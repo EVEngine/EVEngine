@@ -1,6 +1,9 @@
 #pragma once
 
 #include "common/Module.h"
+#include "common/PcgPhotoModeApply.h"
+#include "common/Result.h"
+#include "weather/PcgInteriorWeatherVolume.h"
 
 #include <string>
 
@@ -28,7 +31,7 @@ namespace eve::weather {
  *
  * Presets: "clear", "drizzle", "rain", "storm", "snow", "fog", "wind", "blizzard".
  */
-class Weather : public Module {
+class Weather : public Module, public IPhotoModeFieldSink {
 public:
     Module_REG(Weather);
 
@@ -46,6 +49,18 @@ public:
     static const char *const kPresetNames[];
     static const int kPresetCount;
 
+    /** @brief Return whether this module owns a Pcg weather photo-mode field. */
+    PhotoModeFieldAcceptance acceptsPhotoModeField(const PhotoModeAssignment& assignment) const noexcept override;
+    /** @brief Atomically apply one Pcg weather field to this authoritative weather state. */
+    [[nodiscard]] Result<void> applyPhotoModeField(const PhotoModeAssignment& assignment) override;
+    /** @brief Return Pcg's master weather-enabled state. */
+    bool getPcgWeatherEnabled() const;
+    /** @brief Return Pcg's independent rain playback state. */
+    bool getPcgRainEnabled() const;
+    /** @brief Return Pcg's independent snow playback state. */
+    bool getPcgSnowEnabled() const;
+    /** @brief Return whether photo mode overrides the captured wind. */
+    bool getPcgWindOverride() const;
     // ---- precipitation / wind ----
     void setIntensity(float v);
     float getIntensity() const;
@@ -54,6 +69,27 @@ public:
     /** @brief Wind direction in degrees; 0 = toward +Z, 90 = toward -X. */
     void setWindDirection(float degrees);
     float getWindDirection() const;
+    /** @brief Override snow world velocity exactly as Pcg SnowWindDir. */
+    [[nodiscard]] Result<void> setSnowWind(float x,float y,float z);
+    /** @brief Return to horizontal wind plus the native default fall speed. */
+    void clearSnowWind();
+    /** @brief Return whether a Pcg snow velocity override is active. */
+    bool hasSnowWind() const;
+    float getSnowWindX() const;
+    float getSnowWindY() const;
+    float getSnowWindZ() const;
+
+    /** @brief Sample a bounds-driven interior volume and atomically apply an enter/exit transition. */
+    [[nodiscard]] Result<PcgInteriorWeatherTransition> applyInteriorVolume(
+        const PcgInteriorWeatherVolume& volume, float x, float y, float z);
+    /** @brief Apply a trigger-driven enter/exit event without retaining the volume. */
+    [[nodiscard]] Result<PcgInteriorWeatherTransition> setInteriorVolumeState(
+        const PcgInteriorWeatherVolume& volume, bool inside);
+    /** @brief Clear interior state and restore the last sampled exterior reverb preset. */
+    void clearInteriorWeather();
+    bool isInsideInteriorWeather() const;
+    bool isInteriorWeatherCollisionRequested() const;
+    int getCurrentWeatherReverbPreset() const;
 
     // ---- lightning ----
     void setLightningEnabled(bool on);

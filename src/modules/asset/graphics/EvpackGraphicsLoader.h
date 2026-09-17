@@ -52,6 +52,11 @@ public:
         const float* posXYZ, const float* nrmXYZ, const float* uvST, int vertexCount,
         const std::uint32_t* indices, int indexCount) override;
 
+    /** @copydoc graphics::IMeshResourceFactory::uploadMeshColored */
+    [[nodiscard]] Result<graphics::Mesh*> uploadMeshColored(
+        const float* posXYZ, const float* nrmXYZ, const float* uvST, const float* colorRGBA,
+        int vertexCount, const std::uint32_t* indices, int indexCount) override;
+
     /**
      * @copydoc graphics::IMeshResourceFactory::releaseMesh
      * @param mesh Borrowed factory-owned mesh, observed only for this call.
@@ -78,7 +83,7 @@ public:
         : reader_(reader), factory_(factory) {}
 
     /**
-     * @brief Validate and upload one canonical mesh v2 (or compatibility v1) atomically.
+     * @brief Validate and upload one canonical mesh v3 (or compatibility v1/v2) atomically.
      * @param texcoordSet UV channel to upload to the existing single-UV backend. Missing channels fail,
      * except channel 0 on an untextured mesh. Other channels remain available through decodeCanonicalMesh.
      * @thread Graphics thread; inputs are borrowed for this call, no callbacks or retained staging pointers.

@@ -20,6 +20,8 @@ void Mouse::expose(ssq::Class& cls) {
     // Bind as float: SSQ/Squirrel treat C++ double as userdata, which breaks script arith.
     cls.addFunc("getX", [](Mouse *m) -> float { return m ? float(m->getX()) : 0.f; });
     cls.addFunc("getY", [](Mouse *m) -> float { return m ? float(m->getY()) : 0.f; });
+    cls.addFunc("getWheelX", &Mouse::getWheelX);
+    cls.addFunc("getWheelY", &Mouse::getWheelY);
     cls.addFunc("setX", [](Mouse *m, float x) { if (m) m->setX(x); });
     cls.addFunc("setY", [](Mouse *m, float y) { if (m) m->setY(y); });
     cls.addFunc("setPosition", [](Mouse *m, float x, float y) { if (m) m->setPosition(x, y); });

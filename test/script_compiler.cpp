@@ -4,6 +4,8 @@
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
+#include <chrono>
+#include <cstdio>
 #include <cstring>
 #include <filesystem>
 #include <fstream>
@@ -341,6 +343,10 @@ TEST_CASE("scriptCompiler.compilesRepositoryNutCompatibilityBaseline") {
 #if !defined(EVENGINE_ANDROID) && !defined(EVENGINE_IOS)
     const std::filesystem::path root(EVENGINE_SOURCE_DIR);
     size_t                      compiled = 0;
+    using Clock                          = std::chrono::steady_clock;
+    const auto start                     = Clock::now();
+    double     readMs = 0, vmMs = 0, compileMs = 0, destroyMs = 0;
+    const auto milliseconds = [](auto duration) { return std::chrono::duration<double, std::milli>(duration).count(); };
     for (std::filesystem::recursive_directory_iterator it(root), end; it != end; ++it) {
         if (it->is_directory()) {
             const std::string name = it->path().filename().string();
@@ -348,18 +354,33 @@ TEST_CASE("scriptCompiler.compilesRepositoryNutCompatibilityBaseline") {
             continue;
         }
         if (it->path().extension() != ".nut") continue;
+        const auto    readStart = Clock::now();
         std::ifstream input(it->path(), std::ios::binary);
         REQUIRE(input.good());
         const std::string source(std::istreambuf_iterator<char>(input), {});
         const std::string relative = std::filesystem::relative(it->path(), root).generic_string();
+        readMs += milliseconds(Clock::now() - readStart);
         try {
-            Runtime runtime(1024, ssq::Libs::ALL);
-            runtime.compileSource(source, "baseline:/" + relative);
+            auto phaseStart = Clock::now();
+            {
+                Runtime    runtime(1024, ssq::Libs::ALL);
+                const auto ready = Clock::now();
+                vmMs += milliseconds(ready - phaseStart);
+                runtime.compileSource(source, "baseline:/" + relative);
+                phaseStart = Clock::now();
+                compileMs += milliseconds(phaseStart - ready);
+            }
+            destroyMs += milliseconds(Clock::now() - phaseStart);
         } catch (const std::exception& error) {
             throw std::runtime_error(relative + ": " + error.what());
         }
         ++compiled;
     }
-    CHECK(compiled >= size_t(150));
+    REQUIRE(compiled >= size_t(150));
+    const double totalMs = milliseconds(Clock::now() - start);
+    std::fprintf(
+        stderr,
+        "Script corpus: %zu scripts; walk %.1f ms, read %.1f ms, VM %.1f ms, compile %.1f ms, destroy %.1f ms\n",
+        compiled, totalMs - readMs - vmMs - compileMs - destroyMs, readMs, vmMs, compileMs, destroyMs);
 #endif
 }

@@ -30,23 +30,41 @@ if (gb.isValid()) {
 
 ### 毛发 / 皮毛渲染（Hair Cards）
 
-适用于 VRoid / 角色发片、动物皮毛等 alpha 卡片网格。引擎提供内置 **Kajiya-Kay 各向异性高光** shader，并在 `RenderSystem3D` 中于不透明物体之后、按距离从远到近绘制。
+适用于 VRoid / 角色发片、动物皮毛等 alpha 卡片网格。引擎提供内置 **Kajiya-Kay 各向异性高光** shader（含 soft wrap 漫反射与廉价 back-scatter），并在 `RenderSystem3D` 中于不透明物体之后、按距离从远到近绘制。
+
+**推荐路径（发卡，非 strands）：**
+
+```squirrel
+local hairMesh = gfx.newHairCardMesh(0.12, 0.45)   // 程序化单片；也可用 DCC 发卡模型
+local farMesh  = gfx.newHairCardMesh(0.2, 0.35)    // 远距更宽更矮的代理片
+local hairMat  = gfx.newHairCardMaterial(hairAlbedo) // 自动 transparent/双面/不写深度/不投阴影
+hairMat.getShader().sendFloat("specExp", 90.0)
+hairMat.getShader().sendFloat("diffuseWrap", 0.4)
+hairMat.getShader().sendFloat("scatterStrength", 0.3)
+
+local hair = Renderable3D.create()
+hair.setMaterial(hairMat)
+// LOD：近距发卡 → 远距代理片
+// C++: eve::graphics::hair::configureCardLod(hair, hairMesh, farMesh, 8.0)
+hair.setMeshLod(0, hairMesh, 0)
+hair.setMeshLod(1, farMesh, 8)
+hair.setHair(true)
+```
+
+等价手写：
 
 ```squirrel
 local hairShader = gfx.newHairShader()
-hairShader.sendFloat("specExp", 90.0)
-hairShader.sendFloat("specStrength", 0.9)
-hairShader.sendFloat("alphaCutoff", 0.12)
-
 local hair = Renderable3D.create()
 hair.setMesh(hairCardMesh)
 hair.setTexture(hairAlbedo)
 hair.setShader(hairShader)
-hair.setHair(true)   // 启用透明毛发 pass（背面优先排序）
-hair.setCastShadow(false)  // 发片通常不参与阴影投射
+hair.setHair(true)   // Material/标志会带上双面、透明排序等发卡默认值
 ```
 
-可调 push 参数：`specExp`、`specStrength`、`primaryShift`、`secondaryShift`、`alphaCutoff`、`rimStrength`、`strandDirX/Y/Z`（发束方向，全 0 时由顶点自动推导）。
+可调 push 参数：`specExp`、`specStrength`、`primaryShift`、`secondaryShift`、`alphaCutoff`、`rimStrength`、`strandDir`（发束方向，全 0 时由顶点自动推导）、`diffuseWrap`、`scatterStrength`。
+
+发骨摆动请用 animation 的 `setupHairChain` / `DynamicBoneSolver`（见 animation 模块），不要在 graphics 里直接依赖骨骼求解器。
 
 ### 屏幕空间体积光（尘雾光柱）与体积雾
 

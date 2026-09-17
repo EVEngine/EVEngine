@@ -109,3 +109,20 @@ albedo、normal、height 贴图自动应用，内嵌/外部贴图均可解析）
 
 **源码：** [`src/modules/model3d/`](../../../src/modules/model3d/)
 **相关测试：** 在 [`test/`](../../../test/) 中搜索 `model3d`。
+## 后台预加载
+
+`model3d.requestModelData(path)` 返回 Result，将模型读取和解析提交给引擎线程池。
+成功仅表示已排队或已缓存；之后 `newModelDataFromFile(path)` 等待同一个资源缓存条目，
+不会重复解析，解析失败仍由该读取报告。预加载使用默认 ModelLoadOptions。
+调用发生在游戏线程，后台任务只处理 CPU 数据，不访问脚本 VM 或上传 GPU。
+ResourceManager 拥有任务和解析结果，复制路径；清理/卸载遵循其 epoch 与生命周期约定。
+缺少线程执行器时返回 Unsupported，空路径返回 InvalidArgument，不默默改为同步加载。
+Filesystem 必须先在游戏线程初始化；工作线程不会创建模块。
+
+`requestModelDataWithOptions(path, options)` 返回提交 Result；
+`loadModelDataWithOptions(path, options)` 返回带 `value` 的读取 Result，value 借用自资源缓存。
+options 是严格的布尔值表，可包含 `triangulate`、`generateNormalsIfMissing`、
+`joinIdenticalVertices`、`flipUVs`、`improveCacheLocality`，省略字段默认 true；
+未知字段和非布尔值均拒绝。选项参与缓存键，预加载和读取必须传相同选项。
+对已经建立索引的导出网格，可显式关闭 joinIdenticalVertices 和 improveCacheLocality，
+保留导出器的顶点/三角形顺序；这不会改变普通模型加载的默认选项。

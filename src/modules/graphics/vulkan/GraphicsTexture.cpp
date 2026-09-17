@@ -850,7 +850,71 @@ bool Graphics::replaceTexturePixels(Texture *tex, image::ImageData *data) {
 bool Graphics::updateTexture(Texture *tex, int width, int height, const uint8_t *rgba) {
     if (!tex || width <= 0 || height <= 0 || !rgba) return false;
     if (width != tex->width || height != tex->height) return false;
+    // Dynamic single-mip textures keep their image, sampler and descriptor set.
+    // Replacing the complete texture here used to allocate one descriptor set
+    // per frame from the shared pool, eventually raising ErrorOutOfPoolMemory.
+    if (tex->mipmapCount == 1) {
+        const auto bytes = std::span<const uint8_t>(rgba, size_t(width) * size_t(height) * 4u);
+        return updateTextureRegion(tex, 0, 0, width, height, bytes, size_t(width) * 4u).ok();
+    }
     return replaceTexturePixelsRGBA(tex, width, height, rgba);
+}
+
+eve::Result<void> Graphics::updateTextureFromResidentRgba8(Texture* tex, const GpuResidentBufferView& source, int width,
+                                                           int height) {
+    constexpr const char* context = "graphics.updateTextureFromResidentRgba8";
+    if (!tex || width <= 0 || height <= 0 || width != tex->width || height != tex->height || tex->mipmapCount != 1)
+        return eve::Result<void>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                   "Resident upload requires a matching owned single-mip texture", context));
+    const uint64_t required = uint64_t(width) * uint64_t(height) * 4u;
+    if (source.backend != GpuResidentBackend::Vulkan || source.nativeHandle == 0 ||
+        source.offsetBytes > source.sizeBytes || required > source.sizeBytes - source.offsetBytes ||
+        (source.offsetBytes & 3u) != 0)
+        return eve::Result<void>::failure(
+            eve::Diagnostic::error(source.backend == GpuResidentBackend::Vulkan ? eve::DiagnosticCode::InvalidArgument
+                                                                                : eve::DiagnosticCode::Unsupported,
+                                   "Resident RGBA8 buffer is incompatible with the Vulkan texture", context));
+
+    auto*      gpu = static_cast<GpuTexture*>(tex->gpuHandle);
+    const auto owned =
+        std::find_if(ownedGpuTextures.begin(), ownedGpuTextures.end(),
+                     [gpu](const std::unique_ptr<GpuTexture>& candidate) { return candidate.get() == gpu; });
+    if (!initialized || !gpu || owned == ownedGpuTextures.end() || gpu->isCube)
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                 "Texture is not an owned Vulkan 2D texture", context));
+
+    VkBuffer rawBuffer = VK_NULL_HANDLE;
+    static_assert(sizeof(rawBuffer) <= sizeof(source.nativeHandle));
+    std::memcpy(&rawBuffer, &source.nativeHandle, sizeof(rawBuffer));
+    const vk::Buffer buffer(rawBuffer);
+
+    waitForSharedGpuResources();
+    vkb::executeImmediately(
+        device.instance, uploadPool, device.getQueue(vkb::QueueType::graphics), [&](vk::CommandBuffer cb) {
+            gpu->image.setLayout(cb, vk::ImageLayout::eTransferDstOptimal);
+            vk::BufferImageCopy copy{};
+            copy.bufferOffset     = source.offsetBytes;
+            copy.imageSubresource = {vk::ImageAspectFlagBits::eColor, 0, 0, 1};
+            copy.imageExtent      = vk::Extent3D{uint32_t(width), uint32_t(height), 1};
+            cb.copyBufferToImage(buffer, gpu->image.image(), vk::ImageLayout::eTransferDstOptimal, copy);
+
+            vk::ImageMemoryBarrier barrier{};
+            barrier.srcAccessMask       = vk::AccessFlagBits::eTransferWrite;
+            barrier.dstAccessMask       = vk::AccessFlagBits::eShaderRead;
+            barrier.oldLayout           = vk::ImageLayout::eTransferDstOptimal;
+            barrier.newLayout           = vk::ImageLayout::eShaderReadOnlyOptimal;
+            barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+            barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+            barrier.image               = gpu->image.image();
+            barrier.subresourceRange    = {vk::ImageAspectFlagBits::eColor, 0, 1, 0, 1};
+            cb.pipelineBarrier(vk::PipelineStageFlagBits::eTransfer,
+                               vk::PipelineStageFlagBits::eVertexShader | vk::PipelineStageFlagBits::eFragmentShader |
+                                   vk::PipelineStageFlagBits::eComputeShader,
+                               {}, 0, nullptr, 0, nullptr, 1, &barrier);
+            gpu->image.setCurrentLayout(vk::ImageLayout::eShaderReadOnlyOptimal);
+        });
+    return eve::Result<void>::success();
 }
 
 eve::Result<void> Graphics::updateTextureRegion(Texture *tex, int x, int y, int width,

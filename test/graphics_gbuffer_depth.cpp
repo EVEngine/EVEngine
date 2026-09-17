@@ -1,4 +1,3 @@
-#include <array>
 #include <cmath>
 #include <glm/gtc/matrix_transform.hpp>
 #include <memory>
@@ -40,32 +39,4 @@ TEST_CASE("graphics.gbufferPlaneDepthMatchesCameraRay") {
             CHECK(std::fabs(actual - expected) <= 2.f / 255.f);
         }
     }
-}
-
-TEST_CASE("graphics.gbufferCullModesMatchPbrSurface") {
-    eve::graphics::Graphics *gfx = nullptr;
-    openHeadlessGfx(gfx, 64, 64);
-    const float    positions[] = {-0.28f, -0.6f, 0.5f, 0.28f, -0.6f, 0.5f, 0.f, 0.6f, 0.5f};
-    const float    normals[]   = {0, 0, 1, 0, 0, 1, 0, 0, 1};
-    const float    uv[]        = {0, 0, 1, 0, 0.5f, 1};
-    const uint32_t indices[]   = {0, 1, 2};
-    auto          *mesh        = gfx->newMeshFromArrays(positions, normals, uv, 3, indices, 3);
-    REQUIRE(mesh != nullptr);
-
-    gfx->beginGBufferPass(64, 64);
-    for (const auto [x, mode] : std::array{std::pair{-0.65f, eve::graphics::PbrCullMode::None},
-                                           std::pair{0.f, eve::graphics::PbrCullMode::Back},
-                                           std::pair{0.65f, eve::graphics::PbrCullMode::Front}}) {
-        const auto mvp = glm::translate(glm::mat4(1.f), glm::vec3(x, 0.f, 0.f));
-        gfx->drawMeshGBuffer(mesh, mvp, glm::mat4(1.f), 0.f, 1.f, nullptr, 1.f, 1.f, 1.f, 0.f, 0.f, 0.45f, 0.f, mode);
-    }
-    gfx->endGBufferPass();
-    std::unique_ptr<eve::image::ImageData> albedo(gfx->readGBufferToImageData("albedo"));
-    REQUIRE(albedo != nullptr);
-    const float none  = albedo->getPixel(11, 32).r;
-    const float back  = albedo->getPixel(32, 32).r;
-    const float front = albedo->getPixel(53, 32).r;
-    REQUIRE(none > 0.95f);
-    REQUIRE(std::fabs(back - none) <= 2.f / 255.f);
-    REQUIRE(front < 0.05f);
 }

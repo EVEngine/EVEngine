@@ -23,4 +23,8 @@ fn hash(q:vec2f)->f32{return fract(sin(dot(q,vec2f(12.9898,78.233)))*43758.5453)
 inline constexpr const char *kVolFroxel=R"wgsl(
 @fragment fn fs_main(i:FSIn)->@location(0)vec4f{let cols=max(p(0),1);let rows=max(p(1),1);let slices=max(p(2),1);let tile=vec2f(1/cols,1/rows);var acc=vec4f(0);let count=i32(clamp(slices,1,64));for(var q=0;q<64;q++){if q>=count{break;}let f=f32(q);let cell=vec2f(f-floor(f/cols)*cols,floor(f/cols));let s=tex(cell*tile+i.uv*tile);acc.rgb+=s.rgb*(1-acc.a);acc.a+=s.a*(1-acc.a);}return acc*i.color;}
 )wgsl";
+inline constexpr char kVolDirectionalCookie[]=R"wgsl(
+fn world(m:mat4x4f,uv:vec2f,z:f32)->vec3f{let h=m*vec4f(uv*2-1,z,1);return h.xyz/max(h.w,.000001);}
+@fragment fn fs_main(i:FSIn)->@location(0)vec4f{let z=textureSampleLevel(depthTex,samp,i.uv,0).r;if z<=.00001||z>=.99999{return vec4f(0);}let m=mat4x4f(u.data[0],u.data[1],u.data[2],u.data[3]);let w=world(m,i.uv,z);let l=normalize(vec3f(p(18),p(19),p(20))+vec3f(.000001));let h=select(vec3f(1,0,0),vec3f(0,1,0),abs(l.y)<.99);let a=normalize(cross(h,l));let b=normalize(cross(l,a));let uv=fract(vec2f(dot(w,a),dot(w,b))/max(p(16),.001)+.5);let ra=1-abs(sin((uv.x+.28*sin(uv.y*12))*19));let rb=1-abs(sin((uv.y+.24*sin(uv.x*15))*23));let proc=.12+.88*pow(max(ra,rb),5);let c=max(tex(uv).rgb,vec3f(proc));let alpha=clamp(max(c.r,max(c.g,c.b))*max(p(17),0),0,1);return vec4f(c*i.color.rgb,alpha*i.color.a);}
+)wgsl";
 } // namespace eve::graphics::shaders

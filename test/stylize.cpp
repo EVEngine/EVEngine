@@ -1,3 +1,4 @@
+#include "ManualPreview.h"
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
@@ -585,15 +586,22 @@ TEST_CASE("stylize.render.cylinderStyleGallery") {
 
         // Sanity: some non-background pixels exist (cylinder albedo is warm).
         int warm = 0;
+        int       changed = 0;
         const int w = styled->getWidth();
         const int h = styled->getHeight();
         for (int y = h / 4; y < 3 * h / 4; y += 4) {
             for (int x = w / 4; x < 3 * w / 4; x += 4) {
                 Colorf c = styled->getPixel(x, y);
                 if (c.r + c.g + c.b > 0.2f) ++warm;
+                const auto original = srcFrame->getPixel(x, y);
+                if (std::fabs(c.r - original.r) + std::fabs(c.g - original.g) + std::fabs(c.b - original.b) > 0.04f)
+                    ++changed;
             }
         }
-        CHECK_GT(warm, 20);
+        REQUIRE(warm > 20);
+        REQUIRE(changed > 20);
+
+        if (!eve::test::manualPreviewEnabled()) continue;
 
         // Live gallery: hold each style on the window so the look is visible.
         Texture *preview = gfx->newTexture(styled.get());

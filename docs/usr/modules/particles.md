@@ -398,6 +398,10 @@ embers.start();
 
 `Particles` 管理 Emitter 及配置、模拟、渲染系统；Emitter 持有容量、发射配置与运行状态。模块 update 统一推进所有 emitter（含骨骼绑定同步与蒙皮表面采样），render 按 layer 提交。
 
+`applyUnderwaterParticles(ambience,transition,active,transitionFx,entered,exited)` 将 Pcg 水下状态接到两个借用
+Emitter。ambience 在水下可见并运行、离水停止并隐藏；启用过渡效果且本帧 entered/exited 时，transition
+会停止、复位播放状态并重新启动。entered 与 exited 同时为真会在任何修改前被拒绝。
+
 帧序建议：动画 `computeWorld` → `particles.update(dt)` → `particles.render(gfx)`。
 
 ## 目标导向指南
@@ -445,3 +449,29 @@ embers.start();
 
 **源码：** [`src/modules/particles/`](../../../src/modules/particles/)
 **相关测试：** [`test/particles.cpp`](../../../test/particles.cpp)、[`test/particles_effect_asset.cpp`](../../../test/particles_effect_asset.cpp)、[`test/particles_reference_effects.cpp`](../../../test/particles_reference_effects.cpp)、[`test/particles_attach_skin.cpp`](../../../test/particles_attach_skin.cpp)、[`test/particles_dynamic_bones.cpp`](../../../test/particles_dynamic_bones.cpp)、[`test/particles_attach_more.cpp`](../../../test/particles_attach_more.cpp)、[`test/particles_attach_extra.cpp`](../../../test/particles_attach_extra.cpp)。
+
+`applyUnderwaterSurfaceVfx(surfaceVfx,active)` 对应 Pcg `SetHDRPVisualEffectsState` 的反向水下开关：水面时
+显示并启动调用者拥有的天气/VFX emitter，潜水时停止并隐藏。调用可对一组 surface emitter 逐个执行；函数
+同步借用对象且不保存指针，空对象在修改前返回失败。
+
+`applyGroundParticleCulling(emitter,playerTag,visitorTag,entered,exited)` 对应 Pcg
+`GroundParticlesCulling` 的玩家触发式粒子开关。创建区域时，Box 触发器的完整尺寸使用 Pcg 的 `Radius`
+三轴值，Sphere 触发器直接使用 `Radius`；Shape 必须设为 sensor，并把稳定的玩家标签从 `World3D`
+begin/end 事件传给此函数。组件启用时先调用 `emitter.stop()`；匹配玩家标签的 enter 启动 emitter，exit
+停止 emitter，无关访客保持原状态。函数只在调用期间借用 emitter，不保存指针；空 emitter、零玩家标签，
+或同时设置 enter/exit 会在修改前返回失败。
+
+`shiftWorldSpaceParticles(emitter,shiftX,shiftY)` 对应 Pcg
+`FloatingPointFixParticleSystem` 与 `TerrainLoaderManager.SetOrigin` 的存量粒子修正。调用者计算本次世界原点
+增量，并在下一次粒子 update/render 前调用；函数从所有存活粒子位置减去该增量，同时保留 emitter 位置、
+速度、寿命以及播放/暂停状态。返回值是本次覆盖的 CPU 与 GPU-resident 存活粒子总数。GPU 粒子位移会累计到
+下一次 resident update，提交成功后清零；若后端在提交前停用，待提交偏移也随其状态一同清除。
+只有 `simulationSpace="world"` 的 emitter 可调用，本地空间 emitter 和非有限增量会在修改前失败。对于把
+3D X/Z 投影到粒子 X/Y 平面的项目，参数 `shiftY` 对应世界 Z 增量；Pcg 的垂直世界 Y 原点保持不变。
+
+### Pcg 随机粒子材质
+
+`eve.PcgMaterialSelector()` 保存调用者提供的借用纹理列表。`add(texture)` 添加候选，`clear()` 清空，
+`count()` 返回数量；`selectAndApply(emitter,seed)` 使用显式 seed 确定性选择并应用到粒子发射器。为忠实对应
+Pcg `RandomMaterialSelector` 的 `Random.Range(1, materials.Count)`，索引 0 被保留且永不选择；因此至少
+需要两个非空候选。失败返回标准 `Result`，不会修改 emitter 原有纹理。

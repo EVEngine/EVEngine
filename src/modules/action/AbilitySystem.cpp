@@ -54,6 +54,26 @@ Result<void> AbilityRuntime::registerDefinition(AbilityDefinition definition) {
     return Result<void>::success(Status::success(StatusCode::Applied));
 }
 
+Result<void> AbilityRuntime::replaceDefinition(AbilityDefinition definition) {
+    auto valid = definition.validate();
+    if (!valid) return valid;
+    const std::string key   = definition.id.format();
+    const auto        found = definitions_.find(key);
+    if (found == definitions_.end())
+        return failure(DiagnosticCode::NotFound, "Ability definition is not registered", key);
+    if (found->second.instancing != definition.instancing) {
+        const bool hasGrant = std::any_of(grants_.begin(), grants_.end(), [&](const auto& item) {
+            return item.second.state.definitionId == definition.id;
+        });
+        if (hasGrant)
+            return failure(DiagnosticCode::Conflict,
+                           "Granted ability cannot change its instancing policy during hot reload",
+                           "instancing");
+    }
+    found->second = std::move(definition);
+    return Result<void>::success(Status::success(StatusCode::Applied));
+}
+
 Result<AbilityGrantId> AbilityRuntime::grant(std::string ownerId, const LogicalId& definitionId) {
     if (ownerId.empty())
         return failure<AbilityGrantId>(DiagnosticCode::InvalidArgument, "Ability owner is empty", "ownerId");

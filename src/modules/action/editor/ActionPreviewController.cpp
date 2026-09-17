@@ -49,16 +49,26 @@ Result<action::ActionPreviewFrame> ActionPreviewController::buildFrame(
     action::ActionPreviewReason reason, Duration previous, Duration current,
     const std::vector<action::ActionTimelineEvent>& events) const {
     action::ActionPreviewFrame frame;
-    frame.reason       = reason;
-    frame.animationUri = editor_.target().timeline().animationUri;
-    frame.previous     = previous;
-    frame.current      = current;
+    frame.reason                = reason;
+    frame.animationUri          = editor_.target().timeline().animationUri;
+    Duration rootMotionDuration = editor_.target().timeline().duration;
+    for (const auto& section : editor_.target().timeline().animationSections) {
+        if (current >= section.start && current < section.end) {
+            frame.animationUri = section.animationUri;
+            rootMotionDuration = Duration::fromNanoseconds(section.end.nanoseconds() - section.start.nanoseconds());
+            break;
+        }
+    }
+    frame.previous = previous;
+    frame.current  = current;
+    auto activeBlocks = editor_.target().timeline().activeBlocks(current);
+    if (!activeBlocks) return Result<action::ActionPreviewFrame>::failure(activeBlocks.status());
+    frame.activeBlocks = std::move(activeBlocks).takeValue();
     frame.cues.reserve(events.size());
     for (const auto& event : events)
         frame.cues.push_back({cueKind(event), event.itemId, event.type, event.time, event.payload});
     if (rootMotion_) {
-        auto path = rootMotion_->sampleRootMotion(frame.animationUri, editor_.target().timeline().duration,
-                                                  rootMotionSampleCount_);
+        auto path = rootMotion_->sampleRootMotion(frame.animationUri, rootMotionDuration, rootMotionSampleCount_);
         if (!path) return Result<action::ActionPreviewFrame>::failure(path.status());
         frame.rootMotionState = action::RootMotionPreviewState::Available;
         frame.rootMotionPath  = std::move(path).takeValue();
@@ -102,6 +112,26 @@ EditorResult<void> ActionPreviewController::seek(Duration time) {
     return eve::editing::applied<void>();
 }
 
+EditorResult<void> ActionPreviewController::stop() {
+    auto stopped = seek(Duration::zero());
+    if (stopped.ok()) editor_.pause();
+    return stopped;
+}
+
+EditorResult<void> ActionPreviewController::stepFrames(std::int64_t frames, double frameRate) {
+    auto target = editor_.frameStepTarget(frames, frameRate);
+    if (!target.ok()) return EditorResult<void>::failure(target.status());
+    auto stepped = seek(target.value());
+    if (stepped.ok()) editor_.pause();
+    return stepped;
+}
+
+EditorResult<void> ActionPreviewController::jumpToEnd() {
+    auto jumped = seek(editor_.target().timeline().duration);
+    if (jumped.ok()) editor_.pause();
+    return jumped;
+}
+
 EditorResult<std::size_t> ActionPreviewController::update(Duration delta) {
     auto plan = editor_.planPreview(delta);
     if (!plan.ok())
@@ -109,8 +139,8 @@ EditorResult<std::size_t> ActionPreviewController::update(Duration delta) {
                                               "Could not prepare timeline preview advance");
     if (plan.code() == EditorStatus::NoOp)
         return EditorResult<std::size_t>::success(0, Status::success(EditorStatus::NoOp));
-    auto frame = buildFrame(action::ActionPreviewReason::Advance, plan.value().previous,
-                            plan.value().current, plan.value().events);
+    auto frame = buildFrame(action::ActionPreviewReason::Advance, plan.value().previous, plan.value().current,
+                            plan.value().events);
     if (!frame)
         return previewErrorValue<std::size_t>(EditorStatus::Rejected, "editor.action.preview.root-motion",
                                               diagnosticMessage(frame.status(), "Could not sample root motion"));

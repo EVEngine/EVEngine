@@ -54,3 +54,10 @@ pool.submitPush(channel, "done", 100);
 
 **源码：** [`src/modules/thread/`](../../../src/modules/thread/)
 **相关测试：** 在 [`test/`](../../../test/) 中搜索 `thread`。
+
+## 资源解码并发
+
+ResourceManager 使用的 IAsyncWorkExecutor 拥有独立资源池，工作线程数为
+`min(8, max(1, hardwareConcurrency))`，限制大型解码的并发内存及 CPU 争用。
+普通 `getPool()` 和显式创建的池不受此限制。thread 销毁时先撤销执行器提供者，再等待
+资源任务完成；任务不能在工作线程创建模块或操作图形/脚本状态。

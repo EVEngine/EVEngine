@@ -8,9 +8,6 @@
 #include "thread/Thread.h"
 
 namespace eve::graphics::vulkan {
-namespace {
-constexpr auto kShadowSampleLayout = vk::ImageLayout::eShaderReadOnlyOptimal;
-}  // namespace
 
 void Graphics::resetDeferredFrameGraphs() {
     // Graph command pools/framebuffers borrow these targets. Retire every
@@ -55,7 +52,7 @@ void Graphics::buildDeferredFrameGraphs() {
         shadowDesc.usage       = vk::ImageUsageFlagBits::eSampled | vk::ImageUsageFlagBits::eDepthStencilAttachment;
         // Shadow descriptors sample the depth array in SHADER_READ_ONLY, matching
         // the legacy shadow pass and the layout of every imported cascade.
-        shadowDesc.afterLayout = kShadowSampleLayout;
+        shadowDesc.afterLayout = vk::ImageLayout::eShaderReadOnlyOptimal;
         vk::ClearValue shadowClear{};
         shadowClear.depthStencil  = vk::ClearDepthStencilValue{1.0f, 0};
         const bool haveShadowSlot = i < shadowMaps.size() && shadowMaps[i].image.layerCount() >= shadowLayers;
@@ -121,12 +118,16 @@ void Graphics::recordShadowCascadePass(vkb::FrameGraphPassContext &ctx, int casc
     vk::Pipeline boundPipeline{};
     for (const auto &d : shadowCascadeDraws[cascade]) {
         if (!d.mesh || !d.mesh->gpuHandle) continue;
-        const size_t cullIndex = d.cullMode == PbrCullMode::Back ? 1u : d.cullMode == PbrCullMode::Front ? 2u : 0u;
-        const bool   wantAlpha = d.alphaTest && shadowAlphaPipelines[cullIndex];
+        const bool   wantAlpha = d.alphaTest && shadowAlphaPipeline;
         const bool   skinned   = d.skinSet && d.mesh->hasGpuSkinning();
-        vk::Pipeline wanted    = skinned
-                                     ? (wantAlpha ? shadowSkinAlphaPipelines[cullIndex] : shadowSkinPipelines[cullIndex])
-                                     : (wantAlpha ? shadowAlphaPipelines[cullIndex] : shadowPipelines[cullIndex]);
+        vk::Pipeline wanted{};
+        if (skinned) {
+            wanted = wantAlpha ? (d.doubleSided ? shadowSkinAlphaPipeline : shadowSkinAlphaSingleSidedPipeline)
+                               : (d.doubleSided ? shadowSkinPipeline : shadowSkinSingleSidedPipeline);
+        } else {
+            wanted = wantAlpha ? (d.doubleSided ? shadowAlphaPipeline : shadowAlphaSingleSidedPipeline)
+                               : (d.doubleSided ? shadowPipeline : shadowSingleSidedPipeline);
+        }
         if (wanted != boundPipeline) {
             cb.bindPipeline(vk::PipelineBindPoint::eGraphics, wanted);
             boundPipeline = wanted;
@@ -143,9 +144,17 @@ void Graphics::recordShadowCascadePass(vkb::FrameGraphPassContext &ctx, int casc
                                       gpuTex->descriptorSet.ptr(), 0, nullptr);
             }
         }
-        if (!skinned)
-            cb.pushConstants(wantAlpha ? shadowAlphaPipelineLayout : shadowPipelineLayout,
-                             vk::ShaderStageFlagBits::eVertex, 0, sizeof(glm::mat4), &d.mvp);
+        if (!skinned) {
+            if (wantAlpha) {
+                ShadowAlphaPush push{d.mvp, d.lodFade};
+                cb.pushConstants(shadowAlphaPipelineLayout,
+                                 vk::ShaderStageFlagBits::eVertex | vk::ShaderStageFlagBits::eFragment,
+                                 0, sizeof(push), &push);
+            } else {
+                cb.pushConstants(shadowPipelineLayout, vk::ShaderStageFlagBits::eVertex,
+                                 0, sizeof(glm::mat4), &d.mvp);
+            }
+        }
         drawIndexedMesh(cb, *gpuMesh);
     }
 }
@@ -163,12 +172,10 @@ void Graphics::recordGBufferPassDraws(vkb::FrameGraphPassContext &ctx) {
     vk::Pipeline boundPipeline{};
     for (const auto &d : gbufferPassDraws) {
         if (!d.mesh || !d.mesh->gpuHandle) continue;
-        const size_t cullIndex = d.cullMode == PbrCullMode::Back ? 1u : d.cullMode == PbrCullMode::Front ? 2u : 0u;
-        const bool   wantAlpha = d.alphaTest && gbufferAlphaPipelines[cullIndex];
+        const bool   wantAlpha = d.alphaTest && gbufferAlphaPipeline;
         const bool   skinned   = d.skinSet && d.mesh->hasGpuSkinning();
-        vk::Pipeline wanted    = skinned
-                                     ? (wantAlpha ? gbufferSkinAlphaPipelines[cullIndex] : gbufferSkinPipelines[cullIndex])
-                                     : (wantAlpha ? gbufferAlphaPipelines[cullIndex] : gbufferPipelines[cullIndex]);
+        vk::Pipeline wanted    = skinned ? (wantAlpha ? gbufferSkinAlphaPipeline : gbufferSkinPipeline)
+                                         : (wantAlpha ? gbufferAlphaPipeline : gbufferPipeline);
         if (wanted != boundPipeline) {
             cb.bindPipeline(vk::PipelineBindPoint::eGraphics, wanted);
             boundPipeline = wanted;
@@ -216,7 +223,7 @@ void Graphics::recordDeferredFrameGraph() {
         buildDeferredFrameGraphs();
         graph = currentDeferredFrameGraph();
     }
-    if (!graph || !gbufferPipelines[0] || !gbufferRenderPass || !shadowPipelines[0]) {
+    if (!graph || !gbufferPipeline || !gbufferRenderPass || !shadowPipeline) {
         dropPendingOffscreenPasses();
         return;
     }
@@ -240,7 +247,7 @@ void Graphics::recordDeferredFrameGraph() {
     // pools is satisfied structurally.
     recordFrameGraphWithJobSystem(*graph, jobs);
     graph->submit();
-    if (!shadowMaps.empty()) currentShadowMap().image.setCurrentLayout(kShadowSampleLayout);
+    if (!shadowMaps.empty()) currentShadowMap().image.setCurrentLayout(vk::ImageLayout::eDepthStencilReadOnlyOptimal);
     jobs->endFrame();
     for (auto &d : shadowCascadeDraws) d.clear();
     gbufferPassDraws.clear();

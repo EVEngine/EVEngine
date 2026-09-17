@@ -478,6 +478,10 @@ Renderable 的 tint、metallic、roughness、parallax、lighting 和 shadow 参�
 从 complex static collider 同时切换为 non-static primitive 时，应拆成两笔提交：先换 primitive，再改 Body
 type，避免 Box3D 在旧 complex shape 仍存活时拒绝类型转换。
 
+启用 `physics_editor` 时，模块启动会把 `physics.editing` provider 发布到当前 `Editor` 的
+`ExtensionProviderRegistry`；宿主可取得 `physics.editing.factory` lease 来创建上述 publishing target。
+模块卸载会撤销对应 generation，旧 lease/handle 不得跨卸载继续使用。
+
 2D 使用同一 `PhysicsColliderPublishingTarget`，将 dimensions 设为 `2` 并绑定
 `PhysicsCollider2DRuntimeSink`。AssetDB 的 polygon metadata 使用 3–8 个有限、严格凸的 packed XY
 顶点；chain 使用至少两个顶点，并可用 `loop: true` 闭合。Resolver 会在触碰 Box2D 前拒绝凹多边形、
@@ -593,6 +597,12 @@ ws.select("world", "scene", "level-1", "tree-42", "vegetation.tree", false);
 local created = eve.ActionEditorModule().create("ability.light-attack", timelineAsset);
 if (!created.ok) throw created.status.summary;
 local actionEditor = created.value; // ownership == "owned"
+local canonicalJson = actionEditor.snapshotJson(); // same schema as snapshot(), suitable for runtime transfer
+
+// A project-owned target adapter may claim selected block types. The Montage
+// still emits their events, but the preview runtime does not require a native
+// sink for those types.
+actionEditor.setRuntimeBlockExternallyHandled("combat:damage", true);
 
 local ws = editor.newWorkspace("combat", "Combat Action Editor");
 local composed = actionEditor.configureWorkspace(ws); // Assets/Preview/Inspector/Timeline
@@ -603,16 +613,138 @@ actionEditor.pointerDown(mouseX, mouseY, false);
 actionEditor.pointerMove(mouseX);
 actionEditor.pointerUp(mouseX);
 
+// Inspector mutations share the same native transaction history. Disabled
+// blocks remain authored in schema v4 but do not emit runtime events.
+actionEditor.setItemEnabled("combat-state:hitbox", false);
+actionEditor.editItemDetails("combat-state:hitbox", "combat:hitbox-window",
+                             "{\"hitbox\":\"weapon.main\"}");
+
+// Runtime crossings preserve the canonical item identity and owning payload.
+// Consumers can route the exact edited data into a target-domain adapter.
+for (local i = 0; i < actionEditor.getRuntimeEventCount(); ++i) {
+    print(actionEditor.getRuntimeEventId(i) + " " +
+          actionEditor.getRuntimeEventPayloadJson(i) + "\n");
+}
+
+// Build insertion pickers from the registered semantic notify types, then
+// insert through the same validation and transaction authority as dragging.
+local stateCount = actionEditor.getInsertableTypeCount(true);
+local stateType = actionEditor.getInsertableType(true, 0);
+local stateLabel = actionEditor.getInsertableTypeLabel(true, 0);
+actionEditor.addStateAtCursor("combat-track:gameplay", stateType, 0.25,
+                              "{\"channel\":\"default\"}");
+actionEditor.handleTimelineShortcut("Ctrl+C");
+actionEditor.handleTimelineShortcut("Ctrl+V");
+
+// Whole-track authoring uses the same canonical timeline transaction history.
+actionEditor.addTrack("combat-track:camera", "Camera", "camera");
+actionEditor.renameTrack("combat-track:camera", "Camera Cues");
+actionEditor.setTrackMuted("combat-track:camera", true);
+actionEditor.setTrackLocked("combat-track:camera", true);
+local locked = actionEditor.getTrackLocked(1);
+actionEditor.copyTrack("combat-track:camera");
+local pastedTrack = actionEditor.pasteTrack();
+
+// Animation sections own clip selection, placement, source trim and blending.
+actionEditor.addAnimationSection("combat-section:strike", "asset://combat.glb#Strike",
+                                 0.25, 0.65, 0.08);
+actionEditor.editAnimationSection("combat-section:strike", 0.30, 0.70, 0.10,
+                                  "asset://combat.glb#StrikeHeavy");
+actionEditor.editAnimationSectionSource("combat-section:strike", 0.05, 0.40,
+                                        "ease-in-out");
+
+// Montage-wide settings commit atomically and update a prepared preview.
+actionEditor.setMontageSettings(1.25, false, true, 2,
+                                0.12, 0.15, 0.0,
+                                true, false, true);
+
 actionEditor.play();
 actionEditor.update(dt);
 animationPlayer.setTime(actionEditor.getPreviewTime());
+
+// Publish an edited owning clip into the prepared Montage without retaining
+// the editor clip pointer, then skin the real preview mesh from its pose.
+actionEditor.replaceRuntimeClip("asset://combat.glb#Strike", editedClip);
+local montagePose = actionEditor.getRuntimePose();
+
+// Restart through the fixed dual-slot coordinator. The previous pose fades out
+// while the new execution fades in using the authored default blend-in time.
+actionEditor.replayRuntimeCrossFade();
+
+// SceneLoader 等可选模块注册真实预览层后，seek/update 会原子更新表现实例。
+if (actionEditor.hasPreviewHost())
+    actionEditor.refreshPreview(); // 参数事务提交后刷新当前位置
 ```
+
+拖动与 Seek 先按 `setSnapSeconds()` 指定的确定性帧网格离散；拖动 Block 或边界时，还会在
+8 像素阈值内磁吸到 0 点、当前播放头、物理分段、动画 Section 边界和其他轨道 Block 边界。
+多选拖动会排除选择集自身的边界，避免整组被自己的成员吸住。
+
+物理 Section 分割不是只读装饰。`getSectionSplitCount/getSectionSplitTime` 读取严格排序的边界，
+`addSectionSplit` 在播放头或指定时间插入边界，`setSectionSplit` 移动边界，`removeSectionSplit` 删除边界。
+三种修改都通过 Timeline 的规范替换事务提交，拒绝 0、末尾、重复或越界时间，并立即更新同一编辑器拥有的
+Montage 运行时副本；Undo/Redo、`jumpRuntimeSection`、`evaluateRuntimeSectionProgress`、
+`syncRuntimeSection`、`syncRuntimeSectionAndJump`、`clearRuntimeSectionSync` 和磁吸目标因此共享一份边界事实。
+归一化求值把 `[0,1]` 映射到物理 Section；同步倍率可以只配置，也可以配置后立即跳到该段起点，并可明确清除。
+运行时按资产的 `animationLayer` 选择协调器层，视口读取该层的双槽归一化合成姿态。
+`setRuntimeBoneMask` 会同步复制一个与预览骨架匹配的 `AnimBoneMask` 到当前层，调用方随后可以安全销毁或修改
+原 Mask；`clearRuntimeBoneMask` 恢复全骨骼影响。示例的 Montage Inspector 可从当前选中关节生成 Mask，选择是否
+包含子关节，并提供紧凑的 Apply/Clear 工具栏。
+`setRuntimeLayerWeight/getRuntimeLayerWeight` 和 `setRuntimeLayerAdditive/getRuntimeLayerAdditive` 配置当前协调器层，
+不会写入 ActionTimeline 资产。`getRuntimePoseOverBase(basePose)` 以调用期间借用的基础姿态为底，按层索引依次应用
+归一化双槽、Layer Weight、Bone Mask 与 bind-pose-relative Additive，返回由编辑器协调器拥有、下次合成前有效的
+最终姿态；基础姿态骨骼数不匹配或运行时尚未启动时返回 `null`。
+`getRuntimeState/getRuntimeElapsedSeconds/getRuntimeDurationSeconds/getRuntimeLayer/getRuntimeSlot` 提供只读句柄诊断；
+示例把它们投影到已有状态行，不增加窗口或面板尺寸。
+运行中的预览还可用 `setRuntimeRate/getRuntimeRate` 设置和读取严格为正的倍率；倍率只缩放调用者注入的
+delta，不读取墙钟，也不写回资产的 `basePlayRate`。`getRuntimePhysicalSection`、
+`getRuntimeSectionProgress` 和 `getRuntimeWeight` 可直接驱动运行诊断 HUD。
+
+选中的 Audio、VFX 与 Prefab Block 会显示类型化属性：资源 URI、播放参数、停止或生命周期策略，以及
+attachment、source/target anchor、bone 和位置/旋转/缩放偏移。Audio 还提供分号分隔的随机 URI 池、
+音高扰动、2D/3D 混合、最小/最大衰减距离，以及退出淡出开关和时长；运行时按 execution/item 的稳定
+seed 选片段和音高，并用 ActionRuntime 注入的时间推进淡出。
+VFX State 还提供 `fitBlockToClip` 与 `fitClipToBlock`：前者按有效裁剪区间调整 Block 末端以恢复
+1.0x 播放，后者保持 Block 不动并调整 `clipEndTime`。两者均拒绝 Instant、非 VFX 与越界候选，且只提交
+一个可撤销事务。
+Particles 模块存在时，`fitClipToNaturalDuration` 会通过 `IActionVfxDurationProvider` 读取资源中启用的
+`emitterLife` 与最大 `particleLifetime`；非循环层取完整消散时长，全循环资源取最长单圈周期。无界资源
+返回结构化 Unsupported，provider 缺失时按钮隐藏且 API 明确失败，不会把猜测值写入资产。
+
+能力定义可使用 `encodeAbilityAsset` / `decodeAbilityAsset` 在 owning `Value` 与
+`eve.action.ability` 资产之间转换。当前 v2 使用纳秒，读取 v1 的毫秒时长后会规范化为 v2；未知顶层字段、
+未来版本、负时长、非法条件/目标/成本/Timeline 均返回结构化失败，只有完整解码和校验成功的定义才应传给
+`AbilityRuntime::registerDefinition`。若要写 JSON，可继续调用同一 `Value::toJson/fromJson`，不要复制字段映射。
+脚本也可用 `setItemPayloadText/Number/Integer/Bool/Vector3` 修改单个字段，或用
+`setItemPayloadTextList` 把分号分隔文本写成字符串数组，`patchItemPayload` 原子提交一组字段；
+`getItemPayloadText/Number/Bool/Vector/TextList` 用于把权威 payload 投射回 UI。所有入口先合并到 payload 的拥有型
+副本，保留未识别扩展字段，再通过 `ActionNotifyRegistry` 校验完整候选值，最后交给
+`ActionTimelineEditor` 产生一个撤销步骤。校验失败不会增加 revision 或留下部分修改；Advanced JSON 仍是
+自定义类型和扩展字段的显式逃生口。
 
 工厂与所有可能失败的编辑操作返回通用 Result 表：`ok`、`value`、`status.code`、
 `status.summary` 和 `status.diagnostics`。返回的动作编辑器由 Squirrel VM release hook 拥有，
 仅可在创建它的线程使用；`configureWorkspace` 不保留传入的 Workspace 指针，`snapshot`
 返回与编辑器生命周期解耦的规范化资产值。完整可运行示例见
 [`examples/combat-action-editor`](../../../examples/combat-action-editor)。
+
+`ActionPreviewFrame` 同时携带当前位置的 active blocks。SceneLoader 存在时，Prefab Spawn 预览层
+会加载真实 `Renderable3D`，但使用与游戏运行时分离的池；准备失败不移动播放头，跳帧离开区间或
+编辑器销毁会回收预览实例。Audio 模块存在时，同一组合机制使用真实 Source 预览单点和区间音频；
+连续播放不会每帧重启，跳转按块内时间 seek，参数刷新失败不会破坏当前试听；Audio State 区块还会从
+真实解码 PCM 绘制有界 min/max 波形，并按 pitch、looping 和区块时长映射。Particles 模块存在时，
+单点和区间 VFX 使用真实 `ParticleEffect`；Seek/Refresh 从稳定 seed 重模拟到裁剪后的块内时间，
+连续 Advance 增量模拟且不重建未变实例。裁剪掉全部预览 provider 时
+`hasPreviewHost()` 返回 false，时间轴编辑和
+确定性事件采样仍可使用。
+
+连续参数自动化使用 `presentation:parameter-curve` NotifyState。payload 的 `target` 是 LogicalId，
+`operation` 可为 `replace`、`add` 或 `multiply`，`keys` 必须包含时间为 0 和 1 的端点，并可为每段选择
+`step`、`linear` 或 `cubic`。原生 Timeline 会绘制曲线和关键点；选中后 Inspector 可修改时间、数值、切线和
+插值。脚本可用 `addParameterKey`、`editParameterKey`、`removeParameterKey` 做可撤销编辑，用
+`getParameterKeyCount/Time/Value/Interpolation` 读取关键帧，并用 `sampleParameterCurve` 取得预览值。
+内建 `audio:master-volume` target 可直接驱动并在区块结束时恢复主音量；其他领域通过
+`IActionParameterSink` 注册自己的稳定 target。
 
 ```squirrel
 local dock = editor.newDock();

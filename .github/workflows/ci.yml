@@ -151,6 +151,14 @@ jobs:
         timeout-minutes: 5
         run: python3 scripts/check_test_manifest.py
 
+      - name: Check examples layout and overview registration
+        # Every examples/<name>/ is either a runnable example (main.nut +
+        # config.nut) or explicitly exempted with a reason, owns a README.md and
+        # is listed in examples/README.md.  A new example therefore cannot dodge
+        # the runtime smoke test in the Linux lane by simply not being runnable.
+        timeout-minutes: 5
+        run: python3 scripts/check_examples.py
+
       - name: Check critical return-value diagnostics
         timeout-minutes: 5
         run: python3 scripts/check_nodiscard.py
@@ -174,7 +182,10 @@ jobs:
 
       - name: Test CI and repository scripts
         timeout-minutes: 10
-        run: python3 -m unittest discover -s scripts/tests -p "test_*.py" -v
+        # -X utf8 so the runner's own output never follows the host ANSI code
+        # page; on Linux CI this is already the default. Test modules are
+        # imported by the runner, so they cannot guard their own stdio.
+        run: python3 -X utf8 -m unittest discover -s scripts/tests -p "test_*.py" -v
 
   profile-matrix:
     name: Profile ${{ matrix.profile }}
@@ -408,18 +419,39 @@ jobs:
         run: ctest --test-dir build/win32-debug -R '^graphics\.backendParity\.' --output-on-failure
 
       - name: Configure native Dawn parity lane
-        timeout-minutes: 15
+        # Same googlesource shallow-clone flake as the macOS Metal lane: abseil
+        # can land without CMakeLists.txt. Retry after wiping the incomplete tree.
+        timeout-minutes: 25
         shell: pwsh
         run: |
-          cmake\with-msvc.cmd cmake.exe -S . -B build/webgpu-native -G Ninja `
-            -DCMAKE_BUILD_TYPE=Debug `
-            -DCMAKE_C_COMPILER="$PWD/cmake/msvc-cl.cmd" `
-            -DCMAKE_CXX_COMPILER="$PWD/cmake/msvc-cl.cmd" `
-            -DEVENGINE_BUILD_PLATFORM=webgpu -DBUILD_PLATFORM=webgpu -DBUILD_TESTING=ON `
-            -DEVENGINE_COMPILER_CACHE=SCCACHE `
-            -DEVENGINE_THIRD_PARTY_BINARY_DIR="$PWD/build/third-party-binary/win32-debug" `
-            -DEVENGINE_DOWNLOAD_SPINE_MODELS=OFF `
-            -DEVENGINE_DOWNLOAD_SKINNED_CHARACTER=OFF
+          $ErrorActionPreference = 'Stop'
+          function Invoke-DawnConfigure {
+            & cmake\with-msvc.cmd cmake.exe -S . -B build/webgpu-native -G Ninja `
+              -DCMAKE_BUILD_TYPE=Debug `
+              -DCMAKE_C_COMPILER="$PWD/cmake/msvc-cl.cmd" `
+              -DCMAKE_CXX_COMPILER="$PWD/cmake/msvc-cl.cmd" `
+              -DEVENGINE_BUILD_PLATFORM=webgpu -DBUILD_PLATFORM=webgpu -DBUILD_TESTING=ON `
+              -DEVENGINE_COMPILER_CACHE=SCCACHE `
+              -DEVENGINE_THIRD_PARTY_BINARY_DIR="$PWD/build/third-party-binary/win32-debug" `
+              -DEVENGINE_DOWNLOAD_SPINE_MODELS=OFF `
+              -DEVENGINE_DOWNLOAD_SKINNED_CHARACTER=OFF
+            if ($LASTEXITCODE -ne 0) { throw "cmake configure exited $LASTEXITCODE" }
+          }
+          $abseilCmake = 'build/webgpu-native/_deps/dawn-src/third_party/abseil-cpp/CMakeLists.txt'
+          foreach ($attempt in 1..3) {
+            Write-Host "Dawn parity configure attempt $attempt/3"
+            try {
+              Invoke-DawnConfigure
+              if (Test-Path $abseilCmake) { exit 0 }
+              Write-Host "Dawn abseil-cpp checkout incomplete" -ForegroundColor Yellow
+            } catch {
+              Write-Host $_ -ForegroundColor Yellow
+            }
+            Remove-Item -Recurse -Force build/webgpu-native/_deps/dawn-src/third_party/abseil-cpp -ErrorAction SilentlyContinue
+            Remove-Item -Force build/webgpu-native/CMakeCache.txt -ErrorAction SilentlyContinue
+            Start-Sleep -Seconds (10 * $attempt)
+          }
+          throw 'Dawn parity configure failed after 3 attempts'
 
       - name: Verify native Dawn platform selection
         timeout-minutes: 5
@@ -438,9 +470,9 @@ jobs:
       - name: Build native Dawn parity lane
         # A cold Dawn/Tint build compiles roughly 2,400 targets and reached
         # 95% only when the former 40-minute guard fired on windows-latest. The
-        # full test link reached 2,401/2,403 at 60 minutes as the module matrix
-        # grew, so retain a bounded 15-minute link/cache variance margin.
-        timeout-minutes: 75
+        # growing module matrix crossed the later 75-minute guard in the v0.5.1
+        # release gate, so retain a bounded 30-minute link/cache variance margin.
+        timeout-minutes: 105
         shell: pwsh
         run: cmake\with-msvc.cmd cmake.exe --build build/webgpu-native --target unit_test -j 8
 
@@ -461,6 +493,17 @@ jobs:
         run: >-
           ctest --test-dir build/webgpu-native
           -R '^(graphics\.backendParity\..*|gpgpu\.procgen\.transformParity)$'
+          --output-on-failure
+
+      - name: Run native Dawn Tensor contracts
+        # Ten isolated cases also pay the software adapter's initialization cost.
+        timeout-minutes: 30
+        shell: pwsh
+        env:
+          ALSOFT_DRIVERS: "null"
+        run: >-
+          ctest --test-dir build/webgpu-native
+          -R '^tensor\.gpu\.'
           --output-on-failure
 
       - name: Compare Vulkan and WebGPU parity images
@@ -534,7 +577,7 @@ jobs:
         run: bash .github/scripts/setup-software-vulkan.sh
 
       - name: Build win32 release
-        timeout-minutes: 60
+        timeout-minutes: 90
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: >-
@@ -694,7 +737,7 @@ jobs:
           test -f "$ANDROID_NDK/build/cmake/android.toolchain.cmake"
 
       - name: Build android release
-        timeout-minutes: 60
+        timeout-minutes: 90
         run: |
           test -f "$ANDROID_NDK/build/cmake/android.toolchain.cmake"
           make build/android \
@@ -766,16 +809,44 @@ jobs:
           ALSOFT_DRIVERS: "null"
         run: make test/macosx-debug
 
-      - name: Configure native Dawn Metal lane
-        timeout-minutes: 20
+      - name: Report network phase timings
+        if: always()
         run: |
-          cmake -S . -B build/webgpu-macos -G Ninja \
-            -DCMAKE_BUILD_TYPE=Debug \
-            -DEVENGINE_BUILD_PLATFORM=webgpu -DBUILD_PLATFORM=webgpu -DBUILD_TESTING=ON \
-            -DEVENGINE_COMPILER_CACHE=SCCACHE \
-            -DEVENGINE_THIRD_PARTY_BINARY_DIR="$PWD/build/third-party-binary/macosx-debug" \
-            -DEVENGINE_DOWNLOAD_SPINE_MODELS=OFF \
-            -DEVENGINE_DOWNLOAD_SKINNED_CHARACTER=OFF
+          log=build/macosx-debug/Testing/Temporary/LastTest.log
+          if test -f "$log"; then
+            sed -n '/NetHostPeers .*: .* ms/p' "$log"
+          fi
+
+      - name: Configure native Dawn Metal lane
+        # Dawn's DAWN_FETCH_DEPENDENCIES shallow-clones abseil (and friends)
+        # from chromium.googlesource.com. That clone can land an empty
+        # directory without CMakeLists.txt (run 34850493956 / job 103997514884),
+        # so retry after wiping incomplete third_party checkouts.
+        timeout-minutes: 30
+        run: |
+          set -euo pipefail
+          configure_dawn() {
+            cmake -S . -B build/webgpu-macos -G Ninja \
+              -DCMAKE_BUILD_TYPE=Debug \
+              -DEVENGINE_BUILD_PLATFORM=webgpu -DBUILD_PLATFORM=webgpu -DBUILD_TESTING=ON \
+              -DEVENGINE_COMPILER_CACHE=SCCACHE \
+              -DEVENGINE_THIRD_PARTY_BINARY_DIR="$PWD/build/third-party-binary/macosx-debug" \
+              -DEVENGINE_DOWNLOAD_SPINE_MODELS=OFF \
+              -DEVENGINE_DOWNLOAD_SKINNED_CHARACTER=OFF
+          }
+          abseil_cmake=build/webgpu-macos/_deps/dawn-src/third_party/abseil-cpp/CMakeLists.txt
+          for attempt in 1 2 3; do
+            echo "Dawn Metal configure attempt ${attempt}/3"
+            if configure_dawn && [[ -f "$abseil_cmake" ]]; then
+              exit 0
+            fi
+            echo "Dawn dependency checkout incomplete; clearing for retry" >&2
+            rm -rf build/webgpu-macos/_deps/dawn-src/third_party/abseil-cpp
+            rm -f build/webgpu-macos/CMakeCache.txt
+            sleep $((attempt * 10))
+          done
+          echo "Dawn Metal configure failed after 3 attempts" >&2
+          exit 1
 
       - name: Verify native Dawn Metal platform selection
         timeout-minutes: 5
@@ -805,7 +876,7 @@ jobs:
           ALSOFT_DRIVERS: "null"
         run: |
           ctest --test-dir build/webgpu-macos \
-            -R '^(graphics\.backendParity\.|RenderSystem3D\.(textureCheckerPixels|lightingAffectsPixels))' \
+            -R '^(graphics\.backendParity\.|RenderSystem3D\.(textureCheckerPixels|lightingAffectsPixels)|tensor\.gpu\.|voxel\.render\.(faceDirAliasesDraw|atlasBoundaryIndices|emptyInstanceInputsAreNoOps|thinRectanglesAcrossAxes)|outline\.previewCube|procgen\.render\.dungeonCaveMazePreview)' \
             --output-on-failure
 
   macos-release:
@@ -852,7 +923,7 @@ jobs:
         run: bash .github/scripts/resolve-vulkan-macos.sh "${{ runner.temp }}/VulkanSDK"
 
       - name: Build macosx release
-        timeout-minutes: 40
+        timeout-minutes: 75
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: >-
@@ -993,7 +1064,9 @@ jobs:
     runs-on: ubuntu-24.04
     # Full debug build + per-case unit tests + all-example smoke exceeded the
     # previous 60-minute job cap even though each step stayed within its guard.
-    timeout-minutes: 90
+    # Cold third-party restore + read-only sccache (PR) can push the build step
+    # past 40 minutes, so keep headroom for tests afterward.
+    timeout-minutes: 120
     env:
       SCCACHE_GHA_ENABLED: "true"
       SCCACHE_GHA_VERSION: evengine-cpp-v1-linux-x64
@@ -1011,8 +1084,9 @@ jobs:
 
       - name: Install system packages
         # apt update may consume most of ten minutes while retrying a slow
-        # Ubuntu mirror; keep enough time for the package download itself.
-        timeout-minutes: 20
+        # mirror, and Mesa can download at well below 100 KiB/s. Keep enough
+        # time for an active transfer to finish.
+        timeout-minutes: 25
         run: |
           # GitHub-hosted ubuntu-24.04 images sometimes pin the retired
           # azure.archive.ubuntu.com mirror, which hangs instead of failing.
@@ -1088,7 +1162,10 @@ jobs:
         run: bash .github/scripts/setup-software-vulkan.sh
 
       - name: Build linux debug
-        timeout-minutes: 40
+        # PRs are sccache READ_ONLY and cannot refill the shared cache. A cold
+        # third-party restore plus a full engine rebuild regularly exceeds 40m.
+        # (Also observed on PR #389: timed out at ~94% under the old 40m budget.)
+        timeout-minutes: 60
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
@@ -1162,10 +1239,14 @@ jobs:
           ctest --test-dir build/linux-debug --output-on-failure -j 2 \
             -R '^bundle/(graphics_font|TextureSampler|gpgpu|tensor|virtualgeometry_gpu|graphics_headless)\.cpp$'
 
-      - name: Smoke all examples (headless)
+      - name: Smoke all examples (headless, >=2s alive each)
         timeout-minutes: 20
         env:
           ALSOFT_DRIVERS: "null"
+          # Contract for examples/README.md "示例规范": every runnable example
+          # must still be running MIN_RUN_SECONDS after launch, with no error
+          # markers in its log; dying early or exiting non-zero fails the job.
+          MIN_RUN_SECONDS: "2"
         run: |
           xvfb-run -a -s "-screen 0 1280x800x24" bash scripts/smoke_examples.sh
 
@@ -1249,7 +1330,7 @@ jobs:
         run: bash .github/scripts/setup-software-vulkan.sh
 
       - name: Build linux release
-        timeout-minutes: 40
+        timeout-minutes: 75
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: >-
@@ -1272,8 +1353,8 @@ jobs:
     needs: [source-quality, change-scope]
     if: ${{ needs.source-quality.result == 'success' && needs.change-scope.outputs.asan == 'true' && (github.event_name != 'workflow_call' || inputs.build_type == 'debug' || inputs.build_type == 'both') }}
     runs-on: ubuntu-24.04
-    # Allow the 100-minute cold optimized sanitizer build and 90-minute test
-    # guards plus dependency/toolchain setup and cache reporting.
+    # Allow a cold optimized sanitizer build (PRs are sccache READ_ONLY) and
+    # the 90-minute test guard, plus dependency/toolchain setup and reporting.
     timeout-minutes: 270
     env:
       # Leak detection off: the zeroerr discovery run during the build (and a
@@ -1346,9 +1427,10 @@ jobs:
         run: bash .github/scripts/setup-software-vulkan.sh
 
       - name: Build linux RelWithDebInfo (ASan+UBSan)
-        # PRs cannot populate the shared sccache. A new compiler flag set is
-        # therefore a cold build; run 34596121051 reached 67% after 55 minutes.
-        timeout-minutes: 100
+        # PRs cannot populate the shared sccache, so sanitizer flag sets are a
+        # cold rebuild. Runs 34820985249 / 34823491554 reached ~94% after 100m;
+        # keep headroom for linking unit_test. Job budget is 270m.
+        timeout-minutes: 140
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: >-
@@ -1440,7 +1522,7 @@ jobs:
         run: bash .github/scripts/setup-software-vulkan.sh
 
       - name: Build linux debug (coverage)
-        timeout-minutes: 40
+        timeout-minutes: 75
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: >-
@@ -1453,7 +1535,7 @@ jobs:
         run: sccache --show-stats
 
       - name: Run linux unit tests (coverage)
-        timeout-minutes: 40
+        timeout-minutes: 60
         env:
           ALSOFT_DRIVERS: "null"
         run: |

@@ -16,6 +16,7 @@ import onnx
 from onnx import helper as h, numpy_helper as nh
 from onnx.reference import ReferenceEvaluator
 import onnxruntime as ort
+import utf8_stdio
 
 
 def main():
@@ -148,4 +149,5 @@ def main():
 
 
 if __name__=='__main__':
+    utf8_stdio.enable_utf8_stdio()
     main()

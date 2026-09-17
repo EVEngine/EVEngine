@@ -4,6 +4,10 @@ from pathlib import Path
 
 
 SCRIPT = Path(__file__).parents[1] / "analyze_build.py"
+# Loading a script by path bypasses the normal sys.path entry for its directory,
+# so its own sibling imports (utf8_stdio) only resolve if the test puts that
+# directory on sys.path itself.
+sys.path.insert(0, str(SCRIPT.parent))
 SPEC = importlib.util.spec_from_file_location("analyze_build", SCRIPT)
 MODULE = importlib.util.module_from_spec(SPEC)
 assert SPEC.loader is not None

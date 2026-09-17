@@ -14,7 +14,9 @@ Result<LoadedGraphicsMesh> EvpackGraphicsLoader::loadMesh(const AssetRef&       
                                                           const asset::EvpackCapabilities& capabilities,
                                                           const GraphicsAssetLoadLimits&   limits,
                                                           std::uint32_t texcoordSet, bool preserveAllTexcoords) const {
-    auto payload = reader_.read(asset, "eve.mesh/2", capabilities, limits.maximumDecodedBytes);
+    auto payload = reader_.read(asset, "eve.mesh/3", capabilities, limits.maximumDecodedBytes);
+    if (!payload && payload.error()->code() == DiagnosticCode::TypeMismatch)
+        payload = reader_.read(asset, "eve.mesh/2", capabilities, limits.maximumDecodedBytes);
     if (!payload && payload.error()->code() == DiagnosticCode::TypeMismatch)
         payload = reader_.read(asset, "eve.mesh/1", capabilities, limits.maximumDecodedBytes);
     if (!payload) return Result<LoadedGraphicsMesh>::failure(payload.status());
@@ -37,11 +39,18 @@ Result<LoadedGraphicsMesh> EvpackGraphicsLoader::loadMesh(const AssetRef&       
     if (uv == staging.value().texcoords.end() && (texcoordSet != 0 || !staging.value().texcoords.empty()))
         return failure<LoadedGraphicsMesh>(DiagnosticCode::NotFound,
                                            "requested UV set is absent; no remapping performed");
-    auto uploaded = factory_.uploadMesh(
-        staging.value().positions.data(), staging.value().normals.empty() ? nullptr : staging.value().normals.data(),
-        uv == staging.value().texcoords.end() ? nullptr : uv->second.data(),
-        static_cast<int>(staging.value().positions.size() / 3), staging.value().indices.data(),
-        static_cast<int>(staging.value().indices.size()));
+    auto uploaded = staging.value().colors.empty()
+        ? factory_.uploadMesh(staging.value().positions.data(),
+                              staging.value().normals.empty() ? nullptr : staging.value().normals.data(),
+                              uv == staging.value().texcoords.end() ? nullptr : uv->second.data(),
+                              static_cast<int>(staging.value().positions.size() / 3), staging.value().indices.data(),
+                              static_cast<int>(staging.value().indices.size()))
+        : factory_.uploadMeshColored(staging.value().positions.data(),
+                                     staging.value().normals.empty() ? nullptr : staging.value().normals.data(),
+                                     uv == staging.value().texcoords.end() ? nullptr : uv->second.data(),
+                                     staging.value().colors.data(),
+                                     static_cast<int>(staging.value().positions.size() / 3), staging.value().indices.data(),
+                                     static_cast<int>(staging.value().indices.size()));
     if (!uploaded) return Result<LoadedGraphicsMesh>::failure(uploaded.status());
     if (const auto authored = staging.value().attributes.find("TANGENT");
         authored != staging.value().attributes.end()) {

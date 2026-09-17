@@ -9,6 +9,7 @@ import json
 import re
 from dataclasses import dataclass
 from pathlib import Path
+import utf8_stdio
 
 
 SOURCE_SUFFIXES = {".c", ".cc", ".cpp", ".cxx", ".h", ".hh", ".hpp", ".hxx"}
@@ -159,4 +160,5 @@ def main() -> int:
 
 
 if __name__ == "__main__":
+    utf8_stdio.enable_utf8_stdio()
     raise SystemExit(main())

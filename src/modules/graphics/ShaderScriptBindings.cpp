@@ -30,7 +30,9 @@ Result<std::vector<uint32_t>> shaderWords(ssq::Array array) {
     return Result<std::vector<uint32_t>>::success(std::move(words));
 }
 
-Result<std::vector<std::uint32_t>> readStage(const std::string& path) {
+}  // namespace
+namespace detail {
+Result<std::vector<std::uint32_t>> readShaderStageFile(const std::string& path) {
     try {
         auto* fs = filesystem::Filesystem::create();
         std::unique_ptr<filesystem::FileData> bytes(fs->read(path));
@@ -49,6 +51,8 @@ Result<std::vector<std::uint32_t>> readStage(const std::string& path) {
     }
 }
 
+}  // namespace detail
+namespace {
 // The existing Graphics factory owns the shader; this adapter only borrows it.
 ResultRef<Shader> loadMeshShader(Graphics& graphics, const std::string& vertex,
                                   const std::string& fragment) {
@@ -60,11 +64,11 @@ ResultRef<Shader> loadMeshShader(Graphics& graphics, const std::string& vertex,
             DiagnosticCode::InvalidArgument, "fragment path must not be empty", "fragment"));
     std::vector<std::uint32_t> vert;
     if (!vertex.empty()) {
-        auto decoded = readStage(vertex);
+        auto decoded = detail::readShaderStageFile(vertex);
         if (!decoded) return ResultRef<Shader>::failure(decoded.status());
         vert = std::move(decoded).takeValue();
     }
-    auto frag = readStage(fragment);
+    auto frag = detail::readShaderStageFile(fragment);
     if (!frag) return ResultRef<Shader>::failure(frag.status());
     try {
         auto* shader = graphics.newMeshShaderFromSpv(vert, frag.value());
@@ -77,9 +81,10 @@ ResultRef<Shader> loadMeshShader(Graphics& graphics, const std::string& vertex,
             Diagnostic::error(DiagnosticCode::Failed, error.what(), "shader"));
     }
 }
-} // namespace
+}  // namespace
 
 void exposeShaderScriptBindings(ssq::Table& table, ssq::Class& cls) {
+    detail::exposeShaderResourceBindings(table, cls);
     const auto vm = table.getHandle();
     cls.addFunc(
         "replaceShaderFromSpv", [vm](Graphics* graphics, Shader* shader, ssq::Array vertex, ssq::Array fragment) {
@@ -119,6 +124,49 @@ void exposeShaderScriptBindings(ssq::Table& table, ssq::Class& cls) {
                 });
 
 
+    cls.addFunc("configureMeshShaderSurface",
+                [vm](Graphics* self, Shader* shader, const std::string& name, bool depthWrite, bool doubleSided) {
+                    BlendMode blend = BlendMode::Opaque;
+                    if (name == "alpha")
+                        blend = BlendMode::Alpha;
+                    else if (name == "premultiplied")
+                        blend = BlendMode::Premultiplied;
+                    else if (name == "additive")
+                        blend = BlendMode::Additive;
+                    else if (name == "multiply")
+                        blend = BlendMode::Multiply;
+                    else if (name != "opaque")
+                        return eve::script::projectResult(
+                            vm, Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                                        "Unknown mesh blend mode", "blend")));
+                    if (!self || !shader)
+                        return eve::script::projectResult(
+                            vm, Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                                        "Expected graphics and shader", "shader")));
+                    return eve::script::projectResult(
+                        vm, self->configureMeshShaderSurface(*shader, blend, depthWrite, doubleSided));
+                });
+    cls.addFunc("configureMeshShaderRaster", [vm](Graphics* self, Shader* shader, const std::string& compare,
+                                                  float constantBias, float slopeBias, int colorMask) {
+        MeshShaderRasterState state;
+        if (compare == "less")
+            state.depthCompare = MeshDepthCompare::Less;
+        else if (compare == "lessEqual")
+            state.depthCompare = MeshDepthCompare::LessEqual;
+        else if (compare == "always")
+            state.depthCompare = MeshDepthCompare::Always;
+        else
+            colorMask = -1;
+        if (!self || !shader || colorMask < 0 || colorMask > 15)
+            return eve::script::projectResult(
+                vm, Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                            "Invalid shader, depth comparison or RGBA mask",
+                                                            "shader.raster")));
+        state.depthBiasConstant = constantBias;
+        state.depthBiasSlope    = slopeBias;
+        state.colorWriteMask    = static_cast<std::uint8_t>(colorMask);
+        return eve::script::projectResult(vm, self->configureMeshShaderRaster(*shader, state));
+    });
     cls.addFunc("loadMeshShaderSpv", [vm](Graphics* self, const std::string& vertex,
                                          const std::string& fragment) {
         auto result = loadMeshShader(*self, vertex, fragment);

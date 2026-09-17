@@ -39,6 +39,16 @@ void ReflectionProbeRegistry::clear() {
     lastCapturedFaceCount_ = 0;
     lastPublishedCount_ = 0;
     lastCandidateCount_ = 0;
+    lastDistanceCulledCount_ = 0;
+}
+
+Result<void> ReflectionProbeRegistry::setMaxRenderDistance(float distance) {
+    if (!std::isfinite(distance) || distance <= 0.f)
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+            "Reflection probe render distance must be positive and finite",
+            "graphics.reflectionProbe.maxRenderDistance"));
+    maxRenderDistance_ = distance;
+    return Result<void>::success();
 }
 
 void ReflectionProbeRegistry::setSelectionHysteresis(float distance) {
@@ -91,7 +101,7 @@ int ReflectionProbeRegistry::tick(int faceBudget, int filterBudget, int filterSa
     filterSamples = std::clamp(filterSamples, 8, 512);
 
     for (Entry &entry : entries_) {
-        if (!entry.probe) continue;
+        if (!entry.probe || (distanceCullingEnabled_ && entry.distanceCulled)) continue;
         entry.probe->advanceRefreshPolicy();
         const bool waiting = entry.probe->isCapturePending() ||
                              entry.probe->getPublishedRevision() != entry.probe->getRevision();
@@ -141,6 +151,7 @@ int ReflectionProbeRegistry::tick(int faceBudget, int filterBudget, int filterSa
 int ReflectionProbeRegistry::updateCamera(Camera3D *camera) {
     lastSelectedCount_ = 0;
     lastCandidateCount_ = 0;
+    lastDistanceCulledCount_ = 0;
     if (!camera) {
         lastSelected_.clear();
         return 0;
@@ -165,12 +176,19 @@ int ReflectionProbeRegistry::updateCamera(Camera3D *camera) {
     const float viewSegmentLength2 = viewSegment[0] * viewSegment[0] +
                                      viewSegment[1] * viewSegment[1] +
                                      viewSegment[2] * viewSegment[2];
-    for (const Entry &entry : entries_) {
+    for (Entry &entry : entries_) {
         ReflectionProbeCapture *probe = entry.probe;
-        if (!probe || !probe->getActiveCubemap() || probe->getPublishedRevision() == 0 ||
+        if (!probe) continue;
+        const float center[3] = {probe->getCenterX(), probe->getCenterY(), probe->getCenterZ()};
+        const float eyeDx = center[0] - eye[0], eyeDy = center[1] - eye[1], eyeDz = center[2] - eye[2];
+        const bool distanceCulled = distanceCullingEnabled_ &&
+            eyeDx * eyeDx + eyeDy * eyeDy + eyeDz * eyeDz >= maxRenderDistance_ * maxRenderDistance_;
+        if (entry.distanceCulled && !distanceCulled) probe->queueCapture();
+        entry.distanceCulled = distanceCulled;
+        if (distanceCulled) { ++lastDistanceCulledCount_; continue; }
+        if (!probe->getActiveCubemap() || probe->getPublishedRevision() == 0 ||
             probe->getInfluenceIntensity() <= 0.f)
             continue;
-        const float center[3] = {probe->getCenterX(), probe->getCenterY(), probe->getCenterZ()};
         const float extent[3] = {probe->getInfluenceExtentX(), probe->getInfluenceExtentY(),
                                  probe->getInfluenceExtentZ()};
         float closestT = 0.f;

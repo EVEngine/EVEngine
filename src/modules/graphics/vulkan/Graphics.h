@@ -131,6 +131,9 @@ struct MeshVertex {
     glm::vec2 uv;
     glm::u16vec4 joints{0};
     glm::vec4 weights{0.f};
+    glm::vec4 color{1.f};
+    // Optional imported tangent basis; w=0 explicitly denotes an absent stream.
+    glm::vec4 tangent{0.f};
 
     static vk::VertexInputBindingDescription getBindingDescription(uint32_t binding) {
         vk::VertexInputBindingDescription b{};
@@ -146,6 +149,8 @@ struct MeshVertex {
             {2, binding, vk::Format::eR32G32Sfloat, offsetof(MeshVertex, uv)},
             {3, binding, vk::Format::eR16G16B16A16Uint, offsetof(MeshVertex, joints)},
             {4, binding, vk::Format::eR32G32B32A32Sfloat, offsetof(MeshVertex, weights)},
+            {5, binding, vk::Format::eR32G32B32A32Sfloat, offsetof(MeshVertex, color)},
+            {6, binding, vk::Format::eR32G32B32A32Sfloat, offsetof(MeshVertex, tangent)},
         };
     }
 };
@@ -179,6 +184,13 @@ struct Mesh3DUBO {
     glm::vec4 skinInfo{0.f};
     glm::vec4 reflectionProbeCenter[ReflectionProbeUpload::kMaxProbes]{};
     glm::vec4 reflectionProbeExtent[ReflectionProbeUpload::kMaxProbes]{};
+    glm::vec4 diffuseProbeSh[9]{};
+    glm::vec4 diffuseProbeInfo{0.f};  // x = enabled
+    glm::vec4 diffuseVolumePosition[Lighting3DPack::kMaxDiffuseVolumeProbes]{};
+    glm::vec4 diffuseVolumeExtent[Lighting3DPack::kMaxDiffuseVolumeProbes]{};
+    glm::vec4 diffuseVolumeSh[Lighting3DPack::kMaxDiffuseVolumeProbes * 9]{};
+    glm::vec4 diffuseVolumeInfo{0.f};  // x = probe count
+    glm::vec4 lodFade{1.f, 0.f, 0.f, 0.f}; // coverage, complementary pattern, enabled
 };
 
 struct SkinPassUBO {
@@ -212,11 +224,11 @@ struct Mesh3DClusteredUBO {
 
 struct GpuTexture {
     vkb::TextureImage2D image;
-    vkb::GenericImage      arrayImage;
+    vkb::GenericImage arrayImage;
     vkb::TextureImageCube cubeImage;
     bool isCube = false;
-    bool                   isArray  = false;
-    bool                   isVolume = false;
+    bool isArray = false;
+    bool isVolume = false;
     bool isHDR = false;
     vk::UniqueDeviceMemory rawCubeMemory;
     vk::UniqueImage rawCubeImage;
@@ -235,7 +247,7 @@ struct GpuTexture {
     vk::ImageView imageView() const {
         if (viewOverride) return viewOverride;
         if (rawCubeView) return *rawCubeView;
-        if (isArray) return arrayImage.imageView();
+        if (isArray || isVolume) return arrayImage.imageView();
         return isCube ? cubeImage.imageView() : image.imageView();
     }
 };
@@ -265,6 +277,11 @@ struct GpuMesh {
     GpuMeshRecord record;
 };
 
+struct MeshShaderResources;
+struct MeshShaderResourcesDeleter {
+    void operator()(MeshShaderResources *resources) const noexcept;
+};
+
 struct GpuShader {
     vk::Pipeline       swapchainPipeline;
     vk::Pipeline       offscreenPipeline;
@@ -277,6 +294,8 @@ struct GpuShader {
     vk::Pipeline       mesh3dOffscreenPipeline;
     vk::Pipeline       mesh3dHdrOffscreenPipeline;
     vk::PipelineLayout pipelineLayout;
+    vk::DescriptorSet                                                resourceSet;
+    std::unique_ptr<MeshShaderResources, MeshShaderResourcesDeleter> resources;
     bool isMesh3D = false;
     bool isHair3D = false;
     Shader *owner = nullptr;
@@ -430,15 +449,12 @@ public:
                         bool repeatV = false) override;
     Texture *newTexture(int width, int height, const uint8_t *rgba,
                         const TextureCreateInfo &info) override;
-    /** @copydoc IResourceFactory::newTextureMipChain */
     [[nodiscard]] Result<Texture *> newTextureMipChain(uint32_t width, uint32_t height, uint32_t levels,
-                                                       std::span<const uint8_t> rgba) override;
-    /** @copydoc IResourceFactory::newTextureArrayRgba16f */
+                                                        std::span<const uint8_t> rgba) override;
     [[nodiscard]] Result<Texture *> newTextureArrayRgba16f(uint32_t width, uint32_t height, uint32_t layers,
-                                                           std::span<const uint16_t> rgbaHalf) override;
-    /** @copydoc IResourceFactory::newTexture3DRgba8 */
+                                                            std::span<const uint16_t> rgbaHalf) override;
     [[nodiscard]] Result<Texture *> newTexture3DRgba8(uint32_t width, uint32_t height, uint32_t depth,
-                                                      std::span<const uint8_t> rgba) override;
+                                                       std::span<const uint8_t> rgba) override;
     Texture *newCubemap(int faceSize, const uint8_t *rgbaFaces) override;
     Texture *newCubemap(int faceSize, const uint8_t *rgbaFaces,
                         const TextureCreateInfo &info) override;
@@ -460,6 +476,8 @@ public:
     bool releaseTexture(Texture *texture) override;
     bool updateTexture(Texture *texture, int width, int height,
                        const uint8_t *rgba) override;
+    eve::Result<void> updateTextureFromResidentRgba8(Texture* texture, const GpuResidentBufferView& source, int width,
+                                                     int height) override;
     eve::Result<void> updateTextureRegion(Texture *texture, int x, int y, int width,
                                           int height, std::span<const std::uint8_t> rgba,
                                           std::size_t bytesPerRow = 0) override;
@@ -512,6 +530,9 @@ public:
     [[nodiscard]] Result<void> replaceShaderFromSpv(
         Shader &shader, const std::vector<uint32_t> &vertSpv,
         const std::vector<uint32_t> &fragSpv) override;
+    [[nodiscard]] Result<void> replaceMeshShaderResources(Shader &shader, const std::vector<uint32_t> &vertSpv,
+                                                          const std::vector<uint32_t> &fragSpv,
+                                                          const ShaderResourceInputs  &resources) override;
     [[nodiscard]] Result<void> replaceShaderFromWgsl(
         Shader &shader, const std::string &vertWgsl,
         const std::string &fragWgsl) override;
@@ -526,10 +547,21 @@ public:
     bool releaseShader(Shader *shader) override;
     eve::Result<void> configureMeshShaderSurface(Shader &shader, BlendMode blend, bool depthWrite,
                                                  bool doubleSided) override;
+    eve::Result<void> configureMeshShaderRaster(Shader &shader, const MeshShaderRasterState &state) override;
     Mesh *newMeshFromAssimp(const ::aiMesh &mesh) override;
     Mesh *newMeshFromAssimp(const ::aiMesh &mesh, const aiMatrix4x4 &worldTransform) override;
     Mesh *newMeshFromArrays(const float *posXYZ, const float *nrmXYZ, const float *uvST,
                             int vertexCount, const uint32_t *indices, int indexCount) override;
+    /**
+     * @brief Create a mesh with a packed linear RGBA vertex-color stream.
+     * @return Factory-owned mesh, or nullptr when validation or backend allocation fails.
+     * @ownership The resource factory owns the returned mesh; release it through releaseMesh.
+     * @lifetime Valid until releaseMesh, graphics shutdown, or device loss.
+     * @thread Graphics thread; all input arrays are borrowed and consumed synchronously.
+     */
+    Mesh *newMeshFromArraysColored(const float *posXYZ, const float *nrmXYZ, const float *uvST,
+                                   const float *colorRGBA, int vertexCount,
+                                   const uint32_t *indices, int indexCount) override;
     /** @brief Return layout facts from the owned Vulkan mesh upload. */
     [[nodiscard]] std::optional<eve::graphics::MeshBackendDescriptor> describeMesh(Mesh *mesh) const override;
     bool bakeMeshMorph(Mesh *mesh) override;
@@ -559,10 +591,14 @@ public:
     void drawMesh(Mesh *mesh, const glm::mat4 &model, Texture *texture, const Color &tint) override;
     void drawMeshShader(Mesh *mesh, const glm::mat4 &model, Texture *texture, const Color &tint,
                         Shader *shader) override;
-      void drawVoxelFaceInstances(const uint32_t *packed, int count, float originX, float originY,
-                                  float originZ, const std::string &faceDir, Texture *atlas,
-                                  int tilesPerRow = 16, const uint32_t *ao = nullptr) override;
+    [[nodiscard]] Result<void> drawMeshShaderInstances(Mesh &mesh, Shader &shader, const glm::mat4 &model,
+                                                       const Color &tint, std::uint32_t first,
+                                                       std::uint32_t count) override;
+    void drawVoxelFaceInstances(const uint32_t *packed, int count, float originX, float originY, float originZ,
+                                const std::string &faceDir, Texture *atlas, int tilesPerRow = 16,
+                                const uint32_t *ao = nullptr) override;
     void setMesh3DNormalTexture(Texture *normal) override;
+    void setMesh3DPackedNormalMask(bool enabled) override;
     void setMesh3DHeightTexture(Texture *height) override;
     void setMesh3DVirtualTexture(bool enabled, int pageCountX, int pageCountY,
                                  int atlasSlotsX, int atlasSlotsY,
@@ -577,6 +613,7 @@ public:
                                        const std::string &alphaTechnique = "cutoff") override;
     void              setMesh3DTexCellBomb(float cellScale, float strength, float rotAmount = 1.f) override;
     void              setMesh3DParallax(float scale, float minLayers = 8.f, float maxLayers = 32.f) override;
+    void              setMesh3DLodDither(float weight, bool reverse, bool enabled) override;
     void              setMesh3DLighting(const Lighting3DPack &pack) override;
     void setCloudShadows(float strength, float worldCell, float time, float windSpeed, float windAngle, float coverage,
                          float detail) override;
@@ -588,8 +625,34 @@ public:
     void setMesh3DEnv(Texture *cube, float intensity) override;
     void setMesh3DEnvProbe(const glm::vec3 &center, const glm::vec3 &extent) override;
     void setMesh3DReflectionProbes(const ReflectionProbeUpload &upload) override;
+    [[nodiscard]] Result<void> setSceneToneMapping(SceneToneMapping mode) override;
+    SceneToneMapping           getSceneToneMapping() const override { return sceneToneMapping_; }
     void setSceneExposure(float exposure) override { sceneExposure = std::max(exposure, 0.f); }
     float getSceneExposure() const override { return sceneExposure; }
+    void setSceneColorFilter(const glm::vec3& color) override {
+        sceneColorFilter = glm::max(color, glm::vec3(0.f));
+    }
+    glm::vec3 getSceneColorFilter() const override { return sceneColorFilter; }
+    void setSceneLiftGammaGain(const glm::vec3& lift, const glm::vec3& inverseGamma,
+                               const glm::vec3& gain) override {
+        sceneLift = lift;
+        sceneInverseGamma = glm::max(inverseGamma, glm::vec3(0.001F));
+        sceneGain = gain;
+    }
+    glm::vec3 getSceneLift() const override { return sceneLift; }
+    glm::vec3 getSceneInverseGamma() const override { return sceneInverseGamma; }
+    glm::vec3 getSceneGain() const override { return sceneGain; }
+    void setSceneTransitionFx(float vignette, float vignetteSmoothness,
+                              float lensDistortion, float lensScale) override {
+        sceneTransitionVignette = std::clamp(vignette, 0.0F, 1.0F);
+        sceneTransitionVignetteSmoothness = std::clamp(vignetteSmoothness, 0.01F, 1.0F);
+        sceneTransitionLensDistortion = std::clamp(lensDistortion, 0.0F, 1.0F);
+        sceneTransitionLensScale = std::clamp(lensScale, 0.01F, 5.0F);
+    }
+    float getSceneTransitionVignette() const override { return sceneTransitionVignette; }
+    float getSceneTransitionVignetteSmoothness() const override { return sceneTransitionVignetteSmoothness; }
+    float getSceneTransitionLensDistortion() const override { return sceneTransitionLensDistortion; }
+    float getSceneTransitionLensScale() const override { return sceneTransitionLensScale; }
     void setSceneAutoExposure(bool enabled, float minEV, float maxEV) override {
         sceneAutoExposure = enabled;
         sceneAutoExposureMinEV = minEV;
@@ -604,23 +667,39 @@ public:
     }
     float getSceneBloomIntensity() const override { return sceneBloomIntensity; }
     float getSceneBloomThreshold() const override { return sceneBloomThreshold; }
+    void setSceneDepthOfField(float focusDistance, float maxBlurPx, float focusRange, float nearZ,
+                              float farZ) override {
+        sceneDofFocusDistance = focusDistance;
+        sceneDofMaxBlurPx = maxBlurPx;
+        sceneDofFocusRange = focusRange;
+        sceneDofNearZ = nearZ;
+        sceneDofFarZ = farZ;
+    }
+    float getSceneDofFocusDistance() const override { return sceneDofFocusDistance; }
+    float getSceneDofMaxBlur() const override { return sceneDofMaxBlurPx; }
+    float getSceneDofFocusRange() const override { return sceneDofFocusRange; }
+    float getSceneDofNearZ() const override { return sceneDofNearZ; }
+    float getSceneDofFarZ() const override { return sceneDofFarZ; }
     void setMesh3DShadows(const ShadowUpload &upload) override;
     void setMesh3DShadowReceive(bool receive) override;
+    void setMesh3DSkinInfluenceLimit(SkinInfluenceLimit count) override;
     void beginShadowPass(int cascadeIndex) override;
-    void  drawMeshShadow(Mesh *mesh, const glm::mat4 &lightMVP, PbrCullMode cullMode = PbrCullMode::None) override;
-    void  drawMeshShadowAlpha(Mesh *mesh, const glm::mat4 &lightMVP, Texture *albedo = nullptr,
-                              PbrCullMode cullMode = PbrCullMode::None) override;
+    void drawMeshShadow(Mesh *mesh, const glm::mat4 &lightMVP, bool doubleSided = true) override;
+    void drawMeshShadowAlpha(Mesh *mesh, const glm::mat4 &lightMVP, Texture *albedo = nullptr,
+                             bool doubleSided = true, float lodWeight = 1.f,
+                             bool lodFadeReverse = false, bool lodDither = false) override;
     void endShadowPass() override;
 
     void beginGBufferPass(int width, int height) override;
-    void drawMeshGBuffer(Mesh *mesh, const glm::mat4 &mvp, const glm::mat4 &model, float nearZ, float farZ,
-                         Texture *albedo = nullptr, float tintR = 1.f, float tintG = 1.f, float tintB = 1.f,
-                         float motionX = 0.f, float motionY = 0.f, float roughness = 0.45f, float metallic = 0.f,
-                         PbrCullMode cullMode = PbrCullMode::None) override;
-    void drawMeshGBufferAlpha(Mesh *mesh, const glm::mat4 &mvp, const glm::mat4 &model, float nearZ, float farZ,
-                              Texture *albedo = nullptr, float tintR = 1.f, float tintG = 1.f, float tintB = 1.f,
-                              float motionX = 0.f, float motionY = 0.f, float roughness = 0.45f, float metallic = 0.f,
-                              PbrCullMode cullMode = PbrCullMode::None) override;
+    void drawMeshGBuffer(Mesh *mesh, const glm::mat4 &mvp, const glm::mat4 &model, float nearZ,
+                         float farZ, Texture *albedo = nullptr, float tintR = 1.f, float tintG = 1.f,
+                         float tintB = 1.f, float motionX = 0.f, float motionY = 0.f,
+                         float roughness = 0.45f, float metallic = 0.f) override;
+    void drawMeshGBufferAlpha(Mesh *mesh, const glm::mat4 &mvp, const glm::mat4 &model, float nearZ,
+                              float farZ, Texture *albedo = nullptr, float tintR = 1.f,
+                              float tintG = 1.f, float tintB = 1.f, float motionX = 0.f,
+                              float motionY = 0.f, float roughness = 0.45f,
+                              float metallic = 0.f) override;
     void endGBufferPass() override;
 
     bool supportsDecal() const override { return true; }
@@ -628,7 +707,8 @@ public:
     void setDecalCamera(const glm::mat4 &viewProj, float nearZ, float farZ) override;
     void drawDecal(const glm::mat4 &model, Texture *albedo, Texture *normal, Texture *params,
                    const float uvRect[4], float fade, float normalStrength, float roughnessStrength,
-                   float metalStrength, float emissiveStrength, int blendMode = 0) override;
+                   float metalStrength, float emissiveStrength, int blendMode = 0,
+                   int projectionMode = 0, float blendSharpness = 4.f) override;
     void endDecalPass() override;
 
     Canvas *newCanvas(int width, int height) override;
@@ -692,6 +772,8 @@ public:
     };
 
 private:
+    void drawMeshShaderRange(Mesh *mesh, const glm::mat4 &model, Texture *texture, const Color &tint, Shader *shader,
+                             std::uint32_t first, std::uint32_t count);
     struct GpuParticleDrawRequest;
     struct GpuParticleResource;
 
@@ -779,11 +861,13 @@ private:
                                               const vkb::BuiltRenderPass &rp, vk::PipelineLayout layout,
                                               BlendMode mode = BlendMode::Alpha,
                                               vk::SampleCountFlagBits samples = vk::SampleCountFlagBits::e1);
-    vk::Pipeline  createMesh3DStylePipeline(const std::vector<uint32_t> &vert, const std::vector<uint32_t> &frag,
-                                            vk::PipelineLayout layout, const vkb::BuiltRenderPass &rp,
-                                            vk::SampleCountFlagBits samples,
-                                            BlendMode blend = BlendMode::Opaque,
-                                            bool depthWrite = true, bool doubleSided = true);
+    vk::Pipeline      createMesh3DStylePipeline(const std::vector<uint32_t> &vert, const std::vector<uint32_t> &frag,
+                                                vk::PipelineLayout layout, const vkb::BuiltRenderPass &rp,
+                                                vk::SampleCountFlagBits samples, BlendMode blend = BlendMode::Opaque,
+                                                bool depthWrite = true, bool doubleSided = true,
+                                                const MeshShaderRasterState &raster = {});
+    eve::Result<void> rebuildMeshShaderSurface(Shader &shader, BlendMode blend, bool depthWrite, bool doubleSided,
+                                               const MeshShaderRasterState &raster);
     static constexpr size_t kMesh3DPipelineVariants = 20;
     static size_t mesh3dPipelineIndex(BlendMode blend, bool depthWrite, bool doubleSided);
     static constexpr size_t kPrimitive3DPipelineVariants = 45;
@@ -841,10 +925,10 @@ private:
     /** @brief Release the readback staging ring (callers hold waitIdle). */
     void          destroyReadbackResources();
     void          ensurePresentCaptureHook();
-    vkb::BoundSet mesh3dSetFor(GpuTexture *gpuTex, GpuTexture *normalTex, GpuTexture *envTex, GpuTexture *heightTex,
-                               GpuTexture *depthTex, GpuTexture *sceneColorTex, GpuTexture *decalAlbedo,
-                               GpuTexture *decalNormal, GpuTexture *decalParams, Mesh3dFrameSlots &fslots,
-                               const Shader *shader = nullptr);
+    vkb::BoundSet mesh3dSetFor(GpuTexture *gpuTex, GpuTexture *normalTex, GpuTexture *envTex,
+                               GpuTexture *heightTex, GpuTexture *depthTex, GpuTexture *sceneColorTex,
+                               GpuTexture *decalAlbedo, GpuTexture *decalNormal,
+                               GpuTexture *decalParams, Mesh3dFrameSlots &fslots);
     void          ensureDefaultEnvCubemap();
     void          ensureFlatNormalTexture3D();
     void          ensureFlatHeightTexture3D();
@@ -929,12 +1013,26 @@ private:
     vk::Pipeline opaqueTexPipeline;
     vk::Pipeline particleDistortionPipeline;
     vk::Pipeline sceneTonemapPipeline;
+    SceneToneMapping              sceneToneMapping_      = SceneToneMapping::Aces;
     float sceneExposure = 1.f;
+    glm::vec3 sceneColorFilter{1.f};
+    glm::vec3 sceneLift{0.f};
+    glm::vec3 sceneInverseGamma{1.f};
+    glm::vec3 sceneGain{1.f};
+    float sceneTransitionVignette = 0.0F;
+    float sceneTransitionVignetteSmoothness = 0.2F;
+    float sceneTransitionLensDistortion = 0.0F;
+    float sceneTransitionLensScale = 1.0F;
     bool sceneAutoExposure = false;
     float sceneAutoExposureMinEV = -8.f;
     float sceneAutoExposureMaxEV = 8.f;
     float sceneBloomIntensity = 0.f;
     float sceneBloomThreshold = 1.f;
+    float sceneDofFocusDistance = 0.f;
+    float sceneDofMaxBlurPx = 0.f;
+    float sceneDofFocusRange = 8.f;
+    float sceneDofNearZ = 0.1f;
+    float sceneDofFarZ = 100.f;
     vk::PipelineLayout texPipelineLayout;
     vk::PipelineLayout shaderPipelineLayout;  // tex set + push constants
     vk::CommandPool uploadPool;
@@ -981,25 +1079,22 @@ private:
         GpuTexture *decalAlbedo = nullptr;
         GpuTexture *decalNormal = nullptr;
         GpuTexture *decalParams = nullptr;
-        std::array<GpuTexture *, Shader::kMaxMeshTextures> custom{};
         size_t      paletteSlot      = 0;
         bool operator==(const Mesh3dSetKey &o) const {
             return albedo == o.albedo && normal == o.normal && env == o.env && reflectionProbe0 == o.reflectionProbe0 &&
                    reflectionProbe1 == o.reflectionProbe1 && height == o.height && depth == o.depth &&
                    sceneColor == o.sceneColor && decalAlbedo == o.decalAlbedo && decalNormal == o.decalNormal &&
-                   decalParams == o.decalParams && custom == o.custom && paletteSlot == o.paletteSlot;
+                   decalParams == o.decalParams && paletteSlot == o.paletteSlot;
         }
     };
     struct Mesh3dSetKeyHash {
         size_t operator()(const Mesh3dSetKey &k) const {
-            return std::hash<GpuTexture *>()(k.albedo) ^ (std::hash<GpuTexture *>()(k.normal) << 1) ^
-                   (std::hash<GpuTexture *>()(k.env) << 2) ^ (std::hash<GpuTexture *>()(k.height) << 3) ^
-                   (std::hash<GpuTexture *>()(k.reflectionProbe0) << 8) ^
-                   (std::hash<GpuTexture *>()(k.reflectionProbe1) << 9) ^ (std::hash<GpuTexture *>()(k.depth) << 4) ^
-                   (std::hash<GpuTexture *>()(k.sceneColor) << 10) ^ (std::hash<GpuTexture *>()(k.decalAlbedo) << 5) ^
-                   (std::hash<GpuTexture *>()(k.decalNormal) << 6) ^ (std::hash<GpuTexture *>()(k.decalParams) << 7) ^
-                   (std::hash<GpuTexture *>()(k.custom[0]) << 11) ^ (std::hash<GpuTexture *>()(k.custom[1]) << 12) ^
-                   (std::hash<GpuTexture *>()(k.custom[2]) << 13) ^ (std::hash<GpuTexture *>()(k.custom[3]) << 14) ^
+            return std::hash<GpuTexture*>()(k.albedo) ^ (std::hash<GpuTexture*>()(k.normal) << 1) ^
+                   (std::hash<GpuTexture*>()(k.env) << 2) ^ (std::hash<GpuTexture*>()(k.height) << 3) ^
+                   (std::hash<GpuTexture*>()(k.reflectionProbe0) << 8) ^
+                   (std::hash<GpuTexture*>()(k.reflectionProbe1) << 9) ^ (std::hash<GpuTexture*>()(k.depth) << 4) ^
+                   (std::hash<GpuTexture*>()(k.sceneColor) << 10) ^ (std::hash<GpuTexture*>()(k.decalAlbedo) << 5) ^
+                   (std::hash<GpuTexture*>()(k.decalNormal) << 6) ^ (std::hash<GpuTexture*>()(k.decalParams) << 7) ^
                    k.paletteSlot;
         }
     };
@@ -1022,10 +1117,10 @@ private:
     };
     std::vector<Mesh3dFrameSlots> mesh3dFrameSlots;
     Texture                      *whiteTexture            = nullptr;
-    Texture                      *defaultExtrasArray         = nullptr;
-    Texture                      *defaultColorsArray         = nullptr;
-    Texture                      *defaultVertexArray         = nullptr;
-    Texture                      *defaultMotionArray         = nullptr;
+    Texture                      *defaultExtrasArray = nullptr;
+    Texture                      *defaultColorsArray = nullptr;
+    Texture                      *defaultVertexArray = nullptr;
+    Texture                      *defaultMotionArray = nullptr;
     Texture                      *defaultVegetationFadeNoise = nullptr;
     /** @brief 1x1 white cubemap used as the bindless cubemap-array placeholder. */
     Texture                      *defaultBindlessCube     = nullptr;
@@ -1049,6 +1144,7 @@ private:
     bool mesh3dSurfaceDoubleSided = false;
     float mesh3dAlphaCutoff = 0.5f;
     std::string mesh3dAlphaTechnique = "cutoff";
+    glm::vec4 mesh3dLodFade{1.f, 0.f, 0.f, 0.f};
     float mesh3dTexBombScale = 4.f;
     float mesh3dTexBombStrength = 0.f;
     float mesh3dTexBombRot = 1.f;
@@ -1060,6 +1156,7 @@ private:
     Lighting3DPack mesh3dLighting{};
     ShadowUpload mesh3dShadows{};
     bool mesh3dShadowReceive = true;
+    int mesh3dSkinInfluenceLimit = 4;
 
     // Clustered forward (separate set layout / pipeline; default PBR only).
     bool mesh3dClusteredActive = false;
@@ -1135,7 +1232,8 @@ private:
     uint32_t registerBindlessTexture2D(GpuTexture *tex);
     uint32_t registerBindlessTextureCube(GpuTexture *tex);
     void unregisterBindlessTexture(GpuTexture *tex);
-    uint32_t registerMeshRecord(Mesh *mesh, GpuMesh *gpu);
+    uint32_t          registerMeshRecord(GpuMesh *gpu, const std::vector<MeshVertex> *vertices = nullptr,
+                                         const std::vector<uint32_t> *indices = nullptr);
     void syncMeshTable();
     GpuMaterialRecord buildMaterialRecord(Material *material);
     void createBindlessSet();
@@ -1149,16 +1247,16 @@ private:
         vkb::GenericBuffer normals;    // vec4 per vertex
         vkb::GenericBuffer uvs;        // vec2 per vertex (8B)
         vkb::GenericBuffer indices;    // uint32 (u16 meshes converted)
-        vkb::GenericBuffer vegetation; // GpuVegetationVertexRecord per vertex
         uint32_t vertexCount = 0;
         uint32_t indexCount = 0;
     };
     GpuVertexPool gpuVertexPool_;
     void ensureGpuVertexPool();
     void growGpuVertexPool(uint32_t needVertices, uint32_t needIndices);
-    /** @brief Rewrite bindless bindings 18-21 and 31 (pool buffers) in every slot set. */
+    /** @brief Rewrite bindless bindings 18-21 (pool buffers) in every slot set. */
     void bindGpuVertexPoolBindless();
-    void appendGpuMeshToPool(const Mesh &mesh, GpuMesh &gpu);
+    void appendGpuMeshToPool(GpuMesh &gpu, const std::vector<MeshVertex> *vertices = nullptr,
+                             const std::vector<uint32_t> *indices = nullptr);
 
     // ---- GPU-driven (stage 3): virtual geometry ----
     static constexpr uint32_t kMaxVgAssets = 64;
@@ -1264,23 +1362,32 @@ private:
     vk::Sampler shadowRawSampler{};
     vkb::BuiltRenderPass shadowRenderPass{};
     vk::PipelineLayout shadowPipelineLayout{};
-    std::array<vk::Pipeline, 3>   shadowPipelines{};
+    vk::Pipeline shadowPipeline{};
+    vk::Pipeline shadowSingleSidedPipeline{};
     vk::PipelineLayout shadowAlphaPipelineLayout{};
-    std::array<vk::Pipeline, 3>   shadowAlphaPipelines{};
+    vk::Pipeline shadowAlphaPipeline{};
+    vk::Pipeline shadowAlphaSingleSidedPipeline{};
     vk::PipelineLayout skinPassPipelineLayout{};
     vk::DescriptorSetLayout skinPassSetLayout{};
     vk::UniqueDescriptorSetLayout skinPassSetLayoutUnique;
-    std::array<vk::Pipeline, 3>   shadowSkinPipelines{};
-    std::array<vk::Pipeline, 3>   shadowSkinAlphaPipelines{};
+    vk::Pipeline shadowSkinPipeline{};
+    vk::Pipeline shadowSkinSingleSidedPipeline{};
+    vk::Pipeline shadowSkinAlphaPipeline{};
+    vk::Pipeline shadowSkinAlphaSingleSidedPipeline{};
     int shadowPassCascade = -1;
     struct ShadowDraw {
         Mesh *mesh = nullptr;
         glm::mat4 mvp{1.f};
         Texture *albedo = nullptr;
         bool alphaTest = false;  // use the alpha-cutout shadow pipeline
-        PbrCullMode       cullMode  = PbrCullMode::None;
+        bool doubleSided = true;
+        glm::vec4 lodFade{1.f, 0.f, 0.f, 0.f};
         vk::DescriptorSet skinSet{};
         uint32_t skinUboOffset = 0;
+    };
+    struct ShadowAlphaPush {
+        glm::mat4 mvp{1.f};
+        glm::vec4 lodFade{1.f, 0.f, 0.f, 0.f};
     };
     std::vector<ShadowDraw> shadowPassDraws;
     std::vector<ShadowDraw> shadowCascadeDraws[ShadowConfig::kCascades];
@@ -1302,7 +1409,6 @@ private:
         Texture *albedo = nullptr;
         GBufferPush push{};
         bool alphaTest = false;  // use the alpha-cutout gbuffer pipeline
-        PbrCullMode       cullMode  = PbrCullMode::None;
         vk::DescriptorSet skinSet{};
         uint32_t skinUboOffset = 0;
     };
@@ -1334,10 +1440,10 @@ private:
     vkb::BuiltRenderPass gbufferRenderPass{};
     vkb::BuiltRenderPass gbufferVisRenderPass{};
     vk::PipelineLayout gbufferPipelineLayout{};
-    std::array<vk::Pipeline, 3> gbufferPipelines{};
-    std::array<vk::Pipeline, 3> gbufferAlphaPipelines{};
-    std::array<vk::Pipeline, 3> gbufferSkinPipelines{};
-    std::array<vk::Pipeline, 3> gbufferSkinAlphaPipelines{};
+    vk::Pipeline gbufferPipeline{};
+    vk::Pipeline gbufferAlphaPipeline{};
+    vk::Pipeline gbufferSkinPipeline{};
+    vk::Pipeline gbufferSkinAlphaPipeline{};
     vk::Pipeline gbufferVisPipeline = nullptr;
     bool gbufferPassActive = false;
     bool gbufferPending = false;
@@ -1351,7 +1457,7 @@ private:
         glm::mat4 model{1.f};
         glm::vec4 uvRect{0.f, 0.f, 1.f, 1.f};
         glm::vec4 fadeParams{1.f, 0.f, 0.f, 0.f};   // fade, normalStrength, roughStrength, metalStrength
-        glm::vec4 extraParams{0.f, 0.f, 0.f, 0.f};  // emissiveStrength, blendMode, pad, pad
+        glm::vec4 extraParams{0.f, 0.f, 0.f, 0.f};  // emissive, blendMode, projectionMode, sharpness
     };
     static_assert(sizeof(DecalInstanceData) == 112, "DecalInstanceData must be 112 bytes");
     struct DecalCameraUBO {
@@ -1372,7 +1478,9 @@ private:
         float roughnessStrength = 0.f;
         float metalStrength = 0.f;
         float emissiveStrength = 0.f;
-        int blendMode = 0;  // 0 = premultiplied over, 1 = additive (emissive)
+        int blendMode = 0;       // 0 = premultiplied over, 1 = additive (emissive)
+        int projectionMode = 0;  // 0 = planar, 1 = triplanar
+        float blendSharpness = 4.f;
     };
     struct DecalSetKey {
         GpuTexture *albedo = nullptr;

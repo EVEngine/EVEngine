@@ -1,0 +1,313 @@
+#pragma once
+
+/**
+ * @file MotionRuntime.h
+ * @brief Dense motion storage advanced by Animation::advance(SimulationStep).
+ */
+
+#include "animation/MotionTypes.h"
+#include "common/Time.h"
+
+#include <cstdint>
+#include <functional>
+#include <string>
+#include <vector>
+
+namespace eve::animation {
+
+/**
+ * @brief Owns typed motion slots and applies SimulationStep updates.
+ *
+ * @ownership Animation owns the runtime. Sinks and callbacks are borrowed.
+ * @thread Main-thread animation pump only; not synchronized.
+ * @reentrancy Callbacks must not spawn/cancel motions on this same runtime
+ *             during advance (Phase 1 has no deferred command queue).
+ */
+class MotionRuntime {
+public:
+    using FloatCallback = std::function<void(float)>;
+    using Vec2Callback  = std::function<void(MotionVec2)>;
+    using Vec3Callback  = std::function<void(MotionVec3)>;
+    using ColorCallback = std::function<void(MotionColor)>;
+    using QuatCallback  = std::function<void(MotionQuat)>;
+    using VoidCallback  = std::function<void()>;
+
+    struct FloatDesc {
+        float             from          = 0.f;
+        float             to            = 0.f;
+        float             duration      = 0.f;
+        float             delay         = 0.f;
+        int               loops         = 1;  ///< 1 = once, N = N cycles, -1 = infinite.
+        MotionLoopMode    loopMode      = MotionLoopMode::Restart;
+        std::string       ease          = "linear";
+        IMotionFloatSink *sink          = nullptr;
+        FloatCallback     onUpdate;
+        VoidCallback      onComplete;
+        VoidCallback      onCancel;
+        bool              cancelOnError = true;
+        MotionStyle      style         = MotionStyle::Tween;
+        int              frequency     = 10;  ///< Oscillation count for Punch/Shake.
+        float            dampingRatio  = 1.f; ///< 0 = undamped, 1 = fully damped.
+        std::uint32_t    seed          = 0;   ///< Deterministic Shake seed.
+
+    };
+
+    struct Vec2Desc {
+        MotionVec2       from{};
+        MotionVec2       to{};
+        float            duration      = 0.f;
+        float            delay         = 0.f;
+        int              loops         = 1;
+        MotionLoopMode   loopMode      = MotionLoopMode::Restart;
+        std::string      ease          = "linear";
+        IMotionVec2Sink *sink          = nullptr;
+        Vec2Callback     onUpdate;
+        VoidCallback     onComplete;
+        VoidCallback     onCancel;
+        bool             cancelOnError = true;
+        MotionStyle      style         = MotionStyle::Tween;
+        int              frequency     = 10;  ///< Oscillation count for Punch/Shake.
+        float            dampingRatio  = 1.f; ///< 0 = undamped, 1 = fully damped.
+        std::uint32_t    seed          = 0;   ///< Deterministic Shake seed.
+
+    };
+
+    struct Vec3Desc {
+        MotionVec3       from{};
+        MotionVec3       to{};
+        float            duration      = 0.f;
+        float            delay         = 0.f;
+        int              loops         = 1;
+        MotionLoopMode   loopMode      = MotionLoopMode::Restart;
+        std::string      ease          = "linear";
+        IMotionVec3Sink *sink          = nullptr;
+        Vec3Callback     onUpdate;
+        VoidCallback     onComplete;
+        VoidCallback     onCancel;
+        bool             cancelOnError = true;
+        MotionStyle      style         = MotionStyle::Tween;
+        int              frequency     = 10;  ///< Oscillation count for Punch/Shake.
+        float            dampingRatio  = 1.f; ///< 0 = undamped, 1 = fully damped.
+        std::uint32_t    seed          = 0;   ///< Deterministic Shake seed.
+
+    };
+
+    struct ColorDesc {
+        MotionColor       from{};
+        MotionColor       to{};
+        float             duration      = 0.f;
+        float             delay         = 0.f;
+        int               loops         = 1;
+        MotionLoopMode    loopMode      = MotionLoopMode::Restart;
+        std::string       ease          = "linear";
+        IMotionColorSink *sink          = nullptr;
+        ColorCallback     onUpdate;
+        VoidCallback      onComplete;
+        VoidCallback      onCancel;
+        bool              cancelOnError = true;
+    };
+
+    struct QuatDesc {
+        MotionQuat       from{};
+        MotionQuat       to{};
+        float            duration      = 0.f;
+        float            delay         = 0.f;
+        int              loops         = 1;
+        MotionLoopMode   loopMode      = MotionLoopMode::Restart;
+        std::string      ease          = "linear";
+        IMotionQuatSink *sink          = nullptr;
+        QuatCallback     onUpdate;
+        VoidCallback     onComplete;
+        VoidCallback     onCancel;
+        bool             cancelOnError = true;
+    };
+
+
+    MotionRuntime()  = default;
+    ~MotionRuntime() = default;
+
+    MotionRuntime(const MotionRuntime &)            = delete;
+    MotionRuntime &operator=(const MotionRuntime &) = delete;
+
+    /**
+     * @brief Pre-size float pool slots (Inactive) and reserve storage.
+     * @note Enables O(1) spawn via the free-list without reallocation churn.
+     */
+    void ensureFloatCapacity(std::size_t count);
+    void ensureVec2Capacity(std::size_t count);
+    void ensureVec3Capacity(std::size_t count);
+    void ensureColorCapacity(std::size_t count);
+    void ensureQuatCapacity(std::size_t count);
+
+    /** @brief Convenience: ensure float pool capacity (primary hot path). */
+    void ensureCapacity(std::size_t floatCount) { ensureFloatCapacity(floatCount); }
+
+    [[nodiscard]] std::size_t floatCapacity() const noexcept { return floats_.size(); }
+    [[nodiscard]] std::size_t floatFreeCount() const noexcept { return freeFloats_.size(); }
+    [[nodiscard]] std::size_t vec2Capacity() const noexcept { return vec2s_.size(); }
+    [[nodiscard]] std::size_t vec3Capacity() const noexcept { return vec3s_.size(); }
+    [[nodiscard]] std::size_t colorCapacity() const noexcept { return colors_.size(); }
+    [[nodiscard]] std::size_t quatCapacity() const noexcept { return quats_.size(); }
+
+    [[nodiscard]] eve::Result<MotionHandle> spawnFloat(const FloatDesc &desc);
+    [[nodiscard]] eve::Result<MotionHandle> spawnVec2(const Vec2Desc &desc);
+    [[nodiscard]] eve::Result<MotionHandle> spawnVec3(const Vec3Desc &desc);
+    [[nodiscard]] eve::Result<MotionHandle> spawnColor(const ColorDesc &desc);
+    [[nodiscard]] eve::Result<MotionHandle> spawnQuat(const QuatDesc &desc);
+
+    [[nodiscard]] bool isActive(MotionHandle handle) const noexcept;
+    [[nodiscard]] eve::Result<float> floatValue(MotionHandle handle) const;
+    [[nodiscard]] eve::Result<MotionVec2> vec2Value(MotionHandle handle) const;
+    [[nodiscard]] eve::Result<MotionVec3> vec3Value(MotionHandle handle) const;
+    [[nodiscard]] eve::Result<MotionColor> colorValue(MotionHandle handle) const;
+    [[nodiscard]] eve::Result<MotionQuat> quatValue(MotionHandle handle) const;
+
+    [[nodiscard]] eve::Result<void> complete(MotionHandle handle);
+    [[nodiscard]] eve::Result<void> cancel(MotionHandle handle);
+
+    [[nodiscard]] int activeCount() const noexcept;
+    [[nodiscard]] int floatSlotCount() const noexcept { return static_cast<int>(floats_.size()); }
+
+    [[nodiscard]] eve::Result<void> advance(const eve::SimulationStep &step);
+
+    [[nodiscard]] bool hasCurrentTick() const noexcept { return hasLastTick_; }
+    [[nodiscard]] eve::SimulationTick currentTick() const noexcept { return lastTick_; }
+
+private:
+    enum class Phase : std::uint8_t { Inactive, Delayed, Running, Completed, Cancelled };
+
+    template <class Value, class Sink>
+    struct Slot {
+        std::uint32_t              generation    = 1;
+        Phase                      phase         = Phase::Inactive;
+        Value                      from{};
+        Value                      to{};
+        Value                      current{};
+        float                      duration      = 0.f;
+        float                      delayLeft     = 0.f;
+        float                      elapsed       = 0.f;
+        int                        loops         = 1;
+        int                        played        = 0;
+        MotionLoopMode             loopMode      = MotionLoopMode::Restart;
+        bool                       reverse       = false;
+        bool                       cancelOnError = true;
+        MotionStyle                style         = MotionStyle::Tween;
+        int                        frequency     = 10;
+        float                      dampingRatio  = 1.f;
+        std::uint32_t              seed          = 0;
+        std::string                ease          = "linear";
+        Sink                      *sink          = nullptr;
+        std::function<void(Value)> onUpdate;
+        VoidCallback               onComplete;
+        VoidCallback               onCancel;
+    };
+
+    using FloatSlot = Slot<float, IMotionFloatSink>;
+    using Vec2Slot  = Slot<MotionVec2, IMotionVec2Sink>;
+    using Vec3Slot  = Slot<MotionVec3, IMotionVec3Sink>;
+    using ColorSlot = Slot<MotionColor, IMotionColorSink>;
+    using QuatSlot  = Slot<MotionQuat, IMotionQuatSink>;
+
+    static float lerpFloat(float a, float b, float t) { return a + (b - a) * t; }
+    static MotionVec2 lerpVec2(MotionVec2 a, MotionVec2 b, float t) {
+        return MotionVec2{lerpFloat(a.x, b.x, t), lerpFloat(a.y, b.y, t)};
+    }
+    static MotionVec3 lerpVec3(MotionVec3 a, MotionVec3 b, float t) {
+        return MotionVec3{lerpFloat(a.x, b.x, t), lerpFloat(a.y, b.y, t), lerpFloat(a.z, b.z, t)};
+    }
+
+    static void bumpGeneration(std::uint32_t &generation) {
+        generation = generation == UINT32_MAX ? 1u : generation + 1u;
+    }
+
+    [[nodiscard]] static eve::Diagnostic staleDiag() {
+        return eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle, "MotionHandle is inactive or stale");
+    }
+
+    [[nodiscard]] eve::Result<void> applyFloat(FloatSlot &slot, float linearT, bool fireUpdate);
+    [[nodiscard]] eve::Result<void> applyVec2(Vec2Slot &slot, float linearT, bool fireUpdate);
+    [[nodiscard]] eve::Result<void> applyVec3(Vec3Slot &slot, float linearT, bool fireUpdate);
+    [[nodiscard]] eve::Result<void> applyColor(ColorSlot &slot, float linearT, bool fireUpdate);
+    [[nodiscard]] eve::Result<void> applyQuat(QuatSlot &slot, float linearT, bool fireUpdate);
+
+    [[nodiscard]] eve::Result<void> finishFloat(FloatSlot &slot);
+    [[nodiscard]] eve::Result<void> finishVec2(Vec2Slot &slot);
+    [[nodiscard]] eve::Result<void> finishVec3(Vec3Slot &slot);
+    [[nodiscard]] eve::Result<void> finishColor(ColorSlot &slot);
+    [[nodiscard]] eve::Result<void> finishQuat(QuatSlot &slot);
+
+    [[nodiscard]] eve::Result<void> stepFloat(FloatSlot &slot, float dt);
+    [[nodiscard]] eve::Result<void> stepVec2(Vec2Slot &slot, float dt);
+    [[nodiscard]] eve::Result<void> stepVec3(Vec3Slot &slot, float dt);
+    [[nodiscard]] eve::Result<void> stepColor(ColorSlot &slot, float dt);
+    [[nodiscard]] eve::Result<void> stepQuat(QuatSlot &slot, float dt);
+
+    /**
+     * @brief Resolve a live float slot by generation-checked handle.
+     * @ownership Borrowed pointer into `floats_`; not transferable.
+     * @lifetime Valid until the next structural mutation of `floats_` (spawn /
+     *           recycle) or destruction of this runtime; null when stale.
+     */
+    [[nodiscard]] const FloatSlot *resolveFloat(MotionHandle handle) const;
+    /**
+     * @brief Resolve a live Vec2 slot by generation-checked handle.
+     * @ownership Borrowed pointer into `vec2s_`; not transferable.
+     * @lifetime Valid until the next structural mutation of `vec2s_` (spawn /
+     *           recycle) or destruction of this runtime; null when stale.
+     */
+    [[nodiscard]] const Vec2Slot *resolveVec2(MotionHandle handle) const;
+    /**
+     * @brief Resolve a live Vec3 slot by generation-checked handle.
+     * @ownership Borrowed pointer into `vec3s_`; not transferable.
+     * @lifetime Valid until the next structural mutation of `vec3s_` (spawn /
+     *           recycle) or destruction of this runtime; null when stale.
+     */
+    [[nodiscard]] const Vec3Slot *resolveVec3(MotionHandle handle) const;
+
+    /**
+     * @brief Resolve a live Color slot by generation-checked handle.
+     * @ownership Borrowed pointer into `colors_`; not transferable.
+     * @lifetime Valid until the next structural mutation of `colors_` (spawn /
+     *           recycle) or destruction of this runtime; null when stale.
+     */
+    [[nodiscard]] const ColorSlot *resolveColor(MotionHandle handle) const;
+    /**
+     * @brief Resolve a live Quat slot by generation-checked handle.
+     * @ownership Borrowed pointer into `quats_`; not transferable.
+     * @lifetime Valid until the next structural mutation of `quats_` (spawn /
+     *           recycle) or destruction of this runtime; null when stale.
+     */
+    [[nodiscard]] const QuatSlot *resolveQuat(MotionHandle handle) const;
+
+    [[nodiscard]] eve::Result<MotionHandle> occupyFloat(FloatSlot slot);
+    [[nodiscard]] eve::Result<MotionHandle> occupyVec2(Vec2Slot slot);
+    [[nodiscard]] eve::Result<MotionHandle> occupyVec3(Vec3Slot slot);
+    [[nodiscard]] eve::Result<MotionHandle> occupyColor(ColorSlot slot);
+    [[nodiscard]] eve::Result<MotionHandle> occupyQuat(QuatSlot slot);
+
+    void recycleFloat(FloatSlot &slot);
+    void recycleVec2(Vec2Slot &slot);
+    void recycleVec3(Vec3Slot &slot);
+    void recycleColor(ColorSlot &slot);
+    void recycleQuat(QuatSlot &slot);
+
+    [[nodiscard]] static eve::Result<void> validateDesc(float duration, float delay, int loops,
+                                                        const std::string &ease);
+    [[nodiscard]] static eve::Result<void> validateStyle(MotionStyle style, int frequency,
+                                                         float dampingRatio);
+
+    std::vector<FloatSlot> floats_;
+    std::vector<Vec2Slot>  vec2s_;
+    std::vector<Vec3Slot>  vec3s_;
+    std::vector<ColorSlot> colors_;
+    std::vector<QuatSlot>  quats_;
+    std::vector<std::uint32_t> freeFloats_;
+    std::vector<std::uint32_t> freeVec2s_;
+    std::vector<std::uint32_t> freeVec3s_;
+    std::vector<std::uint32_t> freeColors_;
+    std::vector<std::uint32_t> freeQuats_;
+    eve::SimulationTick    lastTick_    = eve::SimulationTick::zero();
+    bool                   hasLastTick_ = false;
+};
+
+}  // namespace eve::animation

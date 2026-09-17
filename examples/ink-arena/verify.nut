@@ -19,6 +19,11 @@ local missingShader=gfx.loadMeshShaderSpv("","missing.spv");
 checkInk(!missingShader.ok,"missing shader returns a diagnostic");
 clearInk();
 checkInk(shotCount==0,"clear resets shot count");
+local committedCenter=paintRegion.getCenterX();
+local invalidRegion=paintRegion.prepare(0,32,0.5,0.5,0.1,0.1,1.0,0.0,0.0,1.0,false);
+checkInk(!invalidRegion.ok && paintRegion.getCenterX()==committedCenter,
+    "invalid shared UV region is rejected atomically");
+checkInk(strokeStepCount(0,0,42,0)==3,"continuous stroke interpolation has deterministic spacing");
 local point=[0.0,0.0,3.0];
 local replaySeed=seed;
 splat(point,[0,1,0],1.2,0);
@@ -30,6 +35,10 @@ checkInk(fabs(alpha2-(1.0-(1.0-alpha1)*(1.0-alpha1)))<0.012,"RGBA coverage follo
 splat(point,[0,1,0],1.2,1);
 checkInk(sampleWorld(surfaces[0],point,2)>0.5 && sampleWorld(surfaces[0],point,0)<0.5,
     "violet overwrites orange at same world point");
+checkInk(undoInk() && sampleWorld(surfaces[0],point,0)>0.5,
+    "GPU command replay restores the previous stroke");
+local checkpointCount=bakeInkCheckpoint();
+checkInk(checkpointCount==paintCommands.len() && !undoInk(),"checkpoint bounds GPU undo history");
 local before=shotCount;
 checkInk(!shootScreen(1270.0,10.0,0) && shotCount==before,"sky miss creates no paint");
 checkInk(shootScreen(640.0,450.0,0) && shotCount==before+1,"screen ray hits nearest scene surface");
@@ -42,6 +51,7 @@ checkInk(sampleWorld(surfaces[22],[-1.4,2.7,-1.5],3)==0.0,"grazing side projecto
 clearInk();
 checkInk(sampleWorld(surfaces[0],point,3)==0.0,"clear removes persisted paint");
 showcase();
+checkInk(lastShowcaseSeconds<2.0,"108-stroke GPU showcase stays below debug performance budget");
 local savedCount=shotCount;
 local savedAlpha=sampleWorld(surfaces[0],[0,0,3],3);
 foreach(i,knob in inkKnobs) {

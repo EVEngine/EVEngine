@@ -37,6 +37,9 @@ eve_declare_module(NAME housegen_editing LAYER 5
                    DEPS editing
                    OPTIONAL_DEPS housegen
                    GROUP 3d)
+eve_declare_module(NAME archspace_editing LAYER 5
+                   DEPS archspace editing
+                   GROUP 3d)
 eve_declare_module(NAME camera_editing LAYER 5
                    DEPS camera editing
                    GROUP 3d web)
@@ -51,13 +54,15 @@ eve_declare_module(NAME level_editing LAYER 5
                    DEPS editing
                    GROUP 2d 3d web)
 eve_declare_module(NAME particles LAYER 5 SCRIPT Particles SLOT particles
-                   DEPS animation data filesystem graphics ik
+                   DEPS action animation data filesystem graphics ik
                    THIRDPARTY poco
                    GROUP 2d 3d)
 # Surface fluid simulation: particles constrained to mesh SDFs (flow down
-# surfaces, droplet coalescence) with screen-space surface reconstruction.
+# surfaces, droplet coalescence) with screen-space surface reconstruction. Its
+# accelerator provider has an independent lifetime from physics_cloth.
 eve_declare_module(NAME fluids LAYER 5 SCRIPT Fluids SLOT fluids
-                   DEPS gpgpu graphics physics physics_backend
+                   DEPS gpgpu graphics image physics physics_backend
+                   OPTIONAL_DEPS model3d
                    GROUP 3d web)
 eve_declare_module(NAME procgen LAYER 5 SCRIPT Procgen SLOT procgen
                    DEPS gpgpu graphics image map transaction
@@ -93,6 +98,12 @@ eve_declare_module(NAME hd2d LIB EVHd2D LAYER 5 SCRIPT Hd2D SLOT hd2d
                    DEPS graphics map
                    GROUP 3d)
 # L6 -- orchestration
+# Native 3d only: GROUP web would enable animation→model3d on the Emscripten
+# profile, which still trims medialoader_model and then fails at link time.
+eve_declare_module(NAME animation_tensor DIR animation/tensor LAYER 6
+                   SCRIPT AnimationTensor SLOT animationTensor
+                   DEPS animation tensor
+                   GROUP 3d)
 eve_declare_module(NAME agent_tensor DIR agent/tensor LAYER 6
                    SCRIPT AgentTensor SLOT agentTensor
                      DEPS agent tensor gpgpu
@@ -140,9 +151,14 @@ eve_declare_module(NAME definitions_editor LAYER 7 DEPS definitions_editing edit
 eve_declare_module(NAME dialogue_editor LAYER 7 DEPS audio_editor dialogue_editing editor GROUP 3d web)
 eve_declare_module(NAME graphics_editor LAYER 7 SCRIPT GraphicsEditorModule SLOT graphicsEditor
                    DEPS editor graphics graphics_editing GROUP 3d web)
-eve_declare_module(NAME fluids_editor LAYER 7 DEPS editor fluids fluids_editing graphics_editor GROUP 3d web)
+eve_declare_module(NAME fluids_editor LAYER 7 SCRIPT FluidsEditorModule SLOT fluidsEditor
+                   DEPS editor fluids fluids_editing graphics_editor GROUP 3d web)
 eve_declare_module(NAME hd2d_editor LAYER 7 DEPS editor hd2d_editing GROUP 3d)
 eve_declare_module(NAME housegen_editor LAYER 7 DEPS domain_gizmo_editor editor housegen_editing GROUP 3d)
+eve_declare_module(NAME archspace_editor LAYER 7
+                   DEPS archspace_editing editor
+                   SCRIPT ArchSpaceEditorModule SLOT archspaceEditor
+                   GROUP 3d)
 eve_declare_module(NAME input_editor LAYER 7 DEPS editor input_editing GROUP 2d 3d web)
 eve_declare_module(NAME lighting_editor LAYER 7 DEPS editor lighting_editing GROUP 3d web)
 eve_declare_module(NAME localization_editor LAYER 7 DEPS editor localization_editing GROUP 2d 3d web)
@@ -154,7 +170,8 @@ eve_declare_module(NAME material_editor LAYER 7 DEPS editor graphics_editor mate
 eve_declare_module(NAME network_editor LAYER 7 DEPS editor network_editing GROUP 2d 3d web)
 eve_declare_module(NAME npc_ai_editor LAYER 7 DEPS editor npc_ai_editing GROUP 2d 3d web)
 eve_declare_module(NAME particles_editor LAYER 7 DEPS editor particles_editing particles_graphics_editing GROUP 2d 3d)
-eve_declare_module(NAME physics_editor LAYER 7 DEPS asset editor physics_editing GROUP 3d web)
+eve_declare_module(NAME physics_editor LAYER 7 DEPS asset editor physics_editing
+                   SCRIPT PhysicsEditorModule SLOT physicsEditor GROUP 3d web)
 eve_declare_module(NAME procgen_editor LAYER 7 DEPS editor procgen procgen_editing
                    SCRIPT ProcgenEditorModule SLOT procgenEditor GROUP 3d)
 eve_declare_module(NAME profiler_editor LAYER 7 DEPS editor profiler_editing GROUP 3d web)
@@ -226,13 +243,20 @@ eve_declare_module(NAME pixelworld_editor LAYER 6 SCRIPT PixelWorldEditorModule 
                    GROUP 2d 3d web)
 # Runtime bridge from capability-selected packages into executable PointGraphs.
 eve_declare_module(NAME asset_procgen LAYER 6
-                   DEPS asset asset_graphics graphics procgen
+                   DEPS asset asset_graphics asset_import data graphics procgen
+                   GROUP 3d)
+eve_declare_module(NAME procgen_physics LAYER 6 SCRIPT ProcgenPhysics SLOT procgenPhysics
+                   DEPS physics procgen
+                   GROUP 3d)
+eve_declare_module(NAME procgen_animation DIR procgen/animation LAYER 6
+                   SCRIPT ProcgenAnimation SLOT procgenAnimation
+                   DEPS animation procgen
                    GROUP 3d)
 eve_declare_module(NAME snow LAYER 6 SCRIPT Snow SLOT snow
                    DEPS graphics procgen
                    GROUP 3d)
 eve_declare_module(NAME sceneloader LIB EVSceneLoader LAYER 6 SCRIPT SceneLoader
-                   DEPS animation data filesystem graphics image model3d scene thread
+                   DEPS action animation data filesystem graphics image model3d scene thread
                    THIRDPARTY assimp
                    GROUP 3d)
 eve_declare_module(NAME dialogue LAYER 6

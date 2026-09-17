@@ -42,6 +42,24 @@ struct PointGraphNodeMetric {
  * inputs and cycles, retains inspectable node outputs, and supports nested
  * graphs through the `subgraph` operation.
  */
+
+/** @brief One attribute/column descriptor for PointGraph inspect panels. */
+struct PointGraphColumnInfo {
+    std::string name;
+    std::string type;   /**< float, int, bool, vector, string, or builtin. */
+    std::string domain; /**< elements, data, or builtin. */
+};
+
+/** @brief Snapshot of one node output for editor Attribute/Inspect panels. */
+struct PointGraphInspectReport {
+    std::string                     nodeId;
+    int                             pointCount = 0;
+    std::vector<PointGraphColumnInfo> columns;
+    /** @brief Optional sampled float values: columns-major flattened [column * sampleCount + point]. */
+    std::vector<float>              sampleFloats;
+    int                             sampleCount = 0;
+};
+
 class PointGraph {
 public:
     PointGraph();
@@ -64,6 +82,35 @@ public:
     bool setNodePoints(const std::string& id, PointSet* points);
     /** @brief Assign copied spatial data to a spatial sample, filter, projection, or biome node. */
     bool setNodeSpatial(const std::string& id, SpatialData* spatial);
+
+    /**
+     * @brief Bind named SpatialData for get.* / optional binding= parameters.
+     * External runtime slot: not serialized with serializeDefinition().
+     */
+    [[nodiscard]] Result<void> setBindingSpatial(const std::string& name, SpatialData* spatial);
+    /**
+     * @brief Bind named PointSet for get.points / get.actor.
+     * External runtime slot: not serialized with serializeDefinition().
+     */
+    [[nodiscard]] Result<void> setBindingPoints(const std::string& name, PointSet* points);
+    /** @brief Remove one named binding. */
+    [[nodiscard]] Result<void> clearBinding(const std::string& name);
+    /** @brief Remove every named binding. */
+    void clearBindings();
+    /** @brief Return the number of named bindings. */
+    int getBindingCount() const;
+    /** @brief Return a binding name by stable insertion index. */
+    std::string getBindingName(int index) const;
+    /** @brief Return `spatial`, `points`, or empty when the name is unbound. */
+    std::string getBindingType(const std::string& name) const;
+
+    /**
+     * @brief Build an inspect snapshot for a cached node output after execute.
+     * @param id Node identity.
+     * @param sampleLimit Maximum points to sample into sampleFloats; zero skips samples.
+     */
+    [[nodiscard]] Result<PointGraphInspectReport> inspectNode(const std::string& id, int sampleLimit = 0) const;
+
     /** @brief Assign copied biome rules to a `biome.generate` node. */
     bool setNodeBiomeRules(const std::string& id, BiomeRules* rules);
     /** @brief Assign a copied shape grammar to a `grammar.generate` node. */
@@ -243,6 +290,12 @@ private:
         bool                                        cacheValid = false;
         bool                                         deferredTransformValid = false;
     };
+
+    struct GraphBinding {
+        std::shared_ptr<SpatialData> spatial;
+        std::shared_ptr<PointSet>    points;
+        bool                         isSpatial = false;
+    };
     struct ParameterBinding {
         std::string nodeId;
         std::string key;
@@ -272,7 +325,13 @@ private:
     int             intValue(const Node& node, const std::string& key, int fallback) const;
     std::string     stringValue(const Node& node, const std::string& key,
                                 const std::string& fallback = {}) const;
+    [[nodiscard]] Result<std::shared_ptr<SpatialData>> resolveNodeSpatial(const Node& node) const;
+    [[nodiscard]] Result<std::shared_ptr<PointSet>>    resolveBindingPoints(const std::string& name) const;
 
+
+
+    std::unordered_map<std::string, GraphBinding> bindings_;
+    std::vector<std::string>                      bindingOrder_;
     std::unordered_map<std::string, Node>             nodes_;
     std::vector<std::string>                          nodeOrder_;
     std::unordered_map<std::string, ParameterBinding> parameters_;

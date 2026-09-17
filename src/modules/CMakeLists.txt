@@ -277,6 +277,12 @@ foreach(_mod IN LISTS EVE_ENABLED_MODULES)
   create_module(${EVE_MODULE_${_mod}_LIB} ${_mod})
 endforeach()
 
+if(TARGET EVAnimation_editor AND _has_animation_editor_bridge)
+  # Runtime clip/skeleton import is an optional bridge. Web authoring profiles
+  # retain the standalone clip editor without pulling Assimp/model3d into WASM.
+  target_compile_definitions(EVAnimation_editor PRIVATE EVE_ANIMATION_EDITOR_RUNTIME=1)
+endif()
+
 # create_module() globs both physics bridge TUs; keep exactly one.
 eve_module_enabled(vehicle _has_vehicle)
 eve_module_enabled(physics _has_physics)
@@ -303,10 +309,18 @@ foreach(_mod IN LISTS EVE_ENABLED_MODULES)
   target_compile_definitions(${EVE_MODULE_${_mod}_LIB} PUBLIC POCO_STATIC POCO_NO_AUTOMATIC_LIBS)
 endforeach()
 
+eve_module_enabled(model3d _has_fluids_model3d)
+if(TARGET EVFluids AND _has_fluids_model3d)
+  target_compile_definitions(EVFluids PRIVATE EVE_FLUIDS_HAS_MODEL3D=1)
+endif()
+
 # --- per-module build settings ----------------------------------------------
 
 if(TARGET EVAsset_graphics)
   eve_configure_shader_asset_validation(EVAsset_graphics)
+endif()
+if(TARGET EVGraphics)
+  eve_configure_shader_asset_validation(EVGraphics)
 endif()
 
 eve_module_enabled(data _has_data)
@@ -540,14 +554,46 @@ if(_has_procgen OR _eve_procgen_core_profile OR EVENGINE_BUILD_PROCGEN_CORE_CHEC
   # scene adapters, while the normal EVProcgen target keeps the public facade
   # and all compatibility implementations unchanged.
   set(_eve_procgen_core_sources
+    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/PcgSpawnProgress.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/procgen/ArtifactPublish.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/procgen/AttributeTable.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/procgen/core/ProcgenCore.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/heightmap/TerrainStamp.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/heightmap/TerrainDetailLayer.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/heightmap/TerrainDetailPlacement.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/heightmap/TerrainTreePlacement.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/heightmap/TerrainObjectPlacement.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/heightmap/TerrainSpawnPlan.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/heightmap/TerrainSpawnPlanCodec.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/heightmap/TerrainBiomePreset.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/heightmap/TerrainBiomePresetCodec.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/heightmap/TerrainCollisionMask.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/heightmap/TerrainPolygonMask.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/heightmap/TerrainProbePlacement.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/heightmap/TerrainBakedMaskCache.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/heightmap/TerrainNoiseMask.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/heightmap/TerrainSplatmap.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/heightmap/TerrainWorldWorkspace.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/heightmap/TerrainGenerationSession.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/heightmap/PcgRuntimeStamper.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/heightmap/TerrainMask.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/heightmap/TerrainImageMask.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/heightmap/TerrainEffect.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/heightmap/TerrainErosion.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/heightmap/TerrainLegacyHydraulic.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/heightmap/TerrainLegacyThermal.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/heightmap/TerrainSediment.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/heightmap/TerrainWaterField.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/procgen/GeneratorRegistry.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/procgen/GeneratedArtifact.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/procgen/Grid2D.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/procgen/JsonExport.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/procgen/MeshBuild.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/mesh/MeshDeformationSession.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/mesh/MeshBoolean.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/mesh/MeshModifierGraph.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/mesh/MeshUvProjection.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/spline/SplinePath.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/procgen/Palette.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/procgen/ParamSchema.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/procgen/Params.cpp
@@ -560,6 +606,11 @@ if(_has_procgen OR _eve_procgen_core_profile OR EVENGINE_BUILD_PROCGEN_CORE_CHEC
   set(_eve_procgen_core_boundary_files ${_eve_procgen_core_sources}
     ${CMAKE_CURRENT_SOURCE_DIR}/procgen/ArtifactPublish.h
     ${CMAKE_CURRENT_SOURCE_DIR}/procgen/GeneratedArtifact.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/mesh/MeshDeformationSession.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/mesh/MeshBoolean.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/mesh/MeshModifierGraph.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/mesh/MeshUvProjection.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/spline/SplinePath.h
     ${CMAKE_CURRENT_SOURCE_DIR}/procgen/core/ProcgenCore.h)
   foreach(_eve_procgen_core_file IN LISTS _eve_procgen_core_boundary_files)
     if(NOT EXISTS "${_eve_procgen_core_file}")

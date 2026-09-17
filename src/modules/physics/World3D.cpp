@@ -13,6 +13,8 @@
 #include <algorithm>
 #include <cfloat>
 #include <cmath>
+#include <mutex>
+#include <unordered_map>
 #include <unordered_set>
 #include <utility>
 
@@ -156,9 +158,23 @@ eve::Result<eve::SimulationStep> makeLegacyStep(float dt, eve::SimulationTick cu
     return eve::Result<eve::SimulationStep>::success({*nextTick, std::move(duration).takeValue()});
 }
 
+struct WorldRegistry {
+    std::mutex mutex;
+    std::unordered_map<PhysicsWorldHandle::index_type, World3D*> worlds;
+};
+WorldRegistry& worldRegistry() {
+    static auto* registry = new WorldRegistry;
+    return *registry;
+}
+
 }  // namespace
 
-World3D::World3D(float gravityX, float gravityY, float gravityZ, bool sleep) {
+World3D::World3D(float gravityX, float gravityY, float gravityZ, bool sleep, eve::PersistentId instanceId)
+    : World3D(gravityX, gravityY, gravityZ, sleep, instanceId, true) {}
+
+World3D::World3D(float gravityX, float gravityY, float gravityZ, bool sleep, eve::PersistentId instanceId,
+                 bool registerQueries)
+    : instanceId_(instanceId) {
     b3WorldDef def = b3DefaultWorldDef();
     def.gravity    = b3Vec3{gravityX, gravityY, gravityZ};
     def.enableSleep = sleep;
@@ -166,6 +182,7 @@ World3D::World3D(float gravityX, float gravityY, float gravityZ, bool sleep) {
     contactDampingRatio_ = def.contactDampingRatio;
     contactPushOutSpeed_ = def.contactSpeed;
     runtimeHandle_       = detail::allocatePhysicsWorldHandle();
+    if (instanceId_.isNil()) instanceId_ = detail::makePhysicsWorldPersistentId(runtimeHandle_);
     worldId_        = b3CreateWorld(&def);
     auto selection       = detail::selectSimulationBackend(
         SimulationBackendDomain::World3D,
@@ -180,9 +197,12 @@ World3D::World3D(float gravityX, float gravityY, float gravityZ, bool sleep) {
     auto selected           = std::move(selection).takeValue();
     backendFallback_        = selected.usedFallback;
     simulation_             = std::move(selected.backend);
-    registerCameraObstructionWorld(this);
-    auto targetingRegistration = registerTargetingLineOfSightWorld(this);
-    if (!targetingRegistration) {
+    if (registerQueries) registerCameraObstructionWorld(this);
+    auto targetingRegistration = registerQueries ? registerTargetingLineOfSightWorld(this)
+                                                  : eve::Result<void>::success();
+    if (!registerQueries) {
+        targetingRegistration.ignore("detached topology candidate does not publish targeting queries");
+    } else if (!targetingRegistration) {
         // Physics supports multiple worlds; targeting LOS deliberately exposes
         // only one, so an explicitly consumed Conflict leaves this world valid
         // without making its query context ambiguous.
@@ -192,6 +212,9 @@ World3D::World3D(float gravityX, float gravityY, float gravityZ, bool sleep) {
     b3World_SetRestitutionCallback(worldId_, &mixRestitution);
     b3World_SetCustomFilterCallback(worldId_, &World3D::customFilterCallback, this);
     b3World_SetPreSolveCallback(worldId_, &World3D::preSolveCallback, this);
+    auto& registry = worldRegistry();
+    std::scoped_lock registryLock(registry.mutex);
+    registry.worlds[runtimeHandle_.index()] = this;
 }
 
 void World3D::setContinuousCollisionEnabled(bool enabled) {
@@ -378,10 +401,41 @@ EV_PROFILE_GETTER(getProfileSensorsMs, sensors)
 
 World3D::~World3D() { destroy(); }
 
+void World3D::adoptPreparedTopology(World3D &prepared) {
+    std::swap(worldId_, prepared.worldId_);
+    std::swap(nextId_, prepared.nextId_);
+    std::swap(nextShapeId_, prepared.nextShapeId_);
+    std::swap(nextJointId_, prepared.nextJointId_);
+    std::swap(bodies_, prepared.bodies_);
+    std::swap(shapes_, prepared.shapes_);
+    std::swap(joints_, prepared.joints_);
+    std::swap(shapeRecords_, prepared.shapeRecords_);
+    std::swap(shapeHandles_, prepared.shapeHandles_);
+    std::swap(shapeRawHandles_, prepared.shapeRawHandles_);
+    std::swap(jointHandles_, prepared.jointHandles_);
+    std::swap(simulationTick_, prepared.simulationTick_);
+    for (Body3D *body : bodies_) body->world_ = this;
+    for (Shape3D *shape : shapes_) shape->world_ = this;
+    for (Joint3D *joint : joints_) joint->world_ = this;
+    for (Body3D *body : prepared.bodies_) body->world_ = &prepared;
+    for (Shape3D *shape : prepared.shapes_) shape->world_ = &prepared;
+    for (Joint3D *joint : prepared.joints_) joint->world_ = &prepared;
+    b3World_SetCustomFilterCallback(worldId_, &World3D::customFilterCallback, this);
+    b3World_SetPreSolveCallback(worldId_, &World3D::preSolveCallback, this);
+    b3World_SetCustomFilterCallback(prepared.worldId_, &World3D::customFilterCallback, &prepared);
+    b3World_SetPreSolveCallback(prepared.worldId_, &World3D::preSolveCallback, &prepared);
+}
+
 bool World3D::isValid() const { return !destroyed_ && b3World_IsValid(worldId_); }
 
 void World3D::destroy() {
     if (destroyed_) return;
+    {
+        auto& registry = worldRegistry();
+    std::scoped_lock registryLock(registry.mutex);
+        auto found = registry.worlds.find(runtimeHandle_.index());
+        if (found != registry.worlds.end() && found->second == this) registry.worlds.erase(found);
+    }
     destroyed_ = true;
     // Invalidate borrowed query registrations without touching any global
     // registry. This keeps teardown safe for every static destruction order.
@@ -418,6 +472,15 @@ void World3D::destroy() {
     jointHandles_.clear();
     worldId_ = {};
     runtimeHandle_ = PhysicsWorldHandle::invalid();
+}
+
+World3D* World3D::findWorld(PhysicsWorldHandle handle) noexcept {
+    if (handle.isInvalid()) return nullptr;
+    auto& registry = worldRegistry();
+    std::scoped_lock registryLock(registry.mutex);
+    auto found = registry.worlds.find(handle.index());
+    if (found == registry.worlds.end() || !found->second || found->second->runtimeHandle() != handle) return nullptr;
+    return found->second;
 }
 
 bool World3D::sphereCast(float x1, float y1, float z1, float x2, float y2, float z2,
@@ -674,13 +737,13 @@ eve::Result<void> World3D::step(const eve::SimulationStep &stepValue, const Simu
     }
     auto valid = detail::validateSimulationStep(stepValue, settings, simulation_->observation());
     if (!valid) return valid;
-    clearContactEvents();
     for (Shape3D *shape : shapes_) {
         if (shape && shape->isOneWay()) shape->refreshOneWayWorldData();
     }
     auto result = simulation_->step(stepValue, settings);
     if (!result) return result;
     simulationTick_ = stepValue.tick;
+    clearContactEvents();
     emitContactEvents();
     return result;
 }
@@ -1997,12 +2060,18 @@ int World3D::getQueryBodyId(int index) const {
 }
 
 bool World3D::pointProbe(float x, float y, float z, float radius, ClothContact3D *out) const {
+    return pointProbeFiltered(x, y, z, radius, out, ~uint64_t{0}, ~uint64_t{0}) == ClothProbeStatus::Hit;
+}
+
+ClothProbeStatus World3D::pointProbeFiltered(float x, float y, float z, float radius, ClothContact3D *out,
+                                              uint64_t categoryBits, uint64_t maskBits) const {
     if (out) *out = ClothContact3D{};
-    if (!isValid() || radius <= 0.f) return false;
+    if (!isValid() || radius <= 0.f || !out) return ClothProbeStatus::Miss;
 
     const b3Vec3 target{x, y, z};
     for (Shape3D *s : shapes_) {
         if (!s || !s->isValid() || s->isSensor()) continue;
+        if ((maskBits & s->getCategoryBits()) == 0 || (s->getMaskBits() & categoryBits) == 0) continue;
         // Box3D closest-point proxies are convex-only. Concave surfaces are handled by
         // swept queries (and rigid contact generation), not b3Shape_GetClosestPoint.
         const std::string kind = s->getKind();
@@ -2024,9 +2093,11 @@ bool World3D::pointProbe(float x, float y, float z, float radius, ClothContact3D
                 out->nz = 0.f;
             }
             out->body = s->getBody();
+            out->friction = s->getFriction();
+            out->restitution = s->getRestitution();
         }
     }
-    return out->hit;
+    return out->hit ? ClothProbeStatus::Hit : ClothProbeStatus::Miss;
 }
 
 const World3D::RayResult &World3D::rayResultAt(int index, const char *operation) const {

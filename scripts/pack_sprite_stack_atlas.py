@@ -20,6 +20,7 @@ import struct
 import sys
 import zlib
 from pathlib import Path
+import utf8_stdio
 
 PNG_SIG = b"\x89PNG\r\n\x1a\n"
 
@@ -162,4 +163,5 @@ def main() -> int:
 
 
 if __name__ == "__main__":
+    utf8_stdio.enable_utf8_stdio()
     sys.exit(main())

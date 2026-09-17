@@ -67,6 +67,7 @@ bool Graphics::prepareSkinPass(Mesh* mesh, Texture* albedo, const glm::mat4& mvp
     ubo.model      = model;
     ubo.clip       = clip;
     ubo.skinInfo.x = static_cast<float>(mesh->getSkinPaletteCount());
+    ubo.skinInfo.y = static_cast<float>(mesh3dSkinInfluenceLimit);
     uploadSkinPalette(mesh, fslots);
     const size_t slot = fslots.drawIndex++;
     ensureMesh3dStrides();

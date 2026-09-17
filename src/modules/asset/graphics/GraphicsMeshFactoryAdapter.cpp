@@ -30,6 +30,17 @@ Result<graphics::Mesh*> GraphicsMeshFactoryAdapter::uploadMesh(
     return Result<graphics::Mesh*>::success(mesh);
 }
 
+Result<graphics::Mesh*> GraphicsMeshFactoryAdapter::uploadMeshColored(
+    const float* posXYZ, const float* nrmXYZ, const float* uvST, const float* colorRGBA,
+    int vertexCount, const std::uint32_t* indices, int indexCount) {
+    graphics::Mesh* mesh = factory_.newMeshFromArraysColored(
+        posXYZ, nrmXYZ, uvST, colorRGBA, vertexCount, indices, indexCount);
+    if (!mesh)
+        return failure<graphics::Mesh*>(DiagnosticCode::Failed,
+                                        "graphics backend rejected colored canonical mesh upload");
+    return Result<graphics::Mesh*>::success(mesh);
+}
+
 Result<void> GraphicsMeshFactoryAdapter::releaseMesh(graphics::Mesh* mesh) {
     if (!mesh)
         return failure<void>(DiagnosticCode::InvalidArgument,

@@ -509,7 +509,24 @@ struct ClimbingEvent {
     std::vector<std::string> metadata;
 };
 
-/** @brief Per-tick authored animation motion supplied before climbing warp and collision. */
+/** @brief Whether animation deltas still require the runtime's procedural target warp. */
+enum class ClimbingRootMotionPolicy { ApplyActionWarp, PreserveSuppliedDelta };
+/** @brief Per-call capsule collision policy; never changes persistent world collision state. */
+enum class ClimbingObstacleCollision { Collide, IgnoreTraversedShape };
+
+/** @brief Per-tick authored animation motion supplied before climbing warp and collision.
+ * @details Owning values
+ * consumed synchronously on the runtime/world simulation thread.
+ * Prewarped deltas use PreserveSuppliedDelta to avoid
+ * applying a second procedural warp.
+ * IgnoreTraversedShape excludes only the execution's generation-validated
+ * obstacle shape,
+ * retaining the character's existing body filter and collisions with all other shapes.
+ * Both
+ * policies require hasRootMotion; invalid inputs fail before execution advances.
+ * No pointers, callbacks, retained
+ * collision overrides, serialization or wall-clock input.
+ */
 struct ClimbingMotionInput {
     Vec3  rootTranslation;
     Vec3  facing{0.f, 0.f, 1.f};
@@ -518,6 +535,8 @@ struct ClimbingMotionInput {
     bool  hasRootMotion  = false;
     /** @brief Owning semantic notifies crossed by the animation player during this exact simulation step. */
     std::vector<ClimbingNotifyKind> notifies;
+    ClimbingRootMotionPolicy        rootMotionPolicy  = ClimbingRootMotionPolicy::ApplyActionWarp;
+    ClimbingObstacleCollision       obstacleCollision = ClimbingObstacleCollision::Collide;
 };
 
 /** @brief Owning output of one execution tick. */

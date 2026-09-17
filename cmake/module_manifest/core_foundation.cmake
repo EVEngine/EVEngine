@@ -100,7 +100,7 @@ eve_declare_module(NAME pixelworld_streaming LAYER 1
                    DEPS asset pixelworld
                    GROUP 2d 3d web)
 eve_declare_module(NAME rpg LIB EVRPG LAYER 1 SCRIPT RPG
-                   DEPS action attributes decision definitions effects inventory settlement)
+                   DEPS action attributes decision definitions dnut_interpreter effects inventory settlement)
 # L0 -- foundation (continued)
 eve_declare_module(NAME inventory LAYER 0 SCRIPT Inventory)
 eve_declare_module(NAME economy LAYER 0 SCRIPT Economy SLOT economy
@@ -145,8 +145,22 @@ eve_declare_module(NAME npc_ai LAYER 1
 eve_declare_module(NAME action LIB EVAction LAYER 1
                    DEPS decision sensing tags transaction
                    GROUP minimal 2d 3d web)
+# `.dnut` authored-sequence language. Owns the shared lexer, the registry-driven
+# compiler, the compiled sequence model and the cross-frame interpreter. Domain
+# vocabularies (dialogue lines and pools, RPG story steps) are registered by the
+# modules that own them; this core never interprets a domain payload.
+eve_declare_module(NAME dnut_interpreter LIB EVDnutInterpreter LAYER 1)
+# L2 -- combat resolution and optional adapters consuming the action protocol
+# Optional persistent GameEventLog adapter for action timeline events.
+eve_declare_module(NAME action_game_event DIR action/game_event LAYER 2
+                   DEPS action game_event
+                   GROUP minimal 2d 3d web)
+# Optional semantic combo-window projection consumed by player, AI, and script input adapters.
+eve_declare_module(NAME action_input DIR action/input LAYER 2
+                   DEPS action
+                   GROUP minimal 2d 3d web)
 # L2 -- combat resolution consuming the action protocol
-eve_declare_module(NAME combat LIB EVCombat LAYER 2
+eve_declare_module(NAME combat LIB EVCombat LAYER 2 SCRIPT Combat SLOT combat
                    DEPS action attributes tags
                    GROUP minimal 2d 3d web)
 # Shared fixed-step/backend contract extracted from the physics host so

@@ -6,8 +6,8 @@ persist surfaces = [];
 persist camera = null;
 persist brush = null;
 persist imageModule = null;
+persist paintRegion = null;
 persist shotCount = 0;
-persist cooldown = 0.0;
 persist verifyFrame = 0;
 persist inkShader = null;
 persist paintShader = null;
@@ -16,6 +16,11 @@ persist orbit = 0.62;
 persist seed = 1729;
 persist previousKeys = {};
 persist paintCommands = [];
+persist undoFloor = 0;
+persist lastShowcaseSeconds = 0.0;
+persist previousPaintX = null;
+persist previousPaintY = null;
+persist previousPaintTeam = -1;
 function pressed(key) {
     local down=keyboard.isDown(key);
     local before=key in previousKeys ? previousKeys[key] : false;
@@ -30,7 +35,7 @@ function cross(a,b) { return [a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-
 function norm(a) { return mul(a,1.0/sqrt(dot(a,a))); }
 function clamp(x,a,b) { return x<a?a:(x>b?b:x); }
 function random01() { seed = (seed * 48271) % 2147483647; return seed / 2147483647.0; }
-function clearInk() {
+function clearInkCanvas() {
     gfx.setShader(null);
     gfx.setBackgroundColor(0.0,0.0,0.0,0.0);
     foreach(s in surfaces) {
@@ -40,19 +45,14 @@ function clearInk() {
         gfx.setCanvas(null);
     }
     gfx.setBackgroundColor(0.035,0.045,0.075,1.0);
-    shotCount=0; paintCommands.clear();
 }
-function splat(center, normal, radius, team) {
-    // A bounded oriented projector: no indefinite ray projection through walls.
-    local tangent=norm(cross(fabs(normal[1])<0.9?[0,1,0]:[0,0,1],normal));
-    local bitangent=cross(normal,tangent);
-    local angle=random01()*6.283185;
-    local tu=add(mul(tangent,cos(angle)),mul(bitangent,sin(angle)));
-    local tv=cross(normal,tu);
-    local tile=(random01()*16).tointeger();
-    local color=colors[team];
-    if("inkVerify" in getroottable() && inkVerify)
-        paintCommands.push({center=center,normal=normal,radius=radius,tu=tu,tv=tv,tile=tile,color=color});
+function clearInk() {
+    clearInkCanvas();
+    shotCount=0; paintCommands.clear(); undoFloor=0;
+}
+function renderSplat(command) {
+    local center=command.center,normal=command.normal,radius=command.radius;
+    local tu=command.tu,tv=command.tv,tile=command.tile,color=command.color;
     foreach(s in surfaces) {
         // A nearly edge-on projector collapses its footprint into a stripe.
         if(dot(s.n,normal)<=0.15) continue;
@@ -61,10 +61,11 @@ function splat(center, normal, radius, team) {
         if(fabs(dot(relative,s.n))>radius*1.5) continue;
         local cu=dot(relative,s.u)/s.uu, cv=dot(relative,s.v)/s.vv;
         local ru=radius*1.5/sqrt(s.uu), rv=radius*1.5/sqrt(s.vv);
-        local x0=clamp(((cu-ru)*s.w).tointeger(),0,s.w-1);
-        local x1=clamp(((cu+ru)*s.w).tointeger()+1,0,s.w-1);
-        local y0=clamp(((cv-rv)*s.h).tointeger(),0,s.h-1);
-        local y1=clamp(((cv+rv)*s.h).tointeger()+1,0,s.h-1);
+        // CPU editing and GPU canvas painting share this validated UV region;
+        // only raster execution differs between the two backends.
+        local prepared=paintRegion.prepare(s.w,s.h,cu,cv,ru,rv,
+            color[0],color[1],color[2],1.0,false);
+        if(!prepared.ok) throw "UV paint region failed: "+prepared.status;
         // Affine projector coordinates: compute once per patch, not allocating
         // five temporary vectors and crossing script functions for every texel.
         local origin=sub(s.p,center);
@@ -79,12 +80,35 @@ function splat(center, normal, radius, team) {
         paintShader.sendVec4("depth",depth0,ddx,ddy,0.0);
         paintShader.sendVec4("ink",color[0],color[1],color[2],1.0);
         gfx.setCanvas(s.canvas); gfx.setShader(paintShader);
-        gfx.drawTexturedRect(brushTexture,x0.tofloat(),y0.tofloat(),
-            (x1-x0+1).tofloat(),(y1-y0+1).tofloat(),1.0,1.0,1.0,1.0);
+        gfx.drawTexturedRect(brushTexture,paintRegion.getX().tofloat(),paintRegion.getY().tofloat(),
+            paintRegion.getWidth().tofloat(),paintRegion.getHeight().tofloat(),1.0,1.0,1.0,1.0);
         // The backend reads push constants at flush, so submit before updating.
         gfx.setCanvas(null); gfx.setShader(null);
     }
-    shotCount++;
+}
+function splat(center, normal, radius, team) {
+    local tangent=norm(cross(fabs(normal[1])<0.9?[0,1,0]:[0,0,1],normal));
+    local bitangent=cross(normal,tangent),angle=random01()*6.283185;
+    local tu=add(mul(tangent,cos(angle)),mul(bitangent,sin(angle)));
+    local command={center=center,normal=normal,radius=radius,tu=tu,tv=cross(normal,tu),
+        tile=(random01()*16).tointeger(),color=colors[team],team=team};
+    paintCommands.push(command); renderSplat(command); shotCount++;
+}
+function undoInk() {
+    if(paintCommands.len()<=undoFloor) return false;
+    paintCommands.pop(); local replay=[];
+    foreach(command in paintCommands) replay.push(command);
+    clearInkCanvas(); paintCommands.clear();
+    foreach(command in replay) { paintCommands.push(command); renderSplat(command); }
+    shotCount=paintCommands.len(); return true;
+}
+function bakeInkCheckpoint() {
+    undoFloor=paintCommands.len();
+    return undoFloor;
+}
+function strokeStepCount(x0,y0,x1,y1) {
+    local dx=x1-x0,dy=y1-y0;
+    return ceil(sqrt(dx*dx+dy*dy)/14.0).tointeger();
 }
 function shootScreen(x,y,team) {
     camera.screenToRay(x.tofloat(),y.tofloat(),gfx.getWidth().tofloat(),gfx.getHeight().tofloat());
@@ -132,7 +156,8 @@ function showcase() {
         splat([-2.1,0.5+i*0.32,-0.55],[0,0,1],1.0,1);
         splat([2.5,1.82,-2.6-i*0.14],[0,1,0],1.0,0);
     }
-    print(format("INK_PROFILE gpuPaint=%.3fs\n",clock()-started));
+    lastShowcaseSeconds=clock()-started;
+    print(format("INK_PROFILE gpuPaint=%.3fs\n",lastShowcaseSeconds));
 }
 function updateCamera() {
     camera.setEye(sin(orbit)*15,8.5,cos(orbit)*15);
@@ -141,6 +166,7 @@ function updateCamera() {
 eve_init=function() {
     local started=clock();
     imageModule=eve.Image();
+    paintRegion=imageModule.newUvPaintRegion();
     brush=imageModule.newImageDataFromFile("assets/splats.tga");
     brushTexture=gfx.newTexture(brush,false,false);
     paintShader=gfx.newShaderFromSpvFile("shaders/paint.frag.spv");
@@ -174,7 +200,8 @@ eve_init=function() {
     ui.beginBuild(); ui.beginWindow("InkArena","root");
     ui.text("INK ARENA","title");
     ui.text("LMB: orange | RMB: violet","help");
-    ui.text("A / D: orbit | C: clear | R: showcase","controls");
+    ui.text("A/D: orbit | C: clear | R: showcase","controls-camera");
+    ui.text("Z: undo | B: checkpoint","controls-paint");
     foreach(knob in inkKnobs) {
         ui.text(knob.label,knob.id+"-label");
         ui.slider(knob.label,knob.value,knob.min,knob.max,knob.id);
@@ -193,10 +220,19 @@ eve_update=function(dt) {
     updateCamera();
     if(pressed("c")) clearInk();
     if(pressed("r")) showcase();
-    cooldown-=dt;
-    if(cooldown<=0 && !ui.wantCaptureMouse() && (mouse.isDown(1)||mouse.isDown(2))) {
-        shootScreen(mouse.getX(),mouse.getY(),mouse.isDown(2)?1:0); cooldown=0.075;
-    }
+    if(pressed("z")) undoInk();
+    if(pressed("b")) bakeInkCheckpoint();
+    local painting=!ui.wantCaptureMouse() && (mouse.isDown(1)||mouse.isDown(2));
+    if(painting) {
+        local x=mouse.getX(),y=mouse.getY(),team=mouse.isDown(2)?1:0;
+        if(previousPaintX==null || previousPaintTeam!=team) shootScreen(x,y,team);
+        else {
+            local dx=x-previousPaintX,dy=y-previousPaintY;
+            local steps=strokeStepCount(previousPaintX,previousPaintY,x,y);
+            for(local i=1;i<=steps;i++) shootScreen(previousPaintX+dx*i/steps,previousPaintY+dy*i/steps,team);
+        }
+        previousPaintX=x; previousPaintY=y; previousPaintTeam=team;
+    } else { previousPaintX=null; previousPaintY=null; previousPaintTeam=-1; }
     ui.setText("stats",shotCount+" splats / "+surfaces.len()+" surfaces");
 };
 eve_render=function() {

@@ -21,6 +21,10 @@
 #include "procgen/heightmap/TerrainSampler.h"
 #include "procgen/heightmap/TerrainPipeline.h"
 #include "procgen/heightmap/TerrainMesh.h"
+#include "procgen/mesh/MeshModifierGraph.h"
+#include "procgen/mesh/MeshDeformationSession.h"
+#include "procgen/mesh/DynamicMeshUvPaintSession.h"
+#include "procgen/spline/SplinePath.h"
 #include "procgen/texture/CloudField.h"
 #include "procgen/texture/CloudShadow.h"
 
@@ -35,6 +39,7 @@ class Graphics;
 class Texture;
 class Mesh;
 class Shader;
+class Renderable3D;
 }  // namespace eve::graphics
 
 namespace eve::image {
@@ -47,6 +52,8 @@ class ByteData;
 
 namespace eve::procgen {
 struct PbrTextureSet;
+class GtsTerrainLodSet;
+class PcgMeshLodSet;
 
 /** @brief Handle domain for module-owned procedural parameter objects. */
 struct ProcgenParamsHandleTag {};
@@ -80,6 +87,14 @@ struct ProcgenSpatialDataHandleTag {};
 struct ProcgenRuntimeGenerationHandleTag {};
 /** @brief Handle domain for module-owned point graphs. */
 struct ProcgenPointGraphHandleTag {};
+/** @brief Handle domain for module-owned mesh modifier graphs. */
+struct ProcgenMeshModifierGraphHandleTag {};
+/** @brief Handle domain for module-owned interactive mesh deformation sessions. */
+struct ProcgenMeshDeformationSessionHandleTag {};
+/** @brief Handle domain for module-owned dynamic-mesh UV paint sessions. */
+struct ProcgenDynamicMeshUvPaintSessionHandleTag {};
+/** @brief Handle domain for module-owned 3D spline paths. */
+struct ProcgenSplinePathHandleTag {};
 /** @brief Handle domain for module-owned biome rules. */
 struct ProcgenBiomeRulesHandleTag {};
 /** @brief Handle domain for module-owned shape grammars. */
@@ -102,6 +117,11 @@ using ProcgenNormalImageHandleRef       = eve::script::RuntimeHandleRef<ProcgenN
 using ProcgenSpatialDataHandleRef       = eve::script::RuntimeHandleRef<ProcgenSpatialDataHandleTag>;
 using ProcgenRuntimeGenerationHandleRef = eve::script::RuntimeHandleRef<ProcgenRuntimeGenerationHandleTag>;
 using ProcgenPointGraphHandleRef        = eve::script::RuntimeHandleRef<ProcgenPointGraphHandleTag>;
+using ProcgenMeshModifierGraphHandleRef = eve::script::RuntimeHandleRef<ProcgenMeshModifierGraphHandleTag>;
+using ProcgenMeshDeformationSessionHandleRef = eve::script::RuntimeHandleRef<ProcgenMeshDeformationSessionHandleTag>;
+using ProcgenDynamicMeshUvPaintSessionHandleRef =
+    eve::script::RuntimeHandleRef<ProcgenDynamicMeshUvPaintSessionHandleTag>;
+using ProcgenSplinePathHandleRef = eve::script::RuntimeHandleRef<ProcgenSplinePathHandleTag>;
 using ProcgenBiomeRulesHandleRef        = eve::script::RuntimeHandleRef<ProcgenBiomeRulesHandleTag>;
 using ProcgenShapeGrammarHandleRef      = eve::script::RuntimeHandleRef<ProcgenShapeGrammarHandleTag>;
 using ProcgenLSystemHandleRef           = eve::script::RuntimeHandleRef<ProcgenLSystemHandleTag>;
@@ -260,6 +280,14 @@ public:
 
     [[nodiscard]] eve::Result<ProcgenRuntimeGenerationHandleRef> newRuntimeGenerationHandle(uint32_t worldSeed);
     [[nodiscard]] eve::Result<ProcgenPointGraphHandleRef>        newPointGraphHandle();
+    /** @brief Allocate a module-owned mesh modifier graph. */
+    [[nodiscard]] eve::Result<ProcgenMeshModifierGraphHandleRef> newMeshModifierGraphHandle();
+    /** @brief Allocate a module-owned interactive mesh deformation session. */
+    [[nodiscard]] eve::Result<ProcgenMeshDeformationSessionHandleRef> newMeshDeformationSessionHandle();
+    /** @brief Allocate a module-owned dynamic-mesh UV paint session. */
+    [[nodiscard]] eve::Result<ProcgenDynamicMeshUvPaintSessionHandleRef> newDynamicMeshUvPaintSessionHandle();
+    /** @brief Allocate a module-owned 3D spline path. */
+    [[nodiscard]] eve::Result<ProcgenSplinePathHandleRef> newSplinePathHandle();
     [[nodiscard]] eve::Result<ProcgenBiomeRulesHandleRef>        newBiomeRulesHandle();
     [[nodiscard]] eve::Result<ProcgenShapeGrammarHandleRef>      newShapeGrammarHandle();
     [[nodiscard]] eve::Result<ProcgenLSystemHandleRef>           newLSystemHandle();
@@ -267,6 +295,17 @@ public:
     [[nodiscard]] eve::script::Borrowed<RuntimeGeneration> resolveRuntimeGeneration(
         ProcgenRuntimeGenerationHandleRef reference) noexcept;
     [[nodiscard]] eve::script::Borrowed<PointGraph>   resolvePointGraph(ProcgenPointGraphHandleRef reference) noexcept;
+    /** @brief Resolve a mesh modifier graph for the current synchronous call only. */
+    [[nodiscard]] eve::script::Borrowed<MeshModifierGraph> resolveMeshModifierGraph(
+        ProcgenMeshModifierGraphHandleRef reference) noexcept;
+    /** @brief Resolve a mesh deformation session for the current synchronous call only. */
+    [[nodiscard]] eve::script::Borrowed<MeshDeformationSession> resolveMeshDeformationSession(
+        ProcgenMeshDeformationSessionHandleRef reference) noexcept;
+    /** @brief Resolve dynamic UV paint state for the current synchronous call only. */
+    [[nodiscard]] eve::script::Borrowed<DynamicMeshUvPaintSession> resolveDynamicMeshUvPaintSession(
+        ProcgenDynamicMeshUvPaintSessionHandleRef reference) noexcept;
+    /** @brief Resolve a spline path for the current synchronous call only. */
+    [[nodiscard]] eve::script::Borrowed<SplinePath> resolveSplinePath(ProcgenSplinePathHandleRef reference) noexcept;
     [[nodiscard]] eve::script::Borrowed<BiomeRules>   resolveBiomeRules(ProcgenBiomeRulesHandleRef reference) noexcept;
     [[nodiscard]] eve::script::Borrowed<ShapeGrammar> resolveShapeGrammar(
         ProcgenShapeGrammarHandleRef reference) noexcept;
@@ -274,12 +313,28 @@ public:
     [[nodiscard]] eve::Result<void>              release(ProcgenSpatialDataHandleRef reference);
     [[nodiscard]] eve::Result<void>              release(ProcgenRuntimeGenerationHandleRef reference);
     [[nodiscard]] eve::Result<void>              release(ProcgenPointGraphHandleRef reference);
+    /** @brief Release a module-owned mesh modifier graph. */
+    [[nodiscard]] eve::Result<void> release(ProcgenMeshModifierGraphHandleRef reference);
+    /** @brief Release a module-owned mesh deformation session. */
+    [[nodiscard]] eve::Result<void> release(ProcgenMeshDeformationSessionHandleRef reference);
+    /** @brief Release a module-owned dynamic-mesh UV paint session. */
+    [[nodiscard]] eve::Result<void> release(ProcgenDynamicMeshUvPaintSessionHandleRef reference);
+    /** @brief Release a module-owned spline path. */
+    [[nodiscard]] eve::Result<void> release(ProcgenSplinePathHandleRef reference);
     [[nodiscard]] eve::Result<void>              release(ProcgenBiomeRulesHandleRef reference);
     [[nodiscard]] eve::Result<void>              release(ProcgenShapeGrammarHandleRef reference);
     [[nodiscard]] eve::Result<void>              release(ProcgenLSystemHandleRef reference);
     [[nodiscard]] bool                           isStale(ProcgenSpatialDataHandleRef reference) const noexcept;
     [[nodiscard]] bool                           isStale(ProcgenRuntimeGenerationHandleRef reference) const noexcept;
     [[nodiscard]] bool                           isStale(ProcgenPointGraphHandleRef reference) const noexcept;
+    /** @brief Report whether a mesh modifier graph handle is stale. */
+    [[nodiscard]] bool isStale(ProcgenMeshModifierGraphHandleRef reference) const noexcept;
+    /** @brief Report whether a mesh deformation session handle is stale. */
+    [[nodiscard]] bool isStale(ProcgenMeshDeformationSessionHandleRef reference) const noexcept;
+    /** @brief Report whether a dynamic-mesh UV paint handle is stale. */
+    [[nodiscard]] bool isStale(ProcgenDynamicMeshUvPaintSessionHandleRef reference) const noexcept;
+    /** @brief Report whether a spline path handle is stale. */
+    [[nodiscard]] bool isStale(ProcgenSplinePathHandleRef reference) const noexcept;
     [[nodiscard]] bool                           isStale(ProcgenBiomeRulesHandleRef reference) const noexcept;
     [[nodiscard]] bool                           isStale(ProcgenShapeGrammarHandleRef reference) const noexcept;
     [[nodiscard]] bool                           isStale(ProcgenLSystemHandleRef reference) const noexcept;
@@ -683,6 +738,40 @@ public:
     /** @brief Upload a CPU mesh and return a Graphics-owned borrowed mesh. */
     [[nodiscard]] eve::script::Borrowed<graphics::Mesh> uploadMeshBorrowed(const MeshBuild    &mesh,
                                                                            graphics::Graphics &gfx);
+    /**
+     * @brief Upload and atomically attach one GTS tile's LOD chain to a renderable.
+     * @param lods Immutable generated or restored LOD set.
+     * @param tileIndex Row-major non-empty tile index.
+     * @param renderable Borrowed renderable updated only after every mesh upload succeeds.
+     * @param gfx Graphics owner that retains all uploaded meshes.
+     * @param worldDiameter World-space bounds diameter used to convert screen thresholds.
+     * @param verticalFovDegrees Camera vertical field of view.
+     * @param originX Parent terrain X position added to the tile pivot offset.
+     * @param originY Parent terrain Y position.
+     * @param originZ Parent terrain Z position added to the tile pivot offset.
+     * @return Success, or a structured validation/upload failure with the renderable unchanged.
+     * @thread Main/render thread only.
+     * @reentrant Not reentrant for the same renderable or Graphics owner.
+     */
+    [[nodiscard]] eve::Result<void> configureGtsTerrainTileLods(
+        const GtsTerrainLodSet& lods, int tileIndex, graphics::Renderable3D& renderable,
+        graphics::Graphics& gfx, float worldDiameter, float verticalFovDegrees,
+        float originX = 0.f, float originY = 0.f, float originZ = 0.f);
+    /**
+     * @brief Upload and atomically attach one generic Pcg mesh LOD chain.
+     * @param lods Immutable CPU LOD set; no reference is retained.
+     * @param renderable Borrowed renderable updated only after every upload succeeds.
+     * @param gfx Graphics owner that retains uploaded meshes beyond this call.
+     * @param worldDiameter Positive world-space bounds diameter used for screen thresholds.
+     * @param verticalFovDegrees Camera vertical field of view in the open interval (0,180).
+     * @return Success, or a structured validation/upload failure with the renderable unchanged.
+     * @thread Main/render thread only.
+     * @reentrant Not reentrant for the same renderable or Graphics owner; no callbacks are invoked.
+     */
+    [[nodiscard]] eve::Result<void> configurePcgMeshLods(const PcgMeshLodSet& lods,
+                                                           graphics::Renderable3D& renderable,
+                                                           graphics::Graphics& gfx, float worldDiameter,
+                                                           float verticalFovDegrees);
     /** @brief Build + upload to GPU Mesh (owned by Graphics). */
     [[nodiscard]] eve::script::Borrowed<graphics::Mesh> generateMeshBorrowed(const std::string     &recipeId,
                                                                              ProcgenParamsHandleRef params,
@@ -815,6 +904,12 @@ private:
     eve::script::RuntimeObjectRegistry<SpatialData, ProcgenSpatialDataHandleTag>             spatialData_;
     eve::script::RuntimeObjectRegistry<RuntimeGeneration, ProcgenRuntimeGenerationHandleTag> runtimeGenerations_;
     eve::script::RuntimeObjectRegistry<PointGraph, ProcgenPointGraphHandleTag>               pointGraphs_;
+    eve::script::RuntimeObjectRegistry<MeshModifierGraph, ProcgenMeshModifierGraphHandleTag> meshModifierGraphs_;
+    eve::script::RuntimeObjectRegistry<MeshDeformationSession, ProcgenMeshDeformationSessionHandleTag>
+        meshDeformationSessions_;
+    eve::script::RuntimeObjectRegistry<DynamicMeshUvPaintSession, ProcgenDynamicMeshUvPaintSessionHandleTag>
+        dynamicMeshUvPaintSessions_;
+    eve::script::RuntimeObjectRegistry<SplinePath, ProcgenSplinePathHandleTag>                     splinePaths_;
     eve::script::RuntimeObjectRegistry<BiomeRules, ProcgenBiomeRulesHandleTag>               biomeRules_;
     eve::script::RuntimeObjectRegistry<ShapeGrammar, ProcgenShapeGrammarHandleTag>           shapeGrammars_;
     eve::script::RuntimeObjectRegistry<LSystem, ProcgenLSystemHandleTag>                     lsystems_;

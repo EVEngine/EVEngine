@@ -1,14 +1,21 @@
 #include "fluids/Fluids.h"
 
+#include "common/SquirrelBinding.h"
 #include "fluids/FluidGpuKernels.h"
+#include "fluids/VolumeFluid.h"
+#include "fluids/VolumeFluidBindings.h"
+#include "fluids/VolumeFluidCodec.h"
+#include "fluids/VolumeFluidDiffuse.h"
 #include "gpgpu/ComputeShader.h"
 #include "gpgpu/Gpgpu.h"
 #include "gpgpu/GpuBuffer.h"
 #include "gpgpu/Sequence.h"
+#include "image/ImageData.h"
 
 #include <algorithm>
 #include <cmath>
 #include <cstdint>
+#include <cstring>
 #include <exception>
 #include <simplesquirrel/simplesquirrel.hpp>
 #include <utility>
@@ -58,6 +65,7 @@ FluidSimulator::FluidSimulator(int maxParticles, const FluidParams& params, bool
 
 FluidSimulator::~FluidSimulator() {
     delete seq_;
+    delete shAdvance_;
     delete shIntegrate_;
     delete shApply_;
     delete shDelta_;
@@ -84,6 +92,7 @@ void FluidSimulator::setSdf(const MeshSdf& sdf) {
     if (gpuOk_) {
         // Grid and SDF buffers depend on the field; rebuild them.
         delete seq_;
+        delete shAdvance_;
         delete shIntegrate_;
         delete shApply_;
         delete shDelta_;
@@ -101,7 +110,7 @@ void FluidSimulator::setSdf(const MeshSdf& sdf) {
         delete bufHead_;
         delete bufVel_;
         delete bufPos_;
-        shClear_ = shBuild_ = shDensityLambda_ = shDelta_ = shApply_ = shIntegrate_ = nullptr;
+        shClear_ = shBuild_ = shDensityLambda_ = shDelta_ = shApply_ = shIntegrate_ = shAdvance_ = nullptr;
         bufPos_ = bufVel_ = bufHead_ = bufNext_ = bufDens_ = bufLambda_ = bufGrad_ = bufSdf_ = nullptr;
         stagePos_ = stageVel_ = stageDens_ = nullptr;
         seq_                               = nullptr;
@@ -137,6 +146,8 @@ void FluidSimulator::stepSolver(float dt, int substeps) {
         seq_->recordDispatch(shBuild_, groupsFor(sim_.maxParticles()));
         setCommonConstants(shIntegrate_, sub);
         seq_->recordDispatch(shIntegrate_, groupsFor(sim_.maxParticles()));
+        setCommonConstants(shAdvance_, sub);
+        seq_->recordDispatch(shAdvance_, groupsFor(sim_.maxParticles()));
         for (int k = 0; k < pbf; ++k) {
             setCommonConstants(shClear_, sub);
             seq_->recordDispatch(shClear_, groupsFor(grid_.cellCount()));
@@ -259,6 +270,7 @@ bool FluidSimulator::ensureGpu() {
         shDelta_         = gpgpu_->newShader(kFluidComputeDelta);
         shApply_         = gpgpu_->newShader(kFluidApplyDelta);
         shIntegrate_     = gpgpu_->newShader(kFluidIntegrate);
+        shAdvance_       = gpgpu_->newShader(kFluidApplyDelta);
         bufPos_          = gpgpu_->newBuffer(max * 4 * int(sizeof(float)), "storage");
         bufVel_          = gpgpu_->newBuffer(max * 4 * int(sizeof(float)), "storage");
         bufHead_         = gpgpu_->newBuffer(grid_.cellCount() * int(sizeof(int)), "storage");
@@ -294,6 +306,7 @@ bool FluidSimulator::ensureGpu() {
     shDelta_->bindBuffer(6, bufLambda_);
     shDelta_->bindBuffer(7, bufGrad_);
     shApply_->bindBuffer(0, bufPos_);
+    shApply_->bindBuffer(1, bufVel_);
     shApply_->bindBuffer(2, bufHead_);
     shApply_->bindBuffer(3, bufNext_);
     shApply_->bindBuffer(7, bufGrad_);
@@ -303,6 +316,11 @@ bool FluidSimulator::ensureGpu() {
     shIntegrate_->bindBuffer(2, bufHead_);
     shIntegrate_->bindBuffer(3, bufNext_);
     shIntegrate_->bindBuffer(5, bufSdf_);
+    shIntegrate_->bindBuffer(7, bufGrad_);
+    shAdvance_->bindBuffer(0, bufPos_);
+    shAdvance_->bindBuffer(1, bufVel_);
+    shAdvance_->bindBuffer(5, bufSdf_);
+    shAdvance_->bindBuffer(7, bufGrad_);
     return true;
 }
 
@@ -373,6 +391,7 @@ void FluidSimulator::setCommonConstants(gpgpu::ComputeShader* shader, float dt) 
     shader->setFloat(kPushSdfCell, sim_.sdf().cellSize);
     shader->setFloat(kPushIterations, float(p.iterations));
     shader->setFloat(kPushMode, 0.f);
+    if (shader == shAdvance_) shader->setFloat(kPushMode, 1.f);
     shader->setFloat(kPushTime, 0.f);
     shader->setFloat(kPushPbf, float(p.pbfIterations));
 }
@@ -393,8 +412,8 @@ int Fluids::getSimulatorCount() const { return int(simulators_.size()); }
 
 FluidSurfaceRenderer* Fluids::newSurfaceRenderer(int width, int height) {
     FluidSurfaceParams params;
-    params.width              = std::max(8, width);
-    params.height             = std::max(8, height);
+    params.width              = std::clamp(width, 8, 1024);
+    params.height             = std::clamp(height, 8, 1024);
     auto                  r   = std::make_unique<FluidSurfaceRenderer>(params, true);
     FluidSurfaceRenderer* raw = r.get();
     renderers_.push_back(std::move(r));
@@ -406,6 +425,11 @@ int Fluids::getRendererCount() const { return int(renderers_.size()); }
 void Fluids::expose(ssq::Table& table) {
     auto cls = table.addClass(name, Fluids::create, false);
     expose(cls);
+    cls.addFunc("fluidRendererSettingsDefaults", [vm = table.getHandle()](Fluids*) {
+        return eve::script::projectStatusResult(vm, eve::Status::success(), true, true,
+                                                encodeFluidRendererSettings(FluidRendererSettings{}));
+    });
+    exposeVolumeFluidType(table);
 
     auto sim = table.addClass<FluidSimulator>(
         "FluidSim", std::function<FluidSimulator*()>([]() -> FluidSimulator* { return nullptr; }), true);
@@ -428,15 +452,196 @@ void Fluids::expose(ssq::Table& table) {
         "FluidSurface", std::function<FluidSurfaceRenderer*()>([]() -> FluidSurfaceRenderer* { return nullptr; }),
         true);
     surf.addFunc("render", &FluidSurfaceRenderer::renderFrom);
+    surf.addFunc("renderVolume",
+                 [](FluidSurfaceRenderer* renderer, VolumeFluid* solver) { renderer->renderVolume(*solver); });
+    surf.addFunc("renderVolumeInterpolated", [vm = table.getHandle()](FluidSurfaceRenderer* renderer,
+                                                                      VolumeFluid* solver, float alpha) {
+        if (!solver)
+            return eve::script::projectResult(
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(
+                        eve::DiagnosticCode::InvalidArgument, "Missing volume fluid", "fluids.surface.interpolation")));
+        return eve::script::projectResult(vm, renderer->renderVolumeInterpolated(*solver, alpha));
+    });
+    surf.addFunc("renderVolumeColorOnly",
+                 [](FluidSurfaceRenderer* renderer, VolumeFluid* solver) { renderer->renderVolumeColorOnly(*solver); });
+    surf.addFunc("renderGasVolume", [vm = table.getHandle()](FluidSurfaceRenderer* renderer, VolumeFluid* solver,
+                                                             float absorption) {
+        if (!solver)
+            return eve::script::projectResult(
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                      "Missing volume fluid", "fluids.surface.gas")));
+        return eve::script::projectResult(vm, renderer->renderGasVolume(*solver, absorption));
+    });
+    surf.addFunc("renderVolumeWithoutSurface", [vm = table.getHandle()](FluidSurfaceRenderer* renderer,
+                                                                        VolumeFluid* solver, float absorption) {
+        if (!solver)
+            return eve::script::projectResult(
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(
+                        eve::DiagnosticCode::InvalidArgument, "Missing volume fluid", "fluids.surface.volume-cloud")));
+        return eve::script::projectResult(vm, renderer->renderVolumeWithoutSurface(*solver, absorption));
+    });
+    surf.addFunc(
+        "renderConfiguredVolume", [vm = table.getHandle()](FluidSurfaceRenderer* renderer, VolumeFluid* solver) {
+            if (!solver)
+                return eve::script::projectResult(vm, eve::Result<void>::failure(eve::Diagnostic::error(
+                                                          eve::DiagnosticCode::InvalidArgument, "Missing volume fluid",
+                                                          "fluids.surface.configured-volume")));
+            return eve::script::projectResult(vm, renderer->renderConfiguredVolume(*solver));
+        });
+    surf.addFunc("prepare", [vm = table.getHandle()](FluidSurfaceRenderer* renderer) {
+        return eve::script::projectResult(vm, renderer->prepare());
+    });
+    surf.addFunc("copyToTexture", [vm = table.getHandle()](FluidSurfaceRenderer* renderer, graphics::Graphics* graphics,
+                                                           graphics::Texture* texture) {
+        return eve::script::projectResult(vm, renderer->copyToTexture(graphics, texture));
+    });
+    surf.addFunc("renderVolumeColorToTexture", [vm = table.getHandle()](
+                                                   FluidSurfaceRenderer* renderer, VolumeFluid* solver,
+                                                   graphics::Graphics* graphics, graphics::Texture* texture) {
+        if (!solver)
+            return eve::script::projectResult(vm, eve::Result<void>::failure(eve::Diagnostic::error(
+                                                      eve::DiagnosticCode::InvalidArgument, "Missing volume fluid",
+                                                      "fluids.surface.renderVolumeColorToTexture")));
+        return eve::script::projectResult(vm, renderer->renderVolumeColorToTexture(*solver, graphics, texture));
+    });
+    surf.addFunc("compositeDiffuse", [vm = table.getHandle()](FluidSurfaceRenderer* renderer, VolumeFluidDiffuse* pool,
+                                                              float radius, float opacity, float fadeSeconds) {
+        if (!pool)
+            return eve::script::projectResult(
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(
+                        eve::DiagnosticCode::InvalidArgument, "Missing diffuse pool", "fluids.surface.diffuse")));
+        return eve::script::projectResult(vm, renderer->compositeDiffuse(*pool, radius, opacity, fadeSeconds));
+    });
+    surf.addFunc("configureFoam",
+                 [vm = table.getHandle()](FluidSurfaceRenderer* renderer, bool enabled, int downsample) {
+                     return eve::script::projectResult(vm, renderer->configureFoam(enabled, downsample));
+                 });
+    surf.addFunc("compositeSceneRefraction", [vm = table.getHandle()](FluidSurfaceRenderer* renderer,
+                                                                      image::ImageData* scene, float distortion,
+                                                                      float absorption) {
+        if (!scene || scene->getFormat() != "RGBA8" || scene->getWidth() != renderer->getWidth() ||
+            scene->getHeight() != renderer->getHeight())
+            return eve::script::projectResult(
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                      "Refraction requires matching RGBA8 scene image",
+                                                                      "fluids.surface.refraction")));
+        return eve::script::projectResult(
+            vm, renderer->compositeSceneRefraction(
+                    std::span<const uint8_t>(static_cast<const uint8_t*>(scene->getData()), scene->getSize()),
+                    distortion, absorption));
+    });
+    surf.addFunc("configureRefraction", [vm = table.getHandle()](FluidSurfaceRenderer* renderer, float transparency,
+                                                                 float absorption, float coefficient, int downsample) {
+        return eve::script::projectResult(
+            vm, renderer->configureRefraction(transparency, absorption, coefficient, downsample));
+    });
+    surf.addFunc("configureRefractionEnabled", [vm = table.getHandle()](FluidSurfaceRenderer* renderer, bool enabled) {
+        return eve::script::projectResult(vm, renderer->configureRefractionEnabled(enabled));
+    });
+    surf.addFunc("compositeConfiguredSceneRefraction", [vm = table.getHandle()](FluidSurfaceRenderer* renderer,
+                                                                                image::ImageData*     scene) {
+        if (!scene || scene->getFormat() != "RGBA8" || scene->getWidth() != renderer->getWidth() ||
+            scene->getHeight() != renderer->getHeight())
+            return eve::script::projectResult(vm, eve::Result<void>::failure(eve::Diagnostic::error(
+                                                      eve::DiagnosticCode::InvalidArgument,
+                                                      "Configured refraction requires matching RGBA8 scene image",
+                                                      "fluids.surface.configuredRefraction")));
+        return eve::script::projectResult(vm, renderer->compositeConfiguredSceneRefraction(std::span<const uint8_t>(
+                                                  static_cast<const uint8_t*>(scene->getData()), scene->getSize())));
+    });
+    surf.addFunc("configureSurfaceBlend",
+                 [vm = table.getHandle()](FluidSurfaceRenderer* renderer, int source, int destination) {
+                     return eve::script::projectResult(vm, renderer->configureSurfaceBlend(source, destination));
+                 });
+    surf.addFunc("configureParticleBlend", [vm = table.getHandle()](FluidSurfaceRenderer* renderer, int source,
+                                                                    int destination, bool depthWrite) {
+        return eve::script::projectResult(vm, renderer->configureParticleBlend(source, destination, depthWrite));
+    });
+    surf.addFunc("compositeConfiguredSurfaceBlend", [vm = table.getHandle()](FluidSurfaceRenderer* renderer,
+                                                                             image::ImageData*     scene) {
+        if (!scene || scene->getFormat() != "RGBA8" || scene->getWidth() != renderer->getWidth() ||
+            scene->getHeight() != renderer->getHeight())
+            return eve::script::projectResult(
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(
+                        eve::DiagnosticCode::InvalidArgument,
+                        "Configured surface blend requires matching RGBA8 scene image", "fluids.surface.blend")));
+        return eve::script::projectResult(vm, renderer->compositeConfiguredSurfaceBlend(std::span<const uint8_t>(
+                                                  static_cast<const uint8_t*>(scene->getData()), scene->getSize())));
+    });
     surf.addFunc("setMode", &FluidSurfaceRenderer::setMode);
+    surf.addFunc(
+        "configureSurface", [vm = table.getHandle()](FluidSurfaceRenderer* renderer, float thicknessScale,
+                                                     float thicknessCutoff, float depthFalloff, int smoothIterations) {
+            return eve::script::projectResult(
+                vm, renderer->configureSurface(thicknessScale, thicknessCutoff, depthFalloff, smoothIterations));
+        });
+    surf.addFunc("configureSurfaceEnabled", [vm = table.getHandle()](FluidSurfaceRenderer* renderer, bool enabled) {
+        return eve::script::projectResult(vm, renderer->configureSurfaceEnabled(enabled));
+    });
+    surf.addFunc("configureRendererSettings",
+                 [vm = table.getHandle()](FluidSurfaceRenderer* renderer, ssq::Object object) {
+                     auto value = eve::script::valueFromSquirrel(object);
+                     if (!value) return eve::script::projectResult(vm, eve::Result<void>::failure(value.status()));
+                     auto settings = decodeFluidRendererSettings(value.value());
+                     if (!settings)
+                         return eve::script::projectResult(vm, eve::Result<void>::failure(settings.status()));
+                     return eve::script::projectResult(vm, renderer->configureRendererSettings(settings.value()));
+                 });
+    surf.addFunc("rendererSettings", [vm = table.getHandle()](FluidSurfaceRenderer* renderer) {
+        return eve::script::projectStatusResult(vm, eve::Status::success(), true, true,
+                                                encodeFluidRendererSettings(renderer->rendererSettings()));
+    });
+    surf.addFunc("configureSurfaceBlurRadius", [vm = table.getHandle()](FluidSurfaceRenderer* renderer, float radius) {
+        return eve::script::projectResult(vm, renderer->configureSurfaceBlurRadius(radius));
+    });
+    surf.addFunc("configureMaterial", [vm = table.getHandle()](
+                                          FluidSurfaceRenderer* renderer, bool lighting, float smoothness,
+                                          float metalness, float ambientMultiplier, float reflection, float opacity) {
+        return eve::script::projectResult(
+            vm, renderer->configureMaterial(lighting, smoothness, metalness, ambientMultiplier, reflection, opacity));
+    });
+    surf.addFunc("configureReflection", [vm = table.getHandle()](FluidSurfaceRenderer* renderer, bool enabled) {
+        return eve::script::projectResult(vm, renderer->configureReflection(enabled));
+    });
+    surf.addFunc("configureColors", [vm = table.getHandle()](FluidSurfaceRenderer* renderer, float br, float bg,
+                                                             float bb, float rr, float rg, float rb) {
+        return eve::script::projectResult(vm, renderer->configureColors({br, bg, bb}, {rr, rg, rb}));
+    });
+    surf.addFunc("configureAnisotropy", [vm = table.getHandle()](FluidSurfaceRenderer* renderer, bool enabled) {
+        return eve::script::projectResult(vm, renderer->configureAnisotropy(enabled));
+    });
+    surf.addFunc("configureSurfaceDownsample", [vm = table.getHandle()](FluidSurfaceRenderer* renderer, int factor) {
+        return eve::script::projectResult(vm, renderer->configureSurfaceDownsample(factor));
+    });
+    surf.addFunc("configureThicknessDownsample", [vm = table.getHandle()](FluidSurfaceRenderer* renderer, int factor) {
+        return eve::script::projectResult(vm, renderer->configureThicknessDownsample(factor));
+    });
+    surf.addFunc("configureProjection", [vm = table.getHandle()](FluidSurfaceRenderer* renderer, bool orthographic,
+                                                                 float verticalHalfSize) {
+        return eve::script::projectResult(vm, renderer->configureProjection(orthographic, verticalHalfSize));
+    });
     surf.addFunc("setCamera", &FluidSurfaceRenderer::setCamera);
+    surf.addFunc("setCameraXYZ",
+                 [](FluidSurfaceRenderer* renderer, float ex, float ey, float ez, float tx, float ty, float tz,
+                    float fov) { renderer->setCamera({ex, ey, ez}, {tx, ty, tz}, {0.f, 1.f, 0.f}, fov); });
     surf.addFunc("getWidth", &FluidSurfaceRenderer::getWidth);
     surf.addFunc("getHeight", &FluidSurfaceRenderer::getHeight);
     surf.addFunc("usingGpu", &FluidSurfaceRenderer::usingGpu);
     surf.addFunc("writePpm", &FluidSurfaceRenderer::writePpm);
+    surf.addFunc("copyToImage", [vm = table.getHandle()](FluidSurfaceRenderer* renderer, image::ImageData* image) {
+        if (!image || image->getFormat() != "RGBA8" || image->getWidth() != renderer->getWidth() ||
+            image->getHeight() != renderer->getHeight() || image->getSize() != renderer->color().size())
+            return eve::script::projectResult(
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                      "Fluid output requires matching RGBA8 image",
+                                                                      "fluids.copyToImage")));
+        std::memcpy(image->getData(), renderer->color().data(), renderer->color().size());
+        return eve::script::projectResult(vm, eve::Result<void>::success());
+    });
 }
 
 void Fluids::expose(ssq::Class& cls) {
+    exposeVolumeFluidFactory(cls);
     cls.addFunc("getName", &Fluids::getName);
     cls.addFunc("newSimulator", &Fluids::newSimulator);
     cls.addFunc("getSimulatorCount", &Fluids::getSimulatorCount);

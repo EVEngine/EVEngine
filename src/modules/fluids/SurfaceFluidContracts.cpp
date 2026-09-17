@@ -155,6 +155,11 @@ eve::Result<void> ScreenSpaceSurfaceReconstructionAdapter::reconstruct(std::span
     return applied();
 }
 
+eve::Result<void> ScreenSpaceSurfaceReconstructionAdapter::occlude(std::span<const float> sceneDepth, float depthBias) {
+    if (!renderer_) return staleSolver("fluids.screenSpaceReconstruction.renderer");
+    return renderer_->occludeWithSceneDepth(sceneDepth, depthBias);
+}
+
 int ScreenSpaceSurfaceReconstructionAdapter::width() const noexcept { return renderer_ ? renderer_->getWidth() : 0; }
 
 int ScreenSpaceSurfaceReconstructionAdapter::height() const noexcept { return renderer_ ? renderer_->getHeight() : 0; }

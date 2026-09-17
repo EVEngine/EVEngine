@@ -58,3 +58,7 @@ mouse.setRelativeMode(false);  // 恢复绝对坐标
 
 **源码：** [`src/modules/mouse/`](../../../src/modules/mouse/)
 **相关测试：** 在 [`test/`](../../../test/) 中搜索 `mouse`。
+
+### 滚轮快照
+
+`getWheelX()` / `getWheelY()` 返回最近一次完成的事件泵累计滚轮增量（浮点返回值，已统一 flipped 方向；SDL 2.0.18 及以上保留精细滚动，旧版只有整数滚轮事件）。同帧多次读取不消费输入；下一次无滚轮事件的泵完成后归零。仅在事件线程的更新阶段读取，UI 捕获的事件不进入游戏输入快照。

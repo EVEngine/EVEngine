@@ -53,11 +53,29 @@ function terrainRayPick(originX, originY, originZ, dirX, dirY, dirZ, maxDistance
     return null;
 }
 
-/** @brief Terrain point under the current mouse position, or null. */
+/**
+ * @brief Viewport-local mouse / canvas size for ray picks, or null when the
+ * pointer is not over the center viewport.
+ */
+function levelViewportPointer() {
+    ui.select("viewport");
+    if (!ui.viewportHovered("level-vp")) return null;
+    local canvas = ui.viewportCanvas("level-vp");
+    if (canvas == null) return null;
+    return {
+        x = ui.viewportMouseX("level-vp"),
+        y = ui.viewportMouseY("level-vp"),
+        w = canvas.getWidth().tofloat(),
+        h = canvas.getHeight().tofloat()
+    };
+}
+
+/** @brief Terrain point under the current viewport mouse, or null. */
 function terrainPickAtMouse() {
     if (level.camera == null) return null;
-    level.camera.screenToRay(mouse.getX(), mouse.getY(),
-        config.width.tofloat(), config.height.tofloat());
+    local pointer = levelViewportPointer();
+    if (pointer == null) return null;
+    level.camera.screenToRay(pointer.x, pointer.y, pointer.w, pointer.h);
     return terrainRayPick(level.camera.getScreenRayOriginX(), level.camera.getScreenRayOriginY(),
         level.camera.getScreenRayOriginZ(), level.camera.getScreenRayDirX(),
         level.camera.getScreenRayDirY(), level.camera.getScreenRayDirZ(), 6000.0);

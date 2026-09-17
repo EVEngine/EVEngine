@@ -47,6 +47,13 @@ canvas.setPixel(10, 10, 1.0, 0.0, 0.0, 1.0);
 
 返回同格式的新 `ImageData`（调用方拥有）；源范围外采样为透明黑。`rotsprite` 只挑选已有调色板颜色，不引入插值新色。
 
+`ImageData.scalePcg(width, height, filter)` 原地执行 Pcg `ScaleTexture` 的精确取样规则，
+`filter` 为 `"point"` 或 `"bilinear"`。Point 使用
+`floor(sourceSize / destinationSize * coordinate)`；Bilinear 使用
+`(sourceSize - 1) / destinationSize`，忠实保留其不会采到最后一行/列端点的行为。
+它返回结构化 Result，成功值为写入像素数；非法尺寸、滤镜或不足 2x2 的 Bilinear 源图
+不会改变原图。调用会替换当前 `ImageData` 的像素和尺寸；共享缓存图片应先 `clone()`。
+
 ## 目标导向指南
 
 ### 加载并上传一张 PNG 为纹理
@@ -68,6 +75,19 @@ local tex = gfx.newTexture(image.newImageDataFromFile("Textures/hero.png"));
 UV 原点按模型约定位于左下，函数会自动反转 V 到图像左上像素原点。`radiusPixels`
 以像素为单位，`wrapU` / `wrapV` 适用于需要穿过 UV 缝的画笔。返回实际改变的像素数。
 
+需要编辑器事务或运行时撤销时，使用 `newUvPaintSession()`。`initialize(image)` 会复制输入，
+`paintCircle(...)` 在候选副本上完成整笔绘制后原子提交，`undo()`、`restore()`、`bake()` 分别
+撤销一笔、恢复基线和固化新基线；`currentImageResult()` 返回独立 owning 快照，
+`copyCurrentTo(image)` 则把当前结果复制到已有 `ImageData`，便于保持脚本变量的静态类型并上传；可传给
+`Graphics.updateTextureFromImageData()` 原位刷新 GPU 纹理。Session 最多保存 32 笔历史，且不持有
+模型、射线命中、Physics World 或 GPU Texture；鼠标、触摸、VR 和编辑器适配器统一负责把表面命中
+经 `ModelData.mapSurfacePointToUv()` 转成 UV。
+
+CPU 编辑器与 GPU Canvas 喷涂共享 `newUvPaintRegion()` 创建的可复用 scratch。其
+`prepare(width, height, u, v, radiusU, radiusV, r, g, b, a, flipV)` 返回结构化 Result，提供统一验证、原子替换及裁剪后的
+`getX/Y/Width/Height`、中心和颜色。CPU 路径由 `UvPaintSession` 执行并保留撤销，GPU 路径
+直接用该矩形提交 shader；像素状态仍分别由会话或 Canvas 唯一拥有，不建立双份同步状态。
+
 ## 常见问题
 
 - 把 `newImageData(data)` 与 `newEmptyImageData(w, h, format)` 混淆：前者解码编码数据，后者创建空白画布。
@@ -77,11 +97,16 @@ UV 原点按模型约定位于左下，函数会自动反转 V 到图像左上�
 
 ## API 快查
 
-- `Image`：`getName()`、`newImageData(data)`、`newImageDataFromFile(path)`、`newEmptyImageData(width, height, format)`、`isCompressed(data)`
+- `Image`：`getName()`、`newImageData(data)`、`newImageDataFromFile(path)`、`newEmptyImageData(width, height, format)`、`newUvPaintRegion()`、`isCompressed(data)`
 - `ImageData`：`getWidth()`、`getHeight()`、`getFormat()`、`getSize()`、`getPixelSize()`、`isSRGB()`、`inside(x, y)`、
   `clone()`、`paste(src, dx, dy, sx, sy, sw, sh)`、`rotate(radians, filter, expand)`、
+  `scalePcg(width, height, filter)`、
   `getPixelR(x, y)`、`getPixelG(x, y)`、`getPixelB(x, y)`、`getPixelA(x, y)`、`setPixel(x, y, r, g, b, a)`、
   `paintCircleUv(u, v, radiusPixels, r, g, b, a, wrapU, wrapV)`
+- `UvPaintSession`：`initialize(image)`、`paintCircle(...)`、`undo()`、`restore()`、`bake()`、
+  `currentImageResult()`、`copyCurrentTo(image)`、`getRevision()`、`getUndoCount()`、`isInitialized()`
+- `UvPaintRegion`：`getCenterX()`、`getCenterY()`、`getX()`、`getY()`、`getWidth()`、
+  `getHeight()`、`getR()`、`getG()`、`getB()`、`getA()`、`prepare(...)`
 
 ## 使用要点
 

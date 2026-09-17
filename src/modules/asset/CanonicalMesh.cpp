@@ -32,10 +32,18 @@ Result<CanonicalMeshData> decodeCanonicalMesh(std::span<const std::uint8_t> byte
     const auto vertexCount = little32(bytes, 8), indexCount = little32(bytes, 12);
     const auto flags = little32(bytes, 16), countField = little32(bytes, 20);
     const bool legacy = bytes[7] == 1;
-    const bool extended = bytes[7] == 3;
+    const uint32_t candidateUvCount = legacy ? ((flags & 2u) ? 1u : 0u) : countField;
+    const uint64_t standardFloats =
+        3ull + ((flags & 1u) ? 3ull : 0ull) + uint64_t(candidateUvCount) * 2ull + ((flags & 2u) ? 4ull : 0ull);
+    const uint64_t standardSize = 24ull + (legacy ? 0ull : uint64_t(candidateUvCount) * 4ull) +
+                                  uint64_t(vertexCount) * standardFloats * 4ull + uint64_t(indexCount) * 4ull;
+    const bool standardV3 = bytes[7] == 3 && flags <= 3u && standardSize == bytes.size();
+    const bool extended = bytes[7] == 3 && !standardV3;
+    const bool colored = standardV3 && (flags & 2u);
     if (extended && bytes.size() < 28)
         return failure<CanonicalMeshData>(DiagnosticCode::ParseError, "canonical attribute header truncated");
-    if (!vertexCount || !indexCount || indexCount % 3 || flags > (legacy ? 3u : 1u) || (legacy && countField))
+    if (!vertexCount || !indexCount || indexCount % 3 || flags > (legacy || standardV3 ? 3u : 1u) ||
+        (legacy && countField))
         return failure<CanonicalMeshData>(DiagnosticCode::ParseError, "canonical mesh metadata is invalid");
     if (vertexCount > limits.maximumVertices || indexCount > limits.maximumIndices)
         return failure<CanonicalMeshData>(DiagnosticCode::InvalidArgument, "canonical mesh exceeds limits");
@@ -44,7 +52,8 @@ Result<CanonicalMeshData> decodeCanonicalMesh(std::span<const std::uint8_t> byte
     const uint64_t uvOffset        = extended ? 28ull : 24ull;
     const uint64_t attributeOffset = uvOffset + (legacy ? 0ull : uint64_t(uvCount) * 4);
     const uint64_t header          = attributeOffset + uint64_t(attributeCount) * 72;
-    uint64_t       floatsPerVertex = 3ull + ((flags & 1u) ? 3 : 0) + uint64_t(uvCount) * 2;
+    uint64_t       floatsPerVertex =
+        3ull + ((flags & 1u) ? 3 : 0) + uint64_t(uvCount) * 2 + (colored ? 4ull : 0ull);
     if (header > bytes.size() || header > limits.maximumDecodedBytes)
         return failure<CanonicalMeshData>(DiagnosticCode::InvalidArgument, "canonical descriptors exceed budget");
     CanonicalMeshData result;
@@ -82,6 +91,7 @@ Result<CanonicalMeshData> decodeCanonicalMesh(std::span<const std::uint8_t> byte
         return failure<CanonicalMeshData>(DiagnosticCode::InvalidArgument, "canonical mesh byte size is invalid");
     result.positions.reserve(std::size_t(vertexCount) * 3);
     if (flags & 1u) result.normals.reserve(std::size_t(vertexCount) * 3);
+    if (colored) result.colors.reserve(std::size_t(vertexCount) * 4);
     uint32_t previous = 0;
     for (uint32_t set = 0; set < uvCount; ++set) {
         const auto id = legacy ? 0u : little32(bytes, size_t(uvOffset) + size_t(set) * 4);
@@ -119,6 +129,10 @@ Result<CanonicalMeshData> decodeCanonicalMesh(std::span<const std::uint8_t> byte
         for (auto& [name, attribute] : result.attributes) {
             auto values = appendFloats(attribute.values, attribute.components);
             if (!values) return Result<CanonicalMeshData>::failure(values.status());
+        }
+        if (colored) {
+            auto colors = appendFloats(result.colors, 4);
+            if (!colors) return Result<CanonicalMeshData>::failure(colors.status());
         }
     }
     result.indices.reserve(indexCount);

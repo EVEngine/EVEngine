@@ -17,6 +17,7 @@ struct CanonicalMeshAttribute {
 struct CanonicalMeshData {
     std::vector<float>                          positions;
     std::vector<float>                          normals;
+    std::vector<float>                          colors;
     std::map<std::uint32_t, std::vector<float>> texcoords;
     std::vector<std::uint32_t>                  indices;
     std::map<std::string, CanonicalMeshAttribute> attributes;

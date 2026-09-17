@@ -8,6 +8,7 @@ layout(location = 2) in vec2 inUV;
 
 layout(push_constant) uniform Push {
     mat4 mvp;
+    vec4 lodFade;
 } pc;
 
 layout(location = 0) out vec2 vUV;

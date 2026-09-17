@@ -4,6 +4,7 @@
 
 #include <cstdint>
 #include <string>
+#include <string_view>
 #include <vector>
 
 namespace eve::procgen {
@@ -186,6 +187,28 @@ public:
     ProcgenPoint& mutablePoint(std::size_t index);
     /** @brief Borrow the authoritative schema-bearing attribute table. */
     const AttributeTable& attributes() const noexcept { return attributes_; }
+    /**
+     * @brief Borrow the single-row @Data domain attribute table (graph/set metadata).
+     * Row 0 is the authoritative Data domain; empty until the first Data write.
+     */
+    const AttributeTable& dataAttributes() const noexcept { return dataAttributes_; }
+    /** @brief Mutably access the @Data domain table; callers must keep rowCount 0 or 1. */
+    AttributeTable& mutableDataAttributes() noexcept { return dataAttributes_; }
+    /**
+     * @brief Rename one metadata column on this set.
+     * @return AttributeTable rename diagnostics without mutating on failure.
+     */
+    [[nodiscard]] Result<void> tryRenameAttribute(const std::string& from, const std::string& to);
+    /**
+     * @brief Delete one metadata column on this set.
+     * @return AttributeTable remove diagnostics without mutating on failure.
+     */
+    [[nodiscard]] Result<void> tryDeleteAttribute(const std::string& name);
+    /**
+     * @brief Copy one metadata column onto another name on this set.
+     * @return AttributeTable copy diagnostics without mutating on failure.
+     */
+    [[nodiscard]] Result<void> tryCopyAttribute(const std::string& from, const std::string& to);
 
 private:
     ProcgenPoint*       pointAt(int index);
@@ -193,6 +216,7 @@ private:
 
     std::vector<ProcgenPoint> points_;
     AttributeTable            attributes_;
+    AttributeTable            dataAttributes_;
 };
 
 /** @brief Stable label-based seed derivation; independent pipeline branches do not perturb each other. */
@@ -237,17 +261,117 @@ PointSet copyPointsToTargets(const PointSet& source, const PointSet& targets, bo
 /** @brief Linearly remap point density between ranges with optional output clamping. */
 PointSet remapPointDensity(const PointSet& input, float inputMin, float inputMax, float outputMin, float outputMax,
                            bool clampOutput);
-/** @brief Apply one scalar operation to a float metadata attribute. */
+/** @brief Return whether `name` is a known `$`-prefixed float point-field selector. */
+
+/** @brief Ensure PointSet @Data domain has exactly one row for metadata writes. */
+void ensurePointSetDataRow(PointSet& points);
+[[nodiscard]] bool isPointFloatSelector(std::string_view name) noexcept;
+/** @brief Return whether `name` is a valid float channel (builtin selector or metadata name). */
+[[nodiscard]] bool isPointFloatChannel(std::string_view name) noexcept;
+/** @brief Read a float metadata column or closed `$` point-field selector. */
+[[nodiscard]] Result<float> readPointFloatChannel(const PointSet& points, int index, std::string_view name,
+                                                    float defaultValue);
+/** @brief Write a float metadata column or closed `$` point-field selector. */
+[[nodiscard]] Result<void> writePointFloatChannel(PointSet& points, int index, std::string_view name, float value);
+/** @brief Apply one scalar operation to a float metadata attribute or `$` selector. */
 PointSet mathPointFloatAttribute(const PointSet& input, const std::string& attribute,
                                  const std::string& outputAttribute, const std::string& operation, float operand,
                                  float defaultValue);
-/** @brief Select points whose named float attribute lies in an inclusive range. */
+/** @brief Select points whose named float attribute or `$` selector lies in an inclusive range. */
 PointSet filterPointFloatAttribute(const PointSet& input, const std::string& name, float minValue, float maxValue,
                                    bool invert);
 /** @brief Select points whose named string attribute equals a value. */
 PointSet filterPointStringAttribute(const PointSet& input, const std::string& name, const std::string& value,
                                     bool invert);
+/** @brief Select points whose named int attribute lies in an inclusive range. */
+PointSet filterPointIntAttribute(const PointSet& input, const std::string& name, std::int64_t minValue,
+                                 std::int64_t maxValue, bool invert);
+/** @brief Select points whose named bool attribute equals a value. */
+PointSet filterPointBoolAttribute(const PointSet& input, const std::string& name, bool value, bool invert);
+/** @brief Copy one float channel or typed metadata column onto another name. */
+[[nodiscard]] Result<PointSet> copyPointAttribute(const PointSet& input, const std::string& source,
+                                                  const std::string& target);
+/** @brief Rename one metadata column. */
+[[nodiscard]] Result<PointSet> renamePointAttribute(const PointSet& input, const std::string& from,
+                                                    const std::string& to);
+/** @brief Delete one metadata column. */
+[[nodiscard]] Result<PointSet> deletePointAttribute(const PointSet& input, const std::string& name);
+/**
+ * @brief Transfer one attribute from `source` onto `target` points.
+ * @param mode `index`, `id`, or `nearest`.
+ */
+[[nodiscard]] Result<PointSet> transferPointAttribute(const PointSet& target, const PointSet& source,
+                                                      const std::string& attribute, const std::string& outputAttribute,
+                                                      const std::string& mode);
+/** @brief Write a constant int metadata column on every point. */
+PointSet setPointIntAttribute(const PointSet& input, const std::string& attribute, std::int64_t value);
+/** @brief Write a constant bool metadata column on every point. */
+PointSet setPointBoolAttribute(const PointSet& input, const std::string& attribute, bool value);
+/** @brief Write a constant vector metadata column on every point. */
+PointSet setPointVectorAttribute(const PointSet& input, const std::string& attribute, float x, float y, float z);
+/** @brief Compare a float channel against an operand and write a bool metadata column. */
+[[nodiscard]] Result<PointSet> comparePointFloatAttribute(const PointSet& input, const std::string& attribute,
+                                                          const std::string& comparison, float operand,
+                                                          const std::string& outputAttribute, float defaultValue);
+/** @brief Select between two float channels using a bool metadata condition. */
+[[nodiscard]] Result<PointSet> selectPointFloatAttribute(const PointSet& input, const std::string& conditionAttribute,
+                                                         const std::string& trueAttribute,
+                                                         const std::string& falseAttribute,
+                                                         const std::string& outputAttribute, float trueDefault,
+                                                         float falseDefault);
 /** @brief Deterministically keep points according to density and a root seed. */
 PointSet densityCullPoints(const PointSet& input, uint32_t seed, float multiplier);
+/**
+ * @brief Remap surface slope (from normals) into density.
+ *
+ * Slope degrees come from acos(normalY). Values outside [minDegrees, maxDegrees]
+ * clamp to the output endpoints; invert reverses the mapping.
+ */
+PointSet densityFromNormal(const PointSet& input, float minDegrees, float maxDegrees, float outputMin,
+                           float outputMax, bool invert);
+/**
+ * @brief Scale and pad each point's local bounds about its center.
+ *
+ * Zero-extent / degenerate bounds treat |scale| as the full local size before padding.
+ */
+PointSet modifyPointBounds(const PointSet& input, float scaleX, float scaleY, float scaleZ, float padX, float padY,
+                           float padZ);
+/**
+ * @brief Deterministically assign a weighted mesh path string attribute.
+ *
+ * Empty mesh entries are ignored. When every weight is non-positive or every mesh
+ * path is empty, attributes are left unchanged.
+ *
+ * @ownership @p meshes and @p weights are borrowed for this synchronous call only;
+ *            the function does not retain the pointers after returning.
+ * @lifetime Caller must keep both arrays alive for the duration of the call.
+ * @param meshes Mesh path table of length @p entryCount; may be null when @p entryCount is 0.
+ * @param weights Parallel weight table of length @p entryCount; may be null when @p entryCount is 0.
+ */
+PointSet assignWeightedMeshAttribute(const PointSet& input, uint32_t seed, const std::string& attribute,
+                                     const std::string* meshes, const float* weights, int entryCount);
+
+/** @brief Assign partition indices from a string/int attribute (mode: value|hash). */
+PointSet partitionPointAttribute(const PointSet& input, const std::string& attribute,
+                                 const std::string& outputAttribute, const std::string& mode);
+/** @brief Write deterministic float noise into a metadata attribute. */
+PointSet noisePointFloatAttribute(const PointSet& input, const std::string& attribute, uint32_t seed,
+                                  float frequency, float amplitude, float offset);
+/** @brief Apply integer math to an int metadata column. */
+PointSet mathPointIntAttribute(const PointSet& input, const std::string& attribute,
+                               const std::string& outputAttribute, const std::string& operation, std::int64_t operand,
+                               std::int64_t defaultValue);
+/** @brief Apply vector math to a vector metadata column. */
+PointSet mathPointVectorAttribute(const PointSet& input, const std::string& attribute,
+                                  const std::string& outputAttribute, const std::string& operation, float operandX,
+                                  float operandY, float operandZ, float defaultX, float defaultY, float defaultZ);
+/** @brief Write a float into the PointSet @Data domain. */
+[[nodiscard]] Result<void> setPointDataFloatAttribute(PointSet& points, const std::string& attribute, float value);
+/** @brief Write an int into the PointSet @Data domain. */
+[[nodiscard]] Result<void> setPointDataIntAttribute(PointSet& points, const std::string& attribute, std::int64_t value);
+/** @brief Write a string into the PointSet @Data domain. */
+[[nodiscard]] Result<void> setPointDataStringAttribute(PointSet& points, const std::string& attribute,
+                                                       const std::string& value);
+
 
 }  // namespace eve::procgen

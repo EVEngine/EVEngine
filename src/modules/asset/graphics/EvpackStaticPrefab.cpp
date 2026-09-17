@@ -279,10 +279,13 @@ Result<void> EvpackStaticPrefab::drawShadow(graphics::Graphics& gfx,
     for (const auto& draw : impl_->draws) {
         if (!draw.castShadows || draw.material.transparent) continue;
         const glm::mat4 lightMvp = lightVP * instance * draw.transform;
+        const bool doubleSided = draw.material.surface.cullMode == graphics::PbrCullMode::None ||
+                                 (draw.material.surface.cullMode == graphics::PbrCullMode::Inherit &&
+                                  draw.material.doubleSided);
         if (draw.material.masked)
-            gfx.drawMeshShadowAlpha(draw.mesh, lightMvp, draw.image, draw.material.surface.cullMode);
+            gfx.drawMeshShadowAlpha(draw.mesh, lightMvp, draw.image, doubleSided);
         else
-            gfx.drawMeshShadow(draw.mesh, lightMvp, draw.material.surface.cullMode);
+            gfx.drawMeshShadow(draw.mesh, lightMvp, doubleSided);
     }
     return Result<void>::success();
 }

@@ -26,7 +26,7 @@ eve_declare_module(NAME pixelworld_graphics LAYER 4 SCRIPT PixelWorldGraphics SL
                    GROUP 2d 3d web)
 
 eve_declare_module(NAME camera LAYER 4 SCRIPT Camera SLOT camera
-                   DEPS platform_event graphics scene
+                   DEPS action platform_event graphics scene
                    GROUP minimal 2d 3d web)
 eve_declare_module(NAME gpgpu LAYER 4 SCRIPT Gpgpu SLOT gpgpu
                    DEPS data filesystem graphics
@@ -59,13 +59,35 @@ eve_declare_module(NAME weapon LAYER 4 SCRIPT Weapon SLOT weapon
                    DEPS action attributes effects transaction definitions
                    GROUP 2d 3d)
 # L5 -- vehicle adapter
+# Cloth is a host-owned physics satellite: rigid-body physics stays usable in
+# trimmed builds without cloth topology, rendering, or compute backends. Its
+# accelerator provider registers independently and cannot replace the fluids provider.
+eve_declare_module(NAME physics_cloth DIR physics/cloth LAYER 5 SCRIPT Cloth SLOT cloth
+                   DEPS physics graphics gpgpu
+                   GROUP 2d 3d web)
+# Typed package bridge kept outside the physics domain core.
+eve_declare_module(NAME asset_physics DIR asset/physics LAYER 5
+                   DEPS asset physics_cloth
+                   GROUP 3d web)
 eve_declare_module(NAME physics_rope DIR physics/rope LIB EVPhysicsRope LAYER 5
                    SCRIPT Rope SLOT rope
                    DEPS physics schema
                    GROUP 3d web)
-eve_declare_module(NAME pixelworld_physics LAYER 5
+# Optional Action adapter for generation-safe 3D body-pair collision windows.
+eve_declare_module(NAME physics_action DIR physics/action LAYER 5
+                   DEPS action physics
+                   GROUP 3d web)
+# Optional map-backed steering provider. Keeping this bridge above both owners
+# lets headless/minimal combat builds omit the rendering-heavy map closure.
+eve_declare_module(NAME combat_navigation DIR combat/navigation LAYER 5
+                   DEPS combat map
+                   GROUP 2d 3d)
+eve_declare_module(NAME pixelworld_physics LAYER 5 SCRIPT PixelWorldPhysics SLOT pixelworldPhysics
                    DEPS pixelworld physics
                    GROUP 2d)
+eve_declare_module(NAME scene_physics DIR scene/physics LAYER 5 SCRIPT ScenePhysics SLOT scenePhysics
+                   DEPS physics scene
+                   GROUP 3d)
 # Optional editing satellite. Runtime-only profiles can enable physics without
 # pulling editing/editor contracts or AssetDB adapters.
 eve_declare_module(NAME physics_editing LAYER 5
@@ -84,7 +106,7 @@ eve_declare_module(NAME vehicle LAYER 5 SCRIPT Vehicle SLOT vehicle
                    GROUP 2d 3d)
 # L4 -- rendering extensions and simulation (continued)
 eve_declare_module(NAME animation LAYER 4 SCRIPT Animation SLOT anim
-                   DEPS data filesystem graphics image model3d
+                   DEPS action data filesystem graphics image model3d
                    THIRDPARTY poco assimp
                    GROUP 2d 3d)
 eve_declare_module(NAME daynight LIB EVDayNight LAYER 4 SCRIPT DayNight SLOT daynight
@@ -109,6 +131,9 @@ eve_declare_module(NAME spritestack LIB EVSpriteStack LAYER 4 SCRIPT SpriteStack
                    GROUP 2d)
 eve_declare_module(NAME housegen LIB EVHouseGen LAYER 4 SCRIPT HouseGen
                    DEPS data graphics image model3d
+                   GROUP 3d)
+eve_declare_module(NAME archspace LIB EVArchSpace LAYER 4 SCRIPT ArchSpace SLOT archspace
+                   DEPS data
                    GROUP 3d)
 eve_declare_module(NAME card LAYER 4 SCRIPT Card
                    DEPS attributes decision definitions effects graphics transaction)

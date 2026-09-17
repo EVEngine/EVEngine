@@ -11,6 +11,7 @@
 #include "animation/AnimGraph.h"
 #include "animation/AnimPose.h"
 #include "animation/DynamicBoneSolver.h"
+#include "animation/HairDynamicBones.h"
 #include "animation/FootIKSolver.h"
 #include "animation/AnimSkeleton.h"
 #include "animation/AnimSkin.h"
@@ -19,8 +20,13 @@
 #include "animation/AnimSyncGroup.h"
 #include "animation/ControlAnim.h"
 #include "animation/ControlPose.h"
+#include "animation/MotionBuilder.h"
+#include "animation/MotionSequence.h"
+#include "animation/MotionScriptBindings.h"
 #include "animation/MotionDatabase.h"
 #include "animation/MotionMatcher.h"
+#include "animation/MotionRuntime.h"
+#include "animation/Tween.h"
 #include "animation/SpineAnim.h"
 #include "animation/SpineAtlas.h"
 #include "animation/SpineSkeleton.h"
@@ -324,6 +330,29 @@ AnimConstraintStack *Animation::newConstraintStack(AnimSkeleton *skeleton) {
 DynamicBoneSolver *Animation::newDynamicBoneSolver(AnimSkeleton *skeleton) {
     return new DynamicBoneSolver(skeleton);
 }
+
+int Animation::setupHairChain(DynamicBoneSolver *solver, const std::string &rootBone,
+                              const std::string &tipBone, float stiffness, float damping,
+                              float inertia, float endLength, bool selfCollision) {
+    if (!solver) return -1;
+    hair::ChainDesc desc;
+    desc.rootBone = rootBone;
+    desc.tipBone = tipBone;
+    desc.stiffness = stiffness;
+    desc.damping = damping;
+    desc.inertia = inertia;
+    desc.endLength = endLength;
+    desc.selfCollision = selfCollision;
+    auto result = hair::addChain(*solver, desc);
+    return result ? result.value() : -1;
+}
+
+int Animation::setupHairHeadCollider(DynamicBoneSolver *solver, const std::string &boneName,
+                                     float radius) {
+    if (!solver) return -1;
+    auto result = hair::addHeadCollider(*solver, boneName, radius);
+    return result ? result.value() : -1;
+}
 FootIKSolver *Animation::newFootIKSolver(AnimSkeleton *skeleton) { return new FootIKSolver(skeleton); }
 AnimSyncGroup *Animation::newSyncGroup() { return new AnimSyncGroup(); }
 
@@ -393,6 +422,54 @@ AnimLattice *Animation::newLatticeFromModel(eve::model3d::ModelData *model, int 
 }
 
 AnimTrail *Animation::newTrail(int capacity) { return new AnimTrail(capacity); }
+
+MotionBuilder Animation::motion(float from, float to, float duration) {
+    return MotionBuilder(motions_, from, to, duration);
+}
+
+MotionVec2Builder Animation::motionVec2(MotionVec2 from, MotionVec2 to, float duration) {
+    return MotionVec2Builder(motions_, from, to, duration);
+}
+
+MotionVec3Builder Animation::motionVec3(MotionVec3 from, MotionVec3 to, float duration) {
+    return MotionVec3Builder(motions_, from, to, duration);
+}
+
+MotionSequence Animation::sequence() { return MotionSequence(motions_); }
+
+MotionBuilder Animation::punch(float from, float strength, float duration) {
+    return MotionBuilder(motions_, from, strength, duration).style(MotionStyle::Punch);
+}
+
+MotionBuilder Animation::shake(float from, float strength, float duration) {
+    return MotionBuilder(motions_, from, strength, duration).style(MotionStyle::Shake);
+}
+
+MotionVec2Builder Animation::punchVec2(MotionVec2 from, MotionVec2 strength, float duration) {
+    return MotionVec2Builder(motions_, from, strength, duration).style(MotionStyle::Punch);
+}
+
+MotionVec2Builder Animation::shakeVec2(MotionVec2 from, MotionVec2 strength, float duration) {
+    return MotionVec2Builder(motions_, from, strength, duration).style(MotionStyle::Shake);
+}
+
+MotionVec3Builder Animation::punchVec3(MotionVec3 from, MotionVec3 strength, float duration) {
+    return MotionVec3Builder(motions_, from, strength, duration).style(MotionStyle::Punch);
+}
+
+MotionVec3Builder Animation::shakeVec3(MotionVec3 from, MotionVec3 strength, float duration) {
+    return MotionVec3Builder(motions_, from, strength, duration).style(MotionStyle::Shake);
+}
+
+MotionColorBuilder Animation::motionColor(MotionColor from, MotionColor to, float duration) {
+    return MotionColorBuilder(motions_, from, to, duration);
+}
+
+MotionQuatBuilder Animation::motionQuat(MotionQuat from, MotionQuat to, float duration) {
+    return MotionQuatBuilder(motions_, from, to, duration);
+}
+
+
 
 void Animation::registerTween(Tween *t) {
     if (!t) return;
@@ -466,6 +543,9 @@ eve::Result<void> Animation::advance(const eve::SimulationStep &step) {
             return eve::Result<void>::failure(eve::Diagnostic::error(
                 eve::DiagnosticCode::Conflict, "animation SpineAnim child already consumed this tick"));
     }
+    if (motions_.hasCurrentTick() && step.tick <= motions_.currentTick())
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Conflict, "animation MotionRuntime already consumed this tick"));
 
     // Copy pointer lists: destructors during update must not invalidate iteration.
     std::vector<Tween *> tweenSnap = tweens_;
@@ -491,6 +571,11 @@ eve::Result<void> Animation::advance(const eve::SimulationStep &step) {
         }
     }
 
+    {
+        auto result = motions_.advance(step);
+        if (!result) return eve::Result<void>::failure(result.status());
+    }
+
     lastTick_    = step.tick;
     hasLastTick_ = true;
     return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
@@ -514,7 +599,7 @@ void Animation::update(float dt) {
 }
 
 int Animation::getActiveCount() const {
-    int n = 0;
+    int n = motions_.activeCount();
     for (const Tween *t : tweens_) {
         if (t && t->isActive()) ++n;
     }
@@ -550,6 +635,7 @@ void Animation::clearAll() {
 void Animation::expose(ssq::Table &table) {
     auto cls = table.addClass(name, Animation::create, false);
     expose(cls);
+    exposeMotionScriptBindings(table, cls);
 
     auto tw = table.addClass<Tween>(
         "Tween", std::function<Tween *()>([]() -> Tween * { return nullptr; }), true);
@@ -698,6 +784,7 @@ void Animation::expose(ssq::Table &table) {
     skin.addFunc("getBindPositionY", &AnimSkin::getBindPositionY);
     skin.addFunc("getBindPositionZ", &AnimSkin::getBindPositionZ);
     skin.addFunc("getVertexBone", &AnimSkin::getVertexBone);
+    skin.addFunc("getVertexSkinJoint", &AnimSkin::getVertexSkinJoint);
     skin.addFunc("getVertexWeight", &AnimSkin::getVertexWeight);
     skin.addFunc("updateSkinnedPositions", &AnimSkin::updateSkinnedPositions);
     skin.addFunc("hasSkinnedPositions", &AnimSkin::hasSkinnedPositions);
@@ -767,36 +854,7 @@ void Animation::expose(ssq::Table &table) {
     lattice.addFunc("getDeformedPositions", &AnimLattice::getDeformedPositions);
     lattice.addFunc("getDeformedNormals", &AnimLattice::getDeformedNormals);
 
-    auto player = table.addClass<AnimPlayer>(
-        "AnimPlayer", std::function<AnimPlayer *()>([]() -> AnimPlayer * { return nullptr; }),
-        true);
-    player.addFunc("play", &AnimPlayer::play);
-    player.addFunc("crossFade", &AnimPlayer::crossFade);
-    player.addFunc("stop", &AnimPlayer::stop);
-    player.addFunc("pause", &AnimPlayer::pause);
-    player.addFunc("resume", &AnimPlayer::resume);
-    player.addFunc("setSpeed", &AnimPlayer::setSpeed);
-    player.addFunc("getSpeed", &AnimPlayer::getSpeed);
-    player.addFunc("setTime", &AnimPlayer::setTime);
-    player.addFunc("getTime", &AnimPlayer::getTime);
-    player.addFunc("setLoop", &AnimPlayer::setLoop);
-    player.addFunc("getLoop", &AnimPlayer::getLoop);
-    player.addFunc("isPlaying", &AnimPlayer::isPlaying);
-    player.addFunc("isPaused", &AnimPlayer::isPaused);
-    player.addFunc("getPose", &AnimPlayer::getPose);
-    player.addFunc("setRootMotionBone", &AnimPlayer::setRootMotionBone);
-    player.addFunc("getRootMotionBone", &AnimPlayer::getRootMotionBone);
-    player.addFunc("getRootMotionX", &AnimPlayer::getRootMotionX);
-    player.addFunc("getRootMotionY", &AnimPlayer::getRootMotionY);
-    player.addFunc("getRootMotionZ", &AnimPlayer::getRootMotionZ);
-    player.addFunc("getRootMotionRotationX", &AnimPlayer::getRootMotionRotationX);
-    player.addFunc("getRootMotionRotationY", &AnimPlayer::getRootMotionRotationY);
-    player.addFunc("getRootMotionRotationZ", &AnimPlayer::getRootMotionRotationZ);
-    player.addFunc("getRootMotionRotationW", &AnimPlayer::getRootMotionRotationW);
-    player.addFunc("consumeEvent", &AnimPlayer::consumeEvent);
-    player.addFunc("setUpdateRate", &AnimPlayer::setUpdateRate);
-    player.addFunc("getUpdateRate", &AnimPlayer::getUpdateRate);
-    player.addFunc("update", &AnimPlayer::update);
+    exposeAnimPlayerBindings(table);
 
     auto graph = table.addClass<AnimGraph>(
         "AnimGraph", std::function<AnimGraph *()>([]() -> AnimGraph * { return nullptr; }), true);
@@ -820,13 +878,10 @@ void Animation::expose(ssq::Table &table) {
     graph.addFunc("setSpeed", &AnimGraph::setSpeed);
     graph.addFunc("trigger", &AnimGraph::trigger);
     graph.addFunc("isOneShotActive", &AnimGraph::isOneShotActive);
+    graph.addFunc("setAdditiveReference", &AnimGraph::setAdditiveReferenceCompat);
+    graph.addFunc("getAdditiveReference", &AnimGraph::getAdditiveReference);
     graph.addFunc("getPose", &AnimGraph::getPose);
     graph.addFunc("update", &AnimGraph::update);
-
-    player.addFunc("getEventCount", &AnimPlayer::getEventCount);
-    player.addFunc("getEventName", &AnimPlayer::getEventName);
-    player.addFunc("getEventPayload", &AnimPlayer::getEventPayload);
-    player.addFunc("clearEvents", &AnimPlayer::clearEvents);
 
     auto mask = table.addClass<AnimBoneMask>(
         "AnimBoneMask", std::function<AnimBoneMask*()>([]() -> AnimBoneMask* { return nullptr; }), true);
@@ -840,13 +895,22 @@ void Animation::expose(ssq::Table &table) {
     auto mixer = table.addClass<AnimLayerMixer>(
         "AnimLayerMixer", std::function<AnimLayerMixer*()>([]() -> AnimLayerMixer* { return nullptr; }), true);
     mixer.addFunc("setBasePlayer", &AnimLayerMixer::setBasePlayer);
+    mixer.addFunc("setBaseGraph", &AnimLayerMixer::setBaseGraph);
+    mixer.addFunc("setBaseStateMachine", &AnimLayerMixer::setBaseStateMachine);
     mixer.addFunc("getBasePlayer", &AnimLayerMixer::getBasePlayer);
     mixer.addFunc("addLayer", &AnimLayerMixer::addLayer);
+    mixer.addFunc("addGraphLayer", &AnimLayerMixer::addGraphLayer);
+    mixer.addFunc("addStateMachineLayer", &AnimLayerMixer::addStateMachineLayer);
     mixer.addFunc("removeLayer", &AnimLayerMixer::removeLayer);
     mixer.addFunc("setLayerWeight", &AnimLayerMixer::setLayerWeight);
     mixer.addFunc("setLayerEnabled", &AnimLayerMixer::setLayerEnabled);
+    mixer.addFunc("setLayerAdditiveReference", &AnimLayerMixer::setLayerAdditiveReferenceCompat);
     mixer.addFunc("getLayerCount", &AnimLayerMixer::getLayerCount);
     mixer.addFunc("getLayerName", &AnimLayerMixer::getLayerName);
+    mixer.addFunc("getLayerWeight", &AnimLayerMixer::getLayerWeight);
+    mixer.addFunc("getLayerEnabled", &AnimLayerMixer::getLayerEnabled);
+    mixer.addFunc("getLayerMode", &AnimLayerMixer::getLayerMode);
+    mixer.addFunc("getLayerAdditiveReference", &AnimLayerMixer::getLayerAdditiveReference);
     mixer.addFunc("update", &AnimLayerMixer::update);
     mixer.addFunc("getPose", &AnimLayerMixer::getPose);
     mixer.addFunc("getEventCount", &AnimLayerMixer::getEventCount);
@@ -880,52 +944,7 @@ void Animation::expose(ssq::Table &table) {
     sm.addFunc("isBlending", &AnimStateMachine::isBlending);
     sm.addFunc("update", &AnimStateMachine::update);
 
-    auto db = table.addClass<MotionDatabase>(
-        "MotionDatabase",
-        std::function<MotionDatabase *()>([]() -> MotionDatabase * { return nullptr; }), true);
-    db.addFunc("addFeatureBone", &MotionDatabase::addFeatureBone);
-    db.addFunc("addFeatureBoneByName", &MotionDatabase::addFeatureBoneByName);
-    db.addFunc("setRootBone", &MotionDatabase::setRootBone);
-    db.addFunc("getRootBone", &MotionDatabase::getRootBone);
-    db.addFunc("setRootBoneByName", &MotionDatabase::setRootBoneByName);
-    db.addFunc("addClip", &MotionDatabase::addClip);
-    db.addFunc("getClipCount", &MotionDatabase::getClipCount);
-    db.addFunc("bake", &MotionDatabase::bake);
-    db.addFunc("isBaked", &MotionDatabase::isBaked);
-    db.addFunc("getFrameCount", &MotionDatabase::getFrameCount);
-    db.addFunc("getFeatureSize", &MotionDatabase::getFeatureSize);
-    db.addFunc("getFrameTime", &MotionDatabase::getFrameTime);
-    db.addFunc("getFrameClipIndex", &MotionDatabase::getFrameClipIndex);
-    db.addFunc("getFeatureBoneCount", &MotionDatabase::getFeatureBoneCount);
-    db.addFunc("getFeatureBone", &MotionDatabase::getFeatureBone);
-
-    auto mm = table.addClass<MotionMatcher>(
-        "MotionMatcher",
-        std::function<MotionMatcher *()>([]() -> MotionMatcher * { return nullptr; }), true);
-    mm.addFunc("setDesiredVelocity", &MotionMatcher::setDesiredVelocity);
-    mm.addFunc("getDesiredVelocityX", &MotionMatcher::getDesiredVelocityX);
-    mm.addFunc("getDesiredVelocityZ", &MotionMatcher::getDesiredVelocityZ);
-    mm.addFunc("setDesiredYaw", &MotionMatcher::setDesiredYaw);
-    mm.addFunc("getDesiredYaw", &MotionMatcher::getDesiredYaw);
-    mm.addFunc("setSearchInterval", &MotionMatcher::setSearchInterval);
-    mm.addFunc("getSearchInterval", &MotionMatcher::getSearchInterval);
-    mm.addFunc("setBlendTime", &MotionMatcher::setBlendTime);
-    mm.addFunc("getBlendTime", &MotionMatcher::getBlendTime);
-    mm.addFunc("setTrajectoryWeight", &MotionMatcher::setTrajectoryWeight);
-    mm.addFunc("getTrajectoryWeight", &MotionMatcher::getTrajectoryWeight);
-    mm.addFunc("setPoseWeight", &MotionMatcher::setPoseWeight);
-    mm.addFunc("getPoseWeight", &MotionMatcher::getPoseWeight);
-    mm.addFunc("setVelocityWeight", &MotionMatcher::setVelocityWeight);
-    mm.addFunc("getVelocityWeight", &MotionMatcher::getVelocityWeight);
-    mm.addFunc("setIgnoreRadius", &MotionMatcher::setIgnoreRadius);
-    mm.addFunc("getIgnoreRadius", &MotionMatcher::getIgnoreRadius);
-    mm.addFunc("getMatchedFrame", &MotionMatcher::getMatchedFrame);
-    mm.addFunc("getMatchedClipIndex", &MotionMatcher::getMatchedClipIndex);
-    mm.addFunc("getMatchedTime", &MotionMatcher::getMatchedTime);
-    mm.addFunc("getLastSearchCost", &MotionMatcher::getLastSearchCost);
-    mm.addFunc("getPose", &MotionMatcher::getPose);
-    mm.addFunc("search", &MotionMatcher::search);
-    mm.addFunc("update", &MotionMatcher::update);
+    exposeMotionMatcherBindings(table);
 
     auto ca = table.addClass<ControlAnim>(
         "ControlAnim", std::function<ControlAnim *()>([]() -> ControlAnim * { return nullptr; }),
@@ -1307,6 +1326,8 @@ void Animation::expose(ssq::Class &cls) {
     cls.addFunc("newBatch", &Animation::newBatch);
     cls.addFunc("newConstraintStack", &Animation::newConstraintStack);
     cls.addFunc("newDynamicBoneSolver", &Animation::newDynamicBoneSolver);
+    cls.addFunc("setupHairChain", &Animation::setupHairChain);
+    cls.addFunc("setupHairHeadCollider", &Animation::setupHairHeadCollider);
     cls.addFunc("newFootIKSolver", &Animation::newFootIKSolver);
     cls.addFunc("newSyncGroup", &Animation::newSyncGroup);
     cls.addFunc("newPlayer", &Animation::newPlayer);
@@ -1328,6 +1349,7 @@ void Animation::expose(ssq::Class &cls) {
     cls.addFunc("newTrail", &Animation::newTrail);
     cls.addFunc("update", &Animation::update);
     cls.addFunc("getTweenCount", &Animation::getTweenCount);
+    cls.addFunc("getMotionCount", &Animation::getMotionCount);
     cls.addFunc("getSpriteAnimCount", &Animation::getSpriteAnimCount);
     cls.addFunc("getSpineAnimCount", &Animation::getSpineAnimCount);
     cls.addFunc("getActiveCount", &Animation::getActiveCount);

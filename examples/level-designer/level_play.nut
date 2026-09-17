@@ -176,6 +176,13 @@ function levelStartPlay() {
     level.play.focusZ = level.play.positionZ;
     level.play.lastMouseX = mouse.getX();
     level.play.lastMouseY = mouse.getY();
+    try {
+        ui.select("viewport");
+        if (ui.viewportHovered("level-vp")) {
+            level.play.lastMouseX = ui.viewportMouseX("level-vp");
+            level.play.lastMouseY = ui.viewportMouseY("level-vp");
+        }
+    } catch (error) {}
     levelApplyPlayCameraOffset();
     level.controller.setTarget(level.play.focusX, level.play.focusY, level.play.focusZ);
     level.controller.snap();

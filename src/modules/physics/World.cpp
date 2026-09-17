@@ -197,6 +197,7 @@ eve::Result<eve::SimulationStep> makeLegacyStep(float dt, eve::SimulationTick cu
 class ContactRelay : public b2ContactListener {
 public:
     explicit ContactRelay(World *world) : world_(world) {}
+    void setWorld(World *world) noexcept { world_ = world; }
 
     void BeginContact(b2Contact *contact) override { world_->onBeginContact(contact); }
     void EndContact(b2Contact *contact) override { world_->onEndContact(contact); }
@@ -211,9 +212,11 @@ private:
     World *world_;
 };
 
-World::World(float gravityX, float gravityY, bool sleep, float meter) : meter_(meter) {
+World::World(float gravityX, float gravityY, bool sleep, float meter, eve::PersistentId instanceId)
+    : instanceId_(instanceId), meter_(meter) {
     if (meter_ <= 0.f) meter_ = 30.f;
     runtimeHandle_ = detail::allocatePhysicsWorldHandle();
+    if (instanceId_.isNil()) instanceId_ = detail::makePhysicsWorldPersistentId(runtimeHandle_);
     world_ = new b2World(b2Vec2(toMeters(gravityX), toMeters(gravityY)));
     world_->SetAllowSleeping(sleep);
     relay_ = new ContactRelay(this);
@@ -232,9 +235,29 @@ World::World(float gravityX, float gravityY, bool sleep, float meter) : meter_(m
 
 World::~World() { destroy(); }
 
+void World::adoptPreparedTopology(World &prepared) {
+    std::swap(world_, prepared.world_);
+    std::swap(relay_, prepared.relay_);
+    std::swap(simulation_, prepared.simulation_);
+    std::swap(meter_, prepared.meter_);
+    std::swap(nextId_, prepared.nextId_);
+    std::swap(bodies_, prepared.bodies_);
+    std::swap(fixtures_, prepared.fixtures_);
+    std::swap(simulationTick_, prepared.simulationTick_);
+    for (Body *body : bodies_) body->world_ = this;
+    for (Fixture *fixture : fixtures_) fixture->world_ = this;
+    for (Body *body : prepared.bodies_) body->world_ = &prepared;
+    for (Fixture *fixture : prepared.fixtures_) fixture->world_ = &prepared;
+    relay_->setWorld(this);
+    world_->SetContactListener(relay_);
+    prepared.relay_->setWorld(&prepared);
+    prepared.world_->SetContactListener(prepared.relay_);
+}
+
 void World::destroy() {
     if (destroyed_) return;
     destroyed_ = true;
+    lifetime_.reset();
 
     // Copy sets 鈥?Body/Fixture destructors erase from them.
     std::vector<Body *> bodies(bodies_.begin(), bodies_.end());

@@ -16,16 +16,18 @@ function levelInit() {
         // module handles
         session = null, camera = null, controller = null, gizmo = null,
         model3d = null, animation = null, physics = null, heightmapTargets = null,
-        world = null,
+        world = null, workspace = null,
 
         mode = "edit",          // "edit" | "play"
         tool = "select",        // select | whitebox | spawn
+        gizmoMode = "translate", // translate | rotate | scale
         piece = "prototype.cube",
         recipes = [],           // whitebox palette (ProcgenKit prototype recipes)
         selected = "",
         objects = [],
         pieces = {},            // objectId -> {recipe, values, entity, half}
         spawns = {},            // objectId -> {yaw, character, motionSet, entity, facing}
+        gizmoPrims = [],        // live TransformGizmo overlays (Primitive3D)
         rigCache = {},          // "character|motionSet" -> rigged character
         characterName = "Mannequin",
         motionSetName = "Locomotion",
@@ -51,8 +53,11 @@ function levelInit() {
 
 function levelStatus(text) {
     level.status = text;
-    if (level.session != null) ui.select(levelHost());
-    ui.setText("status", text);
+    // Status lives on the center viewport panel after the workspace redesign.
+    try {
+        ui.select("viewport");
+        ui.setText("status", text);
+    } catch (error) {}
 }
 
 // Every scene mutation goes through the session command registry.
@@ -94,6 +99,7 @@ function levelSyncGizmo() {
     level.gizmo.setPosition(t.x, t.y, t.z);
     level.gizmo.setRotationEuler(t.rotationX, t.rotationY, t.rotationZ);
     level.gizmo.setScale(t.scaleX, t.scaleY, t.scaleZ);
+    if (level.gizmoMode != "") level.gizmo.setMode(level.gizmoMode);
 }
 
 function levelNextId(prefix) {

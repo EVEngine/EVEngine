@@ -223,8 +223,7 @@ Result<void> TerrainDetailGpuResolver::drawShadow(
         return failure<void>(DiagnosticCode::Conflict, "terrain Detail shadow resource cleanup is pending",
                              detail.prototype);
     const glm::mat4 lightMvp = glm::make_mat4(lightViewProjection.data()) * glm::make_mat4(transform.data());
-    impl_->graphics.drawMeshShadowAlpha(found->second.mesh, lightMvp, found->second.texture,
-                                        graphics::PbrCullMode::None);
+    impl_->graphics.drawMeshShadowAlpha(found->second.mesh, lightMvp, found->second.texture, true);
     return Result<void>::success();
 }
 

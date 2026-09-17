@@ -125,6 +125,16 @@ public:
     virtual Mesh *newMeshFromAssimp(const ::aiMesh &mesh, const aiMatrix4x4 &worldTransform) = 0;
     virtual Mesh *newMeshFromArrays(const float *posXYZ, const float *nrmXYZ, const float *uvST,
                                     int vertexCount, const uint32_t *indices, int indexCount) = 0;
+    /**
+     * @brief Create a mesh with a packed linear RGBA vertex-color stream.
+     * @return Factory-owned mesh, or nullptr when validation or backend allocation fails.
+     * @ownership The resource factory owns the returned mesh; release it through releaseMesh.
+     * @lifetime Valid until releaseMesh, graphics shutdown, or device loss.
+     * @thread Graphics thread; all input arrays are borrowed and consumed synchronously.
+     */
+    virtual Mesh *newMeshFromArraysColored(const float *posXYZ, const float *nrmXYZ, const float *uvST,
+                                           const float *colorRGBA, int vertexCount,
+                                           const uint32_t *indices, int indexCount) = 0;
     virtual bool updateMeshVertices(Mesh *mesh, const float *posXYZ, const float *nrmXYZ,
                                     const float *uvST, int vertexCount, const uint32_t *indices,
                                     int indexCount) = 0;
@@ -149,8 +159,10 @@ public:
      */
     virtual Shader *newShaderFromWgsl(const std::string &vertWgsl,
                                       const std::string &fragWgsl) = 0;
+    /** @brief Create a Mesh3D shader; an empty stage selects the matching engine default. */
     virtual Shader *newMeshShaderFromSpv(const std::vector<uint32_t> &vertSpv,
                                          const std::vector<uint32_t> &fragSpv) = 0;
+    /** @brief Create a WebGPU Mesh3D shader; an empty stage selects the matching engine default. */
     virtual Shader *newMeshShaderFromWgsl(const std::string &vertWgsl,
                                           const std::string &fragWgsl) = 0;
     virtual Shader *newMeshShader(const std::string &vertGlsl, const std::string &fragGlsl) = 0;

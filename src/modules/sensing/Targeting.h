@@ -14,6 +14,7 @@
 #include "common/Identity.h"
 #include "common/Result.h"
 #include "common/SubjectRef.h"
+#include "sensing/Sensing.h"
 
 #include <cstddef>
 #include <cstdint>
@@ -202,7 +203,7 @@ using TargetLocation = std::variant<WorldPoint, GridPoint>;
  */
 class WorldArea {
 public:
-    enum class Shape : std::uint8_t { Circle2D, Box2D, Sphere3D, Box3D };
+    enum class Shape : std::uint8_t { Circle2D, Box2D, Sphere3D, Box3D, Cone2D };
 
     /** @brief Constructs an invalid default area. */
     WorldArea() = default;
@@ -214,6 +215,16 @@ public:
     [[nodiscard]] static Result<WorldArea> sphere3D(WorldPoint center, float radius);
     /** @brief Creates an axis-aligned 3D world box from inclusive corners. */
     [[nodiscard]] static Result<WorldArea> box3D(WorldPoint minimum, WorldPoint maximum);
+    /**
+     * @brief Creates a 2D world cone/sector.
+     * @param apex Cone apex in World2D.
+     * @param dirX Forward X (normalized on use).
+     * @param dirY Forward Y (normalized on use).
+     * @param halfAngleRadians Half-angle in radians, in `[0, pi]`.
+     * @param range Non-negative distance from the apex.
+     */
+    [[nodiscard]] static Result<WorldArea> cone2D(WorldPoint apex, float dirX, float dirY, float halfAngleRadians,
+                                                  float range);
 
     /** @brief Returns the area shape. */
     [[nodiscard]] Shape shape() const noexcept { return shape_; }
@@ -221,19 +232,32 @@ public:
     [[nodiscard]] CoordinateSpace space() const noexcept { return space_; }
     /** @brief Returns whether this area is valid. */
     [[nodiscard]] bool isValid() const noexcept { return valid_; }
+    /** @brief Return the center for circle/sphere, or minimum corner for boxes. */
+    [[nodiscard]] WorldPoint first() const noexcept { return first_; }
+    /** @brief Return the maximum corner for boxes; invalid/default for circle and sphere. */
+    [[nodiscard]] WorldPoint second() const noexcept { return second_; }
+    /** @brief Return circle/sphere radius; zero for boxes. */
+    [[nodiscard]] float radius() const noexcept { return radius_; }
     /** @brief Tests a world point without converting coordinate spaces. */
     [[nodiscard]] bool contains(WorldPoint point) const noexcept;
 
 private:
-    WorldArea(Shape shape, WorldPoint first, WorldPoint second, float radius) noexcept
-        : shape_(shape), space_(first.space()), first_(first), second_(second), radius_(radius), valid_(true) {}
+    WorldArea(Shape shape, WorldPoint first, WorldPoint second, float radius, float halfAngle = 0.f) noexcept
+        : shape_(shape),
+          space_(first.space()),
+          first_(first),
+          second_(second),
+          radius_(radius),
+          halfAngle_(halfAngle),
+          valid_(true) {}
 
-    Shape           shape_ = Shape::Circle2D;
-    CoordinateSpace space_ = CoordinateSpace::World2D;
+    Shape           shape_     = Shape::Circle2D;
+    CoordinateSpace space_     = CoordinateSpace::World2D;
     WorldPoint      first_;
     WorldPoint      second_;
-    float           radius_ = 0.f;
-    bool            valid_  = false;
+    float           radius_    = 0.f;
+    float           halfAngle_ = 0.f;
+    bool            valid_     = false;
 };
 
 /**
@@ -259,6 +283,10 @@ public:
     [[nodiscard]] CoordinateSpace space() const noexcept { return space_; }
     /** @brief Returns whether this area is valid. */
     [[nodiscard]] bool isValid() const noexcept { return valid_; }
+    /** @brief Return the inclusive minimum grid corner. */
+    [[nodiscard]] GridPoint minimum() const noexcept { return minimum_; }
+    /** @brief Return the inclusive maximum grid corner. */
+    [[nodiscard]] GridPoint maximum() const noexcept { return maximum_; }
     /** @brief Tests a grid point without converting coordinate spaces. */
     [[nodiscard]] bool contains(GridPoint point) const noexcept;
 
@@ -281,8 +309,14 @@ struct TargetingSpec {
     TargetDomain domain = TargetDomain::Any;
     /** @brief Minimum number of candidates required in the resolved set. */
     std::uint32_t minCount = 0;
-    /** @brief Maximum number of candidates accepted; no selection is performed to enforce it. */
+    /** @brief Maximum number of candidates accepted. */
     std::uint32_t maxCount = std::numeric_limits<std::uint32_t>::max();
+    /**
+     * @brief How overflow relative to maxCount is handled.
+     * FailIfOutOfRange preserves historical Action/resolver behavior; TruncateToMax
+     * keeps the nearest maxCount candidates (requires distance-sortable locations).
+     */
+    CountPolicy countPolicy = CountPolicy::FailIfOutOfRange;
     /** @brief Minimum distance, in world units or grid cells according to `space`. */
     float minRange = 0.f;
     /** @brief Maximum distance, in world units or grid cells; positive infinity means unbounded. */
@@ -450,6 +484,42 @@ public:
 
 private:
     std::map<std::string, TargetCandidate> candidates_;
+};
+
+/**
+ * @brief Projects faction string pairs into TargetDomain for SensingWorld adapters.
+ *
+ * Missing relations must not be invented by sensing: callers that request
+ * domain != Any without a relation receive Unsupported.
+ */
+using FactionRelationFn =
+    std::function<Result<TargetDomain>(std::string_view originFaction, std::string_view candidateFaction)>;
+
+/**
+ * @brief ISensingCandidateProvider adapter over a SensingWorld fact mirror.
+ *
+ * Supports World2D queries only. Grid constraints remain Unsupported. Zone
+ * filters use mirrored subject zone membership (`SensingWorld::setZones`).
+ * Domain filters require an injected FactionRelationFn.
+ *
+ * @ownership Non-owning pointer to SensingWorld; the world must outlive this provider.
+ * @thread Call on the same simulation thread as the bound SensingWorld.
+ */
+class SensingWorldCandidateProvider final : public ISensingCandidateProvider {
+public:
+    /** @brief Binds a non-owning SensingWorld; capability registration remains explicit. */
+    explicit SensingWorldCandidateProvider(SensingWorld& world) noexcept : world_(&world) {}
+    ~SensingWorldCandidateProvider() override = default;
+
+    /** @brief Installs optional faction→domain projection used when domain != Any. */
+    void setFactionRelation(FactionRelationFn relation) { relation_ = std::move(relation); }
+
+    /** @copydoc ISensingCandidateProvider::query */
+    [[nodiscard]] Result<std::vector<TargetCandidate>> query(const TargetingQuery& query) const override;
+
+private:
+    SensingWorld*     world_ = nullptr;
+    FactionRelationFn relation_;
 };
 
 /**

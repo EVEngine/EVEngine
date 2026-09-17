@@ -52,10 +52,13 @@ inline constexpr const char *kExposureAdapt = R"wgsl(
 
 /** @lifetime Shader source has static storage for the process lifetime. */
 inline constexpr const char *kExposureApply = R"wgsl(
-@fragment fn fs_main(i:FSIn)->@location(0) vec4f{let hdr=tex(i.uv);let automatic=select(1.0,aux_load(vec2f(.5)).r,p(1)>.5);return vec4f(hdr.rgb*max(p(0),0)*automatic,hdr.a);}
+@fragment fn fs_main(i:FSIn)->@location(0) vec4f{let centered=i.uv-vec2f(.5);var sampleUv=i.uv;let lensIntensity=clamp(p(6),0,1)*100;if(lensIntensity>.0001){sampleUv=centered/clamp(p(17),.01,5)+vec2f(.5);let ruv=sampleUv-vec2f(.5);let ru=length(ruv);let theta=radians(min(160.0,1.6*max(lensIntensity,1.0)));let sigma=2*tan(theta*.5);let factor=tan(ru*theta)/(max(ru,.000001)*sigma);sampleUv+=ruv*(factor-1);}sampleUv=clamp(sampleUv,vec2f(.001),vec2f(.999));let hdr=tex(sampleUv);let lift=vec3f(p(7),p(8),p(9));let invGamma=max(vec3f(p(10),p(11),p(12)),vec3f(.001));let gain=vec3f(p(13),p(14),p(15));let pre=hdr.rgb*gain+lift;let graded=sign(pre)*pow(abs(pre),invGamma);let automatic=select(1.0,aux_load(vec2f(.5)).r,p(1)>.5);let colorFilter=max(vec3f(p(2),p(3),p(4)),vec3f(0));var vd=abs(sampleUv-vec2f(.5))*clamp(p(5),0,1)*3;vd.x*=f32(textureDimensions(MainTex).x)/f32(textureDimensions(MainTex).y);let vignette=pow(clamp(1-dot(vd,vd),0,1),clamp(p(16),.01,1)*5);return vec4f(graded*max(p(0),0)*automatic*colorFilter*vignette,hdr.a);}
 )wgsl";
 
 /** @lifetime Shader source has static storage for the process lifetime. */
+inline constexpr const char *kDepthOfField = R"wgsl(
+@fragment fn fs_main(i:FSIn)->@location(0) vec4f{let t=vec2f(p(0),p(1));let distance=mix(p(5),p(6),aux_load(i.uv).r);let coc=clamp(abs(distance-p(2))/max(p(3),.0001),0,1);let r=t*coc*max(p(4),0);var c=tex(i.uv)*.2;c+=(tex(i.uv+vec2f(r.x,0))+tex(i.uv-vec2f(r.x,0))+tex(i.uv+vec2f(0,r.y))+tex(i.uv-vec2f(0,r.y)))*.1;c+=(tex(i.uv+r)+tex(i.uv-r)+tex(i.uv+vec2f(r.x,-r.y))+tex(i.uv+vec2f(-r.x,r.y)))*.1;return vec4f(c.rgb*i.color.rgb,tex(i.uv).a);}
+)wgsl";
 inline constexpr const char *kDepthPyramidDownsample = R"wgsl(
 fn depth_range(uv:vec2f)->vec2f{let v=tex(uv);return select(v.rg,vec2f(v.r),p(2)>.5);}
 @fragment fn fs_main(i:FSIn)->@location(0) vec4f{let t=vec2f(p(0),p(1));let a=depth_range(i.uv+t*vec2f(-.5,-.5));let b=depth_range(i.uv+t*vec2f(.5,-.5));let c=depth_range(i.uv+t*vec2f(-.5,.5));let d=depth_range(i.uv+t*vec2f(.5,.5));return vec4f(min(min(a.x,b.x),min(c.x,d.x)),max(max(a.y,b.y),max(c.y,d.y)),0,1);}
@@ -120,6 +123,23 @@ fn viewz(z:f32)->f32{let n=max(p(10),.0001);let f=max(p(11),n+.001);return n*f/m
  let offsets=array<vec2f,8>(vec2f(1,0),vec2f(-1,0),vec2f(0,1),vec2f(0,-1),vec2f(.707,.707),vec2f(-.707,-.707),vec2f(-.707,.707),vec2f(.707,-.707));
  for(var q=0;q<8;q++){let uv=i.uv+offsets[q]*t;let cut=max(p(1),0)+dc*max(p(2),0);let dd=abs(dc-viewz(tex(uv).r));let soft=clamp(p(4),0,1);de=max(de,smoothstep(cut*(1-soft),cut,dd));ne=max(ne,1-clamp(dot(nc,aux(uv)),-1,1));}
  let nt=clamp(p(3),0,2);let edge=max(de,smoothstep(nt*(1-clamp(p(4),0,1)),nt+clamp(p(4),0,1),ne));return vec4f(color,clamp(edge,0,1))*i.color;}
+)wgsl";
+
+/** @lifetime Shader source has static storage for the process lifetime. */
+inline constexpr const char *kDofGaussian = R"wgsl(
+fn viewz(z:f32)->f32{let n=max(p(7),.0001);let f=max(p(8),n+.001);return n*f/max(f-z*(f-n),.000001);}
+fn coc(viewZ:f32)->f32{let focus=max(p(4),0);let range=max(p(5),.001);let maxBlur=max(p(6),0);var t=clamp(abs(viewZ-focus)/range,0,1);t=t*t*(3-2*t);return t*maxBlur;}
+@fragment fn fs_main(i:FSIn)->@location(0) vec4f{
+ let maxBlur=max(p(6),0);if maxBlur<=.0001{return tex(i.uv)*i.color;}
+ let ndc=aux_load(i.uv).r;let vz=viewz(ndc);let radius=coc(vz);
+ if radius<.35||ndc>=.9999{return tex(i.uv)*i.color;}
+ let stepUv=vec2f(p(2),p(3))*vec2f(p(0),p(1))*radius;
+ let kw=array<f32,5>(.227027,.1945946,.1216216,.054054,.016216);
+ var color=tex(i.uv).rgb*kw[0];var weight=kw[0];
+ for(var s=1;s<5;s++){let off=stepUv*f32(s);let uvA=clamp(i.uv+off,vec2f(0),vec2f(1));let uvB=clamp(i.uv-off,vec2f(0),vec2f(1));
+  let wA=kw[s]*select(0.0,1.0,coc(viewz(aux_load(uvA).r))>=radius*.35);let wB=kw[s]*select(0.0,1.0,coc(viewz(aux_load(uvB).r))>=radius*.35);
+  color+=tex(uvA).rgb*wA;color+=tex(uvB).rgb*wB;weight+=wA+wB;}
+ return vec4f(color/max(weight,.0001),1)*i.color;}
 )wgsl";
 
 }  // namespace eve::graphics::shaders

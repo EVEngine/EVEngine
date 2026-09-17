@@ -135,7 +135,7 @@ void main() {
     dens.d[i] = rho;
     grad.g[i] = vec4(gradSum, 0.0);
     float rho0 = max(pc.d[4], 1e-6);
-    float C = rho / rho0 - 1.0;
+    float C = max(0.0, rho / rho0 - 1.0);
     lam.l[i] = -C / (dot(gradSum, gradSum) + 1e-6);
 }
 )GLSL";
@@ -199,10 +199,11 @@ inline const char* kFluidApplyDelta = R"GLSL(
 #version 450
 layout(local_size_x = 64) in;
 layout(set = 0, binding = 0) buffer Pos { vec4 p[]; } pos;
+layout(set = 0, binding = 1) buffer Vel { vec4 v[]; } vel;
 layout(set = 0, binding = 2) buffer CellHead { int h[]; } head;
 layout(set = 0, binding = 3) buffer CellNext { int nx[]; } next;
-layout(set = 0, binding = 7) buffer Grad { vec4 g[]; } grad;
 layout(set = 0, binding = 5) buffer Sdf { float d[]; } sdf;
+layout(set = 0, binding = 7) buffer Grad { vec4 g[]; } grad;
 layout(push_constant) uniform PC { float d[32]; } pc;
 
 float sdfValue(ivec3 res, int x, int y, int z) {
@@ -216,6 +217,7 @@ float sdfSample(vec3 p) {
     float cs = pc.d[27];
     vec3 f = (p - o) / cs;
     vec3 clamped = clamp(f, vec3(0.0), vec3(res - 1));
+    float outside = length((f - clamped) * cs);
     ivec3 i0 = ivec3(floor(clamped));
     ivec3 i1 = min(i0 + ivec3(1), res - ivec3(1));
     vec3 t = fract(clamped);
@@ -233,7 +235,7 @@ float sdfSample(vec3 p) {
     float c11 = v011 + (v111 - v011) * t.x;
     float c0 = c00 + (c10 - c00) * t.y;
     float c1 = c01 + (c11 - c01) * t.y;
-    return c0 + (c1 - c0) * t.z;
+    return c0 + (c1 - c0) * t.z + outside;
 }
 
 vec3 sdfGrad(vec3 p) {
@@ -247,14 +249,29 @@ void main() {
     uint i = gl_GlobalInvocationID.x;
     uint n = uint(pc.d[0]);
     if (i >= n) return;
+    if (pc.d[29] > 0.5) {
+        vec3 v = grad.g[i].xyz;
+        vec3 p = pos.p[i].xyz + v * pc.d[1];
+        float radius = pc.d[2];
+        float d = sdfSample(p);
+        vec3 nn = sdfGrad(p);
+        float nl = length(nn);
+        if (nl > 1e-6) nn /= nl;
+        else nn = vec3(0.0, 1.0, 0.0);
+        p -= nn * (d - radius);
+        v -= nn * dot(v, nn);
+        pos.p[i] = vec4(p, 0.0);
+        vel.v[i] = vec4(v, 0.0);
+        return;
+    }
     vec3 delta = grad.g[i].xyz;
-    float maxD = 0.05 * pc.d[3];
+    float maxD = 0.0005 * pc.d[3];
     float dl = length(delta);
     if (dl > maxD && dl > 1e-9) delta *= maxD / dl;
     vec3 p = pos.p[i].xyz + delta;
     float radius = pc.d[2];
     float d = sdfSample(p);
-    if (d < radius) {
+    {
         vec3 nn = sdfGrad(p);
         float nl = length(nn);
         if (nl > 1e-6) nn /= nl;
@@ -274,6 +291,7 @@ layout(set = 0, binding = 1) buffer Vel { vec4 v[]; } vel;
 layout(set = 0, binding = 2) buffer CellHead { int h[]; } head;
 layout(set = 0, binding = 3) buffer CellNext { int nx[]; } next;
 layout(set = 0, binding = 5) buffer Sdf { float d[]; } sdf;
+layout(set = 0, binding = 7) buffer Grad { vec4 g[]; } grad;
 layout(push_constant) uniform PC { float d[32]; } pc;
 
 float poly6(float r2, float h) {
@@ -300,6 +318,7 @@ float sdfSample(vec3 p) {
     float cs = pc.d[27];
     vec3 f = (p - o) / cs;
     vec3 clamped = clamp(f, vec3(0.0), vec3(res - 1));
+    float outside = length((f - clamped) * cs);
     ivec3 i0 = ivec3(floor(clamped));
     ivec3 i1 = min(i0 + ivec3(1), res - ivec3(1));
     vec3 t = fract(clamped);
@@ -317,7 +336,7 @@ float sdfSample(vec3 p) {
     float c11 = v011 + (v111 - v011) * t.x;
     float c0 = c00 + (c10 - c00) * t.y;
     float c1 = c01 + (c11 - c01) * t.y;
-    return c0 + (c1 - c0) * t.z;
+    return c0 + (c1 - c0) * t.z + outside;
 }
 
 vec3 sdfGrad(vec3 p) {
@@ -344,6 +363,9 @@ void main() {
         vec3 viscAcc = vec3(0.0);
         vec3 cohAcc = vec3(0.0);
         float shearAcc = 0.0;
+        float neighborWeight = 0.0;
+        float cohesionWeight = 0.0;
+        float particleVolume = pow(2.0 * pc.d[2], 3.0);
         vec3 origin = vec3(pc.d[17], pc.d[18], pc.d[19]);
         float cs = pc.d[20];
         ivec3 dim = ivec3(int(pc.d[14]), int(pc.d[15]), int(pc.d[16]));
@@ -360,11 +382,15 @@ void main() {
                         vec3 dx = p - pos.p[j].xyz;
                         float r2 = dot(dx, dx);
                         if (r2 < h2) {
-                            if (visc > 0.0) viscAcc += (vel.v[j].xyz - v) * poly6(r2, h);
-                            if (yield > 0.0) shearAcc += length(vel.v[j].xyz - v) * poly6(r2, h);
+                            float weight = poly6(r2, h) * particleVolume;
+                            if (visc > 0.0 || yield > 0.0) {
+                                viscAcc += (vel.v[j].xyz - v) * weight;
+                                neighborWeight += weight;
+                            }
+                            if (yield > 0.0) shearAcc += length(vel.v[j].xyz - v) * weight;
                             if (coh > 0.0) {
-                                float r = sqrt(r2);
-                                cohAcc += -coh * cohesionKernel(r, h) * (dx / r);
+                                cohAcc -= dx * weight;
+                                cohesionWeight += weight;
                             }
                         }
                     }
@@ -373,34 +399,28 @@ void main() {
         }
         float effVisc = visc;
         if (yield > 0.0 && shearAcc > 1e-6) effVisc += yield / shearAcc;
-        v += viscAcc * (effVisc * dt);
-        v += cohAcc * dt;
+        if (neighborWeight > 1e-6)
+            v += (viscAcc / neighborWeight) * clamp(effVisc * dt, 0.0, 1.0);
+        vec3 surfaceNormal = sdfGrad(p);
+        if (length(surfaceNormal) > 1e-6) surfaceNormal = normalize(surfaceNormal);
+        else surfaceNormal = vec3(0.0, 1.0, 0.0);
+        cohAcc -= surfaceNormal * dot(cohAcc, surfaceNormal);
+        vec3 cohesionDv = cohesionWeight > 1e-6 ?
+            (cohAcc / cohesionWeight) * (coh * 100.0 * dt) : vec3(0.0);
+        float cohesionSpeed = length(cohesionDv);
+        float maxCohesionDv = pc.d[2];
+        if (cohesionSpeed > maxCohesionDv && cohesionSpeed > 1e-9)
+            cohesionDv *= maxCohesionDv / cohesionSpeed;
+        v += cohesionDv;
     }
 
     v += vec3(pc.d[5], pc.d[6], pc.d[7]) * dt;
     v *= max(0.0, 1.0 - pc.d[12] * dt);
+    if (pc.d[11] > 0.0) v *= exp(-pc.d[11] * 300.0 * dt);
     float sp = length(v);
     float vmax = pc.d[13];
     if (sp > vmax && sp > 1e-9) v *= vmax / sp;
-    p += v * dt;
-
-    float radius = pc.d[2];
-    float d = sdfSample(p);
-    vec3 nn = sdfGrad(p);
-    float nl = length(nn);
-    if (nl > 1e-6) nn /= nl;
-    else nn = vec3(0.0, 1.0, 0.0);
-    if (d < radius) {
-        p = p - nn * (d - radius);
-        float vn = dot(v, nn);
-        if (vn < 0.0) v -= nn * vn;
-        d = radius;
-    }
-    float adh = pc.d[11];
-    if (adh > 0.0 && d < h) v += -nn * (adh * cohesionKernel(d, h) * dt);
-
-    pos.p[i] = vec4(p, 0.0);
-    vel.v[i] = vec4(v, 0.0);
+    grad.g[i] = vec4(v, 0.0);
 }
 )GLSL";
 

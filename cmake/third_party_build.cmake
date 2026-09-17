@@ -161,6 +161,15 @@ function(check_third_party_project name repo)
         # parent build, so nested dependencies must not install another layer.
         -DASSIMP_BUILD_USE_CCACHE=OFF
     )
+    # A sanitizer-enabled monolithic unit-test executable can exceed the x86-64
+    # small model's 2 GiB section reach. Every static dependency must use the
+    # same large code model as the executable; otherwise internal references in
+    # archives such as Assimp can still overflow with R_X86_64_PC32.
+    if(NOT MSVC AND CMAKE_C_FLAGS MATCHES "(^| )-mcmodel=large($| )")
+        list(APPEND _eve_tp_cmake_args
+            "-DCMAKE_C_FLAGS_RELEASE=-O3 -DNDEBUG -mcmodel=large"
+            "-DCMAKE_CXX_FLAGS_RELEASE=-O3 -DNDEBUG -mcmodel=large")
+    endif()
     # Pass the resolved logical groups into the isolated dependency project.
     # Comma encoding keeps one CMake argument intact across ExternalProject's
     # list expansion on POSIX, Ninja, MSBuild and Emscripten.

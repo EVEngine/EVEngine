@@ -16,15 +16,18 @@ Result<std::vector<std::uint8_t>> encodeCanonicalMesh(const CanonicalMeshData&  
     const auto count = mesh.positions.size() / 3;
     if (!count || mesh.positions.size() % 3 || count > limits.maximumVertices || mesh.indices.empty() ||
         mesh.indices.size() % 3 || mesh.indices.size() > limits.maximumIndices ||
-        (!mesh.normals.empty() && mesh.normals.size() != mesh.positions.size()) || mesh.texcoords.size() > UINT32_MAX ||
+        (!mesh.normals.empty() && mesh.normals.size() != mesh.positions.size()) ||
+        (!mesh.colors.empty() && mesh.colors.size() != count * 4) ||
+        (!mesh.colors.empty() && !mesh.attributes.empty()) || mesh.texcoords.size() > UINT32_MAX ||
         mesh.attributes.size() > UINT32_MAX)
         return invalid();
     const bool extended    = !mesh.attributes.empty();
-    uint64_t   floats      = 3 + (mesh.normals.empty() ? 0 : 3) + uint64_t(mesh.texcoords.size()) * 2;
+    uint64_t   floats      = 3 + (mesh.normals.empty() ? 0 : 3) + uint64_t(mesh.texcoords.size()) * 2 +
+                       (mesh.colors.empty() ? 0 : 4);
     auto       validValues = [](const auto& values) {
         return std::all_of(values.begin(), values.end(), [](float v) { return std::isfinite(v); });
     };
-    if (!validValues(mesh.positions) || !validValues(mesh.normals)) return invalid();
+    if (!validValues(mesh.positions) || !validValues(mesh.normals) || !validValues(mesh.colors)) return invalid();
     for (const auto& [set, values] : mesh.texcoords)
         if (values.size() != count * 2 || !validValues(values)) return invalid();
     for (const auto& [name, attribute] : mesh.attributes) {
@@ -49,13 +52,14 @@ Result<std::vector<std::uint8_t>> encodeCanonicalMesh(const CanonicalMeshData&  
     try {
         std::vector<uint8_t> bytes;
         bytes.reserve(size_t(size));
-        bytes.insert(bytes.end(), {'E', 'V', 'M', 'E', 'S', 'H', 0, uint8_t(extended ? 3 : 2)});
+        bytes.insert(bytes.end(),
+                     {'E', 'V', 'M', 'E', 'S', 'H', 0, uint8_t(extended || !mesh.colors.empty() ? 3 : 2)});
         auto put = [&](uint32_t value) {
             for (unsigned i = 0; i < 4; ++i) bytes.push_back(uint8_t(value >> (i * 8)));
         };
         put(uint32_t(count));
         put(uint32_t(mesh.indices.size()));
-        put(mesh.normals.empty() ? 0 : 1);
+        put((mesh.normals.empty() ? 0u : 1u) | (mesh.colors.empty() ? 0u : 2u));
         put(uint32_t(mesh.texcoords.size()));
         if (extended) put(uint32_t(mesh.attributes.size()));
         for (const auto& [set, values] : mesh.texcoords) put(set);
@@ -73,6 +77,7 @@ Result<std::vector<std::uint8_t>> encodeCanonicalMesh(const CanonicalMeshData&  
             if (!mesh.normals.empty()) stream(mesh.normals, v, 3);
             for (const auto& [set, values] : mesh.texcoords) stream(values, v, 2);
             for (const auto& [name, attribute] : mesh.attributes) stream(attribute.values, v, attribute.components);
+            if (!mesh.colors.empty()) stream(mesh.colors, v, 4);
         }
         for (auto index : mesh.indices) put(index);
         return Output::success(std::move(bytes));

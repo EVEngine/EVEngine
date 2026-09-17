@@ -82,6 +82,53 @@ inline TransformTRS blendTRS(const TransformTRS &a, const TransformTRS &b, float
     return out;
 }
 
+/** @brief Hamilton product `a * b` for unit quaternions (xyzw). */
+inline void multiplyQuat(float ax, float ay, float az, float aw, float bx, float by, float bz, float bw, float &ox,
+                         float &oy, float &oz, float &ow) {
+    ow = aw * bw - ax * bx - ay * by - az * bz;
+    ox = aw * bx + ax * bw + ay * bz - az * by;
+    oy = aw * by - ax * bz + ay * bw + az * bx;
+    oz = aw * bz + ax * by - ay * bx + az * bw;
+}
+
+/**
+ * @brief Apply an additive sample onto `base` using `reference`.
+ *
+ * `reference` is TransformTRS::identity() for Identity-mode deltas, or the
+ * skeleton bind local for BindPose-mode absolute samples. Translation adds
+ * (sample - reference); scale multiplies by sample/reference (or sample when
+ * reference is identity); rotation right-multiplies the slerped identity-to-delta quaternion.
+ * @param base Accumulated transform mutated in place.
+ * @param sample Evaluated additive-layer transform.
+ * @param reference Reference transform used as the additive identity.
+ * @param weight Finite blend influence, clamped to [0,1].
+ */
+inline void applyAdditiveTRS(TransformTRS &base, const TransformTRS &sample, const TransformTRS &reference,
+                             float weight) {
+    weight = clampf(weight, 0.f, 1.f);
+    if (weight <= 0.f) return;
+
+    base.px += (sample.px - reference.px) * weight;
+    base.py += (sample.py - reference.py) * weight;
+    base.pz += (sample.pz - reference.pz) * weight;
+    base.sx *= lerpf(1.f, std::fabs(reference.sx) > 1e-8f ? sample.sx / reference.sx : sample.sx, weight);
+    base.sy *= lerpf(1.f, std::fabs(reference.sy) > 1e-8f ? sample.sy / reference.sy : sample.sy, weight);
+    base.sz *= lerpf(1.f, std::fabs(reference.sz) > 1e-8f ? sample.sz / reference.sz : sample.sz, weight);
+
+    float dx, dy, dz, dw;
+    multiplyQuat(sample.qx, sample.qy, sample.qz, sample.qw, -reference.qx, -reference.qy, -reference.qz, reference.qw,
+                 dx, dy, dz, dw);
+    float ax, ay, az, aw;
+    slerpQuat(0.f, 0.f, 0.f, 1.f, dx, dy, dz, dw, weight, ax, ay, az, aw);
+    float qx, qy, qz, qw;
+    multiplyQuat(base.qx, base.qy, base.qz, base.qw, ax, ay, az, aw, qx, qy, qz, qw);
+    base.qx = qx;
+    base.qy = qy;
+    base.qz = qz;
+    base.qw = qw;
+    base.normalizeRotation();
+}
+
 /** @brief Rotate unit +Z by yaw (radians) around Y — used for planar facing. */
 inline void yawToForward(float yaw, float &fx, float &fz) {
     fx = std::sin(yaw);

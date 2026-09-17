@@ -16,6 +16,7 @@ import shutil
 import subprocess
 import sys
 import tempfile
+import utf8_stdio
 
 
 FIXTURES = {
@@ -128,4 +129,5 @@ def main() -> int:
 
 
 if __name__ == "__main__":
+    utf8_stdio.enable_utf8_stdio()
     raise SystemExit(main())

@@ -5,6 +5,10 @@ import unittest
 
 
 ROOT = Path(__file__).resolve().parents[2]
+# Loading a script by path bypasses the normal sys.path entry for its directory,
+# so its own sibling imports (utf8_stdio) only resolve if the test puts that
+# directory on sys.path itself.
+sys.path.insert(0, str(ROOT / "scripts"))
 SPEC = importlib.util.spec_from_file_location("migrate_evescript", ROOT / "scripts" / "migrate_evescript.py")
 MODULE = importlib.util.module_from_spec(SPEC)
 assert SPEC.loader is not None

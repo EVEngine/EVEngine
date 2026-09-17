@@ -8,11 +8,15 @@
 #include <vector>
 #include "common/Result.h"
 #include "graphics/BlendMode.h"
+#include "graphics/MeshShaderRasterState.h"
 
 #include <glm/mat4x4.hpp>
 
 namespace eve::graphics {
 class Texture;
+namespace vulkan {
+class Graphics;
+}
 
 /**
  * @brief Custom GPU program.
@@ -33,7 +37,7 @@ class Texture;
 class Shader {
 public:
     static constexpr int kMaxFloats = 32;
-    static constexpr std::size_t kMaxMeshTextures   = 4;
+    static constexpr std::size_t kMaxMeshTextures = 4;
     static constexpr uint32_t kPushConstantBytes = uint32_t(kMaxFloats * sizeof(float));
 
     enum class Kind { eSprite2D, eMesh3D };
@@ -71,6 +75,8 @@ public:
     bool meshDepthWrite = true;
     /** @brief Backend-owned culling state for custom mesh programs. */
     bool meshDoubleSided = true;
+    /** @brief Read the committed raster snapshot; render-thread affinity matches the owning Graphics. */
+    const MeshShaderRasterState &meshRasterState() const noexcept { return meshRaster_; }
 
     /** @brief Reserve sequential float slots in the push-constant block. Returns start index. */
     int declareFloat(const std::string &name);
@@ -98,22 +104,23 @@ public:
     int usedFloats() const { return usedFloats_; }
 
     /**
-     * @brief Set one borrowed custom-mesh texture bound after the engine bindings.
-     * @param slot Slot in
-     * `[0,4)`; Vulkan shaders use bindings 22..25 and WGSL uses texture/sampler pairs 22..29.
-     * @param texture
-     * Borrowed texture, or null for the engine white fallback. Render-thread only.
-     * @return InvalidArgument for a
-     * slot outside the fixed portable range.
+     * @brief Assign a borrowed custom-mesh texture to a portable slot in `[0,4)`.
+     * @param slot Portable custom-mesh texture slot.
+     * @param texture Borrowed texture; null clears the slot.
+     * @return Success or InvalidArgument for an out-of-range slot.
+     * @lifetime The caller owns the texture and must keep it alive while assigned and used by a draw.
+     * @thread Graphics thread only; do not call while the shader is being submitted on another thread.
      */
     [[nodiscard]] Result<void> setMeshTexture(std::size_t slot, Texture *texture);
     /**
-     * @brief Return one custom-mesh texture assignment.
-     * @param slot Slot in `[0,4)`.
-     * @return Borrowed texture, or null for an invalid or empty slot.
-     * @lifetime The caller must keep the assigned texture alive through every draw that uses this shader.
+     * @brief Return the borrowed texture assigned to a custom-mesh slot, or null.
+     * @param slot Portable custom-mesh texture slot.
+     * @return Non-owning pointer valid while the caller-owned texture remains alive and assigned.
+     * @thread Graphics thread only.
      */
-    Texture *meshTexture(std::size_t slot) const { return slot < meshTextures_.size() ? meshTextures_[slot] : nullptr; }
+    Texture *meshTexture(std::size_t slot) const {
+        return slot < meshTextures_.size() ? meshTextures_[slot] : nullptr;
+    }
 
     const std::vector<uint32_t> &vertexSpirv() const { return vertSpv_; }
     const std::vector<uint32_t> &fragmentSpirv() const { return fragSpv_; }
@@ -127,6 +134,8 @@ public:
     void *gpuHandle = nullptr;
 
 private:
+    friend class vulkan::Graphics;
+    MeshShaderRasterState meshRaster_;
     struct Uniform {
         int index = 0;
         int floatCount = 0;
@@ -142,8 +151,8 @@ private:
     std::vector<uint32_t> fragSpv_;
     std::map<std::string, Uniform> uniforms_;
     std::array<float, kMaxFloats> floats_{};
-    int usedFloats_ = 0;
     std::array<Texture *, kMaxMeshTextures> meshTextures_{};
+    int usedFloats_ = 0;
 };
 
 }  // namespace eve::graphics

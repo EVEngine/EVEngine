@@ -20,6 +20,9 @@ class FileData;
 namespace image
 {
 
+/** @brief Sampling modes used by Pcg-compatible in-place texture scaling. */
+enum class ImageScaleFilter { Point, Bilinear };
+
 /** @brief Owning receipt for one UV-space raster paint operation. */
 struct UvPaintReceipt {
 	int centerX = 0;
@@ -87,6 +90,18 @@ public:
 	 *         (picks existing palette entries via Scale2x / nearest).
 	 **/
 	ImageData *rotate(float radians, std::string filter = "nearest", bool expand = true) const;
+
+	/**
+	 * @brief Resize this image with Pcg ScaleTexture's exact point or bilinear coordinate mapping.
+	 * @param newWidth Positive destination width.
+	 * @param newHeight Positive destination height.
+	 * @param filter Point uses floor(sourceSize/destinationSize * coordinate). Bilinear uses
+	 * (sourceSize-1)/destinationSize and therefore intentionally does not sample the final source edge.
+	 * @return Number of destination pixels written, or InvalidArgument with this image unchanged.
+	 * @thread Affine to this mutable ImageData; callers provide synchronization.
+	 * @reentrancy Does not invoke callbacks or retain source storage.
+	 */
+	[[nodiscard]] eve::Result<int> scalePcg(int newWidth, int newHeight, ImageScaleFilter filter);
 
 	/**
 	 * @brief Checks whether a position is inside this ImageData. Useful for checking bounds.

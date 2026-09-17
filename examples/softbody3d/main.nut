@@ -7,7 +7,6 @@
 //
 // Controls:
 //   Left drag — grab / drag cloth
-//   Space     — toggle wind
 //   C         — toggle self-collision
 //   F         — toggle fold-angle limit
 //   R         — reset cloth pose
@@ -16,12 +15,12 @@
 // ============================================================================
 
 persist physics = null
+persist clothModule = null
 persist world3 = null
-persist cloth = null
+persist clothBody = null
 persist jelly = null
 persist jellyRenderer = null
 persist grabbing = false
-persist windOn = true
 persist selfCollisionOn = true
 persist foldOn = true
 persist windT = 0.0
@@ -49,6 +48,7 @@ function mousePressed() {
 
 function buildScene() {
     if (physics == null) physics = eve.Physics();
+    if (clothModule == null) clothModule = eve.Cloth();
 
     if (world3 == null) {
         world3 = physics.newWorld3D(0.0, -9.8, 0.0, true);
@@ -63,18 +63,20 @@ function buildScene() {
         ball.newSphereShape(0.5, 1.0, 0.2, 0.0);
     }
 
-    if (cloth == null) {
-        cloth = physics.newCloth3D(16, 12, 0.4, -3.0, CLOTH_TOP_Y, -2.0);
-        cloth.setGravity(0.0, -9.8, 0.0);
-        cloth.setStiffness(0.9);
-        cloth.setIterations(5);
-        cloth.setParticleSize(0.12);
-        cloth.setSelfCollision(true);
-        cloth.setFoldStiffness(0.8);
-        cloth.setMaxFoldAngle(130.0);
-        cloth.setBounds(-4.0, -1.0, -3.0, 8.0, 5.5, 6.0);
-        cloth.setColor(0.72, 0.80, 0.96, 1.0);
-        cloth.setCollideWorld(world3);
+    if (clothBody == null) {
+        clothBody = clothModule.newCloth3D(16, 12, 0.4, -3.0, CLOTH_TOP_Y, -2.0);
+        clothBody.setGravity(0.0, -9.8, 0.0);
+        clothBody.setStiffness(0.9);
+        clothBody.setIterations(5);
+        clothBody.setParticleSize(0.12);
+        clothBody.setWindVelocity(1.8, 1.2, 0.6);
+        clothBody.setAerodynamics(1.225, 1.1, 0.2);
+        clothBody.setSelfCollision(true);
+        clothBody.setFoldStiffness(0.8);
+        clothBody.setMaxFoldAngle(130.0);
+        clothBody.setBounds(-4.0, -1.0, -3.0, 8.0, 5.5, 6.0);
+        clothBody.setColor(0.72, 0.80, 0.96, 1.0);
+        clothBody.setCollideWorld(world3);
     }
 
     // Volumetric soft body: overlapping shape-matching clusters preserve the
@@ -97,8 +99,8 @@ function buildScene() {
 }
 
 function resetScene() {
-    if (cloth) {
-        cloth.reset();
+    if (clothBody) {
+        clothBody.reset();
         grabbing = false;
     }
     if (jelly) jelly.reset();
@@ -137,7 +139,7 @@ eve_init = function() {
     gfx.setDirectionalLight(-0.45, -1.0, -0.35, 1.25, 1.15, 1.0);
 
     buildScene();
-    print("softbody3d: left-drag grab | Space wind | C self-collision | F fold | R reset\n");
+    print("softbody3d: left-drag grab | C self-collision | F fold | R reset\n");
 };
 
 eve_reload <- function() {
@@ -145,17 +147,18 @@ eve_reload <- function() {
 };
 
 eve_update = function(dt) {
-    if (cloth == null) return;
+    if (clothBody == null) return;
 
-    if (edgePressed("Space")) windOn = !windOn;
+    windT += dt;
+
     if (edgePressed("C")) {
         selfCollisionOn = !selfCollisionOn;
-        cloth.setSelfCollision(selfCollisionOn);
+        clothBody.setSelfCollision(selfCollisionOn);
         print("self-collision: " + (selfCollisionOn ? "ON" : "off") + "\n");
     }
     if (edgePressed("F")) {
         foldOn = !foldOn;
-        cloth.setFoldStiffness(foldOn ? 0.8 : 0.0);
+        clothBody.setFoldStiffness(foldOn ? 0.8 : 0.0);
         print("fold limit: " + (foldOn ? "ON" : "off") + "\n");
     }
     if (edgePressed("R") || edgePressed("r")) resetScene();
@@ -163,31 +166,26 @@ eve_update = function(dt) {
     if (mousePressed()) {
         local pt = grabPoint();
         if (pt) {
-            local idx = cloth.grabAt(pt[0], pt[1], pt[2], 0.5);
+            local idx = clothBody.grabAt(pt[0], pt[1], pt[2], 0.5);
             grabbing = idx >= 0;
         }
     }
     if (mouse.isDown(1) && grabbing) {
         local pt = grabPoint();
-        if (pt) cloth.moveGrab(pt[0], pt[1], pt[2]);
+        if (pt) clothBody.moveGrab(pt[0], pt[1], pt[2]);
     } else if (grabbing) {
-        cloth.releaseGrab();
+        clothBody.releaseGrab();
         grabbing = false;
-    }
-
-    if (windOn) {
-        windT += dt;
-        cloth.applyForce(math.polarY(1.8, windT * 1.3), 0.0, math.polarX(0.6, windT * 0.9));
     }
 
     // Pointer field: right mouse repels nearby particles (Fluid2D-style).
     if (mouse.isDown(2)) {
         local pt = grabPoint();
-        if (pt) cloth.interactAt(pt[0], pt[1], pt[2], 1.1, -14.0);
+        if (pt) clothBody.interactAt(pt[0], pt[1], pt[2], 1.1, -14.0);
     }
 
     if (world3) world3.update(dt);
-    cloth.update(dt);
+    clothBody.update(dt);
     if (jelly) {
         // A small alternating lateral load keeps the volume response visible.
         jelly.applyForce(math.polarY(0.055, windT * 1.7), 0.0, 0.0);
@@ -198,6 +196,6 @@ eve_update = function(dt) {
 eve_render = function() {
     gfx.clear();
     gfx.render3D();
-    cloth.draw(gfx);
+    clothBody.draw(gfx);
     if (jellyRenderer) jellyRenderer.draw(gfx);
 };

@@ -57,6 +57,12 @@ void Material::setShadingModel(const std::string &model) {
     if (shadingModel_ == "hair") {
         isHair_ = true;
         surfaceMode_ = SurfaceMode::Transparent;
+        blendMode_ = BlendMode::Alpha;
+        doubleSided_ = true;
+        depthWrite_ = false;
+        castShadow_ = false;
+        alphaCutoff_ = 0.15f;
+        if (sortPriority_ == 0) sortPriority_ = 10;
     }
 }
 
@@ -95,6 +101,12 @@ void Material::setHair(bool hair) {
     if (hair) {
         shadingModel_ = "hair";
         surfaceMode_ = SurfaceMode::Transparent;
+        blendMode_ = BlendMode::Alpha;
+        doubleSided_ = true;
+        depthWrite_ = false;
+        castShadow_ = false;
+        alphaCutoff_ = 0.15f;
+        if (sortPriority_ == 0) sortPriority_ = 10;
     }
 }
 
@@ -182,6 +194,7 @@ Result<void> Material::bind(Graphics& gfx) const {
     gfx.setMesh3DMaterial(metallic_, roughness_);
     gfx.setMesh3DTexCellBomb(texBombScale_, texBombStrength_, texBombRot_);
     gfx.setMesh3DNormalTexture(pbr_.textures[2].texture);
+    gfx.setMesh3DPackedNormalMask(false);
     gfx.setMesh3DHeightTexture(height_);
     gfx.setMesh3DVirtualTexture(virtualTextureEnabled_, virtualPageCountX_, virtualPageCountY_,
                                 virtualAtlasSlotsX_, virtualAtlasSlotsY_,

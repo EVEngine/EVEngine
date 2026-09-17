@@ -1,4 +1,5 @@
 #include "scene/loader/SceneLoader.h"
+#include "scene/loader/PrefabActionCapabilities.h"
 
 #include "animation/AnimClip.h"
 #include "animation/AnimImporter.h"
@@ -60,7 +61,10 @@ SceneLoader::DecodedScene &SceneLoader::DecodedScene::operator=(DecodedScene &&)
 
 Module_IMPL(SceneLoader, new SceneLoader());
 
+SceneLoader::SceneLoader() { registerPrefabActionCapabilities(); }
+
 SceneLoader::~SceneLoader() {
+    shutdownPrefabActionCapabilities();
     // Decoded ModelData instances are owned by the unified resource cache
     // (Model3D::newModelDataFromFile returns cache-shared resources), so no
     // cleanup is needed here.

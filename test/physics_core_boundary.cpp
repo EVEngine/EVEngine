@@ -2,18 +2,23 @@
 #include "zeroerr/unittest.h"
 
 #include "physics/Body.h"
+#include "physics/Body3D.h"
 #include "physics/Physics.h"
 #include "physics/PhysicsLink.h"
+#include "physics/Shape3D.h"
+#include "physics/World3D.h"
 #include "physics/backend/SimulationBackend.h"
 #include "physics/World.h"
 
 #include "common/Capability.h"
 
 #include <Box2D/Box2D.h>
+#include <box3d/box3d.h>
 
 #include <cmath>
 #include <cstdint>
 #include <memory>
+#include <stdexcept>
 
 using namespace eve::physics;
 
@@ -38,6 +43,66 @@ public:
                 eve::DiagnosticCode::Unsupported, "Mock accelerator does not implement this domain"));
         }
         return eve::Result<std::unique_ptr<ISimulationBackend>>::success(detail::makeMockAcceleratorBackend());
+    }
+};
+
+class FailingProvider final : public IAcceleratorBackendProvider {
+public:
+    explicit FailingProvider(bool throws) : throws_(throws) {}
+
+    [[nodiscard]] bool supports(SimulationBackendDomain) const noexcept override { return true; }
+
+    [[nodiscard]] eve::Result<std::unique_ptr<ISimulationBackend>> create(SimulationBackendDomain,
+                                                                          void*) override {
+        if (throws_) throw std::runtime_error("accelerator setup exploded");
+        return eve::Result<std::unique_ptr<ISimulationBackend>>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Conflict, "accelerator rejected shared state", "provider.state"));
+    }
+
+private:
+    bool throws_ = false;
+};
+
+class FailSecondStepBackend final : public ISimulationBackend {
+public:
+    explicit FailSecondStepBackend(b3WorldId* world)
+        : delegate_(detail::makeCallbackSimulationBackend(world, &stepBox3D, SimulationBackendKind::MockAccelerator,
+                                                          SimulationDeterminism::ToleranceBounded)) {}
+
+    [[nodiscard]] eve::Result<void> step(const eve::SimulationStep& step,
+                                         const SimulationSettings& settings) override {
+        if (delegate_->observation().stepCount != 0) {
+            return eve::Result<void>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::Failed, "injected second-step failure", "physics.test.step"));
+        }
+        return delegate_->step(step, settings);
+    }
+    [[nodiscard]] SimulationObservation observation() const noexcept override { return delegate_->observation(); }
+    [[nodiscard]] SimulationBackendKind kind() const noexcept override { return delegate_->kind(); }
+    [[nodiscard]] SimulationDeterminism determinism() const noexcept override { return delegate_->determinism(); }
+    [[nodiscard]] eve::Result<void> restoreObservation(const SimulationObservation& value) override {
+        return delegate_->restoreObservation(value);
+    }
+
+private:
+    static void stepBox3D(void* context, const eve::SimulationStep& step,
+                          const SimulationSettings& settings) noexcept {
+        b3World_Step(*static_cast<b3WorldId*>(context), static_cast<float>(step.delta.seconds()),
+                     settings.subStepCount);
+    }
+
+    std::unique_ptr<ISimulationBackend> delegate_;
+};
+
+class FailSecondStepProvider final : public IAcceleratorBackendProvider {
+public:
+    [[nodiscard]] bool supports(SimulationBackendDomain domain) const noexcept override {
+        return domain == SimulationBackendDomain::World3D;
+    }
+    [[nodiscard]] eve::Result<std::unique_ptr<ISimulationBackend>> create(SimulationBackendDomain,
+                                                                          void* state) override {
+        return eve::Result<std::unique_ptr<ISimulationBackend>>::success(
+            std::make_unique<FailSecondStepBackend>(static_cast<b3WorldId*>(state)));
     }
 };
 
@@ -125,6 +190,57 @@ TEST_CASE("physics.core.backendFallbackIsStructuredAndObservable") {
     auto presentSelection = std::move(present).takeValue();
     CHECK(!presentSelection.usedFallback);
     CHECK_EQ(presentSelection.actualKind, SimulationBackendKind::MockAccelerator);
+}
+
+TEST_CASE("physics.core.backendFallbackPreservesProviderFailureDiagnostics") {
+    CapabilityReset reset;
+    b2World rawWorld(b2Vec2_zero);
+
+    FailingProvider provider(false);
+    eve::cap::provide<IAcceleratorBackendProvider>(&provider);
+    auto selected = detail::selectSimulationBackend(SimulationBackendDomain::World2D,
+                                                     detail::makeBox2DSimulationBackend(&rawWorld), &rawWorld, true);
+    REQUIRE(selected.ok());
+    REQUIRE_EQ(selected.diagnostics().size(), std::size_t(2));
+    CHECK_EQ(selected.diagnostics()[1].code(), eve::DiagnosticCode::Conflict);
+    CHECK_EQ(selected.diagnostics()[1].message(), std::string("accelerator rejected shared state"));
+    CHECK_EQ(selected.diagnostics()[1].path(), std::string("provider.state"));
+}
+
+TEST_CASE("physics.core.backendFallbackPreservesProviderExceptionMessage") {
+    CapabilityReset reset;
+    b2World rawWorld(b2Vec2_zero);
+
+    FailingProvider provider(true);
+    eve::cap::provide<IAcceleratorBackendProvider>(&provider);
+    auto selected = detail::selectSimulationBackend(SimulationBackendDomain::World2D,
+                                                     detail::makeBox2DSimulationBackend(&rawWorld), &rawWorld, true);
+    REQUIRE(selected.ok());
+    REQUIRE_EQ(selected.diagnostics().size(), std::size_t(2));
+    CHECK_EQ(selected.diagnostics()[1].code(), eve::DiagnosticCode::CallbackFailure);
+    CHECK_EQ(selected.diagnostics()[1].message(), std::string("accelerator setup exploded"));
+}
+
+TEST_CASE("physics.core.world3dFailedStepPreservesPreviousContactEvents") {
+    CapabilityReset reset;
+    FailSecondStepProvider provider;
+    eve::cap::provide<IAcceleratorBackendProvider>(&provider);
+
+    World3D world(0.f, -9.8f, 0.f, false);
+    std::unique_ptr<Body3D> bodyA(world.newBody("dynamic", 0.f, 0.f, 0.f));
+    std::unique_ptr<Body3D> bodyB(world.newBody("dynamic", 0.f, 0.f, 0.f));
+    std::unique_ptr<Shape3D> shapeA(bodyA->newSphereShape(1.f));
+    std::unique_ptr<Shape3D> shapeB(bodyB->newSphereShape(1.f));
+
+    auto first = world.step({eve::SimulationTick{1}, eve::Duration::fromNanoseconds(16666667)});
+    REQUIRE(first.ok());
+    REQUIRE_GT(world.getBeginContactCount(), 0);
+    const int previousCount = world.getBeginContactCount();
+
+    auto failed = world.step({eve::SimulationTick{2}, eve::Duration::fromNanoseconds(16666667)});
+    CHECK(!failed.ok());
+    CHECK_EQ(world.getBeginContactCount(), previousCount);
+    CHECK_EQ(world.simulationTick(), eve::SimulationTick{1});
 }
 
 TEST_CASE("physics.core.worldUpdateNeedsNoGraphics") {

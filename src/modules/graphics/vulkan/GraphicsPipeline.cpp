@@ -380,10 +380,6 @@ void Graphics::createMesh3DPipeline() {
             .image(17, vk::DescriptorType::eCombinedImageSampler, vk::ShaderStageFlagBits::eFragment, 1)
             .image(18, vk::DescriptorType::eCombinedImageSampler, vk::ShaderStageFlagBits::eFragment, 1)
             .image(20, vk::DescriptorType::eCombinedImageSampler, vk::ShaderStageFlagBits::eFragment, 1)
-            .image(22, vk::DescriptorType::eCombinedImageSampler, vk::ShaderStageFlagBits::eFragment, 1)
-            .image(23, vk::DescriptorType::eCombinedImageSampler, vk::ShaderStageFlagBits::eFragment, 1)
-            .image(24, vk::DescriptorType::eCombinedImageSampler, vk::ShaderStageFlagBits::eFragment, 1)
-            .image(25, vk::DescriptorType::eCombinedImageSampler, vk::ShaderStageFlagBits::eFragment, 1)
             .createUnique(device.instance);
     mesh3dSetLayout = *mesh3dSetLayoutUnique;
 
@@ -467,11 +463,15 @@ void Graphics::createMesh3DClusteredPipeline() {
 
 void Graphics::destroyShadowResources() {
     resetDeferredFrameGraphs();
-    for (auto &pipeline : shadowPipelines) destroyPipeline(device, pipeline);
+    destroyPipeline(device, shadowPipeline);
+    destroyPipeline(device, shadowSingleSidedPipeline);
     destroyPipelineLayout(device, shadowPipelineLayout);
-    for (auto &pipeline : shadowAlphaPipelines) destroyPipeline(device, pipeline);
-    for (auto &pipeline : shadowSkinPipelines) destroyPipeline(device, pipeline);
-    for (auto &pipeline : shadowSkinAlphaPipelines) destroyPipeline(device, pipeline);
+    destroyPipeline(device, shadowAlphaPipeline);
+    destroyPipeline(device, shadowAlphaSingleSidedPipeline);
+    destroyPipeline(device, shadowSkinPipeline);
+    destroyPipeline(device, shadowSkinSingleSidedPipeline);
+    destroyPipeline(device, shadowSkinAlphaPipeline);
+    destroyPipeline(device, shadowSkinAlphaSingleSidedPipeline);
     destroyPipelineLayout(device, shadowAlphaPipelineLayout);
     for (auto &slot : shadowMaps) {
         for (int i = 0; i < ShadowConfig::kCascades; ++i) {
@@ -529,10 +529,10 @@ void Graphics::destroyGBufferResources() {
     }
     gbufferSlots.clear();
     post2Sets.clear();
-    for (auto &pipeline : gbufferPipelines) destroyPipeline(device, pipeline);
-    for (auto &pipeline : gbufferAlphaPipelines) destroyPipeline(device, pipeline);
-    for (auto &pipeline : gbufferSkinPipelines) destroyPipeline(device, pipeline);
-    for (auto &pipeline : gbufferSkinAlphaPipelines) destroyPipeline(device, pipeline);
+    destroyPipeline(device, gbufferPipeline);
+    destroyPipeline(device, gbufferAlphaPipeline);
+    destroyPipeline(device, gbufferSkinPipeline);
+    destroyPipeline(device, gbufferSkinAlphaPipeline);
     destroyPipeline(device, gbufferVisPipeline);
     destroyPipeline(device, gbufferVgVisPipeline);
     destroyPipelineLayout(device, gbufferPipelineLayout);
@@ -763,7 +763,8 @@ bool Graphics::renderUiOverlayPass() {
 
 void Graphics::createGBufferResources(int gbufW, int gbufH) {
     if (gbufW <= 0 || gbufH <= 0) return;
-    if (!gbufferSlots.empty() && gbufferWidth == gbufW && gbufferHeight == gbufH && gbufferPipelines[0]) return;
+    if (!gbufferSlots.empty() && gbufferWidth == gbufW && gbufferHeight == gbufH && gbufferPipeline)
+        return;
     destroyGBufferResources();
 
     gbufferWidth = gbufW;
@@ -829,21 +830,17 @@ void Graphics::createGBufferResources(int gbufW, int gbufH) {
                                mesh3d_gbuffer_frag_spv + mesh3d_gbuffer_frag_spv_count);
     vk::ShaderModule vertModule = vkb::PipelineBuilder::createShaderModule(device.instance, vert);
     vk::ShaderModule fragModule = vkb::PipelineBuilder::createShaderModule(device.instance, frag);
-    constexpr std::array<vk::CullModeFlags, 3> gbufferCullModes{
-        vk::CullModeFlagBits::eNone, vk::CullModeFlagBits::eBack, vk::CullModeFlagBits::eFront};
-    for (size_t cullIndex = 0; cullIndex < gbufferCullModes.size(); ++cullIndex) {
-        gbufferPipelines[cullIndex] =
-            device.createPipeline()
-                .useClassicPipeline(vertModule, fragModule)
-                .setPipelineLayout(gbufferPipelineLayout)
-                .setVertexInputState(
-                    vkb::VertexInputStateBuilder().addInputBinding<MeshVertex>().addAttributeDescription<MeshVertex>())
-                .setDynamicStatesViewportScissor()
-                .setRasterizer(vk::PolygonMode::eFill, false, false, 1.0f, gbufferCullModes[cullIndex],
-                               vk::FrontFace::eClockwise)
-                .setColorAttachmentCount(3)
-                .build(gbufferPass);
-    }
+    gbufferPipeline = device.createPipeline()
+                          .useClassicPipeline(vertModule, fragModule)
+                          .setPipelineLayout(gbufferPipelineLayout)
+                          .setVertexInputState(vkb::VertexInputStateBuilder()
+                                                   .addInputBinding<MeshVertex>()
+                                                   .addAttributeDescription<MeshVertex>())
+                          .setDynamicStatesViewportScissor()
+                          .setRasterizer(vk::PolygonMode::eFill, false, false, 1.0f,
+                                         vk::CullModeFlagBits::eNone, vk::FrontFace::eClockwise)
+                          .setColorAttachmentCount(3)
+                          .build(gbufferPass);
     device->destroyShaderModule(vertModule);
     device->destroyShaderModule(fragModule);
 
@@ -856,49 +853,46 @@ void Graphics::createGBufferResources(int gbufW, int gbufH) {
                                         mesh3d_gbuffer_alpha_frag_spv_count);
     vk::ShaderModule alphaFragModule =
         vkb::PipelineBuilder::createShaderModule(device.instance, alphaFrag);
-    for (size_t cullIndex = 0; cullIndex < gbufferCullModes.size(); ++cullIndex) {
-        gbufferAlphaPipelines[cullIndex] =
-            device.createPipeline()
-                .useClassicPipeline(alphaVertModule, alphaFragModule)
-                .setPipelineLayout(gbufferPipelineLayout)
-                .setVertexInputState(
-                    vkb::VertexInputStateBuilder().addInputBinding<MeshVertex>().addAttributeDescription<MeshVertex>())
-                .setDynamicStatesViewportScissor()
-                .setRasterizer(vk::PolygonMode::eFill, false, false, 1.0f, gbufferCullModes[cullIndex],
-                               vk::FrontFace::eClockwise)
-                .setColorAttachmentCount(3)
-                .build(gbufferPass);
-    }
+    gbufferAlphaPipeline = device.createPipeline()
+                               .useClassicPipeline(alphaVertModule, alphaFragModule)
+                               .setPipelineLayout(gbufferPipelineLayout)
+                               .setVertexInputState(vkb::VertexInputStateBuilder()
+                                                        .addInputBinding<MeshVertex>()
+                                                        .addAttributeDescription<MeshVertex>())
+                               .setDynamicStatesViewportScissor()
+                               .setRasterizer(vk::PolygonMode::eFill, false, false, 1.0f,
+                                              vk::CullModeFlagBits::eNone,
+                                              vk::FrontFace::eClockwise)
+                               .setColorAttachmentCount(3)
+                               .build(gbufferPass);
     device->destroyShaderModule(alphaVertModule);
     device->destroyShaderModule(alphaFragModule);
 
     auto skinVert = embeddedSpirv(mesh3d_gbuffer_skin_vert_spv);
     auto skinFrag = embeddedSpirv(mesh3d_gbuffer_skin_frag_spv);
-    for (size_t cullIndex = 0; cullIndex < gbufferCullModes.size(); ++cullIndex) {
-        gbufferSkinPipelines[cullIndex] =
-            device.createPipeline()
-                .useClassicPipeline(skinVert, skinFrag)
-                .setPipelineLayout(skinPassPipelineLayout)
-                .setVertexInputState(
-                    vkb::VertexInputStateBuilder().addInputBinding<MeshVertex>().addAttributeDescription<MeshVertex>())
-                .setDynamicStatesViewportScissor()
-                .setRasterizer(vk::PolygonMode::eFill, false, false, 1.0f, gbufferCullModes[cullIndex],
-                               vk::FrontFace::eClockwise)
-                .build(gbufferPass);
-    }
+    gbufferSkinPipeline = device.createPipeline()
+                              .useClassicPipeline(skinVert, skinFrag)
+                              .setPipelineLayout(skinPassPipelineLayout)
+                              .setVertexInputState(vkb::VertexInputStateBuilder()
+                                                       .addInputBinding<MeshVertex>()
+                                                       .addAttributeDescription<MeshVertex>())
+                              .setDynamicStatesViewportScissor()
+                              .setRasterizer(vk::PolygonMode::eFill, false, false, 1.0f,
+                                             vk::CullModeFlagBits::eNone,
+                                             vk::FrontFace::eClockwise)
+                              .build(gbufferPass);
     auto skinAlphaFrag = embeddedSpirv(mesh3d_gbuffer_skin_alpha_frag_spv);
-    for (size_t cullIndex = 0; cullIndex < gbufferCullModes.size(); ++cullIndex) {
-        gbufferSkinAlphaPipelines[cullIndex] =
-            device.createPipeline()
-                .useClassicPipeline(skinVert, skinAlphaFrag)
-                .setPipelineLayout(skinPassPipelineLayout)
-                .setVertexInputState(
-                    vkb::VertexInputStateBuilder().addInputBinding<MeshVertex>().addAttributeDescription<MeshVertex>())
-                .setDynamicStatesViewportScissor()
-                .setRasterizer(vk::PolygonMode::eFill, false, false, 1.0f, gbufferCullModes[cullIndex],
-                               vk::FrontFace::eClockwise)
-                .build(gbufferPass);
-    }
+    gbufferSkinAlphaPipeline = device.createPipeline()
+                                   .useClassicPipeline(skinVert, skinAlphaFrag)
+                                   .setPipelineLayout(skinPassPipelineLayout)
+                                   .setVertexInputState(vkb::VertexInputStateBuilder()
+                                                            .addInputBinding<MeshVertex>()
+                                                            .addAttributeDescription<MeshVertex>())
+                                   .setDynamicStatesViewportScissor()
+                                   .setRasterizer(vk::PolygonMode::eFill, false, false, 1.0f,
+                                                  vk::CullModeFlagBits::eNone,
+                                                  vk::FrontFace::eClockwise)
+                                   .build(gbufferPass);
 
     auto makeSampleTex = [&](GpuTexture &gpu, Texture &tex, vk::ImageView view) {
         vkb::SamplerBuilder sb;
@@ -1451,9 +1445,9 @@ void Graphics::ensureScenePassPipelines(const vkb::BuiltRenderPass &target,
                 createMesh3DHairPipeline(g->owner->vertexSpirv(), g->owner->fragmentSpirv(),
                                          g->pipelineLayout, target, samples);
         } else {
-            g->mesh3dPipeline = createMesh3DStylePipeline(g->owner->vertexSpirv(), g->owner->fragmentSpirv(),
-                                                          g->pipelineLayout, target, samples, g->owner->meshBlend,
-                                                          g->owner->meshDepthWrite, g->owner->meshDoubleSided);
+            g->mesh3dPipeline = createMesh3DStylePipeline(
+                g->owner->vertexSpirv(), g->owner->fragmentSpirv(), g->pipelineLayout, target, samples,
+                g->owner->meshBlend, g->owner->meshDepthWrite, g->owner->meshDoubleSided, g->owner->meshRasterState());
             g->mesh3dXrayPipeline =
                 createMesh3DXrayPipeline(g->owner->vertexSpirv(), g->owner->fragmentSpirv(),
                                          g->pipelineLayout, target, samples);
@@ -1549,7 +1543,9 @@ void Graphics::materializeSceneColorResolve() {
             swapchain.image_format == vk::Format::eB8G8R8A8Srgb || swapchain.image_format == vk::Format::eR8G8B8A8Srgb;
         TexturedBatch resolve{postProcessed, nullptr, nullptr, BlendMode::Opaque, Batcher{}};
         resolve.batch.addTexturedRect(0.f, 0.f, float(width), float(height),
-                                      Color(1.f, 1.f, 1.f, attachmentEncodesSrgb ? 0.f : 65536.f), 0.f, 0.f, 1.f, 1.f);
+                                      Color(getSceneToneMapping() == SceneToneMapping::Aces ? 1.f : 0.f, 1.f, 1.f,
+                                            attachmentEncodesSrgb ? 0.f : 65536.f),
+                                      0.f, 0.f, 1.f, 1.f);
         pendingSceneResolve = std::move(resolve);
     }
     solidBatches = std::move(savedSolid);
@@ -1617,21 +1613,33 @@ void Graphics::createShadowResources() {
                                mesh3d_shadow_frag_spv + mesh3d_shadow_frag_spv_count);
     vk::ShaderModule vertModule = vkb::PipelineBuilder::createShaderModule(device.instance, vert);
     vk::ShaderModule fragModule = vkb::PipelineBuilder::createShaderModule(device.instance, frag);
-    constexpr std::array<vk::CullModeFlags, 3> shadowCullModes{vk::CullModeFlagBits::eNone, vk::CullModeFlagBits::eBack,
-                                                               vk::CullModeFlagBits::eFront};
-    for (size_t cullIndex = 0; cullIndex < shadowCullModes.size(); ++cullIndex) {
-        shadowPipelines[cullIndex] =
-            device.createPipeline()
-                .useClassicPipeline(vertModule, fragModule)
-                .setPipelineLayout(shadowPipelineLayout)
-                .setVertexInputState(
-                    vkb::VertexInputStateBuilder().addInputBinding<MeshVertex>().addAttributeDescription<MeshVertex>())
-                .setDynamicStatesViewportScissor()
-                .setRasterizer(vk::PolygonMode::eFill, false, false, 1.0f, shadowCullModes[cullIndex],
-                               vk::FrontFace::eClockwise)
-                .setDepthBias(0.0f, 0.5f)
-                .build(shadowPass);
-    }
+    shadowPipeline =
+        device.createPipeline()
+            .useClassicPipeline(vertModule, fragModule)
+            .setPipelineLayout(shadowPipelineLayout)
+            .setVertexInputState(vkb::VertexInputStateBuilder()
+                                     .addInputBinding<MeshVertex>()
+                                     .addAttributeDescription<MeshVertex>())
+            .setDynamicStatesViewportScissor()
+            // No cull: Cornell-style one-sided interiors keep writing when the
+            // ceiling/walls are back-facing the sun. Closest depth still wins
+            // on closed meshes, so floors are not punched through.
+            .setRasterizer(vk::PolygonMode::eFill, false, false, 1.0f, vk::CullModeFlagBits::eNone,
+                           vk::FrontFace::eClockwise)
+            .setDepthBias(0.0f, 0.5f)
+            .build(shadowPass);
+    shadowSingleSidedPipeline =
+        device.createPipeline()
+            .useClassicPipeline(vertModule, fragModule)
+            .setPipelineLayout(shadowPipelineLayout)
+            .setVertexInputState(vkb::VertexInputStateBuilder()
+                                     .addInputBinding<MeshVertex>()
+                                     .addAttributeDescription<MeshVertex>())
+            .setDynamicStatesViewportScissor()
+            .setRasterizer(vk::PolygonMode::eFill, false, false, 1.0f, vk::CullModeFlagBits::eBack,
+                           vk::FrontFace::eClockwise)
+            .setDepthBias(0.0f, 0.5f)
+            .build(shadowPass);
     device->destroyShaderModule(vertModule);
     device->destroyShaderModule(fragModule);
 
@@ -1640,7 +1648,8 @@ void Graphics::createShadowResources() {
     // discards transparent texels so shadows follow the silhouette.
     shadowAlphaPipelineLayout = device.createPipelineLayout()
                                     .set(texSetLayout)
-                                    .push<glm::mat4>(vk::ShaderStageFlagBits::eVertex)
+                                    .push<ShadowAlphaPush>(vk::ShaderStageFlagBits::eVertex |
+                                                           vk::ShaderStageFlagBits::eFragment)
                                     .build();
     std::vector<uint32_t> alphaVert(mesh3d_shadow_alpha_vert_spv,
                                     mesh3d_shadow_alpha_vert_spv +
@@ -1652,50 +1661,83 @@ void Graphics::createShadowResources() {
         vkb::PipelineBuilder::createShaderModule(device.instance, alphaVert);
     vk::ShaderModule alphaFragModule =
         vkb::PipelineBuilder::createShaderModule(device.instance, alphaFrag);
-    for (size_t cullIndex = 0; cullIndex < shadowCullModes.size(); ++cullIndex) {
-        shadowAlphaPipelines[cullIndex] =
-            device.createPipeline()
-                .useClassicPipeline(alphaVertModule, alphaFragModule)
-                .setPipelineLayout(shadowAlphaPipelineLayout)
-                .setVertexInputState(
-                    vkb::VertexInputStateBuilder().addInputBinding<MeshVertex>().addAttributeDescription<MeshVertex>())
-                .setDynamicStatesViewportScissor()
-                .setRasterizer(vk::PolygonMode::eFill, false, false, 1.0f, shadowCullModes[cullIndex],
-                               vk::FrontFace::eClockwise)
-                .setDepthBias(0.0f, 0.5f)
-                .build(shadowPass);
-    }
+    shadowAlphaPipeline =
+        device.createPipeline()
+            .useClassicPipeline(alphaVertModule, alphaFragModule)
+            .setPipelineLayout(shadowAlphaPipelineLayout)
+            .setVertexInputState(vkb::VertexInputStateBuilder()
+                                     .addInputBinding<MeshVertex>()
+                                     .addAttributeDescription<MeshVertex>())
+            .setDynamicStatesViewportScissor()
+            .setRasterizer(vk::PolygonMode::eFill, false, false, 1.0f, vk::CullModeFlagBits::eNone,
+                           vk::FrontFace::eClockwise)
+            .setDepthBias(0.0f, 0.5f)
+            .build(shadowPass);
+    shadowAlphaSingleSidedPipeline =
+        device.createPipeline()
+            .useClassicPipeline(alphaVertModule, alphaFragModule)
+            .setPipelineLayout(shadowAlphaPipelineLayout)
+            .setVertexInputState(vkb::VertexInputStateBuilder()
+                                     .addInputBinding<MeshVertex>()
+                                     .addAttributeDescription<MeshVertex>())
+            .setDynamicStatesViewportScissor()
+            .setRasterizer(vk::PolygonMode::eFill, false, false, 1.0f, vk::CullModeFlagBits::eBack,
+                           vk::FrontFace::eClockwise)
+            .setDepthBias(0.0f, 0.5f)
+            .build(shadowPass);
     device->destroyShaderModule(alphaVertModule);
     device->destroyShaderModule(alphaFragModule);
 
     auto skinVert = embeddedSpirv(mesh3d_shadow_skin_vert_spv);
-    for (size_t cullIndex = 0; cullIndex < shadowCullModes.size(); ++cullIndex) {
-        shadowSkinPipelines[cullIndex] =
-            device.createPipeline()
-                .useClassicPipeline(skinVert, frag)
-                .setPipelineLayout(skinPassPipelineLayout)
-                .setVertexInputState(
-                    vkb::VertexInputStateBuilder().addInputBinding<MeshVertex>().addAttributeDescription<MeshVertex>())
-                .setDynamicStatesViewportScissor()
-                .setRasterizer(vk::PolygonMode::eFill, false, false, 1.0f, shadowCullModes[cullIndex],
-                               vk::FrontFace::eClockwise)
-                .setDepthBias(0.0f, 0.5f)
-                .build(shadowPass);
-    }
+    shadowSkinPipeline = device.createPipeline()
+                             .useClassicPipeline(skinVert, frag)
+                             .setPipelineLayout(skinPassPipelineLayout)
+                             .setVertexInputState(vkb::VertexInputStateBuilder()
+                                                      .addInputBinding<MeshVertex>()
+                                                      .addAttributeDescription<MeshVertex>())
+                             .setDynamicStatesViewportScissor()
+                             .setRasterizer(vk::PolygonMode::eFill, false, false, 1.0f,
+                                            vk::CullModeFlagBits::eNone,
+                                            vk::FrontFace::eClockwise)
+                             .setDepthBias(0.0f, 0.5f)
+                             .build(shadowPass);
+    shadowSkinSingleSidedPipeline = device.createPipeline()
+                                        .useClassicPipeline(skinVert, frag)
+                                        .setPipelineLayout(skinPassPipelineLayout)
+                                        .setVertexInputState(vkb::VertexInputStateBuilder()
+                                                                 .addInputBinding<MeshVertex>()
+                                                                 .addAttributeDescription<MeshVertex>())
+                                        .setDynamicStatesViewportScissor()
+                                        .setRasterizer(vk::PolygonMode::eFill, false, false, 1.0f,
+                                                       vk::CullModeFlagBits::eBack,
+                                                       vk::FrontFace::eClockwise)
+                                        .setDepthBias(0.0f, 0.5f)
+                                        .build(shadowPass);
     auto skinAlphaFrag = embeddedSpirv(mesh3d_shadow_skin_alpha_frag_spv);
-    for (size_t cullIndex = 0; cullIndex < shadowCullModes.size(); ++cullIndex) {
-        shadowSkinAlphaPipelines[cullIndex] =
-            device.createPipeline()
-                .useClassicPipeline(skinVert, skinAlphaFrag)
-                .setPipelineLayout(skinPassPipelineLayout)
-                .setVertexInputState(
-                    vkb::VertexInputStateBuilder().addInputBinding<MeshVertex>().addAttributeDescription<MeshVertex>())
-                .setDynamicStatesViewportScissor()
-                .setRasterizer(vk::PolygonMode::eFill, false, false, 1.0f, shadowCullModes[cullIndex],
-                               vk::FrontFace::eClockwise)
-                .setDepthBias(0.0f, 0.5f)
-                .build(shadowPass);
-    }
+    shadowSkinAlphaPipeline = device.createPipeline()
+                                  .useClassicPipeline(skinVert, skinAlphaFrag)
+                                  .setPipelineLayout(skinPassPipelineLayout)
+                                  .setVertexInputState(vkb::VertexInputStateBuilder()
+                                                           .addInputBinding<MeshVertex>()
+                                                           .addAttributeDescription<MeshVertex>())
+                                  .setDynamicStatesViewportScissor()
+                                  .setRasterizer(vk::PolygonMode::eFill, false, false, 1.0f,
+                                                 vk::CullModeFlagBits::eNone,
+                                                 vk::FrontFace::eClockwise)
+                                  .setDepthBias(0.0f, 0.5f)
+                                  .build(shadowPass);
+    shadowSkinAlphaSingleSidedPipeline = device.createPipeline()
+                                             .useClassicPipeline(skinVert, skinAlphaFrag)
+                                             .setPipelineLayout(skinPassPipelineLayout)
+                                             .setVertexInputState(vkb::VertexInputStateBuilder()
+                                                                      .addInputBinding<MeshVertex>()
+                                                                      .addAttributeDescription<MeshVertex>())
+                                             .setDynamicStatesViewportScissor()
+                                             .setRasterizer(vk::PolygonMode::eFill, false, false, 1.0f,
+                                                            vk::CullModeFlagBits::eBack,
+                                                            vk::FrontFace::eClockwise)
+                                             .setDepthBias(0.0f, 0.5f)
+                                             .build(shadowPass);
 
     // Clear every ping-pong copy so sampling before the first real shadow pass
     // sees SHADER_READ_ONLY rather than UNDEFINED.
@@ -1903,70 +1945,6 @@ vkb::BoundSet Graphics::mesh3dClusteredSetFor(GpuTexture *gpuTex, GpuTexture *no
 
 size_t Graphics::mesh3dPipelineIndex(BlendMode blend, bool depthWrite, bool doubleSided) {
     return size_t(blend) * 4u + (depthWrite ? 2u : 0u) + (doubleSided ? 1u : 0u);
-}
-
-vk::Pipeline Graphics::createMesh3DStylePipeline(const std::vector<uint32_t> &vert,
-                                                 const std::vector<uint32_t> &frag,
-                                                 vk::PipelineLayout layout,
-                                                 const vkb::BuiltRenderPass &rp,
-                                                 vk::SampleCountFlagBits samples, BlendMode blend,
-                                                 bool depthWrite, bool doubleSided) {
-    vk::ShaderModule vertModule = vkb::PipelineBuilder::createShaderModule(device.instance, vert);
-    vk::ShaderModule fragModule = vkb::PipelineBuilder::createShaderModule(device.instance, frag);
-    const auto cull = doubleSided ? vk::CullModeFlagBits::eNone : vk::CullModeFlagBits::eBack;
-    vk::Pipeline pipe{};
-    if (blend == BlendMode::Additive || blend == BlendMode::Premultiplied ||
-        blend == BlendMode::Multiply) {
-        std::vector<vk::PipelineColorBlendAttachmentState> attachments(1,
-                                                                       makeBlendAttachment(blend));
-        vk::PipelineColorBlendStateCreateInfo cbs{};
-        cbs.attachmentCount = 1;
-        cbs.pAttachments = attachments.data();
-        pipe = device.createPipeline()
-            .useClassicPipeline(vertModule, fragModule)
-            .setPipelineLayout(layout)
-            .setVertexInputState(vkb::VertexInputStateBuilder()
-                                     .addInputBinding<MeshVertex>()
-                                     .addAttributeDescription<MeshVertex>())
-            .setDynamicStatesViewportScissor()
-            .setRasterizer(vk::PolygonMode::eFill, false, false, 1.0f, cull,
-                           vk::FrontFace::eCounterClockwise)
-            .setMultisampler(false, samples)
-            .setDepthStencil(true, depthWrite, vk::CompareOp::eLess)
-            .setColorBlending(cbs)
-            .build(rp);
-    } else if (blend == BlendMode::Alpha) {
-        pipe = device.createPipeline()
-                   .useClassicPipeline(vertModule, fragModule)
-                   .setPipelineLayout(layout)
-                   .setVertexInputState(vkb::VertexInputStateBuilder()
-                                            .addInputBinding<MeshVertex>()
-                                            .addAttributeDescription<MeshVertex>())
-                   .setDynamicStatesViewportScissor()
-                   .setRasterizer(vk::PolygonMode::eFill, false, false, 1.0f, cull,
-                                  vk::FrontFace::eCounterClockwise)
-                   .setMultisampler(false, samples)
-                   .setDepthStencil(true, depthWrite, vk::CompareOp::eLess)
-                   .setAlphaBlending(1)
-                   .build(rp);
-    } else {
-        pipe = device.createPipeline()
-                   .useClassicPipeline(vertModule, fragModule)
-                   .setPipelineLayout(layout)
-                   .setVertexInputState(vkb::VertexInputStateBuilder()
-                                            .addInputBinding<MeshVertex>()
-                                            .addAttributeDescription<MeshVertex>())
-                   .setDynamicStatesViewportScissor()
-                   .setRasterizer(vk::PolygonMode::eFill, false, false, 1.0f, cull,
-                                  vk::FrontFace::eCounterClockwise)
-                   .setMultisampler(false, samples)
-                   .setDepthStencil(true, depthWrite, vk::CompareOp::eLess)
-                   .setColorAttachmentCount(1)
-                   .build(rp);
-    }
-    device->destroyShaderModule(vertModule);
-    device->destroyShaderModule(fragModule);
-    return pipe;
 }
 
 vk::Pipeline Graphics::createMesh3DHairPipeline(const std::vector<uint32_t> &vert,

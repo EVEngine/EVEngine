@@ -130,3 +130,29 @@ TEST_CASE("procgen.pointSet.rejectsConflictingAttributeSchema") {
     CHECK_EQ(points.getFloatAttribute(row, "weight", -1.f), 0.5f);
     CHECK_EQ(points.attributes().rowCount(), size_t(points.getCount()));
 }
+
+TEST_CASE("procgen.attributeTable.renamesCopiesAndRemovesColumns") {
+    AttributeTable table;
+    CHECK_EQ(table.appendRow(), size_t(0));
+    CHECK_EQ(table.appendRow(), size_t(1));
+    REQUIRE(table.setFloat(0, "height", 1.5f).ok());
+    REQUIRE(table.setFloat(1, "height", 2.5f).ok());
+    REQUIRE(table.setString(0, "biome", "grass").ok());
+
+    REQUIRE(table.copyColumn("height", "altitude").ok());
+    REQUIRE(table.getFloat(1, "altitude").has_value());
+    CHECK_EQ(*table.getFloat(1, "altitude"), 2.5f);
+
+    REQUIRE(table.renameColumn("biome", "cover").ok());
+    CHECK(!table.typeOf("biome").has_value());
+    REQUIRE(table.getString(0, "cover").has_value());
+    CHECK_EQ(*table.getString(0, "cover"), "grass");
+
+    REQUIRE(table.removeColumn("altitude").ok());
+    CHECK(!table.typeOf("altitude").has_value());
+    CHECK(table.typeOf("height").has_value());
+
+    CHECK(!table.renameColumn("missing", "x").ok());
+    CHECK(!table.removeColumn("missing").ok());
+    CHECK(!table.copyColumn("height", "$Density").ok());
+}
