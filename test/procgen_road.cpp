@@ -5,6 +5,7 @@
 #include "procgen/Params.h"
 #include "procgen/algorithms/MarchingCubes.h"
 #include "procgen/texture/TextureRecipe.h"
+#include "image/ImageData.h"
 
 #include "zeroerr/unittest.h"
 
@@ -16,8 +17,6 @@ using namespace eve::procgen;
 using namespace eve::procgen::road;
 
 namespace {
-
-void requireOk(Result<void> result) { REQUIRE(result.ok()); }
 
 }  // namespace
 
