@@ -97,7 +97,7 @@ function buildTree(seed, x) {
     local mr = procgen.generateMesh("mesh.tree", p, gfx);
     if (!mr.ok) return;
     local atlas = makeTex("tex.tree_atlas", seed + 3, 512);
-    local mat = makeFoliageMaterial(atlas, null, 0.82, 0.28);
+    local mat = makeFoliageMaterial(atlas, null, 0.82, 0.42);
     placeMesh(retain(mr.value), x, -2.4, 0.0, 1.0, 1.0, 1.0, mat);
 }
 
@@ -122,7 +122,7 @@ function buildBush(seed, x) {
     if (!mr.ok) return;
     local foliage = makeTex("tex.foliage", seed + 5, 256);
     local normal = makeNormal("tex.foliage", seed + 5, 256);
-    local mat = makeFoliageMaterial(foliage, normal, 0.88, 0.32);
+    local mat = makeFoliageMaterial(foliage, normal, 0.88, 0.42);
     placeMesh(retain(mr.value), x, -2.55, 0.4, 1.15, 1.15, 1.15, mat);
 }
 

@@ -7,10 +7,10 @@ persist mapSeed = 20260917
 persist mapCamera = null
 persist mapFocusX = 12.0
 persist mapFocusZ = 12.0
-persist mapHeight = 14.0
-persist mapTilt = 1.0 // ~57° from horizontal — high oblique top-down like the video
+persist mapHeight = 11.0
+persist mapTilt = 0.95 // ~54° — enough side silhouette for foliage volumes
 persist mapYaw = 0.55
-persist mapAutoPan = true
+persist mapAutoPan = false
 persist mapTime = 0.0
 persist mapFrame = 0
 persist mapScreenshotSaved = false
@@ -23,10 +23,11 @@ persist mapGrass = null
 persist mapHeightmap = null
 persist mapLayers = null
 persist mapCellSize = 0.12
-persist mapHeightScale = 7.2
+persist mapHeightScale = 7.8
 persist mapGrid = 193
 persist mapChunk = 64
 persist mapSeaLevel = 0.34
+persist mapSun = null
 
 function retain(value) {
     mapKeep.append(value);
@@ -118,7 +119,7 @@ function makePrototype(kind, seedOffset) {
         if (!meshResult.ok) return null;
         mesh = retain(meshResult.value);
         local surf = makeSurface("tex.tree_atlas", seedOffset + 100, 512);
-        material = makeDecorMaterial(surf.albedo, null, true, 0.28);
+        material = makeDecorMaterial(surf.albedo, null, true, 0.42);
     } else if (kind == "bush") {
         p.setString("style", "mound");
         p.setString("leafMode", "mixed");
@@ -137,7 +138,7 @@ function makePrototype(kind, seedOffset) {
         if (!meshResult.ok) return null;
         mesh = retain(meshResult.value);
         local surf = makeSurface("tex.foliage", seedOffset + 120, 256);
-        material = makeDecorMaterial(surf.albedo, surf.normal, true, 0.32);
+        material = makeDecorMaterial(surf.albedo, surf.normal, true, 0.42);
     } else {
         // cliff / stone
         p.setInt("subdivisions", kind == "cliff" ? 3 : 2);
@@ -150,6 +151,10 @@ function makePrototype(kind, seedOffset) {
         local recipe = kind == "cliff" ? "tex.moss" : "tex.rock";
         local surf = makeSurface(recipe, seedOffset + 140, 256);
         material = makeDecorMaterial(surf.albedo, surf.normal, false, 0.5);
+        if (material != null) {
+            if (kind == "cliff") material.setTint(0.88, 0.92, 0.82, 1.0);
+            else material.setTint(0.82, 0.78, 0.70, 1.0);
+        }
     }
     return { mesh = mesh, material = material };
 }
@@ -444,9 +449,20 @@ eve_init = function() {
     gfx.setBackgroundColor(0.42, 0.58, 0.72, 1.0);
     gfx.setDirectionalLight(-0.62, 0.78, 0.22, 2.45, 2.05, 1.35);
 
+    local rc = gfx.getRenderControl();
+    rc.enable("gbuffer");
+    rc.compile();
+
+    mapSun = eve.Light3D();
+    mapSun.setType("dir");
+    mapSun.setDirection(-0.62, 0.78, 0.22);
+    mapSun.setColor(1.0, 0.92, 0.78, 2.2);
+    mapSun.setCastShadow(true);
+    mapSun.setShadowStrength(0.82);
+
     mapCamera = eve.Camera3D();
-    mapCamera.setFov(38.0);
-    mapCamera.setAmbient(0.18, 0.20, 0.22);
+    mapCamera.setFov(36.0);
+    mapCamera.setAmbient(0.16, 0.18, 0.20);
     mapCamera.setClipPlanes(0.2, 180.0);
     mapCamera.setActive(true);
 
@@ -499,7 +515,9 @@ eve_render = function() {
     gfx.clear();
     gfx.render3D();
     if (mapGrass != null) mapGrass.draw();
-    gfx.drawSolidRect(16.0, 16.0, 400.0, 40.0, 0.05, 0.08, 0.1, 0.72);
+    if (mapScreenshotSaved) {
+        gfx.drawSolidRect(16.0, 16.0, 400.0, 40.0, 0.05, 0.08, 0.1, 0.72);
+    }
 
     if (!mapScreenshotSaved && mapReady && mapFrame > 28 && mapTime > 2.0) {
         if (gfx.saveFramePng("topdown-procmap.png")) {

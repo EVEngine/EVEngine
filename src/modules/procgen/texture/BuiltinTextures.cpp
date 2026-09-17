@@ -116,11 +116,11 @@ std::vector<TextureRecipeDef> buildDefs() {
     // --- tex.rock: warm boulder with deep crevices (darker, more contrast) ---
     {
         ColorRamp ramp;
-        ramp.add(0.00f, 38, 34, 28);
-        ramp.add(0.28f, 72, 64, 54);
-        ramp.add(0.55f, 108, 98, 82);
-        ramp.add(0.80f, 138, 126, 108);
-        ramp.add(1.00f, 168, 156, 136);
+        ramp.add(0.00f, 28, 24, 20);
+        ramp.add(0.28f, 58, 52, 44);
+        ramp.add(0.55f, 92, 84, 70);
+        ramp.add(0.80f, 122, 112, 96);
+        ramp.add(1.00f, 148, 138, 120);
         PbrParams pbr;
         pbr.roughnessLow = 0.62f;
         pbr.roughnessHigh = 0.98f;
@@ -545,35 +545,36 @@ void sampleFoliageCover(const NoiseField &noise, float u, float v, float scale, 
     shade = 0.f;
     const float su = u * scale;
     const float sv = v * scale;
-    // Dense overlapping leaf cells (voronoi sites act as leaf centres).
+    // Larger, clearer leaf stamps so masked cutouts read as foliage rather than
+    // a speckled green noise field from top-down / mid-range cameras.
     for (int oy = -1; oy <= 1; ++oy) {
         for (int ox = -1; ox <= 1; ++ox) {
-            const int cx = int(std::floor(su * 2.6f)) + ox;
-            const int cy = int(std::floor(sv * 2.6f)) + oy;
+            const int cx = int(std::floor(su * 1.55f)) + ox;
+            const int cy = int(std::floor(sv * 1.55f)) + oy;
             const float px = float(cx) + noise.hash01(cx, cy);
             const float py = float(cy) + noise.hash01(cx * 7 + 3, cy * 13 + 5);
-            float dx = su * 2.6f - px;
-            float dy = sv * 2.6f - py;
-            const float ang = (noise.hash01(cx * 3 + 1, cy * 5 + 2) - 0.5f) * 1.4f;
+            float dx = su * 1.55f - px;
+            float dy = sv * 1.55f - py;
+            const float ang = (noise.hash01(cx * 3 + 1, cy * 5 + 2) - 0.5f) * 1.6f;
             const float ca = std::cos(ang), sa = std::sin(ang);
             const float rx = dx * ca - dy * sa;
             const float ry = dx * sa + dy * ca;
             // Pointed tip along +Y, wider shoulders below centre (lanceolate).
-            const float halfW = 0.38f * (1.f - 0.45f * std::max(0.f, ry));
-            const float d = (rx * rx) / std::max(1e-4f, halfW * halfW) + (ry * ry) / 0.55f;
-            const float mask = 1.f - smoothstep(0.72f, 1.05f, d);
+            const float halfW = 0.42f * (1.f - 0.48f * std::max(0.f, ry));
+            const float d = (rx * rx) / std::max(1e-4f, halfW * halfW) + (ry * ry) / 0.62f;
+            const float mask = 1.f - smoothstep(0.68f, 0.98f, d);
             if (mask <= cover) continue;
             cover = mask;
             const float vein = std::pow(
-                std::fabs(std::sin(ry * 9.f + noise.valueNoise(px * 0.4f, py * 0.4f) * 3.f)), 3.5f);
+                std::fabs(std::sin(ry * 7.5f + noise.valueNoise(px * 0.35f, py * 0.35f) * 2.5f)),
+                3.2f);
             const float mott =
-                noise.fbm(px * 0.35f + u * 2.f, py * 0.35f + v * 2.f, 3);
-            shade = std::clamp(0.35f + mott * 0.45f + (1.f - vein) * 0.25f, 0.f, 1.f);
+                noise.fbm(px * 0.28f + u * 1.6f, py * 0.28f + v * 1.6f, 3);
+            shade = std::clamp(0.28f + mott * 0.42f + (1.f - vein) * 0.30f, 0.f, 1.f);
         }
     }
-    // Tiny gaps / chew marks so the mass does not read as a flat green slab.
-    const float chew = smoothstep(0.55f, 0.85f, noise.fbm(u * 6.f + 3.f, v * 6.f, 2));
-    cover *= 1.f - chew * 0.18f;
+    const float chew = smoothstep(0.62f, 0.9f, noise.fbm(u * 5.f + 3.f, v * 5.f, 2));
+    cover *= 1.f - chew * 0.12f;
 }
 
 /**
@@ -602,11 +603,11 @@ std::unique_ptr<image::ImageData> genTreeAtlas(const Params &params, std::string
     barkRamp.add(1.00f, 68, 46, 28);
 
     ColorRamp leafRamp;
-    leafRamp.add(0.00f, 18, 42, 14);
-    leafRamp.add(0.28f, 40, 92, 28);
-    leafRamp.add(0.52f, 68, 138, 42);
-    leafRamp.add(0.78f, 118, 176, 58);
-    leafRamp.add(1.00f, 30, 64, 22);
+    leafRamp.add(0.00f, 14, 36, 10);
+    leafRamp.add(0.28f, 32, 78, 22);
+    leafRamp.add(0.52f, 52, 118, 34);
+    leafRamp.add(0.78f, 88, 148, 46);
+    leafRamp.add(1.00f, 24, 54, 16);
 
     const float invW = 1.f / float(std::max(1, ctx.width - 1));
     const float invH = 1.f / float(std::max(1, ctx.height - 1));
@@ -666,11 +667,11 @@ std::unique_ptr<image::ImageData> genFoliage(const Params &params, std::string &
     }
 
     ColorRamp leafRamp;
-    leafRamp.add(0.00f, 18, 42, 14);
-    leafRamp.add(0.28f, 40, 92, 28);
-    leafRamp.add(0.52f, 68, 138, 42);
-    leafRamp.add(0.78f, 118, 176, 58);
-    leafRamp.add(1.00f, 30, 64, 22);
+    leafRamp.add(0.00f, 14, 36, 10);
+    leafRamp.add(0.28f, 32, 78, 22);
+    leafRamp.add(0.52f, 52, 118, 34);
+    leafRamp.add(0.78f, 88, 148, 46);
+    leafRamp.add(1.00f, 24, 54, 16);
 
     const float invW = 1.f / float(std::max(1, ctx.width - 1));
     const float invH = 1.f / float(std::max(1, ctx.height - 1));
