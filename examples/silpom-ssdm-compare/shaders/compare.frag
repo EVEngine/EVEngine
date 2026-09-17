@@ -3,9 +3,10 @@
 //
 // pc.data[0] mode:
 //   0 = classic POM  — parallax only; geometric silhouette unchanged
-//   1 = SilPOM       — steep POM + soft chart-BORDER limb discard + height
-//                      normals + self-shadow + FragDepth
-//                      (limb only at UV rim — interior horizon discard = 镂空)
+//   1 = SilPOM       — same solid planar heightfield march as SSDM + jagged
+//                      brick-only limb on sides / narrow front rim + FragDepth
+//                      (steep-POM+horizon discard punched 镂空 and could not
+//                      grow silhouette past the mesh on these cards)
 //   2 = SSDM         — planar heightfield march + FragDepth; side-face misses
 //                      discard so brick caps form the extruded outline
 //
@@ -245,10 +246,10 @@ void chartFillFront(vec3 Nw, float scale, float minLayers, float maxLayers,
     shadow = selfShadow(uv, 1.0 - h, lightTS, scale, minLayers, maxLayers);
 }
 
-bool isFrontFace(vec3 Nw) {
-    // Model +Z is the chart front; sides have |Nz| near 0 in model space.
+bool isFrontFace() {
+    // Use the mesh attribute (before view-facing flip) so side faces stay sides.
     vec3 frontW = normalize(mat3(ubo.model) * vec3(0.0, 0.0, 1.0));
-    return abs(dot(normalize(Nw), frontW)) > 0.55;
+    return abs(dot(normalize(vNormal), frontW)) > 0.55;
 }
 
 vec3 shadeLit(vec3 albedo, vec3 N, vec3 V, float shadow) {
@@ -271,6 +272,14 @@ void main() {
     vec3 V = normalize(vCameraPos - vWorldPos);
     if (dot(Nw, V) < 0.0)
         Nw = -Nw;
+
+    // Silhouette modes: drop the slab back face so the card does not read as a
+    // hollow sandwich; sides + front rim create the extruded brick outline.
+    if (mode >= 0.5) {
+        vec3 frontW = normalize(mat3(ubo.model) * vec3(0.0, 0.0, 1.0));
+        if (dot(normalize(vNormal), frontW) < -0.35)
+            discard;
+    }
 
     mat3 TBN = makeTBN(Nw, vWorldPos, vUV);
     vec3 viewTS = length(TBN[0]) > 1e-4
@@ -295,43 +304,15 @@ void main() {
         local.z = mix(local.z, heightAt(uv), 0.85);
         fragDepth = fragDepthFromLocal(local);
         shadow = selfShadow(uv, hit.z, lightTS, scale, minLayers, maxLayers);
-    } else if (mode < 1.5) {
-        // Full SilPOM: steep POM + jagged chart-BORDER silhouette.
-        // Discard only when POM walks off the chart (or soft limb at the rim).
-        // Never apply interior horizonTrim — that punched mortar 镂空.
-        vec4 hit = pomHit(vUV, viewTS, scale, minLayers, maxLayers);
-        uv = hit.xy;
-        float featherAmt = max(feather, 0.018);
-        coverage = softCoverage(uv, featherAmt);
-        // Mild rim height gate: only near the card border, prefer raised bricks
-        // so the silhouette reads as protruding brick caps (not a flat rectangle).
-        float edgeDist = min(min(uv.x, 1.0 - uv.x), min(uv.y, 1.0 - uv.y));
-        if (edgeDist < featherAmt * 2.5) {
-            float h = heightAt(clamp(uv, 0.0, 1.0));
-            float ndotv = abs(dot(Nw, V));
-            float rimGate = mix(0.22, 0.55, clamp(1.0 - ndotv / 0.45, 0.0, 1.0));
-            if (h < rimGate)
-                coverage = 0.0;
-        }
-        if (uv.x < -0.01 || uv.y < -0.01 || uv.x > 1.01 || uv.y > 1.01 ||
-            coverage < 0.02)
-            discard;
-        N = normalize(TBN * heightNormalTS(clamp(uv, 0.0, 1.0), scale));
-        vec3 local = localFromWorld(vWorldPos);
-        local.z = mix(local.z, heightAt(clamp(uv, 0.0, 1.0)), 0.92);
-        fragDepth = fragDepthFromLocal(local);
-        shadow = selfShadow(clamp(uv, 0.0, 1.0), hit.z, lightTS, scale,
-                            minLayers, maxLayers);
-        uv = clamp(uv, 0.0, 1.0);
     } else {
-        // Full planar SSDM — geometric heightfield march through the slab.
-        // Front misses chart-fill (solid mortar). Side misses discard so only
-        // heightfield hits remain → extruded brick outline on the silhouette.
+        // SilPOM (mode 1) and planar SSDM (mode 2) share the solid heightfield
+        // march. SilPOM only adds a jagged brick-only limb on true side faces
+        // (raw mesh normal), so the silhouette pops without punching front mortar.
         vec3 camL = localFromWorld(vCameraPos);
         vec3 fragL = localFromWorld(vWorldPos);
         vec3 dirL = normalize(fragL - camL);
         vec4 hit = ssdmMarchLocal(camL, dirL, minLayers, maxLayers);
-        bool front = isFrontFace(Nw);
+        bool front = isFrontFace();
         if (hit.z < 0.5) {
             if (!front)
                 discard;
@@ -339,14 +320,16 @@ void main() {
                            uv, N, coverage, fragDepth, shadow);
         } else {
             uv = clamp(hit.xy, 0.0, 1.0);
-            float featherAmt = max(feather, 0.012);
-            float edgeDist = min(min(uv.x, 1.0 - uv.x), min(uv.y, 1.0 - uv.y));
-            // Soft limb at chart rim only — interior stays fully opaque.
-            coverage = (edgeDist < featherAmt * 2.0)
-                           ? max(softCoverage(uv, featherAmt), front ? 0.40 : 0.08)
-                           : 1.0;
-            if (!front && coverage < 0.05)
-                discard;
+            float h = heightAt(uv);
+            if (!front) {
+                // Thickness silhouette.
+                // SilPOM: brick caps only (jagged). SSDM: full continuous profile.
+                if (mode < 1.5 && h < 0.30)
+                    discard;
+            }
+            // No front-face height discard — that re-opens mortar 镂空 at grazing.
+            // Edge pop comes from side-face hits + FragDepth on the front.
+            coverage = 1.0;
             vec3 hitLocal = vec3(uv.x * 2.0 - 1.0, uv.y * 2.0 - 1.0, hit.w);
             fragDepth = fragDepthFromLocal(hitLocal);
             N = normalize(mat3(ubo.model) * heightNormalTS(uv, scale));

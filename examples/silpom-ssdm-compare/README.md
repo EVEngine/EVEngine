@@ -6,8 +6,8 @@ SSDM** on extruded brick cards.
 | Card | Technique | What you should notice |
 | --- | --- | --- |
 | Left (warm) | Classic **POM** | Internal brick depth; **straight geometric** silhouette |
-| Mid (green) | **Full SilPOM** | Steep POM + **chart-border** limb discard + height normals + self-shadow + `FragDepth` → **jagged brick silhouette** (no interior horizon punch-through) |
-| Right (cool) | **Full planar SSDM** | Model-space heightfield march; side-face misses discard so brick caps form a **continuous extruded outline** |
+| Mid (green) | **Full SilPOM** | Same solid heightfield march as SSDM + **jagged brick-only** limb on sides / narrow front rim → protruding brick silhouette (no interior horizon punch-through) |
+| Right (cool) | **Full planar SSDM** | Model-space heightfield march; side misses discard; **continuous** thickness profile → extruded outline |
 
 Cards are **extruded slabs** (local Z = height axis). That is the correct domain
 for silhouette-changing relief. Cylinders are not — a wrapped UV chart cannot
@@ -48,16 +48,15 @@ xvfb-run -a scripts/smoke_examples.sh silpom-ssdm-compare
   `ssdm.glsl` (steep POM, soft coverage, horizon trim, height normals,
   self-shadow, planar heightfield march, screen-warp helpers)
 - Demo shader is self-contained (`shaders/compare.frag`):
-  - **SilPOM**: steep POM + soft chart-**border** limb discard (interior stays
-    opaque — full-face horizon trim punched 镂空) + height normals + self-shadow
-    + `gl_FragDepth`
-  - **SSDM**: model-space heightfield march; **front** misses `chartFill` (solid
-    mortar), **side** misses discard so brick caps extrude the silhouette
+  - **SilPOM / SSDM** share the solid model-space heightfield march + front
+    `chartFill` on miss (interior mortar stays opaque)
+  - **SilPOM** adds a jagged brick-only limb on slab sides + a narrow front rim
+  - **SSDM** keeps the full continuous side height profile
+  - Back faces are discarded so the card does not read as a hollow sandwich
 - Meshes: thin front card for classic POM; extruded slab for SilPOM/SSDM
 - `gl_FragDepth` only pulls toward the camera (Vulkan RH_ZO) so relief never
   punches holes in the floor
-- Height texture uses moderate soft brick ramps (steep enough for edge pop,
-  soft enough to limit cliff-tunnel shells)
+- Height texture uses moderate soft brick ramps (edge pop without cliff tunnels)
 
 ## Honesty bound
 
