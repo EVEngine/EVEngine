@@ -3,17 +3,16 @@
 //
 // pc.data[0] mode:
 //   0 = classic POM  — parallax only; geometric silhouette unchanged
-//   1 = SilPOM       — planar heightfield march; side faces keep brick caps
-//                      only (jagged limb); front keeps geometric depth
-//   2 = SSDM         — same march; side misses discard for continuous
-//                      extruded outline; front keeps geometric depth
+//   1 = SilPOM       — POM shading on the front; side faces raymarch and
+//                      keep brick caps only (jagged limb). Front depth stays
+//                      geometric so cliff FragDepth cannot open 镂空 shells.
+//   2 = SSDM         — model-space heightfield march through the extruded
+//                      slab; side misses discard → continuous outline.
+//                      Front keeps geometric depth for the same reason.
 //
 // Height.r: 1 = raised toward the card normal (+Z in model space).
 // Card mesh is a slab with local XY in [-1,1] → UV, local Z in [0,1]
 // (Z=1 is the front face). Physical thickness comes from model scale.z.
-//
-// Front faces never write relief FragDepth: cliff hits would open see-through
-// shells between brick plateaus. Edge protrusion comes from side-face hits.
 
 layout(location = 0) in vec3 vNormal;
 layout(location = 1) in vec2 vUV;
@@ -94,13 +93,13 @@ vec3 heightNormalTS(vec2 uv, float scale) {
     float hR = heightAt(uv + vec2( texel.x, 0.0));
     float hD = heightAt(uv + vec2(0.0, -texel.y));
     float hU = heightAt(uv + vec2(0.0,  texel.y));
-    // Hard plateaus only need cliff slopes; keep this mild so flats stay flat.
-    return normalize(vec3((hL - hR) * scale * 6.0,
-                          (hD - hU) * scale * 6.0,
+    return normalize(vec3((hL - hR) * scale * 5.0,
+                          (hD - hU) * scale * 5.0,
                           1.0));
 }
 
 // Steep POM + linear refine. Returns xy=UV, z=hitDepth[0..1], w=found.
+// UV is always clamped — walk-off discard shredded the left card at grazing.
 vec4 pomHit(vec2 uv, vec3 viewTS, float scale, float minLayers, float maxLayers) {
     if (scale < 1e-5)
         return vec4(uv, 0.0, 1.0);
@@ -108,7 +107,8 @@ vec4 pomHit(vec2 uv, vec3 viewTS, float scale, float minLayers, float maxLayers)
                              clamp(abs(viewTS.z), 0.0, 1.0)),
                          1.0, 64.0);
     float layerDepth = 1.0 / layers;
-    float vz = max(abs(viewTS.z), 0.08);
+    // Floor |vz| higher at grazing to limit runaway UV steps (zebra stripes).
+    float vz = max(abs(viewTS.z), 0.18);
     vec2 deltaUV = ((viewTS.xy / vz) * scale) / layers;
     vec2 curUV = uv;
     float curDepth = 0.0;
@@ -121,11 +121,11 @@ vec4 pomHit(vec2 uv, vec3 viewTS, float scale, float minLayers, float maxLayers)
             found = true;
             break;
         }
-        curUV -= deltaUV;
+        curUV = clamp(curUV - deltaUV, 0.0, 1.0);
         curMap = 1.0 - heightAt(curUV);
         curDepth += layerDepth;
     }
-    vec2 prevUV = curUV + deltaUV;
+    vec2 prevUV = clamp(curUV + deltaUV, 0.0, 1.0);
     float after = curMap - curDepth;
     float before = (1.0 - heightAt(prevUV)) - (curDepth - layerDepth);
     float denom = after - before;
@@ -143,23 +143,22 @@ float selfShadow(vec2 hitUV, float hitDepth, vec3 lightTS, float scale,
                              clamp(lightTS.z, 0.0, 1.0)),
                          1.0, 32.0);
     float layerDepth = 1.0 / layers;
-    float vz = max(lightTS.z, 0.08);
+    float vz = max(lightTS.z, 0.12);
     vec2 deltaUV = ((lightTS.xy / vz) * scale) / layers;
     vec2 curUV = hitUV;
     float curDepth = hitDepth;
     for (int i = 0; i < 32; ++i) {
         if (float(i) >= layers || curDepth <= 0.0)
             break;
-        curUV += deltaUV;
+        curUV = clamp(curUV + deltaUV, 0.0, 1.0);
         curDepth -= layerDepth;
-        if ((1.0 - heightAt(curUV)) < curDepth - 0.01)
-            return 0.25;
+        if ((1.0 - heightAt(curUV)) < curDepth - 0.015)
+            return 0.35;
     }
     return 1.0;
 }
 
 // Geometric heightfield march. Returns xy=UV, z=1 on hit, w=hitZ.
-// Do NOT pack softCoverage into z — that caused false misses / 镂空.
 vec4 ssdmMarchLocal(vec3 camLocal, vec3 dirLocal, float minLayers, float maxLayers) {
     if (abs(dirLocal.z) < 1e-5)
         return vec4(0.0);
@@ -184,7 +183,7 @@ vec4 ssdmMarchLocal(vec3 camLocal, vec3 dirLocal, float minLayers, float maxLaye
             t += dt;
             continue;
         }
-        if (p.z <= heightAt(uv) + 1e-3) {
+        if (p.z <= heightAt(clamp(uv, 0.0, 1.0)) + 1e-3) {
             float tA = max(t - dt, tEnter);
             float tB = t;
             for (int r = 0; r < 6; ++r) {
@@ -196,7 +195,7 @@ vec4 ssdmMarchLocal(vec3 camLocal, vec3 dirLocal, float minLayers, float maxLaye
                     tA = tm;
             }
             vec3 ph = camLocal + dirLocal * tB;
-            vec2 uvh = uvFromLocal(ph);
+            vec2 uvh = clamp(uvFromLocal(ph), 0.0, 1.0);
             return vec4(uvh, 1.0, clamp(ph.z, 0.0, 1.0));
         }
         t += dt;
@@ -205,7 +204,6 @@ vec4 ssdmMarchLocal(vec3 camLocal, vec3 dirLocal, float minLayers, float maxLaye
 }
 
 bool isFrontFace() {
-    // Use the mesh attribute (before view-facing flip) so side faces stay sides.
     vec3 frontW = normalize(mat3(ubo.model) * vec3(0.0, 0.0, 1.0));
     return abs(dot(normalize(vNormal), frontW)) > 0.55;
 }
@@ -229,7 +227,6 @@ void main() {
     if (dot(Nw, V) < 0.0)
         Nw = -Nw;
 
-    // Drop slab back faces so SilPOM/SSDM do not draw a second ghost layer.
     if (mode >= 0.5) {
         vec3 frontW = normalize(mat3(ubo.model) * vec3(0.0, 0.0, 1.0));
         if (dot(normalize(vNormal), frontW) < -0.35)
@@ -252,12 +249,51 @@ void main() {
 
     if (mode < 0.5) {
         // Classic POM — parallax inside the chart, silhouette stays geometric.
-        vec4 hit = pomHit(vUV, viewTS, scale, minLayers, maxLayers);
-        uv = clamp(hit.xy, 0.0, 1.0);
-        N = normalize(TBN * heightNormalTS(uv, scale));
-        shadow = mix(1.0, selfShadow(uv, hit.z, lightTS, scale, minLayers, maxLayers), 0.55);
+        // Fade parallax at grazing angles so hard cliffs do not zebra-stripe.
+        float facing = clamp(abs(viewTS.z), 0.0, 1.0);
+        float pomAmt = smoothstep(0.12, 0.42, facing);
+        vec4 hit = pomHit(vUV, viewTS, scale * pomAmt, minLayers, maxLayers);
+        uv = clamp(mix(vUV, hit.xy, pomAmt), 0.0, 1.0);
+        vec3 nTS = heightNormalTS(uv, scale);
+        // Flatten normals when facing is low — cliff dFdx noise = zebra.
+        nTS = normalize(mix(vec3(0.0, 0.0, 1.0), nTS, pomAmt));
+        N = normalize(TBN * nTS);
+        shadow = mix(1.0, selfShadow(uv, hit.z, lightTS, scale * pomAmt,
+                                     minLayers, maxLayers), 0.35 * pomAmt);
+    } else if (mode < 1.5) {
+        // SilPOM: POM on the front (parallax look), side-face heightfield for
+        // jagged brick-cap limb. Never horizon-trim the front (that = 镂空).
+        bool front = isFrontFace();
+        if (front) {
+            float facing = clamp(abs(viewTS.z), 0.0, 1.0);
+            float pomAmt = smoothstep(0.10, 0.38, facing);
+            vec4 hit = pomHit(vUV, viewTS, scale * pomAmt, minLayers, maxLayers);
+            uv = clamp(mix(vUV, hit.xy, pomAmt), 0.0, 1.0);
+            vec3 nTS = heightNormalTS(uv, scale);
+            nTS = normalize(mix(vec3(0.0, 0.0, 1.0), nTS, pomAmt));
+            N = normalize(TBN * nTS);
+            shadow = mix(1.0, selfShadow(uv, hit.z, lightTS, scale * pomAmt,
+                                         minLayers, maxLayers), 0.45 * pomAmt);
+        } else {
+            vec3 camL = localFromWorld(vCameraPos);
+            vec3 fragL = localFromWorld(vWorldPos);
+            vec3 dirL = normalize(fragL - camL);
+            vec4 hit = ssdmMarchLocal(camL, dirL, minLayers, maxLayers);
+            if (hit.z < 0.5)
+                discard;
+            uv = clamp(hit.xy, 0.0, 1.0);
+            float h = heightAt(uv);
+            if (h < 0.45)
+                discard;
+            vec3 hitLocal = vec3(uv.x * 2.0 - 1.0, uv.y * 2.0 - 1.0, hit.w);
+            fragDepth = fragDepthFromLocal(hitLocal);
+            writeReliefDepth = true;
+            N = normalize(mat3(ubo.model) * heightNormalTS(uv, scale));
+            shadow = mix(1.0, selfShadow(uv, 1.0 - hit.w, lightTS, scale,
+                                         minLayers, maxLayers), 0.5);
+        }
     } else {
-        // SilPOM (1) / SSDM (2): solid planar heightfield march.
+        // Planar SSDM — geometric heightfield march on every face.
         vec3 camL = localFromWorld(vCameraPos);
         vec3 fragL = localFromWorld(vWorldPos);
         vec3 dirL = normalize(fragL - camL);
@@ -266,28 +302,22 @@ void main() {
         if (hit.z < 0.5) {
             if (!front)
                 discard;
-            // Front miss → chart fill (opaque mortar). No FragDepth rewrite.
             uv = clamp(vUV, 0.0, 1.0);
             N = normalize(mat3(ubo.model) * heightNormalTS(uv, scale));
             shadow = 1.0;
         } else {
             uv = clamp(hit.xy, 0.0, 1.0);
-            float h = heightAt(uv);
+            N = normalize(mat3(ubo.model) * heightNormalTS(uv, scale));
+            shadow = mix(1.0, selfShadow(uv, 1.0 - hit.w, lightTS, scale,
+                                         minLayers, maxLayers), 0.5);
             if (!front) {
-                // SilPOM: brick-cap limb only (jagged). SSDM: full continuous profile.
-                if (mode < 1.5 && h < 0.45)
-                    discard;
                 vec3 hitLocal = vec3(uv.x * 2.0 - 1.0, uv.y * 2.0 - 1.0, hit.w);
                 fragDepth = fragDepthFromLocal(hitLocal);
                 writeReliefDepth = true;
             }
-            N = normalize(mat3(ubo.model) * heightNormalTS(uv, scale));
-            shadow = mix(1.0, selfShadow(uv, 1.0 - hit.w, lightTS, scale,
-                                         minLayers, maxLayers), 0.55);
         }
     }
 
-    // RH_ZO: side faces may pull depth forward for extruded caps.
     if (writeReliefDepth)
         gl_FragDepth = min(gl_FragCoord.z, fragDepth);
     else

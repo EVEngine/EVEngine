@@ -23,13 +23,13 @@ persist cmpGround = null
 persist cmpAlbedo = null
 persist cmpHeight = null
 persist cmpTexVer = 0
-const CMP_TEX_VER = 13
+const CMP_TEX_VER = 15
 persist cmpShaderVer = 0
-const CMP_SHADER_VER = 22
+const CMP_SHADER_VER = 24
 persist cmpYaw = 0.48
 persist cmpPitch = 0.26
 persist cmpOrbit = false
-persist cmpScale = 0.10
+persist cmpScale = 0.08
 persist cmpMinLayers = 24.0
 persist cmpMaxLayers = 56.0
 persist cmpFocus = 2
@@ -50,8 +50,8 @@ function asFloat(v) {
 }
 
 function brickColor(u, v) {
-    // Running-bond masonry with HARD flat plateaus. Soft sine height was what
-    // turned every brick into a pillow blob — keep height binary, tint albedo.
+    // Running-bond masonry with HARD flat plateaus (no soft sine pillows).
+    // Mortar sits mid-depth so cliffs read clearly without floating boxes.
     local bu = u * 5.0;
     local bv = v * 3.5;
     local row = floor(bv);
@@ -59,13 +59,11 @@ function brickColor(u, v) {
     local ou = odd ? (bu + 0.5) : bu;
     local fx = fabs(ou - floor(ou) - 0.5);
     local fy = fabs(bv - floor(bv) - 0.5);
-    // Mortar bands: ~20% of cell. Binary edge (no smoothstep ramps).
     local mortar = (fx > 0.38 || fy > 0.34) ? 1.0 : 0.0;
     if (mortar > 0.5)
-        return [0.48, 0.46, 0.43, 0.06];
-    // Flat brick face (constant height). Albedo only gets mild per-brick tint.
+        return [0.50, 0.48, 0.45, 0.28];
     local tint = 0.92 + 0.08 * (0.5 + 0.5 * sin(floor(ou) * 2.7) * cos(row * 1.9));
-    return [0.62 * tint, 0.30 * tint, 0.22 * tint, 0.94];
+    return [0.62 * tint, 0.30 * tint, 0.22 * tint, 0.92];
 }
 
 function buildTextures() {
@@ -84,8 +82,8 @@ function buildTextures() {
     }
     cmpAlbedo = gfx.newTexture(albedo, false, false);
     cmpHeight = gfx.newTexture(height, false, false);
-    // Nearest keeps hard brick plateaus; linear filtering turns them into pillows.
-    gfx.setTextureSampler(cmpAlbedo, "nearest", "none", 1.0, 0.0);
+    // Linear albedo softens chart-edge moire; nearest height keeps hard plateaus.
+    gfx.setTextureSampler(cmpAlbedo, "linear", "none", 1.0, 0.0);
     gfx.setTextureSampler(cmpHeight, "nearest", "none", 1.0, 0.0);
 }
 
