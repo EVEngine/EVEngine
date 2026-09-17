@@ -672,7 +672,14 @@ void MeshRecipeRegistry::registerBuiltins() {
     addAdvanced(flower,
                 ParamDescriptor::floating("stemRadius", "Stem Radius", 0.02f, 0.005f, 0.12f, 0.001f));
     addAdvanced(flower, ParamDescriptor::integer("sides", "Stem Sides", 6, 4, 16));
-    registerRecipe(std::move(flower), generateFlowerMesh);
+    registerRecipe(std::move(flower), [](const Params &params, MeshBuild &out, std::string &error) {
+        auto result = generateFlowerMesh(params, out);
+        if (!result.ok()) {
+            error = result.status().describe();
+            return false;
+        }
+        return true;
+    });
 
     RecipeDescriptor tower = mesh("mesh.skyscraper", "Skyscraper");
     tower.params.push_back(ParamDescriptor::integer("tiers", "Tiers", 5, 1, 24));

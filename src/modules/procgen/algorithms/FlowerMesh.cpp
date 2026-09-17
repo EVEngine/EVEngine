@@ -1,5 +1,7 @@
 #include "procgen/algorithms/FlowerMesh.h"
 
+#include "common/Diagnostic.h"
+
 #include <algorithm>
 #include <cmath>
 #include <cstdint>
@@ -130,7 +132,7 @@ void addCentre(MeshBuild &out, V3 c, float radius, int rings, int sides) {
 
 }  // namespace
 
-bool generateFlowerMesh(const Params &params, MeshBuild &out, std::string &error) {
+eve::Result<void> generateFlowerMesh(const Params &params, MeshBuild &out) {
     const float height = std::clamp(params.getFloat("height", 0.55f), 0.15f, 2.5f);
     const float petalLength =
         std::clamp(params.getFloat("petalLength", height * 0.38f), 0.05f, 1.2f);
@@ -166,10 +168,10 @@ bool generateFlowerMesh(const Params &params, MeshBuild &out, std::string &error
     out.setMeta("petals", std::to_string(petals));
     out.setMeta("seed", std::to_string(params.getSeed()));
     if (out.empty()) {
-        error = "mesh.flower: generated an empty mesh";
-        return false;
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Failed, "mesh.flower: generated an empty mesh", "recipe"));
     }
-    return true;
+    return eve::Result<void>::success();
 }
 
 }  // namespace eve::procgen
