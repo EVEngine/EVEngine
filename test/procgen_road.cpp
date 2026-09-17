@@ -103,13 +103,28 @@ TEST_CASE("procgen.road.recipe.meshAndTextureDeterministic") {
 }
 
 TEST_CASE("procgen.road.overlay.fromParams") {
-    Params params;
-    params.setSeed(2);
-    params.setFloat("span", 32.f);
-    params.setFloat("bridgeHeight", 5.f);
-    params.setInt("lanes", 1);
-    params.setInt("pathSegments", 16);
-    auto overlay = generateRoadNetworkOverlay(params);
-    REQUIRE(overlay.ok());
-    CHECK_GT(overlay.value().lanes.size(), 0u);
+    auto network = RoadNetwork::makeInterchange(40.f, 7.f, 2, 3);
+    REQUIRE(network.ok());
+    RoadBakeOptions options;
+    options.pathSegmentsPerEdge = 24;
+    options.turnSamples         = 8;
+    options.includeNavigation   = true;
+    auto baked                  = bakeRoadNetwork(network.value(), options);
+    REQUIRE(baked.ok());
+    CHECK_GT(baked.value().overlay.lanes.size(), 0u);
+    CHECK_GT(baked.value().overlay.turns.size(), 0u);
+}
+
+TEST_CASE("procgen.road.network.seedSevenNavigationTerminates") {
+    // Seed 7 previously produced large frame steps that hung the nav arrow loop.
+    auto network = RoadNetwork::makeInterchange(40.f, 7.f, 2, 7);
+    REQUIRE(network.ok());
+    RoadBakeOptions options;
+    options.pathSegmentsPerEdge = 24;
+    options.turnSamples         = 8;
+    options.includeNavigation   = true;
+    auto baked                  = bakeRoadNetwork(network.value(), options);
+    REQUIRE(baked.ok());
+    CHECK_GT(baked.value().mesh.getVertexCount(), 100);
+    CHECK_GT(baked.value().overlay.lanes.size(), 0u);
 }
