@@ -9,3 +9,8 @@ make run/macosx-debug GAME=examples/terrain-gallery
 ```
 
 After eight rendered frames it writes `/private/tmp/evengine-terrain-gallery.png`.
+It also writes a closer terrain view to
+`/private/tmp/evengine-terrain-gallery-closeup.png`. This example contains
+procedural terrain and water only; the closeup is not Unity Terrain Detail
+evidence. Terrain Detail validation requires an imported
+`*.eve-details.json` sidecar and the instance-set/GPU resolver path.

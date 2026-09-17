@@ -32,6 +32,15 @@ TEST_CASE("graphics.pbrSurface.atomicValidationAndAbsentBackend") {
     surface = PbrSurface{};
     REQUIRE(!gfx->Graphics::setMesh3DPbrSurface(&surface).ok());
 }
+TEST_CASE("graphics.shaderCustomMeshTexturesValidateSlotsAndPreserveBorrows") {
+    Shader   shader;
+    Texture* marker = reinterpret_cast<Texture*>(uintptr_t(16));
+    REQUIRE(shader.setMeshTexture(3, marker).ok());
+    REQUIRE_EQ(shader.meshTexture(3), marker);
+    REQUIRE(!shader.setMeshTexture(4, nullptr).ok());
+    REQUIRE_EQ(shader.meshTexture(3), marker);
+    REQUIRE_EQ(shader.meshTexture(4), nullptr);
+}
 TEST_CASE("graphics.pbrSurface.extensionFactorsAndUvChangePixels") {
     auto* gfx = Graphics::create();
     REQUIRE(gfx != nullptr);
@@ -48,19 +57,19 @@ TEST_CASE("graphics.pbrSurface.extensionFactorsAndUvChangePixels") {
     REQUIRE(mesh->setTexcoordSet(1, uv1).ok());
     gfx->setMesh3DViewProj(glm::mat4(1));
     gfx->setMesh3DView(glm::mat4(1));
-    gfx->setMesh3DCameraPos({.35f, .2f, 2});
+    gfx->setMesh3DCameraPos({-.4f, .3f, 2});
     Lighting3DPack lighting{};
     lighting.count               = 1;
     lighting.ambient             = {.15f, .15f, .15f, 0};
-    lighting.lights[0].posRadius = {.3f, .2f, 1, 0};
+    lighting.lights[0].posRadius = {.8f, .1f, .4f, 0};
     lighting.lights[0].color     = {2, 2, 2, 0};
     auto render                  = [&](const PbrSurface& s) {
         gfx->begin3DFrameToCanvas(canvas);
         gfx->setMesh3DLighting(lighting);
-        gfx->setMesh3DMaterial(.15f, .4f);
+        gfx->setMesh3DMaterial(.8f, .75f);
         gfx->setMesh3DSurface(SurfaceMode::Opaque, BlendMode::Opaque, true, true, .5f, "cutoff");
         REQUIRE(gfx->setMesh3DPbrSurface(&s).ok());
-        gfx->drawMesh(mesh, glm::mat4(1), nullptr, Color(.2f, .15f, .1f, 1));
+        gfx->drawMesh(mesh, glm::mat4(1), nullptr, Color(.8f, .6f, .4f, 1));
         REQUIRE(gfx->setMesh3DPbrSurface(nullptr).ok());
         gfx->end3DFrameToCanvas();
         std::unique_ptr<eve::image::ImageData> pixels(canvas->newImageData());
@@ -73,17 +82,18 @@ TEST_CASE("graphics.pbrSurface.extensionFactorsAndUvChangePixels") {
         for (size_t i = 0; i < a.size(); i += 4)
             if (std::abs(int(a[i]) - int(b[i])) + std::abs(int(a[i + 1]) - int(b[i + 1])) +
                     std::abs(int(a[i + 2]) - int(b[i + 2])) >
-                5)
+                0)
                 ++changed;
         return changed;
     };
     PbrSurface base;
+    base.vegetationColor.backfaceNormalMode = PbrVegetationBackfaceNormalMode::Same;
     const auto reference = render(base);
     for (int extension = 0; extension < 6; extension++) {
         auto s = base;
         if (extension == 0) s.specularFactor = 0;
         if (extension == 1) {
-            s.anisotropyStrength = 1;
+            s.anisotropyStrength = .6f;
             s.anisotropyRotation = .6f;
         }
         if (extension == 2) {
@@ -150,6 +160,46 @@ TEST_CASE("graphics.pbrSurface.extensionFactorsAndUvChangePixels") {
         std::fprintf(stderr, "PBR texture %zu changed %zu pixels\n", role, difference(without, with));
         REQUIRE(difference(without, with) > 100);
     }
+    // Deferred backends must snapshot the scalar material state for each draw.
+    // Changing the second draw must not retroactively shade the first one.
+    auto* isolatedCanvas = gfx->newCanvas(128, 128);
+    auto* pairedCanvas   = gfx->newCanvas(128, 128);
+    REQUIRE(isolatedCanvas != nullptr);
+    REQUIRE(pairedCanvas != nullptr);
+    glm::mat4 leftModel(.45f);
+    leftModel[3] = {-0.5f, 0.f, 0.f, 1.f};
+    glm::mat4 rightModel(.45f);
+    rightModel[3] = {0.5f, 0.f, 0.f, 1.f};
+    auto drawPair = [&](Canvas* target, bool includeRight) {
+        gfx->begin3DFrameToCanvas(target);
+        gfx->setMesh3DLighting(lighting);
+        gfx->setMesh3DSurface(SurfaceMode::Opaque, BlendMode::Opaque, true, true, .5f, "cutoff");
+        REQUIRE(gfx->setMesh3DPbrSurface(&base).ok());
+        gfx->setMesh3DMaterial(0.f, 1.f);
+        gfx->drawMesh(mesh, leftModel, nullptr, Color(.8f, .6f, .4f, 1));
+        if (includeRight) {
+            auto alteredLighting = lighting;
+            alteredLighting.ambient = {.8f, .1f, .1f, 0.f};
+            alteredLighting.lights[0].color = {.1f, 2.f, .1f, 0.f};
+            gfx->setMesh3DLighting(alteredLighting);
+            gfx->setMesh3DCameraPos({.8f, -.6f, 1.2f});
+            gfx->setMesh3DMaterial(1.f, .1f);
+            gfx->drawMesh(mesh, rightModel, nullptr, Color(.8f, .6f, .4f, 1));
+        }
+        REQUIRE(gfx->setMesh3DPbrSurface(nullptr).ok());
+        gfx->end3DFrameToCanvas();
+        std::unique_ptr<eve::image::ImageData> image(target->newImageData());
+        REQUIRE(image != nullptr);
+        const auto* bytes = static_cast<const unsigned char*>(image->getData());
+        return std::vector<unsigned char>(bytes, bytes + 128 * 128 * 4);
+    };
+    const auto isolated = drawPair(isolatedCanvas, false);
+    const auto paired   = drawPair(pairedCanvas, true);
+    const size_t leftCenter = (64 * 128 + 32) * 4;
+    for (size_t channel = 0; channel < 3; ++channel)
+        REQUIRE_EQ(isolated[leftCenter + channel], paired[leftCenter + channel]);
+    gfx->setMesh3DLighting(lighting);
+    gfx->setMesh3DCameraPos({-.4f, .3f, 2});
     const uint16_t joints[]  = {203, 0, 0, 0, 203, 0, 0, 0, 203, 0, 0, 0, 203, 0, 0, 0};
     const float    weights[] = {1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0};
     REQUIRE(gfx->setMeshSkinningData(mesh, joints, weights, 4));

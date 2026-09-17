@@ -1,0 +1,26 @@
+{
+  "source": "The Vegetation Engine 12.6.0 Plant Standard generated shader",
+  "sourceSemantics": {
+    "height": "IN.ase_color.a",
+    "value": "saturate((height - _GradientMinValue) / (_GradientMaxValue - _GradientMinValue + 0.0001))",
+    "color": "lerp(_GradientColorTwo.rgb, _GradientColorOne.rgb, value)",
+    "mask": "lerp(mainBlueRemap, detailBlueRemap, detailBlend)",
+    "output": "baseColor.rgb * lerp(1, color, mask)",
+    "ordering": "after main/detail albedo blend and before global Colors and overlay"
+  },
+  "nativeOwnership": {
+    "materialLocal": [
+      "eve.material/14 vegetationGradient exact controls",
+      "main and detail blue-mask remap controls"
+    ],
+    "meshLocal": [
+      "canonical vegetation height factor"
+    ]
+  },
+  "evidence": [
+    "strict Unity property import through canonical cook and runtime load",
+    "malformed HDR colors and endpoints reject atomically",
+    "validation-layer Vulkan Canvas comparison across low and high mesh heights",
+    "strict v13 to v14 migration preserving emission"
+  ]
+}

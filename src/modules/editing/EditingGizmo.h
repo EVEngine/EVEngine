@@ -19,6 +19,7 @@ struct GizmoPrimitive {
     double radius = 0.0;
     double length = 0.0;
     bool dashed = false;
+    double yaw = 0.0;
 };
 
 /** @brief Immutable revision-tagged overlay snapshot consumed by any viewport renderer. */

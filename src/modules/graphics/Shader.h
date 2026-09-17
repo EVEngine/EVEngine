@@ -6,11 +6,13 @@
 #include <map>
 #include <string>
 #include <vector>
+#include "common/Result.h"
 #include "graphics/BlendMode.h"
 
 #include <glm/mat4x4.hpp>
 
 namespace eve::graphics {
+class Texture;
 
 /**
  * @brief Custom GPU program.
@@ -31,6 +33,7 @@ namespace eve::graphics {
 class Shader {
 public:
     static constexpr int kMaxFloats = 32;
+    static constexpr std::size_t kMaxMeshTextures   = 4;
     static constexpr uint32_t kPushConstantBytes = uint32_t(kMaxFloats * sizeof(float));
 
     enum class Kind { eSprite2D, eMesh3D };
@@ -94,6 +97,24 @@ public:
     uint32_t pushConstantSize() const { return uint32_t(usedFloats_ * sizeof(float)); }
     int usedFloats() const { return usedFloats_; }
 
+    /**
+     * @brief Set one borrowed custom-mesh texture bound after the engine bindings.
+     * @param slot Slot in
+     * `[0,4)`; Vulkan shaders use bindings 22..25 and WGSL uses texture/sampler pairs 22..29.
+     * @param texture
+     * Borrowed texture, or null for the engine white fallback. Render-thread only.
+     * @return InvalidArgument for a
+     * slot outside the fixed portable range.
+     */
+    [[nodiscard]] Result<void> setMeshTexture(std::size_t slot, Texture *texture);
+    /**
+     * @brief Return one custom-mesh texture assignment.
+     * @param slot Slot in `[0,4)`.
+     * @return Borrowed texture, or null for an invalid or empty slot.
+     * @lifetime The caller must keep the assigned texture alive through every draw that uses this shader.
+     */
+    Texture *meshTexture(std::size_t slot) const { return slot < meshTextures_.size() ? meshTextures_[slot] : nullptr; }
+
     const std::vector<uint32_t> &vertexSpirv() const { return vertSpv_; }
     const std::vector<uint32_t> &fragmentSpirv() const { return fragSpv_; }
 
@@ -122,6 +143,7 @@ private:
     std::map<std::string, Uniform> uniforms_;
     std::array<float, kMaxFloats> floats_{};
     int usedFloats_ = 0;
+    std::array<Texture *, kMaxMeshTextures> meshTextures_{};
 };
 
 }  // namespace eve::graphics

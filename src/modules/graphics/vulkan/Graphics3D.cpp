@@ -681,7 +681,7 @@ void Graphics::setMesh3DShadowReceive(bool receive) { mesh3dShadowReceive = rece
 
 void Graphics::beginShadowPass(int cascadeIndex) {
     ASSERT(initialized);
-    if (!shadowPipeline) createShadowResources();
+    if (!shadowPipelines[0]) createShadowResources();
     if (cascadeIndex < 0 || cascadeIndex >= ShadowConfig::kCascades) {
         throw Exception("beginShadowPass: cascadeIndex out of range");
     }
@@ -689,18 +689,19 @@ void Graphics::beginShadowPass(int cascadeIndex) {
     shadowPassDraws.clear();
 }
 
-void Graphics::drawMeshShadow(Mesh *mesh, const glm::mat4 &lightMVP) {
+void Graphics::drawMeshShadow(Mesh *mesh, const glm::mat4 &lightMVP, PbrCullMode cullMode) {
     if (shadowPassCascade < 0) throw Exception("drawMeshShadow: call beginShadowPass first");
     if (!mesh || !mesh->gpuHandle) throw Exception("drawMeshShadow: null mesh");
     ShadowDraw d;
     d.mesh = mesh;
     d.mvp = lightMVP;
+    d.cullMode = cullMode;
     prepareSkinPass(mesh, nullptr, lightMVP, glm::mat4(1.f), glm::vec4(0.f), d.skinSet,
                     d.skinUboOffset);
     shadowPassDraws.push_back(d);
 }
 
-void Graphics::drawMeshShadowAlpha(Mesh *mesh, const glm::mat4 &lightMVP, Texture *albedo) {
+void Graphics::drawMeshShadowAlpha(Mesh *mesh, const glm::mat4 &lightMVP, Texture *albedo, PbrCullMode cullMode) {
     if (shadowPassCascade < 0) throw Exception("drawMeshShadowAlpha: call beginShadowPass first");
     if (!mesh || !mesh->gpuHandle) throw Exception("drawMeshShadowAlpha: null mesh");
     ShadowDraw d;
@@ -708,6 +709,7 @@ void Graphics::drawMeshShadowAlpha(Mesh *mesh, const glm::mat4 &lightMVP, Textur
     d.mvp = lightMVP;
     d.albedo = albedo;
     d.alphaTest = true;
+    d.cullMode  = cullMode;
     prepareSkinPass(mesh, albedo, lightMVP, glm::mat4(1.f), glm::vec4(0.f), d.skinSet,
                     d.skinUboOffset);
     shadowPassDraws.push_back(d);
@@ -715,7 +717,7 @@ void Graphics::drawMeshShadowAlpha(Mesh *mesh, const glm::mat4 &lightMVP, Textur
 
 void Graphics::endShadowPass() {
     if (shadowPassCascade < 0) throw Exception("endShadowPass: no active shadow pass");
-    if (!shadowPipeline || !shadowRenderPass) {
+    if (!shadowPipelines[0] || !shadowRenderPass) {
         shadowPassCascade = -1;
         shadowPassDraws.clear();
         return;
@@ -741,14 +743,15 @@ void Graphics::beginGBufferPass(int w, int h) {
     gbufferPassDraws.clear();
 }
 
-void Graphics::drawMeshGBuffer(Mesh *mesh, const glm::mat4 &mvp, const glm::mat4 &model, float nearZ,
-                               float farZ, Texture *albedo, float tintR, float tintG, float tintB,
-                               float motionX, float motionY, float roughness, float metallic) {
+void Graphics::drawMeshGBuffer(Mesh *mesh, const glm::mat4 &mvp, const glm::mat4 &model, float nearZ, float farZ,
+                               Texture *albedo, float tintR, float tintG, float tintB, float motionX, float motionY,
+                               float roughness, float metallic, PbrCullMode cullMode) {
     if (!gbufferPassActive) throw Exception("drawMeshGBuffer: call beginGBufferPass first");
     if (!mesh || !mesh->gpuHandle) throw Exception("drawMeshGBuffer: null mesh");
     GBufferDraw d{};
     d.mesh = mesh;
     d.albedo = albedo;
+    d.cullMode     = cullMode;
     d.push.mvp = mvp;
     d.push.modelR0 = glm::vec4(model[0][0], model[1][0], model[2][0], model[3][0]);
     d.push.modelR1 = glm::vec4(model[0][1], model[1][1], model[2][1], model[3][1]);
@@ -771,16 +774,16 @@ void Graphics::drawMeshGBuffer(Mesh *mesh, const glm::mat4 &mvp, const glm::mat4
     gbufferPassDraws.push_back(d);
 }
 
-void Graphics::drawMeshGBufferAlpha(Mesh *mesh, const glm::mat4 &mvp, const glm::mat4 &model,
-                                    float nearZ, float farZ, Texture *albedo, float tintR,
-                                    float tintG, float tintB, float motionX, float motionY,
-                                    float roughness, float metallic) {
+void Graphics::drawMeshGBufferAlpha(Mesh *mesh, const glm::mat4 &mvp, const glm::mat4 &model, float nearZ, float farZ,
+                                    Texture *albedo, float tintR, float tintG, float tintB, float motionX,
+                                    float motionY, float roughness, float metallic, PbrCullMode cullMode) {
     if (!gbufferPassActive) throw Exception("drawMeshGBufferAlpha: call beginGBufferPass first");
     if (!mesh || !mesh->gpuHandle) throw Exception("drawMeshGBufferAlpha: null mesh");
     GBufferDraw d{};
     d.mesh = mesh;
     d.albedo = albedo;
     d.alphaTest = true;
+    d.cullMode     = cullMode;
     d.push.mvp = mvp;
     d.push.modelR0 = glm::vec4(model[0][0], model[1][0], model[2][0], model[3][0]);
     d.push.modelR1 = glm::vec4(model[0][1], model[1][1], model[2][1], model[3][1]);
@@ -806,7 +809,7 @@ void Graphics::endGBufferPass() {
     gbufferPassActive = false;
 
     auto *slot = currentGBufferSlot();
-    if (!gbufferPipeline || !gbufferRenderPass || !slot || !slot->framebuffer) {
+    if (!gbufferPipelines[0] || !gbufferRenderPass || !slot || !slot->framebuffer) {
         gbufferPassDraws.clear();
         gbufferPending = false;
         if (renderControl_) renderControl_->getGBuffer()->clear();
@@ -1068,9 +1071,8 @@ void Graphics::ensureFlatHeightTexture3D() {
 
 vkb::BoundSet Graphics::mesh3dSetFor(GpuTexture *gpuTex, GpuTexture *normalTex, GpuTexture *envTex,
                                      GpuTexture *heightTex, GpuTexture *depthTex, GpuTexture *sceneColorTex,
-                                     GpuTexture *decalAlbedo, GpuTexture *decalNormal,
-                                     GpuTexture *decalParams,
-                                     Mesh3dFrameSlots &fslots) {
+                                     GpuTexture *decalAlbedo, GpuTexture *decalNormal, GpuTexture *decalParams,
+                                     Mesh3dFrameSlots &fslots, const Shader *shader) {
     ASSERT(gpuTex != nullptr);
     ASSERT(normalTex != nullptr);
     ASSERT(envTex != nullptr);
@@ -1097,6 +1099,12 @@ vkb::BoundSet Graphics::mesh3dSetFor(GpuTexture *gpuTex, GpuTexture *normalTex, 
     GpuTexture *probe1 = probeTexture(1);
     Mesh3dSetKey key{gpuTex, normalTex, envTex, probe0, probe1, heightTex, depthTex, sceneColorTex,
                      decalAlbedo, decalNormal, decalParams};
+    for (std::size_t slot = 0; slot < key.custom.size(); ++slot) {
+        auto *texture = shader ? shader->meshTexture(slot) : nullptr;
+        if (texture && !texture->gpuHandle) throw Exception("custom mesh texture has no GPU resource");
+        key.custom[slot] = texture ? static_cast<GpuTexture *>(texture->gpuHandle)
+                                   : static_cast<GpuTexture *>(whiteTexture->gpuHandle);
+    }
     key.paletteSlot = fslots.activePalette;
     if (fslots.palettes.empty()) uploadSkinPalette(nullptr, fslots);
     auto it = fslots.sets.find(key);
@@ -1108,7 +1116,7 @@ vkb::BoundSet Graphics::mesh3dSetFor(GpuTexture *gpuTex, GpuTexture *normalTex, 
     alloc.pSetLayouts = &mesh3dSetLayout;
     vkb::UnboundSet unbound{device->allocateDescriptorSets(alloc).front()};
 
-    vkb::DescriptorSetUpdater updater(16, 16, 0);
+    vkb::DescriptorSetUpdater updater(20, 20, 0);
     updater.beginDescriptorSet(unbound)
         .beginBuffers(0, 0, vk::DescriptorType::eUniformBufferDynamic)
         .buffer(fslots.uboRing.buffer, 0, sizeof(Mesh3DUBO))
@@ -1142,6 +1150,14 @@ vkb::BoundSet Graphics::mesh3dSetFor(GpuTexture *gpuTex, GpuTexture *normalTex, 
         .image(vkb::SampledImage::forLaterSample(sceneColorTex->sampler, sceneColorTex->imageView()))
         .beginImages(20, 0, vk::DescriptorType::eCombinedImageSampler)
         .image(vkb::SampledImage::forLaterSample(shadowRawSampler, currentShadowArrayView()))
+        .beginImages(22, 0, vk::DescriptorType::eCombinedImageSampler)
+        .image(vkb::SampledImage::forLaterSample(key.custom[0]->sampler, key.custom[0]->imageView()))
+        .beginImages(23, 0, vk::DescriptorType::eCombinedImageSampler)
+        .image(vkb::SampledImage::forLaterSample(key.custom[1]->sampler, key.custom[1]->imageView()))
+        .beginImages(24, 0, vk::DescriptorType::eCombinedImageSampler)
+        .image(vkb::SampledImage::forLaterSample(key.custom[2]->sampler, key.custom[2]->imageView()))
+        .beginImages(25, 0, vk::DescriptorType::eCombinedImageSampler)
+        .image(vkb::SampledImage::forLaterSample(key.custom[3]->sampler, key.custom[3]->imageView()))
         .update(device.instance);
 
     vkb::BoundSet bound = std::move(unbound).publish();

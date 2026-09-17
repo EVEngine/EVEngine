@@ -36,6 +36,16 @@ public:
         return Result<void>::failure(
             Diagnostic::error(DiagnosticCode::Unsupported, "mesh provider does not support additional UV streams"));
     }
+    /** @brief Attach authored XYZ tangent and bitangent streams before mesh publication.
+     * @remarks Graphics
+     * thread; synchronous borrowed inputs, no callbacks. Provider owns copies.
+     * @return Unsupported without
+     * tangent support; failure must leave the mesh unchanged.
+     */
+    [[nodiscard]] virtual Result<void> setMeshTangentFrame(Mesh*, std::span<const float>, std::span<const float>) {
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::Unsupported, "mesh provider does not support authored tangent frames"));
+    }
 
     /**
      * @brief Release a mesh previously returned by this factory.

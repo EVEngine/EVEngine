@@ -30,67 +30,76 @@
 
 using namespace eve::graphics;
 
-namespace {
-
-
-}  // namespace
+namespace {}  // namespace
 
 // Direct SDL Vulkan probe, independent of the engine init path. If this
 // crashes, the problem is in SDL/driver state rather than Graphics::init.
 TEST_CASE("GpuDriven.capsAvailable") {
-    eve::window::Window *win = nullptr;
-    Graphics *gfx = nullptr;
+    eve::window::Window* win = nullptr;
+    Graphics*            gfx = nullptr;
     openGfxWindow(win, gfx);
-    auto *vg = dynamic_cast<eve::graphics::vulkan::Graphics *>(gfx);
+    auto* vg = dynamic_cast<eve::graphics::vulkan::Graphics*>(gfx);
     REQUIRE(vg != nullptr);
     CHECK(vg->gpuDrivenCaps().gpuDrivenAvailable());
     win->close();
 }
 
 TEST_CASE("GpuDriven.bindlessTextureRegistration") {
-    eve::window::Window *win = nullptr;
-    Graphics *gfx = nullptr;
+    eve::window::Window* win = nullptr;
+    Graphics*            gfx = nullptr;
     openGfxWindow(win, gfx);
-    auto *vg = dynamic_cast<eve::graphics::vulkan::Graphics *>(gfx);
+    auto* vg = dynamic_cast<eve::graphics::vulkan::Graphics*>(gfx);
     REQUIRE(vg != nullptr);
     if (!vg->gpuDrivenCaps().gpuDrivenAvailable()) {
         win->close();
         return;  // environment without 1.2 features: nothing to validate
     }
 
-    const uint8_t red[4] = {255, 0, 0, 255};
-    const uint8_t green[4] = {0, 255, 0, 255};
-    Texture *a = gfx->newTexture(1, 1, red);
-    Texture *b = gfx->newTexture(1, 1, green);
-    const uint32_t sa = vg->debugBindlessIndex(a);
-    const uint32_t sb = vg->debugBindlessIndex(b);
+    const uint8_t  red[4]   = {255, 0, 0, 255};
+    const uint8_t  green[4] = {0, 255, 0, 255};
+    Texture*       a        = gfx->newTexture(1, 1, red);
+    Texture*       b        = gfx->newTexture(1, 1, green);
+    const uint32_t sa       = vg->debugBindlessIndex(a);
+    const uint32_t sb       = vg->debugBindlessIndex(b);
     REQUIRE(sa != eve::graphics::vulkan::kInvalidBindlessSlot);
     REQUIRE(sb != eve::graphics::vulkan::kInvalidBindlessSlot);
     REQUIRE(sa != sb);  // distinct slots
 
     const std::vector<uint8_t> cubePx(6 * 4, 128);
-    Texture *cube = gfx->newCubemap(1, cubePx.data());
-    auto *gpuCube = static_cast<eve::graphics::vulkan::GpuTexture *>(cube->gpuHandle);
+    Texture*                   cube    = gfx->newCubemap(1, cubePx.data());
+    auto*                      gpuCube = static_cast<eve::graphics::vulkan::GpuTexture*>(cube->gpuHandle);
     REQUIRE(gpuCube->bindlessIndexCube != eve::graphics::vulkan::kInvalidBindlessSlot);
     win->close();
 }
 
 TEST_CASE("GpuDriven.meshTableRegistration") {
-    eve::window::Window *win = nullptr;
-    Graphics *gfx = nullptr;
+    eve::window::Window* win = nullptr;
+    Graphics*            gfx = nullptr;
     openGfxWindow(win, gfx);
-    auto *vg = dynamic_cast<eve::graphics::vulkan::Graphics *>(gfx);
+    auto* vg = dynamic_cast<eve::graphics::vulkan::Graphics*>(gfx);
     REQUIRE(vg != nullptr);
     if (!vg->gpuDrivenCaps().gpuDrivenAvailable()) {
         win->close();
         return;
     }
 
-    Mesh *m = gfx->newMeshSphere(8, 4);
+    Mesh* m = gfx->newMeshSphere(8, 4);
     REQUIRE(m != nullptr);
-    const uint32_t idx = vg->debugMeshRecordIndex(m);
+    REQUIRE(vg->debugMeshRecordIndex(m) == eve::graphics::vulkan::kInvalidBindlessSlot);
+    auto*        gpu         = static_cast<eve::graphics::vulkan::GpuMesh*>(m->gpuHandle);
+    const size_t vertexCount = size_t(gpu->vertices.size / sizeof(eve::graphics::vulkan::MeshVertex));
+    m->gpuVertexCount        = int(vertexCount);
+    std::vector<float> vegetationFactors(vertexCount * 5u, .5f);
+    std::vector<float> deformationFactors(vertexCount * 9u, 0.f);
+    for (size_t i = 0; i < vertexCount; ++i) {
+        deformationFactors[i * 9u + 7u] = 1.f;
+        deformationFactors[i * 9u + 8u] = 1.f;
+    }
+    REQUIRE(m->adoptVegetationFactors(std::move(vegetationFactors)).ok());
+    REQUIRE(m->adoptVegetationDeformationFactors(std::move(deformationFactors)).ok());
+    const uint32_t idx = gfx->gpuDrivenMeshRecord(m);
     REQUIRE(idx != eve::graphics::vulkan::kInvalidBindlessSlot);
-    auto *gpu = static_cast<eve::graphics::vulkan::GpuMesh *>(m->gpuHandle);
+    REQUIRE(vg->debugMeshRecordIndex(m) == idx);
     REQUIRE(gpu->record.vertexCount > 0);
     REQUIRE(gpu->record.indexCount > 0);
     REQUIRE(gpu->record.boundsCenterRadius.w > 0.f);  // bounds computed at upload
@@ -98,18 +107,18 @@ TEST_CASE("GpuDriven.meshTableRegistration") {
 }
 
 TEST_CASE("GpuDriven.residentInstanceBufferDirectSubmit") {
-    eve::window::Window *win = nullptr;
-    Graphics            *gfx = nullptr;
+    eve::window::Window* win = nullptr;
+    Graphics*            gfx = nullptr;
     openGfxWindow(win, gfx, 320, 240);
-    auto *vg = dynamic_cast<eve::graphics::vulkan::Graphics *>(gfx);
+    auto* vg = dynamic_cast<eve::graphics::vulkan::Graphics*>(gfx);
     REQUIRE(vg != nullptr);
     if (!vg->gpuDrivenCaps().gpuDrivenAvailable()) {
         win->close();
         return;
     }
 
-    Mesh          *mesh       = gfx->newMeshSphere(12, 8);
-    Material      *material   = gfx->newMaterial();
+    Mesh*          mesh       = gfx->newMeshSphere(12, 8);
+    Material*      material   = gfx->newMaterial();
     const uint32_t meshId     = gfx->gpuDrivenMeshRecord(mesh);
     const uint32_t materialId = gfx->gpuDrivenMaterialRecord(material);
     REQUIRE(meshId != kInvalidGpuDrivenSlot);
@@ -119,9 +128,9 @@ TEST_CASE("GpuDriven.residentInstanceBufferDirectSubmit") {
     instance.model      = glm::translate(glm::mat4(1.f), glm::vec3(0.f, 0.f, -3.f));
     instance.meshId     = meshId;
     instance.materialId = materialId;
-    auto *compute       = eve::gpgpu::Gpgpu::create();
+    auto* compute       = eve::gpgpu::Gpgpu::create();
     REQUIRE(compute->isAvailable());
-    eve::gpgpu::GpuBuffer *resident = compute->newBuffer(sizeof(instance), "storage");
+    eve::gpgpu::GpuBuffer* resident = compute->newBuffer(sizeof(instance), "storage");
     resident->uploadBytes(&instance, sizeof(instance));
 
     GpuResidentInstanceBucket bucket{0, 1, meshId, materialId};
@@ -163,8 +172,8 @@ TEST_CASE("GpuDriven.residentInstanceBufferDirectSubmit") {
 }
 
 TEST_CASE("GpuDriven.squirrelResidentInstanceSubmit") {
-    eve::window::Window *win = nullptr;
-    Graphics            *gfx = nullptr;
+    eve::window::Window* win = nullptr;
+    Graphics*            gfx = nullptr;
     openGfxWindow(win, gfx, 320, 240);
     if (!gfx->supportsGpuDriven3D()) {
         win->close();
@@ -205,7 +214,7 @@ TEST_CASE("GpuDriven.squirrelResidentInstanceSubmit") {
     )SQ");
     }
 
-    auto *vg = dynamic_cast<eve::graphics::vulkan::Graphics *>(gfx);
+    auto* vg = dynamic_cast<eve::graphics::vulkan::Graphics*>(gfx);
     REQUIRE(vg != nullptr);
     CHECK_EQ(vg->debugLastGpuDrivenDrawCount(), uint32_t(1));
     win->close();
@@ -213,9 +222,9 @@ TEST_CASE("GpuDriven.squirrelResidentInstanceSubmit") {
 
 namespace {
 
-float gdLuma(const Color &c) { return (c.r + c.g + c.b) / 3.f; }
+float gdLuma(const Color& c) { return (c.r + c.g + c.b) / 3.f; }
 
-void gdWarmPresent(Graphics *gfx) {
+void gdWarmPresent(Graphics* gfx) {
     for (int i = 0; i < 4; ++i) {
         RenderSystem3D::render(*gfx);
         RenderSystem::render(*gfx);
@@ -223,20 +232,20 @@ void gdWarmPresent(Graphics *gfx) {
 }
 
 /** @brief UV sphere (radius r) with positions + normals + triangle indices. */
-void gdSphere(float r, int slices, int stacks, std::vector<float> &pos,
-              std::vector<float> &nrm, std::vector<uint32_t> &idx) {
+void gdSphere(float r, int slices, int stacks, std::vector<float>& pos, std::vector<float>& nrm,
+              std::vector<uint32_t>& idx) {
     pos.clear();
     nrm.clear();
     idx.clear();
     for (int s = 0; s <= slices; ++s) {
         const float u = float(s) / float(slices);
         for (int t = 0; t <= stacks; ++t) {
-            const float v = float(t) / float(stacks);
+            const float v     = float(t) / float(stacks);
             const float theta = u * 6.2831853f;
-            const float phi = v * 3.14159265f;
-            const float x = std::sin(phi) * std::cos(theta);
-            const float y = std::cos(phi);
-            const float z = std::sin(phi) * std::sin(theta);
+            const float phi   = v * 3.14159265f;
+            const float x     = std::sin(phi) * std::cos(theta);
+            const float y     = std::cos(phi);
+            const float z     = std::sin(phi) * std::sin(theta);
             pos.push_back(x * r);
             pos.push_back(y * r);
             pos.push_back(z * r);
@@ -263,39 +272,39 @@ void gdSphere(float r, int slices, int stacks, std::vector<float> &pos,
 }
 
 /** @brief Pack CPU VgCluster into the GPU GpuVgCluster layout (4 x uvec4). */
-void gdPackVgClusters(const eve::virtualgeometry::VirtualGeometryAsset &asset,
-                      std::vector<eve::graphics::GpuVgCluster> &out) {
+void gdPackVgClusters(const eve::virtualgeometry::VirtualGeometryAsset& asset,
+                      std::vector<eve::graphics::GpuVgCluster>&         out) {
     out.resize(asset.clusters.size());
     auto fb = [](float f) {
         union {
-            float f;
+            float    f;
             uint32_t u;
         } x;
         x.f = f;
         return x.u;
     };
     for (size_t i = 0; i < asset.clusters.size(); ++i) {
-        const auto &c = asset.clusters[i];
-        GpuVgCluster &g = out[i];
-        g.u0[0] = fb(c.cx);
-        g.u0[1] = fb(c.cy);
-        g.u0[2] = fb(c.cz);
-        g.u0[3] = fb(c.r);
-        g.u1[0] = c.triStart;
-        g.u1[1] = c.triCount;
-        g.u1[2] = c.lodLevel;
-        g.u1[3] = c.parent;
-        g.u2[0] = fb(c.errorR);
-        g.u2[1] = fb(c.errorRScreen);
-        g.u2[2] = c.childCount;
-        g.u2[3] = 0;
+        const auto&   c = asset.clusters[i];
+        GpuVgCluster& g = out[i];
+        g.u0[0]         = fb(c.cx);
+        g.u0[1]         = fb(c.cy);
+        g.u0[2]         = fb(c.cz);
+        g.u0[3]         = fb(c.r);
+        g.u1[0]         = c.triStart;
+        g.u1[1]         = c.triCount;
+        g.u1[2]         = c.lodLevel;
+        g.u1[3]         = c.parent;
+        g.u2[0]         = fb(c.errorR);
+        g.u2[1]         = fb(c.errorRScreen);
+        g.u2[2]         = c.childCount;
+        g.u2[3]         = 0;
         for (int k = 0; k < 4; ++k) g.u3[k] = c.children[k];
     }
 }
 
-std::vector<float> gdCaptureLuma(Graphics *gfx) {
-    const int w = gfx->getWidth();
-    const int h = gfx->getHeight();
+std::vector<float> gdCaptureLuma(Graphics* gfx) {
+    const int          w = gfx->getWidth();
+    const int          h = gfx->getHeight();
     std::vector<float> out(size_t(w) * size_t(h), 0.f);
     for (int y = 0; y < h; y += 4) {
         for (int x = 0; x < w; x += 4) {
@@ -305,19 +314,24 @@ std::vector<float> gdCaptureLuma(Graphics *gfx) {
     return out;
 }
 
-Texture *gdSolid(Graphics *gfx, uint8_t r, uint8_t g, uint8_t b) {
+Texture* gdSolid(Graphics* gfx, uint8_t r, uint8_t g, uint8_t b) {
     const uint8_t px[4] = {r, g, b, 255};
     return gfx->newTexture(1, 1, px);
 }
 
+Texture* gdSolidAlpha(Graphics* gfx, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
+    const uint8_t px[4] = {r, g, b, a};
+    return gfx->newTexture(1, 1, px);
+}
+
 /** @brief Deterministic LCG so scene layout is stable across machines/runs. */
-float gdRand01(uint32_t &seed) {
+float gdRand01(uint32_t& seed) {
     seed = seed * 1664525u + 1013904223u;
     return (seed >> 8) * (1.f / 16777216.f);
 }
 
 /** @brief Checkerboard 2D texture (high contrast exposes edge/noise artifacts). */
-Texture *gdChecker(Graphics *gfx, int n = 16) {
+Texture* gdChecker(Graphics* gfx, int n = 16) {
     std::vector<uint8_t> px;
     px.reserve(size_t(n) * n * 4);
     for (int y = 0; y < n; ++y)
@@ -332,19 +346,16 @@ Texture *gdChecker(Graphics *gfx, int n = 16) {
 }
 
 /** @brief Unit cube (24 verts, per-face normals) for shape variety in scenes. */
-Mesh *gdCubeMesh(Graphics *gfx) {
+Mesh* gdCubeMesh(Graphics* gfx) {
     static const float kFaces[6][4][3] = {
-        {{-1, -1, -1}, {-1, -1, 1}, {-1, 1, 1}, {-1, 1, -1}},
-        {{1, -1, 1}, {1, -1, -1}, {1, 1, -1}, {1, 1, 1}},
-        {{-1, -1, 1}, {1, -1, 1}, {1, 1, 1}, {-1, 1, 1}},
-        {{1, -1, -1}, {-1, -1, -1}, {-1, 1, -1}, {1, 1, -1}},
-        {{-1, 1, -1}, {-1, 1, 1}, {1, 1, 1}, {1, 1, -1}},
-        {{-1, -1, 1}, {-1, -1, -1}, {1, -1, -1}, {1, -1, 1}},
+        {{-1, -1, -1}, {-1, -1, 1}, {-1, 1, 1}, {-1, 1, -1}}, {{1, -1, 1}, {1, -1, -1}, {1, 1, -1}, {1, 1, 1}},
+        {{-1, -1, 1}, {1, -1, 1}, {1, 1, 1}, {-1, 1, 1}},     {{1, -1, -1}, {-1, -1, -1}, {-1, 1, -1}, {1, 1, -1}},
+        {{-1, 1, -1}, {-1, 1, 1}, {1, 1, 1}, {1, 1, -1}},     {{-1, -1, 1}, {-1, -1, -1}, {1, -1, -1}, {1, -1, 1}},
     };
     static const float kN[6][3] = {
         {-1, 0, 0}, {1, 0, 0}, {0, 0, 1}, {0, 0, -1}, {0, 1, 0}, {0, -1, 0},
     };
-    std::vector<float> pos, nrm;
+    std::vector<float>    pos, nrm;
     std::vector<uint32_t> idx;
     for (int f = 0; f < 6; ++f) {
         const uint32_t base = uint32_t(pos.size() / 3);
@@ -359,58 +370,57 @@ Mesh *gdCubeMesh(Graphics *gfx) {
         idx.push_back(base + 2);
         idx.push_back(base + 3);
     }
-    return gfx->newMeshFromArrays(pos.data(), nrm.data(), nullptr, int(pos.size() / 3), idx.data(),
-                                  int(idx.size()));
+    return gfx->newMeshFromArrays(pos.data(), nrm.data(), nullptr, int(pos.size() / 3), idx.data(), int(idx.size()));
 }
 
 /** @brief Simple delta summary for large-scene parity comparisons. */
 struct GdDelta {
-    float maxDelta = 0.f;
-    float meanDelta = 0.f;
-    int over005 = 0;
-    int over008 = 0;
-    size_t n = 0;
+    float  maxDelta  = 0.f;
+    float  meanDelta = 0.f;
+    int    over005   = 0;
+    int    over008   = 0;
+    size_t n         = 0;
 };
 
-GdDelta gdCompare(const char *name, const std::vector<float> &a, const std::vector<float> &b) {
+GdDelta gdCompare(const char* name, const std::vector<float>& a, const std::vector<float>& b) {
     GdDelta d;
     d.n = std::min(a.size(), b.size());
     for (size_t i = 0; i < d.n; ++i) {
         const float delta = std::fabs(a[i] - b[i]);
-        d.maxDelta = std::max(d.maxDelta, delta);
+        d.maxDelta        = std::max(d.maxDelta, delta);
         d.meanDelta += delta;
         if (delta > 0.05f) ++d.over005;
         if (delta > 0.08f) ++d.over008;
     }
     d.meanDelta /= float(d.n);
-    std::printf("[gd-scene] %-28s max=%.4f mean=%.5f over0.05=%d/%zu over0.08=%d/%zu\n", name,
-                d.maxDelta, d.meanDelta, d.over005, d.n, d.over008, d.n);
+    std::printf("[gd-scene] %-28s max=%.4f mean=%.5f over0.05=%d/%zu over0.08=%d/%zu\n", name, d.maxDelta, d.meanDelta,
+                d.over005, d.n, d.over008, d.n);
     return d;
 }
 
 /** @brief A moderately large deterministic scene (grid of mixed meshes/materials). */
 struct GdGrid {
-    std::vector<Renderable3D *> objects;
-    Mesh *sphere = nullptr;
-    Mesh *cylinder = nullptr;
-    Mesh *cube = nullptr;
-    std::vector<Material *> materials;
-    int nx = 0;
-    int nz = 0;
-    float spacing = 1.f;
+    std::vector<Renderable3D*> objects;
+    Mesh*                      sphere   = nullptr;
+    Mesh*                      cylinder = nullptr;
+    Mesh*                      cube     = nullptr;
+    std::vector<Material*>     materials;
+    int                        nx      = 0;
+    int                        nz      = 0;
+    float                      spacing = 1.f;
 };
 
-GdGrid gdBuildGrid(Graphics *gfx, int nx, int nz, float spacing, uint32_t seed = 20260821u) {
+GdGrid gdBuildGrid(Graphics* gfx, int nx, int nz, float spacing, uint32_t seed = 20260821u) {
     GdGrid s;
-    s.nx = nx;
-    s.nz = nz;
-    s.spacing = spacing;
-    s.sphere = gfx->newMeshSphere(24, 12);
+    s.nx       = nx;
+    s.nz       = nz;
+    s.spacing  = spacing;
+    s.sphere   = gfx->newMeshSphere(24, 12);
     s.cylinder = gfx->newMeshCylinder(16, 1, true);
-    s.cube = gdCubeMesh(gfx);
+    s.cube     = gdCubeMesh(gfx);
 
-    auto addMat = [&](Texture *albedo, float rough, float metal) {
-        Material *m = gfx->newMaterial();
+    auto addMat = [&](Texture* albedo, float rough, float metal) {
+        Material* m = gfx->newMaterial();
         m->setAlbedoTexture(albedo);
         m->setNormalTexture(nullptr);
         m->setRoughness(rough);
@@ -427,13 +437,13 @@ GdGrid gdBuildGrid(Graphics *gfx, int nx, int nz, float spacing, uint32_t seed =
     s.objects.reserve(size_t(nx) * nz);
     for (int i = 0; i < nx; ++i) {
         for (int j = 0; j < nz; ++j) {
-            Mesh *mesh = ((i + j) % 3 == 0) ? s.sphere : (((i + j) % 3 == 1) ? s.cylinder : s.cube);
-            Material *mat = s.materials[size_t(i * 3 + j * 5) % s.materials.size()];
-            const float x = (float(i) - float(nx - 1) * 0.5f) * spacing;
-            const float z = (float(j) - float(nz - 1) * 0.5f) * spacing;
+            Mesh*       mesh  = ((i + j) % 3 == 0) ? s.sphere : (((i + j) % 3 == 1) ? s.cylinder : s.cube);
+            Material*   mat   = s.materials[size_t(i * 3 + j * 5) % s.materials.size()];
+            const float x     = (float(i) - float(nx - 1) * 0.5f) * spacing;
+            const float z     = (float(j) - float(nz - 1) * 0.5f) * spacing;
             const float scale = 0.45f + 0.40f * gdRand01(seed);
-            const float yaw = gdRand01(seed) * 360.f;
-            auto *obj = Renderable3D::create();
+            const float yaw   = gdRand01(seed) * 360.f;
+            auto*       obj   = Renderable3D::create();
             obj->setMesh(mesh);
             obj->setMaterial(mat);
             obj->setPosition(x, 0.35f, z);
@@ -446,25 +456,24 @@ GdGrid gdBuildGrid(Graphics *gfx, int nx, int nz, float spacing, uint32_t seed =
 }
 
 /** @brief Occlusion-heavy scene: a wall hides a crowd behind it. */
-GdGrid gdBuildOcclusionScene(Graphics *gfx, uint32_t seed = 20260822u) {
+GdGrid gdBuildOcclusionScene(Graphics* gfx, uint32_t seed = 20260822u) {
     GdGrid s;
-    s.sphere = gfx->newMeshSphere(24, 12);
-    s.cylinder = gfx->newMeshCylinder(16, 1, true);
-    s.cube = gdCubeMesh(gfx);
-    auto *wallMat = gfx->newMaterial();
+    s.sphere      = gfx->newMeshSphere(24, 12);
+    s.cylinder    = gfx->newMeshCylinder(16, 1, true);
+    s.cube        = gdCubeMesh(gfx);
+    auto* wallMat = gfx->newMaterial();
     wallMat->setAlbedoTexture(gdChecker(gfx, 8));
     wallMat->setNormalTexture(nullptr);
     wallMat->setRoughness(0.6f);
     wallMat->setMetallic(0.1f);
-    auto *crowdMat = gfx->newMaterial();
+    auto* crowdMat = gfx->newMaterial();
     crowdMat->setAlbedoTexture(gdSolid(gfx, 190, 120, 40));
     crowdMat->setNormalTexture(nullptr);
     crowdMat->setRoughness(0.5f);
     crowdMat->setMetallic(0.2f);
 
-    auto add = [&](Mesh *mesh, Material *mat, float x, float y, float z, float sx, float sy,
-                   float sz, float yaw) {
-        auto *obj = Renderable3D::create();
+    auto add = [&](Mesh* mesh, Material* mat, float x, float y, float z, float sx, float sy, float sz, float yaw) {
+        auto* obj = Renderable3D::create();
         obj->setMesh(mesh);
         obj->setMaterial(mat);
         obj->setPosition(x, y, z);
@@ -478,16 +487,14 @@ GdGrid gdBuildOcclusionScene(Graphics *gfx, uint32_t seed = 20260822u) {
     // Crowd hidden behind the wall.
     for (int i = 0; i < 6; ++i)
         for (int j = 0; j < 5; ++j) {
-            const float x = (float(i) - 2.5f) * 1.2f;
-            const float z = -3.6f - float(j) * 1.1f;
+            const float x     = (float(i) - 2.5f) * 1.2f;
+            const float z     = -3.6f - float(j) * 1.1f;
             const float scale = 0.5f + 0.4f * gdRand01(seed);
-            const Mesh *mesh = ((i + j) % 2) ? s.cylinder : s.sphere;
-            add(const_cast<Mesh *>(mesh), crowdMat, x, 0.35f, z, scale, scale, scale,
-                gdRand01(seed) * 360.f);
+            const Mesh* mesh  = ((i + j) % 2) ? s.cylinder : s.sphere;
+            add(const_cast<Mesh*>(mesh), crowdMat, x, 0.35f, z, scale, scale, scale, gdRand01(seed) * 360.f);
         }
     // A few visible objects between camera and wall.
-    for (int i = -2; i <= 2; ++i)
-        add(s.cube, wallMat, float(i) * 1.4f, 0.35f, 2.5f, 0.55f, 0.55f, 0.55f, 0.f);
+    for (int i = -2; i <= 2; ++i) add(s.cube, wallMat, float(i) * 1.4f, 0.35f, 2.5f, 0.55f, 0.55f, 0.55f, 0.f);
     s.nx = int(s.objects.size());
     s.nz = 1;
     return s;
@@ -500,39 +507,39 @@ GdGrid gdBuildOcclusionScene(Graphics *gfx, uint32_t seed = 20260822u) {
  * per-draw path and the GPU-driven (indirect + bindless) path.
  */
 TEST_CASE("GpuDriven.opaqueForwardParity") {
-    eve::window::Window *win = nullptr;
-    Graphics *gfx = nullptr;
+    eve::window::Window* win = nullptr;
+    Graphics*            gfx = nullptr;
     openGfxWindow(win, gfx, 320, 240);
-    auto *vg = dynamic_cast<eve::graphics::vulkan::Graphics *>(gfx);
+    auto* vg = dynamic_cast<eve::graphics::vulkan::Graphics*>(gfx);
     REQUIRE(vg != nullptr);
     if (!vg->gpuDrivenCaps().gpuDrivenAvailable()) {
         win->close();
         return;
     }
 
-    auto *cam = Camera3D::createCamera();
+    auto* cam = Camera3D::createCamera();
     cam->setEye(0.f, 3.5f, 5.5f);
     cam->setTarget(0.f, 0.f, 0.f);
     cam->setAmbient(0.08f, 0.08f, 0.10f);
 
-    Material *ballMat = gfx->newMaterial();
+    Material* ballMat = gfx->newMaterial();
     ballMat->setAlbedoTexture(gdSolid(gfx, 205, 70, 60));  // single texture -> slot 0
     ballMat->setNormalTexture(nullptr);
     ballMat->setRoughness(0.5f);
     ballMat->setMetallic(0.1f);
-    auto *ball = Renderable3D::create();
+    auto* ball = Renderable3D::create();
     ball->setMesh(gfx->newMeshSphere(24, 16));
     ball->setMaterial(ballMat);
     ball->setPosition(0.f, 0.35f, 0.f);
     ball->setScale(0.55f, 0.55f, 0.55f);
 
-    auto *sun = Light3D::createLight("dir");
+    auto* sun = Light3D::createLight("dir");
     sun->setDirection(0.55f, 1.f, 0.35f);
     sun->setColor(1.f, 1.f, 1.f, 2.5f);
     sun->setCastShadow(false);  // isolate the direct-light path first
 
     gfx->setScreenReadbackEnabled(true);
-    RenderControl *rc = gfx->getRenderControl();
+    RenderControl* rc = gfx->getRenderControl();
     rc->disable("gpuDriven");
     gdWarmPresent(gfx);
     const auto legacy = gdCaptureLuma(gfx);
@@ -542,18 +549,114 @@ TEST_CASE("GpuDriven.opaqueForwardParity") {
     const auto gpuDriven = gdCaptureLuma(gfx);
 
     // Same shading source, different emission path: allow small float noise.
-    float maxDelta = 0.f;
-    const int w = gfx->getWidth();
-    const int h = gfx->getHeight();
+    float     maxDelta = 0.f;
+    const int w        = gfx->getWidth();
+    const int h        = gfx->getHeight();
     for (int y = 0; y < h; y += 4) {
         for (int x = 0; x < w; x += 4) {
             const size_t i = size_t(y * w + x);
-            const float d = std::fabs(legacy[i] - gpuDriven[i]);
-            maxDelta = std::max(maxDelta, d);
+            const float  d = std::fabs(legacy[i] - gpuDriven[i]);
+            maxDelta       = std::max(maxDelta, d);
         }
     }
     rc->disable("gpuDriven");
     REQUIRE(maxDelta < 0.03f);
+    win->close();
+}
+
+/**
+ * @brief Masked materials retain their authored cutoff in both GPU-driven
+ * forward and visibility-buffer
+ * rendering. The two non-default cutoffs make a
+ * hard-coded 0.5 threshold observably wrong.
+ */
+TEST_CASE("GpuDriven.maskedAlphaCutoffParity") {
+    eve::window::Window* win = nullptr;
+    Graphics*            gfx = nullptr;
+    openGfxWindow(win, gfx, 320, 240);
+    auto* vg = dynamic_cast<eve::graphics::vulkan::Graphics*>(gfx);
+    REQUIRE(vg != nullptr);
+    if (!vg->gpuDrivenCaps().gpuDrivenAvailable()) {
+        win->close();
+        return;
+    }
+
+    auto* cam = Camera3D::createCamera();
+    cam->setEye(0.f, 2.5f, 5.f);
+    cam->setTarget(0.f, 0.f, 0.f);
+    cam->setAmbient(0.35f, 0.35f, 0.35f);
+
+    Mesh*    shared = gfx->newMeshSphere(24, 16);
+    Texture* alpha  = gdSolidAlpha(gfx, 210, 95, 55, 153);  // alpha = 0.6
+    auto     add    = [&](float x, float cutoff) {
+        Material* mat = gfx->newMaterial();
+        mat->setAlbedoTexture(alpha);
+        mat->setNormalTexture(nullptr);
+        mat->setSurfaceMode("masked");
+        mat->setAlphaCutoff(cutoff);
+        mat->setDoubleSided(true);
+        auto* obj = Renderable3D::create();
+        obj->setMesh(shared);
+        obj->setMaterial(mat);
+        obj->setPosition(x, 0.f, 0.f);
+        obj->setScale(0.8f, 0.8f, 0.8f);
+    };
+    add(-1.f, 0.25f);  // visible
+    add(1.f, 0.75f);   // clipped
+
+    gfx->setScreenReadbackEnabled(true);
+    RenderControl* rc = gfx->getRenderControl();
+    rc->disable("msaa");
+    rc->disable("gpuDriven");
+    gdWarmPresent(gfx);
+    const auto legacy = gdCaptureLuma(gfx);
+
+    rc->enable("gpuDriven");
+    gdWarmPresent(gfx);
+    const auto forward = gdCaptureLuma(gfx);
+    REQUIRE(vg->debugLastGpuDrivenDrawCount() == 2);
+
+    rc->enable("visResolve");
+    gdWarmPresent(gfx);
+    const auto resolved = gdCaptureLuma(gfx);
+
+    float  forwardDelta = 0.f;
+    float  resolveDelta = 0.f;
+    size_t maxIndex     = 0;
+    for (size_t i = 0; i < legacy.size(); ++i) {
+        const float delta = std::fabs(legacy[i] - forward[i]);
+        if (delta > forwardDelta) {
+            forwardDelta = delta;
+            maxIndex     = i;
+        }
+        resolveDelta = std::max(resolveDelta, std::fabs(forward[i] - resolved[i]));
+    }
+    std::printf("masked cutoff delta=%f at (%zu,%zu), legacy=%f forward=%f resolve=%f\n", forwardDelta,
+                maxIndex % size_t(gfx->getWidth()), maxIndex / size_t(gfx->getWidth()), legacy[maxIndex],
+                forward[maxIndex], resolved[maxIndex]);
+    rc->disable("gpuDriven");
+    rc->disable("visResolve");
+    REQUIRE(forwardDelta < 0.03f);
+    REQUIRE(resolveDelta < 0.06f);
+    win->close();
+}
+
+TEST_CASE("GpuDriven.rejectsUnrepresentedSurfaceFeatures") {
+    eve::window::Window* win = nullptr;
+    Graphics*            gfx = nullptr;
+    openGfxWindow(win, gfx);
+    auto* vg = dynamic_cast<eve::graphics::vulkan::Graphics*>(gfx);
+    REQUIRE(vg != nullptr);
+
+    Material* transparent = gfx->newMaterial();
+    transparent->setSurfaceMode("transparent");
+    CHECK(!vg->gpuDrivenMaterialUsable(transparent));
+
+    Material*  extended = gfx->newMaterial();
+    PbrSurface surface;
+    surface.vegetationColor.overlay = 0.5f;
+    REQUIRE(extended->setPbrSurface(surface).ok());
+    CHECK(!vg->gpuDrivenMaterialUsable(extended));
     win->close();
 }
 
@@ -564,23 +667,23 @@ TEST_CASE("GpuDriven.opaqueForwardParity") {
  * indexing at element > 0.
  */
 TEST_CASE("GpuDriven.opaqueForwardParityMultiTexture") {
-    eve::window::Window *win = nullptr;
-    Graphics *gfx = nullptr;
+    eve::window::Window* win = nullptr;
+    Graphics*            gfx = nullptr;
     openGfxWindow(win, gfx, 320, 240);
-    auto *vg = dynamic_cast<eve::graphics::vulkan::Graphics *>(gfx);
+    auto* vg = dynamic_cast<eve::graphics::vulkan::Graphics*>(gfx);
     REQUIRE(vg != nullptr);
     if (!vg->gpuDrivenCaps().gpuDrivenAvailable()) {
         win->close();
         return;
     }
 
-    auto *cam = Camera3D::createCamera();
+    auto* cam = Camera3D::createCamera();
     cam->setEye(0.f, 3.5f, 5.5f);
     cam->setTarget(0.f, 0.f, 0.f);
     cam->setAmbient(0.08f, 0.08f, 0.10f);
 
-    auto makeBall = [&](Mesh *mesh, Texture *albedo, float x) {
-        Material *mat = gfx->newMaterial();
+    auto makeBall = [&](Mesh* mesh, Texture* albedo, float x) {
+        Material* mat = gfx->newMaterial();
         mat->setAlbedoTexture(albedo);
         mat->setNormalTexture(nullptr);
         mat->setRoughness(0.5f);
@@ -589,26 +692,26 @@ TEST_CASE("GpuDriven.opaqueForwardParityMultiTexture") {
         // legacy comparison on the same documented material mode so this test
         // isolates bindless texture selection instead of raster culling.
         mat->setDoubleSided(true);
-        auto *obj = Renderable3D::create();
+        auto* obj = Renderable3D::create();
         obj->setMesh(mesh);
         obj->setMaterial(mat);
         obj->setPosition(x, 0.35f, 0.f);
         obj->setScale(0.55f, 0.55f, 0.55f);
         return obj;
     };
-    Mesh *shared = gfx->newMeshSphere(24, 16);
-    Texture *red = gdSolid(gfx, 205, 70, 60);   // bindless slot 0
-    Texture *green = gdSolid(gfx, 60, 205, 90); // bindless slot 1
-    makeBall(shared, red, -1.2f);   // material 0 -> slot 0
-    makeBall(shared, green, 1.2f);  // material 1 -> slot 1
+    Mesh*    shared = gfx->newMeshSphere(24, 16);
+    Texture* red    = gdSolid(gfx, 205, 70, 60);  // bindless slot 0
+    Texture* green  = gdSolid(gfx, 60, 205, 90);  // bindless slot 1
+    makeBall(shared, red, -1.2f);                 // material 0 -> slot 0
+    makeBall(shared, green, 1.2f);                // material 1 -> slot 1
 
-    auto *sun = Light3D::createLight("dir");
+    auto* sun = Light3D::createLight("dir");
     sun->setDirection(0.55f, 1.f, 0.35f);
     sun->setColor(1.f, 1.f, 1.f, 2.5f);
     sun->setCastShadow(false);
 
     gfx->setScreenReadbackEnabled(true);
-    RenderControl *rc = gfx->getRenderControl();
+    RenderControl* rc = gfx->getRenderControl();
     rc->disable("gpuDriven");
     gdWarmPresent(gfx);
     const auto legacy = gdCaptureLuma(gfx);
@@ -618,14 +721,14 @@ TEST_CASE("GpuDriven.opaqueForwardParityMultiTexture") {
     REQUIRE(vg->debugLastGpuDrivenDrawCount() > 0);  // both spheres went through the path
     const auto gpuDriven = gdCaptureLuma(gfx);
 
-    float maxDelta = 0.f;
-    const int w = gfx->getWidth();
-    const int h = gfx->getHeight();
+    float     maxDelta = 0.f;
+    const int w        = gfx->getWidth();
+    const int h        = gfx->getHeight();
     for (int y = 0; y < h; y += 4) {
         for (int x = 0; x < w; x += 4) {
             const size_t i = size_t(y * w + x);
-            const float d = std::fabs(legacy[i] - gpuDriven[i]);
-            maxDelta = std::max(maxDelta, d);
+            const float  d = std::fabs(legacy[i] - gpuDriven[i]);
+            maxDelta       = std::max(maxDelta, d);
         }
     }
     rc->disable("gpuDriven");
@@ -640,23 +743,23 @@ TEST_CASE("GpuDriven.opaqueForwardParityMultiTexture") {
  * contributed pixels anyway).
  */
 TEST_CASE("GpuDriven.opaqueForwardCullParity") {
-    eve::window::Window *win = nullptr;
-    Graphics *gfx = nullptr;
+    eve::window::Window* win = nullptr;
+    Graphics*            gfx = nullptr;
     openGfxWindow(win, gfx, 320, 240);
-    auto *vg = dynamic_cast<eve::graphics::vulkan::Graphics *>(gfx);
+    auto* vg = dynamic_cast<eve::graphics::vulkan::Graphics*>(gfx);
     REQUIRE(vg != nullptr);
     if (!vg->gpuDrivenCaps().gpuDrivenAvailable()) {
         win->close();
         return;
     }
 
-    auto *cam = Camera3D::createCamera();
+    auto* cam = Camera3D::createCamera();
     cam->setEye(0.f, 3.5f, 5.5f);
     cam->setTarget(0.f, 0.f, 0.f);
     cam->setAmbient(0.08f, 0.08f, 0.10f);
 
-    auto makeBall = [&](Mesh *mesh, Texture *albedo, float x, float z) {
-        Material *mat = gfx->newMaterial();
+    auto makeBall = [&](Mesh* mesh, Texture* albedo, float x, float z) {
+        Material* mat = gfx->newMaterial();
         mat->setAlbedoTexture(albedo);
         mat->setNormalTexture(nullptr);
         mat->setRoughness(0.5f);
@@ -664,28 +767,28 @@ TEST_CASE("GpuDriven.opaqueForwardCullParity") {
         // Match the GPU-driven pipeline's current double-sided raster state;
         // frustum rejection, not back-face culling, is under test here.
         mat->setDoubleSided(true);
-        auto *obj = Renderable3D::create();
+        auto* obj = Renderable3D::create();
         obj->setMesh(mesh);
         obj->setMaterial(mat);
         obj->setPosition(x, 0.35f, z);
         obj->setScale(0.55f, 0.55f, 0.55f);
         return obj;
     };
-    Mesh *shared = gfx->newMeshSphere(24, 16);
-    Texture *albedo = gdSolid(gfx, 120, 140, 160);
+    Mesh*    shared = gfx->newMeshSphere(24, 16);
+    Texture* albedo = gdSolid(gfx, 120, 140, 160);
     makeBall(shared, albedo, -1.2f, 0.f);  // visible
     makeBall(shared, albedo, 0.f, 0.f);    // visible
     makeBall(shared, albedo, 1.2f, 0.f);   // visible
     makeBall(shared, albedo, 0.f, 9.f);    // behind the camera -> culled
     makeBall(shared, albedo, -40.f, 0.f);  // outside the left frustum -> culled
 
-    auto *sun = Light3D::createLight("dir");
+    auto* sun = Light3D::createLight("dir");
     sun->setDirection(0.55f, 1.f, 0.35f);
     sun->setColor(1.f, 1.f, 1.f, 2.5f);
     sun->setCastShadow(false);
 
     gfx->setScreenReadbackEnabled(true);
-    RenderControl *rc = gfx->getRenderControl();
+    RenderControl* rc = gfx->getRenderControl();
     rc->disable("gpuDriven");
     gdWarmPresent(gfx);
     const auto legacy = gdCaptureLuma(gfx);
@@ -694,17 +797,17 @@ TEST_CASE("GpuDriven.opaqueForwardCullParity") {
     gdWarmPresent(gfx);
     const auto gpuDriven = gdCaptureLuma(gfx);
     vg->waitForSharedGpuResources();
-    REQUIRE(vg->debugGpuDrivenVisibleCount() == 3);   // 2 of 5 instances culled
+    REQUIRE(vg->debugGpuDrivenVisibleCount() == 3);  // 2 of 5 instances culled
     REQUIRE(vg->debugGpuDrivenCulledDrawCount() == 3);
 
-    float maxDelta = 0.f;
-    const int w = gfx->getWidth();
-    const int h = gfx->getHeight();
+    float     maxDelta = 0.f;
+    const int w        = gfx->getWidth();
+    const int h        = gfx->getHeight();
     for (int y = 0; y < h; y += 4) {
         for (int x = 0; x < w; x += 4) {
             const size_t i = size_t(y * w + x);
-            const float d = std::fabs(legacy[i] - gpuDriven[i]);
-            maxDelta = std::max(maxDelta, d);
+            const float  d = std::fabs(legacy[i] - gpuDriven[i]);
+            maxDelta       = std::max(maxDelta, d);
         }
     }
     rc->disable("gpuDriven");
@@ -719,49 +822,49 @@ TEST_CASE("GpuDriven.opaqueForwardCullParity") {
  * Requires the 1x scene pass (resolve path gates on MSAA off).
  */
 TEST_CASE("GpuDriven.visResolveParity") {
-    eve::window::Window *win = nullptr;
-    Graphics *gfx = nullptr;
+    eve::window::Window* win = nullptr;
+    Graphics*            gfx = nullptr;
     openGfxWindow(win, gfx, 320, 240);
-    auto *vg = dynamic_cast<eve::graphics::vulkan::Graphics *>(gfx);
+    auto* vg = dynamic_cast<eve::graphics::vulkan::Graphics*>(gfx);
     REQUIRE(vg != nullptr);
     if (!vg->gpuDrivenCaps().gpuDrivenAvailable()) {
         win->close();
         return;
     }
 
-    auto *cam = Camera3D::createCamera();
+    auto* cam = Camera3D::createCamera();
     cam->setEye(0.f, 3.5f, 5.5f);
     cam->setTarget(0.f, 0.f, 0.f);
     cam->setAmbient(0.08f, 0.08f, 0.10f);
 
-    auto makeBall = [&](Mesh *mesh, Texture *albedo, float x, float z) {
-        Material *mat = gfx->newMaterial();
+    auto makeBall = [&](Mesh* mesh, Texture* albedo, float x, float z) {
+        Material* mat = gfx->newMaterial();
         mat->setAlbedoTexture(albedo);
         mat->setNormalTexture(nullptr);
         mat->setRoughness(0.5f);
         mat->setMetallic(0.1f);
-        auto *obj = Renderable3D::create();
+        auto* obj = Renderable3D::create();
         obj->setMesh(mesh);
         obj->setMaterial(mat);
         obj->setPosition(x, 0.35f, z);
         obj->setScale(0.55f, 0.55f, 0.55f);
         return obj;
     };
-    Mesh *shared = gfx->newMeshSphere(24, 16);
-    Texture *albedo = gdSolid(gfx, 120, 140, 160);
+    Mesh*    shared = gfx->newMeshSphere(24, 16);
+    Texture* albedo = gdSolid(gfx, 120, 140, 160);
     makeBall(shared, albedo, -1.2f, 0.f);  // visible
     makeBall(shared, albedo, 0.f, 0.f);    // visible
     makeBall(shared, albedo, 1.2f, 0.f);   // visible
     makeBall(shared, albedo, 0.f, 9.f);    // behind the camera -> culled
     makeBall(shared, albedo, -40.f, 0.f);  // outside the left frustum -> culled
 
-    auto *sun = Light3D::createLight("dir");
+    auto* sun = Light3D::createLight("dir");
     sun->setDirection(0.55f, 1.f, 0.35f);
     sun->setColor(1.f, 1.f, 1.f, 2.5f);
     sun->setCastShadow(false);
 
     gfx->setScreenReadbackEnabled(true);
-    RenderControl *rc = gfx->getRenderControl();
+    RenderControl* rc = gfx->getRenderControl();
     rc->disable("msaa");  // resolve path requires the 1x scene pass
     rc->disable("gpuDriven");
     gdWarmPresent(gfx);
@@ -777,14 +880,14 @@ TEST_CASE("GpuDriven.visResolveParity") {
     vg->waitForSharedGpuResources();
     REQUIRE(vg->debugGpuDrivenVisibleCount() == 3);  // same cull as forward
 
-    float maxDelta = 0.f;
-    const int w = gfx->getWidth();
-    const int h = gfx->getHeight();
+    float     maxDelta = 0.f;
+    const int w        = gfx->getWidth();
+    const int h        = gfx->getHeight();
     for (int y = 0; y < h; y += 4) {
         for (int x = 0; x < w; x += 4) {
             const size_t i = size_t(y * w + x);
-            const float d = std::fabs(fwdGpu[i] - resolved[i]);
-            maxDelta = std::max(maxDelta, d);
+            const float  d = std::fabs(fwdGpu[i] - resolved[i]);
+            maxDelta       = std::max(maxDelta, d);
         }
     }
     rc->disable("gpuDriven");
@@ -801,25 +904,24 @@ TEST_CASE("GpuDriven.visResolveParity") {
  * pixels, plus frustum culling when the object moves behind the camera.
  */
 TEST_CASE("GpuDriven.vgVisResolve") {
-    eve::window::Window *win = nullptr;
-    Graphics *gfx = nullptr;
+    eve::window::Window* win = nullptr;
+    Graphics*            gfx = nullptr;
     openGfxWindow(win, gfx, 320, 240);
-    auto *vg = dynamic_cast<eve::graphics::vulkan::Graphics *>(gfx);
+    auto* vg = dynamic_cast<eve::graphics::vulkan::Graphics*>(gfx);
     REQUIRE(vg != nullptr);
-    if (!vg->gpuDrivenCaps().gpuDrivenAvailable() ||
-        !vg->gpuDrivenCaps().drawIndirectCount) {
+    if (!vg->gpuDrivenCaps().gpuDrivenAvailable() || !vg->gpuDrivenCaps().drawIndirectCount) {
         win->close();
         return;
     }
 
     // Shared geometry: UV sphere -> regular Mesh + VG cluster DAG.
-    std::vector<float> pos, nrm;
+    std::vector<float>    pos, nrm;
     std::vector<uint32_t> idx;
     gdSphere(0.9f, 24, 12, pos, nrm, idx);
-    eve::virtualgeometry::VirtualGeometryBuilder builder;
-    eve::virtualgeometry::VirtualGeometryAsset asset;
-    eve::virtualgeometry::VirtualGeometryBuilder::MeshInput in{
-        int(pos.size() / 3), pos.data(), nrm.data(), idx.data(), int(idx.size())};
+    eve::virtualgeometry::VirtualGeometryBuilder            builder;
+    eve::virtualgeometry::VirtualGeometryAsset              asset;
+    eve::virtualgeometry::VirtualGeometryBuilder::MeshInput in{int(pos.size() / 3), pos.data(), nrm.data(), idx.data(),
+                                                               int(idx.size())};
     REQUIRE(builder.build(in, eve::virtualgeometry::VirtualGeometryBuilder::Options{}, asset));
     REQUIRE(!asset.clusters.empty());
     REQUIRE(asset.totalTriangles() > 0);
@@ -827,58 +929,56 @@ TEST_CASE("GpuDriven.vgVisResolve") {
     std::vector<eve::graphics::GpuVgCluster> packed;
     gdPackVgClusters(asset, packed);
     eve::graphics::GpuVgAssetUpload up{};
-    up.positions = asset.positions.data();
-    up.vertexCount = asset.vertexCount;
-    up.normals = asset.normals.empty() ? nullptr : asset.normals.data();
-    up.triangles = asset.triangles.data();
-    up.triangleCount = int(asset.triangles.size());
-    up.clusters = packed.data();
-    up.clusterCount = int(packed.size());
+    up.positions             = asset.positions.data();
+    up.vertexCount           = asset.vertexCount;
+    up.normals               = asset.normals.empty() ? nullptr : asset.normals.data();
+    up.triangles             = asset.triangles.data();
+    up.triangleCount         = int(asset.triangles.size());
+    up.clusters              = packed.data();
+    up.clusterCount          = int(packed.size());
     const uint32_t vgAssetId = vg->gpuDrivenVgUpload(up);
     REQUIRE(vgAssetId != eve::graphics::kInvalidGpuDrivenSlot);
 
-    Mesh *mesh = gfx->newMeshFromArrays(pos.data(), nrm.data(), nullptr, int(pos.size() / 3),
-                                        idx.data(), int(idx.size()));
+    Mesh* mesh =
+        gfx->newMeshFromArrays(pos.data(), nrm.data(), nullptr, int(pos.size() / 3), idx.data(), int(idx.size()));
     REQUIRE(mesh != nullptr);
     REQUIRE(vg->gpuDrivenVgAttachToMesh(mesh, vgAssetId));
     REQUIRE(vg->gpuDrivenVgAssetId(mesh) == vgAssetId);
 
-    Material *mat = gfx->newMaterial();
+    Material* mat = gfx->newMaterial();
     mat->setTint(0.9f, 0.2f, 0.1f);
-    auto *obj = Renderable3D::create();
+    auto* obj = Renderable3D::create();
     obj->setMesh(mesh);
     obj->setMaterial(mat);
     obj->setPosition(0.f, 0.f, 0.f);
     obj->setScale(1.15f, 1.15f, 1.15f);
 
-    auto *cam = Camera3D::createCamera();
+    auto* cam = Camera3D::createCamera();
     cam->setEye(0.f, 0.f, 3.2f);
     cam->setTarget(0.f, 0.f, 0.f);
     cam->setAmbient(0.15f, 0.15f, 0.17f);
-    auto *sun = Light3D::createLight("dir");
+    auto* sun = Light3D::createLight("dir");
     sun->setDirection(0.4f, 1.f, 0.3f);
     sun->setColor(1.f, 1.f, 1.f, 2.2f);
     sun->setCastShadow(false);
 
     gfx->setScreenReadbackEnabled(true);
-    RenderControl *rc = gfx->getRenderControl();
+    RenderControl* rc = gfx->getRenderControl();
     rc->disable("msaa");
     rc->enable("gpuDriven");
     rc->enable("visResolve");
     gdWarmPresent(gfx);
     vg->waitForSharedGpuResources();
-    std::printf("vgVisResolve: resolveWanted=%d cullEnabled=%d drawCount=%u\n",
-                int(vg->gpuDrivenResolveWanted()), int(vg->gpuDrivenCullEnabled()),
-                vg->debugLastGpuDrivenDrawCount());
-    std::printf("vgVisResolve: rc== %d visResolve=%d msaa=%d gpuDriven=%d\n",
-                int(rc == gfx->getRenderControl()), int(rc->isEnabled("visResolve")),
-                int(rc->isEnabled("msaa")), int(rc->isEnabled("gpuDriven")));
+    std::printf("vgVisResolve: resolveWanted=%d cullEnabled=%d drawCount=%u\n", int(vg->gpuDrivenResolveWanted()),
+                int(vg->gpuDrivenCullEnabled()), vg->debugLastGpuDrivenDrawCount());
+    std::printf("vgVisResolve: rc== %d visResolve=%d msaa=%d gpuDriven=%d\n", int(rc == gfx->getRenderControl()),
+                int(rc->isEnabled("visResolve")), int(rc->isEnabled("msaa")), int(rc->isEnabled("gpuDriven")));
 
     const uint32_t visCount = vg->debugGpuDrivenVgVisibleCount();
     std::printf("vgVisResolve: visible clusters=%u\n", visCount);
     REQUIRE(visCount > 0);
-    const int w = gfx->getWidth();
-    const int h = gfx->getHeight();
+    const int   w      = gfx->getWidth();
+    const int   h      = gfx->getHeight();
     const Color center = gfx->getPixel(w / 2, h / 2);
     std::printf("vgVisResolve: center=(%.3f %.3f %.3f)\n", center.r, center.g, center.b);
     // Flat tint shading: the lit sphere center must be clearly reddish.
@@ -902,17 +1002,17 @@ TEST_CASE("GpuDriven.vgVisResolve") {
  * path under the same camera/lighting/material configuration.
  */
 TEST_CASE("GpuDriven.largeSceneForwardParity") {
-    eve::window::Window *win = nullptr;
-    Graphics *gfx = nullptr;
+    eve::window::Window* win = nullptr;
+    Graphics*            gfx = nullptr;
     openGfxWindow(win, gfx, 480, 360);
-    auto *vg = dynamic_cast<eve::graphics::vulkan::Graphics *>(gfx);
+    auto* vg = dynamic_cast<eve::graphics::vulkan::Graphics*>(gfx);
     REQUIRE(vg != nullptr);
     if (!vg->gpuDrivenCaps().gpuDrivenAvailable()) {
         win->close();
         return;
     }
 
-    auto *cam = Camera3D::createCamera();
+    auto* cam = Camera3D::createCamera();
     cam->setEye(0.f, 12.f, 16.f);
     cam->setTarget(0.f, 0.f, 0.f);
     cam->setFov(45.f);
@@ -921,21 +1021,21 @@ TEST_CASE("GpuDriven.largeSceneForwardParity") {
     const GdGrid scene = gdBuildGrid(gfx, 10, 10, 1.35f);
     REQUIRE(scene.objects.size() == 100);
 
-    auto *sun = Light3D::createLight("dir");
+    auto* sun = Light3D::createLight("dir");
     sun->setDirection(0.55f, 1.f, 0.35f);
     sun->setColor(1.f, 1.f, 1.f, 2.5f);
     sun->setCastShadow(false);
-    auto *p1 = Light3D::createLight("point");
+    auto* p1 = Light3D::createLight("point");
     p1->setPosition(-4.f, 4.f, -2.f);
     p1->setColor(1.f, 0.7f, 0.5f, 2.0f);
     p1->setRadius(9.f);
-    auto *p2 = Light3D::createLight("point");
+    auto* p2 = Light3D::createLight("point");
     p2->setPosition(4.f, 3.f, 3.f);
     p2->setColor(0.5f, 0.8f, 1.f, 1.8f);
     p2->setRadius(8.f);
 
     gfx->setScreenReadbackEnabled(true);
-    RenderControl *rc = gfx->getRenderControl();
+    RenderControl* rc = gfx->getRenderControl();
     rc->disable("msaa");
     rc->disable("gpuDriven");
     gdWarmPresent(gfx);
@@ -944,8 +1044,8 @@ TEST_CASE("GpuDriven.largeSceneForwardParity") {
     rc->enable("gpuDriven");
     gdWarmPresent(gfx);
     REQUIRE(vg->debugLastGpuDrivenDrawCount() > 0);
-    const auto gpuDriven = gdCaptureLuma(gfx);
-    const GdDelta d = gdCompare("largeScene legacy vs gpuDriven", legacy, gpuDriven);
+    const auto    gpuDriven = gdCaptureLuma(gfx);
+    const GdDelta d         = gdCompare("largeScene legacy vs gpuDriven", legacy, gpuDriven);
 
     rc->disable("gpuDriven");
     // Same shading state: differences are confined to high-contrast edge
@@ -962,32 +1062,32 @@ TEST_CASE("GpuDriven.largeSceneForwardParity") {
  * drop sharply while the final image stays close to the CPU result.
  */
 TEST_CASE("GpuDriven.largeSceneCullParity") {
-    eve::window::Window *win = nullptr;
-    Graphics *gfx = nullptr;
+    eve::window::Window* win = nullptr;
+    Graphics*            gfx = nullptr;
     openGfxWindow(win, gfx, 480, 360);
-    auto *vg = dynamic_cast<eve::graphics::vulkan::Graphics *>(gfx);
+    auto* vg = dynamic_cast<eve::graphics::vulkan::Graphics*>(gfx);
     REQUIRE(vg != nullptr);
     if (!vg->gpuDrivenCaps().gpuDrivenAvailable()) {
         win->close();
         return;
     }
 
-    auto *cam = Camera3D::createCamera();
+    auto* cam = Camera3D::createCamera();
     cam->setEye(0.f, 5.5f, 9.f);
     cam->setTarget(0.f, 0.4f, -2.f);
     cam->setFov(50.f);
     cam->setAmbient(0.08f, 0.08f, 0.10f);
 
-    const GdGrid scene = gdBuildOcclusionScene(gfx);
+    const GdGrid scene     = gdBuildOcclusionScene(gfx);
     const size_t submitted = scene.objects.size();  // all inside the frustum
 
-    auto *sun = Light3D::createLight("dir");
+    auto* sun = Light3D::createLight("dir");
     sun->setDirection(0.5f, 1.f, 0.4f);
     sun->setColor(1.f, 1.f, 1.f, 2.2f);
     sun->setCastShadow(false);
 
     gfx->setScreenReadbackEnabled(true);
-    RenderControl *rc = gfx->getRenderControl();
+    RenderControl* rc = gfx->getRenderControl();
     rc->disable("msaa");
     rc->disable("gpuDriven");
     gdWarmPresent(gfx);
@@ -1000,8 +1100,8 @@ TEST_CASE("GpuDriven.largeSceneCullParity") {
     std::printf("[gd-scene] cullParity submitted=%zu gpuVisible=%u\n", submitted, visible);
     REQUIRE(visible >= 6);         // wall + 5 front objects are never occluded
     REQUIRE(visible < submitted);  // HZB dropped at least some hidden crowd
-    const auto gpuDriven = gdCaptureLuma(gfx);
-    const GdDelta d = gdCompare("largeSceneCull legacy vs gpuDriven", legacy, gpuDriven);
+    const auto    gpuDriven = gdCaptureLuma(gfx);
+    const GdDelta d         = gdCompare("largeSceneCull legacy vs gpuDriven", legacy, gpuDriven);
 
     rc->disable("gpuDriven");
     REQUIRE(d.meanDelta < 0.008f);
@@ -1015,18 +1115,17 @@ TEST_CASE("GpuDriven.largeSceneCullParity") {
  * (GBuffer visID/visBary + fullscreen resolve) pass.
  */
 TEST_CASE("GpuDriven.largeSceneVisResolveParity") {
-    eve::window::Window *win = nullptr;
-    Graphics *gfx = nullptr;
+    eve::window::Window* win = nullptr;
+    Graphics*            gfx = nullptr;
     openGfxWindow(win, gfx, 480, 360);
-    auto *vg = dynamic_cast<eve::graphics::vulkan::Graphics *>(gfx);
+    auto* vg = dynamic_cast<eve::graphics::vulkan::Graphics*>(gfx);
     REQUIRE(vg != nullptr);
-    if (!vg->gpuDrivenCaps().gpuDrivenAvailable() ||
-        !vg->gpuDrivenCaps().drawIndirectCount) {
+    if (!vg->gpuDrivenCaps().gpuDrivenAvailable() || !vg->gpuDrivenCaps().drawIndirectCount) {
         win->close();
         return;
     }
 
-    auto *cam = Camera3D::createCamera();
+    auto* cam = Camera3D::createCamera();
     cam->setEye(0.f, 11.f, 15.f);
     cam->setTarget(0.f, 0.f, 0.f);
     cam->setFov(45.f);
@@ -1035,17 +1134,17 @@ TEST_CASE("GpuDriven.largeSceneVisResolveParity") {
     const GdGrid scene = gdBuildGrid(gfx, 8, 8, 1.45f);
     REQUIRE(scene.objects.size() == 64);
 
-    auto *sun = Light3D::createLight("dir");
+    auto* sun = Light3D::createLight("dir");
     sun->setDirection(0.55f, 1.f, 0.35f);
     sun->setColor(1.f, 1.f, 1.f, 2.5f);
     sun->setCastShadow(false);
-    auto *p1 = Light3D::createLight("point");
+    auto* p1 = Light3D::createLight("point");
     p1->setPosition(-3.f, 4.f, -2.f);
     p1->setColor(1.f, 0.7f, 0.5f, 2.0f);
     p1->setRadius(8.f);
 
     gfx->setScreenReadbackEnabled(true);
-    RenderControl *rc = gfx->getRenderControl();
+    RenderControl* rc = gfx->getRenderControl();
     rc->disable("msaa");  // resolve path requires the 1x scene pass
     rc->enable("gpuDriven");
     rc->disable("visResolve");
@@ -1054,8 +1153,8 @@ TEST_CASE("GpuDriven.largeSceneVisResolveParity") {
 
     rc->enable("visResolve");
     gdWarmPresent(gfx);
-    const auto resolved = gdCaptureLuma(gfx);
-    const GdDelta d = gdCompare("largeSceneVis fwd vs resolve", fwd, resolved);
+    const auto    resolved = gdCaptureLuma(gfx);
+    const GdDelta d        = gdCompare("largeSceneVis fwd vs resolve", fwd, resolved);
 
     rc->disable("gpuDriven");
     rc->disable("visResolve");

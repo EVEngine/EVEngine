@@ -6,6 +6,7 @@
 // virtual; the concrete backend implements them.
 
 #include "graphics/Color.h"
+#include "graphics/PbrSurface.h"
 
 #include <glm/mat4x4.hpp>
 #include <glm/vec3.hpp>
@@ -14,9 +15,6 @@
 #include <string>
 
 namespace eve::graphics {
-struct PbrSurface;
-
-
 class Texture;
 
 struct ReflectionProbeUpload {
@@ -108,23 +106,21 @@ public:
     virtual void setMesh3DShadowReceive(bool receive) = 0;
 
     virtual void beginShadowPass(int cascadeIndex) = 0;
-    virtual void drawMeshShadow(Mesh *mesh, const glm::mat4 &lightMVP) = 0;
-    virtual void drawMeshShadowAlpha(Mesh *mesh, const glm::mat4 &lightMVP,
-                                     Texture *albedo = nullptr) = 0;
+    virtual void drawMeshShadow(Mesh *mesh, const glm::mat4 &lightMVP, PbrCullMode cullMode = PbrCullMode::None) = 0;
+    virtual void drawMeshShadowAlpha(Mesh *mesh, const glm::mat4 &lightMVP, Texture *albedo = nullptr,
+                                     PbrCullMode cullMode = PbrCullMode::None)                                   = 0;
     virtual void endShadowPass() = 0;
 
     virtual void beginGBufferPass(int width, int height) = 0;
-    virtual void drawMeshGBuffer(Mesh *mesh, const glm::mat4 &mvp, const glm::mat4 &model,
-                                 float nearZ, float farZ, Texture *albedo = nullptr,
-                                 float tintR = 1.f, float tintG = 1.f, float tintB = 1.f,
-                                 float motionX = 0.f, float motionY = 0.f,
-                                 float roughness = 0.45f, float metallic = 0.f) = 0;
-    virtual void drawMeshGBufferAlpha(Mesh *mesh, const glm::mat4 &mvp, const glm::mat4 &model,
-                                      float nearZ, float farZ, Texture *albedo = nullptr,
-                                      float tintR = 1.f, float tintG = 1.f,
-                                      float tintB = 1.f, float motionX = 0.f,
-                                      float motionY = 0.f, float roughness = 0.45f,
-                                      float metallic = 0.f) = 0;
+    virtual void drawMeshGBuffer(Mesh *mesh, const glm::mat4 &mvp, const glm::mat4 &model, float nearZ, float farZ,
+                                 Texture *albedo = nullptr, float tintR = 1.f, float tintG = 1.f, float tintB = 1.f,
+                                 float motionX = 0.f, float motionY = 0.f, float roughness = 0.45f,
+                                 float metallic = 0.f, PbrCullMode cullMode = PbrCullMode::None) = 0;
+    virtual void drawMeshGBufferAlpha(Mesh *mesh, const glm::mat4 &mvp, const glm::mat4 &model, float nearZ, float farZ,
+                                      Texture *albedo = nullptr, float tintR = 1.f, float tintG = 1.f,
+                                      float tintB = 1.f, float motionX = 0.f, float motionY = 0.f,
+                                      float roughness = 0.45f, float metallic = 0.f,
+                                      PbrCullMode cullMode = PbrCullMode::None)                  = 0;
     virtual void endGBufferPass() = 0;
 
     virtual void drawVoxelFaceInstances(const uint32_t *packed, int count, float originX,

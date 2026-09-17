@@ -369,7 +369,7 @@ image::ImageData *Graphics::renderEntityIdMask(
     // G-buffer pipeline / render pass are created lazily by createGBufferResources,
     // so that must run before the availability check.
     createGBufferResources(maskW, maskH);
-    if (!gbufferPipeline || !gbufferRenderPass) return nullptr;
+    if (!gbufferPipelines[0] || !gbufferRenderPass) return nullptr;
     auto *slot = currentGBufferSlot();
     if (!slot || !slot->framebuffer || !whiteTexture) return nullptr;
 
@@ -424,7 +424,7 @@ image::ImageData *Graphics::renderEntityIdMask(
                                 slot->depth.beginDepthAttachment();
                                 cb.beginRenderPass(rpBegin, vk::SubpassContents::eInline);
                                 setViewportAndScissor(cb, w, h);
-                                cb.bindPipeline(vk::PipelineBindPoint::eGraphics, gbufferPipeline);
+                                cb.bindPipeline(vk::PipelineBindPoint::eGraphics, gbufferPipelines[0]);
                                 for (const auto &d : idDraws) {
                                     auto *gpuMesh = static_cast<GpuMesh *>(d.mesh->gpuHandle);
                                     if (!gpuMesh) continue;
@@ -529,8 +529,8 @@ image::ImageData *Graphics::readDecalLayerToImageData(const std::string &attachm
     if (!initialized) return nullptr;
     auto *slot = currentDecalSlot();
     auto *gslot = currentGBufferSlot();
-    if (!slot || !gslot || !slot->framebuffer || !decalPipeline || !decalRenderPass ||
-        !gbufferPipeline || !gbufferRenderPass || !gslot->framebuffer)
+    if (!slot || !gslot || !slot->framebuffer || !decalPipeline || !decalRenderPass || !gbufferPipelines[0] ||
+        !gbufferRenderPass || !gslot->framebuffer)
         return nullptr;
     vkb::ColorTarget *src = nullptr;
     if (attachment == "normal")

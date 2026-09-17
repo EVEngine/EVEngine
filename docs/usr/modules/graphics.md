@@ -168,6 +168,7 @@ mat.setSurfaceMode("transparent"); // opaque | masked | transparent
 mat.setBlendMode("alpha");         // alpha | premultiplied | additive | multiply
 mat.setDepthWrite(false);
 mat.setDoubleSided(true);
+mat.setCameraFacing(true);          // GPU-driven 竖直卡片绕世界 Y 轴朝向活动相机
 mat.setSortPriority(0);             // 同优先级按相机深度从后向前排序
 mat.setMetallic(0.2);
 mat.setRoughness(0.5);
@@ -182,7 +183,7 @@ local effectiveOrder = r.getPartSortPriority(0);
 
 遮罩材质使用 `setSurfaceMode("masked")`、`setAlphaCutoff()` 和
 `setAlphaTechnique("cutoff" | "dither" | "coverage")`。对应查询接口为
-`getSurfaceMode()`、`getBlendMode()`、`getDepthWrite()`、`getDoubleSided()`、
+`getSurfaceMode()`、`getBlendMode()`、`getDepthWrite()`、`getDoubleSided()`、`getCameraFacing()`、
 `getSortPriority()`、`getAlphaCutoff()` 和 `getAlphaTechnique()`。纹理 Alpha 数据可用
 `Texture.setAlphaConvention("straight" | "premultiplied")` 声明，并通过
 `Texture.getAlphaConvention()` 查询。
@@ -306,6 +307,11 @@ WebGPU 使用带 origin 的 `WriteTexture`；两者都不重建 Texture、采样
 `gfx.loadMeshShaderSpv(vertexPath, fragmentPath)` 从 VFS 加载 Vulkan SPIR-V，返回统一 Result。
 空 vertexPath 使用默认 Mesh3D 顶点着色器；fragmentPath 必填。成功后 `value` 是 Graphics
 所有的借用 Shader，只在 Graphics 生命周期内使用。调用者须预先编译匹配 Mesh3D 布局的程序。
+
+自定义网格 Shader 可用 `shader.setMeshTexture(slot, texture)` 借用最多四张额外纹理；
+slot 必须为 0..3，传入 `null` 会恢复白色后备纹理。Vulkan 对应 binding 22..25；
+WebGPU 对应 texture/sampler binding 对 22/23、24/25、26/27、28/29。纹理和 Shader
+都必须活到绘制完成，且纹理必须由同一个 `Graphics` 后端创建。
 加载失败返回诊断，不修改已有材质。仅在渲染/VM owner 线程同步调用。
 
 `canvas.readPixels()` 返回独立 RGBA8 ImageData 的 Result；成功时脚本拥有 `value`，
@@ -314,3 +320,88 @@ WebGPU 使用带 origin 的 `WriteTexture`；两者都不重建 Texture、采样
 
 Vulkan RGBA8 画布在分次提交之间保留像素，显式 clear 在下一次绘制提交时执行。
 参考 `examples/ink-arena`，可用片元着色器和 alpha 混合在 GPU 上累积表面墨迹。
+
+### 植被影响场（实验性原生接口）
+
+`gfx.newVegetationField()` 返回统一 Result，`value` 是脚本拥有的植被场，释放脚本引用后
+由 VM 回收。它不依赖场景实体、GPU 纹理或 Unity 包，所有操作在 VM owner 线程调用。
+
+- `field.snapshot()` 返回独立配置值，schema 为 `eve.graphics.vegetation-field`、version 为 1。
+- `field.restore(document)` 整份验证并替换；拒绝未知字段、其他版本、无效尺寸和非有限值。
+  失败时保留原配置。只能恢复本版本，没有旧版本迁移。
+- `field.sample(x, y, z, colorLayer, extrasLayer, motionLayer, vertexLayer)` 返回四个 RGBA 数组。
+  坐标使用浮点数，四个层编号使用 0–8 的整数。
+
+编辑器视口可用 `graphics_editing::VegetationFieldGizmoBuilder` 从场的当前 revision 生成拥有型
+`GizmoSnapshot`。Box 会保留 Y 轴旋转，Ellipsoid 会保留三个独立半径；快照有 10000 个元素的
+默认硬预算，陈旧 revision 或超预算请求返回结构化错误。随后由 `PrimitiveGizmoRenderer` 在当前
+3D pass 同步提交，快照和场元素都不会被渲染器跨帧保留。
+
+```squirrel
+local created = eve.Graphics().newVegetationField();
+if (!created.ok) throw "vegetation field creation failed";
+local field = created.value;
+local saved = field.snapshot();
+if (!saved.ok) throw "vegetation snapshot failed";
+saved.value.globals.motion = [1.0, 0.0, 0.8, 0.0];
+local restored = field.restore(saved.value);
+if (!restored.ok) throw "vegetation configuration rejected";
+local sampled = field.sample(0.0, 0.0, 0.0, 0, 0, 0, 0);
+if (!sampled.ok) throw "vegetation sampling failed";
+```
+
+C++ 还提供 `VegetationField::replace/bake`、`deformVegetation`、
+`updateVegetationMesh` 和 `applyVegetationSurface`。场和输入顶点均为 owning CPU 数据；
+GPU 上传与材质应用只同步借用既有 Mesh/Material。网格变形输入为对象坐标，通过显式
+objectToWorld 输出世界坐标，以单位 model 矩阵绘制；更新后的同一网格供颜色、深度、
+阴影使用。时间、实例 variation、噪声纹理和浮动原点显式传入。
+
+运行时资产入口是 C++ `asset_graphics::VegetationAsset`，位于
+`asset/graphics/VegetationAsset.h`。`load` 从 EVPACK 读取 TVE 网格，`fromCanonical`
+接收完整 canonical 网格；二者都拥有解码后的静止顶点、UV 和索引，不保留输入引用。
+`evaluate` 返回独立的世界坐标几何；`createMesh` 创建 Graphics 所有的网格，
+`updateMesh` 每帧从静止数据重新变形。调用者负责通过 Graphics 释放网格。
+GPU 操作必须在 graphics 线程执行；CPU 求值允许不可变数据的并发读取。
+
+GPU 场使用 `uploadVegetationGpuFieldSet` 一次烘焙 Colors、Extras、Motion、Vertex
+四张九层 RGBA16F 数组。任一通道上传失败时，已经创建的纹理会在返回前释放，不会发布
+半套结果。`bindVegetationGpuFields` 要求四张纹理具有相同 revision、尺寸、中心和范围，
+并且 revision 必须等于当前 `VegetationField`；失败时不改变 `PbrSurface`。它统一写入
+世界坐标到 atlas UV 的变换、显式时间、风向、浮动原点、全局 motion 参数及 GPU
+deformation owner。纹理和 motion noise 仍由创建它们的 Graphics 所有，必须覆盖所有
+引用该 surface 的绘制；停用后用 `releaseVegetationGpuFieldSet` 在同一 graphics 线程释放。
+
+`gfx.newVegetationDetails()` 创建 VM 所有的 Global Details 配置。`snapshot()` 返回严格的
+`eve.graphics.vegetation-details/1` 文档，`restore(document)` 先完整验证再发布；未知字段、
+未知版本、非法层编号或数值都不会留下部分修改。C++ `configureVegetationDetails` 把配置
+投影成独立的 PBR 与 motion 快照：Colors/Extras/Motion 层、全局 Color/Alpha/Overlay/
+Wetness、透视与运动参数同步生效；Colors 和 Overlay 使用各自的 mask min/max，alpha
+阈值按 TVE 的 `alphaThreshold - 0.5` 偏移材质 cutoff。PBR 中借用的纹理生命周期仍由调用者负责。
+`packVegetationOrm` 将线性的 TVE 遮罩投影为 ORM：R 为 AO、G 为 roughness、B 为零
+metallic、A 保留原蓝通道遮罩。源纹理保持不变。生成纹理绑定到 PBR 的
+MetallicRoughness 和 Occlusion 槽时应关闭 sRGB 解码，并保留源 UV 与采样设置。
+
+Vulkan C++ `PbrSurface` 可通过 `colorMaskEnabled`、`colorMaskSecondary`、
+`colorMaskMin/Max` 启用逐像素 RGB 双颜色混合。主颜色仍由 Material tint 持有，
+遮罩来自线性 ORM 纹理的 A 通道，过滤后再重映射；支持反向区间，拒绝零分母。
+`albedoTextureStrength` 控制纹理 RGB 从白色插值的强度，不影响纹理 alpha。
+这些参数已接入 TVE 12.6 Plant/Prop 材质导入和 canonical material v14；WebGPU 的扩展
+PBR 路径仍显式返回 Unsupported。
+
+`vegetationGradient` 使用网格植被流的 height、两组线性 HDR 颜色以及 min/max 端点执行
+TVE 高度渐变。它使用主/细节层混合后的蓝色遮罩，在全局 Colors 场与 overlay 之前作用于
+base color；非法颜色、端点和奇异分母会被表面校验拒绝。
+网格 green 通道还会按同一 min/max 区间重映射，并从 `vertexOcclusionColor` 插值到白色；
+该颜色在全局 Colors 前乘入 base color，alpha 则继续分别控制 Colors 与 Overlay 遮罩。
+双面植被可用 `backfaceNormalMode` 选择 TVE 的 Flip、Mirror 或 Same 背面切线法线规则；
+导入器同时把 `_RenderSpecular` 映射到 PBR specular factor。
+
+CPU 与 Vulkan GPU 风模型均实现 Plant Standard 顶点公式，包括噪声平流、pivot 弯曲、
+squash/rolling、flutter、交互、距离衰减与透视修正。Unity v11 网格导入、canonical
+cook 和 `VegetationAsset::createGpuFieldMesh` 保留静止位置、pivot、弯曲、枝干、flutter、
+variation 与 bounds 通道。Colors、Extras、Motion 和 Vertex 场均有真实 Vulkan Canvas
+验证。完整地形、剩余编辑器工具和性能等范围仍见
+[源码调查与移植记录](../../dev/2026-09-12-vegetation-port.md)。
+Vegetation field authoring exposes each influence volume through a stable editor selection ID. The Inspector and transform gizmo commit the same atomic `vegetation-field.element.transform.v1` operation for world center, positive local half-size, and Y-axis yaw. Priority sorting in the runtime field does not change editor selection identity. If another writer replaces the runtime field, the editor target reports a revision conflict instead of overwriting that change.
+
+Multi-material vegetation edits use one `MaterialBatchTarget`. The Inspector reports mixed values across selected material IDs and resolves a set/reset into complete candidate documents. Runtime publication is one `IMaterialBatchRuntimeSink` call, so a rejected material leaves every selected document and the batch revision unchanged.

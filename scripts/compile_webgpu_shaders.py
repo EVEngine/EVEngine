@@ -20,6 +20,7 @@ Environment overrides: EVENGINE_GLSLC, EVENGINE_TINT.
 
 import argparse
 import os
+import re
 import shutil
 import struct
 import subprocess
@@ -28,6 +29,42 @@ import tempfile
 from pathlib import Path
 
 STAGE_EXT = {".vert": "vertex", ".frag": "fragment", ".glsl": "fragment"}
+
+
+def expand_opaque_sampler_arrays(src: str, name: str) -> str:
+    """Expand fixed sampler arrays that WGSL cannot represent as handle arrays."""
+    if name != "pbr_surface.frag":
+        return src
+    replacements = (("maps", 11, 20), ("detailMaps", 3, 40))
+    for array_name, count, first_binding in replacements:
+        declaration = re.compile(
+            rf"layout\(set=0,binding=\d+\) uniform sampler2D {array_name}\[{count}\];"
+        )
+        expanded = "\n".join(
+            f"layout(set=0,binding={first_binding + index}) uniform sampler2D {array_name[:-1]}{index};"
+            for index in range(count)
+        )
+        src, changed = declaration.subn(expanded, src, count=1)
+        if changed != 1:
+            raise ValueError(f"expected one {array_name}[{count}] declaration")
+        src = re.sub(
+            rf"\b{array_name}\[(\d+)\]",
+            lambda match: f"{array_name[:-1]}{match.group(1)}",
+            src,
+        )
+    return src
+
+
+def remap_pbr_vertex_bindings(src: str, name: str) -> str:
+    """Keep split WebGPU texture/sampler bindings disjoint from the fragment stage."""
+    if name != "pbr_surface.vert":
+        return src
+    for old, new in ((10, 50), (11, 52), (12, 54)):
+        marker = f"layout(set=0,binding={old})"
+        if src.count(marker) != 1:
+            raise ValueError(f"expected one PBR vertex binding {old}")
+        src = src.replace(marker, f"layout(set=0,binding={new})", 1)
+    return src
 
 
 def find_tool(name, env_name, extra_hints):
@@ -44,7 +81,9 @@ def find_tool(name, env_name, extra_hints):
 
 def emit_wgsl_inc(src_path: Path, wgsl: bytes) -> Path:
     out = src_path.with_suffix(src_path.suffix + "_wgsl.inc")
-    stem = src_path.stem.replace("-", "_").replace(".", "_")
+    # Include the stage suffix: foo.vert and foo.frag are commonly included by
+    # the same translation unit and must not emit the same C++ symbol.
+    stem = src_path.name.replace("-", "_").replace(".", "_")
     array_name = f"{stem}_wgsl"
 
     # Pack the WGSL source so the C++ side can memcpy it as an opaque blob.
@@ -82,12 +121,18 @@ def compile_one(glsl_path: Path, glslc, glslang, tint, scratch: Path):
         return
 
     spv_path = scratch / (glsl_path.stem + ".spv")
+    compile_path = glsl_path
+    expanded = expand_opaque_sampler_arrays(src, glsl_path.name)
+    expanded = remap_pbr_vertex_bindings(expanded, glsl_path.name)
+    if expanded != src:
+        compile_path = scratch / glsl_path.name
+        compile_path.write_text(expanded, encoding="utf-8")
 
     # 1) GLSL -> SPIR-V
     if glslc:
-        cmd = [glslc, f"-fshader-stage={stage}", "-o", str(spv_path), str(glsl_path)]
+        cmd = [glslc, f"-fshader-stage={stage}", "-I", str(glsl_path.parent), "-o", str(spv_path), str(compile_path)]
     elif glslang:
-        cmd = [glslang, f"-S{stage}", "-V", "-o", str(spv_path), str(glsl_path)]
+        cmd = [glslang, f"-S{stage}", "-V", "-I" + str(glsl_path.parent), "-o", str(spv_path), str(compile_path)]
     else:
         print(f"[webgpu-shaders] SKIP {glsl_path.name}: no glslc/glslangValidator on PATH")
         return
@@ -98,7 +143,8 @@ def compile_one(glsl_path: Path, glslc, glslang, tint, scratch: Path):
         print(f"[webgpu-shaders] SKIP {glsl_path.name}: no tint on PATH")
         return
     wgsl_path = scratch / (glsl_path.stem + ".wgsl")
-    subprocess.run([tint, str(spv_path), "--format", "wgsl", "-o", str(wgsl_path)],
+    subprocess.run([tint, str(spv_path), "--format", "wgsl", "--allow-non-uniform-derivatives", "true",
+                    "-o", str(wgsl_path)],
                    check=True, capture_output=True)
     wgsl = wgsl_path.read_bytes()
     emit_wgsl_inc(glsl_path, wgsl)

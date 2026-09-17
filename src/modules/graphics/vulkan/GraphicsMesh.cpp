@@ -128,7 +128,6 @@ Mesh *Graphics::newMeshFromAssimp(const ::aiMesh &mesh) {
     handle->markMorphClean();
     Mesh *raw = handle.get();
     assignMeshBounds(raw, verts);
-    registerMeshRecord(gpu.get());
     ownedGpuMeshes.push_back(std::move(gpu));
     ownedMeshes.push_back(std::move(handle));
     return raw;
@@ -238,7 +237,6 @@ Mesh *Graphics::newMeshFromArrays(const float *posXYZ, const float *nrmXYZ, cons
     auto handle = makeMeshHandle(*gpu);
     Mesh *raw = handle.get();
     raw->computeBounds(posXYZ, vertexCount);
-    registerMeshRecord(gpu.get());
     ownedGpuMeshes.push_back(std::move(gpu));
     ownedMeshes.push_back(std::move(handle));
     return raw;
@@ -379,6 +377,8 @@ bool Graphics::releaseMesh(Mesh *mesh) {
 
     // An in-flight draw may still read the vertex/index buffers; drain first.
     waitForSharedGpuResources();
+    if (gpu->gpuRecordIndex != kInvalidBindlessSlot && gpu->gpuRecordIndex < meshRecordOwners_.size())
+        meshRecordOwners_[gpu->gpuRecordIndex] = nullptr;
     mesh->gpuHandle = nullptr;
     ownedGpuMeshes.erase(gpuIt);
     // Transfer the CPU facade to the caller instead of destroying it.
@@ -460,7 +460,6 @@ Mesh *Graphics::newMeshSphere(int slices, int stacks) {
     auto handle = makeMeshHandle(*gpu);
     Mesh *raw = handle.get();
     assignMeshBounds(raw, verts);
-    registerMeshRecord(gpu.get());
     ownedGpuMeshes.push_back(std::move(gpu));
     ownedMeshes.push_back(std::move(handle));
     return raw;
@@ -569,7 +568,6 @@ Mesh *Graphics::newMeshCylinder(int slices, int stacks, bool caps) {
     auto handle = makeMeshHandle(*gpu);
     Mesh *raw = handle.get();
     assignMeshBounds(raw, verts);
-    registerMeshRecord(gpu.get());
     ownedGpuMeshes.push_back(std::move(gpu));
     ownedMeshes.push_back(std::move(handle));
     return raw;
@@ -797,8 +795,8 @@ void Graphics::drawMeshShader(Mesh *mesh, const glm::mat4 &model, Texture *textu
                           : sceneColorHistoryValid && completedSceneColorSlot < sceneColorSlots.size()
                               ? &sceneColorSlots[completedSceneColorSlot].colorGpu
                               : static_cast<GpuTexture *>(whiteTexture->gpuHandle);
-    vk::DescriptorSet set = mesh3dSetFor(gpuTex, gpuNormal, gpuEnv, gpuHeight, gpuDepth, gpuSceneColor,
-                                         gpuDecalAlb, gpuDecalNrm, gpuDecalPrm, fslots);
+    vk::DescriptorSet set = mesh3dSetFor(gpuTex, gpuNormal, gpuEnv, gpuHeight, gpuDepth, gpuSceneColor, gpuDecalAlb,
+                                         gpuDecalNrm, gpuDecalPrm, fslots, shader);
     const uint32_t dynOffsets[2] = {uboOffset, shadowOffset};
 
     if (shader) {

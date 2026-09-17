@@ -240,6 +240,19 @@ public:
         return false;
     }
 
+    /**
+     * @brief Remove a material from backend GPU-driven tables before destroying it.
+     * @param material Material previously passed to gpuDrivenMaterialRecord; null is invalid.
+     * @return Success when removed or already absent; Unsupported when the backend owns no table.
+     * @thread Graphics thread only, outside an open frame submission.
+     * @lifetime The caller may destroy the material after this call succeeds.
+     */
+    [[nodiscard]] virtual Result<void> gpuDrivenReleaseMaterialRecord(Material *material) {
+        (void)material;
+        return Result<void>::failure(Diagnostic::error(
+            DiagnosticCode::Unsupported, "GPU-driven material records are unavailable on this backend"));
+    }
+
     /** @brief Return/register a bindless cubemap slot for a GPU-driven local probe. */
     virtual uint32_t gpuDrivenReflectionProbeSlot(Texture *cubemap) {
         (void)cubemap;
@@ -862,23 +875,21 @@ public:
      * After endGBufferPass, textures are available via getRenderControl()->getGBuffer().
      */
     virtual void beginGBufferPass(int width, int height) = 0;
-    virtual void drawMeshGBuffer(Mesh *mesh, const glm::mat4 &mvp, const glm::mat4 &model,
-                                 float nearZ, float farZ, Texture *albedo = nullptr,
-                                 float tintR = 1.f, float tintG = 1.f, float tintB = 1.f,
-                                 float motionX = 0.f, float motionY = 0.f,
-                                 float roughness = 0.45f, float metallic = 0.f) = 0;
+    virtual void drawMeshGBuffer(Mesh *mesh, const glm::mat4 &mvp, const glm::mat4 &model, float nearZ, float farZ,
+                                 Texture *albedo = nullptr, float tintR = 1.f, float tintG = 1.f, float tintB = 1.f,
+                                 float motionX = 0.f, float motionY = 0.f, float roughness = 0.45f,
+                                 float metallic = 0.f, PbrCullMode cullMode = PbrCullMode::None) = 0;
     /**
      * @brief GBuffer fill with alpha-cutout discard (card/billboard geometry such as
      * sprite-stack slices): same outputs as drawMeshGBuffer, but transparent
      * texels are discarded so depth/normal follow the silhouette. No-op on
      * backends without the alpha pipeline (WebGPU).
      */
-    virtual void drawMeshGBufferAlpha(Mesh *mesh, const glm::mat4 &mvp, const glm::mat4 &model,
-                                      float nearZ, float farZ, Texture *albedo = nullptr,
-                                      float tintR = 1.f, float tintG = 1.f,
-                                      float tintB = 1.f, float motionX = 0.f,
-                                      float motionY = 0.f, float roughness = 0.45f,
-                                      float metallic = 0.f) = 0;
+    virtual void drawMeshGBufferAlpha(Mesh *mesh, const glm::mat4 &mvp, const glm::mat4 &model, float nearZ, float farZ,
+                                      Texture *albedo = nullptr, float tintR = 1.f, float tintG = 1.f,
+                                      float tintB = 1.f, float motionX = 0.f, float motionY = 0.f,
+                                      float roughness = 0.45f, float metallic = 0.f,
+                                      PbrCullMode cullMode = PbrCullMode::None) = 0;
     virtual void endGBufferPass() = 0;
 
     /**
@@ -1187,7 +1198,7 @@ public:
      * Call before begin3DFrame.
      */
     virtual void beginShadowPass(int cascadeIndex) = 0;
-    virtual void drawMeshShadow(Mesh *mesh, const glm::mat4 &lightMVP) = 0;
+    virtual void drawMeshShadow(Mesh *mesh, const glm::mat4 &lightMVP, PbrCullMode cullMode = PbrCullMode::None) = 0;
     /**
      * @brief Shadow pass draw with alpha-cutout discard (card/billboard geometry such
      * as sprite-stack slices): transparent texels of `albedo` are discarded so
@@ -1195,8 +1206,8 @@ public:
      * active shadow pass (beginShadowPass). No-op on backends without the
      * alpha shadow pipeline (WebGPU).
      */
-    virtual void drawMeshShadowAlpha(Mesh *mesh, const glm::mat4 &lightMVP,
-                                     Texture *albedo = nullptr) = 0;
+    virtual void drawMeshShadowAlpha(Mesh *mesh, const glm::mat4 &lightMVP, Texture *albedo = nullptr,
+                                     PbrCullMode cullMode = PbrCullMode::None) = 0;
     virtual void endShadowPass() = 0;
 
     /** @brief True after begin3DFrame until present completes. */

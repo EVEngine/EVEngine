@@ -513,6 +513,11 @@ wgpu::BindGroupLayout Graphics::makeMesh3DBindGroupLayout() {
               wgpu::TextureViewDimension::e2D);
     b.sampler(19, wgpu::ShaderStage::Fragment, wgpu::SamplerBindingType::Filtering);
     b.buffer(21, wgpu::ShaderStage::Vertex, wgpu::BufferBindingType::ReadOnlyStorage, false, 64);
+    for (uint32_t slot = 0; slot < Shader::kMaxMeshTextures; ++slot) {
+        b.texture(22 + slot * 2, wgpu::ShaderStage::Fragment, wgpu::TextureSampleType::Float,
+                  wgpu::TextureViewDimension::e2D);
+        b.sampler(23 + slot * 2, wgpu::ShaderStage::Fragment, wgpu::SamplerBindingType::Filtering);
+    }
     return b.build(device, "eve_mesh3d");
 }
 
@@ -1247,14 +1252,18 @@ void Graphics::createShadowPipelines() {
     pd.fragment = nullptr;
     pd.primitive.topology = WGPUPrimitiveTopology_TriangleList;
     pd.primitive.frontFace = WGPUFrontFace_CCW;
-    pd.primitive.cullMode = WGPUCullMode_None;
+    constexpr std::array<WGPUCullMode, 3> shadowCullModes{WGPUCullMode_None, WGPUCullMode_Back, WGPUCullMode_Front};
     pd.primitive.stripIndexFormat = WGPUIndexFormat_Undefined;
     pd.depthStencil = &ds;
     pd.multisample.count = 1;
     // Zero-init would leave mask=0, which discards every fragment
     // (sampleMask=0). The WebGPU default is 0xFFFFFFFF (all samples).
     pd.multisample.mask = 0xFFFFFFFFu;
-    mesh3dShadowPipeline = device.CreateRenderPipeline(reinterpret_cast<const wgpu::RenderPipelineDescriptor*>(&pd));
+    for (size_t cullIndex = 0; cullIndex < shadowCullModes.size(); ++cullIndex) {
+        pd.primitive.cullMode = shadowCullModes[cullIndex];
+        mesh3dShadowPipelines[cullIndex] =
+            device.CreateRenderPipeline(reinterpret_cast<const wgpu::RenderPipelineDescriptor *>(&pd));
+    }
 
     wgpu::ShaderModule alphaVertModule = makeWgslModule(device, kMesh3DShadowAlphaVertWgsl);
     wgpu::ShaderModule alphaFragModule = makeWgslModule(device, kMesh3DShadowAlphaFragWgsl);
@@ -1266,8 +1275,11 @@ void Graphics::createShadowPipelines() {
     alphaFs.targetCount = 0;
     alphaFs.targets = nullptr;
     pd.fragment = &alphaFs;
-    mesh3dShadowAlphaPipeline =
-        device.CreateRenderPipeline(reinterpret_cast<const wgpu::RenderPipelineDescriptor*>(&pd));
+    for (size_t cullIndex = 0; cullIndex < shadowCullModes.size(); ++cullIndex) {
+        pd.primitive.cullMode = shadowCullModes[cullIndex];
+        mesh3dShadowAlphaPipelines[cullIndex] =
+            device.CreateRenderPipeline(reinterpret_cast<const wgpu::RenderPipelineDescriptor *>(&pd));
+    }
 }
 
 void Graphics::createGbufferPipelines() {
@@ -1326,13 +1338,21 @@ void Graphics::createGbufferPipelines() {
     // Zero-init would leave mask=0, which discards every fragment
     // (sampleMask=0). The WebGPU default is 0xFFFFFFFF (all samples).
     pd.multisample.mask = 0xFFFFFFFFu;
-    mesh3dGbufferPipeline = device.CreateRenderPipeline(reinterpret_cast<const wgpu::RenderPipelineDescriptor*>(&pd));
+    constexpr std::array<WGPUCullMode, 3> gbufferCullModes{WGPUCullMode_None, WGPUCullMode_Back, WGPUCullMode_Front};
+    for (size_t cullIndex = 0; cullIndex < gbufferCullModes.size(); ++cullIndex) {
+        pd.primitive.cullMode = gbufferCullModes[cullIndex];
+        mesh3dGbufferPipelines[cullIndex] =
+            device.CreateRenderPipeline(reinterpret_cast<const wgpu::RenderPipelineDescriptor *>(&pd));
+    }
 
     wgpu::ShaderModule alphaFragModule = makeWgslModule(device, kMesh3DGbufferAlphaFragWgsl);
     pd.label = sv("eve_gbuffer_alpha");
     fs.module = alphaFragModule.Get();
-    mesh3dGbufferAlphaPipeline =
-        device.CreateRenderPipeline(reinterpret_cast<const wgpu::RenderPipelineDescriptor*>(&pd));
+    for (size_t cullIndex = 0; cullIndex < gbufferCullModes.size(); ++cullIndex) {
+        pd.primitive.cullMode = gbufferCullModes[cullIndex];
+        mesh3dGbufferAlphaPipelines[cullIndex] =
+            device.CreateRenderPipeline(reinterpret_cast<const wgpu::RenderPipelineDescriptor *>(&pd));
+    }
 }
 
 void Graphics::createDecalPipeline() {
@@ -2445,10 +2465,10 @@ wgpu::BindGroup Graphics::makeTex2DBindGroup(GpuTexture *color, GpuTexture *dept
     return device.CreateBindGroup(reinterpret_cast<const wgpu::BindGroupDescriptor*>(&desc));
 }
 
-wgpu::BindGroup Graphics::makeMeshBindGroup(GpuTexture* albedo, GpuTexture* normal, GpuTexture* env, GpuTexture* height,
-                                            GpuTexture* depth, GpuTexture* sceneColor, uint32_t frameUboOffset,
+wgpu::BindGroup Graphics::makeMeshBindGroup(GpuTexture *albedo, GpuTexture *normal, GpuTexture *env, GpuTexture *height,
+                                            GpuTexture *depth, GpuTexture *sceneColor, uint32_t frameUboOffset,
                                             uint32_t shadowUboOffset, uint32_t pushUboOffset,
-                                            const wgpu::Buffer& skinBuffer) {
+                                            const wgpu::Buffer &skinBuffer, const Shader *shader) {
     GpuTexture *a = albedo ? albedo : whiteTexture;
     GpuTexture *n = normal ? normal : flatNormalTexture;
     GpuTexture *e = env ? env : defaultEnvCubemap;
@@ -2465,6 +2485,12 @@ wgpu::BindGroup Graphics::makeMeshBindGroup(GpuTexture* albedo, GpuTexture* norm
     GpuTexture *d = depth ? depth : flatDepthTexture3D;
     GpuTexture *c = sceneColor ? sceneColor : whiteTexture;
     GpuTexture *shadow = shadowDepthArray ? shadowDepthArray : defaultShadowTex;
+    std::array<GpuTexture *, Shader::kMaxMeshTextures> custom{};
+    for (std::size_t slot = 0; slot < custom.size(); ++slot) {
+        Texture *texture = shader ? shader->meshTexture(slot) : nullptr;
+        if (texture && !texture->gpuHandle) throw Exception("custom mesh texture has no GPU resource");
+        custom[slot] = texture ? gpuForTexture(texture) : whiteTexture;
+    }
     wgpu::TextureView aoView_ =
         aoReady ? aoView[(aoWriteIndex + 1) % 2] : (whiteTexture ? whiteTexture->view : wgpu::TextureView());
     wgpu::TextureView decalAlbedoView = gpuForTextureOrWhite(decalFlatAlbedo)->view;
@@ -2491,12 +2517,20 @@ wgpu::BindGroup Graphics::makeMeshBindGroup(GpuTexture* albedo, GpuTexture* norm
                          reinterpret_cast<uintptr_t>(probe0->view.Get()),
                          reinterpret_cast<uintptr_t>(probe1->view.Get()),
                          reinterpret_cast<uintptr_t>(c->view.Get()),
-                         reinterpret_cast<uintptr_t>(skinBuffer.Get())};
+                         reinterpret_cast<uintptr_t>(skinBuffer.Get()),
+                         reinterpret_cast<uintptr_t>(custom[0]->view.Get()),
+                         reinterpret_cast<uintptr_t>(custom[0]->sampler.Get()),
+                         reinterpret_cast<uintptr_t>(custom[1]->view.Get()),
+                         reinterpret_cast<uintptr_t>(custom[1]->sampler.Get()),
+                         reinterpret_cast<uintptr_t>(custom[2]->view.Get()),
+                         reinterpret_cast<uintptr_t>(custom[2]->sampler.Get()),
+                         reinterpret_cast<uintptr_t>(custom[3]->view.Get()),
+                         reinterpret_cast<uintptr_t>(custom[3]->sampler.Get())};
     auto cached = meshBindGroupCache_.find(key);
     if (cached != meshBindGroupCache_.end()) return cached->second;
     if (meshBindGroupCache_.size() >= kMaxMeshBindGroupCache) meshBindGroupCache_.clear();
 
-    WGPUBindGroupEntry entries[21]{};
+    WGPUBindGroupEntry entries[29]{};
     entries[0].binding = 0;
     entries[0].buffer = currentUboArena().buffer.Get();
     entries[0].size = sizeof(Mesh3DUBO);
@@ -2548,13 +2582,19 @@ wgpu::BindGroup Graphics::makeMeshBindGroup(GpuTexture* albedo, GpuTexture* norm
     entries[20].binding = 21;
     entries[20].buffer  = skinBuffer.Get();
     entries[20].size    = skinBuffer.GetSize();
+    for (uint32_t slot = 0; slot < custom.size(); ++slot) {
+        entries[21 + slot * 2].binding     = 22 + slot * 2;
+        entries[21 + slot * 2].textureView = custom[slot]->view.Get();
+        entries[22 + slot * 2].binding     = 23 + slot * 2;
+        entries[22 + slot * 2].sampler     = custom[slot]->sampler.Get();
+    }
     (void)frameUboOffset;
     (void)shadowUboOffset;
     (void)pushUboOffset;
     WGPUBindGroupDescriptor desc{};
     desc.label = sv("eve_mesh_group");
     desc.layout = mesh3dSetLayout.Get();
-    desc.entryCount = 21;
+    desc.entryCount = 29;
     desc.entries = entries;
     wgpu::BindGroup bg =
         device.CreateBindGroup(reinterpret_cast<const wgpu::BindGroupDescriptor*>(&desc));
@@ -3629,6 +3669,7 @@ void Graphics::end3DFrameToCanvas() {
                 canvas->isHDR() ? WGPUTextureFormat_RGBA16Float
                                 : WGPUTextureFormat_RGBA8Unorm,
                 true);
+    flushGpuDrivenDraws(pass, /*canvasTarget*/ true, canvas->isHDR());
     flushPrimitive3D(pass, canvas->isHDR() ? WGPUTextureFormat_RGBA16Float : WGPUTextureFormat_RGBA8Unorm, 1);
     pass.End();
     if (timestampSlot) {
@@ -3701,8 +3742,18 @@ void Graphics::drawMeshShader(Mesh *mesh, const glm::mat4 &model, Texture *textu
     d.depthWrite     = mesh3dSurfaceDepthWrite;
     d.doubleSided    = mesh3dSurfaceDoubleSided;
     d.shadowReceive  = mesh3dShadowReceive;
+    d.metallic       = mesh3dMetallic;
+    d.roughness      = mesh3dRoughness;
+    d.viewProj       = mesh3dViewProj;
+    d.view           = mesh3dView;
+    d.cameraPos      = mesh3dCameraPos;
+    d.lighting       = mesh3dLighting;
+    d.shadows        = mesh3dShadows;
+    d.environment    = mesh3dEnvTexture;
+    d.environmentIntensity = mesh3dEnvIntensity;
     d.alphaCutoff    = mesh3dAlphaCutoff;
     d.alphaTechnique = mesh3dAlphaTechnique;
+    d.pbrSurface     = mesh3dPbrSurface;
     mesh3dDraws.push_back(d);
 }
 
@@ -3834,21 +3885,23 @@ void Graphics::beginShadowPass(int cascadeIndex) {
     shadowPassDraws.clear();
 }
 
-void Graphics::drawMeshShadow(Mesh *mesh, const glm::mat4 &lightMVP) {
+void Graphics::drawMeshShadow(Mesh *mesh, const glm::mat4 &lightMVP, PbrCullMode cullMode) {
     if (!mesh || !mesh->gpuHandle) return;
     ShadowDraw d;
     d.mesh = mesh;
     d.mvp = lightMVP;
+    d.cullMode = cullMode;
     shadowPassDraws.push_back(d);
 }
 
-void Graphics::drawMeshShadowAlpha(Mesh *mesh, const glm::mat4 &lightMVP, Texture *albedo) {
+void Graphics::drawMeshShadowAlpha(Mesh *mesh, const glm::mat4 &lightMVP, Texture *albedo, PbrCullMode cullMode) {
     if (!mesh || !mesh->gpuHandle) return;
     ShadowDraw d;
     d.mesh = mesh;
     d.albedo = albedo;
     d.mvp = lightMVP;
     d.alphaTest = true;
+    d.cullMode  = cullMode;
     shadowPassDraws.push_back(d);
 }
 
@@ -3875,13 +3928,14 @@ void Graphics::beginGBufferPass(int width, int height) {
     gbufferPassDraws.clear();
 }
 
-void Graphics::drawMeshGBuffer(Mesh *mesh, const glm::mat4 &mvp, const glm::mat4 &model, float nearZ,
-                               float farZ, Texture *albedo, float tintR, float tintG, float tintB,
-                               float motionX, float motionY, float roughness, float metallic) {
+void Graphics::drawMeshGBuffer(Mesh *mesh, const glm::mat4 &mvp, const glm::mat4 &model, float nearZ, float farZ,
+                               Texture *albedo, float tintR, float tintG, float tintB, float motionX, float motionY,
+                               float roughness, float metallic, PbrCullMode cullMode) {
     if (!mesh || !mesh->gpuHandle) return;
     GbufferDraw d;
     d.mesh = mesh;
     d.albedo = albedo;
+    d.cullMode  = cullMode;
     d.mvp = mvp;
     d.model = model;
     d.nearZ = nearZ;
@@ -3893,10 +3947,9 @@ void Graphics::drawMeshGBuffer(Mesh *mesh, const glm::mat4 &mvp, const glm::mat4
     gbufferPassDraws.push_back(d);
 }
 
-void Graphics::drawMeshGBufferAlpha(Mesh *mesh, const glm::mat4 &mvp, const glm::mat4 &model,
-                                    float nearZ, float farZ, Texture *albedo, float tintR,
-                                    float tintG, float tintB, float motionX, float motionY,
-                                    float roughness, float metallic) {
+void Graphics::drawMeshGBufferAlpha(Mesh *mesh, const glm::mat4 &mvp, const glm::mat4 &model, float nearZ, float farZ,
+                                    Texture *albedo, float tintR, float tintG, float tintB, float motionX,
+                                    float motionY, float roughness, float metallic, PbrCullMode cullMode) {
     if (!mesh || !mesh->gpuHandle) return;
     GbufferDraw d;
     d.mesh = mesh;
@@ -3910,6 +3963,7 @@ void Graphics::drawMeshGBufferAlpha(Mesh *mesh, const glm::mat4 &mvp, const glm:
     d.roughness = roughness;
     d.metallic = metallic;
     d.alphaTest = true;
+    d.cullMode  = cullMode;
     gbufferPassDraws.push_back(d);
 }
 
@@ -4144,6 +4198,10 @@ void Graphics::createSceneColorResources(int width, int height) {
         gpuDrivenCullPipeline_ = {};
         gpuDrivenRenderPipeline_ = {};
         gpuDrivenCanvasPipeline_ = {};
+        gpuDrivenHdrCanvasPipeline_ = {};
+        gpuDrivenResidentRenderPipeline_ = {};
+        gpuDrivenResidentCanvasPipeline_ = {};
+        gpuDrivenResidentHdrCanvasPipeline_ = {};
         gpuDrivenComputePipelineLayout_ = {};
         gpuDrivenRenderPipelineLayout_ = {};
         gpuDrivenComputeSetLayout_ = {};
@@ -4482,6 +4540,8 @@ void Graphics::flushMesh3D(wgpu::RenderPassEncoder pass, WGPUTextureFormat forma
         // Canvas targets are 1-sample; scene pipelines follow the active MSAA
         // count. Both sets preserve the per-draw material raster state.
         const bool customShader = d.shader && d.shader->gpuHandle;
+        if (d.pbrSurface && !customShader && drawPbrMesh(pass, format, canvasTarget, d, *gpuMesh))
+            continue;
         wgpu::RenderPipeline pipe;
         if (d.shader && d.shader->gpuHandle) {
             auto *gs = static_cast<GpuShader *>(d.shader->gpuHandle);
@@ -4523,7 +4583,7 @@ void Graphics::flushMesh3D(wgpu::RenderPassEncoder pass, WGPUTextureFormat forma
             pass.SetBindGroup(0, bg, 2, offsets);
         } else {
             bg = makeMeshBindGroup(albedo, normal, env, height, depth, sceneColor, d.frameUboOffset, d.shadowUboOffset,
-                                   d.pushUboOffset, d.skinBuffer);
+                                   d.pushUboOffset, d.skinBuffer, d.shader);
             offsets[0] = d.frameUboOffset;
             offsets[1] = d.shadowUboOffset;
             offsets[2] = d.pushUboOffset;
@@ -4549,13 +4609,14 @@ void Graphics::flushMesh3D(wgpu::RenderPassEncoder pass, WGPUTextureFormat forma
 void Graphics::flushShadowPass(wgpu::RenderPassEncoder pass, int cascade) {
     auto &uboArena = currentUboArena();
     if (cascade < 0 || cascade >= ShadowConfig::kCascades) return;
-    if (!mesh3dShadowPipeline) createShadowPipelines();
+    if (!mesh3dShadowPipelines[0]) createShadowPipelines();
     ensureUboArena(uboArena, uboArena.used + shadowCascadeDraws[cascade].size() * 256);
     for (auto &d : shadowCascadeDraws[cascade]) {
         auto *gpuMesh = static_cast<GpuMesh *>(d.mesh->gpuHandle);
         if (!gpuMesh || !gpuMesh->vertexBuffer) continue;
 
-        pass.SetPipeline(d.alphaTest ? mesh3dShadowAlphaPipeline : mesh3dShadowPipeline);
+        const size_t cullIndex = d.cullMode == PbrCullMode::Back ? 1u : d.cullMode == PbrCullMode::Front ? 2u : 0u;
+        pass.SetPipeline(d.alphaTest ? mesh3dShadowAlphaPipelines[cullIndex] : mesh3dShadowPipelines[cullIndex]);
 
         SkinPassUBO ubo;
         ubo.mvp = d.mvp;
@@ -4604,14 +4665,15 @@ void Graphics::flushShadowPass(wgpu::RenderPassEncoder pass, int cascade) {
 
 void Graphics::flushGbufferPass(wgpu::RenderPassEncoder pass) {
     if (gbufferPassDraws.empty() || gbufferSlots.empty()) return;
-    if (!mesh3dGbufferPipeline) createGbufferPipelines();
+    if (!mesh3dGbufferPipelines[0]) createGbufferPipelines();
     auto &uboArena = currentUboArena();
     ensureUboArena(uboArena, uboArena.used + gbufferPassDraws.size() * 256);
     for (auto &d : gbufferPassDraws) {
         auto *gpuMesh = static_cast<GpuMesh *>(d.mesh->gpuHandle);
         if (!gpuMesh || !gpuMesh->vertexBuffer) continue;
 
-        pass.SetPipeline(d.alphaTest ? mesh3dGbufferAlphaPipeline : mesh3dGbufferPipeline);
+        const size_t cullIndex = d.cullMode == PbrCullMode::Back ? 1u : d.cullMode == PbrCullMode::Front ? 2u : 0u;
+        pass.SetPipeline(d.alphaTest ? mesh3dGbufferAlphaPipelines[cullIndex] : mesh3dGbufferPipelines[cullIndex]);
 
         SkinPassUBO ubo;
         ubo.mvp = d.mvp;
@@ -5011,9 +5073,11 @@ void Graphics::present() {
             // Voxel draws are not expected on the canvas path (voxel module is
             // trimmed from the web build), and its pipeline follows the scene
             // sample count which would mismatch the 1x canvas attachment.
-            flushMesh3D(pass, WGPUTextureFormat_RGBA8Unorm, /*canvasTarget*/ true);
-            flushGpuDrivenDraws(pass, /*canvasTarget*/ true);
-            flushPrimitive3D(pass, WGPUTextureFormat_RGBA8Unorm, 1);
+            const WGPUTextureFormat canvasFormat =
+                oc->isHDR() ? WGPUTextureFormat_RGBA16Float : WGPUTextureFormat_RGBA8Unorm;
+            flushMesh3D(pass, canvasFormat, /*canvasTarget*/ true);
+            flushGpuDrivenDraws(pass, /*canvasTarget*/ true, oc->isHDR());
+            flushPrimitive3D(pass, canvasFormat, 1);
             pass.End();
             oc->clearRequested = false;
             // The script draws the canvas texture explicitly (2D path); it is

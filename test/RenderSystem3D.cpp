@@ -287,6 +287,95 @@ TEST_CASE("RenderSystem3D.smokeRotatingCube") {
     win->close();
 }
 
+TEST_CASE("RenderSystem3D.forwardContributorRunsInMainPassAndUnregisters") {
+    eve::window::Window *win = nullptr;
+    Graphics            *gfx = nullptr;
+    openGfxWindow(win, gfx, 64, 64);
+    resetScene3D();
+
+    auto *cam         = Camera3D::createCamera();
+    cam->data()->eyeZ = 3.f;
+    int calls         = 0;
+    const uint64_t token = RenderSystem3D::addForwardExtraDrawer(
+        [&](Graphics &, const Camera3D::Data &seen, const glm::mat4 &, float aspect) {
+            ++calls;
+            CHECK(&seen == cam->data().operator->());
+            CHECK_GT(aspect, 0.f);
+        });
+    REQUIRE_NE(token, 0u);
+
+    RenderSystem3D::render(*gfx);
+    gfx->present();
+    CHECK_EQ(calls, 1);
+
+    RenderSystem3D::removeForwardExtraDrawer(token);
+    RenderSystem3D::render(*gfx);
+    gfx->present();
+    CHECK_EQ(calls, 1);
+
+    win->close();
+}
+
+TEST_CASE("RenderSystem3D.gpuOpaqueCollectorRunsBeforeCullAndUnregisters") {
+    eve::window::Window *win = nullptr;
+    Graphics            *gfx = nullptr;
+    openGfxWindow(win, gfx, 64, 64);
+    resetScene3D();
+
+    auto *cam         = Camera3D::createCamera();
+    cam->data()->eyeZ = 3.f;
+    int calls         = 0;
+    const uint64_t token = RenderSystem3D::addGpuOpaqueCollector(
+        [&](Graphics &, const Camera3D::Data &seen, const glm::mat4 &, float aspect,
+            std::vector<GpuInstance> &instances) {
+            ++calls;
+            CHECK(&seen == cam->data().operator->());
+            CHECK_GT(aspect, 0.f);
+            CHECK(instances.empty());
+        });
+    REQUIRE_NE(token, 0u);
+
+    RenderSystem3D::render(*gfx);
+    gfx->present();
+    CHECK_EQ(calls, 1);
+
+    RenderSystem3D::removeGpuOpaqueCollector(token);
+    RenderSystem3D::render(*gfx);
+    gfx->present();
+    CHECK_EQ(calls, 1);
+
+    win->close();
+}
+
+TEST_CASE("RenderSystem3D.shadowContributorRunsInCascadesAndUnregisters") {
+    eve::window::Window *win = nullptr;
+    Graphics            *gfx = nullptr;
+    openGfxWindow(win, gfx, 64, 64);
+    resetScene3D();
+
+    auto *cam         = Camera3D::createCamera();
+    cam->data()->eyeZ = 3.f;
+    int calls         = 0;
+    const uint64_t token = RenderSystem3D::addShadowExtraDrawer(
+        [&](Graphics &, const glm::mat4 &, const Camera3D::Data &seen) {
+            ++calls;
+            CHECK(&seen == cam->data().operator->());
+        });
+    REQUIRE_NE(token, 0u);
+
+    RenderSystem3D::render(*gfx);
+    gfx->present();
+    REQUIRE_GT(calls, 0);
+    const int registeredCalls = calls;
+
+    RenderSystem3D::removeShadowExtraDrawer(token);
+    RenderSystem3D::render(*gfx);
+    gfx->present();
+    CHECK_EQ(calls, registeredCalls);
+
+    win->close();
+}
+
 TEST_CASE("RenderSystem3D.dynamicVertexRingTracksLatestUpdate") {
     // P1-2 regression: updateMeshVertices now writes into a per-frame ring of
     // host-visible vertex buffers instead of waiting on all in-flight frames.

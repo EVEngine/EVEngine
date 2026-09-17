@@ -21,6 +21,7 @@
 #include <atomic>
 #include <map>
 #include <memory>
+#include <optional>
 #include <tuple>
 #include <unordered_map>
 #include <vector>
@@ -33,6 +34,8 @@
 #include <glm/vec4.hpp>
 
 namespace eve::graphics::webgpu {
+
+struct PbrVariantSources;
 
 class OffscreenCanvas;
 
@@ -125,6 +128,8 @@ struct GpuTexture {
     // height at 6). Rebuilt when the mesh3d pipeline re-creates its layout.
     wgpu::BindGroup meshGroup;
     bool isCube = false;
+    bool isArray = false;
+    bool isVolume = false;
     bool isHDR = false;
     int width = 0;
     int height = 0;
@@ -189,6 +194,7 @@ public:
     uint32_t gpuDrivenMeshRecord(Mesh *mesh) override;
     uint32_t gpuDrivenMaterialRecord(Material *material) override;
     bool gpuDrivenMaterialUsable(Material *material) override;
+    [[nodiscard]] Result<void> gpuDrivenReleaseMaterialRecord(Material *material) override;
     bool gpuDrivenSubmitOpaque(const GpuInstance *instances, uint32_t instanceCount) override;
     GpuResidentSubmitStatus gpuDrivenSubmitResident(const GpuResidentInstanceBatch &batch) override;
     bool gpuDrivenCullEnabled() const override { return gpuDrivenEnabled_; }
@@ -228,6 +234,12 @@ public:
     }
     /** @brief Read back the last VG indirect instance total (native tests). */
     uint32_t debugGpuDrivenVgGpuVisibleCount();
+    /** @brief Compile the generated full PBR WGSL stages under a validation scope. */
+    [[nodiscard]] Result<void> debugValidatePbrVariantBaseSources();
+    /** @brief Compile caller-provided PBR WGSL stages under a validation scope. */
+    [[nodiscard]] Result<void> debugValidatePbrVariantSources(const PbrVariantSources& sources);
+    /** @brief Compile and link a specialized PBR pair through a real Dawn render pipeline. */
+    [[nodiscard]] Result<void> debugValidatePbrVariantPipeline(const PbrVariantSources& sources);
 
     void initHeadless(int width, int height) override;
     void initWithWindow(void *nativeWindow) override;
@@ -250,6 +262,17 @@ public:
                         bool repeatV = false) override;
     Texture *newTexture(int width, int height, const uint8_t *rgba,
                         const TextureCreateInfo &info) override;
+#if !defined(__EMSCRIPTEN__)
+    /** @copydoc IResourceFactory::newTextureMipChain */
+    [[nodiscard]] Result<Texture *> newTextureMipChain(uint32_t width, uint32_t height, uint32_t levels,
+                                                       std::span<const uint8_t> rgba) override;
+    /** @copydoc IResourceFactory::newTextureArrayRgba16f */
+    [[nodiscard]] Result<Texture *> newTextureArrayRgba16f(uint32_t width, uint32_t height, uint32_t layers,
+                                                           std::span<const uint16_t> rgbaHalf) override;
+    /** @copydoc IResourceFactory::newTexture3DRgba8 */
+    [[nodiscard]] Result<Texture *> newTexture3DRgba8(uint32_t width, uint32_t height, uint32_t depth,
+                                                      std::span<const uint8_t> rgba) override;
+#endif
     Texture *newCubemap(int faceSize, const uint8_t *rgbaFaces) override;
     Texture *newCubemap(int faceSize, const uint8_t *rgbaFaces,
                         const TextureCreateInfo &info) override;
@@ -376,6 +399,7 @@ public:
     void     setMesh3DSceneColor(Texture *color) override;
     [[nodiscard]] Mesh3DSceneColorCaptureStatus captureMesh3DSceneColor() override;
     void     setMesh3DMaterial(float metallic, float roughness) override;
+    [[nodiscard]] Result<void> setMesh3DPbrSurface(const PbrSurface* surface) override;
     void     setMesh3DSurface(SurfaceMode mode, BlendMode blend, bool depthWrite,
                               bool doubleSided, float alphaCutoff,
                               const std::string &alphaTechnique = "cutoff") override;
@@ -411,20 +435,20 @@ public:
     void setMesh3DShadows(const ShadowUpload &upload) override;
     void setMesh3DShadowReceive(bool receive) override;
     void beginShadowPass(int cascadeIndex) override;
-    void drawMeshShadow(Mesh *mesh, const glm::mat4 &lightMVP) override;
-    void drawMeshShadowAlpha(Mesh *mesh, const glm::mat4 &lightMVP, Texture *albedo = nullptr) override;
+    void  drawMeshShadow(Mesh *mesh, const glm::mat4 &lightMVP, PbrCullMode cullMode = PbrCullMode::None) override;
+    void  drawMeshShadowAlpha(Mesh *mesh, const glm::mat4 &lightMVP, Texture *albedo = nullptr,
+                              PbrCullMode cullMode = PbrCullMode::None) override;
     void endShadowPass() override;
 
     void beginGBufferPass(int width, int height) override;
-    void drawMeshGBuffer(Mesh *mesh, const glm::mat4 &mvp, const glm::mat4 &model, float nearZ,
-                         float farZ, Texture *albedo = nullptr, float tintR = 1.f, float tintG = 1.f,
-                         float tintB = 1.f, float motionX = 0.f, float motionY = 0.f,
-                         float roughness = 0.45f, float metallic = 0.f) override;
-    void drawMeshGBufferAlpha(Mesh *mesh, const glm::mat4 &mvp, const glm::mat4 &model,
-                              float nearZ, float farZ, Texture *albedo = nullptr, float tintR = 1.f,
-                              float tintG = 1.f, float tintB = 1.f, float motionX = 0.f,
-                              float motionY = 0.f, float roughness = 0.45f,
-                              float metallic = 0.f) override;
+    void drawMeshGBuffer(Mesh *mesh, const glm::mat4 &mvp, const glm::mat4 &model, float nearZ, float farZ,
+                         Texture *albedo = nullptr, float tintR = 1.f, float tintG = 1.f, float tintB = 1.f,
+                         float motionX = 0.f, float motionY = 0.f, float roughness = 0.45f, float metallic = 0.f,
+                         PbrCullMode cullMode = PbrCullMode::None) override;
+    void drawMeshGBufferAlpha(Mesh *mesh, const glm::mat4 &mvp, const glm::mat4 &model, float nearZ, float farZ,
+                              Texture *albedo = nullptr, float tintR = 1.f, float tintG = 1.f, float tintB = 1.f,
+                              float motionX = 0.f, float motionY = 0.f, float roughness = 0.45f, float metallic = 0.f,
+                              PbrCullMode cullMode = PbrCullMode::None) override;
     void endGBufferPass() override;
     image::ImageData *readGBufferToImageData(const std::string &attachment) override;
 
@@ -515,8 +539,18 @@ private:
         bool depthWrite = false;
         bool doubleSided = false;
         bool shadowReceive = true;
+        float metallic = 0.f;
+        float roughness = 1.f;
+        glm::mat4 viewProj{1.f};
+        glm::mat4 view{1.f};
+        glm::vec3 cameraPos{};
+        Lighting3DPack lighting{};
+        ShadowUpload shadows{};
+        Texture* environment = nullptr;
+        float environmentIntensity = 0.f;
         float alphaCutoff = 0.5f;
         std::string alphaTechnique = "cutoff";
+        std::optional<PbrSurface> pbrSurface;
         wgpu::Buffer skinBuffer;
         uint32_t frameUboOffset = 0;
         uint32_t pushUboOffset = 0;
@@ -528,6 +562,7 @@ private:
         Texture *albedo = nullptr;
         glm::mat4 mvp{1.f};
         bool alphaTest = false;
+        PbrCullMode cullMode  = PbrCullMode::None;
     };
     struct GbufferDraw {
         Mesh *mesh = nullptr;
@@ -541,6 +576,7 @@ private:
         float roughness = 0.45f;
         float metallic = 0.f;
         bool alphaTest = false;
+        PbrCullMode cullMode      = PbrCullMode::None;
         uint32_t pushUboOffset = 0;
     };
     struct VoxelDraw {
@@ -581,7 +617,7 @@ private:
     void createVoxelPipelines();
     void ensureGpuDrivenResources(uint32_t instanceCount, uint32_t bucketCount);
     void recordGpuDrivenCompute(wgpu::CommandEncoder encoder);
-    void flushGpuDrivenDraws(wgpu::RenderPassEncoder pass, bool canvasTarget);
+    void flushGpuDrivenDraws(wgpu::RenderPassEncoder pass, bool canvasTarget, bool hdrCanvas = false);
     void ensureGpuDrivenVisibilityResources();
     void recordGpuDrivenVisibility(wgpu::CommandEncoder encoder);
     void flushGpuDrivenResolve(wgpu::RenderPassEncoder pass);
@@ -622,9 +658,10 @@ private:
     wgpu::BindGroup makeTex2DBindGroup(GpuTexture *color, GpuTexture *depth,
                                        GpuTexture *motion = nullptr, GpuTexture *extra = nullptr,
                                        GpuTexture *specular = nullptr);
-    wgpu::BindGroup makeMeshBindGroup(GpuTexture* albedo, GpuTexture* normal, GpuTexture* env, GpuTexture* height,
-                                      GpuTexture* depth, GpuTexture* sceneColor, uint32_t frameUboOffset,
-                                      uint32_t shadowUboOffset, uint32_t pushUboOffset, const wgpu::Buffer& skinBuffer);
+    wgpu::BindGroup makeMeshBindGroup(GpuTexture *albedo, GpuTexture *normal, GpuTexture *env, GpuTexture *height,
+                                      GpuTexture *depth, GpuTexture *sceneColor, uint32_t frameUboOffset,
+                                      uint32_t shadowUboOffset, uint32_t pushUboOffset, const wgpu::Buffer &skinBuffer,
+                                      const Shader *shader = nullptr);
     wgpu::BindGroup makeMesh3DClusteredBindGroup(GpuTexture *albedo, GpuTexture *normal,
                                                  GpuTexture *env, GpuTexture *height,
                                                  GpuTexture *depth, wgpu::TextureView aoView,
@@ -643,6 +680,8 @@ private:
                       WGPUTextureFormat format);
     void flushMesh3D(wgpu::RenderPassEncoder pass, WGPUTextureFormat format,
                      bool canvasTarget = false);
+    bool drawPbrMesh(wgpu::RenderPassEncoder pass, WGPUTextureFormat format, bool canvasTarget,
+                     Mesh3dDraw& draw, GpuMesh& mesh);
     void                 flushPrimitive3D(wgpu::RenderPassEncoder pass, WGPUTextureFormat format, uint32_t sampleCount);
     wgpu::RenderPipeline getPrimitive3DPipeline(PrimitiveDepthMode depth, BlendMode blend, PrimitiveCullMode cull,
                                                 WGPUTextureFormat format, uint32_t sampleCount);
@@ -805,10 +844,10 @@ private:
     static constexpr size_t kMeshPipelineVariants = 20;
     std::array<wgpu::RenderPipeline, kMeshPipelineVariants> mesh3dPipelines;
     std::array<wgpu::RenderPipeline, kMeshPipelineVariants> mesh3dCanvasPipelines;
-    wgpu::RenderPipeline mesh3dShadowPipeline;
-    wgpu::RenderPipeline mesh3dShadowAlphaPipeline;
-    wgpu::RenderPipeline mesh3dGbufferPipeline;
-    wgpu::RenderPipeline mesh3dGbufferAlphaPipeline;
+    std::array<wgpu::RenderPipeline, 3>                     mesh3dShadowPipelines;
+    std::array<wgpu::RenderPipeline, 3>                     mesh3dShadowAlphaPipelines;
+    std::array<wgpu::RenderPipeline, 3>                     mesh3dGbufferPipelines;
+    std::array<wgpu::RenderPipeline, 3>                     mesh3dGbufferAlphaPipelines;
     wgpu::RenderPipeline decalPipeline;
     wgpu::RenderPipeline voxelRectPipeline;
     wgpu::RenderPipeline lit2dPipeline;
@@ -921,6 +960,10 @@ private:
     glm::vec3 mesh3dCameraPos{0.f, 0.f, 3.f};
     bool frameHad3DThisFrame = false;
     std::vector<Mesh3dDraw> mesh3dDraws;
+    std::optional<PbrSurface> mesh3dPbrSurface;
+    struct PbrResources;
+    static void deletePbrResources(PbrResources* resources);
+    std::unique_ptr<PbrResources, void (*)(PbrResources*)> pbrResources_{nullptr, &deletePbrResources};
     Color clearColor{0.1f, 0.1f, 0.12f, 1.f};
     bool hasPendingClear = true;
 
@@ -1032,6 +1075,7 @@ private:
     bool gpuDrivenEnabled_ = false;
     std::vector<Mesh *> gpuDrivenMeshes_;
     std::vector<Material *> gpuDrivenMaterials_;
+    std::vector<uint32_t> gpuDrivenMaterialFree_;
     std::unordered_map<Mesh *, uint32_t> gpuDrivenMeshIds_;
     std::unordered_map<Material *, uint32_t> gpuDrivenMaterialIds_;
     std::vector<GpuInstance> gpuDrivenPending_;
@@ -1061,8 +1105,10 @@ private:
     uint64_t gpuDrivenHzbCapacity_ = 0;
     wgpu::RenderPipeline gpuDrivenRenderPipeline_;
     wgpu::RenderPipeline gpuDrivenCanvasPipeline_;
+    wgpu::RenderPipeline gpuDrivenHdrCanvasPipeline_;
     wgpu::RenderPipeline         gpuDrivenResidentRenderPipeline_;
     wgpu::RenderPipeline         gpuDrivenResidentCanvasPipeline_;
+    wgpu::RenderPipeline         gpuDrivenResidentHdrCanvasPipeline_;
     wgpu::Buffer gpuDrivenParamsBuffer_;
     wgpu::Buffer gpuDrivenInputBuffer_;
     wgpu::Buffer gpuDrivenVisibleBuffer_;
@@ -1140,7 +1186,8 @@ private:
     // in-flight slot's UBO arena.
     using MeshBindGroupKey =
         std::tuple<uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t,
-                   uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t>;
+                   uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t,
+                   uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t, uintptr_t>;
     std::map<MeshBindGroupKey, wgpu::BindGroup> meshBindGroupCache_;
     static constexpr size_t kMaxMeshBindGroupCache = 128;
     void clearMeshBindGroupCache() { meshBindGroupCache_.clear(); }

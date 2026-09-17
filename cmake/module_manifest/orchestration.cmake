@@ -226,7 +226,7 @@ eve_declare_module(NAME pixelworld_editor LAYER 6 SCRIPT PixelWorldEditorModule 
                    GROUP 2d 3d web)
 # Runtime bridge from capability-selected packages into executable PointGraphs.
 eve_declare_module(NAME asset_procgen LAYER 6
-                   DEPS asset procgen
+                   DEPS asset asset_graphics graphics procgen
                    GROUP 3d)
 eve_declare_module(NAME snow LAYER 6 SCRIPT Snow SLOT snow
                    DEPS graphics procgen

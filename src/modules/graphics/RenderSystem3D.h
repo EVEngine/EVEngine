@@ -9,6 +9,7 @@
 #include <array>
 #include <cstdint>
 #include <string>
+#include <vector>
 
 namespace eve::graphics {
 
@@ -17,6 +18,7 @@ class Graphics;
 class Mesh;
 class Shader;
 class Texture;
+struct GpuInstance;
 
 class Camera3D : public ecs::Entity {
 public:
@@ -403,6 +405,52 @@ public:
     static void removeCaptureExtraDrawer(uint64_t token);
 
     /**
+     * @brief Draw custom opaque forward geometry after the scene pass is open.
+     * @param gfx Graphics backend receiving draw submissions.
+     * @param cam Active default camera; borrowed for this callback only.
+     * @param viewProj Active camera view-projection matrix.
+     * @param aspect Active render-target aspect ratio.
+     * @thread Register, unregister and invoke on the graphics thread.
+     * @reentrancy The callback must not mutate this contributor registry.
+     */
+    using ForwardExtraDrawer =
+        std::function<void(Graphics &gfx, const Camera3D::Data &cam,
+                           const glm::mat4 &viewProj, float aspect)>;
+
+    /**
+     * @brief Register opaque geometry outside the Renderable3D ECS for the main forward pass.
+     * @return Non-zero token accepted by removeForwardExtraDrawer, or zero for an empty callback.
+     */
+    static uint64_t addForwardExtraDrawer(ForwardExtraDrawer drawer);
+
+    /** @brief Unregister a main forward-pass contributor. Zero is ignored. */
+    static void removeForwardExtraDrawer(uint64_t token);
+
+    /**
+     * @brief Append opaque instances before the GPU-driven cull and resolve stages.
+     * @param gfx Graphics backend receiving the eventual instance batch.
+     * @param cam Active default camera; borrowed for this callback only.
+     * @param viewProj Active camera view-projection matrix.
+     * @param aspect Active render-target aspect ratio.
+     * @param instances Frame-local destination; appended records are copied by the backend.
+     * @thread Register, unregister and invoke on the graphics thread.
+     * @reentrancy The callback must not mutate this contributor registry.
+     */
+    using GpuOpaqueCollector =
+        std::function<void(Graphics &gfx, const Camera3D::Data &cam,
+                           const glm::mat4 &viewProj, float aspect,
+                           std::vector<GpuInstance> &instances)>;
+
+    /**
+     * @brief Register geometry that participates in the normal GPU-driven opaque pipeline.
+     * @return Non-zero token accepted by removeGpuOpaqueCollector, or zero for an empty callback.
+     */
+    static uint64_t addGpuOpaqueCollector(GpuOpaqueCollector collector);
+
+    /** @brief Unregister a GPU-driven opaque contributor. Zero is ignored. */
+    static void removeGpuOpaqueCollector(uint64_t token);
+
+    /**
      * @brief Register a callback that fills the G-buffer (depth/normal/albedo) for
      * geometry outside the Renderable3D ECS (e.g. sprite-stack slices). Called
      * inside the GBuffer pass after opaque meshes, before endGBufferPass.
@@ -431,11 +479,19 @@ public:
      * gfx.drawMeshShadowAlpha(...) / drawMeshShadow(...) there. When no Light3D
      * casts shadows but drawers are registered, the legacy directional light is
      * used as the shadow source.
+     * @thread Register, unregister and invoke on the graphics thread.
+     * @reentrancy The callback must not mutate this contributor registry.
      */
     using ShadowExtraDrawer =
         std::function<void(Graphics &gfx, const glm::mat4 &lightVP,
                            const Camera3D::Data &cam)>;
-    static void addShadowExtraDrawer(ShadowExtraDrawer drawer);
+    /** @brief Register a non-ECS shadow caster.
+     * @return Non-zero token accepted by removeShadowExtraDrawer, or zero for an empty callback.
+     */
+    static uint64_t addShadowExtraDrawer(ShadowExtraDrawer drawer);
+
+    /** @brief Unregister a non-ECS shadow caster. Zero is ignored. */
+    static void removeShadowExtraDrawer(uint64_t token);
 
     /** @brief Legacy single directional light used when no enabled Light3D exists. */
     static void setDirectionalLight(float dx, float dy, float dz, float r, float g, float b);

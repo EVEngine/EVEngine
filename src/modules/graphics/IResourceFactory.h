@@ -6,8 +6,10 @@
 // graphics::Graphics god class.
 
 #include <cstdint>
+#include <span>
 #include <string>
 #include <vector>
+#include "common/Result.h"
 
 #include <assimp/matrix4x4.h>
 
@@ -40,6 +42,64 @@ public:
                                 bool repeatV = false) = 0;
     virtual Texture *newTexture(int width, int height, const uint8_t *rgba,
                                 const TextureCreateInfo &info) = 0;
+    /** @brief Upload complete explicit linear RGBA8 mips without regenerating pixels.
+     * @param width Positive base width.
+     * @param height Positive base height.
+     * @param levels Full halving chain through 1x1, clamping each dimension to one.
+     * @param rgba Borrowed tightly packed top-down levels in increasing LOD order; not retained.
+     * @return Failure without publication or a factory-owned texture; default is Unsupported.
+     * @lifetime Until shutdown or releaseTexture; successful release transfers the CPU facade.
+     * @thread Graphics thread only, synchronous, non-reentrant and without callbacks.
+     */
+    [[nodiscard]] virtual Result<Texture *> newTextureMipChain(uint32_t width, uint32_t height, uint32_t levels,
+                                                               std::span<const uint8_t> rgba) {
+        (void)width;
+        (void)height;
+        (void)levels;
+        (void)rgba;
+        return Result<Texture *>::failure(Diagnostic::error(DiagnosticCode::Unsupported,
+                                                            "explicit texture mip upload is unavailable", {}, {},
+                                                            "graphics.texture.mips"));
+    }
+    /** @brief Upload a sampled 2D array of tightly packed linear RGBA16F texels.
+     * @param rgbaHalf IEEE-754
+     * binary16 channel bits, layer-major and row-major within each layer; borrowed for call.
+     * @return Failure
+     * without publication or a factory-owned texture. Unsupported is explicit on absent providers.
+     * @thread
+     * Graphics thread only, synchronous, non-reentrant and without callbacks.
+     */
+    [[nodiscard]] virtual Result<Texture *> newTextureArrayRgba16f(uint32_t width, uint32_t height, uint32_t layers,
+                                                                   std::span<const uint16_t> rgbaHalf) {
+        (void)width;
+        (void)height;
+        (void)layers;
+        (void)rgbaHalf;
+        return Result<Texture *>::failure(Diagnostic::error(
+            DiagnosticCode::Unsupported, "RGBA16F texture arrays are unavailable", {}, {}, "graphics.texture.array"));
+    }
+    /** @brief Upload one tightly packed linear RGBA8 3D sampled texture.
+     * @param width Positive X extent.
+     *
+     * @param height Positive Y extent.
+     * @param depth Positive Z extent.
+     * @param rgba Borrowed Z-major
+     * slices, each row-major RGBA8; not retained.
+     * @return Failure without publication or a factory-owned
+     * texture; default is Unsupported.
+     * @lifetime Until shutdown or releaseTexture; successful release transfers
+     * the CPU facade.
+     * @thread Graphics thread only, synchronous, non-reentrant and without callbacks.
+     */
+    [[nodiscard]] virtual Result<Texture *> newTexture3DRgba8(uint32_t width, uint32_t height, uint32_t depth,
+                                                              std::span<const uint8_t> rgba) {
+        (void)width;
+        (void)height;
+        (void)depth;
+        (void)rgba;
+        return Result<Texture *>::failure(Diagnostic::error(
+            DiagnosticCode::Unsupported, "RGBA8 3D textures are unavailable", {}, {}, "graphics.texture.volume"));
+    }
     virtual Texture *newCubemap(int faceSize, const uint8_t *rgbaFaces) = 0;
     virtual Texture *newCubemap(int faceSize, const uint8_t *rgbaFaces,
                                 const TextureCreateInfo &info) = 0;
