@@ -134,7 +134,7 @@ inline int dualGridMaskFromCorners(bool tl, bool tr, bool bl, bool br) {
 int dualGridDefaultFrame(int mask);
 
 /** @brief Copy of the default frame table (16 entries). */
-const std::array<int, 16>& dualGridDefaultFrameTable();
+const std::array<int, 16> &dualGridDefaultFrameTable();
 
 /**
  * @brief Half-step origin delta for the display layer (added to logic origin).
@@ -143,17 +143,17 @@ const std::array<int, 16>& dualGridDefaultFrameTable();
  * Staggered/Hex Y: (-tileW/2, -pitchY/2)
  * Staggered/Hex X: (-pitchX/2, -tileH/2)
  */
-void dualGridHalfOffset(const TileLayer::Config& cfg, float& offX, float& offY);
+void dualGridHalfOffset(const TileLayer::Config &cfg, float &offX, float &offY);
 
 /** @brief Whether logic cell (tx,ty) is filled under options. Out of bounds → false. */
-bool dualGridLogicFilled(TileLayer& logic, int tx, int ty, int filledGid);
+bool dualGridLogicFilled(TileLayer &logic, int tx, int ty, int filledGid);
 
 /**
  * @brief 4-bit corner mask for display cell (dx,dy) on a (logicW+1)×(logicH+1) grid.
  * Samples logic (dx-1,dy-1), (dx,dy-1), (dx-1,dy), (dx,dy) in index space
  * (orientation-independent topology).
  */
-int dualGridMaskAt(TileLayer& logic, int dx, int dy, int filledGid = 0);
+int dualGridMaskAt(TileLayer &logic, int dx, int dy, int filledGid = 0);
 
 /**
  * @brief Resolve logic → display dual-grid tiles.
@@ -162,9 +162,10 @@ int dualGridMaskAt(TileLayer& logic, int dx, int dy, int filledGid = 0);
  * origin offset, writes GIDs.
  * Returns false and sets error on invalid args.
  */
-bool resolveDualGrid(TileLayer* logic, TileLayer* display, const DualGridOptions& opts, std::string* error = nullptr);
+bool resolveDualGrid(TileLayer *logic, TileLayer *display, const DualGridOptions &opts,
+                     std::string *error = nullptr);
 
 /** @brief Convenience: any non-zero filled, default frame table, half offset, hide logic. */
-bool resolveDualGrid(TileLayer* logic, TileLayer* display, std::string* error = nullptr);
+bool resolveDualGrid(TileLayer *logic, TileLayer *display, std::string *error = nullptr);
 
 }  // namespace eve::map
