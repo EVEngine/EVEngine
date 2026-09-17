@@ -167,6 +167,33 @@ function ensurePrototypes() {
     if (!("bush" in mapPrototypes)) mapPrototypes.bush <- makePrototype("bush", 47);
     if (!("stone" in mapPrototypes)) mapPrototypes.stone <- makePrototype("stone", 71);
     if (!("cliff" in mapPrototypes)) mapPrototypes.cliff <- makePrototype("cliff", 97);
+    if (!("flowerRed" in mapPrototypes)) {
+        // Shared flower mesh; tinted materials for red / blue / white / yellow accents.
+        local paramsResult = procgen.newParams();
+        if (paramsResult.ok) {
+            local p = retain(paramsResult.value);
+            p.setSeed(mapSeed + 131);
+            p.setFloat("height", 0.68);
+            p.setFloat("petalLength", 0.26);
+            p.setFloat("petalWidth", 0.15);
+            p.setInt("petals", 6);
+            p.setFloat("openAngle", 70.0);
+            local meshResult = procgen.generateMesh("mesh.flower", p, gfx);
+            if (meshResult.ok) {
+                local mesh = retain(meshResult.value);
+                local surf = makeSurface("tex.flower", 150, 128);
+                local function flowerMat(tr, tg, tb) {
+                    local mat = makeDecorMaterial(surf.albedo, null, true, 0.28);
+                    if (mat != null) mat.setTint(tr, tg, tb, 1.0);
+                    return { mesh = mesh, material = mat };
+                }
+                mapPrototypes.flowerRed <- flowerMat(1.15, 0.28, 0.38);
+                mapPrototypes.flowerBlue <- flowerMat(0.38, 0.48, 1.15);
+                mapPrototypes.flowerWhite <- flowerMat(1.05, 1.02, 0.95);
+                mapPrototypes.flowerYellow <- flowerMat(1.15, 0.95, 0.22);
+            }
+        }
+    }
 }
 
 function placeDecor(proto, wx, wy, wz, sx, sy, sz, yaw) {
@@ -294,9 +321,26 @@ function scatterDecorations(heightmap, layers) {
                 if (biome == "rainforest") scale *= 1.2;
                 if (biome == "taiga") scale *= 0.85;
                 placeDecor(proto, wx, wy, wz, scale, scale, scale, yaw);
+                // Occasional flower near forest edge.
+                if (jitter > 0.78 && ("flowerWhite" in mapPrototypes)) {
+                    local fp = mapPrototypes.flowerWhite;
+                    if (chance > 0.55) fp = mapPrototypes.flowerYellow;
+                    placeDecor(fp, wx + 0.18, wy, wz - 0.12, 0.55 + jitter * 0.25,
+                               0.55 + jitter * 0.25, 0.55 + jitter * 0.25, yaw * 0.7);
+                }
             } else if ((biome == "grassland" || biome == "wetland") && chance < 0.36) {
                 local scale = 0.65 + jitter * 0.55;
                 placeDecor(mapPrototypes.bush, wx, wy, wz, scale, scale, scale, yaw);
+                if (("flowerRed" in mapPrototypes) && jitter > 0.45) {
+                    local pick = hash01(gx, gy, 53);
+                    local fp = mapPrototypes.flowerRed;
+                    if (pick > 0.75) fp = mapPrototypes.flowerBlue;
+                    else if (pick > 0.5) fp = mapPrototypes.flowerWhite;
+                    else if (pick > 0.25) fp = mapPrototypes.flowerYellow;
+                    local fs = 0.5 + jitter * 0.35;
+                    placeDecor(fp, wx + (pick - 0.5) * 0.35, wy, wz + (jitter - 0.5) * 0.35,
+                               fs, fs, fs, yaw * 1.3);
+                }
             } else if ((biome == "desert" || biome == "alpine" || biome == "tundra") && chance < 0.38) {
                 local scale = 0.5 + jitter * 0.75;
                 placeDecor(mapPrototypes.stone, wx, wy, wz, scale, scale * 0.75, scale, yaw);

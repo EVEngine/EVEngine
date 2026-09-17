@@ -841,6 +841,26 @@ TEST_CASE("procgen.mesh.tree.renderDump") {
     win->close();
 }
 
+TEST_CASE("procgen.mesh.flower.reproducible") {
+    MeshRecipeRegistry::instance().registerBuiltins();
+    Params p;
+    p.setSeed(20260917u);
+    p.setFloat("height", 0.6f);
+    p.setInt("petals", 6);
+    MeshBuild a, b;
+    std::string err;
+    CHECK(MeshRecipeRegistry::instance().generate("mesh.flower", p, a, err));
+    CHECK(MeshRecipeRegistry::instance().generate("mesh.flower", p, b, err));
+    CHECK(a.getVertexCount() > 0);
+    CHECK(a.positions() == b.positions());
+    CHECK(a.indices() == b.indices());
+    CHECK(meshIndicesInRange(a));
+    CHECK(meshPositionsFinite(a));
+    CHECK(meshNormalsFiniteUnit(a));
+    CHECK_EQ(a.getMeta("recipe", ""), "mesh.flower");
+    CHECK_EQ(a.getMeta("petals", ""), "6");
+}
+
 TEST_CASE("procgen.mesh.bush.reproducibleAndStyles") {
     MeshRecipeRegistry::instance().registerBuiltins();
     Params p;
@@ -3164,7 +3184,7 @@ TEST_CASE("procgen.texture.builtinRecipes.expanded") {
     const char *ids[] = {"tex.soil",    "tex.stone",   "tex.rock",   "tex.marble", "tex.water",
                          "tex.ripple",  "tex.sky_cloud", "tex.wood", "tex.cloth",  "tex.ornament",
                          "tex.spot",    "tex.zebra",   "tex.wall",   "tex.cement", "tex.mud",
-                         "tex.bark",    "tex.foliage", "tex.moss",   "tex.tree_atlas"};
+                         "tex.bark",    "tex.foliage", "tex.moss",   "tex.tree_atlas", "tex.flower"};
     for (const char *id : ids) {
         Params p;
         p.setSeed(11);

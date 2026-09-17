@@ -146,6 +146,28 @@ function buildRock(seed, shape, x, scale) {
     placeMesh(retain(mr.value), x, -2.35, -0.2, scale, scale, scale, mat);
 }
 
+function buildFlower(seed, x, z, scale, tintR, tintG, tintB) {
+    local pr = procgen.newParams();
+    if (!pr.ok) return;
+    local p = retain(pr.value);
+    p.setSeed(seed);
+    p.setFloat("height", 0.78);
+    p.setFloat("petalLength", 0.32);
+    p.setFloat("petalWidth", 0.18);
+    p.setInt("petals", 6 + (seed % 2));
+    p.setFloat("openAngle", 68.0 + (seed % 8));
+    local mr = procgen.generateMesh("mesh.flower", p, gfx);
+    if (!mr.ok) {
+        print("PROCGEN_NATURE_QUALITY_FLOWER_FAIL seed=" + seed + "\n");
+        return;
+    }
+    local albedo = makeTex("tex.flower", seed + 9, 128);
+    local mat = makeFoliageMaterial(albedo, null, 0.72, 0.28);
+    if (mat != null) mat.setTint(tintR, tintG, tintB, 1.0);
+    placeMesh(retain(mr.value), x, -2.75, z, scale, scale, scale, mat);
+    print("PROCGEN_NATURE_QUALITY_FLOWER seed=" + seed + " at " + x + "," + z + "\n");
+}
+
 function buildGround() {
     local ground = retain(eve.Renderable3D());
     ground.setMesh(gfx.newMeshCube(1.0));
@@ -178,6 +200,13 @@ eve_init = function() {
     buildBush(gallerySeed + 11, -1.4);
     buildRock(gallerySeed + 23, "cliff", 1.5, 1.55);
     buildRock(gallerySeed + 41, "boulder", 4.4, 1.25);
+    // Sparse flower accents in front of the bush / rock (Flower01-03 vibe).
+    buildFlower(gallerySeed + 61, -2.55, 1.45, 1.45, 1.15, 0.28, 0.38);
+    buildFlower(gallerySeed + 67, -0.85, 1.65, 1.30, 0.38, 0.48, 1.15);
+    buildFlower(gallerySeed + 71, -1.75, 1.95, 1.20, 1.05, 1.02, 0.95);
+    buildFlower(gallerySeed + 79, 0.35, 1.35, 1.35, 1.15, 0.95, 0.22);
+    buildFlower(gallerySeed + 83, -3.15, 1.15, 1.15, 1.05, 0.45, 0.72);
+    buildFlower(gallerySeed + 89, 0.95, 0.85, 1.10, 0.55, 0.75, 1.10);
 
     print("PROCGEN_NATURE_QUALITY_READY seed=" + gallerySeed + "\n");
 };

@@ -6,6 +6,7 @@
 #include "procgen/algorithms/SkyscraperMesh.h"
 #include "procgen/algorithms/TreeMesh.h"
 #include "procgen/algorithms/BushMesh.h"
+#include "procgen/algorithms/FlowerMesh.h"
 #include "procgen/algorithms/LinearStructure.h"
 #include "procgen/algorithms/MeshDeformationGeometry.h"
 #include "procgen/algorithms/LSystemMesh.h"
@@ -658,6 +659,20 @@ void MeshRecipeRegistry::registerBuiltins() {
     addAdvanced(bush,
                 ParamDescriptor::floating("twigLength", "Twig Length", 0.42f, 0.05f, 10.f, 0.01f));
     registerRecipe(std::move(bush), generateBushMesh);
+
+    RecipeDescriptor flower = mesh("mesh.flower", "Flower");
+    flower.params.push_back(ParamDescriptor::floating("height", "Height", 0.55f, 0.15f, 2.5f, 0.01f));
+    flower.params.push_back(
+        ParamDescriptor::floating("petalLength", "Petal Length", 0.22f, 0.05f, 1.2f, 0.01f));
+    flower.params.push_back(
+        ParamDescriptor::floating("petalWidth", "Petal Width", 0.12f, 0.03f, 1.0f, 0.01f));
+    flower.params.push_back(ParamDescriptor::integer("petals", "Petals", 6, 3, 12));
+    flower.params.push_back(
+        ParamDescriptor::floating("openAngle", "Open Angle", 58.f, 20.f, 85.f, 1.f));
+    addAdvanced(flower,
+                ParamDescriptor::floating("stemRadius", "Stem Radius", 0.02f, 0.005f, 0.12f, 0.001f));
+    addAdvanced(flower, ParamDescriptor::integer("sides", "Stem Sides", 6, 4, 16));
+    registerRecipe(std::move(flower), generateFlowerMesh);
 
     RecipeDescriptor tower = mesh("mesh.skyscraper", "Skyscraper");
     tower.params.push_back(ParamDescriptor::integer("tiers", "Tiers", 5, 1, 24));

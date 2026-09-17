@@ -692,6 +692,78 @@ std::unique_ptr<image::ImageData> genFoliage(const Params &params, std::string &
     return img;
 }
 
+/**
+ * tex.flower — stem green on the left, soft cream petal + warm centre on the right.
+ * Tint in examples for red / blue / white / yellow Flower01-03 accents.
+ */
+std::unique_ptr<image::ImageData> genFlower(const Params &params, std::string &error) {
+    const auto ctx = TextureGenContext::fromParams(params);
+    if (ctx.width > 4096 || ctx.height > 4096) {
+        error = "texture size too large (max 4096)";
+        return nullptr;
+    }
+    auto img = std::make_unique<image::ImageData>(ctx.width, ctx.height, "RGBA8");
+    NoiseField noise;
+    noise.seed = ctx.seed;
+    if (ctx.seamless) {
+        noise.periodX = std::max(1, int(ctx.scale));
+        noise.periodY = noise.periodX;
+    }
+
+    ColorRamp stemRamp;
+    stemRamp.add(0.00f, 28, 72, 28);
+    stemRamp.add(0.55f, 48, 110, 42);
+    stemRamp.add(1.00f, 34, 86, 32);
+
+    ColorRamp petalRamp;
+    petalRamp.add(0.00f, 210, 200, 205);
+    petalRamp.add(0.40f, 245, 236, 240);
+    petalRamp.add(0.70f, 255, 250, 252);
+    petalRamp.add(1.00f, 255, 236, 180);  // warm centre
+
+    const float invW = 1.f / float(std::max(1, ctx.width - 1));
+    const float invH = 1.f / float(std::max(1, ctx.height - 1));
+    for (int y = 0; y < ctx.height; ++y) {
+        for (int x = 0; x < ctx.width; ++x) {
+            const float u = float(x) * invW;
+            const float v = float(y) * invH;
+            Rgba8 color;
+            if (u < 0.32f) {
+                const float su = u / 0.32f;
+                const float h =
+                    std::clamp(0.45f + 0.35f * noise.fbm(su * 2.f, v * 4.f, 3) +
+                                   0.2f * std::sin(v * 18.f),
+                               0.f, 1.f);
+                color   = stemRamp.sampleBanded(h, ctx.colors);
+                color.a = 255;
+            } else {
+                // Petal local coords: elliptical falloff with soft tip.
+                const float pu = (u - 0.36f) / 0.62f;
+                const float pv = v;
+                const float dx = (pu - 0.5f) * 2.f;
+                const float dy = (pv - 0.5f) * 2.f;
+                const float halfW = 0.72f * (1.f - 0.35f * std::max(0.f, dy));
+                const float d =
+                    (dx * dx) / std::max(1e-4f, halfW * halfW) + (dy * dy) / 0.95f;
+                const float cover = 1.f - smoothstep(0.72f, 1.05f, d);
+                const float vein = std::pow(
+                    std::fabs(std::sin(dy * 6.f + noise.valueNoise(pu * 2.f, pv * 2.f) * 2.f)),
+                    3.f);
+                const float centre = 1.f - smoothstep(0.05f, 0.42f, std::sqrt(dx * dx + dy * dy));
+                const float h = std::clamp(0.35f + (1.f - vein) * 0.25f + centre * 0.45f +
+                                               noise.fbm(pu * 3.f, pv * 3.f, 2) * 0.1f,
+                                           0.f, 1.f);
+                color   = petalRamp.sampleBanded(h, ctx.colors);
+                color.a = static_cast<uint8_t>(std::clamp(cover, 0.f, 1.f) * 255.f);
+            }
+            img->setPixel(x, y,
+                          image::ImageData::Colorf{color.r / 255.f, color.g / 255.f, color.b / 255.f,
+                                                   color.a / 255.f});
+        }
+    }
+    return img;
+}
+
 }  // namespace
 
 const std::vector<TextureRecipeDef> &builtinTextureDefs() {
@@ -735,6 +807,13 @@ void TextureRecipeRegistry::registerBuiltins() {
         foliage.params.push_back(ParamDescriptor::integer("colors", "Color Bands", 6, 2, 32));
         foliage.params.push_back(ParamDescriptor::boolean("seamless", "Seamless", true));
         registerRecipe(std::move(foliage), genFoliage);
+    }
+    {
+        RecipeDescriptor flower = RecipeDescriptor::grid("tex.flower", "Flower", "Nature", 1, 1);
+        flower.params.push_back(ParamDescriptor::floating("scale", "Scale", 4.f, 0.1f, 64.f, 0.1f));
+        flower.params.push_back(ParamDescriptor::integer("colors", "Color Bands", 6, 2, 32));
+        flower.params.push_back(ParamDescriptor::boolean("seamless", "Seamless", true));
+        registerRecipe(std::move(flower), genFlower);
     }
     for (const TextureRecipeDef &def : builtinTextureDefs()) {
         registerRecipe(makeTextureRecipeDescriptor(def), [def](const Params &params, std::string &error) {
