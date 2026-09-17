@@ -149,6 +149,7 @@ Windows 本地直接跑同样的命令即可：脚本自身按 UTF-8 写 stdout/
 | [terrain-gallery](terrain-gallery/README.md) | 三个固定 seed 在相同生成参数、光照与材质下的并排对比 |
 | [mesh-modifier-lab](mesh-modifier-lab/README.md) | 13 种网格变形变体并排对照：类型化修饰图（bend / twist / FFD / 切面 / 样条 / 声波）、雕刻笔刷、粘液回弹、Mesh Fit、顶点编辑器 |
 | [spline-tube-lab](spline-tube-lab/README.md) | 无源网格生成：样条路径驱动管道 / 带状体 / 自定义截面挤出，含开放与闭合回路、分块、分布采样与行进帧 |
+| [procedural-road](procedural-road/README.md) | 程序化多层立交：截面挤出道路/桥墩/标线/导航逻辑叠加（`mesh.roadNetwork`） |
 | [mesh-impact-lab](mesh-impact-lab/README.md) | Box3D 命中事件驱动网格塑性冲击：法向冲量 → 形变会话 → 重新上传 |
 | [geometry-stroke-lab](geometry-stroke-lab/README.md) | 几何笔刷轨迹：quad / 三棱柱 / 立方体截面、平面与空间输入、最小间距过滤、撤销、CPU 生成 + GPU 上传 |
 | [terrain-stamping](terrain-stamping/README.md) | 地形盖章：旋转印章、距离遮罩、对比度、阶地、平滑与热力核，含 Pcg GTS 雪 / 雨 albedo 分支 |
