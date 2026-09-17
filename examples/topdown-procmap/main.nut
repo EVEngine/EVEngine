@@ -139,6 +139,8 @@ function makePrototype(kind, seedOffset) {
         mesh = retain(meshResult.value);
         local surf = makeSurface("tex.foliage", seedOffset + 120, 256);
         material = makeDecorMaterial(surf.albedo, surf.normal, true, 0.42);
+        // Cooler, deeper bush green vs brighter tree canopy atlas.
+        if (material != null) material.setTint(0.72, 0.92, 0.68, 1.0);
     } else {
         // cliff / stone
         p.setInt("subdivisions", kind == "cliff" ? 3 : 2);

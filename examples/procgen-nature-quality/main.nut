@@ -123,6 +123,8 @@ function buildBush(seed, x) {
     local foliage = makeTex("tex.foliage", seed + 5, 256);
     local normal = makeNormal("tex.foliage", seed + 5, 256);
     local mat = makeFoliageMaterial(foliage, normal, 0.88, 0.42);
+    // Cooler, deeper bush green (video InstRoot shrubs read darker than canopy).
+    if (mat != null) mat.setTint(0.72, 0.92, 0.68, 1.0);
     placeMesh(retain(mr.value), x, -2.55, 0.4, 1.15, 1.15, 1.15, mat);
 }
 

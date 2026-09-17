@@ -666,12 +666,13 @@ std::unique_ptr<image::ImageData> genFoliage(const Params &params, std::string &
         noise.periodY = noise.periodX;
     }
 
+    // Cooler forest green for bushes — less lime/yellow than the tree-atlas canopy.
     ColorRamp leafRamp;
-    leafRamp.add(0.00f, 14, 36, 10);
-    leafRamp.add(0.28f, 32, 78, 22);
-    leafRamp.add(0.52f, 52, 118, 34);
-    leafRamp.add(0.78f, 88, 148, 46);
-    leafRamp.add(1.00f, 24, 54, 16);
+    leafRamp.add(0.00f, 12, 32, 16);
+    leafRamp.add(0.28f, 28, 68, 34);
+    leafRamp.add(0.52f, 42, 96, 48);
+    leafRamp.add(0.78f, 62, 122, 58);
+    leafRamp.add(1.00f, 22, 48, 28);
 
     const float invW = 1.f / float(std::max(1, ctx.width - 1));
     const float invH = 1.f / float(std::max(1, ctx.height - 1));
