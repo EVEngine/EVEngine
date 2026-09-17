@@ -1,13 +1,13 @@
 # SilPOM vs SSDM — full planar algorithms
 
-Side-by-side comparison of **classic POM**, **full SilPOM**, and **full planar
-SSDM** on extruded brick cards.
+Side-by-side comparison of **classic POM**, **SilPOM**, and **planar SSDM**
+on extruded brick cards with hard flat height plateaus.
 
 | Card | Technique | What you should notice |
 | --- | --- | --- |
 | Left (warm) | Classic **POM** | Internal brick depth; **straight geometric** silhouette |
-| Mid (green) | **Full SilPOM** | Same solid heightfield march as SSDM + **jagged brick-only** limb on sides / narrow front rim → protruding brick silhouette (no interior horizon punch-through) |
-| Right (cool) | **Full planar SSDM** | Model-space heightfield march; side misses discard; **continuous** thickness profile → extruded outline |
+| Mid (green) | **SilPOM** | Solid heightfield shading; **jagged brick-cap** side limb |
+| Right (cool) | **Planar SSDM** | Same march; side misses discard → **continuous** extruded outline |
 
 Cards are **extruded slabs** (local Z = height axis). That is the correct domain
 for silhouette-changing relief. Cylinders are not — a wrapped UV chart cannot
@@ -43,20 +43,17 @@ xvfb-run -a scripts/smoke_examples.sh silpom-ssdm-compare
 ## Implementation notes
 
 - Shared CPU references: `src/modules/graphics/ParallaxMap.h`
-  (offset POM, hard/soft SilPOM coverage, horizon trim, SSDM screen offset)
 - Shared GLSL helpers: `src/modules/graphics/shaders/parallax_map.glsl`,
-  `ssdm.glsl` (steep POM, soft coverage, horizon trim, height normals,
-  self-shadow, planar heightfield march, screen-warp helpers)
+  `ssdm.glsl`
 - Demo shader is self-contained (`shaders/compare.frag`):
-  - **SilPOM / SSDM** share the solid model-space heightfield march + front
-    `chartFill` on miss (interior mortar stays opaque)
-  - **SilPOM** adds a jagged brick-only limb on slab sides + a narrow front rim
-  - **SSDM** keeps the full continuous side height profile
-  - Back faces are discarded so the card does not read as a hollow sandwich
+  - Heightmap is **hard flat brick / deep mortar** (no soft sine pillows)
+  - **SilPOM / SSDM** share the solid planar heightfield march (`hit.z` is a
+    hit flag, not softCoverage)
+  - Front faces keep geometric depth (writing cliff FragDepth opens 镂空 shells)
+  - Side faces write hit depth; SilPOM discards low mortar on sides (jagged
+    brick caps); SSDM keeps the continuous profile
 - Meshes: thin front card for classic POM; extruded slab for SilPOM/SSDM
-- `gl_FragDepth` only pulls toward the camera (Vulkan RH_ZO) so relief never
-  punches holes in the floor
-- Height texture uses moderate soft brick ramps (edge pop without cliff tunnels)
+- `gl_FragDepth` only pulls toward the camera (Vulkan RH_ZO)
 
 ## Honesty bound
 

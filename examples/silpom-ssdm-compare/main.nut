@@ -1,8 +1,8 @@
 // Full SilPOM vs full SSDM — planar extruded brick cards.
 //
 // Left  = classic POM   (parallax only; geometric silhouette)
-// Mid   = SilPOM        (solid heightfield march + jagged brick-only limb)
-// Right = SSDM          (solid heightfield march; continuous side profile)
+// Mid   = SilPOM        (planar heightfield march + mild geometric-rim clip)
+// Right = SSDM          (planar heightfield march; side misses discard)
 //
 // Cards are extruded slabs (local Z = height axis) so SilPOM/SSDM can change
 // the silhouette. Cylinders are the wrong domain for these algorithms.
@@ -23,15 +23,15 @@ persist cmpGround = null
 persist cmpAlbedo = null
 persist cmpHeight = null
 persist cmpTexVer = 0
-const CMP_TEX_VER = 7
+const CMP_TEX_VER = 13
 persist cmpShaderVer = 0
-const CMP_SHADER_VER = 15
-persist cmpYaw = 0.58
-persist cmpPitch = 0.24
+const CMP_SHADER_VER = 22
+persist cmpYaw = 0.48
+persist cmpPitch = 0.26
 persist cmpOrbit = false
-persist cmpScale = 0.12
-persist cmpMinLayers = 16.0
-persist cmpMaxLayers = 48.0
+persist cmpScale = 0.10
+persist cmpMinLayers = 24.0
+persist cmpMaxLayers = 56.0
 persist cmpFocus = 2
 persist cmpStatus = "orbit off"
 persist cmpSlabMesh = null
@@ -50,32 +50,27 @@ function asFloat(v) {
 }
 
 function brickColor(u, v) {
-    local bu = u * 6.0;
-    local bv = v * 4.0;
+    // Running-bond masonry with HARD flat plateaus. Soft sine height was what
+    // turned every brick into a pillow blob — keep height binary, tint albedo.
+    local bu = u * 5.0;
+    local bv = v * 3.5;
     local row = floor(bv);
     local odd = (row.tointeger() % 2) == 1;
     local ou = odd ? (bu + 0.5) : bu;
     local fx = fabs(ou - floor(ou) - 0.5);
     local fy = fabs(bv - floor(bv) - 0.5);
-    // Moderate soft ramps: steep enough for clear brick caps / edge protrusion,
-    // soft enough that FragDepth shells / cliff tunnels stay limited.
-    local mx = (fx - 0.24) / 0.20;
-    local my = (fy - 0.22) / 0.20;
-    if (mx < 0.0) mx = 0.0; if (mx > 1.0) mx = 1.0;
-    if (my < 0.0) my = 0.0; if (my > 1.0) my = 1.0;
-    mx = mx * mx * (3.0 - 2.0 * mx);
-    my = my * my * (3.0 - 2.0 * my);
-    local mortar = mx;
-    if (my > mortar) mortar = my;
-    local hBrick = 0.55 + 0.34 * (0.5 + 0.5 * sin(ou * 9.1) * cos(bv * 7.3));
-    local h = (1.0 - mortar) * hBrick + mortar * 0.10;
-    if (mortar > 0.70) return [0.52, 0.50, 0.46, h];
-    return [0.70 + 0.12 * hBrick, 0.32 + 0.08 * hBrick, 0.24 + 0.05 * hBrick, h];
+    // Mortar bands: ~20% of cell. Binary edge (no smoothstep ramps).
+    local mortar = (fx > 0.38 || fy > 0.34) ? 1.0 : 0.0;
+    if (mortar > 0.5)
+        return [0.48, 0.46, 0.43, 0.06];
+    // Flat brick face (constant height). Albedo only gets mild per-brick tint.
+    local tint = 0.92 + 0.08 * (0.5 + 0.5 * sin(floor(ou) * 2.7) * cos(row * 1.9));
+    return [0.62 * tint, 0.30 * tint, 0.22 * tint, 0.94];
 }
 
 function buildTextures() {
-    // 128² keeps Squirrel setPixel init reasonable on this VM.
-    local size = 128;
+    // 512² + nearest → crisp rectangular brick edges (not soft pillows).
+    local size = 512;
     local albedo = eve.Image().newEmptyImageData(size, size, "RGBA8");
     local height = eve.Image().newEmptyImageData(size, size, "RGBA8");
     for (local y = 0; y < size; y += 1) {
@@ -87,8 +82,11 @@ function buildTextures() {
             height.setPixel(x, y, c[3], c[3], c[3], 1.0);
         }
     }
-    cmpAlbedo = gfx.newTexture(albedo, true, true);
-    cmpHeight = gfx.newTexture(height, true, true);
+    cmpAlbedo = gfx.newTexture(albedo, false, false);
+    cmpHeight = gfx.newTexture(height, false, false);
+    // Nearest keeps hard brick plateaus; linear filtering turns them into pillows.
+    gfx.setTextureSampler(cmpAlbedo, "nearest", "none", 1.0, 0.0);
+    gfx.setTextureSampler(cmpHeight, "nearest", "none", 1.0, 0.0);
 }
 
 // Unit slab: XY in [-1,1], Z in [0,1] (front at Z=1). UV from XY.
@@ -168,7 +166,7 @@ function makeCard(mode, x) {
     ent.setTint(1.0, 1.0, 1.0, 1.0);
     ent.setCastShadow(false);
     ent.setReceiveShadow(false);
-    local thick = (mode == 0) ? 0.02 : clampf(cmpScale * 3.2, 0.16, 0.40);
+    local thick = (mode == 0) ? 0.02 : clampf(asFloat(cmpScale) * 2.4, 0.12, 0.28);
     ent.setPosition(x, 1.0, 0.0);
     ent.setScale(1.0, 1.0, thick);
     ent.setYaw(-0.15);
@@ -187,7 +185,7 @@ function syncPanel(panel) {
     panel.shader.sendFloat("feather", 0.02);
     panel.shader.sendFloat("horizon", 0.0);
     if (panel.mode > 0.5) {
-        local thick = clampf(asFloat(cmpScale) * 3.2, 0.16, 0.40);
+        local thick = clampf(asFloat(cmpScale) * 2.4, 0.12, 0.28);
         panel.ent.setScale(1.0, 1.0, thick);
     }
 }
@@ -211,8 +209,7 @@ eve_init = function() {
         buildTextures();
         cmpTexVer = CMP_TEX_VER;
     }
-    // Persisted panels keep the previous shader program; bump forces a clean rebuild
-    // so SilPOM gets chart-border limb discard and SSDM side-miss silhouette back.
+    // Persisted panels keep the previous shader program; bump forces a clean rebuild.
     if (cmpShaderVer != CMP_SHADER_VER) {
         cmpPom = null;
         cmpSil = null;
@@ -254,7 +251,7 @@ eve_init = function() {
     cmpSil.ent.setPosition(0.0, 1.0, 0.0);
     cmpSsdm.ent.setPosition(2.8, 1.0, 0.0);
     cmpPom.ent.setScale(1.0, 1.0, 0.02);
-    local thick = clampf(cmpScale * 3.2, 0.16, 0.40);
+    local thick = clampf(asFloat(cmpScale) * 2.4, 0.12, 0.28);
     cmpSil.ent.setScale(1.0, 1.0, thick);
     cmpSsdm.ent.setScale(1.0, 1.0, thick);
     cmpPom.ent.setYaw(-0.15);
@@ -265,7 +262,7 @@ eve_init = function() {
     updateCamera();
     cmpReady = true;
     print("Full SilPOM vs SSDM: O orbit | A/D yaw | W/S pitch | [/] scale | 1/2/3 focus\n");
-    print("Left=POM  Mid=SilPOM (jagged side limb)  Right=SSDM (continuous side profile)\n");
+    print("Left=POM  Mid=SilPOM (brick-cap limb)  Right=SSDM (continuous extrusion)\n");
 };
 
 eve_asset_reload <- function(path) {
