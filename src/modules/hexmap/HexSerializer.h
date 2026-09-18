@@ -58,8 +58,8 @@ inline constexpr std::uint32_t kHexSaveVersion = 1;
  * observable.
  *
  * @param bytes Payload to decode.
- * @param map Receives the restored grid.
- * @param units Receives the restored unit states; cleared first.
+ * @param map Receives the restored grid; replaced only on success.
+ * @param units Receives the restored unit states; replaced only on success.
  * @return Success, or InvalidArgument for a truncated, mis-magic'd, wrong-version
  *         or out-of-range payload.
  * @cost Proportional to the cell count.

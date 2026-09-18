@@ -151,3 +151,67 @@ What still stands:
 - `mesh.hexterrain` and its generator are untouched and still ship the original
   proof; the module is additive.
 
+## Update: correctness and contract review of the `hexmap` module
+
+A defect review of the module found that its 64 unit tests were all green while
+several defects were live. The tests were the problem: the planar mesh test's
+expected triangle count was derived from the same ownership rule the emitter used,
+so it asserted the bug, and nothing at all covered `HexMapModule`.
+
+Fixed, each with the test that now guards it:
+
+- **Picking returned cell (0, 0).** `HexMap::pickCell` seeded its bisection result with
+  `contains(previousCoordinates) ? previousCoordinates : coordinates`. `previousCoordinates`
+  defaults to `(0, 0)`, which `contains` accepts on every non-empty map, so any ray whose
+  first in-grid sample was already below the surface returned `(0, 0)`; the script binding
+  feeds the result into `elevation`/`editElevation`, so a click edited the wrong cell.
+- **Two authoring setters never dirtied their chunk.** `setTerrainType` was the only
+  setter without `refreshCellDependents` (and carried a `++ ++revision_;` typo), so
+  `hexmap.setTerrainType` changed no mesh; `setExplored` skipped the dirty mark on a false
+  comment claiming fog is not geometry, while `buildFogMesh` selects its shade from exactly
+  that latch, so the example's `j` key did nothing.
+- **Terrain corners were emitted twice.** `appendConnection` reused the *edge* ownership
+  gate for the corner. An edge is shared by two cells (so three of six directions is right);
+  a corner is shared by **three** cells, so the correct gate is two of six. The excess was
+  266 duplicate coincident triangles on the test map, and `appendCorner` sorts its three
+  points by the elevation of the cell each belongs to, so the two copies also carried
+  different terrain triples at every junction whose cells differ in elevation.
+- **Corner point/cell pairing was swapped.** `corner.left` takes its height from the *next*
+  cell and `corner.right` is the neighbour's own corner, but the two were passed with each
+  other's cell, so the terrace/cliff branch was chosen from the wrong elevations. The same
+  swap existed in the wall corner (`addWallCorner`). The sphere backend, which cannot share
+  this code, pairs them correctly and was the evidence.
+- **`findPath` never initialised the origin record.** Only `searchPhase` was written, so a
+  reused `HexSearchContext` (the module owns exactly one) carried the previous search's
+  `distance`/`heuristic` into the bucket priority and into `turns.front()`.
+- **`newGrid`/`newSphere` released the GPU meshes before validating their size.** A rejected
+  size left the old grid alive while every mesh was destroyed, and the renderables scripts
+  already held kept pointing at them.
+- **`loadHexMap` accepted out-of-range cell words.** The payload is untrusted, but decoded
+  words were written verbatim through `setCellState`; a word whose elevation field decoded
+  below `kMinElevation` put a cell's surface under the box `pickCell` marches through, so a
+  visible cell reported NotFound.
+- **`pickCell`'s march budget was a fixed 512 steps of 1.5 world units**, i.e. 768 units past
+  the box entry, so a genuine hit further along a large grid returned NotFound.
+- **`HexVisibility::clear` / `HexUnitRegistry::removeAll` dropped viewers without dirtying
+  the affected chunks**, and `beginTravel` withdrew vision from the reserved destination
+  instead of the cell that actually holds it, permanently lighting the abandoned corridor.
+  `refreshPositions` left a detached unit occupying cell (0, 0), blocking a real cell.
+- Script-supplied `radius`/`delta` were multiplied and added into `int32` unchecked
+  (`radius * 2`, `elevation + delta`), which is signed-overflow UB; the grid-size and
+  sphere-brush entry points were unbounded, and `HexSerializer.h` contradicted itself about
+  whether `units` is cleared before validation.
+
+Two claims from the same review were **not** reproduced against the real build and were left
+alone: the spherical mesher's corner ownership, and the claim that every slope leaves terracing
+cracks. The sphere watertightness test (which asserts zero boundary edges and zero non-manifold
+edges at flat and scattered elevations) passes, and a new planar test that raises one interior
+cell to both a slope and a cliff finds no new boundary edges. The reviewer's numbers came from
+an isolated build of the module against stubbed `Result`/`Diagnostic` headers.
+
+Still open, unchanged from the gap list above: bindable texture arrays and independent
+ORM maps (gaps 2-4), production hydrology (gap 6), and instanced vegetation independent of
+the terrain rebuild (gap 7). `HexMapModule` still has no unit test, because every entry
+point needs a live `Graphics` device; that is the largest remaining coverage hole and the
+next thing to close.
+

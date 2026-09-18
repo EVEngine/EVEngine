@@ -15,6 +15,8 @@
 #include <array>
 #include <cmath>
 #include <cstdint>
+#include <map>
+#include <utility>
 #include <vector>
 
 using namespace eve::hexmap;
@@ -33,6 +35,82 @@ void revealAll(HexMap& map) {
     for (std::int32_t index = 0; index < map.cellCount(); ++index) {
         CHECK(map.setExplored(map.coordinatesAt(index), true).ok());
     }
+}
+
+/** @brief Coincident-geometry census over a set of chunk meshes welded by position. */
+struct MeshWeldReport {
+    std::size_t boundaryEdges      = 0;  ///< Edges used by exactly one triangle (an open seam).
+    std::size_t nonManifoldEdges   = 0;  ///< Edges used by three or more triangles.
+    std::size_t duplicateTriangles = 0;  ///< Triangles repeating an earlier triangle's welded corners.
+};
+
+/** @brief Builds the terrain mesh of every chunk of `map`. */
+[[nodiscard]] std::vector<HexMeshData> collectTerrainChunks(const HexMap& map) {
+    std::vector<HexMeshData> chunks;
+    chunks.reserve(static_cast<std::size_t>(map.chunkCount()));
+    for (std::int32_t chunk = 0; chunk < map.chunkCount(); ++chunk) {
+        HexMeshData terrain;
+        buildTerrainMesh(map, chunk, terrain);
+        chunks.push_back(std::move(terrain));
+    }
+    return chunks;
+}
+
+/**
+ * @brief Welds `chunks` by quantised position and reports coincident geometry.
+ *
+ * The terrain builders reach the same world point from different cells, so a mesh that
+ * emits a junction twice produces exactly coincident triangles. Welding by position is
+ * what makes those visible: an unwelded vertex count cannot see them, and neither can a
+ * triangle count that is compared against an expectation derived from the same gate the
+ * emitter uses.
+ */
+[[nodiscard]] MeshWeldReport analyseMeshWeld(const std::vector<HexMeshData>& chunks) {
+    using Key      = std::array<std::int64_t, 3>;
+    using EdgeKey  = std::pair<std::uint32_t, std::uint32_t>;
+    using Triangle = std::array<std::uint32_t, 3>;
+
+    // 1e-3 world units: identical corners agree far inside this, distinct ones are
+    // separated by whole world units.
+    const auto quantise = [](float x) { return static_cast<std::int64_t>(std::llround(x * 1000.f)); };
+
+    std::map<Key, std::uint32_t>    welded;
+    std::map<EdgeKey, std::size_t>  edgeUse;
+    std::map<Triangle, std::size_t> triangleUse;
+
+    for (const HexMeshData& chunk : chunks) {
+        const std::vector<float>&         positions = chunk.positions();
+        const std::vector<std::uint32_t>& indices   = chunk.indices();
+        std::vector<std::uint32_t>        vertexId(positions.size() / 3u, 0u);
+        for (std::size_t vertex = 0; vertex < vertexId.size(); ++vertex) {
+            const Key  key{quantise(positions[vertex * 3u]), quantise(positions[vertex * 3u + 1u]),
+                           quantise(positions[vertex * 3u + 2u])};
+            const auto inserted = welded.emplace(key, static_cast<std::uint32_t>(welded.size()));
+            vertexId[vertex]    = inserted.first->second;
+        }
+        for (std::size_t index = 0; index + 2u < indices.size(); index += 3u) {
+            Triangle triangle{vertexId[indices[index]], vertexId[indices[index + 1u]], vertexId[indices[index + 2u]]};
+            std::sort(triangle.begin(), triangle.end());
+            ++triangleUse[triangle];
+            for (std::size_t edge = 0; edge < 3u; ++edge) {
+                const std::uint32_t a = triangle[edge];
+                const std::uint32_t b = triangle[(edge + 1u) % 3u];
+                ++edgeUse[{std::min(a, b), std::max(a, b)}];
+            }
+        }
+    }
+
+    MeshWeldReport report;
+    for (const auto& [edge, uses] : edgeUse) {
+        (void)edge;
+        if (uses == 1u) ++report.boundaryEdges;
+        if (uses > 2u) ++report.nonManifoldEdges;
+    }
+    for (const auto& [triangle, uses] : triangleUse) {
+        (void)triangle;
+        if (uses > 1u) report.duplicateTriangles += uses - 1u;
+    }
+    return report;
 }
 
 }  // namespace
@@ -478,14 +556,14 @@ TEST_CASE("hexmap.visibility.respectsViewElevationAndUnexplorableCells") {
     // from the sweep above have to be dropped first: visibility is reference counted
     // and a later increase never takes a viewer away.
     const HexCoordinates near = HexCoordinates::fromOffset(5, 4);
-    visibility.clear();
+    visibility.clear(map);
     REQUIRE(map.setExplorable(near, false).ok());
     REQUIRE(visibility.increase(map, ctx, viewer, 2).ok());
     REQUIRE(!visibility.isVisible(map.indexOf(near)));
     REQUIRE(visibility.visibleCellCount() > 0);
 
     // `clear` drops the counters but keeps the explored latch of the map.
-    visibility.clear();
+    visibility.clear(map);
     CHECK_EQ(visibility.visibleCellCount(), 0);
     CHECK(map.isExplored(viewer));
 }
@@ -826,7 +904,7 @@ TEST_CASE("hexmap.mesh.fogOverlayCoversOnlyUnseenCells") {
     for (std::int32_t index = 0; index < map.cellCount(); ++index) {
         CHECK(map.setExplored(map.coordinatesAt(index), true).ok());
     }
-    visibility.clear();
+    visibility.clear(map);
     buildFogMesh(map, visibility, 0, firstChunk);
     REQUIRE(!firstChunk.empty());
     for (std::size_t i = 0; i < firstChunk.uvs().size(); i += 2) {
@@ -848,11 +926,12 @@ TEST_CASE("hexmap.mesh.terrainTriangulatesEachOwnedBoundaryOnce") {
     // is exactly countable.
     HexMap map = makeMap(20, 15, 23u);
 
-    // Independently derived expectation: six solid fans per cell (four triangles each),
-    // and for every NE/E/SE edge the owning chunk is responsible for, one blend strip
-    // (four quads) plus the closing corner triangle when the next cell exists. If a
-    // boundary were also triangulated from the far side - the defect this guards - the
-    // strip term would double and the count would no longer match.
+    // Independent expectation, derived from how many cells share each feature rather
+    // than from the emitter's own gate: six solid fans per cell (four triangles each);
+    // an edge is shared by two cells, so exactly half of the six directions may emit it
+    // (NE/E/SE), one blend strip of four quads; a corner is shared by *three* cells, so
+    // only a third may emit it (NE/E), one closing triangle. Gating the corner on the
+    // edge rule - which this test previously encoded - emits 3/2 corners per junction.
     std::size_t expected = 0;
     for (std::int32_t index = 0; index < map.cellCount(); ++index) {
         const HexCoordinates coordinates = map.coordinatesAt(index);
@@ -862,19 +941,50 @@ TEST_CASE("hexmap.mesh.terrainTriangulatesEachOwnedBoundaryOnce") {
             HexCoordinates neighbour{};
             if (!map.getNeighbor(coordinates, direction, neighbour)) continue;
             expected += 4u * 2u;
+            if (i > static_cast<std::int32_t>(HexDirection::E)) continue;
             HexCoordinates nextNeighbour{};
             if (map.getNeighbor(coordinates, next(direction), nextNeighbour)) expected += 1u;
         }
     }
 
-    std::size_t actual = 0;
-    for (std::int32_t chunk = 0; chunk < map.chunkCount(); ++chunk) {
-        HexMeshData terrain;
-        buildTerrainMesh(map, chunk, terrain);
-        actual += terrain.triangleCount();
-    }
+    std::vector<HexMeshData> chunks = collectTerrainChunks(map);
+    std::size_t              actual = 0;
+    for (const HexMeshData& chunk : chunks) actual += chunk.triangleCount();
     REQUIRE(actual > 0u);
     REQUIRE_EQ(actual, expected);
+
+    // A flat map puts all three cells of every junction at the same height, so a
+    // junction emitted twice produces exactly coincident triangles. Welding by position
+    // is what exposes that; the triangle count above only catches it because its
+    // expectation no longer shares the emitter's assumption.
+    const MeshWeldReport weld = analyseMeshWeld(chunks);
+    CHECK_EQ(weld.duplicateTriangles, 0u);
+    CHECK_EQ(weld.nonManifoldEdges, 0u);
+}
+
+TEST_CASE("hexmap.mesh.terracesCloseAgainstTheirNeighbours") {
+    // A terrace ladder is walked from one end of the shared edge. If the two cells that
+    // own the two halves of that boundary walk it from opposite ends, the ladders do not
+    // meet and the surface is left with an open seam - interior cracks that a triangle
+    // count cannot see, because they add no triangles.
+    //
+    // The flat patch is the control: on a flat map no ladder runs at all, so the only
+    // unmatched edges are the patch's own outer perimeter. A single step up is a *slope*,
+    // which is the case that runs a terrace ladder on every one of the raised cell's six
+    // sides; two or more steps is a cliff, which emits a wall instead. Both are checked,
+    // because they take different branches of the connection dispatch.
+    HexMap            flat         = makeMap(20, 15, 23u);
+    const std::size_t flatBoundary = analyseMeshWeld(collectTerrainChunks(flat)).boundaryEdges;
+    REQUIRE(flatBoundary > 0u);
+
+    for (const std::int32_t elevation : {1, 3}) {
+        HexMap raised = makeMap(20, 15, 23u);
+        REQUIRE(raised.setElevation(HexCoordinates::fromOffset(7, 7), elevation).ok());
+        const MeshWeldReport report = analyseMeshWeld(collectTerrainChunks(raised));
+        CHECK_EQ(report.duplicateTriangles, 0u);
+        CHECK_EQ(report.nonManifoldEdges, 0u);
+        CHECK_EQ(report.boundaryEdges, flatBoundary);
+    }
 }
 
 // --- water mesh -------------------------------------------------------------

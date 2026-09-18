@@ -117,9 +117,10 @@ private:
         // side too puts two coplanar (or, on a slope, two interpenetrating) copies on
         // every boundary, which is what makes the terrain look like it has seams.
         //
-        // The gate has to come before the strip is built: it also covers the corner
-        // below, which is why the corner matrix only ever runs for these three
-        // directions.
+        // An edge is shared by two cells, so half of the six directions is the right
+        // fraction. A corner below is shared by *three* cells and therefore needs its
+        // own, narrower gate; reusing this one emitted two of the three cells at half
+        // of all junctions, i.e. two coincident corner patches.
         if (static_cast<std::int32_t>(direction) > static_cast<std::int32_t>(HexDirection::SE)) return;
 
         const EdgeVertices far = shiftedEdge(center, direction, map_.cellPosition(neighbourCoordinates).y);
@@ -138,6 +139,12 @@ private:
                 break;
         }
 
+        // Corner gate, two directions out of six: each junction is shared by three
+        // cells and each of them reaches it from one of its own six corners, so one
+        // third of the (cell, corner) pairs must emit it. `NE`/`E` select exactly one
+        // per junction; adding `SE` selected two at half of them.
+        if (static_cast<std::int32_t>(direction) > static_cast<std::int32_t>(HexDirection::E)) return;
+
         HexCoordinates nextCoordinates{};
         if (!map_.getNeighbor(coordinates, next(direction), nextCoordinates)) return;
         const HexCellData* nextCell = map_.cell(nextCoordinates);
@@ -146,12 +153,19 @@ private:
         corner.up = near.v5;
         // Third corner vertex: this cell's corner carried across by the bridge of the
         // *next* edge, exactly as the reference builds `e1.v5 + GetBridge(d.Next())`.
+        // Its Y comes from the next cell, so the point belongs to `nextCell`.
         corner.left      = near.v5 + HexMetrics::bridge(next(direction));
         corner.left.y    = map_.cellPosition(nextCoordinates).y;
         corner.right     = far.v5;
+        // `appendCorner` sorts the three points by the elevation of the cell they belong
+        // to, so each point must be paired with its *own* cell: `left` is the next
+        // cell's corner, `right` is the neighbour's (`far` is the neighbour's edge).
+        // Swapping the two picked the wrong terrace/cliff branch at every junction whose
+        // three cells differ in elevation. The sphere backend, which cannot share this
+        // code, pairs them this way.
         corner.upCell    = cellData;
-        corner.leftCell  = neighbour;
-        corner.rightCell = nextCell;
+        corner.leftCell  = nextCell;
+        corner.rightCell = neighbour;
         appendCorner(corner);
     }
 
