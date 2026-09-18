@@ -3197,9 +3197,22 @@ TEST_CASE("procgen.mesh.bush.ovateLeafCards") {
     MeshBuild out;
     REQUIRE(MeshRecipeRegistry::instance().generate("mesh.bush", p, out, err));
     // Ovate leaves use 8 outline verts (double-sided fan); quads would be 4.
-    // With cards-only and no twigs, nearly all verts are leaf outline verts.
     CHECK(out.getVertexCount() >= 8);
     CHECK(out.getVertexCount() % 8 == 0);
+    // Each leaf samples one 3×3 stamp cell — UV span stays well below a full half.
+    for (int leaf = 0; leaf < out.getVertexCount(); leaf += 8) {
+        float uMin = 1.f, uMax = 0.f, vMin = 1.f, vMax = 0.f;
+        for (int i = 0; i < 8; ++i) {
+            uMin = std::min(uMin, out.getUvU(leaf + i));
+            uMax = std::max(uMax, out.getUvU(leaf + i));
+            vMin = std::min(vMin, out.getUvV(leaf + i));
+            vMax = std::max(vMax, out.getUvV(leaf + i));
+        }
+        CHECK(uMin >= 0.52f - 1e-3f);
+        CHECK(uMax <= 1.f + 1e-3f);
+        CHECK(uMax - uMin < 0.22f);
+        CHECK(vMax - vMin < 0.45f);
+    }
 }
 
 TEST_CASE("procgen.texture.foliage.leafCardAlpha") {

@@ -557,16 +557,16 @@ void buildOvateLeafStamps(const NoiseField &noise, int count, std::vector<LeafSt
         for (int col = 0; col < cols && placed < count; ++col) {
             const float cellW = 1.f / float(cols);
             const float cellH = 1.f / float(rows);
-            const float jx = (noise.hash01(col * 3 + 1, row * 5 + 2) - 0.5f) * cellW * 0.45f;
-            const float jy = (noise.hash01(col * 7 + 3, row * 11 + 4) - 0.5f) * cellH * 0.45f;
+            // Keep stamps centred in their cell so one-cell leaf UVs stay green.
+            const float jx = (noise.hash01(col * 3 + 1, row * 5 + 2) - 0.5f) * cellW * 0.12f;
+            const float jy = (noise.hash01(col * 7 + 3, row * 11 + 4) - 0.5f) * cellH * 0.12f;
             LeafStamp s;
             s.cx = (float(col) + 0.5f) * cellW + jx;
             s.cy = (float(row) + 0.5f) * cellH + jy;
-            // Keep clear transparent margins inside each cell so a card that
-            // samples one cell still alpha-cuts to an ovate silhouette.
-            s.halfW = cellW * (0.22f + 0.08f * noise.hash01(col + 9, row + 2));
-            s.halfH = cellH * (0.30f + 0.10f * noise.hash01(col + 4, row + 8));
-            s.ang = (noise.hash01(col * 13 + 1, row * 17 + 3) - 0.5f) * 1.8f;
+            // Fill most of each 3x3 cell so geometric leaf UVs land on leaf colour.
+            s.halfW = cellW * (0.36f + 0.05f * noise.hash01(col + 9, row + 2));
+            s.halfH = cellH * (0.44f + 0.06f * noise.hash01(col + 4, row + 8));
+            s.ang = (noise.hash01(col * 13 + 1, row * 17 + 3) - 0.5f) * 0.9f;
             stamps.push_back(s);
             ++placed;
         }
@@ -695,10 +695,14 @@ std::unique_ptr<image::ImageData> genTreeAtlas(const Params &params, std::string
             } else if (u > 0.52f) {
                 const float fu = (u - 0.52f) / 0.48f;
                 float cover = 0.f, shade = 0.f;
-                // Transparent card with scattered ovate leaves for masked leaf cards.
+                // Transparent card half: ovate stamps only (empty margins a=0).
                 sampleOvateLeafCard(noise, fu, v, leafStamps, cover, shade);
-                color = leafRamp.sampleBanded(shade, ctx.colors);
-                color.a = static_cast<uint8_t>(std::clamp(cover, 0.f, 1.f) * 255.f);
+                if (cover < 0.02f) {
+                    color = {0, 0, 0, 0};
+                } else {
+                    color   = leafRamp.sampleBanded(shade, ctx.colors);
+                    color.a = static_cast<uint8_t>(std::clamp(cover, 0.f, 1.f) * 255.f);
+                }
             } else {
                 // Narrow blend strip between bark and foliage regions.
                 color = {72, 86, 48, 255};
@@ -759,8 +763,12 @@ std::unique_ptr<image::ImageData> genFoliage(const Params &params, std::string &
             } else if (u > 0.52f) {
                 const float fu = (u - 0.52f) / 0.48f;
                 sampleOvateLeafCard(noise, fu, v, leafStamps, cover, shade);
-                color = leafRamp.sampleBanded(shade, ctx.colors);
-                color.a = static_cast<uint8_t>(std::clamp(cover, 0.f, 1.f) * 255.f);
+                if (cover < 0.02f) {
+                    color = {0, 0, 0, 0};
+                } else {
+                    color   = leafRamp.sampleBanded(shade, ctx.colors);
+                    color.a = static_cast<uint8_t>(std::clamp(cover, 0.f, 1.f) * 255.f);
+                }
             } else {
                 color = {40, 78, 36, 255};
             }

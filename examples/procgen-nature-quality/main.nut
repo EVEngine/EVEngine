@@ -110,13 +110,13 @@ function buildBush(seed, x) {
     p.setString("leafMode", "cards");
     p.setFloat("height", 1.65);
     p.setFloat("width", 2.35);
-    p.setInt("blobs", 18);
-    p.setFloat("leafDensity", 1.0);
+    p.setInt("blobs", 12);
+    p.setFloat("leafDensity", 0.85);
     p.setFloat("lobeScale", 0.64);
     p.setFloat("irregularity", 0.72);
     p.setInt("rings", 5);
     p.setInt("radialSegments", 11);
-    p.setFloat("leafSize", 0.42);
+    p.setFloat("leafSize", 0.62);
     p.setInt("twigs", 7);
     local mr = procgen.generateMesh("mesh.bush", p, gfx);
     if (!mr.ok) return;

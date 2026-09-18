@@ -119,9 +119,8 @@ void addTwig(MeshBuild &out, V3 a, V3 b, float r0, float r1, int sides, float uM
     }
 }
 
-// Ovate leaf card: geometry is a lanceolate polygon (not a rectangle), coloured
-// from one stamp cell of the transparent leaf atlas. Silhouette no longer
-// depends on alpha discard working for flat quads.
+// Ovate leaf: lanceolate polygon silhouette (never a rectangle). Colour comes
+// from one stamp cell of the leaf atlas; shape does not depend on alpha discard.
 void addLeafCard(MeshBuild &out, std::mt19937 &rng, V3 c, V3 direction, float size) {
     V3 right, up;
     basisFor(norm(direction), right, up);
@@ -130,13 +129,14 @@ void addLeafCard(MeshBuild &out, std::mt19937 &rng, V3 c, V3 direction, float si
     up                = norm(cross(norm(direction), right));
     const V3 normal   = norm(cross(right, up));
     const V3 center   = add(c, mul(normal, size * 0.04f));
-    const float halfW = size * randomRange(rng, 0.38f, 0.52f);
-    const float halfH = size * randomRange(rng, 0.62f, 0.88f);
+    // Narrow + long so the outline cannot be mistaken for a green quad.
+    const float halfW = size * randomRange(rng, 0.26f, 0.36f);
+    const float halfH = size * randomRange(rng, 0.88f, 1.18f);
 
     // Pick one stamp from the 3×3 ovate grid (matches BuiltinTextures leaf stamps).
     const int   col    = int(randomRange(rng, 0.f, float(kLeafCols))) % kLeafCols;
     const int   row    = int(randomRange(rng, 0.f, float(kLeafRows))) % kLeafRows;
-    const float inset  = 0.12f;
+    const float inset  = 0.10f;
     const float cellWU = (kCardAtlasU1 - kCardAtlasU0) / float(kLeafCols);
     const float cellWV = 1.f / float(kLeafRows);
     const float u0     = kCardAtlasU0 + (float(col) + inset) * cellWU;
@@ -144,11 +144,9 @@ void addLeafCard(MeshBuild &out, std::mt19937 &rng, V3 c, V3 direction, float si
     const float v0     = (float(row) + inset) * cellWV;
     const float v1     = (float(row) + 1.f - inset) * cellWV;
 
-    // Lanceolate outline in local leaf space (x across, y along tip). Pointed
-    // tip at +Y, wider shoulders below centre — reads as an ovate leaf even
-    // when the albedo is fully opaque.
-    constexpr float kOutlineX[8] = {0.f, -0.28f, -0.48f, -0.42f, 0.f, 0.42f, 0.48f, 0.28f};
-    constexpr float kOutlineY[8] = {-0.50f, -0.32f, -0.02f, 0.28f, 0.50f, 0.28f, -0.02f, -0.32f};
+    // Pointed tip (+Y), narrow waist, rounded base — clearly ovate, not a box.
+    constexpr float kOutlineX[8] = {0.f, -0.16f, -0.34f, -0.20f, 0.f, 0.20f, 0.34f, 0.16f};
+    constexpr float kOutlineY[8] = {-0.50f, -0.30f, 0.00f, 0.36f, 0.58f, 0.36f, 0.00f, -0.30f};
     const uint32_t  base         = uint32_t(out.getVertexCount());
     for (int i = 0; i < 8; ++i) {
         const V3 p = add(center, add(mul(right, kOutlineX[i] * halfW), mul(up, kOutlineY[i] * halfH)));
@@ -276,20 +274,22 @@ bool generateBushMesh(const Params &params, MeshBuild &out, std::string &error) 
                                 {halfW * 0.18f * lobeScale, height * 0.20f, halfW * 0.18f * lobeScale}});
     }
 
-    // Optional loose leaf cards across the canopy for a fuller look.
+    // Scatter ovate leaves across the canopy. Cards-only stays sparse so gaps
+    // between leaves read as transparent background rather than a green slab.
     if (leafMode == "cards" || leafMode == "mixed") {
-        const int cards = std::max(1, int(std::round(float(blobs) * 14.f * density)));
+        const float pack  = leafMode == "cards" ? 2.6f : 5.f;
+        const int   cards = std::max(1, int(std::round(float(blobs) * pack * density)));
         for (int i = 0; i < cards; ++i) {
             const FoliageLobe &lobe = foliageLobes[size_t(i) % foliageLobes.size()];
             const float theta = randomRange(rng, 0.f, 2.f * kPi);
             const float ny = randomRange(rng, -0.45f, 1.f);
             const float radial = std::sqrt(std::max(0.f, 1.f - ny * ny));
             const V3 face = norm({std::cos(theta) * radial, ny, std::sin(theta) * radial});
-            // Push cards slightly outside the lobe so ovate silhouettes read clearly.
-            const V3 c{lobe.center.x + face.x * lobe.radius.x * 1.05f,
-                       lobe.center.y + face.y * lobe.radius.y * 1.05f,
-                       lobe.center.z + face.z * lobe.radius.z * 1.05f};
-            addLeafCard(out, rng, c, face, leafSize * randomRange(rng, 0.85f, 1.35f));
+            // Push leaves outside the lobe so individual ovate silhouettes read.
+            const V3 c{lobe.center.x + face.x * lobe.radius.x * 1.20f,
+                       lobe.center.y + face.y * lobe.radius.y * 1.20f,
+                       lobe.center.z + face.z * lobe.radius.z * 1.20f};
+            addLeafCard(out, rng, c, face, leafSize * randomRange(rng, 1.05f, 1.55f));
         }
     }
 

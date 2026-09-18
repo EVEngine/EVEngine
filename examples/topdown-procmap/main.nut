@@ -125,13 +125,13 @@ function makePrototype(kind, seedOffset) {
         p.setString("leafMode", "cards");
         p.setFloat("height", 1.25);
         p.setFloat("width", 1.75);
-        p.setInt("blobs", 14);
-        p.setFloat("leafDensity", 1.0);
+        p.setInt("blobs", 10);
+        p.setFloat("leafDensity", 0.85);
         p.setFloat("lobeScale", 0.62);
         p.setFloat("irregularity", 0.7);
         p.setInt("rings", 5);
         p.setInt("radialSegments", 10);
-        p.setFloat("leafSize", 0.36);
+        p.setFloat("leafSize", 0.48);
         p.setInt("twigs", 6);
         p.setFloat("twigLength", 0.34);
         local meshResult = procgen.generateMesh("mesh.bush", p, gfx);

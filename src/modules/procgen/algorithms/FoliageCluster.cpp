@@ -98,11 +98,9 @@ void addPetal(MeshBuild &out, V3 center, V3 right, V3 forward, float size, float
     const V3    axisX = add(mul(right, c), mul(forward, s));
     const V3    axisY = add(mul(right, -s), mul(forward, c));
 
-    // Lanceolate outline: pointed base, widest just above the middle, single
-    // tip. Six points read as a leaf only when the shoulders sit low and the
-    // taper towards the tip stays long; a symmetric hexagon reads as a pebble.
-    constexpr float kOutlineX[6] = {0.f, -0.42f, -0.50f, 0.f, 0.50f, 0.42f};
-    constexpr float kOutlineY[6] = {-0.50f, -0.24f, 0.06f, 0.50f, 0.06f, -0.24f};
+    // Lanceolate outline: pointed tip, narrow waist — must not read as a box.
+    constexpr float kOutlineX[6] = {0.f, -0.28f, -0.36f, 0.f, 0.36f, 0.28f};
+    constexpr float kOutlineY[6] = {-0.50f, -0.18f, 0.18f, 0.55f, 0.18f, -0.18f};
 
     const uint32_t base = uint32_t(out.getVertexCount());
     for (int i = 0; i < 6; ++i) {

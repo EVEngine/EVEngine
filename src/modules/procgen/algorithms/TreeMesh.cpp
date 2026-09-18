@@ -76,12 +76,12 @@ void addTaperedCylinder(MeshBuild& out, V3 a, V3 b, float r0, float r1, int side
 void addLeafCard(MeshBuild& out, V3 c, V3 direction, float size, float twist, std::mt19937& rng) {
     V3 right, up;
     basisFor(norm(direction), right, up);
-    right          = add(mul(right, std::cos(twist)), mul(up, std::sin(twist)));
-    up             = norm(cross(norm(direction), right));
+    right           = add(mul(right, std::cos(twist)), mul(up, std::sin(twist)));
+    up              = norm(cross(norm(direction), right));
     const V3 normal = norm(cross(right, up));
     const V3 center = add(c, mul(normal, size * 0.04f));
-    const float halfW = size * randomRange(rng, 0.38f, 0.52f);
-    const float halfH = size * randomRange(rng, 0.72f, 1.05f);
+    const float halfW = size * randomRange(rng, 0.26f, 0.36f);
+    const float halfH = size * randomRange(rng, 0.88f, 1.18f);
 
     // One cell of the tex.tree_atlas / tex.foliage 3×3 ovate stamp grid.
     constexpr float kCardU0 = 0.52f;
@@ -90,7 +90,7 @@ void addLeafCard(MeshBuild& out, V3 c, V3 direction, float size, float twist, st
     constexpr int   kRows   = 3;
     const int       col     = int(randomRange(rng, 0.f, float(kCols))) % kCols;
     const int       row     = int(randomRange(rng, 0.f, float(kRows))) % kRows;
-    const float     inset   = 0.12f;
+    const float     inset   = 0.10f;
     const float     cellWU  = (kCardU1 - kCardU0) / float(kCols);
     const float     cellWV  = 1.f / float(kRows);
     const float     u0      = kCardU0 + (float(col) + inset) * cellWU;
@@ -98,9 +98,9 @@ void addLeafCard(MeshBuild& out, V3 c, V3 direction, float size, float twist, st
     const float     v0      = (float(row) + inset) * cellWV;
     const float     v1      = (float(row) + 1.f - inset) * cellWV;
 
-    // Lanceolate polygon — silhouette is geometric, not a masked quad.
-    constexpr float kOutlineX[8] = {0.f, -0.28f, -0.48f, -0.42f, 0.f, 0.42f, 0.48f, 0.28f};
-    constexpr float kOutlineY[8] = {-0.50f, -0.32f, -0.02f, 0.28f, 0.50f, 0.28f, -0.02f, -0.32f};
+    // Narrow lanceolate polygon — silhouette is geometric, not a masked quad.
+    constexpr float kOutlineX[8] = {0.f, -0.16f, -0.34f, -0.20f, 0.f, 0.20f, 0.34f, 0.16f};
+    constexpr float kOutlineY[8] = {-0.50f, -0.30f, 0.00f, 0.36f, 0.58f, 0.36f, 0.00f, -0.30f};
     const uint32_t  base         = uint32_t(out.getVertexCount());
     for (int i = 0; i < 8; ++i) {
         const V3 p = add(center, add(mul(right, kOutlineX[i] * halfW), mul(up, kOutlineY[i] * halfH)));
