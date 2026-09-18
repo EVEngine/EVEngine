@@ -555,6 +555,7 @@ Result<void> bakeJunction(MeshBuild& mesh, const RoadNetwork& network, const Roa
         const float r0      = cornerR;
         const float r1      = std::max(0.2f, cornerR - curbW);
         const float r2      = std::max(0.15f, cornerR - curbW - walkW);
+        const float hw      = ah + curbW + walkW;
         for (int sx : {-1, 1}) {
             for (int sz : {-1, 1}) {
                 const float sxf = static_cast<float>(sx);
@@ -592,6 +593,51 @@ Result<void> bakeJunction(MeshBuild& mesh, const RoadNetwork& network, const Roa
                     appendOrientedQuad(mesh, V3{c0.x, y, c0.z}, V3{c1.x, y, c1.z}, V3{c1.x, walkY, c1.z},
                                        V3{c0.x, walkY, c0.z}, inToCorner, 0.f, 1.f, 0.f, 1.f,
                                        RoadMaterial::Sidewalk);
+                }
+
+                // Tip pads: arms trim at jr-0.2 leave a square sidewalk/curb stub. Cover
+                // that stub and close the open tip face so the turn has no sharp corner
+                // and the outer gray edge does not show through.
+                {
+                    const float ax    = node.x + sxf * jr;
+                    const float axArm = ax + sxf * 0.35f;  // into the arm past trim
+                    const float az0   = node.z + szf * ah;
+                    const float az1   = node.z + szf * (ah + curbW);
+                    const float az2   = node.z + szf * hw;
+                    const V3    nArmX{sxf, 0.f, 0.f};
+
+                    appendOrientedQuad(mesh, V3{ax, curbTop, az0}, V3{axArm, curbTop, az0}, V3{axArm, curbTop, az1},
+                                       V3{ax, curbTop, az1}, upN, 0.f, 1.f, 0.f, 1.f, RoadMaterial::Curb);
+                    appendOrientedQuad(mesh, V3{ax, walkY, az1}, V3{axArm, walkY, az1}, V3{axArm, walkY, az2},
+                                       V3{ax, walkY, az2}, upN, 0.f, 1.f, 0.f, 1.f, RoadMaterial::Sidewalk);
+                    // Outer vertical on the X-arm tip pad (faces property / ±Z).
+                    appendOrientedQuad(mesh, V3{ax, y, az2}, V3{axArm, y, az2}, V3{axArm, walkY, az2},
+                                       V3{ax, walkY, az2}, V3{0.f, 0.f, szf}, 0.f, 1.f, 0.f, 1.f,
+                                       RoadMaterial::Sidewalk);
+                    // Hub-facing tip close (covers open loft end).
+                    appendOrientedQuad(mesh, V3{ax, y, az0}, V3{ax, y, az2}, V3{ax, walkY, az2}, V3{ax, walkY, az1},
+                                       nArmX * -1.f, 0.f, 1.f, 0.f, 1.f, RoadMaterial::Sidewalk);
+                    appendOrientedQuad(mesh, V3{ax, y, az0}, V3{ax, y, az1}, V3{ax, curbTop, az1},
+                                       V3{ax, curbTop, az0}, nArmX * -1.f, 0.f, 1.f, 0.f, 1.f, RoadMaterial::Curb);
+
+                    const float az    = node.z + szf * jr;
+                    const float azArm = az + szf * 0.35f;
+                    const float ax0   = node.x + sxf * ah;
+                    const float ax1   = node.x + sxf * (ah + curbW);
+                    const float ax2   = node.x + sxf * hw;
+                    const V3    nArmZ{0.f, 0.f, szf};
+
+                    appendOrientedQuad(mesh, V3{ax0, curbTop, az}, V3{ax1, curbTop, az}, V3{ax1, curbTop, azArm},
+                                       V3{ax0, curbTop, azArm}, upN, 0.f, 1.f, 0.f, 1.f, RoadMaterial::Curb);
+                    appendOrientedQuad(mesh, V3{ax1, walkY, az}, V3{ax2, walkY, az}, V3{ax2, walkY, azArm},
+                                       V3{ax1, walkY, azArm}, upN, 0.f, 1.f, 0.f, 1.f, RoadMaterial::Sidewalk);
+                    appendOrientedQuad(mesh, V3{ax2, y, az}, V3{ax2, y, azArm}, V3{ax2, walkY, azArm},
+                                       V3{ax2, walkY, az}, V3{sxf, 0.f, 0.f}, 0.f, 1.f, 0.f, 1.f,
+                                       RoadMaterial::Sidewalk);
+                    appendOrientedQuad(mesh, V3{ax0, y, az}, V3{ax2, y, az}, V3{ax2, walkY, az}, V3{ax1, walkY, az},
+                                       nArmZ * -1.f, 0.f, 1.f, 0.f, 1.f, RoadMaterial::Sidewalk);
+                    appendOrientedQuad(mesh, V3{ax0, y, az}, V3{ax1, y, az}, V3{ax1, curbTop, az},
+                                       V3{ax0, curbTop, az}, nArmZ * -1.f, 0.f, 1.f, 0.f, 1.f, RoadMaterial::Curb);
                 }
             }
         }
