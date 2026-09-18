@@ -63,7 +63,7 @@ std::set<std::int64_t> referencedMeshIds(const UnityProjectImportRequest& reques
             try {
                 std::size_t parsed = 0;
                 const auto id = std::stoll((*match)[1].str(), &parsed);
-                if (parsed == (*match)[1].length() && id != 0) result.emplace(id);
+                if (parsed == static_cast<std::size_t>((*match)[1].length()) && id != 0) result.emplace(id);
             } catch (...) {
             }
         }

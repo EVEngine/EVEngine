@@ -600,8 +600,9 @@ Result<Value> volumeChannel(std::string_view body, std::string_view name) {
     const std::regex legacyField("(?:^|\\n)  " + std::string(name) + R"(: *(-?[0-9]+)\s*(?:\r?\n|$))");
     if (std::regex_search(body.data(), body.data() + body.size(), legacy, legacyField)) {
         try {
-            const auto resolution = std::stoll(legacy[1].str());
-            return Result<Value>::success(Value::array({10, resolution, resolution}));
+            const auto resolution = static_cast<std::int64_t>(std::stoll(legacy[1].str()));
+            return Result<Value>::success(
+                Value::array({Value(std::int64_t{10}), Value(resolution), Value(resolution)}));
         } catch (...) {
             return detail::failure<Value>(DiagnosticCode::ParseError, "TVE legacy volume resolution is invalid",
                                           std::string(name));

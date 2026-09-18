@@ -1,6 +1,7 @@
 #include "asset/import/VegetationPreset.h"
 
-#include <charconv>
+#include <cerrno>
+#include <cstdlib>
 #include <cmath>
 
 namespace eve::asset_import {
@@ -58,10 +59,10 @@ Result<bool> predicate(std::string_view name, const std::vector<std::string>& ar
     if (name == "MATERIAL_FLOAT_EQUALS") {
         if (arguments.size() != 2)
             return fail<bool>(DiagnosticCode::ParseError, "float predicate requires property and value");
-        double     value  = 0;
-        const auto parsed = std::from_chars(arguments[1].data(), arguments[1].data() + arguments[1].size(), value);
-        if (parsed.ec != std::errc{} || parsed.ptr != arguments[1].data() + arguments[1].size() ||
-            !std::isfinite(value))
+        char*       end = nullptr;
+        errno           = 0;
+        const double value = std::strtod(arguments[1].c_str(), &end);
+        if (errno != 0 || end != arguments[1].c_str() + arguments[1].size() || !std::isfinite(value))
             return fail<bool>(DiagnosticCode::ParseError, "float predicate value is invalid");
         const auto found = context.materialFloats.find(arguments[0]);
         return Result<bool>::success(found != context.materialFloats.end() && found->second == value);

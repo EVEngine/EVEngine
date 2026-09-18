@@ -1,7 +1,8 @@
 #include "asset/import/VegetationPreset.h"
 
-#include <charconv>
+#include <cerrno>
 #include <cmath>
+#include <cstdlib>
 
 namespace eve::asset_import {
 namespace {
@@ -12,9 +13,11 @@ Result<T> failure(std::string message, const VegetationPresetCommand& command) {
 }
 
 Result<double> number(std::string_view text, const VegetationPresetCommand& command) {
-    double     value  = 0;
-    const auto parsed = std::from_chars(text.data(), text.data() + text.size(), value);
-    if (parsed.ec != std::errc{} || parsed.ptr != text.data() + text.size() || !std::isfinite(value))
+    const std::string token(text);
+    char*             end = nullptr;
+    errno                 = 0;
+    const double value    = std::strtod(token.c_str(), &end);
+    if (errno != 0 || end != token.c_str() + token.size() || !std::isfinite(value))
         return failure<double>("preset numeric argument is invalid", command);
     return Result<double>::success(value);
 }
