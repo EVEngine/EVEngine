@@ -100,7 +100,7 @@ Result<std::unique_ptr<VegetationAsset>> VegetationAsset::load(const asset::Evpa
                                                                const asset::EvpackCapabilities&   capabilities,
                                                                const asset::CanonicalMeshLimits&  limits) {
     using Output = std::unique_ptr<VegetationAsset>;
-    auto payload = reader.read(ref, "eve.mesh/2", capabilities, limits.maximumDecodedBytes);
+    auto payload = reader.read(ref, "eve.mesh/3", capabilities, limits.maximumDecodedBytes);
     if (!payload) return Result<Output>::failure(payload.status());
     const asset::RuntimeAssetChunk* bulk = nullptr;
     for (const auto& chunk : payload.value().chunks) {

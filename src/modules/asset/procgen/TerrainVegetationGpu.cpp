@@ -69,7 +69,7 @@ Result<TerrainVegetationGpuPlan> buildTerrainVegetationGpuPlan(const TerrainVege
                 const auto& detail = *metadata->second;
                 const float span = detail.maxHeight - detail.minHeight;
                 const float healthy = span > 0.f ? std::clamp((source.scale[1] - detail.minHeight) / span, 0.f, 1.f) : 1.f;
-                for (std::size_t component = 0; component < 4; ++component)
+                for (glm::length_t component = 0; component < 4; ++component)
                     instanceColor[component] =
                         detail.dryColor[component] + (detail.healthyColor[component] - detail.dryColor[component]) * healthy;
             }

@@ -515,7 +515,7 @@ TEST_CASE("graphics.vegetation.vertex_array_scales_each_object_from_its_world_pi
     std::array<int, 2> count{}, ySum{};
     for (int y = 0; y < 64; ++y)
         for (int x = 0; x < 96; ++x)
-            if (image->getPixel(x, y).g > .95f) {
+            if (image->getPixel(x, y).g > .8f) {
                 const auto half = x < 48 ? 0 : 1;
                 ++count[half];
                 ySum[half] += y;

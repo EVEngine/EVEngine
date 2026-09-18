@@ -5,6 +5,7 @@
 #include "asset/EvpackResourceReader.h"
 #include "asset/RuntimeDefinition.h"
 #include "asset/import/AssetImporter.h"
+#include "asset/import/ImportCommon.h"
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 using namespace eve;
@@ -70,7 +71,7 @@ TEST_CASE("asset.import.gltfMissingTextureFailsAtomically") {
 }
 
 #ifdef EVE_TEST_MESH_UPLOAD
-TEST_CASE("asset.import.materialV8ColorParametersSurviveV9CookWithImageDependency") {
+TEST_CASE("asset.import.materialV14ColorParametersSurviveV15CookWithImageDependency") {
     auto imported = prepareGltfImport(materialTriangle());
     REQUIRE(imported.ok());
     auto bytes = asset::buildEvaArchive(imported.value().manifest, imported.value().entries);
@@ -78,29 +79,32 @@ TEST_CASE("asset.import.materialV8ColorParametersSurviveV9CookWithImageDependenc
     auto archive = asset::parseEvaArchive(bytes.value());
     REQUIRE(archive.ok());
     const auto ref = imported.value().manifest.entrypoints.at("material:0");
-    // Stage an authored canonical v8 definition. Cooking rehashes the owning candidate.
+    // Stage an authored N-1 definition. Cooking migrates and rehashes the owning candidate.
     for (auto& material : archive.value().manifest.assets) {
         if (material.asset != ref) continue;
-        material.schemaVersion = SchemaVersion(8);
+        material.schemaVersion = SchemaVersion(14);
         for (auto& entry : archive.value().entries) {
             if (entry.path != material.definition) continue;
             auto decoded = Value::fromJson(std::string(entry.bytes.begin(), entry.bytes.end()));
             REQUIRE(decoded.ok());
             auto& root                    = *decoded.value().getIf<Value::Object>();
-            root["schemaVersion"]         = 8;
+            root["schemaVersion"]         = 14;
+            root.erase("alphaToCoverage");
             root["albedoTextureStrength"] = .25;
             root["colorMask"] =
                 Value::Object{{"secondary", Value::Array{2.0, .1, .3}}, {"minimum", .2}, {"maximum", .8}};
             auto json = decoded.value().toJson();
             REQUIRE(json.ok());
             entry.bytes.assign(json.value().begin(), json.value().end());
+            material.contentHash = asset_import::detail::sha256(entry.bytes);
         }
     }
     for (auto& dependency : archive.value().manifest.dependencies)
-        if (dependency.to == ref) dependency.expectedType = "eve.material/8";
+        if (dependency.to == ref) dependency.expectedType = "eve.material/14";
     auto profile = asset::assetCookProfileForTarget("windows-x86_64-vulkan");
     REQUIRE(profile.ok());
     auto cooked = asset::cookEvaToEvpack(archive.value(), profile.value());
+    if (!cooked) std::cerr << cooked.error()->message() << '\n';
     REQUIRE(cooked.ok());
     auto pack = asset::parseEvpack(cooked.value().bytes);
     REQUIRE(pack.ok());

@@ -353,7 +353,7 @@ Result<void> bindPackedTerrainMaterial(graphics::Shader& shader, const PackedTer
     if (!gpu.albedo || !gpu.normal || !gpu.mask || !gpu.controls || !gpu.parameters || gpu.layerCount == 0 ||
         gpu.layerCount > 16)
         return failure<void>(DiagnosticCode::InvalidArgument, "packed terrain GPU set is incomplete");
-    for (const auto [slot, texture] : {std::pair<std::size_t, graphics::Texture*>{0, gpu.albedo},
+    for (const auto& [slot, texture] : {std::pair<std::size_t, graphics::Texture*>{0, gpu.albedo},
                                        {1, gpu.normal},
                                        {2, gpu.mask},
                                        {3, gpu.parameters}}) {
@@ -369,7 +369,7 @@ Result<void> bindTerrainMaterialGroup(graphics::Shader& shader, const TerrainMat
     if (groupIndex >= gpu.groups.size() || groupIndex * 4 >= material.layers.size() || !gpu.holes)
         return failure<void>(DiagnosticCode::InvalidArgument, "terrain atlas group index is invalid");
     const auto& group = gpu.groups[groupIndex];
-    for (const auto [slot, texture] : {std::pair<std::size_t, graphics::Texture*>{0, group.albedo},
+    for (const auto& [slot, texture] : {std::pair<std::size_t, graphics::Texture*>{0, group.albedo},
                                        {1, group.normal},
                                        {2, group.mask},
                                        {3, gpu.holes}}) {
