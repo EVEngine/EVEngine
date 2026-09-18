@@ -1,4 +1,4 @@
-﻿// Capability-backed MCP domain tools.
+// Capability-backed MCP domain tools.
 //
 // These families exist so a module that already owns a query capability is not
 // invisible to an agent. Two contracts matter and are pinned here: the tool
@@ -10,8 +10,11 @@
 
 #include "common/Capability.h"
 #include "common/DecalQuery.h"
+#include "common/Profile.h"
+#include "common/ProfilerQuery.h"
 #include "common/Module.h"
 #include "decal/Decal.h"
+#include "profiler/Profiler.h"
 #include "devtools/McpDomainTools.hpp"
 #include "devtools/McpServer.hpp"
 
@@ -132,6 +135,32 @@ TEST_CASE("devtools.mcp.decalToolsReportMissingProvider") {
     CHECK(status.find("IDecalQuery") != std::string::npos);
     CHECK(callToolOnce("eve_decal_project", R"({"x":0,"y":0,"z":0})").find("IDecalQuery") != std::string::npos);
     CHECK(callToolOnce("eve_decal_clear", "{}").find("IDecalQuery") != std::string::npos);
+}
+
+TEST_CASE("devtools.mcp.profilerToolsReadTheLiveCore") {
+    auto* const profilerModule = eve::ModuleManager::requireInstance<eve::profiler::Profiler>("Profiler");
+    REQUIRE(profilerModule != nullptr);
+    auto* provider = eve::cap::query<eve::IProfilerQuery>();
+    REQUIRE(provider != nullptr);
+
+    // Aggregate one synthetic frame the way the frame loop does, so the tool has
+    // real zone data to report.
+    profilerModule->beginFrame();
+    {
+        eve::prof::Profiler::zoneBegin("mcp.test.zone", "mcp.test");
+        eve::prof::Profiler::zoneEnd();
+    }
+    profilerModule->endFrame();
+
+    const std::string frame = callToolOnce("eve_profiler_frame", "{}");
+    REQUIRE(!frame.empty());
+    CHECK(frame.find("\"schema\":\"eve.profiler.frame\"") != std::string::npos);
+    CHECK(frame.find("\"hasFrame\":true") != std::string::npos);
+    CHECK(frame.find("mcp.test.zone") != std::string::npos);
+    CHECK(frame.find("\"gpuTimingAvailable\":") != std::string::npos);
+
+    // The text report is the same hotspot view the profiler panel shows.
+    CHECK(callToolOnce("eve_profiler_report", "{}").find("mcp.test.zone") != std::string::npos);
 }
 
 TEST_CASE("devtools.mcp.spatialQueryToolsValidateAndReportMissingProviders") {
