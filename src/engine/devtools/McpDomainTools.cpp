@@ -8,9 +8,11 @@
 #include "common/DecalQuery.h"
 #include "common/ProcgenWorldQuery.h"
 #include "common/ProfilerQuery.h"
+#include "common/SensingQuery.h"
 
 #include <Poco/Dynamic/Var.h>
 #include <Poco/JSON/Object.h>
+#include <Poco/JSON/Parser.h>
 
 #include <algorithm>
 #include <array>
@@ -226,12 +228,54 @@ std::string profilerReport() {
     return textContentResult(report.empty() ? "(no completed frame yet)\n" : report);
 }
 
+// ========================== Sensing =========================================
+
+std::string sensingLastQuery(Poco::JSON::Object::Ptr args) {
+    auto* sensing = eve::cap::query<eve::ISensingQuery>();
+    if (!sensing) return unavailablePayload(eve::ISensingQuery::capabilityName);
+
+    const bool hasIndex = args && args->has("world");
+    const int  index    = getArgInt(args, "world", -1);
+
+    Poco::JSON::Object::Ptr out = Poco::JSON::Object::Ptr(new Poco::JSON::Object());
+    out->set("ok", true);
+    out->set("worldCount", sensing->worldCount());
+
+    Poco::JSON::Array::Ptr worlds = Poco::JSON::Array::Ptr(new Poco::JSON::Array());
+    bool                   found  = false;
+    for (const auto& entry : sensing->lastQueries()) {
+        if (hasIndex && entry.index != index) continue;
+        found = true;
+        Poco::JSON::Object::Ptr item = Poco::JSON::Object::Ptr(new Poco::JSON::Object());
+        item->set("index", entry.index);
+        // The world owns this document's schema (eve.sensing.lastQuery v1); nest
+        // it as an object so the agent does not have to parse JSON-in-JSON.
+        try {
+            Poco::JSON::Parser      parser;
+            Poco::Dynamic::Var      parsed = parser.parse(entry.lastQueryJson);
+            item->set("query", parsed);
+        } catch (...) {
+            item->set("query", entry.lastQueryJson);
+        }
+        worlds->add(item);
+    }
+    if (hasIndex && !found) {
+        Poco::JSON::Object::Ptr missing = Poco::JSON::Object::Ptr(new Poco::JSON::Object());
+        missing->set("ok", false);
+        missing->set("error", "no live sensing world with index " + std::to_string(index));
+        return textPayload(missing, true);
+    }
+    out->set("worlds", worlds);
+    return textPayload(out);
+}
+
 }  // namespace
 
 bool isMcpDomainTool(std::string_view name) {
     return name == "eve_decal_status" || name == "eve_decal_project" || name == "eve_decal_remove" ||
            name == "eve_decal_clear" || name == "eve_decal_set_limit" || name == "eve_physics_sphere_cast" ||
-           name == "eve_world_project_down" || name == "eve_profiler_frame" || name == "eve_profiler_report";
+           name == "eve_world_project_down" || name == "eve_profiler_frame" || name == "eve_profiler_report" ||
+           name == "eve_sensing_last_query";
 }
 
 std::string callMcpDomainTool(std::string_view name, Poco::JSON::Object::Ptr args) {
@@ -244,11 +288,12 @@ std::string callMcpDomainTool(std::string_view name, Poco::JSON::Object::Ptr arg
     if (name == "eve_world_project_down") return worldProjectDown(args);
     if (name == "eve_profiler_frame") return profilerFrame();
     if (name == "eve_profiler_report") return profilerReport();
+    if (name == "eve_sensing_last_query") return sensingLastQuery(args);
     return errorPayload("unknown domain tool '" + std::string(name) + "'");
 }
 
 std::string_view mcpDomainToolSchemas() {
-    return R"json({"name":"eve_decal_status","description":"Live decal count. Decals are runtime surface projections (scorch marks, blood, footprints) owned by the decal module.","inputSchema":{"type":"object","properties":{}}},{"name":"eve_decal_project","description":"Project a decal at a world position facing a normal. Omitted size/depth/lifetime/fade fields use the decal module defaults; no albedo texture is bound through this path, so decals take the module's default look.","inputSchema":{"type":"object","properties":{"x":{"type":"number"},"y":{"type":"number"},"z":{"type":"number"},"nx":{"type":"number"},"ny":{"type":"number"},"nz":{"type":"number"},"kind":{"type":"string","description":"decal kind; a kind with a configured limit evicts its oldest instance first"},"size":{"type":"number"},"depth":{"type":"number"},"randomYaw":{"type":"boolean"},"seed":{"type":"integer","description":"deterministic yaw seed"},"fadeIn":{"type":"number"},"lifetime":{"type":"number"},"fadeOut":{"type":"number"}},"required":["x","y","z"]}},{"name":"eve_decal_remove","description":"Remove one decal by id and report the remaining count.","inputSchema":{"type":"object","properties":{"id":{"type":"integer","minimum":1}},"required":["id"]}},{"name":"eve_decal_clear","description":"Remove every decal and report how many were dropped.","inputSchema":{"type":"object","properties":{}}},{"name":"eve_decal_set_limit","description":"Set the per-kind instance limit used for eviction; 0 disables eviction for that kind.","inputSchema":{"type":"object","properties":{"kind":{"type":"string"},"limit":{"type":"integer","minimum":0}},"required":["kind","limit"]}},{"name":"eve_physics_sphere_cast","description":"Sweep a sphere (radius 0 = ray) through every registered 3D physics world and return the closest hit: bodyId, fraction along the segment, world point and surface normal. This is the 3D counterpart of eve_physics_raycast, which only queries 2D worlds.","inputSchema":{"type":"object","properties":{"from":{"type":"array","items":{"type":"number"},"description":"[x,y,z] segment start"},"to":{"type":"array","items":{"type":"number"},"description":"[x,y,z] segment end"},"radius":{"type":"number","minimum":0,"description":"sphere radius (default 0 = ray)"},"maskBits":{"type":"integer","description":"collision category mask; default matches every category, 0 matches none"},"ignoredBodyId":{"type":"integer","description":"body to skip, e.g. the camera rig"}},"required":["from","to"]}},{"name":"eve_world_project_down","description":"Project a vertical ray through the procedural/3D world surface at (x,z) and return the closest hit height and normal. Use it to place objects on terrain or to check ground level under a moving entity.","inputSchema":{"type":"object","properties":{"x":{"type":"number"},"z":{"type":"number"},"maxY":{"type":"number","description":"projection start height (default 1000)"},"minY":{"type":"number","description":"projection end height (default -1000)"},"maskBits":{"type":"integer","description":"collision category mask; default matches every category"}},"required":["x","z"]}},{"name":"eve_profiler_frame","description":"Last completed frame's profile as JSON (schema eve.profiler.frame): enabled/hasFrame, cpuFrameMs (sum of top-level zone self times), gpuMs when a GPU timer is available, and the per-module/per-zone self and total milliseconds sorted by self time. Use it for unattended performance work instead of guessing from wall-clock timings.","inputSchema":{"type":"object","properties":{}}},{"name":"eve_profiler_report","description":"Human-readable per-module/per-zone hotspot report of the last completed frame (the same text the profiler panel shows).","inputSchema":{"type":"object","properties":{}}})json";
+    return R"json({"name":"eve_decal_status","description":"Live decal count. Decals are runtime surface projections (scorch marks, blood, footprints) owned by the decal module.","inputSchema":{"type":"object","properties":{}}},{"name":"eve_decal_project","description":"Project a decal at a world position facing a normal. Omitted size/depth/lifetime/fade fields use the decal module defaults; no albedo texture is bound through this path, so decals take the module's default look.","inputSchema":{"type":"object","properties":{"x":{"type":"number"},"y":{"type":"number"},"z":{"type":"number"},"nx":{"type":"number"},"ny":{"type":"number"},"nz":{"type":"number"},"kind":{"type":"string","description":"decal kind; a kind with a configured limit evicts its oldest instance first"},"size":{"type":"number"},"depth":{"type":"number"},"randomYaw":{"type":"boolean"},"seed":{"type":"integer","description":"deterministic yaw seed"},"fadeIn":{"type":"number"},"lifetime":{"type":"number"},"fadeOut":{"type":"number"}},"required":["x","y","z"]}},{"name":"eve_decal_remove","description":"Remove one decal by id and report the remaining count.","inputSchema":{"type":"object","properties":{"id":{"type":"integer","minimum":1}},"required":["id"]}},{"name":"eve_decal_clear","description":"Remove every decal and report how many were dropped.","inputSchema":{"type":"object","properties":{}}},{"name":"eve_decal_set_limit","description":"Set the per-kind instance limit used for eviction; 0 disables eviction for that kind.","inputSchema":{"type":"object","properties":{"kind":{"type":"string"},"limit":{"type":"integer","minimum":0}},"required":["kind","limit"]}},{"name":"eve_physics_sphere_cast","description":"Sweep a sphere (radius 0 = ray) through every registered 3D physics world and return the closest hit: bodyId, fraction along the segment, world point and surface normal. This is the 3D counterpart of eve_physics_raycast, which only queries 2D worlds.","inputSchema":{"type":"object","properties":{"from":{"type":"array","items":{"type":"number"},"description":"[x,y,z] segment start"},"to":{"type":"array","items":{"type":"number"},"description":"[x,y,z] segment end"},"radius":{"type":"number","minimum":0,"description":"sphere radius (default 0 = ray)"},"maskBits":{"type":"integer","description":"collision category mask; default matches every category, 0 matches none"},"ignoredBodyId":{"type":"integer","description":"body to skip, e.g. the camera rig"}},"required":["from","to"]}},{"name":"eve_world_project_down","description":"Project a vertical ray through the procedural/3D world surface at (x,z) and return the closest hit height and normal. Use it to place objects on terrain or to check ground level under a moving entity.","inputSchema":{"type":"object","properties":{"x":{"type":"number"},"z":{"type":"number"},"maxY":{"type":"number","description":"projection start height (default 1000)"},"minY":{"type":"number","description":"projection end height (default -1000)"},"maskBits":{"type":"integer","description":"collision category mask; default matches every category"}},"required":["x","z"]}},{"name":"eve_profiler_frame","description":"Last completed frame's profile as JSON (schema eve.profiler.frame): enabled/hasFrame, cpuFrameMs (sum of top-level zone self times), gpuMs when a GPU timer is available, and the per-module/per-zone self and total milliseconds sorted by self time. Use it for unattended performance work instead of guessing from wall-clock timings.","inputSchema":{"type":"object","properties":{}}},{"name":"eve_profiler_report","description":"Human-readable per-module/per-zone hotspot report of the last completed frame (the same text the profiler panel shows).","inputSchema":{"type":"object","properties":{}}},{"name":"eve_sensing_last_query","description":"Last completed sensing query of every live sensing world, with the world's own document (schema eve.sensing.lastQuery) nested as `query`: origin, shape kind, spatial scan counters, and the ranked candidates with their scores and score reasons. Answers why an NPC selected a particular target.","inputSchema":{"type":"object","properties":{"world":{"type":"integer","minimum":0,"description":"optional world index; omit to read every live world"}}}})json";
 }
 
 }  // namespace eve::dev

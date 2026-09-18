@@ -403,9 +403,40 @@ public:
         return !slot.object || slot.generation != ref.handle.generation();
     }
 
+    /**
+     * @brief Visit every live object with its slot index, in slot order.
+     *
+     * Exists for diagnostics and automation surfaces that must enumerate owned
+     * objects — a debug tool cannot know the handles a game script created. The
+     * callback receives a non-owning observation valid only for the duration of
+     * the call; it must not retain the reference or release objects.
+     * @param visit Callable taking `(std::uint32_t index, T& object)`.
+     * @ownership The registry keeps sole ownership; `visit` never receives one.
+     * @lifetime The observed object is valid only inside the call.
+     * @thread Owner thread only; the callback runs under no lock and must not
+     *         re-enter the registry.
+     */
+    template <class F>
+    void forEachLive(F&& visit) {
+        for (std::uint32_t index = 0; index < slots_.size(); ++index) {
+            Slot& slot = slots_[index];
+            if (!slot.object) continue;
+            visit(index, static_cast<T&>(*slot.object));
+        }
+    }
+
+    /** @brief Read-only overload: the callback receives `const T&`. */
+    template <class F>
+    void forEachLive(F&& visit) const {
+        for (std::uint32_t index = 0; index < slots_.size(); ++index) {
+            const Slot& slot = slots_[index];
+            if (!slot.object) continue;
+            visit(index, static_cast<const T&>(*slot.object));
+        }
+    }
+
     /** @brief Invalidates all slots and releases every unique-owned object. */
-    void clear() {
-        // Reserve before mutating live slots so free-list bookkeeping cannot
+    void clear() {        // Reserve before mutating live slots so free-list bookkeeping cannot
         // fail after ownership has already been released.
         freeSlots_.reserve(slots_.size());
         freeSlots_.clear();

@@ -1,4 +1,4 @@
-// Capability-backed MCP domain tools.
+﻿// Capability-backed MCP domain tools.
 //
 // These families exist so a module that already owns a query capability is not
 // invisible to an agent. Two contracts matter and are pinned here: the tool
@@ -12,9 +12,11 @@
 #include "common/DecalQuery.h"
 #include "common/Profile.h"
 #include "common/ProfilerQuery.h"
+#include "common/SensingQuery.h"
 #include "common/Module.h"
 #include "decal/Decal.h"
 #include "profiler/Profiler.h"
+#include "sensing/Sensing.h"
 #include "devtools/McpDomainTools.hpp"
 #include "devtools/McpServer.hpp"
 
@@ -180,4 +182,18 @@ TEST_CASE("devtools.mcp.spatialQueryToolsValidateAndReportMissingProviders") {
     // exists; routing is covered by devtools.mcp.everyDeclaredToolIsRouted.
     CHECK(eve::dev::isMcpDomainTool("eve_physics_sphere_cast"));
     CHECK(eve::dev::isMcpDomainTool("eve_world_project_down"));
+}
+
+TEST_CASE("devtools.mcp.sensingToolsReadLiveWorldQueries") {
+    auto* const sensingModule = eve::ModuleManager::requireInstance<eve::sensing::Sensing>("Sensing");
+    REQUIRE(sensingModule != nullptr);
+    auto* provider = eve::cap::query<eve::ISensingQuery>();
+    REQUIRE(provider != nullptr);
+    CHECK_EQ(provider->worldCount(), 0);
+    CHECK(provider->lastQueries().empty());
+
+    const std::string empty = callToolOnce("eve_sensing_last_query", "{}");
+    CHECK(empty.find("\"ok\":true") != std::string::npos);
+    CHECK(empty.find("\"worldCount\":0") != std::string::npos);
+    CHECK(callToolOnce("eve_sensing_last_query", R"({"world":3})").find("no live sensing world") != std::string::npos);
 }
