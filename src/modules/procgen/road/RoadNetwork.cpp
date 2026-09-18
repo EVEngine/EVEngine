@@ -304,7 +304,7 @@ Result<RoadNetwork> RoadNetwork::makeInterchange(float span, float bridgeHeight,
     const float jr          = asphaltHalf + cornerR;
 
     RoadStyle bridge     = bridgeStyle();
-    bridge.pierSpacing   = 9.0f;
+    bridge.pierSpacing   = 14.0f;
     bridge.sidewalkWidth = 1.0f;
     bridge.curbWidth     = 0.38f;
     bridge.curbHeight    = 0.50f;
@@ -317,11 +317,11 @@ Result<RoadNetwork> RoadNetwork::makeInterchange(float span, float bridgeHeight,
 
     // Elevated ring corners + hub (overpass).
     const float r = half * 0.58f;
-    auto nElev    = network.addNode(0.f, h, 0.f, 5.5f);
-    auto nNE      = network.addNode(r, h, -r, 3.5f);
-    auto nSE      = network.addNode(r, h, r, 3.5f);
-    auto nSW      = network.addNode(-r, h, r, 3.5f);
-    auto nNW      = network.addNode(-r, h, -r, 3.5f);
+    auto nElev    = network.addNode(0.f, h, 0.f, 4.0f);
+    auto nNE      = network.addNode(r, h, -r, 2.5f);
+    auto nSE      = network.addNode(r, h, r, 2.5f);
+    auto nSW      = network.addNode(-r, h, r, 2.5f);
+    auto nNW      = network.addNode(-r, h, -r, 2.5f);
     for (auto* res : {&nGround, &nN, &nS, &nW, &nE, &nElev, &nNE, &nSE, &nSW, &nNW}) {
         if (!res->ok()) return Result<RoadNetwork>::failure(res->status());
     }

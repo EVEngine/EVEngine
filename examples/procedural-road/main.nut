@@ -58,9 +58,9 @@ function roadCameraForScene(name) {
         roadCamera.setEye(0.0, 28.0, 18.0);
         roadCamera.setTarget(0.0, 0.3, 0.0);
     } else {
-        // interchange — elevated three-quarter overview
-        roadCamera.setEye(36.0, 28.0, 32.0);
-        roadCamera.setTarget(0.0, 3.0, 0.0);
+        // interchange — overview showing ground cross, ring, and ramps
+        roadCamera.setEye(42.0, 34.0, 18.0);
+        roadCamera.setTarget(0.0, 4.0, 0.0);
     }
 }
 
@@ -78,7 +78,7 @@ function roadBuildScene(name) {
     params.setInt("lanes", 2);
     local segs = 28;
     if (name == "curve" || name == "bridge") segs = 48;
-    if (name == "interchange") segs = 36;
+    if (name == "interchange") segs = 20;
     params.setInt("pathSegments", segs);
     params.setBool("piers", true);
     params.setBool("markings", true);
