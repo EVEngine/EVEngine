@@ -75,6 +75,7 @@ public:
     void allowMountingForPath(const std::string &path) override;
 
     bool watch(std::string path) override;
+    bool watchRealDirectory(std::string realDir, std::string reportPath) override;
     bool unwatch(std::string path) override;
     void unwatchAll() override;
     int getWatchCount() const override;

@@ -333,8 +333,18 @@ public:
      * @brief Watch a virtual or absolute OS path (file or directory).
      * File watches monitor the parent directory and filter by basename.
      * Returns false if the path cannot be resolved to a real directory.
+     * Relative paths may include `..` and are resolved against the working directory.
      **/
     virtual bool watch(std::string path) = 0;
+
+    /**
+     * @brief Watch a real OS directory and report events under a virtual-relative path.
+     * @param realDir Existing OS directory (absolute or cwd-relative).
+     * @param reportPath Path prefix returned by pollWatch (game/VFS relative, posix).
+     * @return False when realDir is missing or is not a directory.
+     * @cost One OS directory watcher for this directory only (not recursive).
+     **/
+    virtual bool watchRealDirectory(std::string realDir, std::string reportPath) = 0;
 
     /** @brief Stop watching a path previously passed to watch(). */
     virtual bool unwatch(std::string path) = 0;

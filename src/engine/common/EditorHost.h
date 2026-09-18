@@ -24,6 +24,8 @@ public:
     virtual std::string openWindow(const std::string& title, int width, int height) = 0;
     virtual std::string closeWindow() = 0;
     virtual std::string windowState() const = 0;
+    /** @brief True while the host OS window is open. */
+    virtual bool windowOpen() const = 0;
     virtual std::string applyEditor(const std::string& json) = 0;
     virtual std::string removeEditor(const std::string& id) = 0;
     virtual std::string listEditors() const = 0;

@@ -31,6 +31,8 @@ config <- {
     height = 540
     title = "EveScript Tutorial"
     hotReload = true
+    // 默认 ["."]。apps/<editor> 要监视父级 workflow 时写成 [".."]。
+    // hotReloadWatch = ["."]
 
     modules = ["gfx", "keyboard", "timer"]
     optionalModules = ["audio"]
