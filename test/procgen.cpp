@@ -3196,12 +3196,12 @@ TEST_CASE("procgen.mesh.bush.ovateLeafCards") {
     std::string err;
     MeshBuild out;
     REQUIRE(MeshRecipeRegistry::instance().generate("mesh.bush", p, out, err));
-    // Transparent leaf cards are double-sided quads sampling one of six panels.
-    CHECK(out.getVertexCount() >= 4);
-    CHECK(out.getVertexCount() % 4 == 0);
-    for (int leaf = 0; leaf < out.getVertexCount(); leaf += 4) {
+    // Ovate leaf cards are double-sided 6-vertex petals sampling one of six panels.
+    CHECK(out.getVertexCount() >= 6);
+    CHECK(out.getVertexCount() % 6 == 0);
+    for (int leaf = 0; leaf < out.getVertexCount(); leaf += 6) {
         float uMin = 1.f, uMax = 0.f, vMin = 1.f, vMax = 0.f;
-        for (int i = 0; i < 4; ++i) {
+        for (int i = 0; i < 6; ++i) {
             uMin = std::min(uMin, out.getUvU(leaf + i));
             uMax = std::max(uMax, out.getUvU(leaf + i));
             vMin = std::min(vMin, out.getUvV(leaf + i));

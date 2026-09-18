@@ -120,8 +120,9 @@ void addTwig(MeshBuild &out, V3 a, V3 b, float r0, float r1, int sides, float uM
     }
 }
 
-// Leaf card: transparent quad sampling one of six atlas panels. Each panel holds
-// 8–16 solid ovate leaves placed with blue-noise spacing + random rotation.
+// Ovate leaf card: geometric silhouette (not a rectangle) sampling one of six
+// atlas panels. At map distance alpha cutout collapses under minification; the
+// mesh outline must still read as a leaf, never a camera-facing green plate.
 void addLeafCard(MeshBuild &out, std::mt19937 &rng, V3 c, V3 direction, float size) {
     V3 right, up;
     basisFor(norm(direction), right, up);
@@ -129,15 +130,10 @@ void addLeafCard(MeshBuild &out, std::mt19937 &rng, V3 c, V3 direction, float si
     right             = add(mul(right, std::cos(twist)), mul(up, std::sin(twist)));
     up                = norm(cross(norm(direction), right));
     const V3 normal   = norm(cross(right, up));
-    // Quad card 25% larger than the base leafSize.
     const float card  = size * 1.25f;
     const float halfW = card * randomRange(rng, 0.55f, 0.72f);
     const float halfH = card * randomRange(rng, 0.55f, 0.72f);
-    const V3    r     = mul(right, halfW);
-    const V3    h     = mul(up, halfH);
     const V3    center = add(c, mul(normal, size * 0.04f));
-    const V3    points[4] = {sub(sub(center, r), h), add(sub(center, h), r), add(add(center, r), h),
-                             add(sub(center, r), h)};
 
     // Randomly assign one of the six pre-baked leaf-card panels.
     const int   panel  = int(randomRange(rng, 0.f, float(kLeafCardPanels))) % kLeafCardPanels;
@@ -152,21 +148,23 @@ void addLeafCard(MeshBuild &out, std::mt19937 &rng, V3 c, V3 direction, float si
     const float v1     = (float(row) + 1.f - inset) * cellWV;
     const bool  flipU  = random01(rng) > 0.5f;
     const bool  flipV  = random01(rng) > 0.5f;
-    const float uv[4][2] = {
-        {flipU ? u1 : u0, flipV ? v1 : v0},
-        {flipU ? u0 : u1, flipV ? v1 : v0},
-        {flipU ? u0 : u1, flipV ? v0 : v1},
-        {flipU ? u1 : u0, flipV ? v0 : v1},
-    };
-    const uint32_t base = uint32_t(out.getVertexCount());
-    for (int i = 0; i < 4; ++i) {
-        out.addVertex(points[i].x, points[i].y, points[i].z, normal.x, normal.y, normal.z, uv[i][0],
-                      uv[i][1]);
+
+    // Rounded body + soft tip — same outline as FoliageCluster petals.
+    constexpr float kOutlineX[6] = {0.f, -0.40f, -0.46f, 0.f, 0.46f, 0.40f};
+    constexpr float kOutlineY[6] = {-0.48f, -0.18f, 0.16f, 0.50f, 0.16f, -0.18f};
+    const uint32_t  base         = uint32_t(out.getVertexCount());
+    for (int i = 0; i < 6; ++i) {
+        const V3 p = add(center, add(mul(right, kOutlineX[i] * halfW * 2.f), mul(up, kOutlineY[i] * halfH * 2.f)));
+        const float ou = 0.5f + kOutlineX[i];
+        const float ov = 0.5f + kOutlineY[i];
+        const float u  = flipU ? (u1 + (u0 - u1) * ou) : (u0 + (u1 - u0) * ou);
+        const float v  = flipV ? (v1 + (v0 - v1) * ov) : (v0 + (v1 - v0) * ov);
+        out.addVertex(p.x, p.y, p.z, normal.x, normal.y, normal.z, u, v);
     }
-    out.addTriangle(base, base + 1, base + 2);
-    out.addTriangle(base, base + 2, base + 3);
-    out.addTriangle(base + 2, base + 1, base);
-    out.addTriangle(base + 3, base + 2, base);
+    for (int i = 1; i < 5; ++i) {
+        out.addTriangle(base, base + uint32_t(i), base + uint32_t(i + 1));
+        out.addTriangle(base, base + uint32_t(i + 1), base + uint32_t(i));
+    }
 }
 
 }  // namespace

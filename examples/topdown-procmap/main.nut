@@ -71,7 +71,11 @@ function makeSurface(recipe, seedOffset, size) {
     local albedo = null;
     local normal = null;
     local tr = procgen.generateTexture(recipe, p, gfx);
-    if (tr.ok) albedo = retain(tr.value);
+    if (tr.ok) {
+        albedo = retain(tr.value);
+        // Nearest + no mips keeps cutout alpha from averaging into solid plates.
+        gfx.setTextureSampler(albedo, "nearest", "none", 1.0, 0.0);
+    }
     local nr = procgen.generateNormalImage(recipe, p);
     if (nr.ok) normal = retain(gfx.newTexture(nr.value, true, true));
     return { albedo = albedo, normal = normal };
@@ -101,23 +105,16 @@ function makePrototype(kind, seedOffset) {
     local mesh = null;
     local material = null;
     if (kind == "tree") {
-        // Spherical leaf clusters (same 6-panel atlas) — avoids a wall of
-        // large camera-facing cards that read as green plates at map range.
+        // Leaf cards with geometric ovate outlines + shared 6-panel atlas.
         p.setString("style", "realistic");
         p.setString("branchAlgorithm", "weberPenn");
-        p.setString("leafMode", "clusters");
-        p.setFloat("leafDensity", 0.90);
-        p.setFloat("leafSize", 0.28);
+        p.setString("leafMode", "cards");
+        p.setFloat("leafDensity", 0.92);
+        p.setFloat("leafSize", 0.34);
         p.setFloat("height", 5.1);
         p.setFloat("crownRadius", 1.95);
         p.setInt("branchLevels", 3);
         p.setInt("branchCount", 9);
-        p.setFloat("clusterSize", 0.24);
-        p.setFloat("clusterSeparation", 0.38);
-        p.setFloat("clusterLeafScale", 0.72);
-        p.setInt("clusterPlanes", 12);
-        p.setInt("clusterLeaves", 28);
-        p.setInt("clusterLimit", 100);
         p.setFloat("lowerLeafCoverage", 0.85);
         p.setFloat("upperLeafCoverage", 0.35);
         local meshResult = procgen.generateMesh("mesh.tree", p, gfx);

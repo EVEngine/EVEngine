@@ -82,10 +82,7 @@ void addLeafCard(MeshBuild& out, V3 c, V3 direction, float size, float twist, st
     const float card  = size * 1.25f;
     const float halfW = card * randomRange(rng, 0.55f, 0.72f);
     const float halfH = card * randomRange(rng, 0.55f, 0.72f);
-    const V3 r = mul(right, halfW), h = mul(up, halfH);
     const V3 center = add(c, mul(normal, size * 0.04f));
-    const V3 points[4] = {sub(sub(center, r), h), add(sub(center, h), r), add(add(center, r), h),
-                          add(sub(center, r), h)};
 
     // One of six leaf-card panels (8–16 blue-noise ovate stamps each).
     constexpr float kCardU0 = 0.52f;
@@ -104,19 +101,24 @@ void addLeafCard(MeshBuild& out, V3 c, V3 direction, float size, float twist, st
     const float     v1      = (float(row) + 1.f - inset) * cellWV;
     const bool      flipU   = randomRange(rng, 0.f, 1.f) > 0.5f;
     const bool      flipV   = randomRange(rng, 0.f, 1.f) > 0.5f;
-    const float     uv[4][2] = {
-        {flipU ? u1 : u0, flipV ? v1 : v0},
-        {flipU ? u0 : u1, flipV ? v1 : v0},
-        {flipU ? u0 : u1, flipV ? v0 : v1},
-        {flipU ? u1 : u0, flipV ? v0 : v1},
-    };
-    const uint32_t base = uint32_t(out.getVertexCount());
-    for (int i = 0; i < 4; ++i)
-        out.addVertex(points[i].x, points[i].y, points[i].z, normal.x, normal.y, normal.z, uv[i][0], uv[i][1]);
-    out.addTriangle(base, base + 1, base + 2);
-    out.addTriangle(base, base + 2, base + 3);
-    out.addTriangle(base + 2, base + 1, base);
-    out.addTriangle(base + 3, base + 2, base);
+
+    // Geometric ovate outline so distant cards stay leaf-shaped when alpha
+    // cutout collapses under texture minification (no camera-facing green plates).
+    constexpr float kOutlineX[6] = {0.f, -0.40f, -0.46f, 0.f, 0.46f, 0.40f};
+    constexpr float kOutlineY[6] = {-0.48f, -0.18f, 0.16f, 0.50f, 0.16f, -0.18f};
+    const uint32_t  base         = uint32_t(out.getVertexCount());
+    for (int i = 0; i < 6; ++i) {
+        const V3 p = add(center, add(mul(right, kOutlineX[i] * halfW * 2.f), mul(up, kOutlineY[i] * halfH * 2.f)));
+        const float ou = 0.5f + kOutlineX[i];
+        const float ov = 0.5f + kOutlineY[i];
+        const float u  = flipU ? (u1 + (u0 - u1) * ou) : (u0 + (u1 - u0) * ou);
+        const float v  = flipV ? (v1 + (v0 - v1) * ov) : (v0 + (v1 - v0) * ov);
+        out.addVertex(p.x, p.y, p.z, normal.x, normal.y, normal.z, u, v);
+    }
+    for (int i = 1; i < 5; ++i) {
+        out.addTriangle(base, base + uint32_t(i), base + uint32_t(i + 1));
+        out.addTriangle(base, base + uint32_t(i + 1), base + uint32_t(i));
+    }
 }
 
 void addCanopyBlob(MeshBuild& out, V3 center, V3 radius, int rings, int sides) {
