@@ -116,7 +116,15 @@ Result<void> loftProfileClean(MeshBuild& mesh, const std::vector<SplineFrameSamp
         const float u1 = static_cast<float>(ring + 1) / static_cast<float>(ringCount - 1) *
                          (uvMeters > 0.f ? uvMeters : 1.f);
         for (int i = 0; i < profileCount - 1; ++i) {
-            const auto& mat = profile.points[static_cast<std::size_t>(i)].material;
+            const auto& a = profile.points[static_cast<std::size_t>(i)];
+            const auto& b = profile.points[static_cast<std::size_t>(i + 1)];
+            // Prefer asphalt for near-horizontal driving strips (endpoint material alone
+            // would tag the asphalt span as curb because the left corner is a curb drop).
+            RoadMaterial mat = a.material;
+            if (std::fabs(a.up - b.up) <= 1e-3f &&
+                (a.material == RoadMaterial::Asphalt || b.material == RoadMaterial::Asphalt)) {
+                mat = RoadMaterial::Asphalt;
+            }
             const V3&   p00 = ringPositions[static_cast<std::size_t>(ring * profileCount + i)];
             const V3&   p01 = ringPositions[static_cast<std::size_t>(ring * profileCount + i + 1)];
             const V3&   p10 = ringPositions[static_cast<std::size_t>((ring + 1) * profileCount + i)];
@@ -124,11 +132,11 @@ Result<void> loftProfileClean(MeshBuild& mesh, const std::vector<SplineFrameSamp
             const V3    normal = normalize(cross(p10 - p00, p01 - p00));
             const float v0 =
                 profile.halfWidth > 1e-5f
-                    ? (profile.points[static_cast<std::size_t>(i)].side / profile.halfWidth) * 0.5f + 0.5f
+                    ? (a.side / profile.halfWidth) * 0.5f + 0.5f
                     : 0.f;
             const float v1 =
                 profile.halfWidth > 1e-5f
-                    ? (profile.points[static_cast<std::size_t>(i + 1)].side / profile.halfWidth) * 0.5f + 0.5f
+                    ? (b.side / profile.halfWidth) * 0.5f + 0.5f
                     : 1.f;
             appendStripQuad(mesh, p00, p10, p11, p01, normal, u0, u1, v0, v1, mat);
         }
@@ -243,6 +251,13 @@ void appendArrow(MeshBuild& mesh, V3 pos, V3 forward, V3 up, float size) {
     mesh.addVertex(left.x, left.y, left.z, up.x, up.y, up.z, 0.f, 0.f);
     mesh.addVertex(right.x, right.y, right.z, up.x, up.y, up.z, 1.f, 0.f);
     mesh.addTriangle(base, base + 1, base + 2);
+    // Back face so arrows stay visible under top-down interchange cameras.
+    const auto back = static_cast<std::uint32_t>(mesh.getVertexCount());
+    const V3   nd   = up * -1.f;
+    mesh.addVertex(tip.x, tip.y, tip.z, nd.x, nd.y, nd.z, 0.5f, 1.f);
+    mesh.addVertex(right.x, right.y, right.z, nd.x, nd.y, nd.z, 1.f, 0.f);
+    mesh.addVertex(left.x, left.y, left.z, nd.x, nd.y, nd.z, 0.f, 0.f);
+    mesh.addTriangle(back, back + 1, back + 2);
 }
 
 Result<void> bakeEdgeGeometry(MeshBuild& mesh, RoadOverlay& overlay, const RoadNetwork& network, const RoadEdge& edge,
@@ -508,14 +523,14 @@ struct MaterialColor {
 };
 
 MaterialColor colorForGroup(const std::string& name) {
-    if (name == "asphalt") return {0.16f, 0.16f, 0.18f, 1.f};
+    if (name == "asphalt") return {0.28f, 0.28f, 0.30f, 1.f};
     if (name == "curb") return {0.78f, 0.78f, 0.76f, 1.f};
-    if (name == "sidewalk") return {0.82f, 0.82f, 0.80f, 1.f};
-    if (name == "deck") return {0.52f, 0.52f, 0.50f, 1.f};
-    if (name == "pier") return {0.68f, 0.66f, 0.62f, 1.f};
-    if (name == "marking") return {0.95f, 0.95f, 0.93f, 1.f};
-    if (name == "markingYellow") return {0.95f, 0.78f, 0.12f, 1.f};
-    if (name == "nav") return {0.12f, 0.95f, 1.f, 1.f};
+    if (name == "sidewalk") return {0.86f, 0.86f, 0.84f, 1.f};
+    if (name == "deck") return {0.48f, 0.48f, 0.46f, 1.f};
+    if (name == "pier") return {0.70f, 0.68f, 0.64f, 1.f};
+    if (name == "marking") return {0.96f, 0.96f, 0.94f, 1.f};
+    if (name == "markingYellow") return {0.96f, 0.80f, 0.10f, 1.f};
+    if (name == "nav") return {0.10f, 0.95f, 1.f, 1.f};
     return {0.55f, 0.55f, 0.55f, 1.f};
 }
 

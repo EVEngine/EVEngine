@@ -18,16 +18,16 @@ struct RoadControlPoint {
 /** @brief Cross-section and structural style for one road edge. */
 struct RoadStyle {
     float laneWidth      = 3.5f;
-    float curbWidth      = 0.55f;   ///< Jersey-barrier thickness.
-    float curbHeight     = 0.95f;   ///< Raised barrier height (reference look).
-    float sidewalkWidth  = 1.8f;
-    float sidewalkHeight = 0.16f;
-    float deckThickness  = 0.85f;
-    float pierWidth      = 1.45f;
-    float pierDepth      = 1.45f;
+    float curbWidth      = 0.45f;   ///< Jersey-barrier thickness.
+    float curbHeight     = 0.55f;   ///< Raised barrier height (readable asphalt channel).
+    float sidewalkWidth  = 1.5f;
+    float sidewalkHeight = 0.14f;
+    float deckThickness  = 0.70f;
+    float pierWidth      = 1.35f;
+    float pierDepth      = 1.35f;
     float pierSpacing    = 11.f;
     float pierClearance  = 1.5f;
-    float markingWidth   = 0.20f;
+    float markingWidth   = 0.22f;
     float dashLength     = 3.5f;
     float dashGap        = 3.f;
     float uvMeters       = 8.f;
