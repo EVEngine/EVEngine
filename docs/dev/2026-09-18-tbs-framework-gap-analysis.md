@@ -1412,19 +1412,24 @@ INFER / UNVERIFIED），**没有任何一个页面正文被成功打开**，
 **未验证**：`clang-format` 在本环境不可用（PATH 无 `clang-format`/`clang-format-18`），
 故 CI 的 `format` 作业未在本地跑过——这是本提交最可能被 CI 拦下的点，且只涉及格式。
 
-**门禁状态（Phase 1.3 声明切片 + Result 短路修复之后）**：
-`ctest` **5219/5219 通过**（`build/win32-debug` 全量，`-j 8 -E '^bundle/' -LE benchmark`，
-`EVENGINE_VIEW_SECONDS=0.3 EVENGINE_PERF_FRAMES=30`，约 6 分钟）；其中
-`tactics|action|rpg|sensing|combat|gameplay` 子集 **192/192**、
-`result|snapshot|replay|versioned|pixelworld` 子集 **83/83**；
+**门禁状态（Phase 1.6 tactics 侧之后）**：
 `module_depgraph --check`、`check_architecture_contracts --base HEAD`、
 `check_quality_metadata`、`check_bindings --strict` **全部 exit 0**
-（`check_bindings` 报告 8251 个绑定，无新增 gap）。
+（`check_bindings`：8252 个绑定、tactics 49 个绑定有文档、无 gap）；
+tactics 模块用例 **71/71 通过**（每次提交前跑该模块），
+Phase 1.4/1.5 之后曾跑过 `tactics|gameplay` 子集 **91/91**。
+
+**本地验证原则（用户 2026-09-18 明确要求）**：**全量用例交给 CI，不要在本地整套跑**。
+本地只做三件事：编译受影响 target、跑覆盖本次改动的用例（`ctest -R "^tactics\."` 或单个用例）、
+跑四个源码门禁。因此本分支最后一次全量本地运行是 Phase 1.3 之前的记录
+（`ctest 5219/5219`，`build/win32-debug`，`-j 8 -E '^bundle/' -LE benchmark`，约 6 分钟）——
+**Phase 1.4/1.5/1.6 与 v5/v6 之后没有本地全量运行**，这段回归覆盖由 CI 承担，不再由本地重复。
+
 **仍未验证**：`clang-format` 在本环境不可用（PATH 无 `clang-format`/`clang-format-18`），
 故 CI 的 `format` 作业未在本地跑过——涉及本次改动的所有行都按仓库风格手工排版，但未经工具确认；
 `check_nodiscard.py` 因无宿主 C++ 编译器而跳过了它的 compile-fail 部分。
 **构建配方补充**：`test/native_test_plugin.dll` 是独立 target，`--target unit_test` 不会构建它；
-不先构建会让 `plugins.load.nativeLibraryAndInstantiateCppModule` 以
+若确实要在本地跑全量，不先构建它会让 `plugins.load.nativeLibraryAndInstantiateCppModule` 以
 `LoadLibrary failed ... (err=126)` 失败（构建配方问题，非代码回归），已记入 `build/RECIPE.md`。
 
 ### 11.2 实施中发现的、对本文的修正
