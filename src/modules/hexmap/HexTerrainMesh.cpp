@@ -55,6 +55,24 @@ namespace {
     }
 }
 
+/**
+ * @brief Whether the triangle `a`,`b`,`c` is wound so that its normal points downwards.
+ *
+ * The corner branches permute their three points by elevation, and whether that permutation
+ * is even or odd depends on which of the three cells happened to emit the corner - so the
+ * very same junction can come out wound either way, which is how two of a raised cell's six
+ * corners ended up inverted. This engine's front face is the one that makes `(bottom, high,
+ * low)` point up (see the flat corner in `appendCorner`); this predicate is how the terraced
+ * branches check themselves against it. Only XZ is needed: a terrain corner is never vertical.
+ */
+[[nodiscard]] bool facesDown(HexVec3 a, HexVec3 b, HexVec3 c) noexcept {
+    const float abx = b.x - a.x;
+    const float abz = b.z - a.z;
+    const float acx = c.x - a.x;
+    const float acz = c.z - a.z;
+    return (abz * acx - abx * acz) < 0.f;
+}
+
 /** @brief The three cells meeting at a corner, kept together while they are sorted by elevation. */
 struct CornerCells {
     HexVec3            up{};
@@ -146,15 +164,17 @@ private:
                                     elevationOf(cellData) <= elevationOf(neighbour));
                 break;
             case HexEdgeType::Cliff:
-                // The blend strip would already be a vertical wall here, but its winding flips with the
-                // sign of the elevation step; the vertical winding is correct in both directions.
-                // Split into the same four sub-quads as a flat strip: a single `v1 -> v5` chord would
-                // not follow the fan's four-segment border, because `vertex()` perturbs every sample
-                // independently, and that mismatch is an open seam along the wall's foot.
+                // A wall is a steep ramp, not a true vertical: `far` is the neighbour's solid edge
+                // bridged horizontally, raised to its elevation. Its winding therefore depends on
+                // which of the two cells owns the edge, exactly like a terrace ladder, so it goes
+                // through the same orientation check. Split into four sub-quads as well: a single
+                // `v1 -> v5` chord would not follow the fan's four-segment border, because
+                // `vertex()` perturbs every sample independently, and that mismatch is an open
+                // seam along the wall's foot.
                 for (std::int32_t i = 0; i < 4; ++i) {
-                    emitQuadVertical(edgeSample(near, i), edgeSample(near, i + 1), edgeSample(far, i),
-                                     edgeSample(far, i + 1), nearWeights, nearWeights, farWeights, farWeights, cellData,
-                                     neighbour, cellData);
+                    emitQuadUpward(edgeSample(near, i), edgeSample(near, i + 1), edgeSample(far, i),
+                                   edgeSample(far, i + 1), nearWeights, nearWeights, farWeights, farWeights, cellData,
+                                   neighbour, cellData);
                 }
                 break;
         }
@@ -218,9 +238,12 @@ private:
         if (lowEdge == HexEdgeType::Slope && highEdge == HexEdgeType::Slope) {
             cornerTerraces(bottom, low, high, bottomCell, lowCell, highCell);
         } else if (lowEdge == HexEdgeType::Slope && highEdge == HexEdgeType::Flat) {
-            cornerTerraces(low, high, bottom, lowCell, highCell, bottomCell);
+            // `low` is the odd cell out and `high` sits level with `bottom`, so the fan has to
+            // climb from that flat pair to `low` rather than descend from it.
+            cornerTerracesToApex(high, highCell, bottom, bottomCell, low, lowCell);
         } else if (lowEdge == HexEdgeType::Flat && highEdge == HexEdgeType::Slope) {
-            cornerTerraces(high, bottom, low, highCell, bottomCell, lowCell);
+            // Mirror of the above: `bottom` and `low` are level and `high` is the apex.
+            cornerTerracesToApex(bottom, bottomCell, low, lowCell, high, highCell);
         } else if (lowEdge == HexEdgeType::Slope && highEdge == HexEdgeType::Cliff) {
             cornerTerracesCliff(bottom, low, high, bottomCell, lowCell, highCell, lowEdge);
         } else if (lowEdge == HexEdgeType::Cliff && highEdge == HexEdgeType::Slope) {
@@ -233,8 +256,12 @@ private:
             }
         } else {
             // Mirror of the reference winding: this engine's front face is the opposite
-            // handedness, so the flat corner fan is emitted high-before-low.
-            emitTriangle(bottom, high, low, HexTerrainWeights::primary(), bottomCell, lowCell, highCell);
+            // handedness, so the flat corner fan is emitted high-before-low. "Flat" only
+            // describes the two edges though - with cliffs on both of them these three points
+            // still differ in height, and the elevation sort decides which of them is named
+            // `low`, so the winding is taken from the points.
+            emitCornerTriangle(bottom, high, low, HexTerrainWeights::primary(), HexTerrainWeights::primary(),
+                               HexTerrainWeights::primary(), bottomCell, lowCell, highCell);
         }
     }
 
@@ -244,6 +271,9 @@ private:
         const HexTerrainWeights bottomWeights = HexTerrainWeights::primary();
         const HexTerrainWeights leftWeights   = HexTerrainWeights::primary();
         const HexTerrainWeights rightWeights  = HexTerrainWeights::primary();
+
+        // Same reason as the apex fan: the elevation sort permutes these points, so the fan
+        // cannot pick a winding by construction.
 
         HexVec3           lastLeft         = bottom;
         HexVec3           lastRight        = bottom;
@@ -256,15 +286,75 @@ private:
             const HexVec3           boundaryLeft  = HexMetrics::terraceLerp(bottom, left, step);
             const HexVec3           boundaryRight = HexMetrics::terraceLerp(bottom, right, step);
 
-            emitQuadForward(boundaryLeft, boundaryRight, lastLeft, lastRight, wl, wr, lastLeftWeights, lastRightWeights,
-                            bottomCell, leftCell, rightCell);
+            // Both sides start at `bottom`, so the first band is a triangle. Emitting it as a
+            // quad would add a zero-area one whose self-edge the welded census reports as an
+            // open seam and whose doubled edge makes its neighbours look non-manifold.
+            if (step == 1) {
+                emitCornerTriangle(boundaryLeft, boundaryRight, bottom, wl, wr, bottomWeights, bottomCell, leftCell,
+                                   rightCell);
+            } else {
+                emitQuadUpward(boundaryLeft, boundaryRight, lastLeft, lastRight, wl, wr, lastLeftWeights,
+                               lastRightWeights, bottomCell, leftCell, rightCell);
+            }
             lastLeft         = boundaryLeft;
             lastRight        = boundaryRight;
             lastLeftWeights  = wl;
             lastRightWeights = wr;
         }
-        emitQuadForward(lastLeft, lastRight, left, right, lastLeftWeights, lastRightWeights, leftWeights, rightWeights,
-                        bottomCell, leftCell, rightCell);
+        emitQuadUpward(lastLeft, lastRight, left, right, lastLeftWeights, lastRightWeights, leftWeights, rightWeights,
+                       bottomCell, leftCell, rightCell);
+    }
+
+    /**
+     * @brief Terraced corner fan whose ladder climbs from the two lower cells to the apex.
+     *
+     * This is `cornerTerraces` walked the other way, and the two directions are not
+     * interchangeable: `HexMetrics::terraceLerp` is direction-asymmetric, so a corner side
+     * only meets the edge band it borders when both are parameterized from the same end -
+     * and every edge band starts at the lower cell of its edge.
+     *
+     * `appendCorner` reaches this shape whenever the corner's odd cell out is the *highest*
+     * one, which is exactly what a single raised cell produces: the ladder descends from the
+     * apex there, while the bands along its two edges climb to it.
+     *
+     * Quads are emitted high-side-first, this engine's front-face convention (the flat corner
+     * in `appendCorner` documents it). The closing band degenerates at the apex, so it is
+     * emitted as a triangle - a zero-area quad would only add a self-edge that the welded
+     * census reports as an open seam.
+     *
+     * @param left Lower corner point of the left side.
+     * @param leftCell Cell owning `left`.
+     * @param right Lower corner point of the right side.
+     * @param rightCell Cell owning `right`.
+     * @param apex Higher corner point both sides climb to.
+     * @param apexCell Cell owning `apex`.
+     */
+    void cornerTerracesToApex(const HexVec3& left, const HexCellData* leftCell, const HexVec3& right,
+                              const HexCellData* rightCell, const HexVec3& apex, const HexCellData* apexCell) {
+        const HexTerrainWeights leftWeights  = HexTerrainWeights::primary();
+        const HexTerrainWeights rightWeights = HexTerrainWeights::primary();
+        const HexTerrainWeights apexWeights  = HexTerrainWeights::primary();
+
+        HexVec3           lastLeft         = left;
+        HexVec3           lastRight        = right;
+        HexTerrainWeights lastLeftWeights  = leftWeights;
+        HexTerrainWeights lastRightWeights = rightWeights;
+        for (std::int32_t step = 1; step < HexMetrics::kTerracesPerSlope * 2; ++step) {
+            const float             t  = static_cast<float>(step) * HexMetrics::kHorizontalTerraceStepSize;
+            const HexTerrainWeights wl = HexTerrainWeights::lerp(leftWeights, apexWeights, t);
+            const HexTerrainWeights wr = HexTerrainWeights::lerp(rightWeights, apexWeights, t);
+            const HexVec3           bl = HexMetrics::terraceLerp(left, apex, step);
+            const HexVec3           br = HexMetrics::terraceLerp(right, apex, step);
+
+            emitQuadUpward(lastLeft, lastRight, bl, br, lastLeftWeights, lastRightWeights, wl, wr, apexCell, leftCell,
+                           rightCell);
+            lastLeft         = bl;
+            lastRight        = br;
+            lastLeftWeights  = wl;
+            lastRightWeights = wr;
+        }
+        emitCornerTriangle(lastLeft, apex, lastRight, lastLeftWeights, apexWeights, lastRightWeights, apexCell,
+                           leftCell, rightCell);
     }
 
     /**
@@ -284,13 +374,13 @@ private:
             const HexTerrainWeights wl = HexTerrainWeights::lerp(bottomWeights, leftWeights, t);
             const HexTerrainWeights wr = HexTerrainWeights::lerp(bottomWeights, rightWeights, t);
 
-            emitTriangle(leftSide, rightSide, bottom, wl, wr, bottomWeights, bottomCell, leftCell, rightCell);
+            emitCornerTriangle(leftSide, rightSide, bottom, wl, wr, bottomWeights, bottomCell, leftCell, rightCell);
 
             leftSide  = rightSide;
             rightSide = HexMetrics::terraceLerp(bottom, right, step + 1);
         }
-        emitTriangle(leftSide, rightSide, bottom, leftWeights, rightWeights, bottomWeights, bottomCell, leftCell,
-                     rightCell);
+        emitCornerTriangle(leftSide, rightSide, bottom, leftWeights, rightWeights, bottomWeights, bottomCell, leftCell,
+                           rightCell);
     }
 
     /** @brief Terraced corner where the `high` side rises to a cliff foot. */
@@ -310,12 +400,13 @@ private:
         vertex(boundary, boundaryWeights, bottomCell, lowCell, highCell);
         appendBoundaryTriangle(bottom, bottomWeights, low, lowWeights, boundary, boundaryWeights, bottomCell, lowCell,
                                highCell);
-        emitTriangleFrom(anchor, low, bottom, lowWeights, bottomWeights, bottomCell, lowCell, highCell);
+        emitCornerTriangleFrom(anchor, boundary, low, lowWeights, bottom, bottomWeights, bottomCell, lowCell, highCell);
         if (lowEdge == HexEdgeType::Slope) {
             appendBoundaryTriangle(boundary, boundaryWeights, bottom, bottomWeights, high, highWeights, bottomCell,
                                    lowCell, highCell);
         } else {
-            emitTriangle(high, bottom, low, highWeights, bottomWeights, lowWeights, bottomCell, lowCell, highCell);
+            emitCornerTriangle(high, bottom, low, highWeights, bottomWeights, lowWeights, bottomCell, lowCell,
+                               highCell);
         }
     }
 
@@ -336,12 +427,14 @@ private:
         vertex(boundary, boundaryWeights, bottomCell, lowCell, highCell);
         appendBoundaryTriangle(bottom, bottomWeights, high, highWeights, boundary, boundaryWeights, bottomCell,
                                highCell, lowCell);
-        emitTriangleFrom(anchor, high, bottom, highWeights, bottomWeights, bottomCell, highCell, lowCell);
+        emitCornerTriangleFrom(anchor, boundary, high, highWeights, bottom, bottomWeights, bottomCell, highCell,
+                               lowCell);
         if (highEdge == HexEdgeType::Slope) {
             appendBoundaryTriangle(boundary, boundaryWeights, bottom, bottomWeights, low, lowWeights, bottomCell,
                                    highCell, lowCell);
         } else {
-            emitTriangle(low, bottom, high, lowWeights, bottomWeights, highWeights, bottomCell, highCell, lowCell);
+            emitCornerTriangle(low, bottom, high, lowWeights, bottomWeights, highWeights, bottomCell, highCell,
+                               lowCell);
         }
     }
 
@@ -397,20 +490,6 @@ private:
         out_.addTriangle(i0 + 1u, i0 + 2u, i0 + 3u);
     }
 
-    /** @brief Emits a vertical quad in the bottom/top alternating order used by cliff strips. */
-    void emitQuadVertical(const HexVec3& p0, const HexVec3& p1, const HexVec3& p2, const HexVec3& p3,
-                          const HexTerrainWeights& w0, const HexTerrainWeights& w1, const HexTerrainWeights& w2,
-                          const HexTerrainWeights& w3, const HexCellData* t0, const HexCellData* t1,
-                          const HexCellData* t2) {
-        const std::uint32_t i0 = static_cast<std::uint32_t>(out_.vertexCount());
-        vertex(p0, w0, t0, t1, t2);
-        vertex(p1, w1, t0, t1, t2);
-        vertex(p2, w2, t0, t1, t2);
-        vertex(p3, w3, t0, t1, t2);
-        out_.addTriangle(i0, i0 + 2u, i0 + 1u);
-        out_.addTriangle(i0 + 1u, i0 + 2u, i0 + 3u);
-    }
-
     /** @brief Emits a triangle that reuses an already emitted anchor vertex as its first corner. */
     void emitTriangleFrom(std::uint32_t anchor, const HexVec3& p1, const HexVec3& p2, const HexTerrainWeights& w1,
                           const HexTerrainWeights& w2, const HexCellData* t0, const HexCellData* t1,
@@ -419,6 +498,57 @@ private:
         vertex(p1, w1, t0, t1, t2);
         vertex(p2, w2, t0, t1, t2);
         out_.addTriangle(anchor, i1, i1 + 1u);
+    }
+
+    /**
+     * @brief Emits a horizontal quad, mirrored when it would otherwise face downwards.
+     *
+     * A corner fan lists its two sides in an order that depends on which of the three cells
+     * emitted the corner and on how the elevation sort permuted them, so no caller can pick
+     * the winding by construction. Reading it off the emitted triangle keeps every fan
+     * consistent without depending on that order. Cliff walls are steep ramps rather than true
+     * verticals - their far edge is the neighbour's solid edge, bridged horizontally - so they
+     * are part of the heightfield and take the same treatment.
+     */
+    void emitQuadUpward(const HexVec3& p0, const HexVec3& p1, const HexVec3& p2, const HexVec3& p3,
+                        const HexTerrainWeights& w0, const HexTerrainWeights& w1, const HexTerrainWeights& w2,
+                        const HexTerrainWeights& w3, const HexCellData* t0, const HexCellData* t1,
+                        const HexCellData* t2) {
+        // A quad is emitted as `(p0, p2, p1)` and `(p1, p2, p3)`. The first of those is the one
+        // tested here; mirroring swaps the 2nd and 3rd arguments, which reverses both.
+        if (facesDown(p0, p2, p1))
+            emitQuadForward(p0, p2, p1, p3, w0, w2, w1, w3, t0, t1, t2);
+        else
+            emitQuadForward(p0, p1, p2, p3, w0, w1, w2, w3, t0, t1, t2);
+    }
+
+    /**
+     * @brief Emits a corner triangle, choosing the winding that makes it face upwards.
+     *
+     * The cliff corner branches permute their three points by elevation just like the flat
+     * ones, so the same junction can be listed in either cyclic order depending on which
+     * cell emitted it.
+     */
+    void emitCornerTriangle(const HexVec3& p0, const HexVec3& p1, const HexVec3& p2, const HexTerrainWeights& w0,
+                            const HexTerrainWeights& w1, const HexTerrainWeights& w2, const HexCellData* t0,
+                            const HexCellData* t1, const HexCellData* t2) {
+        if (facesDown(p0, p1, p2))
+            emitTriangle(p0, p2, p1, w0, w2, w1, t0, t1, t2);
+        else
+            emitTriangle(p0, p1, p2, w0, w1, w2, t0, t1, t2);
+    }
+
+    /** @brief `emitTriangleFrom` with the winding chosen so the face points upwards. */
+    void emitCornerTriangleFrom(std::uint32_t anchor, const HexVec3& anchorPoint, const HexVec3& p1,
+                                const HexTerrainWeights& w1, const HexVec3& p2, const HexTerrainWeights& w2,
+                                const HexCellData* t0, const HexCellData* t1, const HexCellData* t2) {
+        const std::uint32_t i1 = static_cast<std::uint32_t>(out_.vertexCount());
+        vertex(p1, w1, t0, t1, t2);
+        vertex(p2, w2, t0, t1, t2);
+        if (facesDown(anchorPoint, p1, p2))
+            out_.addTriangle(anchor, i1 + 1u, i1);
+        else
+            out_.addTriangle(anchor, i1, i1 + 1u);
     }
 
     /** @brief Four triangles fanning from `center` along one solid edge. */
