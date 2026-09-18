@@ -2909,7 +2909,8 @@ void main() {
         for (int slot = 0; slot < 4; ++slot)
             shader->declareVec4("terrainLayer" + std::to_string(slot) + "ST");
         shader->declareVec4("terrainMetallic");
-        shader->declareVec4("terrainNormalScale", 1.f, 1.f, 1.f, 1.f);
+        shader->declareVec4("terrainNormalScale");
+        shader->sendVec4("terrainNormalScale", 1.f, 1.f, 1.f, 1.f);
         shader->declareVec4("terrainSmoothness");
         shader->declareVec4("terrainFeatures");
         return shader;
