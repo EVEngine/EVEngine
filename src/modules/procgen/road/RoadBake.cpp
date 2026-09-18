@@ -375,9 +375,10 @@ Result<void> bakeEdgeGeometry(MeshBuild& mesh, RoadOverlay& overlay, const RoadN
     // Honour full junctionRadius so filleted corners meet the arm tips with G1
     // tangents (square stubs from early trim read as sharp turn corners).
     const float maxTrim   = std::max(0.f, pathLength.value() * 0.5f - 0.5f);
-    // Stop arms a bit past jr so junction tip pads own the turn (no arm stub ears).
-    const float trimStart = std::min(std::max(0.f, fromNode.value().junctionRadius + 0.25f), maxTrim);
-    const float trimEnd   = std::min(std::max(0.f, toNode.value().junctionRadius + 0.25f), maxTrim);
+    // Honour full junctionRadius so filleted corners meet the arm tips with G1
+    // tangents (square stubs from early trim read as sharp turn corners).
+    const float trimStart = std::min(std::max(0.f, fromNode.value().junctionRadius), maxTrim);
+    const float trimEnd   = std::min(std::max(0.f, toNode.value().junctionRadius), maxTrim);
     if (trimStart + trimEnd >= pathLength.value() - 0.5f)
         return Result<void>::success();  // fully inside junction; skip strip
 
@@ -612,7 +613,6 @@ Result<void> bakeJunction(MeshBuild& mesh, const RoadNetwork& network, const Roa
         const float r0 = cornerR;
         const float r1 = std::max(0.2f, cornerR - curbW);
         const float r2 = std::max(0.15f, cornerR - curbW - walkW);
-        const float hw = ah + curbW + walkW;
         for (int sx : {-1, 1}) {
             for (int sz : {-1, 1}) {
                 const float sxf = static_cast<float>(sx);
@@ -636,11 +636,11 @@ Result<void> bakeJunction(MeshBuild& mesh, const RoadNetwork& network, const Roa
                     const V3    a1 = arcPt(r0, t1);
                     const V3    b0 = arcPt(r1, t0);
                     const V3    b1 = arcPt(r1, t1);
-                    // Sidewalk top slightly past r2 toward the property so it covers the skirt seam.
-                    const V3    c0 = arcPt(std::max(0.05f, r2 - 0.06f), t0);
-                    const V3    c1 = arcPt(std::max(0.05f, r2 - 0.06f), t1);
                     const V3    s0 = arcPt(r2, t0);
                     const V3    s1 = arcPt(r2, t1);
+                    // Sidewalk top slightly past r2 toward the property to cover the skirt seam.
+                    const V3    c0 = arcPt(std::max(0.05f, r2 - 0.06f), t0);
+                    const V3    c1 = arcPt(std::max(0.05f, r2 - 0.06f), t1);
                     const V3    b0i = arcPt(r1 - 0.02f, t0);
                     const V3    b1i = arcPt(r1 - 0.02f, t1);
                     const V3    b0o = arcPt(r1 + 0.02f, t0);
@@ -657,34 +657,6 @@ Result<void> bakeJunction(MeshBuild& mesh, const RoadNetwork& network, const Roa
                     wall(a0, a1, y, curbTop, outToRoad, RoadMaterial::Curb);
                     wall(b0, b1, walkY, curbTop, outToRoad, RoadMaterial::Curb);
                     wall(s0, s1, y, walkY, outToRoad, RoadMaterial::Sidewalk);
-                }
-
-                // Tip pads: bridge from arc endpoints out along each arm so the turn has no
-                // open stub / sharp ear. Outer skirt continues the r2 tangent.
-                {
-                    const float ax0 = node.x + sxf * (jr - 0.05f);
-                    const float ax1 = node.x + sxf * (jr + 0.45f);
-                    const float azC0 = node.z + szf * ah;
-                    const float azC1 = node.z + szf * (ah + curbW);
-                    const float azW  = node.z + szf * hw;
-                    appendOrientedQuad(mesh, V3{ax0, curbTop, azC0}, V3{ax1, curbTop, azC0}, V3{ax1, curbTop, azC1},
-                                       V3{ax0, curbTop, azC1}, upN, 0.f, 1.f, 0.f, 1.f, RoadMaterial::Curb);
-                    appendOrientedQuad(mesh, V3{ax0, walkY, azC1}, V3{ax1, walkY, azC1}, V3{ax1, walkY, azW},
-                                       V3{ax0, walkY, azW}, upN, 0.f, 1.f, 0.f, 1.f, RoadMaterial::Sidewalk);
-                    wall(V3{ax0, 0.f, azW}, V3{ax1, 0.f, azW}, y, walkY, V3{0.f, 0.f, szf}, RoadMaterial::Sidewalk);
-                    wall(V3{ax0, 0.f, azC1}, V3{ax0, 0.f, azW}, y, walkY, V3{-sxf, 0.f, 0.f}, RoadMaterial::Sidewalk);
-
-                    const float az0 = node.z + szf * (jr - 0.05f);
-                    const float az1 = node.z + szf * (jr + 0.45f);
-                    const float axC0 = node.x + sxf * ah;
-                    const float axC1 = node.x + sxf * (ah + curbW);
-                    const float axW  = node.x + sxf * hw;
-                    appendOrientedQuad(mesh, V3{axC0, curbTop, az0}, V3{axC1, curbTop, az0}, V3{axC1, curbTop, az1},
-                                       V3{axC0, curbTop, az1}, upN, 0.f, 1.f, 0.f, 1.f, RoadMaterial::Curb);
-                    appendOrientedQuad(mesh, V3{axC1, walkY, az0}, V3{axW, walkY, az0}, V3{axW, walkY, az1},
-                                       V3{axC1, walkY, az1}, upN, 0.f, 1.f, 0.f, 1.f, RoadMaterial::Sidewalk);
-                    wall(V3{axW, 0.f, az0}, V3{axW, 0.f, az1}, y, walkY, V3{sxf, 0.f, 0.f}, RoadMaterial::Sidewalk);
-                    wall(V3{axC1, 0.f, az0}, V3{axW, 0.f, az0}, y, walkY, V3{0.f, 0.f, -szf}, RoadMaterial::Sidewalk);
                 }
             }
         }
