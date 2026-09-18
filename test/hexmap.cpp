@@ -959,20 +959,34 @@ TEST_CASE("hexmap.mesh.terrainIsWeldClosedAndFreeOfDuplicateCorners") {
     // emitted twice produces exactly coincident triangles. Welding by position is what
     // exposes that: an unwelded vertex count cannot see them, and neither can a triangle
     // count compared against an expectation derived from the emitter's own gate.
-    //
-    // Only the flat case is asserted here. A raised cell leaves unmatched edges in the
-    // planar terracing path, which is a real and still-open defect - see
-    // `docs/dev/hex-terrain-capability-audit.md`. It is not asserted, because a
-    // permanently failing assertion is not a test; the sphere backend, which had the same
-    // corner defect, is watertight at scattered elevations (see
-    // `hexmap.sphereMesh.isAWatertightSurface`).
-    HexMap flat = makeMap(20, 15, 23u);
-
-    const MeshWeldReport report = analyseMeshWeld(collectTerrainChunks(flat));
-    REQUIRE(report.nonManifoldEdges == 0u);
-    REQUIRE_EQ(report.duplicateTriangles, 0u);
+    HexMap               flat       = makeMap(20, 15, 23u);
+    const MeshWeldReport flatReport = analyseMeshWeld(collectTerrainChunks(flat));
+    REQUIRE(flatReport.nonManifoldEdges == 0u);
+    REQUIRE_EQ(flatReport.duplicateTriangles, 0u);
     // The patch is open at its own outer perimeter, so the control value is not zero.
-    CHECK(report.boundaryEdges > 0u);
+    REQUIRE(flatReport.boundaryEdges > 0u);
+
+    // A cliff closes the height step with a vertical wall, and the wall has to follow the
+    // fan's four-segment border rather than span it with a single `v1 -> v5` chord: the
+    // samples are collinear before perturbation, but `vertex()` displaces each of them
+    // independently, so a chord leaves a seam along the wall's foot. This case is exactly
+    // closed now, and is asserted here so the wall cannot regress.
+    HexMap cliffMap = makeMap(20, 15, 23u);
+    REQUIRE(cliffMap.setElevation(HexCoordinates::fromOffset(7, 7), 3).ok());
+    const MeshWeldReport cliffReport = analyseMeshWeld(collectTerrainChunks(cliffMap));
+    REQUIRE_EQ(cliffReport.duplicateTriangles, 0u);
+    REQUIRE_EQ(cliffReport.nonManifoldEdges, 0u);
+    REQUIRE_EQ(cliffReport.boundaryEdges, flatReport.boundaryEdges);
+
+    // A one-step *slope* runs a terrace ladder instead, and that path is still open around
+    // the raised cell: 72 unmatched edges against the same 700-edge control. The ladder
+    // direction and the four-segment bands are fixed (the count was 148), but the corner
+    // patches do not share one parameterization origin - `appendCorner` enters
+    // `cornerTerraces` with the *lowest* cell on one branch and with the *highest* on
+    // another, and `HexMetrics::terraceLerp` is direction-asymmetric, so whichever end the
+    // edge ladder starts from it can only meet one of the two. Fixing that means giving the
+    // corner family a single convention; it is not asserted here because a permanently
+    // failing assertion is not a test. See `docs/dev/hex-terrain-capability-audit.md`.
 }
 
 // --- water mesh -------------------------------------------------------------

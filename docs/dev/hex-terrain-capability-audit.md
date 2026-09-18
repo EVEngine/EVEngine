@@ -219,15 +219,39 @@ three cells, so half of them were emitted twice. Gating on `nextCell < cell` as 
 lowest-id cell of the three owns the corner - makes the sphere genuinely watertight at flat,
 scattered and finer subdivisions, verified with the assertions above made fatal.
 
-Still open (measured, not fixed): **the planar terracing path leaves cracks around a raised
-cell.** With one interior cell raised, the welded census over the whole 20x15 patch reports
-148 extra unmatched edges (848 against a 700-edge flat control) and 6 non-manifold edges; the
-corner-ownership fix did not change this, and the sphere does not show it. The cause is the
-one `HexSphereMesh.cpp` documents for its own terraces: `appendEdgeTerraces` walks the ladder
-from the *owning* cell while the corner patches interpolate from the elevation-sorted
-`bottom`, and `HexMetrics::terraceLerp` is direction-asymmetric, so the two do not meet. It is
-not asserted in the suite, because a permanently failing assertion is not a test; the flat
-weld invariants around it are (`hexmap.mesh.terrainIsWeldClosedAndFreeOfDuplicateCorners`).
+### Planar seams: what was fixed, and what is left
+
+A raised cell opened seams along both of the planar connection paths, for two separate
+reasons. Both were measured with the welded census over the whole 20x15 patch, against a
+flat control of 700 open (outer-perimeter) edges.
+
+- **A connection band was spanned by the single `v1 -> v5` chord.** The five samples of a
+  solid edge are collinear *before* perturbation, but `vertex()` displaces each of them
+  independently through `horizontalPerturb`, so the chord and the fan's four-segment border
+  diverge and every band opens a seam along its foot. Both the cliff wall and the terrace
+  band now emit four sub-quads, exactly as the sphere builder already did.
+  **Fixed: the cliff case is now exactly closed** - 700 open edges, no non-manifold edges,
+  no duplicates, asserted by `hexmap.mesh.terrainIsWeldClosedAndFreeOfDuplicateCorners`.
+- **The terrace ladder was parameterized from whichever cell owned the edge.** The corner
+  patches interpolate from a cell chosen by elevation, and `HexMetrics::terraceLerp` is
+  direction-asymmetric (its vertical offset is `((step + 1) / 2)` measured from the first
+  argument), so a ladder started at the wrong end cannot meet them. The ladder now always
+  runs from the lower cell, and each boundary is interpolated directly from that origin
+  rather than compounded from the previous one.
+
+Together those took the one-step slope case from **148 extra open edges to 72**, with the
+residual 6 non-manifold edges unchanged. The rest needs one more change, which is why the
+slope case is not asserted:
+
+**The corner family has no single parameterization convention.** `appendCorner` enters
+`cornerTerraces` with the *lowest* of the three cells on one branch
+(`lowEdge == Slope && highEdge == Flat`) and with the **highest** on another
+(`lowEdge == Flat && highEdge == Slope`, which calls `cornerTerraces(high, bottom, low, ...)`
+and `cornerCliffTerraces(high, bottom, low, ...)`). No choice of edge-ladder direction can
+meet both, so one of the two corner shapes always leaves a seam. The fix is to give
+`cornerTerraces` / `cornerTerracesCliff` / `cornerCliffTerraces` one convention and pick the
+edge direction to match it; it changes winding handling, so it wants its own change with the
+census as the acceptance test.
 
 Still open, unchanged from the gap list above: bindable texture arrays and independent
 ORM maps (gaps 2-4), production hydrology (gap 6), and instanced vegetation independent of

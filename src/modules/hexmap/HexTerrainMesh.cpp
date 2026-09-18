@@ -44,6 +44,17 @@ namespace {
     return position;
 }
 
+/** @brief Sample `index` of an edge frame, `0` being `v1` and `4` being `v5`. */
+[[nodiscard]] HexVec3 edgeSample(const EdgeVertices& edge, std::int32_t index) noexcept {
+    switch (index) {
+        case 0: return edge.v1;
+        case 1: return edge.v2;
+        case 2: return edge.v3;
+        case 3: return edge.v4;
+        default: return edge.v5;
+    }
+}
+
 /** @brief The three cells meeting at a corner, kept together while they are sorted by elevation. */
 struct CornerCells {
     HexVec3            up{};
@@ -130,12 +141,21 @@ private:
 
         switch (map_.edgeTypeTo(coordinates, neighbourCoordinates)) {
             case HexEdgeType::Flat: appendBlendStrip(near, far, nearWeights, farWeights, cellData, neighbour); break;
-            case HexEdgeType::Slope: appendEdgeTerraces(near, nearWeights, far, farWeights, cellData, neighbour); break;
+            case HexEdgeType::Slope:
+                appendSlopeTerraces(near, nearWeights, far, farWeights, cellData, neighbour,
+                                    elevationOf(cellData) <= elevationOf(neighbour));
+                break;
             case HexEdgeType::Cliff:
                 // The blend strip would already be a vertical wall here, but its winding flips with the
                 // sign of the elevation step; the vertical winding is correct in both directions.
-                emitQuadVertical(near.v1, near.v5, far.v1, far.v5, nearWeights, nearWeights, farWeights, farWeights,
-                                 cellData, neighbour, cellData);
+                // Split into the same four sub-quads as a flat strip: a single `v1 -> v5` chord would
+                // not follow the fan's four-segment border, because `vertex()` perturbs every sample
+                // independently, and that mismatch is an open seam along the wall's foot.
+                for (std::int32_t i = 0; i < 4; ++i) {
+                    emitQuadVertical(edgeSample(near, i), edgeSample(near, i + 1), edgeSample(far, i),
+                                     edgeSample(far, i + 1), nearWeights, nearWeights, farWeights, farWeights, cellData,
+                                     neighbour, cellData);
+                }
                 break;
         }
 
@@ -414,8 +434,6 @@ private:
     void appendBlendStrip(const EdgeVertices& near, const EdgeVertices& far, const HexTerrainWeights& nearWeights,
                           const HexTerrainWeights& farWeights, const HexCellData* nearCell,
                           const HexCellData* farCell) {
-        const HexVec3 nearPositions[5] = {near.v1, near.v2, near.v3, near.v4, near.v5};
-        const HexVec3 farPositions[5]  = {far.v1, far.v2, far.v3, far.v4, far.v5};
         for (std::int32_t i = 0; i < 4; ++i) {
             const float             t0 = static_cast<float>(i) * 0.25f;
             const float             t1 = static_cast<float>(i + 1) * 0.25f;
@@ -424,25 +442,76 @@ private:
             // Both vertices of an edge share their parameter: the near pair carries w0
             // and the far pair carries w1. Swapping them makes every quad blend along the
             // wrong axis and turns the band into a sawtooth.
-            emitQuadForward(nearPositions[i], nearPositions[i + 1], farPositions[i], farPositions[i + 1], w0, w0, w1,
-                            w1, nearCell, farCell, nearCell);
+            emitQuadForward(edgeSample(near, i), edgeSample(near, i + 1), edgeSample(far, i), edgeSample(far, i + 1),
+                            w0, w0, w1, w1, nearCell, farCell, nearCell);
         }
     }
 
-    /** @brief Terraces a slope between two edges; one quad per terrace step plus the closing quad. */
-    void appendEdgeTerraces(EdgeVertices near, const HexTerrainWeights& nearWeights, EdgeVertices far,
-                            const HexTerrainWeights& farWeights, const HexCellData* nearCell,
-                            const HexCellData* farCell) {
-        for (std::int32_t step = 1; step < HexMetrics::kTerracesPerSlope * 2; ++step) {
-            const HexTerrainWeights w1 = HexTerrainWeights::lerp(
-                nearWeights, farWeights, static_cast<float>(step) * HexMetrics::kHorizontalTerraceStepSize);
-            const EdgeVertices middle = EdgeVertices::terraceLerp(near, far, step);
-            emitQuadForward(near.v1, near.v5, middle.v1, middle.v5, nearWeights, nearWeights, w1, w1, nearCell, farCell,
-                            nearCell);
-            near = middle;
+    /**
+     * @brief Bridges two edges that share their five samples, one quad per sample pair.
+     *
+     * `from`/`to` are used in the order given and carry their own constant weight set;
+     * `fromCell`/`toCell` follow the same order. Emission is always near-side-first, so
+     * callers pass the spatially-near edge first regardless of which end the ladder was
+     * parameterized from.
+     */
+    void appendEdgeBand(const EdgeVertices& from, const HexTerrainWeights& fromWeights, const EdgeVertices& to,
+                        const HexTerrainWeights& toWeights, const HexCellData* fromCell, const HexCellData* toCell) {
+        for (std::int32_t i = 0; i < 4; ++i) {
+            emitQuadForward(edgeSample(from, i), edgeSample(from, i + 1), edgeSample(to, i), edgeSample(to, i + 1),
+                            fromWeights, fromWeights, toWeights, toWeights, fromCell, toCell, fromCell);
         }
-        emitQuadForward(near.v1, near.v5, far.v1, far.v5, nearWeights, nearWeights, farWeights, farWeights, nearCell,
-                        farCell, nearCell);
+    }
+
+    /**
+     * @brief Terraces a slope between two edges, always walking the ladder from the lower cell.
+     *
+     * Two things have to line up along a terraced edge, and both are direction sensitive
+     * because `HexMetrics::terraceLerp` is asymmetric - the vertical offset uses
+     * `((step + 1) / 2)`, measured from its first argument:
+     *
+     *  1. The band's border has to be the same four-segment polyline as the cell fan's.
+     *     Spanning a band with the single `v1 -> v5` chord does not do that: the samples are
+     *     collinear before perturbation, but `vertex()` displaces each of them
+     *     independently, so the chord and the polyline diverge and every terraced edge
+     *     opens a seam.
+     *  2. The ladder has to start at the same end as the corner patches, which always
+     *     interpolate from the lowest of their three cells (`appendCorner`). Walking from
+     *     whichever cell owns the edge put the two opposite ends together wherever the
+     *     owner was the *higher* cell.
+     *
+     * The bands are still emitted near-side-first, because the quad winding depends on it;
+     * only the parameterization origin changes.
+     *
+     * @param near Edge of the cell emitting this connection.
+     * @param far Edge of the neighbour.
+     * @param nearIsLow Whether `near` is the lower of the two cells.
+     */
+    void appendSlopeTerraces(const EdgeVertices& near, const HexTerrainWeights& nearWeights, const EdgeVertices& far,
+                             const HexTerrainWeights& farWeights, const HexCellData* nearCell,
+                             const HexCellData* farCell, bool nearIsLow) {
+        const EdgeVertices&      low   = nearIsLow ? near : far;
+        const EdgeVertices&      high  = nearIsLow ? far : near;
+        const HexTerrainWeights& lowW  = nearIsLow ? nearWeights : farWeights;
+        const HexTerrainWeights& highW = nearIsLow ? farWeights : nearWeights;
+
+        EdgeVertices      previous  = low;
+        HexTerrainWeights previousW = lowW;
+        for (std::int32_t step = 1; step < HexMetrics::kTerracesPerSlope * 2; ++step) {
+            const EdgeVertices      boundary = EdgeVertices::terraceLerp(low, high, step);
+            const HexTerrainWeights weights =
+                HexTerrainWeights::lerp(lowW, highW, static_cast<float>(step) * HexMetrics::kHorizontalTerraceStepSize);
+            if (nearIsLow)
+                appendEdgeBand(previous, previousW, boundary, weights, nearCell, farCell);
+            else
+                appendEdgeBand(boundary, weights, previous, previousW, nearCell, farCell);
+            previous  = boundary;
+            previousW = weights;
+        }
+        if (nearIsLow)
+            appendEdgeBand(previous, previousW, high, highW, nearCell, farCell);
+        else
+            appendEdgeBand(high, highW, previous, previousW, nearCell, farCell);
     }
 
     // --- edge frames --------------------------------------------------------
