@@ -84,6 +84,12 @@ MCP listening on 127.0.0.1:7529 (newline JSON-RPC; use tools/eve-mcp for Cursor 
 | `eve_render_vision_config` | 设置 / 读取视觉模型配置（baseUrl/apiKey/model/path/timeoutMs，密钥掩码） |
 | `eve_particles_status` / `eve_particles_emit` | 粒子系统状态与发射 |
 | `eve_audio_status` / `eve_audio_set_volume` / `eve_audio_stop_all` | 音频主控 |
+| `eve_editor_target_list` / `eve_editor_target_create` | 编辑器目标发现：列出当前工程可创建的目标类型（带 cap），并按类型创建；`provider` 为空时用该列表现查现建，避免 schema 与实现漂移 |
+| `eve_decal_status` / `eve_decal_project` / `eve_decal_remove` / `eve_decal_clear` / `eve_decal_set_limit` | 贴花查询与投影（`IDecalQuery`）：当前贴花、把包围盒/射线投到网格、清理与上限 |
+| `eve_physics_sphere_cast` | 3D 物理球体扫描（世界由脚本创建；返回命中点/法线/距离） |
+| `eve_world_project_down` | 相机障碍投影（`ICameraObstructionQuery`）：从机位向下取可用落点，供无人值守取景 |
+| `eve_profiler_frame` / `eve_profiler_report` | CPU profiler 采样：当前帧 zone 树与聚合报告（总时长/自耗时/热点） |
+| `eve_sensing_last_query` | 感知模块最近一次查询结果（谁看见了什么，便于排查 AI/视线问题） |
 | `eve_gameplay` | 共享玩法协议：`domains` / `instances` 发现 + `observe` / `actions` / `submit` / `advance` / `events` 驱动玩家的背包、经济账本、对话与手牌（见「玩法域」） |
 
 ### Resources
