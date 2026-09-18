@@ -480,7 +480,7 @@ Result<void> bakeJunction(MeshBuild& mesh, const RoadNetwork& network, const Roa
         // asphalt edge is concave and sidewalks wrap toward the property corner.
         const float ah      = maxAsphalt;
         const float cornerR = std::max(0.75f, jr - ah);
-        const int   segs    = 10;
+        const int   segs    = 16;
         const V3    upN{0.f, 1.f, 0.f};
 
         // Hub fan along the filleted outline (arm tips + concave corner arcs).
@@ -573,26 +573,31 @@ Result<void> bakeJunction(MeshBuild& mesh, const RoadNetwork& network, const Roa
                     const V3    b1 = arcPt(r1, t1);
                     const V3    c0 = arcPt(r2, t0);
                     const V3    c1 = arcPt(r2, t1);
+                    // Slightly inset/outset shared edge so curb and sidewalk tops overlap.
+                    const V3    b0i = arcPt(r1 - 0.02f, t0);
+                    const V3    b1i = arcPt(r1 - 0.02f, t1);
+                    const V3    b0o = arcPt(r1 + 0.02f, t0);
+                    const V3    b1o = arcPt(r1 + 0.02f, t1);
                     const V3 inToCorner = normalize(V3{cx - a0.x, 0.f, cz - a0.z});
                     const V3 outToRoad  = inToCorner * -1.f;
 
                     // Tops: curb annulus then sidewalk annulus (no tip fan to jr,jr).
-                    appendOrientedQuad(mesh, V3{a0.x, curbTop, a0.z}, V3{b0.x, curbTop, b0.z},
-                                       V3{b1.x, curbTop, b1.z}, V3{a1.x, curbTop, a1.z}, upN, 0.f, 1.f, 0.f, 1.f,
+                    appendOrientedQuad(mesh, V3{a0.x, curbTop, a0.z}, V3{b0o.x, curbTop, b0o.z},
+                                       V3{b1o.x, curbTop, b1o.z}, V3{a1.x, curbTop, a1.z}, upN, 0.f, 1.f, 0.f, 1.f,
                                        RoadMaterial::Curb);
-                    appendOrientedQuad(mesh, V3{b0.x, walkY, b0.z}, V3{c0.x, walkY, c0.z}, V3{c1.x, walkY, c1.z},
-                                       V3{b1.x, walkY, b1.z}, upN, 0.f, 1.f, 0.f, 1.f, RoadMaterial::Sidewalk);
+                    appendOrientedQuad(mesh, V3{b0i.x, walkY, b0i.z}, V3{c0.x, walkY, c0.z}, V3{c1.x, walkY, c1.z},
+                                       V3{b1i.x, walkY, b1i.z}, upN, 0.f, 1.f, 0.f, 1.f, RoadMaterial::Sidewalk);
 
-                    // Curb face toward asphalt; curb riser onto sidewalk; outer gray skirt.
-                    // Skirt normal faces the hub so the overhead camera sees the front face
-                    // (property-facing normals were backface-culled to a thin silhouette).
-                    appendOrientedQuad(mesh, V3{a0.x, y, a0.z}, V3{a1.x, y, a1.z}, V3{a1.x, curbTop, a1.z},
-                                       V3{a0.x, curbTop, a0.z}, outToRoad, 0.f, 1.f, 0.f, 1.f, RoadMaterial::Curb);
-                    appendOrientedQuad(mesh, V3{b0.x, walkY, b0.z}, V3{b1.x, walkY, b1.z}, V3{b1.x, curbTop, b1.z},
-                                       V3{b0.x, curbTop, b0.z}, outToRoad, 0.f, 1.f, 0.f, 1.f, RoadMaterial::Curb);
-                    appendOrientedQuad(mesh, V3{c0.x, y, c0.z}, V3{c1.x, y, c1.z}, V3{c1.x, walkY, c1.z},
-                                       V3{c0.x, walkY, c0.z}, outToRoad, 0.f, 1.f, 0.f, 1.f,
-                                       RoadMaterial::Sidewalk);
+                    // Verticals are emitted both ways — overhead and side views both see a front face.
+                    auto wall = [&](V3 p0, V3 p1, float y0, float y1, V3 n, RoadMaterial mat) {
+                        appendOrientedQuad(mesh, V3{p0.x, y0, p0.z}, V3{p1.x, y0, p1.z}, V3{p1.x, y1, p1.z},
+                                           V3{p0.x, y1, p0.z}, n, 0.f, 1.f, 0.f, 1.f, mat);
+                        appendOrientedQuad(mesh, V3{p0.x, y0, p0.z}, V3{p1.x, y0, p1.z}, V3{p1.x, y1, p1.z},
+                                           V3{p0.x, y1, p0.z}, n * -1.f, 0.f, 1.f, 0.f, 1.f, mat);
+                    };
+                    wall(a0, a1, y, curbTop, outToRoad, RoadMaterial::Curb);
+                    wall(b0, b1, walkY, curbTop, outToRoad, RoadMaterial::Curb);
+                    wall(c0, c1, y, walkY, outToRoad, RoadMaterial::Sidewalk);
                 }
             }
         }
