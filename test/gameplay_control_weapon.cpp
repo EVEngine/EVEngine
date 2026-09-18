@@ -1,4 +1,6 @@
 #include "common/Capability.h"
+#include "common/GameplayControlJson.h"
+#include "common/GameplayInstanceCatalog.h"
 #include "inventory/Bag.h"
 #include "inventory/InventoryResourceAccount.h"
 #include "inventory/Item.h"
@@ -69,7 +71,10 @@ TEST_CASE("gameplay.control.weaponUsesCanonicalActionAndAtomicAmmoPayment") {
     ammo.maxStack = 20;
     eve::inventory::ItemRegistry::registerItem(ammo);
     eve::inventory::Bag bag(1);
-    REQUIRE_EQ(bag.addItem("ammo", 2), 2);
+    // 先存到局部变量再断言：REQUIRE_EQ/CHECK_EQ 会求值两次，直接写 `REQUIRE_EQ(bag.addItem(...), n)`
+    // 会真的加两次弹药，后面的扣减断言便永远不成立。
+    const int stocked = bag.addItem("ammo", 2);
+    REQUIRE_EQ(stocked, 2);
     eve::inventory::InventoryResourceAccount account(bag);
     Effect effect;
     eve::weapon::WeaponDefinition definition;
@@ -101,6 +106,22 @@ TEST_CASE("gameplay.control.weaponUsesCanonicalActionAndAtomicAmmoPayment") {
     CHECK_EQ(bag.countItem("ammo"), 1);
     CHECK(effect.committed);
 
+    // 目录能力：该适配器服务的就是这一个实例，`instances` 因此能列出它。
+    const auto catalogInstances = control.gameplayInstances();
+    REQUIRE_EQ(catalogInstances.size(), std::size_t{1});
+    CHECK_EQ(catalogInstances[0].format(), instance.format());
+    eve::IGameplayInstanceCatalog* catalog = nullptr;
+    eve::cap::forEach<eve::IGameplayInstanceCatalog>([&](auto* candidate) {
+        if (candidate != nullptr && candidate->gameplayDomain() == "weapon") catalog = candidate;
+    });
+    REQUIRE(catalog != nullptr);
+    CHECK_EQ(catalog->gameplayInstances().size(), std::size_t{1});
+
+    auto scoped = eve::executeGameplayControlJson(
+        R"({"schemaId":"evengine.gameplay-control-request","schemaVersion":1,"op":"instances","domain":"weapon"})");
+    REQUIRE(scoped.ok());
+    CHECK(scoped.value().find(instance.format()) != std::string::npos);
+
     auto stale = control.submitGameplay(player, instance, fireCommand("weapon-fire-stale", wielder, before));
     CHECK(!stale.ok());
     CHECK_EQ(stale.code(), eve::StatusCode::Conflict);
@@ -119,7 +140,8 @@ TEST_CASE("gameplay.control.weaponRejectsUnauthorizedWielderWithoutCharging") {
     ammo.maxStack = 20;
     eve::inventory::ItemRegistry::registerItem(ammo);
     eve::inventory::Bag bag(1);
-    REQUIRE_EQ(bag.addItem("ammo", 1), 1);
+    const int           stockedGuard = bag.addItem("ammo", 1);
+    REQUIRE_EQ(stockedGuard, 1);
     eve::inventory::InventoryResourceAccount account(bag);
     Effect effect;
     eve::weapon::WeaponDefinition definition;

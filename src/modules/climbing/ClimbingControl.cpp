@@ -63,11 +63,22 @@ ClimbingControl::ClimbingControl(SubjectRef instance, SubjectRef character,
                                  const ClimbingPose& pose)
     : instance_(instance), character_(character), runtime_(&runtime), world_(&world), pose_(&pose) {
     cap::addListener<IGameplayControlProvider>(this);
+    cap::addListener<IGameplayInstanceCatalog>(this);
 }
 
-ClimbingControl::~ClimbingControl() { cap::removeListener<IGameplayControlProvider>(this); }
+ClimbingControl::~ClimbingControl() {
+    cap::removeListener<IGameplayInstanceCatalog>(this);
+    cap::removeListener<IGameplayControlProvider>(this);
+}
 
 std::string_view ClimbingControl::gameplayDomain() const noexcept { return "climbing"; }
+
+std::vector<SubjectRef> ClimbingControl::gameplayInstances() const {
+    // This adapter serves exactly one instance: the identity it was constructed
+    // with is the only one it can answer for.
+    if (!instance_.isValid()) return {};
+    return {instance_};
+}
 
 bool ClimbingControl::controls(const GameplaySession& session) const {
     return session.access != GameplayAccess::PlayerEquivalent ||

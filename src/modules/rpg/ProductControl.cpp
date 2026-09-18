@@ -86,11 +86,22 @@ ProductControl::ProductControl(SubjectRef instance, GameState& gameState, Tracke
                                inventory::Bag& bag)
     : instance_(instance), gameState_(&gameState), tracker_(&tracker), bag_(&bag) {
     cap::addListener<IGameplayControlProvider>(this);
+    cap::addListener<IGameplayInstanceCatalog>(this);
 }
 
-ProductControl::~ProductControl() { cap::removeListener<IGameplayControlProvider>(this); }
+ProductControl::~ProductControl() {
+    cap::removeListener<IGameplayInstanceCatalog>(this);
+    cap::removeListener<IGameplayControlProvider>(this);
+}
 
 std::string_view ProductControl::gameplayDomain() const noexcept { return "rpg.product"; }
+
+std::vector<SubjectRef> ProductControl::gameplayInstances() const {
+    // This adapter serves exactly one instance: the identity it was constructed
+    // with is the only one it can answer for.
+    if (!instance_.isValid()) return {};
+    return {instance_};
+}
 
 bool ProductControl::controls(const GameplaySession& session) const {
     return session.access != GameplayAccess::PlayerEquivalent ||
