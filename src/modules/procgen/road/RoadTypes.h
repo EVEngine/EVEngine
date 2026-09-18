@@ -18,17 +18,17 @@ struct RoadControlPoint {
 /** @brief Cross-section and structural style for one road edge. */
 struct RoadStyle {
     float laneWidth      = 3.5f;
-    float curbWidth      = 0.35f;
-    float curbHeight     = 0.18f;
-    float sidewalkWidth  = 1.6f;
-    float sidewalkHeight = 0.12f;
-    float deckThickness  = 0.55f;
-    float pierWidth      = 1.1f;
-    float pierDepth      = 1.1f;
-    float pierSpacing    = 12.f;
-    float pierClearance  = 1.25f;
-    float markingWidth   = 0.12f;
-    float dashLength     = 3.f;
+    float curbWidth      = 0.55f;   ///< Jersey-barrier thickness.
+    float curbHeight     = 0.95f;   ///< Raised barrier height (reference look).
+    float sidewalkWidth  = 1.8f;
+    float sidewalkHeight = 0.16f;
+    float deckThickness  = 0.85f;
+    float pierWidth      = 1.45f;
+    float pierDepth      = 1.45f;
+    float pierSpacing    = 11.f;
+    float pierClearance  = 1.5f;
+    float markingWidth   = 0.20f;
+    float dashLength     = 3.5f;
     float dashGap        = 3.f;
     float uvMeters       = 8.f;
 };
@@ -88,6 +88,7 @@ enum class RoadMaterial : std::uint8_t {
     Deck,
     Pier,
     Marking,
+    MarkingYellow,
     Nav,
 };
 

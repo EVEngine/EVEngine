@@ -14,8 +14,8 @@ struct RoadBakeOptions {
     bool  includeMarkings     = true;
     bool  includeNavigation   = true;
     bool  includeJunctions    = true;
-    float navRibbonHalfWidth  = 0.06f;
-    float arrowSpacing        = 6.f;
+    float navRibbonHalfWidth  = 0.22f;
+    float arrowSpacing        = 5.f;
 };
 
 /** @brief Owning bake result: triangle mesh groups plus overlay polylines. */

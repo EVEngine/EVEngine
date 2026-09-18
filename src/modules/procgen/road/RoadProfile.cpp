@@ -41,6 +41,7 @@ const char* roadMaterialGroup(RoadMaterial material) noexcept {
         case RoadMaterial::Deck: return "deck";
         case RoadMaterial::Pier: return "pier";
         case RoadMaterial::Marking: return "marking";
+        case RoadMaterial::MarkingYellow: return "markingYellow";
         case RoadMaterial::Nav: return "nav";
     }
     return "asphalt";
@@ -58,23 +59,27 @@ Result<RoadProfile> makeRoadProfile(const RoadStyle& style, int lanesForward, in
 
     const float asphaltHalf =
         0.5f * style.laneWidth * static_cast<float>(lanesForward + lanesBackward);
-    const float curbOuter     = asphaltHalf + style.curbWidth;
-    const float sidewalkOuter = curbOuter + style.sidewalkWidth;
+    const float barrierInner  = asphaltHalf;
+    const float barrierOuter  = asphaltHalf + style.curbWidth;
+    const float sidewalkOuter = barrierOuter + style.sidewalkWidth;
+    const float barrierTop    = style.curbHeight;
+    const float walkH         = style.sidewalkHeight;
 
     RoadProfile profile;
     profile.halfWidth = sidewalkOuter;
 
-    // Open U-channel from left sidewalk outer → right sidewalk outer (driving surface on top).
-    pushPoint(profile, -sidewalkOuter, style.sidewalkHeight, RoadMaterial::Sidewalk);
-    pushPoint(profile, -curbOuter, style.sidewalkHeight, RoadMaterial::Sidewalk);
-    pushPoint(profile, -curbOuter, style.curbHeight, RoadMaterial::Curb);
-    pushPoint(profile, -asphaltHalf, style.curbHeight, RoadMaterial::Curb);
-    pushPoint(profile, -asphaltHalf, 0.f, RoadMaterial::Asphalt);
-    pushPoint(profile, asphaltHalf, 0.f, RoadMaterial::Asphalt);
-    pushPoint(profile, asphaltHalf, style.curbHeight, RoadMaterial::Curb);
-    pushPoint(profile, curbOuter, style.curbHeight, RoadMaterial::Curb);
-    pushPoint(profile, curbOuter, style.sidewalkHeight, RoadMaterial::Sidewalk);
-    pushPoint(profile, sidewalkOuter, style.sidewalkHeight, RoadMaterial::Sidewalk);
+    // Jersey-barrier U-channel matching the reference interchange look:
+    // sidewalk → tall barrier outer/top/inner → asphalt deck → mirror.
+    pushPoint(profile, -sidewalkOuter, walkH, RoadMaterial::Sidewalk);
+    pushPoint(profile, -barrierOuter, walkH, RoadMaterial::Sidewalk);
+    pushPoint(profile, -barrierOuter, barrierTop, RoadMaterial::Curb);
+    pushPoint(profile, -barrierInner, barrierTop, RoadMaterial::Curb);
+    pushPoint(profile, -barrierInner, 0.f, RoadMaterial::Curb);
+    pushPoint(profile, barrierInner, 0.f, RoadMaterial::Asphalt);
+    pushPoint(profile, barrierInner, barrierTop, RoadMaterial::Curb);
+    pushPoint(profile, barrierOuter, barrierTop, RoadMaterial::Curb);
+    pushPoint(profile, barrierOuter, walkH, RoadMaterial::Sidewalk);
+    pushPoint(profile, sidewalkOuter, walkH, RoadMaterial::Sidewalk);
 
     return Result<RoadProfile>::success(std::move(profile));
 }
