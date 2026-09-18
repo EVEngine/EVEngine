@@ -121,6 +121,7 @@ Windows 本地直接跑同样的命令即可：脚本自身按 UTF-8 写 stdout/
 |---|---|
 | [procgen](procgen/README.md) | 六种地图算法（BSP / Cellular / Drunkard / Maze / 地形 / WFC）+ 纹理配方 |
 | [procgen-script-pipeline](procgen-script-pipeline/README.md) | 纯脚本 PointSet 组合、确定性 seed、事务式 hot reload |
+| [tileworld-graph-dungeon](tileworld-graph-dungeon/README.md) | TileWorldCreator 风格 GridGraph + PointGraph + MeshGraph 混合地牢、分层构建、增量簇更新与可选物理碰撞 |
 | [pcg-biome](pcg-biome/README.md) | UE PCG 风格空间数据、多层运行时 Cell、时间预算与 Scene 实例批次 |
 | [pcg-runtime-orchestration](pcg-runtime-orchestration/README.md) | Pcg 运行时编排的数值契约：运行时盖章器 + 生成进度 + 任务队列（无 GPU 场景，等价脚本级单测） |
 | [pcg-location-system](pcg-location-system/README.md) | 位置书签：相机位姿 + 玩家位姿 + 控制器 + 场景名的命名书签存取与取景 |
