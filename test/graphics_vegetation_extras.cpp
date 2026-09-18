@@ -468,7 +468,7 @@ TEST_CASE("graphics.vegetation.vertex_array_scales_each_object_from_its_world_pi
 
     VegetationField   field;
     VegetationGlobals globals;
-    globals.vertex = {0, 0, 0, .25f};
+    globals.vertex = {0, 0, 0, .5f};
     VegetationElement right;
     right.channel  = VegetationChannel::Vertex;
     right.shape    = VegetationShape::Box;
