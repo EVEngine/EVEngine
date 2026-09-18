@@ -14,12 +14,14 @@ find_package(Python3 REQUIRED COMPONENTS Interpreter)
 # of headers one translation unit included, not thousands of repo paths.
 string(REPLACE ";" "," _eve_binding_contract_modules "${EVE_ENABLED_MODULES}")
 set(_eve_binding_contract_cpp "${CMAKE_CURRENT_BINARY_DIR}/common/BindingContracts.generated.cpp")
+set(_eve_binding_contract_json "${CMAKE_CURRENT_BINARY_DIR}/common/eve-api.json")
 add_custom_command(
-    OUTPUT "${_eve_binding_contract_cpp}"
+    OUTPUT "${_eve_binding_contract_cpp}" "${_eve_binding_contract_json}"
     COMMAND "${Python3_EXECUTABLE}" "${CMAKE_SOURCE_DIR}/scripts/generate_binding_contracts.py"
             --modules "${_eve_binding_contract_modules}"
             --platform "${BUILD_PLATFORM}"
             --output "${_eve_binding_contract_cpp}"
+            --json-output "${_eve_binding_contract_json}"
     DEPENDS "${CMAKE_SOURCE_DIR}/scripts/generate_binding_contracts.py"
     COMMENT "Generating strict EveScript Binding Contracts"
     VERBATIM)
