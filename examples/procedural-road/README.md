@@ -20,3 +20,8 @@ VK_ICD_FILENAMES=/usr/share/vulkan/icd.d/lvp_icd.json ALSOFT_DRIVERS=null \
 
 配方参数：`scene=straight|curve|bridge|cross|interchange`，另有 `mesh.roadNetwork` / `tex.roadMarkings`。
 设计说明见 `docs/dev/程序化道路系统设计.md`。
+
+> Cloud / Lavapipe 注意：本机无 GPU，Vulkan ICD 是 Mesa Lavapipe（“显存”走主机 RAM）。
+> 立交 + 桥墩在约 15Gi 主机内存上会被 Linux OOM killer 杀掉（`dmesg` 可见
+> `Killed process … (eve) anon-rss:~15Gi`）。这与真实显卡的 32G VRAM 无关；
+> 本地有 GPU 时直接 `make run GAME=examples/procedural-road` 即可看完整桥墩。
