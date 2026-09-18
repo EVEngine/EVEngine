@@ -362,6 +362,8 @@ TEST_CASE("procgen.road.scenes.crossJunctionCornerSidewalks") {
     CHECK_EQ(downHits, 0);
 }
 
+
+
 TEST_CASE("procgen.road.scenes.crossJunctionArmApronSeam") {
     auto cross = RoadNetwork::makeCross(28.f, 2);
     REQUIRE(cross.ok());
