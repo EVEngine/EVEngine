@@ -2902,9 +2902,17 @@ void main() {
     float linearDepth = clamp((viewDepth - nearZ) / (farZ - nearZ), 0.0, 1.0);
     outColor = vec4(color, linearDepth);
 }
-)GLSL";
+    )GLSL";
     try {
-        return gfx->newMeshShader(fragment);
+        auto *shader = gfx->newMeshShader(fragment);
+        if (!shader) return nullptr;
+        for (int slot = 0; slot < 4; ++slot)
+            shader->declareVec4("terrainLayer" + std::to_string(slot) + "ST");
+        shader->declareVec4("terrainMetallic");
+        shader->declareVec4("terrainNormalScale", 1.f, 1.f, 1.f, 1.f);
+        shader->declareVec4("terrainSmoothness");
+        shader->declareVec4("terrainFeatures");
+        return shader;
     } catch (const std::exception &e) {
         lastError_ = std::string("createTerrainMaterialShader: ") + e.what();
         return nullptr;

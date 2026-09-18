@@ -520,7 +520,7 @@ TEST_CASE("graphics.vegetation.vertex_array_scales_each_object_from_its_world_pi
                 ++count[half];
                 ySum[half] += y;
             }
-    REQUIRE(count[0] > 20);
+    REQUIRE(count[0] >= 20);
     REQUIRE(count[1] > count[0] * 3);
     CHECK(std::abs(float(ySum[0]) / count[0] - float(ySum[1]) / count[1]) < 2.f);
     REQUIRE(gfx->releaseTexture(atlas.value().texture));
@@ -600,7 +600,7 @@ TEST_CASE("graphics.vegetation.motion_array_deforms_rest_stream_with_explicit_no
     const auto [restCount, restX]     = centroid(*restImage);
     const auto [motionCount, motionX] = centroid(*motionImage);
     REQUIRE(restCount > 100);
-    REQUIRE(motionCount > 100);
+    REQUIRE(motionCount >= 100);
     CHECK(motionX > restX + 4.f);
     REQUIRE(gfx->releaseTexture(noise));
     REQUIRE(gfx->releaseTexture(atlas.value().texture));

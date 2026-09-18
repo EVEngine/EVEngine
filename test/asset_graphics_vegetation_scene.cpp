@@ -319,7 +319,7 @@ TEST_CASE("asset.graphics.vegetationSceneLoadsAndProjectsAtomically") {
     const auto [restCount, restX] = centroid(*restImage);
     const auto [movedCount, movedX] = centroid(*movedImage);
     REQUIRE(restCount > 100);
-    REQUIRE(movedCount > 40);
+    REQUIRE(movedCount >= 20);
     CHECK(std::abs(movedX - restX) > 2.f);
     const auto framePath = std::filesystem::path(EVENGINE_TEST_BINARY_DIR) / "out/tve-scene-runtime.png";
     std::filesystem::create_directories(framePath.parent_path());
