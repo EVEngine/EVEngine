@@ -11,6 +11,7 @@
 
 #include <cmath>
 #include <string>
+#include <vector>
 
 using namespace eve;
 using namespace eve::procgen;
@@ -188,3 +189,115 @@ TEST_CASE("procgen.road.scenes.fourSimpleBakeClean") {
     CHECK_GT(mesh.getVertexCount(), 40);
     CHECK(!RoadNetwork::makeScene("nope", 20.f, 4.f, 2, 1).ok());
 }
+
+
+TEST_CASE("procgen.road.scenes.crossJunctionHasCenterAsphalt") {
+    auto cross = RoadNetwork::makeCross(28.f, 2);
+    REQUIRE(cross.ok());
+    RoadBakeOptions options;
+    options.pathSegmentsPerEdge = 20;
+    options.includeJunctions = true;
+    options.includeNavigation = false;
+    options.includePiers = false;
+    auto baked = bakeRoadNetwork(cross.value(), options);
+    REQUIRE(baked.ok());
+    const auto& m = baked.value().mesh;
+    int asphaltGroup = -1;
+    for (int g = 0; g < m.getGroupCount(); ++g) {
+        if (m.getGroupName(g) == "asphalt") asphaltGroup = g;
+    }
+    CHECK_GE(asphaltGroup, 0);
+    auto asphalt = m.copyGroup(asphaltGroup);
+    REQUIRE(asphalt);
+    int near = 0;
+    float minX=1e9,maxX=-1e9,minZ=1e9,maxZ=-1e9;
+    for (int i = 0; i < asphalt->getVertexCount(); ++i) {
+        const float x = asphalt->getPositionX(i);
+        const float z = asphalt->getPositionZ(i);
+        if (std::fabs(x) < 3.f && std::fabs(z) < 3.f) {
+            ++near;
+            minX=std::min(minX,x); maxX=std::max(maxX,x);
+            minZ=std::min(minZ,z); maxZ=std::max(maxZ,z);
+        }
+    }
+    // Does any asphalt triangle cover the origin in XZ?
+    int cover = 0;
+    for (int t = 0; t < asphalt->getIndexCount() / 3; ++t) {
+        const int i0 = asphalt->getIndex(t * 3 + 0);
+        const int i1 = asphalt->getIndex(t * 3 + 1);
+        const int i2 = asphalt->getIndex(t * 3 + 2);
+        const float x0 = asphalt->getPositionX(i0), z0 = asphalt->getPositionZ(i0);
+        const float x1 = asphalt->getPositionX(i1), z1 = asphalt->getPositionZ(i1);
+        const float x2 = asphalt->getPositionX(i2), z2 = asphalt->getPositionZ(i2);
+        // barycentric in XZ for (0,0)
+        const float den = (z1 - z2) * (x0 - x2) + (x2 - x1) * (z0 - z2);
+        if (std::fabs(den) < 1e-8f) continue;
+        const float a = ((z1 - z2) * (0.f - x2) + (x2 - x1) * (0.f - z2)) / den;
+        const float b = ((z2 - z0) * (0.f - x2) + (x0 - x2) * (0.f - z2)) / den;
+        const float c = 1.f - a - b;
+        if (a >= -1e-4f && b >= -1e-4f && c >= -1e-4f) {
+            ++cover;
+        }
+    }
+    CHECK_GT(cover, 0);
+}
+
+
+
+
+TEST_CASE("procgen.road.scenes.pierUprightFootprint") {
+    auto bridge = RoadNetwork::makeBridge(30.f, 5.f, 2);
+    REQUIRE(bridge.ok());
+    RoadBakeOptions options;
+    options.pathSegmentsPerEdge = 24;
+    options.includePiers = true;
+    options.includeJunctions = false;
+    options.includeNavigation = false;
+    auto baked = bakeRoadNetwork(bridge.value(), options);
+    REQUIRE(baked.ok());
+    int pierGroup = -1;
+    for (int g = 0; g < baked.value().mesh.getGroupCount(); ++g)
+        if (baked.value().mesh.getGroupName(g) == "pier") pierGroup = g;
+    REQUIRE(pierGroup >= 0);
+    auto pier = baked.value().mesh.copyGroup(pierGroup);
+    REQUIRE(pier);
+    // Cluster by X into piers; for each pier check top/bottom XZ extents match
+    struct Vert { float x,y,z; };
+    std::vector<Vert> verts;
+    for (int i = 0; i < pier->getVertexCount(); ++i)
+        verts.push_back({pier->getPositionX(i), pier->getPositionY(i), pier->getPositionZ(i)});
+    // unique pier centers roughly by rounding X
+    std::vector<float> centers;
+    for (const auto& v : verts) {
+        bool found = false;
+        for (float c : centers) if (std::fabs(c - v.x) < 1.5f) { found = true; break; }
+        if (!found) centers.push_back(v.x);
+    }
+    for (float cx : centers) {
+        float minXb=1e9,maxXb=-1e9,minZb=1e9,maxZb=-1e9;
+        float minXt=1e9,maxXt=-1e9,minZt=1e9,maxZt=-1e9;
+        float minY=1e9,maxY=-1e9;
+        for (const auto& v : verts) {
+            if (std::fabs(v.x - cx) > 2.0f) continue;
+            minY=std::min(minY,v.y); maxY=std::max(maxY,v.y);
+        }
+        const float yCut = minY + 0.15f * (maxY - minY);
+        const float yTop = maxY - 0.15f * (maxY - minY);
+        for (const auto& v : verts) {
+            if (std::fabs(v.x - cx) > 2.0f) continue;
+            if (v.y <= yCut) {
+                minXb=std::min(minXb,v.x); maxXb=std::max(maxXb,v.x);
+                minZb=std::min(minZb,v.z); maxZb=std::max(maxZb,v.z);
+            }
+            if (v.y >= yTop) {
+                minXt=std::min(minXt,v.x); maxXt=std::max(maxXt,v.x);
+                minZt=std::min(minZt,v.z); maxZt=std::max(maxZt,v.z);
+            }
+        }
+        const float dx = std::fabs((minXb+maxXb)*0.5f - (minXt+maxXt)*0.5f);
+        const float dz = std::fabs((minZb+maxZb)*0.5f - (minZt+maxZt)*0.5f);
+        CHECK_LT(dx, 0.05f);
+        CHECK_LT(dz, 0.05f);
+    }
+}
+
