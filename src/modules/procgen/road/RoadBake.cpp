@@ -574,24 +574,24 @@ Result<void> bakeJunction(MeshBuild& mesh, const RoadNetwork& network, const Roa
                     const V3    b1 = arcPt(r1, t1);
                     const V3    c0 = arcPt(r2, t0);
                     const V3    c1 = arcPt(r2, t1);
-                    // Toward the outer corner center (sidewalk side).
+                    // Toward the outer corner center (property side) / toward asphalt.
                     const V3 inToCorner = normalize(V3{cx - a0.x, 0.f, cz - a0.z});
                     const V3 outToRoad  = inToCorner * -1.f;
 
-                    // Tops: asphalt-face → curb → sidewalk → corner disk, all +Y.
+                    // Tops: asphalt-face → curb → sidewalk ring. No fan to (jr,jr) —
+                    // that disk tip is the sharp property-corner spike.
                     appendOrientedQuad(mesh, V3{a0.x, curbTop, a0.z}, V3{b0.x, curbTop, b0.z},
                                        V3{b1.x, curbTop, b1.z}, V3{a1.x, curbTop, a1.z}, upN, 0.f, 1.f, 0.f, 1.f,
                                        RoadMaterial::Curb);
                     appendOrientedQuad(mesh, V3{b0.x, walkY, b0.z}, V3{c0.x, walkY, c0.z}, V3{c1.x, walkY, c1.z},
                                        V3{b1.x, walkY, b1.z}, upN, 0.f, 1.f, 0.f, 1.f, RoadMaterial::Sidewalk);
-                    appendOrientedTri(mesh, V3{cx, walkY, cz}, V3{c0.x, walkY, c0.z}, V3{c1.x, walkY, c1.z}, upN,
-                                      RoadMaterial::Sidewalk);
 
-                    // Vertical curb face toward asphalt / toward corner.
+                    // Vertical curb toward asphalt; sidewalk skirt on the outer gray arc.
                     appendOrientedQuad(mesh, V3{a0.x, y, a0.z}, V3{a1.x, y, a1.z}, V3{a1.x, curbTop, a1.z},
                                        V3{a0.x, curbTop, a0.z}, outToRoad, 0.f, 1.f, 0.f, 1.f, RoadMaterial::Curb);
-                    appendOrientedQuad(mesh, V3{c0.x, y, c0.z}, V3{c1.x, y, c1.z}, V3{c1.x, curbTop, c1.z},
-                                       V3{c0.x, curbTop, c0.z}, inToCorner, 0.f, 1.f, 0.f, 1.f, RoadMaterial::Curb);
+                    appendOrientedQuad(mesh, V3{c0.x, y, c0.z}, V3{c1.x, y, c1.z}, V3{c1.x, walkY, c1.z},
+                                       V3{c0.x, walkY, c0.z}, inToCorner, 0.f, 1.f, 0.f, 1.f,
+                                       RoadMaterial::Sidewalk);
                 }
             }
         }
