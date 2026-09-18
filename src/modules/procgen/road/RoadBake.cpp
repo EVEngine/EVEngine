@@ -299,8 +299,11 @@ Result<void> bakeEdgeGeometry(MeshBuild& mesh, RoadOverlay& overlay, const RoadN
     if (!fromNode.ok() || !toNode.ok())
         return bakeFail<void>(DiagnosticCode::NotFound, "edge endpoints missing during bake");
 
-    const float trimStart = std::min(fromNode.value().junctionRadius, pathLength.value() * 0.35f);
-    const float trimEnd   = std::min(toNode.value().junctionRadius, pathLength.value() * 0.35f);
+    // Honour full junctionRadius so filleted corners meet the arm tips. Only
+    // clamp when the edge is too short to keep a usable mid-strip.
+    const float maxTrim   = std::max(0.f, pathLength.value() * 0.5f - 0.5f);
+    const float trimStart = std::min(fromNode.value().junctionRadius, maxTrim);
+    const float trimEnd   = std::min(toNode.value().junctionRadius, maxTrim);
     if (trimStart + trimEnd >= pathLength.value() - 0.5f)
         return Result<void>::success();  // fully inside junction; skip strip
 
@@ -437,53 +440,59 @@ Result<void> bakeJunction(MeshBuild& mesh, const RoadNetwork& network, const Roa
     // Asphalt fill. Fan from a hub vertex — a single large strip-quad can vanish
     // under Lavapipe even when the CPU triangles cover the origin.
     if (axisCross) {
-        // Filleted apron: arm tips at jr plus quarter-circle curb returns.
+        // Filleted apron built from simple pieces (Lavapipe drops some large fans).
         // Arms trim at jr = asphaltHalf + cornerR so sidewalks no longer stack.
         const float ah      = maxAsphalt;
         const float cornerR = std::max(0.75f, jr - ah);
         const int   segs    = 10;
-        std::vector<std::pair<float, float>> rim;
-        rim.reserve(static_cast<std::size_t>(4 * (segs + 3)));
-        auto pushPt = [&](float x, float z) {
-            if (!rim.empty() && std::fabs(rim.back().first - x) < 1e-4f &&
-                std::fabs(rim.back().second - z) < 1e-4f)
-                return;
-            rim.emplace_back(x, z);
-        };
-        auto pushArc = [&](int sx, int sz, bool reverse) {
-            const float sxf = static_cast<float>(sx);
-            const float szf = static_cast<float>(sz);
-            const float cx  = node.x + sxf * ah;
-            const float cz  = node.z + szf * ah;
-            for (int i = 0; i <= segs; ++i) {
-                const int   ii = reverse ? (segs - i) : i;
-                const float t  = static_cast<float>(ii) / static_cast<float>(segs);
-                const float th = t * 1.5707963f;
-                pushPt(cx + sxf * cornerR * std::cos(th), cz + szf * cornerR * std::sin(th));
-            }
-        };
-        // CCW rim (looking down +Y): east tip → SE arc → south tip → …
-        pushPt(node.x + jr, node.z - ah);
-        pushPt(node.x + jr, node.z + ah);
-        pushArc(+1, +1, false);
-        pushPt(node.x - ah, node.z + jr);
-        pushArc(-1, +1, true);
-        pushPt(node.x - jr, node.z - ah);
-        pushArc(-1, -1, false);
-        pushPt(node.x + ah, node.z - jr);
-        pushArc(+1, -1, true);
-
-        const auto base = static_cast<std::uint32_t>(mesh.getVertexCount());
         mesh.setActiveGroup(roadMaterialGroup(RoadMaterial::Asphalt));
-        mesh.addVertex(node.x, asphaltY, node.z, 0.f, 1.f, 0.f, 0.5f, 0.5f);
-        for (const auto& p : rim) {
-            mesh.addVertex(p.first, asphaltY, p.second, 0.f, 1.f, 0.f, 0.5f, 0.5f);
-        }
-        const auto rimCount = static_cast<std::uint32_t>(rim.size());
-        for (std::uint32_t i = 0; i < rimCount; ++i) {
-            const auto i0 = base + 1u + i;
-            const auto i1 = base + 1u + ((i + 1u) % rimCount);
-            mesh.addTriangle(base, i1, i0);
+        auto addAsphaltTri = [&](float x0, float z0, float x1, float z1, float x2, float z2) {
+            const auto b = static_cast<std::uint32_t>(mesh.getVertexCount());
+            mesh.addVertex(x0, asphaltY, z0, 0.f, 1.f, 0.f, 0.5f, 0.5f);
+            mesh.addVertex(x1, asphaltY, z1, 0.f, 1.f, 0.f, 0.5f, 0.5f);
+            mesh.addVertex(x2, asphaltY, z2, 0.f, 1.f, 0.f, 0.5f, 0.5f);
+            // Both windings — Lavapipe has dropped single-sided apron fans before.
+            mesh.addTriangle(b, b + 1, b + 2);
+            mesh.addTriangle(b, b + 2, b + 1);
+        };
+        auto addAsphaltQuad = [&](float x0, float z0, float x1, float z1, float x2, float z2, float x3, float z3) {
+            addAsphaltTri(x0, z0, x1, z1, x2, z2);
+            addAsphaltTri(x0, z0, x2, z2, x3, z3);
+        };
+        // Center driving square.
+        addAsphaltQuad(node.x - ah, node.z - ah, node.x + ah, node.z - ah, node.x + ah, node.z + ah, node.x - ah,
+                       node.z + ah);
+        // Arm tip rectangles out to jr.
+        addAsphaltQuad(node.x - ah, node.z + ah, node.x + ah, node.z + ah, node.x + ah, node.z + jr, node.x - ah,
+                       node.z + jr);
+        addAsphaltQuad(node.x - ah, node.z - jr, node.x + ah, node.z - jr, node.x + ah, node.z - ah, node.x - ah,
+                       node.z - ah);
+        addAsphaltQuad(node.x + ah, node.z - ah, node.x + jr, node.z - ah, node.x + jr, node.z + ah, node.x + ah,
+                       node.z + ah);
+        addAsphaltQuad(node.x - jr, node.z - ah, node.x - ah, node.z - ah, node.x - ah, node.z + ah, node.x - jr,
+                       node.z + ah);
+        // Quarter-disk fillets in each corner.
+        for (int sx : {-1, 1}) {
+            for (int sz : {-1, 1}) {
+                const float sxf = static_cast<float>(sx);
+                const float szf = static_cast<float>(sz);
+                const float cx  = node.x + sxf * ah;
+                const float cz  = node.z + szf * ah;
+                for (int i = 0; i < segs; ++i) {
+                    const float t0 = static_cast<float>(i) / static_cast<float>(segs);
+                    const float t1 = static_cast<float>(i + 1) / static_cast<float>(segs);
+                    const float th0 = t0 * 1.5707963f;
+                    const float th1 = t1 * 1.5707963f;
+                    const float x0 = cx + sxf * cornerR * std::cos(th0);
+                    const float z0 = cz + szf * cornerR * std::sin(th0);
+                    const float x1 = cx + sxf * cornerR * std::cos(th1);
+                    const float z1 = cz + szf * cornerR * std::sin(th1);
+                    if ((sx * sz) > 0)
+                        addAsphaltTri(cx, cz, x1, z1, x0, z0);
+                    else
+                        addAsphaltTri(cx, cz, x0, z0, x1, z1);
+                }
+            }
         }
 
         // Quarter-circle curb + sidewalk returns in the freed corner rings.
@@ -504,8 +513,10 @@ Result<void> bakeJunction(MeshBuild& mesh, const RoadNetwork& network, const Roa
             for (int sz : {-1, 1}) {
                 const float sxf = static_cast<float>(sx);
                 const float szf = static_cast<float>(sz);
-                const float cx  = node.x + sxf * ah;
-                const float cz  = node.z + szf * ah;
+                // X or Z mirror flips the parametric sweep to CW; reverse strip order.
+                const bool  flip = (sx * sz) < 0;
+                const float cx   = node.x + sxf * ah;
+                const float cz   = node.z + szf * ah;
                 auto        arcPt = [&](float radius, float t) {
                     const float th = t * 1.5707963f;
                     return V3{cx + sxf * radius * std::cos(th), 0.f, cz + szf * radius * std::sin(th)};
@@ -523,19 +534,43 @@ Result<void> bakeJunction(MeshBuild& mesh, const RoadNetwork& network, const Roa
                         V3 n{p.x - cx, 0.f, p.z - cz};
                         return normalize(n);
                     };
-                    appendStripQuad(mesh, V3{a0.x, curbTop, a0.z}, V3{b0.x, curbTop, b0.z}, V3{b1.x, curbTop, b1.z},
-                                    V3{a1.x, curbTop, a1.z}, up, 0.f, 1.f, 0.f, 1.f, RoadMaterial::Curb);
-                    appendStripQuad(mesh, V3{b0.x, walkY, b0.z}, V3{c0.x, walkY, c0.z}, V3{c1.x, walkY, c1.z},
-                                    V3{b1.x, walkY, b1.z}, up, 0.f, 1.f, 0.f, 1.f, RoadMaterial::Sidewalk);
+                    if (!flip) {
+                        appendStripQuad(mesh, V3{a0.x, curbTop, a0.z}, V3{b0.x, curbTop, b0.z}, V3{b1.x, curbTop, b1.z},
+                                        V3{a1.x, curbTop, a1.z}, up, 0.f, 1.f, 0.f, 1.f, RoadMaterial::Curb);
+                        appendStripQuad(mesh, V3{b0.x, walkY, b0.z}, V3{c0.x, walkY, c0.z}, V3{c1.x, walkY, c1.z},
+                                        V3{b1.x, walkY, b1.z}, up, 0.f, 1.f, 0.f, 1.f, RoadMaterial::Sidewalk);
+                        // Opposite winding for Lavapipe.
+                        appendStripQuad(mesh, V3{a0.x, curbTop, a0.z}, V3{a1.x, curbTop, a1.z}, V3{b1.x, curbTop, b1.z},
+                                        V3{b0.x, curbTop, b0.z}, up, 0.f, 1.f, 0.f, 1.f, RoadMaterial::Curb);
+                        appendStripQuad(mesh, V3{b0.x, walkY, b0.z}, V3{b1.x, walkY, b1.z}, V3{c1.x, walkY, c1.z},
+                                        V3{c0.x, walkY, c0.z}, up, 0.f, 1.f, 0.f, 1.f, RoadMaterial::Sidewalk);
+                    } else {
+                        appendStripQuad(mesh, V3{a0.x, curbTop, a0.z}, V3{a1.x, curbTop, a1.z}, V3{b1.x, curbTop, b1.z},
+                                        V3{b0.x, curbTop, b0.z}, up, 0.f, 1.f, 0.f, 1.f, RoadMaterial::Curb);
+                        appendStripQuad(mesh, V3{b0.x, walkY, b0.z}, V3{b1.x, walkY, b1.z}, V3{c1.x, walkY, c1.z},
+                                        V3{c0.x, walkY, c0.z}, up, 0.f, 1.f, 0.f, 1.f, RoadMaterial::Sidewalk);
+                        appendStripQuad(mesh, V3{a0.x, curbTop, a0.z}, V3{b0.x, curbTop, b0.z}, V3{b1.x, curbTop, b1.z},
+                                        V3{a1.x, curbTop, a1.z}, up, 0.f, 1.f, 0.f, 1.f, RoadMaterial::Curb);
+                        appendStripQuad(mesh, V3{b0.x, walkY, b0.z}, V3{c0.x, walkY, c0.z}, V3{c1.x, walkY, c1.z},
+                                        V3{b1.x, walkY, b1.z}, up, 0.f, 1.f, 0.f, 1.f, RoadMaterial::Sidewalk);
+                    }
                     {
                         const V3 n = radial(a0) * -1.f;
-                        appendStripQuad(mesh, V3{a0.x, y, a0.z}, V3{a1.x, y, a1.z}, V3{a1.x, curbTop, a1.z},
-                                        V3{a0.x, curbTop, a0.z}, n, 0.f, 1.f, 0.f, 1.f, RoadMaterial::Curb);
+                        if (!flip)
+                            appendStripQuad(mesh, V3{a0.x, y, a0.z}, V3{a1.x, y, a1.z}, V3{a1.x, curbTop, a1.z},
+                                            V3{a0.x, curbTop, a0.z}, n, 0.f, 1.f, 0.f, 1.f, RoadMaterial::Curb);
+                        else
+                            appendStripQuad(mesh, V3{a0.x, y, a0.z}, V3{a0.x, curbTop, a0.z}, V3{a1.x, curbTop, a1.z},
+                                            V3{a1.x, y, a1.z}, n, 0.f, 1.f, 0.f, 1.f, RoadMaterial::Curb);
                     }
                     {
                         const V3 n = radial(c0);
-                        appendStripQuad(mesh, V3{c0.x, y, c0.z}, V3{c0.x, curbTop, c0.z}, V3{c1.x, curbTop, c1.z},
-                                        V3{c1.x, y, c1.z}, n, 0.f, 1.f, 0.f, 1.f, RoadMaterial::Curb);
+                        if (!flip)
+                            appendStripQuad(mesh, V3{c0.x, y, c0.z}, V3{c0.x, curbTop, c0.z}, V3{c1.x, curbTop, c1.z},
+                                            V3{c1.x, y, c1.z}, n, 0.f, 1.f, 0.f, 1.f, RoadMaterial::Curb);
+                        else
+                            appendStripQuad(mesh, V3{c0.x, y, c0.z}, V3{c1.x, y, c1.z}, V3{c1.x, curbTop, c1.z},
+                                            V3{c0.x, curbTop, c0.z}, n, 0.f, 1.f, 0.f, 1.f, RoadMaterial::Curb);
                     }
                 }
             }
