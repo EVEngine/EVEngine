@@ -3006,11 +3006,21 @@ spawner 计数，`updateRuleFraction` 更新当前规则的小数进度；`getPr
 `object_role=child` 与 `parent_index` 的子对象点。结果仍是普通 PointSet，可继续送入 PointGraph、
 `mesh.instance_points` 或实例发布接口。
 
+对象层 API 速查：`clearAssets` 清空加权资产；`setLayerOffset`、`setLayerScale` 设置层级变换；
+`setPositionRadius` 设置平面散布半径；`setRandomRotation`、`setRandomScale` 设置确定性随机范围；
+`disableOrientation` 关闭朝向层；`clearChildRules` 清空子对象规则；`buildOriented` 使用显式朝向点集
+执行对象层。GridGraph 与 MeshGraph 的运行时输入分别通过 `setNodeGrid` 绑定；GridGraph 使用
+`setNodePointSubgraph` 绑定拥有明确输入/输出节点的 PointGraph 子图。
+
 `eve.ProcgenBuildLayerStack()` 将 Tiles 与 Objects 定义放进同一个有序执行器。`addTileLayer` 和
 `addObjectLayer` 保存值副本，`setEnabled` 控制参与执行的层；`execute` 只在全部启用层成功后返回
 `ProcgenBuildLayerExecution`，再通过 `getType/getMesh/getPoints` 获取具名 artifact。配置使用
 `EVPCG_BUILD_LAYERS 1`，对象层使用嵌入式 `EVPCG_OBJECT_LAYER 1`；反序列化拒绝未知记录和尾随字段，
 并在完整校验成功后原子替换旧配置。
+
+层栈可用 `getLayerId`、`getLayerType` 和 `isLayerEnabled` 查询定义；`executeOriented` 为需要朝向
+点集的对象层执行完整栈。增量执行器的 `getCachedClusterCount` 返回当前成功提交的活动簇数量，
+失败构建不会改变该计数。
 
 `eve.ProcgenIncrementalBuildExecutor()` 为 BuildLayerStack 增加跨次构建缓存。`update` 接收簇边长（格子数）
 和格子世界尺寸，返回 `ProcgenIncrementalBuildDelta`；每项通过 `getClusterX/getClusterZ/isRemoved` 标识
