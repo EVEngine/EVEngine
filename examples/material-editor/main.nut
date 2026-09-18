@@ -7,6 +7,10 @@ persist matEd = {
     ball = null,
     ground = null,
     material = null,
+    probe = null,
+    keyLight = null,
+    fillLight = null,
+    rimLight = null,
     meshKind = 0, // 0 sphere, 1 cube, 2 cylinder
     shadingModel = 0, // pbr, unlit, hair
     surfaceMode = 0, // opaque, masked, transparent
@@ -337,12 +341,74 @@ function handleViewportCamera() {
     matEd.lastY = mouseY;
 }
 
+function attachStudioIbl(camera) {
+    // Metals zero diffuse GI; without an env cubemap chrome/gold read as black disks.
+    // Bake a cheap six-face studio sky (same spirit as RenderImageAudit::makeStudioCubemap).
+    local probe = gfx.newReflectionProbeCapture();
+    probe.configure(0.0, 0.5, 0.0, 32, 0.1, 40.0);
+    probe.setSkyFaceColor(0, 0.86, 0.71, 0.55); // +X warm
+    probe.setSkyFaceColor(1, 0.47, 0.59, 0.82); // -X cool
+    probe.setSkyFaceColor(2, 0.96, 0.96, 0.98); // +Y bright
+    probe.setSkyFaceColor(3, 0.16, 0.16, 0.18); // -Y floor
+    probe.setSkyFaceColor(4, 0.78, 0.82, 0.90); // +Z
+    probe.setSkyFaceColor(5, 0.71, 0.63, 0.55); // -Z
+    probe.setCaptureMask(0); // sky only — cheap on Lavapipe
+    probe.requestCapture();
+    local guard = 0;
+    while (!probe.isCaptureComplete() && guard < 24) {
+        probe.update(6);
+        guard += 1;
+    }
+    if (!probe.isCaptureComplete()) {
+        print("material-editor: studio IBL capture incomplete\n");
+        return null;
+    }
+    if (!probe.stageCapturedFaces()) {
+        print("material-editor: studio IBL stage failed\n");
+        return null;
+    }
+    if (!probe.filterAndPublish(32)) {
+        print("material-editor: studio IBL filter failed\n");
+        return null;
+    }
+    local cube = probe.getActiveCubemap();
+    if (cube == null) {
+        print("material-editor: studio IBL cubemap missing\n");
+        return null;
+    }
+    camera.setEnvMap(cube);
+    camera.setEnvIntensity(1.45);
+    return probe;
+}
+
+function buildStudioLights() {
+    matEd.keyLight = eve.Light3D();
+    matEd.keyLight.setType("dir");
+    matEd.keyLight.setDirection(-0.42, 0.88, 0.28);
+    matEd.keyLight.setColor(1.0, 0.96, 0.90, 2.2);
+    matEd.keyLight.setCastShadow(true);
+
+    matEd.fillLight = eve.Light3D();
+    matEd.fillLight.setType("point");
+    matEd.fillLight.setPosition(-3.2, 2.4, 3.6);
+    matEd.fillLight.setColor(0.55, 0.70, 1.0, 2.0);
+    matEd.fillLight.setRadius(18.0);
+
+    matEd.rimLight = eve.Light3D();
+    matEd.rimLight.setType("point");
+    matEd.rimLight.setPosition(3.4, 1.8, -2.8);
+    matEd.rimLight.setColor(1.0, 0.72, 0.45, 1.6);
+    matEd.rimLight.setRadius(16.0);
+}
+
 function buildStudioScene() {
     matEd.camera = eve.Camera3D();
     matEd.camera.setFov(38.0);
     matEd.camera.setAmbient(0.18, 0.19, 0.21);
     matEd.camera.setActive(true);
     updateOrbitCamera();
+    matEd.probe = attachStudioIbl(matEd.camera);
+    buildStudioLights();
 
     // Neutral studio floor so shadow / roughness response is readable.
     matEd.ground = eve.Renderable3D();
@@ -370,7 +436,8 @@ eve_init = function() {
     mountPanels();
     syncInspectorWidgets();
     syncLabels();
-    print("material-editor: UE5 material sphere ready\n");
+    local ibl = matEd.probe != null ? "ibl-on" : "ibl-off";
+    print("material-editor: UE5 material sphere ready (" + ibl + ")\n");
 };
 
 eve_update = function(dt) {

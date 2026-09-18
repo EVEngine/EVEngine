@@ -20,7 +20,7 @@ make run/win32-debug GAME=examples/material-editor
 ## Layout
 
 - **Top** — material presets (Plastic / Rubber / Brushed / Chrome / Gold / Copper / Glass) and turntable pause
-- **Center** — embedded 3D viewport with the UE5 Material Sphere (`gfx.newMeshSphere(64, 32)`), soft studio lighting, and a neutral shadow floor
+- **Center** — embedded 3D viewport with the UE5 Material Sphere (`gfx.newMeshSphere(64, 32)`), studio IBL cubemap (so metallic presets stay readable), key/fill/rim lights, and a neutral shadow floor
 - **Right** — schema-aligned knobs mirroring `MaterialDocumentTarget`: shading model, tint, metallic, roughness, surface/blend mode, alpha cutoff, parallax, lighting and shadow flags, plus preview mesh switch (Sphere / Cube / Cylinder)
 
 ## Controls
@@ -29,6 +29,8 @@ make run/win32-debug GAME=examples/material-editor
 - Mouse wheel to zoom
 - Auto turntable (Pause spin in the toolbar)
 - Inspector edits apply immediately to the shared `Material` on the preview ball
+
+Metallic / chrome / gold need image-based lighting: ambient alone is scaled by `(1 - metallic)`. The example bakes a six-face studio sky via `gfx.newReflectionProbeCapture` and attaches it with `camera.setEnvMap`.
 
 ## Files
 
