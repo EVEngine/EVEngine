@@ -7,7 +7,7 @@
 | 视频 | 本示例 |
 |---|---|
 | `TerrainRoot` / `TerrainChunk` | `buildTerrainChunk` 网格分块 |
-| `DetailsRoot` / `InstRoot`（Grass / Flower / Cliff / Stone / Tree） | 程序化 `mesh.tree` / `mesh.rock` / `mesh.bush` + `GrassField` 草地实例 |
+| `DetailsRoot` / `InstRoot`（Grass / Flower / Cliff / Stone / Tree） | `mesh.tree`/`mesh.bush` 的 **leafMode=cards** + `tex.tree_atlas`/`tex.foliage`（6 张蓝噪声卵型叶面板）+ `GrassField` |
 | `Ocean`（青绿水深 + 浅滩） | 地形水体 shader，青绿 tint + 较高 `seaLevel` |
 | 斜俯视 ARPG 镜头 | 约 60° 俯视 + WASD 平移 |
 
@@ -35,7 +35,8 @@ make run/<platform>-debug GAME=examples/topdown-procmap
 2. Thermal + hydraulic + fluvial erosion  
 3. High sea-level climate analysis → beach / cove biomes  
 4. Chunked splat terrain + turquoise river/lake meshes  
-5. Slope-driven cliff rocks + biome tree/bush scatter  
+5. Slope-driven cliff rocks + dense biome tree/bush scatter  
+   (trees & bushes share the blue-noise leaf-card atlas panels)  
 6. `GrassField` ground cover with occasional flower tints  
 
 After ~2 s writes `topdown-procmap.png` via `gfx.saveFramePng`.

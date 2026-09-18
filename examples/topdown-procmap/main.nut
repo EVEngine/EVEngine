@@ -101,43 +101,42 @@ function makePrototype(kind, seedOffset) {
     local mesh = null;
     local material = null;
     if (kind == "tree") {
+        // Blue-noise leaf cards (6 atlas panels) — same resource as the nature gallery.
         p.setString("style", "realistic");
         p.setString("branchAlgorithm", "weberPenn");
-        p.setString("leafMode", "clusters");
-        p.setFloat("leafDensity", 0.86);
-        p.setFloat("height", 4.8);
-        p.setFloat("crownRadius", 1.75);
+        p.setString("leafMode", "cards");
+        p.setFloat("leafDensity", 0.96);
+        p.setFloat("leafSize", 0.42);
+        p.setFloat("height", 5.1);
+        p.setFloat("crownRadius", 1.95);
         p.setInt("branchLevels", 3);
-        p.setInt("branchCount", 8);
-        p.setFloat("clusterSize", 0.26);
-        p.setFloat("clusterSeparation", 0.40);
-        p.setFloat("clusterLeafScale", 0.78);
-        p.setInt("clusterPlanes", 13);
-        p.setInt("clusterLeaves", 32);
-        p.setInt("clusterLimit", 120);
+        p.setInt("branchCount", 9);
+        p.setFloat("lowerLeafCoverage", 0.88);
+        p.setFloat("upperLeafCoverage", 0.42);
         local meshResult = procgen.generateMesh("mesh.tree", p, gfx);
         if (!meshResult.ok) return null;
         mesh = retain(meshResult.value);
         local surf = makeSurface("tex.tree_atlas", seedOffset + 100, 512);
         material = makeDecorMaterial(surf.albedo, null, true, 0.32);
     } else if (kind == "bush") {
+        // Masked leaf cards on tex.foliage (bark twigs + 6 ovate panels).
         p.setString("style", "mound");
         p.setString("leafMode", "cards");
-        p.setFloat("height", 1.25);
-        p.setFloat("width", 1.75);
-        p.setInt("blobs", 14);
+        p.setFloat("height", 1.35);
+        p.setFloat("width", 1.95);
+        p.setInt("blobs", 16);
         p.setFloat("leafDensity", 1.0);
-        p.setFloat("lobeScale", 0.62);
-        p.setFloat("irregularity", 0.7);
+        p.setFloat("lobeScale", 0.64);
+        p.setFloat("irregularity", 0.72);
         p.setInt("rings", 5);
         p.setInt("radialSegments", 10);
-        p.setFloat("leafSize", 0.36);
-        p.setInt("twigs", 6);
-        p.setFloat("twigLength", 0.34);
+        p.setFloat("leafSize", 0.40);
+        p.setInt("twigs", 7);
+        p.setFloat("twigLength", 0.36);
         local meshResult = procgen.generateMesh("mesh.bush", p, gfx);
         if (!meshResult.ok) return null;
         mesh = retain(meshResult.value);
-        local surf = makeSurface("tex.foliage", seedOffset + 120, 256);
+        local surf = makeSurface("tex.foliage", seedOffset + 120, 512);
         material = makeDecorMaterial(surf.albedo, surf.normal, true, 0.32);
         // No green tint — twigs sample the brown bark strip and must stay trunk-coloured.
     } else {
@@ -163,7 +162,9 @@ function makePrototype(kind, seedOffset) {
 function ensurePrototypes() {
     if (!("treeA" in mapPrototypes)) mapPrototypes.treeA <- makePrototype("tree", 11);
     if (!("treeB" in mapPrototypes)) mapPrototypes.treeB <- makePrototype("tree", 29);
+    if (!("treeC" in mapPrototypes)) mapPrototypes.treeC <- makePrototype("tree", 41);
     if (!("bush" in mapPrototypes)) mapPrototypes.bush <- makePrototype("bush", 47);
+    if (!("bushB" in mapPrototypes)) mapPrototypes.bushB <- makePrototype("bush", 59);
     if (!("stone" in mapPrototypes)) mapPrototypes.stone <- makePrototype("stone", 71);
     if (!("cliff" in mapPrototypes)) mapPrototypes.cliff <- makePrototype("cliff", 97);
     if (!("flowerRed" in mapPrototypes)) {
@@ -287,7 +288,8 @@ function buildGrassField(heightmap, layers) {
 
 function scatterDecorations(heightmap, layers) {
     ensurePrototypes();
-    local step = 3;
+    // Tighter grid → denser forest/bush cover showcasing leaf-card foliage.
+    local step = 2;
     local half = (mapGrid - 1) * mapCellSize * 0.5;
     for (local gy = 4; gy < mapGrid - 4; gy += step) {
         for (local gx = 4; gx < mapGrid - 4; gx += step) {
@@ -314,12 +316,22 @@ function scatterDecorations(heightmap, layers) {
                 placeDecor(mapPrototypes.stone, wx, wy, wz, s, s * 0.7, s, yaw);
                 continue;
             }
-            if ((biome == "forest" || biome == "rainforest" || biome == "taiga") && chance < 0.82) {
-                local proto = (jitter < 0.5) ? mapPrototypes.treeA : mapPrototypes.treeB;
-                local scale = 0.55 + jitter * 0.65;
-                if (biome == "rainforest") scale *= 1.2;
+            if ((biome == "forest" || biome == "rainforest" || biome == "taiga") && chance < 0.88) {
+                local pick = jitter;
+                local proto = mapPrototypes.treeA;
+                if (pick > 0.66 && ("treeC" in mapPrototypes)) proto = mapPrototypes.treeC;
+                else if (pick > 0.33) proto = mapPrototypes.treeB;
+                local scale = 0.58 + jitter * 0.70;
+                if (biome == "rainforest") scale *= 1.22;
                 if (biome == "taiga") scale *= 0.85;
                 placeDecor(proto, wx, wy, wz, scale, scale, scale, yaw);
+                // Forest undergrowth — leaf-card bushes between trunks.
+                if (jitter > 0.48 && ("bushB" in mapPrototypes)) {
+                    local bp = (hash01(gx, gy, 61) > 0.5) ? mapPrototypes.bush : mapPrototypes.bushB;
+                    local bs = 0.48 + jitter * 0.42;
+                    placeDecor(bp, wx + (jitter - 0.5) * 0.55, wy, wz + (chance - 0.5) * 0.55,
+                               bs, bs, bs, yaw * 1.1);
+                }
                 // Occasional flower near forest edge.
                 if (jitter > 0.78 && ("flowerWhite" in mapPrototypes)) {
                     local fp = mapPrototypes.flowerWhite;
@@ -327,10 +339,12 @@ function scatterDecorations(heightmap, layers) {
                     placeDecor(fp, wx + 0.18, wy, wz - 0.12, 0.55 + jitter * 0.25,
                                0.55 + jitter * 0.25, 0.55 + jitter * 0.25, yaw * 0.7);
                 }
-            } else if ((biome == "grassland" || biome == "wetland") && chance < 0.36) {
-                local scale = 0.65 + jitter * 0.55;
-                placeDecor(mapPrototypes.bush, wx, wy, wz, scale, scale, scale, yaw);
-                if (("flowerRed" in mapPrototypes) && jitter > 0.45) {
+            } else if ((biome == "grassland" || biome == "wetland") && chance < 0.48) {
+                local bp = (jitter > 0.55 && ("bushB" in mapPrototypes))
+                    ? mapPrototypes.bushB : mapPrototypes.bush;
+                local scale = 0.70 + jitter * 0.60;
+                placeDecor(bp, wx, wy, wz, scale, scale, scale, yaw);
+                if (("flowerRed" in mapPrototypes) && jitter > 0.40) {
                     local pick = hash01(gx, gy, 53);
                     local fp = mapPrototypes.flowerRed;
                     if (pick > 0.75) fp = mapPrototypes.flowerBlue;
@@ -343,9 +357,6 @@ function scatterDecorations(heightmap, layers) {
             } else if ((biome == "desert" || biome == "alpine" || biome == "tundra") && chance < 0.38) {
                 local scale = 0.5 + jitter * 0.75;
                 placeDecor(mapPrototypes.stone, wx, wy, wz, scale, scale * 0.75, scale, yaw);
-            } else if (biome == "forest" && chance < 0.95 && jitter > 0.62) {
-                placeDecor(mapPrototypes.bush, wx, wy, wz, 0.55 + jitter * 0.4, 0.55 + jitter * 0.4,
-                           0.55 + jitter * 0.4, yaw);
             }
         }
     }
@@ -506,10 +517,14 @@ eve_init = function() {
     mapSun.setShadowStrength(0.82);
 
     mapCamera = eve.Camera3D();
-    mapCamera.setFov(36.0);
+    mapCamera.setFov(34.0);
     mapCamera.setAmbient(0.16, 0.18, 0.20);
     mapCamera.setClipPlanes(0.2, 180.0);
     mapCamera.setActive(true);
+
+    // Opening shot a bit closer so leaf-card silhouettes read clearly.
+    mapHeight = 9.5;
+    mapTilt = 0.92;
 
     rebuildWorld();
     applyCamera();
