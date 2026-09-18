@@ -122,16 +122,16 @@ function makePrototype(kind, seedOffset) {
         material = makeDecorMaterial(surf.albedo, null, true, 0.32);
     } else if (kind == "bush") {
         p.setString("style", "mound");
-        p.setString("leafMode", "mixed");
+        p.setString("leafMode", "cards");
         p.setFloat("height", 1.25);
         p.setFloat("width", 1.75);
         p.setInt("blobs", 14);
-        p.setFloat("leafDensity", 0.88);
+        p.setFloat("leafDensity", 1.0);
         p.setFloat("lobeScale", 0.62);
         p.setFloat("irregularity", 0.7);
         p.setInt("rings", 5);
         p.setInt("radialSegments", 10);
-        p.setFloat("leafSize", 0.18);
+        p.setFloat("leafSize", 0.36);
         p.setInt("twigs", 6);
         p.setFloat("twigLength", 0.34);
         local meshResult = procgen.generateMesh("mesh.bush", p, gfx);

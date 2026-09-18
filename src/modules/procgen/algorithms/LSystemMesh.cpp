@@ -64,12 +64,13 @@ void addTaperedCylinder(MeshBuild& out, V3 a, V3 b, float r0, float r1, int side
 void addLeafCard(MeshBuild& out, V3 c, V3 direction, float size, float twist) {
     V3 right, up;
     basisFor(norm(direction), right, up);
-    right = add(mul(right, std::cos(twist)), mul(up, std::sin(twist)));
-    up    = norm(cross(norm(direction), right));
-    const V3       r = mul(right, size * 0.5f), u = mul(up, size);
-    const V3       normal    = norm(cross(right, up));
-    const uint32_t base      = uint32_t(out.getVertexCount());
-    const V3       points[4] = {sub(sub(c, r), u), add(sub(c, u), r), add(add(c, r), u), add(sub(c, r), u)};
+    right           = add(mul(right, std::cos(twist)), mul(up, std::sin(twist)));
+    up              = norm(cross(norm(direction), right));
+    const V3 normal = norm(cross(right, up));
+    const V3 center = add(c, mul(normal, size * 0.04f));
+    const float halfW = size * 0.45f;
+    const float halfH = size * 0.85f;
+
     // Deterministic stamp cell from twist so L-system leaves stay reproducible.
     constexpr float kCardU0 = 0.52f;
     constexpr float kCardU1 = 1.00f;
@@ -78,20 +79,27 @@ void addLeafCard(MeshBuild& out, V3 c, V3 direction, float size, float twist) {
     const float     phase   = twist * 0.318309886f;  // /pi
     const int       col     = int(std::floor(std::fabs(phase) * float(kCols))) % kCols;
     const int       row     = int(std::floor(std::fabs(phase * 1.7f) * float(kRows))) % kRows;
-    const float     inset   = 0.10f;
+    const float     inset   = 0.12f;
     const float     cellWU  = (kCardU1 - kCardU0) / float(kCols);
     const float     cellWV  = 1.f / float(kRows);
     const float     u0      = kCardU0 + (float(col) + inset) * cellWU;
     const float     u1      = kCardU0 + (float(col) + 1.f - inset) * cellWU;
     const float     v0      = (float(row) + inset) * cellWV;
     const float     v1      = (float(row) + 1.f - inset) * cellWV;
-    const float     uv[4][2] = {{u0, v0}, {u1, v0}, {u1, v1}, {u0, v1}};
-    for (int i = 0; i < 4; ++i)
-        out.addVertex(points[i].x, points[i].y, points[i].z, normal.x, normal.y, normal.z, uv[i][0], uv[i][1]);
-    out.addTriangle(base, base + 1, base + 2);
-    out.addTriangle(base, base + 2, base + 3);
-    out.addTriangle(base + 2, base + 1, base);
-    out.addTriangle(base + 3, base + 2, base);
+
+    constexpr float kOutlineX[8] = {0.f, -0.28f, -0.48f, -0.42f, 0.f, 0.42f, 0.48f, 0.28f};
+    constexpr float kOutlineY[8] = {-0.50f, -0.32f, -0.02f, 0.28f, 0.50f, 0.28f, -0.02f, -0.32f};
+    const uint32_t  base         = uint32_t(out.getVertexCount());
+    for (int i = 0; i < 8; ++i) {
+        const V3 p = add(center, add(mul(right, kOutlineX[i] * halfW), mul(up, kOutlineY[i] * halfH)));
+        const float u = u0 + (0.5f + kOutlineX[i]) * (u1 - u0);
+        const float v = v0 + (0.5f + kOutlineY[i]) * (v1 - v0);
+        out.addVertex(p.x, p.y, p.z, normal.x, normal.y, normal.z, u, v);
+    }
+    for (int i = 1; i < 7; ++i) {
+        out.addTriangle(base, base + uint32_t(i), base + uint32_t(i + 1));
+        out.addTriangle(base, base + uint32_t(i + 1), base + uint32_t(i));
+    }
 }
 
 void configurePreset(LSystem& ls, const std::string& style) {

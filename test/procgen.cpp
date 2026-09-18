@@ -3180,6 +3180,28 @@ TEST_CASE("procgen.cloud.viaModule") {
 
 
 
+
+TEST_CASE("procgen.mesh.bush.ovateLeafCards") {
+    MeshRecipeRegistry::instance().registerBuiltins();
+    Params p;
+    p.setSeed(42);
+    p.setString("style", "mound");
+    p.setString("leafMode", "cards");
+    p.setInt("blobs", 3);
+    p.setInt("twigs", 0);
+    p.setFloat("leafDensity", 1.f);
+    p.setFloat("leafSize", 0.25f);
+    p.setInt("rings", 3);
+    p.setInt("radialSegments", 6);
+    std::string err;
+    MeshBuild out;
+    REQUIRE(MeshRecipeRegistry::instance().generate("mesh.bush", p, out, err));
+    // Ovate leaves use 8 outline verts (double-sided fan); quads would be 4.
+    // With cards-only and no twigs, nearly all verts are leaf outline verts.
+    CHECK(out.getVertexCount() >= 8);
+    CHECK(out.getVertexCount() % 8 == 0);
+}
+
 TEST_CASE("procgen.texture.foliage.leafCardAlpha") {
     TextureRecipeRegistry::instance().registerBuiltins();
     Params p;
