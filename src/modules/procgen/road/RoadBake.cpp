@@ -335,12 +335,24 @@ Result<void> bakeEdgeGeometry(MeshBuild& mesh, RoadOverlay& overlay, const RoadN
     auto      frames   = spline.value().sampleFramesResult(segments, true, 0.f, 24);
     if (!frames.ok()) return Result<void>::failure(frames.status());
 
-    // Keep frames whose arc distance is inside the trimmed interval.
+    // Keep mid frames, then force exact trim endpoints so the loft meets the
+    // junction apron (uniform samples alone leave ~segment-sized salmon gaps).
     std::vector<SplineFrameSample> trimmed;
-    trimmed.reserve(frames.value().size());
+    trimmed.reserve(frames.value().size() + 2);
+    if (trimStart > 1e-3f) {
+        auto tip = spline.value().travelFrameResult(trimStart, "clamp", 24);
+        if (!tip.ok()) return Result<void>::failure(tip.status());
+        trimmed.push_back(std::move(tip).takeValue());
+    }
+    const float endDist = pathLength.value() - trimEnd;
     for (const auto& frame : frames.value()) {
         const float d = frame.sample.normalizedDistance * pathLength.value();
-        if (d + 1e-3f >= trimStart && d - 1e-3f <= pathLength.value() - trimEnd) trimmed.push_back(frame);
+        if (d > trimStart + 1e-3f && d < endDist - 1e-3f) trimmed.push_back(frame);
+    }
+    if (trimEnd > 1e-3f) {
+        auto tip = spline.value().travelFrameResult(endDist, "clamp", 24);
+        if (!tip.ok()) return Result<void>::failure(tip.status());
+        trimmed.push_back(std::move(tip).takeValue());
     }
     if (trimmed.size() < 2) return Result<void>::success();
 
@@ -509,6 +521,22 @@ Result<void> bakeJunction(MeshBuild& mesh, const RoadNetwork& network, const Roa
                 appendOrientedTri(mesh, hub, V3{p0.first, asphaltY, p0.second},
                                   V3{p1.first, asphaltY, p1.second}, upN, RoadMaterial::Asphalt);
             }
+
+            // Thin seal strips under each arm tip — hides residual sub-cm seams.
+            const float seal = 0.12f;
+            const float ySeal = asphaltY + 0.002f;
+            auto addSeal = [&](float x0, float z0, float x1, float z1, float x2, float z2, float x3, float z3) {
+                appendOrientedQuad(mesh, V3{x0, ySeal, z0}, V3{x1, ySeal, z1}, V3{x2, ySeal, z2}, V3{x3, ySeal, z3},
+                                   upN, 0.f, 1.f, 0.f, 1.f, RoadMaterial::Asphalt);
+            };
+            addSeal(node.x - ah, node.z + jr - seal, node.x + ah, node.z + jr - seal, node.x + ah, node.z + jr + seal,
+                    node.x - ah, node.z + jr + seal);
+            addSeal(node.x - ah, node.z - jr - seal, node.x + ah, node.z - jr - seal, node.x + ah, node.z - jr + seal,
+                    node.x - ah, node.z - jr + seal);
+            addSeal(node.x + jr - seal, node.z - ah, node.x + jr + seal, node.z - ah, node.x + jr + seal, node.z + ah,
+                    node.x + jr - seal, node.z + ah);
+            addSeal(node.x - jr - seal, node.z - ah, node.x - jr + seal, node.z - ah, node.x - jr + seal, node.z + ah,
+                    node.x - jr - seal, node.z + ah);
         }
 
         const float curbW = 0.35f;
