@@ -214,6 +214,10 @@ Result<Value> executeGameplayControlRequest(const Value& request) {
             if (candidate) domains.emplace_back(candidate->gameplayDomain());
         });
         std::sort(domains.begin(), domains.end());
+        // A per-instance adapter registers once per instance, so the same domain
+        // can appear several times; discovery lists it once while an operation on
+        // that domain still reports the duplicate-provider conflict.
+        domains.erase(std::unique(domains.begin(), domains.end()), domains.end());
         Value::Array output;
         for (auto& domain : domains) output.emplace_back(std::move(domain));
         return Result<Value>::success(Value(Value::Object{{"domains", Value(std::move(output))}}));
