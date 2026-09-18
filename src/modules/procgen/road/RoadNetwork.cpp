@@ -186,12 +186,17 @@ Result<RoadNetwork> RoadNetwork::makeInterchange(float span, float bridgeHeight,
     }
 
     RoadStyle ground;
-    ground.deckThickness = 0.35f;
+    ground.deckThickness = 0.45f;
     ground.pierClearance = 100.f;  // no piers on ground
+    ground.curbHeight    = 0.85f;
+    ground.curbWidth     = 0.5f;
     RoadStyle bridge     = ground;
-    bridge.deckThickness = 0.7f;
-    bridge.pierClearance = 1.4f;
-    bridge.pierSpacing   = 10.f + 0.2f * wobble;
+    bridge.deckThickness = 0.95f;
+    bridge.pierClearance = 1.35f;
+    bridge.pierSpacing   = 9.5f + 0.2f * wobble;
+    bridge.pierWidth     = 1.5f;
+    bridge.pierDepth     = 1.5f;
+    bridge.curbHeight    = 1.05f;
 
     const auto g = nGround.value();
     auto add = [&](std::uint32_t a, std::uint32_t b, std::vector<RoadControlPoint> pts, const RoadStyle& style) {

@@ -51,18 +51,21 @@ TEST_CASE("procgen.road.network.interchangeBakeHasGroupsAndOverlay") {
     CHECK_GT(baked.value().overlay.turns.size(), 0u);
     CHECK_EQ(baked.value().mesh.getMeta("schema", ""), "eve.procgen.roadNetwork");
 
-    bool sawAsphalt = false, sawPier = false, sawNav = false, sawMarking = false;
+    bool sawAsphalt = false, sawPier = false, sawNav = false, sawMarking = false, sawCurb = false;
     for (int i = 0; i < baked.value().mesh.getGroupCount(); ++i) {
         const auto name = baked.value().mesh.getGroupName(i);
         if (name == "asphalt") sawAsphalt = true;
         if (name == "pier") sawPier = true;
         if (name == "nav") sawNav = true;
-        if (name == "marking") sawMarking = true;
+        if (name == "marking" || name == "markingYellow") sawMarking = true;
+        if (name == "curb") sawCurb = true;
     }
     CHECK(sawAsphalt);
     CHECK(sawPier);
     CHECK(sawNav);
     CHECK(sawMarking);
+    CHECK(sawCurb);
+    CHECK(baked.value().mesh.hasVertexColors());
 }
 
 TEST_CASE("procgen.road.network.rejectsInvalidEdge") {

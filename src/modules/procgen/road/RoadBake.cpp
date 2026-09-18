@@ -194,7 +194,7 @@ Result<void> addLaneMarkings(MeshBuild& mesh, const std::vector<SplineFrameSampl
     const auto& style = edge.style;
     const float asphaltHalf =
         0.5f * style.laneWidth * static_cast<float>(edge.lanesForward + edge.lanesBackward);
-    auto paintLine = [&](float lateral, bool dashed) {
+    auto paintLine = [&](float lateral, bool dashed, RoadMaterial material) {
         float traveled = 0.f;
         for (std::size_t i = 1; i < frames.size(); ++i) {
             const auto& a = frames[i - 1];
@@ -210,31 +210,33 @@ Result<void> addLaneMarkings(MeshBuild& mesh, const std::vector<SplineFrameSampl
                 !dashed || (std::fmod(traveled, style.dashLength + style.dashGap) < style.dashLength);
             if (draw && seg > 1e-5f) {
                 const float hw = style.markingWidth * 0.5f;
-                const V3    a0 = pa + sa * (lateral - hw) + ua * 0.02f;
-                const V3    a1 = pa + sa * (lateral + hw) + ua * 0.02f;
-                const V3    b1 = pb + sb * (lateral + hw) + ub * 0.02f;
-                const V3    b0 = pb + sb * (lateral - hw) + ub * 0.02f;
-                appendStripQuad(mesh, a0, b0, b1, a1, normalize(ua + ub), 0.f, 1.f, 0.f, 1.f, RoadMaterial::Marking);
+                const V3    a0 = pa + sa * (lateral - hw) + ua * 0.035f;
+                const V3    a1 = pa + sa * (lateral + hw) + ua * 0.035f;
+                const V3    b1 = pb + sb * (lateral + hw) + ub * 0.035f;
+                const V3    b0 = pb + sb * (lateral - hw) + ub * 0.035f;
+                appendStripQuad(mesh, a0, b0, b1, a1, normalize(ua + ub), 0.f, 1.f, 0.f, 1.f, material);
             }
             traveled += seg;
         }
     };
 
-    paintLine(-asphaltHalf + style.markingWidth, false);
-    paintLine(asphaltHalf - style.markingWidth, false);
+    // White edge lines.
+    paintLine(-asphaltHalf + style.markingWidth, false, RoadMaterial::Marking);
+    paintLine(asphaltHalf - style.markingWidth, false, RoadMaterial::Marking);
+    // Yellow dashed lane dividers (reference centerline look).
     for (int lane = 1; lane < edge.lanesForward; ++lane) {
         const float lateral = -asphaltHalf + style.laneWidth * static_cast<float>(lane);
-        paintLine(lateral, true);
+        paintLine(lateral, true, RoadMaterial::MarkingYellow);
     }
     return Result<void>::success();
 }
 
 void appendArrow(MeshBuild& mesh, V3 pos, V3 forward, V3 up, float size) {
     const V3 side = normalize(cross(up, forward));
-    const V3 tip  = pos + forward * size + up * 0.03f;
-    const V3 left = pos - forward * size * 0.35f + side * (size * 0.45f) + up * 0.03f;
+    const V3 tip  = pos + forward * size + up * 0.05f;
+    const V3 left = pos - forward * size * 0.35f + side * (size * 0.5f) + up * 0.05f;
     const V3 right =
-        pos - forward * size * 0.35f - side * (size * 0.45f) + up * 0.03f;
+        pos - forward * size * 0.35f - side * (size * 0.5f) + up * 0.05f;
     mesh.setActiveGroup(roadMaterialGroup(RoadMaterial::Nav));
     const auto base = static_cast<std::uint32_t>(mesh.getVertexCount());
     mesh.addVertex(tip.x, tip.y, tip.z, up.x, up.y, up.z, 0.5f, 1.f);
@@ -302,7 +304,7 @@ Result<void> bakeEdgeGeometry(MeshBuild& mesh, RoadOverlay& overlay, const RoadN
                 const V3 side{frame.sideX, frame.sideY, frame.sideZ};
                 const V3 up{frame.upX, frame.upY, frame.upZ};
                 if (!std::isfinite(origin.x) || !std::isfinite(origin.y) || !std::isfinite(origin.z)) continue;
-                const V3 pos = origin + side * lateral + up * 0.05f;
+                const V3 pos = origin + side * lateral + up * 0.08f;
                 poly.xyz.push_back(pos.x);
                 poly.xyz.push_back(pos.y);
                 poly.xyz.push_back(pos.z);
@@ -317,7 +319,7 @@ Result<void> bakeEdgeGeometry(MeshBuild& mesh, RoadOverlay& overlay, const RoadN
                                         0.f, 1.f, 0.f, 1.f, RoadMaterial::Nav);
                         int arrowGuard = 0;
                         while (traveled >= nextArrow && arrowGuard++ < 64) {
-                            appendArrow(mesh, pos, fwd, up, 0.55f);
+                            appendArrow(mesh, pos, fwd, up, 0.85f);
                             nextArrow += std::max(options.arrowSpacing, 0.5f);
                         }
                         if (arrowGuard >= 64) nextArrow = traveled + std::max(options.arrowSpacing, 0.5f);
@@ -456,16 +458,16 @@ Result<void> bakeTurnOverlays(MeshBuild& mesh, RoadOverlay& overlay, const RoadN
         const V3    uo{fo.upX, fo.upY, fo.upZ};
         const V3    ti{fi.forwardX, fi.forwardY, fi.forwardZ};
         const V3    to{fo.forwardX, fo.forwardY, fo.forwardZ};
-        const V3    a = p0 + si * inLat + ui * 0.06f;
-        const V3    d = p1 + so * outLat + uo * 0.06f;
+        const V3    a = p0 + si * inLat + ui * 0.09f;
+        const V3    d = p1 + so * outLat + uo * 0.09f;
         const float handle = std::max(2.f, node.value().junctionRadius * 0.65f);
         const V3    b = a + ti * handle;
         const V3    c = d - to * handle;
 
         RoadPolyline poly;
-        poly.r = 0.2f;
-        poly.g = 0.55f;
-        poly.b = 1.f;
+        poly.r = 0.25f;
+        poly.g = 0.95f;
+        poly.b = 0.45f;
         poly.width = options.navRibbonHalfWidth * 2.f;
         const int samples = std::max(4, options.turnSamples);
         V3        prev{};
@@ -481,13 +483,13 @@ Result<void> bakeTurnOverlays(MeshBuild& mesh, RoadOverlay& overlay, const RoadN
                 const V3 fwd = normalize(p - prev);
                 const V3 up  = normalize(ui + uo);
                 const V3 lat = normalize(cross(up, fwd));
-                const float hw = options.navRibbonHalfWidth * 0.85f;
+                const float hw = options.navRibbonHalfWidth * 0.9f;
                 appendStripQuad(mesh, prev + lat * -hw, p + lat * -hw, p + lat * hw, prev + lat * hw, up, 0.f, 1.f, 0.f,
                                 1.f, RoadMaterial::Nav);
             }
             if (i == samples / 2) {
                 const V3 fwd = normalize(d - a);
-                appendArrow(mesh, p, fwd, normalize(ui + uo), 0.45f);
+                appendArrow(mesh, p, fwd, normalize(ui + uo), 0.7f);
             }
             prev    = p;
             hasPrev = true;
@@ -495,6 +497,48 @@ Result<void> bakeTurnOverlays(MeshBuild& mesh, RoadOverlay& overlay, const RoadN
         overlay.turns.push_back(std::move(poly));
     }
     return Result<void>::success();
+}
+
+}  // namespace
+
+namespace {
+
+struct MaterialColor {
+    float r, g, b, a;
+};
+
+MaterialColor colorForGroup(const std::string& name) {
+    if (name == "asphalt") return {0.16f, 0.16f, 0.18f, 1.f};
+    if (name == "curb") return {0.78f, 0.78f, 0.76f, 1.f};
+    if (name == "sidewalk") return {0.82f, 0.82f, 0.80f, 1.f};
+    if (name == "deck") return {0.52f, 0.52f, 0.50f, 1.f};
+    if (name == "pier") return {0.68f, 0.66f, 0.62f, 1.f};
+    if (name == "marking") return {0.95f, 0.95f, 0.93f, 1.f};
+    if (name == "markingYellow") return {0.95f, 0.78f, 0.12f, 1.f};
+    if (name == "nav") return {0.12f, 0.95f, 1.f, 1.f};
+    return {0.55f, 0.55f, 0.55f, 1.f};
+}
+
+Result<void> paintGroupVertexColors(MeshBuild& mesh) {
+    const int verts = mesh.getVertexCount();
+    if (verts <= 0) return Result<void>::success();
+    std::vector<float> colors(static_cast<std::size_t>(verts) * 4u, 1.f);
+    const int triCount = mesh.getIndexCount() / 3;
+    for (int t = 0; t < triCount; ++t) {
+        const int group = mesh.getTriangleGroup(t);
+        const MaterialColor c =
+            group >= 0 ? colorForGroup(mesh.getGroupName(group)) : MaterialColor{0.5f, 0.5f, 0.5f, 1.f};
+        for (int k = 0; k < 3; ++k) {
+            const int vi = mesh.getIndex(t * 3 + k);
+            if (vi < 0 || vi >= verts) continue;
+            const auto base = static_cast<std::size_t>(vi) * 4u;
+            colors[base + 0] = c.r;
+            colors[base + 1] = c.g;
+            colors[base + 2] = c.b;
+            colors[base + 3] = c.a;
+        }
+    }
+    return mesh.setVertexColors(std::move(colors));
 }
 
 }  // namespace
@@ -520,6 +564,9 @@ Result<RoadBakeResult> bakeRoadNetwork(const RoadNetwork& network, const RoadBak
         auto turns = bakeTurnOverlays(result.mesh, result.overlay, network, options);
         if (!turns.ok()) return Result<RoadBakeResult>::failure(turns.status());
     }
+
+    auto painted = paintGroupVertexColors(result.mesh);
+    if (!painted.ok()) return Result<RoadBakeResult>::failure(painted.status());
 
     result.mesh.setMeta("generator", "procgen.road");
     result.mesh.setMeta("schema", "eve.procgen.roadNetwork");
