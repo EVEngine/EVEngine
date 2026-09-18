@@ -16,7 +16,7 @@ namespace eve::dev {
 struct EVENGINE_API ConsoleLine {
     std::uint64_t seq = 0;    // process-lifetime sequence number; never reused
     std::string   timestamp;  // HH:MM:SS
-    std::string   level;      // debug | info | warn | error | print | cmd | result
+    std::string   level;      // debug | info | warn | error | print | cmd | result | engine
     std::string   text;
 };
 
@@ -71,6 +71,18 @@ public:
     void addInfo(std::string text);
     void addWarn(std::string text);
     void addError(std::string text);
+    /**
+     * @brief Append one line captured from process stderr under level `engine`.
+     *
+     * A line identical to the immediately preceding script-captured entry
+     * (`print` / `error`) is dropped: `capturePrint`/`captureError` forward to
+     * stderr, so the descriptor-level capture would otherwise duplicate every
+     * script message. Genuine consecutive engine lines are kept.
+     * @param text One complete line, without its newline.
+     */
+    void addEngineLine(const std::string& text);
+    /** @brief Whether process stderr is currently mirrored into this console. */
+    [[nodiscard]] bool isCapturingStderr() const;
 
     void                     clear();
     void                     setMaxEntries(size_t n);
@@ -118,6 +130,9 @@ private:
     ConsolePanel() = default;
 
     static std::string nowStamp();
+
+    /** Append with `mu_` already held (shared by addLog and addEngineLine). */
+    void appendLocked(std::string level, std::string text);
 
     mutable std::mutex      mu_;
     bool                    visible_    = true;

@@ -1,8 +1,10 @@
 #include "devtools/ConsolePanel.hpp"
 #include "devtools/Immortal.hpp"
+#include "devtools/StderrCapture.hpp"
 
 #include "common/ScriptError.h"
 #include "common/ScriptCompiler.h"
+#include "common/CrashLog.h"
 
 #include <simplesquirrel/simplesquirrel.hpp>
 #include <squirrel.h>
@@ -180,17 +182,39 @@ void ConsolePanel::toggleVisible() { setVisible(!isVisible()); }
 
 void ConsolePanel::addLog(std::string level, std::string text) {
     std::lock_guard<std::mutex> lock(mu_);
-    ConsoleLine                 line;
+    appendLocked(std::move(level), std::move(text));
+}
+
+void ConsolePanel::appendLocked(std::string level, std::string text) {
+    ConsoleLine line;
     line.seq       = nextSeq_++;
     line.timestamp = nowStamp();
-    line.level     = std::move(level);
-    line.text      = std::move(text);
+    line.level     = level;
+    line.text      = text;
     log_.push_back(std::move(line));
     while (log_.size() > maxEntries_) {
         droppedThrough_ = log_.front().seq;
         log_.pop_front();
     }
+    // Errors also go to the persistent crash/error log: after a crash the MCP
+    // session is gone, and eve.log is the only evidence of what went wrong.
+    if (level == "error") eve::recordLogEvent("error", text);
 }
+
+void ConsolePanel::addEngineLine(const std::string& text) {
+    if (text.empty()) return;
+    std::lock_guard<std::mutex> lock(mu_);
+    // capturePrint/captureError forward to stderr, so the descriptor-level
+    // capture sees the same text a moment later. Drop only that echo: a genuine
+    // repeat emitted by the engine itself keeps its own entry.
+    if (!log_.empty()) {
+        const ConsoleLine& previous = log_.back();
+        if (previous.text == text && (previous.level == "print" || previous.level == "error")) return;
+    }
+    appendLocked("engine", text);
+}
+
+bool ConsolePanel::isCapturingStderr() const { return stderrCaptureActive(); }
 
 void ConsolePanel::addInfo(std::string text) { addLog("info", std::move(text)); }
 
@@ -285,9 +309,21 @@ void ConsolePanel::attach(HSQUIRRELVM vm) {
     if (!g_prevError) g_prevError = sq_geterrorfunc(vm);
     sq_setprintfunc(vm, capturePrint, captureError);
     addLog("info", "console attached to VM");
+    // Engine-side diagnostics (std::cerr and fprintf(stderr)) are the other half
+    // of a scripted game's output; mirror them into the same ordered stream.
+    const StderrCaptureStatus capture =
+        startStderrCapture([](const std::string& line) { ConsolePanel::instance().addEngineLine(line); });
+    // A handler-less fallback must be observable, not silent: an agent that sees
+    // no `engine` lines has to know the coverage is missing rather than assume
+    // the engine printed nothing.
+    if (capture != StderrCaptureStatus::Active) {
+        addLog("warn",
+               "engine stderr capture unavailable; only script print/error reaches this console");
+    }
 }
 
 void ConsolePanel::detach() {
+    stopStderrCapture();
     if (!vm_) return;
     sq_setprintfunc(vm_, g_prevPrint, g_prevError);
     vm_ = nullptr;

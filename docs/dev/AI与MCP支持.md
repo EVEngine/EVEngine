@@ -78,7 +78,8 @@ MCP listening on 127.0.0.1:7529 (newline JSON-RPC; use tools/eve-mcp for Cursor 
 | `eve_physics_new_world` / `eve_physics_list_worlds` / `eve_physics_raycast` / `eve_physics_remove_world` | 2D 物理世界与射线检测 |
 | `eve_render_status` / `eve_screenshot` | 渲染状态、当前帧截图（PNG）；相对路径按项目根解析并返回绝对路径与字节数 |
 | `eve_screenshot_image` | 把当前帧作为 MCP image content 返回（客户端没有共享文件系统时也能看到画面） |
-| `eve_console_read` / `eve_console_write` / `eve_console_clear` | 运行期控制台：按 `seq` 游标增量读取 Squirrel `print` / 脚本错误 / `eve.dev.console.*` / Agent 标记行 |
+| `eve_console_read` / `eve_console_write` / `eve_console_clear` | 运行期控制台：按 `seq` 游标增量读取 Squirrel `print` / 脚本错误 / 引擎 stderr（level `engine`）/ `eve.dev.console.*` / Agent 标记行 |
+| `eve_crash_report` | 崩溃取证：读取持久化 `eve.log`，给出会话/崩溃计数、最近崩溃时间、上一个会话是正常结束还是崩溃、以及有界 tail |
 | `eve_render_describe` | 采集当前帧 + 渲染参数，交给配置的视觉模型，返回文字描述与「渲染参数↔画面效果」对应关系 |
 | `eve_render_vision_config` | 设置 / 读取视觉模型配置（baseUrl/apiKey/model/path/timeoutMs，密钥掩码） |
 | `eve_particles_status` / `eve_particles_emit` | 粒子系统状态与发射 |
@@ -90,6 +91,7 @@ MCP listening on 127.0.0.1:7529 (newline JSON-RPC; use tools/eve-mcp for Cursor 
 - `eve://error-report`
 - `eve://ai-session`
 - `eve://callgraph`
+- `eve://crash-log`（`eve.log` 的尾部，按 64 KiB 截断；结构化版本用 `eve_crash_report`）
 
 ### 普通游戏 UI 自动化
 
@@ -127,10 +129,14 @@ eve_console_read { "sinceSeq": 0, "limit": 200, "level": "error" }
   序号」，用它当游标会正好跳过一行。
 - `eve_console_clear` 只丢行、不回退游标。被丢弃的行通过 `droppedThrough` 与 `truncated`
   显式上报，Agent 不会把“行被丢弃”误判成“没有新输出”。
-- `limit` 上限 1000；`level` 过滤可选（`debug|info|warn|error|print|cmd|result`）。
+- `limit` 上限 1000；`level` 过滤可选（`debug|info|warn|error|print|cmd|result|engine`）。
 - 单行上限 64 KiB，超长时附带 `[console: truncated …]` 标记，不再静默截断到 1 KiB。
-- **覆盖边界**：控制台只包含 Squirrel 打印与显式 `eve.dev.console.*`；引擎 C++ 层的
-  `fprintf(stderr)`（`[startup] …`、Vulkan/驱动告警等）仍在进程 stderr 上，不进入该缓冲。
+- **引擎 stderr 也在内**：`ConsolePanel::attach()` 把描述符 2 重定向进管道，drain 线程一边把字节
+  原样转发回真实 stderr、一边按行投递到控制台（level `engine`）。`fprintf(stderr, …)` 与
+  `std::cerr` 这两条互不相通的输出路径因此都能出现在 `eve_console_read {"level":"engine"}` 里，
+  `[startup]` 计时、Vulkan/驱动告警、校验层 VUID 都包含在内。脚本 `print`/错误经
+  `capturePrint`/`captureError` 转发到 stderr 会被去重：只丢弃与上一条脚本行完全相同的回声，
+  引擎自身的连续重复行保留。`eve_console_read` 的 `stderrCaptured` 字段报告该捕获是否生效。
 
 截帧契约（`eve_screenshot` / `eve_screenshot_image`）：readback 打开后，交换链拷贝要到
 **下一次 present** 才可取回，所以单次调用无法既开启又读回。首次调用返回
@@ -138,6 +144,61 @@ eve_console_read { "sinceSeq": 0, "limit": 200, "level": "error" }
 等一帧后重试即可——这是可重试状态而不是失败，无人值守循环应继续轮询。`eve_screenshot`
 的相对路径按项目根解析，响应返回绝对路径、字节数、像素尺寸；`eve_screenshot_image` 直接
 返回 MCP image content（`maxBytes` 默认 2 MiB，超出时返回 `image-too-large` 而不截断图片）。
+
+### 崩溃取证（重启后的第一手证据）
+
+MCP server 与它服务的进程同生共死，所以“上一次运行为什么死了”只能由持久日志回答。
+`common/CrashLog.h` 在进程启动时写会话开始标记、退出时写会话结束标记（带退出码），崩溃处理器
+写异常码与符号化栈；`eve_crash_report` 把这些读成结论：
+
+```text
+eve_crash_report { "lines": 60 }
+→ {"ok":true,"exists":true,"path":"<root>/eve.log","bytes":1582,"scannedBytes":1582,
+   "sessions":2,"crashes":1,"lastCrashAt":"2026-09-18 22:55:07",
+   "previousSessionEnded":false,"previousSessionCrashed":true,
+   "tail":["…","[crash] code=0xc0000005 at 0x…"]}
+```
+
+- `previousSession*` 描述**当前会话之前**那一个会话块，因此重连后就能判定上次是崩溃还是正常退出；
+  仅当日志窗口里只剩一个会话块时这两个字段才不出现。
+- 计数与 tail 都是**窗口内**统计（默认读取文件末尾 512 KiB），`scannedBytes` 与 `bytes` 分别给出
+  窗口大小与文件总大小。
+- `eve_status.crashLog` 只做 stat（`path`/`exists`/`bytes`）不读文件；`eve://crash-log` 资源返回
+  日志尾部 64 KiB 文本，便于客户端直接挂载。
+- 控制台中 level 为 `error` 的行会同时写入 `eve.log`，崩溃前的脚本错误也在工件里。
+- `EVE_LOG_DIR` 决定日志目录，默认是启动时的当前目录；`crashLogPath()` 报告实际路径。
+
+### 脚本导出 MCP 工具（`eve.mcp`）
+
+开发者用 Squirrel 描述的领域模型可以直接成为一等 MCP 工具，出现在 `tools/list` 里并按名调用，
+不再只能靠 `eve_run_script` / `eve_host_script` 这类不可发现的逃生口。
+
+```squirrel
+// main.nut（`eve run --debug`）或 mcp.nut（`eve mcp`，保存后自动重载）
+eve.mcp.tool("game_npcs", {
+    description = "列出存活 NPC",
+    inputSchema = { type = "object", properties = { lane = { type = "string" } } },
+    handler = function(args) {
+        local lane = ("lane" in args) ? args.lane : "all";
+        return { count = npcs.len(), lane = lane };
+    }
+});
+
+eve.mcp.tools();              // -> ["game_npcs"]
+eve.mcp.remove("game_npcs"); // -> bool
+eve.mcp.clear();              // -> 移除数量
+```
+
+- `handler(args)` 收到的是由 `arguments` 还原的 Squirrel 表（缺省时是空表），返回值序列化为 JSON
+  作为工具结果；抛异常会变成 `isError` 的工具错误而不是协议错误。
+- 名字必须是 `[a-z][a-z0-9_]{2,63}`，且不得占用内置前缀（`eve_` / `inspect_` / `set_` /
+  `capture_` / `get_`）：内置工具在派发时优先，被遮蔽的工具将永远不可达，所以注册直接拒绝。
+- 边界：本接口用于**观测/驱动游戏领域状态**。修改可编辑文档仍然走编辑器命令协议
+  （`editor.registerScriptCommand` + `eve_editor_execute`，由它持有事务、校验与撤销）；不要再为
+  同一份文档开第二条写入路径。
+- 上限：128 个工具、描述 512 字符、`inputSchema` 16 KiB、序列化参数/结果最多 16 层嵌套；
+  被拒绝的注册会以 `warn` 写进运行期控制台，便于开发者自查。
+- 同名重复注册是**替换**（热重载 `mcp.nut` 不会堆积或泄漏闭包）；VM 分离时引用被释放。
 
 ### Prompts
 
@@ -372,6 +433,9 @@ capture / save / runScript / reloadResource / hotReloadStatus`。脚本可定义
 `eve_host_update(dt)` 与 `eve_host_render()`
 钩子参与每帧更新与绘制（用 `eve.host.widgetRect` 在 viewport 内自绘预览）。
 
+`eve.mcp`：`tool(name, spec) / remove(name) / tools() / clear()`，见上文
+[脚本导出 MCP 工具](#脚本导出-mcp-工具evemcp)。
+
 ### 测试
 
 ```bash
@@ -387,7 +451,14 @@ save→unload→reload 持久化往返）、`devtools.mcp.hostResourceHotReload`
 （MCP 读回 Squirrel `print()`、Agent 标记、非法 level 拒绝、clear 后无新行）、
 `devtools.mcp.everyDeclaredToolIsRouted`（tools/list 声明的每个工具都必须被
 tools/call 路由，防止 schema 表与 dispatcher 漂移）、
-`devtools.mcp.initializeNegotiatesSupportedProtocol`（未知版本不回显）。
+`devtools.mcp.initializeNegotiatesSupportedProtocol`（未知版本不回显）、
+`devtools.mcp.stderrCaptureFeedsConsole`（`fprintf(stderr)` 与 `std::cerr` 都进控制台、
+level 为 `engine`、detach 后关闭捕获）、`devtools.mcp.engineLineDropsScriptEchoOnly`
+（只去重脚本回声，引擎自身重复行保留）、`devtools.mcp.crashReportExplainsPreviousRun`
+（会话/崩溃计数、`previousSessionCrashed` 与 `previousSessionEnded`、`eve_status.crashLog`）、
+`devtools.mcp.scriptToolExportRoundTrip`（脚本注册→tools/list→tools/call 参数与返回值、
+抛异常报错、remove 后从发现中消失、反遮蔽不变量、detach 不遗留 handler）、
+`devtools.mcp.scriptToolNameRules`（命名规则与非法注册拒绝）。
 
 ## 测试
 

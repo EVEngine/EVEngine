@@ -100,5 +100,9 @@ int main(int argc, char **argv)
         argv = injected.data();
     }
 #endif
-    return requireModInst(eve::cmd,Cmdline)->runArgs(argc, argv);
+    const int exitCode = requireModInst(eve::cmd, Cmdline)->runArgs(argc, argv);
+    // An unattended reader tells "the run finished" from "the run died" by
+    // whether a session-end marker follows the session-start marker in eve.log.
+    eve::recordSessionEnd(exitCode);
+    return exitCode;
 }

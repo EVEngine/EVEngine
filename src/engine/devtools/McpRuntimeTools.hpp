@@ -42,4 +42,13 @@ std::string callMcpRuntimeTool(std::string_view name, Poco::JSON::Object::Ptr ar
 /** @brief Comma-separated MCP tool schema fragments without surrounding array brackets. */
 std::string_view mcpRuntimeToolSchemas();
 
+/**
+ * @brief Summary of the persistent crash/error log (`eve.log`).
+ *
+ * An MCP server dies with the process it serves, so the only way an agent can
+ * learn why a previous run ended is the log written by common/CrashLog.h. This
+ * is the same object `eve_crash_report` returns, without the tail lines.
+ */
+[[nodiscard]] Poco::JSON::Object::Ptr crashLogSummary();
+
 }  // namespace eve::dev

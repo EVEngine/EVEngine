@@ -9,6 +9,8 @@
 #include "devtools/AgentDevelopmentMcp.hpp"
 #include "devtools/McpJson.hpp"
 #include "devtools/McpRuntimeTools.hpp"
+#include "devtools/McpScriptTools.hpp"
+#include "devtools/McpSquirrelJson.hpp"
 #include "devtools/PlayHost.h"
 #include "devtools/DebugAdapter.hpp"
 #include "devtools/Debugger.hpp"
@@ -52,6 +54,7 @@
 #include <cstdlib>
 #include <cmath>
 #include <filesystem>
+#include <fstream>
 #include <sstream>
 #include <vector>
 
@@ -117,6 +120,10 @@ std::string engineStatusJson(const McpServer& mcp) {
                                                        : std::string("unavailable"));
     o->set("callgraphEvents", static_cast<int>(mcpCallgraphEvents()));
     o->set("ai", AiPanel::instance().statusLine());
+    // The server dies with the process it serves; point the agent at the
+    // persistent log that outlives a crash.
+    o->set("crashLog", crashLogSummary());
+    o->set("scriptTools", scriptToolCount());
     return mcpStringify(Poco::Dynamic::Var(o));
 }
 
@@ -271,68 +278,11 @@ bool runVmSnippet(HSQUIRRELVM vm, const std::string& source, std::string* err) {
 }
 
 // Serialize a Squirrel value (at stack idx) to compact JSON.
-std::string sqValueToJson(HSQUIRRELVM vm, SQInteger idx) {
-    if (idx < 0) idx = sq_gettop(vm) + idx + 1;  // normalize relative -> absolute
-    switch (sq_gettype(vm, idx)) {
-        case OT_NULL: return "null";
-        case OT_BOOL: {
-            SQBool b = SQFalse;
-            sq_getbool(vm, idx, &b);
-            return b ? "true" : "false";
-        }
-        case OT_INTEGER: {
-            SQInteger i = 0;
-            sq_getinteger(vm, idx, &i);
-            return std::to_string(i);
-        }
-        case OT_FLOAT: {
-            SQFloat f = 0;
-            sq_getfloat(vm, idx, &f);
-            char buf[64];
-            std::snprintf(buf, sizeof(buf), "%g", static_cast<double>(f));
-            return buf;
-        }
-        case OT_STRING: {
-            const SQChar* s = nullptr;
-            sq_getstring(vm, idx, &s);
-            return std::string("\"") + mcpJsonEscape(s ? s : "") + "\"";
-        }
-        case OT_ARRAY: {
-            std::string out   = "[";
-            bool        first = true;
-            sq_pushnull(vm);
-            while (SQ_SUCCEEDED(sq_next(vm, idx))) {
-                if (!first) out += ",";
-                first = false;
-                out += sqValueToJson(vm, -1);
-                sq_pop(vm, 2);
-            }
-            sq_pop(vm, 1);
-            out += "]";
-            return out;
-        }
-        case OT_TABLE: {
-            std::string out   = "{";
-            bool        first = true;
-            sq_pushnull(vm);
-            while (SQ_SUCCEEDED(sq_next(vm, idx))) {
-                if (!first) out += ",";
-                first = false;
-                out += sqValueToJson(vm, -2);
-                out += ":";
-                out += sqValueToJson(vm, -1);
-                sq_pop(vm, 2);
-            }
-            sq_pop(vm, 1);
-            out += "}";
-            return out;
-        }
-        default: return "\"<unserializable>\"";
-    }
-}
+// sqValueToJson lives in devtools/McpSquirrelJson.hpp so the script tool
+// registry serializes handler results exactly the same way.
 
-// Compile a snippet that returns a value, run it, and return the JSON of the
-// return value (e.g. `return ::scene_director.info();`).
+/** Compile a snippet that returns a value, run it, and return the JSON of the
+ *  return value (e.g. `return ::scene_director.info();`). */
 std::string callSceneDirectorReturn(HSQUIRRELVM vm, const std::string& snippet, std::string* err) {
     const SQInteger top = sq_gettop(vm);
     if (SQ_FAILED(sq_compilebuffer(vm, snippet.c_str(), static_cast<SQInteger>(snippet.size()), kMcpSceneDirectorSource,
@@ -1693,8 +1643,9 @@ std::string handleInitialize(McpServer& mcp, const std::string& idJson, Poco::JS
 }
 
 std::string handleToolsList(const std::string& idJson) {
+    // Complete tool objects, comma-separated; the array wrapper is added by
+    // handleToolsList so project-exported tools can be appended last.
     static const char* const kToolsParts[] = {
-        "{\"tools\":["
         "{\"name\":\"eve_status\",\"description\":\"Runtime + debugger + MCP/DAP status JSON.\","
         "\"inputSchema\":{\"type\":\"object\",\"properties\":{}}},"
         "{\"name\":\"eve_gameplay\",\"description\":\"Observe, discover, submit or advance player-equivalent gameplay through the versioned shared control protocol.\","
@@ -2021,23 +1972,33 @@ std::string handleToolsList(const std::string& idJson) {
         "\"inputSchema\":{\"type\":\"object\",\"properties\":{}}},",
         "{\"name\":\"eve_host_shutdown\",\"description\":\"Exit the headless MCP host process.\","
         "\"inputSchema\":{\"type\":\"object\",\"properties\":{}}}",
-        "]}"};
-    static const std::string kToolsJson = [] {
-        // Core table first (last core entry has no trailing comma), then every
+    };
+    static const std::string kToolsBody = [] {
+        // Core table first (the last entry carries no trailing comma), then every
         // satellite tool family. Satellites return comma-free object lists and
         // the separator is added here, so adding a family cannot silently break
         // the array (a missing separator makes the whole tools/list unusable).
         std::string out;
-        for (std::size_t index = 0; index + 1 < std::size(kToolsParts); ++index) out += kToolsParts[index];
+        for (const char* part : kToolsParts) out += part;
         for (std::string_view family : {agentDevelopmentToolSchemas(), mcpRuntimeToolSchemas()}) {
             if (family.empty()) continue;
             out += ',';
             out += family;
         }
-        out += kToolsParts[std::size(kToolsParts) - 1];
         return out;
     }();
-    return makeResult(idJson, kToolsJson);
+
+    // Project-exported tools come last and are re-read every call: a script may
+    // register or drop one at any time (hot reload of mcp.nut).
+    std::string tools = "{\"tools\":[";
+    tools += kToolsBody;
+    const std::string scripted = scriptToolSchemas();
+    if (!scripted.empty()) {
+        tools += ',';
+        tools += scripted;
+    }
+    tools += "]}";
+    return makeResult(idJson, tools);
 }
 
 std::string handleToolsCall(McpServer& mcp, const std::string& idJson, Poco::JSON::Object::Ptr params) {
@@ -2074,6 +2035,17 @@ std::string handleToolsCall(McpServer& mcp, const std::string& idJson, Poco::JSO
         }
     }
 
+    // Project-exported script tools. Built-ins win: a script tool can never
+    // shadow a compiled tool, which is why registration rejects their prefixes.
+    if (isScriptTool(name)) {
+        try {
+            return makeResult(idJson, callScriptTool(name, args));
+        } catch (const std::exception& e) {
+            AiPanel::instance().addLog("error", name, e.what());
+            return makeResult(idJson, textContentResult(std::string("error: ") + e.what(), true));
+        }
+    }
+
     try {
         const std::string out   = callTool(mcp, name, args);
         const bool        isErr = out.rfind("error:", 0) == 0;
@@ -2094,7 +2066,9 @@ std::string handleResourcesList(const std::string& idJson) {
                       "{\"uri\":\"eve://ai-session\",\"name\":\"ai-session\",\"description\":\"AI / MCP session "
                       "log\",\"mimeType\":\"text/plain\"},"
                       "{\"uri\":\"eve://callgraph\",\"name\":\"callgraph\",\"description\":\"CallGraph event "
-                      "summary\",\"mimeType\":\"application/json\"}"
+                      "summary\",\"mimeType\":\"application/json\"},"
+                      "{\"uri\":\"eve://crash-log\",\"name\":\"crash-log\",\"description\":\"Persistent crash/error "
+                      "log (eve.log) that survives a process death\",\"mimeType\":\"text/plain\"}"
                       "]}");
 }
 
@@ -2123,6 +2097,32 @@ std::string handleResourcesRead(const std::string& idJson, Poco::JSON::Object::P
         o->set("stackDepth", static_cast<int>(mcpCallgraphStackDepth()));
         text = mcpStringify(Poco::Dynamic::Var(o));
         mime = "application/json";
+    } else if (uri == "eve://crash-log") {
+        // Same evidence eve_crash_report exposes, as a resource so a client can
+        // attach it without a tool round trip. Bounded to the tail: a resource
+        // read must not turn a long log into one enormous MCP frame.
+        constexpr std::streamoff kCrashResourceBytes = 64 * 1024;
+        text                                         = "(no crash log yet)\n";
+        const std::string path                       = crashLogSummary()->getValue<std::string>("path");
+        std::error_code   exists                     = std::error_code();
+        if (!path.empty() && std::filesystem::exists(path, exists)) {
+            std::ifstream in(path, std::ios::binary);
+            if (in) {
+                in.seekg(0, std::ios::end);
+                const std::streamoff size = in.tellg();
+                const std::streamoff start = size > kCrashResourceBytes ? size - kCrashResourceBytes : 0;
+                in.seekg(start < 0 ? 0 : start);
+                std::ostringstream buffer;
+                buffer << in.rdbuf();
+                text = buffer.str();
+                if (start > 0) {
+                    const auto newline = text.find('\n');
+                    text.erase(0, newline == std::string::npos ? text.size() : newline + 1);
+                    text = "[…truncated; full log at " + path + "]\n" + text;
+                }
+                if (text.empty()) text = "(crash log is empty)\n";
+            }
+        }
     } else {
         return makeError(idJson, -32002, "Unknown resource: " + uri);
     }
