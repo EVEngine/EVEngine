@@ -1,5 +1,5 @@
-// Procedural Road Lab — four simple debug scenes before the complex interchange.
- // Keys 1-4 switch scenes. Headless: set EVENGINE_ROAD_SCENE=straight|curve|bridge|cross.
+// Procedural Road Lab — simple scenes (1-4) + complex interchange (5).
+// Keys 1-5 switch scenes. Headless: write scene name into scene.txt.
 
 persist roadParts = []
 persist roadGround = null
@@ -10,7 +10,7 @@ persist roadReady = false
 persist roadMaterials = {}
 persist roadPrevKeys = {}
 persist roadSceneName = "straight"
-persist roadSceneList = ["straight", "curve", "bridge", "cross"]
+persist roadSceneList = ["straight", "curve", "bridge", "cross", "interchange"]
 
 function roadRequire(result, context) {
     if (!result.ok) throw context + ": " + result.status.summary;
@@ -52,13 +52,15 @@ function roadCameraForScene(name) {
         roadCamera.setEye(16.0, 18.0, 8.0);
         roadCamera.setTarget(-4.0, 0.5, 6.0);
     } else if (name == "bridge") {
-        // Three-quarter view; piers use world-up basis (see side-elevation proof shot).
         roadCamera.setEye(20.0, 12.0, 18.0);
         roadCamera.setTarget(0.0, 2.5, 0.0);
-    } else {
-        // cross
+    } else if (name == "cross") {
         roadCamera.setEye(0.0, 28.0, 18.0);
         roadCamera.setTarget(0.0, 0.3, 0.0);
+    } else {
+        // interchange — elevated three-quarter overview
+        roadCamera.setEye(36.0, 28.0, 32.0);
+        roadCamera.setTarget(0.0, 3.0, 0.0);
     }
 }
 
@@ -71,15 +73,18 @@ function roadBuildScene(name) {
     local params = roadRequire(procgen.newParams(), "new params").value;
     roadRequire(params.setSeed(1), "seed");
     params.setString("scene", name);
-    params.setFloat("span", name == "cross" ? 28.0 : 32.0);
-    params.setFloat("bridgeHeight", 6.0);
+    params.setFloat("span", name == "interchange" ? 48.0 : (name == "cross" ? 28.0 : 32.0));
+    params.setFloat("bridgeHeight", name == "interchange" ? 8.0 : 6.0);
     params.setInt("lanes", 2);
-    params.setInt("pathSegments", name == "curve" || name == "bridge" ? 48 : 28);
+    local segs = 28;
+    if (name == "curve" || name == "bridge") segs = 48;
+    if (name == "interchange") segs = 36;
+    params.setInt("pathSegments", segs);
     params.setBool("piers", true);
     params.setBool("markings", true);
-    // Geometry-first: keep nav off on all four debug scenes.
+    // Nav overlay is noisy on the complex scene; keep it off for the visual pass.
     params.setBool("navigation", false);
-    params.setBool("junctions", name == "cross");
+    params.setBool("junctions", name == "cross" || name == "interchange");
 
     local cpu = roadRequire(procgen.buildMesh("mesh.roadNetwork", params), "buildMesh").value;
     local groupSummary = "";
@@ -107,6 +112,12 @@ function roadBuildScene(name) {
         groupSummary += gname + ":" + component.getVertexCount() + " ";
     }
 
+    // Interchange needs a larger ground plate.
+    if (roadGround != null) {
+        local gscale = name == "interchange" ? 110.0 : 70.0;
+        roadGround.setScale(gscale, 0.4, gscale);
+    }
+
     roadCameraForScene(name);
     print("PROCEDURAL_ROAD_SCENE scene=" + name + " verts=" + cpu.getVertexCount() +
           " groups=" + cpu.getGroupCount() + " parts=" + roadParts.len() + " [" + groupSummary + "]\n");
@@ -117,7 +128,7 @@ if (roadCamera == null) {
     roadCamera = eve.Camera3D();
     roadCamera.setUp(0.0, 1.0, 0.0);
     roadCamera.setFov(42.0);
-    roadCamera.setClipPlanes(0.5, 200.0);
+    roadCamera.setClipPlanes(0.5, 280.0);
     roadCamera.setAmbient(0.42, 0.44, 0.48);
     roadCamera.setActive(true);
     gfx.setDirectionalLight(-0.40, -1.0, -0.30, 1.55, 1.48, 1.35);
@@ -152,7 +163,8 @@ if (!roadReady) {
                     if (ch == "\n" || ch == "\r" || ch == " ") break;
                     s += ch;
                 }
-                if (s == "straight" || s == "curve" || s == "bridge" || s == "cross") boot = s;
+                if (s == "straight" || s == "curve" || s == "bridge" || s == "cross" || s == "interchange")
+                    boot = s;
             }
         }
     } catch (e) {}
@@ -167,6 +179,7 @@ function eve_update(dt) {
     if (roadPressed("2")) roadBuildScene("curve");
     if (roadPressed("3")) roadBuildScene("bridge");
     if (roadPressed("4")) roadBuildScene("cross");
+    if (roadPressed("5")) roadBuildScene("interchange");
 
     if (!roadScreenshotSaved && roadFrame > 24) {
         local file = "procedural-road-" + roadSceneName + ".png";

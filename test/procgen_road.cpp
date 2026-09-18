@@ -133,6 +133,64 @@ TEST_CASE("procgen.road.network.seedSevenNavigationTerminates") {
     CHECK_GT(baked.value().overlay.lanes.size(), 0u);
 }
 
+TEST_CASE("procgen.road.scenes.interchangeGroundCrossAndPiers") {
+    auto network = RoadNetwork::makeInterchange(48.f, 8.f, 2, 1);
+    REQUIRE(network.ok());
+    CHECK_GE(network.value().nodeCount(), 10);
+    CHECK_EQ(network.value().edgeCount(), 12);
+
+    float hubJr = 0.f;
+    for (const auto& n : network.value().nodes()) {
+        if (std::fabs(n.x) < 1e-3f && std::fabs(n.z) < 1e-3f && std::fabs(n.y) < 1e-3f) hubJr = n.junctionRadius;
+    }
+    // Same fillet sizing as makeCross: asphaltHalf + cornerR.
+    CHECK_GT(hubJr, 5.5f);
+    CHECK_LT(hubJr, 7.5f);
+
+    RoadBakeOptions options;
+    options.pathSegmentsPerEdge = 28;
+    options.turnSamples         = 8;
+    options.includeJunctions    = true;
+    options.includeNavigation   = false;
+    options.includePiers        = true;
+    options.includeMarkings     = true;
+    auto baked                  = bakeRoadNetwork(network.value(), options);
+    REQUIRE(baked.ok());
+    CHECK_GT(baked.value().mesh.getVertexCount(), 2000);
+
+    bool sawPier = false, sawSidewalk = false, sawDeck = false;
+    for (int i = 0; i < baked.value().mesh.getGroupCount(); ++i) {
+        const auto name = baked.value().mesh.getGroupName(i);
+        if (name == "pier") sawPier = true;
+        if (name == "sidewalk") sawSidewalk = true;
+        if (name == "deck") sawDeck = true;
+    }
+    CHECK(sawPier);
+    CHECK(sawSidewalk);
+    CHECK(sawDeck);
+
+    // Ground-hub sidewalks should sit on outward-center curb returns (near jr,jr disk).
+    int sidewalkGroup = -1;
+    for (int g = 0; g < baked.value().mesh.getGroupCount(); ++g) {
+        if (baked.value().mesh.getGroupName(g) == "sidewalk") sidewalkGroup = g;
+    }
+    REQUIRE(sidewalkGroup >= 0);
+    auto sw = baked.value().mesh.copyGroup(sidewalkGroup);
+    REQUIRE(sw);
+    int arcHits = 0;
+    for (int i = 0; i < sw->getVertexCount(); ++i) {
+        if (std::fabs(sw->getPositionY(i)) > 0.5f) continue;  // ground level only
+        const float x  = std::fabs(sw->getPositionX(i));
+        const float z  = std::fabs(sw->getPositionZ(i));
+        const float dx = hubJr - x;
+        const float dz = hubJr - z;
+        if (dx < 0.05f || dz < 0.05f) continue;
+        const float r = std::sqrt(dx * dx + dz * dz);
+        if (r > 0.9f && r < 2.9f) ++arcHits;
+    }
+    CHECK_GT(arcHits, 16);
+}
+
 TEST_CASE("procgen.road.scenes.fourSimpleBakeClean") {
     RoadBakeOptions options;
     options.pathSegmentsPerEdge = 20;

@@ -290,75 +290,90 @@ Result<RoadNetwork> RoadNetwork::makeInterchange(float span, float bridgeHeight,
     RoadNetwork network;
     const float half = span * 0.5f;
     const float h    = bridgeHeight;
-    // Small seed-driven wobble keeps recipe deterministic without looking rigid.
-    const float wobble = 0.35f * static_cast<float>((seed % 7u) - 3);
-
-    auto nGround = network.addNode(0.f, 0.f, 0.f, 7.5f);
-    auto nN      = network.addNode(0.f, 0.f, -half, 5.f);
-    auto nS      = network.addNode(0.f, 0.f, half, 5.f);
-    auto nW      = network.addNode(-half, 0.f, 0.f, 5.f);
-    auto nE      = network.addNode(half, 0.f, 0.f, 5.f);
-    auto nElev   = network.addNode(0.f, h, 0.f, 6.5f);
-    auto nNE     = network.addNode(half * 0.55f, h, -half * 0.55f, 4.5f);
-    auto nSE     = network.addNode(half * 0.55f, h, half * 0.55f, 4.5f);
-    auto nSW     = network.addNode(-half * 0.55f, h, half * 0.55f, 4.5f);
-    auto nNW     = network.addNode(-half * 0.55f, h, -half * 0.55f, 4.5f);
-    for (auto* r : {&nGround, &nN, &nS, &nW, &nE, &nElev, &nNE, &nSE, &nSW, &nNW}) {
-        if (!r->ok()) return Result<RoadNetwork>::failure(r->status());
-    }
+    // Tiny seed wobble on elevated mid-handles only — ground cross stays axis-aligned
+    // so bakeJunction keeps the same outward-center curb returns as makeCross.
+    const float wobble = 0.25f * static_cast<float>((seed % 7u) - 3);
 
     RoadStyle ground       = groundStyle();
-    RoadStyle bridge       = bridgeStyle();
-    bridge.pierSpacing     = 9.5f + 0.2f * wobble;
+    ground.deckThickness   = 0.08f;
+    ground.sidewalkWidth   = 1.2f;
+    ground.curbWidth       = 0.35f;
+    ground.curbHeight      = 0.45f;
+    const float asphaltHalf = 0.5f * ground.laneWidth * static_cast<float>(lanes);
+    const float cornerR     = 2.8f;
+    const float jr          = asphaltHalf + cornerR;
 
-    const auto g = nGround.value();
+    RoadStyle bridge     = bridgeStyle();
+    bridge.pierSpacing   = 9.0f;
+    bridge.sidewalkWidth = 1.0f;
+    bridge.curbWidth     = 0.38f;
+    bridge.curbHeight    = 0.50f;
+
+    auto nGround = network.addNode(0.f, 0.f, 0.f, jr);
+    auto nN      = network.addNode(0.f, 0.f, -half, 2.f);
+    auto nS      = network.addNode(0.f, 0.f, half, 2.f);
+    auto nW      = network.addNode(-half, 0.f, 0.f, 2.f);
+    auto nE      = network.addNode(half, 0.f, 0.f, 2.f);
+
+    // Elevated ring corners + hub (overpass).
+    const float r = half * 0.58f;
+    auto nElev    = network.addNode(0.f, h, 0.f, 5.5f);
+    auto nNE      = network.addNode(r, h, -r, 3.5f);
+    auto nSE      = network.addNode(r, h, r, 3.5f);
+    auto nSW      = network.addNode(-r, h, r, 3.5f);
+    auto nNW      = network.addNode(-r, h, -r, 3.5f);
+    for (auto* res : {&nGround, &nN, &nS, &nW, &nE, &nElev, &nNE, &nSE, &nSW, &nNW}) {
+        if (!res->ok()) return Result<RoadNetwork>::failure(res->status());
+    }
+
     auto add = [&](std::uint32_t a, std::uint32_t b, std::vector<RoadControlPoint> pts, const RoadStyle& style) {
         return network.addEdge(a, b, std::move(pts), lanes, 0, style);
     };
 
-    // Ground cross.
-    auto e1 = add(nN.value(), g, {P(0, 0, -half), P(wobble, 0, -half * 0.45f), P(0, 0, -7.5f)}, ground);
-    auto e2 = add(g, nS.value(), {P(0, 0, 7.5f), P(-wobble, 0, half * 0.45f), P(0, 0, half)}, ground);
-    auto e3 = add(nW.value(), g, {P(-half, 0, 0), P(-half * 0.45f, 0, wobble), P(-7.5f, 0, 0)}, ground);
-    auto e4 = add(g, nE.value(), {P(7.5f, 0, 0), P(half * 0.45f, 0, -wobble), P(half, 0, 0)}, ground);
+    // Ground cross — straight axis arms (same fillet path as makeCross).
+    const auto g  = nGround.value();
+    auto       e1 = add(nN.value(), g, {P(0.f, 0.f, -half), P(0.f, 0.f, 0.f)}, ground);
+    auto       e2 = add(g, nS.value(), {P(0.f, 0.f, 0.f), P(0.f, 0.f, half)}, ground);
+    auto       e3 = add(nW.value(), g, {P(-half, 0.f, 0.f), P(0.f, 0.f, 0.f)}, ground);
+    auto       e4 = add(g, nE.value(), {P(0.f, 0.f, 0.f), P(half, 0.f, 0.f)}, ground);
 
-    // Elevated ring.
-    const float r = half * 0.55f;
-    auto e5 =
-        add(nNW.value(), nNE.value(),
-            {P(-r, h, -r), P(-r * 0.2f + wobble, h, -r * 1.05f), P(r * 0.2f, h, -r * 1.05f), P(r, h, -r)}, bridge);
-    auto e6 =
-        add(nNE.value(), nSE.value(),
-            {P(r, h, -r), P(r * 1.05f, h, -r * 0.2f), P(r * 1.05f, h, r * 0.2f + wobble), P(r, h, r)}, bridge);
-    auto e7 =
-        add(nSE.value(), nSW.value(),
-            {P(r, h, r), P(r * 0.2f, h, r * 1.05f), P(-r * 0.2f - wobble, h, r * 1.05f), P(-r, h, r)}, bridge);
-    auto e8 =
-        add(nSW.value(), nNW.value(),
-            {P(-r, h, r), P(-r * 1.05f, h, r * 0.2f), P(-r * 1.05f, h, -r * 0.2f - wobble), P(-r, h, -r)}, bridge);
+    // Elevated ring — quarter arcs with mid handles so the loft reads circular.
+    auto e5 = add(nNW.value(), nNE.value(),
+                  {P(-r, h, -r), P(-r * 0.35f + wobble, h, -r * 1.12f), P(r * 0.35f, h, -r * 1.12f), P(r, h, -r)},
+                  bridge);
+    auto e6 = add(nNE.value(), nSE.value(),
+                  {P(r, h, -r), P(r * 1.12f, h, -r * 0.35f), P(r * 1.12f, h, r * 0.35f + wobble), P(r, h, r)},
+                  bridge);
+    auto e7 = add(nSE.value(), nSW.value(),
+                  {P(r, h, r), P(r * 0.35f, h, r * 1.12f), P(-r * 0.35f - wobble, h, r * 1.12f), P(-r, h, r)},
+                  bridge);
+    auto e8 = add(nSW.value(), nNW.value(),
+                  {P(-r, h, r), P(-r * 1.12f, h, r * 0.35f), P(-r * 1.12f, h, -r * 0.35f - wobble), P(-r, h, -r)},
+                  bridge);
 
-    // Overpass through elevated hub.
-    auto e9 = add(nNW.value(), nElev.value(),
-                  {P(-r, h, -r), P(-r * 0.35f, h, -r * 0.35f), P(-6.f, h, -6.f)}, bridge);
-    auto e10 =
-        add(nElev.value(), nSE.value(), {P(6.f, h, 6.f), P(r * 0.35f, h, r * 0.35f), P(r, h, r)}, bridge);
+    // Diagonal overpass through the elevated hub.
+    auto e9  = add(nNW.value(), nElev.value(),
+                   {P(-r, h, -r), P(-r * 0.45f, h, -r * 0.45f), P(-5.5f, h, -5.5f)}, bridge);
+    auto e10 = add(nElev.value(), nSE.value(),
+                   {P(5.5f, h, 5.5f), P(r * 0.45f, h, r * 0.45f), P(r, h, r)}, bridge);
 
-    // Ramps: ground east → elevated SE, elevated NW → ground west.
+    // Ramps: ground east → elevated SE; elevated NW → ground west.
     auto e11 = add(nE.value(), nSE.value(),
-                   {P(half, 0, 0), P(half * 0.75f, h * 0.35f, half * 0.2f), P(half * 0.6f, h * 0.75f, half * 0.4f),
-                    P(r, h, r)},
+                   {P(half, 0.f, 0.f), P(half * 0.82f, h * 0.22f, half * 0.12f),
+                    P(half * 0.68f, h * 0.55f, half * 0.32f), P(half * 0.58f, h * 0.85f, half * 0.48f), P(r, h, r)},
                    bridge);
     auto e12 = add(nNW.value(), nW.value(),
-                   {P(-r, h, -r), P(-half * 0.6f, h * 0.75f, -half * 0.35f),
-                    P(-half * 0.75f, h * 0.35f, -half * 0.15f), P(-half, 0, 0)},
+                   {P(-r, h, -r), P(-half * 0.58f, h * 0.85f, -half * 0.42f),
+                    P(-half * 0.68f, h * 0.55f, -half * 0.28f), P(-half * 0.82f, h * 0.22f, -half * 0.10f),
+                    P(-half, 0.f, 0.f)},
                    bridge);
 
-    for (auto* rEdge : {&e1, &e2, &e3, &e4, &e5, &e6, &e7, &e8, &e9, &e10, &e11, &e12}) {
-        if (!rEdge->ok()) return Result<RoadNetwork>::failure(rEdge->status());
+    for (auto* edge : {&e1, &e2, &e3, &e4, &e5, &e6, &e7, &e8, &e9, &e10, &e11, &e12}) {
+        if (!edge->ok()) return Result<RoadNetwork>::failure(edge->status());
     }
 
-    for (std::uint32_t node : {g, nElev.value(), nNE.value(), nSE.value(), nSW.value(), nNW.value(), nE.value(),
-                               nW.value()}) {
+    // Turns only where they help nav overlay — ground hub (filleted cross) + elevated hub.
+    for (std::uint32_t node : {g, nElev.value()}) {
         auto turns = network.connectAllTurns(node);
         if (!turns.ok()) return Result<RoadNetwork>::failure(turns.status());
     }
