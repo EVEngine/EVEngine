@@ -722,26 +722,35 @@ void checkClosedSphere(const WeldReport& report) {
 }
 
 /** @brief Number of triangles whose stored normal points back towards the sphere centre. */
+/**
+ * @brief Counts triangles wound towards the sphere centre, from their geometry.
+ *
+ * This reads the winding off the three positions rather than the stored vertex normals.
+ * `HexMeshData::finalize` falls back to `(0, 1, 0)` for a zero-area triangle, so a normal
+ * based count reports every degenerate sliver on the southern hemisphere as inward whether
+ * or not its winding is wrong. Degenerate triangles are counted separately.
+ */
 [[nodiscard]] std::size_t countInwardFacingTriangles(const HexMeshData& mesh) {
     const auto& positions = mesh.positions();
-    const auto& normals   = mesh.normals();
     const auto& indices   = mesh.indices();
 
     std::size_t inward = 0;
     for (std::size_t t = 0; t + 2u < indices.size(); t += 3u) {
-        const std::size_t normalBase = static_cast<std::size_t>(indices[t]) * 3u;
-        const HexVec3     normal{normals[normalBase], normals[normalBase + 1u], normals[normalBase + 2u]};
-
-        HexVec3 centroid{};
-        for (std::int32_t k = 0; k < 3; ++k) {
-            const std::size_t base = static_cast<std::size_t>(indices[t + static_cast<std::size_t>(k)]) * 3u;
-            centroid.x += positions[base];
-            centroid.y += positions[base + 1u];
-            centroid.z += positions[base + 2u];
-        }
-        centroid = centroid * (1.f / 3.f);
-
-        if (normal.x * centroid.x + normal.y * centroid.y + normal.z * centroid.z <= 0.f) ++inward;
+        const auto at = [&positions](std::uint32_t index) {
+            const std::size_t base = static_cast<std::size_t>(index) * 3u;
+            return HexVec3{positions[base], positions[base + 1u], positions[base + 2u]};
+        };
+        const HexVec3 a  = at(indices[t]);
+        const HexVec3 b  = at(indices[t + 1u]);
+        const HexVec3 c  = at(indices[t + 2u]);
+        const HexVec3 ab = b - a;
+        const HexVec3 ac = c - a;
+        const HexVec3 n{ab.y * ac.z - ab.z * ac.y, ab.z * ac.x - ab.x * ac.z, ab.x * ac.y - ab.y * ac.x};
+        // A triangle with no area has no winding to be wrong about, and its normal's sign is
+        // numerical noise. The remaining slivers are reported by the census instead.
+        if (n.x * n.x + n.y * n.y + n.z * n.z < 1e-6f) continue;
+        const float d = n.x * (a.x + b.x + c.x) + n.y * (a.y + b.y + c.y) + n.z * (a.z + b.z + c.z);
+        if (d < 0.f) ++inward;
     }
     return inward;
 }
@@ -801,8 +810,10 @@ TEST_CASE("hexmap.sphereMesh.facesPointAwayFromTheCentre") {
     REQUIRE(!mesh.empty());
     REQUIRE(mesh.hasNormals());
 
-    // A clockwise fan or a reversed strip would light the planet from inside out.
-    CHECK_EQ(countInwardFacingTriangles(mesh), static_cast<std::size_t>(0));
+    // A clockwise fan or a reversed strip would light the planet from inside out. REQUIRE, not
+    // CHECK: with CHECK this assertion was reporting 10030 inward-facing triangles and the test
+    // still exited zero, which is how the corner fans stayed inside-out.
+    REQUIRE_EQ(countInwardFacingTriangles(mesh), static_cast<std::size_t>(0));
 }
 
 TEST_CASE("hexmap.sphereMesh.verticesStayOnTheirSurfaceRadius") {

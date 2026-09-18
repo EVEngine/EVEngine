@@ -514,12 +514,22 @@ private:
                         const HexTerrainWeights& w0, const HexTerrainWeights& w1, const HexTerrainWeights& w2,
                         const HexTerrainWeights& w3, const HexCellData* t0, const HexCellData* t1,
                         const HexCellData* t2) {
-        // A quad is emitted as `(p0, p2, p1)` and `(p1, p2, p3)`. The first of those is the one
-        // tested here; mirroring swaps the 2nd and 3rd arguments, which reverses both.
+        // Each triangle is oriented on its own: a quad spanning a terrace or a corner is not
+        // planar, so its two halves can disagree and orienting the first one alone leaves the
+        // other facing down.
+        const std::uint32_t i0 = static_cast<std::uint32_t>(out_.vertexCount());
+        vertex(p0, w0, t0, t1, t2);
+        vertex(p1, w1, t0, t1, t2);
+        vertex(p2, w2, t0, t1, t2);
+        vertex(p3, w3, t0, t1, t2);
         if (facesDown(p0, p2, p1))
-            emitQuadForward(p0, p2, p1, p3, w0, w2, w1, w3, t0, t1, t2);
+            out_.addTriangle(i0, i0 + 1u, i0 + 2u);
         else
-            emitQuadForward(p0, p1, p2, p3, w0, w1, w2, w3, t0, t1, t2);
+            out_.addTriangle(i0, i0 + 2u, i0 + 1u);
+        if (facesDown(p1, p2, p3))
+            out_.addTriangle(i0 + 1u, i0 + 3u, i0 + 2u);
+        else
+            out_.addTriangle(i0 + 1u, i0 + 2u, i0 + 3u);
     }
 
     /**

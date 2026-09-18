@@ -499,14 +499,52 @@ private:
         out_.addVertex(tangentPerturb(map_.noise(), position, perturbStrength_), u, v);
     }
 
+    /**
+     * @brief Whether `(a, b, c)` is wound so that its normal points towards the sphere centre.
+     *
+     * Every surface this mesher builds is a closed shell around the origin, so "faces outward"
+     * is the winding rule for all of it. The corner branches permute their three points by
+     * elevation and whether that permutation is even or odd depends on which of the three
+     * cells emitted the corner, so the same junction came out wound either way; reading the
+     * orientation off the emitted triangle is what makes every branch agree. The vertex
+     * normals are flat geometric normals (see `HexMeshData::finalize`), which is why
+     * `hexmap.sphereMesh.facesPointAwayFromTheCentre` is the check that measures this.
+     */
+    [[nodiscard]] static bool facesInward(HexVec3 a, HexVec3 b, HexVec3 c) noexcept {
+        const HexVec3 ab = b - a;
+        const HexVec3 ac = c - a;
+        const HexVec3 normal{ab.y * ac.z - ab.z * ac.y, ab.z * ac.x - ab.x * ac.z, ab.x * ac.y - ab.y * ac.x};
+        // The centroid's direction from the origin is the outward direction; leaving both
+        // vectors unnormalised is fine because only the sign matters.
+        return normal.x * (a.x + b.x + c.x) + normal.y * (a.y + b.y + c.y) + normal.z * (a.z + b.z + c.z) < 0.f;
+    }
+
+    /** @brief The position `vertex` will actually emit for `position`. */
+    [[nodiscard]] HexVec3 perturbedPosition(HexVec3 position) const noexcept {
+        return tangentPerturb(map_.noise(), position, perturbStrength_);
+    }
+
+    /** @brief Position of an already emitted vertex, for the anchored-triangle orientation. */
+    [[nodiscard]] HexVec3 positionOf(std::uint32_t vertexIndex) const noexcept {
+        const std::size_t base = static_cast<std::size_t>(vertexIndex) * 3u;
+        return HexVec3{out_.positions()[base], out_.positions()[base + 1u], out_.positions()[base + 2u]};
+    }
+
     /** @brief Emits a triangle whose three vertices share one weight set and one cell triple. */
     void emitTriangle(const HexVec3& p0, const HexVec3& p1, const HexVec3& p2, const HexTerrainWeights& w,
                       const HexCellData* t0, const HexCellData* t1, const HexCellData* t2) {
         const std::uint32_t i0 = static_cast<std::uint32_t>(out_.vertexCount());
+        // The winding is decided on the *emitted* positions: the perturbation is tangential and
+        // can flip the sign of a sliver, so testing the nominal points would leave those wound
+        // the wrong way however carefully the emitter ordered them.
+        const bool inward = facesInward(perturbedPosition(p0), perturbedPosition(p1), perturbedPosition(p2));
         vertex(p0, w, t0, t1, t2);
         vertex(p1, w, t0, t1, t2);
         vertex(p2, w, t0, t1, t2);
-        out_.addTriangle(i0, i0 + 1u, i0 + 2u);
+        if (inward)
+            out_.addTriangle(i0, i0 + 2u, i0 + 1u);
+        else
+            out_.addTriangle(i0, i0 + 1u, i0 + 2u);
     }
 
     /** @brief Emits a triangle with one weight set per vertex. */
@@ -514,16 +552,22 @@ private:
                       const HexTerrainWeights& w1, const HexTerrainWeights& w2, const HexCellData* t0,
                       const HexCellData* t1, const HexCellData* t2) {
         const std::uint32_t i0 = static_cast<std::uint32_t>(out_.vertexCount());
+        const bool          inward = facesInward(perturbedPosition(p0), perturbedPosition(p1), perturbedPosition(p2));
         vertex(p0, w0, t0, t1, t2);
         vertex(p1, w1, t0, t1, t2);
         vertex(p2, w2, t0, t1, t2);
-        out_.addTriangle(i0, i0 + 1u, i0 + 2u);
+        if (inward)
+            out_.addTriangle(i0, i0 + 2u, i0 + 1u);
+        else
+            out_.addTriangle(i0, i0 + 1u, i0 + 2u);
     }
 
     /**
      * @brief Emits a surface quad `(a, b, c, d)` as `(a, c, b)` and `(b, c, d)`.
      *
-     * The argument order is the `a -> b -> d -> c` ring used by `HexMeshData::addQuad`.
+     * The argument order is the `a -> b -> d -> c` ring used by `HexMeshData::addQuad`. The
+     * first emitted triangle decides the winding; mirroring swaps the 2nd and 3rd arguments,
+     * which reverses both.
      */
     void emitQuadForward(const HexVec3& p0, const HexVec3& p1, const HexVec3& p2, const HexVec3& p3,
                          const HexTerrainWeights& w0, const HexTerrainWeights& w1, const HexTerrainWeights& w2,
@@ -534,8 +578,21 @@ private:
         vertex(p1, w1, t0, t1, t2);
         vertex(p2, w2, t0, t1, t2);
         vertex(p3, w3, t0, t1, t2);
-        out_.addTriangle(i0, i0 + 2u, i0 + 1u);
-        out_.addTriangle(i0 + 1u, i0 + 2u, i0 + 3u);
+        // Each triangle is oriented on its own. A quad spanning a terrace or a corner is not
+        // planar, so its two halves can disagree and orienting the first one alone leaves the
+        // other inside-out.
+        const HexVec3 a0 = perturbedPosition(p0);
+        const HexVec3 a1 = perturbedPosition(p1);
+        const HexVec3 a2 = perturbedPosition(p2);
+        const HexVec3 a3 = perturbedPosition(p3);
+        if (facesInward(a0, a2, a1))
+            out_.addTriangle(i0, i0 + 1u, i0 + 2u);
+        else
+            out_.addTriangle(i0, i0 + 2u, i0 + 1u);
+        if (facesInward(a1, a2, a3))
+            out_.addTriangle(i0 + 1u, i0 + 3u, i0 + 2u);
+        else
+            out_.addTriangle(i0 + 1u, i0 + 2u, i0 + 3u);
     }
 
     /** @brief Emits a radial quad in the bottom/top alternating order used by cliff strips. */
@@ -543,13 +600,7 @@ private:
                           const HexTerrainWeights& w0, const HexTerrainWeights& w1, const HexTerrainWeights& w2,
                           const HexTerrainWeights& w3, const HexCellData* t0, const HexCellData* t1,
                           const HexCellData* t2) {
-        const std::uint32_t i0 = static_cast<std::uint32_t>(out_.vertexCount());
-        vertex(p0, w0, t0, t1, t2);
-        vertex(p1, w1, t0, t1, t2);
-        vertex(p2, w2, t0, t1, t2);
-        vertex(p3, w3, t0, t1, t2);
-        out_.addTriangle(i0, i0 + 2u, i0 + 1u);
-        out_.addTriangle(i0 + 1u, i0 + 2u, i0 + 3u);
+        emitQuadForward(p0, p1, p2, p3, w0, w1, w2, w3, t0, t1, t2);
     }
 
     /** @brief Emits a triangle that reuses an already emitted anchor vertex as its first corner. */
@@ -557,9 +608,13 @@ private:
                           const HexTerrainWeights& w2, const HexCellData* t0, const HexCellData* t1,
                           const HexCellData* t2) {
         const std::uint32_t i1 = static_cast<std::uint32_t>(out_.vertexCount());
+        // The anchor is already emitted, so its stored (perturbed) position is used as is.
         vertex(p1, w1, t0, t1, t2);
         vertex(p2, w2, t0, t1, t2);
-        out_.addTriangle(anchor, i1, i1 + 1u);
+        if (facesInward(positionOf(anchor), perturbedPosition(p1), perturbedPosition(p2)))
+            out_.addTriangle(anchor, i1 + 1u, i1);
+        else
+            out_.addTriangle(anchor, i1, i1 + 1u);
     }
 
     /** @brief Four triangles fanning from `center` along one solid edge. */

@@ -261,6 +261,34 @@ else. The downward-triangle count is the oracle that made this tractable: the we
 is position based and cannot see a face emitted in the wrong order, and `CHECK` would not
 have failed on it anyway.
 
+**The spherical mesher had the same winding defect, and it was the visible one.**
+`hexmap.sphereMesh.facesPointAwayFromTheCentre` measured **10030 inward-facing triangles** and
+still passed, because it asserted with `CHECK` - the same non-fatal trap as the mesh-quality
+assertions above. The spherical `appendCornerTriangles` is a line-for-line twin of the planar
+`appendCorner`, with the same elevation-sort permutation and the same branch-dependent
+ordering, so its corner fans came out inside-out wherever the permutation was odd. In the
+rendered planet this was not subtle: the ocean and the ice cap were covered in scattered
+broken triangles, and the north polar cap read as a speckle field rather than an ice sheet.
+
+The fix is applied at the emitters rather than per branch, because a sphere is a closed shell
+and therefore has one rule for all of it: `HexSphereMesh`'s `emitTriangle` (both overloads),
+`emitQuadForward` (which `emitQuadVertical` now delegates to), and `emitTriangleFrom` each
+orient the triangle they are about to add so its normal points away from the origin. Two
+details mattered:
+
+- The decision is taken on the **perturbed** positions, because `vertex()` applies
+  `tangentPerturb` and a tangential nudge can flip the sign of a sliver. Deciding on the
+  nominal points left 128 triangles behind; deciding on the emitted ones took it to 11.
+- Each triangle of a quad is oriented **on its own**. A quad spanning a terrace or a corner
+  is not planar, so its two halves can disagree; orienting the first one alone left the last
+  11. The planar `emitQuadUpward` was given the same treatment.
+
+Result: `facesPointAwayFromTheCentre` now asserts with `REQUIRE` and reports zero inward
+triangles, and `isAWatertightSurface` still passes, so the winding change did not disturb the
+seam work. Captured at the same camera pose, the planet frame changes by 24.4% of its pixels
+(23.5% by more than 8/255) against the pre-change binary - and the three runs of the fixed
+binary are byte-identical.
+
 Still open, unchanged from the gap list above: bindable texture arrays and independent
 ORM maps (gaps 2-4), production hydrology (gap 6), and instanced vegetation independent of
 the terrain rebuild (gap 7). `HexMapModule` now has a test file
