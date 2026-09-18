@@ -3261,6 +3261,23 @@ TEST_CASE("procgen.texture.foliage.leafCardAlpha") {
     // Card half must stay mostly transparent so single-stamp leaf cards alpha-cut.
     CHECK(rightA / double(rightN) < 0.55);
     CHECK(double(rightZero) / double(rightN) > 0.20);
+    // Opaque leaf texels are flat solid colour (no internal texture noise).
+    double sumG = 0.0, sumG2 = 0.0;
+    int    solidN = 0;
+    for (int y = 0; y < h; y += 2) {
+        for (int x = 0; x < w; x += 2) {
+            const auto c = img->getPixel(x, y);
+            const float u = float(x) / float(std::max(1, w - 1));
+            if (u <= 0.52f || c.a < 0.9f) continue;
+            sumG += c.g;
+            sumG2 += double(c.g) * double(c.g);
+            ++solidN;
+        }
+    }
+    REQUIRE(solidN > 8);
+    const double mean = sumG / double(solidN);
+    const double var  = sumG2 / double(solidN) - mean * mean;
+    CHECK(var < 0.0025);
 }
 
 TEST_CASE("procgen.texture.builtinRecipes.expanded") {

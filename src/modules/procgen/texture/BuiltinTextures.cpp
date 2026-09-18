@@ -590,12 +590,8 @@ void sampleOvateLeafCard(const NoiseField &noise, float u, float v, const std::v
         const float mask = 1.f - smoothstep(0.78f, 1.02f, d);
         if (mask <= cover) continue;
         cover = mask;
-        const float vein = std::pow(
-            std::fabs(std::sin(ry * 11.f / std::max(1e-4f, s.halfH) +
-                               noise.valueNoise(s.cx * 4.f, s.cy * 4.f) * 2.f)),
-            3.5f);
-        const float mott = noise.fbm(s.cx * 3.f + u * 2.f, s.cy * 3.f + v * 2.f, 3);
-        shade = std::clamp(0.30f + mott * 0.40f + (1.f - vein) * 0.30f, 0.f, 1.f);
+        // Flat fill — no veins/mottle; slight per-stamp tone so leaves are not identical.
+        shade = 0.48f + 0.12f * noise.hash01(int(s.cx * 97.f), int(s.cy * 53.f));
     }
 }
 
@@ -697,11 +693,12 @@ std::unique_ptr<image::ImageData> genTreeAtlas(const Params &params, std::string
                 const float fu = (u - 0.52f) / 0.48f;
                 float cover = 0.f, shade = 0.f;
                 sampleOvateLeafCard(noise, fu, v, leafStamps, cover, shade);
-                if (cover < 0.02f) {
+                if (cover < 0.5f) {
                     color = {0, 0, 0, 0};
                 } else {
-                    color   = leafRamp.sampleBanded(shade, ctx.colors);
-                    color.a = static_cast<uint8_t>(std::clamp(cover, 0.f, 1.f) * 255.f);
+                    // Solid leaf colour (no banded/mottle texture inside the blade).
+                    color   = leafRamp.sample(shade);
+                    color.a = 255;
                 }
             } else {
                 color = {72, 86, 48, 255};
@@ -768,11 +765,12 @@ std::unique_ptr<image::ImageData> genFoliage(const Params &params, std::string &
             } else {
                 const float fu = (u - 0.52f) / 0.48f;
                 sampleOvateLeafCard(noise, fu, v, leafStamps, cover, shade);
-                if (cover < 0.02f) {
+                if (cover < 0.5f) {
                     color = {0, 0, 0, 0};
                 } else {
-                    color   = leafRamp.sampleBanded(shade, ctx.colors);
-                    color.a = static_cast<uint8_t>(std::clamp(cover, 0.f, 1.f) * 255.f);
+                    // Solid leaf colour (no banded/mottle texture inside the blade).
+                    color   = leafRamp.sample(shade);
+                    color.a = 255;
                 }
             }
             img->setPixel(x, y,
