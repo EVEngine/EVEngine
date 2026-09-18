@@ -238,14 +238,16 @@ Result<RoadNetwork> RoadNetwork::makeCross(float span, int lanes) {
             Diagnostic::error(DiagnosticCode::InvalidArgument, "span>=16, lanes in [1,4] required", "cross"));
     RoadNetwork network;
     const float half = span * 0.5f;
-    RoadStyle style       = groundStyle();
-    style.deckThickness   = 0.08f;
-    style.sidewalkWidth   = 1.2f;
-    style.curbWidth       = 0.35f;
-    style.curbHeight      = 0.45f;
-    // Trim at asphalt half-width so driving lanes meet the hub apron with no gap.
-    // Corner pads then cover [asphaltHalf, halfWidth]^2 on top of the arm tips.
-    const float jr = 0.5f * style.laneWidth * static_cast<float>(lanes) + 0.05f;
+    RoadStyle style     = groundStyle();
+    style.deckThickness = 0.08f;
+    style.sidewalkWidth = 1.2f;
+    style.curbWidth     = 0.35f;
+    style.curbHeight    = 0.45f;
+    // Push arms outward past the asphalt half-width so sidewalks do not overlap;
+    // the leftover ring is filled by quarter-circle curb returns.
+    const float asphaltHalf = 0.5f * style.laneWidth * static_cast<float>(lanes);
+    const float cornerR     = 2.8f;
+    const float jr          = asphaltHalf + cornerR;
     auto nC = network.addNode(0.f, 0.f, 0.f, jr);
     auto nN = network.addNode(0.f, 0.f, -half, 2.f);
     auto nS = network.addNode(0.f, 0.f, half, 2.f);
@@ -255,7 +257,7 @@ Result<RoadNetwork> RoadNetwork::makeCross(float span, int lanes) {
         if (!r->ok()) return Result<RoadNetwork>::failure(r->status());
     }
     // Arms run into the hub; bake trims each end by junctionRadius so strips
-    // stop at the apron instead of piercing it.
+    // stop outside the corner arcs.
     auto e1 = network.addEdge(nN.value(), nC.value(), {P(0.f, 0.f, -half), P(0.f, 0.f, 0.f)}, lanes, 0, style);
     auto e2 = network.addEdge(nC.value(), nS.value(), {P(0.f, 0.f, 0.f), P(0.f, 0.f, half)}, lanes, 0, style);
     auto e3 = network.addEdge(nW.value(), nC.value(), {P(-half, 0.f, 0.f), P(0.f, 0.f, 0.f)}, lanes, 0, style);
