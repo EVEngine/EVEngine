@@ -555,6 +555,16 @@ Result<void> bakeJunction(MeshBuild& mesh, const RoadNetwork& network, const Roa
                     };
                     emitTops(flip);
                     emitTops(!flip);
+                    // Fill the leftover disk toward the outer corner center with sidewalk.
+                    {
+                        mesh.setActiveGroup(roadMaterialGroup(RoadMaterial::Sidewalk));
+                        const auto sb = static_cast<std::uint32_t>(mesh.getVertexCount());
+                        mesh.addVertex(cx, walkY, cz, 0.f, 1.f, 0.f, 0.5f, 0.5f);
+                        mesh.addVertex(c0.x, walkY, c0.z, 0.f, 1.f, 0.f, 0.5f, 0.5f);
+                        mesh.addVertex(c1.x, walkY, c1.z, 0.f, 1.f, 0.f, 0.5f, 0.5f);
+                        mesh.addTriangle(sb, sb + 1, sb + 2);
+                        mesh.addTriangle(sb, sb + 2, sb + 1);
+                    }
                     {
                         const V3 n = radialOut(a0);
                         if (!flip)
