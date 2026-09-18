@@ -57,8 +57,8 @@ function roadCameraForScene(name) {
         roadCamera.setTarget(0.0, 2.5, 0.0);
     } else {
         // cross
-        roadCamera.setEye(22.0, 22.0, 22.0);
-        roadCamera.setTarget(0.0, 0.5, 0.0);
+        roadCamera.setEye(0.0, 28.0, 18.0);
+        roadCamera.setTarget(0.0, 0.3, 0.0);
     }
 }
 
