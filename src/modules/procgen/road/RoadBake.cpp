@@ -7,6 +7,7 @@
 #include <cmath>
 #include <unordered_map>
 #include <utility>
+#include <vector>
 
 namespace eve::procgen::road {
 namespace {
@@ -142,6 +143,29 @@ Result<void> loftProfileClean(MeshBuild& mesh, const std::vector<SplineFrameSamp
         }
     }
     return Result<void>::success();
+}
+
+/** @brief Cap a lofted profile ring so junction-facing open U-channels are not see-through. */
+void capProfileRing(MeshBuild& mesh, const SplineFrameSample& frame, const RoadProfile& profile, bool outward) {
+    if (profile.points.size() < 3) return;
+    const V3 origin{frame.sample.x, frame.sample.y, frame.sample.z};
+    const V3 side{frame.sideX, frame.sideY, frame.sideZ};
+    const V3 up{frame.upX, frame.upY, frame.upZ};
+    V3       fwd{frame.forwardX, frame.forwardY, frame.forwardZ};
+    if (!outward) fwd = fwd * -1.f;
+    const V3 nrm = normalize(fwd);
+    std::vector<V3> ring;
+    ring.reserve(profile.points.size());
+    for (const auto& pp : profile.points) ring.push_back(origin + side * pp.side + up * pp.up);
+    // Fan-fill the end polygon (closes the jersey-barrier U looking into the hub).
+    mesh.setActiveGroup(roadMaterialGroup(RoadMaterial::Curb));
+    const auto base = static_cast<std::uint32_t>(mesh.getVertexCount());
+    for (const V3& p : ring) mesh.addVertex(p.x, p.y, p.z, nrm.x, nrm.y, nrm.z, 0.f, 0.f);
+    for (std::size_t i = 1; i + 1 < ring.size(); ++i) {
+        if (outward) mesh.addTriangle(base, base + static_cast<std::uint32_t>(i), base + static_cast<std::uint32_t>(i + 1));
+        else
+            mesh.addTriangle(base, base + static_cast<std::uint32_t>(i + 1), base + static_cast<std::uint32_t>(i));
+    }
 }
 
 Result<void> addDeckAndPiers(MeshBuild& mesh, const std::vector<SplineFrameSample>& frames, const RoadStyle& style,
@@ -298,6 +322,9 @@ Result<void> bakeEdgeGeometry(MeshBuild& mesh, RoadOverlay& overlay, const RoadN
 
     auto lofted = loftProfileClean(mesh, trimmed, profile.value(), edge.style.uvMeters);
     if (!lofted.ok()) return lofted;
+    // Cap junction-facing ends so the jersey-barrier U is not see-through into the hub.
+    if (trimStart > 0.05f) capProfileRing(mesh, trimmed.front(), profile.value(), false);
+    if (trimEnd > 0.05f) capProfileRing(mesh, trimmed.back(), profile.value(), true);
     auto deck = addDeckAndPiers(mesh, trimmed, edge.style, profile.value().halfWidth, options.includePiers);
     if (!deck.ok()) return deck;
     if (options.includeMarkings) {
@@ -363,8 +390,6 @@ Result<void> bakeJunction(MeshBuild& mesh, const RoadNetwork& network, const Roa
     std::vector<ArmTip> arms;
     float               maxHalfWidth = 0.f;
     float               maxAsphalt   = 0.f;
-    float               curbH        = 0.5f;
-    float               walkH        = 0.14f;
     for (const auto& edge : network.edges()) {
         if (edge.to != node.id && edge.from != node.id) continue;
         auto spline = edgeToSpline(edge);
@@ -389,8 +414,6 @@ Result<void> bakeJunction(MeshBuild& mesh, const RoadNetwork& network, const Roa
         arms.push_back(tip);
         maxHalfWidth = std::max(maxHalfWidth, tip.halfWidth);
         maxAsphalt   = std::max(maxAsphalt, tip.asphaltHalf);
-        curbH        = tip.curbHeight;
-        walkH        = tip.sidewalkH;
     }
     if (static_cast<int>(arms.size()) < 2) return Result<void>::success();
 
@@ -411,29 +434,87 @@ Result<void> bakeJunction(MeshBuild& mesh, const RoadNetwork& network, const Roa
         axisCross = axisHits == 4;
     }
 
-    // Asphalt fill. Always fan from a hub vertex — a single large strip-quad can
-    // disappear under Lavapipe even when the CPU triangles cover the origin.
-    {
+    // Asphalt fill. Fan from a hub vertex — a single large strip-quad can vanish
+    // under Lavapipe even when the CPU triangles cover the origin.
+    if (axisCross) {
+        // Driving apron only (asphalt half-width), slightly overlapping arm tips.
+        const float ah   = maxAsphalt + 0.15f;
+        const auto  base = static_cast<std::uint32_t>(mesh.getVertexCount());
+        mesh.setActiveGroup(roadMaterialGroup(RoadMaterial::Asphalt));
+        mesh.addVertex(node.x, asphaltY, node.z, 0.f, 1.f, 0.f, 0.5f, 0.5f);
+        static const float kSquare[8][2] = {{0.f, -1.f}, {1.f, -1.f}, {1.f, 0.f},  {1.f, 1.f},
+                                            {0.f, 1.f},  {-1.f, 1.f}, {-1.f, 0.f}, {-1.f, -1.f}};
+        for (int i = 0; i < 8; ++i) {
+            mesh.addVertex(node.x + kSquare[i][0] * ah, asphaltY, node.z + kSquare[i][1] * ah, 0.f, 1.f, 0.f, 0.5f,
+                           0.5f);
+        }
+        for (int i = 0; i < 8; ++i) {
+            const auto i0 = base + 1u + static_cast<std::uint32_t>(i);
+            const auto i1 = base + 1u + static_cast<std::uint32_t>((i + 1) % 8);
+            mesh.addTriangle(base, i1, i0);
+        }
+
+        // Raised corner platforms [asphaltHalf, halfWidth]^2 — closes the open
+        // jersey-barrier U ends at the hub and reads as continuous sidewalk corners.
+        const float ai = maxAsphalt;
+        const float ao = maxHalfWidth;
+        if (ao > ai + 0.05f) {
+            float curbH = 0.45f;
+            float walkH = 0.14f;
+            if (!arms.empty()) {
+                curbH = arms.front().curbHeight;
+                walkH = arms.front().sidewalkH;
+            }
+            const float walkY   = y + std::max(walkH, curbH * 0.35f);
+            const float curbTop = y + curbH;
+            for (int sx : {-1, 1}) {
+                for (int sz : {-1, 1}) {
+                    const float sxf = static_cast<float>(sx);
+                    const float szf = static_cast<float>(sz);
+                    const float x0  = std::min(node.x + sxf * ai, node.x + sxf * ao);
+                    const float x1  = std::max(node.x + sxf * ai, node.x + sxf * ao);
+                    const float z0  = std::min(node.z + szf * ai, node.z + szf * ao);
+                    const float z1  = std::max(node.z + szf * ai, node.z + szf * ao);
+                    // Top slab.
+                    appendStripQuad(mesh, V3{x0, curbTop, z0}, V3{x1, curbTop, z0}, V3{x1, curbTop, z1},
+                                    V3{x0, curbTop, z1}, up, 0.f, 1.f, 0.f, 1.f, RoadMaterial::Curb);
+                    // Thin sidewalk lip on the outer corner.
+                    const float bo = ai + 0.35f;
+                    if (ao > bo + 0.05f) {
+                        const float xo0 = std::min(node.x + sxf * bo, node.x + sxf * ao);
+                        const float xo1 = std::max(node.x + sxf * bo, node.x + sxf * ao);
+                        const float zo0 = std::min(node.z + szf * bo, node.z + szf * ao);
+                        const float zo1 = std::max(node.z + szf * bo, node.z + szf * ao);
+                        appendStripQuad(mesh, V3{xo0, walkY + 0.02f, zo0}, V3{xo1, walkY + 0.02f, zo0},
+                                        V3{xo1, walkY + 0.02f, zo1}, V3{xo0, walkY + 0.02f, zo1}, up, 0.f, 1.f, 0.f,
+                                        1.f, RoadMaterial::Sidewalk);
+                    }
+                    const float xIn  = node.x + sxf * ai;
+                    const float zIn  = node.z + szf * ai;
+                    const float xFar = node.x + sxf * ao;
+                    const float zFar = node.z + szf * ao;
+                    appendStripQuad(mesh, V3{xIn, y, z0}, V3{xIn, curbTop, z0}, V3{xIn, curbTop, z1}, V3{xIn, y, z1},
+                                    V3{-sxf, 0.f, 0.f}, 0.f, 1.f, 0.f, 1.f, RoadMaterial::Curb);
+                    appendStripQuad(mesh, V3{x0, y, zIn}, V3{x1, y, zIn}, V3{x1, curbTop, zIn}, V3{x0, curbTop, zIn},
+                                    V3{0.f, 0.f, -szf}, 0.f, 1.f, 0.f, 1.f, RoadMaterial::Curb);
+                    appendStripQuad(mesh, V3{xFar, y, z0}, V3{xFar, y, z1}, V3{xFar, curbTop, z1},
+                                    V3{xFar, curbTop, z0}, V3{sxf, 0.f, 0.f}, 0.f, 1.f, 0.f, 1.f, RoadMaterial::Curb);
+                    appendStripQuad(mesh, V3{x0, y, zFar}, V3{x1, y, zFar}, V3{x1, curbTop, zFar},
+                                    V3{x0, curbTop, zFar}, V3{0.f, 0.f, szf}, 0.f, 1.f, 0.f, 1.f, RoadMaterial::Curb);
+                }
+            }
+        }
+    } else {
         const float radius =
-            axisCross ? jr : (std::sqrt(jr * jr + maxHalfWidth * maxHalfWidth) + 0.35f);
-        const int  segs = axisCross ? 8 : 32;  // square: 8 pts (corners + edge midpoints)
+            std::sqrt(jr * jr + maxHalfWidth * maxHalfWidth) + 0.35f;
+        const int  segs = 32;
         const auto base = static_cast<std::uint32_t>(mesh.getVertexCount());
         mesh.setActiveGroup(roadMaterialGroup(RoadMaterial::Asphalt));
         mesh.addVertex(node.x, asphaltY, node.z, 0.f, 1.f, 0.f, 0.5f, 0.5f);
         for (int i = 0; i < segs; ++i) {
-            float px = 0.f, pz = 0.f;
-            if (axisCross) {
-                // March the square boundary CCW: mid-bottom, BR, mid-right, TR, ...
-                static const float kSquare[8][2] = {{0.f, -1.f},  {1.f, -1.f}, {1.f, 0.f},  {1.f, 1.f},
-                                                    {0.f, 1.f},   {-1.f, 1.f}, {-1.f, 0.f}, {-1.f, -1.f}};
-                px = node.x + kSquare[i][0] * radius;
-                pz = node.z + kSquare[i][1] * radius;
-            } else {
-                const float a = static_cast<float>(i) * 6.2831853f / static_cast<float>(segs);
-                px            = node.x + std::cos(a) * radius;
-                pz            = node.z + std::sin(a) * radius;
-            }
-            mesh.addVertex(px, asphaltY, pz, 0.f, 1.f, 0.f, 0.5f, 0.5f);
+            const float a = static_cast<float>(i) * 6.2831853f / static_cast<float>(segs);
+            mesh.addVertex(node.x + std::cos(a) * radius, asphaltY, node.z + std::sin(a) * radius, 0.f, 1.f, 0.f,
+                           std::cos(a) * 0.5f + 0.5f, std::sin(a) * 0.5f + 0.5f);
         }
         for (int i = 0; i < segs; ++i) {
             const auto i0 = base + 1u + static_cast<std::uint32_t>(i);
@@ -442,52 +523,25 @@ Result<void> bakeJunction(MeshBuild& mesh, const RoadNetwork& network, const Roa
         }
     }
 
-    if (axisCross) {
-        // L-shaped sidewalk corners: fill the square outside asphaltHalf without
-        // overlapping the driving apron (inner edge follows asphalt half-width).
-        const float ai = maxAsphalt;
-        const float ao = std::max(maxHalfWidth, jr + 0.05f);
-        if (ao > ai + 0.05f) {
-            const float walkY   = y + walkH;
-            const float curbTop = y + curbH;
-            for (int sx : {-1, 1}) {
-                for (int sz : {-1, 1}) {
-                    const float sxf = static_cast<float>(sx);
-                    const float szf = static_cast<float>(sz);
-                    // Outer square pad in the corner quadrant.
-                    const float xA = std::min(node.x + sxf * ai, node.x + sxf * ao);
-                    const float xB = std::max(node.x + sxf * ai, node.x + sxf * ao);
-                    const float zA = std::min(node.z + szf * ai, node.z + szf * ao);
-                    const float zB = std::max(node.z + szf * ai, node.z + szf * ao);
-                    appendStripQuad(mesh, V3{xA, walkY, zA}, V3{xB, walkY, zA}, V3{xB, walkY, zB}, V3{xA, walkY, zB},
-                                    up, 0.f, 1.f, 0.f, 1.f, RoadMaterial::Sidewalk);
-                    // Curb faces on the two outer sides of the corner pad.
-                    const float xFar = sx > 0 ? xB : xA;
-                    const float zFar = sz > 0 ? zB : zA;
-                    // Outer curb faces only — inner faces against asphalt created thin fins.
-                    appendStripQuad(mesh, V3{xFar, y, zA}, V3{xFar, y, zB}, V3{xFar, curbTop, zB},
-                                    V3{xFar, curbTop, zA}, V3{sxf, 0.f, 0.f}, 0.f, 1.f, 0.f, 1.f, RoadMaterial::Curb);
-                    appendStripQuad(mesh, V3{xA, y, zFar}, V3{xB, y, zFar}, V3{xB, curbTop, zFar},
-                                    V3{xA, curbTop, zFar}, V3{0.f, 0.f, szf}, 0.f, 1.f, 0.f, 1.f, RoadMaterial::Curb);
-                }
-            }
-        }
-    }
-
-    // Zebra on the first incoming edge approach.
+    // Zebra stripes on every arm tip that meets this hub.
     for (const auto& edge : network.edges()) {
-        if (edge.to != node.id) continue;
+        if (edge.to != node.id && edge.from != node.id) continue;
         auto spline = edgeToSpline(edge);
         if (!spline.ok()) continue;
         auto len = spline.value().lengthResult(16);
-        if (!len.ok() || len.value() < node.junctionRadius + 1.f) continue;
-        auto frame = spline.value().travelFrameResult(len.value() - node.junctionRadius * 0.55f, "clamp", 16);
+        if (!len.ok() || len.value() < node.junctionRadius + 1.5f) continue;
+        const float alongDist =
+            edge.to == node.id ? (len.value() - node.junctionRadius - 1.6f)
+                               : (node.junctionRadius + 1.6f);
+        auto frame = spline.value().travelFrameResult(alongDist, "clamp", 16);
         if (!frame.ok()) continue;
         const auto& f = frame.value();
         const V3    origin{f.sample.x, f.sample.y, f.sample.z};
         const V3    side{f.sideX, f.sideY, f.sideZ};
-        const V3    fwd{f.forwardX, f.forwardY, f.forwardZ};
-        const V3    nrm{f.upX, f.upY, f.upZ};
+        // Stripe direction: toward the hub from this tip.
+        V3          fwd{f.forwardX, f.forwardY, f.forwardZ};
+        if (edge.from == node.id) fwd = fwd * -1.f;
+        const V3    nrm{0.f, 1.f, 0.f};
         const float stripeW = edge.style.laneWidth * static_cast<float>(edge.lanesForward) * 0.45f;
         for (int s = 0; s < 4; ++s) {
             const float along = static_cast<float>(s) * 0.5f;
@@ -498,7 +552,6 @@ Result<void> bakeJunction(MeshBuild& mesh, const RoadNetwork& network, const Roa
             const V3    e     = b - fwd * 0.25f;
             appendStripQuad(mesh, a, b, e, d, nrm, 0.f, 1.f, 0.f, 1.f, RoadMaterial::Marking);
         }
-        break;
     }
     return Result<void>::success();
 }

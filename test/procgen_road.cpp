@@ -301,3 +301,39 @@ TEST_CASE("procgen.road.scenes.pierUprightFootprint") {
     }
 }
 
+
+TEST_CASE("procgen.road.scenes.crossJunctionCornerSidewalks") {
+    auto cross = RoadNetwork::makeCross(28.f, 2);
+    REQUIRE(cross.ok());
+    // jr tracks asphalt half-width; corner pads cover [asphalt, halfWidth]^2.
+    float hubJr = 0.f;
+    for (const auto& n : cross.value().nodes()) {
+        if (std::fabs(n.x) < 1e-3f && std::fabs(n.z) < 1e-3f) hubJr = n.junctionRadius;
+    }
+    CHECK_GT(hubJr, 3.0f);
+    CHECK_LT(hubJr, 4.5f);
+
+    RoadBakeOptions options;
+    options.pathSegmentsPerEdge = 20;
+    options.includeJunctions    = true;
+    options.includeNavigation   = false;
+    options.includePiers        = false;
+    auto baked                  = bakeRoadNetwork(cross.value(), options);
+    REQUIRE(baked.ok());
+    int sidewalkGroup = -1;
+    for (int g = 0; g < baked.value().mesh.getGroupCount(); ++g) {
+        if (baked.value().mesh.getGroupName(g) == "sidewalk") sidewalkGroup = g;
+    }
+    CHECK_GE(sidewalkGroup, 0);
+    auto sw = baked.value().mesh.copyGroup(sidewalkGroup);
+    REQUIRE(sw);
+    // Corner sidewalk pads fill [asphaltHalf, halfWidth] in each quadrant.
+    int cornerHits = 0;
+    for (int i = 0; i < sw->getVertexCount(); ++i) {
+        const float x = std::fabs(sw->getPositionX(i));
+        const float z = std::fabs(sw->getPositionZ(i));
+        if (x > 3.6f && x < 5.5f && z > 3.6f && z < 5.5f) ++cornerHits;
+    }
+    CHECK_GT(cornerHits, 8);
+}
+
