@@ -1412,6 +1412,15 @@ INFER / UNVERIFIED），**没有任何一个页面正文被成功打开**，
 **未验证**：`clang-format` 在本环境不可用（PATH 无 `clang-format`/`clang-format-18`），
 故 CI 的 `format` 作业未在本地跑过——这是本提交最可能被 CI 拦下的点，且只涉及格式。
 
+**完成声明（§6.2 计划项全部落地，验证于 `ed970c2df`）**：
+Phase 0.1–0.3、Phase 1.1a–d、1.2a–b、1.3、1.4、1.5、1.6 均已实现、测试、写文档并通过门禁。
+该提交上的验证证据：`check_architecture_contracts --base HEAD`、`module_depgraph --check`、
+`check_quality_metadata`、`check_bindings --strict` **全部 exit 0**；
+受影响的模块用例 **188/188 通过**（`tactics|sensing|physics|targeting|action|gameplay|result|snapshot|replay|versioned`）。
+**全量套件与 `clang-format` 按约定交给 CI**（本机无 clang-format；全量不本地跑）。
+唯一重新定性为**可选**的计划项：把 `hexmap` 接成网格 LOS 后端（见上表 Phase 1.6 行，理由：它没有阻挡事实，
+接手前需先有持久化阻挡概念 + schema + 迁移；且该空间已被 tactics 认领，替换必须是显式的）。
+
 **门禁状态（Phase 1.6 tactics 侧之后）**：
 `module_depgraph --check`、`check_architecture_contracts --base HEAD`、
 `check_quality_metadata`、`check_bindings --strict` **全部 exit 0**
