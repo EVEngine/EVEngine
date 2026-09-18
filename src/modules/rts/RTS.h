@@ -7,6 +7,7 @@
 
 #include "common/Module.h"
 #include "common/GameplayControl.h"
+#include "common/GameplayInstanceCatalog.h"
 #include "common/Snapshot.h"
 #include "rts/RTSAttributes.h"
 #include "rts/RTSArchetype.h"
@@ -57,7 +58,7 @@ struct RTSFrameLifecycleEvent {
  * authoritative state owners, while action lifecycle state remains owned by
  * the caller-provided action::ActionRuntime through IRTSActionExecutor.
  */
-class RTS : public Module, public IGameplayControlProvider {
+class RTS : public Module, public IGameplayControlProvider, public IGameplayInstanceCatalog {
 public:
     Module_REG(RTS);
 
@@ -68,6 +69,8 @@ public:
 
     /** @copydoc IGameplayControlProvider::gameplayDomain */
     [[nodiscard]] std::string_view gameplayDomain() const noexcept override;
+    /** @copydoc IGameplayInstanceCatalog::gameplayInstances */
+    [[nodiscard]] std::vector<SubjectRef> gameplayInstances() const override;
     /** @copydoc IGameplayControlProvider::observeGameplay */
     [[nodiscard]] Result<GameplayObservation> observeGameplay(const GameplaySession& session,
                                                                SubjectRef instance) const override;

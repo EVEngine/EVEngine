@@ -4,6 +4,7 @@
 
 #include "common/Module.h"
 #include "common/GameplayControl.h"
+#include "common/GameplayInstanceCatalog.h"
 #include "common/SquirrelOwnership.h"
 #include "tactics/TacticsBattle.h"
 #include "tactics/TacticsPersistence.h"
@@ -43,7 +44,7 @@ struct TacticsBattleSession {
  *
  * All methods are simulation-thread-affine and invoke no unknown callbacks.
  */
-class Tactics : public Module, public IGameplayControlProvider {
+class Tactics : public Module, public IGameplayControlProvider, public IGameplayInstanceCatalog {
 public:
     Module_REG(Tactics);
 
@@ -54,6 +55,8 @@ public:
 
     /** @copydoc IGameplayControlProvider::gameplayDomain */
     [[nodiscard]] std::string_view gameplayDomain() const noexcept override;
+    /** @copydoc IGameplayInstanceCatalog::gameplayInstances */
+    [[nodiscard]] std::vector<SubjectRef> gameplayInstances() const override;
     /** @copydoc IGameplayControlProvider::observeGameplay */
     [[nodiscard]] Result<GameplayObservation> observeGameplay(const GameplaySession& session,
                                                                SubjectRef instance) const override;
