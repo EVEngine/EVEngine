@@ -3,12 +3,14 @@
 //
 // pc.data[0] mode:
 //   0 = classic POM  — parallax only; geometric silhouette unchanged
-//   1 = SilPOM       — POM shading on the front; side faces raymarch and
-//                      keep brick caps only (jagged limb). Front depth stays
-//                      geometric so cliff FragDepth cannot open 镂空 shells.
-//   2 = SSDM         — model-space heightfield march through the extruded
-//                      slab; side misses discard → continuous outline.
-//                      Front keeps geometric depth for the same reason.
+//   1 = SilPOM       — solid planar heightfield march (same as SSDM shading)
+//                      + side faces keep brick caps only (jagged limb)
+//   2 = SSDM         — solid planar heightfield march; side misses discard
+//                      for a continuous extruded outline
+//
+// Both silhouette modes keep FRONT geometric depth. Writing cliff FragDepth
+// on the front opens see-through shells between brick plateaus (镂空).
+// Edge protrusion comes from side-face hits + FragDepth.
 //
 // Height.r: 1 = raised toward the card normal (+Z in model space).
 // Card mesh is a slab with local XY in [-1,1] → UV, local Z in [0,1]
@@ -99,7 +101,6 @@ vec3 heightNormalTS(vec2 uv, float scale) {
 }
 
 // Steep POM + linear refine. Returns xy=UV, z=hitDepth[0..1], w=found.
-// UV is always clamped — walk-off discard shredded the left card at grazing.
 vec4 pomHit(vec2 uv, vec3 viewTS, float scale, float minLayers, float maxLayers) {
     if (scale < 1e-5)
         return vec4(uv, 0.0, 1.0);
@@ -107,8 +108,8 @@ vec4 pomHit(vec2 uv, vec3 viewTS, float scale, float minLayers, float maxLayers)
                              clamp(abs(viewTS.z), 0.0, 1.0)),
                          1.0, 64.0);
     float layerDepth = 1.0 / layers;
-    // Floor |vz| higher at grazing to limit runaway UV steps (zebra stripes).
-    float vz = max(abs(viewTS.z), 0.18);
+    // Floor |vz| so hard cliffs do not take runaway UV steps (zebra).
+    float vz = max(abs(viewTS.z), 0.22);
     vec2 deltaUV = ((viewTS.xy / vz) * scale) / layers;
     vec2 curUV = uv;
     float curDepth = 0.0;
@@ -153,12 +154,13 @@ float selfShadow(vec2 hitUV, float hitDepth, vec3 lightTS, float scale,
         curUV = clamp(curUV + deltaUV, 0.0, 1.0);
         curDepth -= layerDepth;
         if ((1.0 - heightAt(curUV)) < curDepth - 0.015)
-            return 0.35;
+            return 0.32;
     }
     return 1.0;
 }
 
 // Geometric heightfield march. Returns xy=UV, z=1 on hit, w=hitZ.
+// Adaptive steps near the surface cut cliff stair-steps without soft pillows.
 vec4 ssdmMarchLocal(vec3 camLocal, vec3 dirLocal, float minLayers, float maxLayers) {
     if (abs(dirLocal.z) < 1e-5)
         return vec4(0.0);
@@ -172,21 +174,25 @@ vec4 ssdmMarchLocal(vec3 camLocal, vec3 dirLocal, float minLayers, float maxLaye
     float layers = clamp(mix(max(maxLayers, 1.0), max(minLayers, 1.0),
                              clamp(abs(dirLocal.z), 0.0, 1.0)),
                          1.0, 64.0);
-    float dt = (tExit - tEnter) / layers;
+    float dtBase = (tExit - tEnter) / layers;
     float t = tEnter;
+    float prevD = 1.0;
+    float prevT = tEnter;
     for (int i = 0; i < 64; ++i) {
-        if (float(i) >= layers)
+        if (float(i) >= layers || t > tExit)
             break;
         vec3 p = camLocal + dirLocal * t;
         vec2 uv = uvFromLocal(p);
         if (uv.x < -0.02 || uv.y < -0.02 || uv.x > 1.02 || uv.y > 1.02) {
-            t += dt;
+            t += dtBase;
             continue;
         }
-        if (p.z <= heightAt(clamp(uv, 0.0, 1.0)) + 1e-3) {
-            float tA = max(t - dt, tEnter);
+        float h = heightAt(clamp(uv, 0.0, 1.0));
+        float d = p.z - h;
+        if (d <= 1e-3) {
+            float tA = prevT;
             float tB = t;
-            for (int r = 0; r < 6; ++r) {
+            for (int r = 0; r < 7; ++r) {
                 float tm = 0.5 * (tA + tB);
                 vec3 pm = camLocal + dirLocal * tm;
                 if (pm.z <= heightAt(uvFromLocal(pm)) + 1e-3)
@@ -198,7 +204,12 @@ vec4 ssdmMarchLocal(vec3 camLocal, vec3 dirLocal, float minLayers, float maxLaye
             vec2 uvh = clamp(uvFromLocal(ph), 0.0, 1.0);
             return vec4(uvh, 1.0, clamp(ph.z, 0.0, 1.0));
         }
-        t += dt;
+        float stepT = dtBase;
+        if (d > 0.0 && d < 0.22)
+            stepT = min(dtBase, max(dtBase * 0.18, d * 0.40 / max(abs(dirLocal.z), 0.08)));
+        prevD = d;
+        prevT = t;
+        t += stepT;
     }
     return vec4(0.0);
 }
@@ -214,6 +225,41 @@ vec3 shadeLit(vec3 albedo, vec3 N, vec3 V, float shadow) {
     float ndv = max(dot(N, V), 0.0);
     float rim = pow(1.0 - ndv, 3.0) * 0.05;
     return albedo * (ubo.ambient.rgb + ubo.lightColor.rgb * ndl) + vec3(rim);
+}
+
+void applySolidMarch(float mode, float scale, float minLayers, float maxLayers,
+                     vec3 lightTS, inout vec2 uv, inout vec3 N, inout float shadow,
+                     inout float fragDepth, inout bool writeReliefDepth) {
+    vec3 camL = localFromWorld(vCameraPos);
+    vec3 fragL = localFromWorld(vWorldPos);
+    vec3 dirL = normalize(fragL - camL);
+    vec4 hit = ssdmMarchLocal(camL, dirL, minLayers, maxLayers);
+    bool front = isFrontFace();
+    if (hit.z < 0.5) {
+        if (!front)
+            discard;
+        // Front miss → opaque chart fill (mortar). No FragDepth rewrite.
+        uv = clamp(vUV, 0.0, 1.0);
+        N = normalize(mat3(ubo.model) * heightNormalTS(uv, scale));
+        shadow = 1.0;
+        return;
+    }
+    uv = clamp(hit.xy, 0.0, 1.0);
+    float h = heightAt(uv);
+    if (!front) {
+        // SilPOM: brick-cap limb only. SSDM: full continuous profile.
+        if (mode < 1.5 && h < 0.50)
+            discard;
+        vec3 hitLocal = vec3(uv.x * 2.0 - 1.0, uv.y * 2.0 - 1.0, hit.w);
+        fragDepth = fragDepthFromLocal(hitLocal);
+        writeReliefDepth = true;
+    }
+    N = normalize(mat3(ubo.model) * heightNormalTS(uv, scale));
+    shadow = mix(1.0, selfShadow(uv, 1.0 - hit.w, lightTS, scale,
+                                 minLayers, maxLayers), 0.55);
+    // Mild contact darkening in mortar trenches (reads depth without soft pillows).
+    float trench = smoothstep(0.85, 0.40, h);
+    shadow *= mix(1.0, 0.72, trench);
 }
 
 void main() {
@@ -249,73 +295,19 @@ void main() {
 
     if (mode < 0.5) {
         // Classic POM — parallax inside the chart, silhouette stays geometric.
-        // Fade parallax at grazing angles so hard cliffs do not zebra-stripe.
         float facing = clamp(abs(viewTS.z), 0.0, 1.0);
-        float pomAmt = smoothstep(0.12, 0.42, facing);
+        float pomAmt = smoothstep(0.16, 0.48, facing);
         vec4 hit = pomHit(vUV, viewTS, scale * pomAmt, minLayers, maxLayers);
         uv = clamp(mix(vUV, hit.xy, pomAmt), 0.0, 1.0);
         vec3 nTS = heightNormalTS(uv, scale);
-        // Flatten normals when facing is low — cliff dFdx noise = zebra.
         nTS = normalize(mix(vec3(0.0, 0.0, 1.0), nTS, pomAmt));
         N = normalize(TBN * nTS);
         shadow = mix(1.0, selfShadow(uv, hit.z, lightTS, scale * pomAmt,
-                                     minLayers, maxLayers), 0.35 * pomAmt);
-    } else if (mode < 1.5) {
-        // SilPOM: POM on the front (parallax look), side-face heightfield for
-        // jagged brick-cap limb. Never horizon-trim the front (that = 镂空).
-        bool front = isFrontFace();
-        if (front) {
-            float facing = clamp(abs(viewTS.z), 0.0, 1.0);
-            float pomAmt = smoothstep(0.10, 0.38, facing);
-            vec4 hit = pomHit(vUV, viewTS, scale * pomAmt, minLayers, maxLayers);
-            uv = clamp(mix(vUV, hit.xy, pomAmt), 0.0, 1.0);
-            vec3 nTS = heightNormalTS(uv, scale);
-            nTS = normalize(mix(vec3(0.0, 0.0, 1.0), nTS, pomAmt));
-            N = normalize(TBN * nTS);
-            shadow = mix(1.0, selfShadow(uv, hit.z, lightTS, scale * pomAmt,
-                                         minLayers, maxLayers), 0.45 * pomAmt);
-        } else {
-            vec3 camL = localFromWorld(vCameraPos);
-            vec3 fragL = localFromWorld(vWorldPos);
-            vec3 dirL = normalize(fragL - camL);
-            vec4 hit = ssdmMarchLocal(camL, dirL, minLayers, maxLayers);
-            if (hit.z < 0.5)
-                discard;
-            uv = clamp(hit.xy, 0.0, 1.0);
-            float h = heightAt(uv);
-            if (h < 0.45)
-                discard;
-            vec3 hitLocal = vec3(uv.x * 2.0 - 1.0, uv.y * 2.0 - 1.0, hit.w);
-            fragDepth = fragDepthFromLocal(hitLocal);
-            writeReliefDepth = true;
-            N = normalize(mat3(ubo.model) * heightNormalTS(uv, scale));
-            shadow = mix(1.0, selfShadow(uv, 1.0 - hit.w, lightTS, scale,
-                                         minLayers, maxLayers), 0.5);
-        }
+                                     minLayers, maxLayers), 0.30 * pomAmt);
     } else {
-        // Planar SSDM — geometric heightfield march on every face.
-        vec3 camL = localFromWorld(vCameraPos);
-        vec3 fragL = localFromWorld(vWorldPos);
-        vec3 dirL = normalize(fragL - camL);
-        vec4 hit = ssdmMarchLocal(camL, dirL, minLayers, maxLayers);
-        bool front = isFrontFace();
-        if (hit.z < 0.5) {
-            if (!front)
-                discard;
-            uv = clamp(vUV, 0.0, 1.0);
-            N = normalize(mat3(ubo.model) * heightNormalTS(uv, scale));
-            shadow = 1.0;
-        } else {
-            uv = clamp(hit.xy, 0.0, 1.0);
-            N = normalize(mat3(ubo.model) * heightNormalTS(uv, scale));
-            shadow = mix(1.0, selfShadow(uv, 1.0 - hit.w, lightTS, scale,
-                                         minLayers, maxLayers), 0.5);
-            if (!front) {
-                vec3 hitLocal = vec3(uv.x * 2.0 - 1.0, uv.y * 2.0 - 1.0, hit.w);
-                fragDepth = fragDepthFromLocal(hitLocal);
-                writeReliefDepth = true;
-            }
-        }
+        // SilPOM (1) and SSDM (2): shared solid heightfield march.
+        applySolidMarch(mode, scale, minLayers, maxLayers, lightTS,
+                        uv, N, shadow, fragDepth, writeReliefDepth);
     }
 
     if (writeReliefDepth)

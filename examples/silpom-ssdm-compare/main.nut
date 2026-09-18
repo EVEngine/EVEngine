@@ -23,15 +23,15 @@ persist cmpGround = null
 persist cmpAlbedo = null
 persist cmpHeight = null
 persist cmpTexVer = 0
-const CMP_TEX_VER = 15
+const CMP_TEX_VER = 16
 persist cmpShaderVer = 0
-const CMP_SHADER_VER = 24
-persist cmpYaw = 0.48
-persist cmpPitch = 0.26
+const CMP_SHADER_VER = 25
+persist cmpYaw = 0.42
+persist cmpPitch = 0.22
 persist cmpOrbit = false
 persist cmpScale = 0.08
-persist cmpMinLayers = 24.0
-persist cmpMaxLayers = 56.0
+persist cmpMinLayers = 28.0
+persist cmpMaxLayers = 60.0
 persist cmpFocus = 2
 persist cmpStatus = "orbit off"
 persist cmpSlabMesh = null
@@ -51,7 +51,7 @@ function asFloat(v) {
 
 function brickColor(u, v) {
     // Running-bond masonry with HARD flat plateaus (no soft sine pillows).
-    // Mortar sits mid-depth so cliffs read clearly without floating boxes.
+    // One-texel bevel only — enough to cut POM zebra, not enough to pillow.
     local bu = u * 5.0;
     local bv = v * 3.5;
     local row = floor(bv);
@@ -59,11 +59,18 @@ function brickColor(u, v) {
     local ou = odd ? (bu + 0.5) : bu;
     local fx = fabs(ou - floor(ou) - 0.5);
     local fy = fabs(bv - floor(bv) - 0.5);
-    local mortar = (fx > 0.38 || fy > 0.34) ? 1.0 : 0.0;
-    if (mortar > 0.5)
-        return [0.50, 0.48, 0.45, 0.28];
+    // Distance into mortar band (0 = deep inside brick, 1 = deep mortar).
+    local mx = (fx - 0.365) / 0.020;
+    local my = (fy - 0.325) / 0.020;
+    if (mx < 0.0) mx = 0.0; if (mx > 1.0) mx = 1.0;
+    if (my < 0.0) my = 0.0; if (my > 1.0) my = 1.0;
+    local mortar = mx;
+    if (my > mortar) mortar = my;
     local tint = 0.92 + 0.08 * (0.5 + 0.5 * sin(floor(ou) * 2.7) * cos(row * 1.9));
-    return [0.62 * tint, 0.30 * tint, 0.22 * tint, 0.92];
+    local h = (1.0 - mortar) * 0.90 + mortar * 0.32;
+    if (mortar > 0.55)
+        return [0.50, 0.48, 0.45, h];
+    return [0.62 * tint, 0.30 * tint, 0.22 * tint, h];
 }
 
 function buildTextures() {
@@ -260,7 +267,7 @@ eve_init = function() {
     updateCamera();
     cmpReady = true;
     print("Full SilPOM vs SSDM: O orbit | A/D yaw | W/S pitch | [/] scale | 1/2/3 focus\n");
-    print("Left=POM  Mid=SilPOM (brick-cap limb)  Right=SSDM (continuous extrusion)\n");
+    print("Left=POM  Mid=SilPOM (solid march + brick-cap limb)  Right=SSDM (continuous)\n");
 };
 
 eve_asset_reload <- function(path) {
