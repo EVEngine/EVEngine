@@ -146,6 +146,7 @@ Windows 本地直接跑同样的命令即可：脚本自身按 UTF-8 写 stdout/
 | [linear-structures](linear-structures/README.md) | 线性可拼接结构：栅栏 / 石墙 / 桥 / 长城 / 树篱 / 拒马 |
 | [hex-terrain](hex-terrain/README.md) | 无源美术的 3D 六边形世界：`mesh.hexterrain` 配方 |
 | [hex-terrain-3d](hex-terrain-3d/README.md) | 可交互 3D 六边形地图：高程台地与悬崖、水面、河流、道路、城墙与地物、战争迷雾、单位寻路、程序化地图生成、存档、相机操控与笔刷编辑 |
+| [hex-planet](hex-planet/README.md) | 球面 hex 地形：二十面体（Goldberg）六边形拓扑、径向高程与台地/悬崖、程序化大陆与海洋、轨道相机（`hexmap` 球面后端） |
 | [terrain-preview](terrain-preview/README.md) | 直写交换链的 3D 地形预览：三种侵蚀 + 河湖水面 + 自动抓帧 |
 | [terrain-gallery](terrain-gallery/README.md) | 三个固定 seed 在相同生成参数、光照与材质下的并排对比 |
 | [mesh-modifier-lab](mesh-modifier-lab/README.md) | 13 种网格变形变体并排对照：类型化修饰图（bend / twist / FFD / 切面 / 样条 / 声波）、雕刻笔刷、粘液回弹、Mesh Fit、顶点编辑器 |

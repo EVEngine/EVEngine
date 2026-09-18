@@ -164,6 +164,47 @@ channel)` 的整数哈希直接导出五个分量，因此不需要分配表、�
 （长度、magic、版本、尺寸上限 512 且为 5 的倍数、单位格在界内、单位格可站立、
 单位不重复），因此被拒绝的载荷不会留下部分写入的地图。修订号字段只作诊断。
 
+### 球面后端（[HexSphereTopology.h](../../../src/modules/hexmap/HexSphereTopology.h)、[HexSphereMap.h](../../../src/modules/hexmap/HexSphereMap.h)、[HexSphereMesh.h](../../../src/modules/hexmap/HexSphereMesh.h)、[HexSphereGenerator.h](../../../src/modules/hexmap/HexSphereGenerator.h)）
+
+前面所有小节都是**平面**地图：单元身份是 `HexCoordinates`，邻居是固定的整数方向偏移。
+球面后端复用同一套单元记录（`HexCellData` / `HexValues` / `HexFlags`）、同一套几何常量
+（`HexMetrics`）、同一个 `HexMeshData` 与同一份顶点编码，只替换这两件事——因为在闭合
+球面上它们才真正不成立：
+
+- **单元身份**是稠密的 `HexSphereCell`（`int32`），来自**二十面体（Goldberg）拓扑**：
+  二十面体按 `f = 2^subdivision` 细分后的**顶点**就是单元，于是
+  `cellCount = 10f² + 2`，其中恰好 12 个是五边形（恒为 `[0, 12)`，因为中点细分从不
+  重编号原始顶点）；`edgeCount = 30f²`，`cornerCount = 20f²`，每个角点恰好被 3 格共享。
+- **邻居关系**来自半边表。**方向不是算术**：六条边的方位逐格变化，而五边形只有五条边，
+  因此不存在处处成立的 `opposite(direction)`——所有跨边查询走
+  `directionOf(cell, other)`。方向 `d` 的边位于 `corner(d)` 与 `corner(d+1)` 之间，
+  这两个角点由该边两侧的单元**以相反顺序**共享。
+
+`HexSphereMap` 是 `HexMap` 的球面对应物：持有单元存储、`HexNoise`、**逐格**脏标记
+（球面没有分块网格，拓扑已经给每格一个全局稳定 id）、拾取、距离、刷子与全套编辑接口。
+高程是**径向**的：`surfaceRadius = sphereRadius + elevation · elevationStep`。
+`elevationStep` 默认取半径的 `0.006`，而不是平面的 `HexMetrics::kElevationStep`
+（3 世界单位）——后者在半径 100 的星球上会让 13 级高程跨越 39% 半径。`HexFlags` 的
+道路/河流 6 个 bit 槽直接由方向索引寻址，五边形上槽 5 永不置位。
+
+`buildSphereTerrainMesh` / `buildSphereWaterMesh` 沿用平面构建器的角点矩阵方案，顶点
+编码（`HexTerrainVertexCode`）完全一致，因此地形着色器的读法不变。三处平面假设被替换：
+
+1. **边数**不是 6（五边形是 5 条），没有任何循环可以写死 `kHexDirectionCount`；
+2. **边归属**：平面版靠分块网格（`direction <= SE`）保证每条共享边只发一次，球面改用
+   **较小的单元 id** 拥有该边——同一组边上的全序，同样保证恰好一次；
+3. **"垂直"是径向**：坡度台地沿**弧**走水平步、沿**半径**走垂直步。
+
+平面版的梯田带用弦 `v1 → v5` 跨越整条边，这在平面上安全**只因为**它的 5 个采样点共线；
+球面上采样点在弧上，弦会在每条带坡度或崖壁的边留下 T 型接缝，因此球面版按扇形同样的
+4 段拆分。地形顶点扰动也改为**切向**并把结果投影回原半径：切向偏移会以 `O(d²/r)` 改变
+半径，而这里扰动量是单元尺寸的可观比例。
+
+`generateSphereMap` 采样**三维**值噪声：`HexNoise` 是 XZ 平面场，用单元方向去采样会在
+两极塌缩（方向的 XZ 投影趋零）、在经度回绕处接缝。海平面由噪声自身的分位数确定，因此
+`landPercentage` 真正决定陆地占比，而不是听任噪声分布。输出是
+`(seed, 拓扑, 半径)` 的纯函数。
+
 ## 脚本 API（`hexmap`）
 
 ```squirrel
@@ -207,6 +248,22 @@ hexmap.findPath(fx, fz, tx, tz)   // -> {ok, value=[[x, z, turn], ...]}
 hexmap.saveMap()                  // -> {ok, value=<二进制安全字符串>}
 hexmap.loadMap(gfx, blob)         // -> Result
 hexmap.generateMap(gfx, seed, landPercentage, waterLevel, riverPercentage)   // -> Result
+
+// 球面（与平面地图相互独立，可同时存在）
+hexmap.newSphere(gfx, subdivision, radius, seed)     // -> Result；重建拓扑并释放上一颗星球的网格
+hexmap.sphereReady() / sphereCellCount() / spherePentagonCount() / sphereSubdivision()
+hexmap.sphereRadius() / sphereElevationStep() / sphereCellSpacing()
+hexmap.sphereIsPentagon(cell) / sphereNeighborCount(cell) / sphereNeighbor(cell, direction)
+hexmap.sphereDirection(cell) / sphereCornerDirection(cell, corner) / sphereCornerCount(cell)
+hexmap.sphereElevation(cell) / sphereWaterLevel(cell) / sphereTerrainType(cell) / sphereIsUnderwater(cell)
+hexmap.sphereCellAt(x, y, z) / sphereDistance(a, b)
+hexmap.spherePickCell(ox, oy, oz, dx, dy, dz)        // -> {ok, value=<cell>}
+hexmap.sphereSetElevation(cell, v) / sphereSetTerrainType(cell, v)
+hexmap.sphereEditElevation(cell, radius, delta) / sphereEditTerrainType(cell, radius, terrainType)
+hexmap.generateSphere(gfx, seed, landPercentage, waterLevel)   // -> Result；生成并重建两个网格
+hexmap.rebuildSphere(gfx)                            // -> Result；批量编辑后重建
+hexmap.sphereTerrainMesh() / sphereWaterMesh()       // -> Mesh（借用），无几何时为 null
+hexmap.sphereReleaseMeshes(gfx)
 ```
 
 `surface` 取 `0=Terrain, 1=Water, 2=River, 3=Road, 4=Fog, 5=Wall, 6=Feature`。
@@ -216,6 +273,13 @@ hexmap.generateMap(gfx, seed, landPercentage, waterLevel, riverPercentage)   // 
 `advance(dt=0)`，因此返回的是含高程与扰动的插值位姿，不是地格中心。`generateMap` 按
 **当前网格尺寸**重新生成，会丢弃全部单位与迷雾状态，调用方必须在成功后重新放置单位
 并重建全部块。
+
+球面接口用 `cell`（稠密 id，`0 .. sphereCellCount()-1`），与平面接口的偏移坐标 `(x, z)`
+是**两套互不相通的地址空间**：不要拿平面坐标去喂球面接口，反之亦然。`sphereDirection`
+与 `sphereCornerDirection` 返回 `[x, y, z]` 单位向量。`newSphere` 只重建拓扑，
+`generateSphere` 才写入单元并重建网格；两者都会释放上一颗星球的网格，因此调用方必须在
+成功后重新绑定 renderable。`rebuildSphere` 是批量编辑后的重建入口——球面是**整张一个
+网格**（没有分块），每次重建都是全量，应当攒够一批编辑再调一次，而不是每改一格就调。
 
 ## 生命周期与所有权
 
@@ -244,6 +308,16 @@ hexmap.generateMap(gfx, seed, landPercentage, waterLevel, riverPercentage)   // 
 存档载荷经 `eve.Filesystem().writeText()` 落到保存目录，读回时先整体校验再接管
 网格，因此损坏的文件不会破坏当前地图。
 
+`examples/hex-planet` 是**球面后端**的示例：轨道相机绕星球旋转，`LMB` 拖拽改变
+方位角/仰角，滚轮缩放，`space` 自动旋转，`R` 换种子，`[`/`]` 切换细分级别，`-`/`=`
+调整陆地占比，`F5` 抓帧。默认姿态是静止的，所以两次运行抓到的画面几乎逐像素
+一致（仅 ImGui 覆盖层有像素级差异）。它自带两个片元着色器：平面地形着色器把
+`vWorldPos.y` 当海拔、`N.y` 当"上"、细节噪声投影到 XZ、远处用距离雾——这四件事在球面上
+都不成立，因此球面版保留调色板与 BRDF、只替换这四处。另外宿主会在片元输出之后再套一层
+Reinhard 风格的 tonemap（调试着色器输出常量 `1.0` 到达帧缓冲是 `224/255`，即
+`y = x/(x+0.139)`），两个球面着色器都用 `hostTonemapInverse` 反解这条曲线，否则颜色会被
+压缩两次且无法调参。
+
 相机方面示例做了一个必要的修正：`eve.Camera3D()` 的默认裁剪范围是 `0.1..100`，
 比一张地图的跨度还小，超过 100 世界单位的地形会被静默裁掉，远端的缩放档位因此只
 能看到空屏。示例现在每帧按地图跨度推导远裁剪面，并让最远缩放距离随之放大
@@ -265,3 +339,9 @@ NE/E/SE 侧发，避免水/水边界重复），邻居是陆地就发四个细�
 地图生成器的两处刻意偏离参考工程（均已在源码中注释）：侵蚀取共享搜索前沿中最低的
 格子，而参考工程是均匀随机挑选可侵蚀格；温度抖动使用私有的值噪声，而参考工程采样
 噪声贴图。生成器的 `HemisphereMode` 只实现参考工程的 `North` 映射。
+
+球面后端的已知边界：球面**没有**河流、道路、城墙、地物、迷雾与单位的网格与查询接口
+（`HexFlags` 的位可以设置，但没有对应的球面几何与寻路）；海洋是每格一个六边形盖面，
+没有浅滩、折射与岸线浪花，且按模块自身的规则 `waterLevel == elevation` 不算淹没，
+所以海平面上的格子会露出；崖壁是径向直墙，没有悬垂或侵蚀细节；球面生成器没有河流、
+侵蚀与板块构造——平面的 `HexMapGenerator` 没有移植过来。球面地图也**没有存档格式**。

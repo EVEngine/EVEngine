@@ -8,6 +8,8 @@
 #include "hexmap/HexMapMesh.h"
 #include "hexmap/HexSearch.h"
 #include "hexmap/HexSerializer.h"
+#include "hexmap/HexSphereGenerator.h"
+#include "hexmap/HexSphereMap.h"
 #include "hexmap/HexUnits.h"
 #include "hexmap/HexVisibility.h"
 
@@ -105,6 +107,73 @@ public:
     /** @brief Whether a grid has been created. */
     [[nodiscard]] bool hasGrid() const noexcept { return !map_.empty(); }
 
+    // --- spherical map ------------------------------------------------------
+
+    /**
+     * @brief Replaces the spherical map and releases the meshes of the previous one.
+     *
+     * The sphere is a second, independent world alongside the flat grid: it shares the
+     * module's device and its cell record types, but neither the flat map nor its
+     * meshes are touched, so a script may hold both without one invalidating the other.
+     *
+     * @param gfx Device used to release the previously created sphere meshes; required.
+     * @param subdivision Topology level in `[0, kMaxHexSphereSubdivision]`.
+     * @param radius Sphere radius in world units; must be finite and positive.
+     * @param seed Deterministic seed for the sphere's noise field.
+     * @return Success, or InvalidArgument for a missing device or a bad shape.
+     * @cost Releases the previous sphere meshes and rebuilds the whole topology.
+     */
+    [[nodiscard]] Result<void> newSphere(graphics::Graphics* gfx, std::int32_t subdivision, float radius,
+                                         std::uint32_t seed);
+
+    /**
+     * @brief Regenerates the spherical map procedurally and rebuilds both its meshes.
+     *
+     * @param gfx Device that owns the sphere meshes; required.
+     * @param seed Deterministic seed for the generator.
+     * @param landPercentage Target share of land, in percent.
+     * @param waterLevel Cells at or below this elevation are flooded.
+     * @return Success, InvalidArgument when there is no sphere or no device, or the
+     *         generator's own failure status.
+     * @cost Overwrites every cell, then one CPU mesh build and one GPU upload for the
+     *       terrain and for the ocean.
+     */
+    [[nodiscard]] Result<void> generateSphere(graphics::Graphics* gfx, std::uint32_t seed,
+                                              std::int32_t landPercentage, std::int32_t waterLevel);
+
+    /**
+     * @brief Rebuilds the whole-sphere terrain and ocean meshes from the current cells.
+     *
+     * @param gfx Device that owns the sphere meshes; required.
+     * @return Success, or InvalidArgument when there is no sphere or no device.
+     * @cost One CPU mesh build plus one GPU upload per stream; proportional to the cell
+     *       count, so build it after a batch of edits rather than after each one.
+     */
+    [[nodiscard]] Result<void> rebuildSphere(graphics::Graphics* gfx);
+
+    /**
+     * @brief Releases every mesh owned by the spherical map.
+     * @param gfx Device that created them; null releases nothing.
+     */
+    void releaseSphereMeshes(graphics::Graphics* gfx) noexcept;
+
+    /** @brief The active spherical map. */
+    [[nodiscard]] const HexSphereMap& sphere() const noexcept { return sphere_; }
+    /** @brief The active spherical map (mutable, for internal build steps). */
+    [[nodiscard]] HexSphereMap& sphere() noexcept { return sphere_; }
+    /**
+     * @brief Borrowed GPU terrain mesh of the sphere.
+     * @ownership Borrowed; the module retains ownership until `releaseSphereMeshes`.
+     * @nullable Yes; null before the first build or when the sphere has no cells.
+     */
+    [[nodiscard]] graphics::Mesh* sphereTerrainMesh() const noexcept { return sphereTerrain_; }
+    /**
+     * @brief Borrowed GPU ocean mesh of the sphere, or null when nothing is flooded.
+     * @ownership Borrowed; the module retains ownership until `releaseSphereMeshes`.
+     * @nullable Yes.
+     */
+    [[nodiscard]] graphics::Mesh* sphereWaterMesh() const noexcept { return sphereWater_; }
+
     /** @brief Fog-of-war counters of the active map. */
     [[nodiscard]] HexVisibility& visibility() noexcept { return visibility_; }
     /** @brief Units of the active map. */
@@ -167,6 +236,10 @@ private:
     HexSearchContext             scratch_{};
     HexVisibility                visibility_{};
     HexUnitRegistry              units_{};
+
+    HexSphereMap    sphere_{};
+    graphics::Mesh* sphereTerrain_ = nullptr;
+    graphics::Mesh* sphereWater_   = nullptr;
 };
 
 }  // namespace eve::hexmap
