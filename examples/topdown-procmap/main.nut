@@ -105,7 +105,7 @@ function makePrototype(kind, seedOffset) {
     local mesh = null;
     local material = null;
     if (kind == "tree") {
-        // Leaf cards with geometric ovate outlines + shared 6-panel atlas.
+        // Leaf cards on shared 6-panel atlas (masked quads).
         p.setString("style", "realistic");
         p.setString("branchAlgorithm", "weberPenn");
         p.setString("leafMode", "cards");
@@ -351,7 +351,7 @@ function scatterDecorations(heightmap, layers) {
                                0.55 + jitter * 0.25, 0.55 + jitter * 0.25, yaw * 0.7);
                     decorBudget += 1;
                 }
-            } else if ((biome == "grassland" || biome == "wetland") && chance < 0.42) {
+            } else if ((biome == "grassland" || biome == "wetland") && chance < 0.21) {
                 local bp = (jitter > 0.55 && ("bushB" in mapPrototypes))
                     ? mapPrototypes.bushB : mapPrototypes.bush;
                 local scale = 0.70 + jitter * 0.60;
