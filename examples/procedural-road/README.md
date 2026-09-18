@@ -1,17 +1,21 @@
 # Procedural Road Lab
 
-纯数学生成的多层立交道路（无预制道路/桥梁模型）：
+纯数学生成道路（无预制道路/桥梁模型）。先用 **4 个简单场景** 逐个验证几何，再打开复杂立交：
 
-- 截面挤出：沥青 / 路缘 / 人行道 / 桥面板
-- 高程桥墩：超过 `pierClearance` 时按间距放置
-- 逻辑标线：边线、虚线、斑马线、导向箭头（几何 + `tex.roadMarkings`）
-- 导航叠加：车道中心线与路口转弯弧（`nav` group）
+| 键 | scene | 内容 |
+|----|-------|------|
+| 1 | `straight` | 平坦直线段（无路口） |
+| 2 | `curve` | 水平弯道（无路口） |
+| 3 | `bridge` | 等高高架直线 + 桥墩（暂不含坡道） |
+| 4 | `cross` | 地面十字路口（圆盘路口，无穿模扇形） |
 
 ```sh
 make run GAME=examples/procedural-road
-# or headless:
+# headless：用 scene.txt 指定场景
+echo straight > examples/procedural-road/scene.txt
 VK_ICD_FILENAMES=/usr/share/vulkan/icd.d/lvp_icd.json ALSOFT_DRIVERS=null \
   xvfb-run -a scripts/smoke_examples.sh procedural-road
 ```
 
-配方：`mesh.roadNetwork`、`tex.roadMarkings`。设计说明见 `docs/dev/程序化道路系统设计.md`。
+配方参数：`scene=straight|curve|bridge|cross|interchange`，另有 `mesh.roadNetwork` / `tex.roadMarkings`。
+设计说明见 `docs/dev/程序化道路系统设计.md`。

@@ -1,21 +1,29 @@
-// Procedural Road Lab — math-only interchange matching the reference look:
-// dark asphalt, raised barriers, sidewalks, piers, markings, cyan nav overlays.
+// Procedural Road Lab — four simple debug scenes before the complex interchange.
+ // Keys 1-4 switch scenes. Headless: set EVENGINE_ROAD_SCENE=straight|curve|bridge|cross.
 
 persist roadParts = []
 persist roadGround = null
-persist roadWater = null
 persist roadCamera = null
 persist roadFrame = 0
 persist roadScreenshotSaved = false
 persist roadReady = false
 persist roadMaterials = {}
+persist roadPrevKeys = {}
+persist roadSceneName = "straight"
+persist roadSceneList = ["straight", "curve", "bridge", "cross"]
 
 function roadRequire(result, context) {
     if (!result.ok) throw context + ": " + result.status.summary;
     return result;
 }
 
-// albedo tint + roughness + metallic + receiveLight (Material drives tint; GPU-driven ignores vertex colors)
+function roadPressed(k) {
+    local down = keyboard.isDown(k);
+    local old = k in roadPrevKeys ? roadPrevKeys[k] : false;
+    roadPrevKeys[k] <- down;
+    return down && !old;
+}
+
 function roadStyleForGroup(name) {
     if (name == "asphalt") return [0.20, 0.20, 0.22, 0.95, 0.0, true];
     if (name == "curb") return [0.62, 0.62, 0.60, 0.55, 0.02, true];
@@ -28,113 +36,143 @@ function roadStyleForGroup(name) {
     return [0.55, 0.55, 0.52, 0.75, 0.0, true];
 }
 
-if (roadCamera == null) {
-    roadCamera = eve.Camera3D();
-    roadCamera.setEye(36.0, 28.0, 34.0);
-    roadCamera.setTarget(0.0, 2.0, 0.0);
-    roadCamera.setUp(0.0, 1.0, 0.0);
-    roadCamera.setFov(42.0);
-    roadCamera.setClipPlanes(0.5, 400.0);
-    roadCamera.setAmbient(0.42, 0.44, 0.48);
-    roadCamera.setActive(true);
-    gfx.setDirectionalLight(-0.40, -1.0, -0.30, 1.55, 1.48, 1.35);
-    gfx.setBackgroundColor(0.62, 0.22, 0.16, 1.0);
+function roadClearParts() {
+    foreach (part in roadParts) {
+        part.setVisible(false);
+        part.setMesh(null);
+    }
+    roadParts = [];
 }
 
-if (!roadReady) {
+function roadCameraForScene(name) {
+    if (name == "straight") {
+        roadCamera.setEye(22.0, 16.0, 18.0);
+        roadCamera.setTarget(0.0, 0.5, 0.0);
+    } else if (name == "curve") {
+        roadCamera.setEye(16.0, 18.0, 8.0);
+        roadCamera.setTarget(-4.0, 0.5, 6.0);
+    } else if (name == "bridge") {
+        roadCamera.setEye(24.0, 14.0, 20.0);
+        roadCamera.setTarget(0.0, 2.5, 0.0);
+    } else {
+        // cross
+        roadCamera.setEye(22.0, 22.0, 22.0);
+        roadCamera.setTarget(0.0, 0.5, 0.0);
+    }
+}
+
+function roadBuildScene(name) {
+    roadClearParts();
+    roadSceneName = name;
+    roadScreenshotSaved = false;
+    roadFrame = 0;
+
     local params = roadRequire(procgen.newParams(), "new params").value;
-    roadRequire(params.setSeed(7), "seed");
-    params.setFloat("span", 44.0);
-    params.setFloat("bridgeHeight", 8.0);
+    roadRequire(params.setSeed(1), "seed");
+    params.setString("scene", name);
+    params.setFloat("span", name == "cross" ? 28.0 : 32.0);
+    params.setFloat("bridgeHeight", 6.0);
     params.setInt("lanes", 2);
-    params.setInt("pathSegments", 40);
+    params.setInt("pathSegments", name == "curve" || name == "bridge" ? 48 : 28);
     params.setBool("piers", true);
     params.setBool("markings", true);
-    params.setBool("navigation", true);
-    params.setBool("junctions", true);
+    // Geometry-first: keep nav off on all four debug scenes.
+    params.setBool("navigation", false);
+    params.setBool("junctions", name == "cross");
 
     local cpu = roadRequire(procgen.buildMesh("mesh.roadNetwork", params), "buildMesh").value;
-
-    roadParts = [];
-    roadMaterials = {};
     local groupSummary = "";
     for (local i = 0; i < cpu.getGroupCount(); ++i) {
         local component = cpu.copyGroup(i);
         if (component == null || component.empty()) continue;
-        local mesh = roadRequire(procgen.uploadMesh(component, gfx), "upload group " + i).value;
+        local mesh = roadRequire(procgen.uploadMesh(component, gfx), "upload " + name + " " + i).value;
         local part = eve.Renderable3D();
-        local name = cpu.getGroupName(i);
-        local style = roadStyleForGroup(name);
-        if (!(name in roadMaterials)) {
+        local gname = cpu.getGroupName(i);
+        local style = roadStyleForGroup(gname);
+        if (!(gname in roadMaterials)) {
             local material = gfx.newMaterial();
             material.setTint(style[0], style[1], style[2], 1.0);
             material.setRoughness(style[3]);
             material.setMetallic(style[4]);
             material.setReceiveLight(style[5]);
             if (!style[5]) material.setShadingModel("unlit");
-            roadMaterials[name] <- material;
+            roadMaterials[gname] <- material;
         }
         part.setMesh(mesh);
-        part.setMaterial(roadMaterials[name]);
-        part.setCastShadow(name != "nav" && name != "marking" && name != "markingYellow");
-        part.setReceiveShadow(name == "asphalt" || name == "sidewalk" || name == "deck" || name == "curb");
+        part.setMaterial(roadMaterials[gname]);
+        part.setCastShadow(gname != "nav" && gname != "marking" && gname != "markingYellow");
+        part.setReceiveShadow(gname == "asphalt" || gname == "sidewalk" || gname == "deck" || gname == "curb");
         roadParts.append(part);
-        groupSummary += name + ":" + component.getVertexCount() + " ";
+        groupSummary += gname + ":" + component.getVertexCount() + " ";
     }
 
+    roadCameraForScene(name);
+    print("PROCEDURAL_ROAD_SCENE scene=" + name + " verts=" + cpu.getVertexCount() +
+          " groups=" + cpu.getGroupCount() + " parts=" + roadParts.len() + " [" + groupSummary + "]\n");
+    roadReady = true;
+}
+
+if (roadCamera == null) {
+    roadCamera = eve.Camera3D();
+    roadCamera.setUp(0.0, 1.0, 0.0);
+    roadCamera.setFov(42.0);
+    roadCamera.setClipPlanes(0.5, 200.0);
+    roadCamera.setAmbient(0.42, 0.44, 0.48);
+    roadCamera.setActive(true);
+    gfx.setDirectionalLight(-0.40, -1.0, -0.30, 1.55, 1.48, 1.35);
+    gfx.setBackgroundColor(0.55, 0.18, 0.14, 1.0);
+}
+
+if (roadGround == null) {
     roadGround = eve.Renderable3D();
     roadGround.setMesh(gfx.newMeshCube(1.0));
-    roadGround.setPosition(0.0, -0.70, 0.0);
-    roadGround.setScale(110.0, 0.6, 110.0);
+    roadGround.setPosition(0.0, -0.55, 0.0);
+    roadGround.setScale(70.0, 0.4, 70.0);
     local groundMat = gfx.newMaterial();
-    groundMat.setTint(0.82, 0.18, 0.12, 1.0);
+    groundMat.setTint(0.78, 0.16, 0.12, 1.0);
     groundMat.setRoughness(0.98);
-    groundMat.setMetallic(0.0);
     roadGround.setMaterial(groundMat);
     roadGround.setCastShadow(false);
     roadGround.setReceiveShadow(true);
+}
 
-    // Water sheet with real alpha so the red ground still reads underneath.
-    roadWater = eve.Renderable3D();
-    roadWater.setMesh(gfx.newMeshCube(1.0));
-    roadWater.setPosition(0.0, -0.28, 0.0);
-    roadWater.setScale(110.0, 0.03, 110.0);
-    local waterMat = gfx.newMaterial();
-    waterMat.setTint(0.05, 0.55, 0.62, 0.38);
-    waterMat.setRoughness(0.10);
-    waterMat.setMetallic(0.30);
-    waterMat.setReceiveLight(false);
-    waterMat.setShadingModel("unlit");
-    waterMat.setSurfaceMode("transparent");
-    waterMat.setBlendMode("alpha");
-    roadWater.setMaterial(waterMat);
-    roadWater.setCastShadow(false);
-    roadWater.setReceiveShadow(false);
-
-    local texParams = roadRequire(procgen.newParams(), "tex params").value;
-    texParams.setSize(256, 64);
-    texParams.setBool("zebra", true);
-    local markings = roadRequire(procgen.generateTexture("tex.roadMarkings", texParams, gfx), "markings").value;
-
-    print("PROCEDURAL_ROAD_PASS verts=" + cpu.getVertexCount() + " groups=" + cpu.getGroupCount() +
-          " parts=" + roadParts.len() + " markingTex=" + markings.getWidth() + "x" + markings.getHeight() +
-          " colors=" + (cpu.hasVertexColors() ? "yes" : "no") + " [" + groupSummary + "]\n");
-    roadReady = true;
+if (!roadReady) {
+    local boot = "straight";
+    try {
+        local handle = file("scene.txt", "r");
+        if (handle != null) {
+            local content = handle.read();
+            handle.close();
+            if (content != null) {
+                local s = "";
+                local raw = content.tostring();
+                for (local i = 0; i < raw.len(); ++i) {
+                    local ch = raw.slice(i, i + 1);
+                    if (ch == "\n" || ch == "\r" || ch == " ") break;
+                    s += ch;
+                }
+                if (s == "straight" || s == "curve" || s == "bridge" || s == "cross") boot = s;
+            }
+        }
+    } catch (e) {}
+    roadBuildScene(boot);
 }
 
 function eve_update(dt) {
     if (!roadReady) return;
     roadFrame += 1;
-    if (roadCamera != null) {
-        local t = roadFrame * 0.005;
-        local radius = 42.0;
-        local height = 26.0 + 3.0 * sin(t * 0.18);
-        roadCamera.setEye(radius * cos(t * 0.20), height, radius * sin(t * 0.20));
-        roadCamera.setTarget(0.0, 2.5, 0.0);
-    }
-    if (!roadScreenshotSaved && roadFrame > 28 && roadFrame < 36 && gfx.saveFramePng("procedural-road.png")) {
-        roadScreenshotSaved = true;
-        print("procedural-road: screenshot saved\n");
+
+    if (roadPressed("1")) roadBuildScene("straight");
+    if (roadPressed("2")) roadBuildScene("curve");
+    if (roadPressed("3")) roadBuildScene("bridge");
+    if (roadPressed("4")) roadBuildScene("cross");
+
+    if (!roadScreenshotSaved && roadFrame > 24) {
+        local file = "procedural-road-" + roadSceneName + ".png";
+        if (gfx.saveFramePng(file)) {
+            roadScreenshotSaved = true;
+            print("procedural-road: screenshot " + file + "\n");
+        }
     }
 }
 

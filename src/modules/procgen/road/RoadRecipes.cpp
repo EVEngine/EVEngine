@@ -23,8 +23,9 @@ RoadBakeOptions bakeOptionsFromParams(const Params& params) {
 }
 
 Result<RoadNetwork> networkFromParams(const Params& params) {
-    return RoadNetwork::makeInterchange(params.getFloat("span", 48.f), params.getFloat("bridgeHeight", 8.f),
-                                        std::max(1, params.getInt("lanes", 2)), params.getSeed());
+    const std::string scene = params.getString("scene", "straight");
+    return RoadNetwork::makeScene(scene, params.getFloat("span", 36.f), params.getFloat("bridgeHeight", 6.f),
+                                  std::max(1, params.getInt("lanes", 2)), params.getSeed());
 }
 
 }  // namespace
@@ -110,13 +111,16 @@ std::unique_ptr<image::ImageData> generateRoadMarkingsTexture(const Params& para
 void registerRoadMeshRecipes(MeshRecipeRegistry& registry) {
     RecipeDescriptor schema{"mesh.roadNetwork", "Procedural Road Network", "Mesh", {}};
     schema.params.push_back(ParamDescriptor::integer("seed", "Seed", 1, 0, 2147483647));
-    schema.params.push_back(ParamDescriptor::floating("span", "Span", 48.f, 16.f, 256.f, 1.f));
-    schema.params.push_back(ParamDescriptor::floating("bridgeHeight", "Bridge Height", 8.f, 1.f, 64.f, 0.5f));
+    schema.params.push_back(
+        ParamDescriptor::choice("scene", "Scene", "straight",
+                                {"straight", "curve", "bridge", "cross", "interchange"}));
+    schema.params.push_back(ParamDescriptor::floating("span", "Span", 36.f, 8.f, 256.f, 1.f));
+    schema.params.push_back(ParamDescriptor::floating("bridgeHeight", "Bridge Height", 6.f, 1.f, 64.f, 0.5f));
     schema.params.push_back(ParamDescriptor::integer("lanes", "Lanes", 2, 1, 4));
-    schema.params.push_back(ParamDescriptor::integer("pathSegments", "Path Segments", 48, 8, 256));
+    schema.params.push_back(ParamDescriptor::integer("pathSegments", "Path Segments", 32, 8, 256));
     schema.params.push_back(ParamDescriptor::boolean("piers", "Piers", true));
     schema.params.push_back(ParamDescriptor::boolean("markings", "Markings", true));
-    schema.params.push_back(ParamDescriptor::boolean("navigation", "Navigation Mesh", true));
+    schema.params.push_back(ParamDescriptor::boolean("navigation", "Navigation Mesh", false));
     schema.params.push_back(ParamDescriptor::boolean("junctions", "Junctions", true));
     registry.registerRecipe(std::move(schema), generateRoadNetworkMesh);
 }

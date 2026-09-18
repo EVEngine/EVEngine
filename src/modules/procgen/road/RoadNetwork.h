@@ -3,6 +3,7 @@
 #include "procgen/road/RoadTypes.h"
 
 #include <cstdint>
+#include <string>
 #include <unordered_map>
 #include <vector>
 
@@ -45,6 +46,23 @@ public:
     /** @brief Build a multi-level interchange demo graph (ground cross + elevated loop + ramps). */
     [[nodiscard]] static Result<RoadNetwork> makeInterchange(float span = 48.f, float bridgeHeight = 8.f,
                                                              int lanes = 2, std::uint32_t seed = 1);
+
+    /** @brief Scene 1: single flat straight segment (no junction). */
+    [[nodiscard]] static Result<RoadNetwork> makeStraight(float length = 36.f, int lanes = 2);
+    /** @brief Scene 2: gentle horizontal curve (no junction). */
+    [[nodiscard]] static Result<RoadNetwork> makeCurve(float radius = 18.f, int lanes = 2);
+    /** @brief Scene 3: elevated straight with piers. */
+    [[nodiscard]] static Result<RoadNetwork> makeBridge(float length = 36.f, float height = 6.f, int lanes = 2);
+    /** @brief Scene 4: simple ground-level 4-way cross (one junction disc). */
+    [[nodiscard]] static Result<RoadNetwork> makeCross(float span = 32.f, int lanes = 2);
+
+    /**
+     * @brief Dispatch a named debug/demo scene.
+     * @param scene One of: straight, curve, bridge, cross, interchange.
+     */
+    [[nodiscard]] static Result<RoadNetwork> makeScene(const std::string& scene, float span = 36.f,
+                                                       float bridgeHeight = 6.f, int lanes = 2,
+                                                       std::uint32_t seed = 1);
 
 private:
     [[nodiscard]] Result<void> validateStyle(const RoadStyle& style) const;
