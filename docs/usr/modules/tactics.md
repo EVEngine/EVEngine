@@ -320,7 +320,31 @@ auto session = eve::tactics::InteractionSession::create(context);
 - 提交后把会话解析回 `await_selection`；提交进行中再次点击是 `Conflict`，
   不会把互相矛盾的意图排队。
 
-## 表现意图与显式回退契约（C++ 接口，无渲染依赖）
+脚本出口：交互会话由脚本自己持有（会话状态属于**客户端**，不属于战局）：
+
+```squirrel
+// 用当前 revision 的投影建一个会话；状态变化后要重建（它是值，不是订阅）
+local ix = battle.newInteraction(unitId).value;
+ix.state();                 // blocked / await_selection / unit_selected / targeting / resolving / ended
+ix.expectedRevision();      // 该投影依据的 revision
+ix.reachableCells().value;  // 可移动到的格子（与提交用的是同一套查询）
+
+local intent = ix.click(0, 0, 0);   // {kind, actor, cell, action, targetUnit, expectedRevision}
+// kind = none / select_unit / move_to / use_ability_on / cancel / confirm / end_turn
+ix.armAbility("test:strike", "[[2,0,0]]");   // 目标格由调用方按自己的规则算好
+ix.armedAction();           // 当前已武装的技能 id，未武装时是空字符串
+ix.cancel();
+ix.endTurn();
+ix.resolve();               // 提交或放弃拿到的意图后回到 await_selection
+```
+
+- `click` 落在没有意义的格子上返回 `kind == "none"`（正常情况）；会话根本无法接受输入
+  （被阻塞、已结束、已有待提交意图）才返回带诊断的失败，UI 可以区分两者。
+- 意图带回 `expectedRevision`：脚本能在提交前发现世界已经变化。
+- 不是自己回合时 `newInteraction` 仍然成功，`state()` 返回 `blocked`——UI 不需要每回合重建会话。
+- 会话状态不进入快照：它属于客户端，重新构建的成本就是一次投影查询。
+
+## 表现意图与显式回退契约
 
 `tactics/Presentation.h` 把战局事件投影成**数据**，而不是去改视图对象（TBSF 的
 `MarkAsSelected/MarkAsAttacking/...`）。这样做的关键差别是**每条意图都说明自己何时失效、

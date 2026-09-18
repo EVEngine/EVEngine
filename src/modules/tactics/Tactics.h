@@ -8,6 +8,7 @@
 #include "tactics/TacticsBattle.h"
 #include "tactics/TacticsPersistence.h"
 #include "tactics/TacticsReplay.h"
+#include "tactics/Interaction.h"
 #include "tactics/Presentation.h"
 
 #include <cstddef>
@@ -271,7 +272,21 @@ public:
     [[nodiscard]] Result<std::vector<Cell>> visibleCellsInRange(ecs::EntityHandle battle, Cell origin, int minimum,
                                                                 int maximum, CellRangeMetric metric);
 
-    /** @brief Id of the line-of-sight policy {@link visibleCellsInRange} currently uses. */
+    /**
+     * @brief Build the interaction projection for one controlled unit.
+     *
+     * @return A context carrying the phase, the active unit, the controlled unit's cell, the
+     *         cells it may legally move to, and which unit occupies each cell.
+     * @remarks The result is a **projection of the current battle revision** and must be
+     *          rebuilt after any state change, exactly like every other query in this module.
+     *          Building it here (rather than inside the script binding) keeps the one authority
+     *          for "what the UI is allowed to know" in C++ and testable.
+     */
+    [[nodiscard]] Result<InteractionContext> interactionContext(ecs::EntityHandle battle, SubjectRef controlledUnit);
+
+    /**
+     * @brief Id of the line-of-sight policy {@link visibleCellsInRange} currently uses.
+     */
     [[nodiscard]] std::string_view lineOfSightAlgorithm() const noexcept;
 
     /**

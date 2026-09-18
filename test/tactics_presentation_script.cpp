@@ -155,6 +155,89 @@ TEST_CASE("tactics.sightAwareRangeUsesTheRegisteredPolicyAndReportsWhichOne") {
     CHECK(again.value() == open.value());
 }
 
+TEST_CASE("tactics.scriptInteractionSessionTurnsClicksIntoIntents") {
+    ecs::Table       world;
+    ecs::ScopedTable guard(world);
+    ssq::VM          vm(4096, ssq::Libs::ALL);
+    eve::ModuleManager::expose(vm);
+    vm.run(vm.compileSource(R"(
+        result <- "fail";
+        local module = eve.Tactics();
+        local created = module.newBattle("00000000-0000-0000-0000-000000000b10", 21);
+        local battle = created.ok ? created.value : null;
+        if (battle != null) {
+            local unitId = "00000000-0000-0000-0000-000000000b11";
+            local allyId = "00000000-0000-0000-0000-000000000b13";
+            local sideId = "00000000-0000-0000-0000-000000000b12";
+            local c0 = battle.addCell(0, 0, 0, 100);
+            local c1 = battle.addCell(1, 0, 0, 100);
+            local c2 = battle.addCell(2, 0, 0, 100);
+            local side = battle.addSide(sideId);
+            local u = battle.addUnit(unitId, sideId, "test:unit", 0, 0, 0, 2, 300, 0, 10);
+            local a = battle.addUnit(allyId, sideId, "test:unit", 2, 0, 0, 1, 300, 0, 5);
+            local started = battle.start("initiative");
+            local p1 = battle.advance(1, 1);
+            local p2 = battle.advance(2, 1);
+            local p3 = battle.advance(3, 1);
+
+            // `newInteraction` returns the usual Result table; its `value` is the session object.
+            local ixResult = battle.newInteraction(unitId);
+            local interaction = ixResult.ok ? ixResult.value : null;
+            local idleResult = battle.newInteraction(allyId);
+            local idle = idleResult.ok ? idleResult.value : null;
+            if (interaction != null && idle != null) {
+                local initial = interaction.state();               // "await_selection"
+                local reachable = interaction.reachableCells();    // the projection the machine reads
+                local revision = interaction.expectedRevision();
+
+                // Selecting the controlled unit, then a reachable cell, yields an intention.
+                local select = interaction.click(0, 0, 0);
+                local afterSelect = interaction.state();
+                local move = interaction.click(1, 0, 0);
+                local afterMove = interaction.state();
+                // A pending intention must be committed or dropped before the next one.
+                local queued = interaction.click(2, 0, 0);
+                local resolved = interaction.resolve();
+                local afterResolve = interaction.state();
+
+                // Arming an ability with script-supplied target cells.
+                local armed = interaction.armAbility("test:strike", "[[2,0,0]]");
+                local targeting = interaction.state();
+                local declared = interaction.click(2, 0, 0);
+
+                // A unit that is not active gets a session that exists and reports itself blocked.
+                local idleState = idle.state();
+                local idleClick = idle.click(0, 0, 0);
+
+                if (c0.ok && c1.ok && c2.ok && side.ok && u.ok && a.ok && started.ok &&
+                    p1.ok && p2.ok && p3.ok &&
+                    initial == "await_selection" && revision > 0 &&
+                    reachable.value.len() >= 2 &&
+                    select.ok && select.value.kind == "select_unit" && select.value.actor == unitId &&
+                    afterSelect == "unit_selected" &&
+                    move.ok && move.value.kind == "move_to" && move.value.cell.x == 1 &&
+                    afterMove == "resolving" && !queued.ok &&
+                    resolved.ok && afterResolve == "await_selection" &&
+                    armed.ok && targeting == "targeting" &&
+                    declared.ok && declared.value.kind == "use_ability_on" &&
+                    declared.value.action == "test:strike" && declared.value.targetUnit == allyId &&
+                    idleState == "blocked" && !idleClick.ok) {
+                    result = "ok";
+                } else {
+                    result = "s=" + initial + "/" + afterSelect + "/" + afterMove + "/" + afterResolve + "/" +
+                             targeting + "/" + idleState +
+                             " f=" + (select.ok?1:0) + (move.ok?1:0) + (queued.ok?1:0) + (resolved.ok?1:0) +
+                             (armed.ok?1:0) + (declared.ok?1:0) + (idleClick.ok?1:0) +
+                             " n=" + reachable.value.len() + " rev=" + revision;
+                }
+            } else {
+                result = "no interaction instance";
+            }
+        }
+    )"));
+    CHECK_EQ(vm.find("result").toString(), std::string("ok"));
+}
+
 TEST_CASE("tactics.scriptReachesPresentationAndSightQueries") {
     ecs::Table       world;
     ecs::ScopedTable guard(world);

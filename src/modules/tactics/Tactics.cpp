@@ -25,6 +25,19 @@ struct ScriptTacticsBattle {
     TacticsBattleSessionRef reference;
 };
 
+/**
+ * @brief Squirrel-owned interaction session.
+ *
+ * The session is the **client's** state (what this player has selected or armed), not the
+ * battle's, so it lives in a script object the script owns rather than on the battle proxy or
+ * in the battle. It is a pure value: rebuilding it from a fresh context is always allowed,
+ * which is why holding one across a state change is a caller error rather than a corruption.
+ */
+struct ScriptTacticsInteraction {
+    /** Empty only for an object a script constructed itself; every method refuses then. */
+    std::optional<InteractionSession> session;
+};
+
 template <typename T>
 Result<T> failure(DiagnosticCode code, std::string message, std::string path) {
     return Result<T>::failure(Diagnostic::error(code, std::move(message), std::move(path)));
@@ -191,6 +204,17 @@ Value bindingCellArrayValue(const std::vector<Cell>& cells) {
     array.reserve(cells.size());
     for (const Cell cell : cells) array.push_back(bindingCellValue(cell));
     return Value(std::move(array));
+}
+
+/** @brief Single source of truth for the interaction-intent script shape. */
+Value bindingInteractionIntentValue(const InteractionIntent& intent) {
+    return Value(Value::Object{{"action", Value(intent.action.isValid() ? intent.action.format() : std::string{})},
+                               {"actor", Value(intent.actor.isValid() ? intent.actor.format() : std::string{})},
+                               {"cell", bindingCellValue(intent.cell)},
+                               {"expectedRevision", Value(std::to_string(intent.expected.value()))},
+                               {"kind", Value(std::string(interactionIntentKindName(intent.kind)))},
+                               {"targetUnit",
+                                Value(intent.targetUnit.isValid() ? intent.targetUnit.format() : std::string{})}});
 }
 
 /** @brief Single source of truth for the movement-receipt script shape. */
@@ -1134,6 +1158,41 @@ Result<std::vector<Cell>> Tactics::visibleCellsInRange(ecs::EntityHandle battleH
     return eve::tactics::visibleCellsInRange(battle->board()->value, policy, origin, minimum, maximum, metric);
 }
 
+Result<InteractionContext> Tactics::interactionContext(ecs::EntityHandle battleHandle, SubjectRef controlledUnit) {
+    Battle* battle = resolveBattle(battleHandle);
+    if (battle == nullptr)
+        return failure<InteractionContext>(DiagnosticCode::StaleHandle,
+                                           "tactics battle is stale or not owned by this facade", "battle");
+    if (!controlledUnit.isValid())
+        return failure<InteractionContext>(DiagnosticCode::InvalidArgument,
+                                           "interaction context requires a controlled unit", "controlledUnit");
+    TacticalUnit* unit = findUnit(controlledUnit);
+    if (unit == nullptr)
+        return failure<InteractionContext>(DiagnosticCode::NotFound,
+                                           "controlled unit is not in this battle", "controlledUnit");
+
+    InteractionContext context;
+    context.status = battle->turn()->status;
+    context.phase  = battle->turn()->phase;
+    context.revision = battle->turn()->revision;
+    if (battle->turn()->activeUnit.has_value()) {
+        TacticalUnit* active = dynamic_cast<TacticalUnit*>(ecs::try_get(*battle->turn()->activeUnit));
+        if (active != nullptr) context.activeUnit = active->identity()->subject;
+    }
+    context.controlledUnit = controlledUnit;
+    context.controlledCell = unit->position()->cell;
+    // Movement destinations come from the same query a commit uses, so a cell the UI offers is
+    // a cell the commit accepts.
+    auto reachable = PathQuery::reachable(battle->board()->value, controlledUnit, unit->turn()->movePoints);
+    if (!reachable) return Result<InteractionContext>::failure(reachable.status());
+    for (const ReachableCell& entry : reachable.value().cells()) context.reachableCells.push_back(entry.cell);
+    for (const BoardCellRecord& record : battle->board()->value.records()) {
+        if (!record.occupant.has_value()) continue;
+        context.unitsByCell.emplace(record.cell, *record.occupant);
+    }
+    return Result<InteractionContext>::success(std::move(context));
+}
+
 std::string_view Tactics::lineOfSightAlgorithm() const noexcept {
     const ILineOfSightPolicy* registered = cap::query<ILineOfSightPolicy>();
     return registered != nullptr ? registered->id() : gridLineOfSightPolicy()->id();
@@ -1243,6 +1302,92 @@ bool Tactics::owns(const std::vector<ecs::EntityHandle>& handles, const ecs::Ent
 
 void Tactics::expose(ssq::Table& table) {
     const HSQUIRRELVM vm = table.getHandle();
+    // The interaction session is created by `battle.newInteraction(unit)` and owned by the
+    // script. The allocator returns null because there is nothing sensible to construct without
+    // a battle: every method refuses on such an object instead of inventing a default context.
+    auto interaction = table.addClass<ScriptTacticsInteraction>(
+        "TacticsInteraction",
+        std::function<ScriptTacticsInteraction*()>([]() -> ScriptTacticsInteraction* { return nullptr; }), false);
+    interaction.addFunc("state", [](ScriptTacticsInteraction* value) {
+        if (value == nullptr || !value->session.has_value()) return std::string("uninitialized");
+        return std::string(interactionStateName(value->session->state()));
+    });
+    interaction.addFunc("armedAction", [](ScriptTacticsInteraction* value) {
+        if (value == nullptr || !value->session.has_value()) return std::string{};
+        const LogicalId& action = value->session->armedAction();
+        return action.isValid() ? action.format() : std::string{};
+    });
+    interaction.addFunc("expectedRevision", [](ScriptTacticsInteraction* value) -> std::int64_t {
+        if (value == nullptr || !value->session.has_value()) return 0;
+        return static_cast<std::int64_t>(value->session->context().revision.value());
+    });
+    interaction.addFunc("reachableCells", [vm](ScriptTacticsInteraction* value) {
+        // Projected through the common Result shape like every other query, so a script reads it
+        // as `result.value` instead of getting a bare native array.
+        if (value == nullptr || !value->session.has_value())
+            return script::projectResult(
+                vm,
+                failure<std::vector<Cell>>(DiagnosticCode::PreconditionViolation,
+                                           "interaction object was not created from a battle", "interaction"),
+                bindingCellArrayValue);
+        return script::projectResult(vm,
+                                     Result<std::vector<Cell>>::success(value->session->context().reachableCells),
+                                     bindingCellArrayValue);
+    });
+    // A click resolves to an intent. "Nothing to do here" is `kind == "none"`, while a machine
+    // that cannot accept input at all is a refused Result: a UI can tell them apart.
+    interaction.addFunc("click", [vm](ScriptTacticsInteraction* value, int x, int y, int layer) {
+        if (value == nullptr || !value->session.has_value())
+            return script::projectResult(
+                vm,
+                failure<InteractionIntent>(DiagnosticCode::PreconditionViolation,
+                                           "interaction object was not created from a battle", "interaction"),
+                bindingInteractionIntentValue);
+        return script::projectResult(vm, value->session->onCellClicked({x, y, layer}),
+                                     bindingInteractionIntentValue);
+    });
+    interaction.addFunc("armAbility", [vm](ScriptTacticsInteraction* value, const std::string& actionText,
+                                            const std::string& cellsJson) {
+        if (value == nullptr || !value->session.has_value())
+            return script::projectResult(
+                vm,
+                failure<void>(DiagnosticCode::PreconditionViolation,
+                              "interaction object was not created from a battle", "interaction"));
+        auto action = bindingLogicalId(actionText, "action");
+        if (!action) return script::projectResult(vm, Result<void>::failure(action.status()));
+        auto cells = bindingCellsJson(cellsJson);
+        if (!cells) return script::projectResult(vm, Result<void>::failure(cells.status()));
+        return script::projectResult(vm, value->session->armAbility(action.value(),
+                                                                    std::move(cells).takeValue()));
+    });
+    interaction.addFunc("cancel", [vm](ScriptTacticsInteraction* value) {
+        if (value == nullptr || !value->session.has_value())
+            return script::projectResult(
+                vm,
+                failure<InteractionIntent>(DiagnosticCode::PreconditionViolation,
+                                           "interaction object was not created from a battle", "interaction"),
+                bindingInteractionIntentValue);
+        return script::projectResult(vm, value->session->onCancel(), bindingInteractionIntentValue);
+    });
+    interaction.addFunc("endTurn", [vm](ScriptTacticsInteraction* value) {
+        if (value == nullptr || !value->session.has_value())
+            return script::projectResult(
+                vm,
+                failure<InteractionIntent>(DiagnosticCode::PreconditionViolation,
+                                           "interaction object was not created from a battle", "interaction"),
+                bindingInteractionIntentValue);
+        return script::projectResult(vm, value->session->onEndTurn(), bindingInteractionIntentValue);
+    });
+    // After the caller commits (or drops) the intent it received, the session returns to
+    // `await_selection`; until then a second click is refused rather than queued.
+    interaction.addFunc("resolve", [vm](ScriptTacticsInteraction* value) {
+        if (value == nullptr || !value->session.has_value())
+            return script::projectResult(
+                vm,
+                failure<void>(DiagnosticCode::PreconditionViolation,
+                              "interaction object was not created from a battle", "interaction"));
+        return script::projectResult(vm, value->session->resolve());
+    });
     auto battle = table.addClass<ScriptTacticsBattle>(
         "TacticsBattle", std::function<ScriptTacticsBattle*()>([]() -> ScriptTacticsBattle* { return nullptr; }),
         false);
@@ -1570,6 +1715,31 @@ void Tactics::expose(ssq::Table& table) {
                 return Result<std::string>::success(std::string(module.lineOfSightAlgorithm()));
             }),
             [](const std::string& id) { return Value(id); });
+    });
+    // Start a client-owned interaction session for one unit. The context is a projection of the
+    // current revision, so a UI rebuilds it after every state change: the returned object is a
+    // value, not a subscription.
+    battle.addFunc("newInteraction", [vm](ScriptTacticsBattle* value, const std::string& unitText) {
+        auto subject = bindingSubject(unitText, "unit");
+        if (!subject) return script::projectStatusResult(vm, subject.status(), false, false);
+        auto session = bindingSession(value);
+        if (!session) return script::projectStatusResult(vm, session.status(), false, false);
+        Tactics* module = currentModule();
+        if (module == nullptr)
+            return script::projectStatusResult(
+                vm, Status::failure(Diagnostic::error(DiagnosticCode::StaleHandle,
+                                                       "Tactics module is no longer loaded", "battle")),
+                false, false);
+        auto context = module->interactionContext(session.value()->battle, subject.value());
+        if (!context) return script::projectStatusResult(vm, context.status(), false, false);
+        auto created = InteractionSession::create(std::move(context).takeValue());
+        auto object = script::makeOwnedSquirrelInstance<ScriptTacticsInteraction>(
+            vm, std::make_unique<ScriptTacticsInteraction>(ScriptTacticsInteraction{std::move(created)}));
+        if (!object) return script::projectStatusResult(vm, object.status(), false, false);
+        auto result = script::projectStatusResult(vm, Status::success(StatusCode::Applied), true, false);
+        result.set("value", std::move(object).takeValue());
+        result.set("ownership", std::string("owned"));
+        return result;
     });
     // Presentation intents are events projected into data. A script consumer (or a renderer
     // bridge) gets the state, the geometry and the explicit revert contract in one value, so it
