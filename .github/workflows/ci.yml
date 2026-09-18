@@ -673,6 +673,7 @@ jobs:
 
       - name: Report C/C++ compilation cache
         if: always()
+        continue-on-error: true
         timeout-minutes: 5
         run: sccache --show-stats
 
@@ -749,6 +750,7 @@ jobs:
 
       - name: Report C/C++ compilation cache
         if: always()
+        continue-on-error: true
         timeout-minutes: 5
         run: sccache --show-stats
 

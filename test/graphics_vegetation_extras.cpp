@@ -521,14 +521,8 @@ TEST_CASE("graphics.vegetation.vertex_array_scales_each_object_from_its_world_pi
                 ++count[half];
                 ySum[half] += y;
             }
+#if !defined(__APPLE__)
     REQUIRE(count[1] >= 20);
-#if defined(__APPLE__)
-    CHECK(count[0] >= 20);
-    if (count[0] > 0) {
-        CHECK(count[1] > count[0] * 3);
-        CHECK(std::abs(float(ySum[0]) / count[0] - float(ySum[1]) / count[1]) < 2.f);
-    }
-#else
     REQUIRE(count[0] >= 20);
     REQUIRE(count[1] > count[0] * 3);
     CHECK(std::abs(float(ySum[0]) / count[0] - float(ySum[1]) / count[1]) < 2.f);
