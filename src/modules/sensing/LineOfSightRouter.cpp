@@ -5,6 +5,7 @@
 
 #include "sensing/LineOfSightRouter.h"
 
+#include "common/Capability.h"
 #include "common/Diagnostic.h"
 
 #include <optional>
@@ -21,7 +22,27 @@ Result<T> failure(DiagnosticCode code, std::string message, std::string path) {
 /** @brief Stable path name for a rejected location, so diagnostics point at the right argument. */
 std::string locationPath(const char* name) { return std::string("lineOfSight.") + name; }
 
+/** @brief Process-wide router, kept alive for the whole run. */
+LineOfSightRouter& routerHolder() {
+    static LineOfSightRouter router;
+    return router;
+}
+
 }  // namespace
+
+Result<LineOfSightRouter*> ensureLineOfSightRouter() {
+    LineOfSightRouter& router = routerHolder();
+    ILineOfSightQuery* registered = cap::query<ILineOfSightQuery>();
+    if (registered == &router) return Result<LineOfSightRouter*>::success(&router);
+    if (registered != nullptr)
+        // Respect an existing registration instead of replacing it, so a project that owns its
+        // own implementation is never silently overridden by a backend claiming a space.
+        return failure<LineOfSightRouter*>(DiagnosticCode::Conflict,
+                                           "another line-of-sight provider is already registered",
+                                           "lineOfSight.provider");
+    cap::provide<ILineOfSightQuery>(&router);
+    return Result<LineOfSightRouter*>::success(&router, Status::success(StatusCode::Applied));
+}
 
 std::optional<CoordinateSpace> LineOfSightRouter::spaceOf(const TargetLocation& location) noexcept {
     return std::visit(

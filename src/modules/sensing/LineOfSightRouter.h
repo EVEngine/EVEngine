@@ -81,4 +81,22 @@ private:
     std::array<const ILineOfSightQuery*, kSpaceCount> providers_{};
 };
 
+/**
+ * @brief The process-wide router, registered as the `ILineOfSightQuery` capability.
+ *
+ * Backends claim their spaces through this function instead of registering the capability
+ * themselves, which is what keeps the routing table in one place:
+ *
+ * @return Applied when this call registered the router, NoOp when the router was already the
+ *         registered provider, or Conflict when some other provider holds the slot.
+ * @remarks A foreign provider holding the slot is **left alone**: a project that deliberately
+ *          registered its own line-of-sight implementation keeps it, and the caller gets a
+ *          Conflict it can report rather than a silent replacement.
+ * @ownership The router is process-wide and immutably owned by this translation unit; callers
+ *            borrow the pointer and must not delete it.
+ * @lifetime Valid for the rest of the process.
+ * @thread Call during startup, before queries run.
+ */
+[[nodiscard]] Result<LineOfSightRouter*> ensureLineOfSightRouter();
+
 }  // namespace eve::sensing

@@ -100,6 +100,44 @@ TEST_CASE("sensing.routerRejectsMixedSpaceQueriesInsteadOfConverting") {
     CHECK_EQ(gridBackend.calls, 0);
 }
 
+TEST_CASE("sensing.ensureRouterRegistersTheCapabilityOnceAndKeepsForeignProviders") {
+    // No provider yet: the first call registers the router as the capability.
+    auto first = eve::sensing::ensureLineOfSightRouter();
+    REQUIRE(first.ok());
+    CHECK(first.code() == eve::StatusCode::Applied);
+    eve::sensing::LineOfSightRouter* router = first.value();
+    CHECK(eve::cap::query<eve::sensing::ILineOfSightQuery>() == router);
+
+    // Idempotent: a second backend asking for the router gets the same one, not a second table.
+    auto second = eve::sensing::ensureLineOfSightRouter();
+    REQUIRE(second.ok());
+    CHECK(second.code() == eve::StatusCode::NoOp);
+    CHECK(second.value() == router);
+
+    // The pipeline path works through the capability: a claimed space answers, an unclaimed one
+    // reports Unsupported rather than "not visible".
+    StubBackend gridBackend(true);
+    REQUIRE(router->addProvider(eve::sensing::CoordinateSpace::Grid2D, &gridBackend).ok());
+    auto* viaCapability = eve::cap::query<eve::sensing::ILineOfSightQuery>();
+    REQUIRE(viaCapability == router);
+    CHECK(viaCapability->query(grid(0, 0), grid(2, 0)).value().visible);
+    CHECK_EQ(viaCapability->query(world(0.f, 0.f, 0.f), world(1.f, 0.f, 0.f))
+                 .status()
+                 .primaryDiagnostic()
+                 ->code(),
+             eve::DiagnosticCode::Unsupported);
+
+    // A project that registered its own provider keeps it: asking for the router is refused
+    // instead of silently replacing the project's implementation.
+    StubBackend foreign(false);
+    eve::cap::provide<eve::sensing::ILineOfSightQuery>(&foreign);
+    auto refused = eve::sensing::ensureLineOfSightRouter();
+    CHECK(!refused.ok());
+    REQUIRE(refused.status().primaryDiagnostic() != nullptr);
+    CHECK_EQ(refused.status().primaryDiagnostic()->code(), eve::DiagnosticCode::Conflict);
+    CHECK(eve::cap::query<eve::sensing::ILineOfSightQuery>() == &foreign);
+}
+
 TEST_CASE("sensing.routerOwnsNoBackendAndRefusesToReplaceOne") {
     eve::sensing::LineOfSightRouter router;
     StubBackend first(true);

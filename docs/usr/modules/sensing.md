@@ -98,6 +98,11 @@ auto ranked = pipeline.executePreset(ctx, "sensing.builtin.coneSelect");
   不会误释放另一个模块的后端，重复释放也安全。
 - 路由器**不拥有**后端：它只持有借用指针，认领方必须保证其后端在认领期间存活。
 
+后端不该自己去 `cap::provide<ILineOfSightQuery>`，而是调用 `sensing::ensureLineOfSightRouter()`：
+首次调用由 `sensing` 把路由器注册为该 capability（`Applied`），之后是 `NoOp`；**如果槽位已经被
+别的 provider 占用，则返回 `Conflict` 并把那个 provider 原样保留**——项目自己注册的实现不会被
+静默顶掉。`physics` 就是这么做的：它认领 `World3D`，而不是独占整个 capability。
+
 ## API 快查
 
 | 对象 | API | 说明 |
