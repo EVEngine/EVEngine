@@ -6,9 +6,12 @@
 #include "common/Capability.h"
 #include "rx/Rx.h"
 
+#include <algorithm>
 #include <cstdint>
 #include <optional>
+#include <string>
 #include <utility>
+#include <vector>
 
 namespace eve::editor {
 
@@ -136,6 +139,7 @@ std::string EditorAutomationProvider::invoke(const std::string& operation, const
         return errorJson(EditorStatus::Rejected, "editor.automation.invalid-json", "Request must be a JSON object");
     const auto& request = *parsed.value().getIf<EditorValue::Object>();
     if (operation == "commands") return commandsJson();
+    if (operation == "target-list") return targetList();
     if (operation == "target-create") return createTarget(request);
     if (operation == "target-close") return closeTarget(request);
     if (operation == "observe-start") return startObservation(request);
@@ -289,6 +293,43 @@ std::string EditorAutomationProvider::closeObservation(const EditorValue::Object
     observationSessions_.erase(found);
     EditorValue response = resultValue(EditorStatus::Applied, {});
     (*response.getIf<EditorValue::Object>())["sessionId"] = id;
+    return editorValueToJson(response);
+}
+
+std::string EditorAutomationProvider::targetList() const {
+    EditorValue response = resultValue(EditorStatus::Applied, {});
+    auto*       value    = response.getIf<EditorValue::Object>();
+    if (!value) return errorJson(EditorStatus::Failed, "editor.automation.target-list", "Could not build response");
+
+    const TargetId bound = session_.boundTargetId();
+    EditorValue::Array entries;
+    for (const auto& summary : targets_->targets()) {
+        EditorValue::Object item;
+        item["id"]         = summary.id;
+        item["bound"]      = summary.id == bound.value();
+        item["owned"]      = ownedTargets_.contains(TargetId(summary.id));
+        item["revision"]   = static_cast<std::int64_t>(summary.revision);
+        item["generation"] = static_cast<std::int64_t>(summary.generation);
+        if (!summary.type.empty()) item["type"] = summary.type;
+        entries.emplace_back(std::move(item));
+    }
+    (*value)["targets"] = std::move(entries);
+    if (!bound.empty()) (*value)["boundTarget"] = bound.value();
+
+    // Type discovery: the accepted names come from the loaded factories, so the
+    // advertised list cannot drift from what create actually accepts.
+    std::vector<std::string> types;
+    eve::cap::forEach<IEditorAutomationTargetFactory>([&](IEditorAutomationTargetFactory* factory) {
+        if (!factory) return;
+        for (const std::string_view type : factory->types()) types.emplace_back(type);
+    });
+    std::sort(types.begin(), types.end());
+    types.erase(std::unique(types.begin(), types.end()), types.end());
+    EditorValue::Array advertised;
+    advertised.reserve(types.size());
+    for (auto& type : types) advertised.emplace_back(std::move(type));
+    (*value)["supportedTypes"] = std::move(advertised);
+
     return editorValueToJson(response);
 }
 

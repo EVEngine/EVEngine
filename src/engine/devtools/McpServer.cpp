@@ -674,6 +674,7 @@ std::string callTool(McpServer& mcp, const std::string& name, Poco::JSON::Object
                            : std::string("error: editor module not available");
     };
     if (name == "eve_editor_commands") return editorInvoke("commands");
+    if (name == "eve_editor_target_list") return editorInvoke("target-list");
     if (name == "eve_editor_target_create") return editorInvoke("target-create");
     if (name == "eve_editor_target_close") return editorInvoke("target-close");
     if (name == "eve_editor_inspect") return editorInvoke("inspect");
@@ -1699,8 +1700,15 @@ std::string handleToolsList(const std::string& idJson) {
         "{\"name\":\"eve_editor_commands\",\"description\":\"List editor commands allowed for automation in the active "
         "game/editor.\","
         "\"inputSchema\":{\"type\":\"object\",\"properties\":{}}},"
-        "{\"name\":\"eve_editor_target_create\",\"description\":\"Create an Editor-owned document target or bind a live SceneHost/Renderable3D for Agent workflows.\","
-        "\"inputSchema\":{\"type\":\"object\",\"properties\":{\"target\":{\"type\":\"string\"},\"type\":{\"type\":\"string\",\"enum\":[\"scene\",\"scene-host\",\"material\",\"material-renderable3d\"]},\"host\":{\"type\":\"string\"},\"object\":{\"type\":\"string\"},\"entityId\":{\"type\":\"integer\",\"minimum\":0},\"generation\":{\"type\":\"integer\",\"minimum\":0}},\"required\":[\"target\",\"type\"]}},"
+        "{\"name\":\"eve_editor_target_list\",\"description\":\"Discover editor targets and creatable types: every "
+        "registered target id with its type/revision/generation plus bound/owned flags, and the target type names the "
+        "currently loaded adapters accept. Targets a project script created and bound (tile layer, height map, voxel "
+        "world, ...) appear here, which is the only way to learn their id.\","
+        "\"inputSchema\":{\"type\":\"object\",\"properties\":{}}},"
+        "{\"name\":\"eve_editor_target_create\",\"description\":\"Create an Editor-owned document target or bind a live "
+        "SceneHost/Renderable3D for Agent workflows. Accepted type names are runtime-dependent: call "
+        "eve_editor_target_list and read supportedTypes instead of assuming a fixed set.\","
+        "\"inputSchema\":{\"type\":\"object\",\"properties\":{\"target\":{\"type\":\"string\"},\"type\":{\"type\":\"string\"},\"host\":{\"type\":\"string\"},\"object\":{\"type\":\"string\"},\"entityId\":{\"type\":\"integer\",\"minimum\":0},\"generation\":{\"type\":\"integer\",\"minimum\":0}},\"required\":[\"target\",\"type\"]}},"
         "{\"name\":\"eve_editor_target_close\",\"description\":\"Unregister and destroy an Editor-owned automation target.\","
         "\"inputSchema\":{\"type\":\"object\",\"properties\":{\"target\":{\"type\":\"string\"}},\"required\":[\"target\"]}},"
         "{\"name\":\"eve_editor_inspect\",\"description\":\"Inspect authoritative structured state for an editor target.\","

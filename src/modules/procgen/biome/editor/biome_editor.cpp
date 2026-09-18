@@ -11,6 +11,8 @@
 
 #include <stdexcept>
 #include <string>
+#include <string_view>
+#include <vector>
 
 namespace eve::biome_editor {
 namespace {
@@ -26,7 +28,7 @@ std::string stringField(const editor::EditorValue::Object& request, const char* 
 
 class BiomeEditorModule::TargetFactory final : public editor::IEditorAutomationTargetFactory {
 public:
-    bool supports(std::string_view type) const override { return type == "biome" || type == "biome-rules"; }
+    std::vector<std::string_view> types() const override { return {"biome", "biome-rules"}; }
 
     editor::EditorResult<editor::AutomationOwnedTarget> create(
         const editor::TargetId& target, std::string_view type,
