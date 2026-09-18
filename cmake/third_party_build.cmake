@@ -409,7 +409,14 @@ function(check_third_party_project name repo)
         )
     endif()
     target_include_directories(eve_engine_includes INTERFACE
-        ${CMAKE_CURRENT_SOURCE_DIR}/build/${name}-binary/${TP_BUILD_PATH}/include)
+        ${CMAKE_CURRENT_SOURCE_DIR}/build/${name}-binary/${TP_BUILD_PATH}/include
+        # SDL2 and FreeType install headers below their own include roots.
+        # These directories do not exist yet during a clean configure because
+        # the ExternalProject install happens in the later `deps` build.  They
+        # must still be registered now; testing IS_DIRECTORY here makes clean
+        # iOS/simulator builds miss <SDL.h> or <ft2build.h>.
+        ${CMAKE_CURRENT_SOURCE_DIR}/build/${name}-binary/${TP_BUILD_PATH}/include/SDL2
+        ${CMAKE_CURRENT_SOURCE_DIR}/build/${name}-binary/${TP_BUILD_PATH}/include/freetype2)
     eve_external_include(
         ${CMAKE_CURRENT_SOURCE_DIR}/build/${name}-binary/${TP_BUILD_PATH}/include)
     target_link_directories(eve_engine_includes INTERFACE
