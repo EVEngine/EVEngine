@@ -327,9 +327,11 @@ TEST_CASE("procgen.road.scenes.crossJunctionCornerSidewalks") {
     CHECK_GE(sidewalkGroup, 0);
     auto sw = baked.value().mesh.copyGroup(sidewalkGroup);
     REQUIRE(sw);
-    // Outward-center curb returns: sidewalks sit near (jr,jr) inside the corner disk.
+    // Outward-center curb returns: sidewalk ring around (jr,jr), no tip disk to the center.
     const float jr = hubJr;
     int         arcHits = 0;
+    int         tipHits = 0;
+    int         outerSkirtHits = 0;
     for (int i = 0; i < sw->getVertexCount(); ++i) {
         const float x  = std::fabs(sw->getPositionX(i));
         const float z  = std::fabs(sw->getPositionZ(i));
@@ -337,10 +339,17 @@ TEST_CASE("procgen.road.scenes.crossJunctionCornerSidewalks") {
         const float dz = jr - z;
         if (dx < 0.05f || dz < 0.05f) continue;
         const float r = std::sqrt(dx * dx + dz * dz);
-        // Between sidewalk outer and curb face radii from the outer corner center.
+        // Sidewalk annulus between outer skirt and curb (no fan into r≈0 tip).
         if (r > 0.9f && r < 2.9f) ++arcHits;
+        if (r < 0.55f) ++tipHits;
+        const float nx = sw->getNormalX(i);
+        const float nz = sw->getNormalZ(i);
+        // Outer skirt faces toward the property corner (±jr,±jr).
+        if (r > 0.7f && r < 1.4f && (nx * dx + nz * dz) > 0.3f) ++outerSkirtHits;
     }
     CHECK_GT(arcHits, 16);
+    CHECK_EQ(tipHits, 0);
+    CHECK_GT(outerSkirtHits, 8);
 
     // Top faces must carry +Y normals (mesh3D CCW / lighting); flipped windings show dark.
     int upHits = 0, downHits = 0;
