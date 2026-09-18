@@ -88,7 +88,7 @@ function makeDecorMaterial(albedo, normal, masked, cutoff) {
         mat.setDoubleSided(true);
         mat.setSurfaceMode("masked");
         mat.setAlphaCutoff(cutoff);
-        mat.setAlphaTechnique("coverage");
+        mat.setAlphaTechnique("cutoff");
     }
     return mat;
 }

@@ -73,7 +73,7 @@ void addTaperedCylinder(MeshBuild& out, V3 a, V3 b, float r0, float r1, int side
     }
 }
 
-void addLeafCard(MeshBuild& out, V3 c, V3 direction, float size, float twist) {
+void addLeafCard(MeshBuild& out, V3 c, V3 direction, float size, float twist, std::mt19937& rng) {
     V3 right, up;
     basisFor(norm(direction), right, up);
     right            = add(mul(right, std::cos(twist)), mul(up, std::sin(twist)));
@@ -82,10 +82,23 @@ void addLeafCard(MeshBuild& out, V3 c, V3 direction, float size, float twist) {
     const V3       normal    = norm(cross(right, up));
     const uint32_t base      = uint32_t(out.getVertexCount());
     const V3       points[4] = {sub(sub(c, r), u), add(sub(c, u), r), add(add(c, r), u), add(sub(c, r), u)};
-    const float    uv[4][2]  = {{0, 0}, {1, 0}, {1, 1}, {0, 1}};
+    // One cell of the tex.tree_atlas / tex.foliage 3×3 ovate stamp grid.
+    constexpr float kCardU0 = 0.52f;
+    constexpr float kCardU1 = 1.00f;
+    constexpr int   kCols   = 3;
+    constexpr int   kRows   = 3;
+    const int       col     = int(randomRange(rng, 0.f, float(kCols))) % kCols;
+    const int       row     = int(randomRange(rng, 0.f, float(kRows))) % kRows;
+    const float     inset   = 0.10f;
+    const float     cellWU  = (kCardU1 - kCardU0) / float(kCols);
+    const float     cellWV  = 1.f / float(kRows);
+    const float     u0      = kCardU0 + (float(col) + inset) * cellWU;
+    const float     u1      = kCardU0 + (float(col) + 1.f - inset) * cellWU;
+    const float     v0      = (float(row) + inset) * cellWV;
+    const float     v1      = (float(row) + 1.f - inset) * cellWV;
+    const float     uv[4][2] = {{u0, v0}, {u1, v0}, {u1, v1}, {u0, v1}};
     for (int i = 0; i < 4; ++i)
-        out.addVertex(points[i].x, points[i].y, points[i].z, normal.x, normal.y, normal.z, 0.55f + uv[i][0] * 0.45f,
-                      uv[i][1]);
+        out.addVertex(points[i].x, points[i].y, points[i].z, normal.x, normal.y, normal.z, uv[i][0], uv[i][1]);
     out.addTriangle(base, base + 1, base + 2);
     out.addTriangle(base, base + 2, base + 3);
     out.addTriangle(base + 2, base + 1, base);
@@ -623,7 +636,8 @@ bool generateTreeMesh(const Params& params, MeshBuild& out, std::string& error) 
                                          randomRange(rng, -1.f, 1.f) * crownRadius * 0.24f * tip.scale});
                 const V3 face =
                     norm({randomRange(rng, -1.f, 1.f), randomRange(rng, -0.2f, 0.8f), randomRange(rng, -1.f, 1.f)});
-                addLeafCard(out, c, face, leafSize * randomRange(rng, 0.72f, 1.25f), randomRange(rng, 0.f, kPi));
+                addLeafCard(out, c, face, leafSize * randomRange(rng, 0.72f, 1.25f), randomRange(rng, 0.f, kPi),
+                            rng);
             }
         }
     } else if (leafMode == "clusters" && density > 0.f) {

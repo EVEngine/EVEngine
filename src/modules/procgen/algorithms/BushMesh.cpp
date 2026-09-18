@@ -12,12 +12,15 @@ namespace {
 constexpr float kPi = 3.14159265358979323846f;
 
 // tex.foliage dual atlas (and tree_atlas right half for shared cards):
-//   blobs sample the opaque fill half; leaf cards sample the transparent
-//   ovate-leaf half so masked alpha cuts silhouettes instead of green quads.
+//   blobs sample the opaque fill half; leaf cards sample ONE cell of the
+//   transparent ovate-leaf grid so masked alpha yields a single leaf, not a
+//   solid green quad covering the whole collage.
 constexpr float kBlobUMin = 0.02f;
 constexpr float kBlobUMax = 0.48f;
-constexpr float kCardUMin = 0.52f;
-constexpr float kCardUMax = 0.98f;
+constexpr float kCardAtlasU0 = 0.52f;
+constexpr float kCardAtlasU1 = 1.00f;
+constexpr int   kLeafCols    = 3;
+constexpr int   kLeafRows    = 3;
 constexpr float kBarkUMin = 0.0f;
 constexpr float kBarkUMax = 0.45f;
 
@@ -116,9 +119,9 @@ void addTwig(MeshBuild &out, V3 a, V3 b, float r0, float r1, int sides, float uM
     }
 }
 
-// Standard leaf card: a double-sided quad whose silhouette comes from the
-// transparent ovate-leaf atlas (tex.foliage right half / tree_atlas foliage).
-void addLeafCard(MeshBuild &out, std::mt19937 &rng, V3 c, V3 direction, float size, float uMin, float uMax) {
+// Standard leaf card: a double-sided quad mapped to one ovate stamp cell.
+// Transparent cell margins + SurfaceMode::Masked cut the silhouette to a leaf.
+void addLeafCard(MeshBuild &out, std::mt19937 &rng, V3 c, V3 direction, float size) {
     V3 right, up;
     basisFor(norm(direction), right, up);
     const float twist = randomRange(rng, 0.f, 2.f * kPi);
@@ -132,11 +135,21 @@ void addLeafCard(MeshBuild &out, std::mt19937 &rng, V3 c, V3 direction, float si
     const V3    center = add(c, mul(normal, size * 0.04f));
     const V3    points[4] = {sub(sub(center, r), h), add(sub(center, h), r), add(add(center, r), h),
                              add(sub(center, r), h)};
-    const float uv[4][2] = {{0.f, 0.f}, {1.f, 0.f}, {1.f, 1.f}, {0.f, 1.f}};
+    // Pick one stamp from the 3×3 ovate grid (matches BuiltinTextures leaf stamps).
+    const int   col    = int(randomRange(rng, 0.f, float(kLeafCols))) % kLeafCols;
+    const int   row    = int(randomRange(rng, 0.f, float(kLeafRows))) % kLeafRows;
+    const float inset  = 0.10f;
+    const float cellWU = (kCardAtlasU1 - kCardAtlasU0) / float(kLeafCols);
+    const float cellWV = 1.f / float(kLeafRows);
+    const float u0     = kCardAtlasU0 + (float(col) + inset) * cellWU;
+    const float u1     = kCardAtlasU0 + (float(col) + 1.f - inset) * cellWU;
+    const float v0     = (float(row) + inset) * cellWV;
+    const float v1     = (float(row) + 1.f - inset) * cellWV;
+    const float uv[4][2] = {{u0, v0}, {u1, v0}, {u1, v1}, {u0, v1}};
     const uint32_t base = uint32_t(out.getVertexCount());
     for (int i = 0; i < 4; ++i) {
-        out.addVertex(points[i].x, points[i].y, points[i].z, normal.x, normal.y, normal.z,
-                      uMin + uv[i][0] * (uMax - uMin), uv[i][1]);
+        out.addVertex(points[i].x, points[i].y, points[i].z, normal.x, normal.y, normal.z, uv[i][0],
+                      uv[i][1]);
     }
     out.addTriangle(base, base + 1, base + 2);
     out.addTriangle(base, base + 2, base + 3);
@@ -247,7 +260,7 @@ bool generateBushMesh(const Params &params, MeshBuild &out, std::string &error) 
             const V3 c{lobe.center.x + face.x * lobe.radius.x * 0.96f,
                        lobe.center.y + face.y * lobe.radius.y * 0.96f,
                        lobe.center.z + face.z * lobe.radius.z * 0.96f};
-            addLeafCard(out, rng, c, face, leafSize * randomRange(rng, 0.70f, 1.20f), kCardUMin, kCardUMax);
+            addLeafCard(out, rng, c, face, leafSize * randomRange(rng, 0.70f, 1.20f));
         }
     }
 

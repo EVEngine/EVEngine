@@ -3179,6 +3179,38 @@ TEST_CASE("procgen.cloud.viaModule") {
 }
 
 
+
+TEST_CASE("procgen.texture.foliage.leafCardAlpha") {
+    TextureRecipeRegistry::instance().registerBuiltins();
+    Params p;
+    p.setSeed(20260922);
+    p.setSize(128, 128);
+    p.setFloat("scale", 4.2f);
+    p.setInt("seamless", 1);
+    p.setInt("colors", 7);
+    std::string err;
+    auto img = TextureRecipeRegistry::instance().generate("tex.foliage", p, err);
+    REQUIRE(static_cast<bool>(img));
+    const int w = img->getWidth();
+    const int h = img->getHeight();
+    double rightA = 0.0;
+    int rightN = 0, rightZero = 0;
+    for (int y = 0; y < h; y += 2) {
+        for (int x = 0; x < w; x += 2) {
+            const auto c = img->getPixel(x, y);
+            const float u = float(x) / float(std::max(1, w - 1));
+            if (u <= 0.52f) continue;
+            rightA += c.a;
+            ++rightN;
+            if (c.a < 0.05f) ++rightZero;
+        }
+    }
+    REQUIRE(rightN > 0);
+    // Card half must stay mostly transparent so single-stamp leaf cards alpha-cut.
+    CHECK(rightA / double(rightN) < 0.55);
+    CHECK(double(rightZero) / double(rightN) > 0.20);
+}
+
 TEST_CASE("procgen.texture.builtinRecipes.expanded") {
     TextureRecipeRegistry::instance().registerBuiltins();
     const char *ids[] = {"tex.soil",    "tex.stone",   "tex.rock",   "tex.marble", "tex.water",

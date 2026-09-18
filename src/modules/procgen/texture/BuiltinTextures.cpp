@@ -562,8 +562,10 @@ void buildOvateLeafStamps(const NoiseField &noise, int count, std::vector<LeafSt
             LeafStamp s;
             s.cx = (float(col) + 0.5f) * cellW + jx;
             s.cy = (float(row) + 0.5f) * cellH + jy;
-            s.halfW = cellW * (0.28f + 0.10f * noise.hash01(col + 9, row + 2));
-            s.halfH = cellH * (0.38f + 0.12f * noise.hash01(col + 4, row + 8));
+            // Keep clear transparent margins inside each cell so a card that
+            // samples one cell still alpha-cuts to an ovate silhouette.
+            s.halfW = cellW * (0.22f + 0.08f * noise.hash01(col + 9, row + 2));
+            s.halfH = cellH * (0.30f + 0.10f * noise.hash01(col + 4, row + 8));
             s.ang = (noise.hash01(col * 13 + 1, row * 17 + 3) - 0.5f) * 1.8f;
             stamps.push_back(s);
             ++placed;
@@ -665,7 +667,8 @@ std::unique_ptr<image::ImageData> genTreeAtlas(const Params &params, std::string
     leafRamp.add(1.00f, 24, 54, 16);
 
     std::vector<LeafStamp> leafStamps;
-    buildOvateLeafStamps(noise, 10, leafStamps);
+    // 3×3 grid — must match BushMesh / TreeMesh / FoliageCluster card UVs.
+    buildOvateLeafStamps(noise, 9, leafStamps);
 
     const float invW = 1.f / float(std::max(1, ctx.width - 1));
     const float invH = 1.f / float(std::max(1, ctx.height - 1));
@@ -711,7 +714,8 @@ std::unique_ptr<image::ImageData> genTreeAtlas(const Params &params, std::string
 /**
  * tex.foliage — dual atlas for bush meshes:
  *   u in [0, 0.48] opaque leafy fill for ellipsoid blobs,
- *   u in [0.52, 1] transparent leaf-card with scattered ovate leaves for addLeafCard.
+ *   u in [0.52, 1] 3×3 transparent ovate leaf stamps for addLeafCard
+ *   (each card samples one stamp cell).
  */
 std::unique_ptr<image::ImageData> genFoliage(const Params &params, std::string &error) {
     const auto ctx = TextureGenContext::fromParams(params);
@@ -736,7 +740,8 @@ std::unique_ptr<image::ImageData> genFoliage(const Params &params, std::string &
     leafRamp.add(1.00f, 22, 48, 28);
 
     std::vector<LeafStamp> leafStamps;
-    buildOvateLeafStamps(noise, 8, leafStamps);
+    // 3×3 grid — must match BushMesh / TreeMesh / FoliageCluster card UVs.
+    buildOvateLeafStamps(noise, 9, leafStamps);
 
     const float invW = 1.f / float(std::max(1, ctx.width - 1));
     const float invH = 1.f / float(std::max(1, ctx.height - 1));
