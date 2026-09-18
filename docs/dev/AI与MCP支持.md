@@ -84,6 +84,7 @@ MCP listening on 127.0.0.1:7529 (newline JSON-RPC; use tools/eve-mcp for Cursor 
 | `eve_render_vision_config` | 设置 / 读取视觉模型配置（baseUrl/apiKey/model/path/timeoutMs，密钥掩码） |
 | `eve_particles_status` / `eve_particles_emit` | 粒子系统状态与发射 |
 | `eve_audio_status` / `eve_audio_set_volume` / `eve_audio_stop_all` | 音频主控 |
+| `eve_gameplay` | 共享玩法协议：`domains` / `instances` 发现 + `observe` / `actions` / `submit` / `advance` / `events` 驱动玩家的背包、经济账本、对话与手牌（见「玩法域」） |
 
 ### Resources
 
@@ -199,6 +200,62 @@ eve.mcp.clear();              // -> 移除数量
 - 上限：128 个工具、描述 512 字符、`inputSchema` 16 KiB、序列化参数/结果最多 16 层嵌套；
   被拒绝的注册会以 `warn` 写进运行期控制台，便于开发者自查。
 - 同名重复注册是**替换**（热重载 `mcp.nut` 不会堆积或泄漏闭包）；VM 分离时引用被释放。
+
+### 玩法域（gameplay domains）
+
+`eve.mcp.tool` 让开发者自己描述领域，但引擎侧已经有完整实现的玩法域不应该再各写一套脚本投影：
+它们通过共享玩法协议（`eve_gameplay` 工具 / `eve.dev.gameplay(...)`）发布，Agent 与玩家走**同一条
+权威写入路径**，而不是调试旁路。协议 schema 为 `evengine.gameplay-control-request` v1。
+
+| op | 作用 |
+|----|------|
+| `domains` | 列出当前注册的领域（每个领域唯一 provider） |
+| `instances` | 列出可枚举的领域及其实例；无法枚举的领域单独出现在 `unenumerable`，与「没有实例」区分开 |
+| `observe` | 读取一个实例的权威观察结果（含 `revision` / `tick`） |
+| `actions` | 列出该实例对当前 `access` 档位**合法**的动作（不会广播会被拒绝的动作） |
+| `submit` | 提交一条命令：需带 `observedTick` / `expectedRevision`，过期即 `conflict` |
+| `advance` | 推进该实例的注入式 tick（必须递增，回退即 `conflict`） |
+| `events` | 按实例内 `afterSequence` 游标增量取事件（新增事件带 `causationCommandId`） |
+
+发现实例不需要 session：`instances` 只回答「有什么」。`observe`/`actions`/`submit` 需要
+`session.access`（`player` / `test-driver` / `developer-cheat`）与 `controlledSubjects`；`player`
+档位必须控制实例 owner，发放类动作（`inventory:add-item`、`economy:credit`、`card:set-attribute`）
+对 `player` 档位既不广播也不接受。
+
+```jsonc
+// eve_gameplay { "request": { ... } }
+{ "schemaId": "evengine.gameplay-control-request", "schemaVersion": 1, "op": "observe",
+  "domain": "inventory", "instance": "<uuid>",
+  "session": { "id": "mcp", "access": "player", "controlledSubjects": ["<owner-uuid>"] } }
+```
+
+已发布的领域（都在模块内提供 `publishGameplay(instanceId, ownerId, ...)`，脚本可直接调用；
+instance / owner 必须是规范持久 id）：
+
+| 领域 | 实例 | 动作 | 权限与披露 |
+|------|------|------|-----------|
+| `inventory` | 一副 `Bag` + 可选 `EquipmentSet` | `remove-item` / `move-slot` / `equip` / `unequip` + `add-item` | `add-item` 仅 test-driver / developer-cheat；`remove-item` 沿用容器「最多取 N」语义，实际生效量以 `quantity` 出现在收据与事件里 |
+| `economy` | 一个玩家账本 | `debit` + `credit` | `credit` 仅非玩家档位；超上限部分不谎报成功，另发 `economy.wasted` 事件；未知资源类型报 `not_found` |
+| `dialogue` | 对话运行器（一次一个对话，最多一个实例） | `start` / `advance` / `select` | 观察结果给出当前节点、说话人、文本与**路由词表**，Agent 无需猜 route id；自动化启动没有 Squirrel 调用帧，绑定表为空（`"bindings":"empty"`） |
+| `card` | 一副手牌 | `draw` / `play` / `set-attribute` | `set-attribute` 仅非玩家档位；出牌需要游戏自己的支付账户，未绑定时 `observe` 报 `"payment":"unbound"`，零费卡照常出牌、收费卡得到明确诊断（而不是动作消失） |
+| `npc_ai` | —（**未发布**，见下） | — | 该模块目前没有 `Module` 实例、也没有脚本面（`NpcAiWorld` 只在模块内部与 editor 中被引用），因此没有「游戏能从脚本发布」的挂点 |
+
+多实例：一个领域只注册一个 provider（路由器要求领域唯一），provider 内部按实例分派。
+`inventory` / `economy` / `card` 支持同时发布多个实例（每个玩家一份），`dialogue` 的运行器
+全局唯一，因此重复发布直接返回 `conflict` 并报出已占用它的实例 id。
+
+`npc_ai` 的正确做法不是加一个 C++-only 适配器：先让该模块拥有模块实例与脚本面（现在脚本
+既不能构造 `NpcAiWorld`，也就无从发布 agent）。这属于模块设计变更，需要在架构评审里单独决策，
+本文件如实记录现状而不静默跳过。
+
+真实会话自检（示例工程 `examples/inventory` 已发布玩家背包）：
+
+```bash
+# 1) 启动带 MCP 的游戏进程
+cd examples/inventory && ../../build/win32-debug/src/engine/eve run --mcp-port 8791
+# 2) 走 TCP 单行 JSON-RPC：initialize -> tools/call eve_gameplay
+#    op=instances 拿到 instance uuid，再用同一 uuid observe / actions / submit / events
+```
 
 ### Prompts
 
@@ -440,7 +497,13 @@ capture / save / runScript / reloadResource / hotReloadStatus`。脚本可定义
 
 ```bash
 ./build/<platform>-debug/test/unit_test --testcase='^devtools\.(mcp|ai)\..*$'
+./build/<platform>-debug/test/unit_test --testcase='^gameplay\.control\.(inventory|economy|dialogue|card).*$'
 ```
+
+玩法域用例：`gameplay.control.inventory*`（vocabulary 对等、多实例路由、权限档位、修订号账本、
+JSON 门面、脚本发布）、`gameplay.control.economy*`（账本观察、上限浪费、未知类型、多账本隔离）、
+`gameplay.control.dialogue*`（节点/路由观察、start→select→advance 全流程、单实例发布规则）、
+`gameplay.control.card*`（手牌与支付边界观察、抽牌与零费出牌、作弊档位改属性）。
 
 新增用例：`devtools.mcp.stdioTransport`（stdio 握手 + tools/list）、
 `devtools.mcp.hostEditorBinding`（VM 注册、双向绑定、onChange、事件、
@@ -475,3 +538,6 @@ level 为 `engine`、detach 后关闭捕获）、`devtools.mcp.engineLineDropsSc
 - 与 `eve test` 场景脚本联动的 MCP 资源
 - AI 生成内容的静态校验（nut AST / 资源清单）
 - 编辑器 JSON：更多控件（image/视频预览、节点图）、多 OS 窗口、编辑器间拖拽
+- 玩法域：`npc_ai` 需要先有模块实例与脚本面（`NpcAiWorld` 目前只在模块内部与 editor 中被引用），
+  之后才有「游戏能发布 agent」的挂点；`rpg` / `rts` / `tactics` / `weapon` / `climbing` 已有
+  provider，但还只覆盖单实例路径，可补 `IGameplayInstanceCatalog` 让 `instances` 也能枚举它们
