@@ -5,6 +5,7 @@
 #include "common/ProcgenWorldQuery.h"
 #include "common/SquirrelBinding.h"
 #include "procgen/BiomeScript.h"
+#include "procgen/GridMeshGraphScript.h"
 #include "procgen/PointGraphScript.h"
 #include "procgen/ProcgenCapabilities.h"
 #include "procgen/RuntimeGenerationScript.h"
@@ -135,8 +136,8 @@ ssq::Table makeOwnedNativeProxy(HSQUIRRELVM vm, eve::Result<Ref>&& reference, Re
             false, false);
     }
 
-    const SQInteger top = sq_gettop(vm);
-    const size_t hashCode = eve::script::detail::squirrelTypeHash<T*>();
+    const SQInteger top      = sq_gettop(vm);
+    const size_t    hashCode = eve::script::detail::squirrelTypeHash<T*>();
     sq_pushobject(vm, ssq::detail::getClassObj(vm, hashCode));
     if (SQ_FAILED(sq_createinstance(vm, -1))) {
         sq_settop(vm, top);
@@ -198,6 +199,18 @@ ssq::Table makeOwnedPointSetProxy(HSQUIRRELVM vm, eve::Result<ProcgenPointSetHan
             return owner ? owner->releasePointSet(ref)
                          : procgenBindingFailure<void>(eve::DiagnosticCode::StaleHandle,
                                                        "Procgen module is no longer loaded", "pointSet");
+        });
+}
+
+ssq::Table makeOwnedGridProxy(HSQUIRRELVM vm, eve::Result<ProcgenGridHandleRef>&& reference) {
+    auto* module = Procgen::create();
+    return makeOwnedNativeProxy<Grid2D>(
+        vm, std::move(reference), [module](ProcgenGridHandleRef ref) { return module->resolve(ref); },
+        [](ProcgenGridHandleRef ref) {
+            auto* owner = ModuleManager::getInstance<Procgen>("Procgen");
+            return owner ? owner->release(ref)
+                         : procgenBindingFailure<void>(eve::DiagnosticCode::StaleHandle,
+                                                       "Procgen module is no longer loaded", "grid");
         });
 }
 
@@ -679,7 +692,7 @@ eve::Result<ProcgenPointSetHandleRef> Procgen::transformPoints3DHandle(ProcgenPo
                                                                        float translateY, float translateZ,
                                                                        float pitchDegrees, float yawDegrees,
                                                                        float rollDegrees, float scaleX, float scaleY,
-    float scaleZ) {
+                                                                       float scaleZ) {
     auto view = resolvePointSet(input);
     if (!view.isBound())
         return procgenBindingFailure<ProcgenPointSetHandleRef>(eve::DiagnosticCode::StaleHandle,
@@ -691,7 +704,7 @@ eve::Result<ProcgenPointSetHandleRef> Procgen::transformPoints3DHandle(ProcgenPo
 
 eve::Result<ProcgenPointSetHandleRef> Procgen::copyPointsHandle(ProcgenPointSetHandleRef source,
                                                                 ProcgenPointSetHandleRef targets,
-    bool inheritTargetAttributes) {
+                                                                bool                     inheritTargetAttributes) {
     auto sourceView = resolvePointSet(source);
     auto targetView = resolvePointSet(targets);
     if (!sourceView.isBound() || !targetView.isBound())
@@ -720,7 +733,7 @@ eve::Result<ProcgenPointSetHandleRef> Procgen::mathFloatAttributeHandle(ProcgenP
                                                                         const std::string&       attribute,
                                                                         const std::string&       outputAttribute,
                                                                         const std::string& operation, float operand,
-    float defaultValue) {
+                                                                        float defaultValue) {
     auto view = resolvePointSet(input);
     if (!view.isBound())
         return procgenBindingFailure<ProcgenPointSetHandleRef>(
@@ -772,7 +785,7 @@ eve::Result<ProcgenPointSetHandleRef> Procgen::densityCullHandle(ProcgenPointSet
 
 eve::Result<ProcgenPointSetHandleRef> Procgen::projectToWorldHandle(ProcgenPointSetHandleRef input, float maxY,
                                                                     float minY, std::uint64_t maskBits,
-    bool keepUnmatched) {
+                                                                    bool keepUnmatched) {
     auto points = resolvePointSet(input);
     if (!points.isBound())
         return procgenBindingFailure<ProcgenPointSetHandleRef>(eve::DiagnosticCode::StaleHandle,
@@ -789,7 +802,7 @@ eve::Result<ProcgenPointSetHandleRef> Procgen::projectToWorldHandle(ProcgenPoint
     output.reserve(points->points().size());
     for (size_t sourceIndex = 0; sourceIndex < points->points().size(); ++sourceIndex) {
         const auto& source      = points->points()[sourceIndex];
-        auto queryResult = query->projectDown(source.x, source.z, maxY, minY, maskBits);
+        auto        queryResult = query->projectDown(source.x, source.z, maxY, minY, maskBits);
         if (!queryResult.ok())
             return procgenBindingFailure<ProcgenPointSetHandleRef>(
                 eve::DiagnosticCode::Failed, "world-query provider failed to execute projection", "worldQuery");
@@ -800,12 +813,12 @@ eve::Result<ProcgenPointSetHandleRef> Procgen::projectToWorldHandle(ProcgenPoint
             continue;
         }
         ProcgenPoint projected = source;
-        projected.x = hit.x;
-        projected.y = hit.y;
-        projected.z = hit.z;
-        projected.normalX = hit.normalX;
-        projected.normalY = hit.normalY;
-        projected.normalZ = hit.normalZ;
+        projected.x            = hit.x;
+        projected.y            = hit.y;
+        projected.z            = hit.z;
+        projected.normalX      = hit.normalX;
+        projected.normalY      = hit.normalY;
+        projected.normalZ      = hit.normalZ;
         const int outputIndex =
             std::move(output.appendPointFrom(*points, sourceIndex)).expect("projectToWorld attribute schema");
         output.mutablePoint(size_t(outputIndex)) = std::move(projected);
@@ -1342,6 +1355,14 @@ eve::script::Borrowed<SplinePath> Procgen::resolveSplinePath(ProcgenSplinePathHa
     return splinePaths_.resolve(reference);
 }
 
+eve::script::Borrowed<GridGraph> Procgen::resolveGridGraph(ProcgenGridGraphHandleRef reference) noexcept {
+    return gridGraphs_.resolve(reference);
+}
+
+eve::script::Borrowed<MeshGraph> Procgen::resolveMeshGraph(ProcgenMeshGraphHandleRef reference) noexcept {
+    return meshGraphs_.resolve(reference);
+}
+
 eve::script::Borrowed<BiomeRules> Procgen::resolveBiomeRules(ProcgenBiomeRulesHandleRef reference) noexcept {
     return biomeRules_.resolve(reference);
 }
@@ -1368,6 +1389,8 @@ eve::Result<void> Procgen::release(ProcgenDynamicMeshUvPaintSessionHandleRef ref
     return dynamicMeshUvPaintSessions_.erase(reference);
 }
 eve::Result<void> Procgen::release(ProcgenSplinePathHandleRef reference) { return splinePaths_.erase(reference); }
+eve::Result<void> Procgen::release(ProcgenGridGraphHandleRef reference) { return gridGraphs_.erase(reference); }
+eve::Result<void> Procgen::release(ProcgenMeshGraphHandleRef reference) { return meshGraphs_.erase(reference); }
 eve::Result<void> Procgen::release(ProcgenBiomeRulesHandleRef reference) { return biomeRules_.erase(reference); }
 eve::Result<void> Procgen::release(ProcgenShapeGrammarHandleRef reference) { return shapeGrammars_.erase(reference); }
 eve::Result<void> Procgen::release(ProcgenLSystemHandleRef reference) { return lsystems_.erase(reference); }
@@ -1386,6 +1409,8 @@ bool Procgen::isStale(ProcgenDynamicMeshUvPaintSessionHandleRef reference) const
     return dynamicMeshUvPaintSessions_.isStale(reference);
 }
 bool Procgen::isStale(ProcgenSplinePathHandleRef reference) const noexcept { return splinePaths_.isStale(reference); }
+bool Procgen::isStale(ProcgenGridGraphHandleRef reference) const noexcept { return gridGraphs_.isStale(reference); }
+bool Procgen::isStale(ProcgenMeshGraphHandleRef reference) const noexcept { return meshGraphs_.isStale(reference); }
 bool Procgen::isStale(ProcgenBiomeRulesHandleRef reference) const noexcept { return biomeRules_.isStale(reference); }
 bool Procgen::isStale(ProcgenShapeGrammarHandleRef reference) const noexcept {
     return shapeGrammars_.isStale(reference);
@@ -1624,7 +1649,7 @@ std::string Procgen::getSystemDebugDiffReport(const std::string& name) const {
     for (const auto& stageName : current->second.debugStageOrder) {
         const int  currentCount = current->second.debugStages.at(stageName).getCount();
         const auto oldStage     = previous->second.debugStages.find(stageName);
-        const int oldCount = oldStage == previous->second.debugStages.end() ? 0 : oldStage->second.getCount();
+        const int  oldCount     = oldStage == previous->second.debugStages.end() ? 0 : oldStage->second.getCount();
         report << "\n  debug " << stageName << " points=" << currentCount << " delta=";
         if (currentCount >= oldCount) report << "+";
         report << currentCount - oldCount;
@@ -1637,7 +1662,7 @@ std::string Procgen::getSystemDebugDiffReport(const std::string& name) const {
     return report.str();
 }
 
-bool Procgen::runGenerate(const std::string &algorithmId, const Params &params, Grid2D &out) {
+bool Procgen::runGenerate(const std::string& algorithmId, const Params& params, Grid2D& out) {
     lastError_.clear();
     GeneratorRegistry::instance().registerBuiltins();
     if (!GeneratorRegistry::instance().generate(algorithmId, params, out, lastError_)) {
@@ -1710,18 +1735,18 @@ eve::Result<void> Procgen::applyToLayer(ProcgenGridHandleRef grid, const std::st
     return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
 }
 
-void Procgen::setPaletteGid(const std::string &palette, const std::string &semantic, int gid) {
+void Procgen::setPaletteGid(const std::string& palette, const std::string& semantic, int gid) {
     palettes_.setGid(palette, semantic, gid);
 }
 
-int Procgen::getPaletteGid(const std::string &palette, const std::string &semantic) const {
+int Procgen::getPaletteGid(const std::string& palette, const std::string& semantic) const {
     return palettes_.getGid(palette, semantic);
 }
 
 namespace {
 
-const ParamDescriptor *algorithmParam(const std::string &algorithmId, int index) {
-    const GeneratorDescriptor *descriptor = GeneratorRegistry::instance().descriptor(algorithmId);
+const ParamDescriptor* algorithmParam(const std::string& algorithmId, int index) {
+    const GeneratorDescriptor* descriptor = GeneratorRegistry::instance().descriptor(algorithmId);
     if (!descriptor || index < 0 || index >= int(descriptor->params.size())) return nullptr;
     return &descriptor->params[size_t(index)];
 }
@@ -1739,55 +1764,55 @@ std::string Procgen::getAlgorithmId(int index) const {
     return algorithmIdsCache_[size_t(index)];
 }
 
-bool Procgen::hasAlgorithm(const std::string &algorithmId) const {
+bool Procgen::hasAlgorithm(const std::string& algorithmId) const {
     return GeneratorRegistry::instance().has(algorithmId);
 }
 
 eve::Result<RecipeDescriptor> Procgen::getAlgorithmSchema(const std::string& algorithmId) const {
-    const RecipeDescriptor *schema = GeneratorRegistry::instance().descriptor(algorithmId);
+    const RecipeDescriptor* schema = GeneratorRegistry::instance().descriptor(algorithmId);
     if (!schema)
         return procgenBindingFailure<RecipeDescriptor>(eve::DiagnosticCode::NotFound, "algorithm schema was not found",
                                                        "algorithm");
     return eve::Result<RecipeDescriptor>::success(*schema);
 }
 
-std::string Procgen::getAlgorithmDisplayName(const std::string &algorithmId) const {
-    const GeneratorDescriptor *descriptor = GeneratorRegistry::instance().descriptor(algorithmId);
+std::string Procgen::getAlgorithmDisplayName(const std::string& algorithmId) const {
+    const GeneratorDescriptor* descriptor = GeneratorRegistry::instance().descriptor(algorithmId);
     return descriptor ? descriptor->displayName : std::string{};
 }
 
-std::string Procgen::getAlgorithmCategory(const std::string &algorithmId) const {
-    const GeneratorDescriptor *descriptor = GeneratorRegistry::instance().descriptor(algorithmId);
+std::string Procgen::getAlgorithmCategory(const std::string& algorithmId) const {
+    const GeneratorDescriptor* descriptor = GeneratorRegistry::instance().descriptor(algorithmId);
     return descriptor ? descriptor->category : std::string{};
 }
 
-int Procgen::getAlgorithmParamCount(const std::string &algorithmId) const {
-    const GeneratorDescriptor *descriptor = GeneratorRegistry::instance().descriptor(algorithmId);
+int Procgen::getAlgorithmParamCount(const std::string& algorithmId) const {
+    const GeneratorDescriptor* descriptor = GeneratorRegistry::instance().descriptor(algorithmId);
     return descriptor ? int(descriptor->params.size()) : 0;
 }
 
-std::string Procgen::getAlgorithmParamKey(const std::string &algorithmId, int index) const {
-    const ParamDescriptor *param = algorithmParam(algorithmId, index);
+std::string Procgen::getAlgorithmParamKey(const std::string& algorithmId, int index) const {
+    const ParamDescriptor* param = algorithmParam(algorithmId, index);
     return param ? param->key : std::string{};
 }
 
-std::string Procgen::getAlgorithmParamLabel(const std::string &algorithmId, int index) const {
-    const ParamDescriptor *param = algorithmParam(algorithmId, index);
+std::string Procgen::getAlgorithmParamLabel(const std::string& algorithmId, int index) const {
+    const ParamDescriptor* param = algorithmParam(algorithmId, index);
     return param ? param->displayName : std::string{};
 }
 
-std::string Procgen::getAlgorithmParamDescription(const std::string &algorithmId, int index) const {
-    const ParamDescriptor *param = algorithmParam(algorithmId, index);
+std::string Procgen::getAlgorithmParamDescription(const std::string& algorithmId, int index) const {
+    const ParamDescriptor* param = algorithmParam(algorithmId, index);
     return param ? param->description : std::string{};
 }
 
-std::string Procgen::getAlgorithmParamCategory(const std::string &algorithmId, int index) const {
-    const ParamDescriptor *param = algorithmParam(algorithmId, index);
+std::string Procgen::getAlgorithmParamCategory(const std::string& algorithmId, int index) const {
+    const ParamDescriptor* param = algorithmParam(algorithmId, index);
     return param ? param->category : std::string{};
 }
 
-std::string Procgen::getAlgorithmParamKind(const std::string &algorithmId, int index) const {
-    const ParamDescriptor *param = algorithmParam(algorithmId, index);
+std::string Procgen::getAlgorithmParamKind(const std::string& algorithmId, int index) const {
+    const ParamDescriptor* param = algorithmParam(algorithmId, index);
     if (!param) return {};
     switch (param->kind) {
         case ParamKind::Integer: return "int";
@@ -1799,49 +1824,48 @@ std::string Procgen::getAlgorithmParamKind(const std::string &algorithmId, int i
     return {};
 }
 
-std::string Procgen::getAlgorithmParamDefault(const std::string &algorithmId, int index) const {
-    const ParamDescriptor *param = algorithmParam(algorithmId, index);
+std::string Procgen::getAlgorithmParamDefault(const std::string& algorithmId, int index) const {
+    const ParamDescriptor* param = algorithmParam(algorithmId, index);
     return param ? param->defaultValue : std::string{};
 }
 
-bool Procgen::algorithmParamHasMinimum(const std::string &algorithmId, int index) const {
-    const ParamDescriptor *param = algorithmParam(algorithmId, index);
+bool Procgen::algorithmParamHasMinimum(const std::string& algorithmId, int index) const {
+    const ParamDescriptor* param = algorithmParam(algorithmId, index);
     return param && param->hasMinimum;
 }
 
-bool Procgen::algorithmParamHasMaximum(const std::string &algorithmId, int index) const {
-    const ParamDescriptor *param = algorithmParam(algorithmId, index);
+bool Procgen::algorithmParamHasMaximum(const std::string& algorithmId, int index) const {
+    const ParamDescriptor* param = algorithmParam(algorithmId, index);
     return param && param->hasMaximum;
 }
 
-float Procgen::getAlgorithmParamMinimum(const std::string &algorithmId, int index) const {
-    const ParamDescriptor *param = algorithmParam(algorithmId, index);
+float Procgen::getAlgorithmParamMinimum(const std::string& algorithmId, int index) const {
+    const ParamDescriptor* param = algorithmParam(algorithmId, index);
     return param ? float(param->minimum) : 0.f;
 }
 
-float Procgen::getAlgorithmParamMaximum(const std::string &algorithmId, int index) const {
-    const ParamDescriptor *param = algorithmParam(algorithmId, index);
+float Procgen::getAlgorithmParamMaximum(const std::string& algorithmId, int index) const {
+    const ParamDescriptor* param = algorithmParam(algorithmId, index);
     return param ? float(param->maximum) : 0.f;
 }
 
-float Procgen::getAlgorithmParamStep(const std::string &algorithmId, int index) const {
-    const ParamDescriptor *param = algorithmParam(algorithmId, index);
+float Procgen::getAlgorithmParamStep(const std::string& algorithmId, int index) const {
+    const ParamDescriptor* param = algorithmParam(algorithmId, index);
     return param ? float(param->step) : 0.f;
 }
 
-bool Procgen::isAlgorithmParamAdvanced(const std::string &algorithmId, int index) const {
-    const ParamDescriptor *param = algorithmParam(algorithmId, index);
+bool Procgen::isAlgorithmParamAdvanced(const std::string& algorithmId, int index) const {
+    const ParamDescriptor* param = algorithmParam(algorithmId, index);
     return param && param->advanced;
 }
 
-int Procgen::getAlgorithmParamChoiceCount(const std::string &algorithmId, int index) const {
-    const ParamDescriptor *param = algorithmParam(algorithmId, index);
+int Procgen::getAlgorithmParamChoiceCount(const std::string& algorithmId, int index) const {
+    const ParamDescriptor* param = algorithmParam(algorithmId, index);
     return param ? int(param->choices.size()) : 0;
 }
 
-std::string Procgen::getAlgorithmParamChoice(const std::string &algorithmId, int paramIndex,
-                                             int choiceIndex) const {
-    const ParamDescriptor *param = algorithmParam(algorithmId, paramIndex);
+std::string Procgen::getAlgorithmParamChoice(const std::string& algorithmId, int paramIndex, int choiceIndex) const {
+    const ParamDescriptor* param = algorithmParam(algorithmId, paramIndex);
     if (!param || choiceIndex < 0 || choiceIndex >= int(param->choices.size())) return {};
     return param->choices[size_t(choiceIndex)];
 }
@@ -1928,12 +1952,12 @@ eve::Result<ProcgenNormalImageHandleRef> Procgen::generateNormalImageHandle(cons
         return procgenBindingFailure<ProcgenNormalImageHandleRef>(eve::DiagnosticCode::StaleHandle,
                                                                   "generated albedo image handle is stale", "image");
     }
-    const int w = albedo->getWidth();
-    const int h = albedo->getHeight();
+    const int          w  = albedo->getWidth();
+    const int          h  = albedo->getHeight();
     auto*              px = static_cast<const uint8_t*>(albedo->getData());
     std::vector<float> height(size_t(w * h));
     for (int i = 0; i < w * h; ++i) {
-        const size_t o = size_t(i) * 4u;
+        const size_t o    = size_t(i) * 4u;
         height[size_t(i)] = (float(px[o]) * 0.299f + float(px[o + 1]) * 0.587f + float(px[o + 2]) * 0.114f) / 255.f;
     }
     const bool  seamless = input->getInt("seamless", 1) != 0;
@@ -2001,14 +2025,14 @@ std::string Procgen::getTextureRecipeId(int index) const {
     return textureRecipeIdsCache_[size_t(index)];
 }
 
-bool Procgen::hasTextureRecipe(const std::string &recipeId) const {
+bool Procgen::hasTextureRecipe(const std::string& recipeId) const {
     TextureRecipeRegistry::instance().registerBuiltins();
     return TextureRecipeRegistry::instance().has(recipeId);
 }
 
 eve::Result<RecipeDescriptor> Procgen::getTextureRecipeSchema(const std::string& recipeId) const {
     TextureRecipeRegistry::instance().registerBuiltins();
-    const RecipeDescriptor *schema = TextureRecipeRegistry::instance().descriptor(recipeId);
+    const RecipeDescriptor* schema = TextureRecipeRegistry::instance().descriptor(recipeId);
     if (!schema)
         return procgenBindingFailure<RecipeDescriptor>(eve::DiagnosticCode::NotFound,
                                                        "texture recipe schema was not found", "recipe");
@@ -2140,14 +2164,14 @@ std::string Procgen::getPbrRecipeId(int index) const {
     return pbrRecipeIdsCache_[size_t(index)];
 }
 
-bool Procgen::hasPbrRecipe(const std::string &recipeId) const {
+bool Procgen::hasPbrRecipe(const std::string& recipeId) const {
     PbrRecipeRegistry::instance().registerPbrBuiltins();
     return PbrRecipeRegistry::instance().has(recipeId);
 }
 
 eve::Result<RecipeDescriptor> Procgen::getPbrRecipeSchema(const std::string& recipeId) const {
     PbrRecipeRegistry::instance().registerPbrBuiltins();
-    const RecipeDescriptor *schema = PbrRecipeRegistry::instance().descriptor(recipeId);
+    const RecipeDescriptor* schema = PbrRecipeRegistry::instance().descriptor(recipeId);
     if (!schema)
         return procgenBindingFailure<RecipeDescriptor>(eve::DiagnosticCode::NotFound, "PBR recipe schema was not found",
                                                        "recipe");
@@ -2346,14 +2370,14 @@ std::string Procgen::getMeshRecipeId(int index) const {
     return meshRecipeIdsCache_[size_t(index)];
 }
 
-bool Procgen::hasMeshRecipe(const std::string &recipeId) const {
+bool Procgen::hasMeshRecipe(const std::string& recipeId) const {
     MeshRecipeRegistry::instance().registerBuiltins();
     return MeshRecipeRegistry::instance().has(recipeId);
 }
 
 eve::Result<RecipeDescriptor> Procgen::getMeshRecipeSchema(const std::string& recipeId) const {
     MeshRecipeRegistry::instance().registerBuiltins();
-    const RecipeDescriptor *schema = MeshRecipeRegistry::instance().descriptor(recipeId);
+    const RecipeDescriptor* schema = MeshRecipeRegistry::instance().descriptor(recipeId);
     if (!schema)
         return procgenBindingFailure<RecipeDescriptor>(eve::DiagnosticCode::NotFound,
                                                        "mesh recipe schema was not found", "recipe");
@@ -2397,8 +2421,8 @@ eve::Result<ProcgenHeightmapHandleRef> Procgen::newHeightmapHandle(int width, in
 
 eve::Result<ProcgenHeightmapHandleRef> Procgen::adoptHeightmap(Heightmap heightmap) {
     if (heightmap.getWidth() <= 0 || heightmap.getHeight() <= 0)
-        return procgenBindingFailure<ProcgenHeightmapHandleRef>(
-            eve::DiagnosticCode::InvalidArgument, "decoded heightmap has no samples", "heightmap");
+        return procgenBindingFailure<ProcgenHeightmapHandleRef>(eve::DiagnosticCode::InvalidArgument,
+                                                                "decoded heightmap has no samples", "heightmap");
     return ownProcgenObject(ownership_->heightmaps, std::make_unique<Heightmap>(std::move(heightmap)));
 }
 
@@ -2528,78 +2552,86 @@ TerrainLayers* Procgen::analyzeTerrainScaled(Heightmap* heightmap, float riverTh
         lastError_ = "analyzeTerrainScaled: coordinateScale must be positive";
         return nullptr;
     }
-    HydrologyMap hydrology = TerrainPipeline::buildHydrology(
-        *heightmap, riverThreshold, seaLevel, coordinateScale);
-    ClimateMap climate = TerrainPipeline::buildClimate(
-        *heightmap, hydrology, seaLevel, latitude, coordinateScale);
+    HydrologyMap hydrology = TerrainPipeline::buildHydrology(*heightmap, riverThreshold, seaLevel, coordinateScale);
+    ClimateMap   climate   = TerrainPipeline::buildClimate(*heightmap, hydrology, seaLevel, latitude, coordinateScale);
     return new TerrainLayers(std::move(hydrology), std::move(climate));
 }
 
-data::ByteData *Procgen::bakeTerrainAsset(Heightmap *heightmap, TerrainLayers *layers,
-                                          int chunkSize) {
+data::ByteData* Procgen::bakeTerrainAsset(Heightmap* heightmap, TerrainLayers* layers, int chunkSize) {
     lastError_.clear();
     if (!heightmap || !layers) {
         lastError_ = "bakeTerrainAsset: heightmap and layers are required";
         return nullptr;
     }
     std::vector<uint8_t> bytes;
-    if (!TerrainAsset::bake(*heightmap, layers->hydrology(), layers->climate(), chunkSize, bytes,
-                            &lastError_)) return nullptr;
+    if (!TerrainAsset::bake(*heightmap, layers->hydrology(), layers->climate(), chunkSize, bytes, &lastError_))
+        return nullptr;
     return new data::ByteData(bytes.data(), bytes.size());
 }
 
-TerrainMeshChunk *Procgen::buildTerrainChunk(Heightmap *heightmap, TerrainLayers *layers,
-                                             int originX, int originY, int cellsX, int cellsY,
-                                             int lod, float cellSize, float heightScale,
+TerrainMeshChunk* Procgen::buildTerrainChunk(Heightmap* heightmap, TerrainLayers* layers, int originX, int originY,
+                                             int cellsX, int cellsY, int lod, float cellSize, float heightScale,
                                              float skirtDepth) {
     lastError_.clear();
-    if (!heightmap) { lastError_ = "buildTerrainChunk: heightmap is required"; return nullptr; }
+    if (!heightmap) {
+        lastError_ = "buildTerrainChunk: heightmap is required";
+        return nullptr;
+    }
     TerrainMeshSettings settings;
-    settings.originX = originX; settings.originY = originY;
-    settings.cellsX = cellsX; settings.cellsY = cellsY; settings.lod = lod;
-    settings.cellSize = cellSize; settings.heightScale = heightScale; settings.skirtDepth = skirtDepth;
-    auto *chunk = new TerrainMeshChunk();
+    settings.originX     = originX;
+    settings.originY     = originY;
+    settings.cellsX      = cellsX;
+    settings.cellsY      = cellsY;
+    settings.lod         = lod;
+    settings.cellSize    = cellSize;
+    settings.heightScale = heightScale;
+    settings.skirtDepth  = skirtDepth;
+    auto* chunk          = new TerrainMeshChunk();
     if (!TerrainMeshBuilder::build(*heightmap, layers, settings, *chunk, &lastError_)) {
-        delete chunk; return nullptr;
+        delete chunk;
+        return nullptr;
     }
     return chunk;
 }
 
-int Procgen::selectTerrainLod(Heightmap *heightmap, int originX, int originY,
-                              int cellsX, int cellsY, int maxLod, float cellSize,
-                              float heightScale, float cameraDistance, float viewportHeight,
+int Procgen::selectTerrainLod(Heightmap* heightmap, int originX, int originY, int cellsX, int cellsY, int maxLod,
+                              float cellSize, float heightScale, float cameraDistance, float viewportHeight,
                               float verticalFovDegrees, float targetPixelError) {
     lastError_.clear();
-    if (!heightmap) { lastError_ = "selectTerrainLod: heightmap is required"; return -1; }
+    if (!heightmap) {
+        lastError_ = "selectTerrainLod: heightmap is required";
+        return -1;
+    }
     TerrainMeshSettings settings;
-    settings.originX = originX; settings.originY = originY;
-    settings.cellsX = cellsX; settings.cellsY = cellsY;
-    settings.cellSize = cellSize; settings.heightScale = heightScale;
-    const int lod = TerrainLodSelector::select(*heightmap, settings, maxLod, cameraDistance,
-                                               viewportHeight, verticalFovDegrees,
-                                               targetPixelError);
+    settings.originX     = originX;
+    settings.originY     = originY;
+    settings.cellsX      = cellsX;
+    settings.cellsY      = cellsY;
+    settings.cellSize    = cellSize;
+    settings.heightScale = heightScale;
+    const int lod        = TerrainLodSelector::select(*heightmap, settings, maxLod, cameraDistance, viewportHeight,
+                                                      verticalFovDegrees, targetPixelError);
     if (lod < 0) lastError_ = "selectTerrainLod: invalid bounds or projection settings";
     return lod;
 }
 
-graphics::Mesh *Procgen::generateTerrainChunkMesh(TerrainMeshChunk *chunk,
-                                                   graphics::Graphics *gfx) {
+graphics::Mesh* Procgen::generateTerrainChunkMesh(TerrainMeshChunk* chunk, graphics::Graphics* gfx) {
     lastError_.clear();
     if (!chunk || !gfx || chunk->mesh().empty()) {
         lastError_ = "generateTerrainChunkMesh: chunk and graphics are required";
         return nullptr;
     }
-    const MeshBuild &mesh = chunk->mesh();
+    const MeshBuild& mesh = chunk->mesh();
     return gfx->newMeshFromArrays(mesh.positions().data(), mesh.normals().data(), mesh.uvs().data(),
                                   mesh.getVertexCount(), mesh.indices().data(), mesh.getIndexCount());
 }
 
 graphics::Mesh* Procgen::generateTerrainRiverMesh(Heightmap* heightmap, TerrainLayers* layers, graphics::Graphics* gfx,
                                                   int originX, int originY, int cellsX, int cellsY, float cellSize,
-                                                   float heightScale, float minWidth, float maxWidth,
-                                                   float heightOffset) {
+                                                  float heightScale, float minWidth, float maxWidth,
+                                                  float heightOffset) {
     return generateTerrainRiverMeshAdvanced(heightmap, layers, gfx, originX, originY, cellsX, cellsY, cellSize,
-        heightScale, minWidth, maxWidth, heightOffset, 0.f, 0.30f);
+                                            heightScale, minWidth, maxWidth, heightOffset, 0.f, 0.30f);
 }
 
 graphics::Mesh* Procgen::generateTerrainRiverMeshAdvanced(Heightmap* heightmap, TerrainLayers* layers,
@@ -2621,7 +2653,7 @@ graphics::Mesh* Procgen::generateTerrainRiverMeshAdvanced(Heightmap* heightmap, 
     settings.heightScale     = heightScale;
     settings.minWidth        = minWidth;
     settings.maxWidth        = maxWidth;
-    settings.heightOffset = heightOffset;
+    settings.heightOffset    = heightOffset;
     settings.minSurfaceSlope = minSurfaceSlope;
     settings.maxSurfaceSlope = maxSurfaceSlope;
     MeshBuild river;
@@ -2655,18 +2687,18 @@ graphics::Mesh* Procgen::generateTerrainLakeMesh(Heightmap* heightmap, TerrainLa
                                   lake.getVertexCount(), lake.indices().data(), lake.getIndexCount());
 }
 
-image::ImageData *Procgen::generateTerrainSplatMap(TerrainMeshChunk *chunk) {
+image::ImageData* Procgen::generateTerrainSplatMap(TerrainMeshChunk* chunk) {
     lastError_.clear();
     if (!chunk || chunk->getSplatWidth() <= 0 || chunk->getSplatHeight() <= 0) {
         lastError_ = "generateTerrainSplatMap: a built terrain chunk is required";
         return nullptr;
     }
-    auto *image = new image::ImageData(chunk->getSplatWidth(), chunk->getSplatHeight(), "RGBA8");
-    auto *pixels = static_cast<uint8_t *>(image->getData());
+    auto* image  = new image::ImageData(chunk->getSplatWidth(), chunk->getSplatHeight(), "RGBA8");
+    auto* pixels = static_cast<uint8_t*>(image->getData());
     for (int vertex = 0; vertex < chunk->getBaseVertexCount(); ++vertex) {
-        std::array<int, 4> quantized{};
+        std::array<int, 4>   quantized{};
         std::array<float, 4> remainder{};
-        int total = 0;
+        int                  total = 0;
         for (int channel = 0; channel < 4; ++channel) {
             const float scaled = std::clamp(chunk->getMaterialWeight(vertex, channel), 0.f, 1.f) * 255.f;
             quantized[channel] = int(std::floor(scaled));
@@ -2685,24 +2717,24 @@ image::ImageData *Procgen::generateTerrainSplatMap(TerrainMeshChunk *chunk) {
     return image;
 }
 
-image::ImageData *Procgen::generateTerrainAlbedoMap(TerrainMeshChunk *chunk) {
+image::ImageData* Procgen::generateTerrainAlbedoMap(TerrainMeshChunk* chunk) {
     lastError_.clear();
     if (!chunk || chunk->getSplatWidth() <= 0 || chunk->getSplatHeight() <= 0) {
         lastError_ = "generateTerrainAlbedoMap: a built terrain chunk is required";
         return nullptr;
     }
     static constexpr std::array<std::array<float, 3>, 4> palette{{
-        {{0.55f, 0.40f, 0.22f}}, // sand, dry soil, and river sediment
-        {{0.15f, 0.38f, 0.12f}}, // vegetation
-        {{0.36f, 0.35f, 0.33f}}, // exposed rock
-        {{0.88f, 0.91f, 0.94f}}, // snow
+        {{0.55f, 0.40f, 0.22f}},  // sand, dry soil, and river sediment
+        {{0.15f, 0.38f, 0.12f}},  // vegetation
+        {{0.36f, 0.35f, 0.33f}},  // exposed rock
+        {{0.88f, 0.91f, 0.94f}},  // snow
     }};
-    auto *image = new image::ImageData(chunk->getSplatWidth(), chunk->getSplatHeight(), "RGBA8");
-    auto *pixels = static_cast<uint8_t *>(image->getData());
+    auto* image  = new image::ImageData(chunk->getSplatWidth(), chunk->getSplatHeight(), "RGBA8");
+    auto* pixels = static_cast<uint8_t*>(image->getData());
     for (int vertex = 0; vertex < chunk->getBaseVertexCount(); ++vertex) {
-        const int biome = chunk->getBiome(vertex);
+        const int            biome = chunk->getBiome(vertex);
         std::array<float, 3> semanticColor{};
-        bool useSemanticColor = true;
+        bool                 useSemanticColor = true;
         if (biome == int(Biome::Ocean))
             semanticColor = {0.035f, 0.16f, 0.25f};
         else if (biome == int(Biome::River))
@@ -2730,33 +2762,32 @@ image::ImageData *Procgen::generateTerrainAlbedoMap(TerrainMeshChunk *chunk) {
 }
 
 namespace {
-float diagnosticScale(const std::vector<float> &values, float exposure) {
+float diagnosticScale(const std::vector<float>& values, float exposure) {
     if (std::isfinite(exposure) && exposure > 0.f) return exposure;
     std::vector<float> positive;
     positive.reserve(values.size());
-    for (float value : values) if (std::isfinite(value) && value > 0.f) positive.push_back(value);
+    for (float value : values)
+        if (std::isfinite(value) && value > 0.f) positive.push_back(value);
     if (positive.empty()) return 1.f;
-    const size_t percentile = std::min(positive.size() - 1,
-        size_t(std::floor(float(positive.size() - 1) * 0.99f)));
+    const size_t percentile = std::min(positive.size() - 1, size_t(std::floor(float(positive.size() - 1) * 0.99f)));
     std::nth_element(positive.begin(), positive.begin() + ptrdiff_t(percentile), positive.end());
     return 1.f / std::max(1e-8f, positive[percentile]);
 }
 
 enum class ErosionImageMode { Combined, Wear, Deposit };
 
-image::ImageData *erosionDiagnosticImage(TerrainErosionMap *map, float exposure,
-                                         ErosionImageMode mode) {
-    if (!map || map->width <= 0 || map->height <= 0 ||
-        map->wear.size() != size_t(map->width) * size_t(map->height) ||
-        map->deposition.size() != map->wear.size()) return nullptr;
-    const float wearScale = diagnosticScale(map->wear, exposure);
+image::ImageData* erosionDiagnosticImage(TerrainErosionMap* map, float exposure, ErosionImageMode mode) {
+    if (!map || map->width <= 0 || map->height <= 0 || map->wear.size() != size_t(map->width) * size_t(map->height) ||
+        map->deposition.size() != map->wear.size())
+        return nullptr;
+    const float wearScale    = diagnosticScale(map->wear, exposure);
     const float depositScale = diagnosticScale(map->deposition, exposure);
-    auto *result = new image::ImageData(map->width, map->height, "RGBA8");
-    auto *pixels = static_cast<uint8_t *>(result->getData());
+    auto*       result       = new image::ImageData(map->width, map->height, "RGBA8");
+    auto*       pixels       = static_cast<uint8_t*>(result->getData());
     for (size_t i = 0; i < map->wear.size(); ++i) {
-        const float wear = std::sqrt(std::clamp(map->wear[i] * wearScale, 0.f, 1.f));
+        const float wear    = std::sqrt(std::clamp(map->wear[i] * wearScale, 0.f, 1.f));
         const float deposit = std::sqrt(std::clamp(map->deposition[i] * depositScale, 0.f, 1.f));
-        float r = 0.025f, g = 0.035f, b = 0.050f;
+        float       r = 0.025f, g = 0.035f, b = 0.050f;
         if (mode == ErosionImageMode::Wear) {
             r += 0.95f * wear;
             g += 0.30f * wear;
@@ -2770,7 +2801,7 @@ image::ImageData *erosionDiagnosticImage(TerrainErosionMap *map, float exposure,
             g += 0.30f * wear + 0.78f * deposit;
             b += 0.035f * wear + 0.95f * deposit;
         }
-        pixels[i * 4u] = uint8_t(std::lround(std::clamp(r, 0.f, 1.f) * 255.f));
+        pixels[i * 4u]      = uint8_t(std::lround(std::clamp(r, 0.f, 1.f) * 255.f));
         pixels[i * 4u + 1u] = uint8_t(std::lround(std::clamp(g, 0.f, 1.f) * 255.f));
         pixels[i * 4u + 2u] = uint8_t(std::lround(std::clamp(b, 0.f, 1.f) * 255.f));
         pixels[i * 4u + 3u] = 255;
@@ -2779,35 +2810,34 @@ image::ImageData *erosionDiagnosticImage(TerrainErosionMap *map, float exposure,
 }
 }  // namespace
 
-image::ImageData *Procgen::generateTerrainErosionMap(TerrainErosionMap *erosion, float exposure) {
+image::ImageData* Procgen::generateTerrainErosionMap(TerrainErosionMap* erosion, float exposure) {
     lastError_.clear();
-    image::ImageData *result = erosionDiagnosticImage(erosion, exposure, ErosionImageMode::Combined);
+    image::ImageData* result = erosionDiagnosticImage(erosion, exposure, ErosionImageMode::Combined);
     if (!result) lastError_ = "generateTerrainErosionMap: valid erosion diagnostics are required";
     return result;
 }
 
-image::ImageData *Procgen::generateTerrainWearMap(TerrainErosionMap *erosion, float exposure) {
+image::ImageData* Procgen::generateTerrainWearMap(TerrainErosionMap* erosion, float exposure) {
     lastError_.clear();
-    image::ImageData *result = erosionDiagnosticImage(erosion, exposure, ErosionImageMode::Wear);
+    image::ImageData* result = erosionDiagnosticImage(erosion, exposure, ErosionImageMode::Wear);
     if (!result) lastError_ = "generateTerrainWearMap: valid erosion diagnostics are required";
     return result;
 }
 
-image::ImageData *Procgen::generateTerrainDepositionMap(
-    TerrainErosionMap *erosion, float exposure) {
+image::ImageData* Procgen::generateTerrainDepositionMap(TerrainErosionMap* erosion, float exposure) {
     lastError_.clear();
-    image::ImageData *result = erosionDiagnosticImage(erosion, exposure, ErosionImageMode::Deposit);
+    image::ImageData* result = erosionDiagnosticImage(erosion, exposure, ErosionImageMode::Deposit);
     if (!result) lastError_ = "generateTerrainDepositionMap: valid erosion diagnostics are required";
     return result;
 }
 
-graphics::Shader *Procgen::createTerrainMaterialShader(graphics::Graphics *gfx) {
+graphics::Shader* Procgen::createTerrainMaterialShader(graphics::Graphics* gfx) {
     lastError_.clear();
     if (!gfx) {
         lastError_ = "createTerrainMaterialShader: graphics is required";
         return nullptr;
     }
-    static const char *fragment = R"GLSL(#version 450
+    static const char* fragment = R"GLSL(#version 450
 layout(location=0) in vec3 vNormal;
 layout(location=1) in vec2 vUV;
 layout(location=2) in vec4 vTint;
@@ -2905,19 +2935,19 @@ void main() {
 )GLSL";
     try {
         return gfx->newMeshShader(fragment);
-    } catch (const std::exception &e) {
+    } catch (const std::exception& e) {
         lastError_ = std::string("createTerrainMaterialShader: ") + e.what();
         return nullptr;
     }
 }
 
-graphics::Shader *Procgen::createTerrainWaterShader(graphics::Graphics *gfx) {
+graphics::Shader* Procgen::createTerrainWaterShader(graphics::Graphics* gfx) {
     lastError_.clear();
     if (!gfx) {
         lastError_ = "createTerrainWaterShader: graphics is required";
         return nullptr;
     }
-    static const char *fragment = R"GLSL(#version 450
+    static const char* fragment = R"GLSL(#version 450
 layout(location=0) in vec3 vNormal;
 layout(location=1) in vec2 vUV;
 layout(location=2) in vec4 vTint;
@@ -2960,19 +2990,20 @@ void main() {
 )GLSL";
     try {
         return gfx->newMeshShader(fragment);
-    } catch (const std::exception &e) {
+    } catch (const std::exception& e) {
         lastError_ = std::string("createTerrainWaterShader: ") + e.what();
         return nullptr;
     }
 }
 
-void Procgen::expose(ssq::Table &table) {
+void Procgen::expose(ssq::Table& table) {
     const HSQUIRRELVM vm  = table.getHandle();
-    auto cls = table.addClass(name, Procgen::create, false);
+    auto              cls = table.addClass(name, Procgen::create, false);
     expose(cls);
     exposeBiomeRules(table);
     exposePointGraph(table);
     exposeMeshModifierGraph(table);
+    exposeGridMeshGraphs(table);
     exposeShapeGrammar(table);
 
     auto recipe = table.addClass<RecipeDescriptor>(
@@ -3026,15 +3057,55 @@ void Procgen::expose(ssq::Table &table) {
 
     auto grid =
         table.addClass<Grid2D>("ProcgenGrid2D", std::function<Grid2D*()>([]() -> Grid2D* { return nullptr; }), true);
-    grid.addFunc("resize", &Grid2D::resize);
+    const HSQUIRRELVM gridVm = grid.getHandle();
+    grid.addFunc("ownership", [](Grid2D* value) {
+        return nativeProxyReference<ProcgenGridHandleRef>(value).has_value() ? std::string("owned")
+                                                                            : std::string("value");
+    });
+    grid.addFunc("ownerEpoch", [](Grid2D* value) {
+        const auto reference = nativeProxyReference<ProcgenGridHandleRef>(value);
+        return reference ? static_cast<std::int64_t>(reference->ownerEpoch) : std::int64_t{0};
+    });
+    grid.addFunc("handle", [](Grid2D* value) {
+        const auto reference = nativeProxyReference<ProcgenGridHandleRef>(value);
+        return reference ? static_cast<std::int64_t>(reference->packed()) : std::int64_t{0};
+    });
+    grid.addFunc("isStale", [](Grid2D* value) {
+        const auto reference = nativeProxyReference<ProcgenGridHandleRef>(value);
+        return reference ? Procgen::isStale(*reference) : false;
+    });
+    grid.addFunc("release", [gridVm](Grid2D* value) {
+        const auto reference = nativeProxyReference<ProcgenGridHandleRef>(value);
+        if (!reference)
+            return eve::script::projectResult(
+                gridVm, procgenBindingFailure<void>(eve::DiagnosticCode::InvalidArgument,
+                                                     "grid value is not an owned procgen proxy", "grid"));
+        return eve::script::projectResult(gridVm, Procgen::release(*reference));
+    });
+    grid.addFunc("resize", [gridVm](Grid2D* value, int width, int height) {
+        value->resize(width, height);
+        return eve::script::projectResult(gridVm, eve::Result<void>::success());
+    });
     grid.addFunc("getWidth", &Grid2D::getWidth);
     grid.addFunc("getHeight", &Grid2D::getHeight);
-    grid.addFunc("setCell", &Grid2D::setCell);
+    grid.addFunc("setCell", [gridVm](Grid2D* value, int x, int y, int semantic) {
+        value->setCell(x, y, semantic);
+        return eve::script::projectResult(gridVm, eve::Result<void>::success());
+    });
     grid.addFunc("getCell", &Grid2D::getCell);
-    grid.addFunc("setDetail", &Grid2D::setDetail);
+    grid.addFunc("setDetail", [gridVm](Grid2D* value, int x, int y, int detail) {
+        value->setDetail(x, y, detail);
+        return eve::script::projectResult(gridVm, eve::Result<void>::success());
+    });
     grid.addFunc("getDetail", &Grid2D::getDetail);
-    grid.addFunc("fill", &Grid2D::fill);
-    grid.addFunc("setMeta", &Grid2D::setMeta);
+    grid.addFunc("fill", [gridVm](Grid2D* value, int semantic) {
+        value->fill(semantic);
+        return eve::script::projectResult(gridVm, eve::Result<void>::success());
+    });
+    grid.addFunc("setMeta", [gridVm](Grid2D* value, const std::string& key, const std::string& data) {
+        value->setMeta(key, data);
+        return eve::script::projectResult(gridVm, eve::Result<void>::success());
+    });
     grid.addFunc("getMeta", &Grid2D::getMeta);
     grid.addFunc("clearObjects", &Grid2D::clearObjects);
     grid.addFunc("addObjectAt", &Grid2D::addObjectAt);
@@ -3128,7 +3199,7 @@ void Procgen::expose(ssq::Table &table) {
     lsystem.addFunc("addRule", &LSystem::addRule);
     lsystem.addFunc("addRules", [](LSystem* ls, char symbol, ssq::Array productions, ssq::Array weights) {
         ls->addRules(symbol, productions.convert<std::string>(), weights.convert<float>());
-                    });
+    });
     lsystem.addFunc("clearRules", &LSystem::clearRules);
     lsystem.addFunc("setAngle", &LSystem::setAngle);
     lsystem.addFunc("setStep", &LSystem::setStep);
@@ -3178,8 +3249,7 @@ void Procgen::expose(ssq::Table &table) {
             throw std::out_of_range("getTargetId: index is out of range");
         return std::to_string(value->targetOrder[std::size_t(index)]);
     });
-    pointDelta.addFunc("getBaseFingerprint",
-                       [](PointDelta* value) { return std::to_string(value->baseFingerprint); });
+    pointDelta.addFunc("getBaseFingerprint", [](PointDelta* value) { return std::to_string(value->baseFingerprint); });
     pointDelta.addFunc("getTargetFingerprint",
                        [](PointDelta* value) { return std::to_string(value->targetFingerprint); });
 
@@ -3942,17 +4012,22 @@ void Procgen::expose(ssq::Table &table) {
     terrainMesh.addFunc("getGeometricError", &TerrainMeshChunk::getGeometricError);
     terrainMesh.addFunc("getBiome", &TerrainMeshChunk::getBiome);
     terrainMesh.addFunc("getMaterialWeight", &TerrainMeshChunk::getMaterialWeight);
-    terrainMesh.addFunc("getPositionX", [](const TerrainMeshChunk *c, int i) { return c ? c->mesh().getPositionX(i) : 0.f; });
-    terrainMesh.addFunc("getPositionY", [](const TerrainMeshChunk *c, int i) { return c ? c->mesh().getPositionY(i) : 0.f; });
-    terrainMesh.addFunc("getPositionZ", [](const TerrainMeshChunk *c, int i) { return c ? c->mesh().getPositionZ(i) : 0.f; });
-    terrainMesh.addFunc("getNormalX", [](const TerrainMeshChunk *c, int i) { return c ? c->mesh().getNormalX(i) : 0.f; });
-    terrainMesh.addFunc("getNormalY", [](const TerrainMeshChunk *c, int i) { return c ? c->mesh().getNormalY(i) : 0.f; });
-    terrainMesh.addFunc("getNormalZ", [](const TerrainMeshChunk *c, int i) { return c ? c->mesh().getNormalZ(i) : 0.f; });
-    terrainMesh.addFunc("getIndex", [](const TerrainMeshChunk *c, int i) { return c ? c->mesh().getIndex(i) : 0; });
+    terrainMesh.addFunc("getPositionX",
+                        [](const TerrainMeshChunk* c, int i) { return c ? c->mesh().getPositionX(i) : 0.f; });
+    terrainMesh.addFunc("getPositionY",
+                        [](const TerrainMeshChunk* c, int i) { return c ? c->mesh().getPositionY(i) : 0.f; });
+    terrainMesh.addFunc("getPositionZ",
+                        [](const TerrainMeshChunk* c, int i) { return c ? c->mesh().getPositionZ(i) : 0.f; });
+    terrainMesh.addFunc("getNormalX",
+                        [](const TerrainMeshChunk* c, int i) { return c ? c->mesh().getNormalX(i) : 0.f; });
+    terrainMesh.addFunc("getNormalY",
+                        [](const TerrainMeshChunk* c, int i) { return c ? c->mesh().getNormalY(i) : 0.f; });
+    terrainMesh.addFunc("getNormalZ",
+                        [](const TerrainMeshChunk* c, int i) { return c ? c->mesh().getNormalZ(i) : 0.f; });
+    terrainMesh.addFunc("getIndex", [](const TerrainMeshChunk* c, int i) { return c ? c->mesh().getIndex(i) : 0; });
 
     auto cloud = table.addClass<CloudField>(
-        "ProcgenCloudField",
-        std::function<CloudField *()>([]() -> CloudField * { return nullptr; }), true);
+        "ProcgenCloudField", std::function<CloudField*()>([]() -> CloudField* { return nullptr; }), true);
     cloud.addFunc("setSeed", &CloudField::setSeed);
     cloud.addFunc("setWorldScale", &CloudField::setWorldScale);
     cloud.addFunc("setCoverage", &CloudField::setCoverage);
@@ -3980,27 +4055,26 @@ void Procgen::expose(ssq::Table &table) {
     pbr.addFunc("getMetallic", &PbrTextureSet::getMetallic);
     pbr.addFunc("getHeight", &PbrTextureSet::getHeight);
     pbr.addFunc("getAo", &PbrTextureSet::getAo);
-    pbr.addFunc("getAlbedoWidth", [](const PbrTextureSet *s) { return s->albedo->getWidth(); });
-    pbr.addFunc("getAlbedoHeight", [](const PbrTextureSet *s) { return s->albedo->getHeight(); });
-    pbr.addFunc("getNormalWidth", [](const PbrTextureSet *s) { return s->normal->getWidth(); });
-    pbr.addFunc("getRoughnessWidth", [](const PbrTextureSet *s) { return s->roughness->getWidth(); });
-    pbr.addFunc("getMetallicWidth", [](const PbrTextureSet *s) { return s->metallic->getWidth(); });
-    pbr.addFunc("getHeightWidth", [](const PbrTextureSet *s) { return s->height->getWidth(); });
-    pbr.addFunc("getAoWidth", [](const PbrTextureSet *s) { return s->ao->getWidth(); });
-    pbr.addFunc("hasAllMaps", [](const PbrTextureSet *s) {
+    pbr.addFunc("getAlbedoWidth", [](const PbrTextureSet* s) { return s->albedo->getWidth(); });
+    pbr.addFunc("getAlbedoHeight", [](const PbrTextureSet* s) { return s->albedo->getHeight(); });
+    pbr.addFunc("getNormalWidth", [](const PbrTextureSet* s) { return s->normal->getWidth(); });
+    pbr.addFunc("getRoughnessWidth", [](const PbrTextureSet* s) { return s->roughness->getWidth(); });
+    pbr.addFunc("getMetallicWidth", [](const PbrTextureSet* s) { return s->metallic->getWidth(); });
+    pbr.addFunc("getHeightWidth", [](const PbrTextureSet* s) { return s->height->getWidth(); });
+    pbr.addFunc("getAoWidth", [](const PbrTextureSet* s) { return s->ao->getWidth(); });
+    pbr.addFunc("hasAllMaps", [](const PbrTextureSet* s) {
         return s->albedo && s->normal && s->roughness && s->metallic && s->height && s->ao;
     });
 }
 
-void Procgen::expose(ssq::Class &cls) {
+void Procgen::expose(ssq::Class& cls) {
     cls.addFunc("getName", &Procgen::getName);
     cls.addFunc("newParams", [vm = cls.getHandle()](Procgen*) -> ssq::Table {
         return makeOwnedProxy<ProcgenParamsHandleRef, ScriptProcgenParams>(
             vm, Procgen::newParamsHandle(), [](ProcgenParamsHandleRef ref) { return Procgen::release(ref); });
     });
     cls.addFunc("newGrid", [vm = cls.getHandle()](Procgen*, int width, int height) -> ssq::Table {
-        return makeOwnedProxy<ProcgenGridHandleRef, ScriptProcgenGrid>(
-            vm, Procgen::newGridHandle(width, height), [](ProcgenGridHandleRef ref) { return Procgen::release(ref); });
+        return makeOwnedGridProxy(vm, Procgen::newGridHandle(width, height));
     });
     cls.addFunc("newOutput", [vm = cls.getHandle()](Procgen*) -> ssq::Table {
         auto* module = Procgen::create();
@@ -4038,60 +4112,60 @@ void Procgen::expose(ssq::Class &cls) {
                                        ? owner->releasePointSet(ref)
                                        : procgenBindingFailure<void>(eve::DiagnosticCode::StaleHandle,
                                                                      "Procgen module is no longer loaded", "pointSet");
-                         });
-                 });
+                        });
+                });
     cls.addFunc("filterHeight", [vm = cls.getHandle()](Procgen* value, PointSet* input, float minimum, float maximum) {
-                    const auto reference = nativeProxyReference<ProcgenPointSetHandleRef>(input);
-                    if (!value || !reference)
-                        return makeOwnedPointSetProxy(
-                            vm, procgenBindingFailure<ProcgenPointSetHandleRef>(eve::DiagnosticCode::InvalidArgument,
+        const auto reference = nativeProxyReference<ProcgenPointSetHandleRef>(input);
+        if (!value || !reference)
+            return makeOwnedPointSetProxy(
+                vm, procgenBindingFailure<ProcgenPointSetHandleRef>(eve::DiagnosticCode::InvalidArgument,
                                                                     "filterHeight requires owned points", "points"));
-                    return makeOwnedPointSetProxy(vm, value->filterHeightHandle(*reference, minimum, maximum));
-                });
+        return makeOwnedPointSetProxy(vm, value->filterHeightHandle(*reference, minimum, maximum));
+    });
     cls.addFunc("filterDensity", [vm = cls.getHandle()](Procgen* value, PointSet* input, float minimum, float maximum) {
-                    const auto reference = nativeProxyReference<ProcgenPointSetHandleRef>(input);
-                    if (!value || !reference)
-                        return makeOwnedPointSetProxy(
-                            vm, procgenBindingFailure<ProcgenPointSetHandleRef>(eve::DiagnosticCode::InvalidArgument,
+        const auto reference = nativeProxyReference<ProcgenPointSetHandleRef>(input);
+        if (!value || !reference)
+            return makeOwnedPointSetProxy(
+                vm, procgenBindingFailure<ProcgenPointSetHandleRef>(eve::DiagnosticCode::InvalidArgument,
                                                                     "filterDensity requires owned points", "points"));
-                    return makeOwnedPointSetProxy(vm, value->filterDensityHandle(*reference, minimum, maximum));
-                });
+        return makeOwnedPointSetProxy(vm, value->filterDensityHandle(*reference, minimum, maximum));
+    });
     cls.addFunc("filterBox", [vm = cls.getHandle()](Procgen* value, PointSet* input, float minX, float minY, float minZ,
-                                       float maxX, float maxY, float maxZ) {
-                    const auto reference = nativeProxyReference<ProcgenPointSetHandleRef>(input);
-                    if (!value || !reference)
-                        return makeOwnedPointSetProxy(
-                            vm, procgenBindingFailure<ProcgenPointSetHandleRef>(eve::DiagnosticCode::InvalidArgument,
+                                                    float maxX, float maxY, float maxZ) {
+        const auto reference = nativeProxyReference<ProcgenPointSetHandleRef>(input);
+        if (!value || !reference)
+            return makeOwnedPointSetProxy(
+                vm, procgenBindingFailure<ProcgenPointSetHandleRef>(eve::DiagnosticCode::InvalidArgument,
                                                                     "filterBox requires owned points", "points"));
         return makeOwnedPointSetProxy(vm,
                                       value->filterBoxHandle(*reference, minX, minY, minZ, maxX, maxY, maxZ, false));
-                });
+    });
     cls.addFunc("excludeBox", [vm = cls.getHandle()](Procgen* value, PointSet* input, float minX, float minY,
                                                      float minZ, float maxX, float maxY, float maxZ) {
-                    const auto reference = nativeProxyReference<ProcgenPointSetHandleRef>(input);
-                    if (!value || !reference)
-                        return makeOwnedPointSetProxy(
-                            vm, procgenBindingFailure<ProcgenPointSetHandleRef>(eve::DiagnosticCode::InvalidArgument,
+        const auto reference = nativeProxyReference<ProcgenPointSetHandleRef>(input);
+        if (!value || !reference)
+            return makeOwnedPointSetProxy(
+                vm, procgenBindingFailure<ProcgenPointSetHandleRef>(eve::DiagnosticCode::InvalidArgument,
                                                                     "excludeBox requires owned points", "points"));
         return makeOwnedPointSetProxy(vm, value->filterBoxHandle(*reference, minX, minY, minZ, maxX, maxY, maxZ, true));
-                });
+    });
     cls.addFunc("filterSlope", [vm = cls.getHandle()](Procgen* value, PointSet* input, float minimum, float maximum) {
-                    const auto reference = nativeProxyReference<ProcgenPointSetHandleRef>(input);
-                    if (!value || !reference)
-                        return makeOwnedPointSetProxy(
-                            vm, procgenBindingFailure<ProcgenPointSetHandleRef>(eve::DiagnosticCode::InvalidArgument,
+        const auto reference = nativeProxyReference<ProcgenPointSetHandleRef>(input);
+        if (!value || !reference)
+            return makeOwnedPointSetProxy(
+                vm, procgenBindingFailure<ProcgenPointSetHandleRef>(eve::DiagnosticCode::InvalidArgument,
                                                                     "filterSlope requires owned points", "points"));
-                    return makeOwnedPointSetProxy(vm, value->filterSlopeHandle(*reference, minimum, maximum));
-                });
+        return makeOwnedPointSetProxy(vm, value->filterSlopeHandle(*reference, minimum, maximum));
+    });
     cls.addFunc(
         "excludeRadius", [vm = cls.getHandle()](Procgen* value, PointSet* input, float x, float z, float radius) {
-                    const auto reference = nativeProxyReference<ProcgenPointSetHandleRef>(input);
-                    if (!value || !reference)
-                        return makeOwnedPointSetProxy(
+            const auto reference = nativeProxyReference<ProcgenPointSetHandleRef>(input);
+            if (!value || !reference)
+                return makeOwnedPointSetProxy(
                     vm, procgenBindingFailure<ProcgenPointSetHandleRef>(
                             eve::DiagnosticCode::InvalidArgument, "excludeRadius requires owned points", "points"));
-                    return makeOwnedPointSetProxy(vm, value->excludeRadiusHandle(*reference, x, z, radius));
-                });
+            return makeOwnedPointSetProxy(vm, value->excludeRadiusHandle(*reference, x, z, radius));
+        });
     cls.addFunc("jitterPoints",
                 [vm = cls.getHandle()](Procgen* value, PointSet* input, uint32_t seed, float amountX, float amountZ) {
                     const auto reference = nativeProxyReference<ProcgenPointSetHandleRef>(input);
@@ -4102,33 +4176,33 @@ void Procgen::expose(ssq::Class &cls) {
                     return makeOwnedPointSetProxy(vm, value->jitterPointsHandle(*reference, seed, amountX, amountZ));
                 });
     cls.addFunc("poissonDisk", [vm = cls.getHandle()](Procgen* value, int width, int depth, float radius, uint32_t seed,
-                                       int maxPoints) {
-                    if (!value)
-                        return makeOwnedPointSetProxy(
-                            vm, procgenBindingFailure<ProcgenPointSetHandleRef>(eve::DiagnosticCode::InvalidArgument,
+                                                      int maxPoints) {
+        if (!value)
+            return makeOwnedPointSetProxy(
+                vm, procgenBindingFailure<ProcgenPointSetHandleRef>(eve::DiagnosticCode::InvalidArgument,
                                                                     "poissonDisk requires Procgen", "procgen"));
-                    return makeOwnedPointSetProxy(vm, value->poissonDiskHandle(width, depth, radius, seed, maxPoints));
-                });
+        return makeOwnedPointSetProxy(vm, value->poissonDiskHandle(width, depth, radius, seed, maxPoints));
+    });
     cls.addFunc("mergePoints", [vm = cls.getHandle()](Procgen* value, PointSet* first, PointSet* second) {
         const auto firstRef  = nativeProxyReference<ProcgenPointSetHandleRef>(first);
         const auto secondRef = nativeProxyReference<ProcgenPointSetHandleRef>(second);
         if (!value || !firstRef || !secondRef)
             return makeOwnedPointSetProxy(
                 vm, procgenBindingFailure<ProcgenPointSetHandleRef>(eve::DiagnosticCode::InvalidArgument,
-                                                                   "mergePoints requires owned point sets", "points"));
+                                                                    "mergePoints requires owned point sets", "points"));
         return makeOwnedPointSetProxy(vm, value->mergePointsHandle(*firstRef, *secondRef));
     });
     cls.addFunc("unionPoints", [vm = cls.getHandle()](Procgen* value, PointSet* first, PointSet* second) {
-        const auto firstRef = nativeProxyReference<ProcgenPointSetHandleRef>(first);
+        const auto firstRef  = nativeProxyReference<ProcgenPointSetHandleRef>(first);
         const auto secondRef = nativeProxyReference<ProcgenPointSetHandleRef>(second);
         if (!value || !firstRef || !secondRef)
             return makeOwnedPointSetProxy(
                 vm, procgenBindingFailure<ProcgenPointSetHandleRef>(eve::DiagnosticCode::InvalidArgument,
-                                                                   "unionPoints requires owned point sets", "points"));
+                                                                    "unionPoints requires owned point sets", "points"));
         return makeOwnedPointSetProxy(vm, value->unionPointsHandle(*firstRef, *secondRef));
     });
     cls.addFunc("intersectPoints", [vm = cls.getHandle()](Procgen* value, PointSet* first, PointSet* second) {
-        const auto firstRef = nativeProxyReference<ProcgenPointSetHandleRef>(first);
+        const auto firstRef  = nativeProxyReference<ProcgenPointSetHandleRef>(first);
         const auto secondRef = nativeProxyReference<ProcgenPointSetHandleRef>(second);
         if (!value || !firstRef || !secondRef)
             return makeOwnedPointSetProxy(
@@ -4137,7 +4211,7 @@ void Procgen::expose(ssq::Class &cls) {
         return makeOwnedPointSetProxy(vm, value->intersectPointsHandle(*firstRef, *secondRef));
     });
     cls.addFunc("differencePoints", [vm = cls.getHandle()](Procgen* value, PointSet* first, PointSet* second) {
-        const auto firstRef = nativeProxyReference<ProcgenPointSetHandleRef>(first);
+        const auto firstRef  = nativeProxyReference<ProcgenPointSetHandleRef>(first);
         const auto secondRef = nativeProxyReference<ProcgenPointSetHandleRef>(second);
         if (!value || !firstRef || !secondRef)
             return makeOwnedPointSetProxy(
@@ -4147,98 +4221,98 @@ void Procgen::expose(ssq::Class &cls) {
     });
     cls.addFunc("transformPoints", [vm = cls.getHandle()](Procgen* value, PointSet* input, float x, float y, float z,
                                                           float yaw, float scaleX, float scaleY, float scaleZ) {
-                    const auto reference = nativeProxyReference<ProcgenPointSetHandleRef>(input);
-                    if (!value || !reference)
-                        return makeOwnedPointSetProxy(
-                            vm, procgenBindingFailure<ProcgenPointSetHandleRef>(eve::DiagnosticCode::InvalidArgument,
+        const auto reference = nativeProxyReference<ProcgenPointSetHandleRef>(input);
+        if (!value || !reference)
+            return makeOwnedPointSetProxy(
+                vm, procgenBindingFailure<ProcgenPointSetHandleRef>(eve::DiagnosticCode::InvalidArgument,
                                                                     "transformPoints requires owned points", "points"));
         return makeOwnedPointSetProxy(vm,
                                       value->transformPointsHandle(*reference, x, y, z, yaw, scaleX, scaleY, scaleZ));
-                });
+    });
     cls.addFunc("transformPoints3D", [vm = cls.getHandle()](Procgen* value, PointSet* input, float x, float y, float z,
                                                             float pitch, float yaw, float roll, float scaleX,
                                                             float scaleY, float scaleZ) {
-                    const auto reference = nativeProxyReference<ProcgenPointSetHandleRef>(input);
-                    if (!value || !reference)
-                        return makeOwnedPointSetProxy(
-                            vm, procgenBindingFailure<ProcgenPointSetHandleRef>(
+        const auto reference = nativeProxyReference<ProcgenPointSetHandleRef>(input);
+        if (!value || !reference)
+            return makeOwnedPointSetProxy(
+                vm, procgenBindingFailure<ProcgenPointSetHandleRef>(
                         eve::DiagnosticCode::InvalidArgument, "transformPoints3D requires owned points", "points"));
-                    return makeOwnedPointSetProxy(
+        return makeOwnedPointSetProxy(
             vm, value->transformPoints3DHandle(*reference, x, y, z, pitch, yaw, roll, scaleX, scaleY, scaleZ));
-                });
+    });
     cls.addFunc("copyPoints", [vm = cls.getHandle()](Procgen* value, PointSet* source, PointSet* targets,
-                                       bool inheritTargetAttributes) {
-                    const auto sourceRef = nativeProxyReference<ProcgenPointSetHandleRef>(source);
-                    const auto targetRef = nativeProxyReference<ProcgenPointSetHandleRef>(targets);
-                    if (!value || !sourceRef || !targetRef)
-                        return makeOwnedPointSetProxy(
+                                                     bool inheritTargetAttributes) {
+        const auto sourceRef = nativeProxyReference<ProcgenPointSetHandleRef>(source);
+        const auto targetRef = nativeProxyReference<ProcgenPointSetHandleRef>(targets);
+        if (!value || !sourceRef || !targetRef)
+            return makeOwnedPointSetProxy(
                 vm, procgenBindingFailure<ProcgenPointSetHandleRef>(eve::DiagnosticCode::InvalidArgument,
-                                    "copyPoints requires owned point sets", "points"));
+                                                                    "copyPoints requires owned point sets", "points"));
         return makeOwnedPointSetProxy(vm, value->copyPointsHandle(*sourceRef, *targetRef, inheritTargetAttributes));
-                });
+    });
     cls.addFunc("remapDensity", [vm = cls.getHandle()](Procgen* value, PointSet* input, float inputMin, float inputMax,
                                                        float outputMin, float outputMax, bool clampOutput) {
-                    const auto reference = nativeProxyReference<ProcgenPointSetHandleRef>(input);
-                    if (!value || !reference)
-                        return makeOwnedPointSetProxy(
+        const auto reference = nativeProxyReference<ProcgenPointSetHandleRef>(input);
+        if (!value || !reference)
+            return makeOwnedPointSetProxy(
                 vm, procgenBindingFailure<ProcgenPointSetHandleRef>(eve::DiagnosticCode::InvalidArgument,
-                                    "remapDensity requires owned points", "points"));
-                    return makeOwnedPointSetProxy(
+                                                                    "remapDensity requires owned points", "points"));
+        return makeOwnedPointSetProxy(
             vm, value->remapDensityHandle(*reference, inputMin, inputMax, outputMin, outputMax, clampOutput));
-                });
+    });
     cls.addFunc(
         "mathFloatAttribute", [vm = cls.getHandle()](Procgen* value, PointSet* input, const std::string& attribute,
                                                      const std::string& outputAttribute, const std::string& operation,
                                                      float operand, float defaultValue) {
-                    const auto reference = nativeProxyReference<ProcgenPointSetHandleRef>(input);
-                    if (!value || !reference)
+            const auto reference = nativeProxyReference<ProcgenPointSetHandleRef>(input);
+            if (!value || !reference)
                 return makeOwnedPointSetProxy(vm, procgenBindingFailure<ProcgenPointSetHandleRef>(
-                                    eve::DiagnosticCode::InvalidArgument,
-                                    "mathFloatAttribute requires owned points", "points"));
+                                                      eve::DiagnosticCode::InvalidArgument,
+                                                      "mathFloatAttribute requires owned points", "points"));
             return makeOwnedPointSetProxy(vm, value->mathFloatAttributeHandle(*reference, attribute, outputAttribute,
-                                                            operation, operand, defaultValue));
-                });
+                                                                              operation, operand, defaultValue));
+        });
     cls.addFunc("filterFloatAttribute", [vm = cls.getHandle()](Procgen* value, PointSet* input, const std::string& name,
                                                                float minimum, float maximum, bool invert) {
-                    const auto reference = nativeProxyReference<ProcgenPointSetHandleRef>(input);
-                    if (!value || !reference)
-                        return makeOwnedPointSetProxy(
+        const auto reference = nativeProxyReference<ProcgenPointSetHandleRef>(input);
+        if (!value || !reference)
+            return makeOwnedPointSetProxy(
                 vm, procgenBindingFailure<ProcgenPointSetHandleRef>(
                         eve::DiagnosticCode::InvalidArgument, "filterFloatAttribute requires owned points", "points"));
         return makeOwnedPointSetProxy(vm,
                                       value->filterFloatAttributeHandle(*reference, name, minimum, maximum, invert));
-                });
+    });
     cls.addFunc("filterStringAttribute", [vm = cls.getHandle()](Procgen* value, PointSet* input,
                                                                 const std::string& name, const std::string& expected,
                                                                 bool invert) {
-                    const auto reference = nativeProxyReference<ProcgenPointSetHandleRef>(input);
-                    if (!value || !reference)
-                        return makeOwnedPointSetProxy(
+        const auto reference = nativeProxyReference<ProcgenPointSetHandleRef>(input);
+        if (!value || !reference)
+            return makeOwnedPointSetProxy(
                 vm, procgenBindingFailure<ProcgenPointSetHandleRef>(
                         eve::DiagnosticCode::InvalidArgument, "filterStringAttribute requires owned points", "points"));
         return makeOwnedPointSetProxy(vm, value->filterStringAttributeHandle(*reference, name, expected, invert));
-                });
+    });
     cls.addFunc(
         "densityCull", [vm = cls.getHandle()](Procgen* value, PointSet* input, uint32_t seed, float multiplier) {
-                    const auto reference = nativeProxyReference<ProcgenPointSetHandleRef>(input);
-                    if (!value || !reference)
-                        return makeOwnedPointSetProxy(
-                            vm, procgenBindingFailure<ProcgenPointSetHandleRef>(eve::DiagnosticCode::InvalidArgument,
+            const auto reference = nativeProxyReference<ProcgenPointSetHandleRef>(input);
+            if (!value || !reference)
+                return makeOwnedPointSetProxy(
+                    vm, procgenBindingFailure<ProcgenPointSetHandleRef>(eve::DiagnosticCode::InvalidArgument,
                                                                         "densityCull requires owned points", "points"));
-                    return makeOwnedPointSetProxy(vm, value->densityCullHandle(*reference, seed, multiplier));
-                });
+            return makeOwnedPointSetProxy(vm, value->densityCullHandle(*reference, seed, multiplier));
+        });
     cls.addFunc("projectToWorld", [vm = cls.getHandle()](Procgen* value, PointSet* input, float maxY, float minY,
-                                       std::int64_t maskBits, bool keepUnmatched) {
-                    const auto reference = nativeProxyReference<ProcgenPointSetHandleRef>(input);
-                    if (!value || !reference || maskBits < 0)
-                        return makeOwnedPointSetProxy(
-                            vm, procgenBindingFailure<ProcgenPointSetHandleRef>(
-                                    eve::DiagnosticCode::InvalidArgument,
-                                    "projectToWorld requires owned points and a non-negative mask", "points"));
-                    return makeOwnedPointSetProxy(
+                                                         std::int64_t maskBits, bool keepUnmatched) {
+        const auto reference = nativeProxyReference<ProcgenPointSetHandleRef>(input);
+        if (!value || !reference || maskBits < 0)
+            return makeOwnedPointSetProxy(
+                vm, procgenBindingFailure<ProcgenPointSetHandleRef>(
+                        eve::DiagnosticCode::InvalidArgument,
+                        "projectToWorld requires owned points and a non-negative mask", "points"));
+        return makeOwnedPointSetProxy(
             vm,
             value->projectToWorldHandle(*reference, maxY, minY, static_cast<std::uint64_t>(maskBits), keepUnmatched));
-                });
+    });
     cls.addFunc("newTerrainSampler", [vm = cls.getHandle()](Procgen*) -> ssq::Table {
         auto* module = Procgen::create();
         return makeOwnedNativeProxy<TerrainSampler>(
@@ -4264,16 +4338,16 @@ void Procgen::expose(ssq::Class &cls) {
     // referencing level owns that value and `hasSpacing` is false.
     cls.addFunc("loadTerrainFile",
                 [vm = cls.getHandle()](Procgen*, const std::string& path, const std::string& format) -> ssq::Table {
-                    return projectDecodedTerrainResult(
-                        vm, loadTerrainFile(path, parseTerrainFileFormat(format)));
+                    return projectDecodedTerrainResult(vm, loadTerrainFile(path, parseTerrainFileFormat(format)));
                 });
     cls.addFunc("loadTerrainBytes",
                 [vm = cls.getHandle()](Procgen*, const std::string& bytes, const std::string& format) -> ssq::Table {
                     const auto* data = reinterpret_cast<const std::uint8_t*>(bytes.data());
                     return projectDecodedTerrainResult(
                         vm, decodeTerrainFile(std::span<const std::uint8_t>(data, bytes.size()),
-                                                       parseTerrainFileFormat(format)));
-                });    cls.addFunc("newCloudField", [vm = cls.getHandle()](Procgen*) -> ssq::Table {
+                                              parseTerrainFileFormat(format)));
+                });
+    cls.addFunc("newCloudField", [vm = cls.getHandle()](Procgen*) -> ssq::Table {
         auto* module = Procgen::create();
         return makeOwnedNativeProxy<CloudField>(
             vm, module->newCloudFieldHandle(),
@@ -4308,9 +4382,7 @@ void Procgen::expose(ssq::Class &cls) {
                                                                 "generate params proxy must not be null", "params")
                         .status(),
                     false, false);
-            return makeOwnedProxy<ProcgenGridHandleRef, ScriptProcgenGrid>(
-                vm, module->generateHandle(algorithm, params->reference),
-                [](ProcgenGridHandleRef ref) { return Procgen::release(ref); });
+            return makeOwnedGridProxy(vm, module->generateHandle(algorithm, params->reference));
         });
     cls.addFunc(
         "generateImage",
@@ -4516,6 +4588,42 @@ void Procgen::expose(ssq::Class &cls) {
                                                            "Procgen module is no longer loaded", "dynamicUvPaint");
             });
     });
+    cls.addFunc("newGridGraph", [vm = cls.getHandle()](Procgen* value) -> ssq::Table {
+        if (!value)
+            return eve::script::projectStatusResult(
+                vm,
+                procgenBindingFailure<void>(eve::DiagnosticCode::InvalidArgument, "Procgen module must not be null",
+                                             "procgen")
+                    .status(),
+                false, false);
+        return makeOwnedNativeProxy<GridGraph>(
+            vm, value->newGridGraphHandle(),
+            [value](ProcgenGridGraphHandleRef ref) { return value->resolveGridGraph(ref); },
+            [](ProcgenGridGraphHandleRef ref) {
+                auto* owner = ModuleManager::getInstance<Procgen>("Procgen");
+                return owner ? owner->release(ref)
+                             : procgenBindingFailure<void>(eve::DiagnosticCode::StaleHandle,
+                                                           "Procgen module is no longer loaded", "gridGraph");
+            });
+    });
+    cls.addFunc("newMeshGraph", [vm = cls.getHandle()](Procgen* value) -> ssq::Table {
+        if (!value)
+            return eve::script::projectStatusResult(
+                vm,
+                procgenBindingFailure<void>(eve::DiagnosticCode::InvalidArgument, "Procgen module must not be null",
+                                             "procgen")
+                    .status(),
+                false, false);
+        return makeOwnedNativeProxy<MeshGraph>(
+            vm, value->newMeshGraphHandle(),
+            [value](ProcgenMeshGraphHandleRef ref) { return value->resolveMeshGraph(ref); },
+            [](ProcgenMeshGraphHandleRef ref) {
+                auto* owner = ModuleManager::getInstance<Procgen>("Procgen");
+                return owner ? owner->release(ref)
+                             : procgenBindingFailure<void>(eve::DiagnosticCode::StaleHandle,
+                                                           "Procgen module is no longer loaded", "meshGraph");
+            });
+    });
     cls.addFunc("newBiomeRules", [vm = cls.getHandle()](Procgen* value) -> ssq::Table {
         if (!value)
             return eve::script::projectStatusResult(
@@ -4554,13 +4662,13 @@ void Procgen::expose(ssq::Class &cls) {
         return makeOwnedSpatialProxy(vm, value->sphereVolumeHandle(x, y, z, radius));
     });
     cls.addFunc("polygonVolume", [vm = cls.getHandle()](Procgen* value, PointSet* points, float minY, float maxY) {
-                    const auto reference = nativeProxyReference<ProcgenPointSetHandleRef>(points);
-                    if (!value || !reference)
-                        return makeOwnedSpatialProxy(
-                            vm, procgenBindingFailure<ProcgenSpatialDataHandleRef>(
+        const auto reference = nativeProxyReference<ProcgenPointSetHandleRef>(points);
+        if (!value || !reference)
+            return makeOwnedSpatialProxy(
+                vm, procgenBindingFailure<ProcgenSpatialDataHandleRef>(
                         eve::DiagnosticCode::InvalidArgument, "polygonVolume requires owned control points", "points"));
-                    return makeOwnedSpatialProxy(vm, value->polygonVolumeHandle(*reference, minY, maxY));
-                });
+        return makeOwnedSpatialProxy(vm, value->polygonVolumeHandle(*reference, minY, maxY));
+    });
     cls.addFunc("pointData", [vm = cls.getHandle()](Procgen* value, PointSet* points) {
         const auto reference = nativeProxyReference<ProcgenPointSetHandleRef>(points);
         if (!value || !reference)
@@ -4571,33 +4679,33 @@ void Procgen::expose(ssq::Class &cls) {
     });
     cls.addFunc("heightfieldData", [vm = cls.getHandle()](Procgen* value, Heightmap* heightmap, float originX,
                                                           float originZ, float cellSize, float heightScale) {
-                    const auto reference = nativeProxyReference<ProcgenHeightmapHandleRef>(heightmap);
-                    if (!value || !reference)
+        const auto reference = nativeProxyReference<ProcgenHeightmapHandleRef>(heightmap);
+        if (!value || !reference)
             return makeOwnedSpatialProxy(vm, procgenBindingFailure<ProcgenSpatialDataHandleRef>(
-                                    eve::DiagnosticCode::InvalidArgument,
-                                    "heightfieldData requires an owned heightmap", "heightmap"));
+                                                 eve::DiagnosticCode::InvalidArgument,
+                                                 "heightfieldData requires an owned heightmap", "heightmap"));
         return makeOwnedSpatialProxy(vm,
                                      value->heightfieldDataHandle(*reference, originX, originZ, cellSize, heightScale));
-                });
+    });
     cls.addFunc("textureMaskData", [vm = cls.getHandle()](Procgen* value, Heightmap* values, float originX,
                                                           float originZ, float cellSize, float minValue, float maxValue,
                                                           float minY, float maxY) {
-                    const auto reference = nativeProxyReference<ProcgenHeightmapHandleRef>(values);
-                    if (!value || !reference)
+        const auto reference = nativeProxyReference<ProcgenHeightmapHandleRef>(values);
+        if (!value || !reference)
             return makeOwnedSpatialProxy(vm, procgenBindingFailure<ProcgenSpatialDataHandleRef>(
-                                    eve::DiagnosticCode::InvalidArgument,
-                                    "textureMaskData requires an owned scalar map", "values"));
-                    return makeOwnedSpatialProxy(
+                                                 eve::DiagnosticCode::InvalidArgument,
+                                                 "textureMaskData requires an owned scalar map", "values"));
+        return makeOwnedSpatialProxy(
             vm, value->textureMaskDataHandle(*reference, originX, originZ, cellSize, minValue, maxValue, minY, maxY));
-                });
+    });
     cls.addFunc("meshSurfaceData", [vm = cls.getHandle()](Procgen* value, MeshBuild* mesh, float tolerance) {
-                    const auto reference = nativeProxyReference<ProcgenMeshBuildHandleRef>(mesh);
-                    if (!value || !reference)
-                        return makeOwnedSpatialProxy(
-                            vm, procgenBindingFailure<ProcgenSpatialDataHandleRef>(
+        const auto reference = nativeProxyReference<ProcgenMeshBuildHandleRef>(mesh);
+        if (!value || !reference)
+            return makeOwnedSpatialProxy(
+                vm, procgenBindingFailure<ProcgenSpatialDataHandleRef>(
                         eve::DiagnosticCode::InvalidArgument, "meshSurfaceData requires an owned mesh build", "mesh"));
-                    return makeOwnedSpatialProxy(vm, value->meshSurfaceDataHandle(*reference, tolerance));
-                });
+        return makeOwnedSpatialProxy(vm, value->meshSurfaceDataHandle(*reference, tolerance));
+    });
     cls.addFunc("unionSpatial", [vm = cls.getHandle()](Procgen* value, SpatialData* first, SpatialData* second) {
         const auto firstRef  = nativeProxyReference<ProcgenSpatialDataHandleRef>(first);
         const auto secondRef = nativeProxyReference<ProcgenSpatialDataHandleRef>(second);
@@ -4608,49 +4716,49 @@ void Procgen::expose(ssq::Class &cls) {
         return makeOwnedSpatialProxy(vm, value->unionSpatialHandle(*firstRef, *secondRef));
     });
     cls.addFunc("intersectSpatial", [vm = cls.getHandle()](Procgen* value, SpatialData* first, SpatialData* second) {
-                    const auto firstRef  = nativeProxyReference<ProcgenSpatialDataHandleRef>(first);
-                    const auto secondRef = nativeProxyReference<ProcgenSpatialDataHandleRef>(second);
-                    if (!value || !firstRef || !secondRef)
+        const auto firstRef  = nativeProxyReference<ProcgenSpatialDataHandleRef>(first);
+        const auto secondRef = nativeProxyReference<ProcgenSpatialDataHandleRef>(second);
+        if (!value || !firstRef || !secondRef)
             return makeOwnedSpatialProxy(vm, procgenBindingFailure<ProcgenSpatialDataHandleRef>(
-                                    eve::DiagnosticCode::InvalidArgument,
-                                    "intersectSpatial requires owned spatial data", "spatial"));
-                    return makeOwnedSpatialProxy(vm, value->intersectSpatialHandle(*firstRef, *secondRef));
-                });
+                                                 eve::DiagnosticCode::InvalidArgument,
+                                                 "intersectSpatial requires owned spatial data", "spatial"));
+        return makeOwnedSpatialProxy(vm, value->intersectSpatialHandle(*firstRef, *secondRef));
+    });
     cls.addFunc("differenceSpatial", [vm = cls.getHandle()](Procgen* value, SpatialData* first, SpatialData* second) {
-                    const auto firstRef  = nativeProxyReference<ProcgenSpatialDataHandleRef>(first);
-                    const auto secondRef = nativeProxyReference<ProcgenSpatialDataHandleRef>(second);
-                    if (!value || !firstRef || !secondRef)
+        const auto firstRef  = nativeProxyReference<ProcgenSpatialDataHandleRef>(first);
+        const auto secondRef = nativeProxyReference<ProcgenSpatialDataHandleRef>(second);
+        if (!value || !firstRef || !secondRef)
             return makeOwnedSpatialProxy(vm, procgenBindingFailure<ProcgenSpatialDataHandleRef>(
-                                    eve::DiagnosticCode::InvalidArgument,
-                                    "differenceSpatial requires owned spatial data", "spatial"));
-                    return makeOwnedSpatialProxy(vm, value->differenceSpatialHandle(*firstRef, *secondRef));
-                });
+                                                 eve::DiagnosticCode::InvalidArgument,
+                                                 "differenceSpatial requires owned spatial data", "spatial"));
+        return makeOwnedSpatialProxy(vm, value->differenceSpatialHandle(*firstRef, *secondRef));
+    });
     cls.addFunc("sampleSpatial", [vm = cls.getHandle()](Procgen* value, SpatialData* spatial, float spacing,
                                                         uint32_t seed, float jitter) {
-                    const auto reference = nativeProxyReference<ProcgenSpatialDataHandleRef>(spatial);
-                    if (!value || !reference)
-                        return makeOwnedPointSetProxy(
+        const auto reference = nativeProxyReference<ProcgenSpatialDataHandleRef>(spatial);
+        if (!value || !reference)
+            return makeOwnedPointSetProxy(
                 vm, procgenBindingFailure<ProcgenPointSetHandleRef>(
                         eve::DiagnosticCode::InvalidArgument, "sampleSpatial requires owned spatial data", "spatial"));
-                    return makeOwnedPointSetProxy(vm, value->sampleSpatialHandle(*reference, spacing, seed, jitter));
-                });
+        return makeOwnedPointSetProxy(vm, value->sampleSpatialHandle(*reference, spacing, seed, jitter));
+    });
     cls.addFunc(
         "filterSpatial", [vm = cls.getHandle()](Procgen* value, PointSet* points, SpatialData* spatial, bool invert) {
-                    const auto pointsRef  = nativeProxyReference<ProcgenPointSetHandleRef>(points);
-                    const auto spatialRef = nativeProxyReference<ProcgenSpatialDataHandleRef>(spatial);
-                    if (!value || !pointsRef || !spatialRef)
-                        return makeOwnedPointSetProxy(
+            const auto pointsRef  = nativeProxyReference<ProcgenPointSetHandleRef>(points);
+            const auto spatialRef = nativeProxyReference<ProcgenSpatialDataHandleRef>(spatial);
+            if (!value || !pointsRef || !spatialRef)
+                return makeOwnedPointSetProxy(
                     vm, procgenBindingFailure<ProcgenPointSetHandleRef>(
                             eve::DiagnosticCode::InvalidArgument, "filterSpatial requires owned inputs", "input"));
-                    return makeOwnedPointSetProxy(vm, value->filterSpatialHandle(*pointsRef, *spatialRef, invert));
-                });
+            return makeOwnedPointSetProxy(vm, value->filterSpatialHandle(*pointsRef, *spatialRef, invert));
+        });
     cls.addFunc("projectToSpatial", [vm = cls.getHandle()](Procgen* value, PointSet* points, SpatialData* spatial) {
         const auto pointsRef  = nativeProxyReference<ProcgenPointSetHandleRef>(points);
         const auto spatialRef = nativeProxyReference<ProcgenSpatialDataHandleRef>(spatial);
         if (!value || !pointsRef || !spatialRef)
             return makeOwnedPointSetProxy(
                 vm, procgenBindingFailure<ProcgenPointSetHandleRef>(eve::DiagnosticCode::InvalidArgument,
-                                                                   "projectToSpatial requires owned inputs", "input"));
+                                                                    "projectToSpatial requires owned inputs", "input"));
         return makeOwnedPointSetProxy(vm, value->projectToSpatialHandle(*pointsRef, *spatialRef));
     });
     cls.addFunc("splineData", [vm = cls.getHandle()](Procgen* value, PointSet* points, float radius) -> ssq::Table {
@@ -5004,22 +5112,24 @@ void Procgen::expose(ssq::Class &cls) {
                                                 "generateTo requires params and owned output", "generateTo"));
         return eve::script::projectResult(vm, value->generateTo(algorithm, params->reference, *outputRef));
     });
-    cls.addFunc("autotileGrid", [vm = cls.getHandle()](Procgen* value, ScriptProcgenGrid* grid) {
-        if (!value || !grid)
+    cls.addFunc("autotileGrid", [vm = cls.getHandle()](Procgen* value, Grid2D* grid) {
+        const auto gridRef = nativeProxyReference<ProcgenGridHandleRef>(grid);
+        if (!value || !gridRef)
             return eve::script::projectResult(
                 vm, procgenBindingFailure<void>(eve::DiagnosticCode::InvalidArgument,
-                                                "autotileGrid requires a grid proxy", "grid"));
-        return eve::script::projectResult(vm, value->autotileGrid(grid->reference));
+                                                "autotileGrid requires an owned grid proxy", "grid"));
+        return eve::script::projectResult(vm, value->autotileGrid(*gridRef));
     });
     cls.addFunc("randomSeed", &Procgen::randomSeed);
-    cls.addFunc("gridToJson", [vm = cls.getHandle()](Procgen* value, ScriptProcgenGrid* grid) {
-        if (!value || !grid)
+    cls.addFunc("gridToJson", [vm = cls.getHandle()](Procgen* value, Grid2D* grid) {
+        const auto gridRef = nativeProxyReference<ProcgenGridHandleRef>(grid);
+        if (!value || !gridRef)
             return eve::script::projectResult(
                 vm,
                 procgenBindingFailure<std::string>(eve::DiagnosticCode::InvalidArgument,
-                                                   "gridToJson requires a grid proxy", "grid"),
+                                                   "gridToJson requires an owned grid proxy", "grid"),
                 [](std::string&& json) { return eve::Value(std::move(json)); });
-        return eve::script::projectResult(vm, value->gridToJson(grid->reference),
+        return eve::script::projectResult(vm, value->gridToJson(*gridRef),
                                           [](std::string&& json) { return eve::Value(std::move(json)); });
     });
     cls.addFunc("getTextureRecipeCount", &Procgen::getTextureRecipeCount);
