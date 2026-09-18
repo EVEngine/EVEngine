@@ -637,8 +637,7 @@ bool generateTreeMesh(const Params& params, MeshBuild& out, std::string& error) 
 
     int clusterCount = 0;
     if (leafMode == "cards") {
-        // Sparse geometric leaves — keep count low so ovate silhouettes stay readable.
-        const int perTip = std::max(1, int(std::round((realistic ? 5.f : 3.f) * density)));
+        const int perTip = int(std::round((realistic ? 12.f : 6.f) * density));
         for (const Tip& tip : foliageAnchors) {
             for (int i = 0; i < perTip; ++i) {
                 V3       c = add(tip.p, {randomRange(rng, -1.f, 1.f) * crownRadius * 0.24f * tip.scale,
@@ -646,7 +645,7 @@ bool generateTreeMesh(const Params& params, MeshBuild& out, std::string& error) 
                                          randomRange(rng, -1.f, 1.f) * crownRadius * 0.24f * tip.scale});
                 const V3 face =
                     norm({randomRange(rng, -1.f, 1.f), randomRange(rng, -0.2f, 0.8f), randomRange(rng, -1.f, 1.f)});
-                addLeafCard(out, c, face, leafSize * randomRange(rng, 0.95f, 1.45f), randomRange(rng, 0.f, kPi),
+                addLeafCard(out, c, face, leafSize * randomRange(rng, 0.72f, 1.25f), randomRange(rng, 0.f, kPi),
                             rng);
             }
         }

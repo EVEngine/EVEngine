@@ -103,13 +103,18 @@ function makePrototype(kind, seedOffset) {
     if (kind == "tree") {
         p.setString("style", "realistic");
         p.setString("branchAlgorithm", "weberPenn");
-        p.setString("leafMode", "cards");
-        p.setFloat("leafDensity", 0.70);
+        p.setString("leafMode", "clusters");
+        p.setFloat("leafDensity", 0.86);
         p.setFloat("height", 4.8);
         p.setFloat("crownRadius", 1.75);
         p.setInt("branchLevels", 3);
         p.setInt("branchCount", 8);
-        p.setFloat("leafSize", 0.36);
+        p.setFloat("clusterSize", 0.26);
+        p.setFloat("clusterSeparation", 0.40);
+        p.setFloat("clusterLeafScale", 0.78);
+        p.setInt("clusterPlanes", 13);
+        p.setInt("clusterLeaves", 32);
+        p.setInt("clusterLimit", 120);
         local meshResult = procgen.generateMesh("mesh.tree", p, gfx);
         if (!meshResult.ok) return null;
         mesh = retain(meshResult.value);
@@ -120,13 +125,13 @@ function makePrototype(kind, seedOffset) {
         p.setString("leafMode", "cards");
         p.setFloat("height", 1.25);
         p.setFloat("width", 1.75);
-        p.setInt("blobs", 10);
-        p.setFloat("leafDensity", 0.85);
+        p.setInt("blobs", 14);
+        p.setFloat("leafDensity", 1.0);
         p.setFloat("lobeScale", 0.62);
         p.setFloat("irregularity", 0.7);
         p.setInt("rings", 5);
         p.setInt("radialSegments", 10);
-        p.setFloat("leafSize", 0.48);
+        p.setFloat("leafSize", 0.36);
         p.setInt("twigs", 6);
         p.setFloat("twigLength", 0.34);
         local meshResult = procgen.generateMesh("mesh.bush", p, gfx);

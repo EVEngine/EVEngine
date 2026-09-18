@@ -274,22 +274,19 @@ bool generateBushMesh(const Params &params, MeshBuild &out, std::string &error) 
                                 {halfW * 0.18f * lobeScale, height * 0.20f, halfW * 0.18f * lobeScale}});
     }
 
-    // Scatter ovate leaves across the canopy. Cards-only stays sparse so gaps
-    // between leaves read as transparent background rather than a green slab.
+    // Leaf cards across the canopy (ovate geometry; density follows leafDensity).
     if (leafMode == "cards" || leafMode == "mixed") {
-        const float pack  = leafMode == "cards" ? 2.6f : 5.f;
-        const int   cards = std::max(1, int(std::round(float(blobs) * pack * density)));
+        const int cards = std::max(1, int(std::round(float(blobs) * 14.f * density)));
         for (int i = 0; i < cards; ++i) {
             const FoliageLobe &lobe = foliageLobes[size_t(i) % foliageLobes.size()];
             const float theta = randomRange(rng, 0.f, 2.f * kPi);
             const float ny = randomRange(rng, -0.45f, 1.f);
             const float radial = std::sqrt(std::max(0.f, 1.f - ny * ny));
             const V3 face = norm({std::cos(theta) * radial, ny, std::sin(theta) * radial});
-            // Push leaves outside the lobe so individual ovate silhouettes read.
-            const V3 c{lobe.center.x + face.x * lobe.radius.x * 1.20f,
-                       lobe.center.y + face.y * lobe.radius.y * 1.20f,
-                       lobe.center.z + face.z * lobe.radius.z * 1.20f};
-            addLeafCard(out, rng, c, face, leafSize * randomRange(rng, 1.05f, 1.55f));
+            const V3 c{lobe.center.x + face.x * lobe.radius.x * 1.05f,
+                       lobe.center.y + face.y * lobe.radius.y * 1.05f,
+                       lobe.center.z + face.z * lobe.radius.z * 1.05f};
+            addLeafCard(out, rng, c, face, leafSize * randomRange(rng, 0.85f, 1.35f));
         }
     }
 
