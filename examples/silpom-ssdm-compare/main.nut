@@ -25,7 +25,7 @@ persist cmpHeight = null
 persist cmpTexVer = 0
 const CMP_TEX_VER = 16
 persist cmpShaderVer = 0
-const CMP_SHADER_VER = 25
+const CMP_SHADER_VER = 26
 persist cmpYaw = 0.42
 persist cmpPitch = 0.22
 persist cmpOrbit = false
@@ -184,7 +184,11 @@ function syncPanel(panel) {
     // sendFloat requires FLOAT; key presses / script assigns can leave integers.
     panel.mode = asFloat(panel.mode);
     panel.shader.sendFloat("mode", panel.mode);
-    panel.shader.sendFloat("scale", asFloat(cmpScale));
+    // Classic POM gets a milder scale — hard cliffs zebra badly at full relief.
+    local scale = asFloat(cmpScale);
+    if (panel.mode < 0.5)
+        scale = scale * 0.55;
+    panel.shader.sendFloat("scale", scale);
     panel.shader.sendFloat("minLayers", asFloat(cmpMinLayers));
     panel.shader.sendFloat("maxLayers", asFloat(cmpMaxLayers));
     panel.shader.sendFloat("feather", 0.02);
