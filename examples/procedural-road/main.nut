@@ -52,7 +52,8 @@ function roadCameraForScene(name) {
         roadCamera.setEye(16.0, 18.0, 8.0);
         roadCamera.setTarget(-4.0, 0.5, 6.0);
     } else if (name == "bridge") {
-        roadCamera.setEye(24.0, 14.0, 20.0);
+        // Three-quarter view; piers use world-up basis (see side-elevation proof shot).
+        roadCamera.setEye(20.0, 12.0, 18.0);
         roadCamera.setTarget(0.0, 2.5, 0.0);
     } else {
         // cross
