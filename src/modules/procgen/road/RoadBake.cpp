@@ -362,9 +362,10 @@ Result<void> bakeEdgeGeometry(MeshBuild& mesh, RoadOverlay& overlay, const RoadN
 
     auto lofted = loftProfileClean(mesh, trimmed, profile.value(), edge.style.uvMeters);
     if (!lofted.ok()) return lofted;
-    // Cap junction-facing ends so the jersey-barrier U is not see-through into the hub.
-    if (trimStart > 0.05f) capProfileRing(mesh, trimmed.front(), profile.value(), false);
-    if (trimEnd > 0.05f) capProfileRing(mesh, trimmed.back(), profile.value(), true);
+    // Cap only small stub ends. Large junction trims meet an apron — a full-profile
+    // U-cap draws a dark tip bar that reads as a salmon seam from above.
+    if (trimStart > 0.05f && trimStart < 2.5f) capProfileRing(mesh, trimmed.front(), profile.value(), false);
+    if (trimEnd > 0.05f && trimEnd < 2.5f) capProfileRing(mesh, trimmed.back(), profile.value(), true);
     auto deck = addDeckAndPiers(mesh, trimmed, edge.style, profile.value().halfWidth, options.includePiers);
     if (!deck.ok()) return deck;
     if (options.includeMarkings) {
