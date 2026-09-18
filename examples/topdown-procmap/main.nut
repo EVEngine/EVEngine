@@ -335,8 +335,8 @@ function scatterDecorations(heightmap, layers) {
                 if (biome == "taiga") scale *= 0.85;
                 placeDecor(proto, wx, wy, wz, scale, scale, scale, yaw);
                 decorBudget += 1;
-                // Forest undergrowth — half as many bushes between trunks.
-                if (jitter > 0.78 && ("bushB" in mapPrototypes) && decorBudget < decorCap) {
+                // Sparse forest undergrowth — keep bushes rare next to trunks.
+                if (jitter > 0.90 && ("bushB" in mapPrototypes) && decorBudget < decorCap) {
                     local bp = (hash01(gx, gy, 61) > 0.5) ? mapPrototypes.bush : mapPrototypes.bushB;
                     local bs = 0.48 + jitter * 0.42;
                     placeDecor(bp, wx + (jitter - 0.5) * 0.55, wy, wz + (chance - 0.5) * 0.55,
@@ -351,7 +351,7 @@ function scatterDecorations(heightmap, layers) {
                                0.55 + jitter * 0.25, 0.55 + jitter * 0.25, yaw * 0.7);
                     decorBudget += 1;
                 }
-            } else if ((biome == "grassland" || biome == "wetland") && chance < 0.21) {
+            } else if ((biome == "grassland" || biome == "wetland") && chance < 0.08) {
                 local bp = (jitter > 0.55 && ("bushB" in mapPrototypes))
                     ? mapPrototypes.bushB : mapPrototypes.bush;
                 local scale = 0.70 + jitter * 0.60;
