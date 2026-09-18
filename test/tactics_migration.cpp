@@ -19,6 +19,12 @@ eve::SimulationStep step(std::uint64_t tick) {
     return {eve::SimulationTick(tick), eve::Duration::fromNanoseconds(1)};
 }
 
+eve::LogicalId action(const char* text) {
+    const auto id = eve::LogicalId::parse(text);
+    REQUIRE(id.has_value());
+    return *id;
+}
+
 eve::SnapshotHashProvider testHash() {
     return [](std::string_view input) -> eve::Result<eve::ContentId> {
         std::uint64_t left  = 14695981039346656037ull;
@@ -122,7 +128,7 @@ TEST_CASE("tactics.versionOneSnapshotMigratesEdgesAbsentAndPolicyId") {
     auto captured = source.tactics.snapshot(source.battle, hash);
     REQUIRE(captured.ok());
     auto current = std::move(captured).takeValue();
-    CHECK(current.schemaVersion == eve::SchemaVersion(3));
+    CHECK(current.schemaVersion == eve::SchemaVersion(4));
 
     // Version 1 predates board edges, so the legacy payload drops that field.
     auto legacy = eve::makeSnapshotEnvelope(current.type, current.schema, eve::SchemaVersion(1), current.instanceId,
@@ -188,4 +194,109 @@ TEST_CASE("tactics.futureSnapshotVersionIsRejectedWithoutMutatingTarget") {
     auto status = target.tactics.status(target.battle);
     REQUIRE(status.ok());
     CHECK(status.value() == eve::tactics::BattleStatus::Setup);
+}
+
+/**
+ * @brief The version-3 shape is still readable once version 4 exists.
+ *
+ * Version 4 widened only *which* command kinds are legal, so a version-3 payload
+ * with no ability declaration must keep restoring. This is the "does not regress"
+ * half of the gate: widening a range must not invalidate the older versions.
+ */
+TEST_CASE("tactics.versionThreeSnapshotStillRestoresCommandlessBattles") {
+    auto    hash = testHash();
+    Fixture source;
+    source.build();
+    REQUIRE(source.tactics.start(source.battle, eve::tactics::kInitiativePolicyId).ok());
+    REQUIRE(source.tactics.advance(source.battle, step(1)).ok());
+
+    auto captured = source.tactics.snapshot(source.battle, hash);
+    REQUIRE(captured.ok());
+    auto current = std::move(captured).takeValue();
+
+    auto relabelled = eve::makeSnapshotEnvelope(current.type, current.schema, eve::SchemaVersion(3),
+                                                current.instanceId, current.revision, current.tick,
+                                                current.payload, hash);
+    REQUIRE(relabelled.ok());
+
+    Fixture target;
+    target.build();
+    REQUIRE(target.tactics.restore(target.battle, relabelled.value(), hash).ok());
+    auto migrated = target.tactics.policyId(target.battle);
+    REQUIRE(migrated.ok());
+    CHECK_EQ(migrated.value(), std::string(eve::tactics::kInitiativePolicyId));
+}
+
+/**
+ * @brief A version-3 payload may not smuggle in the version-4 command kind.
+ *
+ * The payload bytes are exactly what version 4 writes; only the declared version
+ * differs, so the ability command is the single fact under test. Without the
+ * version gate the restore would succeed and a version-3 reader would later see a
+ * command kind it cannot interpret.
+ */
+TEST_CASE("tactics.versionThreeSnapshotRefusesTheAbilityCommandKind") {
+    auto    hash = testHash();
+    Fixture source;
+    source.build();
+    REQUIRE(source.tactics.start(source.battle, eve::tactics::kInitiativePolicyId).ok());
+    const auto actor = source.firstActor();
+    REQUIRE(source.tactics.useAbility(source.battle, actor, action("test:strike"), {0, 0, 0}).ok());
+
+    auto captured = source.tactics.snapshot(source.battle, hash);
+    REQUIRE(captured.ok());
+    auto current = std::move(captured).takeValue();
+
+    auto relabelled = eve::makeSnapshotEnvelope(current.type, current.schema, eve::SchemaVersion(3),
+                                                current.instanceId, current.revision, current.tick,
+                                                current.payload, hash);
+    REQUIRE(relabelled.ok());
+
+    Fixture target;
+    target.build();
+    auto restored = target.tactics.restore(target.battle, relabelled.value(), hash);
+    CHECK(!restored.ok());
+    REQUIRE(restored.status().primaryDiagnostic() != nullptr);
+    CHECK_EQ(restored.status().primaryDiagnostic()->code(), eve::DiagnosticCode::ParseError);
+    // The refusal must not leave a half-restored battle behind.
+    auto status = target.tactics.status(target.battle);
+    REQUIRE(status.ok());
+    CHECK(status.value() == eve::tactics::BattleStatus::Setup);
+    auto commands = target.tactics.commandsFrom(target.battle, eve::Revision(0));
+    REQUIRE(commands.ok());
+    CHECK(commands.value().empty());
+}
+
+/** @brief The version-4 round trip keeps both the cost and the declaration. */
+TEST_CASE("tactics.abilityDeclarationSurvivesSnapshotRoundTrip") {
+    auto    hash = testHash();
+    Fixture source;
+    source.build();
+    REQUIRE(source.tactics.start(source.battle, eve::tactics::kInitiativePolicyId).ok());
+    const auto actor = source.firstActor();
+    REQUIRE(source.tactics.useAbility(source.battle, actor, action("test:strike"), {0, 0, 0}).ok());
+
+    auto captured = source.tactics.snapshot(source.battle, hash);
+    REQUIRE(captured.ok());
+    auto current = std::move(captured).takeValue();
+    CHECK(current.schemaVersion == eve::SchemaVersion(4));
+
+    Fixture target;
+    target.build();
+    REQUIRE(target.tactics.restore(target.battle, current, hash).ok());
+
+    // Both faces of the fact are restored: the spent point and the log entry, since
+    // the log is what replay re-applies.
+    auto resources = target.tactics.unitResources(target.battle, actor);
+    REQUIRE(resources.ok());
+    CHECK_EQ(resources.value().actionPoints, 0);
+
+    auto commands = target.tactics.commandsFrom(target.battle, eve::Revision(0));
+    REQUIRE(commands.ok());
+    const auto values = std::move(commands).takeValue();
+    REQUIRE(!values.empty());
+    CHECK(values.back().kind == eve::tactics::BattleCommandKind::UseAbility);
+    CHECK_EQ(values.back().action.format(), std::string("test:strike"));
+    const eve::tactics::Cell declaredTarget{0, 0, 0};
+    CHECK(values.back().cell == declaredTarget);
 }

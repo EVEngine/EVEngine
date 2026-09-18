@@ -32,7 +32,7 @@ local moved = battle.move("00000000-0000-0000-0000-000000001002", 1, 0, 0);
 战局方法前显式检查代理是否已因 `release()` 或模块 epoch 变化而失效。
 
 可用的战局操作包括
-`setTopology/addCell/addEdge/addSide/addUnit/start/advance/move/face/wait/endTurn/finish/defeatUnit`，
+`setTopology/addCell/addEdge/addSide/addUnit/start/advance/move/face/wait/endTurn/useAbility/finish/defeatUnit`，
 预检与查询包括
 `previewMove/previewFace/previewWait/reachable/cellsInRange/unitResources/edge/hasEdge`，
 反应包括 `openReaction/acceptReaction/declineReaction`，
@@ -69,6 +69,33 @@ local r = battle.unitResources(actorId).value;
 `reachable` / `cellsInRange` 的返回值是**该次查询所观察到的棋盘版本的投影**，
 不代表预留；状态改变后必须重算。`preview*` 成功也不代表占用或资源已被预留。
 
+### 行动经济与技能声明
+
+`useAbility(actor, action, x, y, layer)` 只做**声明**：它扣一点行动力、发出 `action.declared`
+事件、并把 `use_ability` 命令写入命令日志。**伤害与效果结算不属于 tactics**——由 RPG 或游戏
+适配层接收事件后处理，因此脚本无法借这个调用夹带伤害：
+
+```squirrel
+local declared = battle.useAbility(actorId, "tactics:strike", 1, 0, 0);
+// declared.value = null；失败时 {ok=false, code, diagnostics}
+
+// 行动力就是可用次数：耗尽后被拒绝（PreconditionViolation），且不扣不记
+local resources = battle.unitResources(actorId).value;   // actionPoints 已减 1
+```
+
+拒绝条件与诊断码（拒绝**不改变任何状态**）：
+
+| 条件 | DiagnosticCode |
+| --- | --- |
+| 不在 `running` / `acting`，或没有 active unit | `PreconditionViolation` |
+| `action` 不是合法 `LogicalId` | `InvalidArgument` |
+| `actor` 不拥有当前回合 | `PreconditionViolation` |
+| `actionPoints` 已为 0 | `PreconditionViolation` |
+| 目标层与行动者所在层不同，或该格不存在 | `InvalidArgument` |
+
+`use_ability` 命令因此进入快照 schema **v4**；v1–v3 快照仍可恢复，但 v3 及更早的快照
+**不得**携带 `use_ability`（会被判为 `ParseError`），否则旧版本读者会读到无法解释的命令种类。
+
 ### 命令日志（只读）
 
 `commandsFrom(revision)` 返回**该 revision 之后被接受的命令**——这是回放的基质，
@@ -78,7 +105,7 @@ local r = battle.unitResources(actorId).value;
 local all = battle.commandsFrom(0);
 // all.value = [{ sequence, kind, actor, cell, facing, policyId, action, triggerSequence }, ...]
 // kind 是稳定协议字符串：start / advance / move / face / wait / end_turn / finish /
-//   open_reaction / accept_reaction / decline_reaction / defeat_unit / roll_random
+//   open_reaction / accept_reaction / decline_reaction / defeat_unit / roll_random / use_ability
 
 local newer = battle.commandsFrom(battle.revision().tointeger());
 ```
@@ -186,11 +213,13 @@ auto unit = tactics.newUnit(battle.value(), side.value(), unitSubject,
 `SimulationStep`，不使用墙上时钟：
 
 ```cpp
-tactics.start(battle.value(), eve::tactics::TurnPolicyKind::Initiative);
+tactics.start(battle.value(), eve::tactics::kInitiativePolicyId);
 tactics.advance(battle.value(), step1); // battle_start -> round_start
 tactics.advance(battle.value(), step2); // round_start -> turn_start
 tactics.advance(battle.value(), step3); // turn_start -> acting
 auto moved = tactics.moveUnit(battle.value(), unitSubject, {1, 0, 0});
+auto declared = tactics.useAbility(battle.value(), unitSubject, *eve::LogicalId::parse("tactics:strike"),
+                                   {1, 0, 0});
 ```
 
 移动预检和提交使用同一套 `PathQuery` 规则。共享 `action::ActionRuntime` 可通过
@@ -203,7 +232,7 @@ auto moved = tactics.moveUnit(battle.value(), unitSubject, {1, 0, 0});
 ## 快照约定
 
 `TacticsPersistence` 使用引擎统一的 `SnapshotEnvelope`，schema 为 `tactics:battle`、
-当前版本为 1。快照保存稳定 `SubjectRef`，不保存 ECS handle。恢复只适用于身份集合相同的
+当前版本为 4。快照保存稳定 `SubjectRef`，不保存 ECS handle。恢复只适用于身份集合相同的
 目标战局：实现会先解析并验证完整候选状态，再一次性提交；哈希错误、未知版本、缺失单位或
 非法占位均不会修改目标。payload 覆盖棋盘、单位资源/朝向、回合、seed、事件序列、反应栈、
 objective 和已接受命令日志。

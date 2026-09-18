@@ -247,6 +247,45 @@ Result<void> BattleSystem::start(Battle& battle, std::string policyId) {
     return Result<void>::success(Status::success(StatusCode::Applied));
 }
 
+Result<void> BattleSystem::useAbility(Battle& battle, SubjectRef actor, const LogicalId& action, Cell targetCell) {
+    auto turn = battle.turn();
+    const Revision expectedRevision = turn->revision;
+    if (turn->status != BattleStatus::Running || turn->phase != BattlePhase::Acting || !turn->activeUnit)
+        return failure(DiagnosticCode::PreconditionViolation, "tactics battle is not accepting an ability",
+                       "battle.phase");
+    if (!action.isValid())
+        return failure(DiagnosticCode::InvalidArgument, "tactics ability requires a valid action id", "action");
+    TacticalUnit* unit = resolve<TacticalUnit>(*turn->activeUnit);
+    if (unit == nullptr)
+        return failure(DiagnosticCode::StaleHandle, "tactics active unit is stale", "battle.activeUnit");
+    if (unit->identity()->subject != actor)
+        return failure(DiagnosticCode::PreconditionViolation, "tactics actor does not own the active turn", "actor");
+    // The action economy is enforced here: an activation costs one action point,
+    // and a unit with none left cannot act.
+    if (unit->turn()->actionPoints <= 0)
+        return failure(DiagnosticCode::PreconditionViolation, "tactics unit has no action points left",
+                       "unit.actionPoints");
+    if (targetCell.layer != unit->position()->cell.layer)
+        return failure(DiagnosticCode::InvalidArgument, "tactics ability target must share the actor's layer",
+                       "targetCell.layer");
+    auto targetState = battle.board()->value.cell(targetCell);
+    if (!targetState) return Result<void>::failure(targetState.status());
+
+    auto revision = nextRevision(battle);
+    if (!revision) return Result<void>::failure(revision.status());
+    --unit->turn()->actionPoints;
+    turn->revision = std::move(revision).takeValue();
+    emit(battle, turn->phase, turn->phase, turn->tick, "action.declared", actor);
+    BattleCommand command;
+    command.kind             = BattleCommandKind::UseAbility;
+    command.expectedRevision = expectedRevision;
+    command.actor            = actor;
+    command.action           = action;
+    command.cell             = targetCell;
+    record(battle, std::move(command));
+    return Result<void>::success(Status::success(StatusCode::Applied));
+}
+
 Result<BattlePhase> BattleSystem::advance(Battle& battle, const SimulationStep& step) {
     auto turn = battle.turn();
     if (turn->status != BattleStatus::Running)

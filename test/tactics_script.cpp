@@ -263,6 +263,64 @@ TEST_CASE("tactics.scriptEdgesAreDirectedAndAffectReachability") {
     CHECK_EQ(vm.find("result").toString(), std::string("ok"));
 }
 
+TEST_CASE("tactics.scriptAbilityDeclarationIsCostedAndLogged") {
+    ecs::Table       world;
+    ecs::ScopedTable guard(world);
+    ssq::VM          vm(4096, ssq::Libs::ALL);
+    eve::ModuleManager::expose(vm);
+    vm.run(vm.compileSource(R"(
+        result <- "fail";
+        local module = eve.Tactics();
+        local created = module.newBattle("00000000-0000-0000-0000-000000000140", 14);
+        local battle = created.ok ? created.value : null;
+        if (battle != null) {
+            local unitId = "00000000-0000-0000-0000-000000000141";
+            local sideId = "00000000-0000-0000-0000-000000000142";
+            local c0 = battle.addCell(0, 0, 0, 100);
+            local c1 = battle.addCell(1, 0, 0, 100);
+            local side = battle.addSide(sideId);
+            // Two action points, so exactly two declarations are affordable.
+            local u = battle.addUnit(unitId, sideId, "test:unit", 0, 0, 0, 2, 300, 0, 10);
+            local started = battle.start("initiative");
+            local p1 = battle.advance(1, 1);
+            local p2 = battle.advance(2, 1);
+            local p3 = battle.advance(3, 1);
+
+            local first = battle.useAbility(unitId, "test:strike", 1, 0, 0);
+            // Refusals run while a point is still available, so they exercise the
+            // validation path rather than the exhausted-resource path.
+            local badLayer = battle.useAbility(unitId, "test:strike", 1, 0, 4);
+            local badAction = battle.useAbility(unitId, "", 1, 0, 0);
+            local second = battle.useAbility(unitId, "test:strike", 0, 0, 0);
+            local exhausted = battle.useAbility(unitId, "test:strike", 1, 0, 0);
+
+            local resources = battle.unitResources(unitId);
+            local all = battle.commandsFrom(0);
+            local declared = 0;
+            local sawActor = false;
+            local sawCell = false;
+            if (all.ok) {
+                foreach (command in all.value) {
+                    if (command.kind == "use_ability") {
+                        declared = declared + 1;
+                        if (command.actor == unitId) sawActor = true;
+                        if (command.cell.x == 1 && command.cell.y == 0 && command.cell.layer == 0) sawCell = true;
+                    }
+                }
+            }
+
+            if (c0.ok && c1.ok && side.ok && u.ok && started.ok &&
+                p1.ok && p2.ok && p3.ok &&
+                first.ok && second.ok && !exhausted.ok && !badLayer.ok && !badAction.ok &&
+                resources.ok && resources.value.actionPoints == 0 &&
+                all.ok && declared == 2 && sawActor && sawCell) {
+                result = "ok";
+            }
+        }
+    )"));
+    CHECK_EQ(vm.find("result").toString(), std::string("ok"));
+}
+
 TEST_CASE("tactics.scriptCommandLogIsReadableAndRevisionScoped") {
     ecs::Table       world;
     ecs::ScopedTable guard(world);

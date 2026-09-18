@@ -1388,7 +1388,8 @@ INFER / UNVERIFIED），**没有任何一个页面正文被成功打开**，
 ## 11. 实施进度（截至 2026-09-18，worktree `codex/tbs-framework-gap-analysis`）
 
 本节记录 §6.2 计划**实际落地并已验证**的部分，避免本文继续推荐已完成的工作。
-基线 `origin/dev` `d486eff1e`；累计 **11 文件 / +1214 −113** + 4 个新文件。
+基线 `origin/dev` `d486eff1e`；§11.1 记录的 Phase 0.2–1.2a 累计 **11 文件 / +1214 −113** + 4 个新文件
+（提交 `bdcb98b25`）；其后 Phase 1.3 声明切片与 Result 短路修复见同表后续行。
 
 ### 11.1 已完成并验证
 
@@ -1399,7 +1400,8 @@ INFER / UNVERIFIED），**没有任何一个页面正文被成功打开**，
 | Phase 0.3 | **有向边事实**：`EdgeState{passable,extraCost,tags}` + `addEdge/edge/tryEdge/edgeRecords`；寻路按方向阻挡与叠加非对称代价；**快照 v2** + v1 迁移；脚本 `addEdge/edge/hasEdge` | 3 个 C++ 用例 + 1 个脚本用例；单向性、非对称代价（出 150 / 回 350）、往返保真 |
 | Phase 1.1a–c | 脚本面补全：`endTurn`/`finish`/反应三件套/`previewMove·Face·Wait`/`reachable`/`cellsInRange`/`unitResources` | 4 个脚本用例；预检与提交 cost 一致 |
 | Phase 1.2a | **`ITurnPolicy` + `TurnPolicyRegistry`**：稳定字符串 id、值投影 `UnitOrder`、三值 `TurnOrder`；内建 `side_alternating`/`initiative`；**快照 v3** + v1/v2 冻结映射迁移；脚本 `start(id)`（诊断列出已注册集合）+ `policyIds()` + `policyId()`（读取侧） | 3 个策略用例（含**自定义策略反转行动顺序**，证明 id 真被解析）+ 3 个迁移用例 |
-| 迁移覆盖 | **每个历史版本都有往返测试**：把当前载荷降级成该版本的形状（v1 去掉 `board.edges`、`policy` 写回数值），用 `makeSnapshotEnvelope` 按该版本**重新封套并重算哈希**，再 restore 断言迁移结果；另测未知版本被拒且目标不被改动 | 直接断言 `policyId()` 等于迁移后的 id，**并且**断言该 id 真的被采用（快的单位先动） |
+| Phase 1.3（声明切片） | **`UseAbility` 命令种类** + `BattleSystem::useAbility` + 门面 `Tactics::useAbility` + 脚本 `useAbility(actor, action, x, y, layer)`：只扣 1 点行动力、发 `action.declared`、写命令日志；**效果结算留在 RPG/游戏适配层**，脚本无法借它夹带伤害。**快照 v4** + v3 及更早**拒绝** `use_ability`（`ParseError`） | 3 个 C++ 用例（扣点+记日志+事件、行动力耗尽拒绝且零副作用、错行动者/层/action 三类拒绝各带诊断码）+ 1 个脚本用例（含 `commandsFrom` 里 `kind == "use_ability"`）+ 2 个版本门槛用例 + 1 个 v4 往返用例 |
+| 迁移覆盖 | **每个历史版本都有往返测试**：把当前载荷降级成该版本的形状（v1 去掉 `board.edges`、`policy` 写回数值），用 `makeSnapshotEnvelope` 按该版本**重新封套并重算哈希**，再 restore 断言迁移结果；另测未知版本被拒且目标不被改动；v3 载荷**不得**携带 v4 命令种类 | 直接断言 `policyId()` 等于迁移后的 id，**并且**断言该 id 真的被采用（快的单位先动）；v3+v4 门槛用例成对（一个必须被接受、一个必须被拒绝） |
 
 **交付检查点**：提交 **`bdcb98b25`**（分支 `codex/tbs-framework-gap-analysis`，领先 `origin/dev` 1 个提交），
 23 文件 / **+6292 −113**，工作区干净。
@@ -1409,9 +1411,20 @@ INFER / UNVERIFIED），**没有任何一个页面正文被成功打开**，
 **未验证**：`clang-format` 在本环境不可用（PATH 无 `clang-format`/`clang-format-18`），
 故 CI 的 `format` 作业未在本地跑过——这是本提交最可能被 CI 拦下的点，且只涉及格式。
 
-**当前门禁状态**：`ctest` **261/261 通过**（tactics/action/rpg/sensing/combat/gameplay_control）；
+**门禁状态（Phase 1.3 声明切片 + Result 短路修复之后）**：
+`ctest` **5219/5219 通过**（`build/win32-debug` 全量，`-j 8 -E '^bundle/' -LE benchmark`，
+`EVENGINE_VIEW_SECONDS=0.3 EVENGINE_PERF_FRAMES=30`，约 6 分钟）；其中
+`tactics|action|rpg|sensing|combat|gameplay` 子集 **192/192**、
+`result|snapshot|replay|versioned|pixelworld` 子集 **83/83**；
 `module_depgraph --check`、`check_architecture_contracts --base HEAD`、
-`check_quality_metadata`、`check_bindings --strict` **全部 exit 0**。
+`check_quality_metadata`、`check_bindings --strict` **全部 exit 0**
+（`check_bindings` 报告 8251 个绑定，无新增 gap）。
+**仍未验证**：`clang-format` 在本环境不可用（PATH 无 `clang-format`/`clang-format-18`），
+故 CI 的 `format` 作业未在本地跑过——涉及本次改动的所有行都按仓库风格手工排版，但未经工具确认；
+`check_nodiscard.py` 因无宿主 C++ 编译器而跳过了它的 compile-fail 部分。
+**构建配方补充**：`test/native_test_plugin.dll` 是独立 target，`--target unit_test` 不会构建它；
+不先构建会让 `plugins.load.nativeLibraryAndInstantiateCppModule` 以
+`LoadLibrary failed ... (err=126)` 失败（构建配方问题，非代码回归），已记入 `build/RECIPE.md`。
 
 ### 11.2 实施中发现的、对本文的修正
 
@@ -1427,14 +1440,43 @@ INFER / UNVERIFIED），**没有任何一个页面正文被成功打开**，
    `sourceVersion != SchemaVersion(1)`。
    **教训：每次加版本，门槛条件都要写成"某版本及其之后"，而不是"恰好等于某版本"**，
    并且必须有一组覆盖全部历史版本的往返测试。
+3. **一个真实的生产缺陷被新用例暴露：`!a || !b` 短路链会漏检 Result。**
+   为 v4 写"v3 载荷携带 `use_ability` 必须被拒绝"的用例时，整个测试进程**直接以退出码 3
+   死掉，没有任何断言输出**。逐段插桩定位到
+   `TacticsPersistence.cpp` 的 `parseCandidate`：`parseCommands` 已经按预期返回失败，
+   但失败传播语句本身崩了。根因是
+
+   ```cpp
+   if (!events) return Result<Candidate>::failure(events.status());
+   if (!reactions) ...
+   if (!commands) ...          // ← 在这里返回
+   if (!objectives) ...        // ← objectives / random 从未被观察
+   if (!random) ...
+   ```
+
+   `commands` 失败时提前返回，**`objectives` 与 `random` 这两个 Result 从未被 `ok()/status()` 观察**；
+   Debug 下未观察的 Result 在析构时 `EV_ASSERT`，于是
+   `random` 的析构抛出 → 栈展开 → `objectives` 的析构**再次抛出** →
+   `std::terminate` → `abort`（Windows 退出码 3）。单个未观察只会变成一条"内部断言失败"，
+   两个及以上就变成无输出的硬崩溃——这就是它长期没被发现的原因。
+   `TacticsPersistence.cpp` 里同形状的 `!a || !b || ...` 守卫共 **22 处**（事件、反应、
+   命令、objective、random、棋盘格/边、单位记录），全部是同类地雷。
+   **修复**：新增引擎级 `eve::everyResultValid(...)`（`Result.h`，用 `&` 折叠而非 `&&`，
+   保证每个实参都被观察且不短路），并把该文件全部多 Result 守卫改写为它；
+   在 `Result检查与不得丢弃返回值规范.md` 增加"多个 Result 的组合条件（短路陷阱）"一节与测试清单项。
+   **教训：Result 的"必须检查"契约与 C++ 的短路求值天然冲突；任何把多个 Result 放进同一个
+   条件表达式的代码都必须显式全量观察，否则失败路径会以崩溃而非诊断的形式呈现。**
+   剩余风险：其他模块（尤其各 `*Persistence.cpp`/`*Snapshot.cpp` 解析器）可能仍有同形状代码，
+   本分支只修了 tactics 这一个文件（见 §11.3）。
 
 ### 11.3 未完成（按剩余价值排序）
 
 | 项 | 阻塞/说明 |
 |---|---|
 | Phase 1.2b CTB/ATB | 需要**阈值 + 就绪过滤 + 消耗**才能让快单位真的行动更多次；这要求改 `advance` 的 Round 阶段机（含"本轮无人就绪"的语义），并给 `TurnResources` 加持久化 `charge` → **快照 v4 + 迁移**。只做"按累积 charge 排序"会退化成 initiative 顺序，属误导性半成品，故未提交 |
-| Phase 1.3 通用行动协议 | `UseAbility` + `targetUnit` + `payloadJson`，接入既有 `CombatRuntime`、`combat/ActionDamageSink`、`combat/ActionWindowState`、`sensing/TargetingPipeline` |
-| Phase 0.4 行动经济 | `actionPoints` 仍无人消耗——它需要一个消耗 AP 的行动，而那正是 1.3；单独做只能凭空发明消费者 |
+| Phase 1.3 通用行动协议 | ✅ **声明切片已完成**（`UseAbility` + 行动经济 + v4 门槛）。**未完成**：`targetUnit`（单体目标）与 `payloadJson`（技能参数），以及接入既有 `CombatRuntime`、`combat/ActionDamageSink`、`combat/ActionWindowState`、`sensing/TargetingPipeline`——这些属于"效果结算"，按本方案的分层约定不应落回 tactics（tactics 保持 render-free 且不拥有伤害），应由 RPG/游戏适配层消费 `action.declared` 事件完成；`gameplay_control` 的动作描述符（`availableGameplayActions`）也尚未暴露 use_ability |
+| Phase 0.4 行动经济 | ✅ 已解除阻塞：`useAbility` 现在是 `actionPoints` 的真实消费者（1 次声明 = 1 点，耗尽后拒绝）。**未完成**：自动结束回合语义（行动力为 0 时是否自动 `endTurn`）需要产品决策，暂不默认 |
+| `Result` 短路陷阱（新发现） | tactics 的 `TacticsPersistence.cpp` 已全量修复（22 处守卫 + 新增 `eve::everyResultValid`）。**未完成**：**其他模块未审计**——建议用 `rg '!\w+ \|\| !\w+' src/modules` 加人工筛"操作数是否为 Result"扫一遍其余解析器 |
 | Phase 1.1d 快照/回放脚本出口 | `src/` 内**没有任何 host 侧 `SnapshotHashProvider`**（类型是调用方注入的 `std::function`，模块刻意不拥有哈希）。开脚本出口需先设计 capability + 宿主注册点 + **provider 存在/缺失双态测试** |
 | Phase 1.4–1.6 | 交互状态机（返回意图、不改仿真）、表现意图（**含显式 revert 契约**）、视线/掩体策略 + `hexmap` 注册 `sensing::ILineOfSightQuery` provider |
 

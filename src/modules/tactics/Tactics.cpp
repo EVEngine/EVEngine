@@ -730,6 +730,14 @@ Result<void> Tactics::endTurn(ecs::EntityHandle battleHandle, SubjectRef actor) 
     return BattleSystem::endTurn(*battle, actor);
 }
 
+Result<void> Tactics::useAbility(ecs::EntityHandle battleHandle, SubjectRef actor, const LogicalId& action,
+                                 Cell targetCell) {
+    Battle* battle = resolveBattle(battleHandle);
+    if (battle == nullptr)
+        return failure(DiagnosticCode::StaleHandle, "tactics battle is stale or not owned by this facade", "battle");
+    return BattleSystem::useAbility(*battle, actor, action, targetCell);
+}
+
 Result<MoveReceipt> Tactics::moveUnit(ecs::EntityHandle battleHandle, SubjectRef actor, Cell destination) {
     Battle* battle = resolveBattle(battleHandle);
     if (battle == nullptr)
@@ -1212,6 +1220,20 @@ void Tactics::expose(ssq::Table& table) {
         return script::projectResult(
             vm, withScriptBattle<Result<void>>(value, [&](Tactics& module, TacticsBattleSession& session) {
                 return module.endTurn(session.battle, subject.value());
+            }));
+    });
+    // Declare an ability activation. Tactics owns the action-economy cost and the
+    // command record; resolving the effect stays with the RPG/game adapter, so a
+    // script cannot smuggle damage through this call.
+    battle.addFunc("useAbility", [vm](ScriptTacticsBattle* value, const std::string& actor,
+                                      const std::string& actionText, int x, int y, int layer) {
+        auto subject = bindingSubject(actor, "actor");
+        if (!subject) return script::projectResult(vm, Result<void>::failure(subject.status()));
+        auto action = bindingLogicalId(actionText, "action");
+        if (!action) return script::projectResult(vm, Result<void>::failure(action.status()));
+        return script::projectResult(
+            vm, withScriptBattle<Result<void>>(value, [&](Tactics& module, TacticsBattleSession& session) {
+                return module.useAbility(session.battle, subject.value(), action.value(), {x, y, layer});
             }));
     });
     // End a running battle and enter BattleEnd. Scripts previously had no way to

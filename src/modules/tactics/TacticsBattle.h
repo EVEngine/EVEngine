@@ -77,6 +77,22 @@ public:
     /** @brief Preview a wait action with the exact validator used by commit. */
     [[nodiscard]] static Result<void> previewWait(Battle& battle, SubjectRef actor);
 
+    /**
+     * @brief Declare an ability activation by the active unit against a target cell.
+     * @param action Ability identity; it must be a valid logical id.
+     * @param targetCell Target cell; it must exist and share the actor's layer.
+     * @return Applied, or a structured refusal that leaves resources, events and the
+     *         command log unchanged.
+     * @remarks Tactics owns the *activation opportunity*, not the effect: it enforces
+     *          the phase and the actor, spends one action point, emits
+     *          `action.declared` and records the command for replay. Damage, status
+     *          and hit resolution stay with the RPG or game adapter, which reports
+     *          the tactical outcome back through {@link defeatUnit}. Ending the turn
+     *          is the caller's decision, exactly as for a move.
+     */
+    [[nodiscard]] static Result<void> useAbility(Battle& battle, SubjectRef actor, const LogicalId& action,
+                                                 Cell targetCell);
+
     /** @brief Preview movement with the exact validator used by commit, without mutation. */
     [[nodiscard]] static Result<MoveReceipt> previewMove(Battle& battle, SubjectRef actor, Cell destination);
 

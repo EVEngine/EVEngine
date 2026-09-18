@@ -266,7 +266,7 @@ Result<Battle::Events> parseEvents(const Value& value) {
         return fail<Battle::Events>(DiagnosticCode::ParseError, "invalid events object", "payload.events");
     auto nextMember = field(*root.value(), "nextSequence", "payload.events");
     auto valuesMember = field(*root.value(), "values", "payload.events");
-    if (!nextMember || !valuesMember)
+    if (!everyResultValid(nextMember, valuesMember))
         return fail<Battle::Events>(DiagnosticCode::ParseError, "incomplete events object", "payload.events");
     auto next = decimal(*nextMember.value(), "payload.events.nextSequence");
     const auto* values = valuesMember.value()->getIf<Value::Array>();
@@ -289,8 +289,8 @@ Result<Battle::Events> parseEvents(const Value& value) {
         auto correlationMember = field(*record.value(), "correlationCommand", path);
         auto from = intField(*record.value(), "from", path);
         auto to = intField(*record.value(), "to", path);
-        if (!sequenceMember || !tickMember || !subjectMember || !typeMember || !causationMember ||
-            !correlationMember || !from || !to ||
+        if (!everyResultValid(sequenceMember, tickMember, subjectMember, typeMember, causationMember,
+                              correlationMember, from, to) ||
             from.value() < 0 || from.value() > static_cast<int>(BattlePhase::BattleEnd) || to.value() < 0 ||
             to.value() > static_cast<int>(BattlePhase::BattleEnd))
             return fail<Battle::Events>(DiagnosticCode::ParseError, "invalid event fields", path);
@@ -300,7 +300,7 @@ Result<Battle::Events> parseEvents(const Value& value) {
         auto causation = decimal(*causationMember.value(), path + ".causationCommand");
         auto correlation = decimal(*correlationMember.value(), path + ".correlationCommand");
         const auto* type = typeMember.value()->getIf<std::string>();
-        if (!sequence || !tick || !subjectRef || !causation || !correlation || !type || type->empty() ||
+        if (!everyResultValid(sequence, tick, subjectRef, causation, correlation) || !type || type->empty() ||
             causation.value() == 0 || correlation.value() == 0 || sequence.value() <= previous ||
             sequence.value() >= result.nextSequence)
             return fail<Battle::Events>(DiagnosticCode::InvariantViolation, "invalid event ordering", path);
@@ -319,7 +319,7 @@ Result<Battle::Reactions> parseReactions(const Value& value, BattlePhase phase) 
     auto maxDepthMember = field(*root.value(), "maxDepth", "payload.reactions");
     auto seenMember = field(*root.value(), "seen", "payload.reactions");
     auto stackMember = field(*root.value(), "stack", "payload.reactions");
-    if (!maxDepthMember || !seenMember || !stackMember)
+    if (!everyResultValid(maxDepthMember, seenMember, stackMember))
         return fail<Battle::Reactions>(DiagnosticCode::ParseError, "incomplete reactions object",
                                        "payload.reactions");
     auto maxDepth = decimal(*maxDepthMember.value(), "payload.reactions.maxDepth");
@@ -347,12 +347,12 @@ Result<Battle::Reactions> parseReactions(const Value& value, BattlePhase phase) 
         auto triggerMember = field(*window.value(), "triggerSequence", path);
         auto depthMember = field(*window.value(), "depth", path);
         auto candidatesMember = field(*window.value(), "candidates", path);
-        if (!triggerMember || !depthMember || !candidatesMember)
+        if (!everyResultValid(triggerMember, depthMember, candidatesMember))
             return fail<Battle::Reactions>(DiagnosticCode::ParseError, "incomplete reaction window", path);
         auto trigger = decimal(*triggerMember.value(), path + ".triggerSequence");
         auto depth = decimal(*depthMember.value(), path + ".depth");
         const auto* candidates = candidatesMember.value()->getIf<Value::Array>();
-        if (!trigger || trigger.value() == 0 || !depth || depth.value() != i + 1 || !candidates ||
+        if (!everyResultValid(trigger, depth) || trigger.value() == 0 || depth.value() != i + 1 || !candidates ||
             candidates->empty())
             return fail<Battle::Reactions>(DiagnosticCode::InvariantViolation, "invalid reaction window state",
                                            path);
@@ -368,12 +368,12 @@ Result<Battle::Reactions> parseReactions(const Value& value, BattlePhase phase) 
             auto actionMember = field(*candidate.value(), "action", candidatePath);
             auto priority = intField(*candidate.value(), "priority", candidatePath);
             auto initiative = intField(*candidate.value(), "initiative", candidatePath);
-            if (!reactorMember || !actionMember || !priority || !initiative)
+            if (!everyResultValid(reactorMember, actionMember, priority, initiative))
                 return fail<Battle::Reactions>(DiagnosticCode::ParseError, "incomplete reaction candidate",
                                                candidatePath);
             auto reactor = subject(*reactorMember.value(), candidatePath + ".reactor");
             auto action = logicalId(*actionMember.value(), candidatePath + ".action");
-            if (!reactor || !action)
+            if (!everyResultValid(reactor, action))
                 return fail<Battle::Reactions>(DiagnosticCode::ParseError, "invalid reaction identity",
                                                candidatePath);
             const std::string key = reactor.value().format() + ":" + action.value().format();
@@ -391,13 +391,25 @@ Result<Battle::Reactions> parseReactions(const Value& value, BattlePhase phase) 
     return Result<Battle::Reactions>::success(std::move(result));
 }
 
-Result<Battle::Commands> parseCommands(const Value& value, Revision snapshotRevision, bool hasPolicyIdStrings) {
+/**
+ * @brief Version-gated interpretation of the command-record shape.
+ * @remarks Each flag is frozen to the version range that introduced the field, and is
+ *          written as "this version or later" so a future version never regresses to the
+ *          legacy reading. A payload can therefore only ever be read as the shape its own
+ *          version declared.
+ */
+struct CommandFieldPolicy {
+    bool policyIdStrings = false;  ///< v3+: stable policy id string instead of the legacy numeric enum.
+    bool allowUseAbility = false;  ///< v4+: the `UseAbility` command kind exists.
+};
+
+Result<Battle::Commands> parseCommands(const Value& value, Revision snapshotRevision, CommandFieldPolicy policy) {
     auto root = object(value, "payload.commands");
     if (!root || root.value()->size() != 2)
         return fail<Battle::Commands>(DiagnosticCode::ParseError, "invalid commands object", "payload.commands");
     auto nextMember = field(*root.value(), "nextSequence", "payload.commands");
     auto valuesMember = field(*root.value(), "values", "payload.commands");
-    if (!nextMember || !valuesMember)
+    if (!everyResultValid(nextMember, valuesMember))
         return fail<Battle::Commands>(DiagnosticCode::ParseError, "incomplete commands object", "payload.commands");
     auto next = decimal(*nextMember.value(), "payload.commands.nextSequence");
     const auto* values = valuesMember.value()->getIf<Value::Array>();
@@ -426,14 +438,19 @@ Result<Battle::Commands> parseCommands(const Value& value, Revision snapshotRevi
         auto kind = intField(*record.value(), "kind", path);
         auto facing = intField(*record.value(), "facing", path);
         auto policyMember = field(*record.value(), "policy", path);
-        if (!sequenceMember || !expectedMember || !resultingMember || !tickMember || !deltaMember ||
-            !triggerMember || !actorMember || !actionMember || !cellMember || !candidatesMember || !kind ||
-            !facing || !policyMember || kind.value() < 0 ||
-            kind.value() > static_cast<int>(BattleCommandKind::RollRandom))
+        const int highestKnownKind = policy.allowUseAbility ? static_cast<int>(BattleCommandKind::UseAbility)
+                                                            : static_cast<int>(BattleCommandKind::RollRandom);
+        // Every Result is observed before the decision, so a record with several
+        // missing fields reports one structured failure instead of destroying
+        // unobserved Results.
+        if (!everyResultValid(sequenceMember, expectedMember, resultingMember, tickMember, deltaMember,
+                              triggerMember, actorMember, actionMember, cellMember, candidatesMember, kind,
+                              facing, policyMember) ||
+            kind.value() < 0 || kind.value() > highestKnownKind)
             return fail<Battle::Commands>(DiagnosticCode::ParseError, "invalid command fields", path);
         // Version 3 stores the stable id string; versions 1-2 stored a numeric enum.
         std::string policyId;
-        if (hasPolicyIdStrings) {
+        if (policy.policyIdStrings) {
             if (!policyMember.value()->isString() || policyMember.value()->asString().empty())
                 return fail<Battle::Commands>(DiagnosticCode::ParseError, "invalid command policy", path + ".policy");
             policyId = policyMember.value()->asString();
@@ -454,8 +471,8 @@ Result<Battle::Commands> parseCommands(const Value& value, Revision snapshotRevi
         auto cell = parseCell(*cellMember.value(), path + ".cell");
         const auto* actionText = actionMember.value()->getIf<std::string>();
         const auto* candidates = candidatesMember.value()->getIf<Value::Array>();
-        if (!sequence || !expected || !resulting || !tick || !delta || !trigger || !actor || !cell ||
-            !actionText || !candidates || sequence.value() <= previousSequence ||
+        if (!everyResultValid(sequence, expected, resulting, tick, delta, trigger, actor, cell) || !actionText ||
+            !candidates || sequence.value() <= previousSequence ||
             sequence.value() >= result.nextSequence || expected.value() == std::numeric_limits<std::uint64_t>::max() ||
             resulting.value() != expected.value() + 1 ||
             (i > 0 && expected.value() != previousRevision.value()))
@@ -487,12 +504,12 @@ Result<Battle::Commands> parseCommands(const Value& value, Revision snapshotRevi
             auto candidateActionMember = field(*candidate.value(), "action", candidatePath);
             auto priority = intField(*candidate.value(), "priority", candidatePath);
             auto initiative = intField(*candidate.value(), "initiative", candidatePath);
-            if (!reactorMember || !candidateActionMember || !priority || !initiative)
+            if (!everyResultValid(reactorMember, candidateActionMember, priority, initiative))
                 return fail<Battle::Commands>(DiagnosticCode::ParseError, "incomplete command candidate",
                                               candidatePath);
             auto reactor = subject(*reactorMember.value(), candidatePath + ".reactor");
             auto candidateAction = logicalId(*candidateActionMember.value(), candidatePath + ".action");
-            if (!reactor || !candidateAction)
+            if (!everyResultValid(reactor, candidateAction))
                 return fail<Battle::Commands>(DiagnosticCode::ParseError, "invalid command candidate identity",
                                               candidatePath);
             command.candidates.push_back(
@@ -514,6 +531,8 @@ Result<Battle::Commands> parseCommands(const Value& value, Revision snapshotRevi
                     return command.triggerSequence == 0 || !command.actor.isValid() || !command.action.isValid();
                 case BattleCommandKind::DeclineReaction: return command.triggerSequence == 0;
                 case BattleCommandKind::RollRandom: return !command.action.isValid();
+                case BattleCommandKind::UseAbility:
+                    return command.triggerSequence != 0 || !command.actor.isValid() || !command.action.isValid();
             }
             return true;
         };
@@ -559,10 +578,10 @@ Result<Battle::Objectives> parseObjectives(Battle& battle, const BoardState& boa
         auto completedMember = field(*record.value(), "completedRevision", path);
         auto kind = intField(*record.value(), "kind", path);
         auto status = intField(*record.value(), "status", path);
-        if (!idMember || !beneficiaryMember || !targetMember || !roundMember || !cellsMember || !endsMember ||
-            !completedMember || !kind || !status || kind.value() < 0 ||
-            kind.value() > static_cast<int>(ObjectiveKind::OccupyCells) || status.value() < 0 ||
-            status.value() > static_cast<int>(ObjectiveStatus::Completed))
+        if (!everyResultValid(idMember, beneficiaryMember, targetMember, roundMember, cellsMember, endsMember,
+                              completedMember, kind, status) ||
+            kind.value() < 0 || kind.value() > static_cast<int>(ObjectiveKind::OccupyCells) ||
+            status.value() < 0 || status.value() > static_cast<int>(ObjectiveStatus::Completed))
             return fail<Battle::Objectives>(DiagnosticCode::ParseError, "invalid objective fields", path);
         auto id = logicalId(*idMember.value(), path + ".id");
         auto beneficiary = subject(*beneficiaryMember.value(), path + ".beneficiarySide");
@@ -571,7 +590,7 @@ Result<Battle::Objectives> parseObjectives(Battle& battle, const BoardState& boa
         auto completed = decimal(*completedMember.value(), path + ".completedRevision");
         const auto* cells = cellsMember.value()->getIf<Value::Array>();
         const auto* endsBattle = endsMember.value()->getIf<bool>();
-        if (!id || !beneficiary || !target || !round || !completed || !cells || !endsBattle ||
+        if (!everyResultValid(id, beneficiary, target, round, completed) || !cells || !endsBattle ||
             !ids.insert(id.value().format()).second || !sideSubjects.contains(beneficiary.value().format()) ||
             (target.value().isValid() && !sideSubjects.contains(target.value().format())) ||
             completed.value() > snapshotRevision.value())
@@ -623,12 +642,12 @@ Result<Battle::Random> parseRandom(const Value& value) {
                                         "payload.random." + name);
         auto stateMember = field(*state.value(), "state", "payload.random." + name);
         auto indexMember = field(*state.value(), "rollIndex", "payload.random." + name);
-        if (!stateMember || !indexMember)
+        if (!everyResultValid(stateMember, indexMember))
             return fail<Battle::Random>(DiagnosticCode::ParseError, "incomplete random stream state",
                                         "payload.random." + name);
         auto parsedState = decimal(*stateMember.value(), "payload.random." + name + ".state");
         auto parsedIndex = decimal(*indexMember.value(), "payload.random." + name + ".rollIndex");
-        if (!parsedState || !parsedIndex || parsedIndex.value() == 0)
+        if (!everyResultValid(parsedState, parsedIndex) || parsedIndex.value() == 0)
             return fail<Battle::Random>(DiagnosticCode::InvariantViolation, "invalid random stream state",
                                         "payload.random." + name);
         result.streams.emplace(name, Battle::RandomStreamState{parsedState.value(), parsedIndex.value()});
@@ -651,7 +670,7 @@ Result<Candidate> parseCandidate(Battle& battle, const Value& payload, Revision 
     Candidate result;
     auto status = intField(*root.value(), "status", "payload");
     auto phase = intField(*root.value(), "phase", "payload");
-    if (!status || !phase) return fail<Candidate>(DiagnosticCode::ParseError, "invalid battle enum");
+    if (!everyResultValid(status, phase)) return fail<Candidate>(DiagnosticCode::ParseError, "invalid battle enum");
     if (status.value() < 0 || status.value() > static_cast<int>(BattleStatus::Ended) || phase.value() < 0 ||
         phase.value() > static_cast<int>(BattlePhase::BattleEnd))
         return fail<Candidate>(DiagnosticCode::UnknownVersion, "snapshot contains an unknown battle enum");
@@ -660,7 +679,7 @@ Result<Candidate> parseCandidate(Battle& battle, const Value& payload, Revision 
     // Version 3 carries the stable policy id; versions 1-2 carried a numeric enum.
     auto policyMember = field(*root.value(), "policy", "payload");
     if (!policyMember) return fail<Candidate>(DiagnosticCode::ParseError, "invalid battle enum");
-    if (sourceVersion == SchemaVersion(3)) {
+    if (sourceVersion >= SchemaVersion(3)) {
         if (!policyMember.value()->isString() || policyMember.value()->asString().empty())
             return fail<Candidate>(DiagnosticCode::ParseError, "invalid battle policy", "payload.policy");
         result.policyId = policyMember.value()->asString();
@@ -673,10 +692,11 @@ Result<Candidate> parseCandidate(Battle& battle, const Value& payload, Revision 
     }
     auto roundValue = field(*root.value(), "round", "payload");
     auto cursorValue = field(*root.value(), "cursor", "payload");
-    if (!roundValue || !cursorValue) return fail<Candidate>(DiagnosticCode::ParseError, "missing turn state");
+    if (!everyResultValid(roundValue, cursorValue))
+        return fail<Candidate>(DiagnosticCode::ParseError, "missing turn state");
     auto round = decimal(*roundValue.value(), "payload.round");
     auto cursor = decimal(*cursorValue.value(), "payload.cursor");
-    if (!round || !cursor || cursor.value() > static_cast<std::uint64_t>(SIZE_MAX))
+    if (!everyResultValid(round, cursor) || cursor.value() > static_cast<std::uint64_t>(SIZE_MAX))
         return fail<Candidate>(DiagnosticCode::ParseError, "invalid turn counters");
     result.round = round.value();
     result.cursor = static_cast<std::size_t>(cursor.value());
@@ -697,7 +717,7 @@ Result<Candidate> parseCandidate(Battle& battle, const Value& payload, Revision 
         return fail<Candidate>(DiagnosticCode::ParseError, "invalid board object", "payload.board");
     auto topology = intField(*boardObject.value(), "topology", "payload.board");
     auto cellsMember = field(*boardObject.value(), "cells", "payload.board");
-    if (!topology || !cellsMember || topology.value() < 0 || topology.value() > 2)
+    if (!everyResultValid(topology, cellsMember) || topology.value() < 0 || topology.value() > 2)
         return fail<Candidate>(DiagnosticCode::ParseError, "invalid board topology", "payload.board.topology");
     const auto* cells = cellsMember.value()->getIf<Value::Array>();
     if (!cells)
@@ -713,7 +733,7 @@ Result<Candidate> parseCandidate(Battle& battle, const Value& payload, Revision 
         auto height = intField(*record.value(), "height", path);
         auto passableMember = field(*record.value(), "passable", path);
         auto tagsMember = field(*record.value(), "tags", path);
-        if (!cellMember || !moveCost || !height || !passableMember || !tagsMember)
+        if (!everyResultValid(cellMember, moveCost, height, passableMember, tagsMember))
             return fail<Candidate>(DiagnosticCode::ParseError, "incomplete board cell record", path);
         auto cell = parseCell(*cellMember.value(), path + ".cell");
         const auto* passable = passableMember.value()->getIf<bool>();
@@ -746,13 +766,13 @@ Result<Candidate> parseCandidate(Battle& battle, const Value& payload, Revision 
             auto passableMember = field(*record.value(), "passable", path);
             auto extraCost = intField(*record.value(), "extraCost", path);
             auto tagsMember = field(*record.value(), "tags", path);
-            if (!fromMember || !toMember || !passableMember || !extraCost || !tagsMember)
+            if (!everyResultValid(fromMember, toMember, passableMember, extraCost, tagsMember))
                 return fail<Candidate>(DiagnosticCode::ParseError, "incomplete board edge record", path);
             auto from = parseCell(*fromMember.value(), path + ".from");
             auto to = parseCell(*toMember.value(), path + ".to");
             const auto* passable = passableMember.value()->getIf<bool>();
             const auto* tags = tagsMember.value()->getIf<Value::Array>();
-            if (!from || !to || !passable || !tags)
+            if (!everyResultValid(from, to) || !passable || !tags)
                 return fail<Candidate>(DiagnosticCode::ParseError, "invalid board edge", path);
             EdgeState state;
             state.passable  = *passable;
@@ -813,14 +833,14 @@ Result<Candidate> parseCandidate(Battle& battle, const Value& payload, Revision 
         auto cellMember = field(*unitObject.value(), "cell", path);
         auto definitionMember = field(*unitObject.value(), "definition", path);
         auto sideMember = field(*unitObject.value(), "side", path);
-        if (!subjectMember || !cellMember || !definitionMember || !sideMember)
+        if (!everyResultValid(subjectMember, cellMember, definitionMember, sideMember))
             return fail<Candidate>(DiagnosticCode::ParseError, "incomplete unit record", path);
         auto subjectRef = subject(*subjectMember.value(), path + ".subject");
         auto cell = parseCell(*cellMember.value(), path + ".cell");
         auto facing = intField(*unitObject.value(), "facing", path);
         const auto* definitionText = definitionMember.value()->getIf<std::string>();
         auto sideRef = subject(*sideMember.value(), path + ".side");
-        if (!subjectRef || !cell || !facing || !definitionText || !sideRef)
+        if (!everyResultValid(subjectRef, cell, facing, sideRef) || !definitionText)
             return fail<Candidate>(DiagnosticCode::ParseError, "invalid unit identity or cell", path);
         const auto found = currentUnits.find(subjectRef.value().format());
         if (found == currentUnits.end() || !restoredSubjects.insert(found->first).second)
@@ -889,18 +909,30 @@ Result<Candidate> parseCandidate(Battle& battle, const Value& payload, Revision 
     auto commandsMember = field(*root.value(), "commands", "payload");
     auto objectivesMember = field(*root.value(), "objectives", "payload");
     auto randomMember = field(*root.value(), "random", "payload");
-    if (!eventsMember || !reactionsMember || !commandsMember || !objectivesMember || !randomMember)
+    if (!everyResultValid(eventsMember, reactionsMember, commandsMember, objectivesMember, randomMember))
         return fail<Candidate>(DiagnosticCode::ParseError, "snapshot is missing deterministic streams");
     auto events = parseEvents(*eventsMember.value());
     auto reactions = parseReactions(*reactionsMember.value(), result.phase);
-    auto commands = parseCommands(*commandsMember.value(), snapshotRevision, sourceVersion == SchemaVersion(3));
+    CommandFieldPolicy commandFields;
+    commandFields.policyIdStrings = sourceVersion >= SchemaVersion(3);
+    commandFields.allowUseAbility = sourceVersion >= SchemaVersion(4);
+    auto commands = parseCommands(*commandsMember.value(), snapshotRevision, commandFields);
     auto objectives = parseObjectives(battle, result.board, *objectivesMember.value(), snapshotRevision);
     auto random = parseRandom(*randomMember.value());
-    if (!events) return Result<Candidate>::failure(events.status());
-    if (!reactions) return Result<Candidate>::failure(reactions.status());
-    if (!commands) return Result<Candidate>::failure(commands.status());
-    if (!objectives) return Result<Candidate>::failure(objectives.status());
-    if (!random) return Result<Candidate>::failure(random.status());
+    // Observe every parsed stream *before* returning the first failure. A
+    // short-circuiting guard chain would leave the later Results unobserved, and an
+    // unobserved Result asserts when destroyed; two such destructors running during
+    // the same unwinding would terminate the process instead of reporting failure.
+    const bool eventsOk     = events.ok();
+    const bool reactionsOk  = reactions.ok();
+    const bool commandsOk   = commands.ok();
+    const bool objectivesOk = objectives.ok();
+    const bool randomOk     = random.ok();
+    if (!eventsOk) return Result<Candidate>::failure(events.status());
+    if (!reactionsOk) return Result<Candidate>::failure(reactions.status());
+    if (!commandsOk) return Result<Candidate>::failure(commands.status());
+    if (!objectivesOk) return Result<Candidate>::failure(objectives.status());
+    if (!randomOk) return Result<Candidate>::failure(random.status());
     result.events = std::move(events).takeValue();
     result.reactions = std::move(reactions).takeValue();
     result.commands = std::move(commands).takeValue();
@@ -1019,7 +1051,7 @@ Result<SnapshotEnvelope> TacticsPersistence::snapshot(Battle& battle, const Snap
         {"status", Value(static_cast<int>(battle.turn()->status))},
         {"units", Value(std::move(units))},
     });
-    return makeSnapshotEnvelope(std::string(kType), schema(), SchemaVersion(3),
+    return makeSnapshotEnvelope(std::string(kType), schema(), SchemaVersion(4),
                                 battle.identity()->subject.persistentId(), battle.turn()->revision,
                                 battle.turn()->tick,
                                 std::move(payload), hashProvider);
@@ -1033,10 +1065,11 @@ Result<void> TacticsPersistence::restore(Battle& battle, const SnapshotEnvelope&
         return fail<void>(DiagnosticCode::Conflict, "snapshot battle identity differs from target");
     auto verified = verifySnapshotEnvelope(source, hashProvider);
     if (!verified) return Result<void>::failure(verified.status());
-    // V1 predates board edges; V2 predates stable policy ids. Each is migrated by
-    // the documented default for the field that did not exist yet.
+    // V1 predates board edges; V2 predates stable policy ids; V3 predates the
+    // UseAbility command kind. Each is migrated by the documented default for the
+    // field that did not exist yet, so this list only ever grows.
     if (source.schemaVersion != SchemaVersion(1) && source.schemaVersion != SchemaVersion(2) &&
-        source.schemaVersion != SchemaVersion(3))
+        source.schemaVersion != SchemaVersion(3) && source.schemaVersion != SchemaVersion(4))
         return fail<void>(DiagnosticCode::UnknownVersion, "unsupported tactics battle snapshot version");
     auto metadata = validateSnapshotPayloadMetadata(source.payload, source.revision, source.tick);
     if (!metadata) return Result<void>::failure(metadata.status());

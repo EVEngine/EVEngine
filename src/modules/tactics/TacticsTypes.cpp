@@ -243,6 +243,7 @@ std::string_view commandKindName(BattleCommandKind kind) noexcept {
         case BattleCommandKind::DeclineReaction: return "decline_reaction";
         case BattleCommandKind::DefeatUnit: return "defeat_unit";
         case BattleCommandKind::RollRandom: return "roll_random";
+        case BattleCommandKind::UseAbility: return "use_ability";
     }
     return "unknown";
 }

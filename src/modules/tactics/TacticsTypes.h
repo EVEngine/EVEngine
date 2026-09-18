@@ -323,6 +323,15 @@ enum class BattleCommandKind : std::uint8_t {
     DeclineReaction,
     DefeatUnit,
     RollRandom,
+    /**
+     * @brief Declare a unit ability activation against a target cell.
+     *
+     * Appended last on purpose: the numeric value is persisted in the command log,
+     * so inserting a kind anywhere else would renumber every later kind and
+     * silently reinterpret existing payloads. Its legal range is version-gated
+     * (schema v4), not widened unconditionally.
+     */
+    UseAbility,
 };
 
 /**

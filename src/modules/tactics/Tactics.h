@@ -101,6 +101,14 @@ public:
     [[nodiscard]] Result<BattlePhase> advance(ecs::EntityHandle battle, const SimulationStep& step);
     /** @brief End the active actor turn. */
     [[nodiscard]] Result<void> endTurn(ecs::EntityHandle battle, SubjectRef actor);
+    /**
+     * @brief Declare an ability activation for the active unit against a target cell.
+     * @return Applied, or a structured refusal; the battle is unchanged on failure.
+     * @remarks Spends one action point and emits `action.declared`. Effect resolution
+     *          belongs to the RPG or game adapter, not to tactics.
+     */
+    [[nodiscard]] Result<void> useAbility(ecs::EntityHandle battle, SubjectRef actor, const LogicalId& action,
+                                          Cell targetCell);
     /** @brief Validate and commit movement for the active unit. */
     [[nodiscard]] Result<MoveReceipt> moveUnit(ecs::EntityHandle battle, SubjectRef actor, Cell destination);
     /** @brief Change the active unit's logical facing. */
