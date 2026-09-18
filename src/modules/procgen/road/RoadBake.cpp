@@ -446,8 +446,7 @@ Result<void> bakeJunction(MeshBuild& mesh, const RoadNetwork& network, const Roa
 
     const float y        = node.y;
     const float asphaltY = y + 0.01f;
-    const V3    up{0.f, 1.f, 0.f};
-    const float jr = node.junctionRadius;
+    const float jr       = node.junctionRadius;
 
     // Detect an axis-aligned 4-way cross (the simple debug scene).
     bool axisCross = arms.size() == 4;
