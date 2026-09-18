@@ -82,6 +82,22 @@ auto ranked = pipeline.executePreset(ctx, "sensing.builtin.coneSelect");
 - 期望 Preset 选出“最佳目标”——sensing 只排序；primary 由消费者显式 `setPrimary`。
 - 在非 World2D 事实上跑 2D QuerySpec——World 事实面目前是 2D。
 
+## 视线 provider 的路由（`LineOfSightRouter`）
+
+`eve.sensing.ILineOfSightQuery` 是**单槽位** capability，但一个项目通常有多套互不相关的视线实现
+（世界坐标 3D 探针、战棋棋盘上的格线行走）。各自直接注册会变成"最后注册者生效"，实际行为取决于
+模块加载顺序。
+
+`LineOfSightRouter`（`sensing/LineOfSightRouter.h`）就是那个**唯一被注册的 provider**：每个后端声明
+自己能解释的坐标空间，查询按空间分发。
+
+- 某个空间**没有后端**时返回 `Unsupported`，诊断里带上空间名——不会静默返回"看不见"
+  （那会被 `LineOfSightMode::Required` 当成"没有视线"而悄悄丢掉动作）。
+- 两端点**空间不同**时返回 `InvalidArgument`：接口本来就禁止在空间之间隐式换算。
+- 同一空间**重复认领**返回 `Conflict`；释放只能由认领者自己发起（否则 `NoOp`），因此一个模块
+  不会误释放另一个模块的后端，重复释放也安全。
+- 路由器**不拥有**后端：它只持有借用指针，认领方必须保证其后端在认领期间存活。
+
 ## API 快查
 
 | 对象 | API | 说明 |
