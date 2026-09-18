@@ -7,6 +7,7 @@
 #include "graphics/Mesh.h"
 #include "hexmap/HexFeatures.h"
 #include "hexmap/HexMapGenerator.h"
+#include "hexmap/HexSphereMesh.h"
 
 #include <simplesquirrel/simplesquirrel.hpp>
 
@@ -185,6 +186,83 @@ std::int32_t HexMapModule::rebuildDirtyChunks(graphics::Graphics* gfx) {
         rebuilt += rebuildChunk(gfx, chunkIndex);
     }
     return rebuilt;
+}
+
+// --- spherical map ----------------------------------------------------------
+
+void HexMapModule::releaseSphereMeshes(graphics::Graphics* gfx) noexcept {
+    if (gfx != nullptr) {
+        if (sphereTerrain_ != nullptr) (void)gfx->releaseMesh(sphereTerrain_);
+        if (sphereWater_ != nullptr) (void)gfx->releaseMesh(sphereWater_);
+    }
+    sphereTerrain_ = nullptr;
+    sphereWater_   = nullptr;
+}
+
+Result<void> HexMapModule::newSphere(graphics::Graphics* gfx, std::int32_t subdivision, float radius,
+                                     std::uint32_t seed) {
+    if (gfx == nullptr) return invalidArgument("hex sphere needs a graphics device");
+    releaseSphereMeshes(gfx);
+    return sphere_.reset(subdivision, radius, seed);
+}
+
+Result<void> HexMapModule::generateSphere(graphics::Graphics* gfx, std::uint32_t seed, std::int32_t landPercentage,
+                                          std::int32_t waterLevel) {
+    if (gfx == nullptr) return invalidArgument("hex sphere needs a graphics device");
+    if (sphere_.empty()) return invalidArgument("hex sphere map has no cells");
+
+    HexSphereGeneratorSettings settings{};
+    settings.seed           = seed;
+    settings.landPercentage = landPercentage;
+    settings.waterLevel     = waterLevel;
+
+    // The generator's only failure is an empty map, which the guard above already
+    // rejected, so it cannot leave the cells half-written.
+    auto generated = generateSphereMap(sphere_, settings);
+    if (!generated.ok()) return Result<void>::failure(generated.status());
+    return rebuildSphere(gfx);
+}
+
+Result<void> HexMapModule::rebuildSphere(graphics::Graphics* gfx) {
+    if (gfx == nullptr) return invalidArgument("hex sphere needs a graphics device");
+    if (sphere_.empty()) return invalidArgument("hex sphere map has no cells");
+
+    HexMeshData terrain;
+    buildSphereTerrainMesh(sphere_, terrain);
+    HexMeshData water;
+    buildSphereWaterMesh(sphere_, water);
+
+    bool       uploaded = true;
+    const auto upload   = [&](HexMeshData& data, graphics::Mesh*& mesh) {
+        if (data.empty()) {
+            // Nothing is flooded any more, for example: retire the mesh rather than draw
+            // stale geometry.
+            if (mesh != nullptr) {
+                (void)gfx->releaseMesh(mesh);
+                mesh = nullptr;
+            }
+            return;
+        }
+        const int vertexCount = static_cast<int>(data.vertexCount());
+        const int indexCount  = static_cast<int>(data.indices().size());
+        if (mesh != nullptr &&
+            !gfx->updateMeshVertices(mesh, data.positions().data(), data.normals().data(), data.uvs().data(),
+                                     vertexCount, data.indices().data(), indexCount)) {
+            // The backend rejected the in-place update; recreate rather than keep stale geometry.
+            (void)gfx->releaseMesh(mesh);
+            mesh = nullptr;
+        }
+        if (mesh == nullptr) {
+            mesh = gfx->newMeshFromArrays(data.positions().data(), data.normals().data(), data.uvs().data(),
+                                          vertexCount, data.indices().data(), indexCount);
+        }
+        if (mesh == nullptr) uploaded = false;
+    };
+
+    upload(terrain, sphereTerrain_);
+    upload(water, sphereWater_);
+    if (!uploaded) return invalidArgument("the graphics backend refused the hex sphere mesh upload");
+    return Result<void>::success();
 }
 
 // --- script bindings --------------------------------------------------------
@@ -533,6 +611,100 @@ void HexMapModule::expose(ssq::Class& cls) {
         auto                      loaded = loadHexMap(bytes, restored, units);
         if (!loaded) return script::projectResult(vm, std::move(loaded));
         return script::projectResult(vm, self->adoptGrid(gfx, std::move(restored), units));
+    });
+
+    // --- spherical map ---
+    cls.addFunc(
+        "newSphere", [vm](HexMapModule* self, graphics::Graphics* gfx, int subdivision, float radius, int seed) {
+            if (!self) return script::projectResult(vm, invalidArgument("hex map module is not available"));
+            if (seed < 0) seed = 0;
+            return script::projectResult(vm,
+                                         self->newSphere(gfx, subdivision, radius, static_cast<std::uint32_t>(seed)));
+        });
+    cls.addFunc("generateSphere", [vm](HexMapModule* self, graphics::Graphics* gfx, int seed, int landPercentage,
+                                       int waterLevel) {
+        if (!self) return script::projectResult(vm, invalidArgument("hex map module is not available"));
+        if (seed < 0) seed = 0;
+        return script::projectResult(
+            vm, self->generateSphere(gfx, static_cast<std::uint32_t>(seed), landPercentage, waterLevel));
+    });
+    cls.addFunc("rebuildSphere", [vm](HexMapModule* self, graphics::Graphics* gfx) {
+        if (!self) return script::projectResult(vm, invalidArgument("hex map module is not available"));
+        return script::projectResult(vm, self->rebuildSphere(gfx));
+    });
+    cls.addFunc("sphereReady", [](HexMapModule* self) { return self != nullptr && !self->sphere().empty(); });
+    cls.addFunc("sphereCellCount", [](HexMapModule* self) { return self ? self->sphere().cellCount() : 0; });
+    cls.addFunc("spherePentagonCount", [](HexMapModule* self) { return self ? self->sphere().pentagonCount() : 0; });
+    cls.addFunc("sphereSubdivision", [](HexMapModule* self) { return self ? self->sphere().subdivision() : 0; });
+    cls.addFunc("sphereRadius", [](HexMapModule* self) { return self ? self->sphere().sphereRadius() : 0.f; });
+    cls.addFunc("sphereElevationStep", [](HexMapModule* self) { return self ? self->sphere().elevationStep() : 0.f; });
+    cls.addFunc("sphereCellSpacing", [](HexMapModule* self) { return self ? self->sphere().cellSpacing() : 0.f; });
+    cls.addFunc("sphereIsPentagon",
+                [](HexMapModule* self, int cell) { return self != nullptr && self->sphere().isPentagon(cell); });
+    cls.addFunc("sphereNeighborCount",
+                [](HexMapModule* self, int cell) { return self ? self->sphere().neighborCount(cell) : 0; });
+    cls.addFunc("sphereNeighbor", [](HexMapModule* self, int cell, int direction) {
+        return self ? self->sphere().neighbor(cell, direction) : kNoHexSphereCell;
+    });
+    cls.addFunc("sphereDirection", [](HexMapModule* self, int cell) {
+        const HexVec3 direction = self ? self->sphere().direction(cell) : HexVec3{};
+        return Value(Value::Array{Value(direction.x), Value(direction.y), Value(direction.z)});
+    });
+    cls.addFunc("sphereCornerDirection", [](HexMapModule* self, int cell, int corner) {
+        const HexVec3 direction = self ? self->sphere().cornerDirection(cell, corner) : HexVec3{};
+        return Value(Value::Array{Value(direction.x), Value(direction.y), Value(direction.z)});
+    });
+    cls.addFunc("sphereCornerCount",
+                [](HexMapModule* self, int cell) { return self ? self->sphere().cornerCountOf(cell) : 0; });
+    cls.addFunc("sphereElevation", [](HexMapModule* self, int cell) { return self ? self->sphere().elevation(cell) : 0; });
+    cls.addFunc("sphereWaterLevel",
+                [](HexMapModule* self, int cell) { return self ? self->sphere().waterLevel(cell) : 0; });
+    cls.addFunc("sphereTerrainType",
+                [](HexMapModule* self, int cell) { return self ? self->sphere().terrainType(cell) : 0; });
+    cls.addFunc("sphereIsUnderwater",
+                [](HexMapModule* self, int cell) { return self != nullptr && self->sphere().isUnderwater(cell); });
+    cls.addFunc("sphereCellAt", [](HexMapModule* self, float x, float y, float z) {
+        return self ? self->sphere().topology().cellAt(HexVec3{x, y, z}) : kNoHexSphereCell;
+    });
+    cls.addFunc("sphereDistance", [](HexMapModule* self, int a, int b) {
+        return self ? self->sphere().distance(a, b) : kNoHexSphereCell;
+    });
+    cls.addFunc("spherePickCell",
+                [vm](HexMapModule* self, float ox, float oy, float oz, float dx, float dy, float dz) {
+                    const auto project = [](HexSphereCell cell) { return Value(static_cast<std::int64_t>(cell)); };
+                    if (!self) {
+                        return script::projectResult(
+                            vm,
+                            Result<HexSphereCell>::failure(Diagnostic::error(
+                                DiagnosticCode::NotFound, "hex map module is not available", "hexmap.sphere.pick")),
+                            project);
+                    }
+                    return script::projectResult(vm,
+                                                 self->sphere().pickCell(HexVec3{ox, oy, oz}, HexVec3{dx, dy, dz}),
+                                                 project);
+                });
+    cls.addFunc("sphereSetElevation", [vm](HexMapModule* self, int cell, int value) {
+        if (!self) return script::projectResult(vm, invalidArgument("hex map module is not available"));
+        return script::projectResult(vm, self->sphere().setElevation(cell, value));
+    });
+    cls.addFunc("sphereSetTerrainType", [vm](HexMapModule* self, int cell, int value) {
+        if (!self) return script::projectResult(vm, invalidArgument("hex map module is not available"));
+        return script::projectResult(vm, self->sphere().setTerrainType(cell, value));
+    });
+    cls.addFunc("sphereEditElevation", [vm](HexMapModule* self, int cell, int radius, int delta) {
+        if (!self) return script::projectResult(vm, invalidArgument("hex map module is not available"));
+        return script::projectResult(vm, self->sphere().editElevation(cell, radius, delta));
+    });
+    cls.addFunc("sphereEditTerrainType", [vm](HexMapModule* self, int cell, int radius, int terrainType) {
+        if (!self) return script::projectResult(vm, invalidArgument("hex map module is not available"));
+        return script::projectResult(vm, self->sphere().editTerrainType(cell, radius, terrainType));
+    });
+    cls.addFunc("sphereTerrainMesh",
+                [](HexMapModule* self) -> graphics::Mesh* { return self ? self->sphereTerrainMesh() : nullptr; });
+    cls.addFunc("sphereWaterMesh",
+                [](HexMapModule* self) -> graphics::Mesh* { return self ? self->sphereWaterMesh() : nullptr; });
+    cls.addFunc("sphereReleaseMeshes", [](HexMapModule* self, graphics::Graphics* gfx) {
+        if (self) self->releaseSphereMeshes(gfx);
     });
 }
 
