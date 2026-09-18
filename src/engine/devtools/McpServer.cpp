@@ -7,6 +7,8 @@
 
 #include "devtools/AiPanel.hpp"
 #include "devtools/AgentDevelopmentMcp.hpp"
+#include "devtools/McpJson.hpp"
+#include "devtools/McpRuntimeTools.hpp"
 #include "devtools/PlayHost.h"
 #include "devtools/DebugAdapter.hpp"
 #include "devtools/Debugger.hpp"
@@ -59,37 +61,6 @@ namespace {
 constexpr const SQChar* kMcpSnippetSource       = _SC("memory://mcp/snippet");
 constexpr const SQChar* kMcpSceneDirectorSource = _SC("memory://mcp/scene-director");
 
-std::string mcpStringify(const Poco::Dynamic::Var& v) {
-    std::ostringstream oss;
-    // indent=0, step=0 => compact single-line JSON (required for newline framing)
-    Poco::JSON::Stringifier::stringify(v, oss, 0, 0);
-    return oss.str();
-}
-
-std::string mcpJsonEscape(const std::string& s) {
-    std::string out;
-    out.reserve(s.size() + 8);
-    for (char c : s) {
-        switch (c) {
-            case '"': out += "\\\""; break;
-            case '\\': out += "\\\\"; break;
-            case '\n': out += "\\n"; break;
-            case '\r': out += "\\r"; break;
-            case '\t': out += "\\t"; break;
-            default:
-                if (static_cast<unsigned char>(c) < 0x20) {
-                    char buf[8];
-                    std::snprintf(buf, sizeof(buf), "\\u%04x", static_cast<unsigned>(c));
-                    out += buf;
-                } else {
-                    out += c;
-                }
-                break;
-        }
-    }
-    return out;
-}
-
 std::string idToJson(const Poco::Dynamic::Var& id) {
     if (id.isEmpty()) return "null";
     try {
@@ -110,18 +81,6 @@ std::string makeResult(const std::string& idJson, const std::string& resultJson)
 std::string makeError(const std::string& idJson, int code, const std::string& message) {
     return std::string("{\"jsonrpc\":\"2.0\",\"id\":") + idJson + ",\"error\":{\"code\":" + std::to_string(code) +
            ",\"message\":\"" + mcpJsonEscape(message) + "\"}}";
-}
-
-std::string textContentResult(const std::string& text, bool isError = false) {
-    Poco::JSON::Object::Ptr result  = Poco::JSON::Object::Ptr(new Poco::JSON::Object());
-    Poco::JSON::Array::Ptr  content = Poco::JSON::Array::Ptr(new Poco::JSON::Array());
-    Poco::JSON::Object::Ptr item    = Poco::JSON::Object::Ptr(new Poco::JSON::Object());
-    item->set("type", "text");
-    item->set("text", text);
-    content->add(item);
-    result->set("content", content);
-    if (isError) result->set("isError", true);
-    return mcpStringify(Poco::Dynamic::Var(result));
 }
 
 std::string pauseReasonName(PauseReason r) {
@@ -441,6 +400,18 @@ eve::IUIAutomation*     mcpUI() { return eve::cap::query<eve::IUIAutomation>(); 
 eve::IEditorAutomation* mcpEditor() { return eve::cap::query<eve::IEditorAutomation>(); }
 eve::IPixelWorldAutomation* mcpPixelWorld() {
     return eve::cap::query<eve::IPixelWorldAutomation>();
+}
+
+/**
+ * @brief Run a pending breakpoint/error vision dump on the game-loop thread.
+ *
+ * Graphics readback is only safe here, and both transports have to reach this:
+ * a stdio host that skipped it would leave a requested dump pending forever.
+ */
+void runPendingVisionDump() {
+    if (!RenderVision::instance().pending()) return;
+    auto* cap = mcpCapture();
+    if (cap) RenderVision::instance().pollPending(cap, renderStatusText(cap));
 }
 
 Poco::JSON::Object::Ptr renderableObservation(eve::IRenderCapture& capture, int entityId, int generation) {
@@ -1139,11 +1110,43 @@ std::string callTool(McpServer& mcp, const std::string& name, Poco::JSON::Object
         if (!cap) return "error: Graphics module not available";
         std::string path = argString(args, "path");
         if (path.empty()) path = "mcp_screenshot.png";
-        int         w = 0, h = 0;
-        std::string err;
-        if (!cap->savePng(path, &w, &h, &err)) return "error: " + err;
-        Poco::JSON::Object::Ptr o = Poco::JSON::Object::Ptr(new Poco::JSON::Object());
+        // A relative path resolves against the project root: the host process may
+        // run from any working directory, and an agent has to be able to read the
+        // artifact back from the path it receives.
+        if (std::filesystem::path(path).is_relative() && !mcp.gameRoot().empty())
+            path = (std::filesystem::path(mcp.gameRoot()) / path).string();
+        // Report one separator convention: the project root already uses '/',
+        // and agents echo this path back into file tooling.
+        for (char& c : path) {
+            if (c == '\\') c = '/';
+        }
+
+        const eve::RenderStatusInfo status = cap->status();
+        int                         w      = 0;
+        int                         h      = 0;
+        std::string                 err;
+        if (!cap->savePng(path, &w, &h, &err)) {
+            // Enabling readback and reading it back cannot happen inside one
+            // presented frame: the swapchain copy is recorded by the next
+            // present. Report that as a retryable state instead of a failure so
+            // an unattended loop keeps polling instead of giving up.
+            const bool              retryable = !status.readbackEnabled;
+            Poco::JSON::Object::Ptr o         = Poco::JSON::Object::Ptr(new Poco::JSON::Object());
+            o->set("ok", false);
+            o->set("retryable", retryable);
+            o->set("reason", retryable ? "no-presented-frame" : "capture-failed");
+            o->set("readbackEnabled", status.readbackEnabled);
+            o->set("message", err);
+            const std::string payload = mcpStringify(Poco::Dynamic::Var(o));
+            return retryable ? payload : "error: " + payload;
+        }
+
+        std::error_code         sizeError;
+        const auto              bytes = std::filesystem::file_size(path, sizeError);
+        Poco::JSON::Object::Ptr o     = Poco::JSON::Object::Ptr(new Poco::JSON::Object());
+        o->set("ok", true);
         o->set("path", path);
+        o->set("bytes", sizeError ? Poco::Int64(0) : static_cast<Poco::Int64>(bytes));
         o->set("width", w);
         o->set("height", h);
         return mcpStringify(Poco::Dynamic::Var(o));
@@ -1643,16 +1646,25 @@ std::string callTool(McpServer& mcp, const std::string& name, Poco::JSON::Object
     return "error: unknown tool " + name;
 }
 
+// Revisions this server actually implements. The newline-delimited JSON-RPC
+// shape and the tools/resources/prompts surface are shared by all of them, so a
+// client asking for one of these may keep its own framing assumptions.
+constexpr const char* kMcpProtocolLatest = "2025-06-18";
+
+bool isSupportedProtocol(const std::string& requested) {
+    return requested == "2025-06-18" || requested == "2025-03-26" || requested == "2024-11-05";
+}
+
 std::string handleInitialize(McpServer& mcp, const std::string& idJson, Poco::JSON::Object::Ptr params) {
     std::string clientName = "mcp-client";
-    std::string protocol   = "2025-06-18";
+    std::string requested  = kMcpProtocolLatest;
     if (params) {
         try {
             if (params->has("clientInfo")) {
                 auto info = params->getObject("clientInfo");
                 if (info && info->has("name")) clientName = info->get("name").convert<std::string>();
             }
-            if (params->has("protocolVersion")) protocol = params->get("protocolVersion").convert<std::string>();
+            if (params->has("protocolVersion")) requested = params->get("protocolVersion").convert<std::string>();
         } catch (...) {
         }
     }
@@ -1660,13 +1672,23 @@ std::string handleInitialize(McpServer& mcp, const std::string& idJson, Poco::JS
     AiPanel::instance().setClientName(clientName);
     AiPanel::instance().addLog("system", "mcp.initialize", clientName);
 
+    // The server must answer with a revision it implements; echoing an
+    // arbitrary client string would claim support for a protocol that was never
+    // built, and the client would then frame requests accordingly.
+    const std::string protocol = isSupportedProtocol(requested) ? requested : kMcpProtocolLatest;
+
     // Hand-built JSON keeps initialize compact (newline framing) without a Poco Object tree.
     const std::string resultJson =
         std::string("{\"protocolVersion\":\"") + mcpJsonEscape(protocol) +
         "\",\"capabilities\":{\"tools\":{},\"resources\":{},\"prompts\":{}},"
         "\"serverInfo\":{\"name\":\"evengine\",\"title\":\"EVEngine MCP\",\"version\":\"0.5.1\"},"
-        "\"instructions\":\"EVEngine MCP for AI-assisted game development. eve_host_* tools create JSON-defined editor "
-        "windows bound to Squirrel ViewModels (MVVM) for AI-crafted terrain/material/event editors.\"}";
+        "\"instructions\":\"EVEngine MCP for AI-assisted game development. Diagnose through the game's own channels: "
+        "eve_console_read returns the runtime console (Squirrel print/error plus engine log lines) with a monotonic "
+        "seq cursor, eve_error_slice returns the last script/render error slice, and eve_render_status with "
+        "eve_screenshot/eve_screenshot_image capture engine-owned frames. Drive a run with eve_pause/eve_step_* or "
+        "eve_play (clock/step/observe/capture/checkpoint/act), assert with eve_eval/eve_run_script and snapshot "
+        "tools, and inspect live state with eve_editor_*/eve_scene_*/eve_ui_*. eve_host_* tools create JSON-defined "
+        "editor windows bound to Squirrel ViewModels (MVVM) for AI-crafted terrain/material/event editors.\"}";
     return makeResult(idJson, resultJson);
 }
 
@@ -1911,7 +1933,10 @@ std::string handleToolsList(const std::string& idJson) {
         "{\"name\":\"eve_render_status\",\"description\":\"Render window size, 3D frame flag, readback state and "
         "RenderFlow event count.\","
         "\"inputSchema\":{\"type\":\"object\",\"properties\":{}}},"
-        "{\"name\":\"eve_screenshot\",\"description\":\"Capture the current frame to a PNG file (enables readback).\","
+        "{\"name\":\"eve_screenshot\",\"description\":\"Capture the current frame to a PNG file (enables readback). "
+        "Relative paths resolve against the project root and the response carries the absolute path, byte size and "
+        "pixel size. The swapchain copy lands on the next present, so the first call can return ok=false with "
+        "retryable=true and readbackEnabled=false; wait one rendered frame and call again.\","
         "\"inputSchema\":{\"type\":\"object\",\"properties\":{\"path\":{\"type\":\"string\"}}}},"
         "{\"name\":\"eve_render_describe\",\"description\":\"Capture the current frame and ask the configured vision "
         "model to describe it and relate it to render parameters. Cached unless fresh=true.\","
@@ -1995,14 +2020,21 @@ std::string handleToolsList(const std::string& idJson) {
         "reload diagnostic.\","
         "\"inputSchema\":{\"type\":\"object\",\"properties\":{}}},",
         "{\"name\":\"eve_host_shutdown\",\"description\":\"Exit the headless MCP host process.\","
-        "\"inputSchema\":{\"type\":\"object\",\"properties\":{}}},",
+        "\"inputSchema\":{\"type\":\"object\",\"properties\":{}}}",
         "]}"};
     static const std::string kToolsJson = [] {
+        // Core table first (last core entry has no trailing comma), then every
+        // satellite tool family. Satellites return comma-free object lists and
+        // the separator is added here, so adding a family cannot silently break
+        // the array (a missing separator makes the whole tools/list unusable).
         std::string out;
-        for (std::size_t index = 0; index < std::size(kToolsParts); ++index) {
-            if (index + 1 == std::size(kToolsParts)) out += agentDevelopmentToolSchemas();
-            out += kToolsParts[index];
+        for (std::size_t index = 0; index + 1 < std::size(kToolsParts); ++index) out += kToolsParts[index];
+        for (std::string_view family : {agentDevelopmentToolSchemas(), mcpRuntimeToolSchemas()}) {
+            if (family.empty()) continue;
+            out += ',';
+            out += family;
         }
+        out += kToolsParts[std::size(kToolsParts) - 1];
         return out;
     }();
     return makeResult(idJson, kToolsJson);
@@ -2030,6 +2062,17 @@ std::string handleToolsCall(McpServer& mcp, const std::string& idJson, Poco::JSO
     } catch (...) {
     }
     AiPanel::instance().addLog("tool", name, detail);
+
+    // Runtime-observation tools build their own content envelope: a console
+    // payload is text, a frame capture is an MCP image item.
+    if (isMcpRuntimeTool(name)) {
+        try {
+            return makeResult(idJson, callMcpRuntimeTool(name, args));
+        } catch (const std::exception& e) {
+            AiPanel::instance().addLog("error", name, e.what());
+            return makeResult(idJson, textContentResult(std::string("error: ") + e.what(), true));
+        }
+    }
 
     try {
         const std::string out   = callTool(mcp, name, args);
@@ -2317,16 +2360,12 @@ void McpServer::poll() {
             batch.swap(stdioQueue_);
         }
         for (const auto& line : batch) handleMessage(line);
+        runPendingVisionDump();
         return;
     }
     acceptNonBlocking();
     readAndDispatch();
-    // Main-thread hook: run a pending breakpoint/error vision dump (if any) on
-    // the render thread where Graphics readback is safe.
-    if (RenderVision::instance().pending()) {
-        auto* cap = mcpCapture();
-        if (cap) RenderVision::instance().pollPending(cap, renderStatusText(cap));
-    }
+    runPendingVisionDump();
 }
 
 void McpServer::acceptNonBlocking() {

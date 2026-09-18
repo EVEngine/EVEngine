@@ -11,8 +11,11 @@
 #include <cstdio>
 #include <chrono>
 #include <ctime>
+#include <algorithm>
 #include <sstream>
+#include <string>
 #include <utility>
+#include <vector>
 
 namespace eve::dev {
 namespace {
@@ -39,26 +42,49 @@ void forwardError(HSQUIRRELVM v, const SQChar* text) {
     }
 }
 
+// One console line has to survive a full debug dump: the previous fixed 1 KiB
+// buffer silently cut long prints, and truncated output is exactly what an
+// unattended agent cannot afford to miss. Over-long lines are now truncated
+// explicitly, and the marker says how much was dropped.
+constexpr std::size_t kMaxCapturedLine = 64 * 1024;
+
+std::string formatCaptured(const SQChar* s, va_list args) {
+    const char* format = s ? s : "";
+    va_list     probe;
+    va_copy(probe, args);
+    const int needed = std::vsnprintf(nullptr, 0, format, probe);
+    va_end(probe);
+    if (needed < 0) return std::string(format);
+
+    const std::size_t size = static_cast<std::size_t>(needed);
+    const std::size_t keep = std::min(size, kMaxCapturedLine);
+    std::vector<char> buffer(keep + 1, '\0');
+    std::vsnprintf(buffer.data(), buffer.size(), format, args);
+    std::string text(buffer.data(), keep);
+    if (size > keep) {
+        text += "\n[console: truncated " + std::to_string(size - keep) + " of " + std::to_string(size) + " bytes]";
+    }
+    return text;
+}
+
 // Squirrel print callback (varargs, printf-style). Captured into the console
 // log, then forwarded to the previous handler so stdout/stderr behavior stays.
 void capturePrint(HSQUIRRELVM v, const SQChar* s, ...) {
     va_list args;
     va_start(args, s);
-    char buf[1024];
-    vsnprintf(buf, sizeof(buf), s ? s : "", args);
+    const std::string text = formatCaptured(s, args);
     va_end(args);
-    ConsolePanel::instance().addLog("print", buf);
-    forwardPrint(v, buf);
+    ConsolePanel::instance().addLog("print", text);
+    forwardPrint(v, text.c_str());
 }
 
 void captureError(HSQUIRRELVM v, const SQChar* s, ...) {
     va_list args;
     va_start(args, s);
-    char buf[1024];
-    vsnprintf(buf, sizeof(buf), s ? s : "", args);
+    const std::string text = formatCaptured(s, args);
     va_end(args);
-    ConsolePanel::instance().addLog("error", buf);
-    forwardError(v, buf);
+    ConsolePanel::instance().addLog("error", text);
+    forwardError(v, text.c_str());
 }
 
 std::string typeName(HSQUIRRELVM vm, SQInteger idx) {
@@ -154,12 +180,16 @@ void ConsolePanel::toggleVisible() { setVisible(!isVisible()); }
 
 void ConsolePanel::addLog(std::string level, std::string text) {
     std::lock_guard<std::mutex> lock(mu_);
-    ConsoleLine line;
+    ConsoleLine                 line;
+    line.seq       = nextSeq_++;
     line.timestamp = nowStamp();
     line.level     = std::move(level);
     line.text      = std::move(text);
     log_.push_back(std::move(line));
-    while (log_.size() > maxEntries_) log_.pop_front();
+    while (log_.size() > maxEntries_) {
+        droppedThrough_ = log_.front().seq;
+        log_.pop_front();
+    }
 }
 
 void ConsolePanel::addInfo(std::string text) { addLog("info", std::move(text)); }
@@ -170,13 +200,62 @@ void ConsolePanel::addError(std::string text) { addLog("error", std::move(text))
 
 void ConsolePanel::clear() {
     std::lock_guard<std::mutex> lock(mu_);
+    // Dropping lines must advance the drop cursor, never the sequence cursor:
+    // an existing reader cursor stays meaningful and cannot re-read or stall.
+    droppedThrough_ = nextSeq_ == 0 ? 0 : nextSeq_ - 1;
     log_.clear();
 }
 
 void ConsolePanel::setMaxEntries(size_t n) {
     std::lock_guard<std::mutex> lock(mu_);
     maxEntries_ = n == 0 ? 1 : n;
-    while (log_.size() > maxEntries_) log_.pop_front();
+    while (log_.size() > maxEntries_) {
+        droppedThrough_ = log_.front().seq;
+        log_.pop_front();
+    }
+}
+
+std::uint64_t ConsolePanel::nextSeq() const {
+    std::lock_guard<std::mutex> lock(mu_);
+    return nextSeq_;
+}
+
+std::uint64_t ConsolePanel::droppedThrough() const {
+    std::lock_guard<std::mutex> lock(mu_);
+    return droppedThrough_;
+}
+
+ConsoleSlice ConsolePanel::read(std::uint64_t afterSeq, size_t max, const std::string& level) const {
+    std::lock_guard<std::mutex> lock(mu_);
+
+    ConsoleSlice slice;
+    slice.nextSeq        = nextSeq_;
+    slice.droppedThrough = droppedThrough_;
+    slice.firstSeq       = log_.empty() ? nextSeq_ : log_.front().seq;
+
+    const size_t want = max == 0 ? 64 : max;
+    if (afterSeq == 0) {
+        // Tail read: newest matching lines, returned oldest first.
+        slice.truncated = droppedThrough_ > 0;
+        for (auto it = log_.rbegin(); it != log_.rend() && slice.lines.size() < want; ++it) {
+            if (!level.empty() && it->level != level) continue;
+            slice.lines.push_back(*it);
+        }
+        std::reverse(slice.lines.begin(), slice.lines.end());
+    } else {
+        slice.truncated = afterSeq < droppedThrough_;
+        for (const auto& line : log_) {
+            if (line.seq <= afterSeq) continue;
+            if (!level.empty() && line.level != level) continue;
+            if (slice.lines.size() >= want) break;
+            slice.lines.push_back(line);
+        }
+    }
+    // The resumable cursor is the last line actually covered by this read. It is
+    // deliberately not `nextSeq`: that is the seq the *next* appended line will
+    // receive, and paging from it would skip exactly one line.
+    slice.cursor = slice.lines.empty() ? afterSeq : slice.lines.back().seq;
+    return slice;
 }
 
 std::vector<ConsoleLine> ConsolePanel::recent(size_t max) const {

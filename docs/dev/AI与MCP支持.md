@@ -76,7 +76,9 @@ MCP listening on 127.0.0.1:7529 (newline JSON-RPC; use tools/eve-mcp for Cursor 
 | `eve_scene_director_install` / `eve_scene_director_status` / `eve_scene_reset` / `eve_scene_modify` / `eve_scene_info` / `eve_camera_generate` | AI 场景导演：搭台 kit 安装 / 状态 / 清场 / 摆物调光摄像机 / 场景真值 / 生成机位（见 [AI 场景导演](AI场景导演.md)） |
 | `eve_procgen_recipes` / `eve_procgen_map` / `eve_procgen_mesh` | 程序化生成：算法/配方枚举、生成地图网格、构建网格 |
 | `eve_physics_new_world` / `eve_physics_list_worlds` / `eve_physics_raycast` / `eve_physics_remove_world` | 2D 物理世界与射线检测 |
-| `eve_render_status` / `eve_screenshot` | 渲染状态、当前帧截图（PNG） |
+| `eve_render_status` / `eve_screenshot` | 渲染状态、当前帧截图（PNG）；相对路径按项目根解析并返回绝对路径与字节数 |
+| `eve_screenshot_image` | 把当前帧作为 MCP image content 返回（客户端没有共享文件系统时也能看到画面） |
+| `eve_console_read` / `eve_console_write` / `eve_console_clear` | 运行期控制台：按 `seq` 游标增量读取 Squirrel `print` / 脚本错误 / `eve.dev.console.*` / Agent 标记行 |
 | `eve_render_describe` | 采集当前帧 + 渲染参数，交给配置的视觉模型，返回文字描述与「渲染参数↔画面效果」对应关系 |
 | `eve_render_vision_config` | 设置 / 读取视觉模型配置（baseUrl/apiKey/model/path/timeoutMs，密钥掩码） |
 | `eve_particles_status` / `eve_particles_emit` | 粒子系统状态与发射 |
@@ -105,13 +107,47 @@ eve_ui_click { "host": "editor-v2", "widget": "asset-tree" }
 `ui.dispatchEvents()` 分发，再由下一帧游戏逻辑通过 `ui.consumeClick()` 或注册回调消费；
 它不会直接调用业务函数。省略 `host` 时，widget id 必须在全部 host 中唯一，否则返回歧义错误。
 
+### 运行期控制台与截帧（无人值守诊断）
+
+`eve_console_read` 暴露引擎内的 `ConsolePanel` 环形缓冲：Squirrel `print()`、脚本错误、
+`eve.dev.console.*` 以及 Agent 自己写入的标记行。stdio 传输下 stdout 只承载 JSON-RPC 帧、
+所有诊断都走 stderr，因此在此之前 Agent 根本无法通过 MCP 看到 `print()` 输出。
+
+每行带一个进程内单调递增的 `seq`：
+
+```text
+eve_console_read { "sinceSeq": 0, "limit": 200, "level": "error" }
+→ {"ok":true,"attached":true,"firstSeq":12,"cursor":30,"nextSeq":31,"droppedThrough":11,
+   "truncated":false,"count":19,
+   "lines":[{"seq":12,"time":"10:31:02","level":"print","text":"boss phase 1"}]}
+```
+
+- 游标语义：只返回 `seq > sinceSeq` 的行；`sinceSeq=0` 返回最新若干行。
+- **把响应里的 `cursor` 原样回传作为下一次的 `sinceSeq`**。`nextSeq` 只是「下一行将要使用的
+  序号」，用它当游标会正好跳过一行。
+- `eve_console_clear` 只丢行、不回退游标。被丢弃的行通过 `droppedThrough` 与 `truncated`
+  显式上报，Agent 不会把“行被丢弃”误判成“没有新输出”。
+- `limit` 上限 1000；`level` 过滤可选（`debug|info|warn|error|print|cmd|result`）。
+- 单行上限 64 KiB，超长时附带 `[console: truncated …]` 标记，不再静默截断到 1 KiB。
+- **覆盖边界**：控制台只包含 Squirrel 打印与显式 `eve.dev.console.*`；引擎 C++ 层的
+  `fprintf(stderr)`（`[startup] …`、Vulkan/驱动告警等）仍在进程 stderr 上，不进入该缓冲。
+
+截帧契约（`eve_screenshot` / `eve_screenshot_image`）：readback 打开后，交换链拷贝要到
+**下一次 present** 才可取回，所以单次调用无法既开启又读回。首次调用返回
+`{"ok":false,"retryable":true,"reason":"no-presented-frame","readbackEnabled":false}`，
+等一帧后重试即可——这是可重试状态而不是失败，无人值守循环应继续轮询。`eve_screenshot`
+的相对路径按项目根解析，响应返回绝对路径、字节数、像素尺寸；`eve_screenshot_image` 直接
+返回 MCP image content（`maxBytes` 默认 2 MiB，超出时返回 `image-too-large` 而不截断图片）。
+
 ### Prompts
 
 - `debug_failure` — 用切片排查失败
 - `test_scenario` — 暂停 → 快照 → 断言 → 恢复
 - `ai_game_review` — 审查 AI 生成内容的运行态风险
 
-协议版本默认协商 `2025-06-18`。传输：TCP + **单行 JSON**（与 MCP stdio 一致，载荷内不得含裸换行）。
+协议版本在 `2024-11-05` / `2025-03-26` / `2025-06-18` 之间协商：客户端请求其中之一时按该版本应答，
+请求其他版本时返回服务端最新支持的 `2025-06-18`（不再原样回显客户端字符串）。传输：TCP + **单行
+JSON**（与 MCP stdio 一致，载荷内不得含裸换行）。
 
 ## DevTools AI 面板
 
@@ -345,7 +381,13 @@ capture / save / runScript / reloadResource / hotReloadStatus`。脚本可定义
 新增用例：`devtools.mcp.stdioTransport`（stdio 握手 + tools/list）、
 `devtools.mcp.hostEditorBinding`（VM 注册、双向绑定、onChange、事件、
 save→unload→reload 持久化往返）、`devtools.mcp.hostResourceHotReload`
-（View / ViewModel / mcp.nut 重载、状态保留、错误回退、路径隔离与诊断）。
+（View / ViewModel / mcp.nut 重载、状态保留、错误回退、路径隔离与诊断）、
+`devtools.mcp.consoleCursorSurvivesEvictionAndClear`（seq 游标、淘汰与 clear 后的
+`droppedThrough`/`truncated` 语义）、`devtools.mcp.consoleToolsRoundTripScriptPrint`
+（MCP 读回 Squirrel `print()`、Agent 标记、非法 level 拒绝、clear 后无新行）、
+`devtools.mcp.everyDeclaredToolIsRouted`（tools/list 声明的每个工具都必须被
+tools/call 路由，防止 schema 表与 dispatcher 漂移）、
+`devtools.mcp.initializeNegotiatesSupportedProtocol`（未知版本不回显）。
 
 ## 测试
 
