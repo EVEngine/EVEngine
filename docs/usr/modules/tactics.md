@@ -282,6 +282,74 @@ auto declared = tactics.useAbility(battle.value(), unitSubject, *eve::LogicalId:
 内建 objective 包括 `EliminateSide`、`SurviveRounds` 和 `OccupyCells`。RPG 或游戏结算不应直接
 修改棋盘；确认死亡后调用 `defeatUnit`，由 tactics 原子更新存活状态、占位、objective 和战局状态。
 
+## 棋盘交互状态机（C++ 接口，无渲染依赖）
+
+`tactics/Interaction.h` 解决的是"同一个规则被实现两遍"的问题：UI 通常自己维护选中/高亮状态，
+于是"这个单位能不能走到那格"既有高亮版本、又有提交版本。这里的状态机只读一份**不可变投影**，
+回答的是**意图**值，从不改战局：
+
+```cpp
+// C++：调用方先用自己的权威查询（reachable / cellsInRange / observe）拼出投影
+eve::tactics::InteractionContext context;
+context.status = BattleStatus::Running;
+context.phase = BattlePhase::Acting;
+context.activeUnit = controlled;          // 现在轮到谁
+context.controlledUnit = controlled;      // 这个会话驱动谁
+context.controlledCell = {0, 0, 0};
+context.reachableCells = reachableCells;  // 由调用方算好，状态机不重算
+context.unitsByCell = { {{2, 0, 0}, enemy} };
+context.revision = observed.revision;
+
+auto session = eve::tactics::InteractionSession::create(context);
+// InteractionState: blocked / await_selection / unit_selected / targeting / resolving / ended
+// InteractionIntentKind: none / select_unit / move_to / use_ability_on / cancel / confirm / end_turn
+```
+
+规则：
+
+- **`create` 不会因为"还没轮到它"而失败**：会话照常存在，用会话状态 `blocked` 表达，
+  因此 UI 可以跨回合持有一个会话，而不是每回合防御性重建。
+- 点击**无法到达的格子**返回 `kind == none`（正常情况，不是错误）；**结构性非法**（战局未在
+  `acting`、已结束、会话被阻塞、已有待提交意图）返回带诊断的失败。
+- 意图带回 `actor`、`cell`、`action`、`targetUnit` 与**决策时所依据的 `expected` revision**，
+  所以调用方能在提交前发现世界已经变化，而不是拿过期观察去提交。
+- `armAbility` 允许传入**空的合法目标集**：UI 可以显示"这个技能现在没有合法目标"，
+  每次点击都得到 `none`，而不必凭空造一个失败。
+- 把格子解析成**格子上的单位**由状态机做（`unitsByCell`），因为"点到了哪一格 → 打谁"
+  写错正是这类 bug 的高发区。
+- 提交后把会话解析回 `await_selection`；提交进行中再次点击是 `Conflict`，
+  不会把互相矛盾的意图排队。
+
+## 表现意图与显式回退契约（C++ 接口，无渲染依赖）
+
+`tactics/Presentation.h` 把战局事件投影成**数据**，而不是去改视图对象（TBSF 的
+`MarkAsSelected/MarkAsAttacking/...`）。这样做的关键差别是**每条意图都说明自己何时失效、
+以及怎么撤销**——"卡住的高亮"就是因为原框架没有任何东西负责撤销：
+
+```cpp
+eve::tactics::PresentationProjector projector;
+eve::tactics::PresentationFrame frame;         // revision + 每个单位的"静止状态"
+auto commands = projector.project(event, command, frame);
+// commands[i] = { intent, revert }
+// intent = {sequence, subject, other, state, from, to, path, revision, tick, expiresAtTick}
+// state  = idle / friendly / selected / finished / targetable / attacking / defending / moving / destroyed
+// revert = {restingState, trigger, sequence}
+// trigger = never / on_expiry / on_next_turn / on_round_start
+```
+
+规则：
+
+- `never` = **持久状态**（`destroyed`；跨回合的 `finished` 用 `on_round_start`），
+  其撤销许可为 false；撤销一次持久状态会被拒绝并返回 `Unsupported`——不允许"撤销一次阵亡"
+  把视图改成与战局不符。
+- 瞬时状态必须带 `expiresAtTick`（0 只用于持久状态），`on_expiry` 的消费者在超过该 tick 后
+  必须撤销或丢弃，因此表现层不会留下过期高亮。
+- 几何信息（`from`/`to`/`path`）来自**事件指向的那条已被接受的命令**，不是从事件里猜的：
+  事件流只带 `sequence` 与 `type`，命令日志才是位移与目标的权威。调用方拿不到命令时，
+  意图照常产生但**不带几何**（而不是编一个目的地）。
+- 与表现无关的事件（随机数、objective 结算）投影为**空列表**，这是正常答案。
+- 全部是值：投影可以在快照/serve 之后逐字节重算，测试与渲染只是两个消费者。
+
 ## 快照约定
 
 `TacticsPersistence` 使用引擎统一的 `SnapshotEnvelope`，schema 为 `tactics:battle`、
