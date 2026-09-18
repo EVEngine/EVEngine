@@ -147,8 +147,8 @@ public:
      * @brief Return an owning snapshot of a placed unit's per-turn resources.
      *
      * This is the read side of the action economy: it exposes the same values the
-     * turn resolvers consume, including the `acted` flag, without granting script
-     * code a write path.
+     * turn resolvers consume, including the `acted` flag and the scheduling
+     * `charge`, without granting script code a write path.
      */
     [[nodiscard]] Result<TacticalUnit::TurnResources> unitResources(ecs::EntityHandle battle, SubjectRef unit);
 

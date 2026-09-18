@@ -45,36 +45,53 @@ eve::SnapshotHashProvider testHash() {
 /**
  * @brief Rewrite a current payload into a legacy *version* shape.
  *
- * Versions 1 and 2 stored the turn policy as the numeric enum `1` (the frozen
- * mapping to `initiative`), and version 1 had no board edge set. Nothing else
- * changes, so this isolates exactly the fields the migrations own.
+ * Every field group introduced after `target` is removed, so the result is exactly what
+ * that version would have written:
+ *  - v1 predates the board edge set;
+ *  - v1-v2 predate the stable policy id (they stored the numeric enum `1`, the frozen
+ *    mapping to `initiative`);
+ *  - v1-v4 predate the persisted scheduling charge and the explicit round schedule.
  *
  * Deliberately defensive instead of using REQUIRE: it returns a value, and a
  * failing lookup should degrade to "unchanged payload" so the test fails on the
  * restore assertion rather than on an unrelated precondition.
  */
-eve::Value legacyPayload(const eve::Value& current, bool keepEdges) {
+eve::Value legacyPayload(const eve::Value& current, eve::SchemaVersion target) {
     auto* root = current.getIf<eve::Value::Object>();
     if (root == nullptr) return current;
     eve::Value::Object payload = *root;
 
-    payload["policy"] = eve::Value(1);
-    if (!keepEdges) {
+    if (target == eve::SchemaVersion(1)) {
         auto boardIt = payload.find("board");
         if (boardIt != payload.end()) {
             if (auto* board = boardIt->second.getIf<eve::Value::Object>(); board != nullptr) board->erase("edges");
         }
     }
-    auto commandsIt = payload.find("commands");
-    if (commandsIt != payload.end()) {
-        if (auto* commands = commandsIt->second.getIf<eve::Value::Object>(); commands != nullptr) {
-            auto valuesIt = commands->find("values");
-            if (valuesIt != commands->end()) {
-                if (auto* records = valuesIt->second.getIf<eve::Value::Array>(); records != nullptr) {
-                    for (auto& record : *records) {
-                        if (auto* fields = record.getIf<eve::Value::Object>(); fields != nullptr)
-                            (*fields)["policy"] = eve::Value(1);
+    if (target < eve::SchemaVersion(3)) {
+        payload["policy"] = eve::Value(1);
+        auto commandsIt = payload.find("commands");
+        if (commandsIt != payload.end()) {
+            if (auto* commands = commandsIt->second.getIf<eve::Value::Object>(); commands != nullptr) {
+                auto valuesIt = commands->find("values");
+                if (valuesIt != commands->end()) {
+                    if (auto* records = valuesIt->second.getIf<eve::Value::Array>(); records != nullptr) {
+                        for (auto& record : *records) {
+                            if (auto* fields = record.getIf<eve::Value::Object>(); fields != nullptr)
+                                (*fields)["policy"] = eve::Value(1);
+                        }
                     }
+                }
+            }
+        }
+    }
+    if (target < eve::SchemaVersion(5)) {
+        payload.erase("schedule");
+        auto unitsIt = payload.find("units");
+        if (unitsIt != payload.end()) {
+            if (auto* records = unitsIt->second.getIf<eve::Value::Array>(); records != nullptr) {
+                for (auto& record : *records) {
+                    if (auto* fields = record.getIf<eve::Value::Object>(); fields != nullptr)
+                        fields->erase("charge");
                 }
             }
         }
@@ -115,6 +132,12 @@ struct Fixture {
         REQUIRE(active.ok());
         return std::move(active).takeValue();
     }
+
+    [[nodiscard]] int chargeOf(eve::SubjectRef unit) {
+        auto resources = tactics.unitResources(battle, unit);
+        REQUIRE(resources.ok());
+        return resources.value().charge;
+    }
 };
 
 }  // namespace
@@ -128,11 +151,12 @@ TEST_CASE("tactics.versionOneSnapshotMigratesEdgesAbsentAndPolicyId") {
     auto captured = source.tactics.snapshot(source.battle, hash);
     REQUIRE(captured.ok());
     auto current = std::move(captured).takeValue();
-    CHECK(current.schemaVersion == eve::SchemaVersion(4));
+    CHECK(current.schemaVersion == eve::SchemaVersion(5));
 
     // Version 1 predates board edges, so the legacy payload drops that field.
     auto legacy = eve::makeSnapshotEnvelope(current.type, current.schema, eve::SchemaVersion(1), current.instanceId,
-                                            current.revision, current.tick, legacyPayload(current.payload, false), hash);
+                                            current.revision, current.tick,
+                                            legacyPayload(current.payload, eve::SchemaVersion(1)), hash);
     REQUIRE(legacy.ok());
 
     Fixture target;
@@ -162,7 +186,8 @@ TEST_CASE("tactics.versionTwoSnapshotKeepsEdgesAndMigratesPolicyId") {
 
     // Version 2 already carried edges, so only the policy representation differs.
     auto legacy = eve::makeSnapshotEnvelope(current.type, current.schema, eve::SchemaVersion(2), current.instanceId,
-                                            current.revision, current.tick, legacyPayload(current.payload, true), hash);
+                                            current.revision, current.tick,
+                                            legacyPayload(current.payload, eve::SchemaVersion(2)), hash);
     REQUIRE(legacy.ok());
 
     Fixture target;
@@ -197,11 +222,12 @@ TEST_CASE("tactics.futureSnapshotVersionIsRejectedWithoutMutatingTarget") {
 }
 
 /**
- * @brief The version-3 shape is still readable once version 4 exists.
+ * @brief The version-3 shape is still readable once version 5 exists.
  *
- * Version 4 widened only *which* command kinds are legal, so a version-3 payload
- * with no ability declaration must keep restoring. This is the "does not regress"
- * half of the gate: widening a range must not invalidate the older versions.
+ * Versions 4 and 5 only *added* fields (a command kind, then charge and the round
+ * schedule), so a version-3 payload written by that version must keep restoring. This is
+ * the "does not regress" half of the gate: widening a range must not invalidate the
+ * older versions.
  */
 TEST_CASE("tactics.versionThreeSnapshotStillRestoresCommandlessBattles") {
     auto    hash = testHash();
@@ -216,7 +242,7 @@ TEST_CASE("tactics.versionThreeSnapshotStillRestoresCommandlessBattles") {
 
     auto relabelled = eve::makeSnapshotEnvelope(current.type, current.schema, eve::SchemaVersion(3),
                                                 current.instanceId, current.revision, current.tick,
-                                                current.payload, hash);
+                                                legacyPayload(current.payload, eve::SchemaVersion(3)), hash);
     REQUIRE(relabelled.ok());
 
     Fixture target;
@@ -279,7 +305,7 @@ TEST_CASE("tactics.abilityDeclarationSurvivesSnapshotRoundTrip") {
     auto captured = source.tactics.snapshot(source.battle, hash);
     REQUIRE(captured.ok());
     auto current = std::move(captured).takeValue();
-    CHECK(current.schemaVersion == eve::SchemaVersion(4));
+    CHECK(current.schemaVersion == eve::SchemaVersion(5));
 
     Fixture target;
     target.build();
@@ -299,4 +325,111 @@ TEST_CASE("tactics.abilityDeclarationSurvivesSnapshotRoundTrip") {
     CHECK_EQ(values.back().action.format(), std::string("test:strike"));
     const eve::tactics::Cell declaredTarget{0, 0, 0};
     CHECK(values.back().cell == declaredTarget);
+}
+
+/** @brief Scheduling charge survives a round trip, so a saved round resumes where it was. */
+TEST_CASE("tactics.chargeSurvivesSnapshotRoundTrip") {
+    auto    hash = testHash();
+    Fixture source;
+    source.build();
+    REQUIRE(source.tactics.start(source.battle, eve::tactics::kChargeTimeBattlePolicyId).ok());
+
+    // Four quiet rounds leave the fast unit at 80 and the slow one at 40: a state that
+    // decides who activates next, and which the round machine spent charge to reach.
+    for (std::uint64_t tick = 1; tick <= 5; ++tick) REQUIRE(source.tactics.advance(source.battle, step(tick)).ok());
+    REQUIRE_EQ(source.chargeOf(source.fast), 80);
+    REQUIRE_EQ(source.chargeOf(source.slow), 40);
+
+    auto captured = source.tactics.snapshot(source.battle, hash);
+    REQUIRE(captured.ok());
+    auto current = std::move(captured).takeValue();
+
+    Fixture target;
+    target.build();
+    REQUIRE(target.tactics.restore(target.battle, current, hash).ok());
+    CHECK_EQ(target.chargeOf(target.fast), 80);
+    CHECK_EQ(target.chargeOf(target.slow), 40);
+
+    // Continuing the restored battle must select the same unit the source would have:
+    // the fifth gain takes the fast unit to exactly the threshold and leaves the slow
+    // one short, so only the persisted charge can explain the choice.
+    auto advanced = target.tactics.advance(target.battle, step(6));
+    REQUIRE(advanced.ok());
+    CHECK(advanced.value() == eve::tactics::BattlePhase::TurnStart);
+    auto active = target.tactics.activeUnit(target.battle);
+    REQUIRE(active.ok());
+    CHECK_EQ(active.value(), target.fast);
+    CHECK_EQ(target.chargeOf(target.fast), 0);
+    CHECK_EQ(target.chargeOf(target.slow), 50);
+}
+
+/**
+ * @brief A version-4 payload has no charge and no explicit schedule, and is migrated.
+ *
+ * Version 4 could not express charge-time scheduling, so the documented default is
+ * "charge is zero, the roster is the round's queue". Both halves are asserted here:
+ * the payload is accepted, and the missing state really is absent afterwards.
+ */
+TEST_CASE("tactics.versionFourSnapshotMigratesAbsentChargeAndSchedule") {
+    auto    hash = testHash();
+    Fixture source;
+    source.build();
+    REQUIRE(source.tactics.start(source.battle, eve::tactics::kChargeTimeBattlePolicyId).ok());
+    for (std::uint64_t tick = 1; tick <= 5; ++tick) REQUIRE(source.tactics.advance(source.battle, step(tick)).ok());
+    REQUIRE_EQ(source.chargeOf(source.fast), 80);
+
+    auto captured = source.tactics.snapshot(source.battle, hash);
+    REQUIRE(captured.ok());
+    auto current = std::move(captured).takeValue();
+
+    auto legacy = eve::makeSnapshotEnvelope(current.type, current.schema, eve::SchemaVersion(4), current.instanceId,
+                                            current.revision, current.tick,
+                                            legacyPayload(current.payload, eve::SchemaVersion(4)), hash);
+    REQUIRE(legacy.ok());
+
+    Fixture target;
+    target.build();
+    REQUIRE(target.tactics.restore(target.battle, legacy.value(), hash).ok());
+    // The policy id is a v3 field, so it survives: the battle is still charge-scheduled,
+    // it simply restarts its accumulation from the documented default.
+    auto policy = target.tactics.policyId(target.battle);
+    REQUIRE(policy.ok());
+    CHECK_EQ(policy.value(), std::string(eve::tactics::kChargeTimeBattlePolicyId));
+    CHECK_EQ(target.chargeOf(target.fast), 0);
+    CHECK_EQ(target.chargeOf(target.slow), 0);
+    // With charge reset, the fifth gain cannot reach the threshold, so the migrated
+    // battle reports a quiet round instead of activating a unit on invented charge.
+    auto advanced = target.tactics.advance(target.battle, step(6));
+    REQUIRE(advanced.ok());
+    CHECK(advanced.code() == eve::StatusCode::NoOp);
+    CHECK(advanced.value() == eve::tactics::BattlePhase::RoundStart);
+}
+
+/** @brief A version-4 payload may not carry the version-5 fields. */
+TEST_CASE("tactics.versionFourSnapshotRefusesVersionFiveFields") {
+    auto    hash = testHash();
+    Fixture source;
+    source.build();
+    REQUIRE(source.tactics.start(source.battle, eve::tactics::kChargeTimeBattlePolicyId).ok());
+    for (std::uint64_t tick = 1; tick <= 5; ++tick) REQUIRE(source.tactics.advance(source.battle, step(tick)).ok());
+    auto captured = source.tactics.snapshot(source.battle, hash);
+    REQUIRE(captured.ok());
+    auto current = std::move(captured).takeValue();
+
+    // Keep the v5 payload bytes and only declare version 4: the unit charge and the
+    // round schedule are then the single facts under test.
+    auto mislabelled = eve::makeSnapshotEnvelope(current.type, current.schema, eve::SchemaVersion(4),
+                                                 current.instanceId, current.revision, current.tick,
+                                                 current.payload, hash);
+    REQUIRE(mislabelled.ok());
+
+    Fixture target;
+    target.build();
+    auto restored = target.tactics.restore(target.battle, mislabelled.value(), hash);
+    CHECK(!restored.ok());
+    REQUIRE(restored.status().primaryDiagnostic() != nullptr);
+    CHECK_EQ(restored.status().primaryDiagnostic()->code(), eve::DiagnosticCode::ParseError);
+    auto status = target.tactics.status(target.battle);
+    REQUIRE(status.ok());
+    CHECK(status.value() == eve::tactics::BattleStatus::Setup);
 }

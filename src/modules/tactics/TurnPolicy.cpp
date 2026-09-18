@@ -48,7 +48,41 @@ public:
     }
 };
 
+/**
+ * @brief Charge-time (CTB/ATB) scheduling: initiative decides how *often* a unit acts.
+ *
+ * Each scheduling round every living unit gains `initiative` charge. A unit may
+ * activate once its charge reaches @ref kChargeTimeBattleThreshold, and an
+ * activation spends exactly that threshold. A unit with twice the initiative
+ * therefore reaches the threshold twice as often, which is the behaviour a pure
+ * ordering policy cannot express: with `initiative` ordering, fast and slow units
+ * each act once per round.
+ *
+ * Ordering among the ready units uses charge first, so the unit closest to acting
+ * (and, on a tie, the one with the higher initiative) goes first. Charge survives
+ * across rounds, and the round machine reports a round in which nobody is ready as
+ * a `NoOp` advance instead of inventing an activation.
+ */
+class ChargeTimeBattlePolicy final : public ITurnPolicy {
+public:
+    [[nodiscard]] std::string_view id() const noexcept override { return kChargeTimeBattlePolicyId; }
+
+    [[nodiscard]] TurnOrder order(const Battle&, const UnitOrder& left, const UnitOrder& right) const override {
+        if (left.charge > right.charge) return TurnOrder::LeftFirst;
+        if (right.charge > left.charge) return TurnOrder::RightFirst;
+        if (left.initiative > right.initiative) return TurnOrder::LeftFirst;
+        if (right.initiative > left.initiative) return TurnOrder::RightFirst;
+        return TurnOrder::Equivalent;
+    }
+
+    [[nodiscard]] ChargeModel chargeModel(const Battle&) const override {
+        return ChargeModel{1, kChargeTimeBattleThreshold, kChargeTimeBattleThreshold};
+    }
+};
+
 }  // namespace
+
+ChargeModel ITurnPolicy::chargeModel(const Battle&) const { return ChargeModel{}; }
 
 Result<void> TurnPolicyRegistry::add(std::shared_ptr<const ITurnPolicy> policy) {
     if (policy == nullptr || policy->id().empty())
@@ -84,10 +118,11 @@ TurnPolicyRegistry& TurnPolicyRegistry::builtins() {
     // order is no longer a question.
     static TurnPolicyRegistry registry = [] {
         TurnPolicyRegistry value;
-        // Both built-ins are immutable and stateless, so a failed registration is
+        // Built-ins are immutable and stateless, so a failed registration is
         // impossible here; ignoring the result would hide a real duplicate bug.
         if (!value.add(std::make_shared<const SideAlternatingPolicy>()).ok()) return TurnPolicyRegistry{};
         if (!value.add(std::make_shared<const InitiativePolicy>()).ok()) return TurnPolicyRegistry{};
+        if (!value.add(std::make_shared<const ChargeTimeBattlePolicy>()).ok()) return TurnPolicyRegistry{};
         return value;
     }();
     return registry;

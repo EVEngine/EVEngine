@@ -203,6 +203,7 @@ Value bindingTurnResourcesValue(const TacticalUnit::TurnResources& resources) {
     return Value(Value::Object{{"actionPoints", Value(resources.actionPoints)},
                                {"acted", Value(resources.acted)},
                                {"alive", Value(resources.alive)},
+                               {"charge", Value(resources.charge)},
                                {"initiative", Value(resources.initiative)},
                                {"movePoints", Value(resources.movePoints)},
                                {"reactionPoints", Value(resources.reactionPoints)},

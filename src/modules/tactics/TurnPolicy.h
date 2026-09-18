@@ -37,6 +37,39 @@ struct UnitOrder {
     int initiative = 0;
     /** @brief Index of the unit's side inside the battle's side list. */
     std::size_t sideIndex = 0;
+    /**
+     * @brief Charge accumulated by this unit under a charge-time policy.
+     *
+     * Always `0` for a policy whose @ref ChargeModel declares no charge, so a
+     * policy that ignores this field cannot be affected by it.
+     */
+    int charge = 0;
+};
+
+/**
+ * @brief The charge rule a policy declares for round scheduling.
+ *
+ * This is the one place a policy states *how* charge affects scheduling. The
+ * battle owns the mutation (per-unit charge lives in `TurnResources`, the single
+ * authority for per-unit turn state) and the ordering (via `order` plus the
+ * caller's canonical tie-break); the policy only declares the numbers. A policy
+ * therefore stays a stateless value-like object and schedules identically after a
+ * save/restore.
+ *
+ * The default value — all zeros — means "no charge model": every living unit is
+ * ready every round and activating costs nothing, which is exactly the
+ * one-activation-per-unit-per-round behaviour of a pure ordering policy.
+ */
+struct ChargeModel {
+    /** @brief Multiplier applied to a unit's initiative to get its per-round charge gain. */
+    int initiativeGain = 0;
+    /** @brief Charge a unit spends when it activates. */
+    int cost = 0;
+    /** @brief Charge a unit must reach to be scheduled; `0` means "always ready". */
+    int threshold = 0;
+
+    /** @brief Whether this model schedules by charge at all. */
+    [[nodiscard]] constexpr bool isChargeBased() const noexcept { return threshold > 0; }
 };
 
 /**
@@ -85,6 +118,20 @@ public:
      */
     [[nodiscard]] virtual TurnOrder order(const Battle& battle, const UnitOrder& left,
                                           const UnitOrder& right) const = 0;
+
+    /**
+     * @brief Declare the charge rule this policy schedules by.
+     * @param battle Read-only battle, for policies whose charge rule depends on it.
+     * @return The charge rule; the default reports "no charge model".
+     * @remarks Implementations must be pure and must return the same value for the
+     *          same battle state: the rule is applied to persisted per-unit charge,
+     *          so a rule that changed between calls would make a restored battle
+     *          schedule differently from the one that was saved. A rule with
+     *          `threshold > 0` must advance some unit's charge every round, or the
+     *          round machine can never make progress; `BattleSystem::start` refuses
+     *          a battle whose units could never reach that threshold.
+     */
+    [[nodiscard]] virtual ChargeModel chargeModel(const Battle& battle) const;
 };
 
 /**

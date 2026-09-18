@@ -184,7 +184,7 @@ TEST_CASE("tactics.snapshotRoundTripsEdgesAtTheCurrentVersion") {
     auto envelope = std::move(captured).takeValue();
     // Adding the edge set and the stable policy id are both schema changes, so the
     // version must advance with them.
-    CHECK(envelope.schemaVersion == eve::SchemaVersion(3));
+    CHECK(envelope.schemaVersion == eve::SchemaVersion(5));
 
     // Restoring into an identity-compatible battle must rebuild the declared edges,
     // not silently drop them.

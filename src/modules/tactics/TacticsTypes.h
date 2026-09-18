@@ -59,6 +59,22 @@ enum class BattlePhase : std::uint8_t {
 inline constexpr std::string_view kSideAlternatingPolicyId = "side_alternating";
 /** @brief Stable id of the built-in per-unit initiative turn policy. */
 inline constexpr std::string_view kInitiativePolicyId = "initiative";
+/**
+ * @brief Stable id of the built-in charge-time (CTB/ATB) turn policy.
+ *
+ * This policy schedules by accumulated charge instead of "one activation per unit
+ * per round", so a unit with higher initiative really does act more often. See
+ * `ChargeTimeBattlePolicy` for the exact gain/ready/consume rule.
+ */
+inline constexpr std::string_view kChargeTimeBattlePolicyId = "charge_time_battle";
+/**
+ * @brief Charge a unit must accumulate before it may activate under CTB scheduling.
+ *
+ * Part of the policy's behaviour rather than of persisted data, but it is a named
+ * constant because the charge values stored in a snapshot are only meaningful
+ * relative to it.
+ */
+inline constexpr int kChargeTimeBattleThreshold = 100;
 
 /**
  * @brief Typed spelling of the built-in turn-policy ids.
@@ -71,6 +87,7 @@ inline constexpr std::string_view kInitiativePolicyId = "initiative";
 struct TurnPolicyKind {
     static constexpr std::string_view SideAlternating = kSideAlternatingPolicyId;
     static constexpr std::string_view Initiative      = kInitiativePolicyId;
+    static constexpr std::string_view ChargeTimeBattle = kChargeTimeBattlePolicyId;
 };
 
 /** @brief One authoritative board cell fact. */
@@ -264,6 +281,15 @@ public:
         int  roundMovePoints      = 0;
         int  roundReactionPoints  = 0;
         int  initiative           = 0;
+        /**
+         * @brief Accumulated scheduling charge for charge-time policies.
+         *
+         * Stays zero under every policy whose `ChargeModel` declares no charge, so
+         * the field is inert unless the battle actually uses CTB scheduling. It is
+         * persisted at schema version 5, because it is exactly the state that makes
+         * "the fast unit acts more often" survive a save/restore.
+         */
+        int  charge               = 0;
         bool alive                = true;
         bool acted                = false;
     };
@@ -409,7 +435,23 @@ public:
         std::optional<ecs::EntityHandle> activeSide;
         std::optional<ecs::EntityHandle> activeUnit;
         std::vector<ecs::EntityHandle>   sides;
+        /**
+         * @brief Every unit of this battle, as declared by `newUnit`.
+         *
+         * This is the membership roster and the authority for "which units exist".
+         * It is not an activation queue: see @ref schedule.
+         */
         std::vector<ecs::EntityHandle>   units;
+        /**
+         * @brief The current round's activation queue, in activation order.
+         *
+         * @ref cursor indexes this list. It is a subset of @ref units: a policy with
+         * a charge model leaves units out of the queue until they have accumulated
+         * enough charge, so the queue can be shorter than the roster and it changes
+         * from round to round. Persisted (snapshot v5) because a round may be
+         * suspended by a save at any activation.
+         */
+        std::vector<ecs::EntityHandle>   schedule;
     };
     /** @brief Transient deterministic event projection; not a second state authority. */
     struct Events {

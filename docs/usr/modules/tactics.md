@@ -60,10 +60,10 @@ local reach = battle.reachable(actorId, 100);
 local range = battle.cellsInRange(0, 0, 0, 1, 2, "hex");
 // range.value = [{x,y,layer}, ...]
 
-// 每回合资源的读取侧（含此前只写不可读的 acted）
+// 每回合资源的读取侧（含此前只写不可读的 acted，以及调度充电 charge）
 local r = battle.unitResources(actorId).value;
 // r = {actionPoints, movePoints, reactionPoints, roundActionPoints, roundMovePoints,
-//      roundReactionPoints, initiative, alive, acted}
+//      roundReactionPoints, initiative, alive, acted, charge}
 ```
 
 `reachable` / `cellsInRange` 的返回值是**该次查询所观察到的棋盘版本的投影**，
@@ -152,16 +152,47 @@ local ids = battle.policyIds();   // 已注册 id，按字典序
 battle.start("initiative");       // 未注册的 id 会被拒绝，诊断里列出已注册集合
 local active = battle.policyId(); // 当前战局实际采用的 id
 ```
-
-- 内建两种：`"side_alternating"`（按阵营分组）与 `"initiative"`（按 initiative 降序）。
+- 内建三种：`"side_alternating"`（按阵营分组）、`"initiative"`（按 initiative 降序）
+  与 `"charge_time_battle"`（CTB/ATB，见下）。
 - 策略只回答"两个单位谁先动"，**并列时由调用方按 canonical subject 排序决胜**，
   因此任何策略在等键上自动确定，且不需要自己重述这条规则。
-- 策略收到的是**值投影**（initiative、sideIndex），不是 ECS handle——它无法解析单位、
+- 策略收到的是**值投影**（initiative、sideIndex、charge），不是 ECS handle——它无法解析单位、
   修改状态或依赖调用方没有提供的数据。
 - C++ 侧可用 `TurnPolicyRegistry::add` 注册项目策略（`tactics/TurnPolicy.h`）；
   战局数据里只留 id 字符串，因此快照与命令日志不绑定具体实现。
 - 该 id 进入快照，schema 因此升到 **v3**；v1/v2 的数值枚举会按冻结的映射迁移
   （`0 → side_alternating`，`1 → initiative`）。
+
+### 充电时间轴（CTB / ATB）
+
+纯排序策略里**每个单位每轮恰好行动一次**，所以"快"只体现在顺序上。要让 initiative
+真正决定**行动频率**，策略需要状态：充电。这正是 `"charge_time_battle"` 做的事，而状态由
+每个单位的 `TurnResources::charge` 拥有（不是策略对象持有——策略必须保持无状态，否则存档后
+排期会变）：
+
+```squirrel
+battle.start("charge_time_battle");
+local r = battle.unitResources(actorId).value;
+// r.charge 是当前累计量；阈值是内建常量 100（kChargeTimeBattleThreshold）
+```
+
+规则（`ITurnPolicy::chargeModel` 声明，回合机执行）：
+
+- 每个排期轮开始时，每个存活单位 `charge += initiativeGain × initiative`（内建模型
+  `initiativeGain = 1`）。
+- `charge ≥ threshold` 的单位才进入本轮的行动队列；队列按 charge 降序、再按 initiative 降序。
+- 进入队列的单位在**本轮开始时**一次性扣除 `cost`（内建模型 `cost = threshold`），
+  因此一个 2 倍 initiative 的单位行动频率就是 2 倍。
+- **本轮无人达标时**：`advance` 报告该轮为 **`NoOp` 且 phase 不变**（仍是 `round_start`）。
+  轮数与每轮资源刷新照常发生，调用方据此区分"时间过去了"与"有人行动了"，
+  而不用为一个只有某种策略才会出现的状态新造 phase。
+- 若某策略声明的充电规则**永远无法让任何单位达标**（例如 `initiativeGain = 0` 而
+  `threshold > 0`，或全部单位 initiative 为 0），`start` 直接拒绝
+  （`PreconditionViolation`）并让战局留在 `setup`；不会退化成无尽的空轮。
+
+项目策略可以声明自己的模型（`ChargeModel{initiativeGain, cost, threshold}`），
+回合机不需要任何改动；`{0, 0, 0}` 是默认值，语义就是"无充电模型：每个存活单位每轮都就绪"，
+因此排序型策略的行为与加充电模型之前完全一致。
 
 ### 反应窗口
 
@@ -232,10 +263,24 @@ auto declared = tactics.useAbility(battle.value(), unitSubject, *eve::LogicalId:
 ## 快照约定
 
 `TacticsPersistence` 使用引擎统一的 `SnapshotEnvelope`，schema 为 `tactics:battle`、
-当前版本为 4。快照保存稳定 `SubjectRef`，不保存 ECS handle。恢复只适用于身份集合相同的
+当前版本为 **5**。快照保存稳定 `SubjectRef`，不保存 ECS handle。恢复只适用于身份集合相同的
 目标战局：实现会先解析并验证完整候选状态，再一次性提交；哈希错误、未知版本、缺失单位或
 非法占位均不会修改目标。payload 覆盖棋盘、单位资源/朝向、回合、seed、事件序列、反应栈、
 objective 和已接受命令日志。
+
+版本与迁移（每加一个字段就加一行，且门槛一律写成"该版本及其之后"）：
+
+| 版本 | 新增 | 更早版本的迁移 |
+| --- | --- | --- |
+| v1 | 棋盘 + 单位 + 回合 + 事件/反应/命令/objective/随机 | —— |
+| v2 | `board.edges` 有向边集合 | v1 按"所有方向均未声明"迁移 |
+| v3 | `policy` 由数值枚举改为稳定 id 字符串 | v1/v2 按冻结映射迁移（`0 → side_alternating`，`1 → initiative`） |
+| v4 | `use_ability` 命令种类 | v3 及更早**不得**携带该种类（`ParseError`） |
+| v5 | 单位 `charge` 与回合 `schedule`（本轮行动队列） | v1–v4 按"充电为 0、名册即队列"迁移 |
+
+`charge` 只在充电型策略下非零；`schedule` 是**本轮的行动队列**（名册的子集，按行动顺序），
+不能靠 restore 重算——产生它的充电已经扣掉了，所以它必须随快照保存。命令日志里的
+`advance` 命令与 `NoOp` 轮一起进入回放基质，因此"空轮"也是可回放的确定性事实。
 
 `BattleReplay::commandsFrom` 提取指定 revision 之后的命令；`replay` 会逐条验证 command sequence、
 expected revision 和 resulting revision。相同起始快照与命令序列应产生字节相同的最终 payload/hash。
@@ -246,8 +291,10 @@ expected revision 和 resulting revision。相同起始快照与命令序列应�
 
 - 路径成本使用整数，所有相同成本选择以格坐标稳定排序。
 - initiative 相同时以 `SubjectRef` canonical UUID 排序。
+- 充电累计在 `int` 上**饱和**而非回绕（否则排期会不确定）；充电不会为负。
+- 本轮无人就绪时 phase 不变、状态为 `NoOp`，轮数与每轮资源刷新照常推进。
 - 反应候选按 priority、initiative、reactor、action 排序，窗口按 LIFO 处理。
-- 事件带 command causation/correlation；嵌套反应沿根命令 correlation 串联。
+- 事件带 command causation/correlation；嵌套反应沿根 command correlation 串联。
 - 命令、快照和跨域事件只使用稳定身份，不跨帧保存裸指针。
 
 可运行示例位于 `examples/tactics/`。

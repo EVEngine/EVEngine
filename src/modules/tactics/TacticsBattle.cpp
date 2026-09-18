@@ -3,6 +3,8 @@
 #include "tactics/TurnPolicy.h"
 
 #include <algorithm>
+#include <cstdint>
+#include <limits>
 #include <utility>
 
 namespace eve::tactics {
@@ -144,6 +146,88 @@ Result<BattlePhase> transition(Battle& battle, BattlePhase next, SimulationTick 
     return Result<BattlePhase>::success(next, Status::success(StatusCode::Applied));
 }
 
+/** @brief Resolve the policy named by the battle's persistent policy id. */
+Result<const ITurnPolicy*> schedulingPolicy(Battle& battle) {
+    return TurnPolicyRegistry::builtins().find(battle.turn()->policyId);
+}
+
+/**
+ * @brief Report whether a charge rule can ever make progress on this battle.
+ *
+ * A rule with a threshold but no unit that gains charge would leave the round
+ * machine reporting "nobody is ready" forever. That is a structured refusal, not a
+ * silent fallback: the caller must fix the data or pick a different policy.
+ *
+ * @return A non-failure status when the rule is usable (including "no charge model").
+ */
+Result<void> validateChargeProgress(Battle& battle, ChargeModel model) {
+    const Status usable = Status::success(StatusCode::NoOp);
+    if (!model.isChargeBased()) return Result<void>::success(usable);
+    for (const auto& handle : battle.turn()->units) {
+        TacticalUnit* unit = resolve<TacticalUnit>(handle);
+        if (unit == nullptr || !unit->turn()->alive) continue;
+        const std::int64_t gain = static_cast<std::int64_t>(model.initiativeGain) *
+                                  static_cast<std::int64_t>(unit->turn()->initiative);
+        if (gain > 0) return Result<void>::success(usable);
+    }
+    return failure<void>(DiagnosticCode::PreconditionViolation,
+                         "charge-time turn policy requires a living unit that can gain charge", "battle.units");
+}
+
+/**
+ * @brief Add one round of scheduling charge to every living unit.
+ * @remarks Saturates instead of wrapping: a policy whose gain exceeds its cost would
+ *          otherwise accumulate without bound, and a wrapped value would schedule
+ *          non-deterministically. Charge is a non-negative accumulator, so a negative
+ *          gain is clamped at zero.
+ */
+void applyChargeGain(Battle& battle, ChargeModel model) {
+    if (model.initiativeGain == 0) return;
+    constexpr int kMaxCharge = std::numeric_limits<int>::max();
+    for (const auto& handle : battle.turn()->units) {
+        TacticalUnit* unit = resolve<TacticalUnit>(handle);
+        if (unit == nullptr || !unit->turn()->alive) continue;
+        const std::int64_t gain = static_cast<std::int64_t>(model.initiativeGain) *
+                                  static_cast<std::int64_t>(unit->turn()->initiative);
+        const std::int64_t next = static_cast<std::int64_t>(unit->turn()->charge) + gain;
+        unit->turn()->charge = next < 0 ? 0 : (next > kMaxCharge ? kMaxCharge : static_cast<int>(next));
+    }
+}
+
+/**
+ * @brief Keep only the units that reached the model's threshold, in the given order.
+ *
+ * A model without charge keeps every unit, which is what makes the default path
+ * identical to a plain ordering policy.
+ */
+std::vector<ecs::EntityHandle> readySchedule(Battle& battle, ChargeModel model,
+                                             const std::vector<ecs::EntityHandle>& ordered) {
+    if (!model.isChargeBased()) return ordered;
+    std::vector<ecs::EntityHandle> result;
+    result.reserve(ordered.size());
+    for (const auto& handle : ordered) {
+        TacticalUnit* unit = resolve<TacticalUnit>(handle);
+        if (unit != nullptr && unit->turn()->charge >= model.threshold) result.push_back(handle);
+    }
+    return result;
+}
+
+/** @brief Charge the activation cost back from the units that are about to act. */
+void consumeActivationCharge(Battle& battle, ChargeModel model, const std::vector<ecs::EntityHandle>& activated) {
+    if (model.cost == 0) return;
+    for (const auto& handle : activated) {
+        TacticalUnit* unit = resolve<TacticalUnit>(handle);
+        if (unit == nullptr) continue;
+        unit->turn()->charge = std::max(0, unit->turn()->charge - model.cost);
+    }
+}
+
+/** @brief Whether a scheduled unit can still take its activation. */
+bool scheduleEntryAlive(const ecs::EntityHandle& handle) {
+    TacticalUnit* unit = resolve<TacticalUnit>(handle);
+    return unit != nullptr && unit->turn()->alive;
+}
+
 }  // namespace
 
 Result<void> BattleSystem::addSide(Battle& battle, ecs::EntityHandle sideHandle) {
@@ -223,6 +307,11 @@ Result<void> BattleSystem::start(Battle& battle, std::string policyId) {
     // cannot schedule.
     auto policy = TurnPolicyRegistry::builtins().find(policyId);
     if (!policy) return Result<void>::failure(policy.status());
+    // A charge rule that can never make progress is refused here, before any
+    // mutation, so an unschedulable battle stays in Setup instead of advancing
+    // forever without an activation.
+    auto chargeUsable = validateChargeProgress(battle, policy.value()->chargeModel(battle));
+    if (!chargeUsable) return Result<void>::failure(chargeUsable.status());
     auto boardValid = battle.board()->value.validateInvariants();
     if (!boardValid) return Result<void>::failure(boardValid.status());
     auto units = orderedUnits(battle);
@@ -307,6 +396,10 @@ Result<BattlePhase> BattleSystem::advance(Battle& battle, const SimulationStep& 
             return transition(battle, BattlePhase::RoundStart, step.tick, "round.pending", committedRevision,
                               std::move(command));
         case BattlePhase::RoundStart: {
+            auto policy = schedulingPolicy(battle);
+            if (!policy) return Result<BattlePhase>::failure(policy.status());
+            const ChargeModel charge = policy.value()->chargeModel(battle);
+            applyChargeGain(battle, charge);
             auto ordered = orderedUnits(battle);
             if (!ordered) return Result<BattlePhase>::failure(ordered.status());
             turn->units  = std::move(ordered).takeValue();
@@ -324,8 +417,26 @@ Result<BattlePhase> BattleSystem::advance(Battle& battle, const SimulationStep& 
             if (turn->units.empty())
                 return transition(battle, BattlePhase::BattleEnd, step.tick, "battle.empty", committedRevision,
                                   std::move(command));
-            TacticalUnit* unit = resolve<TacticalUnit>(turn->units.front());
-            turn->activeUnit   = turn->units.front();
+            // A charge rule may leave units out of this round's queue. That is a real
+            // scheduling outcome, so it is reported as an unchanged phase with NoOp
+            // rather than as a new phase only one policy can reach: the caller can
+            // tell "time passed, nobody acted" apart from an activation, and the
+            // round counter and resource refresh above still describe a real round.
+            turn->schedule = readySchedule(battle, charge, turn->units);
+            if (turn->schedule.empty()) {
+                auto progress = validateChargeProgress(battle, charge);
+                if (!progress) return Result<BattlePhase>::failure(progress.status());
+                turn->tick     = step.tick;
+                turn->revision = committedRevision;
+                record(battle, std::move(command));
+                return Result<BattlePhase>::success(BattlePhase::RoundStart, Status::success(StatusCode::NoOp));
+            }
+            consumeActivationCharge(battle, charge, turn->schedule);
+            TacticalUnit* unit = resolve<TacticalUnit>(turn->schedule.front());
+            if (unit == nullptr)
+                return failure<BattlePhase>(DiagnosticCode::StaleHandle,
+                                            "tactics schedule contains a stale unit", "battle.schedule");
+            turn->activeUnit   = turn->schedule.front();
             turn->activeSide   = unit->membership()->side;
             return transition(battle, BattlePhase::TurnStart, step.tick, "turn.pending", committedRevision,
                               std::move(command),
@@ -341,18 +452,24 @@ Result<BattlePhase> BattleSystem::advance(Battle& battle, const SimulationStep& 
                               unit->identity()->subject);
         }
         case BattlePhase::TurnEnd: {
-            auto ordered = orderedUnits(battle);
-            if (!ordered) return Result<BattlePhase>::failure(ordered.status());
-            turn->units = std::move(ordered).takeValue();
-            ++turn->cursor;
-            if (turn->cursor >= turn->units.size()) {
+            // The round's queue is fixed when the round starts, so the remaining
+            // order cannot drift. A unit that died before its activation is skipped
+            // rather than shifting the cursor onto somebody else's turn.
+            do {
+                ++turn->cursor;
+            } while (turn->cursor < turn->schedule.size() && !scheduleEntryAlive(turn->schedule[turn->cursor]));
+            if (turn->cursor >= turn->schedule.size()) {
                 turn->activeUnit.reset();
                 turn->activeSide.reset();
                 return transition(battle, BattlePhase::RoundEnd, step.tick, "round.pending", committedRevision,
                                   std::move(command));
             }
-            TacticalUnit* unit = resolve<TacticalUnit>(turn->units[turn->cursor]);
-            turn->activeUnit   = turn->units[turn->cursor];
+            TacticalUnit* unit = resolve<TacticalUnit>(turn->schedule[turn->cursor]);
+            if (unit == nullptr)
+                return failure<BattlePhase>(DiagnosticCode::StaleHandle,
+                                            "tactics schedule contains a stale unit", "battle.schedule");
+            turn->activeUnit   = turn->schedule[turn->cursor];
+            turn->activeSide   = unit->membership()->side;
             turn->activeSide   = unit->membership()->side;
             return transition(battle, BattlePhase::TurnStart, step.tick, "turn.pending", committedRevision,
                               std::move(command),
@@ -865,7 +982,8 @@ Result<std::vector<ecs::EntityHandle>> BattleSystem::orderedUnits(Battle& battle
         if (!unit->turn()->alive) continue;
         result.push_back(handle);
         entries.push_back({handle,
-                           UnitOrder{unit->turn()->initiative, sideIndexOf(unit->membership()->side)},
+                           UnitOrder{unit->turn()->initiative, sideIndexOf(unit->membership()->side),
+                                     unit->turn()->charge},
                            unit->identity()->subject.format()});
     }
     std::sort(entries.begin(), entries.end(), [&](const Entry& left, const Entry& right) {

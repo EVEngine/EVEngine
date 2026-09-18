@@ -146,6 +146,13 @@ struct Candidate {
     std::optional<ecs::EntityHandle> activeUnit;
     std::optional<ecs::EntityHandle> activeSide;
     std::vector<UnitCandidate>       units;
+    /**
+     * @brief The round's activation queue, resolved against the target battle.
+     *
+     * Empty for a payload whose phase needs no queue. Its order is the scheduling
+     * decision, so a restore must not re-derive it.
+     */
+    std::vector<ecs::EntityHandle>   schedule;
     std::vector<ecs::EntityHandle>   sides;
     Battle::Events                   events;
     Battle::Reactions                reactions;
@@ -234,6 +241,7 @@ Result<Value> unitValue(TacticalUnit& unit) {
         {"actionPoints", Value(turn->actionPoints)},
         {"alive", Value(turn->alive)},
         {"cell", cellValue(unit.position()->cell)},
+        {"charge", Value(turn->charge)},
         {"definition", Value(unit.identity()->definition.isValid() ? unit.identity()->definition.format()
                                                                       : std::string{})},
         {"facing", Value(unit.position()->facing)},
@@ -662,9 +670,15 @@ Result<Candidate> parseCandidate(Battle& battle, const Value& payload, Revision 
     static const std::set<std::string> fields = {"activeUnit", "board", "commands", "cursor", "events",
                                                   "objectives", "phase", "policy", "random", "reactions", "round",
                                                   "seed", "sides", "status", "units"};
+    // Version 5 added the round's activation queue, because charge-time scheduling
+    // makes it shorter than the roster and impossible to recompute after a restore.
+    const bool hasSchedule = sourceVersion >= SchemaVersion(5);
+    std::set<std::string> expectedFields = fields;
+    if (hasSchedule) expectedFields.insert("schedule");
     for (const auto& [name, unused] : *root.value())
-        if (!fields.contains(name)) return fail<Candidate>(DiagnosticCode::ParseError, "unknown payload field", name);
-    if (root.value()->size() != fields.size())
+        if (!expectedFields.contains(name))
+            return fail<Candidate>(DiagnosticCode::ParseError, "unknown payload field", name);
+    if (root.value()->size() != expectedFields.size())
         return fail<Candidate>(DiagnosticCode::ParseError, "snapshot payload is incomplete", "payload");
 
     Candidate result;
@@ -827,7 +841,9 @@ Result<Candidate> parseCandidate(Battle& battle, const Value& payload, Revision 
     for (std::size_t i = 0; i < units->size(); ++i) {
         const std::string path = "payload.units[" + std::to_string(i) + "]";
         auto unitObject = object((*units)[i], path);
-        if (!unitObject || unitObject.value()->size() != 15)
+        // Version 5 added the persisted scheduling charge.
+        const std::size_t expectedUnitFields = hasSchedule ? 16u : 15u;
+        if (!unitObject || unitObject.value()->size() != expectedUnitFields)
             return fail<Candidate>(DiagnosticCode::ParseError, "invalid unit record", path);
         auto subjectMember = field(*unitObject.value(), "subject", path);
         auto cellMember = field(*unitObject.value(), "cell", path);
@@ -865,6 +881,16 @@ Result<Candidate> parseCandidate(Battle& battle, const Value& payload, Revision 
             auto parsed = intField(*unitObject.value(), name, path);
             if (!parsed) return Result<Candidate>::failure(parsed.status());
             *target = parsed.value();
+        }
+        if (hasSchedule) {
+            auto charge = intField(*unitObject.value(), "charge", path);
+            if (!charge) return Result<Candidate>::failure(charge.status());
+            // Charge is a non-negative accumulator: a negative value could never have
+            // been produced by the round machine, so it is a corrupted payload.
+            if (charge.value() < 0)
+                return fail<Candidate>(DiagnosticCode::InvariantViolation, "unit charge is negative",
+                                       path + ".charge");
+            turn.charge = charge.value();
         }
         auto aliveMember = field(*unitObject.value(), "alive", path);
         auto actedMember = field(*unitObject.value(), "acted", path);
@@ -904,6 +930,36 @@ Result<Candidate> parseCandidate(Battle& battle, const Value& payload, Revision 
     }
     if (result.cursor >= result.units.size() && !result.units.empty())
         return fail<Candidate>(DiagnosticCode::InvariantViolation, "turn cursor is outside unit schedule");
+    // The activation queue. Version 5 stores it explicitly; versions 1-4 used the
+    // unit roster itself as the queue, so the migration keeps that roster order and
+    // the persisted cursor keeps indexing exactly what it used to.
+    if (hasSchedule) {
+        auto scheduleMember = field(*root.value(), "schedule", "payload");
+        if (!scheduleMember) return Result<Candidate>::failure(scheduleMember.status());
+        const auto* values = scheduleMember.value()->getIf<Value::Array>();
+        if (values == nullptr)
+            return fail<Candidate>(DiagnosticCode::ParseError, "round schedule must be an array", "payload.schedule");
+        std::set<std::string> scheduled;
+        for (std::size_t i = 0; i < values->size(); ++i) {
+            const std::string path = "payload.schedule[" + std::to_string(i) + "]";
+            auto entry = subject((*values)[i], path);
+            if (!entry) return Result<Candidate>::failure(entry.status());
+            const auto found = currentUnits.find(entry.value().format());
+            if (found == currentUnits.end())
+                return fail<Candidate>(DiagnosticCode::Conflict, "scheduled unit is absent from the target battle",
+                                       path);
+            if (!scheduled.insert(found->first).second)
+                return fail<Candidate>(DiagnosticCode::Conflict, "round schedule repeats a unit", path);
+            result.schedule.push_back(found->second->identity()->self);
+        }
+        const bool activationPhase = result.phase == BattlePhase::TurnStart || result.phase == BattlePhase::Acting ||
+                                     result.phase == BattlePhase::TurnEnd;
+        if (activationPhase && result.cursor >= result.schedule.size())
+            return fail<Candidate>(DiagnosticCode::InvariantViolation,
+                                   "turn cursor is outside the round schedule", "payload.cursor");
+    } else {
+        for (const auto& unit : result.units) result.schedule.push_back(unit.unit->identity()->self);
+    }
     auto eventsMember = field(*root.value(), "events", "payload");
     auto reactionsMember = field(*root.value(), "reactions", "payload");
     auto commandsMember = field(*root.value(), "commands", "payload");
@@ -1027,6 +1083,14 @@ Result<SnapshotEnvelope> TacticsPersistence::snapshot(Battle& battle, const Snap
     for (const auto& command : battle.commands()->values) commands.push_back(commandValue(command));
     Value::Array objectives;
     for (const auto& objective : battle.objectives()->values) objectives.push_back(objectiveValue(objective));
+    // The round's activation queue cannot be recomputed after a restore: the charge
+    // that produced it has already been spent, so a suspended round has to carry it.
+    Value::Array schedule;
+    for (const auto& handle : battle.turn()->schedule) {
+        auto* unit = resolve<TacticalUnit>(handle);
+        if (!unit) return fail<SnapshotEnvelope>(DiagnosticCode::StaleHandle, "battle schedule is stale");
+        schedule.push_back(subjectValue(unit->identity()->subject));
+    }
     Value payload(Value::Object{
         {"activeUnit", subjectValue(active)},
         {"board", Value(Value::Object{{"cells", Value(std::move(cells))},
@@ -1046,12 +1110,13 @@ Result<SnapshotEnvelope> TacticsPersistence::snapshot(Battle& battle, const Snap
                           {"seen", Value(std::move(reactionSeen))},
                           {"stack", Value(std::move(reactionStack))}})},
         {"round", Value(std::to_string(battle.turn()->round))},
+        {"schedule", Value(std::move(schedule))},
         {"seed", Value(std::to_string(battle.identity()->seed))},
         {"sides", Value(std::move(sides))},
         {"status", Value(static_cast<int>(battle.turn()->status))},
         {"units", Value(std::move(units))},
     });
-    return makeSnapshotEnvelope(std::string(kType), schema(), SchemaVersion(4),
+    return makeSnapshotEnvelope(std::string(kType), schema(), SchemaVersion(5),
                                 battle.identity()->subject.persistentId(), battle.turn()->revision,
                                 battle.turn()->tick,
                                 std::move(payload), hashProvider);
@@ -1066,10 +1131,12 @@ Result<void> TacticsPersistence::restore(Battle& battle, const SnapshotEnvelope&
     auto verified = verifySnapshotEnvelope(source, hashProvider);
     if (!verified) return Result<void>::failure(verified.status());
     // V1 predates board edges; V2 predates stable policy ids; V3 predates the
-    // UseAbility command kind. Each is migrated by the documented default for the
+    // UseAbility command kind; V4 predates persisted scheduling charge and the
+    // explicit round schedule. Each is migrated by the documented default for the
     // field that did not exist yet, so this list only ever grows.
     if (source.schemaVersion != SchemaVersion(1) && source.schemaVersion != SchemaVersion(2) &&
-        source.schemaVersion != SchemaVersion(3) && source.schemaVersion != SchemaVersion(4))
+        source.schemaVersion != SchemaVersion(3) && source.schemaVersion != SchemaVersion(4) &&
+        source.schemaVersion != SchemaVersion(5))
         return fail<void>(DiagnosticCode::UnknownVersion, "unsupported tactics battle snapshot version");
     auto metadata = validateSnapshotPayloadMetadata(source.payload, source.revision, source.tick);
     if (!metadata) return Result<void>::failure(metadata.status());
@@ -1098,6 +1165,7 @@ Result<void> TacticsPersistence::restore(Battle& battle, const SnapshotEnvelope&
     turn->activeUnit = restored.activeUnit;
     turn->activeSide = restored.activeSide;
     turn->sides = std::move(restored.sides);
+    turn->schedule = std::move(restored.schedule);
     *battle.events() = std::move(restored.events);
     *battle.reactions() = std::move(restored.reactions);
     *battle.commands() = std::move(restored.commands);
