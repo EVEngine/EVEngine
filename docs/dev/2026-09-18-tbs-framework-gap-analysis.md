@@ -1478,8 +1478,10 @@ INFER / UNVERIFIED），**没有任何一个页面正文被成功打开**，
 | Phase 1.3 通用行动协议 | ✅ **已完成**（声明 / 目标 / payload / 预检 / 回放 / 控制面，见 §11.1）。**刻意不做**：把 `payloadJson` 解释成技能参数、或在 tactics 内结算效果——`rpg`/`combat` 已经拥有技能定义与 `CombatRuntime`，tactics 再解释一遍就会变成第二个真值来源。若将来要让 tactics 直接约束目标合法性（`action::AbilityDefinition` 的 AP/冷却、`sensing::TargetingSpec` 的射程/视线），应做成**可注入接口或 capability**（同 §1.6 的做法），不要给 tactics 加 `sensing`/`rpg` 依赖 |
 | Phase 0.4 行动经济 | ✅ 已解除阻塞：`useAbility` 现在是 `actionPoints` 的真实消费者（1 次声明 = 1 点，耗尽后拒绝）。**未完成**：自动结束回合语义（行动力为 0 时是否自动 `endTurn`）需要产品决策，暂不默认 |
 | `Result` 短路陷阱（新发现） | tactics 的 `TacticsPersistence.cpp` 已全量修复（22 处守卫 + 新增 `eve::everyResultValid`）。**未完成**：**其他模块未审计**——建议用 `rg '!\w+ \|\| !\w+' src/modules` 加人工筛"操作数是否为 Result"扫一遍其余解析器 |
-| Phase 1.1d 快照/回放脚本出口 | `src/` 内**没有任何 host 侧 `SnapshotHashProvider`**（类型是调用方注入的 `std::function`，模块刻意不拥有哈希）。开脚本出口需先设计 capability + 宿主注册点 + **provider 存在/缺失双态测试** |
-| Phase 1.4–1.6 | ✅ **1.4 交互状态机、1.5 表现意图与回退契约已完成**（见 §11.1）。**未完成**：交互/表现目前只有 **C++ 接口，没有 Squirrel 绑定**（六面里 script 那一面还缺；把它们绑到脚本需要给 `InteractionSession`/`PresentationProjector` 建脚本代理对象）；1.6 见下一行 |
+| Phase 1.6（tactics 侧） | **`ILineOfSightPolicy` / `ICoverPolicy`**（具名 capability `eve.tactics.ILineOfSightPolicy` / `ICoverPolicy`）+ 内建网格实现：阻挡读持久化 **tag**（`sight_blocker`）而非 `passable`（视线与通行是两件事，且**不占新 schema 版本**）；追踪只算两端点之间、棋盘外格按阻挡、三种拓扑（supercover / hex cube 插值）；**从 canonical 格序计算后翻转 → 对称性由构造保证**；`visibleCellsInRange` 组合既有 `cellsInRange` 与视线（射程与视线各自单一所有者） | 6 个新用例：端点不挡/线上挡/线外不挡/棋盘外挡四点、**625 个有序对的对称性扫描**（补 §5.14 空白）、hex 轴向与反对称方向阻挡 + 跨层 `Unsupported` + 未知格 `NotFound`、掩体 full/half/none 与方向无关性、组合查询与射程一致且被挡格消失、capability `provide/query/revoke`（含 provider 缺失 == 空指针） |
+| Phase 1.6（hexmap 接线） | ❌ **未做**：把 `hexmap::collectVisibleCells` 适配成 provider 需要给 `hexmap` 加指向 `sensing` 的依赖或做一次 capability 桥接，属于跨模块改动，本轮未动 |
+| Phase 1.1d 快照脚本出口 | ❌ **未做**：`src/` 内**没有宿主侧 `SnapshotHashProvider`**（类型是调用方注入的 `std::function`，模块刻意不拥有哈希）。开脚本出口需先设计 capability + 宿主注册点 + **provider 存在/缺失双态测试** |
+| Phase 1.4–1.6 | ✅ **1.4 交互状态机、1.5 表现意图与回退契约、1.6 tactics 侧视线/掩体策略已完成**（见 §11.1）。**未完成**：交互/表现目前只有 **C++ 接口，没有 Squirrel 绑定**（六面里 script 那一面还缺）；`hexmap` → `sensing::ILineOfSightQuery` 的 provider 接线见下一行 |
 
 ---
 

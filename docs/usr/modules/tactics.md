@@ -350,6 +350,43 @@ auto commands = projector.project(event, command, frame);
 - 与表现无关的事件（随机数、objective 结算）投影为**空列表**，这是正常答案。
 - 全部是值：投影可以在快照/serve 之后逐字节重算，测试与渲染只是两个消费者。
 
+## 视线与掩体策略（C++ 接口，无渲染依赖）
+
+`tactics/LineOfSight.h` 把"能不能看见""这一格有多少掩体"做成**可注入策略 + 具名 capability**，
+而不是写进技能结算里——后者正是参考框架的做法，结果是规则无法单测、无法复用、也无法换棋盘形状。
+
+```cpp
+auto sight = eve::tactics::gridLineOfSightPolicy();   // 内建：按棋盘自身拓扑直线追踪
+auto cover = eve::tactics::gridCoverPolicy();         // 内建：目标周围/来向的阻挡
+auto visible = sight->visible(board, from, to);       // Result<bool>
+auto level = cover->cover(board, attacker, target);   // Result<CoverLevel>
+```
+
+规则：
+
+- **阻挡读的是格子的 tag**（`kSightBlockerTag = "sight_blocker"`），不是 `passable`：
+  "能不能走进去"和"能不能看穿"是两件事（矮墙、烟雾挡视线但不挡路），
+  因此视线成为独立事实，且**不需要新的快照版本**。
+- 追踪只算**两端点之间**的格：站在烟雾里仍能看出去，目标格上的阻挡保护目标但不隐藏它。
+- 棋盘上**不存在的格按阻挡处理**——没铺格子的地方不是免费射界。
+- 追踪从**canonical 格序**计算后按查询方向翻转，所以 `visible(a,b)` 与 `visible(b,a)` 由构造保证一致，
+  而不是靠两份实现碰巧相同；测试对 5×5 棋盘**全部 625 个有序对**做了对称性扫描（§5.14 的空白）。
+- 三种拓扑都支持（Square4/Square8 用 supercover 走法，HexAxial 用 cube 直线插值）。
+- 跨层与不存在的格返回结构化拒绝（`Unsupported` / `NotFound`），而不是"看不见"。
+- 掩体分三档：`full`（直线被挡，伤害被吸收）、`half`（目标旁边有阻挡但不在来向上）、
+  `none`。"看不见"和"看得见但被吸收"是不同玩法，所以视线与掩体是**两个接口**，不是一个合并结果。
+- `visibleCellsInRange(board, policy, origin, min, max, metric)` 把既有 `cellsInRange` 与视线组合起来
+  ——正好是填 `InteractionContext::targetableCells` 需要的那个查询；它**不重新实现射程或视线**，
+  两个规则各自只有一个所有者。
+- 换棋盘（例如带自己投影的六边形大地图）时注册自己的 provider：
+
+```cpp
+static constexpr const char* capabilityName;   // "eve.tactics.ILineOfSightPolicy" / "..ICoverPolicy"
+eve::cap::provide<eve::tactics::ILineOfSightPolicy>(myPolicy.get());
+```
+
+**provider 缺失时 `query` 返回空指针**，由调用方显式处理，不会有一个静默的默认实现替它回答。
+
 ## 快照约定
 
 `TacticsPersistence` 使用引擎统一的 `SnapshotEnvelope`，schema 为 `tactics:battle`、
