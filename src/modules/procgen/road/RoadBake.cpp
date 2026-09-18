@@ -583,13 +583,15 @@ Result<void> bakeJunction(MeshBuild& mesh, const RoadNetwork& network, const Roa
                     appendOrientedQuad(mesh, V3{b0.x, walkY, b0.z}, V3{c0.x, walkY, c0.z}, V3{c1.x, walkY, c1.z},
                                        V3{b1.x, walkY, b1.z}, upN, 0.f, 1.f, 0.f, 1.f, RoadMaterial::Sidewalk);
 
-                    // Curb face toward asphalt; curb riser down onto sidewalk; outer gray skirt.
+                    // Curb face toward asphalt; curb riser onto sidewalk; outer gray skirt.
+                    // Skirt normal faces the hub so the overhead camera sees the front face
+                    // (property-facing normals were backface-culled to a thin silhouette).
                     appendOrientedQuad(mesh, V3{a0.x, y, a0.z}, V3{a1.x, y, a1.z}, V3{a1.x, curbTop, a1.z},
                                        V3{a0.x, curbTop, a0.z}, outToRoad, 0.f, 1.f, 0.f, 1.f, RoadMaterial::Curb);
                     appendOrientedQuad(mesh, V3{b0.x, walkY, b0.z}, V3{b1.x, walkY, b1.z}, V3{b1.x, curbTop, b1.z},
-                                       V3{b0.x, curbTop, b0.z}, inToCorner, 0.f, 1.f, 0.f, 1.f, RoadMaterial::Curb);
+                                       V3{b0.x, curbTop, b0.z}, outToRoad, 0.f, 1.f, 0.f, 1.f, RoadMaterial::Curb);
                     appendOrientedQuad(mesh, V3{c0.x, y, c0.z}, V3{c1.x, y, c1.z}, V3{c1.x, walkY, c1.z},
-                                       V3{c0.x, walkY, c0.z}, inToCorner, 0.f, 1.f, 0.f, 1.f,
+                                       V3{c0.x, walkY, c0.z}, outToRoad, 0.f, 1.f, 0.f, 1.f,
                                        RoadMaterial::Sidewalk);
                 }
             }
