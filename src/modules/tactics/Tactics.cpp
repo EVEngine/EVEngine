@@ -1,6 +1,7 @@
 #include "tactics/Tactics.h"
 
 #include "tactics/TurnPolicy.h"
+#include "tactics/TacticsLineOfSightAdapter.h"
 #include "tactics/LineOfSight.h"
 #include "common/SnapshotHash.h"
 #include "common/SquirrelBinding.h"
@@ -465,7 +466,13 @@ void releaseLive(std::vector<ecs::EntityHandle>& handles) noexcept {
 
 Module_IMPL(Tactics, new Tactics());
 
-Tactics::Tactics() { cap::addListener<IGameplayControlProvider>(this); }
+Tactics::Tactics() {
+    cap::addListener<IGameplayControlProvider>(this);
+    // Importing tactics is what makes grid line of sight available to the targeting pipeline. A
+    // refusal here (a foreign provider already owning the capability, say) is observed rather than
+    // thrown: the project keeps whatever it registered, and grid sight simply is not claimed.
+    registerTacticsLineOfSightProvider().ignore("grid line-of-sight spaces were not claimed");
+}
 
 TacticsBattleSession::~TacticsBattleSession() noexcept {
     auto* value = dynamic_cast<Battle*>(ecs::try_get(battle));
@@ -1196,6 +1203,16 @@ Result<InteractionContext> Tactics::interactionContext(ecs::EntityHandle battleH
 std::string_view Tactics::lineOfSightAlgorithm() const noexcept {
     const ILineOfSightPolicy* registered = cap::query<ILineOfSightPolicy>();
     return registered != nullptr ? registered->id() : gridLineOfSightPolicy()->id();
+}
+
+Result<void> Tactics::attachLineOfSightBoard(ecs::EntityHandle battle) {
+    // The adapter resolves the handle itself, so a stale one is refused there rather than being
+    // cached here as a pointer that could dangle.
+    return tacticsLineOfSightAdapter().bindBattle(battle);
+}
+
+Result<void> Tactics::detachLineOfSightBoard(ecs::EntityHandle battle) {
+    return tacticsLineOfSightAdapter().unbindBattle(battle);
 }
 
 Result<std::vector<PresentationCommand>> Tactics::presentationIntents(ecs::EntityHandle battleHandle,

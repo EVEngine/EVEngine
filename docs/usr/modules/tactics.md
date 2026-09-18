@@ -430,6 +430,21 @@ eve::cap::provide<eve::tactics::ILineOfSightPolicy>(myPolicy.get());
 
 **provider 缺失时 `query` 返回空指针**，由调用方显式处理，不会有一个静默的默认实现替它回答。
 
+### 让 `sensing` 的瞄准管线也能用这套视线
+
+`tactics` 导入即向 `sensing::LineOfSightRouter` **认领 `Grid2D` 与 `Grid3D`**（`TacticsLineOfSightAdapter`），
+于是 `sensing::TargetingResolver` 的 `LineOfSightMode::Required` 在战棋里真正可用——而世界坐标空间仍归
+`physics`，两者不再按加载顺序互相顶掉。
+
+- 适配器**同时只服务一个棋盘**：`Tactics` 的 attach/detach（C++ 接口，与 physics 注册 World3D 的做法对称）
+  绑定/解绑；绑定第二个不同战局返回 `Conflict`，因为"谁生效"必须由调用方明确指定。
+- 绑定的战局以 **ECS handle 保存、不用指针**：战局被释放后 handle 解析不到，查询返回 `Unsupported`
+  而不是读取已释放的棋盘。
+- **什么都没绑定**时查询也返回 `Unsupported`（不是"看不见"）；`Unsupported` 与"不可见"是两个不同的
+  可观察结果，瞄准管线据此区分"没有 provider"和"被挡住"。
+- 阻挡事实就是单元格子上的 `sight_blocker` tag，与模块自己的射程查询读同一份数据，**不引入第二套阻挡模型**。
+- `blocker` 字段保持为空：内建网格策略回答的是"可见性"，不是"谁挡住的"；能识别阻挡者的策略可以自行填充。
+
 ## 快照与回放的脚本出口
 
 战局可以整份存档、读回并回放——**跨脚本边界的都是 JSON 文本**，因为信封与命令日志都是自描述的

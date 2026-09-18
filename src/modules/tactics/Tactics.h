@@ -290,6 +290,21 @@ public:
     [[nodiscard]] std::string_view lineOfSightAlgorithm() const noexcept;
 
     /**
+     * @brief Bind one battle as the board that grid line-of-sight queries answer for.
+     *
+     * @return Applied, NoOp when it is already bound, Conflict when a different battle is bound, or
+     *         StaleHandle when the handle is not a live battle.
+     * @remarks Mirrors the physics adapter's explicit world registration: the adapter serves one
+     *          board at a time, so a project states which board the targeting pipeline should see
+     *          instead of getting an answer that depends on binding order. Nothing is bound by
+     *          default, and a query while nothing is bound is `Unsupported`, never "not visible".
+     */
+    [[nodiscard]] Result<void> attachLineOfSightBoard(ecs::EntityHandle battle);
+
+    /** @brief Release the line-of-sight binding when @p battle is the bound one; otherwise NoOp. */
+    [[nodiscard]] Result<void> detachLineOfSightBoard(ecs::EntityHandle battle);
+
+    /**
      * @brief Project authoritative events after @p afterSequence into presentable intents.
      *
      * @param afterSequence Only events with a greater sequence are projected.
