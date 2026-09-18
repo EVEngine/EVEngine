@@ -192,6 +192,55 @@ void capProfileRing(MeshBuild& mesh, const SplineFrameSample& frame, const RoadP
     }
 }
 
+/**
+ * @brief Close only curb/sidewalk shoulders at a tip — leave the asphalt U open.
+ *
+ * Full `capProfileRing` draws a dark tip bar across the asphalt that reads as a
+ * salmon seam from above on large junction trims. Shoulder-only caps still stop
+ * see-through holes at the outer gray edge.
+ */
+void capProfileShoulders(MeshBuild& mesh, const SplineFrameSample& frame, const RoadProfile& profile, bool outward) {
+    if (profile.points.size() < 6) return;
+    const V3 origin{frame.sample.x, frame.sample.y, frame.sample.z};
+    const V3 side{frame.sideX, frame.sideY, frame.sideZ};
+    const V3 up{frame.upX, frame.upY, frame.upZ};
+    V3       fwd{frame.forwardX, frame.forwardY, frame.forwardZ};
+    if (!outward) fwd = fwd * -1.f;
+    const V3 nrm = normalize(fwd);
+
+    // First Asphalt point marks the deck span start; shoulders are everything else.
+    std::size_t asphaltBegin = profile.points.size();
+    for (std::size_t i = 0; i < profile.points.size(); ++i) {
+        if (profile.points[i].material == RoadMaterial::Asphalt) {
+            asphaltBegin = i;
+            break;
+        }
+    }
+    if (asphaltBegin == 0 || asphaltBegin >= profile.points.size()) return;
+
+    auto emitFan = [&](std::size_t begin, std::size_t end, RoadMaterial mat) {
+        if (end < begin + 3) return;
+        mesh.setActiveGroup(roadMaterialGroup(mat));
+        const auto base = static_cast<std::uint32_t>(mesh.getVertexCount());
+        for (std::size_t i = begin; i < end; ++i) {
+            const auto& pp = profile.points[i];
+            const V3    p  = origin + side * pp.side + up * pp.up;
+            mesh.addVertex(p.x, p.y, p.z, nrm.x, nrm.y, nrm.z, 0.f, 0.f);
+        }
+        const auto count = static_cast<std::uint32_t>(end - begin);
+        for (std::uint32_t i = 1; i + 1 < count; ++i) {
+            if (outward) mesh.addTriangle(base, base + i, base + i + 1);
+            else
+                mesh.addTriangle(base, base + i + 1, base + i);
+        }
+    };
+
+    // Left shoulder: outer sidewalk → curb down to asphalt lip (excludes asphalt point).
+    emitFan(0, asphaltBegin, RoadMaterial::Sidewalk);
+    // Right shoulder: asphalt lip → curb → outer sidewalk.
+    emitFan(asphaltBegin, profile.points.size(), RoadMaterial::Sidewalk);
+}
+
 Result<void> addDeckAndPiers(MeshBuild& mesh, const std::vector<SplineFrameSample>& frames, const RoadStyle& style,
                              float halfWidth, bool includePiers) {
     if (frames.size() < 2) return Result<void>::success();
@@ -361,10 +410,18 @@ Result<void> bakeEdgeGeometry(MeshBuild& mesh, RoadOverlay& overlay, const RoadN
 
     auto lofted = loftProfileClean(mesh, trimmed, profile.value(), edge.style.uvMeters);
     if (!lofted.ok()) return lofted;
-    // Cap only small stub ends. Large junction trims meet an apron — a full-profile
-    // U-cap draws a dark tip bar that reads as a salmon seam from above.
-    if (trimStart > 0.05f && trimStart < 2.5f) capProfileRing(mesh, trimmed.front(), profile.value(), false);
-    if (trimEnd > 0.05f && trimEnd < 2.5f) capProfileRing(mesh, trimmed.back(), profile.value(), true);
+    // Cap stub ends fully. On large junction trims, only close curb/sidewalk
+    // shoulders — a full U-cap draws a dark asphalt tip bar that reads as a gap.
+    if (trimStart > 0.05f) {
+        if (trimStart < 2.5f) capProfileRing(mesh, trimmed.front(), profile.value(), false);
+        else
+            capProfileShoulders(mesh, trimmed.front(), profile.value(), false);
+    }
+    if (trimEnd > 0.05f) {
+        if (trimEnd < 2.5f) capProfileRing(mesh, trimmed.back(), profile.value(), true);
+        else
+            capProfileShoulders(mesh, trimmed.back(), profile.value(), true);
+    }
     auto deck = addDeckAndPiers(mesh, trimmed, edge.style, profile.value().halfWidth, options.includePiers);
     if (!deck.ok()) return deck;
     if (options.includeMarkings) {
