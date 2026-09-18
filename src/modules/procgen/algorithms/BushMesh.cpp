@@ -14,15 +14,16 @@ constexpr float kPi = 3.14159265358979323846f;
 // tex.foliage atlas layout:
 //   u in [0, 0.22] brown bark for twigs (same look as tree trunks),
 //   u in [0.24, 0.50] opaque leafy fill for ellipsoid blobs,
-//   u in [0.52, 1] 3×3 transparent ovate stamps for leaf cards.
-constexpr float kBarkUMin    = 0.00f;
-constexpr float kBarkUMax    = 0.22f;
-constexpr float kBlobUMin    = 0.24f;
-constexpr float kBlobUMax    = 0.50f;
-constexpr float kCardAtlasU0 = 0.52f;
-constexpr float kCardAtlasU1 = 1.00f;
-constexpr int   kLeafCols    = 3;
-constexpr int   kLeafRows    = 3;
+//   u in [0.52, 1] 2×3 = 6 leaf-card panels (each 8–16 blue-noise ovate stamps).
+constexpr float kBarkUMin     = 0.00f;
+constexpr float kBarkUMax     = 0.22f;
+constexpr float kBlobUMin     = 0.24f;
+constexpr float kBlobUMax     = 0.50f;
+constexpr float kCardAtlasU0  = 0.52f;
+constexpr float kCardAtlasU1  = 1.00f;
+constexpr int   kLeafCardCols = 2;
+constexpr int   kLeafCardRows = 3;
+constexpr int   kLeafCardPanels = kLeafCardCols * kLeafCardRows;
 
 struct V3 {
     float x = 0.f, y = 0.f, z = 0.f;
@@ -119,8 +120,8 @@ void addTwig(MeshBuild &out, V3 a, V3 b, float r0, float r1, int sides, float uM
     }
 }
 
-// Leaf card: larger transparent quad (+25%) with a smaller ovate stamp (−25%)
-// sampled from one atlas cell. Masked alpha keeps only the blade.
+// Leaf card: transparent quad sampling one of six atlas panels. Each panel holds
+// 8–16 solid ovate leaves placed with blue-noise spacing + random rotation.
 void addLeafCard(MeshBuild &out, std::mt19937 &rng, V3 c, V3 direction, float size) {
     V3 right, up;
     basisFor(norm(direction), right, up);
@@ -138,12 +139,13 @@ void addLeafCard(MeshBuild &out, std::mt19937 &rng, V3 c, V3 direction, float si
     const V3    points[4] = {sub(sub(center, r), h), add(sub(center, h), r), add(add(center, r), h),
                              add(sub(center, r), h)};
 
-    // One 3×3 stamp cell — stamp itself is drawn smaller so the blade reads −25%.
-    const int   col    = int(randomRange(rng, 0.f, float(kLeafCols))) % kLeafCols;
-    const int   row    = int(randomRange(rng, 0.f, float(kLeafRows))) % kLeafRows;
-    const float inset  = 0.06f;
-    const float cellWU = (kCardAtlasU1 - kCardAtlasU0) / float(kLeafCols);
-    const float cellWV = 1.f / float(kLeafRows);
+    // Randomly assign one of the six pre-baked leaf-card panels.
+    const int   panel  = int(randomRange(rng, 0.f, float(kLeafCardPanels))) % kLeafCardPanels;
+    const int   col    = panel % kLeafCardCols;
+    const int   row    = panel / kLeafCardCols;
+    const float inset  = 0.04f;
+    const float cellWU = (kCardAtlasU1 - kCardAtlasU0) / float(kLeafCardCols);
+    const float cellWV = 1.f / float(kLeafCardRows);
     const float u0     = kCardAtlasU0 + (float(col) + inset) * cellWU;
     const float u1     = kCardAtlasU0 + (float(col) + 1.f - inset) * cellWU;
     const float v0     = (float(row) + inset) * cellWV;

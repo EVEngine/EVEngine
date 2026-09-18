@@ -4,12 +4,15 @@
 #include "procgen/texture/ColorRamp.h"
 #include "procgen/texture/CloudField.h"
 #include "procgen/texture/CloudShadow.h"
+#include "procgen/PointSet.h"
 
 #include "image/ImageData.h"
 
 #include <algorithm>
 #include <cmath>
+#include <cstdint>
 #include <functional>
+#include <random>
 #include <utility>
 #include <vector>
 
@@ -534,11 +537,10 @@ std::unique_ptr<image::ImageData> genCloudShadow(const Params &params, std::stri
 }
 
 /**
- * @brief Discrete ovate leaf stamps on a transparent leaf-card atlas.
+ * @brief Ovate leaf stamps on a transparent leaf-card panel.
  *
- * Each stamp is an egg-shaped leaf with clear empty margins so
- * SurfaceMode::Masked cuts the card to foliage silhouettes rather than a
- * solid green rectangle.
+ * Each of 6 atlas panels holds 8–16 solid ovate leaves placed with blue-noise
+ * spacing and random rotation. Quad leaf cards UV-map to one random panel.
  */
 struct LeafStamp {
     float cx = 0.5f, cy = 0.5f;
@@ -546,30 +548,56 @@ struct LeafStamp {
     float ang = 0.f;
 };
 
-void buildOvateLeafStamps(const NoiseField &noise, int count, std::vector<LeafStamp> &stamps) {
+constexpr int kLeafCardPanels = 6;
+constexpr int kLeafCardCols   = 2;
+constexpr int kLeafCardRows   = 3;
+
+/**
+ * @brief Blue-noise ovate stamps inside one unit panel (8–16 leaves).
+ */
+void buildBlueNoiseCardStamps(std::uint32_t seed, int count, std::vector<LeafStamp> &stamps) {
     stamps.clear();
-    count = std::clamp(count, 1, 24);
-    // Rough grid so leaves do not pile into an opaque slab.
-    const int cols = std::max(1, int(std::ceil(std::sqrt(float(count)))));
-    const int rows = std::max(1, int(std::ceil(float(count) / float(cols))));
+    count = std::clamp(count, 8, 16);
+    // Bridson on a fine grid, then normalize to the unit square with a margin.
+    const float minDist01 = std::sqrt(0.42f / float(count));
+    constexpr int kSide   = 64;
+    const float   radius  = std::max(1.5f, minDist01 * float(kSide));
+    const PointSet pts    = poissonDiskPoints(kSide, kSide, radius, seed, count + 12);
+    std::mt19937 rng(seed ^ 0x9e3779b9u);
+    std::uniform_real_distribution<float> unit(0.f, 1.f);
+    constexpr float kMargin = 0.07f;
     int placed = 0;
-    for (int row = 0; row < rows && placed < count; ++row) {
-        for (int col = 0; col < cols && placed < count; ++col) {
-            const float cellW = 1.f / float(cols);
-            const float cellH = 1.f / float(rows);
-            // Keep stamps centred; blade ~25% smaller than a full cell so a larger
-            // transparent card shows clear ovate leaves with empty margins.
-            const float jx = (noise.hash01(col * 3 + 1, row * 5 + 2) - 0.5f) * cellW * 0.10f;
-            const float jy = (noise.hash01(col * 7 + 3, row * 11 + 4) - 0.5f) * cellH * 0.10f;
-            LeafStamp s;
-            s.cx = (float(col) + 0.5f) * cellW + jx;
-            s.cy = (float(row) + 0.5f) * cellH + jy;
-            s.halfW = cellW * (0.27f + 0.04f * noise.hash01(col + 9, row + 2));
-            s.halfH = cellH * (0.33f + 0.05f * noise.hash01(col + 4, row + 8));
-            s.ang = (noise.hash01(col * 13 + 1, row * 17 + 3) - 0.5f) * 0.9f;
-            stamps.push_back(s);
-            ++placed;
+    for (const ProcgenPoint &p : pts.points()) {
+        if (placed >= count) break;
+        LeafStamp s;
+        s.cx    = kMargin + (1.f - 2.f * kMargin) * (p.x / float(kSide));
+        s.cy    = kMargin + (1.f - 2.f * kMargin) * (p.z / float(kSide));
+        s.ang   = unit(rng) * 6.28318530718f;
+        s.halfW = 0.050f + 0.028f * unit(rng);
+        s.halfH = 0.070f + 0.036f * unit(rng);
+        stamps.push_back(s);
+        ++placed;
+    }
+    // Top up with dart throws if Bridson under-filled (small textures / tight radius).
+    int guard = 0;
+    while (placed < count && guard++ < count * 100) {
+        LeafStamp s;
+        s.cx    = kMargin + (1.f - 2.f * kMargin) * unit(rng);
+        s.cy    = kMargin + (1.f - 2.f * kMargin) * unit(rng);
+        bool ok = true;
+        for (const LeafStamp &o : stamps) {
+            const float dx = s.cx - o.cx, dy = s.cy - o.cy;
+            if (dx * dx + dy * dy < minDist01 * minDist01) {
+                ok = false;
+                break;
+            }
         }
+        if (!ok) continue;
+        s.ang   = unit(rng) * 6.28318530718f;
+        s.halfW = 0.050f + 0.028f * unit(rng);
+        s.halfH = 0.070f + 0.036f * unit(rng);
+        stamps.push_back(s);
+        ++placed;
     }
 }
 
@@ -593,6 +621,33 @@ void sampleOvateLeafCard(const NoiseField &noise, float u, float v, const std::v
         // Flat fill — no veins/mottle; slight per-stamp tone so leaves are not identical.
         shade = 0.48f + 0.12f * noise.hash01(int(s.cx * 97.f), int(s.cy * 53.f));
     }
+}
+
+/**
+ * @brief Build six blue-noise leaf-card panels (shared by foliage / tree atlases).
+ */
+void buildSixLeafCardPanels(std::uint32_t seed, const NoiseField &noise,
+                            std::vector<std::vector<LeafStamp>> &panels) {
+    panels.clear();
+    panels.resize(size_t(kLeafCardPanels));
+    for (int i = 0; i < kLeafCardPanels; ++i) {
+        const std::uint32_t panelSeed = seed ^ (std::uint32_t(i + 1) * 2654435761u);
+        const int count = 8 + int(noise.hash01(i * 3 + 1, i * 7 + 2) * 8.999f);  // 8..16
+        buildBlueNoiseCardStamps(panelSeed, count, panels[size_t(i)]);
+    }
+}
+
+/**
+ * @brief Sample one of six leaf-card panels from card-half UV fu,v ∈ [0,1].
+ */
+void sampleLeafCardAtlas(const NoiseField &noise, float fu, float v,
+                         const std::vector<std::vector<LeafStamp>> &panels, float &cover, float &shade) {
+    const int col = std::clamp(int(fu * float(kLeafCardCols)), 0, kLeafCardCols - 1);
+    const int row = std::clamp(int(v * float(kLeafCardRows)), 0, kLeafCardRows - 1);
+    const float localU = fu * float(kLeafCardCols) - float(col);
+    const float localV = v * float(kLeafCardRows) - float(row);
+    const int   panel  = row * kLeafCardCols + col;
+    sampleOvateLeafCard(noise, localU, localV, panels[size_t(panel)], cover, shade);
 }
 
 /**
@@ -676,9 +731,8 @@ std::unique_ptr<image::ImageData> genTreeAtlas(const Params &params, std::string
     leafRamp.add(0.78f, 88, 148, 46);
     leafRamp.add(1.00f, 24, 54, 16);
 
-    std::vector<LeafStamp> leafStamps;
-    // 3×3 grid — must match BushMesh / TreeMesh / FoliageCluster card UVs.
-    buildOvateLeafStamps(noise, 9, leafStamps);
+    std::vector<std::vector<LeafStamp>> leafPanels;
+    buildSixLeafCardPanels(std::uint32_t(ctx.seed), noise, leafPanels);
 
     const float invW = 1.f / float(std::max(1, ctx.width - 1));
     const float invH = 1.f / float(std::max(1, ctx.height - 1));
@@ -692,11 +746,10 @@ std::unique_ptr<image::ImageData> genTreeAtlas(const Params &params, std::string
             } else if (u > 0.52f) {
                 const float fu = (u - 0.52f) / 0.48f;
                 float cover = 0.f, shade = 0.f;
-                sampleOvateLeafCard(noise, fu, v, leafStamps, cover, shade);
+                sampleLeafCardAtlas(noise, fu, v, leafPanels, cover, shade);
                 if (cover < 0.5f) {
                     color = {0, 0, 0, 0};
                 } else {
-                    // Solid leaf colour (no banded/mottle texture inside the blade).
                     color   = leafRamp.sample(shade);
                     color.a = 255;
                 }
@@ -739,8 +792,8 @@ std::unique_ptr<image::ImageData> genFoliage(const Params &params, std::string &
     leafRamp.add(0.78f, 62, 122, 58);
     leafRamp.add(1.00f, 22, 48, 28);
 
-    std::vector<LeafStamp> leafStamps;
-    buildOvateLeafStamps(noise, 9, leafStamps);
+    std::vector<std::vector<LeafStamp>> leafPanels;
+    buildSixLeafCardPanels(std::uint32_t(ctx.seed), noise, leafPanels);
 
     const float invW = 1.f / float(std::max(1, ctx.width - 1));
     const float invH = 1.f / float(std::max(1, ctx.height - 1));
@@ -764,11 +817,10 @@ std::unique_ptr<image::ImageData> genFoliage(const Params &params, std::string &
                 color = {40, 78, 36, 255};
             } else {
                 const float fu = (u - 0.52f) / 0.48f;
-                sampleOvateLeafCard(noise, fu, v, leafStamps, cover, shade);
+                sampleLeafCardAtlas(noise, fu, v, leafPanels, cover, shade);
                 if (cover < 0.5f) {
                     color = {0, 0, 0, 0};
                 } else {
-                    // Solid leaf colour (no banded/mottle texture inside the blade).
                     color   = leafRamp.sample(shade);
                     color.a = 255;
                 }

@@ -205,13 +205,12 @@ int addFoliageCluster(MeshBuild &out, const FoliageClusterDesc &desc) {
             }
 
             const float size = leafSize * (1.f + randomRange(rng, -sizeVar, sizeVar));
-            // One cell of the shared 3×3 ovate leaf-card atlas (tex.tree_atlas /
-            // tex.foliage right half). Avoid sampling the whole collage.
-            constexpr int kCols = 3;
+            // One of six shared leaf-card panels (tex.tree_atlas / tex.foliage).
+            constexpr int kCols = 2;
             constexpr int kRows = 3;
             const int     col   = int(randomRange(rng, 0.f, float(kCols))) % kCols;
             const int     row   = int(randomRange(rng, 0.f, float(kRows))) % kRows;
-            const float   inset = 0.10f;
+            const float   inset = 0.04f;
             const float   spanU = (uvMax - uvMin) / float(kCols);
             const float   spanV = 1.f / float(kRows);
             const float   u0    = uvMin + (float(col) + inset) * spanU;

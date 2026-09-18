@@ -79,39 +79,44 @@ void addLeafCard(MeshBuild& out, V3 c, V3 direction, float size, float twist, st
     right           = add(mul(right, std::cos(twist)), mul(up, std::sin(twist)));
     up              = norm(cross(norm(direction), right));
     const V3 normal = norm(cross(right, up));
+    const float card  = size * 1.25f;
+    const float halfW = card * randomRange(rng, 0.55f, 0.72f);
+    const float halfH = card * randomRange(rng, 0.55f, 0.72f);
+    const V3 r = mul(right, halfW), h = mul(up, halfH);
     const V3 center = add(c, mul(normal, size * 0.04f));
-    const float halfW = size * randomRange(rng, 0.42f, 0.55f);
-    const float halfH = size * randomRange(rng, 0.58f, 0.78f);
+    const V3 points[4] = {sub(sub(center, r), h), add(sub(center, h), r), add(add(center, r), h),
+                          add(sub(center, r), h)};
 
-    // One cell of the tex.tree_atlas / tex.foliage 3×3 ovate stamp grid.
+    // One of six leaf-card panels (8–16 blue-noise ovate stamps each).
     constexpr float kCardU0 = 0.52f;
     constexpr float kCardU1 = 1.00f;
-    constexpr int   kCols   = 3;
+    constexpr int   kCols   = 2;
     constexpr int   kRows   = 3;
-    const int       col     = int(randomRange(rng, 0.f, float(kCols))) % kCols;
-    const int       row     = int(randomRange(rng, 0.f, float(kRows))) % kRows;
-    const float     inset   = 0.10f;
+    const int       panel   = int(randomRange(rng, 0.f, float(kCols * kRows))) % (kCols * kRows);
+    const int       col     = panel % kCols;
+    const int       row     = panel / kCols;
+    const float     inset   = 0.04f;
     const float     cellWU  = (kCardU1 - kCardU0) / float(kCols);
     const float     cellWV  = 1.f / float(kRows);
     const float     u0      = kCardU0 + (float(col) + inset) * cellWU;
     const float     u1      = kCardU0 + (float(col) + 1.f - inset) * cellWU;
     const float     v0      = (float(row) + inset) * cellWV;
     const float     v1      = (float(row) + 1.f - inset) * cellWV;
-
-    // Ovate polygon — silhouette is geometric, not a masked quad.
-    constexpr float kOutlineX[8] = {0.f, -0.32f, -0.48f, -0.30f, 0.f, 0.30f, 0.48f, 0.32f};
-    constexpr float kOutlineY[8] = {-0.48f, -0.28f, 0.02f, 0.32f, 0.50f, 0.32f, 0.02f, -0.28f};
-    const uint32_t  base         = uint32_t(out.getVertexCount());
-    for (int i = 0; i < 8; ++i) {
-        const V3 p = add(center, add(mul(right, kOutlineX[i] * halfW), mul(up, kOutlineY[i] * halfH)));
-        const float u = u0 + (0.5f + kOutlineX[i]) * (u1 - u0);
-        const float v = v0 + (0.5f + kOutlineY[i]) * (v1 - v0);
-        out.addVertex(p.x, p.y, p.z, normal.x, normal.y, normal.z, u, v);
-    }
-    for (int i = 1; i < 7; ++i) {
-        out.addTriangle(base, base + uint32_t(i), base + uint32_t(i + 1));
-        out.addTriangle(base, base + uint32_t(i + 1), base + uint32_t(i));
-    }
+    const bool      flipU   = randomRange(rng, 0.f, 1.f) > 0.5f;
+    const bool      flipV   = randomRange(rng, 0.f, 1.f) > 0.5f;
+    const float     uv[4][2] = {
+        {flipU ? u1 : u0, flipV ? v1 : v0},
+        {flipU ? u0 : u1, flipV ? v1 : v0},
+        {flipU ? u0 : u1, flipV ? v0 : v1},
+        {flipU ? u1 : u0, flipV ? v0 : v1},
+    };
+    const uint32_t base = uint32_t(out.getVertexCount());
+    for (int i = 0; i < 4; ++i)
+        out.addVertex(points[i].x, points[i].y, points[i].z, normal.x, normal.y, normal.z, uv[i][0], uv[i][1]);
+    out.addTriangle(base, base + 1, base + 2);
+    out.addTriangle(base, base + 2, base + 3);
+    out.addTriangle(base + 2, base + 1, base);
+    out.addTriangle(base + 3, base + 2, base);
 }
 
 void addCanopyBlob(MeshBuild& out, V3 center, V3 radius, int rings, int sides) {

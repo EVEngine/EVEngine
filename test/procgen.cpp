@@ -3196,7 +3196,7 @@ TEST_CASE("procgen.mesh.bush.ovateLeafCards") {
     std::string err;
     MeshBuild out;
     REQUIRE(MeshRecipeRegistry::instance().generate("mesh.bush", p, out, err));
-    // Transparent leaf cards are double-sided quads (4 verts) sampling one stamp cell.
+    // Transparent leaf cards are double-sided quads sampling one of six panels.
     CHECK(out.getVertexCount() >= 4);
     CHECK(out.getVertexCount() % 4 == 0);
     for (int leaf = 0; leaf < out.getVertexCount(); leaf += 4) {
@@ -3209,8 +3209,40 @@ TEST_CASE("procgen.mesh.bush.ovateLeafCards") {
         }
         CHECK(uMin >= 0.52f - 1e-3f);
         CHECK(uMax <= 1.f + 1e-3f);
-        CHECK(uMax - uMin < 0.22f);
-        CHECK(vMax - vMin < 0.45f);
+        // One 2×3 panel (not the full card half).
+        CHECK(uMax - uMin < 0.28f);
+        CHECK(vMax - vMin < 0.40f);
+    }
+}
+
+TEST_CASE("procgen.texture.foliage.sixLeafCardPanels") {
+    TextureRecipeRegistry::instance().registerBuiltins();
+    Params p;
+    p.setSeed(20260922);
+    p.setSize(256, 256);
+    p.setFloat("scale", 4.2f);
+    p.setInt("seamless", 1);
+    p.setInt("colors", 7);
+    std::string err;
+    auto img = TextureRecipeRegistry::instance().generate("tex.foliage", p, err);
+    REQUIRE(static_cast<bool>(img));
+    const int w = img->getWidth();
+    const int h = img->getHeight();
+    // Each of the 6 panels (2×3) should contain several opaque leaf texels.
+    for (int row = 0; row < 3; ++row) {
+        for (int col = 0; col < 2; ++col) {
+            int opaque = 0;
+            const int x0 = int((0.52f + float(col) * 0.24f) * float(w - 1));
+            const int x1 = int((0.52f + float(col + 1) * 0.24f) * float(w - 1));
+            const int y0 = int((float(row) / 3.f) * float(h - 1));
+            const int y1 = int((float(row + 1) / 3.f) * float(h - 1));
+            for (int y = y0; y < y1; y += 2) {
+                for (int x = x0; x < x1; x += 2) {
+                    if (img->getPixel(x, y).a > 0.9f) ++opaque;
+                }
+            }
+            CHECK(opaque >= 8);
+        }
     }
 }
 
