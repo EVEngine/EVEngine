@@ -1,6 +1,7 @@
 #include "devtools/McpRuntimeTools.hpp"
 
 #include "devtools/ConsolePanel.hpp"
+#include "devtools/McpArgs.hpp"
 #include "devtools/McpJson.hpp"
 
 #include "common/Capability.h"
@@ -55,32 +56,10 @@ std::string joined(const std::vector<std::string>& values) {
     return out;
 }
 
-std::string argString(Poco::JSON::Object::Ptr args, const char* key, const std::string& def = {}) {
-    if (!args || !args->has(key)) return def;
-    try {
-        return args->get(key).convert<std::string>();
-    } catch (...) {
-        return def;
-    }
-}
-
-int argInt(Poco::JSON::Object::Ptr args, const char* key, int def) {
-    if (!args || !args->has(key)) return def;
-    try {
-        return args->get(key).convert<int>();
-    } catch (...) {
-        return def;
-    }
-}
-
-std::int64_t argSeq(Poco::JSON::Object::Ptr args, const char* key) {
-    if (!args || !args->has(key)) return 0;
-    try {
-        const std::int64_t value = args->get(key).convert<Poco::Int64>();
-        return value > 0 ? value : 0;
-    } catch (...) {
-        return 0;
-    }
+/** Console cursors are non-negative; a negative request means "from the start". */
+std::int64_t getArgSeq(Poco::JSON::Object::Ptr args, const char* key) {
+    const long long value = getArgInt64(args, key, 0);
+    return value > 0 ? static_cast<std::int64_t>(value) : 0;
 }
 
 std::string textPayload(Poco::JSON::Object::Ptr object, bool isError = false) {
@@ -95,12 +74,12 @@ std::string errorPayload(const std::string& message) {
 }
 
 std::string consoleRead(Poco::JSON::Object::Ptr args) {
-    const std::string level = argString(args, "level");
+    const std::string level = getArgString(args, "level");
     if (!level.empty() && !isListed(consoleLevels(), level)) {
         return errorPayload("unknown level '" + level + "'; expected one of " + joined(consoleLevels()));
     }
-    const int           limit    = std::clamp(argInt(args, "limit", kDefaultConsoleRead), 1, kMaxConsoleRead);
-    const std::uint64_t afterSeq = static_cast<std::uint64_t>(argSeq(args, "sinceSeq"));
+    const int           limit    = std::clamp(getArgInt(args, "limit", kDefaultConsoleRead), 1, kMaxConsoleRead);
+    const std::uint64_t afterSeq = static_cast<std::uint64_t>(getArgSeq(args, "sinceSeq"));
 
     const ConsoleSlice slice = ConsolePanel::instance().read(afterSeq, static_cast<std::size_t>(limit), level);
 
@@ -130,9 +109,9 @@ std::string consoleRead(Poco::JSON::Object::Ptr args) {
 }
 
 std::string consoleWrite(Poco::JSON::Object::Ptr args) {
-    const std::string text = argString(args, "text");
+    const std::string text = getArgString(args, "text");
     if (text.empty()) return errorPayload("missing text");
-    const std::string level = argString(args, "level", "info");
+    const std::string level = getArgString(args, "level", "info");
     if (!isListed(markerLevels(), level)) {
         return errorPayload("unknown level '" + level + "'; expected one of " + joined(markerLevels()));
     }
@@ -284,7 +263,7 @@ Poco::JSON::Object::Ptr crashLogScanObject(const CrashLogScan& scan) {
 }
 
 std::string crashReport(Poco::JSON::Object::Ptr args) {
-    const int    lines = std::clamp(argInt(args, "lines", 200), 1, 2000);
+    const int    lines = std::clamp(getArgInt(args, "lines", 200), 1, 2000);
     CrashLogScan scan  = scanCrashLog(lines);
 
     Poco::JSON::Object::Ptr out = crashLogScanObject(scan);
@@ -304,7 +283,7 @@ std::string screenshotImage(Poco::JSON::Object::Ptr args) {
     if (!capture) return errorPayload("graphics module not available");
 
     const int budget =
-        std::clamp(argInt(args, "maxBytes", kDefaultScreenshotBytes), kMinScreenshotBytes, kMaxScreenshotBytes);
+        std::clamp(getArgInt(args, "maxBytes", kDefaultScreenshotBytes), kMinScreenshotBytes, kMaxScreenshotBytes);
 
     static const std::string kDataUrlPrefix = "data:image/png;base64,";
     const std::string        dataUrl        = capture->capturePngDataUrl();

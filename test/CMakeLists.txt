@@ -1,4 +1,4 @@
-enable_testing()
+﻿enable_testing()
 
 # Compile-fail fixtures for critical non-Result return values. This target is
 # intentionally independent of unit_test and never triggers a full engine
@@ -64,7 +64,7 @@ endif()
 # all_test_cpp holds absolute paths from file(GLOB), so filter by basename.
 if(ANDROID OR (CMAKE_SYSTEM_NAME STREQUAL "Android") OR EVENGINE_IOS_TEST_APP)
   foreach(_eve_devtool_test IN ITEMS
-      callgraph.cpp renderflow.cpp debugger.cpp debugger_audit.cpp reload_script.cpp dap.cpp agent_development_session.cpp play_host.cpp play_trace.cpp mcp.cpp mcp_console.cpp mcp_agent_export.cpp mcp_editor_targets.cpp console.cpp runtime_error_sink.cpp scenario_recorder.cpp language_index.cpp language_server.cpp language_text.cpp)
+      callgraph.cpp renderflow.cpp debugger.cpp debugger_audit.cpp reload_script.cpp dap.cpp agent_development_session.cpp play_host.cpp play_trace.cpp mcp.cpp mcp_console.cpp mcp_agent_export.cpp mcp_editor_targets.cpp mcp_domain_tools.cpp console.cpp runtime_error_sink.cpp scenario_recorder.cpp language_index.cpp language_server.cpp language_text.cpp)
     list(FILTER all_test_cpp EXCLUDE REGEX "/${_eve_devtool_test}$")
   endforeach()
   message(STATUS "Mobile test app: removed devtools test files, remaining=${all_test_cpp}")
@@ -122,7 +122,7 @@ if(NOT _eve_test_has_physics)
 endif()
 eve_module_enabled(devtools _eve_test_has_devtools)
 if(NOT _eve_test_has_devtools)
-  foreach(_eve_lsp_test IN ITEMS language_index.cpp language_server.cpp language_text.cpp play_host.cpp play_trace.cpp mcp_console.cpp mcp_agent_export.cpp mcp_editor_targets.cpp)
+  foreach(_eve_lsp_test IN ITEMS language_index.cpp language_server.cpp language_text.cpp play_host.cpp play_trace.cpp mcp_console.cpp mcp_agent_export.cpp mcp_editor_targets.cpp mcp_domain_tools.cpp)
     list(FILTER all_test_cpp EXCLUDE REGEX "/${_eve_lsp_test}$")
   endforeach()
 endif()

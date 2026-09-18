@@ -7,6 +7,8 @@
 
 #include "devtools/AiPanel.hpp"
 #include "devtools/AgentDevelopmentMcp.hpp"
+#include "devtools/McpArgs.hpp"
+#include "devtools/McpDomainTools.hpp"
 #include "devtools/McpJson.hpp"
 #include "devtools/McpRuntimeTools.hpp"
 #include "devtools/McpScriptTools.hpp"
@@ -127,42 +129,6 @@ std::string engineStatusJson(const McpServer& mcp) {
     return mcpStringify(Poco::Dynamic::Var(o));
 }
 
-Poco::Dynamic::Var argVar(Poco::JSON::Object::Ptr args, const char* key) {
-    if (!args || !args->has(key)) return Poco::Dynamic::Var();
-    try {
-        return args->get(key);
-    } catch (...) {
-        return Poco::Dynamic::Var();
-    }
-}
-
-std::string argString(Poco::JSON::Object::Ptr args, const char* key, const std::string& def = {}) {
-    if (!args || !args->has(key)) return def;
-    try {
-        return args->get(key).convert<std::string>();
-    } catch (...) {
-        return def;
-    }
-}
-
-int argInt(Poco::JSON::Object::Ptr args, const char* key, int def = 0) {
-    if (!args || !args->has(key)) return def;
-    try {
-        return args->get(key).convert<int>();
-    } catch (...) {
-        return def;
-    }
-}
-
-float argFloat(Poco::JSON::Object::Ptr args, const char* key, float def = 0.f) {
-    if (!args || !args->has(key)) return def;
-    try {
-        return static_cast<float>(args->get(key).convert<double>());
-    } catch (...) {
-        return def;
-    }
-}
-
 glm::vec3 argVec3(Poco::JSON::Object::Ptr args, const char* key, const glm::vec3& def = {}) {
     if (!args || !args->has(key)) return def;
     try {
@@ -183,15 +149,6 @@ Poco::JSON::Array::Ptr vec3ToArray(const glm::vec3& v) {
     arr->add(v.y);
     arr->add(v.z);
     return arr;
-}
-
-bool argBool(Poco::JSON::Object::Ptr args, const char* key, bool def = false) {
-    if (!args || !args->has(key)) return def;
-    try {
-        return args->get(key).convert<bool>();
-    } catch (...) {
-        return def;
-    }
 }
 
 // ============================= Scene Director (AI scene-authoring) =============
@@ -438,15 +395,15 @@ Poco::JSON::Object::Ptr sceneNodeObservation(eve::ISceneQuery& scene, const std:
 }
 
 Poco::JSON::Object::Ptr runtimeObservation(Poco::JSON::Object::Ptr args, std::string* error) {
-    const std::string observer = argString(args, "observer", "renderable3d");
+    const std::string observer = getArgString(args, "observer", "renderable3d");
     if (observer == "renderable3d") {
         auto* capture = mcpCapture();
         if (!capture) {
             if (error) *error = "graphics module not available";
             return nullptr;
         }
-        const int entityId = argInt(args, "entityId", -1);
-        const int generation = argInt(args, "generation", -1);
+        const int entityId = getArgInt(args, "entityId", -1);
+        const int generation = getArgInt(args, "generation", -1);
         if (entityId < 0 || generation < 0) {
             if (error) *error = "entityId and generation are required";
             return nullptr;
@@ -461,7 +418,7 @@ Poco::JSON::Object::Ptr runtimeObservation(Poco::JSON::Object::Ptr args, std::st
             if (error) *error = "scene module not available";
             return nullptr;
         }
-        return sceneNodeObservation(*scene, argString(args, "host"), argString(args, "node"));
+        return sceneNodeObservation(*scene, getArgString(args, "host"), getArgString(args, "node"));
     }
     if (error) *error = "unsupported observer: " + observer;
     return nullptr;
@@ -657,14 +614,14 @@ std::string callTool(McpServer& mcp, const std::string& name, Poco::JSON::Object
 
     // ============================= Game UI =============================
     if (name == "eve_ui_tree") {
-        return mcpUI() ? mcpUI()->tree(argString(args, "host")) : "error: ui module not available";
+        return mcpUI() ? mcpUI()->tree(getArgString(args, "host")) : "error: ui module not available";
     }
     if (name == "eve_ui_get") {
-        return mcpUI() ? mcpUI()->get(argString(args, "host"), argString(args, "widget"))
+        return mcpUI() ? mcpUI()->get(getArgString(args, "host"), getArgString(args, "widget"))
                        : "error: ui module not available";
     }
     if (name == "eve_ui_click") {
-        return mcpUI() ? mcpUI()->click(argString(args, "host"), argString(args, "widget"))
+        return mcpUI() ? mcpUI()->click(getArgString(args, "host"), getArgString(args, "widget"))
                        : "error: ui module not available";
     }
 
@@ -728,7 +685,7 @@ std::string callTool(McpServer& mcp, const std::string& name, Poco::JSON::Object
                 event->set("error", error);
             }
             Poco::JSON::Object::Ptr publish = Poco::JSON::Object::Ptr(new Poco::JSON::Object());
-            publish->set("sessionId", argString(args, "sessionId"));
+            publish->set("sessionId", getArgString(args, "sessionId"));
             publish->set("event", event);
             Poco::JSON::Parser publishParser;
             Poco::Dynamic::Var published = publishParser.parse(editor->invoke(
@@ -836,8 +793,8 @@ std::string callTool(McpServer& mcp, const std::string& name, Poco::JSON::Object
     if (name == "eve_renderable3d_get") {
         auto* capture = mcpCapture();
         if (!capture) return "error: graphics module not available";
-        const int entityId = argInt(args, "entityId", -1);
-        const int generation = argInt(args, "generation", -1);
+        const int entityId = getArgInt(args, "entityId", -1);
+        const int generation = getArgInt(args, "generation", -1);
         if (entityId < 0 || generation < 0) return "error: entityId and generation are required";
         return mcpStringify(Poco::Dynamic::Var(renderableObservation(*capture, entityId, generation)));
     }
@@ -865,7 +822,7 @@ std::string callTool(McpServer& mcp, const std::string& name, Poco::JSON::Object
     if (name == "eve_scene_nodes") {
         auto* scene = mcpScene();
         if (!scene || scene->activeHost().empty()) return "error: no active scene host";
-        const int              limit = argInt(args, "limit", 500);
+        const int              limit = getArgInt(args, "limit", 500);
         Poco::JSON::Array::Ptr arr   = Poco::JSON::Array::Ptr(new Poco::JSON::Array());
         for (const auto& n : scene->nodes(limit)) {
             Poco::JSON::Object::Ptr o = Poco::JSON::Object::Ptr(new Poco::JSON::Object());
@@ -881,7 +838,7 @@ std::string callTool(McpServer& mcp, const std::string& name, Poco::JSON::Object
     if (name == "eve_scene_node_get") {
         auto* scene = mcpScene();
         if (!scene || scene->activeHost().empty()) return "error: no active scene host";
-        const std::string  id = argString(args, "id");
+        const std::string  id = getArgString(args, "id");
         eve::SceneNodeInfo n;
         if (id.empty() || !scene->getNode(id, &n)) return "error: node not found: " + id;
         Poco::JSON::Object::Ptr o = Poco::JSON::Object::Ptr(new Poco::JSON::Object());
@@ -908,14 +865,14 @@ std::string callTool(McpServer& mcp, const std::string& name, Poco::JSON::Object
     if (name == "eve_scene_node_set") {
         auto* scene = mcpScene();
         if (!scene || scene->activeHost().empty()) return "error: no active scene host";
-        const std::string id = argString(args, "id");
+        const std::string id = getArgString(args, "id");
         if (id.empty()) return "error: node not found: " + id;
         bool changed = false;
         if (args && args->has("x") && args->has("y") && args->has("z")) {
-            changed = scene->setNodeTransform(id, argFloat(args, "x"), argFloat(args, "y"), argFloat(args, "z"));
+            changed = scene->setNodeTransform(id, getArgFloat(args, "x"), getArgFloat(args, "y"), getArgFloat(args, "z"));
         }
         if (args && args->has("visible")) {
-            changed = scene->setNodeVisible(id, argBool(args, "visible")) || changed;
+            changed = scene->setNodeVisible(id, getArgBool(args, "visible")) || changed;
         }
         return changed ? "ok" : "error: node not found: " + id;
     }
@@ -940,16 +897,16 @@ std::string callTool(McpServer& mcp, const std::string& name, Poco::JSON::Object
     if (name == "eve_procgen_map") {
         auto* pg = mcpProcgen();
         if (!pg) return "error: Procgen module not available";
-        const std::string algorithm = argString(args, "algorithm");
+        const std::string algorithm = getArgString(args, "algorithm");
         if (algorithm.empty()) return "error: missing algorithm";
         std::vector<std::pair<std::string, std::string>> params;
         for (const auto& key : {"roomCount", "roomMin", "roomMax", "corridorWidth", "autotile", "scale", "octaves"}) {
-            if (args && args->has(key)) params.emplace_back(key, std::to_string(argInt(args, key)));
+            if (args && args->has(key)) params.emplace_back(key, std::to_string(getArgInt(args, key)));
         }
-        if (args && args->has("corridorStyle")) params.emplace_back("corridorStyle", argString(args, "corridorStyle"));
+        if (args && args->has("corridorStyle")) params.emplace_back("corridorStyle", getArgString(args, "corridorStyle"));
         std::string err;
-        std::string json = pg->generateMap(algorithm, argInt(args, "width", 32), argInt(args, "height", 32),
-                                           static_cast<uint32_t>(argInt(args, "seed", 0)), params, &err);
+        std::string json = pg->generateMap(algorithm, getArgInt(args, "width", 32), getArgInt(args, "height", 32),
+                                           static_cast<uint32_t>(getArgInt(args, "seed", 0)), params, &err);
         if (json.empty()) return "error: " + (err.empty() ? std::string("empty grid") : err);
         return json;
     }
@@ -957,12 +914,12 @@ std::string callTool(McpServer& mcp, const std::string& name, Poco::JSON::Object
     if (name == "eve_procgen_mesh") {
         auto* pg = mcpProcgen();
         if (!pg) return "error: Procgen module not available";
-        const std::string recipe = argString(args, "recipe");
+        const std::string recipe = getArgString(args, "recipe");
         if (recipe.empty()) return "error: missing recipe";
         std::string err;
         std::string json =
-            pg->buildMesh(recipe, static_cast<uint32_t>(argInt(args, "seed", 0)), argInt(args, "width", -1),
-                          argInt(args, "height", -1), argInt(args, "depth", -1), &err);
+            pg->buildMesh(recipe, static_cast<uint32_t>(getArgInt(args, "seed", 0)), getArgInt(args, "width", -1),
+                          getArgInt(args, "height", -1), getArgInt(args, "depth", -1), &err);
         if (json.empty()) return "error: " + (err.empty() ? std::string("build failed") : err);
         Poco::JSON::Object::Ptr o = Poco::JSON::Object::Ptr(new Poco::JSON::Object());
         o->set("recipe", recipe);
@@ -982,7 +939,7 @@ std::string callTool(McpServer& mcp, const std::string& name, Poco::JSON::Object
     if (name == "eve_physics_new_world") {
         auto* ph = mcpPhysics();
         if (!ph) return "error: Physics module not available";
-        const int id = ph->newWorld(argFloat(args, "gravityX", 0.f), argFloat(args, "gravityY", 900.f));
+        const int id = ph->newWorld(getArgFloat(args, "gravityX", 0.f), getArgFloat(args, "gravityY", 900.f));
         if (id < 0) return "error: failed to create world";
         float gx = 0.f, gy = 0.f;
         ph->worldGravity(id, &gx, &gy);
@@ -1013,8 +970,8 @@ std::string callTool(McpServer& mcp, const std::string& name, Poco::JSON::Object
         auto* ph = mcpPhysics();
         if (!ph) return "error: Physics module not available";
         eve::RayHitInfo h;
-        if (!ph->rayCast(argInt(args, "world", 0), argFloat(args, "x1"), argFloat(args, "y1"), argFloat(args, "x2"),
-                         argFloat(args, "y2"), &h))
+        if (!ph->rayCast(getArgInt(args, "world", 0), getArgFloat(args, "x1"), getArgFloat(args, "y1"), getArgFloat(args, "x2"),
+                         getArgFloat(args, "y2"), &h))
             return "error: unknown physics world id";
         Poco::JSON::Object::Ptr o = Poco::JSON::Object::Ptr(new Poco::JSON::Object());
         o->set("hit", h.hit);
@@ -1032,7 +989,7 @@ std::string callTool(McpServer& mcp, const std::string& name, Poco::JSON::Object
     if (name == "eve_physics_remove_world") {
         auto* ph = mcpPhysics();
         if (!ph) return "error: Physics module not available";
-        return ph->removeWorld(argInt(args, "world", -1)) ? "ok" : "error: unknown physics world id";
+        return ph->removeWorld(getArgInt(args, "world", -1)) ? "ok" : "error: unknown physics world id";
     }
 
     // ============================= Render =============================
@@ -1041,25 +998,25 @@ std::string callTool(McpServer& mcp, const std::string& name, Poco::JSON::Object
     }
 
     if (name == "eve_render_describe") {
-        const bool        fresh  = argBool(args, "fresh", false);
-        const std::string reason = argString(args, "reason");
+        const bool        fresh  = getArgBool(args, "fresh", false);
+        const std::string reason = getArgString(args, "reason");
         return RenderVision::instance().describe(mcpCapture(), renderStatusText(mcpCapture()), fresh, reason);
     }
 
     if (name == "eve_render_vision_config") {
         auto& rv = RenderVision::instance();
-        if (args && args->has("baseUrl")) rv.setBaseUrl(argString(args, "baseUrl"));
-        if (args && args->has("apiKey")) rv.setApiKey(argString(args, "apiKey"));
-        if (args && args->has("model")) rv.setModel(argString(args, "model"));
-        if (args && args->has("path")) rv.setPath(argString(args, "path"));
-        if (args && args->has("timeoutMs")) rv.setTimeoutMs(argInt(args, "timeoutMs", 20000));
+        if (args && args->has("baseUrl")) rv.setBaseUrl(getArgString(args, "baseUrl"));
+        if (args && args->has("apiKey")) rv.setApiKey(getArgString(args, "apiKey"));
+        if (args && args->has("model")) rv.setModel(getArgString(args, "model"));
+        if (args && args->has("path")) rv.setPath(getArgString(args, "path"));
+        if (args && args->has("timeoutMs")) rv.setTimeoutMs(getArgInt(args, "timeoutMs", 20000));
         return rv.configJson();
     }
 
     if (name == "eve_screenshot") {
         auto* cap = mcpCapture();
         if (!cap) return "error: Graphics module not available";
-        std::string path = argString(args, "path");
+        std::string path = getArgString(args, "path");
         if (path.empty()) path = "mcp_screenshot.png";
         // A relative path resolves against the project root: the host process may
         // run from any working directory, and an agent has to be able to read the
@@ -1120,8 +1077,8 @@ std::string callTool(McpServer& mcp, const std::string& name, Poco::JSON::Object
         if (!part) return "error: Particles module not available";
         float ex = 0.f, ey = 0.f;
         int   cnt = 0;
-        if (!part->createEmitter(argInt(args, "buffer", 1000), argFloat(args, "x"), argFloat(args, "y"),
-                                 argString(args, "preset"), argInt(args, "count", 100), &ex, &ey, &cnt))
+        if (!part->createEmitter(getArgInt(args, "buffer", 1000), getArgFloat(args, "x"), getArgFloat(args, "y"),
+                                 getArgString(args, "preset"), getArgInt(args, "count", 100), &ex, &ey, &cnt))
             return "error: failed to create emitter";
         Poco::JSON::Object::Ptr o = Poco::JSON::Object::Ptr(new Poco::JSON::Object());
         o->set("x", ex);
@@ -1145,7 +1102,7 @@ std::string callTool(McpServer& mcp, const std::string& name, Poco::JSON::Object
     if (name == "eve_audio_set_volume") {
         auto* audio = mcpAudio();
         if (!audio) return "error: Audio module not available";
-        audio->setVolume(argFloat(args, "volume", 1.f));
+        audio->setVolume(getArgFloat(args, "volume", 1.f));
         return "ok";
     }
 
@@ -1161,8 +1118,8 @@ std::string callTool(McpServer& mcp, const std::string& name, Poco::JSON::Object
         return mcpHost() ? mcpHost()->status() : "error: ui module not available";
     }
     if (name == "eve_host_window_open") {
-        const std::string title = argString(args, "title", "EVEngine AI Host");
-        return mcpHost() ? mcpHost()->openWindow(title, argInt(args, "width", 1280), argInt(args, "height", 800))
+        const std::string title = getArgString(args, "title", "EVEngine AI Host");
+        return mcpHost() ? mcpHost()->openWindow(title, getArgInt(args, "width", 1280), getArgInt(args, "height", 800))
                          : "error: ui module not available";
     }
     if (name == "eve_host_window_close") {
@@ -1179,57 +1136,57 @@ std::string callTool(McpServer& mcp, const std::string& name, Poco::JSON::Object
                 if (o)
                     json = mcpStringify(Poco::Dynamic::Var(o));
                 else
-                    json = argString(args, "editor");
+                    json = getArgString(args, "editor");
             } catch (...) {
-                json = argString(args, "editor");
+                json = getArgString(args, "editor");
             }
         }
         if (json.empty()) return "error: missing editor";
         return mcpHost() ? mcpHost()->applyEditor(json) : "error: ui module not available";
     }
     if (name == "eve_host_editor_remove") {
-        return mcpHost() ? mcpHost()->removeEditor(argString(args, "id")) : "error: ui module not available";
+        return mcpHost() ? mcpHost()->removeEditor(getArgString(args, "id")) : "error: ui module not available";
     }
     if (name == "eve_host_editor_list") {
         return mcpHost() ? mcpHost()->listEditors() : "error: ui module not available";
     }
     if (name == "eve_host_editor_state") {
-        return mcpHost() ? mcpHost()->editorState(argString(args, "id")) : "error: ui module not available";
+        return mcpHost() ? mcpHost()->editorState(getArgString(args, "id")) : "error: ui module not available";
     }
     if (name == "eve_host_editor_set_value") {
         if (!args || !args->has("value")) return "error: missing value";
-        return mcpHost() ? mcpHost()->setEditorValue(argString(args, "editor"), argString(args, "widget"),
-                                                     mcpStringify(argVar(args, "value")))
+        return mcpHost() ? mcpHost()->setEditorValue(getArgString(args, "editor"), getArgString(args, "widget"),
+                                                     mcpStringify(getArgVar(args, "value")))
                          : "error: ui module not available";
     }
     if (name == "eve_host_editor_save") {
-        return mcpHost() ? mcpHost()->saveEditor(argString(args, "id")) : "error: ui module not available";
+        return mcpHost() ? mcpHost()->saveEditor(getArgString(args, "id")) : "error: ui module not available";
     }
     if (name == "eve_host_editor_unload") {
-        return mcpHost() ? mcpHost()->unloadEditor(argString(args, "id")) : "error: ui module not available";
+        return mcpHost() ? mcpHost()->unloadEditor(getArgString(args, "id")) : "error: ui module not available";
     }
     if (name == "eve_host_vm_register") {
-        return mcpHost() ? mcpHost()->registerVM(argString(args, "name"), argString(args, "source"))
+        return mcpHost() ? mcpHost()->registerVM(getArgString(args, "name"), getArgString(args, "source"))
                          : "error: ui module not available";
     }
     if (name == "eve_host_vm_unregister") {
-        return mcpHost() ? mcpHost()->unregisterVM(argString(args, "name")) : "error: ui module not available";
+        return mcpHost() ? mcpHost()->unregisterVM(getArgString(args, "name")) : "error: ui module not available";
     }
     if (name == "eve_host_events") {
-        return mcpHost() ? mcpHost()->consumeEvents(argString(args, "editor")) : "error: ui module not available";
+        return mcpHost() ? mcpHost()->consumeEvents(getArgString(args, "editor")) : "error: ui module not available";
     }
     if (name == "eve_host_widget_rect") {
-        return mcpHost() ? mcpHost()->widgetRect(argString(args, "editor"), argString(args, "widget"))
+        return mcpHost() ? mcpHost()->widgetRect(getArgString(args, "editor"), getArgString(args, "widget"))
                          : "error: ui module not available";
     }
     if (name == "eve_host_capture") {
-        return mcpHost() ? mcpHost()->capture(argString(args, "path")) : "error: ui module not available";
+        return mcpHost() ? mcpHost()->capture(getArgString(args, "path")) : "error: ui module not available";
     }
     if (name == "eve_host_script") {
-        return mcpHost() ? mcpHost()->runScript(argString(args, "source")) : "error: ui module not available";
+        return mcpHost() ? mcpHost()->runScript(getArgString(args, "source")) : "error: ui module not available";
     }
     if (name == "eve_host_resource_reload") {
-        return mcpHost() ? mcpHost()->reloadResource(argString(args, "path")) : "error: ui module not available";
+        return mcpHost() ? mcpHost()->reloadResource(getArgString(args, "path")) : "error: ui module not available";
     }
     if (name == "eve_host_hot_reload_status") {
         return mcpHost() ? mcpHost()->hotReloadStatus() : "error: ui module not available";
@@ -1240,7 +1197,7 @@ std::string callTool(McpServer& mcp, const std::string& name, Poco::JSON::Object
     }
 
     if (name == "eve_eval") {
-        const std::string expr = argString(args, "expression");
+        const std::string expr = getArgString(args, "expression");
         if (expr.empty()) return "error: missing expression";
         auto                    info = dbg.evaluate(expr);
         Poco::JSON::Object::Ptr o    = Poco::JSON::Object::Ptr(new Poco::JSON::Object());
@@ -1253,8 +1210,8 @@ std::string callTool(McpServer& mcp, const std::string& name, Poco::JSON::Object
     }
 
     if (name == "eve_skeleton_inspect") {
-        const std::string actor = argString(args, "actor");
-        const std::string bone  = argString(args, "bone");
+        const std::string actor = getArgString(args, "actor");
+        const std::string bone  = getArgString(args, "bone");
         if (actor.empty()) return "error: missing actor";
         const std::string expr = "eve_mcp_skeleton_inspect(\"" + sqStringLiteralEscape(actor) +
                                  "\",\"" + sqStringLiteralEscape(bone) + "\")";
@@ -1314,7 +1271,7 @@ std::string callTool(McpServer& mcp, const std::string& name, Poco::JSON::Object
     }
 
     if (name == "eve_locals") {
-        const int              level = argInt(args, "level", 1);
+        const int              level = getArgInt(args, "level", 1);
         auto                   vars  = dbg.locals(level);
         Poco::JSON::Array::Ptr arr   = Poco::JSON::Array::Ptr(new Poco::JSON::Array());
         for (const auto& v : vars) {
@@ -1328,16 +1285,16 @@ std::string callTool(McpServer& mcp, const std::string& name, Poco::JSON::Object
     }
 
     if (name == "eve_set_breakpoint") {
-        const std::string source = argString(args, "source");
-        const int         line   = argInt(args, "line");
+        const std::string source = getArgString(args, "source");
+        const int         line   = getArgInt(args, "line");
         if (source.empty() || line <= 0) return "error: need source and line";
-        const std::string condition = argString(args, "condition");
+        const std::string condition = getArgString(args, "condition");
         const int id = dbg.setBreakpoint(source, line, true, condition);
         return "ok id=" + std::to_string(id);
     }
     if (name == "eve_clear_breakpoint") {
-        const std::string source = argString(args, "source");
-        const int         line   = argInt(args, "line");
+        const std::string source = getArgString(args, "source");
+        const int         line   = getArgInt(args, "line");
         if (source.empty() || line <= 0) return "error: need source and line";
         return dbg.clearBreakpoint(source, line) ? "cleared" : "not_found";
     }
@@ -1356,7 +1313,7 @@ std::string callTool(McpServer& mcp, const std::string& name, Poco::JSON::Object
     }
 
     if (name == "eve_watch_add") {
-        const std::string expr = argString(args, "expression");
+        const std::string expr = getArgString(args, "expression");
         if (expr.empty()) return "error: missing expression";
         dbg.addWatch(expr);
         dbg.refreshWatches();
@@ -1386,7 +1343,7 @@ std::string callTool(McpServer& mcp, const std::string& name, Poco::JSON::Object
     if (name == "eve_snapshot_restore") {
         HSQUIRRELVM vm = dbg.vm();
         if (!vm) return "error: no VM";
-        const std::string json = argString(args, "json");
+        const std::string json = getArgString(args, "json");
         std::string       err;
         if (!Snapshot::instance().restore(vm, json, &err)) return "error: " + err;
         return "ok";
@@ -1394,7 +1351,7 @@ std::string callTool(McpServer& mcp, const std::string& name, Poco::JSON::Object
     if (name == "eve_snapshot_save") {
         HSQUIRRELVM vm = dbg.vm();
         if (!vm) return "error: no VM";
-        const std::string path = argString(args, "path");
+        const std::string path = getArgString(args, "path");
         std::string       err;
         if (!Snapshot::instance().saveFile(vm, path, &err)) return "error: " + err;
         return "ok";
@@ -1402,7 +1359,7 @@ std::string callTool(McpServer& mcp, const std::string& name, Poco::JSON::Object
     if (name == "eve_snapshot_load") {
         HSQUIRRELVM vm = dbg.vm();
         if (!vm) return "error: no VM";
-        const std::string path = argString(args, "path");
+        const std::string path = getArgString(args, "path");
         std::string       err;
         if (!Snapshot::instance().loadFile(vm, path, &err)) return "error: " + err;
         return "ok";
@@ -1417,7 +1374,7 @@ std::string callTool(McpServer& mcp, const std::string& name, Poco::JSON::Object
     if (name == "eve_run_script") {
         HSQUIRRELVM vm = dbg.vm();
         if (!vm) return "error: no VM";
-        const std::string source = argString(args, "source");
+        const std::string source = getArgString(args, "source");
         if (source.empty()) return "error: missing source";
         std::string error;
         if (!runVmSnippet(vm, source, &error)) return "error: " + error;
@@ -1425,7 +1382,7 @@ std::string callTool(McpServer& mcp, const std::string& name, Poco::JSON::Object
     }
 
     if (name == "eve_ai_note") {
-        const std::string text = argString(args, "text");
+        const std::string text = getArgString(args, "text");
         if (text.empty()) return "error: missing text";
         AiPanel::instance().addNote(text);
         return "ok";
@@ -1465,8 +1422,8 @@ std::string callTool(McpServer& mcp, const std::string& name, Poco::JSON::Object
         if (!vm) return "error: no VM";
         std::string err;
         if (!ensureSceneDirectorInstalled(vm, &err)) return sceneDirectorToolError(name, err);
-        const std::string  action = argString(args, "action");
-        const std::string  target = argString(args, "target");
+        const std::string  action = getArgString(args, "action");
+        const std::string  target = getArgString(args, "target");
         Poco::Dynamic::Var paramsVar;
         if (args && args->has("params")) {
             try {
@@ -1487,7 +1444,7 @@ std::string callTool(McpServer& mcp, const std::string& name, Poco::JSON::Object
         if (!vm) return "error: no VM";
         std::string err;
         if (!ensureSceneDirectorInstalled(vm, &err)) return sceneDirectorToolError(name, err);
-        const int         count   = argInt(args, "count", 6);
+        const int         count   = getArgInt(args, "count", 6);
         const std::string snippet = "return ::scene_director.cameras(" + std::to_string(count) + ");";
         const std::string out     = callSceneDirectorReturn(vm, snippet, &err);
         if (!err.empty()) return sceneDirectorToolError(name, err);
@@ -1507,7 +1464,7 @@ std::string callTool(McpServer& mcp, const std::string& name, Poco::JSON::Object
     // ---- 场景巡检工具集（图像与 3D 几何数据严格同步） ----
     if (name == "inspect_generate_scene_camera_views") {
         const glm::vec3         center = argVec3(args, "center");
-        const float             fov    = argFloat(args, "fov", 60.f);
+        const float             fov    = getArgFloat(args, "fov", 60.f);
         auto                    views  = SceneInspect::instance().generateViews(center, fov);
         Poco::JSON::Object::Ptr root   = Poco::JSON::Object::Ptr(new Poco::JSON::Object());
         Poco::JSON::Array::Ptr  arr    = Poco::JSON::Array::Ptr(new Poco::JSON::Array());
@@ -1527,7 +1484,7 @@ std::string callTool(McpServer& mcp, const std::string& name, Poco::JSON::Object
     if (name == "set_camera_pose") {
         const glm::vec3         pos = argVec3(args, "pos", glm::vec3(0.f, 1.8f, 0.f));
         const glm::vec3         rot = argVec3(args, "rot", glm::vec3(0.f));
-        const float             fov = argFloat(args, "fov", 0.f);
+        const float             fov = getArgFloat(args, "fov", 0.f);
         const bool              ok  = SceneInspect::instance().setCameraPose(pos, rot, fov);
         Poco::JSON::Object::Ptr o   = Poco::JSON::Object::Ptr(new Poco::JSON::Object());
         o->set("ok", ok);
@@ -1544,8 +1501,8 @@ std::string callTool(McpServer& mcp, const std::string& name, Poco::JSON::Object
     }
 
     if (name == "capture_render_frame") {
-        const std::string        dir = argString(args, "dir");
-        const std::string        tag = argString(args, "tag", "frame");
+        const std::string        dir = getArgString(args, "dir");
+        const std::string        tag = getArgString(args, "tag", "frame");
         std::vector<std::string> buffers;
         if (args && args->has("buffers")) {
             try {
@@ -1587,10 +1544,10 @@ std::string callTool(McpServer& mcp, const std::string& name, Poco::JSON::Object
         if (hasPos && hasTarget) {
             const glm::vec3 eye = argVec3(args, "pos");
             const glm::vec3 tgt = argVec3(args, "target");
-            const float     fov = argFloat(args, "fov", 0.f);
+            const float     fov = getArgFloat(args, "fov", 0.f);
             return SceneInspect::instance().visibleEntitiesJson(&eye, &tgt, fov);
         }
-        const float fov = argFloat(args, "fov", 0.f);
+        const float fov = getArgFloat(args, "fov", 0.f);
         return SceneInspect::instance().visibleEntitiesJson(nullptr, nullptr, fov);
     }
 
@@ -1988,7 +1945,8 @@ std::string handleToolsList(const std::string& idJson) {
         // the array (a missing separator makes the whole tools/list unusable).
         std::string out;
         for (const char* part : kToolsParts) out += part;
-        for (std::string_view family : {agentDevelopmentToolSchemas(), mcpRuntimeToolSchemas()}) {
+        for (std::string_view family :
+             {agentDevelopmentToolSchemas(), mcpRuntimeToolSchemas(), mcpDomainToolSchemas()}) {
             if (family.empty()) continue;
             out += ',';
             out += family;
@@ -2037,6 +1995,17 @@ std::string handleToolsCall(McpServer& mcp, const std::string& idJson, Poco::JSO
     if (isMcpRuntimeTool(name)) {
         try {
             return makeResult(idJson, callMcpRuntimeTool(name, args));
+        } catch (const std::exception& e) {
+            AiPanel::instance().addLog("error", name, e.what());
+            return makeResult(idJson, textContentResult(std::string("error: ") + e.what(), true));
+        }
+    }
+
+    // Capability-backed domain families (decals, ...). They report a named
+    // `unavailable` reason when their provider was trimmed out of the build.
+    if (isMcpDomainTool(name)) {
+        try {
+            return makeResult(idJson, callMcpDomainTool(name, args));
         } catch (const std::exception& e) {
             AiPanel::instance().addLog("error", name, e.what());
             return makeResult(idJson, textContentResult(std::string("error: ") + e.what(), true));
