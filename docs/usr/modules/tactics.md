@@ -350,6 +350,25 @@ auto commands = projector.project(event, command, frame);
 - 与表现无关的事件（随机数、objective 结算）投影为**空列表**，这是正常答案。
 - 全部是值：投影可以在快照/serve 之后逐字节重算，测试与渲染只是两个消费者。
 
+脚本出口（表现与视线都是**纯查询投影**，所以直接以函数形式暴露，不需要脚本侧状态）：
+
+```squirrel
+// 视线感知的射程查询：注册了 ILineOfSightPolicy 就用它，否则用内建网格规则
+local visible = battle.visibleCellsInRange(0, 0, 0, 1, 3, "chebyshev"); // [{x,y,layer}, ...]
+local algo = battle.lineOfSightAlgorithm();                            // 当前实际生效的策略 id
+
+// 表现意图：从 afterSequence 之后的事件投影，带上显式回退契约
+local intents = battle.presentationIntents(before, 5);   // 5 = 瞬时状态的存活 tick
+// intents.value[i] = {sequence, subject, other, state, from, to, path,
+//                     revision, tick, expiresAtTick,
+//                     revert = {restingState, trigger, sequence}}
+// state  = idle / friendly / selected / finished / targetable / attacking / defending / moving / destroyed
+// trigger = never / on_expiry / on_next_turn / on_round_start
+```
+
+`presentationIntents` 的几何来自事件指向的**已接受命令**，所以脚本拿到的 `to`/`other` 与仿真一致，
+而不是从事件类型猜出来的。
+
 ## 视线与掩体策略（C++ 接口，无渲染依赖）
 
 `tactics/LineOfSight.h` 把"能不能看见""这一格有多少掩体"做成**可注入策略 + 具名 capability**，

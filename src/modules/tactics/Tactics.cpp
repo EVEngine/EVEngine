@@ -1,6 +1,7 @@
 #include "tactics/Tactics.h"
 
 #include "tactics/TurnPolicy.h"
+#include "tactics/LineOfSight.h"
 #include "common/SnapshotHash.h"
 #include "common/SquirrelBinding.h"
 #include "common/Capability.h"
@@ -1118,6 +1119,78 @@ Result<void> Tactics::replayJson(ecs::EntityHandle battleHandle, std::string_vie
 
 std::string_view Tactics::snapshotHashAlgorithm() const noexcept { return activeSnapshotHashAlgorithm(); }
 
+Result<std::vector<Cell>> Tactics::visibleCellsInRange(ecs::EntityHandle battleHandle, Cell origin, int minimum,
+                                                       int maximum, CellRangeMetric metric) {
+    Battle* battle = resolveBattle(battleHandle);
+    if (battle == nullptr)
+        return failure<std::vector<Cell>>(DiagnosticCode::StaleHandle,
+                                          "tactics battle is stale or not owned by this facade", "battle");
+    // A registered sight policy wins, so a project board (a hex map with its own projection)
+    // replaces the built-in rule instead of being ignored.
+    const ILineOfSightPolicy* registered = cap::query<ILineOfSightPolicy>();
+    const ILineOfSightPolicy& policy = registered != nullptr ? *registered : *gridLineOfSightPolicy();
+    // Qualified: the member of the same name would otherwise hide the free function that
+    // composes the range and sight rules.
+    return eve::tactics::visibleCellsInRange(battle->board()->value, policy, origin, minimum, maximum, metric);
+}
+
+std::string_view Tactics::lineOfSightAlgorithm() const noexcept {
+    const ILineOfSightPolicy* registered = cap::query<ILineOfSightPolicy>();
+    return registered != nullptr ? registered->id() : gridLineOfSightPolicy()->id();
+}
+
+Result<std::vector<PresentationCommand>> Tactics::presentationIntents(ecs::EntityHandle battleHandle,
+                                                                     std::uint64_t afterSequence,
+                                                                     std::uint64_t transientTicks) {
+    Battle* battle = resolveBattle(battleHandle);
+    if (battle == nullptr)
+        return failure<std::vector<PresentationCommand>>(DiagnosticCode::StaleHandle,
+                                                         "tactics battle is stale or not owned by this facade",
+                                                         "battle");
+    // The frame is built from the battle itself: the revision anchors the projection and each
+    // unit's resting state is where a transient intent has to return to.
+    PresentationFrame frame;
+    frame.revision       = battle->turn()->revision;
+    frame.transientTicks = transientTicks;
+    for (const auto& handle : battle->turn()->units) {
+        // Explicit dynamic_cast: the facade also has a static `resolve` for script session
+        // references, which would hide the entity helper here.
+        TacticalUnit* unit = dynamic_cast<TacticalUnit*>(ecs::try_get(handle));
+        if (unit == nullptr)
+            return failure<std::vector<PresentationCommand>>(DiagnosticCode::StaleHandle,
+                                                             "tactics battle contains a stale unit", "battle.units");
+        UnitVisualState resting = UnitVisualState::Idle;
+        if (!unit->turn()->alive) {
+            resting = UnitVisualState::Destroyed;
+        } else if (unit->turn()->acted) {
+            resting = UnitVisualState::Finished;
+        }
+        frame.restingState.emplace(unit->identity()->subject.format(), resting);
+    }
+
+    PresentationProjector projector(transientTicks);
+    std::vector<PresentationCommand> commands;
+    for (const BattleEvent& event : battle->events()->values) {
+        if (event.sequence <= afterSequence) continue;
+        // The event names the command that caused it; the command owns the geometry the event
+        // does not carry. No command (or a command that is not the shape we expect) simply means
+        // a geometry-less intent, never a guessed one.
+        const BattleCommand* command = nullptr;
+        if (event.causationCommand != 0) {
+            for (const BattleCommand& candidate : battle->commands()->values) {
+                if (candidate.sequence == event.causationCommand) {
+                    command = &candidate;
+                    break;
+                }
+            }
+        }
+        auto projected = projector.project(event, command, frame);
+        if (!projected) return Result<std::vector<PresentationCommand>>::failure(projected.status());
+        for (auto& entry : projected.value()) commands.push_back(std::move(entry));
+    }
+    return Result<std::vector<PresentationCommand>>::success(std::move(commands));
+}
+
 std::size_t Tactics::battleCount() const noexcept { return countLive<Battle>(battles_); }
 std::size_t Tactics::unitCount() const noexcept { return countLive<TacticalUnit>(units_); }
 std::size_t Tactics::sideCount() const noexcept { return countLive<TacticalSide>(sides_); }
@@ -1463,6 +1536,88 @@ void Tactics::expose(ssq::Table& table) {
                 return Result<std::string>::success(std::string(module.snapshotHashAlgorithm()));
             }),
             [](const std::string& id) { return Value(id); });
+    });
+    // Sight-aware range query: the cells a unit can both reach by metric and actually see. Uses
+    // the registered sight policy when a board module provided one, otherwise the built-in grid
+    // rule, and reports which through `lineOfSightAlgorithm`.
+    battle.addFunc("visibleCellsInRange", [vm](ScriptTacticsBattle* value, int x, int y, int layer, int minimum,
+                                               int maximum, const std::string& metric) {
+        const auto projectCells = [](const std::vector<Cell>& cells) { return bindingCellArrayValue(cells); };
+        CellRangeMetric parsed;
+        if (metric == "manhattan")
+            parsed = CellRangeMetric::Manhattan;
+        else if (metric == "chebyshev")
+            parsed = CellRangeMetric::Chebyshev;
+        else if (metric == "hex")
+            parsed = CellRangeMetric::Hex;
+        else
+            return script::projectResult(
+                vm,
+                failure<std::vector<Cell>>(DiagnosticCode::InvalidArgument, "unknown tactics range metric", "metric"),
+                projectCells);
+        return script::projectResult(
+            vm,
+            withScriptBattle<Result<std::vector<Cell>>>(value, [&](Tactics& module, TacticsBattleSession& session) {
+                return module.visibleCellsInRange(session.battle, {x, y, layer}, minimum, maximum, parsed);
+            }),
+            projectCells);
+    });
+    battle.addFunc("lineOfSightAlgorithm", [vm](ScriptTacticsBattle* value) {
+        return script::projectResult(
+            vm,
+            withScriptBattle<Result<std::string>>(value, [](Tactics& module, TacticsBattleSession& session) {
+                (void)session;
+                return Result<std::string>::success(std::string(module.lineOfSightAlgorithm()));
+            }),
+            [](const std::string& id) { return Value(id); });
+    });
+    // Presentation intents are events projected into data. A script consumer (or a renderer
+    // bridge) gets the state, the geometry and the explicit revert contract in one value, so it
+    // never has to guess when a highlight stops being true.
+    battle.addFunc("presentationIntents", [vm](ScriptTacticsBattle* value, std::int64_t afterSequence,
+                                               std::int64_t transientTicks) {
+        const auto projectIntents = [](const std::vector<PresentationCommand>& commands) {
+            Value::Array array;
+            array.reserve(commands.size());
+            for (const PresentationCommand& command : commands) {
+                const PresentationIntent& intent = command.intent;
+                Value::Array path;
+                path.reserve(intent.path.size());
+                for (const Cell cell : intent.path) path.push_back(bindingCellValue(cell));
+                array.push_back(Value(Value::Object{
+                    {"expiresAtTick", Value(std::to_string(intent.expiresAtTick.value()))},
+                    {"from", bindingCellValue(intent.from)},
+                    {"other", Value(intent.other.isValid() ? intent.other.format() : std::string{})},
+                    {"path", Value(std::move(path))},
+                    {"revert", Value(Value::Object{
+                                   {"restingState", Value(std::string(unitVisualStateName(command.revert.restingState)))},
+                                   {"sequence", Value(std::to_string(command.revert.sequence))},
+                                   {"trigger", Value(std::string(presentationRevertTriggerName(command.revert.trigger)))}})},
+                    {"revision", Value(std::to_string(intent.revision.value()))},
+                    {"sequence", Value(std::to_string(intent.sequence))},
+                    {"state", Value(std::string(unitVisualStateName(intent.state)))},
+                    {"subject", Value(intent.subject.isValid() ? intent.subject.format() : std::string{})},
+                    {"tick", Value(std::to_string(intent.tick.value()))},
+                    {"to", bindingCellValue(intent.to)},
+                }));
+            }
+            return Value(std::move(array));
+        };
+        if (afterSequence < 0 || transientTicks < 0)
+            return script::projectResult(
+                vm,
+                failure<std::vector<PresentationCommand>>(DiagnosticCode::InvalidArgument,
+                                                          "presentation window must be non-negative",
+                                                          "afterSequence"),
+                projectIntents);
+        return script::projectResult(
+            vm,
+            withScriptBattle<Result<std::vector<PresentationCommand>>>(
+                value, [&](Tactics& module, TacticsBattleSession& session) {
+                    return module.presentationIntents(session.battle, static_cast<std::uint64_t>(afterSequence),
+                                                       static_cast<std::uint64_t>(transientTicks));
+                }),
+            projectIntents);
     });
     // End a running battle and enter BattleEnd. Scripts previously had no way to
     // close a battle; only the devtools/MCP GameplayControl path could.

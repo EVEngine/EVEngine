@@ -8,6 +8,7 @@
 #include "tactics/TacticsBattle.h"
 #include "tactics/TacticsPersistence.h"
 #include "tactics/TacticsReplay.h"
+#include "tactics/Presentation.h"
 
 #include <cstddef>
 #include <vector>
@@ -257,6 +258,35 @@ public:
      *          battle is refused rather than re-applied onto the wrong state.
      */
     [[nodiscard]] Result<void> replayJson(ecs::EntityHandle battle, std::string_view json);
+
+    /**
+     * @brief Cells within a metric range of @p origin that actually see it.
+     *
+     * @return The visible cells in deterministic order, or a structured refusal.
+     * @remarks Uses the registered `ILineOfSightPolicy` when a module provided one, otherwise
+     *          the module's built-in grid policy. {@link lineOfSightAlgorithm} reports which,
+     *          so a caller never has to assume. This is the query that fills
+     *          `InteractionContext::targetableCells` for a sight-aware UI.
+     */
+    [[nodiscard]] Result<std::vector<Cell>> visibleCellsInRange(ecs::EntityHandle battle, Cell origin, int minimum,
+                                                                int maximum, CellRangeMetric metric);
+
+    /** @brief Id of the line-of-sight policy {@link visibleCellsInRange} currently uses. */
+    [[nodiscard]] std::string_view lineOfSightAlgorithm() const noexcept;
+
+    /**
+     * @brief Project authoritative events after @p afterSequence into presentable intents.
+     *
+     * @param afterSequence Only events with a greater sequence are projected.
+     * @param transientTicks How long a transient intent stays valid, in simulation ticks.
+     * @return Intents with their explicit revert contract, or a structured refusal.
+     * @remarks Presentation is derived, never authoritative: each intent carries the revision
+     *          it came from and the tick after which it is stale, so a consumer may drop it.
+     *          Geometry is taken from the accepted command the event points at, never guessed.
+     */
+    [[nodiscard]] Result<std::vector<PresentationCommand>> presentationIntents(ecs::EntityHandle battle,
+                                                                             std::uint64_t afterSequence,
+                                                                             std::uint64_t transientTicks = 20);
 
     /**
      * @brief Id of the content-digest algorithm snapshots currently use.
