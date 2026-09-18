@@ -98,9 +98,9 @@ void addPetal(MeshBuild &out, V3 center, V3 right, V3 forward, float size, float
     const V3    axisX = add(mul(right, c), mul(forward, s));
     const V3    axisY = add(mul(right, -s), mul(forward, c));
 
-    // Lanceolate outline: pointed tip, narrow waist — must not read as a box.
-    constexpr float kOutlineX[6] = {0.f, -0.28f, -0.36f, 0.f, 0.36f, 0.28f};
-    constexpr float kOutlineY[6] = {-0.50f, -0.18f, 0.18f, 0.55f, 0.18f, -0.18f};
+    // Ovate outline: rounded body, soft tip — matches bush/tree leaf cards.
+    constexpr float kOutlineX[6] = {0.f, -0.40f, -0.46f, 0.f, 0.46f, 0.40f};
+    constexpr float kOutlineY[6] = {-0.48f, -0.18f, 0.16f, 0.50f, 0.16f, -0.18f};
 
     const uint32_t base = uint32_t(out.getVertexCount());
     for (int i = 0; i < 6; ++i) {

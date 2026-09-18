@@ -68,8 +68,8 @@ void addLeafCard(MeshBuild& out, V3 c, V3 direction, float size, float twist) {
     up              = norm(cross(norm(direction), right));
     const V3 normal = norm(cross(right, up));
     const V3 center = add(c, mul(normal, size * 0.04f));
-    const float halfW = size * 0.30f;
-    const float halfH = size * 1.00f;
+    const float halfW = size * 0.48f;
+    const float halfH = size * 0.68f;
 
     // Deterministic stamp cell from twist so L-system leaves stay reproducible.
     constexpr float kCardU0 = 0.52f;
@@ -87,8 +87,8 @@ void addLeafCard(MeshBuild& out, V3 c, V3 direction, float size, float twist) {
     const float     v0      = (float(row) + inset) * cellWV;
     const float     v1      = (float(row) + 1.f - inset) * cellWV;
 
-    constexpr float kOutlineX[8] = {0.f, -0.16f, -0.34f, -0.20f, 0.f, 0.20f, 0.34f, 0.16f};
-    constexpr float kOutlineY[8] = {-0.50f, -0.30f, 0.00f, 0.36f, 0.58f, 0.36f, 0.00f, -0.30f};
+    constexpr float kOutlineX[8] = {0.f, -0.32f, -0.48f, -0.30f, 0.f, 0.30f, 0.48f, 0.32f};
+    constexpr float kOutlineY[8] = {-0.48f, -0.28f, 0.02f, 0.32f, 0.50f, 0.32f, 0.02f, -0.28f};
     const uint32_t  base         = uint32_t(out.getVertexCount());
     for (int i = 0; i < 8; ++i) {
         const V3 p = add(center, add(mul(right, kOutlineX[i] * halfW), mul(up, kOutlineY[i] * halfH)));

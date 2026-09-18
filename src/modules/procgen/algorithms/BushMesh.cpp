@@ -129,9 +129,9 @@ void addLeafCard(MeshBuild &out, std::mt19937 &rng, V3 c, V3 direction, float si
     up                = norm(cross(norm(direction), right));
     const V3 normal   = norm(cross(right, up));
     const V3 center   = add(c, mul(normal, size * 0.04f));
-    // Narrow + long so the outline cannot be mistaken for a green quad.
-    const float halfW = size * randomRange(rng, 0.26f, 0.36f);
-    const float halfH = size * randomRange(rng, 0.88f, 1.18f);
+    // Egg-shaped (ovate): wider mid-body, soft tip — not a long tape strip.
+    const float halfW = size * randomRange(rng, 0.42f, 0.55f);
+    const float halfH = size * randomRange(rng, 0.58f, 0.78f);
 
     // Pick one stamp from the 3×3 ovate grid (matches BuiltinTextures leaf stamps).
     const int   col    = int(randomRange(rng, 0.f, float(kLeafCols))) % kLeafCols;
@@ -144,9 +144,9 @@ void addLeafCard(MeshBuild &out, std::mt19937 &rng, V3 c, V3 direction, float si
     const float v0     = (float(row) + inset) * cellWV;
     const float v1     = (float(row) + 1.f - inset) * cellWV;
 
-    // Pointed tip (+Y), narrow waist, rounded base — clearly ovate, not a box.
-    constexpr float kOutlineX[8] = {0.f, -0.16f, -0.34f, -0.20f, 0.f, 0.20f, 0.34f, 0.16f};
-    constexpr float kOutlineY[8] = {-0.50f, -0.30f, 0.00f, 0.36f, 0.58f, 0.36f, 0.00f, -0.30f};
+    // Ovate outline: rounded base, widest below centre, soft tip at +Y.
+    constexpr float kOutlineX[8] = {0.f, -0.32f, -0.48f, -0.30f, 0.f, 0.30f, 0.48f, 0.32f};
+    constexpr float kOutlineY[8] = {-0.48f, -0.28f, 0.02f, 0.32f, 0.50f, 0.32f, 0.02f, -0.28f};
     const uint32_t  base         = uint32_t(out.getVertexCount());
     for (int i = 0; i < 8; ++i) {
         const V3 p = add(center, add(mul(right, kOutlineX[i] * halfW), mul(up, kOutlineY[i] * halfH)));
