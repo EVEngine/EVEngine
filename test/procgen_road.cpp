@@ -327,18 +327,17 @@ TEST_CASE("procgen.road.scenes.crossJunctionCornerSidewalks") {
     CHECK_GE(sidewalkGroup, 0);
     auto sw = baked.value().mesh.copyGroup(sidewalkGroup);
     REQUIRE(sw);
-    // Outward-center curb returns: sidewalks sit near (jr,jr) inside the corner disk.
-    const float jr = hubJr;
+    // Convex curb returns: sidewalks sit on the outer annulus around (asphaltHalf, asphaltHalf).
+    const float ah = 3.5f;
     int         arcHits = 0;
     for (int i = 0; i < sw->getVertexCount(); ++i) {
         const float x  = std::fabs(sw->getPositionX(i));
         const float z  = std::fabs(sw->getPositionZ(i));
-        const float dx = jr - x;
-        const float dz = jr - z;
-        if (dx < 0.05f || dz < 0.05f) continue;
+        const float dx = x - ah;
+        const float dz = z - ah;
+        if (dx < 0.15f || dz < 0.15f) continue;
         const float r = std::sqrt(dx * dx + dz * dz);
-        // Between sidewalk outer and curb face radii from the outer corner center.
-        if (r > 0.9f && r < 2.9f) ++arcHits;
+        if (r > 2.9f && r < 5.0f) ++arcHits;
     }
     CHECK_GT(arcHits, 16);
 
@@ -351,5 +350,59 @@ TEST_CASE("procgen.road.scenes.crossJunctionCornerSidewalks") {
     }
     CHECK_GT(upHits, 16);
     CHECK_EQ(downHits, 0);
+}
+
+TEST_CASE("procgen.road.scenes.crossJunctionArmApronSeam") {
+    auto cross = RoadNetwork::makeCross(28.f, 2);
+    REQUIRE(cross.ok());
+    float hubJr = 0.f;
+    for (const auto& n : cross.value().nodes()) {
+        if (std::fabs(n.x) < 1e-3f && std::fabs(n.z) < 1e-3f) hubJr = n.junctionRadius;
+    }
+    REQUIRE(hubJr > 5.f);
+
+    RoadBakeOptions options;
+    options.pathSegmentsPerEdge = 28;
+    options.includeJunctions    = true;
+    options.includeNavigation   = false;
+    options.includePiers        = false;
+    auto baked                  = bakeRoadNetwork(cross.value(), options);
+    REQUIRE(baked.ok());
+    int asphaltGroup = -1;
+    for (int g = 0; g < baked.value().mesh.getGroupCount(); ++g) {
+        if (baked.value().mesh.getGroupName(g) == "asphalt") asphaltGroup = g;
+    }
+    REQUIRE(asphaltGroup >= 0);
+    auto asphalt = baked.value().mesh.copyGroup(asphaltGroup);
+    REQUIRE(asphalt);
+
+    // Along +Z arm centerline, asphalt should cover continuously across jr (no gap).
+    const float ah = 3.5f;
+    auto covers = [&](float x, float z) {
+        for (int t = 0; t < asphalt->getIndexCount() / 3; ++t) {
+            const int i0 = asphalt->getIndex(t * 3 + 0);
+            const int i1 = asphalt->getIndex(t * 3 + 1);
+            const int i2 = asphalt->getIndex(t * 3 + 2);
+            const float x0 = asphalt->getPositionX(i0), z0 = asphalt->getPositionZ(i0);
+            const float x1 = asphalt->getPositionX(i1), z1 = asphalt->getPositionZ(i1);
+            const float x2 = asphalt->getPositionX(i2), z2 = asphalt->getPositionZ(i2);
+            const float den = (z1 - z2) * (x0 - x2) + (x2 - x1) * (z0 - z2);
+            if (std::fabs(den) < 1e-8f) continue;
+            const float a = ((z1 - z2) * (x - x2) + (x2 - x1) * (z - z2)) / den;
+            const float b = ((z2 - z0) * (x - x2) + (x0 - x2) * (z - z2)) / den;
+            const float c = 1.f - a - b;
+            if (a >= -1e-3f && b >= -1e-3f && c >= -1e-3f) return true;
+        }
+        return false;
+    };
+    // Probe just inside apron, on the seam, and just onto the arm.
+    CHECK(covers(0.f, hubJr - 0.25f));
+    CHECK(covers(0.f, hubJr));
+    CHECK(covers(0.f, hubJr + 0.25f));
+    CHECK(covers(0.f, -(hubJr)));
+    CHECK(covers(hubJr, 0.f));
+    CHECK(covers(-hubJr, 0.f));
+    // Stay within asphalt half-width when probing the seam.
+    CHECK(covers(ah * 0.5f, hubJr));
 }
 
