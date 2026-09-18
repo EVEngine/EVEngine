@@ -222,7 +222,7 @@ TEST_CASE("asset.graphics.vegetationSceneLoadsAndProjectsAtomically") {
     CHECK(std::abs(nativeAtlas.value().channels[2][0].y -
                    (bakedElements.value().channels[2][0].y * 2.f - 1.f)) < 1e-6f);
     for (const auto channel : {0u, 1u, 3u})
-        for (std::size_t component = 0; component < 4; ++component)
+        for (glm::length_t component = 0; component < 4; ++component)
             CHECK(nativeAtlas.value().channels[channel][0][component] ==
                   bakedElements.value().channels[channel][0][component]);
 
