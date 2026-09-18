@@ -313,7 +313,7 @@ void ConsolePanel::attach(HSQUIRRELVM vm) {
     // of a scripted game's output; mirror them into the same ordered stream.
     const StderrCaptureStatus capture =
         startStderrCapture([](const std::string& line) { ConsolePanel::instance().addEngineLine(line); });
-    // A handler-less fallback must be observable, not silent: an agent that sees
+    // A handler-less capture must be observable, not silent: an agent that sees
     // no `engine` lines has to know the coverage is missing rather than assume
     // the engine printed nothing.
     if (capture != StderrCaptureStatus::Active) {

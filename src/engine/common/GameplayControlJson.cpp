@@ -1,6 +1,7 @@
 #include "common/GameplayControlJson.h"
 
 #include "common/Capability.h"
+#include "common/GameplayInstanceCatalog.h"
 
 #include <algorithm>
 #include <limits>
@@ -154,6 +155,13 @@ Value encodeReceipt(GameplayCommandReceipt receipt) {
                                {"resultingRevision", Value(static_cast<std::int64_t>(receipt.resultingRevision))}});
 }
 
+Value encodeInstances(const IGameplayInstanceCatalog* catalog) {
+    Value::Array output;
+    if (catalog == nullptr) return Value(std::move(output));
+    for (const auto& instance : catalog->gameplayInstances()) output.emplace_back(instance.format());
+    return Value(std::move(output));
+}
+
 Value encodeEvents(std::vector<GameplayEvent> events) {
     Value::Array output;
     for (auto& event : events)
@@ -209,6 +217,51 @@ Result<Value> executeGameplayControlRequest(const Value& request) {
         Value::Array output;
         for (auto& domain : domains) output.emplace_back(std::move(domain));
         return Result<Value>::success(Value(Value::Object{{"domains", Value(std::move(output))}}));
+    }
+    if (operation.value() == "instances") {
+        // Discovery needs neither a session nor an authority check: it reports
+        // what exists, not what the caller may do with it.
+        const auto domainField = root.value()->find("domain");
+        if (domainField != root.value()->end()) {
+            if (!domainField->second.isString())
+                return failure<Value>(DiagnosticCode::ParseError, "domain must be a string", "request.domain");
+            const std::string         wanted = domainField->second.asString();
+            IGameplayInstanceCatalog* match  = nullptr;
+            cap::forEach<IGameplayInstanceCatalog>([&](auto* candidate) {
+                if (candidate && candidate->gameplayDomain() == wanted) match = candidate;
+            });
+            if (match == nullptr)
+                return failure<Value>(DiagnosticCode::Unsupported,
+                                      "that gameplay domain cannot enumerate its instances", "request.domain");
+            return Result<Value>::success(
+                Value(Value::Object{{"domain", Value(wanted)}, {"instances", encodeInstances(match)}}));
+        }
+        std::vector<std::pair<std::string, Value>> catalogs;
+        std::vector<std::string>                   catalogDomains;
+        cap::forEach<IGameplayInstanceCatalog>([&](auto* candidate) {
+            if (!candidate) return;
+            const std::string domain(candidate->gameplayDomain());
+            catalogDomains.push_back(domain);
+            catalogs.emplace_back(domain, encodeInstances(candidate));
+        });
+        std::sort(catalogs.begin(), catalogs.end(),
+                  [](const auto& left, const auto& right) { return left.first < right.first; });
+        Value::Array encoded;
+        for (auto& entry : catalogs)
+            encoded.emplace_back(
+                Value::Object{{"domain", Value(std::move(entry.first))}, {"instances", std::move(entry.second)}});
+        std::vector<std::string> unenumerable;
+        cap::forEach<IGameplayControlProvider>([&](auto* candidate) {
+            if (!candidate) return;
+            const std::string domain(candidate->gameplayDomain());
+            if (std::find(catalogDomains.begin(), catalogDomains.end(), domain) == catalogDomains.end())
+                unenumerable.push_back(domain);
+        });
+        std::sort(unenumerable.begin(), unenumerable.end());
+        Value::Array missing;
+        for (auto& domain : unenumerable) missing.emplace_back(std::move(domain));
+        return Result<Value>::success(
+            Value(Value::Object{{"catalogs", Value(std::move(encoded))}, {"unenumerable", Value(std::move(missing))}}));
     }
     auto domain = stringMember(*root.value(), "domain", "request");
     if (!domain) return Result<Value>::failure(domain.status());
