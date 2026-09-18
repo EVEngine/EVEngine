@@ -116,3 +116,38 @@ procedural PBR surfaces, perturbs the boundary with world-space FBM and performs
 GGX metallic-roughness lighting evaluation. This gives stable, asset-free
 transitions and validates the end-to-end path, but it supports only two layers per
 vertex and should not become the permanent terrain data format.
+
+## Update: the `hexmap` module
+
+The hex map was subsequently ported from the Catlike Coding reference project as a
+dedicated module rather than another procgen recipe, because an *editable* map needs
+authoritative cell data and incremental mesh updates that a one-shot generator
+cannot provide. `docs/usr/modules/hexmap.md` is the module contract;
+`examples/hex-terrain-3d` is the interactive editor over it. It deliberately lives
+in its own directory so that `examples/hex-terrain` — the `mesh.hexterrain` proof
+described above — keeps shipping unchanged.
+
+What that closes from the gap list above:
+
+- Gaps 1 and 5 (no cell data, no chunking, no picking): `hexmap::HexMap` owns the
+  cell grid (elevation, water, terrain, feature levels, river/road connections),
+  partitions it into 5x5 chunks with dirty tracking, answers neighbour/edge
+  queries, and converts a world-space ray back to a cell.
+- Gap 5's mesh side: `buildChunkSurfaceMesh` generates the terrain, water, river
+  and road streams per chunk, and `HexMapModule::rebuildChunk` updates only the
+  dirty surfaces in place.
+- Gap 7's "one baked mesh" half: the walkable terrain is now the chunked,
+  independent surface the audit asked for.
+
+What still stands:
+
+- Gaps 2-4 (bindable texture arrays, independent roughness/metallic/AO maps, a
+  CPU-to-GPU `PbrTextureSet`) are unchanged. The example therefore still shades the
+  terrain procedurally from a packed vertex encoding, now three layers instead of
+  two; `HexMapMesh.h` documents that as a compatibility bridge.
+- Gap 6 (production hydrology: basin filling, flow accumulation, confluences) is
+  unchanged. The module enforces the reference's downhill/lake-outflow rule and
+  draws channels, but does not solve drainage.
+- `mesh.hexterrain` and its generator are untouched and still ship the original
+  proof; the module is additive.
+
