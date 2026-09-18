@@ -40,7 +40,6 @@ eve_init = function() {
     gfx.setBackgroundColor(0.025, 0.055, 0.09, 1.0);
     print("PCG_HOST_SYSTEM limitFrame="+("limitFrame" in system)+" type="+typeof system+"\n");
     print("PCG_RUNTIME_ORCHESTRATION_PASS stamp=6 progress=0.35 queue=0\n");
-    eve.bootBench <- true;
 };
 
 eve_update = function(dt) {};
