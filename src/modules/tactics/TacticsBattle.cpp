@@ -1,5 +1,7 @@
 #include "tactics/TacticsBattle.h"
 
+#include "tactics/TurnPolicy.h"
+
 #include <algorithm>
 #include <utility>
 
@@ -208,7 +210,7 @@ Result<void> BattleSystem::addUnit(Battle& battle, ecs::EntityHandle unitHandle,
     return Result<void>::success(Status::success(StatusCode::Applied));
 }
 
-Result<void> BattleSystem::start(Battle& battle, TurnPolicyKind policy) {
+Result<void> BattleSystem::start(Battle& battle, std::string policyId) {
     auto turn = battle.turn();
     const Revision expectedRevision = turn->revision;
     if (turn->status != BattleStatus::Setup)
@@ -216,6 +218,11 @@ Result<void> BattleSystem::start(Battle& battle, TurnPolicyKind policy) {
     if (turn->sides.empty() || turn->units.empty())
         return failure(DiagnosticCode::PreconditionViolation, "tactics battle requires sides and units",
                        "battle.setup");
+    // Resolve the policy before mutating anything: an unregistered id must be a
+    // refusal that leaves the battle in Setup, not a battle that starts and then
+    // cannot schedule.
+    auto policy = TurnPolicyRegistry::builtins().find(policyId);
+    if (!policy) return Result<void>::failure(policy.status());
     auto boardValid = battle.board()->value.validateInvariants();
     if (!boardValid) return Result<void>::failure(boardValid.status());
     auto units = orderedUnits(battle);
@@ -223,7 +230,7 @@ Result<void> BattleSystem::start(Battle& battle, TurnPolicyKind policy) {
     auto revision = nextRevision(battle);
     if (!revision) return Result<void>::failure(revision.status());
 
-    turn->policy = policy;
+    turn->policyId = std::move(policyId);
     turn->status = BattleStatus::Running;
     turn->phase  = BattlePhase::BattleStart;
     turn->tick   = SimulationTick::zero();
@@ -235,7 +242,7 @@ Result<void> BattleSystem::start(Battle& battle, TurnPolicyKind policy) {
     BattleCommand command;
     command.kind = BattleCommandKind::Start;
     command.expectedRevision = expectedRevision;
-    command.policy = policy;
+    command.policyId = turn->policyId;
     record(battle, std::move(command));
     return Result<void>::success(Status::success(StatusCode::Applied));
 }
@@ -791,33 +798,51 @@ Result<std::uint64_t> BattleSystem::roll(Battle& battle, const LogicalId& stream
 }
 
 Result<std::vector<ecs::EntityHandle>> BattleSystem::orderedUnits(Battle& battle) {
+    // Resolve the scheduling policy once: an unregistered id cannot be scheduled.
+    auto policy = TurnPolicyRegistry::builtins().find(battle.turn()->policyId);
+    if (!policy) return Result<std::vector<ecs::EntityHandle>>::failure(policy.status());
+
+    const auto sideIndexOf = [&](const ecs::EntityHandle& side) {
+        const auto& sides = battle.turn()->sides;
+        const auto  found =
+            std::find_if(sides.begin(), sides.end(), [&](const auto& value) { return sameHandle(value, side); });
+        return static_cast<std::size_t>(std::distance(sides.begin(), found));
+    };
+
+    // Project once, sort the projection, then map back, so the comparator never
+    // resolves a unit and the policy sees values only.
+    struct Entry {
+        ecs::EntityHandle handle;
+        UnitOrder         order;
+        std::string       canonical;
+    };
+    std::vector<Entry> entries;
     std::vector<ecs::EntityHandle> result;
     for (const auto& handle : battle.turn()->units) {
         TacticalUnit* unit = resolve<TacticalUnit>(handle);
         if (unit == nullptr)
             return failure<std::vector<ecs::EntityHandle>>(DiagnosticCode::StaleHandle,
                                                            "tactics battle contains a stale unit", "battle.units");
-        if (unit->turn()->alive) result.push_back(handle);
+        if (!unit->turn()->alive) continue;
+        result.push_back(handle);
+        entries.push_back({handle,
+                           UnitOrder{unit->turn()->initiative, sideIndexOf(unit->membership()->side)},
+                           unit->identity()->subject.format()});
     }
-    const auto sideIndex = [&](const ecs::EntityHandle& side) {
-        const auto& sides = battle.turn()->sides;
-        const auto  found = std::find_if(sides.begin(), sides.end(),
-                                        [&](const auto& value) { return sameHandle(value, side); });
-        return static_cast<std::size_t>(std::distance(sides.begin(), found));
-    };
-    std::sort(result.begin(), result.end(), [&](const auto& leftHandle, const auto& rightHandle) {
-        TacticalUnit* left  = resolve<TacticalUnit>(leftHandle);
-        TacticalUnit* right = resolve<TacticalUnit>(rightHandle);
-        if (battle.turn()->policy == TurnPolicyKind::Initiative &&
-            left->turn()->initiative != right->turn()->initiative)
-            return left->turn()->initiative > right->turn()->initiative;
-        if (battle.turn()->policy == TurnPolicyKind::SideAlternating) {
-            const auto leftSide  = sideIndex(left->membership()->side);
-            const auto rightSide = sideIndex(right->membership()->side);
-            if (leftSide != rightSide) return leftSide < rightSide;
+    std::sort(entries.begin(), entries.end(), [&](const Entry& left, const Entry& right) {
+        const ITurnPolicy* resolved = policy.value();
+        switch (resolved->order(battle, left.order, right.order)) {
+            case TurnOrder::LeftFirst: return true;
+            case TurnOrder::RightFirst: return false;
+            case TurnOrder::Equivalent: break;
         }
-        return left->identity()->subject.format() < right->identity()->subject.format();
+        // The caller owns the tie-break, so every policy is deterministic on equal
+        // keys without having to restate this rule.
+        return left.canonical < right.canonical;
     });
+    result.clear();
+    result.reserve(entries.size());
+    for (const Entry& entry : entries) result.push_back(entry.handle);
     return Result<std::vector<ecs::EntityHandle>>::success(std::move(result));
 }
 

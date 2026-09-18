@@ -19,6 +19,7 @@
 #include <string>
 #include <string_view>
 #include <tuple>
+#include <utility>
 #include <vector>
 
 namespace eve::tactics {
@@ -54,8 +55,23 @@ enum class BattlePhase : std::uint8_t {
     BattleEnd,
 };
 
-/** @brief Built-in deterministic turn scheduling policy. */
-enum class TurnPolicyKind : std::uint8_t { SideAlternating, Initiative };
+/** @brief Stable id of the built-in side-alternating turn policy. */
+inline constexpr std::string_view kSideAlternatingPolicyId = "side_alternating";
+/** @brief Stable id of the built-in per-unit initiative turn policy. */
+inline constexpr std::string_view kInitiativePolicyId = "initiative";
+
+/**
+ * @brief Typed spelling of the built-in turn-policy ids.
+ *
+ * These are **ids, not an enum**. A battle stores the id string and resolves its
+ * behaviour from `TurnPolicyRegistry`, so a project policy is added by registering
+ * an `ITurnPolicy` and needs no change here. The spelling stays stable because
+ * persisted payloads, replay commands and scripts carry these exact strings.
+ */
+struct TurnPolicyKind {
+    static constexpr std::string_view SideAlternating = kSideAlternatingPolicyId;
+    static constexpr std::string_view Initiative      = kInitiativePolicyId;
+};
 
 /** @brief One authoritative board cell fact. */
 struct CellState {
@@ -65,11 +81,36 @@ struct CellState {
     std::vector<std::string> tags;
 };
 
+/**
+ * @brief One authoritative **directed** edge fact between two adjacent cells.
+ *
+ * Edges exist in addition to cells, not instead of them: a cell keeps the cost of
+ * entering it from anywhere, while an edge refines one specific direction. That
+ * separation is what lets a board express a one-way drop, a door that only opens
+ * one way, or a diagonal that costs more than its orthogonal neighbours, without
+ * duplicating cell facts or inventing a second board.
+ */
+struct EdgeState {
+    /** @brief Whether travel is allowed in this exact direction. */
+    bool                     passable  = true;
+    /** @brief Additional cost charged only when crossing this direction. */
+    int                      extraCost = 0;
+    /** @brief Stable tags for game rules (for example `door`, `one_way`). */
+    std::vector<std::string> tags;
+};
+
 /** @brief Owning persistent board record used by snapshots and replay inspection. */
 struct BoardCellRecord {
     Cell                      cell;
     CellState                 state;
     std::optional<SubjectRef> occupant;
+};
+
+/** @brief Owning persistent edge record used by snapshots and replay inspection. */
+struct BoardEdgeRecord {
+    Cell      from;
+    Cell      to;
+    EdgeState state;
 };
 
 /** @brief Initial and per-round tactical resource values for one unit. */
@@ -135,6 +176,29 @@ public:
     [[nodiscard]] std::vector<BoardCellRecord> records() const;
     /** @brief Return deterministic neighbouring cells that exist on this board. */
     [[nodiscard]] std::vector<Cell> neighbours(Cell origin) const;
+
+    /**
+     * @brief Declare a directed edge between two existing adjacent cells.
+     * @param from Source cell; it must already exist on this board.
+     * @param to Destination cell; it must already exist and be a neighbour of `from`.
+     * @param state Directed traversal facts for this one direction.
+     * @return Applied, InvalidArgument when either endpoint is missing or they are
+     *         not adjacent, or Conflict when this direction is already declared.
+     * @remarks The reverse direction is independent and stays whatever it was; a
+     *          one-way edge is `addEdge(a,b,...)` without `addEdge(b,a,...)`.
+     */
+    [[nodiscard]] Result<void> addEdge(Cell from, Cell to, EdgeState state = {});
+    /** @brief Return a declared directed edge, or NotFound when none is declared. */
+    [[nodiscard]] Result<EdgeState> edge(Cell from, Cell to) const;
+    /**
+     * @brief Return a declared directed edge, or empty when none is declared.
+     *
+     * This is the query path-search uses: an undeclared direction is the common
+     * case, so it must not build a diagnostic on every relaxed neighbour.
+     */
+    [[nodiscard]] std::optional<EdgeState> tryEdge(Cell from, Cell to) const;
+    /** @brief Return every declared directed edge in deterministic order. */
+    [[nodiscard]] std::vector<BoardEdgeRecord> edgeRecords() const;
     /** @brief Validate the two occupancy indexes and all referenced cells. */
     [[nodiscard]] Result<void> validateInvariants() const;
 
@@ -145,6 +209,7 @@ private:
     std::map<Cell, CellState>        cells_;
     std::map<Cell, SubjectRef>       occupantByCell_;
     std::map<std::string, Cell>      cellBySubject_;
+    std::map<std::pair<Cell, Cell>, EdgeState> edges_;
 };
 
 /** @brief Tactical side short-root entity. */
@@ -275,7 +340,7 @@ struct BattleCommand {
     SubjectRef                    actor;
     Cell                          cell;
     int                           facing = 0;
-    TurnPolicyKind                policy = TurnPolicyKind::SideAlternating;
+    std::string                   policyId{kSideAlternatingPolicyId};
     std::uint64_t                 triggerSequence = 0;
     LogicalId                     action;
     std::vector<ReactionCandidate> candidates;
@@ -328,7 +393,7 @@ public:
         Revision                     revision;
         BattleStatus                 status = BattleStatus::Setup;
         BattlePhase                  phase  = BattlePhase::Setup;
-        TurnPolicyKind               policy = TurnPolicyKind::SideAlternating;
+        std::string                  policyId{kSideAlternatingPolicyId};
         SimulationTick               tick   = SimulationTick::zero();
         std::uint64_t                round  = 0;
         std::size_t                  cursor = 0;
@@ -381,5 +446,13 @@ public:
 [[nodiscard]] std::string_view phaseName(BattlePhase phase) noexcept;
 /** @brief Return the stable protocol spelling of a battle status. */
 [[nodiscard]] std::string_view statusName(BattleStatus status) noexcept;
+/**
+ * @brief Return the stable protocol spelling of an accepted command kind.
+ *
+ * The command log is persisted and replayed, so its kind spelling is protocol:
+ * scripts, diagnostics and tests branch on these strings, never on the numeric
+ * enum value, which is free to change with the schema version.
+ */
+[[nodiscard]] std::string_view commandKindName(BattleCommandKind kind) noexcept;
 
 }  // namespace eve::tactics

@@ -23,6 +23,21 @@ LogicalId schema() {
     return *value;
 }
 
+/**
+ * @brief Map a version-1/2 numeric turn policy to its stable id.
+ *
+ * Versions 1 and 2 stored the turn policy as an integer; version 3 stores the id
+ * string. The numeric mapping is therefore frozen migration data: it must keep
+ * meaning what it meant when those versions were written, and must not follow any
+ * later change to the built-in set.
+ */
+Result<std::string> migrateLegacyPolicyId(int value) {
+    if (value == 0) return Result<std::string>::success(std::string(kSideAlternatingPolicyId));
+    if (value == 1) return Result<std::string>::success(std::string(kInitiativePolicyId));
+    return fail<std::string>(DiagnosticCode::UnknownVersion, "snapshot contains an unknown battle enum",
+                             "payload.policy");
+}
+
 Value cellValue(Cell cell) {
     return Value(Value::Object{{"layer", Value(cell.layer)}, {"x", Value(cell.x)}, {"y", Value(cell.y)}});
 }
@@ -124,7 +139,7 @@ struct Candidate {
     std::uint64_t                    seed = 0;
     BattleStatus                     status = BattleStatus::Setup;
     BattlePhase                      phase = BattlePhase::Setup;
-    TurnPolicyKind                   policy = TurnPolicyKind::SideAlternating;
+    std::string                      policyId{kSideAlternatingPolicyId};
     SimulationTick                   tick;
     std::uint64_t                    round = 0;
     std::size_t                      cursor = 0;
@@ -177,7 +192,7 @@ Value commandValue(const BattleCommand& command) {
         {"expectedRevision", Value(std::to_string(command.expectedRevision.value()))},
         {"facing", Value(command.facing)},
         {"kind", Value(static_cast<int>(command.kind))},
-        {"policy", Value(static_cast<int>(command.policy))},
+        {"policy", Value(command.policyId)},
         {"resultingRevision", Value(std::to_string(command.resultingRevision.value()))},
         {"sequence", Value(std::to_string(command.sequence))},
         {"tick", Value(std::to_string(command.step.tick.value()))},
@@ -376,7 +391,7 @@ Result<Battle::Reactions> parseReactions(const Value& value, BattlePhase phase) 
     return Result<Battle::Reactions>::success(std::move(result));
 }
 
-Result<Battle::Commands> parseCommands(const Value& value, Revision snapshotRevision) {
+Result<Battle::Commands> parseCommands(const Value& value, Revision snapshotRevision, bool hasPolicyIdStrings) {
     auto root = object(value, "payload.commands");
     if (!root || root.value()->size() != 2)
         return fail<Battle::Commands>(DiagnosticCode::ParseError, "invalid commands object", "payload.commands");
@@ -410,13 +425,25 @@ Result<Battle::Commands> parseCommands(const Value& value, Revision snapshotRevi
         auto candidatesMember = field(*record.value(), "candidates", path);
         auto kind = intField(*record.value(), "kind", path);
         auto facing = intField(*record.value(), "facing", path);
-        auto policy = intField(*record.value(), "policy", path);
+        auto policyMember = field(*record.value(), "policy", path);
         if (!sequenceMember || !expectedMember || !resultingMember || !tickMember || !deltaMember ||
             !triggerMember || !actorMember || !actionMember || !cellMember || !candidatesMember || !kind ||
-            !facing || !policy || kind.value() < 0 ||
-            kind.value() > static_cast<int>(BattleCommandKind::RollRandom) || policy.value() < 0 ||
-            policy.value() > static_cast<int>(TurnPolicyKind::Initiative))
+            !facing || !policyMember || kind.value() < 0 ||
+            kind.value() > static_cast<int>(BattleCommandKind::RollRandom))
             return fail<Battle::Commands>(DiagnosticCode::ParseError, "invalid command fields", path);
+        // Version 3 stores the stable id string; versions 1-2 stored a numeric enum.
+        std::string policyId;
+        if (hasPolicyIdStrings) {
+            if (!policyMember.value()->isString() || policyMember.value()->asString().empty())
+                return fail<Battle::Commands>(DiagnosticCode::ParseError, "invalid command policy", path + ".policy");
+            policyId = policyMember.value()->asString();
+        } else {
+            auto legacy = intField(*record.value(), "policy", path);
+            if (!legacy) return fail<Battle::Commands>(DiagnosticCode::ParseError, "invalid command policy", path);
+            auto migrated = migrateLegacyPolicyId(legacy.value());
+            if (!migrated) return Result<Battle::Commands>::failure(migrated.status());
+            policyId = std::move(migrated).takeValue();
+        }
         auto sequence = decimal(*sequenceMember.value(), path + ".sequence");
         auto expected = decimal(*expectedMember.value(), path + ".expectedRevision");
         auto resulting = decimal(*resultingMember.value(), path + ".resultingRevision");
@@ -442,7 +469,7 @@ Result<Battle::Commands> parseCommands(const Value& value, Revision snapshotRevi
         command.actor = actor.value();
         command.cell = cell.value();
         command.facing = facing.value();
-        command.policy = static_cast<TurnPolicyKind>(policy.value());
+        command.policyId = policyId;
         command.triggerSequence = trigger.value();
         if (!actionText->empty()) {
             const auto parsedAction = LogicalId::parse(*actionText);
@@ -609,7 +636,8 @@ Result<Battle::Random> parseRandom(const Value& value) {
     return Result<Battle::Random>::success(std::move(result));
 }
 
-Result<Candidate> parseCandidate(Battle& battle, const Value& payload, Revision snapshotRevision) {
+Result<Candidate> parseCandidate(Battle& battle, const Value& payload, Revision snapshotRevision,
+                                 SchemaVersion sourceVersion) {
     auto root = object(payload, "payload");
     if (!root) return Result<Candidate>::failure(root.status());
     static const std::set<std::string> fields = {"activeUnit", "board", "commands", "cursor", "events",
@@ -623,15 +651,26 @@ Result<Candidate> parseCandidate(Battle& battle, const Value& payload, Revision 
     Candidate result;
     auto status = intField(*root.value(), "status", "payload");
     auto phase = intField(*root.value(), "phase", "payload");
-    auto policy = intField(*root.value(), "policy", "payload");
-    if (!status || !phase || !policy) return fail<Candidate>(DiagnosticCode::ParseError, "invalid battle enum");
+    if (!status || !phase) return fail<Candidate>(DiagnosticCode::ParseError, "invalid battle enum");
     if (status.value() < 0 || status.value() > static_cast<int>(BattleStatus::Ended) || phase.value() < 0 ||
-        phase.value() > static_cast<int>(BattlePhase::BattleEnd) || policy.value() < 0 ||
-        policy.value() > static_cast<int>(TurnPolicyKind::Initiative))
+        phase.value() > static_cast<int>(BattlePhase::BattleEnd))
         return fail<Candidate>(DiagnosticCode::UnknownVersion, "snapshot contains an unknown battle enum");
     result.status = static_cast<BattleStatus>(status.value());
     result.phase = static_cast<BattlePhase>(phase.value());
-    result.policy = static_cast<TurnPolicyKind>(policy.value());
+    // Version 3 carries the stable policy id; versions 1-2 carried a numeric enum.
+    auto policyMember = field(*root.value(), "policy", "payload");
+    if (!policyMember) return fail<Candidate>(DiagnosticCode::ParseError, "invalid battle enum");
+    if (sourceVersion == SchemaVersion(3)) {
+        if (!policyMember.value()->isString() || policyMember.value()->asString().empty())
+            return fail<Candidate>(DiagnosticCode::ParseError, "invalid battle policy", "payload.policy");
+        result.policyId = policyMember.value()->asString();
+    } else {
+        auto legacy = intField(*root.value(), "policy", "payload");
+        if (!legacy) return fail<Candidate>(DiagnosticCode::ParseError, "invalid battle enum");
+        auto migrated = migrateLegacyPolicyId(legacy.value());
+        if (!migrated) return Result<Candidate>::failure(migrated.status());
+        result.policyId = std::move(migrated).takeValue();
+    }
     auto roundValue = field(*root.value(), "round", "payload");
     auto cursorValue = field(*root.value(), "cursor", "payload");
     if (!roundValue || !cursorValue) return fail<Candidate>(DiagnosticCode::ParseError, "missing turn state");
@@ -650,7 +689,11 @@ Result<Candidate> parseCandidate(Battle& battle, const Value& payload, Revision 
     auto boardMember = field(*root.value(), "board", "payload");
     if (!boardMember) return Result<Candidate>::failure(boardMember.status());
     auto boardObject = object(*boardMember.value(), "payload.board");
-    if (!boardObject || boardObject.value()->size() != 2)
+    // Version 1 boards carry topology + cells only; every later version also
+    // carries the directed edge set.
+    const bool        hasEdges            = sourceVersion != SchemaVersion(1);
+    const std::size_t expectedBoardFields = hasEdges ? 3u : 2u;
+    if (!boardObject || boardObject.value()->size() != expectedBoardFields)
         return fail<Candidate>(DiagnosticCode::ParseError, "invalid board object", "payload.board");
     auto topology = intField(*boardObject.value(), "topology", "payload.board");
     auto cellsMember = field(*boardObject.value(), "cells", "payload.board");
@@ -684,6 +727,45 @@ Result<Candidate> parseCandidate(Battle& battle, const Value& payload, Revision 
         }
         auto added = result.board.addCell(cell.value(), std::move(state));
         if (!added) return Result<Candidate>::failure(added.status());
+    }
+
+    // Edges are parsed after every cell so the board can validate adjacency itself
+    // instead of the parser re-deriving the topology rules.
+    if (hasEdges) {
+        auto        edgesMember = field(*boardObject.value(), "edges", "payload.board");
+        const auto* edges = edgesMember ? edgesMember.value()->getIf<Value::Array>() : nullptr;
+        if (edges == nullptr)
+            return fail<Candidate>(DiagnosticCode::ParseError, "board edges must be an array", "payload.board.edges");
+        for (std::size_t i = 0; i < edges->size(); ++i) {
+            const std::string path = "payload.board.edges[" + std::to_string(i) + "]";
+            auto              record = object((*edges)[i], path);
+            if (!record || record.value()->size() != 5)
+                return fail<Candidate>(DiagnosticCode::ParseError, "invalid board edge record", path);
+            auto fromMember = field(*record.value(), "from", path);
+            auto toMember = field(*record.value(), "to", path);
+            auto passableMember = field(*record.value(), "passable", path);
+            auto extraCost = intField(*record.value(), "extraCost", path);
+            auto tagsMember = field(*record.value(), "tags", path);
+            if (!fromMember || !toMember || !passableMember || !extraCost || !tagsMember)
+                return fail<Candidate>(DiagnosticCode::ParseError, "incomplete board edge record", path);
+            auto from = parseCell(*fromMember.value(), path + ".from");
+            auto to = parseCell(*toMember.value(), path + ".to");
+            const auto* passable = passableMember.value()->getIf<bool>();
+            const auto* tags = tagsMember.value()->getIf<Value::Array>();
+            if (!from || !to || !passable || !tags)
+                return fail<Candidate>(DiagnosticCode::ParseError, "invalid board edge", path);
+            EdgeState state;
+            state.passable  = *passable;
+            state.extraCost = extraCost.value();
+            for (const auto& tag : *tags) {
+                const auto* text = tag.getIf<std::string>();
+                if (!text)
+                    return fail<Candidate>(DiagnosticCode::ParseError, "edge tag must be a string", path + ".tags");
+                state.tags.push_back(*text);
+            }
+            auto added = result.board.addEdge(from.value(), to.value(), std::move(state));
+            if (!added) return Result<Candidate>::failure(added.status());
+        }
     }
 
     std::map<std::string, TacticalSide*> currentSides;
@@ -811,7 +893,7 @@ Result<Candidate> parseCandidate(Battle& battle, const Value& payload, Revision 
         return fail<Candidate>(DiagnosticCode::ParseError, "snapshot is missing deterministic streams");
     auto events = parseEvents(*eventsMember.value());
     auto reactions = parseReactions(*reactionsMember.value(), result.phase);
-    auto commands = parseCommands(*commandsMember.value(), snapshotRevision);
+    auto commands = parseCommands(*commandsMember.value(), snapshotRevision, sourceVersion == SchemaVersion(3));
     auto objectives = parseObjectives(battle, result.board, *objectivesMember.value(), snapshotRevision);
     auto random = parseRandom(*randomMember.value());
     if (!events) return Result<Candidate>::failure(events.status());
@@ -873,6 +955,16 @@ Result<SnapshotEnvelope> TacticsPersistence::snapshot(Battle& battle, const Snap
                                          {"passable", Value(record.state.passable)},
                                          {"tags", Value(std::move(tags))}});
     }
+    Value::Array edges;
+    for (const auto& record : battle.board()->value.edgeRecords()) {
+        Value::Array tags;
+        for (const auto& tag : record.state.tags) tags.emplace_back(tag);
+        edges.emplace_back(Value::Object{{"extraCost", Value(record.state.extraCost)},
+                                         {"from", cellValue(record.from)},
+                                         {"passable", Value(record.state.passable)},
+                                         {"tags", Value(std::move(tags))},
+                                         {"to", cellValue(record.to)}});
+    }
     Value::Array units;
     for (const auto& handle : battle.turn()->units) {
         auto* unit = resolve<TacticalUnit>(handle);
@@ -906,6 +998,7 @@ Result<SnapshotEnvelope> TacticsPersistence::snapshot(Battle& battle, const Snap
     Value payload(Value::Object{
         {"activeUnit", subjectValue(active)},
         {"board", Value(Value::Object{{"cells", Value(std::move(cells))},
+                                       {"edges", Value(std::move(edges))},
                                        {"topology", Value(static_cast<int>(battle.board()->value.topology()))}})},
         {"cursor", Value(std::to_string(battle.turn()->cursor))},
         {"commands", Value(Value::Object{{"nextSequence", Value(std::to_string(battle.commands()->nextSequence))},
@@ -914,7 +1007,7 @@ Result<SnapshotEnvelope> TacticsPersistence::snapshot(Battle& battle, const Snap
                                         {"values", Value(std::move(events))}})},
         {"objectives", Value(std::move(objectives))},
         {"phase", Value(static_cast<int>(battle.turn()->phase))},
-        {"policy", Value(static_cast<int>(battle.turn()->policy))},
+        {"policy", Value(battle.turn()->policyId)},
         {"random", randomValue(*battle.random())},
         {"reactions", Value(Value::Object{
                           {"maxDepth", Value(std::to_string(battle.reactions()->maxDepth))},
@@ -926,7 +1019,7 @@ Result<SnapshotEnvelope> TacticsPersistence::snapshot(Battle& battle, const Snap
         {"status", Value(static_cast<int>(battle.turn()->status))},
         {"units", Value(std::move(units))},
     });
-    return makeSnapshotEnvelope(std::string(kType), schema(), SchemaVersion(1),
+    return makeSnapshotEnvelope(std::string(kType), schema(), SchemaVersion(3),
                                 battle.identity()->subject.persistentId(), battle.turn()->revision,
                                 battle.turn()->tick,
                                 std::move(payload), hashProvider);
@@ -940,11 +1033,14 @@ Result<void> TacticsPersistence::restore(Battle& battle, const SnapshotEnvelope&
         return fail<void>(DiagnosticCode::Conflict, "snapshot battle identity differs from target");
     auto verified = verifySnapshotEnvelope(source, hashProvider);
     if (!verified) return Result<void>::failure(verified.status());
-    if (source.schemaVersion != SchemaVersion(1))
+    // V1 predates board edges; V2 predates stable policy ids. Each is migrated by
+    // the documented default for the field that did not exist yet.
+    if (source.schemaVersion != SchemaVersion(1) && source.schemaVersion != SchemaVersion(2) &&
+        source.schemaVersion != SchemaVersion(3))
         return fail<void>(DiagnosticCode::UnknownVersion, "unsupported tactics battle snapshot version");
     auto metadata = validateSnapshotPayloadMetadata(source.payload, source.revision, source.tick);
     if (!metadata) return Result<void>::failure(metadata.status());
-    auto candidate = parseCandidate(battle, source.payload, source.revision);
+    auto candidate = parseCandidate(battle, source.payload, source.revision, source.schemaVersion);
     if (!candidate) return Result<void>::failure(candidate.status());
 
     Candidate restored = std::move(candidate).takeValue();
@@ -961,7 +1057,7 @@ Result<void> TacticsPersistence::restore(Battle& battle, const SnapshotEnvelope&
     auto turn = battle.turn();
     turn->status = restored.status;
     turn->phase = restored.phase;
-    turn->policy = restored.policy;
+    turn->policyId = std::move(restored.policyId);
     turn->tick = source.tick;
     turn->revision = source.revision;
     turn->round = restored.round;

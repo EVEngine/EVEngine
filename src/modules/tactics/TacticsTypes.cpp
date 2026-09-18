@@ -138,7 +138,50 @@ std::vector<Cell> BoardState::neighbours(Cell origin) const {
     return result;
 }
 
+Result<void> BoardState::addEdge(Cell from, Cell to, EdgeState state) {
+    if (!cells_.contains(from))
+        return failure(DiagnosticCode::NotFound, "tactics edge source cell does not exist", "board.edge.from");
+    if (!cells_.contains(to))
+        return failure(DiagnosticCode::NotFound, "tactics edge destination cell does not exist", "board.edge.to");
+    const std::vector<Cell> adjacent = neighbours(from);
+    if (std::find(adjacent.begin(), adjacent.end(), to) == adjacent.end())
+        return failure(DiagnosticCode::InvalidArgument, "tactics edge endpoints are not adjacent", "board.edge");
+    if (state.extraCost < 0)
+        return failure(DiagnosticCode::InvalidArgument, "tactics edge extra cost must be non-negative",
+                       "board.edge.extraCost");
+    const std::pair<Cell, Cell> key{from, to};
+    if (edges_.contains(key))
+        return failure(DiagnosticCode::Conflict, "tactics edge is already declared", "board.edge");
+    edges_.emplace(key, std::move(state));
+    return Result<void>::success(Status::success(StatusCode::Applied));
+}
+
+Result<EdgeState> BoardState::edge(Cell from, Cell to) const {
+    const auto found = edges_.find(std::pair<Cell, Cell>{from, to});
+    if (found == edges_.end())
+        return failure<EdgeState>(DiagnosticCode::NotFound, "tactics edge is not declared", "board.edge");
+    return Result<EdgeState>::success(found->second);
+}
+
+std::optional<EdgeState> BoardState::tryEdge(Cell from, Cell to) const {
+    const auto found = edges_.find(std::pair<Cell, Cell>{from, to});
+    if (found == edges_.end()) return std::nullopt;
+    return found->second;
+}
+
+std::vector<BoardEdgeRecord> BoardState::edgeRecords() const {
+    std::vector<BoardEdgeRecord> result;
+    result.reserve(edges_.size());
+    for (const auto& [key, state] : edges_) result.push_back({key.first, key.second, state});
+    return result;
+}
+
 Result<void> BoardState::validateInvariants() const {
+    for (const auto& [key, state] : edges_) {
+        if (!cells_.contains(key.first) || !cells_.contains(key.second))
+            return failure(DiagnosticCode::InvariantViolation, "tactics edge references a missing cell",
+                           "board.edge");
+    }
     if (occupantByCell_.size() != cellBySubject_.size())
         return failure(DiagnosticCode::InvariantViolation, "tactics occupancy indexes differ in size", "board");
     for (const auto& [cellValue, subject] : occupantByCell_) {
@@ -182,6 +225,24 @@ std::string_view statusName(BattleStatus status) noexcept {
         case BattleStatus::Setup: return "setup";
         case BattleStatus::Running: return "running";
         case BattleStatus::Ended: return "ended";
+    }
+    return "unknown";
+}
+
+std::string_view commandKindName(BattleCommandKind kind) noexcept {
+    switch (kind) {
+        case BattleCommandKind::Start: return "start";
+        case BattleCommandKind::Advance: return "advance";
+        case BattleCommandKind::Move: return "move";
+        case BattleCommandKind::Face: return "face";
+        case BattleCommandKind::Wait: return "wait";
+        case BattleCommandKind::EndTurn: return "end_turn";
+        case BattleCommandKind::Finish: return "finish";
+        case BattleCommandKind::OpenReaction: return "open_reaction";
+        case BattleCommandKind::AcceptReaction: return "accept_reaction";
+        case BattleCommandKind::DeclineReaction: return "decline_reaction";
+        case BattleCommandKind::DefeatUnit: return "defeat_unit";
+        case BattleCommandKind::RollRandom: return "roll_random";
     }
     return "unknown";
 }

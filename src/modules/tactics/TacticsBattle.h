@@ -41,7 +41,7 @@ public:
                                               Cell cell);
 
     /** @brief Start a configured battle and emit battle.started. */
-    [[nodiscard]] static Result<void> start(Battle& battle, TurnPolicyKind policy);
+    [[nodiscard]] static Result<void> start(Battle& battle, std::string policyId);
 
     /**
      * @brief Advance exactly one observable automatic phase transition.

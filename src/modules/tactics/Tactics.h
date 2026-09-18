@@ -89,8 +89,14 @@ public:
     [[nodiscard]] Result<void> addCell(ecs::EntityHandle battle, Cell cell, CellState state = {});
     /** @brief Select square-four, square-eight, or axial-hex topology during setup. */
     [[nodiscard]] Result<void> setTopology(ecs::EntityHandle battle, BoardTopology topology);
-    /** @brief Start a module-owned battle. */
-    [[nodiscard]] Result<void> start(ecs::EntityHandle battle, TurnPolicyKind policy);
+    /**
+     * @brief Start a module-owned battle with a registered turn policy.
+     * @param policyId Stable id of a policy in `TurnPolicyRegistry::builtins()`;
+     *        the built-in spellings are in `TurnPolicyKind`.
+     * @return Applied, or NotFound when the id is not registered (the battle is
+     *         left in Setup, so a bad id can be corrected and retried).
+     */
+    [[nodiscard]] Result<void> start(ecs::EntityHandle battle, std::string_view policyId);
     /** @brief Advance one automatic phase using injected deterministic time. */
     [[nodiscard]] Result<BattlePhase> advance(ecs::EntityHandle battle, const SimulationStep& step);
     /** @brief End the active actor turn. */
@@ -103,6 +109,58 @@ public:
     [[nodiscard]] Result<void> waitUnit(ecs::EntityHandle battle, SubjectRef actor);
     /** @brief Finish a running battle. */
     [[nodiscard]] Result<void> finish(ecs::EntityHandle battle);
+
+    /**
+     * @brief Validate a move with the exact validator used by commit, without mutating.
+     * @return The same receipt {@link moveUnit} would return, or its refusal.
+     * @remarks Callers must treat the receipt as a projection of the observed board
+     *          revision; a successful preview does not reserve anything.
+     */
+    [[nodiscard]] Result<MoveReceipt> previewMove(ecs::EntityHandle battle, SubjectRef actor, Cell destination);
+    /** @brief Validate a facing change with the exact validator used by commit. */
+    [[nodiscard]] Result<void> previewFace(ecs::EntityHandle battle, SubjectRef actor, int facing);
+    /** @brief Validate a wait activation with the exact validator used by commit. */
+    [[nodiscard]] Result<void> previewWait(ecs::EntityHandle battle, SubjectRef actor);
+
+    /**
+     * @brief Return the cells a placed subject can reach within an explicit budget.
+     * @param budget Non-negative fixed-point movement budget.
+     * @remarks Pure query: it neither reserves resources nor advances any random stream.
+     * @cost Proportional to the number of cells expanded; bounded by the board cell count.
+     */
+    [[nodiscard]] Result<Reachability> reachable(ecs::EntityHandle battle, SubjectRef subject, int budget);
+    /**
+     * @brief Enumerate existing cells whose logical distance falls in an inclusive range.
+     * @cost Linear in the number of board cells.
+     */
+    [[nodiscard]] Result<std::vector<Cell>> cellsInRange(ecs::EntityHandle battle, Cell origin, int minimum,
+                                                         int maximum, CellRangeMetric metric);
+    /**
+     * @brief Return an owning snapshot of a placed unit's per-turn resources.
+     *
+     * This is the read side of the action economy: it exposes the same values the
+     * turn resolvers consume, including the `acted` flag, without granting script
+     * code a write path.
+     */
+    [[nodiscard]] Result<TacticalUnit::TurnResources> unitResources(ecs::EntityHandle battle, SubjectRef unit);
+
+    /**
+     * @brief Declare a directed edge between two adjacent cells during setup.
+     * @return Applied, or a structured validation/conflict/phase failure.
+     * @remarks Setup-only and revision-bumping, exactly like {@link addCell}: an
+     *          edge changes traversal, so it must not appear once the battle runs.
+     */
+    [[nodiscard]] Result<void> addEdge(ecs::EntityHandle battle, Cell from, Cell to, EdgeState state = {});
+    /** @brief Return a declared directed edge, or NotFound when none is declared. */
+    [[nodiscard]] Result<EdgeState> edge(ecs::EntityHandle battle, Cell from, Cell to);
+    /** @brief Return a declared directed edge, or empty when none is declared. */
+    [[nodiscard]] std::optional<EdgeState> tryEdge(ecs::EntityHandle battle, Cell from, Cell to);
+    /**
+     * @brief Return the stable id of the policy scheduling this battle.
+     * @return The id recorded by {@link start}; the read side of the policy choice,
+     *         so a UI or a test can observe it without inferring it from ordering.
+     */
+    [[nodiscard]] Result<std::string> policyId(ecs::EntityHandle battle);
     /** @brief Open a deterministic reaction window. */
     [[nodiscard]] Result<std::size_t> openReaction(ecs::EntityHandle battle, std::uint64_t triggerSequence,
                                                    std::vector<ReactionCandidate> candidates);
@@ -154,6 +212,7 @@ public:
 private:
     [[nodiscard]] Battle* resolveBattle(ecs::EntityHandle handle) const noexcept;
     [[nodiscard]] Battle* resolveBattle(SubjectRef subject) const noexcept;
+    [[nodiscard]] TacticalUnit* findUnit(SubjectRef subject) const noexcept;
     [[nodiscard]] bool owns(const std::vector<ecs::EntityHandle>& handles,
                             const ecs::EntityHandle&              handle) const noexcept;
 

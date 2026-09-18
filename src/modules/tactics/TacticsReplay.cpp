@@ -18,7 +18,7 @@ Result<void> consume(Result<T>&& result) {
 
 Result<void> apply(Battle& battle, const BattleCommand& command) {
     switch (command.kind) {
-        case BattleCommandKind::Start: return BattleSystem::start(battle, command.policy);
+        case BattleCommandKind::Start: return BattleSystem::start(battle, command.policyId);
         case BattleCommandKind::Advance: return consume(BattleSystem::advance(battle, command.step));
         case BattleCommandKind::Move:
             return consume(BattleSystem::moveUnit(battle, command.actor, command.cell, command.step.tick));
