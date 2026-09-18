@@ -8,6 +8,7 @@
 #include "common/Result.h"
 #include "common/Value.h"
 
+#include <cstdint>
 #include <functional>
 #include <memory>
 #include <string>
@@ -27,6 +28,132 @@ namespace eve::rpg {
 class GameState;
 class Party;
 class RPGActor;
+
+/** @brief Terminal state of one requested actor move. */
+enum class StoryMoveStatus : std::uint8_t {
+    /** @brief The actor is already at the destination, so the step completes inline. */
+    Arrived,
+    /** @brief The move was accepted and is still running; the host acknowledges the step when it ends. */
+    Travelling,
+    /** @brief The destination cannot be reached, so the `move` step fails. */
+    Unreachable,
+};
+
+/**
+ * @brief One `move` step request, expressed in the host's own movement space.
+ *
+ * `x` and `y` carry whatever the game's movement model uses — tile indices for a
+ * grid or tactics game, world units for a continuous one, lanes for a rail
+ * sequence. The engine never interprets them and never assumes a path model, so
+ * one authored `.dnut` story is not tied to one kind of game; the meaning is
+ * settled by whoever installs the handler.
+ *
+ * @thread Filled and consumed synchronously inside one step dispatch.
+ */
+struct StoryMoveRequest {
+    /** @brief Authored `actor=<id>` verbatim; the host's own subject space. */
+    std::string actorId;
+    /**
+     * @brief Actor resolved through the binding, or nullptr.
+     *
+     * A convenience for hosts whose subjects are party members: it is non-null
+     * exactly when `RpgStoryBinding::resolveActor` or `party` resolved
+     * `actorId`. It is visibly null when the id belongs to another subject space
+     * (a map object, a camera, a squad), so a host must not read a null here as
+     * "the actor does not exist" — use `actorId` and resolve it yourself.
+     */
+    RPGActor* actor = nullptr;
+    /** @brief Requested destination. */
+    double x = 0.0;
+    double y = 0.0;
+    /** @brief Whether the authored step carried a `duration` field at all. */
+    bool hasDuration = false;
+    /** @brief Authored travel time in seconds; only meaningful when `hasDuration`. */
+    double duration = 0.0;
+};
+
+/**
+ * @brief Host movement controller invoked by the `move` step.
+ *
+ * @ownership Borrowed callback; the binding keeps it alive for the whole session.
+ * @thread Invoked on the session's owner thread, synchronously.
+ * @reentrancy Must not re-enter the session that invoked it.
+ *
+ * Returning `Arrived` completes the step inline, so a host whose movement is
+ * instantaneous — teleport, snap, an already-satisfied target — needs no host
+ * loop at all. Returning `Travelling` suspends the story until the host
+ * acknowledges the step. Returning `Unreachable` fails the step with a
+ * diagnostic naming the actor and the destination, and the session keeps its
+ * cursor so the caller can decide whether to retry or abandon. A failed
+ * `Result` is reported verbatim instead, so a reason such as "the navigation
+ * service is not loaded" is never swallowed.
+ */
+using StoryMoveHandler = std::function<eve::Result<StoryMoveStatus>(const StoryMoveRequest&)>;
+
+/** @brief Terminal state of one requested animation playback. */
+enum class StoryAnimationStatus : std::uint8_t {
+    /** @brief The clip was applied instantaneously, so the step completes inline. */
+    Finished,
+    /** @brief Playback was accepted and is still running; the host acknowledges the step when it ends. */
+    Playing,
+    /** @brief The target or the clip cannot be played, so the `animation` step fails. */
+    Unavailable,
+};
+
+/**
+ * @brief One `animation` step request, expressed in the host's own animation space.
+ *
+ * `clip` is an opaque locator owned by the host — a skeletal clip id, a sprite
+ * sequence name, a Spine animation, a montage section. The engine never resolves
+ * it, never loads it and never assumes a rig or a clip format, so one authored
+ * `.dnut` story is not tied to one animation stack; the meaning is settled by
+ * whoever installs the handler.
+ *
+ * `loop` and `hold` are carried verbatim as authored and are never interpreted
+ * here. `loop` asks for indefinite repetition; `hold` asks playback to stay on
+ * its final pose once the clip ends. A host whose animation stack has no such
+ * concept simply ignores the flags it does not implement.
+ *
+ * @thread Filled and consumed synchronously inside one step dispatch.
+ */
+struct StoryAnimationRequest {
+    /** @brief Authored `target=<id>` verbatim; the host's own subject space. */
+    std::string targetId;
+    /**
+     * @brief Target resolved through the binding, or nullptr.
+     *
+     * The same convenience projection as `StoryMoveRequest::actor`: it is
+     * non-null exactly when `RpgStoryBinding::resolveActor` or `party` resolved
+     * `targetId`, and visibly null when the id belongs to another subject space
+     * (a map prop, a camera, a UI element). A host must not read a null here as
+     * "the target does not exist" — use `targetId` and resolve it yourself.
+     */
+    RPGActor* actor = nullptr;
+    /** @brief Authored `clip=<uri>` verbatim; opaque to the engine. */
+    std::string clip;
+    /** @brief Authored `loop` flag; false when the step omits it. */
+    bool loop = false;
+    /** @brief Authored `hold` flag; false when the step omits it. */
+    bool hold = false;
+};
+
+/**
+ * @brief Host animation controller invoked by the `animation` step.
+ *
+ * @ownership Borrowed callback; the binding keeps it alive for the whole session.
+ * @thread Invoked on the session's owner thread, synchronously.
+ * @reentrancy Must not re-enter the session that invoked it.
+ *
+ * Returning `Finished` completes the step inline, so a host whose playback is
+ * instantaneous — an applied pose, a zero-length clip, a purely cosmetic flicker
+ * — needs no host loop at all. Returning `Playing` suspends the story until the
+ * host acknowledges the step. Returning `Unavailable` fails the step with a
+ * diagnostic naming the target and the clip, and the session keeps its cursor so
+ * the caller can decide whether to retry or abandon. A failed `Result` is
+ * reported verbatim instead, so a reason such as "the clip library is still
+ * streaming" is never swallowed.
+ */
+using StoryAnimationHandler = std::function<eve::Result<StoryAnimationStatus>(const StoryAnimationRequest&)>;
 
 /**
  * @brief Borrowed domain objects an RPG story step runs against.
@@ -53,6 +180,38 @@ struct RpgStoryBinding {
      * content observable instead of silently skipping the effect.
      */
     std::function<RPGActor*(const std::string& actorId)> resolveActor;
+    /**
+     * @brief Optional movement controller for `move` steps.
+     *
+     * When this is empty the `move` step keeps its host-presented contract: the
+     * story suspends, the host reads the payload and calls
+     * `RpgStorySession::advance()`. That is the escape hatch for hosts whose
+     * movement cannot be started by one call — for example a host that wants to
+     * route the move through its own command queue.
+     *
+     * When it is set, the handler is the single place that knows how actors
+     * move, which is what keeps the dialect free of any game-mode assumption.
+     *
+     * @ownership Borrowed; the session stores a pointer to `RpgStoryBinding` and
+     *            never copies the callback.
+     */
+    StoryMoveHandler moveActor;
+    /**
+     * @brief Optional animation controller for `animation` steps.
+     *
+     * When this is empty the `animation` step keeps its host-presented contract:
+     * the story suspends, the host reads the payload and calls
+     * `RpgStorySession::advance()`. That is the escape hatch for hosts whose
+     * playback cannot be started by one call — for example a host that wants to
+     * blend the request into a state machine on its own schedule.
+     *
+     * When it is set, the handler is the single place that knows how clips play,
+     * which is what keeps the dialect free of any animation-stack assumption.
+     *
+     * @ownership Borrowed; the session stores a pointer to `RpgStoryBinding` and
+     *            never copies the callback.
+     */
+    StoryAnimationHandler playAnimation;
 };
 
 /**
@@ -144,6 +303,11 @@ public:
     /**
      * @brief Acknowledge the presented `move` / `animation` / `select` / `dialogue`
      *        / `message` / `camera` / `wait` step and continue.
+     * @remarks A `move` step is acknowledged the same way whether it was
+     *          host-presented or suspended by `RpgStoryBinding::moveActor`
+     *          reporting `StoryMoveStatus::Travelling`: call `advance` once the
+     *          actor has actually arrived. A handler that reports `Arrived`
+     *          never suspends the story at all.
      */
     [[nodiscard]] eve::Result<void> advance();
 

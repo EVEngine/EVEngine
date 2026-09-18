@@ -983,13 +983,23 @@ void RPG::expose(ssq::Table &table) {
 
     auto storySession = table.addClass<RpgStorySession>(
         "RPGStorySession", std::function<RpgStorySession *()>([]() { return new RpgStorySession(); }), true);
+    // `party` / `bag` / `equipment` are optional collaborators: a story that only
+    // walks actors and shows messages needs none of them, and the C++ entry point
+    // documents them as nullable. ssq's default pointer binding rejects Squirrel
+    // `null`, so accept ssq::Object and translate null -> nullptr (the same idiom
+    // as avatar/Avatar.cpp's addLayer). `gameState` stays typed and required: it
+    // owns the story completion fact, so a story always has one.
     storySession.addFunc("begin", [vm](RpgStorySession *session, const std::string &storyId, GameState *gameState,
-                                       Party *party, inventory::Bag *bag, inventory::EquipmentSet *equipment) {
+                                       ssq::Object partyObject, ssq::Object bagObject, ssq::Object equipmentObject) {
         if (!session)
             return eve::script::projectResult(
                 vm, eve::Result<void>::failure(eve::Diagnostic::error(
                         eve::DiagnosticCode::InvalidArgument, "RPGStorySession receiver must not be null",
                         "session", {}, "rpg.squirrel")));
+        Party                   *party = partyObject.isNull() ? nullptr : partyObject.toPtrUnsafe<Party *>();
+        inventory::Bag          *bag   = bagObject.isNull() ? nullptr : bagObject.toPtrUnsafe<inventory::Bag *>();
+        inventory::EquipmentSet *equipment =
+            equipmentObject.isNull() ? nullptr : equipmentObject.toPtrUnsafe<inventory::EquipmentSet *>();
         return eve::script::projectResult(vm, session->begin(storyId, gameState, party, bag, equipment));
     });
     storySession.addFunc("advance", [vm](RpgStorySession *session) {
