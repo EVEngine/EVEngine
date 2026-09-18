@@ -341,5 +341,15 @@ TEST_CASE("procgen.road.scenes.crossJunctionCornerSidewalks") {
         if (r > 0.9f && r < 2.9f) ++arcHits;
     }
     CHECK_GT(arcHits, 16);
+
+    // Top faces must carry +Y normals (mesh3D CCW / lighting); flipped windings show dark.
+    int upHits = 0, downHits = 0;
+    for (int i = 0; i < sw->getVertexCount(); ++i) {
+        const float ny = sw->getNormalY(i);
+        if (ny > 0.5f) ++upHits;
+        if (ny < -0.5f) ++downHits;
+    }
+    CHECK_GT(upHits, 16);
+    CHECK_EQ(downHits, 0);
 }
 
