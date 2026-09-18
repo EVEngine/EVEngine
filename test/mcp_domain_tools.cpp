@@ -1,4 +1,4 @@
-// Capability-backed MCP domain tools.
+﻿// Capability-backed MCP domain tools.
 //
 // These families exist so a module that already owns a query capability is not
 // invisible to an agent. Two contracts matter and are pinned here: the tool
@@ -12,6 +12,7 @@
 #include "common/DecalQuery.h"
 #include "common/Module.h"
 #include "decal/Decal.h"
+#include "devtools/McpDomainTools.hpp"
 #include "devtools/McpServer.hpp"
 
 #include <Poco/JSON/Array.h>
@@ -131,4 +132,23 @@ TEST_CASE("devtools.mcp.decalToolsReportMissingProvider") {
     CHECK(status.find("IDecalQuery") != std::string::npos);
     CHECK(callToolOnce("eve_decal_project", R"({"x":0,"y":0,"z":0})").find("IDecalQuery") != std::string::npos);
     CHECK(callToolOnce("eve_decal_clear", "{}").find("IDecalQuery") != std::string::npos);
+}
+
+TEST_CASE("devtools.mcp.spatialQueryToolsValidateAndReportMissingProviders") {
+    // 3D spatial queries ride on capabilities the base test process does not
+    // load, so this pins both the argument validation and the named-unavailable
+    // contract for each of them.
+    const std::string castMissing = callToolOnce("eve_physics_sphere_cast", R"({"from":[0,1,0],"to":[0,0,0]})");
+    CHECK(castMissing.find("\"ok\":false") != std::string::npos);
+    CHECK(castMissing.find("ICameraObstructionQuery") != std::string::npos);
+    CHECK(callToolOnce("eve_physics_sphere_cast", "{}").find("from and to are required") != std::string::npos);
+
+    const std::string projectMissing = callToolOnce("eve_world_project_down", R"({"x":1,"z":2})");
+    CHECK(projectMissing.find("\"ok\":false") != std::string::npos);
+    CHECK(projectMissing.find("IProcgenWorldQuery") != std::string::npos);
+
+    // Both tools are advertised, so an agent can discover them before a provider
+    // exists; routing is covered by devtools.mcp.everyDeclaredToolIsRouted.
+    CHECK(eve::dev::isMcpDomainTool("eve_physics_sphere_cast"));
+    CHECK(eve::dev::isMcpDomainTool("eve_world_project_down"));
 }
