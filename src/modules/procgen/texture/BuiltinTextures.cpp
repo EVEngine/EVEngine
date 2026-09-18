@@ -557,15 +557,15 @@ void buildOvateLeafStamps(const NoiseField &noise, int count, std::vector<LeafSt
         for (int col = 0; col < cols && placed < count; ++col) {
             const float cellW = 1.f / float(cols);
             const float cellH = 1.f / float(rows);
-            // Keep stamps centred in their cell so one-cell leaf UVs stay green.
-            const float jx = (noise.hash01(col * 3 + 1, row * 5 + 2) - 0.5f) * cellW * 0.12f;
-            const float jy = (noise.hash01(col * 7 + 3, row * 11 + 4) - 0.5f) * cellH * 0.12f;
+            // Keep stamps centred; blade ~25% smaller than a full cell so a larger
+            // transparent card shows clear ovate leaves with empty margins.
+            const float jx = (noise.hash01(col * 3 + 1, row * 5 + 2) - 0.5f) * cellW * 0.10f;
+            const float jy = (noise.hash01(col * 7 + 3, row * 11 + 4) - 0.5f) * cellH * 0.10f;
             LeafStamp s;
             s.cx = (float(col) + 0.5f) * cellW + jx;
             s.cy = (float(row) + 0.5f) * cellH + jy;
-            // Fill most of each 3x3 cell so geometric leaf UVs land on leaf colour.
-            s.halfW = cellW * (0.36f + 0.05f * noise.hash01(col + 9, row + 2));
-            s.halfH = cellH * (0.44f + 0.06f * noise.hash01(col + 4, row + 8));
+            s.halfW = cellW * (0.27f + 0.04f * noise.hash01(col + 9, row + 2));
+            s.halfH = cellH * (0.33f + 0.05f * noise.hash01(col + 4, row + 8));
             s.ang = (noise.hash01(col * 13 + 1, row * 17 + 3) - 0.5f) * 0.9f;
             stamps.push_back(s);
             ++placed;
@@ -635,6 +635,27 @@ void sampleFoliageFill(const NoiseField &noise, float u, float v, float scale, f
 }
 
 /**
+ * @brief Sample brown bark colour (shared by tex.tree_atlas / tex.foliage twigs).
+ */
+Rgba8 sampleBarkColor(const NoiseField &noise, float bu, float v, float scale, int colors) {
+    ColorRamp barkRamp;
+    barkRamp.add(0.00f, 28, 18, 12);
+    barkRamp.add(0.22f, 58, 38, 24);
+    barkRamp.add(0.48f, 102, 72, 44);
+    barkRamp.add(0.72f, 148, 110, 70);
+    barkRamp.add(1.00f, 68, 46, 28);
+    const float warp = noise.warp(bu * scale, v * scale, 2.1f, 3);
+    const float grain = 0.5f + 0.5f * std::sin((bu * 9.f + warp * 6.f) * 6.28318f);
+    const float ridge = noise.ridged(bu * 1.6f * scale, v * 0.28f * scale, 5);
+    const float crack =
+        std::pow(std::fabs(noise.valueNoise(bu * 1.4f * scale, v * 4.2f * scale) - 0.5f) * 2.f, 1.55f);
+    const float flake = noise.fbm(bu * 3.2f * scale + 1.7f, v * 0.9f * scale, 3);
+    const float h =
+        std::clamp(grain * 0.28f + ridge * 0.38f + (1.f - crack) * 0.22f + flake * 0.12f, 0.f, 1.f);
+    return barkRamp.sampleBanded(h, colors);
+}
+
+/**
  * tex.tree_atlas — split atlas matching mesh.tree UV layout:
  *   u in [0, 0.45] bark on the left, u in [0.55, 1] foliage on the right.
  */
@@ -651,13 +672,6 @@ std::unique_ptr<image::ImageData> genTreeAtlas(const Params &params, std::string
         noise.periodX = std::max(1, int(ctx.scale));
         noise.periodY = noise.periodX;
     }
-
-    ColorRamp barkRamp;
-    barkRamp.add(0.00f, 28, 18, 12);
-    barkRamp.add(0.22f, 58, 38, 24);
-    barkRamp.add(0.48f, 102, 72, 44);
-    barkRamp.add(0.72f, 148, 110, 70);
-    barkRamp.add(1.00f, 68, 46, 28);
 
     ColorRamp leafRamp;
     leafRamp.add(0.00f, 14, 36, 10);
@@ -678,24 +692,10 @@ std::unique_ptr<image::ImageData> genTreeAtlas(const Params &params, std::string
             const float v = float(y) * invH;
             Rgba8 color;
             if (u < 0.48f) {
-                const float bu = u / 0.48f;
-                const float warp = noise.warp(bu * ctx.scale, v * ctx.scale, 2.1f, 3);
-                const float grain =
-                    0.5f + 0.5f * std::sin((bu * 9.f + warp * 6.f) * 6.28318f);
-                const float ridge = noise.ridged(bu * 1.6f * ctx.scale, v * 0.28f * ctx.scale, 5);
-                const float crack = std::pow(
-                    std::fabs(noise.valueNoise(bu * 1.4f * ctx.scale, v * 4.2f * ctx.scale) - 0.5f) *
-                        2.f,
-                    1.55f);
-                const float flake =
-                    noise.fbm(bu * 3.2f * ctx.scale + 1.7f, v * 0.9f * ctx.scale, 3);
-                const float h = std::clamp(
-                    grain * 0.28f + ridge * 0.38f + (1.f - crack) * 0.22f + flake * 0.12f, 0.f, 1.f);
-                color = barkRamp.sampleBanded(h, ctx.colors);
+                color = sampleBarkColor(noise, u / 0.48f, v, ctx.scale, ctx.colors);
             } else if (u > 0.52f) {
                 const float fu = (u - 0.52f) / 0.48f;
                 float cover = 0.f, shade = 0.f;
-                // Transparent card half: ovate stamps only (empty margins a=0).
                 sampleOvateLeafCard(noise, fu, v, leafStamps, cover, shade);
                 if (cover < 0.02f) {
                     color = {0, 0, 0, 0};
@@ -704,7 +704,6 @@ std::unique_ptr<image::ImageData> genTreeAtlas(const Params &params, std::string
                     color.a = static_cast<uint8_t>(std::clamp(cover, 0.f, 1.f) * 255.f);
                 }
             } else {
-                // Narrow blend strip between bark and foliage regions.
                 color = {72, 86, 48, 255};
             }
             img->setPixel(x, y,
@@ -716,10 +715,10 @@ std::unique_ptr<image::ImageData> genTreeAtlas(const Params &params, std::string
 }
 
 /**
- * tex.foliage — dual atlas for bush meshes:
- *   u in [0, 0.48] opaque leafy fill for ellipsoid blobs,
- *   u in [0.52, 1] 3×3 transparent ovate leaf stamps for addLeafCard
- *   (each card samples one stamp cell).
+ * tex.foliage — bush atlas:
+ *   u in [0, 0.22] brown bark for twigs,
+ *   u in [0.24, 0.50] opaque leafy fill for ellipsoid blobs,
+ *   u in [0.52, 1] 3×3 transparent ovate leaf stamps for leaf cards.
  */
 std::unique_ptr<image::ImageData> genFoliage(const Params &params, std::string &error) {
     const auto ctx = TextureGenContext::fromParams(params);
@@ -744,7 +743,6 @@ std::unique_ptr<image::ImageData> genFoliage(const Params &params, std::string &
     leafRamp.add(1.00f, 22, 48, 28);
 
     std::vector<LeafStamp> leafStamps;
-    // 3×3 grid — must match BushMesh / TreeMesh / FoliageCluster card UVs.
     buildOvateLeafStamps(noise, 9, leafStamps);
 
     const float invW = 1.f / float(std::max(1, ctx.width - 1));
@@ -755,12 +753,19 @@ std::unique_ptr<image::ImageData> genFoliage(const Params &params, std::string &
             const float v = float(y) * invH;
             float cover = 0.f, shade = 0.f;
             Rgba8 color;
-            if (u < 0.48f) {
-                const float fu = u / 0.48f;
+            if (u < 0.22f) {
+                color = sampleBarkColor(noise, u / 0.22f, v, ctx.scale, ctx.colors);
+                color.a = 255;
+            } else if (u < 0.24f) {
+                color = {72, 64, 42, 255};  // bark → fill blend
+            } else if (u <= 0.50f) {
+                const float fu = (u - 0.24f) / 0.26f;
                 sampleFoliageFill(noise, fu, v, ctx.scale, cover, shade);
                 color = leafRamp.sampleBanded(shade, ctx.colors);
                 color.a = 255;
-            } else if (u > 0.52f) {
+            } else if (u < 0.52f) {
+                color = {40, 78, 36, 255};
+            } else {
                 const float fu = (u - 0.52f) / 0.48f;
                 sampleOvateLeafCard(noise, fu, v, leafStamps, cover, shade);
                 if (cover < 0.02f) {
@@ -769,8 +774,6 @@ std::unique_ptr<image::ImageData> genFoliage(const Params &params, std::string &
                     color   = leafRamp.sampleBanded(shade, ctx.colors);
                     color.a = static_cast<uint8_t>(std::clamp(cover, 0.f, 1.f) * 255.f);
                 }
-            } else {
-                color = {40, 78, 36, 255};
             }
             img->setPixel(x, y,
                           image::ImageData::Colorf{color.r / 255.f, color.g / 255.f, color.b / 255.f,

@@ -11,18 +11,18 @@ namespace {
 
 constexpr float kPi = 3.14159265358979323846f;
 
-// tex.foliage dual atlas (and tree_atlas right half for shared cards):
-//   blobs sample the opaque fill half; leaf cards sample ONE cell of the
-//   transparent ovate-leaf grid so masked alpha yields a single leaf, not a
-//   solid green quad covering the whole collage.
-constexpr float kBlobUMin = 0.02f;
-constexpr float kBlobUMax = 0.48f;
+// tex.foliage atlas layout:
+//   u in [0, 0.22] brown bark for twigs (same look as tree trunks),
+//   u in [0.24, 0.50] opaque leafy fill for ellipsoid blobs,
+//   u in [0.52, 1] 3×3 transparent ovate stamps for leaf cards.
+constexpr float kBarkUMin    = 0.00f;
+constexpr float kBarkUMax    = 0.22f;
+constexpr float kBlobUMin    = 0.24f;
+constexpr float kBlobUMax    = 0.50f;
 constexpr float kCardAtlasU0 = 0.52f;
 constexpr float kCardAtlasU1 = 1.00f;
 constexpr int   kLeafCols    = 3;
 constexpr int   kLeafRows    = 3;
-constexpr float kBarkUMin = 0.0f;
-constexpr float kBarkUMax = 0.45f;
 
 struct V3 {
     float x = 0.f, y = 0.f, z = 0.f;
@@ -119,8 +119,8 @@ void addTwig(MeshBuild &out, V3 a, V3 b, float r0, float r1, int sides, float uM
     }
 }
 
-// Ovate leaf: lanceolate polygon silhouette (never a rectangle). Colour comes
-// from one stamp cell of the leaf atlas; shape does not depend on alpha discard.
+// Leaf card: larger transparent quad (+25%) with a smaller ovate stamp (−25%)
+// sampled from one atlas cell. Masked alpha keeps only the blade.
 void addLeafCard(MeshBuild &out, std::mt19937 &rng, V3 c, V3 direction, float size) {
     V3 right, up;
     basisFor(norm(direction), right, up);
@@ -128,37 +128,43 @@ void addLeafCard(MeshBuild &out, std::mt19937 &rng, V3 c, V3 direction, float si
     right             = add(mul(right, std::cos(twist)), mul(up, std::sin(twist)));
     up                = norm(cross(norm(direction), right));
     const V3 normal   = norm(cross(right, up));
-    const V3 center   = add(c, mul(normal, size * 0.04f));
-    // Egg-shaped (ovate): wider mid-body, soft tip — not a long tape strip.
-    const float halfW = size * randomRange(rng, 0.42f, 0.55f);
-    const float halfH = size * randomRange(rng, 0.58f, 0.78f);
+    // Quad card 25% larger than the base leafSize.
+    const float card  = size * 1.25f;
+    const float halfW = card * randomRange(rng, 0.55f, 0.72f);
+    const float halfH = card * randomRange(rng, 0.55f, 0.72f);
+    const V3    r     = mul(right, halfW);
+    const V3    h     = mul(up, halfH);
+    const V3    center = add(c, mul(normal, size * 0.04f));
+    const V3    points[4] = {sub(sub(center, r), h), add(sub(center, h), r), add(add(center, r), h),
+                             add(sub(center, r), h)};
 
-    // Pick one stamp from the 3×3 ovate grid (matches BuiltinTextures leaf stamps).
+    // One 3×3 stamp cell — stamp itself is drawn smaller so the blade reads −25%.
     const int   col    = int(randomRange(rng, 0.f, float(kLeafCols))) % kLeafCols;
     const int   row    = int(randomRange(rng, 0.f, float(kLeafRows))) % kLeafRows;
-    const float inset  = 0.10f;
+    const float inset  = 0.06f;
     const float cellWU = (kCardAtlasU1 - kCardAtlasU0) / float(kLeafCols);
     const float cellWV = 1.f / float(kLeafRows);
     const float u0     = kCardAtlasU0 + (float(col) + inset) * cellWU;
     const float u1     = kCardAtlasU0 + (float(col) + 1.f - inset) * cellWU;
     const float v0     = (float(row) + inset) * cellWV;
     const float v1     = (float(row) + 1.f - inset) * cellWV;
-
-    // Ovate outline: rounded base, widest below centre, soft tip at +Y.
-    constexpr float kOutlineX[8] = {0.f, -0.32f, -0.48f, -0.30f, 0.f, 0.30f, 0.48f, 0.32f};
-    constexpr float kOutlineY[8] = {-0.48f, -0.28f, 0.02f, 0.32f, 0.50f, 0.32f, 0.02f, -0.28f};
-    const uint32_t  base         = uint32_t(out.getVertexCount());
-    for (int i = 0; i < 8; ++i) {
-        const V3 p = add(center, add(mul(right, kOutlineX[i] * halfW), mul(up, kOutlineY[i] * halfH)));
-        const float u = u0 + (0.5f + kOutlineX[i]) * (u1 - u0);
-        const float v = v0 + (0.5f + kOutlineY[i]) * (v1 - v0);
-        out.addVertex(p.x, p.y, p.z, normal.x, normal.y, normal.z, u, v);
+    const bool  flipU  = random01(rng) > 0.5f;
+    const bool  flipV  = random01(rng) > 0.5f;
+    const float uv[4][2] = {
+        {flipU ? u1 : u0, flipV ? v1 : v0},
+        {flipU ? u0 : u1, flipV ? v1 : v0},
+        {flipU ? u0 : u1, flipV ? v0 : v1},
+        {flipU ? u1 : u0, flipV ? v0 : v1},
+    };
+    const uint32_t base = uint32_t(out.getVertexCount());
+    for (int i = 0; i < 4; ++i) {
+        out.addVertex(points[i].x, points[i].y, points[i].z, normal.x, normal.y, normal.z, uv[i][0],
+                      uv[i][1]);
     }
-    // Fan from the base tip; emit both windings for engines that cull back faces.
-    for (int i = 1; i < 7; ++i) {
-        out.addTriangle(base, base + uint32_t(i), base + uint32_t(i + 1));
-        out.addTriangle(base, base + uint32_t(i + 1), base + uint32_t(i));
-    }
+    out.addTriangle(base, base + 1, base + 2);
+    out.addTriangle(base, base + 2, base + 3);
+    out.addTriangle(base + 2, base + 1, base);
+    out.addTriangle(base + 3, base + 2, base);
 }
 
 }  // namespace
@@ -274,9 +280,9 @@ bool generateBushMesh(const Params &params, MeshBuild &out, std::string &error) 
                                 {halfW * 0.18f * lobeScale, height * 0.20f, halfW * 0.18f * lobeScale}});
     }
 
-    // Leaf cards across the canopy (ovate geometry; density follows leafDensity).
+    // Leaf cards across the canopy (+50% count vs prior 14× density packing).
     if (leafMode == "cards" || leafMode == "mixed") {
-        const int cards = std::max(1, int(std::round(float(blobs) * 14.f * density)));
+        const int cards = std::max(1, int(std::round(float(blobs) * 21.f * density)));
         for (int i = 0; i < cards; ++i) {
             const FoliageLobe &lobe = foliageLobes[size_t(i) % foliageLobes.size()];
             const float theta = randomRange(rng, 0.f, 2.f * kPi);

@@ -3196,13 +3196,12 @@ TEST_CASE("procgen.mesh.bush.ovateLeafCards") {
     std::string err;
     MeshBuild out;
     REQUIRE(MeshRecipeRegistry::instance().generate("mesh.bush", p, out, err));
-    // Ovate leaves use 8 outline verts (double-sided fan); quads would be 4.
-    CHECK(out.getVertexCount() >= 8);
-    CHECK(out.getVertexCount() % 8 == 0);
-    // Each leaf samples one 3×3 stamp cell — UV span stays well below a full half.
-    for (int leaf = 0; leaf < out.getVertexCount(); leaf += 8) {
+    // Transparent leaf cards are double-sided quads (4 verts) sampling one stamp cell.
+    CHECK(out.getVertexCount() >= 4);
+    CHECK(out.getVertexCount() % 4 == 0);
+    for (int leaf = 0; leaf < out.getVertexCount(); leaf += 4) {
         float uMin = 1.f, uMax = 0.f, vMin = 1.f, vMax = 0.f;
-        for (int i = 0; i < 8; ++i) {
+        for (int i = 0; i < 4; ++i) {
             uMin = std::min(uMin, out.getUvU(leaf + i));
             uMax = std::max(uMax, out.getUvU(leaf + i));
             vMin = std::min(vMin, out.getUvV(leaf + i));
@@ -3213,6 +3212,24 @@ TEST_CASE("procgen.mesh.bush.ovateLeafCards") {
         CHECK(uMax - uMin < 0.22f);
         CHECK(vMax - vMin < 0.45f);
     }
+}
+
+TEST_CASE("procgen.texture.foliage.barkTwigStrip") {
+    TextureRecipeRegistry::instance().registerBuiltins();
+    Params p;
+    p.setSeed(11);
+    p.setSize(64, 64);
+    p.setFloat("scale", 4.f);
+    p.setInt("seamless", 1);
+    p.setInt("colors", 7);
+    std::string err;
+    auto img = TextureRecipeRegistry::instance().generate("tex.foliage", p, err);
+    REQUIRE(static_cast<bool>(img));
+    // Left bark strip should be opaque brown (R≈G≈B-ish warm, not leaf-green).
+    const auto c = img->getPixel(2, 32);
+    CHECK(c.a > 0.9f);
+    CHECK(c.r > c.b);
+    CHECK(c.g < c.r + 0.12f);
 }
 
 TEST_CASE("procgen.texture.foliage.leafCardAlpha") {
