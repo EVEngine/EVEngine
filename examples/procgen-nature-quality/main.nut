@@ -124,7 +124,7 @@ function buildBush(seed, x) {
     local normal = makeNormal("tex.foliage", seed + 5, 256);
     // Masked leaf cards: tex.foliage right half is transparent + ovate leaves.
     local mat = makeFoliageMaterial(foliage, normal, 0.88, 0.32);
-    if (mat != null) mat.setTint(0.72, 0.92, 0.68, 1.0);
+    // No green tint — twigs sample the brown bark strip and must stay trunk-coloured.
     placeMesh(retain(mr.value), x, -2.55, 0.4, 1.15, 1.15, 1.15, mat);
 }
 
