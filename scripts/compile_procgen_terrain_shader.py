@@ -2,8 +2,8 @@
 
 import shutil
 import subprocess
-from pathlib import Path
 
+import utf8_stdio
 from compile_graphics_water_shaders import ROOT, spv_to_inc
 
 
@@ -29,4 +29,5 @@ def main() -> None:
 
 
 if __name__ == "__main__":
+    utf8_stdio.enable_utf8_stdio()
     main()
