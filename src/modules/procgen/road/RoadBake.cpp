@@ -350,60 +350,39 @@ Result<void> bakeEdgeGeometry(MeshBuild& mesh, RoadOverlay& overlay, const RoadN
 }
 
 Result<void> bakeJunction(MeshBuild& mesh, const RoadNetwork& network, const RoadNode& node) {
-    std::vector<V3> rim;
-    float           y = node.y;
+    int   degree       = 0;
+    float maxHalfWidth = 0.f;
     for (const auto& edge : network.edges()) {
         if (edge.to != node.id && edge.from != node.id) continue;
-        auto spline = edgeToSpline(edge);
-        if (!spline.ok()) continue;
-        auto len = spline.value().lengthResult(16);
-        if (!len.ok()) continue;
-        const float d = edge.to == node.id ? std::max(0.f, len.value() - node.junctionRadius)
-                                           : std::min(node.junctionRadius, len.value());
-        auto frame = spline.value().travelFrameResult(d, "clamp", 16);
-        if (!frame.ok()) continue;
-        const auto& f = frame.value();
-        const V3    origin{f.sample.x, f.sample.y, f.sample.z};
-        const V3    side{f.sideX, f.sideY, f.sideZ};
-        auto        profile = makeRoadProfile(edge.style, edge.lanesForward, edge.lanesBackward);
-        if (!profile.ok()) continue;
-        const float hw = profile.value().halfWidth;
-        rim.push_back(origin + side * -hw);
-        rim.push_back(origin + side * hw);
-        y = std::max(y, f.sample.y);
+        ++degree;
+        auto profile = makeRoadProfile(edge.style, edge.lanesForward, edge.lanesBackward);
+        if (profile.ok()) maxHalfWidth = std::max(maxHalfWidth, profile.value().halfWidth);
     }
-    if (rim.size() < 3) {
-        // Degenerate: disc around node.
-        const int segs = 16;
-        const auto base = static_cast<std::uint32_t>(mesh.getVertexCount());
-        mesh.setActiveGroup(roadMaterialGroup(RoadMaterial::Asphalt));
-        mesh.addVertex(node.x, y, node.z, 0.f, 1.f, 0.f, 0.5f, 0.5f);
-        for (int i = 0; i < segs; ++i) {
-            const float a = static_cast<float>(i) * 6.2831853f / static_cast<float>(segs);
-            mesh.addVertex(node.x + std::cos(a) * node.junctionRadius, y,
-                           node.z + std::sin(a) * node.junctionRadius, 0.f, 1.f, 0.f,
-                           std::cos(a) * 0.5f + 0.5f, std::sin(a) * 0.5f + 0.5f);
-        }
-        for (int i = 0; i < segs; ++i) {
-            const auto i0 = base + 1u + static_cast<std::uint32_t>(i);
-            const auto i1 = base + 1u + static_cast<std::uint32_t>((i + 1) % segs);
-            mesh.addTriangle(base, i0, i1);
-        }
-        return Result<void>::success();
-    }
+    // Endpoints and lonely stubs get no junction pad — that was a major source of overlap.
+    if (degree < 2) return Result<void>::success();
 
-    // Fan from node center using rim points (unsorted but visually dense enough for MVP).
+    // Disc must cover the trimmed arm ends including sidewalk corners, otherwise
+    // the salmon ground shows through the four corner gaps.
+    const float radius =
+        std::sqrt(node.junctionRadius * node.junctionRadius + maxHalfWidth * maxHalfWidth) + 0.35f;
+    const float y    = node.y + 0.01f;
+    const int   segs = 32;
+    const auto  base = static_cast<std::uint32_t>(mesh.getVertexCount());
     mesh.setActiveGroup(roadMaterialGroup(RoadMaterial::Asphalt));
-    const auto center = static_cast<std::uint32_t>(mesh.getVertexCount());
     mesh.addVertex(node.x, y, node.z, 0.f, 1.f, 0.f, 0.5f, 0.5f);
-    for (const auto& p : rim) {
-        mesh.addVertex(p.x, y, p.z, 0.f, 1.f, 0.f, 0.f, 0.f);
+    for (int i = 0; i < segs; ++i) {
+        const float a = static_cast<float>(i) * 6.2831853f / static_cast<float>(segs);
+        mesh.addVertex(node.x + std::cos(a) * radius, y, node.z + std::sin(a) * radius, 0.f, 1.f, 0.f,
+                       std::cos(a) * 0.5f + 0.5f, std::sin(a) * 0.5f + 0.5f);
     }
-    for (std::uint32_t i = 0; i + 1 < static_cast<std::uint32_t>(rim.size()); i += 2) {
-        mesh.addTriangle(center, center + 1 + i, center + 2 + i);
+    for (int i = 0; i < segs; ++i) {
+        const auto i0 = base + 1u + static_cast<std::uint32_t>(i);
+        const auto i1 = base + 1u + static_cast<std::uint32_t>((i + 1) % segs);
+        // Winding must face +Y so a top-down camera sees the disc (not an empty hole).
+        mesh.addTriangle(base, i1, i0);
     }
 
-    // Zebra strips toward first incoming edge.
+    // One zebra approach on the first incoming edge (optional visual cue).
     for (const auto& edge : network.edges()) {
         if (edge.to != node.id) continue;
         auto spline = edgeToSpline(edge);
@@ -417,14 +396,14 @@ Result<void> bakeJunction(MeshBuild& mesh, const RoadNetwork& network, const Roa
         const V3    side{f.sideX, f.sideY, f.sideZ};
         const V3    fwd{f.forwardX, f.forwardY, f.forwardZ};
         const V3    up{f.upX, f.upY, f.upZ};
-        const float stripeW = edge.style.laneWidth * static_cast<float>(edge.lanesForward) * 0.5f;
-        for (int s = 0; s < 5; ++s) {
-            const float along = static_cast<float>(s) * 0.55f;
-            const V3    c     = origin - fwd * along + up * 0.03f;
+        const float stripeW = edge.style.laneWidth * static_cast<float>(edge.lanesForward) * 0.45f;
+        for (int s = 0; s < 4; ++s) {
+            const float along = static_cast<float>(s) * 0.5f;
+            const V3    c     = origin - fwd * along + up * 0.04f;
             const V3    a     = c + side * -stripeW;
             const V3    b     = c + side * stripeW;
-            const V3    d     = a - fwd * 0.28f;
-            const V3    e     = b - fwd * 0.28f;
+            const V3    d     = a - fwd * 0.25f;
+            const V3    e     = b - fwd * 0.25f;
             appendStripQuad(mesh, a, b, e, d, up, 0.f, 1.f, 0.f, 1.f, RoadMaterial::Marking);
         }
         break;

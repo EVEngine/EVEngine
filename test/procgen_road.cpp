@@ -131,3 +131,60 @@ TEST_CASE("procgen.road.network.seedSevenNavigationTerminates") {
     CHECK_GT(baked.value().mesh.getVertexCount(), 100);
     CHECK_GT(baked.value().overlay.lanes.size(), 0u);
 }
+
+TEST_CASE("procgen.road.scenes.fourSimpleBakeClean") {
+    RoadBakeOptions options;
+    options.pathSegmentsPerEdge = 20;
+    options.turnSamples         = 6;
+    options.includeNavigation   = false;
+
+    auto straight = RoadNetwork::makeStraight(28.f, 2);
+    REQUIRE(straight.ok());
+    CHECK_EQ(straight.value().edgeCount(), 1);
+    options.includeJunctions = false;
+    auto bakedStraight = bakeRoadNetwork(straight.value(), options);
+    REQUIRE(bakedStraight.ok());
+    CHECK_GT(bakedStraight.value().mesh.getVertexCount(), 50);
+
+    auto curve = RoadNetwork::makeCurve(16.f, 2);
+    REQUIRE(curve.ok());
+    CHECK_EQ(curve.value().edgeCount(), 1);
+    auto bakedCurve = bakeRoadNetwork(curve.value(), options);
+    REQUIRE(bakedCurve.ok());
+    CHECK_GT(bakedCurve.value().mesh.getVertexCount(), 50);
+
+    auto bridge = RoadNetwork::makeBridge(30.f, 5.f, 2);
+    REQUIRE(bridge.ok());
+    options.includePiers = true;
+    auto bakedBridge = bakeRoadNetwork(bridge.value(), options);
+    REQUIRE(bakedBridge.ok());
+    bool sawPier = false;
+    for (int i = 0; i < bakedBridge.value().mesh.getGroupCount(); ++i) {
+        if (bakedBridge.value().mesh.getGroupName(i) == "pier") sawPier = true;
+    }
+    CHECK(sawPier);
+
+    auto cross = RoadNetwork::makeCross(28.f, 2);
+    REQUIRE(cross.ok());
+    CHECK_EQ(cross.value().edgeCount(), 4);
+    CHECK_GT(cross.value().laneLinkCount(), 0);
+    options.includeJunctions  = true;
+    options.includeNavigation = false;
+    auto bakedCross = bakeRoadNetwork(cross.value(), options);
+    REQUIRE(bakedCross.ok());
+    CHECK_GT(bakedCross.value().mesh.getVertexCount(), 100);
+
+    MeshRecipeRegistry::instance().registerBuiltins();
+    Params params;
+    params.setString("scene", "straight");
+    params.setFloat("span", 24.f);
+    params.setInt("lanes", 2);
+    params.setInt("pathSegments", 16);
+    params.setBool("navigation", false);
+    params.setBool("junctions", false);
+    MeshBuild mesh;
+    std::string error;
+    REQUIRE(MeshRecipeRegistry::instance().generate("mesh.roadNetwork", params, mesh, error));
+    CHECK_GT(mesh.getVertexCount(), 40);
+    CHECK(!RoadNetwork::makeScene("nope", 20.f, 4.f, 2, 1).ok());
+}

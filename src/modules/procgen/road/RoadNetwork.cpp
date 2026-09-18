@@ -4,6 +4,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <string>
 #include <utility>
 
 namespace eve::procgen::road {
@@ -14,6 +15,26 @@ bool finite3(float x, float y, float z) {
 }
 
 RoadControlPoint P(float x, float y, float z) { return RoadControlPoint{x, y, z}; }
+
+RoadStyle groundStyle() {
+    RoadStyle style;
+    style.deckThickness = 0.35f;
+    style.pierClearance = 100.f;
+    style.curbHeight    = 0.50f;
+    style.curbWidth     = 0.42f;
+    return style;
+}
+
+RoadStyle bridgeStyle() {
+    RoadStyle style     = groundStyle();
+    style.deckThickness = 0.75f;
+    style.pierClearance = 1.25f;
+    style.pierSpacing   = 8.f;
+    style.pierWidth     = 1.3f;
+    style.pierDepth     = 1.3f;
+    style.curbHeight    = 0.55f;
+    return style;
+}
 
 }  // namespace
 
@@ -159,6 +180,99 @@ Result<RoadEdge> RoadNetwork::edgeResult(std::uint32_t id) const {
     return Result<RoadEdge>::success(edges_[static_cast<std::size_t>(idx)]);
 }
 
+Result<RoadNetwork> RoadNetwork::makeStraight(float length, int lanes) {
+    if (!std::isfinite(length) || length < 8.f || lanes < 1 || lanes > 4)
+        return Result<RoadNetwork>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "length>=8, lanes in [1,4] required", "straight"));
+    RoadNetwork network;
+    const float half = length * 0.5f;
+    auto a = network.addNode(-half, 0.f, 0.f, 2.f);
+    auto b = network.addNode(half, 0.f, 0.f, 2.f);
+    if (!a.ok()) return Result<RoadNetwork>::failure(a.status());
+    if (!b.ok()) return Result<RoadNetwork>::failure(b.status());
+    auto edge = network.addEdge(a.value(), b.value(), {P(-half, 0.f, 0.f), P(0.f, 0.f, 0.f), P(half, 0.f, 0.f)},
+                                lanes, 0, groundStyle());
+    if (!edge.ok()) return Result<RoadNetwork>::failure(edge.status());
+    return Result<RoadNetwork>::success(std::move(network));
+}
+
+Result<RoadNetwork> RoadNetwork::makeCurve(float radius, int lanes) {
+    if (!std::isfinite(radius) || radius < 8.f || lanes < 1 || lanes > 4)
+        return Result<RoadNetwork>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "radius>=8, lanes in [1,4] required", "curve"));
+    RoadNetwork network;
+    auto a = network.addNode(-radius, 0.f, 0.f, 2.f);
+    auto b = network.addNode(0.f, 0.f, radius, 2.f);
+    if (!a.ok()) return Result<RoadNetwork>::failure(a.status());
+    if (!b.ok()) return Result<RoadNetwork>::failure(b.status());
+    auto edge = network.addEdge(a.value(), b.value(),
+                                {P(-radius, 0.f, 0.f), P(-radius * 0.55f, 0.f, radius * 0.15f),
+                                 P(-radius * 0.15f, 0.f, radius * 0.55f), P(0.f, 0.f, radius)},
+                                lanes, 0, groundStyle());
+    if (!edge.ok()) return Result<RoadNetwork>::failure(edge.status());
+    return Result<RoadNetwork>::success(std::move(network));
+}
+
+Result<RoadNetwork> RoadNetwork::makeBridge(float length, float height, int lanes) {
+    if (!std::isfinite(length) || length < 12.f || !std::isfinite(height) || height < 2.f || lanes < 1 || lanes > 4)
+        return Result<RoadNetwork>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "length>=12, height>=2, lanes in [1,4] required", "bridge"));
+    RoadNetwork network;
+    const float half = length * 0.5f;
+    // Flat elevated deck at constant height (no ramps yet) — isolates pier baking
+    // from Frenet-frame twist that shows up on steep climbs.
+    auto a = network.addNode(-half, height, 0.f, 2.f);
+    auto b = network.addNode(half, height, 0.f, 2.f);
+    if (!a.ok()) return Result<RoadNetwork>::failure(a.status());
+    if (!b.ok()) return Result<RoadNetwork>::failure(b.status());
+    auto edge = network.addEdge(a.value(), b.value(),
+                                {P(-half, height, 0.f), P(0.f, height, 0.f), P(half, height, 0.f)}, lanes, 0,
+                                bridgeStyle());
+    if (!edge.ok()) return Result<RoadNetwork>::failure(edge.status());
+    return Result<RoadNetwork>::success(std::move(network));
+}
+
+Result<RoadNetwork> RoadNetwork::makeCross(float span, int lanes) {
+    if (!std::isfinite(span) || span < 16.f || lanes < 1 || lanes > 4)
+        return Result<RoadNetwork>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "span>=16, lanes in [1,4] required", "cross"));
+    RoadNetwork network;
+    const float half = span * 0.5f;
+    const float jr   = 5.5f;
+    auto nC = network.addNode(0.f, 0.f, 0.f, jr);
+    auto nN = network.addNode(0.f, 0.f, -half, 2.f);
+    auto nS = network.addNode(0.f, 0.f, half, 2.f);
+    auto nW = network.addNode(-half, 0.f, 0.f, 2.f);
+    auto nE = network.addNode(half, 0.f, 0.f, 2.f);
+    for (auto* r : {&nC, &nN, &nS, &nW, &nE}) {
+        if (!r->ok()) return Result<RoadNetwork>::failure(r->status());
+    }
+    const RoadStyle style = groundStyle();
+    // Arms run into the hub; bake trims each end by junctionRadius so strips
+    // stop at the disc instead of piercing it.
+    auto e1 = network.addEdge(nN.value(), nC.value(), {P(0.f, 0.f, -half), P(0.f, 0.f, 0.f)}, lanes, 0, style);
+    auto e2 = network.addEdge(nC.value(), nS.value(), {P(0.f, 0.f, 0.f), P(0.f, 0.f, half)}, lanes, 0, style);
+    auto e3 = network.addEdge(nW.value(), nC.value(), {P(-half, 0.f, 0.f), P(0.f, 0.f, 0.f)}, lanes, 0, style);
+    auto e4 = network.addEdge(nC.value(), nE.value(), {P(0.f, 0.f, 0.f), P(half, 0.f, 0.f)}, lanes, 0, style);
+    for (auto* e : {&e1, &e2, &e3, &e4}) {
+        if (!e->ok()) return Result<RoadNetwork>::failure(e->status());
+    }
+    auto turns = network.connectAllTurns(nC.value());
+    if (!turns.ok()) return Result<RoadNetwork>::failure(turns.status());
+    return Result<RoadNetwork>::success(std::move(network));
+}
+
+Result<RoadNetwork> RoadNetwork::makeScene(const std::string& scene, float span, float bridgeHeight, int lanes,
+                                           std::uint32_t seed) {
+    if (scene == "straight") return makeStraight(span, lanes);
+    if (scene == "curve") return makeCurve(std::max(8.f, span * 0.5f), lanes);
+    if (scene == "bridge") return makeBridge(span, bridgeHeight, lanes);
+    if (scene == "cross") return makeCross(span, lanes);
+    if (scene == "interchange" || scene.empty()) return makeInterchange(span, bridgeHeight, lanes, seed);
+    return Result<RoadNetwork>::failure(Diagnostic::error(
+        DiagnosticCode::InvalidArgument, "scene must be straight|curve|bridge|cross|interchange", "scene"));
+}
+
 Result<RoadNetwork> RoadNetwork::makeInterchange(float span, float bridgeHeight, int lanes, std::uint32_t seed) {
     if (!std::isfinite(span) || span < 16.f || !std::isfinite(bridgeHeight) || bridgeHeight < 1.f || lanes < 1 ||
         lanes > 4)
@@ -185,18 +299,9 @@ Result<RoadNetwork> RoadNetwork::makeInterchange(float span, float bridgeHeight,
         if (!r->ok()) return Result<RoadNetwork>::failure(r->status());
     }
 
-    RoadStyle ground;
-    ground.deckThickness = 0.40f;
-    ground.pierClearance = 100.f;  // no piers on ground
-    ground.curbHeight    = 0.50f;
-    ground.curbWidth     = 0.42f;
-    RoadStyle bridge     = ground;
-    bridge.deckThickness = 0.80f;
-    bridge.pierClearance = 1.35f;
-    bridge.pierSpacing   = 9.5f + 0.2f * wobble;
-    bridge.pierWidth     = 1.4f;
-    bridge.pierDepth     = 1.4f;
-    bridge.curbHeight    = 0.60f;
+    RoadStyle ground       = groundStyle();
+    RoadStyle bridge       = bridgeStyle();
+    bridge.pierSpacing     = 9.5f + 0.2f * wobble;
 
     const auto g = nGround.value();
     auto add = [&](std::uint32_t a, std::uint32_t b, std::vector<RoadControlPoint> pts, const RoadStyle& style) {
