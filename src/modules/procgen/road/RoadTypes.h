@@ -56,10 +56,10 @@ struct RoadEdge {
 /**
  * @brief One legal lane-to-lane connection inside a junction.
  *
- * Ownership: stored by value in RoadNetwork; edge/lane indices are stable until
- * the network mutates and bumping revision.
+ * Value type owned by RoadNetwork (not a cross-domain Link projection). Edge and
+ * lane indices stay valid until the network mutates and bumps its revision.
  */
-struct RoadLaneLink {
+struct RoadLaneConnection {
     std::uint32_t inEdge   = 0;
     int           inLane   = 0;
     std::uint32_t outEdge  = 0;
@@ -114,7 +114,11 @@ struct RoadProfile {
  */
 [[nodiscard]] Result<RoadProfile> makeRoadProfile(const RoadStyle& style, int lanesForward, int lanesBackward);
 
-/** @brief Map a material tag to the MeshBuild group name used by the baker. */
+/**
+ * @brief Map a material tag to the MeshBuild group name used by the baker.
+ * @ownership borrowed — returns a pointer to a static string literal; callers must not free it.
+ * @lifetime Program lifetime; the pointer remains valid for the process.
+ */
 [[nodiscard]] const char* roadMaterialGroup(RoadMaterial material) noexcept;
 
 }  // namespace eve::procgen::road

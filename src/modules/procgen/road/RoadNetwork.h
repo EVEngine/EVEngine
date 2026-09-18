@@ -24,7 +24,7 @@ public:
                                                 std::vector<RoadControlPoint> controlPoints, int lanesForward = 2,
                                                 int lanesBackward = 0, RoadStyle style = {});
     /** @brief Register one legal turn inside a shared junction node. */
-    [[nodiscard]] Result<void> addLaneLink(RoadLaneLink link);
+    [[nodiscard]] Result<void> addLaneLink(RoadLaneConnection link);
     /** @brief Auto-connect every incoming lane to every outgoing lane at one node. */
     [[nodiscard]] Result<int> connectAllTurns(std::uint32_t nodeId);
     /** @brief Replace edge style atomically. */
@@ -41,7 +41,7 @@ public:
     [[nodiscard]] Result<RoadEdge> edgeResult(std::uint32_t id) const;
     [[nodiscard]] const std::vector<RoadNode>& nodes() const noexcept { return nodes_; }
     [[nodiscard]] const std::vector<RoadEdge>& edges() const noexcept { return edges_; }
-    [[nodiscard]] const std::vector<RoadLaneLink>& laneLinks() const noexcept { return laneLinks_; }
+    [[nodiscard]] const std::vector<RoadLaneConnection>& laneLinks() const noexcept { return laneLinks_; }
 
     /** @brief Build a multi-level interchange demo graph (ground cross + elevated loop + ramps). */
     [[nodiscard]] static Result<RoadNetwork> makeInterchange(float span = 48.f, float bridgeHeight = 8.f,
@@ -71,7 +71,7 @@ private:
 
     std::vector<RoadNode>     nodes_;
     std::vector<RoadEdge>     edges_;
-    std::vector<RoadLaneLink> laneLinks_;
+    std::vector<RoadLaneConnection> laneLinks_;
     std::unordered_map<std::uint32_t, int> nodeIndex_;
     std::unordered_map<std::uint32_t, int> edgeIndex_;
     std::uint32_t nextNodeId_ = 1;

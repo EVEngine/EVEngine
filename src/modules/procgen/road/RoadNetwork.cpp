@@ -99,7 +99,7 @@ Result<std::uint32_t> RoadNetwork::addEdge(std::uint32_t from, std::uint32_t to,
     return Result<std::uint32_t>::success(id);
 }
 
-Result<void> RoadNetwork::addLaneLink(RoadLaneLink link) {
+Result<void> RoadNetwork::addLaneLink(RoadLaneConnection link) {
     const int inIdx  = findEdgeIndex(link.inEdge);
     const int outIdx = findEdgeIndex(link.outEdge);
     if (inIdx < 0 || outIdx < 0)
@@ -132,7 +132,7 @@ Result<int> RoadNetwork::connectAllTurns(std::uint32_t nodeId) {
             if (outEdge.id == inEdge.id) continue;
             for (int il = 0; il < inEdge.lanesForward; ++il) {
                 const int ol = std::min(il, outEdge.lanesForward - 1);
-                auto r = addLaneLink(RoadLaneLink{inEdge.id, il, outEdge.id, ol});
+                auto r = addLaneLink(RoadLaneConnection{inEdge.id, il, outEdge.id, ol});
                 if (!r.ok()) return Result<int>::failure(r.status());
                 ++added;
             }
