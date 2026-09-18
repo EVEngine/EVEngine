@@ -286,34 +286,44 @@ TEST_CASE("tactics.scriptAbilityDeclarationIsCostedAndLogged") {
             local p2 = battle.advance(2, 1);
             local p3 = battle.advance(3, 1);
 
-            local first = battle.useAbility(unitId, "test:strike", 1, 0, 0);
+            local first = battle.useAbility(unitId, "test:strike", 1, 0, 0, unitId, "{\"power\":3}");
             // Refusals run while a point is still available, so they exercise the
             // validation path rather than the exhausted-resource path.
-            local badLayer = battle.useAbility(unitId, "test:strike", 1, 0, 4);
-            local badAction = battle.useAbility(unitId, "", 1, 0, 0);
-            local second = battle.useAbility(unitId, "test:strike", 0, 0, 0);
-            local exhausted = battle.useAbility(unitId, "test:strike", 1, 0, 0);
+            local badLayer = battle.useAbility(unitId, "test:strike", 1, 0, 4, "", "");
+            local badAction = battle.useAbility(unitId, "", 1, 0, 0, "", "");
+            local badTarget = battle.useAbility(unitId, "test:strike", 1, 0, 0, "not-a-uuid", "");
+            // A preview runs the commit validator without spending anything.
+            local preview = battle.previewAbility(unitId, "test:strike", 0, 0, 0, unitId, "");
+            local afterPreview = battle.unitResources(unitId);
+            local second = battle.useAbility(unitId, "test:strike", 0, 0, 0, "", "");
+            local exhausted = battle.useAbility(unitId, "test:strike", 1, 0, 0, "", "");
 
             local resources = battle.unitResources(unitId);
             local all = battle.commandsFrom(0);
             local declared = 0;
             local sawActor = false;
             local sawCell = false;
+            local sawTarget = false;
+            local sawPayload = false;
             if (all.ok) {
                 foreach (command in all.value) {
                     if (command.kind == "use_ability") {
                         declared = declared + 1;
                         if (command.actor == unitId) sawActor = true;
                         if (command.cell.x == 1 && command.cell.y == 0 && command.cell.layer == 0) sawCell = true;
+                        if (command.targetUnit == unitId) sawTarget = true;
+                        if (command.payload == "{\"power\":3}") sawPayload = true;
                     }
                 }
             }
 
             if (c0.ok && c1.ok && side.ok && u.ok && started.ok &&
                 p1.ok && p2.ok && p3.ok &&
-                first.ok && second.ok && !exhausted.ok && !badLayer.ok && !badAction.ok &&
+                first.ok && second.ok && !exhausted.ok && !badLayer.ok && !badAction.ok && !badTarget.ok &&
+                preview.ok && preview.value.remainingActionPoints == 0 &&
+                afterPreview.ok && afterPreview.value.actionPoints == 1 &&
                 resources.ok && resources.value.actionPoints == 0 &&
-                all.ok && declared == 2 && sawActor && sawCell) {
+                all.ok && declared == 2 && sawActor && sawCell && sawTarget && sawPayload) {
                 result = "ok";
             }
         }

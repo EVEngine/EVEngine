@@ -222,6 +222,15 @@ void consumeActivationCharge(Battle& battle, ChargeModel model, const std::vecto
     }
 }
 
+/** @brief Resolve one unit of this battle by its stable subject. */
+TacticalUnit* findUnit(Battle& battle, SubjectRef subject) {
+    for (const auto& handle : battle.turn()->units) {
+        TacticalUnit* unit = resolve<TacticalUnit>(handle);
+        if (unit != nullptr && unit->identity()->subject == subject) return unit;
+    }
+    return nullptr;
+}
+
 /** @brief Whether a scheduled unit can still take its activation. */
 bool scheduleEntryAlive(const ecs::EntityHandle& handle) {
     TacticalUnit* unit = resolve<TacticalUnit>(handle);
@@ -336,34 +345,87 @@ Result<void> BattleSystem::start(Battle& battle, std::string policyId) {
     return Result<void>::success(Status::success(StatusCode::Applied));
 }
 
-Result<void> BattleSystem::useAbility(Battle& battle, SubjectRef actor, const LogicalId& action, Cell targetCell) {
+/**
+ * @brief Validate one ability declaration without mutating anything.
+ *
+ * The commit path and the preview path both run exactly this function, so a caller can
+ * show "legal, costs one point" and then commit it without a second rule set that could
+ * disagree.
+ */
+Result<AbilityReceipt> validateAbility(Battle& battle, SubjectRef actor, const LogicalId& action, Cell targetCell,
+                                       SubjectRef targetUnit, std::string_view payload) {
     auto turn = battle.turn();
-    const Revision expectedRevision = turn->revision;
     if (turn->status != BattleStatus::Running || turn->phase != BattlePhase::Acting || !turn->activeUnit)
-        return failure(DiagnosticCode::PreconditionViolation, "tactics battle is not accepting an ability",
-                       "battle.phase");
+        return failure<AbilityReceipt>(DiagnosticCode::PreconditionViolation,
+                                       "tactics battle is not accepting an ability", "battle.phase");
     if (!action.isValid())
-        return failure(DiagnosticCode::InvalidArgument, "tactics ability requires a valid action id", "action");
+        return failure<AbilityReceipt>(DiagnosticCode::InvalidArgument,
+                                       "tactics ability requires a valid action id", "action");
     TacticalUnit* unit = resolve<TacticalUnit>(*turn->activeUnit);
     if (unit == nullptr)
-        return failure(DiagnosticCode::StaleHandle, "tactics active unit is stale", "battle.activeUnit");
+        return failure<AbilityReceipt>(DiagnosticCode::StaleHandle, "tactics active unit is stale",
+                                       "battle.activeUnit");
     if (unit->identity()->subject != actor)
-        return failure(DiagnosticCode::PreconditionViolation, "tactics actor does not own the active turn", "actor");
+        return failure<AbilityReceipt>(DiagnosticCode::PreconditionViolation,
+                                       "tactics actor does not own the active turn", "actor");
     // The action economy is enforced here: an activation costs one action point,
     // and a unit with none left cannot act.
     if (unit->turn()->actionPoints <= 0)
-        return failure(DiagnosticCode::PreconditionViolation, "tactics unit has no action points left",
-                       "unit.actionPoints");
+        return failure<AbilityReceipt>(DiagnosticCode::PreconditionViolation,
+                                       "tactics unit has no action points left", "unit.actionPoints");
     if (targetCell.layer != unit->position()->cell.layer)
-        return failure(DiagnosticCode::InvalidArgument, "tactics ability target must share the actor's layer",
-                       "targetCell.layer");
+        return failure<AbilityReceipt>(DiagnosticCode::InvalidArgument,
+                                       "tactics ability target must share the actor's layer", "targetCell.layer");
     auto targetState = battle.board()->value.cell(targetCell);
-    if (!targetState) return Result<void>::failure(targetState.status());
+    if (!targetState) return Result<AbilityReceipt>::failure(targetState.status());
+    if (targetUnit.isValid()) {
+        // A named target must be a living unit of this battle; a stale or foreign subject
+        // is a refusal, never a silently dropped target.
+        TacticalUnit* targeted = findUnit(battle, targetUnit);
+        if (targeted == nullptr)
+            return failure<AbilityReceipt>(DiagnosticCode::NotFound,
+                                           "tactics ability target is not a unit of this battle", "targetUnit");
+        if (!targeted->turn()->alive)
+            return failure<AbilityReceipt>(DiagnosticCode::PreconditionViolation,
+                                           "tactics ability target is already defeated", "targetUnit");
+    }
+    if (payload.size() > kMaxAbilityPayloadBytes)
+        return failure<AbilityReceipt>(DiagnosticCode::InvalidArgument,
+                                       "tactics ability payload exceeds the persisted size bound", "payload");
 
+    AbilityReceipt receipt;
+    receipt.actor                 = actor;
+    receipt.action                = action;
+    receipt.targetUnit            = targetUnit;
+    receipt.targetCell            = targetCell;
+    receipt.remainingActionPoints = unit->turn()->actionPoints - 1;
+    return Result<AbilityReceipt>::success(std::move(receipt));
+}
+
+Result<AbilityReceipt> BattleSystem::previewAbility(Battle& battle, SubjectRef actor, const LogicalId& action,
+                                                    Cell targetCell, SubjectRef targetUnit,
+                                                    std::string_view payload) {
+    return validateAbility(battle, actor, action, targetCell, targetUnit, payload);
+}
+
+Result<AbilityReceipt> BattleSystem::useAbility(Battle& battle, SubjectRef actor, const LogicalId& action,
+                                                Cell targetCell, SubjectRef targetUnit, std::string payload) {
+    auto validated = validateAbility(battle, actor, action, targetCell, targetUnit, payload);
+    if (!validated) return Result<AbilityReceipt>::failure(validated.status());
+
+    auto turn = battle.turn();
+    const Revision expectedRevision = turn->revision;
     auto revision = nextRevision(battle);
-    if (!revision) return Result<void>::failure(revision.status());
+    if (!revision) return Result<AbilityReceipt>::failure(revision.status());
+    TacticalUnit* unit = resolve<TacticalUnit>(*turn->activeUnit);
+    if (unit == nullptr)
+        return failure<AbilityReceipt>(DiagnosticCode::StaleHandle, "tactics active unit is stale",
+                                       "battle.activeUnit");
     --unit->turn()->actionPoints;
     turn->revision = std::move(revision).takeValue();
+    // The event carries the actor; the action id and both targets are read back from the
+    // command log entry this declaration records, joined by its sequence. That keeps one
+    // authority for the declaration instead of copying it into a second shape.
     emit(battle, turn->phase, turn->phase, turn->tick, "action.declared", actor);
     BattleCommand command;
     command.kind             = BattleCommandKind::UseAbility;
@@ -371,8 +433,10 @@ Result<void> BattleSystem::useAbility(Battle& battle, SubjectRef actor, const Lo
     command.actor            = actor;
     command.action           = action;
     command.cell             = targetCell;
+    command.targetUnit       = targetUnit;
+    command.payload          = std::move(payload);
     record(battle, std::move(command));
-    return Result<void>::success(Status::success(StatusCode::Applied));
+    return Result<AbilityReceipt>::success(std::move(validated).takeValue(), Status::success(StatusCode::Applied));
 }
 
 Result<BattlePhase> BattleSystem::advance(Battle& battle, const SimulationStep& step) {
@@ -893,14 +957,7 @@ Result<void> BattleSystem::defeatUnit(Battle& battle, SubjectRef subject) {
     if (turn->status != BattleStatus::Running)
         return failure(DiagnosticCode::PreconditionViolation, "tactics battle is not accepting outcomes",
                        "battle.status");
-    TacticalUnit* target = nullptr;
-    for (const auto& handle : turn->units) {
-        auto* unit = resolve<TacticalUnit>(handle);
-        if (unit && unit->identity()->subject == subject) {
-            target = unit;
-            break;
-        }
-    }
+    TacticalUnit* target = findUnit(battle, subject);
     if (!target) return failure(DiagnosticCode::NotFound, "tactics defeat target is not in the battle", "unit");
     if (!target->turn()->alive)
         return Result<void>::success(Status::success(StatusCode::NoOp));

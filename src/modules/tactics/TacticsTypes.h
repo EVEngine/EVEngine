@@ -335,6 +335,15 @@ struct ReactionReceipt {
     int          remainingReactionPoints = 0;
 };
 
+/**
+ * @brief Upper bound on the opaque ability payload a declaration may carry.
+ *
+ * The payload is caller-owned effect data that tactics stores and replays verbatim, so
+ * the only rule tactics can enforce without reading it is a bound: a persisted snapshot
+ * must not grow without limit.
+ */
+inline constexpr std::size_t kMaxAbilityPayloadBytes = 4096;
+
 /** @brief Accepted deterministic command kinds recorded for replay. */
 enum class BattleCommandKind : std::uint8_t {
     Start,
@@ -374,6 +383,24 @@ struct BattleCommand {
     SimulationStep                step;
     SubjectRef                    actor;
     Cell                          cell;
+    /**
+     * @brief The unit this command targeted, when the command targets one.
+     *
+     * Independent of @ref cell on purpose: an ability may name a primary unit *and* a
+     * centre cell (a single-target effect inside an area), and the framework must not
+     * silently pick one of the two for the effect owner.
+     */
+    SubjectRef                    targetUnit;
+    /**
+     * @brief Opaque caller-owned effect parameters, as declared by the caller.
+     *
+     * Tactics stores and replays this verbatim and never interprets it: the ability's
+     * parameters belong to whoever owns the effect (`rpg`/`combat` or the game), and a
+     * second interpretation here would be a second source of truth. The schema and
+     * version of this blob are the caller's contract; tactics only enforces a size
+     * bound so a persisted payload stays bounded.
+     */
+    std::string                   payload;
     int                           facing = 0;
     std::string                   policyId{kSideAlternatingPolicyId};
     std::uint64_t                 triggerSequence = 0;

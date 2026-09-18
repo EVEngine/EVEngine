@@ -71,17 +71,31 @@ local r = battle.unitResources(actorId).value;
 
 ### 行动经济与技能声明
 
-`useAbility(actor, action, x, y, layer)` 只做**声明**：它扣一点行动力、发出 `action.declared`
-事件、并把 `use_ability` 命令写入命令日志。**伤害与效果结算不属于 tactics**——由 RPG 或游戏
-适配层接收事件后处理，因此脚本无法借这个调用夹带伤害：
+`useAbility(actor, action, x, y, layer, target, payload)` 只做**声明**：它扣一点行动力、发出
+`action.declared` 事件、并把 `use_ability` 命令写入命令日志。**伤害与效果结算不属于 tactics**——
+由 RPG 或游戏适配层接收声明后处理，因此脚本无法借这个调用夹带伤害：
 
 ```squirrel
-local declared = battle.useAbility(actorId, "tactics:strike", 1, 0, 0);
-// declared.value = null；失败时 {ok=false, code, diagnostics}
+// target 传 "" 表示只指定格子；payload 是不透明字符串，tactics 原样保存与回放
+local declared = battle.useAbility(actorId, "tactics:strike", 1, 0, 0, targetUnitId, "{\"power\":3}");
+// declared.value = {actor, action, targetCell, targetUnit, remainingActionPoints}
+
+// 提交前预检：与 useAbility 共用同一个 validator，拒绝时诊断码完全一致
+local preview = battle.previewAbility(actorId, "tactics:strike", 1, 0, 0, targetUnitId, "{\"power\":3}");
+// preview 不扣点、不发事件、不记命令；preview.value.remainingActionPoints == 本回合剩下的点数 - 1
 
 // 行动力就是可用次数：耗尽后被拒绝（PreconditionViolation），且不扣不记
 local resources = battle.unitResources(actorId).value;   // actionPoints 已减 1
 ```
+
+`target`（被指定的单位）与 `cell`（目标格）**互相独立**：一个技能可以指向范围中心格 + 主目标单位，
+框架不会替你二选一。`payload` 是**调用方自己的效果数据**，tactics 只做两件事：原样存入命令日志
+（回放时原样交回）与限制大小（`kMaxAbilityPayloadBytes = 4096`）。它的 schema 与版本属于调用方契约——
+在 tactics 里再解释一遍就会变成第二个真值来源。
+
+`action.declared` 事件只带行动者；**技能 id、两个目标与 payload 的唯一权威是它写入命令日志的那条记录**，
+消费者用事件里的 `causationCommand`（形如 `"tactics:<sequence>"`）去 `commandsFrom` 里取。这样声明
+只有一份，不会被复制成第二种形状。
 
 拒绝条件与诊断码（拒绝**不改变任何状态**）：
 
@@ -92,9 +106,17 @@ local resources = battle.unitResources(actorId).value;   // actionPoints 已减 
 | `actor` 不拥有当前回合 | `PreconditionViolation` |
 | `actionPoints` 已为 0 | `PreconditionViolation` |
 | 目标层与行动者所在层不同，或该格不存在 | `InvalidArgument` |
+| `target` 不是本战局单位 | `NotFound` |
+| `target` 已被击败 | `PreconditionViolation` |
+| `payload` 超过大小上限 | `InvalidArgument` |
 
-`use_ability` 命令因此进入快照 schema **v4**；v1–v3 快照仍可恢复，但 v3 及更早的快照
-**不得**携带 `use_ability`（会被判为 `ParseError`），否则旧版本读者会读到无法解释的命令种类。
+`use_ability` 命令因此进入快照 schema **v4**（v6 起还携带 `targetUnit` 与 `payload`）；v1–v3 快照仍可
+恢复，但 v3 及更早的快照**不得**携带 `use_ability`（会被判为 `ParseError`），否则旧版本读者会读到
+无法解释的命令种类。
+
+MCP / devtools 控制面同样暴露了这个协议：`availableGameplayActions` 在 `acting` 阶段额外给出
+`tactics:use-ability`，参数为 `{action, x, y, layer, targetUnit, payload}`（`targetUnit` 与 `payload`
+可省略），提交后回执的 `details` 是 `{action, target, remainingActionPoints}`。
 
 ### 命令日志（只读）
 
@@ -263,7 +285,7 @@ auto declared = tactics.useAbility(battle.value(), unitSubject, *eve::LogicalId:
 ## 快照约定
 
 `TacticsPersistence` 使用引擎统一的 `SnapshotEnvelope`，schema 为 `tactics:battle`、
-当前版本为 **5**。快照保存稳定 `SubjectRef`，不保存 ECS handle。恢复只适用于身份集合相同的
+当前版本为 **6**。快照保存稳定 `SubjectRef`，不保存 ECS handle。恢复只适用于身份集合相同的
 目标战局：实现会先解析并验证完整候选状态，再一次性提交；哈希错误、未知版本、缺失单位或
 非法占位均不会修改目标。payload 覆盖棋盘、单位资源/朝向、回合、seed、事件序列、反应栈、
 objective 和已接受命令日志。
@@ -277,10 +299,13 @@ objective 和已接受命令日志。
 | v3 | `policy` 由数值枚举改为稳定 id 字符串 | v1/v2 按冻结映射迁移（`0 → side_alternating`，`1 → initiative`） |
 | v4 | `use_ability` 命令种类 | v3 及更早**不得**携带该种类（`ParseError`） |
 | v5 | 单位 `charge` 与回合 `schedule`（本轮行动队列） | v1–v4 按"充电为 0、名册即队列"迁移 |
+| v6 | 命令记录的 `targetUnit` 与 `payload` | v1–v5 按"无目标单位、payload 为空"迁移 |
 
 `charge` 只在充电型策略下非零；`schedule` 是**本轮的行动队列**（名册的子集，按行动顺序），
 不能靠 restore 重算——产生它的充电已经扣掉了，所以它必须随快照保存。命令日志里的
 `advance` 命令与 `NoOp` 轮一起进入回放基质，因此"空轮"也是可回放的确定性事实。
+`useAbility` 写入的 `targetUnit` 与 `payload` 同样进入命令记录：`replay` 会把它们原样重新声明，
+否则读回放日志的效果层会拿到与实时不同的声明。
 
 `BattleReplay::commandsFrom` 提取指定 revision 之后的命令；`replay` 会逐条验证 command sequence、
 expected revision 和 resulting revision。相同起始快照与命令序列应产生字节相同的最终 payload/hash。

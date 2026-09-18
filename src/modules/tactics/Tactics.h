@@ -102,13 +102,35 @@ public:
     /** @brief End the active actor turn. */
     [[nodiscard]] Result<void> endTurn(ecs::EntityHandle battle, SubjectRef actor);
     /**
-     * @brief Declare an ability activation for the active unit against a target cell.
-     * @return Applied, or a structured refusal; the battle is unchanged on failure.
+     * @brief Declare an ability activation for the active unit.
+     * @param action Ability identity the effect owner will resolve.
+     * @param targetCell Target cell; it must exist and share the actor's layer.
+     * @param targetUnit Optional targeted unit; when valid it must be a living unit of
+     *        this battle.
+     * @param payload Opaque caller-owned effect parameters, stored and replayed
+     *        verbatim, bounded by `kMaxAbilityPayloadBytes`.
+     * @return The declaration receipt (actor, action, both targets and remaining action
+     *         points), or a structured refusal; the battle is unchanged on failure.
      * @remarks Spends one action point and emits `action.declared`. Effect resolution
-     *          belongs to the RPG or game adapter, not to tactics.
+     *          belongs to the RPG or game adapter, not to tactics, so a script cannot
+     *          route damage through this call.
      */
-    [[nodiscard]] Result<void> useAbility(ecs::EntityHandle battle, SubjectRef actor, const LogicalId& action,
-                                          Cell targetCell);
+    [[nodiscard]] Result<AbilityReceipt> useAbility(ecs::EntityHandle battle, SubjectRef actor,
+                                                    const LogicalId& action, Cell targetCell,
+                                                    SubjectRef targetUnit = {}, std::string payload = {});
+
+    /**
+     * @brief Ask whether an ability declaration would be accepted, without declaring it.
+     * @return The receipt the commit would produce, or the same refusal the commit would
+     *         return.
+     * @remarks Shares one validator with {@link useAbility}, so a UI can show a legal
+     *          activation and then commit it without a second rule set that could
+     *          disagree.
+     */
+    [[nodiscard]] Result<AbilityReceipt> previewAbility(ecs::EntityHandle battle, SubjectRef actor,
+                                                        const LogicalId& action, Cell targetCell,
+                                                        SubjectRef targetUnit = {},
+                                                        std::string_view payload = {});
     /** @brief Validate and commit movement for the active unit. */
     [[nodiscard]] Result<MoveReceipt> moveUnit(ecs::EntityHandle battle, SubjectRef actor, Cell destination);
     /** @brief Change the active unit's logical facing. */

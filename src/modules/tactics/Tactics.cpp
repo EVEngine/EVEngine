@@ -40,6 +40,17 @@ Result<SubjectRef> bindingSubject(const std::string& text, std::string path) {
     return Result<SubjectRef>::success(SubjectRef::fromPersistentId(*id));
 }
 
+/**
+ * @brief Parse a subject that the caller may legitimately omit.
+ *
+ * An empty string means "no subject" and yields an invalid `SubjectRef`; anything else
+ * must still be a well-formed non-nil UUID, so a typo cannot be read as "no target".
+ */
+Result<SubjectRef> bindingOptionalSubject(const std::string& text, std::string path) {
+    if (text.empty()) return Result<SubjectRef>::success(SubjectRef{});
+    return bindingSubject(text, std::move(path));
+}
+
 Result<LogicalId> bindingLogicalId(const std::string& text, std::string path) {
     const auto id = LogicalId::parse(text);
     if (!id)
@@ -222,6 +233,16 @@ Value bindingEdgeValue(const EdgeState& state) {
                                {"tags", Value(std::move(tags))}});
 }
 
+/** @brief Single source of truth for the declared-ability script shape. */
+Value bindingAbilityReceiptValue(const AbilityReceipt& receipt) {
+    return Value(Value::Object{{"action", Value(receipt.action.format())},
+                               {"actor", Value(receipt.actor.format())},
+                               {"remainingActionPoints", Value(receipt.remainingActionPoints)},
+                               {"targetCell", bindingCellValue(receipt.targetCell)},
+                               {"targetUnit",
+                                Value(receipt.targetUnit.isValid() ? receipt.targetUnit.format() : std::string{})}});
+}
+
 /** @brief Single source of truth for the accepted-command script shape. */
 Value bindingCommandValue(const BattleCommand& command) {
     return Value(Value::Object{
@@ -230,8 +251,10 @@ Value bindingCommandValue(const BattleCommand& command) {
         {"cell", bindingCellValue(command.cell)},
         {"facing", Value(command.facing)},
         {"kind", Value(std::string(commandKindName(command.kind)))},
+        {"payload", Value(command.payload)},
         {"policyId", Value(command.policyId)},
         {"sequence", Value(std::to_string(command.sequence))},
+        {"targetUnit", Value(command.targetUnit.isValid() ? command.targetUnit.format() : std::string{})},
         {"triggerSequence", Value(std::to_string(command.triggerSequence))}});
 }
 
@@ -377,6 +400,26 @@ Result<int> integerParameter(const Value& parameters, std::string_view name) {
     return Result<int>::success(static_cast<int>(value));
 }
 
+/**
+ * @brief Read a gameplay parameter that may legitimately be absent.
+ *
+ * An absent key, or a JSON null, means "not supplied" and yields an empty string; a
+ * present non-string is a validation failure, so a caller cannot smuggle a number into a
+ * field the protocol declares as a string.
+ */
+Result<std::string> optionalStringParameter(const Value& parameters, std::string_view name) {
+    const auto* object = parameters.getIf<Value::Object>();
+    if (object == nullptr) return Result<std::string>::success(std::string{});
+    const auto found = object->find(std::string(name));
+    if (found == object->end() || found->second.isNull()) return Result<std::string>::success(std::string{});
+    const auto* text = found->second.getIf<std::string>();
+    if (text == nullptr)
+        return failure<std::string>(DiagnosticCode::InvalidArgument,
+                                    "gameplay command parameter must be a string",
+                                    "parameters." + std::string(name));
+    return Result<std::string>::success(*text);
+}
+
 template <typename T>
 std::size_t countLive(const std::vector<ecs::EntityHandle>& handles) {
     return static_cast<std::size_t>(std::count_if(handles.begin(), handles.end(), [](const auto& handle) {
@@ -485,14 +528,24 @@ Result<std::vector<GameplayActionDescriptor>> Tactics::availableGameplayActions(
         return Result<std::vector<GameplayActionDescriptor>>::success({});
 
     Value integerSchema(Value::Object{{"type", Value("integer")}});
+    Value stringSchema(Value::Object{{"type", Value("string")}});
     Value moveSchema(Value::Object{{"layer", integerSchema}, {"x", integerSchema}, {"y", integerSchema}});
     Value faceSchema(Value::Object{{"facing", integerSchema}});
+    // `targetUnit` and `payload` are optional: an ability may target a cell only, and the
+    // effect parameters are the caller's own data, carried verbatim.
+    Value abilitySchema(Value::Object{{"action", stringSchema},
+                                      {"layer", integerSchema},
+                                      {"payload", stringSchema},
+                                      {"targetUnit", stringSchema},
+                                      {"x", integerSchema},
+                                      {"y", integerSchema}});
     std::vector<GameplayActionDescriptor> actions;
     if (battle->turn()->phase == BattlePhase::Acting) {
         actions.push_back({gameplayId("tactics:move"), std::move(moveSchema)});
         actions.push_back({gameplayId("tactics:face"), std::move(faceSchema)});
         actions.push_back({gameplayId("tactics:wait"), Value(Value::Object{})});
         actions.push_back({gameplayId("tactics:end-turn"), Value(Value::Object{})});
+        actions.push_back({gameplayId("tactics:use-ability"), std::move(abilitySchema)});
     }
     return Result<std::vector<GameplayActionDescriptor>>::success(std::move(actions));
 }
@@ -540,6 +593,33 @@ Result<GameplayCommandReceipt> Tactics::submitGameplay(const GameplaySession& se
     } else if (command.action == gameplayId("tactics:end-turn")) {
         auto ended = BattleSystem::endTurn(*battle, command.subject);
         if (!ended) return Result<GameplayCommandReceipt>::failure(ended.status());
+    } else if (command.action == gameplayId("tactics:use-ability")) {
+        auto actionText = optionalStringParameter(command.parameters, "action");
+        auto targetText = optionalStringParameter(command.parameters, "targetUnit");
+        auto payload = optionalStringParameter(command.parameters, "payload");
+        if (!actionText) return Result<GameplayCommandReceipt>::failure(actionText.status());
+        if (!targetText) return Result<GameplayCommandReceipt>::failure(targetText.status());
+        if (!payload) return Result<GameplayCommandReceipt>::failure(payload.status());
+        auto x = integerParameter(command.parameters, "x");
+        auto y = integerParameter(command.parameters, "y");
+        auto layer = integerParameter(command.parameters, "layer");
+        if (!x) return Result<GameplayCommandReceipt>::failure(x.status());
+        if (!y) return Result<GameplayCommandReceipt>::failure(y.status());
+        if (!layer) return Result<GameplayCommandReceipt>::failure(layer.status());
+        auto ability = bindingLogicalId(actionText.value(), "parameters.action");
+        if (!ability) return Result<GameplayCommandReceipt>::failure(ability.status());
+        auto target = bindingOptionalSubject(targetText.value(), "parameters.targetUnit");
+        if (!target) return Result<GameplayCommandReceipt>::failure(target.status());
+        auto declared = BattleSystem::useAbility(*battle, command.subject, ability.value(),
+                                                 {x.value(), y.value(), layer.value()}, target.value(),
+                                                 std::move(payload).takeValue());
+        if (!declared) return Result<GameplayCommandReceipt>::failure(declared.status());
+        const AbilityReceipt receipt = std::move(declared).takeValue();
+        details = Value(Value::Object{{"action", Value(receipt.action.format())},
+                                      {"remainingActionPoints", Value(receipt.remainingActionPoints)},
+                                      {"target",
+                                       Value(receipt.targetUnit.isValid() ? receipt.targetUnit.format()
+                                                                          : std::string{})}});
     } else {
         return failure<GameplayCommandReceipt>(DiagnosticCode::Unsupported,
                                                "unsupported tactics gameplay action", "command.action");
@@ -731,12 +811,23 @@ Result<void> Tactics::endTurn(ecs::EntityHandle battleHandle, SubjectRef actor) 
     return BattleSystem::endTurn(*battle, actor);
 }
 
-Result<void> Tactics::useAbility(ecs::EntityHandle battleHandle, SubjectRef actor, const LogicalId& action,
-                                 Cell targetCell) {
+Result<AbilityReceipt> Tactics::useAbility(ecs::EntityHandle battleHandle, SubjectRef actor, const LogicalId& action,
+                                           Cell targetCell, SubjectRef targetUnit, std::string payload) {
     Battle* battle = resolveBattle(battleHandle);
     if (battle == nullptr)
-        return failure(DiagnosticCode::StaleHandle, "tactics battle is stale or not owned by this facade", "battle");
-    return BattleSystem::useAbility(*battle, actor, action, targetCell);
+        return failure<AbilityReceipt>(DiagnosticCode::StaleHandle,
+                                       "tactics battle is stale or not owned by this facade", "battle");
+    return BattleSystem::useAbility(*battle, actor, action, targetCell, targetUnit, std::move(payload));
+}
+
+Result<AbilityReceipt> Tactics::previewAbility(ecs::EntityHandle battleHandle, SubjectRef actor,
+                                               const LogicalId& action, Cell targetCell, SubjectRef targetUnit,
+                                               std::string_view payload) {
+    Battle* battle = resolveBattle(battleHandle);
+    if (battle == nullptr)
+        return failure<AbilityReceipt>(DiagnosticCode::StaleHandle,
+                                       "tactics battle is stale or not owned by this facade", "battle");
+    return BattleSystem::previewAbility(*battle, actor, action, targetCell, targetUnit, payload);
 }
 
 Result<MoveReceipt> Tactics::moveUnit(ecs::EntityHandle battleHandle, SubjectRef actor, Cell destination) {
@@ -1225,17 +1316,49 @@ void Tactics::expose(ssq::Table& table) {
     });
     // Declare an ability activation. Tactics owns the action-economy cost and the
     // command record; resolving the effect stays with the RPG/game adapter, so a
-    // script cannot smuggle damage through this call.
+    // script cannot smuggle damage through this call. `target` may be "" for a
+    // cell-only ability, and `payload` is opaque caller-owned effect data.
     battle.addFunc("useAbility", [vm](ScriptTacticsBattle* value, const std::string& actor,
-                                      const std::string& actionText, int x, int y, int layer) {
+                                      const std::string& actionText, int x, int y, int layer,
+                                      const std::string& targetText, const std::string& payload) {
         auto subject = bindingSubject(actor, "actor");
-        if (!subject) return script::projectResult(vm, Result<void>::failure(subject.status()));
+        if (!subject) return script::projectResult(vm, Result<AbilityReceipt>::failure(subject.status()),
+                                                   bindingAbilityReceiptValue);
         auto action = bindingLogicalId(actionText, "action");
-        if (!action) return script::projectResult(vm, Result<void>::failure(action.status()));
+        if (!action) return script::projectResult(vm, Result<AbilityReceipt>::failure(action.status()),
+                                                  bindingAbilityReceiptValue);
+        auto target = bindingOptionalSubject(targetText, "target");
+        if (!target) return script::projectResult(vm, Result<AbilityReceipt>::failure(target.status()),
+                                                  bindingAbilityReceiptValue);
         return script::projectResult(
-            vm, withScriptBattle<Result<void>>(value, [&](Tactics& module, TacticsBattleSession& session) {
-                return module.useAbility(session.battle, subject.value(), action.value(), {x, y, layer});
-            }));
+            vm,
+            withScriptBattle<Result<AbilityReceipt>>(value, [&](Tactics& module, TacticsBattleSession& session) {
+                return module.useAbility(session.battle, subject.value(), action.value(), {x, y, layer},
+                                         target.value(), payload);
+            }),
+            bindingAbilityReceiptValue);
+    });
+    // The pre-check runs the exact commit validator, so a script UI can offer an
+    // activation and then declare it without a divergent second rule set.
+    battle.addFunc("previewAbility", [vm](ScriptTacticsBattle* value, const std::string& actor,
+                                          const std::string& actionText, int x, int y, int layer,
+                                          const std::string& targetText, const std::string& payload) {
+        auto subject = bindingSubject(actor, "actor");
+        if (!subject) return script::projectResult(vm, Result<AbilityReceipt>::failure(subject.status()),
+                                                   bindingAbilityReceiptValue);
+        auto action = bindingLogicalId(actionText, "action");
+        if (!action) return script::projectResult(vm, Result<AbilityReceipt>::failure(action.status()),
+                                                  bindingAbilityReceiptValue);
+        auto target = bindingOptionalSubject(targetText, "target");
+        if (!target) return script::projectResult(vm, Result<AbilityReceipt>::failure(target.status()),
+                                                  bindingAbilityReceiptValue);
+        return script::projectResult(
+            vm,
+            withScriptBattle<Result<AbilityReceipt>>(value, [&](Tactics& module, TacticsBattleSession& session) {
+                return module.previewAbility(session.battle, subject.value(), action.value(), {x, y, layer},
+                                             target.value(), payload);
+            }),
+            bindingAbilityReceiptValue);
     });
     // End a running battle and enter BattleEnd. Scripts previously had no way to
     // close a battle; only the devtools/MCP GameplayControl path could.

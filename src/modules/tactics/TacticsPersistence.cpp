@@ -199,9 +199,11 @@ Value commandValue(const BattleCommand& command) {
         {"expectedRevision", Value(std::to_string(command.expectedRevision.value()))},
         {"facing", Value(command.facing)},
         {"kind", Value(static_cast<int>(command.kind))},
+        {"payload", Value(command.payload)},
         {"policy", Value(command.policyId)},
         {"resultingRevision", Value(std::to_string(command.resultingRevision.value()))},
         {"sequence", Value(std::to_string(command.sequence))},
+        {"targetUnit", subjectValue(command.targetUnit)},
         {"tick", Value(std::to_string(command.step.tick.value()))},
         {"triggerSequence", Value(std::to_string(command.triggerSequence))},
     });
@@ -409,6 +411,7 @@ Result<Battle::Reactions> parseReactions(const Value& value, BattlePhase phase) 
 struct CommandFieldPolicy {
     bool policyIdStrings = false;  ///< v3+: stable policy id string instead of the legacy numeric enum.
     bool allowUseAbility = false;  ///< v4+: the `UseAbility` command kind exists.
+    bool abilityTargetFields = false;  ///< v6+: commands carry `targetUnit` and `payload`.
 };
 
 Result<Battle::Commands> parseCommands(const Value& value, Revision snapshotRevision, CommandFieldPolicy policy) {
@@ -431,7 +434,9 @@ Result<Battle::Commands> parseCommands(const Value& value, Revision snapshotRevi
     for (std::size_t i = 0; i < values->size(); ++i) {
         const std::string path = "payload.commands.values[" + std::to_string(i) + "]";
         auto record = object((*values)[i], path);
-        if (!record || record.value()->size() != 13)
+        // Version 6 added the targeted unit and the opaque effect payload.
+        const std::size_t expectedCommandFields = policy.abilityTargetFields ? 15u : 13u;
+        if (!record || record.value()->size() != expectedCommandFields)
             return fail<Battle::Commands>(DiagnosticCode::ParseError, "invalid command record", path);
         auto sequenceMember = field(*record.value(), "sequence", path);
         auto expectedMember = field(*record.value(), "expectedRevision", path);
@@ -446,6 +451,10 @@ Result<Battle::Commands> parseCommands(const Value& value, Revision snapshotRevi
         auto kind = intField(*record.value(), "kind", path);
         auto facing = intField(*record.value(), "facing", path);
         auto policyMember = field(*record.value(), "policy", path);
+        auto targetMember = policy.abilityTargetFields ? field(*record.value(), "targetUnit", path)
+                                                       : Result<const Value*>::success(nullptr);
+        auto payloadMember = policy.abilityTargetFields ? field(*record.value(), "payload", path)
+                                                        : Result<const Value*>::success(nullptr);
         const int highestKnownKind = policy.allowUseAbility ? static_cast<int>(BattleCommandKind::UseAbility)
                                                             : static_cast<int>(BattleCommandKind::RollRandom);
         // Every Result is observed before the decision, so a record with several
@@ -453,7 +462,7 @@ Result<Battle::Commands> parseCommands(const Value& value, Revision snapshotRevi
         // unobserved Results.
         if (!everyResultValid(sequenceMember, expectedMember, resultingMember, tickMember, deltaMember,
                               triggerMember, actorMember, actionMember, cellMember, candidatesMember, kind,
-                              facing, policyMember) ||
+                              facing, policyMember, targetMember, payloadMember) ||
             kind.value() < 0 || kind.value() > highestKnownKind)
             return fail<Battle::Commands>(DiagnosticCode::ParseError, "invalid command fields", path);
         // Version 3 stores the stable id string; versions 1-2 stored a numeric enum.
@@ -496,6 +505,22 @@ Result<Battle::Commands> parseCommands(const Value& value, Revision snapshotRevi
         command.facing = facing.value();
         command.policyId = policyId;
         command.triggerSequence = trigger.value();
+        if (policy.abilityTargetFields) {
+            auto targetUnit = subject(*targetMember.value(), path + ".targetUnit", true);
+            if (!targetUnit) return Result<Battle::Commands>::failure(targetUnit.status());
+            command.targetUnit = targetUnit.value();
+            const auto* payload = payloadMember.value()->getIf<std::string>();
+            if (payload == nullptr)
+                return fail<Battle::Commands>(DiagnosticCode::ParseError, "invalid command payload",
+                                              path + ".payload");
+            // The bound is re-checked on restore: a payload written by a buggy or foreign
+            // writer must not become unbounded persisted state.
+            if (payload->size() > kMaxAbilityPayloadBytes)
+                return fail<Battle::Commands>(DiagnosticCode::ParseError,
+                                              "command payload exceeds the persisted size bound",
+                                              path + ".payload");
+            command.payload = *payload;
+        }
         if (!actionText->empty()) {
             const auto parsedAction = LogicalId::parse(*actionText);
             if (!parsedAction)
@@ -972,6 +997,7 @@ Result<Candidate> parseCandidate(Battle& battle, const Value& payload, Revision 
     CommandFieldPolicy commandFields;
     commandFields.policyIdStrings = sourceVersion >= SchemaVersion(3);
     commandFields.allowUseAbility = sourceVersion >= SchemaVersion(4);
+    commandFields.abilityTargetFields = sourceVersion >= SchemaVersion(6);
     auto commands = parseCommands(*commandsMember.value(), snapshotRevision, commandFields);
     auto objectives = parseObjectives(battle, result.board, *objectivesMember.value(), snapshotRevision);
     auto random = parseRandom(*randomMember.value());
@@ -1116,7 +1142,7 @@ Result<SnapshotEnvelope> TacticsPersistence::snapshot(Battle& battle, const Snap
         {"status", Value(static_cast<int>(battle.turn()->status))},
         {"units", Value(std::move(units))},
     });
-    return makeSnapshotEnvelope(std::string(kType), schema(), SchemaVersion(5),
+    return makeSnapshotEnvelope(std::string(kType), schema(), SchemaVersion(6),
                                 battle.identity()->subject.persistentId(), battle.turn()->revision,
                                 battle.turn()->tick,
                                 std::move(payload), hashProvider);
@@ -1132,11 +1158,12 @@ Result<void> TacticsPersistence::restore(Battle& battle, const SnapshotEnvelope&
     if (!verified) return Result<void>::failure(verified.status());
     // V1 predates board edges; V2 predates stable policy ids; V3 predates the
     // UseAbility command kind; V4 predates persisted scheduling charge and the
-    // explicit round schedule. Each is migrated by the documented default for the
-    // field that did not exist yet, so this list only ever grows.
+    // explicit round schedule; V5 predates the ability target unit and payload. Each is
+    // migrated by the documented default for the field that did not exist yet, so this
+    // list only ever grows.
     if (source.schemaVersion != SchemaVersion(1) && source.schemaVersion != SchemaVersion(2) &&
         source.schemaVersion != SchemaVersion(3) && source.schemaVersion != SchemaVersion(4) &&
-        source.schemaVersion != SchemaVersion(5))
+        source.schemaVersion != SchemaVersion(5) && source.schemaVersion != SchemaVersion(6))
         return fail<void>(DiagnosticCode::UnknownVersion, "unsupported tactics battle snapshot version");
     auto metadata = validateSnapshotPayloadMetadata(source.payload, source.revision, source.tick);
     if (!metadata) return Result<void>::failure(metadata.status());

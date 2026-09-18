@@ -50,7 +50,8 @@ eve::SnapshotHashProvider testHash() {
  *  - v1 predates the board edge set;
  *  - v1-v2 predate the stable policy id (they stored the numeric enum `1`, the frozen
  *    mapping to `initiative`);
- *  - v1-v4 predate the persisted scheduling charge and the explicit round schedule.
+ *  - v1-v4 predate the persisted scheduling charge and the explicit round schedule;
+ *  - v1-v5 predate the ability target unit and its opaque payload on every command record.
  *
  * Deliberately defensive instead of using REQUIRE: it returns a value, and a
  * failing lookup should degrade to "unchanged payload" so the test fails on the
@@ -60,6 +61,25 @@ eve::Value legacyPayload(const eve::Value& current, eve::SchemaVersion target) {
     auto* root = current.getIf<eve::Value::Object>();
     if (root == nullptr) return current;
     eve::Value::Object payload = *root;
+
+    if (target < eve::SchemaVersion(6)) {
+        auto commandsIt = payload.find("commands");
+        if (commandsIt != payload.end()) {
+            if (auto* commands = commandsIt->second.getIf<eve::Value::Object>(); commands != nullptr) {
+                auto valuesIt = commands->find("values");
+                if (valuesIt != commands->end()) {
+                    if (auto* records = valuesIt->second.getIf<eve::Value::Array>(); records != nullptr) {
+                        for (auto& record : *records) {
+                            if (auto* fields = record.getIf<eve::Value::Object>(); fields != nullptr) {
+                                fields->erase("targetUnit");
+                                fields->erase("payload");
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
 
     if (target == eve::SchemaVersion(1)) {
         auto boardIt = payload.find("board");
@@ -151,7 +171,7 @@ TEST_CASE("tactics.versionOneSnapshotMigratesEdgesAbsentAndPolicyId") {
     auto captured = source.tactics.snapshot(source.battle, hash);
     REQUIRE(captured.ok());
     auto current = std::move(captured).takeValue();
-    CHECK(current.schemaVersion == eve::SchemaVersion(5));
+    CHECK(current.schemaVersion == eve::SchemaVersion(6));
 
     // Version 1 predates board edges, so the legacy payload drops that field.
     auto legacy = eve::makeSnapshotEnvelope(current.type, current.schema, eve::SchemaVersion(1), current.instanceId,
@@ -305,7 +325,7 @@ TEST_CASE("tactics.abilityDeclarationSurvivesSnapshotRoundTrip") {
     auto captured = source.tactics.snapshot(source.battle, hash);
     REQUIRE(captured.ok());
     auto current = std::move(captured).takeValue();
-    CHECK(current.schemaVersion == eve::SchemaVersion(5));
+    CHECK(current.schemaVersion == eve::SchemaVersion(6));
 
     Fixture target;
     target.build();
@@ -419,6 +439,111 @@ TEST_CASE("tactics.versionFourSnapshotRefusesVersionFiveFields") {
     // Keep the v5 payload bytes and only declare version 4: the unit charge and the
     // round schedule are then the single facts under test.
     auto mislabelled = eve::makeSnapshotEnvelope(current.type, current.schema, eve::SchemaVersion(4),
+                                                 current.instanceId, current.revision, current.tick,
+                                                 current.payload, hash);
+    REQUIRE(mislabelled.ok());
+
+    Fixture target;
+    target.build();
+    auto restored = target.tactics.restore(target.battle, mislabelled.value(), hash);
+    CHECK(!restored.ok());
+    REQUIRE(restored.status().primaryDiagnostic() != nullptr);
+    CHECK_EQ(restored.status().primaryDiagnostic()->code(), eve::DiagnosticCode::ParseError);
+    auto status = target.tactics.status(target.battle);
+    REQUIRE(status.ok());
+    CHECK(status.value() == eve::tactics::BattleStatus::Setup);
+}
+
+/** @brief The version-5 round trip keeps the targeted unit and the opaque payload. */
+TEST_CASE("tactics.abilityTargetAndPayloadSurviveSnapshotRoundTrip") {
+    auto    hash = testHash();
+    Fixture source;
+    source.build();
+    REQUIRE(source.tactics.start(source.battle, eve::tactics::kInitiativePolicyId).ok());
+    const auto actor = source.firstActor();
+    REQUIRE(source.tactics
+                .useAbility(source.battle, actor, action("test:strike"), {1, 0, 0}, source.slow, "{\"power\":7}")
+                .ok());
+
+    auto captured = source.tactics.snapshot(source.battle, hash);
+    REQUIRE(captured.ok());
+    auto current = std::move(captured).takeValue();
+
+    Fixture target;
+    target.build();
+    REQUIRE(target.tactics.restore(target.battle, current, hash).ok());
+
+    auto commands = target.tactics.commandsFrom(target.battle, eve::Revision(0));
+    REQUIRE(commands.ok());
+    const auto values = std::move(commands).takeValue();
+    REQUIRE(!values.empty());
+    CHECK(values.back().kind == eve::tactics::BattleCommandKind::UseAbility);
+    // The payload is caller-owned effect data: tactics must return it byte-identically,
+    // because a replay hands it back to the effect owner.
+    CHECK_EQ(values.back().payload, std::string("{\"power\":7}"));
+    CHECK_EQ(values.back().targetUnit, target.slow);
+    const eve::tactics::Cell declaredTarget{1, 0, 0};
+    CHECK(values.back().cell == declaredTarget);
+}
+
+/**
+ * @brief A version-5 payload has no ability target or payload, and is migrated.
+ *
+ * Version 5 could not express either, so the documented default is "no target unit, empty
+ * payload". Both halves are asserted: the payload restores, and the fields really are
+ * empty afterwards instead of being invented.
+ */
+TEST_CASE("tactics.versionFiveSnapshotMigratesAbsentAbilityTargetAndPayload") {
+    auto    hash = testHash();
+    Fixture source;
+    source.build();
+    REQUIRE(source.tactics.start(source.battle, eve::tactics::kInitiativePolicyId).ok());
+    const auto actor = source.firstActor();
+    REQUIRE(source.tactics
+                .useAbility(source.battle, actor, action("test:strike"), {1, 0, 0}, source.slow, "{\"power\":7}")
+                .ok());
+
+    auto captured = source.tactics.snapshot(source.battle, hash);
+    REQUIRE(captured.ok());
+    auto current = std::move(captured).takeValue();
+
+    auto legacy = eve::makeSnapshotEnvelope(current.type, current.schema, eve::SchemaVersion(5), current.instanceId,
+                                            current.revision, current.tick,
+                                            legacyPayload(current.payload, eve::SchemaVersion(5)), hash);
+    REQUIRE(legacy.ok());
+
+    Fixture target;
+    target.build();
+    REQUIRE(target.tactics.restore(target.battle, legacy.value(), hash).ok());
+    auto commands = target.tactics.commandsFrom(target.battle, eve::Revision(0));
+    REQUIRE(commands.ok());
+    const auto values = std::move(commands).takeValue();
+    REQUIRE(!values.empty());
+    // The declaration itself survives: only the fields version 5 could not express are
+    // migrated to their documented defaults.
+    CHECK(values.back().kind == eve::tactics::BattleCommandKind::UseAbility);
+    CHECK_EQ(values.back().action.format(), std::string("test:strike"));
+    CHECK(!values.back().targetUnit.isValid());
+    CHECK(values.back().payload.empty());
+}
+
+/** @brief A version-5 payload may not carry the version-6 command fields. */
+TEST_CASE("tactics.versionFiveSnapshotRefusesVersionSixFields") {
+    auto    hash = testHash();
+    Fixture source;
+    source.build();
+    REQUIRE(source.tactics.start(source.battle, eve::tactics::kInitiativePolicyId).ok());
+    const auto actor = source.firstActor();
+    REQUIRE(source.tactics
+                .useAbility(source.battle, actor, action("test:strike"), {1, 0, 0}, source.slow, "{\"power\":7}")
+                .ok());
+    auto captured = source.tactics.snapshot(source.battle, hash);
+    REQUIRE(captured.ok());
+    auto current = std::move(captured).takeValue();
+
+    // Keep the v6 payload bytes and only declare version 5: the two extra command fields
+    // are then the single facts under test.
+    auto mislabelled = eve::makeSnapshotEnvelope(current.type, current.schema, eve::SchemaVersion(5),
                                                  current.instanceId, current.revision, current.tick,
                                                  current.payload, hash);
     REQUIRE(mislabelled.ok());

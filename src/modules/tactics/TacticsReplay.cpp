@@ -34,6 +34,12 @@ Result<void> apply(Battle& battle, const BattleCommand& command) {
         case BattleCommandKind::DeclineReaction: return BattleSystem::declineReaction(battle);
         case BattleCommandKind::DefeatUnit: return BattleSystem::defeatUnit(battle, command.actor);
         case BattleCommandKind::RollRandom: return consume(BattleSystem::roll(battle, command.action));
+        case BattleCommandKind::UseAbility:
+            // The declared target and the opaque payload are part of the command, so a
+            // replay reproduces the same declaration instead of dropping the effect data
+            // the adapter needs.
+            return consume(BattleSystem::useAbility(battle, command.actor, command.action, command.cell,
+                                                    command.targetUnit, command.payload));
     }
     return fail(DiagnosticCode::UnknownVersion, "unknown tactics replay command kind", "command.kind");
 }
