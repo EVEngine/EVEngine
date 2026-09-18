@@ -657,6 +657,14 @@ jobs:
           export VK_ICD_FILENAMES="$(ls /usr/share/vulkan/icd.d/lvp_icd*.json 2>/dev/null | head -1)"
           xvfb-run -a bash .github/scripts/consumer-test.sh "$HOST" "$TAG" "$RUNNER_TEMP/consumer"
 
+      - name: Upload android APK
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: android-apk-${{ env.HOST }}
+          path: ${{ runner.temp }}/consumer/eve-android-${{ env.HOST }}.apk
+          if-no-files-found: error
+          retention-days: 7
+
       - name: Upload cross win32 package (produced on linux)
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
@@ -701,6 +709,14 @@ jobs:
       - name: Run consumer test (get android -> build android -> package -> run + cross win32/linux)
         timeout-minutes: 90
         run: bash .github/scripts/consumer-test.sh "$HOST" "$TAG" "$RUNNER_TEMP/consumer"
+
+      - name: Upload android APK
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: android-apk-${{ env.HOST }}
+          path: ${{ runner.temp }}/consumer/eve-android-${{ env.HOST }}.apk
+          if-no-files-found: error
+          retention-days: 7
 
       - name: Upload cross win32 package (produced on macosx)
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
@@ -850,19 +866,20 @@ jobs:
           fi
 
   # ---- Android emulator run (release hard gate) ------------------------------
-  # The official SDK ships arm64-v8a only, so the APK needs an arm64 emulator:
-  # macOS (arm64) runners run these natively.
+  # Every desktop consumer builds an APK from the official Android SDK. Run all
+  # three APKs on an arm64 emulator so no host-specific consumer path can regress.
   run-android:
-    name: Run APK on arm64 emulator
-    needs: consumer-win32
+    name: Run all consumer APKs on arm64 emulator
+    needs: [consumer-win32, consumer-linux, consumer-macosx]
     runs-on: macos-14
     timeout-minutes: 45
     steps:
-      - name: Download android APK
+      - name: Download all consumer Android APKs
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
-          name: android-apk-win32
+          pattern: android-apk-*
           path: apk
+          merge-multiple: true
 
       - name: Boot arm64 emulator, install and launch the game
         timeout-minutes: 40
@@ -873,19 +890,30 @@ jobs:
           target: google_apis
           disable-animations: true
           script: |
-            adb logcat -c
-            adb install -r apk/*.apk
-            adb shell am start -n com.evengine.example/.EVEngineActivity
-            ok=0
-            for i in $(seq 1 90); do
-              if adb logcat -d | grep -q EVE_CI_GAME_OK; then ok=1; break; fi
-              sleep 1
+            found=0
+            for apk_file in apk/*.apk; do
+              [ -f "$apk_file" ] || continue
+              found=$((found + 1))
+              apk_name=$(basename "$apk_file")
+              echo "Testing $apk_name"
+              adb logcat -c
+              adb install -r "$apk_file"
+              adb shell am force-stop com.evengine.example || true
+              adb shell am start -W -n com.evengine.example/.EVEngineActivity
+              ok=0
+              for i in $(seq 1 90); do
+                if adb logcat -d | grep -q EVE_CI_GAME_OK; then ok=1; break; fi
+                sleep 1
+              done
+              if [ "$ok" -ne 1 ]; then
+                echo "ERROR: $apk_name did not print EVE_CI_GAME_OK (logcat tail):"
+                adb logcat -d | tail -n 60 || true
+                exit 1
+              fi
+              echo "OK: $apk_name printed EVE_CI_GAME_OK on the emulator"
             done
-            if [ "$ok" -eq 1 ]; then
-              echo "OK: APK printed EVE_CI_GAME_OK on the emulator"
-            else
-              echo "WARN: game marker not seen (logcat tail):"
-              adb logcat -d | tail -n 60 || true
+            if [ "$found" -ne 3 ]; then
+              echo "ERROR: expected 3 consumer APKs, found $found"
               exit 1
             fi
 

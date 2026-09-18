@@ -23,12 +23,15 @@ class MobileSdkReleaseGateTests(unittest.TestCase):
         cls.workflow = WORKFLOW.read_text(encoding="utf-8")
         cls.sdk_test = SDK_TEST.read_text(encoding="utf-8")
 
-    def test_android_emulator_is_a_hard_gate_and_downloads_existing_artifact(self) -> None:
+    def test_android_emulator_is_a_hard_gate_for_every_consumer_host(self) -> None:
         block = job_block(self.workflow, "run-android", "ios-sim")
         self.assertNotIn("continue-on-error:", block)
-        self.assertIn("needs: consumer-win32", block)
-        self.assertIn("name: android-apk-win32", block)
-        self.assertIn("name: android-apk-${{ env.HOST }}", self.workflow)
+        self.assertIn("needs: [consumer-win32, consumer-linux, consumer-macosx]", block)
+        self.assertIn("pattern: android-apk-*", block)
+        self.assertIn("merge-multiple: true", block)
+        self.assertIn("for apk_file in apk/*.apk", block)
+        self.assertIn('if [ "$found" -ne 3 ]', block)
+        self.assertEqual(3, self.workflow.count("name: android-apk-${{ env.HOST }}"))
 
     def test_ios_artifact_and_simulator_are_hard_gates(self) -> None:
         ios_build = job_block(self.workflow, "ios", "linux")
