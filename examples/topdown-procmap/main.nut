@@ -101,18 +101,25 @@ function makePrototype(kind, seedOffset) {
     local mesh = null;
     local material = null;
     if (kind == "tree") {
-        // Blue-noise leaf cards (6 atlas panels) — same resource as the nature gallery.
+        // Spherical leaf clusters (same 6-panel atlas) — avoids a wall of
+        // large camera-facing cards that read as green plates at map range.
         p.setString("style", "realistic");
         p.setString("branchAlgorithm", "weberPenn");
-        p.setString("leafMode", "cards");
-        p.setFloat("leafDensity", 0.96);
-        p.setFloat("leafSize", 0.42);
+        p.setString("leafMode", "clusters");
+        p.setFloat("leafDensity", 0.90);
+        p.setFloat("leafSize", 0.28);
         p.setFloat("height", 5.1);
         p.setFloat("crownRadius", 1.95);
         p.setInt("branchLevels", 3);
         p.setInt("branchCount", 9);
-        p.setFloat("lowerLeafCoverage", 0.88);
-        p.setFloat("upperLeafCoverage", 0.42);
+        p.setFloat("clusterSize", 0.24);
+        p.setFloat("clusterSeparation", 0.38);
+        p.setFloat("clusterLeafScale", 0.72);
+        p.setInt("clusterPlanes", 12);
+        p.setInt("clusterLeaves", 28);
+        p.setInt("clusterLimit", 100);
+        p.setFloat("lowerLeafCoverage", 0.85);
+        p.setFloat("upperLeafCoverage", 0.35);
         local meshResult = procgen.generateMesh("mesh.tree", p, gfx);
         if (!meshResult.ok) return null;
         mesh = retain(meshResult.value);
@@ -487,7 +494,11 @@ function rebuildWorld() {
     }
 
     scatterDecorations(heightmap, layers);
-    buildGrassField(heightmap, layers);
+    // GrassField uses camera-facing cylindrical billboards; at map scale those
+    // read as a pile of solid green plates and fight the leaf-card trees/bushes.
+    // Ground cover comes from biome splat + flower accents instead.
+    // buildGrassField(heightmap, layers);
+    mapGrass = null;
     mapReady = true;
     print("TOPDOWN_PROCMAP_READY seed=" + mapSeed +
           " decor=" + mapDecor.len() +
