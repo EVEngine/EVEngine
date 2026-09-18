@@ -121,9 +121,8 @@ function buildBush(seed, x) {
     local mr = procgen.generateMesh("mesh.bush", p, gfx);
     if (!mr.ok) return;
     local foliage = makeTex("tex.foliage", seed + 5, 256);
-    local normal = makeNormal("tex.foliage", seed + 5, 256);
-    // Masked leaf cards: tex.foliage right half is transparent + ovate leaves.
-    local mat = makeFoliageMaterial(foliage, normal, 0.88, 0.32);
+    // Solid leaf albedo only — skip foliage normals so blades stay flat colour.
+    local mat = makeFoliageMaterial(foliage, null, 0.88, 0.32);
     // No green tint — twigs sample the brown bark strip and must stay trunk-coloured.
     placeMesh(retain(mr.value), x, -2.55, 0.4, 1.15, 1.15, 1.15, mat);
 }

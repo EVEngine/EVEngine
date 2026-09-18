@@ -138,7 +138,8 @@ function makePrototype(kind, seedOffset) {
         if (!meshResult.ok) return null;
         mesh = retain(meshResult.value);
         local surf = makeSurface("tex.foliage", seedOffset + 120, 256);
-        material = makeDecorMaterial(surf.albedo, surf.normal, true, 0.32);
+        // Solid leaf albedo only — skip foliage normals so blades stay flat colour.
+        material = makeDecorMaterial(surf.albedo, null, true, 0.32);
         // No green tint — twigs sample the brown bark strip and must stay trunk-coloured.
     } else {
         // cliff / stone
