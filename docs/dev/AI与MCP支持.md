@@ -545,11 +545,12 @@ level 为 `engine`、detach 后关闭捕获）、`devtools.mcp.engineLineDropsSc
 - AI 生成内容的静态校验（nut AST / 资源清单）
 - 编辑器 JSON：更多控件（image/视频预览、节点图）、多 OS 窗口、编辑器间拖拽
 - 玩法域：`npc_ai` 需要先有模块实例与脚本面（`NpcAiWorld` 目前只在模块内部与 editor 中被引用），
-  之后才有「游戏能发布 agent」的挂点；`rpg` / `rts` / `tactics` / `weapon` / `climbing` 已有
-  provider，但还只覆盖单实例路径，可补 `IGameplayInstanceCatalog` 让 `instances` 也能枚举它们
+  之后才有「游戏能发布 agent」的挂点
 - 玩法域（结构性）：`weapon` / `climbing` / `rpg.battle` / `rpg.product` 目前是**每实例一个
   provider**，因此同一进程里出现第二个实例时，路由器会以 `conflict: multiple gameplay providers
   publish the same domain` 拒绝整个域（已用两个 `WeaponControl` 实测：`observe` 直接失败）。
   两条修法各有取舍，需要单独决策：按 `inventory`/`economy` 的方式把这些适配器改成「一域一
   provider、内部按实例分派」（接口 + 全部调用点一起改），或让路由器在多个同域 provider 之间按
-  实例分派（改动小，但会改变协议语义）。`domains` 已对重复域去重，不再出现 `["weapon","weapon"]`
+  实例分派（改动小，但会改变协议语义）。全部 10 个 provider 都已实现 `IGameplayInstanceCatalog`
+  （单实例适配器列出它持有的那一个实例），所以上面这条一旦修好，`instances` 会自动跟随。
+  `domains` 已对重复域去重，不再出现 `["weapon","weapon"]`
