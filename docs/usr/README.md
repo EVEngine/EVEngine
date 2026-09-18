@@ -25,6 +25,8 @@ EVEngine 是一个以 Squirrel 脚本驱动的轻量游戏引擎，适合快速�
 
 - `bin/eve(.exe)`：引擎运行时（桌面平台）；
 - `share/eve/examples/basic/`：可直接运行的参考游戏；
+- `share/eve/ai/`：本 SDK 构建的 EveScript API 目录（`eve-api.json`）与 Agent skill / MCP 桥；
+- `llms.txt`：给编程 Agent 的入口（解压后打开 SDK 目录即可被 Cursor 等读取）；
 - `platform/`：目标平台打包模板（Android APK 工程等）；
 - `share/eve/licenses/`：引擎与第三方许可文本；
 - `include/`、`lib/`、`cmake/`：原生插件开发文件（做纯脚本游戏用不到）。

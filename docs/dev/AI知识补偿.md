@@ -40,8 +40,10 @@ EveScript（Squirrel 超集）和 `eve.X()` / `persist` / Result 表几乎不在
 给 Coding Agent 的默认上下文必须短、稳定、可版本化，不要把整本
 [`docs/usr/EVESCRIPT.md`](../usr/EVESCRIPT.md) 塞进 system prompt。
 
-入口：[`.cursor/skills/evescript/SKILL.md`](../../.cursor/skills/evescript/SKILL.md)
-（语言差异、API 规范、概念对照、金样例路径）。索引见仓库根目录 [`llms.txt`](../../llms.txt)。
+入口：引擎仓库 [`.cursor/skills/evescript/SKILL.md`](../../.cursor/skills/evescript/SKILL.md)
+与根目录 [`llms.txt`](../../llms.txt)。**SDK 发行物**把同一份 skill 装到
+`share/eve/ai/SKILL.md` 和 `.cursor/skills/evescript/SKILL.md`，并把 `llms.txt` 放在 SDK 根目录，
+这样解压 `eve-sdk-*.zip` 的游戏开发者不必克隆源码。
 
 ### 层 B — 机器可读 API 目录
 
@@ -51,10 +53,11 @@ EveScript（Squirrel 超集）和 `eve.X()` / `persist` / Result 表几乎不在
 | --- | --- |
 | JSON 目录 | `python3 scripts/generate_binding_contracts.py --json-output eve-api.json` |
 | 伪 TypeScript 签名（不是第二语言） | 同上，加 `--dts-output eve-api.d.ts` |
+| SDK 安装 | `share/eve/ai/eve-api.json` 与 `eve-api.d.ts`（与该 SDK 的 `bin/eve` 同源） |
 | 运行时查询 | MCP `eve_api_search` / `eve_api_get`（读本构建生成的 Binding Contracts） |
 
-构建时 CMake 会在 `EVCommon` 二进制目录写出 `eve-api.json`，与
-`BindingContracts.generated.cpp` 同源。手册继续给人读；Agent 默认先查合同再写脚本。
+构建时 CMake 会在 `EVCommon` 二进制目录写出 `eve-api.json` / `eve-api.d.ts`，
+`cmake --install` 把它们拷进 SDK。手册继续给人读；Agent 默认先查合同再写脚本。
 
 ### 层 C — 少写脚本
 
@@ -72,5 +75,5 @@ AI 改「有 schema 的事实」；脚本只写无法数据化的行为。
 
 ## 成功标准
 
-一个没见过本仓库的 Agent，只靠 skill + `eve_api_search`，能写出通过编译的 `eve_update` 移动方块，
-并且用 MCP 截图或 observe 证明，而不是从 Unity C# 臆造 API。
+一个没见过本仓库的 Agent，只靠 **SDK 内** skill + `share/eve/ai/eve-api.json` 或 `eve_api_search`，
+能写出通过编译的 `eve_update` 移动方块，并且用 MCP 截图或 observe 证明，而不是从 Unity C# 臆造 API。

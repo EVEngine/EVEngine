@@ -15,13 +15,15 @@ find_package(Python3 REQUIRED COMPONENTS Interpreter)
 string(REPLACE ";" "," _eve_binding_contract_modules "${EVE_ENABLED_MODULES}")
 set(_eve_binding_contract_cpp "${CMAKE_CURRENT_BINARY_DIR}/common/BindingContracts.generated.cpp")
 set(_eve_binding_contract_json "${CMAKE_CURRENT_BINARY_DIR}/common/eve-api.json")
+set(_eve_binding_contract_dts "${CMAKE_CURRENT_BINARY_DIR}/common/eve-api.d.ts")
 add_custom_command(
-    OUTPUT "${_eve_binding_contract_cpp}" "${_eve_binding_contract_json}"
+    OUTPUT "${_eve_binding_contract_cpp}" "${_eve_binding_contract_json}" "${_eve_binding_contract_dts}"
     COMMAND "${Python3_EXECUTABLE}" "${CMAKE_SOURCE_DIR}/scripts/generate_binding_contracts.py"
             --modules "${_eve_binding_contract_modules}"
             --platform "${BUILD_PLATFORM}"
             --output "${_eve_binding_contract_cpp}"
             --json-output "${_eve_binding_contract_json}"
+            --dts-output "${_eve_binding_contract_dts}"
     DEPENDS "${CMAKE_SOURCE_DIR}/scripts/generate_binding_contracts.py"
     COMMENT "Generating strict EveScript Binding Contracts"
     VERBATIM)

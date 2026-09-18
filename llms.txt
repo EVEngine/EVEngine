@@ -9,6 +9,7 @@
 - [docs/usr/EVESCRIPT.md](docs/usr/EVESCRIPT.md): full language tutorial (humans)
 - [docs/dev/API-CONVENTIONS.md](docs/dev/API-CONVENTIONS.md): `eve.X()`, errors, ownership
 - Binding catalog: `python3 scripts/generate_binding_contracts.py --json-output eve-api.json`
+- SDK zip (no git tree): `share/eve/ai/eve-api.json` + `share/eve/ai/SKILL.md` + root `llms.txt`
 
 ## For runtime agents
 

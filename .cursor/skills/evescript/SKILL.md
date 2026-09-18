@@ -7,13 +7,13 @@ description: Write EveScript (.nut) for EVEngine. Use when editing game scripts,
 
 Do not invent Unity C#, Godot GDScript, Lua, or JavaScript APIs. EVEngine games are `.nut` (EveScript = Squirrel + compile-time extensions). There is no second runtime language.
 
-Lookup before writing: MCP `eve_api_search` / `eve_api_get`, or
+Lookup before writing (do not guess Unity/Godot names):
 
-```sh
-python3 scripts/generate_binding_contracts.py --json-output eve-api.json
-```
+1. Live MCP: `eve_api_search` / `eve_api_get` on `bin/eve run --debug --mcp-port=7529 …`
+2. **SDK zip** (no engine source): `share/eve/ai/eve-api.json` (same catalog as this `eve` binary)
+3. Engine git tree only: `python3 scripts/generate_binding_contracts.py --json-output eve-api.json`
 
-Longer strategy: `docs/dev/AI知识补偿.md`. Human tutorial: `docs/usr/EVESCRIPT.md`.
+Cursor skill copy in an unzipped SDK: `.cursor/skills/evescript/SKILL.md`. Human tutorial: `docs/usr/EVESCRIPT.md` in the source tree / online docs. Longer engine-maintainer note: `docs/dev/AI知识补偿.md`.
 
 ## Language (differences from JS/C#)
 
@@ -66,9 +66,8 @@ eve_render <- function() {
 
 ## Gold examples
 
-- `examples/basic/main.nut` — persist, physics, particles, lifecycle
-- `examples/ecs/main.nut` — Component / Entity / System
-- `examples/primitive-drawing/main.nut` — Result tables (`requirePrimitive`)
+- SDK and tree: `share/eve/examples/basic/main.nut` or `examples/basic/main.nut` — persist, physics, particles, lifecycle
+- Engine tree only: `examples/ecs/main.nut` (Component / Entity / System), `examples/primitive-drawing/main.nut` (Result tables)
 
 ## Runtime agents
 
