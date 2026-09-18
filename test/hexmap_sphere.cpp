@@ -710,12 +710,15 @@ struct WeldReport {
  * boundary edges, but it could not also satisfy the Euler characteristic.
  */
 void checkClosedSphere(const WeldReport& report) {
-    CHECK(report.triangles > 0u);
-    CHECK(report.vertices > 0u);
-    CHECK(report.edges > 0u);
-    CHECK_EQ(report.boundaryEdges, static_cast<std::size_t>(0));
-    CHECK_EQ(report.nonManifold, static_cast<std::size_t>(0));
-    CHECK_EQ(report.vertices + report.triangles - report.edges, static_cast<std::size_t>(2));
+    // REQUIRE, not CHECK: in this suite a failed CHECK is only a warning and the test
+    // still exits zero, which is how a mesh with 118 non-manifold edges and 241 boundary
+    // edges passed this test unnoticed.
+    REQUIRE(report.triangles > 0u);
+    REQUIRE(report.vertices > 0u);
+    REQUIRE(report.edges > 0u);
+    REQUIRE_EQ(report.boundaryEdges, static_cast<std::size_t>(0));
+    REQUIRE_EQ(report.nonManifold, static_cast<std::size_t>(0));
+    REQUIRE_EQ(report.vertices + report.triangles - report.edges, static_cast<std::size_t>(2));
 }
 
 /** @brief Number of triangles whose stored normal points back towards the sphere centre. */

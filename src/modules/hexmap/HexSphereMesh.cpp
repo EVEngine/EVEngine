@@ -309,6 +309,14 @@ private:
         const HexCellData* nextData = map_.cellAt(nextCell);
         if (nextData == nullptr) return;
 
+        // Corner ownership. `appendConnection` already returned unless `cell < neighbour`,
+        // which is the right total order for an *edge* - two cells share it. A corner is
+        // shared by three, so reusing that gate emits the patch for one or two of them and
+        // half of all corners end up with two coincident patches (non-manifold edges and a
+        // broken Euler characteristic). The lowest id of the three cells owns the corner,
+        // which is exactly one emitter and is always a cell that owns its preceding edge.
+        if (nextCell < cell) return;
+
         // The corner between edge `d` and edge `d + 1` of `cell` is corner `d + 1`. Each
         // neighbour reaches that same corner from the far end of its own shared edge,
         // which the topology stores in the opposite order.

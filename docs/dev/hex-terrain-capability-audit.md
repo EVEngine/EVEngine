@@ -202,16 +202,37 @@ Fixed, each with the test that now guards it:
   sphere-brush entry points were unbounded, and `HexSerializer.h` contradicted itself about
   whether `units` is cleared before validation.
 
-Two claims from the same review were **not** reproduced against the real build and were left
-alone: the spherical mesher's corner ownership, and the claim that every slope leaves terracing
-cracks. The sphere watertightness test (which asserts zero boundary edges and zero non-manifold
-edges at flat and scattered elevations) passes, and a new planar test that raises one interior
-cell to both a slope and a cliff finds no new boundary edges. The reviewer's numbers came from
-an isolated build of the module against stubbed `Result`/`Diagnostic` headers.
+**Why these survived a green suite - a finding in its own right.** zeroerr's `CHECK` is
+non-fatal: a failed `CHECK` is reported as `WARN Assertion Failed` and the test case still
+exits zero. CTest only turns that into a failure for tests matching `^resourceFormats\.`,
+which carry an explicit `FAIL_REGULAR_EXPRESSION "Assertion Failed"`
+(`cmake/ZeroErrDiscoverTestsImpl.cmake:126-131`). Everywhere else only `REQUIRE` fails a
+test. The mesh-quality assertions were all `CHECK`, so `hexmap.sphereMesh.isAWatertightSurface`
+had been reporting a broken mesh as a pass: with the assertions made fatal it failed with
+`boundaryEdges 2 / nonManifold 118 / V+T-E 41` on a flat sphere, and `241 / 154 / 40` with
+scattered elevations. **When adding geometry or lifecycle assertions to this module, use
+`REQUIRE`.**
+
+The spherical mesher had the same corner-ownership defect, in the same shape: its
+`appendCorner` reused `appendConnection`'s `cell < neighbour` edge gate. A corner is shared by
+three cells, so half of them were emitted twice. Gating on `nextCell < cell` as well - the
+lowest-id cell of the three owns the corner - makes the sphere genuinely watertight at flat,
+scattered and finer subdivisions, verified with the assertions above made fatal.
+
+Still open (measured, not fixed): **the planar terracing path leaves cracks around a raised
+cell.** With one interior cell raised, the welded census over the whole 20x15 patch reports
+148 extra unmatched edges (848 against a 700-edge flat control) and 6 non-manifold edges; the
+corner-ownership fix did not change this, and the sphere does not show it. The cause is the
+one `HexSphereMesh.cpp` documents for its own terraces: `appendEdgeTerraces` walks the ladder
+from the *owning* cell while the corner patches interpolate from the elevation-sorted
+`bottom`, and `HexMetrics::terraceLerp` is direction-asymmetric, so the two do not meet. It is
+not asserted in the suite, because a permanently failing assertion is not a test; the flat
+weld invariants around it are (`hexmap.mesh.terrainIsWeldClosedAndFreeOfDuplicateCorners`).
 
 Still open, unchanged from the gap list above: bindable texture arrays and independent
 ORM maps (gaps 2-4), production hydrology (gap 6), and instanced vegetation independent of
-the terrain rebuild (gap 7). `HexMapModule` still has no unit test, because every entry
-point needs a live `Graphics` device; that is the largest remaining coverage hole and the
-next thing to close.
+the terrain rebuild (gap 7). `HexMapModule` now has a test file
+(`test/hexmap_module.cpp`, headless `GfxFixture`) covering the grid and sphere lifetime
+contracts; the rest of its script surface is still uncovered. `HexMapGenerator.cpp` is
+1145 lines, above the repository's ~1000-line split threshold.
 
