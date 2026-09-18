@@ -534,47 +534,102 @@ std::unique_ptr<image::ImageData> genCloudShadow(const Params &params, std::stri
 }
 
 /**
- * @brief Lanceolate leaf coverage + interior shade for foliage cards / atlas.
+ * @brief Discrete ovate leaf stamps on a transparent leaf-card atlas.
  *
- * Stamps overlapping leaf silhouettes so SurfaceMode::Masked cuts organic edges
- * instead of rendering solid green rectangles.
+ * Each stamp is an egg-shaped leaf with clear empty margins so
+ * SurfaceMode::Masked cuts the card to foliage silhouettes rather than a
+ * solid green rectangle.
  */
-void sampleFoliageCover(const NoiseField &noise, float u, float v, float scale, float &cover,
-                        float &shade) {
+struct LeafStamp {
+    float cx = 0.5f, cy = 0.5f;
+    float halfW = 0.12f, halfH = 0.18f;
+    float ang = 0.f;
+};
+
+void buildOvateLeafStamps(const NoiseField &noise, int count, std::vector<LeafStamp> &stamps) {
+    stamps.clear();
+    count = std::clamp(count, 1, 24);
+    // Rough grid so leaves do not pile into an opaque slab.
+    const int cols = std::max(1, int(std::ceil(std::sqrt(float(count)))));
+    const int rows = std::max(1, int(std::ceil(float(count) / float(cols))));
+    int placed = 0;
+    for (int row = 0; row < rows && placed < count; ++row) {
+        for (int col = 0; col < cols && placed < count; ++col) {
+            const float cellW = 1.f / float(cols);
+            const float cellH = 1.f / float(rows);
+            const float jx = (noise.hash01(col * 3 + 1, row * 5 + 2) - 0.5f) * cellW * 0.45f;
+            const float jy = (noise.hash01(col * 7 + 3, row * 11 + 4) - 0.5f) * cellH * 0.45f;
+            LeafStamp s;
+            s.cx = (float(col) + 0.5f) * cellW + jx;
+            s.cy = (float(row) + 0.5f) * cellH + jy;
+            s.halfW = cellW * (0.28f + 0.10f * noise.hash01(col + 9, row + 2));
+            s.halfH = cellH * (0.38f + 0.12f * noise.hash01(col + 4, row + 8));
+            s.ang = (noise.hash01(col * 13 + 1, row * 17 + 3) - 0.5f) * 1.8f;
+            stamps.push_back(s);
+            ++placed;
+        }
+    }
+}
+
+void sampleOvateLeafCard(const NoiseField &noise, float u, float v, const std::vector<LeafStamp> &stamps,
+                         float &cover, float &shade) {
+    cover = 0.f;
+    shade = 0.f;
+    for (const LeafStamp &s : stamps) {
+        float dx = u - s.cx;
+        float dy = v - s.cy;
+        const float ca = std::cos(s.ang), sa = std::sin(s.ang);
+        const float rx = dx * ca - dy * sa;
+        const float ry = dx * sa + dy * ca;
+        // Ovate / lanceolate: pointed tip along +Y, wider shoulders below centre.
+        const float halfW = s.halfW * (1.f - 0.42f * std::max(0.f, ry / std::max(1e-4f, s.halfH)));
+        const float d = (rx * rx) / std::max(1e-5f, halfW * halfW) +
+                        (ry * ry) / std::max(1e-5f, s.halfH * s.halfH);
+        const float mask = 1.f - smoothstep(0.78f, 1.02f, d);
+        if (mask <= cover) continue;
+        cover = mask;
+        const float vein = std::pow(
+            std::fabs(std::sin(ry * 11.f / std::max(1e-4f, s.halfH) +
+                               noise.valueNoise(s.cx * 4.f, s.cy * 4.f) * 2.f)),
+            3.5f);
+        const float mott = noise.fbm(s.cx * 3.f + u * 2.f, s.cy * 3.f + v * 2.f, 3);
+        shade = std::clamp(0.30f + mott * 0.40f + (1.f - vein) * 0.30f, 0.f, 1.f);
+    }
+}
+
+/**
+ * @brief Dense leafy fill for bush/canopy blobs (mostly opaque).
+ */
+void sampleFoliageFill(const NoiseField &noise, float u, float v, float scale, float &cover, float &shade) {
     cover = 0.f;
     shade = 0.f;
     const float su = u * scale;
     const float sv = v * scale;
-    // Larger, clearer leaf stamps so masked cutouts read as foliage rather than
-    // a speckled green noise field from top-down / mid-range cameras.
     for (int oy = -1; oy <= 1; ++oy) {
         for (int ox = -1; ox <= 1; ++ox) {
-            const int cx = int(std::floor(su * 1.55f)) + ox;
-            const int cy = int(std::floor(sv * 1.55f)) + oy;
+            const int cx = int(std::floor(su * 2.2f)) + ox;
+            const int cy = int(std::floor(sv * 2.2f)) + oy;
             const float px = float(cx) + noise.hash01(cx, cy);
             const float py = float(cy) + noise.hash01(cx * 7 + 3, cy * 13 + 5);
-            float dx = su * 1.55f - px;
-            float dy = sv * 1.55f - py;
-            const float ang = (noise.hash01(cx * 3 + 1, cy * 5 + 2) - 0.5f) * 1.6f;
+            float dx = su * 2.2f - px;
+            float dy = sv * 2.2f - py;
+            const float ang = (noise.hash01(cx * 3 + 1, cy * 5 + 2) - 0.5f) * 1.4f;
             const float ca = std::cos(ang), sa = std::sin(ang);
             const float rx = dx * ca - dy * sa;
             const float ry = dx * sa + dy * ca;
-            // Pointed tip along +Y, wider shoulders below centre (lanceolate).
-            const float halfW = 0.42f * (1.f - 0.48f * std::max(0.f, ry));
-            const float d = (rx * rx) / std::max(1e-4f, halfW * halfW) + (ry * ry) / 0.62f;
-            const float mask = 1.f - smoothstep(0.68f, 0.98f, d);
+            const float halfW = 0.48f * (1.f - 0.4f * std::max(0.f, ry));
+            const float d = (rx * rx) / std::max(1e-4f, halfW * halfW) + (ry * ry) / 0.58f;
+            const float mask = 1.f - smoothstep(0.55f, 1.05f, d);
             if (mask <= cover) continue;
             cover = mask;
             const float vein = std::pow(
-                std::fabs(std::sin(ry * 7.5f + noise.valueNoise(px * 0.35f, py * 0.35f) * 2.5f)),
-                3.2f);
-            const float mott =
-                noise.fbm(px * 0.28f + u * 1.6f, py * 0.28f + v * 1.6f, 3);
-            shade = std::clamp(0.28f + mott * 0.42f + (1.f - vein) * 0.30f, 0.f, 1.f);
+                std::fabs(std::sin(ry * 8.f + noise.valueNoise(px * 0.35f, py * 0.35f) * 2.5f)), 3.f);
+            const float mott = noise.fbm(px * 0.28f + u * 1.6f, py * 0.28f + v * 1.6f, 3);
+            shade = std::clamp(0.30f + mott * 0.42f + (1.f - vein) * 0.28f, 0.f, 1.f);
         }
     }
-    const float chew = smoothstep(0.62f, 0.9f, noise.fbm(u * 5.f + 3.f, v * 5.f, 2));
-    cover *= 1.f - chew * 0.12f;
+    // Keep blob fill nearly opaque so ellipsoid lobes do not go hollow.
+    cover = std::clamp(cover * 0.55f + 0.45f, 0.f, 1.f);
 }
 
 /**
@@ -609,6 +664,9 @@ std::unique_ptr<image::ImageData> genTreeAtlas(const Params &params, std::string
     leafRamp.add(0.78f, 88, 148, 46);
     leafRamp.add(1.00f, 24, 54, 16);
 
+    std::vector<LeafStamp> leafStamps;
+    buildOvateLeafStamps(noise, 10, leafStamps);
+
     const float invW = 1.f / float(std::max(1, ctx.width - 1));
     const float invH = 1.f / float(std::max(1, ctx.height - 1));
     for (int y = 0; y < ctx.height; ++y) {
@@ -634,10 +692,9 @@ std::unique_ptr<image::ImageData> genTreeAtlas(const Params &params, std::string
             } else if (u > 0.52f) {
                 const float fu = (u - 0.52f) / 0.48f;
                 float cover = 0.f, shade = 0.f;
-                sampleFoliageCover(noise, fu, v, ctx.scale, cover, shade);
+                // Transparent card with scattered ovate leaves for masked leaf cards.
+                sampleOvateLeafCard(noise, fu, v, leafStamps, cover, shade);
                 color = leafRamp.sampleBanded(shade, ctx.colors);
-                // Hard-ish alpha so SurfaceMode::Masked cuts leaf silhouettes
-                // instead of rendering solid green quads.
                 color.a = static_cast<uint8_t>(std::clamp(cover, 0.f, 1.f) * 255.f);
             } else {
                 // Narrow blend strip between bark and foliage regions.
@@ -651,7 +708,11 @@ std::unique_ptr<image::ImageData> genTreeAtlas(const Params &params, std::string
     return img;
 }
 
-/** tex.foliage — leaf-card atlas with alpha cutouts for masked bush/tree cards. */
+/**
+ * tex.foliage — dual atlas for bush meshes:
+ *   u in [0, 0.48] opaque leafy fill for ellipsoid blobs,
+ *   u in [0.52, 1] transparent leaf-card with scattered ovate leaves for addLeafCard.
+ */
 std::unique_ptr<image::ImageData> genFoliage(const Params &params, std::string &error) {
     const auto ctx = TextureGenContext::fromParams(params);
     if (ctx.width > 4096 || ctx.height > 4096) {
@@ -674,6 +735,9 @@ std::unique_ptr<image::ImageData> genFoliage(const Params &params, std::string &
     leafRamp.add(0.78f, 62, 122, 58);
     leafRamp.add(1.00f, 22, 48, 28);
 
+    std::vector<LeafStamp> leafStamps;
+    buildOvateLeafStamps(noise, 8, leafStamps);
+
     const float invW = 1.f / float(std::max(1, ctx.width - 1));
     const float invH = 1.f / float(std::max(1, ctx.height - 1));
     for (int y = 0; y < ctx.height; ++y) {
@@ -681,9 +745,20 @@ std::unique_ptr<image::ImageData> genFoliage(const Params &params, std::string &
             const float u = float(x) * invW;
             const float v = float(y) * invH;
             float cover = 0.f, shade = 0.f;
-            sampleFoliageCover(noise, u, v, ctx.scale, cover, shade);
-            Rgba8 color = leafRamp.sampleBanded(shade, ctx.colors);
-            color.a = static_cast<uint8_t>(std::clamp(cover, 0.f, 1.f) * 255.f);
+            Rgba8 color;
+            if (u < 0.48f) {
+                const float fu = u / 0.48f;
+                sampleFoliageFill(noise, fu, v, ctx.scale, cover, shade);
+                color = leafRamp.sampleBanded(shade, ctx.colors);
+                color.a = 255;
+            } else if (u > 0.52f) {
+                const float fu = (u - 0.52f) / 0.48f;
+                sampleOvateLeafCard(noise, fu, v, leafStamps, cover, shade);
+                color = leafRamp.sampleBanded(shade, ctx.colors);
+                color.a = static_cast<uint8_t>(std::clamp(cover, 0.f, 1.f) * 255.f);
+            } else {
+                color = {40, 78, 36, 255};
+            }
             img->setPixel(x, y,
                           image::ImageData::Colorf{color.r / 255.f, color.g / 255.f, color.b / 255.f,
                                                    color.a / 255.f});

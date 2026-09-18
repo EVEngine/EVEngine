@@ -119,7 +119,7 @@ function makePrototype(kind, seedOffset) {
         if (!meshResult.ok) return null;
         mesh = retain(meshResult.value);
         local surf = makeSurface("tex.tree_atlas", seedOffset + 100, 512);
-        material = makeDecorMaterial(surf.albedo, null, true, 0.42);
+        material = makeDecorMaterial(surf.albedo, null, true, 0.32);
     } else if (kind == "bush") {
         p.setString("style", "mound");
         p.setString("leafMode", "mixed");
@@ -138,7 +138,7 @@ function makePrototype(kind, seedOffset) {
         if (!meshResult.ok) return null;
         mesh = retain(meshResult.value);
         local surf = makeSurface("tex.foliage", seedOffset + 120, 256);
-        material = makeDecorMaterial(surf.albedo, surf.normal, true, 0.42);
+        material = makeDecorMaterial(surf.albedo, surf.normal, true, 0.32);
         // Cooler, deeper bush green vs brighter tree canopy atlas.
         if (material != null) material.setTint(0.72, 0.92, 0.68, 1.0);
     } else {

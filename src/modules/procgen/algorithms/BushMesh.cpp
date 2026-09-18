@@ -11,13 +11,15 @@ namespace {
 
 constexpr float kPi = 3.14159265358979323846f;
 
-// Shared with the tree atlas: the left half is bark/stems, the right half foliage.
-// A bush is almost entirely foliage, so lobes/cards sample the right half while
-// the few emergent twigs sample the left half.
-constexpr float kFoliageUMin = 0.55f;
-constexpr float kFoliageUMax = 1.0f;
-constexpr float kBarkUMin    = 0.0f;
-constexpr float kBarkUMax    = 0.45f;
+// tex.foliage dual atlas (and tree_atlas right half for shared cards):
+//   blobs sample the opaque fill half; leaf cards sample the transparent
+//   ovate-leaf half so masked alpha cuts silhouettes instead of green quads.
+constexpr float kBlobUMin = 0.02f;
+constexpr float kBlobUMax = 0.48f;
+constexpr float kCardUMin = 0.52f;
+constexpr float kCardUMax = 0.98f;
+constexpr float kBarkUMin = 0.0f;
+constexpr float kBarkUMax = 0.45f;
 
 struct V3 {
     float x = 0.f, y = 0.f, z = 0.f;
@@ -114,36 +116,32 @@ void addTwig(MeshBuild &out, V3 a, V3 b, float r0, float r1, int sides, float uM
     }
 }
 
-// A rounded, slightly cupped leaf. The eight-point outline avoids both the
-// rectangular-card look and the long triangular spikes of a diamond leaf.
+// Standard leaf card: a double-sided quad whose silhouette comes from the
+// transparent ovate-leaf atlas (tex.foliage right half / tree_atlas foliage).
 void addLeafCard(MeshBuild &out, std::mt19937 &rng, V3 c, V3 direction, float size, float uMin, float uMax) {
     V3 right, up;
     basisFor(norm(direction), right, up);
     const float twist = randomRange(rng, 0.f, 2.f * kPi);
     right             = add(mul(right, std::cos(twist)), mul(up, std::sin(twist)));
-    up                   = norm(cross(norm(direction), right));
-    const V3 normal = norm(cross(right, up));
-    const float halfWidth = size * randomRange(rng, 0.34f, 0.44f);
-    const float halfLength = size * randomRange(rng, 0.58f, 0.72f);
+    up                = norm(cross(norm(direction), right));
+    const V3 normal   = norm(cross(right, up));
+    const float halfW = size * randomRange(rng, 0.42f, 0.55f);
+    const float halfH = size * randomRange(rng, 0.55f, 0.72f);
+    const V3    r     = mul(right, halfW);
+    const V3    h     = mul(up, halfH);
+    const V3    center = add(c, mul(normal, size * 0.04f));
+    const V3    points[4] = {sub(sub(center, r), h), add(sub(center, h), r), add(add(center, r), h),
+                             add(sub(center, r), h)};
+    const float uv[4][2] = {{0.f, 0.f}, {1.f, 0.f}, {1.f, 1.f}, {0.f, 1.f}};
     const uint32_t base = uint32_t(out.getVertexCount());
-    const V3 center = add(c, mul(normal, size * 0.06f));
-    out.addVertex(center.x, center.y, center.z, normal.x, normal.y, normal.z,
-                  (uMin + uMax) * 0.5f, 0.5f);
-    constexpr int outline = 8;
-    for (int i = 0; i < outline; ++i) {
-        const float angle = -0.5f * kPi + float(i) * 2.f * kPi / float(outline);
-        const float x = std::cos(angle) * halfWidth;
-        const float y = std::sin(angle) * halfLength;
-        const V3 point = add(c, add(mul(right, x), mul(up, y)));
-        out.addVertex(point.x, point.y, point.z, normal.x, normal.y, normal.z,
-                      uMin + (0.5f + x / (2.f * halfWidth)) * (uMax - uMin), 0.5f + y / (2.f * halfLength));
+    for (int i = 0; i < 4; ++i) {
+        out.addVertex(points[i].x, points[i].y, points[i].z, normal.x, normal.y, normal.z,
+                      uMin + uv[i][0] * (uMax - uMin), uv[i][1]);
     }
-    for (int i = 0; i < outline; ++i) {
-        const uint32_t a = base + 1u + uint32_t(i);
-        const uint32_t b = base + 1u + uint32_t((i + 1) % outline);
-        out.addTriangle(base, a, b);
-        out.addTriangle(base, b, a);
-    }
+    out.addTriangle(base, base + 1, base + 2);
+    out.addTriangle(base, base + 2, base + 3);
+    out.addTriangle(base + 2, base + 1, base);
+    out.addTriangle(base + 3, base + 2, base);
 }
 
 }  // namespace
@@ -226,14 +224,14 @@ bool generateBushMesh(const Params &params, MeshBuild &out, std::string &error) 
             center.z += randomRange(rng, -0.10f, 0.10f) * halfW;
         }
         const V3 radius{rx, ry, rz};
-        addEllipsoidBlob(out, center, radius, rings, sides, kFoliageUMin, kFoliageUMax,
+        addEllipsoidBlob(out, center, radius, rings, sides, kBlobUMin, kBlobUMax,
                          randomRange(rng, 0.f, 2.f * kPi), irregularity);
         foliageLobes.push_back({center, radius});
     }
     // Always cap the top so the dome has no gap at its peak.
     const float topRx = halfW * 0.18f * lobeScale;
     addEllipsoidBlob(out, {0.f, height * (sphere ? 0.62f : 0.72f), 0.f}, {topRx, height * 0.20f, topRx},
-                     rings, sides, kFoliageUMin, kFoliageUMax, randomRange(rng, 0.f, 2.f * kPi), irregularity);
+                     rings, sides, kBlobUMin, kBlobUMax, randomRange(rng, 0.f, 2.f * kPi), irregularity);
     foliageLobes.push_back({{0.f, height * (sphere ? 0.62f : 0.72f), 0.f},
                             {topRx, height * 0.20f, topRx}});
 
@@ -249,7 +247,7 @@ bool generateBushMesh(const Params &params, MeshBuild &out, std::string &error) 
             const V3 c{lobe.center.x + face.x * lobe.radius.x * 0.96f,
                        lobe.center.y + face.y * lobe.radius.y * 0.96f,
                        lobe.center.z + face.z * lobe.radius.z * 0.96f};
-            addLeafCard(out, rng, c, face, leafSize * randomRange(rng, 0.70f, 1.20f), kFoliageUMin, kFoliageUMax);
+            addLeafCard(out, rng, c, face, leafSize * randomRange(rng, 0.70f, 1.20f), kCardUMin, kCardUMax);
         }
     }
 
