@@ -126,8 +126,8 @@ public:
      * shared by three cells. On a sphere a corner is not a fixed angular offset of
      * its cell, so the mesh builder reads it here instead of deriving it.
      *
-     * @return A unit vector, or the sphere's north pole when an argument is out of
-     *         range (callers gate on `contains`).
+     * @return A unit vector, or the sphere's north pole when an argument is out
+     *         of range (callers gate on `contains`).
      */
     [[nodiscard]] HexVec3 corner(HexSphereCell cell, std::int32_t corner) const noexcept;
 
