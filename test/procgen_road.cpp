@@ -327,17 +327,18 @@ TEST_CASE("procgen.road.scenes.crossJunctionCornerSidewalks") {
     CHECK_GE(sidewalkGroup, 0);
     auto sw = baked.value().mesh.copyGroup(sidewalkGroup);
     REQUIRE(sw);
-    // Convex curb returns: sidewalks sit on the outer annulus around (asphaltHalf, asphaltHalf).
-    const float ah = 3.5f;
+    // Outward-center curb returns: sidewalks sit near (jr,jr) inside the corner disk.
+    const float jr = hubJr;
     int         arcHits = 0;
     for (int i = 0; i < sw->getVertexCount(); ++i) {
         const float x  = std::fabs(sw->getPositionX(i));
         const float z  = std::fabs(sw->getPositionZ(i));
-        const float dx = x - ah;
-        const float dz = z - ah;
-        if (dx < 0.15f || dz < 0.15f) continue;
+        const float dx = jr - x;
+        const float dz = jr - z;
+        if (dx < 0.05f || dz < 0.05f) continue;
         const float r = std::sqrt(dx * dx + dz * dz);
-        if (r > 2.9f && r < 5.0f) ++arcHits;
+        // Between sidewalk outer and curb face radii from the outer corner center.
+        if (r > 0.9f && r < 2.9f) ++arcHits;
     }
     CHECK_GT(arcHits, 16);
 

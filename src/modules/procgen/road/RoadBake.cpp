@@ -477,14 +477,14 @@ Result<void> bakeJunction(MeshBuild& mesh, const RoadNetwork& network, const Roa
     // Asphalt fill. Fan from a hub vertex — a single large strip-quad can vanish
     // under Lavapipe even when the CPU triangles cover the origin.
     if (axisCross) {
-        // Convex curb returns: circle centers at the asphalt corner (ah,ah).
-        // Arms trim at jr = ah + R so sidewalks no longer stack; arcs fill the ring.
+        // Curb-return fillet: circle centers sit in the outer corner (jr,jr), so the
+        // asphalt edge is concave and sidewalks wrap toward the property corner.
         const float ah      = maxAsphalt;
         const float cornerR = std::max(0.75f, jr - ah);
         const int   segs    = 10;
         const V3    upN{0.f, 1.f, 0.f};
 
-        // Hub fan: arm tips at jr + quarter-circle asphalt edges (convex).
+        // Hub fan along the filleted outline (arm tips + concave corner arcs).
         {
             std::vector<std::pair<float, float>> rim;
             rim.reserve(static_cast<std::size_t>(4 * (segs + 3)));
@@ -494,17 +494,16 @@ Result<void> bakeJunction(MeshBuild& mesh, const RoadNetwork& network, const Roa
                     return;
                 rim.emplace_back(x, z);
             };
-            // Inward center C=(sx*ah, sz*ah): th=0 → (sx*jr, sz*ah), th=π/2 → (sx*ah, sz*jr).
             auto pushCornerArc = [&](int sx, int sz, bool reverse) {
                 const float sxf = static_cast<float>(sx);
                 const float szf = static_cast<float>(sz);
-                const float cx  = node.x + sxf * ah;
-                const float cz  = node.z + szf * ah;
+                const float cx  = node.x + sxf * jr;
+                const float cz  = node.z + szf * jr;
                 for (int i = 0; i <= segs; ++i) {
                     const int   ii = reverse ? (segs - i) : i;
                     const float t  = static_cast<float>(ii) / static_cast<float>(segs);
                     const float th = t * 1.5707963f;
-                    pushPt(cx + sxf * cornerR * std::cos(th), cz + szf * cornerR * std::sin(th));
+                    pushPt(cx - sxf * cornerR * std::sin(th), cz - szf * cornerR * std::cos(th));
                 }
             };
             pushPt(node.x + jr, node.z - ah);
@@ -525,8 +524,8 @@ Result<void> bakeJunction(MeshBuild& mesh, const RoadNetwork& network, const Roa
                                   V3{p1.first, asphaltY, p1.second}, upN, RoadMaterial::Asphalt);
             }
 
-            // Thin seal strips under each arm tip.
-            const float seal  = 0.15f;
+            // Thin seal strips under each arm tip — hides residual sub-cm seams.
+            const float seal  = 0.12f;
             const float ySeal = asphaltY + 0.002f;
             auto        addSeal = [&](float x0, float z0, float x1, float z1, float x2, float z2, float x3,
                                float z3) {
@@ -554,18 +553,17 @@ Result<void> bakeJunction(MeshBuild& mesh, const RoadNetwork& network, const Roa
         const float walkY   = y + walkH;
         const float curbTop = y + curbH;
         const float r0      = cornerR;
-        const float r1      = cornerR + curbW;
-        const float r2      = cornerR + curbW + walkW;
-        const float hw      = ah + curbW + walkW;
+        const float r1      = std::max(0.2f, cornerR - curbW);
+        const float r2      = std::max(0.15f, cornerR - curbW - walkW);
         for (int sx : {-1, 1}) {
             for (int sz : {-1, 1}) {
                 const float sxf = static_cast<float>(sx);
                 const float szf = static_cast<float>(sz);
-                const float cx  = node.x + sxf * ah;
-                const float cz  = node.z + szf * ah;
+                const float cx  = node.x + sxf * jr;
+                const float cz  = node.z + szf * jr;
                 auto        arcPt = [&](float radius, float t) {
                     const float th = t * 1.5707963f;
-                    return V3{cx + sxf * radius * std::cos(th), 0.f, cz + szf * radius * std::sin(th)};
+                    return V3{cx - sxf * radius * std::sin(th), 0.f, cz - szf * radius * std::cos(th)};
                 };
                 for (int i = 0; i < segs; ++i) {
                     const float t0 = static_cast<float>(i) / static_cast<float>(segs);
@@ -576,50 +574,24 @@ Result<void> bakeJunction(MeshBuild& mesh, const RoadNetwork& network, const Roa
                     const V3    b1 = arcPt(r1, t1);
                     const V3    c0 = arcPt(r2, t0);
                     const V3    c1 = arcPt(r2, t1);
-                    const V3    outRadial = normalize(V3{a0.x - cx, 0.f, a0.z - cz});
-                    const V3    inRadial  = outRadial * -1.f;
+                    // Toward the outer corner center (sidewalk side).
+                    const V3 inToCorner = normalize(V3{cx - a0.x, 0.f, cz - a0.z});
+                    const V3 outToRoad  = inToCorner * -1.f;
 
+                    // Tops: asphalt-face → curb → sidewalk → corner disk, all +Y.
                     appendOrientedQuad(mesh, V3{a0.x, curbTop, a0.z}, V3{b0.x, curbTop, b0.z},
                                        V3{b1.x, curbTop, b1.z}, V3{a1.x, curbTop, a1.z}, upN, 0.f, 1.f, 0.f, 1.f,
                                        RoadMaterial::Curb);
                     appendOrientedQuad(mesh, V3{b0.x, walkY, b0.z}, V3{c0.x, walkY, c0.z}, V3{c1.x, walkY, c1.z},
                                        V3{b1.x, walkY, b1.z}, upN, 0.f, 1.f, 0.f, 1.f, RoadMaterial::Sidewalk);
+                    appendOrientedTri(mesh, V3{cx, walkY, cz}, V3{c0.x, walkY, c0.z}, V3{c1.x, walkY, c1.z}, upN,
+                                      RoadMaterial::Sidewalk);
 
+                    // Vertical curb face toward asphalt / toward corner.
                     appendOrientedQuad(mesh, V3{a0.x, y, a0.z}, V3{a1.x, y, a1.z}, V3{a1.x, curbTop, a1.z},
-                                       V3{a0.x, curbTop, a0.z}, inRadial, 0.f, 1.f, 0.f, 1.f, RoadMaterial::Curb);
+                                       V3{a0.x, curbTop, a0.z}, outToRoad, 0.f, 1.f, 0.f, 1.f, RoadMaterial::Curb);
                     appendOrientedQuad(mesh, V3{c0.x, y, c0.z}, V3{c1.x, y, c1.z}, V3{c1.x, curbTop, c1.z},
-                                       V3{c0.x, curbTop, c0.z}, outRadial, 0.f, 1.f, 0.f, 1.f, RoadMaterial::Curb);
-                }
-
-                // Tip-face pads: arc ends on the asphalt edge (z=±ah or x=±ah) while arm
-                // sidewalks span out to ±hw. Fill curb+sidewalk along both tip faces.
-                {
-                    // Along X-arm tip (x = ±jr, z from ±ah toward ±hw).
-                    const float ax   = node.x + sxf * jr;
-                    const float axIn = ax - sxf * 0.08f;
-                    const float az0  = node.z + szf * ah;
-                    const float az1  = node.z + szf * (ah + curbW);
-                    const float az2  = node.z + szf * hw;
-                    appendOrientedQuad(mesh, V3{axIn, curbTop, az0}, V3{ax, curbTop, az0}, V3{ax, curbTop, az1},
-                                       V3{axIn, curbTop, az1}, upN, 0.f, 1.f, 0.f, 1.f, RoadMaterial::Curb);
-                    appendOrientedQuad(mesh, V3{axIn, walkY, az1}, V3{ax, walkY, az1}, V3{ax, walkY, az2},
-                                       V3{axIn, walkY, az2}, upN, 0.f, 1.f, 0.f, 1.f, RoadMaterial::Sidewalk);
-
-                    // Along Z-arm tip (z = ±jr, x from ±ah toward ±hw).
-                    const float az   = node.z + szf * jr;
-                    const float azIn = az - szf * 0.08f;
-                    const float ax0  = node.x + sxf * ah;
-                    const float ax1  = node.x + sxf * (ah + curbW);
-                    const float ax2  = node.x + sxf * hw;
-                    appendOrientedQuad(mesh, V3{ax0, curbTop, azIn}, V3{ax1, curbTop, azIn}, V3{ax1, curbTop, az},
-                                       V3{ax0, curbTop, az}, upN, 0.f, 1.f, 0.f, 1.f, RoadMaterial::Curb);
-                    appendOrientedQuad(mesh, V3{ax1, walkY, azIn}, V3{ax2, walkY, azIn}, V3{ax2, walkY, az},
-                                       V3{ax1, walkY, az}, upN, 0.f, 1.f, 0.f, 1.f, RoadMaterial::Sidewalk);
-
-                    // Shoulder between tip outers and the arc outer mid — no asphalt intrusion.
-                    const V3 midOuter = arcPt(r2, 0.5f);
-                    appendOrientedTri(mesh, V3{ax, walkY, az2}, V3{midOuter.x, walkY, midOuter.z},
-                                      V3{ax2, walkY, az}, upN, RoadMaterial::Sidewalk);
+                                       V3{c0.x, curbTop, c0.z}, inToCorner, 0.f, 1.f, 0.f, 1.f, RoadMaterial::Curb);
                 }
             }
         }
