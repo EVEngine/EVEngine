@@ -344,8 +344,8 @@ TEST_CASE("procgen.road.scenes.crossJunctionCornerSidewalks") {
         if (r < 0.55f) ++tipHits;
         const float nx = sw->getNormalX(i);
         const float nz = sw->getNormalZ(i);
-        // Outer skirt faces toward the property corner (±jr,±jr).
-        if (r > 0.7f && r < 1.4f && (nx * dx + nz * dz) > 0.3f) ++outerSkirtHits;
+        // Outer skirt faces the hub (away from property corner) so overhead views see it.
+        if (r > 0.7f && r < 1.4f && (nx * dx + nz * dz) < -0.3f) ++outerSkirtHits;
     }
     CHECK_GT(arcHits, 16);
     CHECK_EQ(tipHits, 0);
