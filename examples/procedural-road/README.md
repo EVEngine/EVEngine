@@ -7,7 +7,7 @@
 | 1 | `straight` | 平坦直线段（无路口） |
 | 2 | `curve` | 水平弯道（无路口） |
 | 3 | `bridge` | 等高高架直线 + 桥墩（暂不含坡道） |
-| 4 | `cross` | 地面十字路口（车道宽方形 apron + 四角人行道） |
+| 4 | `cross` | 地面十字路口（四臂外推 + 四分之一圆弧转角人行道） |
 
 ```sh
 make run GAME=examples/procedural-road
