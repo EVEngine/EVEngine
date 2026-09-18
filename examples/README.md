@@ -188,6 +188,7 @@ Windows 本地直接跑同样的命令即可：脚本自身按 UTF-8 写 stdout/
 | [combat-action-editor](combat-action-editor/README.md) | 战斗动作编辑示例：用 UI 无关编辑器 SDK 组装项目专属工作区 |
 | [procgen-script-editor](procgen-script-editor/README.md) | 宿主封装 Squirrel generator（`generators/forest.nut`）的程序化生成编辑器 |
 | [ui-theme-editor](ui-theme-editor/README.md) | UI 主题编辑示例：组装命名 Theme 工作区 + 实时预览 |
+| [material-editor](material-editor/README.md) | 材质编辑器：中央 UE5 材质球预览 + 右侧 Shading/Surface/Lighting 参数面板 |
 | [ai-stage](ai-stage/README.md) | AI 空舞台：scene_director 搭台 kit + MCP，供 Agent 摆物 / 调光 / 截图 / 质检 |
 | [blender_hot_reload](blender_hot_reload/README.md) | Blender 保存 → GLB → `SceneLoader.load` → 卸载旧 SceneHost 的热重载往返 |
 | [model-converter](model-converter/README.md) | 驱动 Blender 把 OBJ 转换成 GLB 并回载（modelconverter 插件） |
