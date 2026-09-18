@@ -223,6 +223,49 @@ public:
     /** @brief Replay checked commands against a module-owned battle. */
     [[nodiscard]] Result<void> replay(ecs::EntityHandle battle, std::span<const BattleCommand> commands);
 
+    /**
+     * @brief Seal a snapshot and serialize it as one JSON string.
+     *
+     * @return Canonical envelope JSON, or a structured failure. The digest comes from
+     *         {@link snapshotHashAlgorithm}: a registered hasher when a module provided one,
+     *         otherwise the engine's built-in non-cryptographic one.
+     * @remarks This is the form that can cross the script, file and network boundaries: the
+     *          envelope is self-describing (schema, version, instance, revision, tick, digest),
+     *          so a reader does not need out-of-band context to accept or reject it.
+     */
+    [[nodiscard]] Result<std::string> snapshotJson(ecs::EntityHandle battle);
+
+    /**
+     * @brief Parse, verify and transactionally restore a snapshot from JSON text.
+     * @return Applied, or a parse/version/identity/digest refusal; the battle is unchanged on
+     *         failure, including when the envelope parses but its payload does not.
+     */
+    [[nodiscard]] Result<void> restoreJson(ecs::EntityHandle battle, std::string_view json);
+
+    /**
+     * @brief Serialize the accepted command log after @p revision in its persisted shape.
+     * @return JSON text that {@link replayJson} accepts, or a structured failure.
+     */
+    [[nodiscard]] Result<std::string> commandLogJson(ecs::EntityHandle battle, Revision revision);
+
+    /**
+     * @brief Replay a command log produced by {@link commandLogJson}.
+     *
+     * @return Applied, or a structured refusal; commands are validated before any is applied.
+     * @remarks The log is parsed by the same codec that restore uses, so replay cannot drift
+     *          from the persisted command format. A log whose revision does not match this
+     *          battle is refused rather than re-applied onto the wrong state.
+     */
+    [[nodiscard]] Result<void> replayJson(ecs::EntityHandle battle, std::string_view json);
+
+    /**
+     * @brief Id of the content-digest algorithm snapshots currently use.
+     *
+     * @return The active hasher's stable id, so a caller can record which algorithm produced a
+     *         stored hash instead of assuming one.
+     */
+    [[nodiscard]] std::string_view snapshotHashAlgorithm() const noexcept;
+
     /** @brief Return the number of live facade-owned battles. */
     [[nodiscard]] std::size_t battleCount() const noexcept;
     /** @brief Return the number of live facade-owned units. */

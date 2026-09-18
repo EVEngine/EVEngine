@@ -402,6 +402,21 @@ Result<Battle::Reactions> parseReactions(const Value& value, BattlePhase phase) 
 }
 
 /**
+ * @brief Which end of a command log has to agree with the revision the log is used against.
+ *
+ * A log appears in two roles, and they anchor at opposite ends:
+ *  - inside a snapshot payload the log is the battle's history **up to** that snapshot, so it
+ *    must end at the snapshot's revision;
+ *  - as a replay log handed back to `TacticsPersistence::parseCommandLog`, it is applied
+ *    **onto** an earlier state, so it must start at the revision it will be replayed against.
+ * Both rules are checked by one parser; only the anchor differs.
+ */
+enum class CommandLogBoundary {
+    EndsAtRevision,
+    StartsAtRevision,
+};
+
+/**
  * @brief Version-gated interpretation of the command-record shape.
  * @remarks Each flag is frozen to the version range that introduced the field, and is
  *          written as "this version or later" so a future version never regresses to the
@@ -412,6 +427,7 @@ struct CommandFieldPolicy {
     bool policyIdStrings = false;  ///< v3+: stable policy id string instead of the legacy numeric enum.
     bool allowUseAbility = false;  ///< v4+: the `UseAbility` command kind exists.
     bool abilityTargetFields = false;  ///< v6+: commands carry `targetUnit` and `payload`.
+    CommandLogBoundary boundary = CommandLogBoundary::EndsAtRevision;  ///< Anchor rule, see above.
 };
 
 Result<Battle::Commands> parseCommands(const Value& value, Revision snapshotRevision, CommandFieldPolicy policy) {
@@ -576,9 +592,17 @@ Result<Battle::Commands> parseCommands(const Value& value, Revision snapshotRevi
         previousRevision = command.resultingRevision;
         result.values.push_back(std::move(command));
     }
-    if (!result.values.empty() && result.values.back().resultingRevision != snapshotRevision)
+    if (policy.boundary == CommandLogBoundary::EndsAtRevision && !result.values.empty() &&
+        result.values.back().resultingRevision != snapshotRevision)
         return fail<Battle::Commands>(DiagnosticCode::Conflict,
                                       "command log revision differs from snapshot revision", "payload.commands");
+    // A replay log is applied onto the state it starts from, so it is anchored at its first
+    // command instead: re-applying a log captured elsewhere would run commands against state
+    // they were never accepted against.
+    if (policy.boundary == CommandLogBoundary::StartsAtRevision && !result.values.empty() &&
+        result.values.front().expectedRevision != snapshotRevision)
+        return fail<Battle::Commands>(DiagnosticCode::Conflict,
+                                      "replay log does not start at the target revision", "payload.commands");
     return Result<Battle::Commands>::success(std::move(result));
 }
 
@@ -1146,6 +1170,30 @@ Result<SnapshotEnvelope> TacticsPersistence::snapshot(Battle& battle, const Snap
                                 battle.identity()->subject.persistentId(), battle.turn()->revision,
                                 battle.turn()->tick,
                                 std::move(payload), hashProvider);
+}
+
+Result<Value> TacticsPersistence::commandLogValue(Battle& battle, Revision fromRevision) {
+    Value::Array values;
+    for (const BattleCommand& command : battle.commands()->values) {
+        if (command.resultingRevision > fromRevision) values.push_back(commandValue(command));
+    }
+    // The sequence counter is part of the value: replay refuses a log whose next sequence does
+    // not match the target battle, and that check is only meaningful if the counter travels
+    // with the commands.
+    return Result<Value>::success(Value(Value::Object{
+        {"nextSequence", Value(std::to_string(battle.commands()->nextSequence))},
+        {"values", Value(std::move(values))},
+    }));
+}
+
+Result<Battle::Commands> TacticsPersistence::parseCommandLog(const Value& value, Revision snapshotRevision) {
+    CommandFieldPolicy policy;
+    policy.policyIdStrings     = true;
+    policy.allowUseAbility     = true;
+    policy.abilityTargetFields = true;
+    // A replay log is anchored at the revision it will be replayed onto, not at its own end.
+    policy.boundary = CommandLogBoundary::StartsAtRevision;
+    return parseCommands(value, snapshotRevision, policy);
 }
 
 Result<void> TacticsPersistence::restore(Battle& battle, const SnapshotEnvelope& source,

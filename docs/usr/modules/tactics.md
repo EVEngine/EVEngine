@@ -387,6 +387,44 @@ eve::cap::provide<eve::tactics::ILineOfSightPolicy>(myPolicy.get());
 
 **provider 缺失时 `query` 返回空指针**，由调用方显式处理，不会有一个静默的默认实现替它回答。
 
+## 快照与回放的脚本出口
+
+战局可以整份存档、读回并回放——**跨脚本边界的都是 JSON 文本**，因为信封与命令日志都是自描述的
+（schema、版本、实例、revision、tick、摘要都在文档里），读的一侧不需要额外的上下文：
+
+```squirrel
+local baselineRev = battle.revision();          // 回放日志必须锚定的 revision
+local doc = battle.snapshotJson();              // 完整存档（含摘要），value 是 JSON 字符串
+local log = battle.commandLogJson(baselineRev); // 该 revision 之后被接受的命令（同样是 JSON）
+local algo = battle.snapshotAlgorithm();        // 当前生效的摘要算法 id，可随存档一起记录
+
+// ...继续打...
+
+battle.restoreJson(doc.value);                  // 校验摘要 → 解析 → 一次性提交，失败不改状态
+battle.replayJson(log.value);                   // 用 restore 的同一个命令编解码器回放
+```
+
+规则：
+
+- **`restoreJson` 先校验摘要在先、再验证完整候选状态、最后一次性提交**：文档损坏、版本未知、
+  实例不符、哈希不符、单位缺失都不会留下半恢复的战局。
+- **回放日志锚定在它的起点**：`commandLogJson(revision)` 产出的日志必须以该 revision 为
+  `expectedRevision` 开始，否则 `replayJson` 直接拒绝——把别处接受的命令应用到当前状态上，
+  是比失败更糟的结果。日志里的 `nextSequence` 也随命令一起保存，回放会校验它。
+- **回放与恢复共用同一个命令编解码器**（命令的记录形状只有一个所有者），
+  因此回放不可能与存档格式漂移；`restore` + `replay` 之后的快照与直接打出来的快照**逐字节相同**。
+- `snapshotJson` / `commandLogJson` 的输出是**规范 JSON 文本**，可以直接写文件或过网；
+  脚本不需要理解信封内部结构。
+
+摘要算法的选择是**可注入、且不伪装**的：
+
+- 引擎内建一个摘要实现，其 id 就叫 `fnv1a64x2-noncrypto`，并如实报告
+  `NonCryptographic`——它用于**完整性/身份**校验（发现损坏或错配），**不是安全边界**。
+- 需要密码学保证时，注册 `ISnapshotContentHasher` capability 即可；引擎宿主启动时只在
+  **尚无 provider** 的情况下注册内建实现（已有 provider 不会被顶掉）。
+- `snapshotAlgorithm` 让调用方**观察**当前用的是哪个算法并把它记在数据旁边，
+  因此"用了弱摘要"是可见事实而不是隐含假设。
+
 ## 快照约定
 
 `TacticsPersistence` 使用引擎统一的 `SnapshotEnvelope`，schema 为 `tactics:battle`、

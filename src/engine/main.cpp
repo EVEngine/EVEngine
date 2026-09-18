@@ -1,6 +1,7 @@
 #include "common/config.h"
 #include "common/CrashHandler.h"
 #include "common/CrashLog.h"
+#include "common/SnapshotHash.h"
 #include "cmdline/cmdline.h"
 #include <CLI11.hpp>
 #include <rang.hpp>
@@ -54,6 +55,12 @@ int main(int argc, char **argv)
     // Open the crash/error log before anything that could fail, so hard crashes
     // and uncaught exceptions are persisted (see common/CrashLog.h).
     eve::initSystemLogging();
+
+    // Host registration point for the default snapshot content hasher. Script and tooling
+    // paths cannot inject a SnapshotHashProvider, so without this they would have no digest
+    // at all; a module that registered a stronger hasher first is left untouched (NoOp).
+    // See common/SnapshotHash.h for why the built-in one is named non-cryptographic.
+    (void)eve::registerBuiltinSnapshotHasher().status();
 
 #if defined(EVENGINE_WINDOWS) || defined(_WIN32)
     eve::installCrashHandler();

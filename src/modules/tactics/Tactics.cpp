@@ -1,6 +1,7 @@
 #include "tactics/Tactics.h"
 
 #include "tactics/TurnPolicy.h"
+#include "common/SnapshotHash.h"
 #include "common/SquirrelBinding.h"
 #include "common/Capability.h"
 
@@ -1068,6 +1069,55 @@ Result<void> Tactics::replay(ecs::EntityHandle battleHandle, std::span<const Bat
     return BattleReplay::replay(*battle, commands);
 }
 
+Result<std::string> Tactics::snapshotJson(ecs::EntityHandle battleHandle) {
+    Battle* battle = resolveBattle(battleHandle);
+    if (battle == nullptr)
+        return failure<std::string>(DiagnosticCode::StaleHandle,
+                                    "tactics battle is stale or not owned by this facade", "battle");
+    // The provider is resolved per call, so a module that registers a stronger hasher later is
+    // picked up instead of the facade caching a weaker one from an earlier call.
+    auto sealed = TacticsPersistence::snapshot(*battle, snapshotContentHashProvider());
+    if (!sealed) return Result<std::string>::failure(sealed.status());
+    return serializeSnapshotEnvelope(sealed.value());
+}
+
+Result<void> Tactics::restoreJson(ecs::EntityHandle battleHandle, std::string_view json) {
+    Battle* battle = resolveBattle(battleHandle);
+    if (battle == nullptr)
+        return failure(DiagnosticCode::StaleHandle, "tactics battle is stale or not owned by this facade", "battle");
+    // Parsing verifies the digest before anything is mutated, and TacticsPersistence::restore
+    // validates the whole candidate state before it commits, so a bad document cannot leave a
+    // half-restored battle behind.
+    auto parsed = parseSnapshotEnvelope(json, snapshotContentHashProvider());
+    if (!parsed) return Result<void>::failure(parsed.status());
+    return TacticsPersistence::restore(*battle, parsed.value(), snapshotContentHashProvider());
+}
+
+Result<std::string> Tactics::commandLogJson(ecs::EntityHandle battleHandle, Revision revision) {
+    Battle* battle = resolveBattle(battleHandle);
+    if (battle == nullptr)
+        return failure<std::string>(DiagnosticCode::StaleHandle,
+                                    "tactics battle is stale or not owned by this facade", "battle");
+    auto log = TacticsPersistence::commandLogValue(*battle, revision);
+    if (!log) return Result<std::string>::failure(log.status());
+    return log.value().toJson();
+}
+
+Result<void> Tactics::replayJson(ecs::EntityHandle battleHandle, std::string_view json) {
+    Battle* battle = resolveBattle(battleHandle);
+    if (battle == nullptr)
+        return failure(DiagnosticCode::StaleHandle, "tactics battle is stale or not owned by this facade", "battle");
+    auto parsedValue = Value::fromJson(json);
+    if (!parsedValue) return Result<void>::failure(parsedValue.status());
+    // The log must describe this battle's current revision: a log captured at a different point
+    // holds commands that were accepted against different state.
+    auto parsed = TacticsPersistence::parseCommandLog(parsedValue.value(), battle->turn()->revision);
+    if (!parsed) return Result<void>::failure(parsed.status());
+    return BattleReplay::replay(*battle, parsed.value().values);
+}
+
+std::string_view Tactics::snapshotHashAlgorithm() const noexcept { return activeSnapshotHashAlgorithm(); }
+
 std::size_t Tactics::battleCount() const noexcept { return countLive<Battle>(battles_); }
 std::size_t Tactics::unitCount() const noexcept { return countLive<TacticalUnit>(units_); }
 std::size_t Tactics::sideCount() const noexcept { return countLive<TacticalSide>(sides_); }
@@ -1359,6 +1409,60 @@ void Tactics::expose(ssq::Table& table) {
                                              target.value(), payload);
             }),
             bindingAbilityReceiptValue);
+    });
+    // Snapshot / replay across the script boundary. The envelope and the command log travel as
+    // JSON text because both are self-describing: a script can store the text, hand it to
+    // another system, and read it back without out-of-band context.
+    battle.addFunc("snapshotJson", [vm](ScriptTacticsBattle* value) {
+        return script::projectResult(
+            vm,
+            withScriptBattle<Result<std::string>>(value, [](Tactics& module, TacticsBattleSession& session) {
+                return module.snapshotJson(session.battle);
+            }),
+            [](const std::string& json) { return Value(json); });
+    });
+    battle.addFunc("restoreJson", [vm](ScriptTacticsBattle* value, const std::string& json) {
+        if (json.empty())
+            return script::projectResult(
+                vm, failure<void>(DiagnosticCode::InvalidArgument, "snapshot text must not be empty", "json"));
+        return script::projectResult(
+            vm, withScriptBattle<Result<void>>(value, [&](Tactics& module, TacticsBattleSession& session) {
+                return module.restoreJson(session.battle, json);
+            }));
+    });
+    battle.addFunc("commandLogJson", [vm](ScriptTacticsBattle* value, std::int64_t revision) {
+        if (revision < 0)
+            return script::projectResult(
+                vm,
+                failure<std::string>(DiagnosticCode::InvalidArgument, "command revision must be non-negative",
+                                     "revision"),
+                [](const std::string& json) { return Value(json); });
+        return script::projectResult(
+            vm,
+            withScriptBattle<Result<std::string>>(value, [&](Tactics& module, TacticsBattleSession& session) {
+                return module.commandLogJson(session.battle, Revision(static_cast<std::uint64_t>(revision)));
+            }),
+            [](const std::string& json) { return Value(json); });
+    });
+    battle.addFunc("replayJson", [vm](ScriptTacticsBattle* value, const std::string& json) {
+        if (json.empty())
+            return script::projectResult(
+                vm, failure<void>(DiagnosticCode::InvalidArgument, "command log text must not be empty", "json"));
+        return script::projectResult(
+            vm, withScriptBattle<Result<void>>(value, [&](Tactics& module, TacticsBattleSession& session) {
+                return module.replayJson(session.battle, json);
+            }));
+    });
+    // Which digest produced a stored hash is observable rather than assumed: a script can record
+    // it next to the data, and a build that registers a stronger hasher reports its own id.
+    battle.addFunc("snapshotAlgorithm", [vm](ScriptTacticsBattle* value) {
+        return script::projectResult(
+            vm,
+            withScriptBattle<Result<std::string>>(value, [](Tactics& module, TacticsBattleSession& session) {
+                (void)session;
+                return Result<std::string>::success(std::string(module.snapshotHashAlgorithm()));
+            }),
+            [](const std::string& id) { return Value(id); });
     });
     // End a running battle and enter BattleEnd. Scripts previously had no way to
     // close a battle; only the devtools/MCP GameplayControl path could.
