@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "editing/EditableTarget.h"
 #include "editing/EditingAuthority.h"
@@ -55,7 +57,7 @@ struct HouseKitComponentValue {
 };
 
 /** @brief Revisioned component-kit and deterministic generation-request asset. */
-class HouseGenDocumentTarget final : public virtual IEditableTarget,
+class EVENGINE_API_DOMAINS HouseGenDocumentTarget final : public virtual IEditableTarget,
                                      public IDomainOperationTarget,
                                      public IDomainOperationTargetStaging,
                                      public IPropertyProvider {
@@ -104,7 +106,7 @@ private:
 };
 
 /** @brief Candidate generation containing a validated library and deterministic layout. */
-class HouseGenPreviewRuntime {
+class EVENGINE_API_DOMAINS HouseGenPreviewRuntime {
 public:
     HouseGenPreviewRuntime();
     ~HouseGenPreviewRuntime();

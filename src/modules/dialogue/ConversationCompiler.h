@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "dialogue/Conversation.h"
 
@@ -16,7 +18,7 @@ struct ConversationDiagnostic {
 };
 
 /** @brief Compile parameterized conversation blocks embedded in .dnut text. */
-bool compileDnutConversations(const std::string& source, const std::string& path,
+EVENGINE_API_ORCHESTRATION bool compileDnutConversations(const std::string& source, const std::string& path,
                               std::vector<ConversationAsset>& assets,
                               std::vector<ConversationDiagnostic>& diagnostics);
 
@@ -25,6 +27,6 @@ bool lintConversations(const std::vector<ConversationAsset>& assets, const std::
                        std::vector<ConversationDiagnostic>& diagnostics);
 
 /** @brief Export stable line IDs and localization keys as RFC4180 CSV. */
-std::string exportConversationLocalizationCsv(const std::vector<ConversationAsset>& assets);
+EVENGINE_API_ORCHESTRATION std::string exportConversationLocalizationCsv(const std::vector<ConversationAsset>& assets);
 
 }  // namespace eve::dialogue

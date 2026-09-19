@@ -153,7 +153,7 @@ struct BuildingPlacementPreview {
 };
 
 /** @brief Live PlacementWorld target with reversible place/move/remove operations. */
-class BuildingPlacementTarget final : public virtual IEditableTarget,
+class EVENGINE_API_DOMAINS BuildingPlacementTarget final : public virtual IEditableTarget,
                                       public IDomainOperationTarget,
                                       public editing::IDomainOperationTargetStaging {
 public:
@@ -161,6 +161,24 @@ public:
     static CapabilityId editorCapabilityId() { return CapabilityId("eve.editor.target.building-placement"); }
     /** @brief Bind a borrowed world that must outlive the target. */
     BuildingPlacementTarget(std::string id, building::PlacementWorld* world);
+    /**
+     * @brief Out-of-line special members; `ownedWorld_` holds a *forward-declared*
+     * `building::PlacementWorld`.
+     *
+     * A class-level export macro makes MSVC instantiate every member in every
+     * translation unit that includes this header (OBJECT mode: the macro is a plain
+     * `__declspec(dllexport)`). The implicitly-defined destructor then has to delete
+     * `ownedWorld_`, which needs the complete type and fails with C2027/C2338
+     * ("can't delete an incomplete type") in the TUs that only forward-declare it
+     * (measured: `building/editor/building_editor.cpp`). Declaring them here and
+     * defaulting them in `BuildingTarget.cpp` — where `PlacementWorld.h` is included —
+     * keeps the semantics identical and gives the other TUs something to call.
+     */
+    BuildingPlacementTarget(BuildingPlacementTarget&&) noexcept;
+    BuildingPlacementTarget& operator=(BuildingPlacementTarget&&) noexcept;
+    BuildingPlacementTarget(const BuildingPlacementTarget&) = delete;
+    BuildingPlacementTarget& operator=(const BuildingPlacementTarget&) = delete;
+    ~BuildingPlacementTarget();
     TargetId targetId() const override { return TargetId(id_); }
     std::uint64_t revision() const override { return revision_; }
     EditRegion dirtyRegion() const override { return dirty_; }

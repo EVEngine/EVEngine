@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/Result.h"
 #include "common/StateValue.h"
@@ -37,7 +39,7 @@ struct ConversationRoute {
 using Route = ConversationRoute;
 
 /** @brief Immutable, parameterized conversation definition. */
-struct ConversationAsset {
+struct EVENGINE_API_ORCHESTRATION ConversationAsset {
     /** @brief A serializable step in a conversation. */
     struct Node {
         enum class Kind { Line, Branch, Choice, Call, Command, Wait, End };
@@ -75,7 +77,7 @@ struct ConversationAsset {
 };
 
 /** @brief Explicit conversation executor whose suspension points are node IDs. */
-class ConversationRunner {
+class EVENGINE_API_ORCHESTRATION ConversationRunner {
 public:
     using AssetResolver = std::function<const ConversationAsset*(const std::string&)>;
     using ExpressionEvaluator =

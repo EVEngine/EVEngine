@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/Module.h"
 #include "common/Result.h"
@@ -25,7 +27,7 @@ namespace eve::map {
  * Pathfinding: newPathfinder / newPathfinderSize → A* + Flow Field group paths.
  * FOV: newFov / newFovSize → shadowcast visibility + explored memory.
  */
-class Map : public Module {
+class EVENGINE_API_WORLD Map : public Module {
 public:
     Module_REG(Map);
     Map();

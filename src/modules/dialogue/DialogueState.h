@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @file DialogueState.h
@@ -62,14 +64,14 @@ using CommandRequestHandler = std::function<CommandResponse(const CommandRequest
  * @param value Owned StateValue tree; it is not retained.
  * @return An owning common Value with identical JSON-compatible contents.
  */
-[[nodiscard]] eve::Value toCanonicalValue(const eve::StateValue& value);
+[[nodiscard]] EVENGINE_API_ORCHESTRATION eve::Value toCanonicalValue(const eve::StateValue& value);
 
 /**
  * @brief Convert a canonical value to the legacy reload representation.
  * @param value Owned common value; it is not retained.
  * @return An owning StateValue used by the existing persistence facade.
  */
-[[nodiscard]] eve::StateValue toDialogueStateValue(const eve::Value& value);
+[[nodiscard]] EVENGINE_API_ORCHESTRATION eve::StateValue toDialogueStateValue(const eve::Value& value);
 
 /**
  * @brief Decision EvaluationContext backed by one dialogue subject.
@@ -124,7 +126,7 @@ private:
  * all-or-nothing contract; persistent providers are expected to use
  * StatePatch's transaction participant internally.
  */
-class DialogueStateContext {
+class EVENGINE_API_ORCHESTRATION DialogueStateContext {
 public:
     /** @brief Construct a context for one stable world subject. */
     explicit DialogueStateContext(std::string subject = {});

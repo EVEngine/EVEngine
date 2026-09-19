@@ -514,6 +514,14 @@ BuildingPlacementTarget::BuildingPlacementTarget(
     std::string id, std::unique_ptr<building::PlacementWorld> world, unsigned long long revision)
     : id_(std::move(id)), world_(world.get()), ownedWorld_(std::move(world)), revision_(revision) {}
 
+// Defined here (PlacementWorld.h is included above) so every other translation unit
+// gets a declaration to call instead of instantiating the deleter itself; see the
+// special-member comment in BuildingTarget.h.
+BuildingPlacementTarget::BuildingPlacementTarget(BuildingPlacementTarget&&) noexcept = default;
+BuildingPlacementTarget& BuildingPlacementTarget::operator=(BuildingPlacementTarget&&) noexcept =
+    default;
+BuildingPlacementTarget::~BuildingPlacementTarget() = default;
+
 TargetDescriptor BuildingPlacementTarget::describe() const {
     TargetDescriptor result;
     result.id = TargetId(id_);

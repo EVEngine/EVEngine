@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/StateValue.h"
 #include "dialogue/Conversation.h"
@@ -11,13 +13,13 @@
 namespace eve::dialogue {
 
 /** @brief Serialize a dialogue state tree as JSON. */
-std::string conversationStateToJson(const StateValue& state, std::string* error = nullptr);
+EVENGINE_API_ORCHESTRATION std::string conversationStateToJson(const StateValue& state, std::string* error = nullptr);
 
 /** @brief Parse a JSON dialogue state tree. */
-bool conversationStateFromJson(const std::string& json, StateValue& state, std::string* error = nullptr);
+EVENGINE_API_ORCHESTRATION bool conversationStateFromJson(const std::string& json, StateValue& state, std::string* error = nullptr);
 
 /** @brief Explicit save migrations from an old asset version to its current version. */
-class ConversationSaveMigrations {
+class EVENGINE_API_ORCHESTRATION ConversationSaveMigrations {
 public:
     using Resolver = std::function<const ConversationAsset*(const std::string&)>;
 

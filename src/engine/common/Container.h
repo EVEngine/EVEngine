@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @file Container.h
@@ -355,7 +357,7 @@ struct TransferReceipt {
  * @remarks A same-container transfer creates one participant and one staged
  *          replacement. No post-commit snapshot or fallible restore is used.
  */
-class TransferService {
+class EVENGINE_API_FOUNDATION TransferService {
 public:
     /**
      * @brief Preflight and atomically transfer one object.

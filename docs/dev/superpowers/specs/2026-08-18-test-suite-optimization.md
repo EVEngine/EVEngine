@@ -439,3 +439,18 @@ debug SDK（`make sdk/win32-debug`）**沿用开发配置，即动态**：它从
 **修正 §7.8 的一处说法**：`test/ScriptTest.h` 不是跨 link-unit 问题 —— 该头全内联，唯一类外依赖 `ModuleManager::expose` 已是 `EVENGINE_API_FOUNDATION`；三个使用域（platform 27/27、scripts 72/72、card 30/30）都 0 未解析。
 
 **scene 的那 1 个失败属于跨 DLL 静态状态复制（与 §7.3/§7.7 同族）**：`editor.automation_publishes_material_transactions_to_live_renderable` 返回 `Renderable3D handle is missing or stale`。根因是 `external/ECS.hpp` 的 `inline Table &default_table(){ static Table t; … }` —— 头内联的函数局部静态单例，每个 link unit 一份：实体由 graphics（EVBackends）写进它那份 table，material_editor（EVEditors）读自己那份，于是判定 stale。引擎宏无解，必须等 §7.3 的第三方共享化或把默认 ECS table 收归引擎自持。窗口/Vulkan 类域还会叠加 SDL 的同类问题。
+### 7.10 SHARED 测试面标注：dialogue / building（2026-09-20）
+
+| 域 | LNK1120 前→后 | exe | ctest（`-E "^bundle/"`） |
+| --- | --- | --- | --- |
+| dialogue | 119 → 0 | 5.61 MiB | 39/39 通过（含 bundle 55/55） |
+| building | 160 → 0 | 9.18 MiB | 92/96（4 失败，见下；含 bundle 101/107） |
+
+40 个类站点 + 13 个自由函数站点、34 处 `Export.h`、1 处手工特殊成员（`BuildingPlacementTarget`）、`_INLINE` 0、未定位 0。`C:\evs` 的 OBJECT `ninja eve` exit 0。
+
+**building 的 4 个失败 = 跨 DLL 单例复制，已用对照实验定性**：失败点都是测试 TU 自己的 `ecs::View<Renderable3D,…>` 数不到实体（同用例在 DLL 侧操作全部成功）。证据链：`external/ECS.hpp:160` 的 `inline Table &default_table()` 是函数局部 static，每 link unit 一份（.obj 级实测：259 个目标中 27 个各持一份，`unit_test_building` 2 份、`EVBuilding` 1 份、`EVGraphics` 44 份）；`Renderable3D` 是 `EVENGINE_API_BACKENDS`，实体建在 EVBackends.dll 那份表里。**决定性对照**：同一份源码在 OBJECT 单链接单元下 `ctest -R "^buildingfx\."` = **18/18 全通过**。结论与 §7.9 的 scene 那条同族，引擎宏无解，必须等 §7.3 第三方共享化或把默认 ECS 表收归引擎自持。
+
+**三条新坑（并入 §7.5 流水线）**：
+1. **OBJECT 模式下类级标注的第二变体**：类里持有 `unique_ptr<前向声明类型>` 时，dllexport 会在每个 include 该头的 TU 里实例化析构 → `C2027/C2338 can't delete an incomplete type`（实测 `building/editing/BuildingTarget.h::BuildingPlacementTarget` 的 `unique_ptr<placement::PlacementWorld>`）。修法（语义不变）：头里声明析构与移动、删拷贝，在已 include 完整类型的 `.cpp` 里 `= default` 定义。
+2. **清理陈旧对象的脚本要同时覆盖两个对象根**：`src/engine/CMakeFiles/<LIB>.dir` 与 `src/modules/CMakeFiles/<LIB>.dir`（`b3_clean_modules.py` 只扫后者，`common/Container.h` 曾因此漏清、留下陈旧 `.obj`）。
+3. **`ctest -E '^bundle/'` 在 cmd 下单引号会静默失效**（bundle 被一起跑），必须写双引号 `-E "^bundle/"`。因此此前各批报告里"已排除 bundle"的口径要按此重读：本刀 dialogue 不排除是 55（含 16 个 bundle），building 是 107（6 失败 = 4 个用例 + 2 个 bundle 复跑）。

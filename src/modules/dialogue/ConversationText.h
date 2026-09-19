@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/StateValue.h"
 
@@ -9,7 +11,7 @@
 namespace eve::dialogue {
 
 /** @brief Parameter substitution and state-driven character voice modifiers. */
-class ConversationTextRenderer {
+class EVENGINE_API_ORCHESTRATION ConversationTextRenderer {
 public:
     using Evaluator = std::function<bool(const std::string&)>;
     struct ToneRule {

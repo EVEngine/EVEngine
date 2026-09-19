@@ -1,4 +1,6 @@
 #pragma once
+
+#include "common/Export.h"
 #include "building/editing/BuildingTarget.h"
 #include "editor/EditorPresentation.h"
 #include "editor/EditorTool.h"
@@ -54,7 +56,7 @@ struct BuildingEdgeCurveToolSelection {
  * state is tool-owned and never mutates the target until pointer-up authority commit succeeds.
  * @thread Editor/viewport thread only.
  */
-class BuildingEdgeCurveTool final : public IEditorTool {
+class EVENGINE_API_EDITORS BuildingEdgeCurveTool final : public IEditorTool {
 public:
     BuildingEdgeCurveTool(IBuildingViewportAdapter* viewport,
                           editing::IEditAuthority* authority);
