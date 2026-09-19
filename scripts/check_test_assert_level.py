@@ -92,7 +92,34 @@ def mask_non_code(text: str) -> str:
                         out[k] = " "
                 i = stop
                 continue
-        if ch == '"' or ch == "'":
+        if ch == "'":
+            # A C++14 digit separator (`1'000'000`) looks like the start of a character
+            # literal to a naive scanner, and treating it as one blanks every character up to
+            # the next apostrophe -- which hid whole cases from this checker. Two digit
+            # neighbours are unambiguous.
+            if 0 < i < n - 1 and text[i - 1].isdigit() and text[i + 1].isdigit():
+                i += 1
+                continue
+            # Otherwise scan a *bounded* character literal (`'a'`, `'\n'`, `'\''`, `'ab'`):
+            # a stray apostrophe must not consume the rest of the file.
+            closing = -1
+            j = i + 1
+            while j < n and j - i <= 8 and text[j] != "\n":
+                if text[j] == "\\":
+                    j += 2
+                    continue
+                if text[j] == "'":
+                    closing = j
+                    break
+                j += 1
+            if closing <= i + 1:
+                i += 1
+                continue
+            for k in range(i, closing + 1):
+                out[k] = " "
+            i = closing + 1
+            continue
+        if ch == '"':
             quote = ch
             out[i] = " "
             i += 1

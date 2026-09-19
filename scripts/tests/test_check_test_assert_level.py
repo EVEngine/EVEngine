@@ -98,6 +98,30 @@ class AssertLevelTests(unittest.TestCase):
         self.assertEqual(len(masked), len(source))
         self.assertEqual(masked.count("\n"), source.count("\n"))
 
+    def test_digit_separator_is_not_a_character_literal(self):
+        # A C++14 digit separator used to be read as a character literal, which blanked every
+        # character up to the next apostrophe -- hiding the REQUIRE below and turning a real
+        # case into a false offender (or hiding an offender entirely).
+        source = (
+            'TEST_CASE("a.separator") {\n'
+            "    const auto n = 1'000'000;\n"
+            "    REQUIRE(n == 1'000'000);\n"
+            "    CHECK(true);\n"
+            "}\n"
+        )
+        self.assertEqual(self.scan(source), [])
+
+    def test_stray_apostrophe_does_not_swallow_the_file(self):
+        source = (
+            'TEST_CASE("a.stray") {\n'
+            "    // don't let an apostrophe in prose break the scanner\n"
+            '    const char* s = "x";\n'
+            "    REQUIRE(s != nullptr);\n"
+            "}\n"
+            'TEST_CASE("a.afterStray") { CHECK(true); }\n'
+        )
+        self.assertEqual([name for _, name in self.scan(source)], ["a.afterStray"])
+
 
 if __name__ == "__main__":
     unittest.main()

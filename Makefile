@@ -145,7 +145,7 @@ GAME ?=
 	link-compile-commands download-classic-scenes download-skinned-character \
 	check/test-manifest check/module-layers check/bindings check/nodiscard check/quality-metadata \
 	check/profile-matrix check/architecture-contracts check/quality check/examples \
-	check/test-case-lines check/sq-call-sites check/test-assert-level \
+	check/test-case-lines check/sq-call-sites check/test-assert-level check/test-case-names \
 	profile profile/configure profile/build profile/smoke profile/dry-run \
 	ensure-built/win32 ensure-built/win32-debug ensure-built/linux ensure-built/linux-debug \
 	ensure-built/macosx ensure-built/macosx-debug \
@@ -217,6 +217,13 @@ check/sq-call-sites:
 check/test-assert-level:
 	python3 scripts/check_test_assert_level.py
 
+# CTest is keyed by test name, so two cases sharing a name turn every name-based filter
+# ("ctest -R ...", unit_test --testcase=X) into one ambiguous entry and make a "N/N passed"
+# count stop meaning what it looks like. zeroerr registers by (file, line) and does not
+# object, so only a check catches it. No baseline: a duplicate is always an error.
+check/test-case-names:
+	python3 scripts/check_test_case_names.py
+
 # Compile-fail diagnostics for critical Result/ID/Subscription returns. This
 # is a source-only check and does not configure or build the engine.
 check/nodiscard:
@@ -252,7 +259,7 @@ check/profile-matrix:
 	python3 scripts/profile_matrix.py --check
 
 # Fast local quality gate for the profile and debt contracts.
-check/quality: check/quality-metadata check/profile-matrix check/nodiscard check/architecture-contracts check/test-case-lines check/sq-call-sites check/test-assert-level
+check/quality: check/quality-metadata check/profile-matrix check/nodiscard check/architecture-contracts check/test-case-lines check/sq-call-sites check/test-assert-level check/test-case-names
 
 # Profile stages are separate so CI can report configure, build, and
 # independent capability smoke failures independently. The default build root
