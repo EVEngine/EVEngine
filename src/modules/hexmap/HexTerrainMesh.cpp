@@ -526,16 +526,6 @@ private:
         out_.addTriangle(i0 + 1u, i0 + 2u, i0 + 3u);
     }
 
-    /** @brief Emits a triangle that reuses an already emitted anchor vertex as its first corner. */
-    void emitTriangleFrom(std::uint32_t anchor, const HexVec3& p1, const HexVec3& p2, const HexTerrainWeights& w1,
-                          const HexTerrainWeights& w2, const HexCellData* t0, const HexCellData* t1,
-                          const HexCellData* t2) {
-        const std::uint32_t i1 = static_cast<std::uint32_t>(out_.vertexCount());
-        vertex(p1, w1, t0, t1, t2);
-        vertex(p2, w2, t0, t1, t2);
-        out_.addTriangle(anchor, i1, i1 + 1u);
-    }
-
     /**
      * @brief Emits a horizontal quad, mirrored when it would otherwise face downwards.
      *
@@ -545,6 +535,10 @@ private:
      * consistent without depending on that order. Cliff walls are steep ramps rather than true
      * verticals - their far edge is the neighbour's solid edge, bridged horizontally - so they
      * are part of the heightfield and take the same treatment.
+     *
+     * The orientation is read off the positions that are stored, not the unperturbed inputs, for
+     * the same reason `emitCornerTriangle` below does it: the displaced corners are what the
+     * renderer sees, and the two are computed once either way.
      */
     void emitQuadUpward(const HexVec3& p0, const HexVec3& p1, const HexVec3& p2, const HexVec3& p3,
                         const HexTerrainWeights& w0, const HexTerrainWeights& w1, const HexTerrainWeights& w2,
@@ -553,16 +547,20 @@ private:
         // Each triangle is oriented on its own: a quad spanning a terrace or a corner is not
         // planar, so its two halves can disagree and orienting the first one alone leaves the
         // other facing down.
+        const HexVec3 a0 = horizontalPerturb(map_.noise(), p0);
+        const HexVec3 a1 = horizontalPerturb(map_.noise(), p1);
+        const HexVec3 a2 = horizontalPerturb(map_.noise(), p2);
+        const HexVec3 a3 = horizontalPerturb(map_.noise(), p3);
         const std::uint32_t i0 = static_cast<std::uint32_t>(out_.vertexCount());
-        vertex(p0, w0, t0, t1, t2);
-        vertex(p1, w1, t0, t1, t2);
-        vertex(p2, w2, t0, t1, t2);
-        vertex(p3, w3, t0, t1, t2);
-        if (facesDown(p0, p2, p1))
+        vertexAt(a0, w0, t0, t1, t2);
+        vertexAt(a1, w1, t0, t1, t2);
+        vertexAt(a2, w2, t0, t1, t2);
+        vertexAt(a3, w3, t0, t1, t2);
+        if (facesDown(a0, a2, a1))
             out_.addTriangle(i0, i0 + 1u, i0 + 2u);
         else
             out_.addTriangle(i0, i0 + 2u, i0 + 1u);
-        if (facesDown(p1, p2, p3))
+        if (facesDown(a1, a2, a3))
             out_.addTriangle(i0 + 1u, i0 + 3u, i0 + 2u);
         else
             out_.addTriangle(i0 + 1u, i0 + 2u, i0 + 3u);
@@ -595,19 +593,6 @@ private:
             emitPerturbedTriangle(a0, a2, a1, w0, w2, w1, t0, t1, t2);
         else
             emitPerturbedTriangle(a0, a1, a2, w0, w1, w2, t0, t1, t2);
-    }
-
-    /** @brief `emitTriangleFrom` with the winding chosen so the face points upwards. */
-    void emitCornerTriangleFrom(std::uint32_t anchor, const HexVec3& anchorPoint, const HexVec3& p1,
-                                const HexTerrainWeights& w1, const HexVec3& p2, const HexTerrainWeights& w2,
-                                const HexCellData* t0, const HexCellData* t1, const HexCellData* t2) {
-        const std::uint32_t i1 = static_cast<std::uint32_t>(out_.vertexCount());
-        vertex(p1, w1, t0, t1, t2);
-        vertex(p2, w2, t0, t1, t2);
-        if (facesDown(anchorPoint, p1, p2))
-            out_.addTriangle(anchor, i1 + 1u, i1);
-        else
-            out_.addTriangle(anchor, i1, i1 + 1u);
     }
 
     /** @brief Four triangles fanning from `center` along one solid edge. */
