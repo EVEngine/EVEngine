@@ -360,7 +360,7 @@ eve.Scene["getEntity"] <- function(nodeId, cls) {
 
 eve.Scene["getEntityAt"] <- function(hostName, nodeId, cls) {
     local out = null
-    forEachEntity(hostName, nodeId, function(e) {
+    forEachEntity(hostName, nodeId, function(e, index) {
         if (out == null && e instanceof cls) out = e
     })
     return out
@@ -380,7 +380,7 @@ eve.Scene["entitiesOf"] <- function(nodeId) {
 
 eve.Scene["entitiesOfAt"] <- function(hostName, nodeId) {
     local out = []
-    forEachEntity(hostName, nodeId, function(e) { out.push(e) })
+    forEachEntity(hostName, nodeId, function(e, index) { out.push(e) })
     return out
 }
 
@@ -811,6 +811,7 @@ void Scene::beginBuild() {
     openStack_.clear();
     hasBuiltRoot_ = false;
     builtRoot_ = NodeDesc{};
+    buildCursor_  = BuildCursor::None;
 }
 
 void Scene::pushOpen(NodeDesc d) { openStack_.push_back(std::move(d)); }
@@ -820,14 +821,23 @@ NodeDesc &Scene::currentParent() {
     return openStack_.back();
 }
 
+NodeDesc& Scene::buildTarget() {
+    if (openStack_.empty()) throw std::runtime_error("scene: node outside beginNode/beginGroup");
+    if (buildCursor_ == BuildCursor::LastAddedChild && !openStack_.back().children.empty())
+        return openStack_.back().children.back();
+    return openStack_.back();
+}
+
 void Scene::beginNode(const std::string &id, const std::string &name) {
     if (openStack_.empty() && hasBuiltRoot_) beginBuild();
     pushOpen(node(id, {}, name));
+    buildCursor_ = BuildCursor::OpenNode;
 }
 
 void Scene::beginGroup(const std::string &id) {
     if (openStack_.empty() && hasBuiltRoot_) beginBuild();
     pushOpen(group({}, id));
+    buildCursor_ = BuildCursor::OpenNode;
 }
 
 void Scene::end() {
@@ -837,39 +847,43 @@ void Scene::end() {
     if (openStack_.empty()) {
         builtRoot_ = std::move(finished);
         hasBuiltRoot_ = true;
+        buildCursor_  = BuildCursor::None;
     } else {
         openStack_.back().children.push_back(std::move(finished));
+        // The finished node is now the open parent's last child.
+        buildCursor_ = BuildCursor::LastAddedChild;
     }
 }
 
 void Scene::addNode(const std::string &id, const std::string &name) {
     currentParent().children.push_back(node(id, {}, name));
+    buildCursor_ = BuildCursor::LastAddedChild;
 }
 
 void Scene::setBuildPosition(float x, float y, float z) {
-    NodeDesc &d = currentParent();
+    NodeDesc& d = buildTarget();
     d.x = x;
     d.y = y;
     d.z = z;
 }
 
 void Scene::setBuildRotation(float yaw, float pitch, float roll) {
-    NodeDesc &d = currentParent();
+    NodeDesc& d = buildTarget();
     d.yaw = yaw;
     d.pitch = pitch;
     d.roll = roll;
 }
 
 void Scene::setBuildScale(float sx, float sy, float sz) {
-    NodeDesc &d = currentParent();
+    NodeDesc& d = buildTarget();
     d.sx = sx;
     d.sy = sy;
     d.sz = sz;
 }
 
-void Scene::setBuildSpace(const std::string &space) { currentParent().space = space; }
+void Scene::setBuildSpace(const std::string& space) { buildTarget().space = space; }
 
-void Scene::setBuildVisible(bool visible) { currentParent().visible = visible; }
+void Scene::setBuildVisible(bool visible) { buildTarget().visible = visible; }
 
 bool Scene::buildComplete() const { return openStack_.empty() && hasBuiltRoot_; }
 
@@ -918,7 +932,7 @@ SceneHost *Scene::resolveHost(const std::string &hostName) const {
 }
 
 SceneObject *Scene::findSceneObjectById(uint32_t id) const {
-    if (id == 0) return nullptr;
+    if (id == kNoSceneObject) return nullptr;
     if (ecs::current()->getManager<SceneObject>() == nullptr) return nullptr;
     auto view = ecs::View<SceneObject, SceneObject::Meta>();
     for (auto it = view.begin(); it != view.end(); ++it) {
@@ -940,12 +954,12 @@ SceneObject *Scene::findSceneObjectByPersistentId(eve::SceneObjectId id) const {
 
 SceneObject *Scene::ensureSceneObject(SceneHost *host, SceneNode *node,
                                       const std::string &hostName) {
-    if (node->objectId != 0) {
+    if (node->objectId != kNoSceneObject) {
         if (SceneObject *o = findSceneObjectById(node->objectId)) {
             if (!node->persistentId.isNil()) o->meta()->persistentId = node->persistentId;
             return o;
         }
-        node->objectId = 0;  // stale id (entity was released)
+        node->objectId = kNoSceneObject;  // stale id (entity was released)
     }
     if (!node->persistentId.isNil()) {
         if (SceneObject *o = findSceneObjectByPersistentId(node->persistentId)) {
@@ -989,7 +1003,7 @@ bool Scene::unrootEntityAt(const std::string &hostName, const std::string &nodeI
     if (!h) return false;
     SceneNode *n = borrowSceneResult(h->findById(nodeId));
     if (!n) return false;
-    SceneObject *obj = n->objectId ? findSceneObjectById(n->objectId) : nullptr;
+    SceneObject* obj = n->objectId != kNoSceneObject ? findSceneObjectById(n->objectId) : nullptr;
     if (!obj) return false;
     auto &vec = obj->scriptBindings()->instances;
     if (index < 0 || index >= int(vec.size())) return false;
@@ -997,7 +1011,7 @@ bool Scene::unrootEntityAt(const std::string &hostName, const std::string &nodeI
     vec.erase(vec.begin() + index);
     sq_release(vm_, &raw);
     if (vec.empty()) {
-        n->objectId = 0;
+        n->objectId = kNoSceneObject;
         obj->release();
     }
     return true;
@@ -1010,7 +1024,7 @@ int Scene::forEachEntity(const std::string &hostName, const std::string &nodeId,
     if (!h) return 0;
     SceneNode *n = borrowSceneResult(h->findById(nodeId));
     if (!n) return 0;
-    SceneObject *obj = n->objectId ? findSceneObjectById(n->objectId) : nullptr;
+    SceneObject* obj = n->objectId != kNoSceneObject ? findSceneObjectById(n->objectId) : nullptr;
     if (!obj) return 0;
     // Copy + addref: the callback may attach/detach and mutate the live list.
     auto vec = obj->scriptBindings()->instances;
@@ -1043,6 +1057,11 @@ void Scene::updateScripts(float dt) {
     for (auto &h : snapshot) sq_addref(vm_, &h);
     for (auto &h : snapshot) callMethod(h, "update", dt);
     for (auto &h : snapshot) sq_release(vm_, &h);
+    // Scripts moved nodes during update(dt), so world matrices are stale: recompute
+    // them before returning. updateHost() early-outs on a clean tree, so the cost is
+    // proportional to what the scripts actually touched. Without this, getWorldPosition()
+    // right after update(dt) reported pre-move values.
+    updateTransformsAll();
 }
 
 std::string Scene::currentHostName() const {
@@ -1171,10 +1190,15 @@ bool Scene::callMethod0(HSQOBJECT inst, const char *name) {
 bool Scene::callCallback(HSQOBJECT fn, HSQOBJECT inst, int index) {
     if (!vm_) return false;
     const SQInteger top = sq_gettop(vm_);
+    // sq_call's parameter count includes the receiver slot, so the callback sees
+    // (entity, index) as ordinary parameters while `this` is bound to the entity.
+    // Pushing only the receiver + index made `e` arrive as an integer, which the
+    // script wrappers silently read as "no such entity" (`e instanceof cls` false).
     sq_pushobject(vm_, fn);
-    sq_pushobject(vm_, inst);
+    sq_pushobject(vm_, inst);  // this
+    sq_pushobject(vm_, inst);  // entity
     sq_pushinteger(vm_, SQInteger(index));
-    if (SQ_FAILED(sq_call(vm_, 2, SQFalse, SQTrue))) {
+    if (SQ_FAILED(sq_call(vm_, 3, SQFalse, SQTrue))) {
         sq_settop(vm_, top);
         return false;
     }

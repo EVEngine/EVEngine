@@ -158,7 +158,7 @@ EditorResult<void> SceneHostEditorTarget::synchronizeHost(const SceneTargetBase&
             return liveError<void>(EditorStatus::Conflict, "editor.scene.live-host-diverged",
                                    "Live scene changed outside this target: " + id.value());
         const auto* node = live->getNode(live->findIndexById(id.value()));
-        if (!desired.contains(id) && (!node->links.empty() || node->objectId != 0))
+        if (!desired.contains(id) && (!node->links.empty() || node->objectId != eve::scene::kNoSceneObject))
             return liveError<void>(EditorStatus::Rejected, "editor.scene.live-delete-attached",
                                    "Detach domain links and behaviors before deleting this node");
     }

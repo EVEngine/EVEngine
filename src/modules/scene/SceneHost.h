@@ -39,6 +39,16 @@ namespace eve::scene {
 enum class SceneMutationStatus { Applied, Rejected };
 
 /**
+ * @brief `SceneNode::objectId` value meaning "this node has no SceneObject".
+ *
+ * The ECS registry allocates dense entity ids starting at 0, so 0 is a *valid*
+ * runtime id. Using it as the "none" marker made the first SceneObject created in
+ * a process look unbound. The sentinel is therefore a value the dense allocator
+ * cannot reach.
+ */
+inline constexpr uint32_t kNoSceneObject = 0xFFFFFFFFu;
+
+/**
  * @brief Retained scene node (arena). Conceptual GameObject; isomorphic to eve::ui::UINode.
  */
 struct SceneNode {
@@ -69,8 +79,12 @@ struct SceneNode {
     /** @brief Generic links (renderable / physics / camera / audio). Target owned elsewhere. */
     std::vector<SceneLink> links;
 
-    /** @brief Lazy companion SceneObject ECS runtime id; 0 = none. Never a persisted identity. */
-    uint32_t objectId = 0;
+    /**
+     * @brief Lazy companion SceneObject ECS runtime id; kNoSceneObject = none.
+     *
+     * This is the raw entity id, not an encoded handle. Never a persisted identity.
+     */
+    uint32_t objectId = kNoSceneObject;
 
     int firstChild = -1;
     int nextSibling = -1;

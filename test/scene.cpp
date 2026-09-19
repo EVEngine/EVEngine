@@ -704,7 +704,7 @@ TEST_CASE("Scene.objectId.preservedAcrossFullRebuild") {
     REQUIRE(p2 != nullptr);
     REQUIRE(q != nullptr);
     CHECK_EQ(uint32_t(p2->objectId), uint32_t(o->id));
-    CHECK_EQ(q->objectId, 0u);
+    REQUIRE_EQ(q->objectId, eve::scene::kNoSceneObject);
 
     // Reconcile patch keeps the marker too.
     h->setTreeReconcile(node("root", {node("p").withPosition(1.f, 0.f, 0.f)}));
@@ -713,6 +713,15 @@ TEST_CASE("Scene.objectId.preservedAcrossFullRebuild") {
     CHECK_EQ(uint32_t(p3->objectId), uint32_t(o->id));
 
     o->release();
+}
+
+TEST_CASE("Scene.objectId.sentinelIsNotADenseEntityId") {
+    // The ECS registry allocates dense entity ids starting at 0, so the *first*
+    // SceneObject in a process is id 0. A 0 "no SceneObject" marker therefore made
+    // that object unreachable: the node looked unbound, so `Scene::rootEntity`
+    // created a fresh object each call and `forEachEntity` yielded nothing.
+    static_assert(eve::scene::kNoSceneObject != 0, "the 'no SceneObject' marker must not collide with a dense ECS id");
+    REQUIRE_EQ(eve::scene::SceneNode{}.objectId, eve::scene::kNoSceneObject);
 }
 
 TEST_CASE("Scene.link.genericMultiLinkAndSync") {
@@ -1367,9 +1376,13 @@ function testSceneComponentOnMount() {
     class MyComp extends eve.SceneComponent {
         function onMount() { mounted += 1 }
         function build() {
-            scene.beginBuild()
-            scene.beginNode("root", "")
-            scene.end()
+            // `scene` bare would resolve to the inherited SceneComponent.scene()
+            // accessor method, so the documented pattern is to call the accessor
+            // (see examples/basic/ui_component.nut: `local u = ui()`). updateIfDirty()
+            // has already called beginBuild() for this pass.
+            local s = scene()
+            s.beginNode("root", "")
+            s.end()
         }
     }
     local c = MyComp()
@@ -1450,37 +1463,39 @@ public:
 };
 
 TEST_CASE_FIXTURE(SceneEcsBridgeFixture, "Scene.script.entityLifecycle") {
-    // CHECK, not REQUIRE: the script returns false. Pre-existing and untriaged
-    // (plan doc 9.15); the sweep only revealed that it never asserted.
-    CHECK(vm.callFunc(vm.findFunc("testSceneEntityLifecycle"), vm).toBool());
+    REQUIRE(vm.callFunc(vm.findFunc("testSceneEntityLifecycle"), vm).toBool());
 }
 
 TEST_CASE_FIXTURE(SceneEcsBridgeFixture, "Scene.script.entityViewCacheAfterDetach") {
-    // CHECK, not REQUIRE: the script returns false. Pre-existing and untriaged
-    // (plan doc 9.15); the sweep only revealed that it never asserted.
-    CHECK(vm.callFunc(vm.findFunc("testSceneEntityViewCacheAfterDetach"), vm).toBool());
+    REQUIRE(vm.callFunc(vm.findFunc("testSceneEntityViewCacheAfterDetach"), vm).toBool());
 }
 
 TEST_CASE_FIXTURE(SceneEcsBridgeFixture, "Scene.script.linkPhysics2D") {
-    // CHECK, not REQUIRE: the script returns false. Pre-existing and untriaged
-    // (plan doc 9.15); the sweep only revealed that it never asserted.
+    // CHECK, not REQUIRE: the script still returns false. The link itself registers
+    // (linkCount == 1 passes); the first failing check is script line 1247 — after
+    // scene.updateTransforms() the linked physics body still holds the stale
+    // position, so the node->body push does not happen for a script-created link.
+    // Untriaged (plan doc 9.19).
     CHECK(vm.callFunc(vm.findFunc("testSceneLinkPhysics2D"), vm).toBool());
 }
 
 TEST_CASE_FIXTURE(SceneEcsBridgeFixture, "Scene.script.apiCompleteness") {
-    // CHECK, not REQUIRE: the script returns false. Pre-existing and untriaged
-    // (plan doc 9.15); the sweep only revealed that it never asserted.
+    // CHECK, not REQUIRE: the script still returns false. The local getters now pass
+    // (setBuild* cursor fix, plan doc 9.19); the first failing check is script line
+    // 1288 — scene.getNodeWorldPosition("ball") misses the parent offset after
+    // scene.updateTransforms(). Untriaged.
     CHECK(vm.callFunc(vm.findFunc("testSceneApiCompleteness"), vm).toBool());
 }
 
 TEST_CASE_FIXTURE(SceneEcsBridgeFixture, "Scene.script.nodeEvents") {
-    // CHECK, not REQUIRE: the script returns false. Pre-existing, untriaged (9.15).
+    // CHECK, not REQUIRE: the script still returns false. The first failing check is
+    // script line 1350 — a reconcile patch that moves one child expects two
+    // node_changed events (root then the child) but fewer fire. Untriaged (9.19).
     CHECK(vm.callFunc(vm.findFunc("testSceneNodeEvents"), vm).toBool());
 }
 
 TEST_CASE_FIXTURE(SceneEcsBridgeFixture, "Scene.script.componentOnMount") {
-    // CHECK, not REQUIRE: the script returns false. Pre-existing, untriaged (9.15).
-    CHECK(vm.callFunc(vm.findFunc("testSceneComponentOnMount"), vm).toBool());
+    REQUIRE(vm.callFunc(vm.findFunc("testSceneComponentOnMount"), vm).toBool());
 }
 
 TEST_CASE_FIXTURE(SceneEcsBridgeFixture, "Scene.script.errorSemantics") {

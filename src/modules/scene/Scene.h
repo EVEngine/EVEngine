@@ -337,6 +337,17 @@ public:
 private:
     [[nodiscard]] SceneHost *ensureSelected(const std::string &preferredName = "");
     NodeDesc &currentParent();
+    /**
+     * @brief Node that setBuildPosition/Rotation/Scale configure.
+     *
+     * The builder's setBuild* calls target the node created most recently, whether
+     * by `beginNode`/`beginGroup` (still open) or by `addNode` (last child of the
+     * open parent). Targeting only the open node silently moved the *parent* for the
+     * documented `addNode(...); setBuildPosition(...)` order.
+     */
+    NodeDesc& buildTarget();
+    /** @brief Which node buildTarget() resolves to. */
+    enum class BuildCursor { None, OpenNode, LastAddedChild };
     void pushOpen(NodeDesc d);
     bool buildComplete() const;
 
@@ -363,6 +374,7 @@ private:
     std::vector<NodeDesc> openStack_;
     NodeDesc builtRoot_;
     bool hasBuiltRoot_ = false;
+    BuildCursor           buildCursor_  = BuildCursor::None;
 };
 
 }  // namespace eve::scene
