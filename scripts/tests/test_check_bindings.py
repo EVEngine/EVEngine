@@ -100,6 +100,28 @@ class ReverseDirectionTests(unittest.TestCase):
         self.assertIn("bar", code)
         self.assertNotIn("baz", code)
 
+    def test_cpp_fence_between_nut_fences_does_not_leak_prose(self):
+        # A ```cpp block's closing fence used to be read as an unlabelled opening one, so
+        # the prose that followed it was captured as script code (this is how editor.md's
+        # mention of `session.constraints()` was reported as a script promise).
+        text = (
+            "```nut\nx.a()\n```\n"
+            "prose mentioning y.leak()\n"
+            "```cpp\nz.b()\n```\n"
+            "```nut\nw.c()\n```\n"
+        )
+        code = checker.squirrel_fences(text)
+        self.assertIn("a(", code)
+        self.assertIn("c(", code)
+        self.assertNotIn("leak", code)
+        self.assertNotIn("b(", code)
+
+    def test_commented_out_calls_are_not_promises(self):
+        text = "```nut\n// x.commented()\nx.live()\n```\n"
+        code = checker.squirrel_fences(text)
+        self.assertIn("live", code)
+        self.assertNotIn("commented", code)
+
     def test_only_lowercase_instance_receivers_are_promises(self):
         matches = checker.DOC_MEMBER_CALL_RE.findall("a.method()\nEve.Other()\n")
         # `Eve.Other()` is a class/factory access, not an instance method call.

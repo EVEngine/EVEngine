@@ -118,9 +118,16 @@ SCRIPT_DEF_RES = (
 # inline mention produced 221 names whose actionable yield was one. Counting member
 # calls in runnable samples keeps the real case this check ever found
 # (`procgen.newShapeGrammar`) and leaves a list short enough to read.
-SQUIRREL_FENCE_RE = re.compile(r"```(?:nut|squirrel|sq)?\n(.*?)```", re.DOTALL)
-# An instance method call: a lowercase receiver that is not the `eve` root table (whose
-# members are classes and module factories, registered as `addClass`, not as methods).
+SQUIRREL_LANGS = frozenset({"", "nut", "squirrel", "sq"})
+# Pair every fence in order and keep the script ones. Scanning for ```nut directly is
+# wrong: a ```cpp block's *closing* fence looks like an unlabelled opening, so the prose
+# after it was captured as script code (that is how editor.md's prose mention of
+# `session.constraints()` was reported as a script promise).
+FENCE_RE = re.compile(r"^```([^\n]*)\n(.*?)^```", re.DOTALL | re.MULTILINE)
+# Commented-out lines are not promises either: dialogue.md's Inspector sample carries a
+# disabled `// viewModel.addEditor(...)`, and animation.md records the C++-only
+# `spine.collectDrawItems` in a comment next to the script accessors that replace it.
+SQUIRREL_COMMENT_RE = re.compile(r"//[^\n]*")
 DOC_MEMBER_CALL_RE = re.compile(r"\b([a-z][A-Za-z0-9_]*)\.([A-Za-z_][A-Za-z0-9_]*)\s*\(")
 # Squirrel's own methods are not engine API, however they are spelled in a sample.
 SQUIRREL_BUILTINS = frozenset(
@@ -256,8 +263,13 @@ def doc_for(module: str) -> Path | None:
 
 
 def squirrel_fences(text: str) -> str:
-    """Only the Squirrel code blocks of a doc chapter: its runnable samples."""
-    return "\n".join(match.group(1) for match in SQUIRREL_FENCE_RE.finditer(text))
+    """Only the live Squirrel code of a doc chapter's runnable samples."""
+    parts = [
+        SQUIRREL_COMMENT_RE.sub("", match.group(2))
+        for match in FENCE_RE.finditer(text)
+        if match.group(1).strip().lower() in SQUIRREL_LANGS
+    ]
+    return "\n".join(parts)
 
 
 def declared_dirs() -> list[Path]:

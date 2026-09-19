@@ -4835,6 +4835,35 @@ void Procgen::expose(ssq::Class& cls) {
                     return makeOwnedPointSetProxy(
                         vm, value->filterSplineDistanceHandle(*inputRef, *splineRef, minDistance, maxDistance));
                 });
+    // Pointset-pipeline.md documents `filterPolygon` / `excludePolygon` for concave
+    // XZ polygons; the C++ side takes an `invert` flag, so both names bind to one
+    // implementation rather than two.
+    cls.addFunc("filterPolygon",
+                [vm = cls.getHandle()](Procgen* value, PointSet* input, PointSet* polygon) -> ssq::Table {
+                    const auto inputRef   = nativeProxyReference<ProcgenPointSetHandleRef>(input);
+                    const auto polygonRef = nativeProxyReference<ProcgenPointSetHandleRef>(polygon);
+                    if (!value || !inputRef || !polygonRef)
+                        return eve::script::projectStatusResult(
+                            vm,
+                            procgenBindingFailure<void>(eve::DiagnosticCode::InvalidArgument,
+                                                        "filterPolygon requires owned point sets", "points")
+                                .status(),
+                            false, false);
+                    return makeOwnedPointSetProxy(vm, value->filterPolygonHandle(*inputRef, *polygonRef, false));
+                });
+    cls.addFunc("excludePolygon",
+                [vm = cls.getHandle()](Procgen* value, PointSet* input, PointSet* polygon) -> ssq::Table {
+                    const auto inputRef   = nativeProxyReference<ProcgenPointSetHandleRef>(input);
+                    const auto polygonRef = nativeProxyReference<ProcgenPointSetHandleRef>(polygon);
+                    if (!value || !inputRef || !polygonRef)
+                        return eve::script::projectStatusResult(
+                            vm,
+                            procgenBindingFailure<void>(eve::DiagnosticCode::InvalidArgument,
+                                                        "excludePolygon requires owned point sets", "points")
+                                .status(),
+                            false, false);
+                    return makeOwnedPointSetProxy(vm, value->filterPolygonHandle(*inputRef, *polygonRef, true));
+                });
     cls.addFunc("selfPrune", [vm = cls.getHandle()](Procgen* value, PointSet* input, float radius) -> ssq::Table {
         const auto inputRef = nativeProxyReference<ProcgenPointSetHandleRef>(input);
         if (!value || !inputRef)
@@ -4858,6 +4887,36 @@ void Procgen::expose(ssq::Class& cls) {
                                                     "publishCellInstances"));
             return eve::script::projectResult(
                 vm, value->publishCellInstances(prefix, *request, *pointsRef, assetAttribute, defaultAsset));
+        });
+    // The manual (non-cell) publication path documented in pointset-pipeline.md's
+    // "发布到 Scene" section. `removeInstances` and the counters were already bound or
+    // are bound above, so this is the missing half of the same batch API.
+    cls.addFunc(
+        "publishInstances", [vm = cls.getHandle()](Procgen* value, const std::string& batchId, PointSet* points,
+                                                   const std::string& assetAttribute, const std::string& defaultAsset) {
+            const auto pointsRef = nativeProxyReference<ProcgenPointSetHandleRef>(points);
+            if (!value || !pointsRef)
+                return eve::script::projectResult(
+                    vm, procgenBindingFailure<void>(eve::DiagnosticCode::InvalidArgument,
+                                                    "publishInstances requires owned points", "publishInstances"));
+            return eve::script::projectResult(
+                vm, value->publishInstances(batchId, *pointsRef, assetAttribute, defaultAsset));
+        });
+    cls.addFunc(
+        "projectToHeightmap",
+        [vm = cls.getHandle()](Procgen* value, PointSet* input, Heightmap* terrain, float originX, float originZ,
+                               float cellSize, float heightScale) -> ssq::Table {
+            const auto inputRef  = nativeProxyReference<ProcgenPointSetHandleRef>(input);
+            const auto heightRef = nativeProxyReference<ProcgenHeightmapHandleRef>(terrain);
+            if (!value || !inputRef || !heightRef)
+                return eve::script::projectStatusResult(
+                    vm,
+                    procgenBindingFailure<void>(eve::DiagnosticCode::InvalidArgument,
+                                                "projectToHeightmap requires owned points and heightmap", "points")
+                        .status(),
+                    false, false);
+            return makeOwnedPointSetProxy(
+                vm, value->projectToHeightmapHandle(*inputRef, *heightRef, originX, originZ, cellSize, heightScale));
         });
     cls.addFunc("publishCellSnapshot", [vm = cls.getHandle()](
                                            Procgen* value, const std::string& prefix, ProcgenCellRequest* request,
@@ -4982,6 +5041,13 @@ void Procgen::expose(ssq::Class& cls) {
                                                 "removeInstances requires Procgen", "procgen"));
         return eve::script::projectResult(vm, value->removeInstances(batchId));
     });
+    // The batch publication counters. Pointset-pipeline.md documents these (and the
+    // C++ side has had them since the batch API landed); they were simply never
+    // exposed, so a script could publish a batch and then not observe what it did.
+    cls.addFunc("getPublishedInstanceCount", &Procgen::getPublishedInstanceCount);
+    cls.addFunc("getPublishedCreatedCount", &Procgen::getPublishedCreatedCount);
+    cls.addFunc("getPublishedReusedCount", &Procgen::getPublishedReusedCount);
+    cls.addFunc("getPublishedRemovedCount", &Procgen::getPublishedRemovedCount);
     cls.addFunc(
         "generateTexture",
         [vm = cls.getHandle()](Procgen* value, const std::string& recipe, ScriptProcgenParams* params,
