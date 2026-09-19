@@ -31,7 +31,7 @@ class Weapon;
  * @return A value-owned projection for one consumer, or a structured parse failure.
  * @remarks The returned value is independent of the registry and does not form a second store.
  */
-[[nodiscard]] eve::Result<WeaponDefinition> parseWeaponDefinition(const eve::definitions::Definition& source);
+[[nodiscard]] EVENGINE_API_WORLD eve::Result<WeaponDefinition> parseWeaponDefinition(const eve::definitions::Definition& source);
 
 /**
  * @brief Mutable state owned by one typed weapon runtime instance.

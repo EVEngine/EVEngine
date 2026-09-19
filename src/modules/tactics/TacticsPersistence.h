@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /** @file TacticsPersistence.h @brief Versioned battle snapshots with transactional restore. */
 
@@ -15,7 +17,7 @@ namespace eve::tactics {
  * all candidate values first, and only then replaces mutable components.
  * Methods are simulation-thread-affine and invoke no unknown callbacks.
  */
-class TacticsPersistence {
+class EVENGINE_API_DOMAINS TacticsPersistence {
 public:
     /** @brief Capture a version-one, integrity-sealed battle snapshot. */
     [[nodiscard]] static Result<SnapshotEnvelope> snapshot(Battle& battle,

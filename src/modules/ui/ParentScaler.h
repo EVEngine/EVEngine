@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/Result.h"
 
@@ -43,7 +45,7 @@ struct ParentScalerOutput {
  * @ownership All values remain caller-owned and no references are retained.
  * @thread UI owner thread; no callbacks are invoked.
  */
-[[nodiscard]] Result<void> evaluateParentScaler(ParentScalerState* state,
+[[nodiscard]] EVENGINE_API_WORLD Result<void> evaluateParentScaler(ParentScalerState* state,
                                                 ParentScalerOutput* output,
                                                 const ParentScalerSettings* settings,
                                                 const ParentScalerInput* input);

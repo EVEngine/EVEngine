@@ -150,7 +150,7 @@ struct AbilitySpec {
 };
 
 /** @brief Entity-local sorted tags; this is the RTS entity's tag authority. */
-class TagSet {
+class EVENGINE_API_DOMAINS TagSet {
 public:
     /** @brief Add a tag in deterministic lexical order. */
     [[nodiscard]] Result<void> add(std::string_view tag);
@@ -790,7 +790,7 @@ public:
 };
 
 /** @brief RTS building domain root with placement and production composition. */
-class Building : public ecs::Entity {
+class EVENGINE_API_DOMAINS Building : public ecs::Entity {
 public:
     ENTITY(Building, ecs::Entity)
 
@@ -1020,7 +1020,7 @@ public:
 };
 
 /** @brief Harvestable RTS resource node; deposited balances are owned by an external resource account. */
-class ResourceNode : public ecs::Entity {
+class EVENGINE_API_DOMAINS ResourceNode : public ecs::Entity {
 public:
     ENTITY(ResourceNode, ecs::Entity)
 
@@ -1125,7 +1125,7 @@ public:
 };
 
 /** @brief Faction domain root; membership is a set of typed runtime handles. */
-class Faction : public ecs::Entity {
+class EVENGINE_API_DOMAINS Faction : public ecs::Entity {
 public:
     ENTITY(Faction, ecs::Entity)
 
@@ -1237,7 +1237,7 @@ enum class VictoryRule : std::uint8_t { Annihilation, DestroyHeadquarters, Resou
 enum class MatchPhase : std::uint8_t { Setup, Running, Finished };
 
 /** @brief Independent match composition root; factions may participate in different matches. */
-class Match : public ecs::Entity {
+class EVENGINE_API_DOMAINS Match : public ecs::Entity {
 public:
     ENTITY(Match, ecs::Entity)
     void release() override { ecs::DestroyEntity(this); }

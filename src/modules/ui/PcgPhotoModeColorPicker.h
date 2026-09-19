@@ -1,4 +1,6 @@
 #pragma once
+
+#include "common/Export.h"
 #include "common/Result.h"
 #include "ui/PcgUiStatus.h"
 #include <cstdint>
@@ -6,7 +8,7 @@
 namespace ssq { class Table; }
 namespace eve::ui {
 /** @brief Caller-owned runtime model of Pcg PhotoModeColorPicker. */
-class PcgPhotoModeColorPicker {
+class EVENGINE_API_WORLD PcgPhotoModeColorPicker {
 public:
  /** @brief Open with a source color and preserve Pcg's HDR preprocessing. */ [[nodiscard]] Result<void> open(float r,float g,float b,float a,bool hdr);
  /** @brief Store the color restored by reset. */ [[nodiscard]] Result<void> setLast(float r,float g,float b,float a);

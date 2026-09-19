@@ -73,7 +73,7 @@ EVENGINE_API_WORLD FlexResult flexArrange(bool row, float gap, float availMain, 
 void measureNode(UIHost::Tree &tree, int index);
 
 /** Measure the whole tree from its root. */
-void measureTree(UIHost::Tree &tree);
+EVENGINE_API_WORLD void measureTree(UIHost::Tree &tree);
 
 /** Flow measure helpers for non-flex containers (Window/Group/Child/Header). */
 void measureFlowChildren(UIHost::Tree &tree, int firstChild, float *outW, float *outH);

@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "ui/UIHost.h"
 #include "ui/Widget.h"
@@ -12,7 +14,7 @@ namespace eve::ui {
  * @brief React-style UI component: implement build(), call setState / markDirty, then rebuild().
  * Mounts onto a named UIHost via mountAs / attach.
  */
-class Component {
+class EVENGINE_API_WORLD Component {
 public:
     virtual ~Component() = default;
 

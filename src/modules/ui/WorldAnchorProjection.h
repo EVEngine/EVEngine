@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "ui/UIHost.h"
 
@@ -58,7 +60,7 @@ struct WorldAnchorLayoutResult {
  * @return Owning, deterministic projection snapshot. Invalid viewports produce NoCamera.
  * @thread Pure and thread-safe; invokes no callbacks and retains no references.
  */
-[[nodiscard]] WorldAnchorProjection projectWorldAnchor(const UIHost::WorldAnchor &anchor,
+[[nodiscard]] EVENGINE_API_WORLD WorldAnchorProjection projectWorldAnchor(const UIHost::WorldAnchor &anchor,
                                                        const glm::mat4 &viewProjection,
                                                        float cameraX, float cameraY, float cameraZ,
                                                        float viewportWidth, float viewportHeight);
@@ -71,7 +73,7 @@ struct WorldAnchorLayoutResult {
  * @return One owning result per input item, sorted by stableIndex.
  * @thread Pure and thread-safe; invokes no callbacks and retains no references.
  */
-[[nodiscard]] std::vector<WorldAnchorLayoutResult> resolveWorldAnchorOverlaps(
+[[nodiscard]] EVENGINE_API_WORLD std::vector<WorldAnchorLayoutResult> resolveWorldAnchorOverlaps(
     std::vector<WorldAnchorLayoutItem> items, float viewportWidth, float viewportHeight);
 
 }  // namespace eve::ui

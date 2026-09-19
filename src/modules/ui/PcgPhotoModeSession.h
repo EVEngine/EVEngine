@@ -1,4 +1,6 @@
 #pragma once
+
+#include "common/Export.h"
 #include "common/Result.h"
 #include "ui/PcgPhotoModeValues.h"
 #include <cstdint>
@@ -7,7 +9,7 @@ namespace ssq { class Table; }
 namespace eve::ui {
 enum class PcgPhotoModeLoadDecision { Current=0, Saved=1, SaveCurrent=2 };
 /** @brief Transactional lifecycle state for Pcg PhotoMode setup, disable and destroy. */
-class PcgPhotoModeSession {
+class EVENGINE_API_WORLD PcgPhotoModeSession {
 public:
  /** @brief Begin from captured engine values and optionally select a compatible saved profile. */
  [[nodiscard]] Result<void> begin(const std::string&capturedJson,const std::string&savedJson,bool loadSaved,bool savedEver,int currentPipeline,int savedPipeline,const std::string&sceneName,int lightingProfile);

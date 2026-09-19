@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /** @file TacticsAction.h @brief Tactics movement adapter for shared ActionRuntime. */
 
@@ -17,7 +19,7 @@ namespace eve::tactics {
  * ActionRuntime calls commit synchronously on the same simulation thread. The
  * provider retains no unit pointer and invokes no script or external callback.
  */
-class TacticsActionExecutor final : public action::IActionEffectExecutor {
+class EVENGINE_API_DOMAINS TacticsActionExecutor final : public action::IActionEffectExecutor {
 public:
     /** @brief Bind one module-owned running battle. */
     explicit TacticsActionExecutor(Battle& battle) noexcept : battle_(battle) {}
@@ -35,11 +37,11 @@ private:
 using MoveActionExecutor = TacticsActionExecutor;
 
 /** @brief Build the canonical zero-duration tactics move action definition. */
-[[nodiscard]] action::ActionDefinition moveActionDefinition();
+[[nodiscard]] EVENGINE_API_DOMAINS action::ActionDefinition moveActionDefinition();
 /** @brief Build the canonical zero-duration tactics facing action definition. */
-[[nodiscard]] action::ActionDefinition faceActionDefinition();
+[[nodiscard]] EVENGINE_API_DOMAINS action::ActionDefinition faceActionDefinition();
 /** @brief Build the canonical zero-duration tactics wait action definition. */
-[[nodiscard]] action::ActionDefinition waitActionDefinition();
+[[nodiscard]] EVENGINE_API_DOMAINS action::ActionDefinition waitActionDefinition();
 
 /**
  * @brief Build a checked move request using canonical integer cell parameters.
@@ -47,12 +49,12 @@ using MoveActionExecutor = TacticsActionExecutor;
  * @param destination Logical target cell.
  * @param tick Deterministic request tick.
  */
-[[nodiscard]] Result<action::ActionRequest> makeMoveRequest(ecs::EntityHandle unit, Cell destination,
+[[nodiscard]] EVENGINE_API_DOMAINS Result<action::ActionRequest> makeMoveRequest(ecs::EntityHandle unit, Cell destination,
                                                             SimulationTick tick);
 /** @brief Build a checked facing request with optimistic battle revision. */
-[[nodiscard]] Result<action::ActionRequest> makeFaceRequest(ecs::EntityHandle unit, int facing,
+[[nodiscard]] EVENGINE_API_DOMAINS Result<action::ActionRequest> makeFaceRequest(ecs::EntityHandle unit, int facing,
                                                             SimulationTick tick);
 /** @brief Build a checked wait request with optimistic battle revision. */
-[[nodiscard]] Result<action::ActionRequest> makeWaitRequest(ecs::EntityHandle unit, SimulationTick tick);
+[[nodiscard]] EVENGINE_API_DOMAINS Result<action::ActionRequest> makeWaitRequest(ecs::EntityHandle unit, SimulationTick tick);
 
 }  // namespace eve::tactics

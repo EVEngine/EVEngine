@@ -1,10 +1,12 @@
 #pragma once
+
+#include "common/Export.h"
 #include "common/Result.h"
 #include <string>
 namespace ssq { class Table; }
 namespace eve::ui {
 /** @brief Caller-owned notification state ported from Pcg ScreenshotSavedManager. */
-class PcgScreenshotSavedNotice {
+class EVENGINE_API_WORLD PcgScreenshotSavedNotice {
 public:
  /** @brief Configure enable state and visible duration atomically. */ [[nodiscard]] Result<void> configure(bool enabled,float showSeconds);
  /** @brief Cancel an old notice and schedule a new one for the next end-of-frame. */ [[nodiscard]] Result<void> request(const std::string& savedPath);

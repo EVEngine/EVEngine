@@ -466,3 +466,19 @@ debug SDK（`make sdk/win32-debug`）**沿用开发配置，即动态**：它从
 **combat 的唯一失败与 §7.9/§7.10 同族**：`actionPrefabRuntime.spawnsRealRenderablePoolsAndAppliesThreeLifecycles` 断言 `renderableCount(true) == 1` 得到 0（Vulkan 初始化正常，不是 SDL 族）。`external/ECS.hpp:160` 的 `inline default_table()` 每 link unit 一份（SHARED 实测 **28 个 link unit / 198 个 .obj** 各持一份），而 `Renderable3D::create()` 定义在 EVGraphics（`Renderable3D.cpp.obj` plain=8、`__imp_`=0），测试 TU 读自己那份表 → 数不到实体。**决定性对照**：OBJECT 单链接单元 `unit_test_combat` **151/151 全通过**。引擎宏无解。
 
 **回归**：`ninja -C C:\evs eve` exit 0；OBJECT 的 `unit_test_combat` / `unit_test_map` 均链接成功且 map 109/109；已迁移域重链后复跑计数与 §7.7/§7.9/§7.10 记录逐项一致（platform 27/27、particles 25/34、scene 69/70、building 92/96）→ 无回归。`unit_test_rpg` 仍 481 未解析（该域未迁移，非回归）。
+### 7.12 SHARED 测试面标注：tactics_rts / ui（2026-09-20）
+
+| 域 | LNK1120 前→后 | exe | ctest（`-E "^bundle/"`） |
+| --- | --- | --- | --- |
+| tactics_rts | 116 → 0 | 13.45 MiB（OBJECT 同一源码 228.38 MiB） | **145/145 通过**（另有 21 个 bundle 未跑） |
+| ui | 194 → 0 | 10.80 MiB（OBJECT 同一源码 225.05 MiB） | **100/106 通过，6 个用例挂起**（另有 31 个 bundle 未跑） |
+
+改动：303 个未解析符号收敛到 **111 个声明点 / 34 个头文件**（`EVENGINE_API_WORLD` 49、`EVENGINE_API_DOMAINS` 61、`EVENGINE_API_EDITORS` 1）、`Export.h` include 29、`_INLINE` 0、四特殊成员 0、friend 补宏 0；7 处 AMBIGUOUS（`applyThemeToImGui` 两个重载、`Faction`、`RTSProjectileSystem` 等）由类级宏或逐条标注覆盖（`Theme.h` 两个重载都带宏）。链接前用 `b4a/b4b_clean.py --apply` 清掉两棵构建树两个对象根的 6 模块 93 个 `.obj`，再 `ninja -k 0 unit_test_ui unit_test_tactics_rts` → exit 0，LNK1120/LNK2019/LNK2001 全 0。
+
+**`ui` 的 6 个挂起**（`--timeout 120`，同一断言，都不是"慢"）：`UI.editorKit.desktopCompositionRenders`、`UI.layout.measureNestedFlexAndWindowContent`、`UI.p1.statsAfterHeadlessRender`、`UI.p1.scrollListHeadlessRenderLarge`、`UISystem.render.headlessImGuiWalk`、`UI.overlay.transparentHostHasNoChromeAndRestoresStyle`；断言为 `GImGui != 0 && "No current context…"`（`third-party/imgui/imgui.cpp:2425` 的 `GetStyle()` 与 `:3441` 的 `GetIO()`）。机制与 §7.9/§7.10/§7.11 同族（第三方静态状态每个 link unit 一份）：用例在测试 TU 里 `ImGui::CreateContext()/SetCurrentContext()`（走 exe 自带的那份 imgui —— 链接行里有 `src\modules\eve_imgui.lib`），随后调用的 ui 模块函数在 **EVWorld.dll** 里读自己那份 `GImGui`。取证 `b5a2-imgui-copies.log`：该断言字符串在 `imgui.cpp` 里共 3 处，而只有 `EVWorld.dll` 与 `unit_test_ui.exe` 各命中 3 处（= 各含 1 份 imgui），其余 29 个二进制 0 处；`?GImGui@@` 定义在 `eve_imgui`(3 obj)/`EVUI`(1 obj)。**挂起而非退出**：单跑 `UI.editorKit.desktopCompositionRenders` 45 s 内 CPU 仅 0.09 s，主线程 `Wait/UserRequest`、另 3 线程 `EventPairLow`，stderr 打出断言后进程不结束 → ctest 只能靠超时杀掉。**决定性对照**：OBJECT 单链接单元 `unit_test_ui` **106/106 全通过**（7.4 s，这 6 个用例 0.26–0.51 s）、`unit_test_tactics_rts` **145/145**。
+
+**流水线新增两条**：
+1. 跑 ctest **必须带 `--timeout`**：挂死用例在默认 1500 s 下会把"日志很久没动"伪装成"代理卡死"（本批前后两个代理都误判过，§7.12 初稿也因此只记了 2 个挂起）。判断依据是"文件写入时间 + 是否有 cl/ninja/ctest 进程在跑"，不是"多久没输出"。
+2. 统计 failed 之前先确认日志覆盖了全部用例：截断的日志会漏报挂起用例（本轮 `ui` 4 → 6）。
+
+**回归对账（本批标注未破坏已迁移域）**：platform 27/27、particles 25/34（9 个仍是 SDL `_this` 族）、scene 69/70（ECS 族）、building 92/96（ECS 族）——与 §7.7/§7.9/§7.10 记录**逐项一致**。静态 `ninja -C C:\evs eve` exit 0（`eve.exe` 221.25 MiB）。ECS 单例对象级取证：2437 个 `.obj` / 259 个目标中 173 个 `.obj` / 27 个目标各持一份（`unit_test_ui` 1、`unit_test_tactics_rts` 1、`EVUI` 15、`EVRts` 11、`EVTactics` 1、`EVGraphics` 44…）；SDL 取证：7 个组 DLL + 全部 30 个测试 exe 各含一份 SDL video 静态状态。本批日志前缀 `b5a2-`。

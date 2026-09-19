@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "ui/editor/EditorUiDocumentTarget.h"
 
@@ -46,7 +48,7 @@ struct UiSkinDrawPlan {
 };
 
 /** @brief Builds deterministic text/texture commands without touching runtime graphics. */
-class UiSkinPreviewPlanner {
+class EVENGINE_API_EDITORS UiSkinPreviewPlanner {
 public:
     /** @brief Resolve assets and fit/clamp widget content against a layout preview. */
     UiSkinDrawPlan build(const UiDocumentTarget& document, const UiPreviewSnapshot& preview,

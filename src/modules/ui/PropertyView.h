@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "property_access/PropertyAccess.h"
 #include "ui/Component.h"
@@ -31,14 +33,14 @@ WidgetDesc buildPropertyField(property_access::IPropertyAccess &model, const std
  * IPropertyAccess::write(), so gameplay models and command-backed editor models
  * use the same UI generation path.
  */
-WidgetDesc buildPropertyView(property_access::IPropertyAccess &model, const PropertyViewOptions &options = {});
+EVENGINE_API_WORLD WidgetDesc buildPropertyView(property_access::IPropertyAccess &model, const PropertyViewOptions &options = {});
 
 /** @brief Pull current model values into an existing compatible UI tree. */
-void syncPropertyView(UIHost &host, const property_access::IPropertyAccess &model,
+EVENGINE_API_WORLD void syncPropertyView(UIHost &host, const property_access::IPropertyAccess &model,
                       const PropertyViewOptions &options = {});
 
 /** @brief Component wrapper that becomes dirty when its bound model changes. */
-class PropertyComponent final : public Component {
+class EVENGINE_API_WORLD PropertyComponent final : public Component {
 public:
     explicit PropertyComponent(property_access::IPropertyAccess *model = nullptr, PropertyViewOptions options = {});
     ~PropertyComponent() override = default;
