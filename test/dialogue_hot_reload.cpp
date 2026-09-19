@@ -45,3 +45,17 @@ endconversation
     CHECK(flow.getLastLoadChanged());
     CHECK(flow.lintAll());
 }
+
+TEST_CASE("dialogueHotReload.rejectsDuplicateCrossSourceOwnership") {
+    DialogueFlow flow;
+    const std::string source = R"(
+conversation shared.id entry=end
+node end end
+endconversation
+)";
+    REQUIRE(flow.loadFromDnut(source, "first.dnut") == 1);
+    CHECK(flow.loadFromDnut(source, "second.dnut") == 0);
+    CHECK(flow.hasConversation("shared.id"));
+    CHECK(flow.removeSource("first.dnut"));
+    CHECK(!flow.hasConversation("shared.id"));
+}

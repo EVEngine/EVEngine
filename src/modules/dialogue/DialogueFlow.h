@@ -233,8 +233,9 @@ private:
     HSQUIRRELVM                                               vm_ = nullptr;
     HSQOBJECT                                                 evaluator_{};
     bool                                                      hasEvaluator_ = false;
-    std::unordered_map<std::string, size_t>                   sourceHashes_;
+    std::unordered_map<std::string, std::string>              sourceTexts_;
     std::unordered_map<std::string, std::vector<std::string>> sourceAssets_;
+    std::unordered_map<std::string, std::string>              assetSources_;
     bool                                                      lastLoadChanged_ = false;
     ConversationLocalizationCatalog                           localization_;
     std::string                                               locale_;

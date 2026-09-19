@@ -222,8 +222,7 @@ const ConversationAsset* DialogueFlow::find(const std::string& id) const {
 }
 
 int DialogueFlow::loadFromDnut(const std::string& source, const std::string& path) {
-    const size_t hash = std::hash<std::string>{}(source);
-    if (const auto it = sourceHashes_.find(path); it != sourceHashes_.end() && it->second == hash) {
+    if (const auto it = sourceTexts_.find(path); it != sourceTexts_.end() && it->second == source) {
         lastLoadChanged_ = false;
         failureMessage_.clear();
         return static_cast<int>(sourceAssets_[path].size());
@@ -233,6 +232,15 @@ int DialogueFlow::loadFromDnut(const std::string& source, const std::string& pat
     if (!compileDnutConversations(source, path, compiled, diagnostics_)) {
         failureMessage_ = diagnostics_.empty() ? "conversation compilation failed" : diagnostics_.front().message;
         return 0;
+    }
+    for (const auto& asset : compiled) {
+        const auto owner = assetSources_.find(asset.id);
+        if (owner != assetSources_.end() && owner->second != path) {
+            diagnostics_.push_back({ConversationDiagnostic::Severity::Error, path, 0,
+                                    "conversation '" + asset.id + "' is already owned by '" + owner->second + "'"});
+            failureMessage_ = diagnostics_.back().message;
+            return 0;
+        }
     }
     runner_.stop();
     if (const auto old = sourceAssets_.find(path); old != sourceAssets_.end()) {
@@ -252,16 +260,16 @@ int DialogueFlow::loadFromDnut(const std::string& source, const std::string& pat
         else
             *it = std::move(asset);
     }
-    sourceHashes_[path] = hash;
+    sourceTexts_[path] = source;
     sourceAssets_[path] = std::move(compiledIds);
+    for (const auto& id : sourceAssets_[path]) assetSources_[id] = path;
     lastLoadChanged_    = true;
     failureMessage_.clear();
     return static_cast<int>(compiled.size());
 }
 
 int DialogueFlow::reloadFromDnut(const std::string& source, const std::string& path) {
-    const size_t hash = std::hash<std::string>{}(source);
-    if (const auto cached = sourceHashes_.find(path); cached != sourceHashes_.end() && cached->second == hash) {
+    if (const auto cached = sourceTexts_.find(path); cached != sourceTexts_.end() && cached->second == source) {
         lastLoadChanged_ = false;
         failureMessage_.clear();
         return static_cast<int>(sourceAssets_[path].size());
@@ -273,6 +281,18 @@ int DialogueFlow::reloadFromDnut(const std::string& source, const std::string& p
         failureMessage_  = diagnostics_.empty() ? "conversation compilation failed" : diagnostics_.front().message;
         lastLoadChanged_ = false;
         return 0;
+    }
+    for (const auto& asset : compiled) {
+        const auto owner = assetSources_.find(asset.id);
+        if (owner != assetSources_.end() && owner->second != path) {
+            candidateDiagnostics.push_back({ConversationDiagnostic::Severity::Error, path, 0,
+                                            "conversation '" + asset.id + "' is already owned by '" +
+                                                owner->second + "'"});
+            diagnostics_ = std::move(candidateDiagnostics);
+            failureMessage_ = diagnostics_.back().message;
+            lastLoadChanged_ = false;
+            return 0;
+        }
     }
 
     std::vector<ConversationAsset> candidate = assets_;
@@ -321,8 +341,11 @@ int DialogueFlow::reloadFromDnut(const std::string& source, const std::string& p
         }
     }
     diagnostics_        = std::move(candidateDiagnostics);
-    sourceHashes_[path] = hash;
+    if (const auto old = sourceAssets_.find(path); old != sourceAssets_.end())
+        for (const auto& id : old->second) assetSources_.erase(id);
+    sourceTexts_[path] = source;
     sourceAssets_[path] = std::move(compiledIds);
+    for (const auto& id : sourceAssets_[path]) assetSources_[id] = path;
     lastLoadChanged_    = true;
     failureMessage_.clear();
     return static_cast<int>(compiled.size());
@@ -338,8 +361,10 @@ bool DialogueFlow::removeSource(const std::string& path) {
                                             source->second.end();
                                  }),
                   assets_.end());
+    const std::vector<std::string> removedIds = source->second;
     sourceAssets_.erase(source);
-    sourceHashes_.erase(path);
+    sourceTexts_.erase(path);
+    for (const auto& id : removedIds) assetSources_.erase(id);
     lastLoadChanged_ = true;
     return true;
 }
@@ -354,6 +379,11 @@ bool DialogueFlow::lintAll() {
 bool DialogueFlow::renameConversation(const std::string& oldId, const std::string& newId) {
     runner_.stop();
     if (!renameConversationAsset(assets_, oldId, newId, &failureMessage_)) return false;
+    if (const auto owner = assetSources_.find(oldId); owner != assetSources_.end()) {
+        const std::string path = owner->second;
+        assetSources_.erase(owner);
+        assetSources_[newId] = path;
+    }
     for (auto& [path, ids] : sourceAssets_)
         for (auto& id : ids)
             if (id == oldId) id = newId;
@@ -423,8 +453,9 @@ int DialogueFlow::importTwee(const std::string& source, const std::string& path)
 void DialogueFlow::clear() {
     runner_.stop();
     assets_.clear();
-    sourceHashes_.clear();
+    sourceTexts_.clear();
     sourceAssets_.clear();
+    assetSources_.clear();
     localization_.clear();
     migrations_.clear();
     textRenderer_.clearToneRules();

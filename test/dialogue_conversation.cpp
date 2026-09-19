@@ -46,6 +46,7 @@ TEST_CASE("dialogueConversation.parameterizedRunner") {
     StateValue bindings = StateValue::object();
     CHECK(bindings.setPath("speaker.mood", StateValue::string("happy")));
     CHECK(bindings.setPath("listener.id", StateValue::string("player")));
+    CHECK(bindings.set("location", StateValue::string("village")));
     std::string error;
     CHECK(runner.start(&asset, std::move(bindings), &error));
     CHECK(error.empty());
@@ -54,6 +55,22 @@ TEST_CASE("dialogueConversation.parameterizedRunner") {
     CHECK(runner.currentNode()->pool == "greeting.friendly");
     CHECK(runner.advance(&error));
     CHECK(!runner.isActive());
+}
+
+TEST_CASE("dialogueConversation.rejectsMissingAndUndeclaredBindings") {
+    ConversationAsset  asset = makeGreeting();
+    ConversationRunner runner;
+    StateValue         bindings = StateValue::object();
+    CHECK(bindings.set("speaker", StateValue::object()));
+    CHECK(bindings.set("listener", StateValue::object()));
+    std::string error;
+    CHECK(!runner.start(&asset, bindings, &error));
+    CHECK(error.find("missing required binding 'location'") != std::string::npos);
+
+    CHECK(bindings.set("location", StateValue::string("village")));
+    CHECK(bindings.set("unexpected", StateValue::boolean(true)));
+    CHECK(!runner.start(&asset, bindings, &error));
+    CHECK(error.find("undeclared binding 'unexpected'") != std::string::npos);
 }
 
 TEST_CASE("dialogueConversation.validation") {

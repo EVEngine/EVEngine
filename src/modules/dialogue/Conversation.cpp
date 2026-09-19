@@ -1,5 +1,6 @@
 #include "dialogue/Conversation.h"
 
+#include <algorithm>
 #include <unordered_set>
 #include <utility>
 
@@ -74,6 +75,14 @@ bool ConversationRunner::start(const ConversationAsset* asset, StateValue bindin
     if (!asset) return fail(error, "conversation: null asset");
     if (!bindings.isObject()) return fail(error, "conversation: bindings must be an object");
     if (!asset->validate(error)) return false;
+    for (const auto& parameter : asset->parameters) {
+        if (!bindings.find(parameter))
+            return fail(error, "conversation '" + asset->id + "': missing required binding '" + parameter + "'");
+    }
+    for (const auto& key : bindings.keys()) {
+        if (std::find(asset->parameters.begin(), asset->parameters.end(), key) == asset->parameters.end())
+            return fail(error, "conversation '" + asset->id + "': undeclared binding '" + key + "'");
+    }
     asset_ = asset;
     bindings_ = std::move(bindings);
     locals_ = StateValue::object();
