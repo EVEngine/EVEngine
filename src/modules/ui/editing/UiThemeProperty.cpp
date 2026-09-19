@@ -28,7 +28,7 @@ eve::Result<eve::Revision> UiThemeCatalogTarget::currentRevision(const Selection
     if (!matches(selection))
         return eve::Result<eve::Revision>::failure(eve::Diagnostic::error(
             eve::DiagnosticCode::InvalidArgument, "Theme selection mismatch", "editor.ui-theme.selection"));
-    return eve::Result<eve::Revision>::success(eve::Revision(revision_));
+    return eve::Result<eve::Revision>::success(eve::Revision(revisionValue()));
 }
 
 PropertySchema UiThemeCatalogTarget::schema(const SelectionSnapshot&) const { return themeTokenSchema(); }

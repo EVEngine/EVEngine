@@ -74,7 +74,7 @@ bool errors(const std::vector<EditorDiagnostic>& d) {
 VoxelPaletteTarget::VoxelPaletteTarget(std::string id) : id_(std::move(id)) {}
 TargetDescriptor VoxelPaletteTarget::describe() const {
     return {
-        TargetId(id_), "voxel-palette", revision_, false, {CapabilityId("eve.editor.target.voxel-palette-properties")}};
+        TargetId(id_), "voxel-palette", revisionValue(), false, {CapabilityId("eve.editor.target.voxel-palette-properties")}};
 }
 void* VoxelPaletteTarget::queryCapability(const CapabilityId& c) {
     return c == CapabilityId("eve.editor.target.voxel-palette-properties") ? static_cast<IPropertyProvider*>(this)
@@ -93,7 +93,7 @@ eve::Result<eve::Revision> VoxelPaletteTarget::currentRevision(const SelectionSn
         return eve::Result<eve::Revision>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
                                                                           "Voxel palette selection mismatch",
                                                                           "editor.voxel-palette.selection"));
-    return eve::Result<eve::Revision>::success(eve::Revision(revision_));
+    return eve::Result<eve::Revision>::success(eve::Revision(revisionValue()));
 }
 PropertySchema VoxelPaletteTarget::schema(const SelectionSnapshot&) const {
     PropertySchema s;
@@ -253,8 +253,8 @@ EditorResult<void> VoxelPaletteTarget::applyDomainOperation(const DomainOperatio
     if (errors(c.validate()))
         return fail<void>(EditorStatus::Rejected, "editor.voxel-palette.invalid", "Voxel palette validation failed");
     entries_ = std::move(c.entries_);
-    ++revision_;
-    dirty_.include(0, 0);
+    bumpRevision();
+    widenDirty(0, 0);
     return eve::editing::applied<void>();
 }
 std::unique_ptr<IDomainOperationTarget> VoxelPaletteTarget::cloneDomainState() const {
@@ -281,7 +281,7 @@ EditorResult<void> VoxelPaletteTarget::loadSnapshot(const EditorValue& s) {
     op.type     = "voxel.palette.replace.v1";
     op.payload  = *content;
     auto result = applyDomainOperation(op);
-    if (result.ok()) dirty_.clear();
+    if (result.ok()) clearDirtyRegion();
     return result;
 }
 }  // namespace eve::voxel_editing

@@ -101,7 +101,7 @@ UiThemeCatalogTarget::UiThemeCatalogTarget(std::string id) : id_(std::move(id)) 
 TargetDescriptor UiThemeCatalogTarget::describe() const {
     return {TargetId(id_),
             "ui-theme-catalog",
-            revision_,
+            revisionValue(),
             false,
             {propertyCapabilityId(), IEditingSnapshotProvider::editingCapabilityId()}};
 }
@@ -195,8 +195,8 @@ EditorResult<void> UiThemeCatalogTarget::applyDomainOperation(const DomainOperat
                           "Theme catalog replacement is invalid");
     themes_   = std::move(candidate.themes_);
     activeId_ = candidate.activeId_;
-    ++revision_;
-    dirty_.include(0, 0);
+    bumpRevision();
+    widenDirty(0, 0);
     return eve::editing::applied<void>();
 }
 
@@ -333,8 +333,8 @@ EditorResult<void> UiThemeCatalogTarget::loadSnapshot(const EditorValue& snapsho
                           "Theme snapshot failed validation");
     themes_   = std::move(candidate.themes_);
     activeId_ = candidate.activeId_;
-    ++revision_;
-    dirty_.clear();
+    bumpRevision();
+    clearDirtyRegion();
     return eve::editing::applied<void>();
 }
 

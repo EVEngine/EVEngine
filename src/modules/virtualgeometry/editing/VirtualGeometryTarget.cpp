@@ -37,7 +37,7 @@ VirtualGeometryDocumentTarget::VirtualGeometryDocumentTarget(std::string id) : i
 TargetDescriptor VirtualGeometryDocumentTarget::describe() const {
     return {TargetId(id_),
             "virtualgeometry-import",
-            revision_,
+            revisionValue(),
             false,
             {CapabilityId("eve.editor.target.virtualgeometry-properties")}};
 }
@@ -53,7 +53,7 @@ eve::Result<eve::Revision> VirtualGeometryDocumentTarget::currentRevision(const 
         return eve::Result<eve::Revision>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
                                                                           "VirtualGeometry selection mismatch",
                                                                           "editor.virtualgeometry.selection"));
-    return eve::Result<eve::Revision>::success(eve::Revision(revision_));
+    return eve::Result<eve::Revision>::success(eve::Revision(revisionValue()));
 }
 PropertySchema VirtualGeometryDocumentTarget::schema(const SelectionSnapshot&) const {
     PropertySchema s;
@@ -244,8 +244,8 @@ EditorResult<void> VirtualGeometryDocumentTarget::applyDomainOperation(const Dom
         return fail<void>(EditorStatus::Rejected, "editor.virtualgeometry.invalid",
                           "VirtualGeometry document validation failed");
     value_ = std::move(v);
-    ++revision_;
-    dirty_.include(0, 0);
+    bumpRevision();
+    widenDirty(0, 0);
     return eve::editing::applied<void>();
 }
 std::unique_ptr<IDomainOperationTarget> VirtualGeometryDocumentTarget::cloneDomainState() const {
@@ -274,7 +274,7 @@ EditorResult<void> VirtualGeometryDocumentTarget::loadSnapshot(const EditorValue
     op.type     = "virtualgeometry.document.replace.v1";
     op.payload  = *content;
     auto result = applyDomainOperation(op);
-    if (result.ok()) dirty_.clear();
+    if (result.ok()) clearDirtyRegion();
     return result;
 }
 }  // namespace eve::virtualgeometry_editing

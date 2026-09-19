@@ -187,7 +187,7 @@ TargetDescriptor MapDocumentTarget::describe() const {
     TargetDescriptor result;
     result.id           = TargetId(id_);
     result.type         = "map-document";
-    result.revision     = revision_;
+    result.revision     = revisionValue();
     result.capabilities = {IMapStructureEditTarget::editorCapabilityId()};
     return result;
 }
@@ -306,8 +306,8 @@ EditorResult<void> MapDocumentTarget::applyDomainOperation(const DomainOperation
         return mapError<void>(EditorStatus::Unsupported, "editor.map.operation-unsupported",
                               "Map operation is unsupported: " + domainOperation.type);
     }
-    ++revision_;
-    dirty_.include(0, 0);
+    bumpRevision();
+    widenDirty(0, 0);
     return eve::editing::applied<void>();
 }
 
@@ -323,8 +323,8 @@ EditorResult<void> MapDocumentTarget::commitDomainState(std::unique_ptr<IDomainO
     layers_.swap(staged->layers_);
     roads_.swap(staged->roads_);
     placements_.swap(staged->placements_);
-    revision_ = staged->revision_;
-    dirty_    = staged->dirty_;
+    setRevision(staged->revisionValue());
+    setDirtyRegion(staged->dirtyRegion());
     return eve::editing::applied<void>();
 }
 
@@ -531,7 +531,7 @@ std::vector<EditorDiagnostic> MapDocumentTarget::validate() const {
 
 MapRoadPreviewResult MapDocumentTarget::previewRoad(const StableId& roadId, int triangleBudget) const {
     MapRoadPreviewResult result;
-    result.documentRevision = revision_;
+    result.documentRevision = revisionValue();
     result.road             = roadId;
     const auto found        = roads_.find(roadId);
     if (found == roads_.end()) {
@@ -667,8 +667,8 @@ EditorResult<void> MapDocumentTarget::loadSnapshot(const EditorValue& snapshot) 
     layers_.swap(candidate.layers_);
     roads_.swap(candidate.roads_);
     placements_.swap(candidate.placements_);
-    ++revision_;
-    dirty_.clear();
+    bumpRevision();
+    clearDirtyRegion();
     return eve::editing::applied<void>();
 }
 

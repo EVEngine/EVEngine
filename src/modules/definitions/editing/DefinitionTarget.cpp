@@ -38,7 +38,7 @@ DefinitionDocument::DefinitionDocument(std::string type, std::string id, int ver
       version_(version > 0 ? version : 1) {}
 
 TargetDescriptor DefinitionDocument::describe() const {
-    return {TargetId(targetId_), "definition-document", revision_, false, {}};
+    return {TargetId(targetId_), "definition-document", revisionValue(), false, {}};
 }
 
 EditorResult<void> DefinitionDocument::applyDomainOperation(const DomainOperation& operation) {
@@ -58,8 +58,8 @@ EditorResult<void> DefinitionDocument::applyDomainOperation(const DomainOperatio
     if (*present) (*object)[*path] = *assigned;
     else object->erase(*path);
     json_ = editorValueToJson(parsed.value());
-    ++revision_;
-    dirty_.include(0, 0);
+    bumpRevision();
+    widenDirty(0, 0);
     return eve::editing::applied<void>();
 }
 
@@ -68,8 +68,8 @@ EditorResult<void> DefinitionDocument::setJson(std::string json) {
         return definitionError<void>(EditorStatus::Rejected, "editor.definition.invalid-json-shape",
                                      "Definition payload must be a JSON object or array");
     json_ = std::move(json);
-    ++revision_;
-    dirty_.include(0, 0);
+    bumpRevision();
+    widenDirty(0, 0);
     return eve::editing::applied<void>();
 }
 
@@ -78,8 +78,8 @@ EditorResult<void> DefinitionDocument::setVersion(int version) {
         return definitionError<void>(EditorStatus::Rejected, "editor.definition.invalid-version",
                                      "Definition schema version must be positive");
     version_ = version;
-    ++revision_;
-    dirty_.include(0, 0);
+    bumpRevision();
+    widenDirty(0, 0);
     return eve::editing::applied<void>();
 }
 
@@ -90,8 +90,8 @@ EditorResult<void> DefinitionDocument::setReferences(std::vector<DefinitionRefer
             return definitionError<void>(EditorStatus::Rejected, "editor.definition.invalid-reference-path",
                                          "Definition reference paths must be unique and non-empty");
     references_ = std::move(references);
-    ++revision_;
-    dirty_.include(0, 0);
+    bumpRevision();
+    widenDirty(0, 0);
     return eve::editing::applied<void>();
 }
 
@@ -209,8 +209,8 @@ EditorResult<void> DefinitionDocument::loadSnapshot(const EditorValue& snapshot)
     json_ = std::move(candidate.json_);
     references_ = std::move(candidate.references_);
     targetId_ = "definition:" + type_ + ":" + id_;
-    ++revision_;
-    dirty_.clear();
+    bumpRevision();
+    clearDirtyRegion();
     return eve::editing::applied<void>();
 }
 

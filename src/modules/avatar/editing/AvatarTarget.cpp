@@ -139,7 +139,7 @@ AvatarDocumentTarget::AvatarDocumentTarget(std::string id) : id_(std::move(id)) 
 TargetDescriptor AvatarDocumentTarget::describe() const {
     return {TargetId(id_),
             "avatar-asset",
-            revision_,
+            revisionValue(),
             false,
             {CapabilityId("eve.editor.target.avatar-properties"), IPropertyProvider::editingCapabilityId()}};
 }
@@ -166,7 +166,7 @@ eve::Result<eve::Revision> AvatarDocumentTarget::currentRevision(const Selection
     if (!matches(s))
         return eve::Result<eve::Revision>::failure(eve::Diagnostic::error(
             eve::DiagnosticCode::InvalidArgument, "Avatar selection mismatch", "editor.avatar.selection"));
-    return eve::Result<eve::Revision>::success(eve::Revision(revision_));
+    return eve::Result<eve::Revision>::success(eve::Revision(revisionValue()));
 }
 PropertySchema AvatarDocumentTarget::schema(const SelectionSnapshot& s) const {
     PropertySchema schema;
@@ -464,8 +464,8 @@ EditorResult<void> AvatarDocumentTarget::applyDomainOperation(const DomainOperat
     layers_      = std::move(c.layers_);
     parameters_  = std::move(c.parameters_);
     expressions_ = std::move(c.expressions_);
-    ++revision_;
-    dirty_.include(0, 0);
+    bumpRevision();
+    widenDirty(0, 0);
     return eve::editing::applied<void>();
 }
 std::unique_ptr<IDomainOperationTarget> AvatarDocumentTarget::cloneDomainState() const {
@@ -491,7 +491,7 @@ EditorResult<void> AvatarDocumentTarget::loadSnapshot(const EditorValue& s) {
     op.type     = "avatar.document.replace.v1";
     op.payload  = *content;
     auto result = applyDomainOperation(op);
-    if (result.ok()) dirty_.clear();
+    if (result.ok()) clearDirtyRegion();
     return result;
 }
 }  // namespace eve::avatar_editing

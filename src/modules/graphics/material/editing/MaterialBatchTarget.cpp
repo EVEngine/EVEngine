@@ -47,7 +47,7 @@ MaterialBatchTarget::MaterialBatchTarget(std::string id, std::vector<MaterialDoc
 TargetDescriptor MaterialBatchTarget::describe() const {
     return {targetId(),
             "material-batch",
-            revision_,
+            revisionValue(),
             false,
             {IPropertyProvider::editingCapabilityId(), editing::IEditingSnapshotProvider::editingCapabilityId()}};
 }
@@ -87,7 +87,7 @@ EditorResult<std::vector<std::size_t>> MaterialBatchTarget::selectedIndices(cons
 eve::Result<eve::Revision> MaterialBatchTarget::currentRevision(const SelectionSnapshot& selection) const {
     const auto indices = selectedIndices(selection);
     if (!indices.ok()) return eve::Result<eve::Revision>::failure(indices.status());
-    return eve::Result<eve::Revision>::success(eve::Revision(revision_));
+    return eve::Result<eve::Revision>::success(eve::Revision(revisionValue()));
 }
 
 PropertySchema MaterialBatchTarget::schema(const SelectionSnapshot&) const {
@@ -155,8 +155,8 @@ EditorResult<void> MaterialBatchTarget::publishAndAdopt(std::vector<MaterialDocu
         if (!published.ok()) return published;
     }
     materials_ = std::move(candidates);
-    revision_  = candidateRevision;
-    dirty_.include(candidateDirty);
+    setRevision(candidateRevision);
+    widenDirty(candidateDirty);
     return editing::applied<void>();
 }
 
@@ -191,7 +191,7 @@ EditorResult<void> MaterialBatchTarget::applyDomainOperation(const DomainOperati
     }
     EditRegion dirty;
     dirty.include(0, 0);
-    return publishAndAdopt(std::move(candidates), revision_ + 1, dirty);
+    return publishAndAdopt(std::move(candidates), revisionValue() + 1, dirty);
 }
 
 std::unique_ptr<IDomainOperationTarget> MaterialBatchTarget::cloneDomainState() const {
@@ -205,7 +205,7 @@ EditorResult<void> MaterialBatchTarget::commitDomainState(std::unique_ptr<IDomai
     if (!typed || typed->id_ != id_ || typed->materials_.size() != materials_.size())
         return fail<void>(EditorStatus::Conflict, "editor.material-batch.candidate",
                           "Material batch candidate does not match this target");
-    return publishAndAdopt(std::move(typed->materials_), typed->revision_, typed->dirty_);
+    return publishAndAdopt(std::move(typed->materials_), typed->revisionValue(), typed->dirtyRegion());
 }
 
 EditorValue MaterialBatchTarget::snapshotValue() const {

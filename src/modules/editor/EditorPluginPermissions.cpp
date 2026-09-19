@@ -48,7 +48,7 @@ DomainOperation operation(const char* type, const char* inverseType, const std::
 
 PluginPermissionTarget::PluginPermissionTarget(std::string id) : id_(std::move(id)) {}
 TargetDescriptor PluginPermissionTarget::describe() const {
-    return {TargetId(id_), "plugin-permissions", revision_, false,
+    return {TargetId(id_), "plugin-permissions", revisionValue(), false,
             {CapabilityId("eve.editor.target.plugin-permissions")}};
 }
 void* PluginPermissionTarget::queryCapability(const CapabilityId& capability) {
@@ -76,7 +76,7 @@ EditorResult<void> PluginPermissionTarget::applyDomainOperation(const DomainOper
         return permissionError<void>(EditorStatus::Rejected, "editor.plugins.permission-operation",
                                      "Unsupported permission operation");
     }
-    ++revision_; dirty_.include(0, 0);
+    bumpRevision(); widenDirty(0, 0);
     return eve::editing::applied<void>();
 }
 std::unique_ptr<IDomainOperationTarget> PluginPermissionTarget::cloneDomainState() const {
@@ -146,7 +146,7 @@ EditorResult<void> PluginPermissionTarget::loadSnapshot(const EditorValue& snaps
         auto applied = candidate.applyDomainOperation(planned.value());
         if (!applied.ok()) return applied;
     }
-    grants_ = std::move(candidate.grants_); ++revision_; dirty_.include(0, 0);
+    grants_ = std::move(candidate.grants_); bumpRevision(); widenDirty(0, 0);
     return eve::editing::applied<void>();
 }
 }  // namespace eve::editor

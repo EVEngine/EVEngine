@@ -39,7 +39,7 @@ SpriteStackDocumentTarget::SpriteStackDocumentTarget(std::string id) : id_(std::
 TargetDescriptor SpriteStackDocumentTarget::describe() const {
     return {TargetId(id_),
             "spritestack-asset",
-            revision_,
+            revisionValue(),
             false,
             {CapabilityId("eve.editor.target.spritestack-properties")}};
 }
@@ -54,7 +54,7 @@ eve::Result<eve::Revision> SpriteStackDocumentTarget::currentRevision(const Sele
     if (!matches(s))
         return eve::Result<eve::Revision>::failure(eve::Diagnostic::error(
             eve::DiagnosticCode::InvalidArgument, "SpriteStack selection mismatch", "editor.spritestack.selection"));
-    return eve::Result<eve::Revision>::success(eve::Revision(revision_));
+    return eve::Result<eve::Revision>::success(eve::Revision(revisionValue()));
 }
 PropertySchema SpriteStackDocumentTarget::schema(const SelectionSnapshot&) const {
     PropertySchema s;
@@ -305,8 +305,8 @@ EditorResult<void> SpriteStackDocumentTarget::applyDomainOperation(const DomainO
         return fail<void>(EditorStatus::Rejected, "editor.spritestack.invalid",
                           "SpriteStack document validation failed");
     value_ = std::move(v);
-    ++revision_;
-    dirty_.include(0, 0);
+    bumpRevision();
+    widenDirty(0, 0);
     return eve::editing::applied<void>();
 }
 std::unique_ptr<IDomainOperationTarget> SpriteStackDocumentTarget::cloneDomainState() const {
@@ -333,7 +333,7 @@ EditorResult<void> SpriteStackDocumentTarget::loadSnapshot(const EditorValue& sn
     op.type     = "spritestack.document.replace.v1";
     op.payload  = *content;
     auto result = applyDomainOperation(op);
-    if (result.ok()) dirty_.clear();
+    if (result.ok()) clearDirtyRegion();
     return result;
 }
 

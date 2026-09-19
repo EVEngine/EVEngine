@@ -95,7 +95,7 @@ public:
 };
 
 /** @brief UI-neutral animation clip document with reversible stable-id timeline edits. */
-class AnimationClipDocumentTarget final : public virtual IEditableTarget,
+class AnimationClipDocumentTarget final : public ::eve::editing::EditableTargetState, public virtual IEditableTarget,
                                           public IDomainOperationTarget,
                                           public IDomainOperationTargetStaging,
                                           public eve::editing::IEditingSnapshotProvider,
@@ -103,9 +103,6 @@ class AnimationClipDocumentTarget final : public virtual IEditableTarget,
 public:
     explicit AnimationClipDocumentTarget(std::string id);
     TargetId targetId() const override { return TargetId(id_); }
-    std::uint64_t revision() const override { return revision_; }
-    EditRegion dirtyRegion() const override { return dirty_; }
-    void clearDirtyRegion() override { dirty_.clear(); }
     TargetDescriptor describe() const override;
     /** @brief Query an optional target capability. @return Borrowed pointer owned by this target, or null. @lifetime Valid until this target is destroyed or mutated. */
     void* queryCapability(const CapabilityId& capability) override;
@@ -143,8 +140,6 @@ public:
 
 private:
     std::string id_;
-    unsigned long long revision_ = 1;
-    EditRegion dirty_;
     double duration_ = 1.0;
     double sampleRate_ = 30.0;
     bool loop_ = true;

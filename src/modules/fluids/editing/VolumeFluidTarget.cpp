@@ -138,7 +138,7 @@ EditorValue setting(const VolumeFluidAuthoringSettings& s, const std::string& pa
 VolumeFluidTarget::VolumeFluidTarget(std::string id) : id_(std::move(id)) {}
 TargetDescriptor VolumeFluidTarget::describe() const {
     return {
-        TargetId(id_), "volume-fluid", revision_, false, {CapabilityId("eve.editor.target.volume-fluid-properties")}};
+        TargetId(id_), "volume-fluid", revisionValue(), false, {CapabilityId("eve.editor.target.volume-fluid-properties")}};
 }
 void* VolumeFluidTarget::queryCapability(const CapabilityId& capability) {
     return capability == CapabilityId("eve.editor.target.volume-fluid-properties")
@@ -153,7 +153,7 @@ eve::Result<eve::Revision> VolumeFluidTarget::currentRevision(const SelectionSna
         return eve::Result<eve::Revision>::failure(eve::Diagnostic::error(
             eve::DiagnosticCode::InvalidArgument, "Volume fluid selection mismatch", "editor.volume-fluid.selection"));
     }
-    return eve::Result<eve::Revision>::success(eve::Revision(revision_));
+    return eve::Result<eve::Revision>::success(eve::Revision(revisionValue()));
 }
 PropertySchema VolumeFluidTarget::schema(const SelectionSnapshot&) const {
     const VolumeFluidAuthoringSettings d;
@@ -225,15 +225,15 @@ EditorResult<void> VolumeFluidTarget::applyDomainOperation(const DomainOperation
         return EditorResult<void>::failure(parsed.status());
     }
     settings_ = parsed.value();
-    ++revision_;
-    dirty_.include(0, 0);
+    bumpRevision();
+    widenDirty(0, 0);
     return eve::editing::applied<void>();
 }
 std::vector<EditorDiagnostic> VolumeFluidTarget::validate() const { return validateSettings(settings_); }
 VolumeFluidAuthoringPreview   VolumeFluidTarget::previewBudget(std::uint64_t byteBudget,
                                                                std::uint64_t visitBudget) const {
     VolumeFluidAuthoringPreview result;
-    result.documentRevision = revision_;
+    result.documentRevision = revisionValue();
     result.estimatedBytes = static_cast<std::uint64_t>(settings_.previewParticles) * kEstimatedScratchBytesPerParticle;
     result.estimatedConstraintVisits =
         static_cast<std::uint64_t>(settings_.previewParticles) * 96ULL * settings_.iterations * 2ULL;
@@ -271,8 +271,8 @@ EditorResult<void> VolumeFluidTarget::loadSnapshot(const EditorValue& snapshot) 
         return EditorResult<void>::failure(parsed.status());
     }
     settings_ = parsed.value();
-    ++revision_;
-    dirty_.clear();
+    bumpRevision();
+    clearDirtyRegion();
     return eve::editing::applied<void>();
 }
 EditorResult<void> VolumeFluidRuntimeApplier::apply(const VolumeFluidTarget& target,

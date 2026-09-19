@@ -13,15 +13,12 @@ using EditorStatus = eve::editing::Status;
 using EditorDiagnostic = eve::editing::Diagnostic;
 template<class T> using EditorResult = eve::editing::Result<T>;
 /** @brief Revisioned, schema-driven procedural texture recipe asset. */
-class TextureRecipeTarget final : public virtual IEditableTarget, public IDomainOperationTarget,
+class TextureRecipeTarget final : public ::eve::editing::EditableTargetState, public virtual IEditableTarget, public IDomainOperationTarget,
                                   public IDomainOperationTargetStaging, public IPropertyProvider {
 public:
     /** @brief Construct a registered procedural texture recipe target. @throws std::invalid_argument When recipe is not registered. */
     TextureRecipeTarget(std::string id, std::string recipe);
     TargetId targetId() const override { return TargetId(id_); }
-    std::uint64_t revision() const override { return revision_; }
-    EditRegion dirtyRegion() const override { return dirty_; }
-    void clearDirtyRegion() override { dirty_.clear(); }
     TargetDescriptor describe() const override;
     /** @brief Query an optional target capability. @return Borrowed pointer owned by this target, or null. @lifetime Valid until this target is destroyed or mutated. */
     void* queryCapability(const CapabilityId&) override;
@@ -44,8 +41,6 @@ private:
     EditorResult<void> initializeDefaults();
     EditorValue contentValue() const;
     std::string id_, recipe_;
-    editing::Revision revision_ = 1;
-    EditRegion dirty_;
     EditorValue::Object values_;
 };
 struct TextureRecipePreviewArtifact { editing::Revision sourceRevision=0; int width=0,height=0; std::uint64_t checksum=0; };

@@ -283,7 +283,7 @@ bool hasErrors(const std::vector<EditorDiagnostic>& values) {
 
 HouseGenDocumentTarget::HouseGenDocumentTarget(std::string id) : id_(std::move(id)) {}
 TargetDescriptor HouseGenDocumentTarget::describe() const {
-    return {TargetId(id_), "housegen-asset", revision_, false, {CapabilityId("eve.editor.target.housegen-properties")}};
+    return {TargetId(id_), "housegen-asset", revisionValue(), false, {CapabilityId("eve.editor.target.housegen-properties")}};
 }
 void* HouseGenDocumentTarget::queryCapability(const CapabilityId& c) {
     return c == CapabilityId("eve.editor.target.housegen-properties") ? static_cast<IPropertyProvider*>(this) : nullptr;
@@ -301,7 +301,7 @@ eve::Result<eve::Revision> HouseGenDocumentTarget::currentRevision(const Selecti
     if (!matches(s))
         return eve::Result<eve::Revision>::failure(eve::Diagnostic::error(
             eve::DiagnosticCode::InvalidArgument, "House component selection mismatch", "editor.housegen.selection"));
-    return eve::Result<eve::Revision>::success(eve::Revision(revision_));
+    return eve::Result<eve::Revision>::success(eve::Revision(revisionValue()));
 }
 PropertySchema HouseGenDocumentTarget::schema(const SelectionSnapshot&) const {
     PropertySchema s;
@@ -513,8 +513,8 @@ EditorResult<void> HouseGenDocumentTarget::applyDomainOperation(const DomainOper
         return fail<void>(EditorStatus::Rejected, "editor.housegen.invalid", "House document validation failed");
     components_ = std::move(candidate.components_);
     request_    = std::move(candidate.request_);
-    ++revision_;
-    dirty_.include(0, 0);
+    bumpRevision();
+    widenDirty(0, 0);
     return eve::editing::applied<void>();
 }
 std::unique_ptr<IDomainOperationTarget> HouseGenDocumentTarget::cloneDomainState() const {
@@ -541,7 +541,7 @@ EditorResult<void> HouseGenDocumentTarget::loadSnapshot(const EditorValue& snaps
     op.type     = "housegen.document.replace.v1";
     op.payload  = *content;
     auto result = applyDomainOperation(op);
-    if (result.ok()) dirty_.clear();
+    if (result.ok()) clearDirtyRegion();
     return result;
 }
 

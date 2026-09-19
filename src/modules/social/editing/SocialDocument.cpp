@@ -79,7 +79,7 @@ std::vector<T> values(const std::map<StableId, T>& m) {
 
 SocialDocumentTarget::SocialDocumentTarget(std::string id) : id_(std::move(id)) {}
 TargetDescriptor SocialDocumentTarget::describe() const {
-    return {TargetId(id_), "social-document", revision_, false, {editorCapabilityId()}};
+    return {TargetId(id_), "social-document", revisionValue(), false, {editorCapabilityId()}};
 }
 void* SocialDocumentTarget::queryCapability(const CapabilityId& capability) {
     return capability == editorCapabilityId() ? static_cast<SocialDocumentTarget*>(this) : nullptr;
@@ -116,8 +116,8 @@ EditorResult<void> SocialDocumentTarget::applyDomainOperation(const DomainOperat
             return fail<void>(EditorStatus::NotFound, "editor.social.edge-not-found", "Edge was not found");
     } else
         return fail<void>(EditorStatus::Rejected, "editor.social.operation", "Unsupported social operation");
-    ++revision_;
-    dirty_.include(0, 0);
+    bumpRevision();
+    widenDirty(0, 0);
     return eve::editing::applied<void>();
 }
 std::unique_ptr<IDomainOperationTarget> SocialDocumentTarget::cloneDomainState() const {
@@ -240,8 +240,8 @@ EditorResult<void> SocialDocumentTarget::loadSnapshot(const EditorValue& s) {
                               "Social snapshot violates graph invariants");
     entities_ = std::move(c.entities_);
     edges_    = std::move(c.edges_);
-    ++revision_;
-    dirty_.include(0, 0);
+    bumpRevision();
+    widenDirty(0, 0);
     return eve::editing::applied<void>();
 }
 

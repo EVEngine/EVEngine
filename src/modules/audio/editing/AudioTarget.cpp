@@ -35,7 +35,7 @@ PropertyDescriptor property(const char* path, const char* label, const char* cat
 AudioSourceTarget::AudioSourceTarget(std::string id) : id_(std::move(id)), values_(defaults()) {}
 
 TargetDescriptor AudioSourceTarget::describe() const {
-    return {TargetId(id_), "audio-source", revision_, false,
+    return {TargetId(id_), "audio-source", revisionValue(), false,
             {editingCapabilityId(), IEditingSnapshotProvider::editingCapabilityId()}};
 }
 
@@ -63,8 +63,8 @@ EditorResult<void> AudioSourceTarget::applyDomainOperation(const DomainOperation
     auto valid = validatePropertyValue(*descriptor, *value);
     if (!valid.ok()) return valid;
     values_[*path] = *value;
-    ++revision_;
-    dirty_.include(0, 0);
+    bumpRevision();
+    widenDirty(0, 0);
     return eve::editing::applied<void>();
 }
 
@@ -87,7 +87,7 @@ eve::Result<eve::Revision> AudioSourceTarget::currentRevision(const SelectionSna
         return eve::Result<eve::Revision>::failure(eve::Diagnostic::error(
             eve::DiagnosticCode::InvalidArgument, "Selection does not belong to this audio source",
             "editor.audio.selection", {}, "editor.AudioSourceTarget"));
-    return eve::Result<eve::Revision>::success(eve::Revision(revision_));
+    return eve::Result<eve::Revision>::success(eve::Revision(revisionValue()));
 }
 
 PropertySchema AudioSourceTarget::schema(const SelectionSnapshot&) const { return sourceSchema(); }

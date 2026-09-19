@@ -112,7 +112,7 @@ TargetDescriptor LightingPropertyTargetBase::describe() const {
     TargetDescriptor result;
     result.id           = TargetId(id_);
     result.type         = targetType_;
-    result.revision     = revision_;
+    result.revision     = revisionValue();
     result.capabilities = {CapabilityId("eve.editor.target.lighting-properties")};
     return result;
 }
@@ -139,8 +139,8 @@ EditorResult<void> LightingPropertyTargetBase::applyDomainOperation(const Domain
     auto valid = validatePropertyValue(*descriptor, *assigned);
     if (!valid.ok()) return valid;
     values_[*path] = *assigned;
-    ++revision_;
-    dirty_.include(0, 0);
+    bumpRevision();
+    widenDirty(0, 0);
     return eve::editing::applied<void>();
 }
 
@@ -149,7 +149,7 @@ eve::Result<eve::Revision> LightingPropertyTargetBase::currentRevision(const Sel
         return eve::Result<eve::Revision>::failure(eve::Diagnostic::error(
             eve::DiagnosticCode::InvalidArgument, "Selection does not belong to this lighting target",
             "editor.lighting.selection", {}, "editor.LightingPropertyTargetBase"));
-    return eve::Result<eve::Revision>::success(eve::Revision(revision_));
+    return eve::Result<eve::Revision>::success(eve::Revision(revisionValue()));
 }
 
 PropertySchema LightingPropertyTargetBase::schema(const SelectionSnapshot&) const { return schema_; }
@@ -228,8 +228,8 @@ EditorResult<void> LightingPropertyTargetBase::loadSnapshot(const EditorValue& s
         candidate[path] = assigned;
     }
     values_ = std::move(candidate);
-    ++revision_;
-    dirty_.clear();
+    bumpRevision();
+    clearDirtyRegion();
     return eve::editing::applied<void>();
 }
 

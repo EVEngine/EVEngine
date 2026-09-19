@@ -51,8 +51,8 @@ EditorResult<void> PhysicsColliderTarget::loadSnapshot(const EditorValue& snapsh
         candidate[path] = value;
     }
     values_ = std::move(candidate);
-    ++revision_;
-    dirty_.clear();
+    bumpRevision();
+    clearDirtyRegion();
     return eve::editing::applied<void>();
 }
 

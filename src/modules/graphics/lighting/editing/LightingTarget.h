@@ -49,14 +49,11 @@ using TargetId                 = editing::TargetId;
 using editing::validatePropertyValue;
 
 /** @brief Shared property-document implementation for light and environment targets. */
-class LightingPropertyTargetBase : public virtual IEditableTarget,
+class LightingPropertyTargetBase : public ::eve::editing::EditableTargetState, public virtual IEditableTarget,
                                    public IDomainOperationTarget,
                                    public IPropertyProvider {
 public:
     TargetId         targetId() const override { return TargetId(id_); }
-    std::uint64_t    revision() const override { return revision_; }
-    EditRegion       dirtyRegion() const override { return dirty_; }
-    void             clearDirtyRegion() override { dirty_.clear(); }
     TargetDescriptor describe() const override;
     /** @brief Query an optional target capability. @return Borrowed pointer owned by this target, or null. @lifetime
      * Valid until this target is destroyed or mutated. */
@@ -87,8 +84,6 @@ private:
     std::string                        targetType_;
     PropertySchema                     schema_;
     std::map<std::string, EditorValue> values_;
-    unsigned long long                 revision_ = 1;
-    EditRegion                         dirty_;
 };
 
 /** @brief Serializable property target matching graphics::Light3D. */

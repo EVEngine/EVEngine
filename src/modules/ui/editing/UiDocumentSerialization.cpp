@@ -257,8 +257,8 @@ EditorResult<void> UiDocumentTarget::loadSnapshot(const EditorValue& snapshot) {
                                             "UI snapshot hierarchy is missing a parent or contains a cycle");
     }
     widgets_ = std::move(candidate);
-    ++revision_;
-    dirty_.clear();
+    bumpRevision();
+    clearDirtyRegion();
     return eve::editing::applied<void>();
 }
 

@@ -151,7 +151,7 @@ AnimationClipDocumentTarget::AnimationClipDocumentTarget(std::string id) : id_(s
 
 TargetDescriptor AnimationClipDocumentTarget::describe() const {
     TargetDescriptor result;
-    result.id = TargetId(id_); result.type = "animation-clip-document"; result.revision = revision_;
+    result.id = TargetId(id_); result.type = "animation-clip-document"; result.revision = revisionValue();
     result.capabilities = {IAnimationClipEditTarget::editingCapabilityId(),
                            eve::editing::IEditingSnapshotProvider::editingCapabilityId()};
     return result;
@@ -202,7 +202,7 @@ EditorResult<void> AnimationClipDocumentTarget::applyDomainOperation(const Domai
     } else {
         return clipError<void>(EditorStatus::Unsupported, "editor.animation.unsupported-operation", "Unsupported clip operation");
     }
-    ++revision_; dirty_.include(0, 0); return eve::editing::applied<void>();
+    bumpRevision(); widenDirty(0, 0); return eve::editing::applied<void>();
 }
 
 std::unique_ptr<IDomainOperationTarget> AnimationClipDocumentTarget::cloneDomainState() const {
@@ -279,7 +279,7 @@ std::vector<EditorDiagnostic> AnimationClipDocumentTarget::validate(const std::v
 }
 
 AnimationClipPreview AnimationClipDocumentTarget::preview(double time, const std::vector<std::string>& bones) const {
-    AnimationClipPreview result; result.documentRevision = revision_;
+    AnimationClipPreview result; result.documentRevision = revisionValue();
     if (!std::isfinite(time)) { result.diagnostics.push_back(clipDiagnostic("editor.animation.invalid-preview-time", DiagnosticSeverity::Error, "Preview time must be finite")); return result; }
     result.time = loop_ ? std::fmod(std::max(0.0, time), duration_) : std::clamp(time, 0.0, duration_);
     result.diagnostics = validate(bones);
@@ -301,7 +301,7 @@ AnimationClipPreview AnimationClipDocumentTarget::preview(double time, const std
 }
 
 AnimationRetargetPreview AnimationClipDocumentTarget::previewRetarget(const std::vector<std::string>& targetBones) const {
-    AnimationRetargetPreview result; result.documentRevision = revision_; std::set<std::string> used;
+    AnimationRetargetPreview result; result.documentRevision = revisionValue(); std::set<std::string> used;
     for (const auto& [id, track] : tracks_) { static_cast<void>(id); auto exact = std::find(targetBones.begin(), targetBones.end(), track.bone);
         auto found = exact; if (found == targetBones.end()) found = std::find_if(targetBones.begin(), targetBones.end(), [&](const auto& target) { return normalized(target) == normalized(track.bone); });
         if (found == targetBones.end() || used.contains(*found)) result.unmatchedSourceBones.push_back(track.bone); else { result.mapping[track.bone] = *found; used.insert(*found); }
@@ -333,7 +333,7 @@ EditorResult<void> AnimationClipDocumentTarget::loadSnapshot(const EditorValue& 
     for (const auto& entry : *tracks) { auto parsed = parseTrack(entry); if (!parsed.ok()) return clipError<void>(EditorStatus::Rejected, "editor.animation.invalid-track", "Clip snapshot contains invalid track"); auto op = candidate.makeSetTrack(parsed.value()); if (!op.ok() || !candidate.applyDomainOperation(op.value()).ok()) return clipError<void>(EditorStatus::Rejected, "editor.animation.invalid-track", "Clip snapshot track cannot be applied"); }
     for (const auto& entry : *events) { auto parsed = parseEvent(entry); if (!parsed.ok()) return clipError<void>(EditorStatus::Rejected, "editor.animation.invalid-event", "Clip snapshot contains invalid event"); auto op = candidate.makeSetEvent(parsed.value()); if (!op.ok() || !candidate.applyDomainOperation(op.value()).ok()) return clipError<void>(EditorStatus::Rejected, "editor.animation.invalid-event", "Clip snapshot event cannot be applied"); }
     for (const auto& entry : *masks) { const auto* bone = stringField(entry, "bone"); double weight = 0; if (!bone || !readNumber(entry, "weight", weight)) return clipError<void>(EditorStatus::Rejected, "editor.animation.invalid-mask", "Clip snapshot contains invalid mask"); auto op = candidate.makeSetMask({*bone, weight}); if (!op.ok() || !candidate.applyDomainOperation(op.value()).ok()) return clipError<void>(EditorStatus::Rejected, "editor.animation.invalid-mask", "Clip snapshot mask cannot be applied"); }
-    candidate.revision_ = revision_ + 1; candidate.dirty_.include(0, 0); *this = std::move(candidate); return eve::editing::applied<void>();
+    candidate.setRevision(revisionValue() + 1); candidate.widenDirty(0, 0); *this = std::move(candidate); return eve::editing::applied<void>();
 }
 
 EditorResult<AnimationBoneTrack> parseAnimationBoneTrack(const EditorValue& value) { return parseTrack(value); }

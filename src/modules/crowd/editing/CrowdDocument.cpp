@@ -155,7 +155,7 @@ CrowdDocumentTarget::CrowdDocumentTarget(std::string id) : id_(std::move(id)) {}
 
 TargetDescriptor CrowdDocumentTarget::describe() const {
     TargetDescriptor result; result.id = TargetId(id_); result.type = "crowd-document";
-    result.revision = revision_; result.capabilities = {editorCapabilityId()}; return result;
+    result.revision = revisionValue(); result.capabilities = {editorCapabilityId()}; return result;
 }
 
 void* CrowdDocumentTarget::queryCapability(const CapabilityId& capability) {
@@ -173,7 +173,7 @@ EditorResult<void> CrowdDocumentTarget::applyDomainOperation(const DomainOperati
             const StableId stable(*id); std::size_t erased = type[6] == 'a' ? agents_.erase(stable) : (type[6] == 'z' ? zones_.erase(stable) : paths_.erase(stable));
             if (!erased) return failure<void>(EditorStatus::NotFound, "editor.crowd.object-not-found", "Crowd object was not found");
         } else return failure<void>(EditorStatus::Rejected, "editor.crowd.unsupported-operation", "Unsupported crowd document operation");
-        ++revision_; dirty_.include(0, 0); return eve::editing::applied<void>();
+        bumpRevision(); widenDirty(0, 0); return eve::editing::applied<void>();
     };
     return apply(op.type, op.payload);
 }
@@ -207,7 +207,7 @@ std::vector<EditorDiagnostic> CrowdDocumentTarget::validate() const {
 }
 
 CrowdOverlayResult CrowdDocumentTarget::overlay(int budget) const {
-    CrowdOverlayResult result; result.revision=revision_; result.diagnostics=validate();
+    CrowdOverlayResult result; result.revision=revisionValue(); result.diagnostics=validate();
     if (budget <= 0) { result.status=EditorStatus::Rejected; result.diagnostics.push_back(eve::editing::ruleDiagnostic(eve::DiagnosticCode::InvalidArgument, RuleId("editor.crowd.invalid-overlay-budget"),DiagnosticSeverity::Error,"Overlay primitive budget must be positive")); return result; }
     auto add=[&](CrowdOverlayPrimitive primitive){ if(static_cast<int>(result.primitives.size())>=budget) return false; result.primitives.push_back(std::move(primitive)); return true; };
     for(const auto& [id,path]:paths_) for(std::size_t i=1;i<path.points.size();++i) if(!add({"line",id,{path.points[i-1].x,path.points[i-1].y,path.points[i].x,path.points[i].y},path.name})) goto exhausted;
@@ -232,7 +232,7 @@ EditorResult<void> CrowdDocumentTarget::loadSnapshot(const EditorValue& snapshot
     for(const auto& entry:*zones){auto value=parseZone(entry);if(!value.ok())return failure<void>(value.code(),"editor.crowd.invalid-snapshot-zone","Snapshot contains an invalid zone");if(!candidate.zones_.emplace(value.value().id,value.value()).second)return failure<void>(EditorStatus::Rejected,"editor.crowd.duplicate-zone","Snapshot zone ids must be unique");}
     for(const auto& entry:*agents){auto value=parseAgent(entry);if(!value.ok())return failure<void>(value.code(),"editor.crowd.invalid-snapshot-agent","Snapshot contains an invalid agent");if(!candidate.agents_.emplace(value.value().id,value.value()).second)return failure<void>(EditorStatus::Rejected,"editor.crowd.duplicate-agent","Snapshot agent ids must be unique");}
     for(const auto& diagnostic:candidate.validate()) if(diagnostic.severity()==DiagnosticSeverity::Error) return failure<void>(EditorStatus::Rejected,"editor.crowd.invalid-snapshot-reference","Snapshot contains dangling references");
-    agents_=std::move(candidate.agents_);zones_=std::move(candidate.zones_);paths_=std::move(candidate.paths_);++revision_;dirty_.include(0,0);return eve::editing::applied<void>();
+    agents_=std::move(candidate.agents_);zones_=std::move(candidate.zones_);paths_=std::move(candidate.paths_);bumpRevision();widenDirty(0,0);return eve::editing::applied<void>();
 }
 
 }  // namespace eve::crowd_editing

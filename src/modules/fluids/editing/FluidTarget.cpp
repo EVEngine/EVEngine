@@ -115,7 +115,7 @@ EditorValue setting(const FluidSimulationSettings& s, const std::string& path) {
 
 FluidSimulationTarget::FluidSimulationTarget(std::string id) : id_(std::move(id)) {}
 TargetDescriptor FluidSimulationTarget::describe() const {
-    return {TargetId(id_), "fluid-simulation", revision_, false, {CapabilityId("eve.editor.target.fluid-properties")}};
+    return {TargetId(id_), "fluid-simulation", revisionValue(), false, {CapabilityId("eve.editor.target.fluid-properties")}};
 }
 void* FluidSimulationTarget::queryCapability(const CapabilityId& capability) {
     return capability == CapabilityId("eve.editor.target.fluid-properties") ? static_cast<IPropertyProvider*>(this)
@@ -129,8 +129,8 @@ EditorResult<void> FluidSimulationTarget::applyDomainOperation(const DomainOpera
     auto parsed = parseSettings(operation.payload);
     if (!parsed.ok()) return EditorResult<void>::failure(parsed.status());
     settings_ = std::move(parsed.value());
-    ++revision_;
-    dirty_.include(0, 0);
+    bumpRevision();
+    widenDirty(0, 0);
     return eve::editing::applied<void>();
 }
 
@@ -142,7 +142,7 @@ eve::Result<eve::Revision> FluidSimulationTarget::currentRevision(const Selectio
         return eve::Result<eve::Revision>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
                                                                           "Fluid selection does not match its target",
                                                                           "editor.fluid.selection"));
-    return eve::Result<eve::Revision>::success(eve::Revision(revision_));
+    return eve::Result<eve::Revision>::success(eve::Revision(revisionValue()));
 }
 
 PropertySchema FluidSimulationTarget::schema(const SelectionSnapshot&) const {
@@ -222,7 +222,7 @@ std::vector<EditorDiagnostic> FluidSimulationTarget::validate() const {
 FluidSimulationPreview FluidSimulationTarget::previewBudget(std::uint64_t byteBudget,
                                                             std::uint64_t neighborBudget) const {
     FluidSimulationPreview result;
-    result.documentRevision        = revision_;
+    result.documentRevision        = revisionValue();
     const std::uint64_t particles  = static_cast<std::uint64_t>(settings_.previewParticles);
     result.estimatedBytes          = particles * 80ULL;
     const double ratio             = settings_.supportRadius / settings_.particleRadius;
@@ -254,8 +254,8 @@ EditorResult<void> FluidSimulationTarget::loadSnapshot(const EditorValue& snapsh
     auto parsed = parseSettings(*settings);
     if (!parsed.ok()) return EditorResult<void>::failure(parsed.status());
     settings_ = std::move(parsed.value());
-    ++revision_;
-    dirty_.clear();
+    bumpRevision();
+    clearDirtyRegion();
     return eve::editing::applied<void>();
 }
 

@@ -29,7 +29,7 @@ struct DefinitionReferenceField {
 };
 
 /** @brief UI-neutral versioned definition asset and cross-reference model. */
-class DefinitionDocument : public virtual IEditableTarget, public IDomainOperationTarget {
+class DefinitionDocument : public ::eve::editing::EditableTargetState, public virtual IEditableTarget, public IDomainOperationTarget {
 public:
     using ReferenceResolver = std::function<bool(const std::string& type, const std::string& id)>;
     using SchemaValidator = std::function<std::vector<EditorDiagnostic>(const std::string& type,
@@ -39,9 +39,6 @@ public:
     /** @brief Construct an empty JSON-object definition with stable identity. */
     DefinitionDocument(std::string type, std::string id, int version = 1);
     TargetId targetId() const override { return TargetId(targetId_); }
-    std::uint64_t revision() const override { return revision_; }
-    EditRegion dirtyRegion() const override { return dirty_; }
-    void clearDirtyRegion() override { dirty_.clear(); }
     TargetDescriptor describe() const override;
     /** @brief Query an optional target capability. @return Borrowed pointer owned by this target, or null. @lifetime Valid until this target is destroyed or mutated. */
     void* queryCapability(const CapabilityId&) override { return nullptr; }
@@ -72,7 +69,7 @@ public:
     /** @brief Return JSON payload text. */
     const std::string& json() const { return json_; }
     /** @brief Return current editor revision. */
-    editing::Revision documentRevision() const { return revision_; }
+    editing::Revision documentRevision() const { return revisionValue(); }
 
 private:
     std::string type_;
@@ -81,8 +78,6 @@ private:
     int version_ = 1;
     std::string json_ = "{}";
     std::vector<DefinitionReferenceField> references_;
-    editing::Revision revision_ = 0;
-    EditRegion dirty_;
 };
 
 /** @brief Optional bridge publishing a validated definition to DefinitionRegistry. */

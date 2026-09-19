@@ -48,7 +48,7 @@ bool errors(const std::vector<EditorDiagnostic>& d) {
 }  // namespace
 Hd2dDocumentTarget::Hd2dDocumentTarget(std::string id) : id_(std::move(id)) {}
 TargetDescriptor Hd2dDocumentTarget::describe() const {
-    return {TargetId(id_), "hd2d-asset", revision_, false, {CapabilityId("eve.editor.target.hd2d-properties")}};
+    return {TargetId(id_), "hd2d-asset", revisionValue(), false, {CapabilityId("eve.editor.target.hd2d-properties")}};
 }
 void* Hd2dDocumentTarget::queryCapability(const CapabilityId& c) {
     return c == CapabilityId("eve.editor.target.hd2d-properties") ? static_cast<IPropertyProvider*>(this) : nullptr;
@@ -60,7 +60,7 @@ eve::Result<eve::Revision> Hd2dDocumentTarget::currentRevision(const SelectionSn
     if (!matches(s))
         return eve::Result<eve::Revision>::failure(eve::Diagnostic::error(
             eve::DiagnosticCode::InvalidArgument, "HD2D selection mismatch", "editor.hd2d.selection"));
-    return eve::Result<eve::Revision>::success(eve::Revision(revision_));
+    return eve::Result<eve::Revision>::success(eve::Revision(revisionValue()));
 }
 PropertySchema Hd2dDocumentTarget::schema(const SelectionSnapshot&) const {
     PropertySchema s;
@@ -271,8 +271,8 @@ EditorResult<void> Hd2dDocumentTarget::applyDomainOperation(const DomainOperatio
     if (errors(c.validate()))
         return fail<void>(EditorStatus::Rejected, "editor.hd2d.invalid", "HD2D document validation failed");
     value_ = v;
-    ++revision_;
-    dirty_.include(0, 0);
+    bumpRevision();
+    widenDirty(0, 0);
     return eve::editing::applied<void>();
 }
 std::unique_ptr<IDomainOperationTarget> Hd2dDocumentTarget::cloneDomainState() const {
@@ -298,7 +298,7 @@ EditorResult<void> Hd2dDocumentTarget::loadSnapshot(const EditorValue& s) {
     op.type     = "hd2d.document.replace.v1";
     op.payload  = *content;
     auto result = applyDomainOperation(op);
-    if (result.ok()) dirty_.clear();
+    if (result.ok()) clearDirtyRegion();
     return result;
 }
 EditorResult<Hd2dFramePreview> Hd2dFramePreviewService::evaluate(const Hd2dDocumentTarget& d, float time) const {

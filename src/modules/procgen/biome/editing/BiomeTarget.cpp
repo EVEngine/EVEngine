@@ -100,7 +100,7 @@ BiomeDocumentTarget::BiomeDocumentTarget(std::string id) : id_(std::move(id)) {}
 TargetDescriptor BiomeDocumentTarget::describe() const {
     return {TargetId(id_),
             "biome-rules",
-            revision_,
+            revisionValue(),
             false,
             {propertyCapabilityId(), IEditingSnapshotProvider::editingCapabilityId()}};
 }
@@ -133,7 +133,7 @@ eve::Result<eve::Revision> BiomeDocumentTarget::currentRevision(const SelectionS
     if (!matches(s))
         return eve::Result<eve::Revision>::failure(eve::Diagnostic::error(
             eve::DiagnosticCode::InvalidArgument, "Biome selection mismatch", "editor.biome.selection"));
-    return eve::Result<eve::Revision>::success(eve::Revision(revision_));
+    return eve::Result<eve::Revision>::success(eve::Revision(revisionValue()));
 }
 PropertySchema BiomeDocumentTarget::schema(const SelectionSnapshot& s) const {
     PropertySchema schema;
@@ -367,8 +367,8 @@ EditorResult<void> BiomeDocumentTarget::applyDomainOperation(const DomainOperati
         return fail<void>(EditorStatus::Rejected, "editor.biome.invalid", "Biome document validation failed");
     layers_     = std::move(c.layers_);
     exclusions_ = std::move(c.exclusions_);
-    ++revision_;
-    dirty_.include(0, 0);
+    bumpRevision();
+    widenDirty(0, 0);
     return eve::editing::applied<void>();
 }
 std::unique_ptr<IDomainOperationTarget> BiomeDocumentTarget::cloneDomainState() const {
@@ -394,7 +394,7 @@ EditorResult<void> BiomeDocumentTarget::loadSnapshot(const EditorValue& s) {
     op.type     = "biome.document.replace.v1";
     op.payload  = *content;
     auto result = applyDomainOperation(op);
-    if (result.ok()) dirty_.clear();
+    if (result.ok()) clearDirtyRegion();
     return result;
 }
 }  // namespace eve::biome_editing

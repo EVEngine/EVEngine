@@ -93,6 +93,64 @@ public:
         return cap ? &cap->get() : nullptr;
     }
 };
+/**
+ * @brief Dirty region and revision shared by every editable document target.
+ *
+ * Inherit this instead of hand-writing dirtyRegion(), clearDirtyRegion(),
+ * revision() and their two members in each target. Identity (targetId) and the
+ * descriptor's type and capability list stay per-target; only the state is
+ * common. Mutation goes through the helpers below rather than through the
+ * members, so a target cannot advance its revision without recording what
+ * changed. The initial revision is a constructor argument because targets
+ * legitimately differ: some start at the first revision, some at "not yet
+ * revised".
+ *
+ * @remarks Revision here is editing::Revision, the protocol's plain 64-bit
+ *          revision, not the eve::Revision strong type used by property
+ *          providers. Keeping the protocol boundary on the plain integer is
+ *          deliberate: ExpectedRevision/BaseRevision are plain integers too.
+ */
+class EditableTargetState : public virtual IEditableTarget {
+public:
+    /** @brief Constructs the shared state with an explicit initial revision. */
+    explicit EditableTargetState(Revision initial = 1) : revision_(initial) {}
+
+    /** @brief Return the accumulated dirty region. */
+    [[nodiscard]] EditRegion dirtyRegion() const override { return dirty_; }
+
+    /** @brief Discard the dirty region; the revision does not change. */
+    void clearDirtyRegion() override { dirty_ = {}; }
+
+    /** @brief Return the current revision. */
+    [[nodiscard]] std::uint64_t revision() const override { return revision_; }
+
+    /** @brief Return the revision as the shared protocol revision type. */
+    [[nodiscard]] Revision revisionValue() const noexcept { return revision_; }
+
+protected:
+    /** @brief Widen the dirty region without advancing the revision. */
+    void widenDirty(int x, int y) { dirty_.include(x, y); }
+    /** @brief Widen the dirty region without advancing the revision. */
+    void widenDirty(const EditRegion& region) { dirty_.include(region); }
+    /** @brief Mark an unknown area dirty without advancing the revision. */
+    void widenDirty() { dirty_.include(0, 0); }
+    /** @brief Advance the revision without touching the dirty region. */
+    void bumpRevision() { ++revision_; }
+    /** @brief Adopt a revision observed elsewhere, without advancing it. */
+    void setRevision(Revision revision) { revision_ = revision; }
+    /** @brief Replace the dirty region wholesale, without advancing the revision. */
+    void setDirtyRegion(const EditRegion& region) { dirty_ = region; }
+    /** @brief Include one cell in the dirty region and advance the revision. */
+    void markDirty(int x, int y) { widenDirty(x, y); bumpRevision(); }
+    /** @brief Include a whole region and advance the revision. */
+    void markDirty(const EditRegion& region) { widenDirty(region); bumpRevision(); }
+    /** @brief Mark an unknown area dirty and advance the revision. */
+    void markDirty() { widenDirty(); bumpRevision(); }
+
+private:
+    EditRegion dirty_;
+    Revision   revision_;
+};
 enum class FieldWriteStatus { Applied, Unchanged, Rejected };
 class IGridTarget {
 public:

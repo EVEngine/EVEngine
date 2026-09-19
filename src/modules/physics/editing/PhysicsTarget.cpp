@@ -37,7 +37,7 @@ PhysicsColliderTarget::PhysicsColliderTarget(std::string id, int dimensions)
 TargetDescriptor PhysicsColliderTarget::describe() const {
     return {TargetId(id_),
             dimensions_ == 2 ? "physics-collider-2d" : "physics-collider-3d",
-            revision_,
+            revisionValue(),
             false,
             {CapabilityId("eve.editor.target.physics-collider")}};
 }
@@ -67,8 +67,8 @@ EditorResult<void> PhysicsColliderTarget::applyDomainOperation(const DomainOpera
     auto valid = validateAssignment(*descriptor, *value);
     if (!valid.ok()) return valid;
     values_[*path] = *value;
-    ++revision_;
-    dirty_.include(0, 0);
+    bumpRevision();
+    widenDirty(0, 0);
     return eve::editing::applied<void>();
 }
 
@@ -90,7 +90,7 @@ eve::Result<eve::Revision> PhysicsColliderTarget::currentRevision(const Selectio
         return eve::Result<eve::Revision>::failure(
             eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "Selection does not belong to this collider",
                                    "editor.physics.selection", {}, "editor.PhysicsColliderTarget"));
-    return eve::Result<eve::Revision>::success(eve::Revision(revision_));
+    return eve::Result<eve::Revision>::success(eve::Revision(revisionValue()));
 }
 
 PropertySchema PhysicsColliderTarget::schema(const SelectionSnapshot&) const { return colliderSchema(); }

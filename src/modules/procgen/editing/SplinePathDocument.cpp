@@ -130,7 +130,7 @@ SplinePathDocument::SplinePathDocument(std::string id) : id_(std::move(id)) {}
 TargetDescriptor SplinePathDocument::describe() const {
     return {TargetId(id_),
             "spline-path-document",
-            revision_,
+            revisionValue(),
             false,
             {ISplinePathDocumentEditTarget::editingCapabilityId()}};
 }
@@ -150,8 +150,8 @@ EditorResult<void> SplinePathDocument::applyDomainOperation(const DomainOperatio
         auto               loaded = candidate.loadSnapshot(value.payload);
         if (!loaded.ok())
             return splineError<void>(loaded.code(), "editor.spline.invalid-replacement", loaded.status().describe());
-        candidate.revision_ = revision_ + 1;
-        candidate.dirty_.include(0, 0);
+        candidate.setRevision(revisionValue() + 1);
+        candidate.widenDirty(0, 0);
         *this = std::move(candidate);
         return eve::editing::applied<void>();
     }
@@ -174,8 +174,8 @@ EditorResult<void> SplinePathDocument::applyDomainOperation(const DomainOperatio
         return splineError<void>(EditorStatus::Unsupported, "editor.spline.operation-unsupported",
                                  "Spline operation is unsupported");
     }
-    ++revision_;
-    dirty_.include(0, 0);
+    bumpRevision();
+    widenDirty(0, 0);
     return eve::editing::applied<void>();
 }
 
@@ -582,8 +582,8 @@ EditorResult<void> SplinePathDocument::loadSnapshot(const EditorValue& snapshot)
                                                   [](const auto& entry) { return entry.second.breakBefore; }))
         return splineError<void>(EditorStatus::Rejected, "editor.spline.invalid-snapshot-breaks",
                                  "Closed spline snapshot cannot contain disconnected chunks");
-    candidate.revision_ = revision_ + 1;
-    candidate.dirty_.clear();
+    candidate.setRevision(revisionValue() + 1);
+    candidate.clearDirtyRegion();
     *this = std::move(candidate);
     return eve::editing::applied<void>();
 }

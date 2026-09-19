@@ -40,7 +40,7 @@ TargetDescriptor MaterialDocumentTarget::describe() const {
     TargetDescriptor result;
     result.id = TargetId(id_);
     result.type = "material-document";
-    result.revision = revision_;
+    result.revision = revisionValue();
     result.capabilities = {IPropertyProvider::editingCapabilityId(),
                            eve::editing::IEditingSnapshotProvider::editingCapabilityId()};
     return result;
@@ -74,8 +74,8 @@ EditorResult<void> MaterialDocumentTarget::applyDomainOperation(const DomainOper
     auto valid = validateAssignment(*descriptor, *value);
     if (!valid.ok()) return valid;
     values_[*path] = *value;
-    ++revision_;
-    dirty_.include(0, 0);
+    bumpRevision();
+    widenDirty(0, 0);
     return eve::editing::applied<void>();
 }
 
@@ -98,7 +98,7 @@ eve::Result<eve::Revision> MaterialDocumentTarget::currentRevision(const Selecti
         return eve::Result<eve::Revision>::failure(eve::Diagnostic::error(
             eve::DiagnosticCode::InvalidArgument, "Selection does not belong to this material",
             "editor.material.selection", {}, "editor.MaterialDocumentTarget"));
-    return eve::Result<eve::Revision>::success(eve::Revision(revision_));
+    return eve::Result<eve::Revision>::success(eve::Revision(revisionValue()));
 }
 
 PropertySchema MaterialDocumentTarget::schema(const SelectionSnapshot&) const { return materialSchema(); }
@@ -187,8 +187,8 @@ EditorResult<void> MaterialDocumentTarget::loadSnapshot(const EditorValue& snaps
         candidate[path] = value;
     }
     values_ = std::move(candidate);
-    ++revision_;
-    dirty_.clear();
+    bumpRevision();
+    clearDirtyRegion();
     return eve::editing::applied<void>();
 }
 

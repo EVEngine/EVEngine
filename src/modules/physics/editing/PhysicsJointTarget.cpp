@@ -36,7 +36,7 @@ PropertyDescriptor jointProperty(const char* path, const char* label, const char
 PhysicsJointTarget::PhysicsJointTarget(std::string id) : id_(std::move(id)), values_(defaults()) {}
 
 TargetDescriptor PhysicsJointTarget::describe() const {
-    return {TargetId(id_), "physics-joint-3d", revision_, false, {CapabilityId("eve.editor.target.physics-joint")}};
+    return {TargetId(id_), "physics-joint-3d", revisionValue(), false, {CapabilityId("eve.editor.target.physics-joint")}};
 }
 
 void* PhysicsJointTarget::queryCapability(const CapabilityId& capability) {
@@ -61,8 +61,8 @@ EditorResult<void> PhysicsJointTarget::applyDomainOperation(const DomainOperatio
     auto valid = validatePropertyValue(*descriptor, *value);
     if (!valid.ok()) return valid;
     values_[*path] = *value;
-    ++revision_;
-    dirty_.include(0, 0);
+    bumpRevision();
+    widenDirty(0, 0);
     return eve::editing::applied<void>();
 }
 
@@ -84,7 +84,7 @@ eve::Result<eve::Revision> PhysicsJointTarget::currentRevision(const SelectionSn
         return eve::Result<eve::Revision>::failure(
             eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "Selection does not belong to this joint",
                                    "editor.physics.joint-selection", {}, "editor.PhysicsJointTarget"));
-    return eve::Result<eve::Revision>::success(eve::Revision(revision_));
+    return eve::Result<eve::Revision>::success(eve::Revision(revisionValue()));
 }
 
 PropertySchema PhysicsJointTarget::schema(const SelectionSnapshot&) const { return jointSchema(); }

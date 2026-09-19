@@ -187,7 +187,7 @@ ArchSpaceDocumentTarget::ArchSpaceDocumentTarget(std::string id) : id_(std::move
 TargetDescriptor ArchSpaceDocumentTarget::describe() const {
     return {TargetId(id_),
             "archspace-document",
-            revision_,
+            revisionValue(),
             false,
             {propertyCapabilityId(), IEditingSnapshotProvider::editingCapabilityId()}};
 }
@@ -222,7 +222,7 @@ eve::Result<eve::Revision> ArchSpaceDocumentTarget::currentRevision(const Select
     if (!matches(selection))
         return eve::Result<eve::Revision>::failure(eve::Diagnostic::error(
             eve::DiagnosticCode::InvalidArgument, "ArchSpace selection mismatch", "editor.archspace.selection"));
-    return eve::Result<eve::Revision>::success(eve::Revision(revision_));
+    return eve::Result<eve::Revision>::success(eve::Revision(revisionValue()));
 }
 
 PropertySchema ArchSpaceDocumentTarget::schema(const SelectionSnapshot& selection) const {
@@ -528,8 +528,8 @@ EditorResult<void> ArchSpaceDocumentTarget::applyDomainOperation(const DomainOpe
     if (hasErrors(candidate.validate()))
         return fail<void>(EditorStatus::Rejected, "editor.archspace.invalid", "ArchSpace document validation failed");
     document_ = std::move(candidate.document_);
-    ++revision_;
-    dirty_.include(0, 0);
+    bumpRevision();
+    widenDirty(0, 0);
     return eve::editing::applied<void>();
 }
 
@@ -558,7 +558,7 @@ EditorResult<void> ArchSpaceDocumentTarget::loadSnapshot(const EditorValue& snap
     op.type     = "archspace.document.replace.v1";
     op.payload  = *content;
     auto result = applyDomainOperation(op);
-    if (result.ok()) dirty_.clear();
+    if (result.ok()) clearDirtyRegion();
     return result;
 }
 
@@ -566,7 +566,7 @@ EditorResult<EditorGizmoSnapshot> ArchSpaceDocumentTarget::gizmo() const {
     EditorGizmoSnapshot snapshot;
     snapshot.status         = EditorStatus::Applied;
     snapshot.target         = id_;
-    snapshot.targetRevision = revision_;
+    snapshot.targetRevision = revisionValue();
     for (const auto& [id, node] : document_.nodes()) {
         (void)id;
         if (node.kind == archspace::NodeKind::Wall) {

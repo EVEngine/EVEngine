@@ -127,7 +127,7 @@ struct VoxelPick {
                                        float dz, float maxDistance);
 
 /** @brief Revisioned project of MagicaVoxel-style sculpted models. */
-class VoxelCatalogTarget final : public virtual IEditableTarget,
+class VoxelCatalogTarget final : public ::eve::editing::EditableTargetState, public virtual IEditableTarget,
                                  public IDomainOperationTarget,
                                  public IDomainOperationTargetStaging,
                                  public IPropertyProvider,
@@ -138,9 +138,6 @@ public:
     static CapabilityId propertyCapabilityId() { return CapabilityId("eve.editor.target.voxel-catalog-properties"); }
 
     TargetId      targetId() const override { return TargetId(id_); }
-    std::uint64_t revision() const override { return revision_; }
-    EditRegion    dirtyRegion() const override { return dirty_; }
-    void          clearDirtyRegion() override { dirty_.clear(); }
     TargetDescriptor describe() const override;
 
     /**
@@ -195,8 +192,6 @@ private:
     VoxelModelValue* findModelMut(const ObjectId&);
 
     std::string                  id_;
-    Revision                     revision_ = 1;
-    EditRegion                   dirty_;
     std::vector<VoxelModelValue> models_;
 };
 

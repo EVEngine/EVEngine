@@ -151,7 +151,7 @@ struct BuildingPlacementPreview {
 };
 
 /** @brief Live PlacementWorld target with reversible place/move/remove operations. */
-class BuildingPlacementTarget final : public virtual IEditableTarget,
+class BuildingPlacementTarget final : public ::eve::editing::EditableTargetState, public virtual IEditableTarget,
                                       public IDomainOperationTarget,
                                       public editing::IDomainOperationTargetStaging {
 public:
@@ -160,9 +160,6 @@ public:
     /** @brief Bind a borrowed world that must outlive the target. */
     BuildingPlacementTarget(std::string id, building::PlacementWorld* world);
     TargetId targetId() const override { return TargetId(id_); }
-    std::uint64_t revision() const override { return revision_; }
-    EditRegion dirtyRegion() const override { return dirty_; }
-    void clearDirtyRegion() override { dirty_.clear(); }
     TargetDescriptor describe() const override;
     /** @brief Query an optional target capability. @return Borrowed pointer owned by this target, or null. @lifetime Valid until this target is destroyed or mutated. */
     void* queryCapability(const CapabilityId& capability) override;
@@ -241,8 +238,6 @@ private:
     std::string id_;
     building::PlacementWorld* world_ = nullptr;
     std::unique_ptr<building::PlacementWorld> ownedWorld_;
-    unsigned long long revision_ = 1;
-    EditRegion dirty_;
 };
 
 /** @brief Immutable result of one curve-handle pointer update. */

@@ -59,16 +59,13 @@ struct StylizePassValue {
 };
 
 /** @brief Serializable ordered style recipe with dynamic parameter Inspector. */
-class StylizeRecipeTarget final : public virtual IEditableTarget,
+class StylizeRecipeTarget final : public ::eve::editing::EditableTargetState, public virtual IEditableTarget,
                                   public IDomainOperationTarget,
                                   public IDomainOperationTargetStaging,
                                   public IPropertyProvider {
 public:
     explicit StylizeRecipeTarget(std::string id);
     TargetId         targetId() const override { return TargetId(id_); }
-    std::uint64_t    revision() const override { return revision_; }
-    EditRegion       dirtyRegion() const override { return dirty_; }
-    void             clearDirtyRegion() override { dirty_.clear(); }
     TargetDescriptor describe() const override;
     /** @brief Query an optional target capability. @return Borrowed pointer owned by this target, or null. @lifetime
      * Valid until this target is destroyed or mutated. */
@@ -103,8 +100,6 @@ private:
     EditorValue                          contentValue() const;
     EditorResult<DomainOperation>        replacement(EditorValue payload, std::string property = {}) const;
     std::string                          id_;
-    Revision                             revision_ = 1;
-    EditRegion                           dirty_;
     std::map<ObjectId, StylizePassValue> passes_;
     std::vector<ObjectId>                order_;
 };

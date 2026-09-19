@@ -512,13 +512,13 @@ BuildingPlacementTarget::BuildingPlacementTarget(std::string id, building::Place
 
 BuildingPlacementTarget::BuildingPlacementTarget(
     std::string id, std::unique_ptr<building::PlacementWorld> world, unsigned long long revision)
-    : id_(std::move(id)), world_(world.get()), ownedWorld_(std::move(world)), revision_(revision) {}
+    : EditableTargetState(revision), id_(std::move(id)), world_(world.get()), ownedWorld_(std::move(world)) {}
 
 TargetDescriptor BuildingPlacementTarget::describe() const {
     TargetDescriptor result;
     result.id = TargetId(id_);
     result.type = "building-placement-world";
-    result.revision = revision_;
+    result.revision = revisionValue();
     result.readOnly = world_ == nullptr;
     result.capabilities = {editorCapabilityId()};
     return result;
@@ -553,7 +553,7 @@ BuildingPlacementPreview BuildingPlacementTarget::preview(const std::string& bui
                                                           double rotationDegrees,
                                                           int excludeInstanceId) const {
     BuildingPlacementPreview result;
-    result.worldRevision = revision_;
+    result.worldRevision = revisionValue();
     if (!world_) {
         result.status = EditorStatus::Rejected;
         result.diagnostics.push_back(eve::editing::ruleDiagnostic(eve::DiagnosticCode::PreconditionViolation,
@@ -943,7 +943,7 @@ BuildingEdgeCurvePreview BuildingPlacementTarget::previewEdgeCubicBezier(
     const std::vector<BuildingEdgeCurvePoint>& controlPoints, int subdivisions,
     int replacingMemberInstanceId, const std::string& surfaceName) const {
     BuildingEdgeCurvePreview result;
-    result.worldRevision = revision_;
+    result.worldRevision = revisionValue();
     result.controlPoints = controlPoints;
     if (!world_) {
         result.status = EditorStatus::Rejected;
@@ -1033,7 +1033,7 @@ editing::GizmoSnapshot BuildingPlacementTarget::edgeCubicBezierGizmo(
     int level, int replacingMemberInstanceId, const std::string& surfaceName) const {
     editing::GizmoSnapshot gizmo;
     gizmo.target = id_;
-    gizmo.targetRevision = revision_;
+    gizmo.targetRevision = revisionValue();
     const BuildingEdgeCurvePreview preview =
         previewEdgeCubicBezier(buildingId, controlPoints, subdivisions,
                                replacingMemberInstanceId, surfaceName);
@@ -1135,7 +1135,7 @@ EditorResult<DomainOperation> BuildingPlacementTarget::makeUpdateEdgeCubicBezier
             return buildingError<DomainOperation>(
                 EditorStatus::Failed, "editor.building.edge-curve-draft-delete-failed",
                 "Curve update could not create an isolated draft world");
-    BuildingPlacementTarget draftTarget(id_, std::move(draftWorld), revision_);
+    BuildingPlacementTarget draftTarget(id_, std::move(draftWorld), revisionValue());
     auto desiredOperation = draftTarget.makeEdgeCubicBezier(
         currentGroup.value().buildingId, controlPoints, subdivisions);
     if (!desiredOperation.ok()) return desiredOperation;
@@ -1415,15 +1415,15 @@ EditorResult<void> BuildingPlacementTarget::applyDomainOperation(const DomainOpe
         return buildingError<void>(EditorStatus::Unsupported, "editor.building.operation-unsupported",
                                    "Building placement operation is unsupported: " + operation.type);
     }
-    ++revision_;
-    dirty_.include(0, 0);
+    bumpRevision();
+    widenDirty(0, 0);
     return eve::editing::applied<void>();
 }
 
 std::unique_ptr<IDomainOperationTarget> BuildingPlacementTarget::cloneDomainState() const {
     if (!world_) return {};
     return std::unique_ptr<IDomainOperationTarget>(
-        new BuildingPlacementTarget(id_, world_->cloneState(), revision_));
+        new BuildingPlacementTarget(id_, world_->cloneState(), revisionValue()));
 }
 
 EditorResult<void> BuildingPlacementTarget::commitDomainState(
@@ -1434,8 +1434,8 @@ EditorResult<void> BuildingPlacementTarget::commitDomainState(
         return buildingError<void>(EditorStatus::Conflict, "editor.building.candidate-mismatch",
                                    "Building candidate cannot be published to this target");
     world_->swapState(*buildingCandidate->ownedWorld_);
-    ++revision_;
-    dirty_.include(0, 0);
+    bumpRevision();
+    widenDirty(0, 0);
     return eve::editing::applied<void>();
 }
 

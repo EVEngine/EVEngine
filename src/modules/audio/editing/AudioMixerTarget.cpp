@@ -24,7 +24,7 @@ AudioMixerTarget::AudioMixerTarget(std::string id) : id_(std::move(id)) {
 }
 
 TargetDescriptor AudioMixerTarget::describe() const {
-    return {TargetId(id_), "audio-mixer", revision_, false,
+    return {TargetId(id_), "audio-mixer", revisionValue(), false,
             {CapabilityId("eve.editor.target.audio-mixer")}};
 }
 
@@ -63,8 +63,8 @@ EditorResult<void> AudioMixerTarget::applyDomainOperation(const DomainOperation&
         return mixerError<void>(EditorStatus::Unsupported, "editor.audio.mixer-operation",
                                 "Unsupported mixer operation: " + operation.type);
     }
-    ++revision_;
-    dirty_.include(0, 0);
+    bumpRevision();
+    widenDirty(0, 0);
     return eve::editing::applied<void>();
 }
 
@@ -237,8 +237,8 @@ EditorResult<void> AudioMixerTarget::loadSnapshot(const EditorValue& snapshot) {
         }
     }
     buses_ = std::move(candidate);
-    ++revision_;
-    dirty_.clear();
+    bumpRevision();
+    clearDirtyRegion();
     return eve::editing::applied<void>();
 }
 

@@ -166,7 +166,7 @@ PropertyDescriptor descriptor(const char* path, PropertyType type, EditorValue d
 SurfaceFluidTarget::SurfaceFluidTarget(std::string id) : id_(std::move(id)) {}
 TargetDescriptor SurfaceFluidTarget::describe() const {
     return {
-        TargetId(id_), "surface-fluid", revision_, false, {CapabilityId("eve.editor.target.surface-fluid-properties")}};
+        TargetId(id_), "surface-fluid", revisionValue(), false, {CapabilityId("eve.editor.target.surface-fluid-properties")}};
 }
 void* SurfaceFluidTarget::queryCapability(const CapabilityId& c) {
     return c == CapabilityId("eve.editor.target.surface-fluid-properties") ? static_cast<IPropertyProvider*>(this)
@@ -180,7 +180,7 @@ eve::Result<eve::Revision> SurfaceFluidTarget::currentRevision(const SelectionSn
         return eve::Result<eve::Revision>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
                                                                           "Surface fluid selection mismatch",
                                                                           "editor.surface-fluid.selection"));
-    return eve::Result<eve::Revision>::success(eve::Revision(revision_));
+    return eve::Result<eve::Revision>::success(eve::Revision(revisionValue()));
 }
 PropertySchema SurfaceFluidTarget::schema(const SelectionSnapshot&) const {
     SurfaceFluidSettings d;
@@ -253,8 +253,8 @@ EditorResult<void> SurfaceFluidTarget::applyDomainOperation(const DomainOperatio
     auto parsed = parse(op.payload);
     if (!parsed.ok()) return EditorResult<void>::failure(parsed.status());
     settings_ = std::move(parsed.value());
-    ++revision_;
-    dirty_.include(0, 0);
+    bumpRevision();
+    widenDirty(0, 0);
     return eve::editing::applied<void>();
 }
 std::vector<EditorDiagnostic> SurfaceFluidTarget::validate() const { return validateSettings(settings_); }
@@ -270,8 +270,8 @@ EditorResult<void> SurfaceFluidTarget::loadSnapshot(const EditorValue& snapshot)
     auto parsed = parse(*s);
     if (!parsed.ok()) return EditorResult<void>::failure(parsed.status());
     settings_ = std::move(parsed.value());
-    ++revision_;
-    dirty_.clear();
+    bumpRevision();
+    clearDirtyRegion();
     return eve::editing::applied<void>();
 }
 

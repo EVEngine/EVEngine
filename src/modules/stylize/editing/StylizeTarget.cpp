@@ -71,7 +71,7 @@ PropertyDescriptor property(const std::string& path, PropertyType type, EditorVa
 
 StylizeRecipeTarget::StylizeRecipeTarget(std::string id) : id_(std::move(id)) {}
 TargetDescriptor StylizeRecipeTarget::describe() const {
-    return {TargetId(id_), "stylize-recipe", revision_, false, {CapabilityId("eve.editor.target.stylize-properties")}};
+    return {TargetId(id_), "stylize-recipe", revisionValue(), false, {CapabilityId("eve.editor.target.stylize-properties")}};
 }
 void* StylizeRecipeTarget::queryCapability(const CapabilityId& c) {
     return c == CapabilityId("eve.editor.target.stylize-properties") ? static_cast<IPropertyProvider*>(this) : nullptr;
@@ -86,7 +86,7 @@ eve::Result<eve::Revision> StylizeRecipeTarget::currentRevision(const SelectionS
     if (!matches(s))
         return eve::Result<eve::Revision>::failure(eve::Diagnostic::error(
             eve::DiagnosticCode::InvalidArgument, "Stylize selection mismatch", "editor.stylize.selection"));
-    return eve::Result<eve::Revision>::success(eve::Revision(revision_));
+    return eve::Result<eve::Revision>::success(eve::Revision(revisionValue()));
 }
 PropertySchema StylizeRecipeTarget::schema(const SelectionSnapshot& s) const {
     PropertySchema schema;
@@ -241,8 +241,8 @@ EditorResult<void> StylizeRecipeTarget::applyDomainOperation(const DomainOperati
                           "Stylize recipe violates stage or parameter rules");
     passes_ = std::move(candidate.passes_);
     order_  = std::move(candidate.order_);
-    ++revision_;
-    dirty_.include(0, 0);
+    bumpRevision();
+    widenDirty(0, 0);
     return eve::editing::applied<void>();
 }
 std::unique_ptr<IDomainOperationTarget> StylizeRecipeTarget::cloneDomainState() const {
@@ -302,7 +302,7 @@ EditorResult<void> StylizeRecipeTarget::loadSnapshot(const EditorValue& s) {
     op.type     = "stylize.recipe.replace.v1";
     op.payload  = *content;
     auto result = applyDomainOperation(op);
-    if (result.ok()) dirty_.clear();
+    if (result.ok()) clearDirtyRegion();
     return result;
 }
 

@@ -55,7 +55,7 @@ using editing::validatePropertyValue;
     std::vector<BiomeAssetValue> assets;
 };
 /** @brief Revisioned BiomeRules asset. */
-class BiomeDocumentTarget final : public virtual IEditableTarget,
+class BiomeDocumentTarget final : public ::eve::editing::EditableTargetState, public virtual IEditableTarget,
                                   public IDomainOperationTarget,
                                   public IDomainOperationTargetStaging,
                                   public IPropertyProvider,
@@ -67,9 +67,6 @@ public:
         return CapabilityId("eve.editor.target.biome-properties");
     }
     TargetId                                targetId() const override { return TargetId(id_); }
-    std::uint64_t                           revision() const override { return revision_; }
-    EditRegion                              dirtyRegion() const override { return dirty_; }
-    void                                    clearDirtyRegion() override { dirty_.clear(); }
     TargetDescriptor                        describe() const override;
     /**
      * @brief Query Inspector property and snapshot capabilities.
@@ -103,8 +100,6 @@ private:
     EditorValue                   contentValue() const;
     EditorResult<DomainOperation> replacement(EditorValue, std::string = {}) const;
     std::string                   id_;
-    Revision                      revision_ = 1;
-    EditRegion                    dirty_;
     std::vector<BiomeLayerValue>  layers_;
     std::vector<std::string>      exclusions_;
 };

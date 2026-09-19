@@ -72,7 +72,7 @@ EditorResult<void> TextureRecipeTarget::initializeDefaults() {
 TargetDescriptor TextureRecipeTarget::describe() const {
     return {TargetId(id_),
             "texture-recipe",
-            revision_,
+            revisionValue(),
             false,
             {CapabilityId("eve.editor.target.texture-recipe-properties")}};
 }
@@ -88,7 +88,7 @@ eve::Result<eve::Revision> TextureRecipeTarget::currentRevision(const SelectionS
         return eve::Result<eve::Revision>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
                                                                           "Texture recipe selection mismatch",
                                                                           "editor.texture-recipe.selection"));
-    return eve::Result<eve::Revision>::success(eve::Revision(revision_));
+    return eve::Result<eve::Revision>::success(eve::Revision(revisionValue()));
 }
 PropertySchema TextureRecipeTarget::schema(const SelectionSnapshot&) const {
     PropertySchema out;
@@ -186,8 +186,8 @@ EditorResult<void> TextureRecipeTarget::applyDomainOperation(const DomainOperati
     if (hasErrors(candidate.validate()))
         return fail<void>(EditorStatus::Rejected, "editor.texture-recipe.invalid", "Texture recipe validation failed");
     values_ = std::move(candidate.values_);
-    ++revision_;
-    dirty_.include(0, 0);
+    bumpRevision();
+    widenDirty(0, 0);
     return eve::editing::applied<void>();
 }
 std::unique_ptr<IDomainOperationTarget> TextureRecipeTarget::cloneDomainState() const {
@@ -216,7 +216,7 @@ EditorResult<void> TextureRecipeTarget::loadSnapshot(const EditorValue& s) {
     op.type     = "texture-recipe.replace.v1";
     op.payload  = *c;
     auto result = applyDomainOperation(op);
-    if (result.ok()) dirty_.clear();
+    if (result.ok()) clearDirtyRegion();
     return result;
 }
 TextureRecipePreviewRuntime::TextureRecipePreviewRuntime()  = default;

@@ -22,7 +22,7 @@ template <class T> using EditorResult = editing::Result<T>;
 using EditorStatus = editing::Status; using EditorValue = editing::Value; using EditorDiagnostic = editing::Diagnostic;
 
 /** @brief UI-neutral, serializable material authoring target. */
-class MaterialDocumentTarget final : public virtual IEditableTarget,
+class MaterialDocumentTarget final : public ::eve::editing::EditableTargetState, public virtual IEditableTarget,
                                      public IDomainOperationTarget,
                                      public IDomainOperationTargetStaging,
                                      public eve::editing::IEditingSnapshotProvider,
@@ -31,9 +31,6 @@ public:
     explicit MaterialDocumentTarget(std::string id);
 
     TargetId targetId() const override { return TargetId(id_); }
-    std::uint64_t revision() const override { return revision_; }
-    EditRegion dirtyRegion() const override { return dirty_; }
-    void clearDirtyRegion() override { dirty_.clear(); }
     TargetDescriptor describe() const override;
     /** @brief Query an optional target capability. @return Borrowed pointer owned by this target, or null. @lifetime Valid until this target is destroyed or mutated. */
     void* queryCapability(const CapabilityId& capability) override;
@@ -65,8 +62,6 @@ private:
     bool selectionMatches(const SelectionSnapshot& selection) const;
 
     std::string id_;
-    unsigned long long revision_ = 1;
-    EditRegion dirty_;
     std::map<std::string, EditorValue> values_;
 };
 

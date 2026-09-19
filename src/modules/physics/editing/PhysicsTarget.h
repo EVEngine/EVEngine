@@ -45,7 +45,7 @@ using EditorDiagnostic = editing::Diagnostic;
 using IPhysicsColliderAssetResolver = eve::physics_editing::IPhysicsColliderAssetResolver;
 
 /** @brief Serializable, backend-neutral 2D/3D collider authoring target. */
-class PhysicsColliderTarget final : public virtual IEditableTarget,
+class PhysicsColliderTarget final : public ::eve::editing::EditableTargetState, public virtual IEditableTarget,
                                     public IDomainOperationTarget,
                                     public IDomainOperationTargetStaging,
                                     public IPropertyProvider {
@@ -53,9 +53,6 @@ public:
     explicit PhysicsColliderTarget(std::string id, int dimensions = 3);
 
     TargetId targetId() const override { return TargetId(id_); }
-    std::uint64_t revision() const override { return revision_; }
-    EditRegion         dirtyRegion() const override { return dirty_; }
-    void               clearDirtyRegion() override { dirty_.clear(); }
     TargetDescriptor   describe() const override;
     /** @brief Query an optional target capability. @return Borrowed pointer owned by this target, or null. @lifetime
      * Valid until this target is destroyed or mutated. */
@@ -87,8 +84,6 @@ private:
 
     std::string                        id_;
     int                                dimensions_ = 3;
-    unsigned long long                 revision_   = 1;
-    EditRegion                         dirty_;
     std::map<std::string, EditorValue> values_;
 };
 
@@ -124,7 +119,7 @@ private:
 };
 
 /** @brief Serializable joint authoring target using stable body references. */
-class PhysicsJointTarget final : public virtual IEditableTarget,
+class PhysicsJointTarget final : public ::eve::editing::EditableTargetState, public virtual IEditableTarget,
                                  public IDomainOperationTarget,
                                  public IDomainOperationTargetStaging,
                                  public IPropertyProvider {
@@ -132,9 +127,6 @@ public:
     explicit PhysicsJointTarget(std::string id);
 
     TargetId targetId() const override { return TargetId(id_); }
-    std::uint64_t revision() const override { return revision_; }
-    EditRegion         dirtyRegion() const override { return dirty_; }
-    void               clearDirtyRegion() override { dirty_.clear(); }
     TargetDescriptor   describe() const override;
     /** @brief Query an optional target capability. @return Borrowed pointer owned by this target, or null. @lifetime
      * Valid until this target is destroyed or mutated. */
@@ -160,8 +152,6 @@ private:
     bool                                      selectionMatches(const SelectionSnapshot& selection) const;
 
     std::string                        id_;
-    unsigned long long                 revision_ = 1;
-    EditRegion                         dirty_;
     std::map<std::string, EditorValue> values_;
 };
 

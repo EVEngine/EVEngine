@@ -30,7 +30,7 @@ bool errors(const std::vector<EditorDiagnostic>& d) {
 SceneImportTarget::SceneImportTarget(std::string id) : id_(std::move(id)) {}
 TargetDescriptor SceneImportTarget::describe() const {
     return {
-        TargetId(id_), "scene-import", revision_, false, {CapabilityId("eve.editor.target.scene-import-properties")}};
+        TargetId(id_), "scene-import", revisionValue(), false, {CapabilityId("eve.editor.target.scene-import-properties")}};
 }
 void* SceneImportTarget::queryCapability(const CapabilityId& c) {
     return c == CapabilityId("eve.editor.target.scene-import-properties") ? static_cast<IPropertyProvider*>(this)
@@ -43,7 +43,7 @@ eve::Result<eve::Revision> SceneImportTarget::currentRevision(const SelectionSna
     if (!matches(s))
         return eve::Result<eve::Revision>::failure(eve::Diagnostic::error(
             eve::DiagnosticCode::InvalidArgument, "Scene import selection mismatch", "editor.scene-import.selection"));
-    return eve::Result<eve::Revision>::success(eve::Revision(revision_));
+    return eve::Result<eve::Revision>::success(eve::Revision(revisionValue()));
 }
 PropertySchema SceneImportTarget::schema(const SelectionSnapshot&) const {
     PropertySchema s;
@@ -177,8 +177,8 @@ EditorResult<void> SceneImportTarget::applyDomainOperation(const DomainOperation
         return fail<void>(EditorStatus::Rejected, "editor.scene-import.invalid",
                           "Scene import settings validation failed");
     value_ = std::move(v);
-    ++revision_;
-    dirty_.include(0, 0);
+    bumpRevision();
+    widenDirty(0, 0);
     return eve::editing::applied<void>();
 }
 std::unique_ptr<IDomainOperationTarget> SceneImportTarget::cloneDomainState() const {
@@ -205,7 +205,7 @@ EditorResult<void> SceneImportTarget::loadSnapshot(const EditorValue& s) {
     op.type     = "scene-import.replace.v1";
     op.payload  = *c;
     auto result = applyDomainOperation(op);
-    if (result.ok()) dirty_.clear();
+    if (result.ok()) clearDirtyRegion();
     return result;
 }
 }  // namespace eve::sceneloader_editing

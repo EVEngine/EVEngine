@@ -189,7 +189,7 @@ eve::Result<eve::Revision> UiDocumentTarget::currentRevision(const SelectionSnap
             return eve::Result<eve::Revision>::failure(eve::Diagnostic::error(
                 eve::DiagnosticCode::InvalidArgument, "UI selection contains an invalid widget",
                 "editor.ui.selection", {}, "editor.UiDocumentTarget"));
-    return eve::Result<eve::Revision>::success(eve::Revision(revision_));
+    return eve::Result<eve::Revision>::success(eve::Revision(revisionValue()));
 }
 
 PropertySchema UiDocumentTarget::schema(const SelectionSnapshot&) const {

@@ -26,7 +26,7 @@ UiDocumentTarget::UiDocumentTarget(std::string id) : id_(std::move(id)) {}
 TargetDescriptor UiDocumentTarget::describe() const {
     return {TargetId(id_),
             "ui-document",
-            revision_,
+            revisionValue(),
             false,
             {IUiDocumentEditTarget::editorCapabilityId(), CapabilityId("eve.editor.target.ui-properties")}};
 }
@@ -100,8 +100,8 @@ EditorResult<void> UiDocumentTarget::applyDomainOperation(const DomainOperation&
         return uiError<void>(EditorStatus::Unsupported, "editor.ui.operation-unsupported",
                              "Unsupported UI operation: " + operation.type);
     }
-    ++revision_;
-    dirty_.include(0, 0);
+    bumpRevision();
+    widenDirty(0, 0);
     return eve::editing::applied<void>();
 }
 

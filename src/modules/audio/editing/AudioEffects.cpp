@@ -92,7 +92,7 @@ DomainOperation operation(const char* type, const char* inverse, const std::stri
 
 AudioEffectChainTarget::AudioEffectChainTarget(std::string id) : id_(std::move(id)) {}
 TargetDescriptor AudioEffectChainTarget::describe() const {
-    return {TargetId(id_), "audio-effect-chain", revision_, false, {CapabilityId("eve.editor.target.audio-effects")}};
+    return {TargetId(id_), "audio-effect-chain", revisionValue(), false, {CapabilityId("eve.editor.target.audio-effects")}};
 }
 void* AudioEffectChainTarget::queryCapability(const CapabilityId& capability) {
     return capability == CapabilityId("eve.editor.target.audio-effects") ? static_cast<AudioEffectChainTarget*>(this)
@@ -123,8 +123,8 @@ EditorResult<void> AudioEffectChainTarget::applyDomainOperation(const DomainOper
     } else
         return effectError<void>(EditorStatus::Rejected, "editor.audio.effect-operation",
                                  "Unsupported effect operation");
-    ++revision_;
-    dirty_.include(0, 0);
+    bumpRevision();
+    widenDirty(0, 0);
     return eve::editing::applied<void>();
 }
 std::unique_ptr<IDomainOperationTarget> AudioEffectChainTarget::cloneDomainState() const {
@@ -217,8 +217,8 @@ EditorResult<void> AudioEffectChainTarget::loadSnapshot(const EditorValue& snaps
                                  "Effect snapshot exceeds safety budget");
     effects_ = std::move(candidate.effects_);
     order_   = std::move(candidate.order_);
-    ++revision_;
-    dirty_.include(0, 0);
+    bumpRevision();
+    widenDirty(0, 0);
     return eve::editing::applied<void>();
 }
 EditorResult<DomainOperation> AudioEffectChainTarget::makeAssignToBus(const AudioMixerTarget& mixer,

@@ -314,7 +314,7 @@ VoxelCatalogTarget::VoxelCatalogTarget(std::string id) : id_(std::move(id)) {}
 TargetDescriptor VoxelCatalogTarget::describe() const {
     return {TargetId(id_),
             "voxel-catalog",
-            revision_,
+            revisionValue(),
             false,
             {propertyCapabilityId(), IEditingSnapshotProvider::editingCapabilityId()}};
 }
@@ -347,7 +347,7 @@ eve::Result<eve::Revision> VoxelCatalogTarget::currentRevision(const SelectionSn
         return eve::Result<eve::Revision>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
                                                                           "Voxel catalog selection mismatch",
                                                                           "editor.voxel-model.selection"));
-    return eve::Result<eve::Revision>::success(eve::Revision(revision_));
+    return eve::Result<eve::Revision>::success(eve::Revision(revisionValue()));
 }
 
 PropertySchema VoxelCatalogTarget::schema(const SelectionSnapshot&) const {
@@ -557,8 +557,8 @@ EditorResult<void> VoxelCatalogTarget::applyDomainOperation(const DomainOperatio
     if (errors(c.validate()))
         return fail<void>(EditorStatus::Rejected, "editor.voxel-model.invalid", "Voxel catalog validation failed");
     models_ = std::move(c.models_);
-    ++revision_;
-    dirty_.include(0, 0);
+    bumpRevision();
+    widenDirty(0, 0);
     return eve::editing::applied<void>();
 }
 
@@ -589,7 +589,7 @@ EditorResult<void> VoxelCatalogTarget::loadSnapshot(const EditorValue& s) {
     op.type     = "voxel.catalog.replace.v1";
     op.payload  = *content;
     auto result = applyDomainOperation(op);
-    if (result.ok()) dirty_.clear();
+    if (result.ok()) clearDirtyRegion();
     return result;
 }
 

@@ -51,7 +51,7 @@ ProjectSettingsTarget::ProjectSettingsTarget(std::string id, ProjectSettingsSche
 }
 
 TargetDescriptor ProjectSettingsTarget::describe() const {
-    return {TargetId(id_), "project-settings", revision_, false, {CapabilityId("eve.editor.target.project-settings")}};
+    return {TargetId(id_), "project-settings", revisionValue(), false, {CapabilityId("eve.editor.target.project-settings")}};
 }
 
 void* ProjectSettingsTarget::queryCapability(const CapabilityId& capability) {
@@ -93,8 +93,8 @@ EditorResult<void> ProjectSettingsTarget::applyDomainOperation(const DomainOpera
     if (values_.at(*path) == *value) return eve::editing::noOp();
     values_[*path] = *value;
     if (setting->requiresRestart) restartDirty_[*path] = true;
-    ++revision_;
-    dirty_.include(0, 0);
+    bumpRevision();
+    widenDirty(0, 0);
     return eve::editing::applied<void>();
 }
 
@@ -102,7 +102,7 @@ eve::Result<eve::Revision> ProjectSettingsTarget::currentRevision(const Selectio
     if (!selectionMatches(selection))
         return eve::Result<eve::Revision>::failure(
             eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "Selection does not match settings target"));
-    return eve::Result<eve::Revision>::success(eve::Revision(revision_));
+    return eve::Result<eve::Revision>::success(eve::Revision(revisionValue()));
 }
 
 PropertySchema ProjectSettingsTarget::schema(const SelectionSnapshot&) const {
@@ -214,8 +214,8 @@ EditorResult<void> ProjectSettingsTarget::loadSnapshot(const EditorValue& snapsh
     }
     values_ = std::move(candidate.values_);
     restartDirty_.clear();
-    ++revision_;
-    dirty_.include(0, 0);
+    bumpRevision();
+    widenDirty(0, 0);
     return eve::editing::applied<void>();
 }
 

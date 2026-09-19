@@ -46,20 +46,20 @@ MeshVfxAssetTarget::MeshVfxAssetTarget(std::string id) : id_(std::move(id)) {
 MeshVfxAssetTarget::~MeshVfxAssetTarget() = default;
 
 MeshVfxAssetTarget::MeshVfxAssetTarget(const MeshVfxAssetTarget& other)
-    : id_(other.id_), revision_(other.revision_), dirty_(other.dirty_),
+    : id_(other.id_), EditableTargetState(other),
       asset_(std::make_unique<stylize::MeshVfxAsset>(*other.asset_)) {}
 
 MeshVfxAssetTarget& MeshVfxAssetTarget::operator=(const MeshVfxAssetTarget& other) {
     if (this == &other) return *this;
     id_ = other.id_;
-    revision_ = other.revision_;
-    dirty_ = other.dirty_;
+    setRevision(other.revisionValue());
+    setDirtyRegion(other.dirtyRegion());
     asset_ = std::make_unique<stylize::MeshVfxAsset>(*other.asset_);
     return *this;
 }
 
 TargetDescriptor MeshVfxAssetTarget::describe() const {
-    return {TargetId(id_), "stylize.mesh-vfx", revision_, false,
+    return {TargetId(id_), "stylize.mesh-vfx", revisionValue(), false,
             {CapabilityId("eve.editor.target.stylize-mesh-vfx-properties")}};
 }
 
@@ -77,7 +77,7 @@ eve::Result<eve::Revision> MeshVfxAssetTarget::currentRevision(const SelectionSn
     if (!matches(selection))
         return eve::Result<eve::Revision>::failure(eve::Diagnostic::error(
             eve::DiagnosticCode::InvalidArgument, "Mesh VFX selection mismatch", "editor.stylize.mesh-vfx.selection"));
-    return eve::Result<eve::Revision>::success(eve::Revision(revision_));
+    return eve::Result<eve::Revision>::success(eve::Revision(revisionValue()));
 }
 
 PropertySchema MeshVfxAssetTarget::schema(const SelectionSnapshot&) const { return assetSchema(); }
@@ -140,8 +140,8 @@ EditorResult<void> MeshVfxAssetTarget::applyDomainOperation(const DomainOperatio
         return fail<void>(editing::Status::Rejected, "editor.stylize.mesh-vfx.invalid",
                           candidate.status().describe());
     asset_ = std::make_unique<stylize::MeshVfxAsset>(std::move(candidate).takeValue());
-    ++revision_;
-    dirty_.include(0, 0);
+    bumpRevision();
+    widenDirty(0, 0);
     return editing::applied<void>();
 }
 
@@ -177,7 +177,7 @@ EditorResult<void> MeshVfxAssetTarget::loadSnapshot(const EditorValue& snapshot)
     operation.type = "stylize.mesh-vfx.replace.v1";
     operation.payload = EditorValue::Object{{"assetJson", *json}};
     auto result = applyDomainOperation(operation);
-    if (result.ok()) dirty_.clear();
+    if (result.ok()) clearDirtyRegion();
     return result;
 }
 

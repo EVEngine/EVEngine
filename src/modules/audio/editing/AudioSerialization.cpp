@@ -49,8 +49,8 @@ EditorResult<void> AudioSourceTarget::loadSnapshot(const EditorValue& snapshot) 
         candidate[path] = value;
     }
     values_ = std::move(candidate);
-    ++revision_;
-    dirty_.clear();
+    bumpRevision();
+    clearDirtyRegion();
     return eve::editing::applied<void>();
 }
 

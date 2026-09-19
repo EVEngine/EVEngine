@@ -29,7 +29,7 @@ TargetDescriptor SceneTargetBase::describe() const {
     TargetDescriptor descriptor;
     descriptor.id           = TargetId(id_);
     descriptor.type         = type_;
-    descriptor.revision     = revision_;
+    descriptor.revision     = revisionValue();
     descriptor.capabilities = {ISceneHierarchyEditTarget::editorCapabilityId(),
                                ITransformEditTarget::editingCapabilityId(),
                                eve::editing::IEditingSnapshotProvider::editingCapabilityId()};
@@ -159,8 +159,8 @@ EditorResult<void> SceneTargetBase::applyDomainOperation(const DomainOperation& 
         return sceneError<void>(EditorStatus::Unsupported, "editor.scene.operation-unsupported",
                                 "Scene target does not support operation: " + operation.type);
     }
-    ++revision_;
-    dirty_.include(0, 0);
+    bumpRevision();
+    widenDirty(0, 0);
     return eve::editing::applied<void>();
 }
 
@@ -174,8 +174,8 @@ EditorResult<void> SceneTargetBase::commitDomainState(std::unique_ptr<IDomainOpe
         return sceneError<void>(EditorStatus::Conflict, "editor.scene.candidate-mismatch",
                                 "Scene candidate does not belong to this target");
     objects_.swap(staged->objects_);
-    revision_ = staged->revision_;
-    dirty_    = staged->dirty_;
+    setRevision(staged->revisionValue());
+    setDirtyRegion(staged->dirtyRegion());
     return eve::editing::applied<void>();
 }
 
