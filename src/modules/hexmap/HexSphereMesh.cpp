@@ -675,15 +675,16 @@ private:
         return tangentPerturb(map_.noise(), position, perturbStrength_);
     }
 
-
-
-    /** @brief Whether the triangle about to be emitted must be reversed to face outward. */
-    [[nodiscard]] bool reverseWinding(HexVec3 a, HexVec3 b, HexVec3 c) const noexcept {
-        // One convention for the whole mesh: emitters lay their vertices out in a fixed order,
-        // and the only thing that ever reverses it is the parity of the corner sort that built
-        // the patch. No geometric test is consulted, because none of them can read a cliff wall.
-        return !mirrorCorner_;
-    }
+    /**
+     * @brief Whether the triangle about to be emitted must be reversed to face outward.
+     *
+     * One convention for the whole mesh: emitters lay their vertices out in a fixed order, and the
+     * only thing that ever reverses it is the parity of the corner sort that built the patch. No
+     * geometric test is consulted, because none of them can read a cliff wall - so this takes no
+     * positions. It used to be handed the perturbed corners, which cost three noise samples per
+     * triangle in the innermost emitter and then ignored every one of them.
+     */
+    [[nodiscard]] bool reverseWinding() const noexcept { return !mirrorCorner_; }
 
     /** @brief Whether a triangle has two corners close enough to weld into a single vertex. */
     [[nodiscard]] static bool degenerate(HexVec3 a, HexVec3 b, HexVec3 c) noexcept {
@@ -699,7 +700,7 @@ private:
         if (degenerate(perturbedPosition(p0), perturbedPosition(p1), perturbedPosition(p2))) return;
         const std::uint32_t i0 = static_cast<std::uint32_t>(out_.vertexCount());
         const bool          reverse =
-            reverseWinding(perturbedPosition(p0), perturbedPosition(p1), perturbedPosition(p2));
+            reverseWinding();
         vertex(p0, w, t0, t1, t2);
         vertex(p1, w, t0, t1, t2);
         vertex(p2, w, t0, t1, t2);
@@ -716,7 +717,7 @@ private:
         if (degenerate(perturbedPosition(p0), perturbedPosition(p1), perturbedPosition(p2))) return;
         const std::uint32_t i0 = static_cast<std::uint32_t>(out_.vertexCount());
         const bool          reverse =
-            reverseWinding(perturbedPosition(p0), perturbedPosition(p1), perturbedPosition(p2));
+            reverseWinding();
         vertex(p0, w0, t0, t1, t2);
         vertex(p1, w1, t0, t1, t2);
         vertex(p2, w2, t0, t1, t2);
@@ -753,7 +754,7 @@ private:
         vertex(p3, w3, t0, t1, t2);
         // Oriented as a unit: deciding each half on its own leaves the shared diagonal traversed
         // the same way twice whenever the two halves disagree, and one of them is then culled.
-        const bool reverse = reverseWinding(a0, a2, a1);
+        const bool reverse = reverseWinding();
         if (firstOk) {
             if (reverse)
                 out_.addTriangle(i0, i0 + 1u, i0 + 2u);
