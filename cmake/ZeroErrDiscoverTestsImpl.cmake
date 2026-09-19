@@ -2,6 +2,13 @@ if(NOT DEFINED ZEROERR_EXE OR NOT DEFINED CTEST_FILE OR NOT DEFINED ZEROERR_WORK
   message(FATAL_ERROR "ZEROERR_EXE, CTEST_FILE, and ZEROERR_WORKING_DIRECTORY required")
 endif()
 
+# Every generated entry carries a label so a run can be restricted to one link
+# unit (ctest -L '^unit_test_<domain>$'). Falls back to a generic label when the
+# caller passes none, because LABELS must not be empty.
+if(NOT DEFINED ZEROERR_LABEL OR ZEROERR_LABEL STREQUAL "")
+  set(ZEROERR_LABEL "zeroerr")
+endif()
+
 # 1) Collect test cases.
 #
 # Prefer zeroerr's machine-readable listing (--list-format=plain, one
@@ -103,25 +110,27 @@ set(_content "")
 foreach(_basename IN LISTS _bundle_files)
   string(APPEND _content
     "add_test(\"bundle/${_basename}\" \"${ZEROERR_EXE}\" \"--quiet\" \"--file=.*${_basename}\")\n"
-    "set_tests_properties(\"bundle/${_basename}\" PROPERTIES LABELS \"bundle\" WORKING_DIRECTORY \"${ZEROERR_WORKING_DIRECTORY}\")\n")
+    "set_tests_properties(\"bundle/${_basename}\" PROPERTIES LABELS \"bundle;${ZEROERR_LABEL}\" WORKING_DIRECTORY \"${ZEROERR_WORKING_DIRECTORY}\")\n")
   foreach(_entry IN LISTS _cases)
     string(REPLACE "|" ";" _parts "${_entry}")
     list(GET _parts 0 _name)
     list(GET _parts 1 _file)
     if(_file STREQUAL _basename)
+      set(_eve_case_labels "${ZEROERR_LABEL}")
+      if(_name STREQUAL "ClassicScenes.perf.maxFps")
+        # Full FPS sweeps stay opt-in: the benchmark label lets `make test`
+        # exclude them (CTEST_BENCHMARK_SEL) while -L benchmark still selects them.
+        set(_eve_case_labels "${_eve_case_labels};benchmark")
+      endif()
       # CTest include files use classic add_test(name exe [args...]), not NAME/COMMAND keywords.
       string(APPEND _content
         "add_test(\"${_name}\" \"${ZEROERR_EXE}\" \"--testcase=^${_name}$\")\n"
-        "set_tests_properties(\"${_name}\" PROPERTIES WORKING_DIRECTORY \"${ZEROERR_WORKING_DIRECTORY}\")\n")
+        "set_tests_properties(\"${_name}\" PROPERTIES LABELS \"${_eve_case_labels}\" WORKING_DIRECTORY \"${ZEROERR_WORKING_DIRECTORY}\")\n")
       if(_name MATCHES "^ClassicScenes[.]")
         # These asset-dependent cases already return early with these diagnostics.
         # Expose that outcome as skipped rather than a zero-assertion pass.
         string(APPEND _content
           "set_tests_properties(\"${_name}\" PROPERTIES SKIP_REGULAR_EXPRESSION \"ClassicScenes.*: missing\")\n")
-      endif()
-      if(_name STREQUAL "ClassicScenes.perf.maxFps")
-        string(APPEND _content
-          "set_tests_properties(\"${_name}\" PROPERTIES LABELS \"benchmark\")\n")
       endif()
       if(_name MATCHES "^resourceFormats\\.")
         # Helpers must receive TestContext, but fail closed if a future helper
