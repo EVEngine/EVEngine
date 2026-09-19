@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "ui/UIHost.h"
 
@@ -63,7 +65,7 @@ struct FlexResult {
  * Distribute flex items along main/cross axis. Pure — no ImGui state touched,
  * so it can be unit-tested headlessly.
  */
-FlexResult flexArrange(bool row, float gap, float availMain, float availCross,
+EVENGINE_API_WORLD FlexResult flexArrange(bool row, float gap, float availMain, float availCross,
                        FlexAlign containerAlign, FlexJustify justify,
                        const std::vector<FlexItemSpec> &items);
 

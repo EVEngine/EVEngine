@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/Result.h"
 
@@ -12,7 +14,7 @@ class Source;
 struct AudioZoneItem { float volume=1.f, fadeInTime=5.f, fadeOutTime=5.f, duration=0.f; };
 enum class AudioZonePhase : std::uint8_t { Active, BecomingInactive, Inactive };
 /** @brief Caller-owned Pcg audio-zone configuration and track list. */
-class AudioZoneProfile {
+class EVENGINE_API_BACKENDS AudioZoneProfile {
 public:
     float x=0.f,y=0.f,z=0.f,radius=30.f,minimumBreakTime=5.f,maximumBreakTime=10.f,deactivationTime=10.f;
     bool global=false;
@@ -49,8 +51,8 @@ struct AudioZoneOutput { bool play=false,stop=false; int trackIndex=-1; float vo
  * @param masterVolume Pcg master-volume ceiling.
  * @param seed Named audio-zone RNG stream seed used when a new track starts.
  */
-[[nodiscard]] Result<AudioZoneOutput> evaluateAudioZone(const AudioZoneProfile& profile, AudioZoneState& state,
+[[nodiscard]] EVENGINE_API_BACKENDS Result<AudioZoneOutput> evaluateAudioZone(const AudioZoneProfile& profile, AudioZoneState& state,
     float now,float playerX,float playerY,float playerZ,float masterVolume,std::uint32_t seed);
 /** @brief Apply one evaluated command to the caller-selected track Source without retaining it. */
-[[nodiscard]] Result<void> applyAudioZoneOutput(Source* source,const AudioZoneOutput& output);
+[[nodiscard]] EVENGINE_API_BACKENDS Result<void> applyAudioZoneOutput(Source* source,const AudioZoneOutput& output);
 }

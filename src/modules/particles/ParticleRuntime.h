@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/Time.h"
 
@@ -40,9 +42,9 @@ struct ParticleFrameStats {
 };
 
 /** @brief Mutable process-wide scalability configuration. */
-ParticleBudgetConfig& particleBudgetConfig();
+EVENGINE_API_DOMAINS ParticleBudgetConfig& particleBudgetConfig();
 /** @brief Statistics for the most recently processed particle frame. */
-const ParticleFrameStats& particleFrameStats();
+EVENGINE_API_DOMAINS const ParticleFrameStats& particleFrameStats();
 /** @brief Internal mutable statistics used by particle systems. */
 ParticleFrameStats& mutableParticleFrameStats();
 

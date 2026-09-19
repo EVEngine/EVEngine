@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/Module.h"
 #include "editing/EditingExtension.h"
@@ -41,7 +43,7 @@ class EditorTargetCoordinator;
  * Provides transform gizmos, map brushes, and UI shell helpers so games/tools
  * can assemble their own editors (Love2D-style runtime tooling).
  */
-class Editor : public Module {
+class EVENGINE_API_ORCHESTRATION Editor : public Module {
 public:
     Module_REG(Editor);
     Editor();

@@ -13,7 +13,7 @@ namespace eve::particles {
 class ParticleEmitter;
 
 /** @brief Advances all ParticleEmitter Sim components. */
-class ParticleSimSystem {
+class EVENGINE_API_DOMAINS ParticleSimSystem {
 public:
     /**
      * @brief Advances emitters using one scheduler-owned deterministic step.

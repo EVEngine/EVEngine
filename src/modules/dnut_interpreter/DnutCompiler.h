@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /** @file DnutCompiler.h @brief Registry-driven compiler for the `.dnut` story dialect. */
 
@@ -19,7 +21,7 @@ namespace eve::dnut {
  * `diagnostics` instead of stopping at the first one, so a tool or editor can
  * present the whole list. Call `hasErrors` before publishing `assets`.
  */
-struct DnutCompileOutput {
+struct EVENGINE_API_PLATFORM DnutCompileOutput {
     std::vector<SequenceAsset>  assets;
     std::vector<DnutDiagnostic> diagnostics;
 
@@ -47,7 +49,7 @@ struct DnutCompileOutput {
  * @cost Linear in the document size; allocates one token buffer and one asset
  *       per `story` block.
  */
-[[nodiscard]] DnutCompileOutput compileDnut(std::string_view source, const std::string& path,
+[[nodiscard]] EVENGINE_API_PLATFORM DnutCompileOutput compileDnut(std::string_view source, const std::string& path,
                                             const StepKindRegistry& registry);
 
 }  // namespace eve::dnut

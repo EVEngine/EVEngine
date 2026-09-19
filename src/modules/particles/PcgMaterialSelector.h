@@ -1,4 +1,6 @@
 #pragma once
+
+#include "common/Export.h"
 #include "common/Result.h"
 #include <cstdint>
 #include <vector>
@@ -6,7 +8,7 @@ namespace eve::graphics { class Texture; }
 namespace eve::particles {
 class ParticleEmitter;
 /** @brief Pcg-compatible particle texture palette that reserves candidate zero. */
-class PcgMaterialSelector {
+class EVENGINE_API_DOMAINS PcgMaterialSelector {
 public:
     /** @brief Add a borrowed texture. Graphics retains ownership and it must outlive use. */
     [[nodiscard]] Result<void> add(graphics::Texture* texture);

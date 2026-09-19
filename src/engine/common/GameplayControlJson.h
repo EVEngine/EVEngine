@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @file GameplayControlJson.h
@@ -16,7 +18,7 @@ namespace eve {
  * @remarks Unknown root fields are rejected. Provider callbacks execute synchronously on
  *          the gameplay owner thread; this function retains no request or provider pointer.
  */
-[[nodiscard]] Result<Value> executeGameplayControlRequest(const Value& request);
+[[nodiscard]] EVENGINE_API_FOUNDATION Result<Value> executeGameplayControlRequest(const Value& request);
 
 /**
  * @brief Parse, execute and serialize one gameplay-control JSON request.

@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/Identity.h"
 
@@ -120,7 +122,7 @@ struct NodeDesc {
     const std::string &reconcileKey() const { return key.empty() ? id : key; }
 };
 
-NodeDesc node(std::string id, std::vector<NodeDesc> children = {}, std::string name = "");
+EVENGINE_API_PLATFORM NodeDesc node(std::string id, std::vector<NodeDesc> children = {}, std::string name = "");
 NodeDesc group(std::vector<NodeDesc> children = {}, std::string id = "");
 /** @brief Conditional: include `child` only when `cond` is true (empty group otherwise). */
 NodeDesc when(bool cond, NodeDesc child);

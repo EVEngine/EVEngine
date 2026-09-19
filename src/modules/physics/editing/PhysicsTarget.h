@@ -103,7 +103,7 @@ public:
 };
 
 /** @brief Candidate-first collider target whose commit/undo publishes to a live sink. */
-class PhysicsColliderPublishingTarget final : public IDomainOperationTarget, public IDomainOperationTargetStaging {
+class EVENGINE_API_DOMAINS PhysicsColliderPublishingTarget final : public IDomainOperationTarget, public IDomainOperationTargetStaging {
 public:
     /** @brief Create an owned collider document bound to a non-owning runtime sink. */
     PhysicsColliderPublishingTarget(std::string id, int dimensions, IPhysicsColliderRuntimeSink* sink);

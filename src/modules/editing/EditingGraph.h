@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "editing/EditingProtocol.h"
 
@@ -51,7 +53,7 @@ struct GraphConnectionDecision {
 };
 
 /** @brief Generic mutable graph model with one authoritative revision clock. */
-class GraphDocument {
+class EVENGINE_API_PLATFORM GraphDocument {
 public:
     [[nodiscard]] Result<void> createNode(GraphNodeRecord node);
     [[nodiscard]] Result<void> deleteNode(const GraphNodeId& node);

@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/Result.h"
 
@@ -18,7 +20,7 @@ class Source;
  * @ownership Sources remain caller-owned and are never retained.
  * @thread Audio owner thread only; callbacks are not invoked.
  */
-[[nodiscard]] Result<void> applyUnderwaterAudio(Source* submergeDown, Source* submergeUp,
+[[nodiscard]] EVENGINE_API_BACKENDS Result<void> applyUnderwaterAudio(Source* submergeDown, Source* submergeUp,
                                                  Source* ambience, bool playDown, bool playUp,
                                                  bool loopAmbience, float volume);
 }

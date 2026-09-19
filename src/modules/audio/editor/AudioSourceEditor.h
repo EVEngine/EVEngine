@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @file AudioSourceEditor.h
@@ -58,7 +60,7 @@ private:
  * @threadaffinity Owner thread only.
  * @reentrancy No unknown callbacks.
  */
-class AudioSourceEditor {
+class EVENGINE_API_EDITORS AudioSourceEditor {
 public:
     /**
      * @brief Construct a seeded preview source with a generated tone clip.

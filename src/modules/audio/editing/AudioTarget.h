@@ -77,7 +77,7 @@ public:
  * complete candidate before replacing its authoring state, so standard
  * transaction undo/redo follows the same live path.
  */
-class AudioSourcePublishingTarget final : public IDomainOperationTarget,
+class EVENGINE_API_BACKENDS AudioSourcePublishingTarget final : public IDomainOperationTarget,
                                           public IDomainOperationTargetStaging {
 public:
     /** @brief Create an authoring target bound to a non-owning runtime sink. */

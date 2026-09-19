@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @file ClimbingAnchorAuthoring.h
@@ -59,9 +61,9 @@ struct ClimbingAnchorBakeRequest {
 };
 
 /** @brief Encodes an owning bake request for editor/script transport. */
-[[nodiscard]] eve::Result<eve::Value> encodeClimbingAnchorBakeRequest(const ClimbingAnchorBakeRequest& request);
+[[nodiscard]] EVENGINE_API_DOMAINS eve::Result<eve::Value> encodeClimbingAnchorBakeRequest(const ClimbingAnchorBakeRequest& request);
 /** @brief Decodes all known bake request fields without publishing a graph. */
-[[nodiscard]] eve::Result<ClimbingAnchorBakeRequest> decodeClimbingAnchorBakeRequest(const eve::Value& value);
+[[nodiscard]] EVENGINE_API_DOMAINS eve::Result<ClimbingAnchorBakeRequest> decodeClimbingAnchorBakeRequest(const eve::Value& value);
 
 /** @brief Measured bake result used by tools and build telemetry. */
 struct ClimbingAnchorBakeResult {
@@ -104,7 +106,7 @@ struct ClimbingAnchorAuthoringOverlay {
  * @param request Complete candidate; it is validated before any graph is published.
  * @return Canonically ordered graph and measured node counts.
  */
-[[nodiscard]] eve::Result<ClimbingAnchorBakeResult> bakeClimbingAnchorGraph(
+[[nodiscard]] EVENGINE_API_DOMAINS eve::Result<ClimbingAnchorBakeResult> bakeClimbingAnchorGraph(
     const ClimbingAnchorBakeRequest& request);
 
 /**
@@ -112,7 +114,7 @@ struct ClimbingAnchorAuthoringOverlay {
  * @param graph Complete graph candidate.
  * @return Body-local nodes and edges in canonical deterministic order.
  */
-[[nodiscard]] eve::Result<ClimbingAnchorAuthoringOverlay> inspectClimbingAnchorGraphAuthoring(
+[[nodiscard]] EVENGINE_API_DOMAINS eve::Result<ClimbingAnchorAuthoringOverlay> inspectClimbingAnchorGraphAuthoring(
     const ClimbingAnchorGraphDefinition& graph);
 
 }  // namespace eve::climbing

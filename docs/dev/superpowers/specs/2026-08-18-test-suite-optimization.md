@@ -381,3 +381,22 @@ debug SDK（`make sdk/win32-debug`）**沿用开发配置，即动态**：它从
 实测（`unit_test_platform`）：exe **4.71 MiB**（同域静态产物曾 218 MiB）；`dumpbin /dependents` 直接导入 EVEditors / EVBackends / EVPlatform / EVFoundation.dll（其余是间接依赖，进程启动即 7 个组 DLL 全部加载）；`ctest -L unit_test_platform -E '^bundle/'` **27/27 通过**（含 bundle 33/35，2 个失败是 bundle 同进程路径的 SEGFAULT，`make test` 默认排除，未定位）；反向对照：PATH 去掉 build 根 → `0xC0000135 STATUS_DLL_NOT_FOUND`，加上即通过；静态 `C:\evs ninja eve` 仍 exit 0 且无组安装规则。
 
 **动态路线尚未覆盖的面（后续工作量的硬数字）**：30 个域里只有 platform 能链，29 个失败 —— LNK1120 合计 5806、去重后 **5263 个未导出符号**，分布在 144 个命名空间（graphics 1138 / procgen 925 / rpg 565 / physics 343 / animation 313 / core 303 / editor 247 / tactics_rts 240 / ui 210 / map 192 / combat 171 / building 162 / card 133 / scene 128 / fluids 126 / dialogue 125 …）。仍有 **22 个模块目录零 `EVENGINE_API` 标注**（authority, card, climbing, database, demo, dialogue, dnut_interpreter, font, hexmap, math, npc_ai, plugins, policyregistry, rpg, rts, rx, snow, statepatch, steering, system, tactics, vehicle）。注意按"零标注模块"计数会**低估**：已部分标注的 graphics/procgen/editor 等仍漏了大量脚本绑定入口，工作量以 LNK1120 为准。补齐这一面之后，"开发默认动态（`EVENGINE_MODULE_LINKAGE=SHARED`）"才真正可用；release/SDK 侧不受影响（`WIN32_CMAKE_ARGS` 已钉 `OBJECT`）。
+### 7.7 SHARED 测试面标注：第一批六个域（2026-09-20）
+
+| 域 | LNK1120 前→后 | exe | ctest（`-E '^bundle/'`） |
+| --- | --- | --- | --- |
+| agent | 8 → 0 | 4.73 MiB | 13/13 通过 |
+| climbing | 11 → 0 | 4.76 MiB | 14/14 通过 |
+| devtools | 12 → 0 | 9.31 MiB | 145/145 通过 |
+| scripts | 12 → 0 | 5.92 MiB | 72/72 通过 |
+| particles | 16 → 0 | 5.61 MiB | **25/34（9 失败）** |
+| audio | 33 → 0 | 5.80 MiB | 51/51 通过 |
+
+改动 34 个头文件 / 50 行组宏 / 29 处 `Export.h` include（21 个类、29 个自由函数；`_INLINE` 0、特殊成员 0）。`unit_test_platform` 重链后仍 27/27；`C:\evs` 的 OBJECT `ninja eve` exit 0。
+
+流水线补丁（§7.5 的第 2、3 步需要按此修正）：
+- `add_export_includes.py` 只扫 `.h`，**`.hpp`/`.inl`/`.ipp` 会漏**（devtools 因此编出 `class EVENGINE_API_FOUNDATION AgentDevelopmentSession`，C2079/C2270 一片）；改用覆盖这些后缀的版本。
+- 按符号名找声明点**会命中注释**（`/** One live decal instance … */` 被当成成员 `instance`）：placer 必须先屏蔽注释、字符串与 raw string 再建索引。
+- 同名重载要判 AMBIGUOUS 并交给人工（`ParticleEmitter.h` 的 `advanceEmitterSim` 两行），不要乱挑一个。
+
+**particles 的 9 个失败是 DLL 拆分本身造成的（不是标注问题）**：全部报 `SDL_Vulkan_GetInstanceExtensions failed: Video subsystem has not been initialized`。根因是第三方静态状态被复制——`build.ninja` 里 7 条组 DLL 链接语句都链了 SDL2 静态库，实测 7 个组 DLL 与测试 exe 每个都各含一份 SDL，而 SDL 的 `_this` 是 `SDL_video.c` 的静态全局：`SDL_InitSubSystem(SDL_INIT_VIDEO)` 发生在 window 模块（EVPlatform 组 DLL 的副本），`SDL_Vulkan_GetInstanceExtensions` 却跑在 graphics 模块（EVBackends 组 DLL 的副本）里。平台域之所以 27/27 是因为它没有 Vulkan 窗口用例。**结论：窗口/Vulkan 类域要真正跑通，必须先做 §7.3 的第三方共享化（EVThirdParty 收进一个共享库）或把 Vulkan 实例创建与 SDL video 初始化收进同一组 DLL**；这一步不能靠补标注解决。

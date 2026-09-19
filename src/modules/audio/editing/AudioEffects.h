@@ -68,7 +68,7 @@ public:
 };
 
 /** @brief Rejects invalid/stale chains before runtime publication. */
-class AudioEffectChainPublisher {
+class EVENGINE_API_BACKENDS AudioEffectChainPublisher {
 public:
     EditorResult<void> publish(const AudioEffectChainTarget& chain,
                                Revision expectedRevision,
