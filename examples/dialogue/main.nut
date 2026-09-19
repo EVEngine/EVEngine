@@ -5,8 +5,7 @@
 //   eve.Avatar    ——  Image 分层人物（Live2D / VRoid API 见设计文档）
 //   eve.I18n      ——  对话文案走翻译表（locales/en.json, locales/zh.json）
 //
-// 剧情用 Squirrel generator 编写（yield "wait" / yield "choice"），
-// 不引入第二套脚本 DSL。
+// 剧情与 pool 来自一个版本化块式 dnut；Squirrel 只负责 UI 投影和输入。
 //
 // 操作：空格 / 鼠标左键 / 触屏 推进；选项阶段按 1 / 2。
 // 运行：make run/linux-debug GAME=examples/dialogue
@@ -16,9 +15,10 @@ persist dlg = null
 persist i18n = eve.I18n()
 persist aliceAv = null
 persist bobAv = null
-persist vnGen = null
 persist vnDone = false
-persist waitingResume = false
+persist presentedFlowNode = ""
+persist pendingCommandTime = 0.0
+persist restoredCommandOnce = false
 // mouse / touch 边沿检测仍用 prevKeys（edgePressed）。
 persist prevKeys = {}
 persist uiReady = false
@@ -68,51 +68,51 @@ function makePortrait(name) {
     return av;
 }
 
-// ---- VN script: still Squirrel (generator), not a new language ----
-// 文案全部来自 i18n 翻译表（默认中文，按 数字键 1 / 2 切换语言）。
+// ---- Canonical dnut flow; Squirrel only projects the current node into UI. ----
 function tr(key, params = null) {
     if (params == null) return i18n.get(key);
     return i18n.getWithParams(key, params);
 }
 
-function scene_intro() {
-    dlg.show("alice", "left");
-    if (!dlg.playPool("alice.greet", { name = tr("name.player") }))
-        dlg.say("alice", tr("line.hello", { name = tr("name.player") }));
-    yield "wait";
+function reportFlowFailure(result, operation) {
+    if (result.ok) return false;
+    print("dialogue " + operation + " failed: " + result.status.summary + "\n");
+    return true;
+}
 
-    dlg.show("bob", "right");
-    if (!dlg.playPool("bob.greet", { name = tr("name.player") }))
-        dlg.say("bob", tr("line.intro"));
-    yield "wait";
-
-    dlg.setExpression("alice", "shy");
-    dlg.say("alice", tr("line.avatar"));
-    yield "wait";
-
-    dlg.narrate(tr("line.continue_ask"));
-    yield "wait";
-
-    dlg.clearChoices();
-    dlg.addChoice("yes", tr("choice.yes"));
-    dlg.addChoice("no", tr("choice.no"));
-    dlg.presentChoices();
-    yield "choice";
-
-    if (dlg.getSelectedChoiceId() == "yes") {
-        dlg.setExpression("alice", "happy");
-        dlg.setMotion("alice", "wave");
-        dlg.say("alice", tr("line.backends"));
-        yield "wait";
-        dlg.say("bob", tr("line.image_layers"));
-        yield "wait";
-    } else {
-        dlg.say("bob", tr("line.bye"));
-        yield "wait";
+function presentFlowNode() {
+    while (dialogueFlow.isActive() &&
+           (dialogueFlow.getNodeKind() == "branch" || dialogueFlow.getNodeKind() == "call")) {
+        local automatic = dialogueFlow.advanceChecked();
+        if (reportFlowFailure(automatic, "automatic node")) { vnDone = true; return; }
     }
-
-    dlg.narrate(tr("line.end"));
-    yield "wait";
+    if (!dialogueFlow.isActive()) { vnDone = true; return; }
+    local nodeId = dialogueFlow.getActiveConversationId() + "/" + dialogueFlow.getNodeId();
+    if (nodeId == presentedFlowNode) return;
+    presentedFlowNode = nodeId;
+    local kind = dialogueFlow.getNodeKind();
+    if (kind == "line") {
+        local speaker = dialogueFlow.getSpeaker();
+        if (speaker == "alice") dlg.show("alice", "left");
+        if (speaker == "bob") dlg.show("bob", "right");
+        local pool = dialogueFlow.getPool();
+        if (pool == "" || !dlg.playPool(pool, { name = tr("name.player") }))
+            dlg.say(speaker, dialogueFlow.getText());
+    } else if (kind == "choice") {
+        dlg.clearChoices();
+        for (local i = 0; i < dialogueFlow.getRouteCount(); ++i)
+            dlg.addChoice(dialogueFlow.getRouteId(i), dialogueFlow.getRouteText(i));
+        dlg.presentChoices();
+    } else if (kind == "wait") {
+        dlg.narrate("[wait] 点击继续");
+    } else if (kind == "command") {
+        pendingCommandTime = 0.8;
+        dlg.narrate("[async command] 正在准备资源…");
+        if (!restoredCommandOnce) {
+            local saved = dialogueFlow.captureStateJson();
+            restoredCommandOnce = dialogueFlow.restoreStateJson(saved);
+        }
+    }
 }
 
 function buildScenes() {
@@ -130,27 +130,11 @@ function buildScenes() {
 }
 
 function eve_asset_reload(path) {
-    // .dnut 属于内容资产：热重载时重新编译并注册台词池。
+    // Pools and conversations reload as one transaction; failure keeps the live workspace.
     if (path == "pools.dnut") {
-        dlg.loadPoolsFromDnutFile("pools.dnut");
-        print("dialogue pools reloaded: " + path + "\n");
-    }
-}
-
-function resumeVn() {
-    if (vnDone || vnGen == null) return;
-    try {
-        local r = resume vnGen;
-        if (r == null) {
-            vnDone = true;
-            waitingResume = false;
-            return;
-        }
-        waitingResume = true;
-    } catch (e) {
-        // generator finished
-        vnDone = true;
-        waitingResume = false;
+        local loaded = dialogueFlow.reloadDnutFileChecked("pools.dnut");
+        if (loaded <= 0) print("dialogue dnut reload rolled back: " + path + "\n");
+        else print("dialogue dnut workspace reloaded: " + path + "\n");
     }
 }
 
@@ -168,10 +152,15 @@ function startScene() {
     aliceAv.setPosition(0.0, 20.0);
     aliceAv.setVisible(false);
     bobAv.setVisible(false);
-    vnGen = scene_intro();
     vnDone = false;
-    waitingResume = false;
-    resumeVn();
+    presentedFlowNode = "";
+    pendingCommandTime = 0.0;
+    restoredCommandOnce = false;
+    local started = dialogueFlow.startChecked("demo.main", {
+        playerName = tr("name.player"), evening = true
+    });
+    if (reportFlowFailure(started, "start")) { vnDone = true; return; }
+    presentFlowNode();
 }
 
 // Presentation is disposable; switching skins keeps the current line and choices.
@@ -211,7 +200,7 @@ function buildUI() {
 
 function refreshUI(dt) {
     if (!uiReady) return;
-    if (dialogueView.update(dt)) resumeVn();
+    dialogueView.update(dt);
     ui.select("dlgbox");
     local action = dlg.isWaitingChoice() ? tr("hint.choose")
                   : (vnDone ? tr("hint.restart") : tr("hint.advance"));
@@ -229,14 +218,22 @@ function tryAdvance() {
     }
     if (dlg.isWaitingAdvance()) {
         dlg.advance();
-        resumeVn();
+        local advanced = dialogueFlow.advanceChecked();
+        if (!reportFlowFailure(advanced, "advance")) presentFlowNode();
         return;
+    }
+    if (dialogueFlow.getNodeKind() == "wait") {
+        local advanced = dialogueFlow.advanceChecked();
+        if (!reportFlowFailure(advanced, "wait")) presentFlowNode();
     }
 }
 
 function tryChoice(index) {
-    if (!dlg.isWaitingChoice()) return;
-    if (dlg.selectChoice(index)) resumeVn();
+    if (dialogueFlow.getNodeKind() != "choice") return;
+    local routeId = dialogueFlow.getRouteId(index);
+    if (dlg.isWaitingChoice()) dlg.selectChoice(index);
+    local selected = dialogueFlow.select(routeId);
+    if (!reportFlowFailure(selected, "select")) presentFlowNode();
 }
 
 function eve_init() {
@@ -251,8 +248,12 @@ function eve_init() {
         i18n.setLanguage("zh");
         i18n.setAutoReload(true);
     }
-    // 程序化对话：.dnut 台词池 + 故事变量 + 脚本谓词。
-    dlg.loadPoolsFromDnutFile("pools.dnut");
+    // One versioned dnut transaction installs pools and conversations.
+    if (dialogueFlow.loadDnutFileChecked("pools.dnut") <= 0)
+        throw "dialogue: failed to load canonical dnut workspace";
+    dialogueFlow.setLocale(i18n.getLanguage());
+    dialogueFlow.setManualCommandMode(true);
+    dialogueFlow.setExpressionEvaluator(function(ctx) { return true; });
     dlg.setVar("name", tr("name.player"), "global");
     dlg.setVar("mood", "happy", "global");
     dlg.setVar("hour", 20, "global");
@@ -275,6 +276,14 @@ function eve_update(dt) {
         anim.update(dt);
     i18n.update(dt);
     viewTime += dt;
+    if (pendingCommandTime > 0.0) {
+        pendingCommandTime -= dt;
+        if (pendingCommandTime <= 0.0) {
+            local requestId = dialogueFlow.getPendingCommandRequestId();
+            local resumed = dialogueFlow.resumeCommandChecked(requestId, { ready = true });
+            if (!reportFlowFailure(resumed, "resume command")) presentFlowNode();
+        }
+    }
     if (keyPressed("4")) { viewStyle = 0; buildUI(); }
     if (keyPressed("5")) { viewStyle = 1; buildUI(); }
     if (keyPressed("6")) { viewStyle = 2; buildUI(); }
@@ -291,10 +300,12 @@ function eve_update(dt) {
         if (key2) tryChoice(1);
     } else {
         if (key1 && i18n.setLanguage("en")) {
+            dialogueFlow.setLocale("en");
             dlg.reset();
             startScene();
         }
         if (key2 && i18n.setLanguage("zh")) {
+            dialogueFlow.setLocale("zh");
             dlg.reset();
             startScene();
         }
