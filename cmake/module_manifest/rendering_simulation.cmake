@@ -47,6 +47,12 @@ eve_declare_module(NAME map LAYER 4 SCRIPT Map SLOT map
                    DEPS data filesystem graphics grid
                    THIRDPARTY poco
                    GROUP 2d 3d)
+# Interactive 3D hex map: an editable pointy-top cell grid plus per-chunk mesh
+# generation (ground fans, blend strips, terraces, cliffs, water, rivers, roads,
+# city walls, decorations and the fog overlay).
+eve_declare_module(NAME hexmap LAYER 4 SCRIPT HexMap SLOT hexmap
+                   DEPS graphics
+                   GROUP 3d)
 eve_declare_module(NAME map_editing LAYER 4
                    DEPS editing
                    OPTIONAL_DEPS map

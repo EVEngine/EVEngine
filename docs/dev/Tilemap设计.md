@@ -226,3 +226,20 @@ Tiled 提供的相关能力：
 - 角掩码在**格子索引空间**采样（与投影无关）；默认图集为 SpriteCook 式 4×4 frame 表；`useDefaultFrameTable=false` 时 `gid = firstGid + mask`
 
 角位：`TL=1, TR=2, BL=4, BR=8`。mask 0 不绘制。
+
+### 程序化过渡 mask
+
+`generateDualGridMaskAtlas` 从四个角场自动生成 0..15 的完整 mask、平滑 coverage 与
+signed-distance field。相同配置和 seed 的结果确定，可按配置缓存；拓扑仍由逻辑 terrain grid
+唯一拥有，生成图只是可重建的显示投影。`bandAt` 可从同一 SDF 派生湿沙、浪花、积雪边缘等带状层。
+
+普通 RGBA8 tile 可直接交给 `bakeDualGridTransitionAtlas(A, B, config)`，得到按 mask 行优先排列的
+4×4 atlas：frame 0 是 A，frame 15 是 B，中间 14 帧由程序化 mask 混合。这样导入任意 grass、
+sand、dirt、water tile 时无需美术提供 A→B 的 autotile atlas；运行时继续使用现有 TileLayer 与
+DualGrid frame 选择。海岸等特殊视觉只消费同一 SDF，不改变拓扑或再维护一份地形状态。
+
+测试使用的最小 CC0 SBS 等距素材集位于
+`test/assets/map/sbs_isometric_overworld_flat`。从仓库根目录设置
+`EVENGINE_DUAL_GRID_FOUR_MATERIAL_PREVIEW` 为目标 BMP 路径并运行
+`map.dualGridMask.worldSpaceFourMaterialPreview`，即可生成草地、沙地、石头、水体四材质预览；
+默认直接读取随测试打包的三张图集，也可通过对应环境变量替换素材。

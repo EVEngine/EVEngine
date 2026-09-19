@@ -5,6 +5,7 @@
 #include "procgen/texture/CloudField.h"
 #include "procgen/texture/CloudShadow.h"
 #include "procgen/PointSet.h"
+#include "procgen/road/RoadRecipes.h"
 
 #include "image/ImageData.h"
 
@@ -961,6 +962,7 @@ void TextureRecipeRegistry::registerBuiltins() {
             return makeFromHeightFn(params, error, def);
         });
     }
+    road::registerRoadTextureRecipes(*this);
     builtinsRegistered_ = true;
 }
 
