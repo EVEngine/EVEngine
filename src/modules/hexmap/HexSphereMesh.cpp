@@ -469,13 +469,19 @@ private:
             mirrorCorner_ = cornerParity_;
             cornerCliffTerraces(bottom, low, high, bottomCell, lowCell, highCell);
         } else if (edgeType(elevationOf(lowCell), elevationOf(highCell)) == HexEdgeType::Slope) {
-            if (elevationOf(lowCell) < elevationOf(highCell)) {
-                mirrorCorner_ = cornerParity_;
-                cornerCliffTerraces(high, bottom, low, highCell, bottomCell, lowCell);
-            } else {
-                mirrorCorner_ = cornerParity_;
-                cornerTerracesCliff(low, high, bottom, lowCell, highCell, bottomCell);
-            }
+            // Neither side out of `bottom` is a slope: both are cliffs, so both of the corner's
+            // sides there are those walls' single straight end edges, and the only side carrying
+            // rungs is `low -> high`. Fanning from `bottom` puts the two straight chords along the
+            // walls and lays the ladder on the third side.
+            //
+            // The reference rotates its three cells here and hands them to a cliff-corner builder
+            // in that rotated order; those builders read their arguments as bottom/low/high, so a
+            // corner whose three cells all sit at different heights came out with the wrong side
+            // terraced. It takes all three differing, which is why the sparse elevation patterns
+            // never reached it and a generated planet does.
+            mirrorCorner_ = cornerParity_;
+            const HexTerrainWeights w = HexTerrainWeights::primary();
+            appendBoundaryTriangle(bottom, w, low, w, high, w, bottomCell, lowCell, highCell);
         } else {
             mirrorCorner_ = cornerParity_;
             // Mirror of the reference winding: this engine's front face is the opposite

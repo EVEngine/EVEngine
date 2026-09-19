@@ -980,38 +980,45 @@ TEST_CASE("hexmap.sphereMesh.facesPointAwayFromTheCentre") {
 }
 
 TEST_CASE("hexmap.sphereMesh.theShippedPlanetIsClosed") {
-    // `examples/hex-planet` renders subdivision 4 at radius 100 and fills the cells with
-    // `hexmap.generateSphere(gfx, seed, 45, 0)` at its default seed. Every other case in this file
-    // uses `scatterElevation`, which is a different elevation pattern, so the terrain the example
-    // actually draws had no coverage - and a defect that only appears on a real planet would have
-    // been invisible to the suite.
+    // `examples/hex-planet` fills its cells with `hexmap.generateSphere(gfx, seed, 45, 0)` at its
+    // default seed, and `[` / `]` walk the subdivision at runtime, so every level it can show is
+    // checked here. The generator is a pure function of the topology, the radius and its settings,
+    // so this is that planet cell for cell.
     //
-    // The generator is a pure function of the topology, the radius and its settings, so this is
-    // that planet cell for cell.
+    // Every other case in this file uses `scatterElevation`, which raises isolated cells to 1 and
+    // 3 on a 0 floor. The generator produces the engine's whole range - `kMinElevation` is -4 and
+    // `kMaxElevation` is 8 - with large same-elevation regions and gentle transitions, so its
+    // corners reach elevation spans and drops that pattern never produces. A defect that only
+    // appears on a real planet was invisible to the suite for exactly that reason.
     constexpr std::uint32_t kExampleSeed = 20260918u;
 
-    HexSphereMap map = makeMap(4, 100.f, kExampleSeed);
+    std::size_t worstDoubled  = 0;
+    std::size_t worstBoundary = 0;
+    for (const std::int32_t subdivision : {1, 2, 3, 4}) {
+        HexSphereMap map = makeMap(subdivision, 100.f, kExampleSeed);
 
-    HexSphereGeneratorSettings settings{};
-    settings.seed           = kExampleSeed;
-    settings.landPercentage = 45;
-    settings.waterLevel     = 0;
-    REQUIRE(generateSphereMap(map, settings).ok());
+        HexSphereGeneratorSettings settings{};
+        settings.seed           = kExampleSeed;
+        settings.landPercentage = 45;
+        settings.waterLevel     = 0;
+        REQUIRE(generateSphereMap(map, settings).ok());
 
-    HexMeshData mesh;
-    buildSphereTerrainMesh(map, mesh);
-    REQUIRE(mesh.triangleCount() > 10000u);
+        HexMeshData mesh;
+        buildSphereTerrainMesh(map, mesh);
+        REQUIRE(mesh.triangleCount() > 100u);
 
-    const OrientationReport orientation = analyseOrientation(mesh);
-    const WeldReport        weld        = analyseWeld(mesh);
-    std::printf("[planet] triangles %zu doubled %zu boundary %zu | weld boundary %zu nonManifold %zu duplicate %zu\n",
-                orientation.triangles, orientation.doubledEdges, orientation.boundaryEdges, weld.boundaryEdges,
-                weld.nonManifold, weld.duplicateTriangles);
-    REQUIRE_EQ(orientation.doubledEdges, static_cast<std::size_t>(0));
-    REQUIRE_EQ(orientation.boundaryEdges, static_cast<std::size_t>(0));
-    REQUIRE_EQ(weld.boundaryEdges, static_cast<std::size_t>(0));
-    REQUIRE_EQ(weld.nonManifold, static_cast<std::size_t>(0));
-    REQUIRE_EQ(weld.duplicateTriangles, static_cast<std::size_t>(0));
+        const OrientationReport orientation = analyseOrientation(mesh);
+        const WeldReport        weld        = analyseWeld(mesh);
+        std::printf("[planet] subdiv %d triangles %zu doubled %zu boundary %zu | weld boundary %zu nonManifold %zu "
+                    "duplicate %zu\n",
+                    subdivision, orientation.triangles, orientation.doubledEdges, orientation.boundaryEdges,
+                    weld.boundaryEdges, weld.nonManifold, weld.duplicateTriangles);
+        worstDoubled  = std::max(worstDoubled, orientation.doubledEdges + orientation.boundaryEdges);
+        worstBoundary = std::max(worstBoundary, weld.boundaryEdges + weld.nonManifold + weld.duplicateTriangles);
+
+    }
+    REQUIRE_EQ(worstDoubled, static_cast<std::size_t>(0));
+    REQUIRE_EQ(worstBoundary, static_cast<std::size_t>(0));
 }
 
 TEST_CASE("hexmap.sphereMesh.waterCapsFaceOutwardAndCoverEveryFloodedCell") {

@@ -1109,6 +1109,12 @@ TEST_CASE("hexmap.mesh.terrainIsWeldClosedAndFreeOfDuplicateCorners") {
         {"a cliff beside one step", 7, 7, 8, 7, 3, 1},
         {"diagonally", 7, 7, 8, 8, 1, 3},
         {"one step beside a two-step rise", 7, 7, 8, 7, 1, 2},
+        // Both edges out of the lowest cell rise by more than one step, so the corner takes the
+        // plain fan branch, and all three cells sit at different heights. The `ring` pattern above
+        // is the only other one that reaches that branch and it puts two of them level, which the
+        // single fan happens to cover; three different heights is the case it has to earn.
+        {"a two-step rise beside a cliff", 7, 7, 8, 7, 2, 3},
+        {"a cliff beside a two-step rise", 7, 7, 8, 7, 3, 2},
     };
     for (const SlopeCliff& pattern : patterns) {
         HexMap map = makeMap(20, 15, 23u);
