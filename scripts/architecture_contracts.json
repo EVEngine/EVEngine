@@ -575,6 +575,101 @@
       "failure_injection": "prepare, commit, rollback, restore and capability-loss failures are injected and assert no partial publication."
     },
     {
+      "id": "module-interface-policy",
+      "rule": "module-interface",
+      "scope": "src/**",
+      "owner": "engine-maintainers",
+      "issue": "EVENGINE-ARCH-MODULE-INTERFACE",
+      "reason": "A module's outward boundary is enumerated across the six faces; a new capability provide/consume must be named in the module's own entry so the declaration can be falsified from source.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "docs/dev/模块接口契约与机制选型规范.md",
+        "docs/dev/模块边界审查清单.md"
+      ],
+      "tests": [
+        "scripts/tests/test_architecture_contracts.py"
+      ],
+      "provides": [],
+      "requires": [],
+      "emits": [],
+      "observes": [],
+      "binds": [],
+      "trim": {
+        "layer_vocabulary": "L1 compile / L2 link / L3 runtime / L4 observable",
+        "evidence_rule": "a trim claim names its layer and cites symbol-reference or trimmed-build evidence; the #include graph alone is not accepted."
+      }
+    },
+    {
+      "id": "particles-module-interface",
+      "rule": "module-interface",
+      "scope": "src/modules/particles/**",
+      "owner": "particles",
+      "issue": "EVENGINE-ARCH-MODULE-INTERFACE",
+      "reason": "Particle emitters publish query, VFX-duration, action-notify and asset-reload capabilities, while the per-frame emitter cull and simulation path must not re-resolve a module by string key.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/particles/ParticleSystem.cpp",
+        "src/modules/particles/ParticlesCapabilities.cpp"
+      ],
+      "tests": [
+        "scripts/tests/test_architecture_contracts.py"
+      ],
+      "provides": [
+        "IActionNotifyProvider",
+        "IActionPreviewSinkProvider",
+        "IActionVfxDurationProvider",
+        "IAssetReloader",
+        "IParticlesQuery"
+      ],
+      "requires": [],
+      "emits": [],
+      "observes": [],
+      "binds": [
+        "eve.Particles (plus ParticleEmitter, PcgMaterialSelector, ParticleEffect)"
+      ],
+      "trim": {
+        "absent_profile": "not yet recorded; this entry is filled in on first touch (spec 8.3)",
+        "layer": "L3 runtime"
+      },
+      "hot_path": [
+        "src/modules/particles/ParticleSystem.cpp"
+      ]
+    },
+    {
+      "id": "platform-event-module-interface",
+      "rule": "module-interface",
+      "scope": "src/modules/platform_event/**",
+      "owner": "platform_event",
+      "issue": "EVENGINE-ARCH-MODULE-INTERFACE",
+      "reason": "Event pumping and main-thread posting expose one capability, dispatch one listener interface and bind one script class; the boundary is recorded so the next provider or consumer must declare itself.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/platform_event/PlatformEvent.h",
+        "src/modules/platform_event/PlatformEventSink.h",
+        "src/modules/platform_event/MainThreadPost.cpp"
+      ],
+      "tests": [
+        "scripts/tests/test_architecture_contracts.py"
+      ],
+      "provides": [
+        "IMainThreadPost"
+      ],
+      "requires": [
+        "IPlatformEventSink"
+      ],
+      "emits": [
+        "poll notifications delivered through PlatformEvent::subscribePoll; subscribers run on the pump thread and outside the message lock."
+      ],
+      "observes": [],
+      "binds": [
+        "eve.PlatformEvent (getName, pump, poll, pollData, getLastData, pushData)"
+      ],
+      "trim": {
+        "absent_profile": "not yet recorded; this entry is filled in on first touch (spec 8.3)",
+        "layer": "L3 runtime"
+      }
+    },
+    {
       "id": "quality-debt-policy",
       "rule": "debt-metadata",
       "scope": "scripts/**",

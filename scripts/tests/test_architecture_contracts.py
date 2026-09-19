@@ -15,7 +15,7 @@ import check_architecture_contracts as contracts  # noqa: E402
 
 
 class ArchitectureContractTests(unittest.TestCase):
-    def test_repository_catalogue_covers_all_ten_rules(self):
+    def test_repository_catalogue_covers_all_eleven_rules(self):
         metadata = contracts.load_json(ROOT / "scripts" / "architecture_contracts.json")
         self.assertEqual([], contracts.validate_catalogue(metadata, today=date(2026, 8, 26)))
 
@@ -95,6 +95,141 @@ class ArchitectureContractTests(unittest.TestCase):
         }
         lines = [contracts.SourceLine("src/modules/test/Link.h", 3, "struct TestLink {};" )]
         self.assertEqual([], contracts.lint_contract_coverage(lines, metadata))
+
+    def test_capability_use_must_be_named_in_module_interface(self):
+        # A matching entry for the file is not enough: the capability name itself
+        # must appear in `provides` (provide/addListener) or `requires`
+        # (query/forEach/forEachUntil).
+        metadata = {
+            "entries": [
+                {
+                    "rule": "module-interface",
+                    "scope": "src/modules/test/**",
+                    "provides": [],
+                    "requires": [],
+                }
+            ]
+        }
+        lines = [
+            contracts.SourceLine("src/modules/test/New.cpp", 7, "eve::cap::provide<eve::INewCapability>(&impl);"),
+            contracts.SourceLine("src/modules/test/New.cpp", 8, "cap::addListener<INewSink>(this);"),
+            contracts.SourceLine("src/modules/test/New.cpp", 9, "eve::cap::query<INewQuery>();"),
+            contracts.SourceLine(
+                "src/modules/test/New.cpp",
+                10,
+                "cap::forEachUntil<INewSink>([&](INewSink* sink) { return sink != nullptr; });",
+            ),
+        ]
+        findings = contracts.lint_contract_coverage(lines, metadata)
+        self.assertEqual(4, len(findings))
+        self.assertEqual({"undeclared-capability-face"}, {finding.code for finding in findings})
+        self.assertEqual({"module-interface"}, {finding.rule for finding in findings})
+        messages = " ".join(finding.message for finding in findings)
+        # provide/addListener declare the outbound face; query/forEach declare the inbound face.
+        self.assertIn("provides", messages)
+        self.assertIn("requires", messages)
+
+    def test_capability_use_declared_in_module_interface_passes(self):
+        metadata = {
+            "entries": [
+                {
+                    "rule": "module-interface",
+                    "scope": "src/modules/test/**",
+                    "provides": ["INewCapability", "INewSink"],
+                    "requires": ["INewQuery"],
+                }
+            ]
+        }
+        lines = [
+            contracts.SourceLine("src/modules/test/New.cpp", 7, "eve::cap::provide<eve::INewCapability>(&impl);"),
+            contracts.SourceLine("src/modules/test/New.cpp", 8, "cap::addListener<INewSink>(this);"),
+            contracts.SourceLine("src/modules/test/New.cpp", 9, "eve::cap::query<INewQuery>();"),
+        ]
+        self.assertEqual([], contracts.lint_contract_coverage(lines, metadata))
+
+    def test_declared_hot_path_rejects_new_provider_lookup(self):
+        metadata = {
+            "entries": [
+                {
+                    "rule": "module-interface",
+                    "id": "hot-module",
+                    "scope": "src/modules/hot/**",
+                    "hot_path": ["src/modules/hot/HotSystem.cpp"],
+                }
+            ]
+        }
+        lines = [
+            contracts.SourceLine(
+                "src/modules/hot/HotSystem.cpp", 5, 'auto* g = eve::ModuleManager::getInstance<Gfx>("Gfx");'
+            ),
+            contracts.SourceLine("src/modules/hot/HotSystem.cpp", 6, "auto* q = eve::cap::query<IPhysicsQuery>();"),
+            contracts.SourceLine("src/modules/hot/HotSystem.cpp", 7, "auto* n = requireModInst(Other, Thing);"),
+            # Outside the declared hot path: unaffected.
+            contracts.SourceLine(
+                "src/modules/hot/Cold.cpp", 8, 'auto* g = eve::ModuleManager::getInstance<Gfx>("Gfx");'
+            ),
+            # Inside the hot path but not a provider lookup: unaffected.
+            contracts.SourceLine("src/modules/hot/HotSystem.cpp", 9, "const float dt = frame.deltaSeconds;"),
+        ]
+        findings = contracts.lint_hot_paths(lines, metadata)
+        self.assertEqual(3, len(findings))
+        self.assertEqual({"hot-path-primitive"}, {finding.code for finding in findings})
+        self.assertTrue(all(finding.path == "src/modules/hot/HotSystem.cpp" for finding in findings))
+
+    def test_runtime_module_rejects_convenience_lookup(self):
+        runtime = [
+            contracts.SourceLine("src/modules/map/TileSystem.cpp", 3, "auto* m = requireModInst(Graphics, Graphics);"),
+            contracts.SourceLine("src/modules/map/TileSystem.cpp", 4, "auto* g = getModInst(Graphics, Graphics);"),
+            # ModuleManager::getInstance stays permitted (checklist M-03 boundary form).
+            contracts.SourceLine(
+                "src/modules/map/TileSystem.cpp", 5, 'auto* g = eve::ModuleManager::getInstance<G>("G");'
+            ),
+        ]
+        exempt = [
+            contracts.SourceLine(
+                "src/modules/map/editor/MapTarget.cpp", 3, "auto* m = requireModInst(Graphics, Graphics);"
+            ),
+            contracts.SourceLine(
+                "src/modules/level_editor/Level.cpp", 4, "auto* m = requireModInst(Graphics, Graphics);"
+            ),
+            contracts.SourceLine(
+                "src/modules/asset/import/Import.cpp", 5, "auto* m = requireModInst(Graphics, Graphics);"
+            ),
+            contracts.SourceLine(
+                "src/engine/devtools/McpServer.cpp", 6, "auto* m = requireModInst(Graphics, Graphics);"
+            ),
+            contracts.SourceLine("scripts/check.py", 7, "auto* m = requireModInst(Graphics, Graphics);"),
+        ]
+        findings = contracts.lint_runtime_convenience(runtime)
+        self.assertEqual(2, len(findings))
+        self.assertEqual({"runtime-convenience-primitive"}, {finding.code for finding in findings})
+        self.assertEqual([], contracts.lint_runtime_convenience(exempt))
+
+    def test_primitive_definition_site_is_not_a_use(self):
+        # Module.h declares the macros; the declaration must not count as a use in
+        # either gate.
+        definition = [
+            contracts.SourceLine(
+                "src/engine/common/Module.h", 43, "#define getModInst(N,T) eve::ModuleManager::getInstance<N::T>(#T)"
+            ),
+            contracts.SourceLine(
+                "src/engine/common/Module.h",
+                44,
+                "#define requireModInst(N,T) eve::ModuleManager::requireInstance<N::T>(#T)",
+            ),
+        ]
+        self.assertEqual([], contracts.lint_runtime_convenience(definition))
+        hot = {
+            "entries": [
+                {
+                    "rule": "module-interface",
+                    "id": "hot-module",
+                    "scope": "src/engine/common/**",
+                    "hot_path": ["src/engine/common/Module.h"],
+                }
+            ]
+        }
+        self.assertEqual([], contracts.lint_hot_paths(definition, hot))
 
 
 if __name__ == "__main__":

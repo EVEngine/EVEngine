@@ -55,6 +55,7 @@ RULES = (
     "persistence",
     "optional-capability",
     "backend-contract",
+    "module-interface",
     "debt-metadata",
 )
 
@@ -107,6 +108,14 @@ RULE_REQUIRED = {
         "providers",
         "shared_contract_tests",
         "failure_injection",
+    },
+    "module-interface": {
+        "provides",
+        "requires",
+        "emits",
+        "observes",
+        "binds",
+        "trim",
     },
     "debt-metadata": {
         "removal_condition",
@@ -273,6 +282,22 @@ def validate_catalogue(metadata: Any, today: date | None = None) -> list[str]:
     missing = sorted(set(RULES) - covered)
     if missing:
         errors.append("catalogue has no entry for rule(s): " + ", ".join(missing))
+
+    # A declared hot path must point at real files (R-MECH-5): a glob that matches
+    # nothing silently disables the hot-path gate for that module.
+    declared = declared_hot_paths(entries)
+    if declared:
+        satisfied = {glob: False for glob, _ in declared}
+        for candidate in ROOT.rglob("*"):
+            if not candidate.is_file():
+                continue
+            candidate_path = relative(candidate)
+            for glob in satisfied:
+                if not satisfied[glob] and path_matches(candidate_path, glob):
+                    satisfied[glob] = True
+        for glob, entry_id in declared:
+            if not satisfied[glob]:
+                errors.append(f"{entry_id}.hot_path matches no repository file: {glob}")
     return errors
 
 
@@ -596,6 +621,13 @@ def contract_matches(path: str, rule: str, entries: Iterable[Mapping[str, Any]])
     return [entry for entry in entries if entry.get("rule") == rule and path_matches(path, entry.get("scope", ""))]
 
 
+# One `cap::<operation><Type>` use. The template argument may be qualified
+# (`eve::caps::IStateProvider`); only its final segment is the capability name.
+CAPABILITY_USE = re.compile(
+    r"\bcap::(provide|addListener|query|forEach|forEachUntil)\s*<\s*([A-Za-z_]\w*(?:::\w+)*)"
+)
+
+
 def lint_contract_coverage(lines: list[SourceLine], metadata: Mapping[str, Any]) -> list[Finding]:
     """Require a catalogue entry for newly introduced contract surfaces.
 
@@ -607,6 +639,7 @@ def lint_contract_coverage(lines: list[SourceLine], metadata: Mapping[str, Any])
     entries = [entry for entry in metadata.get("entries", []) if isinstance(entry, Mapping)]
     findings: list[Finding] = []
     seen: set[tuple[str, str]] = set()
+    seen_capability: set[tuple[str, str, str]] = set()
     for item in lines:
         text = item.text
         triggers: list[tuple[str, str]] = []
@@ -630,6 +663,174 @@ def lint_contract_coverage(lines: list[SourceLine], metadata: Mapping[str, Any])
                 findings.append(
                     Finding(rule, "missing-contract-entry", item.path, item.line, f"{description} has no catalogue entry")
                 )
+
+    # G-2: a capability provide/consume must name the capability in the module's
+    # own `module-interface` entry. The pre-existing triggers above only match a
+    # rule plus a path scope, so they accept any entry for the file; this check
+    # is what makes `provides` / `requires` falsifiable (R-FACE-1, R-FACE-2).
+    for item in lines:
+        for use in CAPABILITY_USE.finditer(item.text):
+            operation = use.group(1)
+            capability = use.group(2).split("::")[-1]
+            if not capability:
+                continue
+            field = "provides" if operation in {"provide", "addListener"} else "requires"
+            declared = any(
+                capability in entry.get(field, [])
+                for entry in contract_matches(item.path, "module-interface", entries)
+                if isinstance(entry.get(field), list)
+            )
+            if declared:
+                continue
+            key = (item.path, operation, capability)
+            if key in seen_capability:
+                continue
+            seen_capability.add(key)
+            findings.append(
+                Finding(
+                    "module-interface",
+                    "undeclared-capability-face",
+                    item.path,
+                    item.line,
+                    f"cap::{operation}<{capability}> must be listed in the matching "
+                    f"module-interface entry's {field}",
+                )
+            )
+    return findings
+
+
+# G-3: primitives that must not appear on a new line inside a declared hot path
+# (spec 4.2). The spec's third bullet, "per-line string-keyed lookup", is not
+# reachable with the repository's regex-only gates and is deliberately absent.
+HOT_PATH_PRIMITIVES = re.compile(
+    r"\b(?:getModInst|requireModInst)\s*\(|\bModuleManager::getInstance\b|\bcap::(?:query|forEach|forEachUntil)\s*<"
+)
+
+# G-4: the convenience lookup macros belong to non-runtime profiles only
+# (R-MECH-3). `ModuleManager::getInstance` is not listed here: M-03 permits it at
+# an explicitly named composition root, adapter or boundary function.
+RUNTIME_CONVENIENCE_PRIMITIVES = re.compile(r"\b(?:getModInst|requireModInst)\s*\(")
+
+AUTHORING_FACET_SEGMENTS = ("editing", "editor")
+TOOLING_MODULE_TOKENS = ("cmdline", "devtools", "editor", "import", "cook", "target", "demo")
+
+
+def is_primitive_definition(text: str) -> bool:
+    """True for the preprocessor line that *declares* a convenience primitive.
+
+    `Module.h` defines `getModInst` / `requireModInst`; the definition site is not
+    a use, so both hot-path and profile gates skip it.
+    """
+
+    return text.lstrip().startswith("#define")
+
+
+def declared_hot_paths(entries: Iterable[Mapping[str, Any]]) -> list[tuple[str, str]]:
+    """Return every (glob, entry id) hot path declared by a module-interface entry."""
+
+    declared: list[tuple[str, str]] = []
+    for entry in entries:
+        if entry.get("rule") != "module-interface":
+            continue
+        paths = entry.get("hot_path")
+        if not isinstance(paths, list):
+            continue
+        for glob in paths:
+            if nonempty_string(glob):
+                declared.append((glob, str(entry.get("id", ""))))
+    return declared
+
+
+def lint_hot_paths(lines: list[SourceLine], metadata: Mapping[str, Any]) -> list[Finding]:
+    """G-3: a declared hot path must not re-resolve providers on a new line."""
+
+    entries = [entry for entry in metadata.get("entries", []) if isinstance(entry, Mapping)]
+    hot_paths = declared_hot_paths(entries)
+    if not hot_paths:
+        return []
+    findings: list[Finding] = []
+    seen: set[tuple[str, int]] = set()
+    for item in lines:
+        owners = sorted({entry_id for glob, entry_id in hot_paths if path_matches(item.path, glob)})
+        if not owners:
+            continue
+        if is_primitive_definition(item.text):
+            continue
+        match = HOT_PATH_PRIMITIVES.search(item.text)
+        if match is None:
+            continue
+        key = (item.path, item.line)
+        if key in seen:
+            continue
+        seen.add(key)
+        findings.append(
+            Finding(
+                "module-interface",
+                "hot-path-primitive",
+                item.path,
+                item.line,
+                f"declared hot path ({', '.join(owners)}) must not use "
+                f"'{match.group(0).strip()}'; resolve it once and cache it as a member",
+            )
+        )
+    return findings
+
+
+def is_runtime_module_path(path: str) -> bool:
+    """Approximate `module_boundary_audit.is_runtime_module` from a source path.
+
+    The approximation is deliberately conservative: a segment that cannot be
+    attributed to a runtime module is treated as authoring or tooling, so this
+    gate never blocks a legitimate non-runtime profile. Manifest-driven module
+    discovery replaces the approximation once the symbol-reference tooling of
+    spec 8.2 (G-6) exists.
+    """
+
+    parts = path.replace("\\", "/").split("/")
+    if len(parts) < 4 or parts[0] != "src":
+        return False
+    if parts[1] == "engine":
+        return parts[2] not in {"cmdline", "devtools"}
+    if parts[1] != "modules":
+        return False
+    module = parts[2]
+    if module.endswith(AUTHORING_FACET_SEGMENTS):
+        return False
+    for segment in parts[3:-1]:
+        if segment in AUTHORING_FACET_SEGMENTS:
+            return False
+        if any(token in segment for token in TOOLING_MODULE_TOKENS):
+            return False
+    return not any(token in module for token in TOOLING_MODULE_TOKENS)
+
+
+def lint_runtime_convenience(lines: list[SourceLine]) -> list[Finding]:
+    """G-4: runtime-profile module code must not use the convenience lookup macros."""
+
+    findings: list[Finding] = []
+    seen: set[tuple[str, int]] = set()
+    for item in lines:
+        if not is_runtime_module_path(item.path):
+            continue
+        if is_primitive_definition(item.text):
+            continue
+        match = RUNTIME_CONVENIENCE_PRIMITIVES.search(item.text)
+        if match is None:
+            continue
+        key = (item.path, item.line)
+        if key in seen:
+            continue
+        seen.add(key)
+        findings.append(
+            Finding(
+                "module-interface",
+                "runtime-convenience-primitive",
+                item.path,
+                item.line,
+                f"'{match.group(0).strip()}' belongs to non-runtime profiles (R-MECH-3); "
+                "query the capability at the composition boundary instead",
+            )
+        )
     return findings
 
 
@@ -673,7 +874,12 @@ def main(argv: list[str] | None = None) -> int:
         if base is None:
             base = os.environ.get("EVENGINE_ARCHITECTURE_BASE")
         lines = _changed_lines(base or "HEAD")
-    findings = lint_api_shapes(lines) + lint_contract_coverage(lines, metadata)
+    findings = (
+        lint_api_shapes(lines)
+        + lint_contract_coverage(lines, metadata)
+        + lint_hot_paths(lines, metadata)
+        + lint_runtime_convenience(lines)
+    )
     return render(findings, catalogue_errors, args.json)
 
 
