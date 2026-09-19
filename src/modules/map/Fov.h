@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/Result.h"
 #include "map/TileLayer.h"
@@ -22,7 +24,7 @@ namespace eve::map {
  * Phase C: hex topology FOV, rectangle-based FOV, perception/stealth
  *          detection helpers, GPU mask Texture upload.
  */
-class Fov {
+class EVENGINE_API_WORLD Fov {
 public:
     /** @brief Owning visibility-memory snapshot for the current grid/volume dimensions. */
     struct Snapshot {

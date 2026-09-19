@@ -31,7 +31,7 @@ struct Lighting2DUBO {
  * @brief Declarative 2D light. Collected by RenderSystem (max 8 per canvas/frame).
  * type: "point" | "dir" (≤15 chars).
  */
-class Light2D : public ecs::Entity {
+class EVENGINE_API_BACKENDS Light2D : public ecs::Entity {
 public:
     ENTITY(Light2D, ecs::Entity)
 

@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/Result.h"
 #include "common/PcgPhotoModeApply.h"
@@ -170,7 +172,7 @@ void makePlane(float sizeX, float sizeZ, int segX, int segZ, std::vector<float> 
  * @brief Dense grass + sparse dark tufts on a mesh. Caller owns GrassField*;
  * GPU Mesh / Shader / Texture are owned by Graphics.
  */
-class GrassField : public IPhotoModeFieldSink {
+class EVENGINE_API_BACKENDS GrassField : public IPhotoModeFieldSink {
 public:
     struct BakeParams {
         /** @brief Poisson spacing. Keep this well below `width` so tufts overlap. */

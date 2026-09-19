@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @file WeaponDefinitionRuntime.h
@@ -63,7 +65,7 @@ struct WeaponRuntimeState {
  * clamping it to the new typed limits. `RejectWhileActive` rejects replacement
  * while the instance is marked active.
  */
-class WeaponDefinitionRuntime final {
+class EVENGINE_API_WORLD WeaponDefinitionRuntime final {
 public:
     /**
      * @brief Create from a common `weapon:<name>` definition reference.

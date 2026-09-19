@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "ik.hpp"
 
@@ -9,7 +11,7 @@ namespace eve::ik {
  * Bone indices are stable after each createBone / topological refresh.
  * Root bone is always id 0.
  */
-class Skeleton2D {
+class EVENGINE_API_FOUNDATION Skeleton2D {
 public:
     Skeleton2D();
     ~Skeleton2D() = default;

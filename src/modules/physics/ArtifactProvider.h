@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @file ArtifactProvider.h
@@ -62,7 +64,7 @@ struct PhysicsArtifactCollider {
  * future colliders in one caller-owned simulation authority. Procgen never
  * includes Box3D; the backend remains an implementation detail of this module.
  */
-class PhysicsArtifactProvider final : public eve::artifact::IPhysicsArtifactAdapter {
+class EVENGINE_API_WORLD PhysicsArtifactProvider final : public eve::artifact::IPhysicsArtifactAdapter {
 public:
     /** @brief Construct an empty provider; all methods use the owner thread. */
     PhysicsArtifactProvider();
@@ -156,7 +158,7 @@ private:
 };
 
 /** @brief Return the process-owned physics artifact provider singleton. */
-[[nodiscard]] PhysicsArtifactProvider& physicsArtifactProvider() noexcept;
+[[nodiscard]] EVENGINE_API_WORLD PhysicsArtifactProvider& physicsArtifactProvider() noexcept;
 /** @brief Register the physics provider in the common capability registry. */
 void registerPhysicsArtifactProvider();
 

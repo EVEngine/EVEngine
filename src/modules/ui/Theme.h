@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include <string>
 
@@ -34,7 +36,7 @@ struct ThemeLayout {
  * Applied to ImGui each frame via applyThemeToImGui; metrics are design-time
  * units at uiScale=1 and are multiplied by the current UI scale.
  */
-struct Theme {
+struct EVENGINE_API_WORLD Theme {
     /** CSS-like component layout defaults; explicit widget metrics override them. */
     ThemeLayout layout;
 
@@ -128,8 +130,8 @@ Theme &globalTheme();
 /** @brief Current preset name: "dark", "light", or "custom". */
 const std::string &globalThemeName();
 
-void setGlobalTheme(const Theme &theme);
-void setGlobalTheme(const Theme &theme, const std::string &name);
+EVENGINE_API_WORLD void setGlobalTheme(const Theme &theme);
+EVENGINE_API_WORLD void setGlobalTheme(const Theme &theme, const std::string &name);
 
 /** @brief Apply a named preset ("dark" / "light"). Case-insensitive. Returns false if unknown. */
 bool setThemeByName(const std::string &name);

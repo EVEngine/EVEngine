@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/Module.h"
 #include "common/Result.h"
@@ -165,7 +167,7 @@ public:
  * compensate in reverse order. The coordinator never substitutes rollback
  * for compensation and never hides a failed compensation.
  */
-class Coordinator {
+class EVENGINE_API_FOUNDATION Coordinator {
 public:
     /**
      * @brief Atomically execute borrowed participants for one context.

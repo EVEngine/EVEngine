@@ -1,4 +1,6 @@
 #pragma once
+
+#include "common/Export.h"
 #include <array>
 #include <memory>
 #include <span>
@@ -22,7 +24,7 @@ namespace eve::asset_graphics {
  * @lifetime No resource pointer escapes. Draw inputs are borrowed only during the call. Reload builds a new lease.
  * @thread Load, update, draw, release and destruction are graphics-thread affine, outside callbacks/reentrancy.
  */
-class EvpackShader final {
+class EVENGINE_API_WORLD EvpackShader final {
 public:
     ~EvpackShader();
     EvpackShader(const EvpackShader&)            = delete;

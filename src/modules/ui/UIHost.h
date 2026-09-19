@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/BorrowedRef.h"
 #include "common/ECS.h"
@@ -215,7 +217,7 @@ struct WidgetDesc;
  * Subclass to attach UI to game entities, e.g. `class Hud : public UIHost`.
  * UISystem walks `ecs::View<UIHost, Meta, Tree>` (includes subclasses).
  */
-class UIHost : public ecs::Entity {
+class EVENGINE_API_WORLD UIHost : public ecs::Entity {
 public:
     ENTITY(UIHost, ecs::Entity)
 

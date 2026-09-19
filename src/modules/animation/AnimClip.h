@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "animation/AnimMath.h"
 #include "animation/AnimSmr.h"
@@ -140,7 +142,7 @@ private:
  * @brief Keyframed skeletal animation clip (local TRS tracks per bone).
  * Script type: `AnimClip`.
  */
-class AnimClip {
+class EVENGINE_API_WORLD AnimClip {
 public:
     explicit AnimClip(std::string name = "");
     ~AnimClip();

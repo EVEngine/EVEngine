@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "animation/AnimMath.h"
 
@@ -11,7 +13,7 @@ namespace eve::animation {
  * @brief 3D bone hierarchy + bind-pose local TRS for skeletal animation.
  * Independent of ik::Skeleton3D (FABRIK). Script type: `AnimSkeleton`.
  */
-class AnimSkeleton {
+class EVENGINE_API_WORLD AnimSkeleton {
 public:
     AnimSkeleton() = default;
     ~AnimSkeleton() = default;

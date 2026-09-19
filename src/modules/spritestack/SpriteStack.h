@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/Module.h"
 
@@ -39,8 +41,8 @@ struct SliceOptions {
 };
 
 std::vector<image::ImageData *> sliceMeshToLayers(const SliceInput &, const SliceOptions &);
-std::vector<image::ImageData *> sliceModelToLayers(model3d::ModelData *, const SliceOptions &);
-std::vector<image::ImageData *> slicePrimitiveToLayers(const std::string &, const SliceOptions &);
+EVENGINE_API_WORLD std::vector<image::ImageData *> sliceModelToLayers(model3d::ModelData *, const SliceOptions &);
+EVENGINE_API_WORLD std::vector<image::ImageData *> slicePrimitiveToLayers(const std::string &, const SliceOptions &);
 
 /**
  * @brief Pure-2D sprite stack made from horizontal RGBA cross-sections.
@@ -49,7 +51,7 @@ std::vector<image::ImageData *> slicePrimitiveToLayers(const std::string &, cons
  * higher layer is offset upward by `thickness` 2D units. Rotation is applied in
  * the 2D plane; no Camera3D, depth buffer, G-buffer, mesh, or 3D pass is used.
  */
-class SpriteStack2D {
+class EVENGINE_API_WORLD SpriteStack2D {
 public:
     SpriteStack2D() = default;
     SpriteStack2D(const SpriteStack2D &) = delete;

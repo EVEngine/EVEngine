@@ -20,7 +20,7 @@ class AnimSkeleton;
  * @brief Clip-driven animation state machine with float/bool/trigger parameters
  * and cross-fade transitions. Script type: `AnimStateMachine`.
  */
-class AnimStateMachine : public IAnimPoseSource {
+class EVENGINE_API_WORLD AnimStateMachine : public IAnimPoseSource {
 public:
     explicit AnimStateMachine(AnimSkeleton *skeleton);
     ~AnimStateMachine() override;

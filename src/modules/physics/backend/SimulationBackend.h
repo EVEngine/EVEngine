@@ -318,7 +318,7 @@ EVENGINE_API_BACKENDS eve::Result<void> validateSimulationStep(const eve::Simula
  * @return The next observation, or an overflow/invalid-input failure.
  */
 [[nodiscard("check observation advancement")]]
-eve::Result<SimulationObservation> advanceSimulationObservation(const SimulationObservation& current,
+EVENGINE_API_BACKENDS eve::Result<SimulationObservation> advanceSimulationObservation(const SimulationObservation& current,
                                                                 const eve::SimulationStep&   step);
 
 /**

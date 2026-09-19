@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @file EconomyLedgerResourceAccount.h
@@ -26,7 +28,7 @@ namespace eve::economy {
  * The referenced ledger is borrowed and must outlive this adapter. Operations
  * are synchronous and must be called on the owner thread.
  */
-class EconomyLedgerResourceAccount final : public eve::resource::IResourceAccount {
+class EVENGINE_API_FOUNDATION EconomyLedgerResourceAccount final : public eve::resource::IResourceAccount {
 public:
     /** @brief Bind an account adapter to an existing caller-owned ledger. */
     explicit EconomyLedgerResourceAccount(EconomyLedger& ledger);

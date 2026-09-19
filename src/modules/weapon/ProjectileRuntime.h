@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /** @file ProjectileRuntime.h @brief Deterministic pooled projectile simulation. */
 
@@ -109,7 +111,7 @@ public:
  * point replay is deterministic for the same compiler/backend; cross-backend
  * comparison should use a documented positional tolerance.
  */
-class ProjectileRuntime {
+class EVENGINE_API_WORLD ProjectileRuntime {
 public:
     ProjectileRuntime();
 

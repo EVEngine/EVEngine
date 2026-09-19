@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include <string>
 #include <vector>
@@ -31,7 +33,7 @@ struct DynamicBoneUpdateStats { int activeChains=0,sleepingChains=0,particles=0,
  * The skeleton is borrowed and must outlive the solver. All methods are main-thread only.
  * Simulation is tolerance-bounded, not bit-exact across floating-point platforms.
  */
-class DynamicBoneSolver {
+class EVENGINE_API_WORLD DynamicBoneSolver {
 public:
     /** @brief Construct for a borrowed skeleton, which may be null. */
     explicit DynamicBoneSolver(AnimSkeleton *skeleton);

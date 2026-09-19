@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/Result.h"
 #include "common/AttachmentPoint.h"
@@ -68,7 +70,7 @@ struct MeshVfxLayerAsset {
 };
 
 /** @brief Versioned, backend-neutral description of a real-time mesh effect. */
-struct MeshVfxAsset {
+struct EVENGINE_API_WORLD MeshVfxAsset {
     static constexpr std::string_view schemaId = "eve.stylize.mesh-vfx";
     static constexpr std::uint32_t schemaVersion = 1;
 
@@ -101,7 +103,7 @@ struct MeshVfxAsset {
  * @thread Simulation-thread affine. Rendering must consume layers on the render thread.
  * @reentrancy Does not invoke callbacks.
  */
-class MeshVfxAssetInstance {
+class EVENGINE_API_WORLD MeshVfxAssetInstance {
 public:
     /**
      * @brief Build independent runtime state for every asset layer.

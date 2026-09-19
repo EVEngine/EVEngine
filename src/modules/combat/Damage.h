@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /** @file Damage.h @brief Deterministic damage, poise, hit-reaction and knockback resolution. */
 
@@ -30,7 +32,7 @@ enum class DamageRuleSource : std::uint8_t { Default, Provider };
  * This is a focused component-like value, not an actor inheritance root. The
  * owning domain resolves SubjectRef lifetime and persists/restores this value.
  */
-struct CombatState {
+struct EVENGINE_API_BACKENDS CombatState {
     SubjectRef subject;
     double     health    = 0.0;
     double     maxHealth = 0.0;
@@ -108,7 +110,7 @@ struct DamageOutcome {
  * identical inputs on supported backends; replay comparison uses exact stored
  * doubles produced by this single resolution path.
  */
-class DamageRuntime {
+class EVENGINE_API_BACKENDS DamageRuntime {
 public:
     /** @brief Construct with an optional borrowed rule provider and owning policy copy. */
     explicit DamageRuntime(const IDamageRule* rule = nullptr, HitReactionPolicy policy = {})

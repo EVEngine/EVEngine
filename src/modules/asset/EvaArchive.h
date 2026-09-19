@@ -48,7 +48,7 @@ struct EvaArchive {
  * @thread Worker-safe when inputs are not concurrently mutated.
  * @reentrancy Does not invoke callbacks.
  */
-[[nodiscard]] Result<std::vector<std::uint8_t>> buildEvaArchive(
+[[nodiscard]] EVENGINE_API_FOUNDATION Result<std::vector<std::uint8_t>> buildEvaArchive(
     const EvaManifest& manifest, std::vector<EvaArchiveEntry> entries,
     const EvaArchiveLimits& limits = {});
 
