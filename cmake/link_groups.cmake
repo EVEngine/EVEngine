@@ -97,6 +97,30 @@ foreach(_eve_group IN LISTS EVE_LINK_GROUP_NAMES)
             LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}")
     endif()
 
+    # A SHARED build produces a dynamic SDK: the host binary needs its group
+    # libraries next to it, exactly like the DLLs cmake/win32_bundle_runtime.cmake
+    # copies. Destinations mirror install(TARGETS eve ...) in
+    # cmake/install_sdk.cmake -- RUNTIME bin (the DLL/.dll beside eve.exe), plus
+    # lib for the import library plugins link against. Only reached when
+    # EVENGINE_MODULE_LINKAGE=SHARED: the release SDK stays a static/one-exe
+    # install because its configure passes OBJECT and this file returns above.
+    if(ANDROID OR CMAKE_SYSTEM_NAME STREQUAL "Android")
+        # Android packages the host as lib/libmain.so, so its satellites follow.
+        install(TARGETS ${_eve_group}
+            RUNTIME DESTINATION lib
+            LIBRARY DESTINATION lib
+            ARCHIVE DESTINATION lib)
+    elseif(WIN32)
+        install(TARGETS ${_eve_group}
+            RUNTIME DESTINATION bin
+            ARCHIVE DESTINATION lib)
+    else()
+        install(TARGETS ${_eve_group}
+            RUNTIME DESTINATION bin
+            LIBRARY DESTINATION lib
+            ARCHIVE DESTINATION lib)
+    endif()
+
     list(LENGTH _eve_group_modules _eve_group_module_count)
     message(STATUS "Link group ${_eve_group}: ${_eve_group_module_count} modules -> one shared library")
 endforeach()

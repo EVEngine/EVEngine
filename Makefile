@@ -1130,6 +1130,23 @@ unit-test/%:
 # Host platform debug shortcut (same as run/$(PLATFORM)-debug).
 run: run/$(PLATFORM)-debug
 
+# PATH prefix for running a built binary from its build tree.
+# SHARED module-linkage builds (cmake/link_groups.cmake) write the link-group
+# DLLs to the CMake binary dir -> build/<plat>, while eve.exe lives in
+# build/<plat>/src/engine. Windows resolves DLLs through PATH (there is no
+# rpath), so a local run needs build/<plat> on PATH -- the same directory the
+# generated CTest entries prepend (cmake/ZeroErrDiscoverTestsImpl.cmake).
+# The build tree is probed instead of adding a flag: the static/one-exe route
+# (release passes -DEVENGINE_MODULE_LINKAGE=OBJECT) produces no group DLL, so the
+# prefix is empty and the recipe is byte-for-byte what it was before.
+# `cd ... && pwd` rather than $(CURDIR)/... because this recipe runs under Git
+# bash, which does not accept a "C:/..." element inside PATH (MSYS then rewrites
+# it relative to its own root and the DLL directory is silently lost); pwd
+# yields the "/c/evt/..." form the loader conversion understands.
+# PATH is the Win32 loader's search path; the ELF/Mach-O equivalent would be
+# rpath/LD_LIBRARY_PATH, which these recipes do not set today.
+eve-dll-path = $(if $(wildcard $(CURDIR)/$(1)/EVFoundation.dll),$$(cd '$(CURDIR)/$(1)' && pwd):,)
+
 # Desktop: run built eve. With GAME unset, run with no args from the repo
 # root so eve finds no main.nut and falls back to the embedded release demo.
 # With GAME set, cd into it and run the "run" subcommand against it instead.
@@ -1141,8 +1158,8 @@ run: run/$(PLATFORM)-debug
 #   make run/macosx-debug GAME=examples/rpg
 #   make run              # current host platform, debug, embedded demo
 run/win32-debug: ensure-built/win32-debug
-	@if [ -n "$(GAME)" ]; then cd $(GAME) && "$(CURDIR)/build/win32-debug/src/engine/eve.exe" run $(RUN_ARGS); \
-	else build/win32-debug/src/engine/eve.exe $(RUN_ARGS); fi
+	@if [ -n "$(GAME)" ]; then cd $(GAME) && PATH="$(call eve-dll-path,build/win32-debug)$$PATH" "$(CURDIR)/build/win32-debug/src/engine/eve.exe" run $(RUN_ARGS); \
+	else PATH="$(call eve-dll-path,build/win32-debug)$$PATH" build/win32-debug/src/engine/eve.exe $(RUN_ARGS); fi
 
 run/linux-debug: ensure-built/linux-debug
 	@if [ -n "$(GAME)" ]; then cd $(GAME) && "$(CURDIR)/build/linux-debug/src/engine/eve" run $(RUN_ARGS); \
@@ -1153,8 +1170,8 @@ run/macosx-debug: ensure-built/macosx-debug
 	else build/macosx-debug/src/engine/eve $(RUN_ARGS); fi
 
 run/win32: ensure-built/win32
-	@if [ -n "$(GAME)" ]; then cd $(GAME) && "$(CURDIR)/build/win32/src/engine/eve.exe" run $(RUN_ARGS); \
-	else build/win32/src/engine/eve.exe $(RUN_ARGS); fi
+	@if [ -n "$(GAME)" ]; then cd $(GAME) && PATH="$(call eve-dll-path,build/win32)$$PATH" "$(CURDIR)/build/win32/src/engine/eve.exe" run $(RUN_ARGS); \
+	else PATH="$(call eve-dll-path,build/win32)$$PATH" build/win32/src/engine/eve.exe $(RUN_ARGS); fi
 
 run/linux: ensure-built/linux
 	@if [ -n "$(GAME)" ]; then cd $(GAME) && "$(CURDIR)/build/linux/src/engine/eve" run $(RUN_ARGS); \
@@ -1165,8 +1182,8 @@ run/macosx: ensure-built/macosx
 	else build/macosx/src/engine/eve $(RUN_ARGS); fi
 
 debug/win32:
-	@if [ -n "$(GAME)" ]; then cd $(GAME) && "$(CURDIR)/build/win32-debug/src/engine/eve.exe" run $(RUN_ARGS); \
-	else build/win32-debug/src/engine/eve.exe $(RUN_ARGS); fi
+	@if [ -n "$(GAME)" ]; then cd $(GAME) && PATH="$(call eve-dll-path,build/win32-debug)$$PATH" "$(CURDIR)/build/win32-debug/src/engine/eve.exe" run $(RUN_ARGS); \
+	else PATH="$(call eve-dll-path,build/win32-debug)$$PATH" build/win32-debug/src/engine/eve.exe $(RUN_ARGS); fi
 
 debug/linux:
 	@if [ -n "$(GAME)" ]; then cd $(GAME) && "$(CURDIR)/build/linux-debug/src/engine/eve" run $(RUN_ARGS); \
