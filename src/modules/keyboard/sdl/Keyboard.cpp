@@ -12,9 +12,7 @@ namespace {
 /** Composition boundary: the single place this module resolves the Window module for
  *  DPI conversion, spelled out rather than through the non-runtime `getModInst`
  *  macro, so the input methods below stay free of per-call lookups (R-MECH-3). */
-eve::window::Window *windowOrNull() {
-    return eve::ModuleManager::getInstance<eve::window::Window>("Window");
-}
+eve::window::Window* windowOrNull() { return eve::ModuleManager::getInstance<eve::window::Window>("Window"); }
 
 }  // namespace
 

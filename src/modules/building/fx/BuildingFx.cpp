@@ -40,9 +40,7 @@ float toFloat(const std::string &s, float fallback) {
 
 // Composition boundary: the single place this module resolves Graphics, spelled out
 // rather than through the non-runtime `getModInst` convenience macro (R-MECH-3).
-graphics::Graphics *gfxOrNull() {
-    return eve::ModuleManager::getInstance<graphics::Graphics>("Graphics");
-}
+graphics::Graphics* gfxOrNull() { return eve::ModuleManager::getInstance<graphics::Graphics>("Graphics"); }
 
 bool toBool(const std::string &value, bool fallback);
 

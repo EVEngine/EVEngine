@@ -181,7 +181,7 @@ public:
     /** @brief Empty reference; `operator bool` is false. */
     ProviderRef() noexcept = default;
 
-    ProviderRef(const ProviderRef&) = delete;
+    ProviderRef(const ProviderRef&)            = delete;
     ProviderRef& operator=(const ProviderRef&) = delete;
     ProviderRef(ProviderRef&& other) noexcept : provider_(other.provider_) { other.provider_ = nullptr; }
     ProviderRef& operator=(ProviderRef&& other) noexcept {
@@ -237,8 +237,8 @@ private:
  */
 struct ProviderHandle {
     std::string   capability;
-    std::uint64_t generation = 0;
-    friend bool operator==(const ProviderHandle&, const ProviderHandle&) = default;
+    std::uint64_t generation                                               = 0;
+    friend bool   operator==(const ProviderHandle&, const ProviderHandle&) = default;
 };
 
 namespace detail {
@@ -275,7 +275,7 @@ public:
     /** @brief Empty lease; `operator bool` is false. */
     ProviderLease() noexcept = default;
 
-    ProviderLease(const ProviderLease&) = delete;
+    ProviderLease(const ProviderLease&)            = delete;
     ProviderLease& operator=(const ProviderLease&) = delete;
     ProviderLease(ProviderLease&& other) noexcept
         : handle_(std::move(other.handle_)), provider_(std::move(other.provider_)) {
@@ -297,9 +297,9 @@ public:
     [[nodiscard]] static Result<ProviderLease> acquire(const ProviderHandle& handle) {
         std::shared_ptr<void> raw = detail::acquireOwnedRaw(handle.capability.c_str(), handle.generation);
         if (!raw) {
-            return Result<ProviderLease>::failure(Diagnostic::error(
-                DiagnosticCode::StaleHandle, "registry-owned provider generation is no longer published",
-                handle.capability));
+            return Result<ProviderLease>::failure(
+                Diagnostic::error(DiagnosticCode::StaleHandle,
+                                  "registry-owned provider generation is no longer published", handle.capability));
         }
         ProviderLease lease;
         lease.handle_   = handle;
@@ -334,7 +334,7 @@ public:
     I* operator->() const noexcept { return provider_.get(); }
 
 private:
-    ProviderHandle    handle_{};
+    ProviderHandle     handle_{};
     std::shared_ptr<I> provider_{};
 };
 
@@ -363,11 +363,9 @@ template <class I>
  *          only stops new acquisitions.
  */
 [[nodiscard]] inline Result<void> unloadOwned(const ProviderHandle& handle) {
-    if (detail::unloadOwnedRaw(handle.capability.c_str(), handle.generation))
-        return Result<void>::success();
+    if (detail::unloadOwnedRaw(handle.capability.c_str(), handle.generation)) return Result<void>::success();
     return Result<void>::failure(Diagnostic::error(
-        DiagnosticCode::StaleHandle, "registry-owned provider generation is no longer published",
-        handle.capability));
+        DiagnosticCode::StaleHandle, "registry-owned provider generation is no longer published", handle.capability));
 }
 
 }  // namespace eve::cap

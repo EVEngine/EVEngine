@@ -182,8 +182,7 @@ int appendRibbonItems(const ParticleEmitter::Config& cfg, const ParticleEmitter:
  *            here would be a string-keyed module probe on the per-emitter path.
  *            Null skips the viewport test.
  */
-bool emitterOffscreen(graphics::Graphics *gfx, const ParticleEmitter::Config &cfg,
-                      const ParticleEmitter::Draw &draw) {
+bool emitterOffscreen(graphics::Graphics* gfx, const ParticleEmitter::Config& cfg, const ParticleEmitter::Draw& draw) {
     auto *cam = draw.camera;
     if (!cam) return false;
     if (cfg.cullDistance > 0.f) {
@@ -520,13 +519,14 @@ int appendOneEmitter(graphics::Graphics& gfx, ParticleEmitter& emitter,
     auto gpu = emitter.gpuSim(); const int alive = liveParticleCount(&emitter);
     if (!draw->visible || alive <= 0) return 0;
     const auto& budget = particleBudgetConfig();
-    if (respectSceneCulling &&
-        (budget.qualityLevel < cfg->minimumQuality || emitterOffscreen(&gfx, *cfg, *draw))) {
-        culled = true; return 0;
+    if (respectSceneCulling && (budget.qualityLevel < cfg->minimumQuality || emitterOffscreen(&gfx, *cfg, *draw))) {
+        culled = true;
+        return 0;
     }
     if (gpu->residentActive) {
         graphics::GpuParticleDraw gpuDraw;
-        gpuDraw.texture = draw->texture; gpuDraw.sceneDepth = gfx.getSceneLinearDepthTexture();
+        gpuDraw.texture    = draw->texture;
+        gpuDraw.sceneDepth = gfx.getSceneLinearDepthTexture();
         gpuDraw.blend = draw->blend; gpuDraw.viewportWidth = float(gfx.getWidth());
         gpuDraw.viewportHeight = float(gfx.getHeight());
         if (draw->camera) { gpuDraw.cameraEnabled = true; gpuDraw.cameraX = draw->camera->data()->x;

@@ -122,8 +122,8 @@ void clearAllRaw() {
 std::uint64_t publishOwnedRaw(const char* name, std::shared_ptr<void> provider) {
     if (!name || !provider) return 0;
     std::lock_guard<std::mutex> guard(ownedMutex());
-    OwnedSlot& slot = ownedSlots()[name];
-    slot.provider   = std::move(provider);
+    OwnedSlot&                  slot = ownedSlots()[name];
+    slot.provider                    = std::move(provider);
     // Generation 0 is reserved for "never published", so the first publish is 1.
     return ++slot.generation;
 }
@@ -131,7 +131,7 @@ std::uint64_t publishOwnedRaw(const char* name, std::shared_ptr<void> provider) 
 std::shared_ptr<void> acquireOwnedRaw(const char* name, std::uint64_t generation) {
     if (!name || generation == 0) return {};
     std::lock_guard<std::mutex> guard(ownedMutex());
-    auto it = ownedSlots().find(name);
+    auto                        it = ownedSlots().find(name);
     if (it == ownedSlots().end() || it->second.generation != generation) return {};
     // Returns empty after a retirement, so the caller reports StaleHandle rather
     // than handing out a destroyed implementation.
@@ -141,7 +141,7 @@ std::shared_ptr<void> acquireOwnedRaw(const char* name, std::uint64_t generation
 bool unloadOwnedRaw(const char* name, std::uint64_t generation) {
     if (!name || generation == 0) return false;
     std::lock_guard<std::mutex> guard(ownedMutex());
-    auto it = ownedSlots().find(name);
+    auto                        it = ownedSlots().find(name);
     if (it == ownedSlots().end() || it->second.generation != generation) return false;
     it->second.provider.reset();
     // Advance past the retired generation so the retired handle never resolves
@@ -153,7 +153,7 @@ bool unloadOwnedRaw(const char* name, std::uint64_t generation) {
 std::uint64_t ownedGenerationRaw(const char* name) {
     if (!name) return 0;
     std::lock_guard<std::mutex> guard(ownedMutex());
-    auto it = ownedSlots().find(name);
+    auto                        it = ownedSlots().find(name);
     if (it == ownedSlots().end() || !it->second.provider) return 0;
     return it->second.generation;
 }
