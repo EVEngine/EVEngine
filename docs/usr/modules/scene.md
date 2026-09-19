@@ -131,6 +131,12 @@ scene.setNodeEventHandler(function(action, nodeId, parentId) {
 
 `SceneComponent` 提供 `onMount()`（首次挂载调用一次）。默认 `eve_update` 已调用 `scene.updateTransformsAll()`；API 修改节点后只需增量同步（脏子树裁剪），全净树零开销。
 
+> **陷阱**：在 `eve.SceneComponent` 的子类方法里，请写 `this.scene()`（等同 `scene()`），
+> **不要**裸写 `scene.beginBuild()`。裸名 `scene` 在子类里解析到的是 `scene()` 这个
+> **访问器方法本身**，而不是它的返回值，于是报 `the index 'beginBuild' does not exist`，
+> 错误信息指不到真正原因。访问器本身已经优先返回你设的全局槽位（`::scene`），所以
+> `this.scene()` 与你自己的全局 `scene` 语义一致——只有"不带调用"的裸名会踩到。
+
 ### 错误语义
 
 新增的 getter（`getNodePosition` 等）在节点不存在时抛 Squirrel 异常；可先用 `scene.hasNode(nodeId)` 守卫。setter 保持返回 bool。

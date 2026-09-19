@@ -47,6 +47,12 @@ class Counter extends eve.UIComponent {
 }
 ```
 
+> **陷阱**：在 `eve.UIComponent` 的子类方法里，请写 `this.ui()`（等同 `ui()`），**不要**
+> 裸写 `ui.beginBuild()`。裸名 `ui` 在子类里解析到的是 `ui()` 这个**访问器方法本身**，
+> 而不是它的返回值，于是报 `the index 'beginBuild' does not exist`，错误信息指不到真正
+> 原因。访问器本身已经优先返回你设的全局槽位（`::ui`），所以 `this.ui()` 与你自己的全局
+> `ui` 语义一致——只有"不带调用"的裸名会踩到。
+
 ## `.9.png` 九宫格资源
 
 支持未经 Android 编译的标准 `.9.png`：顶边和左边各一段连续黑色像素定义可拉伸区，
