@@ -370,10 +370,9 @@ jobs:
 
       - name: Build win32 debug
         # A PR that changes the third-party patch/cache key must do a full cold
-        # dependency plus engine/test build. Recent windows-2025 runners can
-        # exceed 40 minutes without any compiler failure, so retain a bounded
-        # hang guard while allowing the cold build to finish.
-        timeout-minutes: 60
+        # dependency plus engine/test build. Release run 35419568563 was still
+        # compiling normally when the former 60-minute guard terminated it.
+        timeout-minutes: 100
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
@@ -577,7 +576,9 @@ jobs:
         run: bash .github/scripts/setup-software-vulkan.sh
 
       - name: Build win32 release
-        timeout-minutes: 90
+        # A cold release build reached the former 90-minute guard without a
+        # compiler failure in release run 35419568563.
+        timeout-minutes: 120
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: >-
@@ -630,6 +631,10 @@ jobs:
         uses: mozilla-actions/sccache-action@fc920bf0ec8de6ee65d409111f7ec508035751ba # v0.0.11
         with:
           version: "v0.16.0"
+
+      - name: Start C/C++ compilation cache
+        timeout-minutes: 5
+        run: sccache --start-server
 
       - name: Setup Java 17
         timeout-minutes: 10
@@ -710,6 +715,10 @@ jobs:
         uses: mozilla-actions/sccache-action@fc920bf0ec8de6ee65d409111f7ec508035751ba # v0.0.11
         with:
           version: "v0.16.0"
+
+      - name: Start C/C++ compilation cache
+        timeout-minutes: 5
+        run: sccache --start-server
 
       - name: Setup Java 17
         timeout-minutes: 10
@@ -798,7 +807,9 @@ jobs:
         run: bash .github/scripts/resolve-vulkan-macos.sh "${{ runner.temp }}/VulkanSDK"
 
       - name: Build macosx debug
-        timeout-minutes: 40
+        # A cold build reached 96% of unit_test before the former 40-minute
+        # guard terminated release run 35419568563.
+        timeout-minutes: 75
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: >-
