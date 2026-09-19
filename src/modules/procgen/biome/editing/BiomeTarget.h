@@ -1,4 +1,6 @@
 #pragma once
+
+#include "common/Export.h"
 #include <memory>
 #include <string>
 #include <vector>
@@ -55,7 +57,7 @@ using editing::validatePropertyValue;
     std::vector<BiomeAssetValue> assets;
 };
 /** @brief Revisioned BiomeRules asset. */
-class BiomeDocumentTarget final : public virtual IEditableTarget,
+class EVENGINE_API_ORCHESTRATION BiomeDocumentTarget final : public virtual IEditableTarget,
                                   public IDomainOperationTarget,
                                   public IDomainOperationTargetStaging,
                                   public IPropertyProvider,
@@ -121,7 +123,7 @@ public:
     virtual EditorResult<procgen::SpatialData*> resolve(const std::string&) const = 0;
 };
 /** @brief Candidate-first BiomeRules generation. */
-class BiomeDocumentRuntime {
+class EVENGINE_API_ORCHESTRATION BiomeDocumentRuntime {
 public:
     BiomeDocumentRuntime();
     ~BiomeDocumentRuntime();

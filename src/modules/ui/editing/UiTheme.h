@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "editing/EditableTarget.h"
 #include "editing/EditingProperty.h"
@@ -51,7 +53,7 @@ struct UiThemeAsset {
 };
 
 /** @brief Serializable catalog of named UI themes with one active publication slot. */
-class UiThemeCatalogTarget final : public virtual IEditableTarget,
+class EVENGINE_API_DOMAINS UiThemeCatalogTarget final : public virtual IEditableTarget,
                                    public IDomainOperationTarget,
                                    public IDomainOperationTargetStaging,
                                    public IPropertyProvider,
@@ -151,7 +153,7 @@ struct UiThemePreviewSnapshot {
 };
 
 /** @brief Builds a Theme copy for a catalog revision without touching runtime globals. */
-class UiThemePreviewService {
+class EVENGINE_API_DOMAINS UiThemePreviewService {
 public:
     /**
      * @brief Copy tokens for @p themeId when @p expectedRevision matches the catalog.
@@ -162,7 +164,7 @@ public:
 };
 
 /** @brief Publishes the active catalog theme through ui::setGlobalTheme. */
-class UiThemeRuntimePublisher {
+class EVENGINE_API_DOMAINS UiThemeRuntimePublisher {
 public:
     /**
      * @brief Replace the process global theme with the catalog's active asset.

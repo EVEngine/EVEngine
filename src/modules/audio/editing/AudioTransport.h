@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "audio/editing/AudioEditingTypes.h"
 
@@ -39,7 +41,7 @@ public:
 };
 
 /** @brief Revision-safe play/pause/seek/custom-loop state machine for asset audition. */
-class AudioAuditionTransport {
+class EVENGINE_API_BACKENDS AudioAuditionTransport {
 public:
     /** @brief Bind a borrowed backend and stop any previously bound audition. */
     EditorResult<void> bind(StableId asset, Revision sourceRevision,
@@ -71,7 +73,7 @@ private:
 };
 
 /** @brief Non-owning transport backend for a live OpenAL-backed audio Source. */
-class AudioSourceTransportBackend final : public IAudioTransportBackend {
+class EVENGINE_API_BACKENDS AudioSourceTransportBackend final : public IAudioTransportBackend {
 public:
     explicit AudioSourceTransportBackend(audio::Source* source) : source_(source) {}
     void play() override;

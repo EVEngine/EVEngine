@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "editing/EditableTarget.h"
 #include "editing/EditingProperty.h"
@@ -40,7 +42,7 @@ struct ProcgenScriptModuleSpec {
  * @threadaffinity Owner thread only.
  * @reentrancy No unknown callbacks.
  */
-class ProcgenScriptDocumentTarget final : public virtual editing::IEditableTarget,
+class EVENGINE_API_ORCHESTRATION ProcgenScriptDocumentTarget final : public virtual editing::IEditableTarget,
                                           public editing::IDomainOperationTarget,
                                           public editing::IDomainOperationTargetStaging,
                                           public editing::IPropertyProvider {

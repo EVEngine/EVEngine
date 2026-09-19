@@ -122,7 +122,7 @@ struct AudioBusSnapshot {
 };
 
 /** @brief Serializable mixer-bus hierarchy, including master bus. */
-class AudioMixerTarget final : public virtual IEditableTarget,
+class EVENGINE_API_BACKENDS AudioMixerTarget final : public virtual IEditableTarget,
                                public IDomainOperationTarget,
                                public IDomainOperationTargetStaging {
 public:
@@ -173,7 +173,7 @@ class Source;
 namespace eve::audio_editing {
 
 /** @brief Optional bridge applying authoring settings to an existing live Source. */
-class AudioSourceRuntimeApplier {
+class EVENGINE_API_BACKENDS AudioSourceRuntimeApplier {
 public:
     EditorResult<void> apply(const AudioSourceTarget& target, audio::Source* source) const;
 };

@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "editing/EditableTarget.h"
 
@@ -12,7 +14,7 @@ class TileLayer;
 namespace eve::map_editing {
 
 /** @brief Non-owning editable adapter for a live map tile layer. */
-class TileLayerTarget final : public editing::IEditableTarget, public editing::IIntFieldTarget {
+class EVENGINE_API_WORLD TileLayerTarget final : public editing::IEditableTarget, public editing::IIntFieldTarget {
 public:
     /** @brief Bind a live layer which must outlive this adapter. */
     TileLayerTarget(std::string id, map::TileLayer* layer);
@@ -46,6 +48,6 @@ private:
  * @param layer Borrowed layer that must outlive the adapter.
  * @return Independently owned adapter.
  */
-[[nodiscard]] std::unique_ptr<TileLayerTarget> createTileLayerTarget(std::string id, map::TileLayer* layer);
+[[nodiscard]] EVENGINE_API_WORLD std::unique_ptr<TileLayerTarget> createTileLayerTarget(std::string id, map::TileLayer* layer);
 
 }  // namespace eve::map_editing

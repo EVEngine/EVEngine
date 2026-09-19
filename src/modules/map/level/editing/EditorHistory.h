@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "map/level/editing/TileBuffer.h"
 #include "editing/EditingResult.h"
@@ -12,7 +14,7 @@ namespace eve::level_editing {
  * @brief Undo/redo stack: opaque string actions + optional tile change groups
  * that can apply directly to a TileBuffer.
  */
-class EditorHistory {
+class EVENGINE_API_DOMAINS EditorHistory {
 public:
     void clear();
 

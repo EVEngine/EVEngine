@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/Result.h"
 #include "common/Subscription.h"
@@ -25,7 +27,7 @@ class AnimClip;
  * registrations must not outlive the clip (the engine's script bindings keep
  * clips alive for the process lifetime, and tests use owning pointers).
  */
-class AnimClipRegistry {
+class EVENGINE_API_WORLD AnimClipRegistry {
 public:
     /** @brief Owning event value emitted after an EVA path reload attempt. */
     struct ReloadEvent {

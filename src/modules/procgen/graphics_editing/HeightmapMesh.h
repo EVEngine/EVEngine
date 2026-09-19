@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "editing/EditingResult.h"
 
@@ -21,7 +23,7 @@ namespace eve::procgen_graphics_editing {
  * @return Applied with a newly allocated mesh owned by the caller, or a structured failure.
  * @thread Render-thread only.
  */
-[[nodiscard]] editing::Result<graphics::Mesh*> createHeightmapMesh(
+[[nodiscard]] EVENGINE_API_ORCHESTRATION editing::Result<graphics::Mesh*> createHeightmapMesh(
     procgen::Heightmap* heightmap, float cellSize, float heightScale, bool smoothNormals);
 /**
  * @brief Update preview vertices without replacing the mesh identity.
@@ -34,7 +36,7 @@ namespace eve::procgen_graphics_editing {
  * @return Applied, or a structured validation/backend failure.
  * @thread Render-thread only.
  */
-[[nodiscard]] editing::Result<void> updateHeightmapMesh(
+[[nodiscard]] EVENGINE_API_ORCHESTRATION editing::Result<void> updateHeightmapMesh(
     graphics::Mesh* mesh, graphics::Graphics* graphics, procgen::Heightmap* heightmap,
     float cellSize, float heightScale, bool smoothNormals);
 

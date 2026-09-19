@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "audio/editing/AudioTarget.h"
 
@@ -19,7 +21,7 @@ struct AudioEffectRecord {
 };
 
 /** @brief Revisioned reversible serial effect chain independent of an audio backend. */
-class AudioEffectChainTarget final : public virtual IEditableTarget,
+class EVENGINE_API_BACKENDS AudioEffectChainTarget final : public virtual IEditableTarget,
                                      public IDomainOperationTarget,
                                      public IDomainOperationTargetStaging {
 public:

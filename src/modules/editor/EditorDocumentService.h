@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "editor/EditorProtocol.h"
 
@@ -109,7 +111,7 @@ private:
  * ticket advances `saved` only to its captured edit revision, preserving dirty
  * state for edits made while the save was pending.
  */
-class DocumentService {
+class EVENGINE_API_ORCHESTRATION DocumentService {
 public:
     /** @brief Synchronous content validator borrowed only for one external reconciliation call. */
     using ContentValidator = std::function<EditorResult<void>(const EditorValue&)>;

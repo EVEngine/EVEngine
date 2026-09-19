@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/ECS.h"
 #include "scene/editing/SceneEditingCommands.h"
@@ -73,7 +75,7 @@ public:
  * Concrete subclasses differ only in host-facing target type. The mutation
  * protocol and capabilities stay identical so tools contain no backend branch.
  */
-class SceneTargetBase : public virtual IEditableTarget,
+class EVENGINE_API_BACKENDS SceneTargetBase : public virtual IEditableTarget,
                         public IDomainOperationTarget,
                         public IDomainOperationTargetStaging,
                         public eve::editing::IEditingSnapshotProvider,
@@ -168,7 +170,7 @@ namespace eve::scene_editing {
  * the complete tree; they
  * must not destroy this target during the callback.
  */
-class SceneHostEditorTarget final : public SceneTargetBase, public ISceneComponentInspector {
+class EVENGINE_API_BACKENDS SceneHostEditorTarget final : public SceneTargetBase, public ISceneComponentInspector {
 public:
     /** @brief Import a host using a generation handle. @param host Borrowed for
      * this call, or null for staging.

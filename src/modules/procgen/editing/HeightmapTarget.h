@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "editing/EditableTarget.h"
 #include "procgen/editing/HeightmapBrush.h"
@@ -44,6 +46,6 @@ private:
  * @param heightmap Borrowed heightmap that must outlive the adapter.
  * @return Independently owned adapter.
  */
-[[nodiscard]] std::unique_ptr<HeightmapTarget> createHeightmapTarget(
+[[nodiscard]] EVENGINE_API_ORCHESTRATION std::unique_ptr<HeightmapTarget> createHeightmapTarget(
     std::string id, procgen::Heightmap* heightmap);
 }  // namespace eve::procgen_editing

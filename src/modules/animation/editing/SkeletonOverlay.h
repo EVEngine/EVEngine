@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "editing/EditingGizmo.h"
 
@@ -45,7 +47,7 @@ struct SkeletonOverlayOptions {
 };
 
 /** @brief Builds bone lines, joints, local axes and constraint arcs without a renderer dependency. */
-class SkeletonOverlayBuilder {
+class EVENGINE_API_DOMAINS SkeletonOverlayBuilder {
 public:
     /** @brief Build a deterministic overlay or structured hierarchy/value diagnostics. */
     editing::GizmoSnapshot build(std::string target, Revision revision,

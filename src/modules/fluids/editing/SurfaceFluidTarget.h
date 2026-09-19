@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "editing/EditableTarget.h"
 #include "editing/EditingAuthority.h"
@@ -61,7 +63,7 @@ struct SurfaceFluidSettings {
 };
 
 /** @brief Reversible document for surface droplets, wet traces and material response. */
-class SurfaceFluidTarget final : public virtual IEditableTarget,
+class EVENGINE_API_ORCHESTRATION SurfaceFluidTarget final : public virtual IEditableTarget,
                                  public IDomainOperationTarget,
                                  public IPropertyProvider {
 public:
@@ -100,7 +102,7 @@ private:
 };
 
 /** @brief Optional bridge copying a validated document into live fluid components. */
-class SurfaceFluidRuntimeApplier {
+class EVENGINE_API_ORCHESTRATION SurfaceFluidRuntimeApplier {
 public:
     /** @brief Apply droplet parameters and emit matching render/wetness parameters atomically. */
     EditorResult<void> apply(const SurfaceFluidTarget& target, fluids::SurfaceDropletSimulation* simulation,

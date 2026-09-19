@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include <glm/glm.hpp>
 
@@ -40,7 +42,7 @@ struct SurfaceWalkResult {
  * stable while the supplied vertices move. Call setTransform for rigid motion or
  * setDeformedPositions for skinning, morphing and procedural deformation.
  */
-class FluidSurfaceBinding {
+class EVENGINE_API_DOMAINS FluidSurfaceBinding {
 public:
     /**
      * @brief Build topology and initialize the current and previous poses.

@@ -81,7 +81,7 @@ public:
 };
 
 /** @brief Candidate-first material operation target with live commit/undo publication. */
-class MaterialPublishingTarget final : public IDomainOperationTarget,
+class EVENGINE_API_BACKENDS MaterialPublishingTarget final : public IDomainOperationTarget,
                                        public IDomainOperationTargetStaging {
 public:
     /** @brief Create an owned material document bound to a non-owning runtime sink. */
@@ -133,7 +133,7 @@ public:
 };
 
 /** @brief Built-in legacy-material publisher for one borrowed Renderable3D. */
-class Renderable3DMaterialRuntimeSink final : public IMaterialRuntimeSink {
+class EVENGINE_API_WORLD Renderable3DMaterialRuntimeSink final : public IMaterialRuntimeSink {
 public:
     /** @brief Bind a live renderable and asset resolver; both must outlive the sink. */
     Renderable3DMaterialRuntimeSink(graphics::Renderable3D* renderable,

@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "editing/EditingCommandRegistry.h"
 #include "editor/EditorCommandService.h"
@@ -17,7 +19,7 @@ class EditorSession;
  * planners through IEditingCommandRegistry; targets remain borrowed.
  * @thread Owner-thread only.
  */
-class EditorTargetCoordinator final : public eve::editing::IEditingCommandRegistry {
+class EVENGINE_API_ORCHESTRATION EditorTargetCoordinator final : public eve::editing::IEditingCommandRegistry {
 public:
     explicit EditorTargetCoordinator(EditorCommandService& commands);
     ~EditorTargetCoordinator();

@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "editing/EditableTarget.h"
 #include "editing/EditingProperty.h"
@@ -110,7 +112,7 @@ private:
 };
 
 /** @brief Compiled, owned StyleRecipe generation used for live and offscreen preview. */
-class StylizeRecipeRuntime {
+class EVENGINE_API_DOMAINS StylizeRecipeRuntime {
 public:
     StylizeRecipeRuntime();
     ~StylizeRecipeRuntime();

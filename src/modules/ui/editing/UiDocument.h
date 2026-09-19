@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "editing/EditableTarget.h"
 #include "editing/EditingProperty.h"
@@ -128,7 +130,7 @@ public:
 };
 
 /** @brief Serializable UI authoring document with hierarchy and inspector capabilities. */
-class UiDocumentTarget final : public virtual IEditableTarget,
+class EVENGINE_API_DOMAINS UiDocumentTarget final : public virtual IEditableTarget,
                                public IDomainOperationTarget,
                                public IDomainOperationTargetStaging,
                                public IUiDocumentEditTarget,
@@ -215,7 +217,7 @@ struct UiPreviewSnapshot {
 };
 
 /** @brief UI-neutral preview, picking and anchor-gizmo geometry service. */
-class UiDocumentPreviewService {
+class EVENGINE_API_DOMAINS UiDocumentPreviewService {
 public:
     /** @brief Compute absolute rectangles for a viewport without mutating runtime UI. */
     UiPreviewSnapshot build(const UiDocumentTarget& document, double width, double height) const;

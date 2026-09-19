@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "fluids/editing/FluidTarget.h"
 
@@ -38,7 +40,7 @@ struct VolumeFluidAuthoringPreview {
  * @thread Editor-thread affine.
  * @reentrancy Does not invoke callbacks.
  */
-class VolumeFluidTarget final : public virtual IEditableTarget,
+class EVENGINE_API_ORCHESTRATION VolumeFluidTarget final : public virtual IEditableTarget,
                                 public IDomainOperationTarget,
                                 public IPropertyProvider {
 public:

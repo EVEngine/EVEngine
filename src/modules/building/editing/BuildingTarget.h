@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "editing/EditingAuthority.h"
 #include "editing/EditableTarget.h"
@@ -259,7 +261,7 @@ struct BuildingEdgeCurveDragPreview {
  * @ownership Borrows the target; the caller must end/cancel before destroying it.
  * @thread Viewport/editor thread only; callbacks are not retained or invoked.
  */
-class BuildingEdgeCurveDragSession {
+class EVENGINE_API_DOMAINS BuildingEdgeCurveDragSession {
 public:
     /** @brief Configure an idle drag session from authoritative editor selection state. */
     BuildingEdgeCurveDragSession(BuildingPlacementTarget* target, std::string buildingId,

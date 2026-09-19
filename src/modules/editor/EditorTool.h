@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "editor/EditorTarget.h"
 #include "editor/EditorResult.h"
@@ -61,7 +63,7 @@ struct ToolResponse {
  * Later editor capabilities (targets, transactions, overlays, selection) attach
  * to this stable context instead of adding concrete tool cases to the session.
  */
-class EditorContext {
+class EVENGINE_API_ORCHESTRATION EditorContext {
 public:
     explicit EditorContext(EditorSession* session = nullptr) : session_(session) {}
 

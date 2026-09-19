@@ -71,9 +71,9 @@ struct ActionAnimationSection {
 };
 
 /** @brief Stable persisted name for a montage cross-fade curve. */
-[[nodiscard]] std::string_view actionBlendCurveName(ActionBlendCurve curve) noexcept;
+[[nodiscard]] EVENGINE_API_PLATFORM std::string_view actionBlendCurveName(ActionBlendCurve curve) noexcept;
 /** @brief Parse a persisted montage cross-fade curve name. */
-[[nodiscard]] std::optional<ActionBlendCurve> actionBlendCurveFromName(std::string_view name) noexcept;
+[[nodiscard]] EVENGINE_API_PLATFORM std::optional<ActionBlendCurve> actionBlendCurveFromName(std::string_view name) noexcept;
 
 /** @brief Semantic lane kind; hosts choose presentation without changing data. */
 enum class ActionTrackKind : std::uint8_t {
@@ -88,9 +88,9 @@ enum class ActionTrackKind : std::uint8_t {
 };
 
 /** @brief Stable lowercase protocol spelling for a track kind. */
-[[nodiscard]] std::string_view actionTrackKindName(ActionTrackKind kind) noexcept;
+[[nodiscard]] EVENGINE_API_PLATFORM std::string_view actionTrackKindName(ActionTrackKind kind) noexcept;
 /** @brief Parse a stable track kind spelling. */
-[[nodiscard]] Result<ActionTrackKind> parseActionTrackKind(std::string_view text);
+[[nodiscard]] EVENGINE_API_PLATFORM Result<ActionTrackKind> parseActionTrackKind(std::string_view text);
 
 /** @brief Instantaneous typed event placed on an action track. */
 struct ActionNotify {

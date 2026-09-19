@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "editing/EditableTarget.h"
 #include "editing/EditingAuthority.h"
@@ -70,7 +72,7 @@ struct FluidSimulationPreview {
 };
 
 /** @brief Reversible property document for fluid simulation authoring. */
-class FluidSimulationTarget final : public virtual IEditableTarget,
+class EVENGINE_API_ORCHESTRATION FluidSimulationTarget final : public virtual IEditableTarget,
                                     public IDomainOperationTarget,
                                     public IPropertyProvider {
 public:
