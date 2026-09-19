@@ -1,4 +1,6 @@
 #pragma once
+
+#include "common/Export.h"
 #include <cstdint>
 #include <map>
 #include <span>
@@ -38,6 +40,6 @@ struct CanonicalMeshLimits {
  * @thread Worker-safe and reentrant; no IO, callbacks, backend calls or global mutation.
  * @details v1 and v2 are compatibility-only. v3 adds an optional linear RGBA vertex-color stream.
  */
-[[nodiscard]] Result<CanonicalMeshData> decodeCanonicalMesh(std::span<const std::uint8_t> bytes,
+[[nodiscard]] EVENGINE_API_FOUNDATION Result<CanonicalMeshData> decodeCanonicalMesh(std::span<const std::uint8_t> bytes,
                                                             const CanonicalMeshLimits&    limits = {});
 }  // namespace eve::asset

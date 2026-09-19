@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/Result.h"
 
@@ -30,7 +32,7 @@ class Texture;
  * Quality presets ("low" | "medium" | "high") control sample count and
  * suggested downscale via resolutionFor().
  */
-class Volumetric {
+class EVENGINE_API_BACKENDS Volumetric {
 public:
     explicit Volumetric(Graphics *gfx);
     ~Volumetric();

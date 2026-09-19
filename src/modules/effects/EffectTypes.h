@@ -97,7 +97,7 @@ private:
  * reloaded after the call.  The payload is descriptive data only; applying a
  * definition does not mutate gameplay attributes.
  */
-struct EffectDefinition {
+struct EVENGINE_API_FOUNDATION EffectDefinition {
     std::string id;
     std::string stackKey;
     int         priority = 0;

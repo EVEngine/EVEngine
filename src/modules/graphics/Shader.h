@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include <array>
 #include <cstddef>
@@ -32,7 +34,7 @@ class Graphics;
  * **Stylized grass** (`newGrassShader`): Mesh3D layout + CSM shadow bindings.
  *   Alpha-tested billboards (depth write on). See graphics/Grass.h.
  */
-class Shader {
+class EVENGINE_API_BACKENDS Shader {
 public:
     static constexpr int kMaxFloats = 32;
     static constexpr uint32_t kPushConstantBytes = uint32_t(kMaxFloats * sizeof(float));

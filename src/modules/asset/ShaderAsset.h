@@ -56,7 +56,7 @@ struct ShaderAssetLimits {
  * @return Independent CPU candidate or a diagnostic; no live state is changed.
  * @thread Worker-safe. No callbacks or GPU allocation. GPU validation remains the upload boundary's responsibility.
  */
-[[nodiscard]] Result<ShaderAsset> loadShaderAsset(const EvpackResourceReader& reader, const AssetRef& asset,
+[[nodiscard]] EVENGINE_API_FOUNDATION Result<ShaderAsset> loadShaderAsset(const EvpackResourceReader& reader, const AssetRef& asset,
                                                   const EvpackCapabilities& capabilities);
 
 }  // namespace eve::asset

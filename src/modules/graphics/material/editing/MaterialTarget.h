@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "editing/EditingAuthority.h"
 #include "editing/EditingProperty.h"
@@ -22,7 +24,7 @@ template <class T> using EditorResult = editing::Result<T>;
 using EditorStatus = editing::Status; using EditorValue = editing::Value; using EditorDiagnostic = editing::Diagnostic;
 
 /** @brief UI-neutral, serializable material authoring target. */
-class MaterialDocumentTarget final : public virtual IEditableTarget,
+class EVENGINE_API_BACKENDS MaterialDocumentTarget final : public virtual IEditableTarget,
                                      public IDomainOperationTarget,
                                      public IDomainOperationTargetStaging,
                                      public eve::editing::IEditingSnapshotProvider,

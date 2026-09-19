@@ -125,7 +125,8 @@ enum class ConditionReasonCode : std::uint32_t {
  * `details` contains stable field names and child explanations. Both values
  * own their storage and remain valid after the evaluation context is gone.
  */
-class [[nodiscard("ConditionResult must be inspected before the decision is used")]] ConditionResult {
+class EVENGINE_API_FOUNDATION [[nodiscard("ConditionResult must be inspected before the decision is used")]]
+ConditionResult {
 public:
     /** @brief Construct a passed result with optional evidence and details. */
     static ConditionResult success(Value evidence = {}, Value details = Value::Object{});

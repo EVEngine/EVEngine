@@ -48,7 +48,7 @@ class SceneObject;
  * mount / remountReconcile / beginBuild. TransformSystem propagates world matrices
  * and syncs linked Renderable2D/3D transforms.
  */
-class EVENGINE_API Scene : public Module {
+class EVENGINE_API_PLATFORM Scene : public Module {
 public:
     Module_REG(Scene);
     Scene();

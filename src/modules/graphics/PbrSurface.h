@@ -1,4 +1,6 @@
 #pragma once
+
+#include "common/Export.h"
 #include <array>
 #include <cstddef>
 #include <cstdint>
@@ -48,5 +50,5 @@ struct PbrSurface {
  * @return Checked validation status; performs no IO, backend calls or callbacks.
  * @thread Worker-safe and reentrant. Texture pointers are never dereferenced or retained.
  */
-[[nodiscard]] Result<void> validatePbrSurface(const PbrSurface& surface);
+[[nodiscard]] EVENGINE_API_BACKENDS Result<void> validatePbrSurface(const PbrSurface& surface);
 }  // namespace eve::graphics

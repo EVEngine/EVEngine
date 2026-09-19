@@ -177,11 +177,11 @@ private:
 };
 
 /** @brief Returns the stable lowercase name of a task state. */
-EVENGINE_API std::string_view taskStateName(TaskState state);
+EVENGINE_API_FOUNDATION std::string_view taskStateName(TaskState state);
 /** @brief Writes the stable task-state spelling to a stream. */
 inline std::ostream& operator<<(std::ostream& stream, TaskState state) { return stream << taskStateName(state); }
 /** @brief Returns the stable lowercase name of an event kind. */
-EVENGINE_API std::string_view eventKindName(ProductionEventKind kind);
+EVENGINE_API_FOUNDATION std::string_view eventKindName(ProductionEventKind kind);
 
 /** @brief Script module factory for generic production queues. */
 class Production : public Module {

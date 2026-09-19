@@ -167,7 +167,7 @@ struct ActionActiveBlock {
  * resources are referenced by URI/type payloads and resolved by downstream
  * adapters; this L1 module never depends on those presentation modules.
  */
-struct EVENGINE_API ActionTimeline {
+struct EVENGINE_API_PLATFORM ActionTimeline {
     SchemaVersion schemaVersion{kActionTimelineSchemaVersion};
     LogicalId     actionId;
     Duration      duration = Duration::zero();

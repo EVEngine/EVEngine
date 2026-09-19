@@ -133,7 +133,7 @@ public:
  * registry so plugin unload cannot leave a raw pointer. All methods are
  * owner-thread-only; unregister before unloading handler code.
  */
-class EVENGINE_API ActionNotifyRegistry {
+class EVENGINE_API_PLATFORM ActionNotifyRegistry {
 public:
     /** @brief Build a registry containing the engine's standard semantic notify types. */
     [[nodiscard]] static Result<ActionNotifyRegistry> withBuiltins();

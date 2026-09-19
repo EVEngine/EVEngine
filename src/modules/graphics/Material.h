@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/Result.h"
 #include "graphics/BlendMode.h"
@@ -30,7 +32,7 @@ enum class MaterialVirtualTextureMode { Conventional, AtlasPageTable };
  * Attach via Renderable3D::setMaterial / setPart. When a Material* is set,
  * RenderSystem3D prefers it over the scattered MeshRenderer fields.
  */
-class Material {
+class EVENGINE_API_BACKENDS Material {
 public:
     static constexpr int kMaxPartsHint = 8;
 

@@ -29,6 +29,17 @@ endif()
 # checks EVENGINE_ENGINE_EXPORTS first, so the defining side still exports.
 target_compile_definitions(eve_engine_includes INTERFACE EVENGINE_MODULE_DLL)
 
+# vulkan-hpp's default dispatcher is a *data* symbol that must be imported, not
+# re-declared, across a module-DLL boundary (MSVC only provides __imp_<symbol>
+# for imported data). VULKAN_HPP_STORAGE_SHARED makes every consumer see the
+# declaration as dllimport; the group that defines the storage adds
+# VULKAN_HPP_STORAGE_SHARED_EXPORT for dllexport (see create_module() in
+# CMakeLists.txt, where EVENGINE_EXPORTS_<GROUP> is added). Without a shared
+# storage the referencing groups link LNK2001 against the bare
+# ?defaultDispatchLoaderDynamic@vk@@3VDispatchLoaderDynamic@1@A that only
+# EVBackends defines.
+target_compile_definitions(eve_engine_includes INTERFACE VULKAN_HPP_STORAGE_SHARED)
+
 # The same external closure the host and the test runner link. ThirdParty is
 # directory-scoped in src/engine and test/, so this file derives its own copy
 # from the manifest rather than reading theirs.

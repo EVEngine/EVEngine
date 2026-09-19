@@ -37,7 +37,7 @@ void exposeECSToVM(ssq::VM& vm);
  * 脚本 eve.view(cls) 沿类链找到登记的 C++ 类型后调用 fn 填充输出数组。
  */
 using CppEntityViewFn = std::function<void(ssq::Array& out)>;
-void registerCppEntityView(const ssq::Class& cls, CppEntityViewFn fn);
+EVENGINE_API_FOUNDATION void registerCppEntityView(const ssq::Class& cls, CppEntityViewFn fn);
 
 /**
  * @brief 在脚本 ECS 基类（eve.Component / eve.Entity / eve.System）注入之后执行的回调。

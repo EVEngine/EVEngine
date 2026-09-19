@@ -34,7 +34,7 @@ struct RuntimeDefinitionLimits {
  * @return Owning Value after exact-length, canonical-key and finite-number validation.
  * @thread Worker-safe; no shared mutable state.
  */
-[[nodiscard]] EVENGINE_API Result<Value> decodeRuntimeDefinition(
+[[nodiscard]] EVENGINE_API_FOUNDATION Result<Value> decodeRuntimeDefinition(
     std::span<const std::uint8_t> bytes, const RuntimeDefinitionLimits& limits = {});
 
 }  // namespace eve::asset

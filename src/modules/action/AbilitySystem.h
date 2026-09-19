@@ -28,7 +28,7 @@ struct AbilityTrigger {
 };
 
 /** @brief Canonical immutable-by-convention definition of a grantable ability. */
-struct EVENGINE_API AbilityDefinition {
+struct EVENGINE_API_PLATFORM AbilityDefinition {
     LogicalId                   id;
     ActionDefinition            action;
     Duration                    cooldown        = Duration::zero();
@@ -75,7 +75,7 @@ struct AbilityActivation {
  * ActionRuntime remains the sole owner of action phase state. The borrowed
  * runtime must outlive this system. No method reads a clock or invokes scripts.
  */
-class EVENGINE_API AbilityRuntime {
+class EVENGINE_API_PLATFORM AbilityRuntime {
 public:
     /** @brief Construct a system borrowing the action runtime used for submissions. */
     explicit AbilityRuntime(ActionRuntime& runtime) : runtime_(runtime) {}

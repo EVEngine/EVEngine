@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "CompressedData.h"
 #include "Compressor.h"
@@ -57,7 +59,8 @@ char *decompress(CompressedData *data, size_t &decompressedsize);
  *               bytes of the newly decompressed data.
  * @return The newly decompressed data (allocated with new[]).
  **/
-char *decompress(std::string format, const char *cbytes, size_t compressedsize, size_t &rawsize);
+EVENGINE_API_FOUNDATION char *decompress(std::string format, const char *cbytes, size_t compressedsize,
+                                         size_t &rawsize);
 
 /**
  * @brief Encodes raw bytes (e.g. hex / base64) into a text buffer.
@@ -80,7 +83,7 @@ char *encode(std::string format, const char *src, size_t srclen, size_t &dstlen,
  * @return The newly allocated decoded buffer (allocated with new[]; caller frees).
  * @throws eve::Exception on an unsupported format or malformed input.
  **/
-char *decode(std::string format, const char *src, size_t srclen, size_t &dstlen);
+EVENGINE_API_FOUNDATION char *decode(std::string format, const char *src, size_t srclen, size_t &dstlen);
 
 /**
  * @brief Hash the input, producing an set of bytes as output.
@@ -97,7 +100,7 @@ void hash(std::string function, const char *input, uint64_t size, HashFunction::
 
 
 
-class DataModule : public Module
+class EVENGINE_API_FOUNDATION DataModule : public Module
 {
 public:
 	Module_REG(DataModule);

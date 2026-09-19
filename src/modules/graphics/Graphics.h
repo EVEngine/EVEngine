@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include <assimp/matrix4x4.h>
 #include <cstdint>
@@ -109,7 +111,7 @@ struct ShadowUpload;
 struct TextureCreateInfo;
 struct TextureSampler;
 
-class Graphics : public Module,
+class EVENGINE_API_BACKENDS Graphics : public Module,
                  public Canvas,
                  public IWindowSurfaceHost,
                  public IGraphics2D,

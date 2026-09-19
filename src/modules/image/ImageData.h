@@ -35,7 +35,7 @@ struct UvPaintReceipt {
 /**
  * @brief Represents raw pixel data.
  **/
-class EVENGINE_API ImageData : public Resource
+class EVENGINE_API_PLATFORM ImageData : public Resource
 {
 public:
 	using float16 = medialoader::float16;

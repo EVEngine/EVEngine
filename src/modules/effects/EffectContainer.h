@@ -278,7 +278,7 @@ private:
  * This executor only decrements durations and emits expiry events.  It does
  * not interpret magnitude, payload, tags, or perform any domain settlement.
  */
-class EffectExecutor {
+class EVENGINE_API_FOUNDATION EffectExecutor {
 public:
     /**
      * @brief Advances one container by a legacy seconds delta.

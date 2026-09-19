@@ -31,7 +31,7 @@ struct TaskSnapshot {
 };
 
 /** @brief Cooperative cancellation and progress API passed to worker code. */
-class EVENGINE_API TaskContext {
+class EVENGINE_API_PLATFORM TaskContext {
 public:
     /** @brief True after cancellation was requested. */
     bool isCancellationRequested() const;
@@ -59,7 +59,7 @@ struct TaskOutcome {
  * synchronized and can be queried from the host/UI thread without callbacks
  * into game objects from the worker.
  */
-class EVENGINE_API TaskService {
+class EVENGINE_API_PLATFORM TaskService {
 public:
     using Work = std::function<TaskOutcome(const TaskContext&)>;
 

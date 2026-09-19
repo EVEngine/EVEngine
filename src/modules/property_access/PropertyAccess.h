@@ -80,7 +80,7 @@ struct PropertyDescriptor {
 };
 
 /** @brief Versioned schema for one view model or editable target. */
-struct PropertySchema {
+struct EVENGINE_API_FOUNDATION PropertySchema {
     std::string                     typeId;
     std::uint32_t                   version = 1;
     std::vector<PropertyDescriptor> properties;

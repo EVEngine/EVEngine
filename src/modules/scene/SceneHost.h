@@ -86,7 +86,7 @@ using GameObject = SceneNode;
  * @brief ECS mount point for one scene graph (full scene or nested subtree root).
  * Isomorphic to eve::ui::UIHost.
  */
-class EVENGINE_API SceneHost : public ecs::Entity {
+class EVENGINE_API_PLATFORM SceneHost : public ecs::Entity {
 public:
     ENTITY(SceneHost, ecs::Entity)
 

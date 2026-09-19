@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "stylize/MeshParticleEmitter.h"
 #include "stylize/TrailEffect.h"
@@ -114,7 +116,7 @@ public:
     [[nodiscard]] std::size_t size() const noexcept { return images_.size(); }
 
 private:
-    struct Image {
+    struct EVENGINE_API_WORLD Image {
         std::uint64_t stableId = 0;
         glm::mat4 model{1.f};
         float age = 0.f;

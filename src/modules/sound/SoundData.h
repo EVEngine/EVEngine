@@ -12,7 +12,7 @@ namespace eve {
 namespace sound {
 
 /** @brief Raw PCM audio buffer with format metadata (samples/rate/bit depth/channels). */
-class EVENGINE_API SoundData : public Resource {
+class EVENGINE_API_PLATFORM SoundData : public Resource {
 public:
     /** @brief Takes ownership of the PCM bytes. */
     SoundData(std::vector<uint8_t> pcm, int sampleRate, int bitDepth, int channels);

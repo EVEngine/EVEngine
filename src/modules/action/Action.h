@@ -53,7 +53,7 @@ enum class ActionPhase : std::uint8_t {
  * @return Borrowed static storage valid for the lifetime of the process.
  * @borrowed The returned pointer must not be freed or retained as mutable data.
  */
-[[nodiscard]] EVENGINE_API const char* actionPhaseName(ActionPhase phase) noexcept;
+[[nodiscard]] EVENGINE_API_PLATFORM const char* actionPhaseName(ActionPhase phase) noexcept;
 
 /** @brief Selects how an action obtains its target set. */
 enum class TargetingMode : std::uint8_t {
@@ -87,7 +87,7 @@ struct ActionTiming {
  * common `CostSpec`; effectIds are references resolved by the injected active
  * executor. No RPG, RTS, Weapon or Card type is included here.
  */
-struct ActionDefinition {
+struct EVENGINE_API_PLATFORM ActionDefinition {
     /** @brief Scoped logical definition identity, not a runtime execution id. */
     LogicalId id;
     /** @brief Timed phase policy in simulation durations. */
@@ -124,7 +124,7 @@ struct ActionDefinition {
  * pointers. `requestedTick` is the deterministic starting point for this
  * execution.
  */
-struct ActionRequest {
+struct EVENGINE_API_PLATFORM ActionRequest {
     /** @brief Definition identity this request intends to execute. */
     LogicalId actionId;
     /** @brief Optional source ECS identity; the action core does not interpret its type. */
@@ -475,7 +475,7 @@ private:
  * duration. Structural execution storage is owned here; adapters only submit
  * requests and observe results.
  */
-class EVENGINE_API ActionRuntime {
+class EVENGINE_API_PLATFORM ActionRuntime {
 public:
     /**
      * @brief Bind borrowed composition ports to this owner-thread runtime.

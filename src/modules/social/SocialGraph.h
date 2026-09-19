@@ -31,7 +31,7 @@ struct SocialChangeEvent {
  * IDs are opaque. String IDs are stored verbatim; integer helpers use a reserved
  * representation so integer 12 cannot collide with the string "12".
  */
-class EVENGINE_API SocialGraph {
+class EVENGINE_API_FOUNDATION SocialGraph {
 public:
     /** @brief Converts a stable integer ID to its canonical graph key. */
     static EntityId integerId(std::int64_t id);

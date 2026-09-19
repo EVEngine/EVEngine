@@ -98,7 +98,7 @@ private:
     std::optional<PropertyDescriptor> descriptor_;
 };
 
-struct EVENGINE_API PropertySchema {
+struct EVENGINE_API_PLATFORM PropertySchema {
     std::string                            typeId;
     std::uint32_t                          version = 1;
     std::vector<PropertyDescriptor>        properties;
@@ -136,7 +136,7 @@ public:
                                                             const PropertyPath&      path) const          = 0;
 };
 
-[[nodiscard]] EVENGINE_API Result<void> validatePropertyValue(const PropertyDescriptor& descriptor, const Value& value);
+[[nodiscard]] EVENGINE_API_PLATFORM Result<void> validatePropertyValue(const PropertyDescriptor& descriptor, const Value& value);
 [[nodiscard]] property_access::PropertyDescriptor toPresentationDescriptor(const PropertyDescriptor& source);
 [[nodiscard]] eve::Value                          toPresentationValue(const Value& value);
 [[nodiscard]] Value                               toEditingValue(const eve::Value& value);

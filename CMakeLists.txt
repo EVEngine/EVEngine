@@ -663,6 +663,16 @@ macro(create_module libname folder)
         string(TOUPPER "${_eve_module_group}" _eve_module_group)
         target_compile_definitions(${libname} PRIVATE
             "EVENGINE_EXPORTS_${_eve_module_group}")
+        # The vulkan-hpp default dispatcher is a data symbol defined by exactly
+        # one TU (src/modules/graphics/vulkan/Graphics.cpp, via VKB_IMPL) and
+        # referenced by every group that calls vulkan-hpp enhanced-mode
+        # overloads. Its owning group declares it dllexport here while every
+        # other consumer gets dllimport from VULKAN_HPP_STORAGE_SHARED
+        # (cmake/link_groups.cmake): vulkan-hpp offers exactly this pair of
+        # hooks, and data symbols cannot cross a DLL boundary without it.
+        if(_eve_module_group STREQUAL "BACKENDS")
+            target_compile_definitions(${libname} PRIVATE VULKAN_HPP_STORAGE_SHARED_EXPORT)
+        endif()
     endif()
     # Opt the module into the shared engine include set (was global
     # include_directories before; see eve_engine_includes in main()).
