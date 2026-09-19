@@ -66,15 +66,19 @@ foreach(_eve_group IN LISTS EVE_LINK_GROUP_NAMES)
         EVScripts zeroerr ${_eve_group_tp_libs} ${_eve_group_system_libs}
         ${EVENGINE_VULKAN_LIB} ${EVENGINE_WEBGPU_LIB})
     if(MSVC)
-        # The 2551 compile steps all use -MDd, so the objects ask for MSVCRTD,
-        # but the UCRT and VC runtime import libraries are requested by pragmas
-        # inside the CRT headers. A target whose own sources do not include CRT
-        # headers therefore never asks for them, and the DLL startup ends up with
-        # unresolved UCRT/VC runtime internals (__acrt_initialize,
-        # __CxxFrameHandler4, __current_exception, ...). Name the pair explicitly.
-        target_link_libraries(${_eve_group} PRIVATE
-            $<$<CONFIG:Debug>:ucrtd vcruntimed>
-            $<$<NOT:$<CONFIG:Debug>>:ucrt vcruntime>)
+        # box3dd.lib (third-party) is the one archive that carries
+        # /DEFAULTLIB:LIBCMTD -- the STATIC debug CRT -- while every other archive
+        # and every compile step in this build uses the dynamic /MDd CRT. In an
+        # executable link that mix is only LNK4098 ("defaultlib 'LIBCMTD'
+        # conflicts with use of other libs"); in a shared library it is fatal,
+        # because MSVCRTD.lib's startup object then cannot resolve
+        # __acrt_initialize / __vcrt_initialize / __acrt_thread_attach and the
+        # link stops with LNK1120. /NODEFAULTLIB is the documented remedy for
+        # LNK4098. The real fix belongs in the third-party build (Box3D should be
+        # compiled /MDd like its siblings); see cmake/third_party_build.cmake.
+        target_link_options(${_eve_group} PRIVATE
+            $<$<CONFIG:Debug>:/NODEFAULTLIB:LIBCMTD>
+            $<$<NOT:$<CONFIG:Debug>>:/NODEFAULTLIB:LIBCMT>)
     endif()
     if(NOT EVENGINE_PROFILE_HOSTLESS)
         add_dependencies(${_eve_group} third-party)
