@@ -92,10 +92,10 @@ if(NOT _has_audio_editor_bridge)
 endif()
 
 # graphics/SceneLinks.cpp registers the link kinds graphics owns and
-# graphics/ScenePicking.cpp implements the scene picking entry points that
-# need a complete Camera3D; both include scene headers, so dropping scene
-# drops both files. physics / audio each have their own SceneLinks.cpp with
-# the same basename, so one rule covers all three.
+# graphics/ScenePicking.cpp provides the ISceneCameraProjection capability that
+# scene's picking entry points query; both include scene headers, so dropping
+# scene drops both files. physics / audio each have their own SceneLinks.cpp
+# with the same basename, so one rule covers all three.
 eve_module_enabled(scene _has_scene)
 if(NOT _has_scene)
   set(EVENGINE_EXCLUDED_MODULE_FILES

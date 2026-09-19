@@ -324,8 +324,9 @@ SDL 头：实测 `#include <SDL.h>` 的预处理输出在 `-DHAVE_LIBC=1` 下多
 - **只能靠改分层**（只在上层定义、下层拿不到）：**3 个**，全在 `EVPlatform` 切口，都是
   `eve::scene::Scene` 的 `pickScreenAt` / `collectFrustumIdsAt` / `applyPcgTerrainCullingAt`：
   声明在 `src/modules/scene/Scene.h`（scene，L1），实现却在 `src/modules/graphics/ScenePicking.cpp`
-  （graphics，L4）。这是真实的上行引用，导出救不了 —— 要么把实现搬回 scene，要么按
-  「低层经接口/能力调用高层」改成 capability + 注册。
+  （graphics，L4）。这是真实的上行引用，导出救不了 —— 已按「低层经接口/能力调用高层」改成 capability：
+  新增 `ISceneCameraProjection`（由 scene 声明），graphics/ScenePicking.cpp 注册，三个入口留在
+  scene 并显式处理 provider 缺失（空 id / 空表 / `DiagnosticCode::Unsupported`），详见提交 `0365d7552`。
 
 校准：`EVPlatform` 这一刀有 ground truth（那次失败链接报出的 153 条未解析符号）。上表对这 153 个的
 **召回率 1.000**；反方向 230 个里有 77 个是假阳 —— 它们只出现在被链接器丢弃的 COMDAT（未使用的内联

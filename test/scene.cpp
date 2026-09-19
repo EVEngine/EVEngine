@@ -3,11 +3,14 @@
 
 #include "scene/NodeDesc.h"
 #include "scene/Scene.h"
+#include "scene/SceneCameraProjection.h"
 #include "scene/SceneComponent.h"
 #include "scene/SceneHost.h"
 #include "scene/SceneNodeRef.h"
 #include "scene/SceneObject.h"
 #include "scene/TransformSystem.h"
+
+#include "common/Capability.h"
 
 #include "graphics/AmbientOcclusion.h"
 #include "graphics/AntiAliasing.h"
@@ -1100,6 +1103,31 @@ TEST_CASE("Scene.cull.frustum") {
     CHECK(mod->getNodeVisibleAt("cu","decor"));
     CHECK(!mod->applyPcgTerrainCullingAt("cu",cam,0.f,480.f,"terrain").ok());
     CHECK(!mod->getNodeVisibleAt("cu","side"));
+    ecs::DestroyEntity(cam);
+}
+
+// The camera projection the picking entry points need is an optional
+// capability: without a provider they must fail explicitly instead of silently
+// returning a result, and with it restored they must work again.
+TEST_CASE("Scene.pick.withoutProjectionProvider") {
+    Scene *mod = Scene::create();
+    mod->mountAs("np", node("root", {node("target").withBounds(-1.f, -1.f, -1.f, 1.f, 1.f, 1.f)}))
+        .ignore("test setup");
+    mod->updateTransformsAll();
+    auto *cam = eve::graphics::Camera3D::createCamera();
+    cam->setEye(0.f, 0.f, 5.f);
+    cam->setTarget(0.f, 0.f, 0.f);
+    cam->setFov(60.f);
+
+    auto *provider = eve::cap::query<eve::scene::ISceneCameraProjection>();
+    REQUIRE(provider != nullptr);
+    eve::cap::revoke<eve::scene::ISceneCameraProjection>(provider);
+    CHECK(mod->pickScreenAt("np", cam, 320.f, 240.f, 640.f, 480.f).empty());
+    CHECK(mod->collectFrustumIdsAt("np", cam, 640.f, 480.f).empty());
+    CHECK(!mod->applyPcgTerrainCullingAt("np", cam, 640.f, 480.f, "terrain").ok());
+
+    eve::cap::provide<eve::scene::ISceneCameraProjection>(provider);
+    CHECK(mod->pickScreenAt("np", cam, 320.f, 240.f, 640.f, 480.f) == "target");
     ecs::DestroyEntity(cam);
 }
 
