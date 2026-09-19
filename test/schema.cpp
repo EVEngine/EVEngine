@@ -221,16 +221,48 @@ TEST_CASE("schema.module.reflectFromClass") {
             if (s.getSchemaTitle("card.definition") != "Card Definition") return "title";
             if (s.getSchemaAdditionalProperties("card.definition")) return "additionalProperties";
             if (s.getFieldCount("card.definition") != 6) return "count";
-            if (s.getFieldType("card.definition", 3) != "integer") return "type";
-            if (!s.getFieldRequired("card.definition", 0)) return "required";
-            if (s.getFieldEnumCount("card.definition", 2) != 2) return "enum";
-            if (!s.getFieldHasMinimum("card.definition", 3)) return "min";
-            if (s.getFieldMaximum("card.definition", 3) != 20) return "max";
+            // Resolve by name, not by position. registerFromClass walks the class's
+            // SQTable of members, so the enumeration order is the table's order, not the
+            // declaration order (measured: attack, health, name, id, kind, cost). The API
+            // promises getFieldName is stable, not that index 3 is `cost`, so index-based
+            // expectations were the unfounded part. Looking names up also asserts that all
+            // six declared fields are reflected at all.
+            local function indexOf(field) {
+                for (local i = 0; i < s.getFieldCount("card.definition"); ++i)
+                    if (s.getFieldName("card.definition", i) == field) return i;
+                return -1;
+            }
+            local idIdx = indexOf("id");
+            local kindIdx = indexOf("kind");
+            local costIdx = indexOf("cost");
+            if (idIdx < 0 || kindIdx < 0 || costIdx < 0) return "names";
+            if (s.getFieldType("card.definition", costIdx) != "integer") return "type";
+            if (s.getFieldType("card.definition", idIdx) != "string") return "stringType";
+            if (!s.getFieldRequired("card.definition", idIdx)) return "required";
+            if (s.getFieldEnumCount("card.definition", kindIdx) != 2) return "enum";
+            if (!s.getFieldHasMinimum("card.definition", costIdx)) return "min";
+            if (s.getFieldMaximum("card.definition", costIdx) != 20) return "max";
             local ok = @"{""id"":""card.scout"",""name"":""Scout"",""kind"":""creature"",""cost"":2,""attack"":3,""health"":2}";
-            if (!s.validateJson("card.definition", ok)) return "valid";
+            // validateJson returns the projected Result table {ok, code, status, ...}, not a
+            // bool -- the Result convention forbids collapsing a Result to bool. Testing the
+            // table itself for truthiness always said "accepted", because a Squirrel table is
+            // truthy; that is what made this case look like a validation bug.
+            local okResult = s.validateJson("card.definition", ok);
+            if (!okResult.ok) return "valid";
             local bad = @"{""id"":""x"",""name"":""y"",""kind"":""air"",""cost"":25}";
-            if (s.validateJson("card.definition", bad)) return "invalid";
-            return s.getValidationErrorCode(0) == "enum";
+            local badResult = s.validateJson("card.definition", bad);
+            if (badResult.ok) return "invalid";
+            // Assert the constraint classes that must reject, not the first error code:
+            // field iteration order is the class table's order, so "error 0" is not stable.
+            local sawEnum = false;
+            local sawMaximum = false;
+            for (local i = 0; i < s.getValidationErrorCount(); ++i) {
+                local code = s.getValidationErrorCode(i);
+                if (code == "enum") sawEnum = true;
+                if (code == "maximum") sawMaximum = true;
+            }
+            if (!sawEnum) return "enumCode";
+            return sawMaximum;
         }
     )");
     vm.run(script);
@@ -240,8 +272,6 @@ TEST_CASE("schema.module.reflectFromClass") {
     if (reflected.getType() == ssq::Type::STRING) {
         std::cerr << "[script] schemaReflectTest failed: " << reflected.toString() << std::endl;
     }
-    // CHECK, not REQUIRE: the script returns the reason "type", i.e.
-    // getFieldType("card.definition", 3) is not "integer". Reflection mismatch,
-    // untriaged (plan doc 9.15).
-    CHECK(reflected.getType() == ssq::Type::BOOL && reflected.toBool());
+    REQUIRE(reflected.getType() == ssq::Type::BOOL);
+    REQUIRE(reflected.toBool());
 }
