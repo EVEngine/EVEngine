@@ -451,44 +451,45 @@ function testGpuDrivenBindingSurface() {
 
 UnitSciptTest(ScriptEcsTest, kScriptEcsContent);
 
-TEST_CASE_FIXTURE(ScriptEcsTest, "ScriptECS.ready") {
-    CHECK(vm.callFunc(vm.findFunc("testEcsReady"), vm).toBool());
-}
+TEST_CASE_FIXTURE(ScriptEcsTest, "ScriptECS.ready") { REQUIRE(vm.callFunc(vm.findFunc("testEcsReady"), vm).toBool()); }
 
 TEST_CASE_FIXTURE(ScriptEcsTest, "ScriptECS.defineClassAndComponent") {
-    CHECK(vm.callFunc(vm.findFunc("testDefineClassAndComponent"), vm).toBool());
+    REQUIRE(vm.callFunc(vm.findFunc("testDefineClassAndComponent"), vm).toBool());
 }
 
 TEST_CASE_FIXTURE(ScriptEcsTest, "ScriptECS.viewIncludesSubclass") {
-    CHECK(vm.callFunc(vm.findFunc("testViewIncludesSubclass"), vm).toBool());
+    REQUIRE(vm.callFunc(vm.findFunc("testViewIncludesSubclass"), vm).toBool());
 }
 
 TEST_CASE_FIXTURE(ScriptEcsTest, "ScriptECS.systemUpdate") {
-    CHECK(vm.callFunc(vm.findFunc("testSystemUpdate"), vm).toBool());
+    REQUIRE(vm.callFunc(vm.findFunc("testSystemUpdate"), vm).toBool());
 }
 
 TEST_CASE_FIXTURE(ScriptEcsTest, "ScriptECS.systemDynamicSpawnDespawn") {
-    CHECK(vm.callFunc(vm.findFunc("testSystemDynamicSpawnDespawn"), vm).toBool());
+    REQUIRE(vm.callFunc(vm.findFunc("testSystemDynamicSpawnDespawn"), vm).toBool());
 }
 
 TEST_CASE_FIXTURE(ScriptEcsTest, "ScriptECS.systemQueryArrayAndSubclass") {
-    CHECK(vm.callFunc(vm.findFunc("testSystemQueryArrayAndSubclass"), vm).toBool());
+    REQUIRE(vm.callFunc(vm.findFunc("testSystemQueryArrayAndSubclass"), vm).toBool());
 }
 
 TEST_CASE_FIXTURE(ScriptEcsTest, "ScriptECS.typeMarkersAndEntityContainer") {
-    CHECK(vm.callFunc(vm.findFunc("testTypeMarkersAndEntityContainer"), vm).toBool());
+    REQUIRE(vm.callFunc(vm.findFunc("testTypeMarkersAndEntityContainer"), vm).toBool());
 }
 
 TEST_CASE_FIXTURE(ScriptEcsTest, "ScriptECS.staticComponentsTable") {
-    CHECK(vm.callFunc(vm.findFunc("testStaticComponentsTable"), vm).toBool());
+    REQUIRE(vm.callFunc(vm.findFunc("testStaticComponentsTable"), vm).toBool());
 }
 
 TEST_CASE_FIXTURE(ScriptEcsTest, "ScriptECS.shaderSystemClassExists") {
+    // CHECK, not REQUIRE, on purpose: this script returns false in this fixture because
+    // the gpgpu module is never instantiated, so `eve.ShaderSystem` is not reachable.
+    // It has therefore been reporting a warning all along. See the plan doc 9.14.1.
     CHECK(vm.callFunc(vm.findFunc("testShaderSystemClassExists"), vm).toBool());
 }
 
 TEST_CASE_FIXTURE(ScriptEcsTest, "ScriptECS.shaderSystemGpuResidentTransfers") {
-    CHECK(vm.callFunc(vm.findFunc("testShaderSystemGpuResidentTransfers"), vm).toBool());
+    REQUIRE(vm.callFunc(vm.findFunc("testShaderSystemGpuResidentTransfers"), vm).toBool());
 }
 
 TEST_CASE_FIXTURE(ScriptEcsTest, "ScriptECS.viewCacheStableAndInvalidated") {
@@ -496,11 +497,11 @@ TEST_CASE_FIXTURE(ScriptEcsTest, "ScriptECS.viewCacheStableAndInvalidated") {
 }
 
 TEST_CASE_FIXTURE(ScriptEcsTest, "ScriptECS.viewCacheBaseClassIncludesSubclasses") {
-    CHECK(vm.callFunc(vm.findFunc("testViewCacheBaseClassIncludesSubclasses"), vm).toBool());
+    REQUIRE(vm.callFunc(vm.findFunc("testViewCacheBaseClassIncludesSubclasses"), vm).toBool());
 }
 
 TEST_CASE_FIXTURE(ScriptEcsTest, "ScriptECS.componentDefaultsAndSlotsCached") {
-    CHECK(vm.callFunc(vm.findFunc("testComponentDefaultsAndSlotsCached"), vm).toBool());
+    REQUIRE(vm.callFunc(vm.findFunc("testComponentDefaultsAndSlotsCached"), vm).toBool());
 }
 
 TEST_CASE_FIXTURE(ScriptEcsTest, "ScriptECS.destroyClearsComponentState") {
@@ -508,5 +509,7 @@ TEST_CASE_FIXTURE(ScriptEcsTest, "ScriptECS.destroyClearsComponentState") {
 }
 
 TEST_CASE_FIXTURE(ScriptEcsTest, "ScriptECS.gpuDrivenBindingSurface") {
+    // CHECK, not REQUIRE, for the same reason as shaderSystemClassExists above:
+    // `eve.Gpgpu()` is unavailable in this fixture, so the script returns false.
     CHECK(vm.callFunc(vm.findFunc("testGpuDrivenBindingSurface"), vm).toBool());
 }
