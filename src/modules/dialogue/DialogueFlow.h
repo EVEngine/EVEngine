@@ -109,19 +109,22 @@ public:
     [[nodiscard]] eve::Result<int> reloadDnutChecked(const std::string& source, const std::string& sourceId);
     /** @brief Read through the injected filesystem capability and call loadDnutChecked. */
     [[nodiscard]] eve::Result<int> loadDnutFileChecked(const std::string& path);
-    int         importYarn(const std::string& source, const std::string& path);
-    int         importTwee(const std::string& source, const std::string& path);
-    bool        removeSource(const std::string& path);
-    bool        lintAll();
-    bool        renameConversation(const std::string& oldId, const std::string& newId);
-    bool        renameNode(const std::string& conversationId, const std::string& oldId, const std::string& newId);
+    [[nodiscard]] eve::Result<int> importYarnChecked(const std::string& source, const std::string& path);
+    [[nodiscard]] eve::Result<int> importTweeChecked(const std::string& source, const std::string& path);
+    [[nodiscard]] eve::Result<void> removeSourceChecked(const std::string& path);
+    [[nodiscard]] eve::Result<void> lintAllChecked();
+    [[nodiscard]] eve::Result<void> renameConversationChecked(const std::string& oldId, const std::string& newId);
+    [[nodiscard]] eve::Result<void> renameNodeChecked(const std::string& conversationId, const std::string& oldId,
+                                                      const std::string& newId);
     bool        getLastLoadChanged() const { return lastLoadChanged_; }
     void        clear();
     int         getConversationCount() const;
     std::string getConversationId(int index) const;
     bool        hasConversation(const std::string& id) const;
     std::string exportLocalizationCsv() const;
-    int         importLocalizationCsv(const std::string& csv, const std::string& defaultLocale);
+    /** @brief Import localized strings transactionally and return the imported row count. */
+    [[nodiscard]] eve::Result<int> importLocalizationCsvChecked(const std::string& csv,
+                                                                const std::string& defaultLocale);
     std::string exportMissingLocalizationCsv(const std::string& locale) const;
     std::string exportVoiceRecordingCsv(const std::string& locale) const;
     /**
@@ -144,13 +147,19 @@ public:
     std::string                    getDiagnosticSeverity(int index) const;
     std::string                    getDiagnosticPath(int index) const;
     int                            getDiagnosticLine(int index) const;
+    /** @brief Return the one-based source column for a diagnostic, or zero when unavailable. */
+    int                            getDiagnosticColumn(int index) const;
+    /** @brief Return the stable machine-readable diagnostic code. */
+    std::string                    getDiagnosticCode(int index) const;
+    /** @brief Return the stable asset/node/route path associated with a diagnostic. */
+    std::string                    getDiagnosticAssetPath(int index) const;
     std::string                    getDiagnosticMessage(int index) const;
     /** @brief Create an empty UI-neutral conversation document. */
     ConversationDocument* newDocument(const std::string& id) const;
     /** @brief Create an editable copy of a registered conversation. */
     ConversationDocument* getDocument(const std::string& id) const;
     /** @brief Validate and transactionally insert or replace an authored document. */
-    bool applyDocument(ConversationDocument* document);
+    [[nodiscard]] eve::Result<void> applyDocumentChecked(ConversationDocument* document);
 
     /**
      * @brief Start a conversation after validating script bindings.
@@ -160,8 +169,6 @@ public:
      * Does not invoke integration callbacks.
      */
     [[nodiscard]] eve::Result<void> startChecked(const std::string& id, ssq::Object bindings);
-    /** @brief Compatibility-only bool projection of startChecked. */
-    bool start(const std::string& id, ssq::Object bindings);
     /**
      * @brief Advance the active conversation with a structured runner diagnostic.
      * @return Applied on
@@ -170,8 +177,6 @@ public:
      * @reentrancy May synchronously invoke configured command handlers.
      */
     [[nodiscard]] eve::Result<void> advanceChecked();
-    /** @brief Compatibility-only bool projection of advanceChecked. */
-    bool advance();
     /**
      * @brief Resume the exact asynchronous command currently owned by the runner.
      * @param requestId Stable id returned by getPendingCommandRequestId().
@@ -210,15 +215,17 @@ public:
     void                            setManualCommandMode(bool enabled);
 
     /** @brief Register one pure Squirrel evaluator receiving {expression,bindings,locals}. */
-    bool setExpressionEvaluator(ssq::Object fn);
+    /** @brief Install the checked pure-expression callback used by branch evaluation. */
+    [[nodiscard]] eve::Result<void> setExpressionEvaluatorChecked(ssq::Object fn);
     void clearExpressionEvaluator();
 
-    bool        captureState(StateValue& out) const { return runner_.captureState(out); }
-    bool        restoreState(const StateValue& in, std::string* error = nullptr);
-    std::string captureStateJson() const;
-    bool        restoreStateJson(const std::string& json);
-    bool        registerMigration(const std::string& assetId, int fromVersion, const std::string& currentAssetId,
-                                  const std::string& nodeMap);
+    [[nodiscard]] eve::Result<StateValue> captureStateChecked() const { return runner_.captureStateChecked(); }
+    [[nodiscard]] eve::Result<void> restoreStateChecked(const StateValue& in);
+    [[nodiscard]] eve::Result<std::string> captureStateJsonChecked() const;
+    [[nodiscard]] eve::Result<void> restoreStateJsonChecked(const std::string& json);
+    [[nodiscard]] eve::Result<void> registerMigrationChecked(const std::string& assetId, int fromVersion,
+                                                             const std::string& currentAssetId,
+                                                             const std::string& nodeMap);
     void        clearMigrations() { migrations_.clear(); }
     void        addToneRule(const std::string& expression, const std::string& prefix, const std::string& suffix,
                             const std::string& find, const std::string& replacement);
@@ -228,7 +235,7 @@ private:
     int loadDnutImpl(const std::string& source, const std::string& sourceId);
     int reloadDnutImpl(const std::string& source, const std::string& sourceId);
     int loadDnutFileImpl(const std::string& path);
-    int                      mergeImported(std::vector<ConversationAsset> imported);
+    [[nodiscard]] eve::Result<int> mergeImported(std::vector<ConversationAsset> imported);
     const ConversationAsset* find(const std::string& id) const;
     [[nodiscard]] eve::Result<StateValue> evaluate(const std::string& expression, const StateValue& bindings,
                                                    const StateValue& locals);

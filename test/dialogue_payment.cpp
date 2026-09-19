@@ -137,8 +137,8 @@ TEST_CASE("dialoguePayment.choiceUsesTheSameAtomicFacade") {
     config.accounts.money      = &money;
     config.accounts.reputation = &reputation;
     flow.configureIntegration(std::move(config));
-    REQUIRE(flow.applyDocument(&document));
-    CHECK(flow.start(asset.id, ssq::Object{}));
+    REQUIRE(flow.applyDocumentChecked(&document).ok());
+    CHECK(flow.startChecked(asset.id, ssq::Object{}).ok());
     CHECK(flow.select("buy").ok());
     CHECK(ledger.get("gold") == 15);
     CHECK(attributes.getBase("reputation") == 8.0);

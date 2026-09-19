@@ -26,11 +26,12 @@ TEST_CASE("dialoguePersistence.jsonRoundtrip") {
     array.pushBack(StateValue::boolean(true));
     array.pushBack(StateValue::number(2.5));
     state.set("values", std::move(array));
-    std::string error;
-    const auto  json = conversationStateToJson(state, &error);
-    REQUIRE(!json.empty());
-    StateValue restored;
-    CHECK(conversationStateFromJson(json, restored, &error));
+    auto encoded = conversationStateToJson(state);
+    REQUIRE(encoded.ok());
+    const auto json = std::move(encoded).takeValue();
+    auto decoded = conversationStateFromJson(json);
+    REQUIRE(decoded.ok());
+    StateValue restored = std::move(decoded).takeValue();
     CHECK(restored == state);
 }
 
@@ -50,24 +51,27 @@ TEST_CASE("dialoguePersistence.migratesCurrentAndCallFrames") {
         return nullptr;
     });
     std::string error;
-    REQUIRE(runner.start(&oldParent, StateValue::object(), &error));
-    StateValue saved;
-    REQUIRE(runner.captureState(saved));
+    REQUIRE(runner.startChecked(&oldParent, StateValue::object()).ok());
+    auto captured = runner.captureStateChecked();
+    REQUIRE(captured.ok());
+    StateValue saved = std::move(captured).takeValue();
 
     ConversationSaveMigrations migrations;
-    CHECK(migrations.registerMigration("common.child", 1, "common.child.v2", "line:line-renamed", &error));
-    CHECK(migrations.registerMigration("scene.parent", 1, "scene.parent", "after:after-renamed", &error));
+    CHECK(migrations.registerMigration("common.child", 1, "common.child.v2", "line:line-renamed").ok());
+    CHECK(migrations.registerMigration("scene.parent", 1, "scene.parent", "after:after-renamed").ok());
     const auto resolveCurrent = [&](const std::string& id) -> const ConversationAsset* {
         if (id == currentParent.id) return &currentParent;
         if (id == currentChild.id) return &currentChild;
         return nullptr;
     };
-    CHECK(migrations.migrate(saved, resolveCurrent, &error));
+    auto migrated = migrations.migrate(saved, resolveCurrent);
+    REQUIRE(migrated.ok());
+    saved = std::move(migrated).takeValue();
     ConversationRunner restored;
     restored.setAssetResolver(resolveCurrent);
-    CHECK(restored.restoreState(saved, &error));
+    CHECK(restored.restoreStateChecked(saved).ok());
     CHECK(restored.currentNodeId() == "line-renamed");
-    CHECK(restored.advance(&error));
+    CHECK(restored.advanceChecked().ok());
     CHECK(restored.currentNodeId() == "after-renamed");
 }
 
@@ -76,6 +80,7 @@ TEST_CASE("dialoguePersistence.rejectsLegacyUnversionedState") {
     StateValue         legacy = StateValue::object();
     legacy.set("active", StateValue::boolean(false));
     std::string error;
-    CHECK(!runner.restoreState(legacy, &error));
-    CHECK(error.find("unsupported runner save schema") != std::string::npos);
+    auto rejected = runner.restoreStateChecked(legacy);
+    CHECK(!rejected.ok());
+    CHECK_EQ(static_cast<int>(rejected.error()->code()), static_cast<int>(eve::DiagnosticCode::UnknownVersion));
 }

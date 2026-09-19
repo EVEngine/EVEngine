@@ -23,15 +23,12 @@ std::string csv(std::string value) {
 
 }  // namespace
 
-bool compileDnutConversations(const std::string& source, const std::string& path,
-                              std::vector<ConversationAsset>& assets,
-                              std::vector<ConversationDiagnostic>& diagnostics) {
-    DnutDocument document;
+eve::Result<std::vector<ConversationAsset>> compileDnutConversations(
+    const std::string& source, const std::string& path, std::vector<ConversationDiagnostic>& diagnostics) {
     auto compiled = compileDnutDocument(source, path, diagnostics);
-    if (!compiled) return false;
-    document = std::move(compiled).takeValue();
-    assets = std::move(document.conversations);
-    return true;
+    if (!compiled) return eve::Result<std::vector<ConversationAsset>>::failure(compiled.status());
+    DnutDocument document = std::move(compiled).takeValue();
+    return eve::Result<std::vector<ConversationAsset>>::success(std::move(document.conversations));
 }
 
 eve::Result<DnutDocument> compileDnutDocument(const std::string& source, const std::string& path,
@@ -41,29 +38,28 @@ eve::Result<DnutDocument> compileDnutDocument(const std::string& source, const s
         return eve::Result<DnutDocument>::failure(parsed.status());
     }
     DnutDocument document = std::move(parsed).takeValue();
-    if (!lintConversations(document.conversations, path, diagnostics)) {
-        const std::string message = diagnostics.empty() ? "dnut compilation failed" : diagnostics.front().message;
-        return eve::Result<DnutDocument>::failure(eve::Diagnostic::error(
-            eve::DiagnosticCode::InvalidArgument, message, path, {}, "dialogue.dnut.compile"));
-    }
+    auto linted = lintConversations(document.conversations, path, diagnostics);
+    if (!linted) return eve::Result<DnutDocument>::failure(linted.status());
     return eve::Result<DnutDocument>::success(std::move(document));
 }
 
-bool lintConversations(const std::vector<ConversationAsset>& assets, const std::string& path,
-                       std::vector<ConversationDiagnostic>& diagnostics) {
+eve::Result<void> lintConversations(const std::vector<ConversationAsset>& assets, const std::string& path,
+                                    std::vector<ConversationDiagnostic>& diagnostics) {
     bool valid = true;
     std::unordered_set<std::string> assetIds;
     for (const auto& asset : assets) {
         if (!assetIds.insert(asset.id).second) {
-            diagnostics.push_back({ConversationDiagnostic::Severity::Error, path, 0,
-                                   "duplicate conversation id '" + asset.id + "'", "DuplicateAssetId", 0,
+            diagnostics.push_back({ConversationDiagnostic::Severity::Error, path, asset.sourceLine,
+                                   "duplicate conversation id '" + asset.id + "'", "DuplicateAssetId",
+                                   asset.sourceColumn,
                                    asset.id});
             valid = false;
         }
-        std::string error;
-        if (!asset.validate(&error)) {
+        auto validated = asset.validate();
+        if (!validated) {
             diagnostics.push_back(
-                {ConversationDiagnostic::Severity::Error, path, 0, error, "InvalidConversation", 0, asset.id});
+                {ConversationDiagnostic::Severity::Error, path, asset.sourceLine, validated.status().describe(),
+                 "InvalidConversation", asset.sourceColumn, asset.id});
             valid = false;
             continue;
         }
@@ -81,10 +77,10 @@ bool lintConversations(const std::vector<ConversationAsset>& assets, const std::
         }
         for (const auto& node : asset.nodes) {
             if (reached.find(node.id) == reached.end())
-                diagnostics.push_back({ConversationDiagnostic::Severity::Warning, path, 0,
+                diagnostics.push_back({ConversationDiagnostic::Severity::Warning, path, node.sourceLine,
                                        "conversation '" + asset.id + "': unreachable node '" +
                                            node.id + "'",
-                                       "UnreachableNode", 0, asset.id + "/" + node.id});
+                                       "UnreachableNode", node.sourceColumn, asset.id + "/" + node.id});
         }
 
         std::unordered_set<std::string> canExit;
@@ -110,15 +106,21 @@ bool lintConversations(const std::vector<ConversationAsset>& assets, const std::
             }
         }
         if (!canExit.contains(asset.entry) && allReachableHaveOutgoing) {
-            diagnostics.push_back({ConversationDiagnostic::Severity::Error, path, 0,
+            diagnostics.push_back({ConversationDiagnostic::Severity::Error, path, asset.sourceLine,
                                    "conversation '" + asset.id + "' contains a reachable loop with no exit",
-                                   "NoExitLoop", 0, asset.id});
+                                   "NoExitLoop", asset.sourceColumn, asset.id});
             valid = false;
         }
     }
-    return valid && std::none_of(diagnostics.begin(), diagnostics.end(), [](const auto& item) {
-               return item.severity == ConversationDiagnostic::Severity::Error;
-           });
+    valid = valid && std::none_of(diagnostics.begin(), diagnostics.end(), [](const auto& item) {
+        return item.severity == ConversationDiagnostic::Severity::Error;
+    });
+    if (!valid) {
+        const std::string message = diagnostics.empty() ? "conversation lint failed" : diagnostics.front().message;
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, message, path, {}, "dialogue.lint"));
+    }
+    return eve::Result<void>::success();
 }
 
 std::string exportConversationLocalizationCsv(const std::vector<ConversationAsset>& assets) {

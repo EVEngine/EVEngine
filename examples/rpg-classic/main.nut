@@ -440,7 +440,8 @@ function loadDialogueContent(reload = false) {
     if (source == null) { print("rpg-classic: dialogue source missing\n"); return false; }
     local loaded = reload ? dialogueFlow.reloadDnutChecked(source, "data/village-dialogue.dnut")
                           : dialogueFlow.loadDnutChecked(source, "data/village-dialogue.dnut");
-    if (!loaded.ok || loaded.value <= 0 || !dialogueFlow.lintAll()) {
+    local linted = dialogueFlow.lintAllChecked();
+    if (!loaded.ok || loaded.value <= 0 || !linted.ok) {
         reportDialogueDiagnostics();
         return false;
     }
@@ -571,7 +572,8 @@ function restoreNarrativeContent(previousQuest, previousDialogue, previousShop, 
     }
     if (previousDialogue != null) {
         local loaded = dialogueFlow.reloadDnutChecked(previousDialogue, "data/village-dialogue.dnut");
-        if (!loaded.ok || loaded.value <= 0 || !dialogueFlow.lintAll()) {
+        local linted = dialogueFlow.lintAllChecked();
+        if (!loaded.ok || loaded.value <= 0 || !linted.ok) {
             print("rpg-classic: fatal dialogue catalogue rollback failure\n");
             reportDialogueDiagnostics();
             restored = false;

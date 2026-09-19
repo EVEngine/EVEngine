@@ -13,13 +13,13 @@ namespace eve::dialogue {
     const std::string& source, const std::string& path, std::vector<ConversationDiagnostic>& diagnostics);
 
 /** @brief Compile parameterized conversation blocks embedded in .dnut text. */
-bool compileDnutConversations(const std::string& source, const std::string& path,
-                              std::vector<ConversationAsset>& assets,
-                              std::vector<ConversationDiagnostic>& diagnostics);
+[[nodiscard]] eve::Result<std::vector<ConversationAsset>> compileDnutConversations(
+    const std::string& source, const std::string& path, std::vector<ConversationDiagnostic>& diagnostics);
 
 /** @brief Validate references and report unreachable nodes. */
-bool lintConversations(const std::vector<ConversationAsset>& assets, const std::string& path,
-                       std::vector<ConversationDiagnostic>& diagnostics);
+[[nodiscard]] eve::Result<void> lintConversations(const std::vector<ConversationAsset>& assets,
+                                                  const std::string& path,
+                                                  std::vector<ConversationDiagnostic>& diagnostics);
 
 /** @brief Export stable line IDs and localization keys as RFC4180 CSV. */
 std::string exportConversationLocalizationCsv(const std::vector<ConversationAsset>& assets);

@@ -49,9 +49,10 @@ node unused command kind=operation target="quest.accept" result="accepted" mutat
 node end end
 }
 )DNUT";
-    std::vector<ConversationAsset> assets;
     std::vector<ConversationDiagnostic> diagnostics;
-    CHECK(compileDnutConversations(source, "greeting.dnut", assets, diagnostics));
+    auto compiled = compileDnutConversations(source, "greeting.dnut", diagnostics);
+    REQUIRE(compiled.ok());
+    auto assets = std::move(compiled).takeValue();
     CHECK(assets.size() == 1);
     CHECK(assets[0].version == 3);
     CHECK(assets[0].findNode("decide")->routes[0].first == "friendly");

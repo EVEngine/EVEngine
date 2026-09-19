@@ -174,7 +174,11 @@ bool ConversationDocument::removeNode(const std::string& nodeId) {
 
 bool ConversationDocument::renameNode(const std::string& oldId, const std::string& newId) {
     std::vector<ConversationAsset> assets{asset_};
-    if (!renameConversationNode(assets, asset_.id, oldId, newId, &failureMessage_)) return false;
+    auto renamed = renameConversationNode(assets, asset_.id, oldId, newId);
+    if (!renamed) {
+        failureMessage_ = renamed.status().describe();
+        return false;
+    }
     asset_ = std::move(assets.front());
     return true;
 }
@@ -225,7 +229,7 @@ std::string ConversationDocument::getField(const std::string& nodeId, const std:
     if (field == "expression") return node->expression;
     if (field == "target") return node->target;
     if (field == "returnNode") return node->returnNode;
-    if (field == "arguments") return conversationStateToJson(node->arguments);
+    if (field == "arguments") return std::move(conversationStateToJson(node->arguments)).valueOr({});
     return {};
 }
 
@@ -251,10 +255,14 @@ bool ConversationDocument::setField(const std::string& nodeId, const std::string
     else if (field == "returnNode")
         node->returnNode = value;
     else if (field == "arguments") {
-        StateValue parsed;
-        if (!conversationStateFromJson(value, parsed, &failureMessage_)) return false;
-        if (!parsed.isObject()) return fail("arguments must be a JSON object");
-        node->arguments = std::move(parsed);
+        auto parsed = conversationStateFromJson(value);
+        if (!parsed) {
+            failureMessage_ = parsed.status().describe();
+            return false;
+        }
+        StateValue arguments = std::move(parsed).takeValue();
+        if (!arguments.isObject()) return fail("arguments must be a JSON object");
+        node->arguments = std::move(arguments);
     } else {
         return fail("unknown node field: " + field);
     }
@@ -307,7 +315,7 @@ bool ConversationDocument::removeRoute(const std::string& nodeId, int index) {
 
 bool ConversationDocument::validate() {
     diagnostics_.clear();
-    const bool valid = lintConversations({asset_}, asset_.id, diagnostics_);
+    const bool valid = lintConversations({asset_}, asset_.id, diagnostics_).ok();
     failureMessage_  = valid || diagnostics_.empty() ? std::string{} : diagnostics_.front().message;
     return valid;
 }

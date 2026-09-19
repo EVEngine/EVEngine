@@ -190,25 +190,25 @@ node end end
 `kind` 支持 `set/remove/addTag/removeTag/addNumber`；未知字段、缺失 subject/key、类型错误以及
 不适用于该 kind 的 value 都是编译错误，不会降级或静默忽略。
 
-- 内容：`loadDnutChecked/loadDnutFileChecked`、`importYarn/importTwee`、`clear`、
+- 内容：`loadDnutChecked/loadDnutFileChecked`、`importYarnChecked/importTweeChecked`、`clear`、
   `getConversationCount()`、`getConversationId(index)`、`hasConversation`；失败详情通过诊断查询 API 获取。
 - 外部格式：Yarn Spinner 节点和 Twine Twee 3 passages 会转换为相同的稳定节点模型；
   角色前缀、参数占位符、双向 Twine 链接、Yarn shortcut options、`jump/stop/wait/call/set`
   命令以及 `#line:/#voice:` 标签都会保留，并进入统一的引用校验流程。Twee 的
   `StoryTitle/StoryData` 元数据 passages 会自动忽略。
-- 校验：`getDiagnosticCount`、`getDiagnosticSeverity/getDiagnosticPath/getDiagnosticLine/getDiagnosticMessage`；编译检查
+- 校验：`getDiagnosticCount`、`getDiagnosticSeverity/getDiagnosticCode/getDiagnosticPath/getDiagnosticLine/getDiagnosticColumn/getDiagnosticAssetPath/getDiagnosticMessage`；编译检查
   重复或缺失 ID、无效引用，并报告不可达节点。
 - 工具链：相同 source ID、相同内容的 `loadDnutChecked` 会命中内存增量缓存，
-  `getLastLoadChanged()` 可判断是否重编译；`removeSource(path)` 卸载该来源产生的资产；
-  `lintAll()` 批量检查全库并验证跨文件 call；`renameConversation/renameNode` 自动改写引用，
+  `getLastLoadChanged()` 可判断是否重编译；`removeSourceChecked(path)` 卸载该来源产生的资产；
+  `lintAllChecked()` 批量检查全库并验证跨文件 call；`renameConversationChecked/renameNodeChecked` 自动改写引用，
   同时提升资产版本以显式拒绝不兼容的旧执行游标。
 - 热重载：`reloadDnutChecked(source, sourceId)` 在临时工作区编译并执行全库跨文件引用校验；
   编译、引用校验或活动游标迁移任一失败时，会保留旧资产和旧执行位置。成功时则结合
-  `registerMigration` 恢复当前对话和全部调用栈。普通 `loadDnutChecked` 仍允许按任意顺序初次
-  装入互相引用的文件，全部装入后用 `lintAll()` 做一次完整校验。
+  `registerMigrationChecked` 恢复当前对话和全部调用栈。普通 `loadDnutChecked` 仍允许按任意顺序初次
+  装入互相引用的文件，全部装入后用 `lintAllChecked()` 做一次完整校验。
 - 本地化：`exportLocalizationCsv()` 返回带 conversation/node 稳定 ID、i18n key、
   speaker、源文和 voice key 的 RFC4180 CSV。
-- 回导与配音：`importLocalizationCsv(csv, defaultLocale)` 接受 `i18n_key/locale/translation`
+- 回导与配音：`importLocalizationCsvChecked(csv, defaultLocale)` 接受 `i18n_key/locale/translation`
   以及可选的 `voice/status/duration` 列；`setLocale/getLocale` 控制当前语言，读取当前
   `getText/getVoice` 时按精确 locale、语言代码、默认 locale 依次回退。
   `exportMissingLocalizationCsv(locale)` 生成待翻译清单，
@@ -227,12 +227,12 @@ node end end
   `getRouteCount/getRouteId/getRouteText`。route ID 是稳定控制标识，显示文本与 i18n key 独立。
 - 手动异步桥：`setManualCommandMode(true)` 让没有原生 handler 的 command 明确进入 blocked，
   供脚本在外部工作完成后用 `resumeCommandChecked` 恢复；关闭后缺失 handler 仍是运行错误。
-- 复杂条件：`setExpressionEvaluator(fn)` 注册纯计算函数，fn 接收
+- 复杂条件：`setExpressionEvaluatorChecked(fn)` 注册纯计算函数，fn 接收
   `{ expression, bindings, locals }` 并返回 bool 或结构化值；
   `clearExpressionEvaluator` 解除注册。表达式文本不会被编译器限制成简单比较式。
-- 脚本存档：`captureStateJson()` 返回可直接交给项目存档系统的 JSON；
-  `restoreStateJson(json)` 恢复当前节点、参数、局部值和完整的子对话调用栈。
-  资产升级后用 `registerMigration(oldAssetId, oldVersion, currentAssetId, nodeMap)`
+- 脚本存档：`captureStateJsonChecked()` 返回包含 JSON 的结构化 Result；
+  `restoreStateJsonChecked(json)` 恢复当前节点、参数、局部值、pending command 和完整调用栈。
+  资产升级后用 `registerMigrationChecked(oldAssetId, oldVersion, currentAssetId, nodeMap)`
   显式登记迁移，其中 `nodeMap` 是逗号分隔的 `old:new` 对；未改名的稳定节点无需列出。
   迁移会事务式覆盖当前帧和全部调用帧，任何缺失规则或目标节点都会拒绝恢复；
   `clearMigrations()` 清除规则。
@@ -240,18 +240,18 @@ node end end
   渲染 `{speaker.name}` 等路径；支持 `{path??fallback}`，以及 `|upper`、`|lower`、
   `|capitalize` 修饰。找不到且没有 fallback 的占位符会原样保留，便于内容 QA 发现缺参。
 - 人物语气：`addToneRule(expression, prefix, suffix, find, replacement)` 添加有序规则；
-  expression 复用 `setExpressionEvaluator`，因此可以读取人物性格、关系、疲劳或剧情状态，
+  expression 复用 `setExpressionEvaluatorChecked`，因此可以读取人物性格、关系、疲劳或剧情状态，
   对渲染后的文本加前后缀或做词语替换。多个命中规则依次叠加，
   `clearToneRules()` 可在场景或角色配置切换时清空。
 
 Runner 在 line、choice、wait 和异步 command 边界暂停；C++ API 的
-`captureState/restoreState` 保存资产版本、node ID、bindings、locals 和子对话调用栈。
+`captureStateChecked/restoreStateChecked` 保存资产版本、node ID、bindings、locals 和子对话调用栈。
 
 ### `ConversationDocument`（可组合编辑数据）
 
 引擎不内置固定的对话编辑器。`dialogueFlow.newDocument(id)` 创建 UI 无关的可变图文档，
 `getDocument(id)` 返回运行资产的可编辑副本；项目可用任意 MVVM/UI 组件组合节点列表、
-画布、Inspector、诊断面板与游戏内剧情工具。只有 `applyDocument(document)` 校验整个工作区
+画布、Inspector、诊断面板与游戏内剧情工具。只有 `applyDocumentChecked(document)` 校验整个工作区
 成功后才事务式替换运行资产。
 
 ```squirrel
@@ -267,7 +267,7 @@ for (local i = 0; i < doc.getFieldCount("welcome"); ++i) {
     local hint = doc.getFieldKind("welcome", i); // string|multiline|node|asset|json
     // viewModel.addEditor(key, hint, doc.getField("welcome", key));
 }
-if (doc.validate()) dialogueFlow.applyDocument(doc);
+if (doc.validate()) dialogueFlow.applyDocumentChecked(doc);
 ```
 
 - 文档：`getId/setId`、`getVersion/setVersion`、`getEntry/setEntry`、
@@ -278,9 +278,9 @@ if (doc.validate()) dialogueFlow.applyDocument(doc);
   `arguments` 字段以 JSON object 编辑，其余字段为字符串或资源/节点引用。
 - 连线：`getRouteCount/getRouteLabel/getRouteTarget/addRoute/setRoute/removeRoute`；
   route 适用于 branch 与 choice，节点改名或删除会同步维护引用。
-- 结构化诊断：`validate`、`getDiagnosticCount/getDiagnosticSeverity/getDiagnosticPath`
-  `/getDiagnosticLine/getDiagnosticMessage`。
-- Registry 桥接：`DialogueFlow.newDocument/getDocument/applyDocument`。文档只是数据类，
+- 结构化诊断：`validate`、`getDiagnosticCount/getDiagnosticSeverity/getDiagnosticCode/getDiagnosticPath`
+  `/getDiagnosticLine/getDiagnosticColumn/getDiagnosticAssetPath/getDiagnosticMessage`。
+- Registry 桥接：`DialogueFlow.newDocument/getDocument/applyDocumentChecked`。文档只是数据类，
   不依赖 editor 或 ui 模块，因此同一资产可被桌面编辑器、游戏内工具、自动化生成器和测试复用。
 
 ## 生命周期

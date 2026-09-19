@@ -79,8 +79,13 @@ public:
         } catch (const ParseError& e) {
             const int line = toks_.empty() ? 1 : cur().line;
             const int column = toks_.empty() ? 1 : cur().column;
+            const std::string message = e.what();
+            const std::string code = message.find("不支持的 dnut") != std::string::npos
+                                         ? "UnsupportedSchemaVersion"
+                                         : (message.find("未知") != std::string::npos ? "UnknownField"
+                                                                                     : "DnutParseError");
             diagnostics.push_back({ConversationDiagnostic::Severity::Error, path_, line, e.what(),
-                                   "DnutParseError", column, {}});
+                                   code, column, {}});
             return false;
         }
     }
@@ -585,8 +590,11 @@ private:
 
     ConversationRoute parseRoute() {
         const int line = cur().line;
+        const int column = cur().column;
         expectIdent("route");
         ConversationRoute route;
+        route.sourceLine = line;
+        route.sourceColumn = column;
         route.first = expectIdent("稳定 route ID");
         route.id = route.first;
         bool hasTarget = false;
@@ -616,8 +624,11 @@ private:
 
     ConversationAsset::Node parseNode() {
         const int line = cur().line;
+        const int column = cur().column;
         expectIdent("node");
         ConversationAsset::Node node;
+        node.sourceLine = line;
+        node.sourceColumn = column;
         node.id = expectIdent("node ID");
         const std::string kind = expectIdent("node 类型");
         if (kind == "line") node.kind = ConversationAsset::Node::Kind::Line;
@@ -643,8 +654,11 @@ private:
 
     ConversationAsset parseConversation() {
         const int declarationLine = cur().line;
+        const int declarationColumn = cur().column;
         expectIdent("conversation");
         ConversationAsset asset;
+        asset.sourceLine = declarationLine;
+        asset.sourceColumn = declarationColumn;
         asset.id = expectIdent("conversation ID");
         while (cur().kind != Tok::Eof && cur().line == declarationLine && !isPunct("{")) {
             const std::string key = expectIdent("conversation 字段");
@@ -660,11 +674,14 @@ private:
             if (!isIdent()) fail("conversation 内期望 parameter 或 node");
             if (cur().value == "parameter") {
                 const int line = cur().line;
+                const int column = cur().column;
                 adv();
                 const std::string name = expectIdent("parameter 名称");
                 const std::string type = expectIdent("parameter 类型");
                 ConversationAsset::Parameter parameter;
                 parameter.name = name;
+                parameter.sourceLine = line;
+                parameter.sourceColumn = column;
                 if (type != "string" && type != "int" && type != "float" && type != "bool")
                     fail("未知 parameter 类型 '" + type + "'");
                 if (type == "string") parameter.type = ConversationAsset::Parameter::Type::String;

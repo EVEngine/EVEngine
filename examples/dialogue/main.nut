@@ -109,8 +109,9 @@ function presentFlowNode() {
         pendingCommandTime = 0.8;
         dlg.narrate("[async command] 正在准备资源…");
         if (!restoredCommandOnce) {
-            local saved = dialogueFlow.captureStateJson();
-            restoredCommandOnce = dialogueFlow.restoreStateJson(saved);
+            local saved = dialogueFlow.captureStateJsonChecked();
+            local restored = saved.ok ? dialogueFlow.restoreStateJsonChecked(saved.value) : null;
+            restoredCommandOnce = restored != null && restored.ok;
         }
     }
 }
@@ -254,7 +255,9 @@ function eve_init() {
         throw "dialogue: failed to load canonical dnut workspace";
     dialogueFlow.setLocale(i18n.getLanguage());
     dialogueFlow.setManualCommandMode(true);
-    dialogueFlow.setExpressionEvaluator(function(ctx) { return true; });
+    local evaluatorResult = dialogueFlow.setExpressionEvaluatorChecked(function(ctx) { return true; });
+    if (reportFlowFailure(evaluatorResult, "set expression evaluator"))
+        throw "dialogue: failed to install expression evaluator";
     dlg.setVar("name", tr("name.player"), "global");
     dlg.setVar("mood", "happy", "global");
     dlg.setVar("hour", 20, "global");

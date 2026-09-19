@@ -21,10 +21,10 @@ const ConversationAsset::Node* ConversationAsset::findNode(const std::string& no
     return nullptr;
 }
 
-bool ConversationAsset::validate(std::string* error) const {
+eve::Result<void> ConversationAsset::validate() const {
     const auto fail = [&](const std::string& message) {
-        if (error) *error = "conversation '" + id + "': " + message;
-        return false;
+        return runnerFailure(eve::DiagnosticCode::InvalidArgument,
+                             "conversation '" + id + "': " + message, id);
     };
     if (id.empty()) return fail("missing id");
     if (entry.empty()) return fail("missing entry node");
@@ -42,12 +42,15 @@ bool ConversationAsset::validate(std::string* error) const {
         if (!ids.insert(node.id).second) return fail("duplicate node id '" + node.id + "'");
     }
     if (!findNode(entry)) return fail("entry node '" + entry + "' does not exist");
-    const auto checkRef = [&](const std::string& owner, const std::string& ref) {
-        return ref.empty() || findNode(ref) ? true : fail("node '" + owner + "' references missing node '" + ref + "'");
+    const auto checkRef = [&](const std::string& owner, const std::string& ref) -> eve::Result<void> {
+        if (ref.empty() || findNode(ref)) return eve::Result<void>::success();
+        return fail("node '" + owner + "' references missing node '" + ref + "'");
     };
     for (const auto& node : nodes) {
-        if (!checkRef(node.id, node.next)) return false;
-        if (!checkRef(node.id, node.returnNode)) return false;
+        auto nextValid = checkRef(node.id, node.next);
+        if (!nextValid) return eve::Result<void>::failure(nextValid.status());
+        auto returnValid = checkRef(node.id, node.returnNode);
+        if (!returnValid) return eve::Result<void>::failure(returnValid.status());
         auto paymentValid = node.payment.validate();
         if (!paymentValid) {
             const auto* diagnostic = paymentValid.error();
@@ -67,10 +70,11 @@ bool ConversationAsset::validate(std::string* error) const {
                 return fail("route payment is only valid for choice nodes");
             if (!route.stateMutations.empty() && node.kind != ConversationAsset::Node::Kind::Choice)
                 return fail("route state mutations are only valid for choice nodes");
-            if (!checkRef(node.id, route.second)) return false;
+            auto routeValid = checkRef(node.id, route.second);
+            if (!routeValid) return eve::Result<void>::failure(routeValid.status());
         }
     }
-    return true;
+    return eve::Result<void>::success();
 }
 
 bool ConversationRunner::fail(std::string* error, const std::string& message) const {
@@ -78,11 +82,12 @@ bool ConversationRunner::fail(std::string* error, const std::string& message) co
     return false;
 }
 
-bool ConversationRunner::start(const ConversationAsset* asset, StateValue bindings,
-                               std::string* error) {
+bool ConversationRunner::startImpl(const ConversationAsset* asset, StateValue bindings,
+                                   std::string* error) {
     if (!asset) return fail(error, "conversation: null asset");
     if (!bindings.isObject()) return fail(error, "conversation: bindings must be an object");
-    if (!asset->validate(error)) return false;
+    auto validated = asset->validate();
+    if (!validated) return fail(error, validated.status().describe());
     StateValue resolvedBindings = bindings;
     for (const auto& parameter : asset->parameters) {
         const StateValue* value = resolvedBindings.find(parameter.name);
@@ -116,7 +121,29 @@ bool ConversationRunner::start(const ConversationAsset* asset, StateValue bindin
     lastConditionResult_.reset();
     lastCommandRequest_.reset();
     emit(Event::Kind::Started);
-    return enter(asset_->entry, error) && runUntilBlocked(error);
+    return enter(asset_->entry, error) && runUntilBlockedImpl(error);
+}
+
+eve::Result<void> ConversationRunner::startChecked(const ConversationAsset* asset, StateValue bindings) {
+    StateValue before;
+    captureStateImpl(before);
+    std::string error;
+    if (startImpl(asset, std::move(bindings), &error)) return eve::Result<void>::success();
+    std::string ignored;
+    restoreStateImpl(before, &ignored);
+    return runnerFailure(eve::DiagnosticCode::InvalidArgument,
+                         error.empty() ? "conversation: start failed" : std::move(error), "start");
+}
+
+eve::Result<void> ConversationRunner::runUntilBlockedChecked() {
+    StateValue before;
+    captureStateImpl(before);
+    std::string error;
+    if (runUntilBlockedImpl(&error)) return eve::Result<void>::success();
+    std::string ignored;
+    restoreStateImpl(before, &ignored);
+    return runnerFailure(eve::DiagnosticCode::Failed,
+                         error.empty() ? "conversation: execution failed" : std::move(error), "cursor");
 }
 
 void ConversationRunner::stop() {
@@ -203,7 +230,7 @@ std::string ConversationRunner::evaluateRoute(const ConversationAsset::Node& nod
     return node.next;
 }
 
-bool ConversationRunner::runUntilBlocked(std::string* error) {
+bool ConversationRunner::runUntilBlockedImpl(std::string* error) {
     int budget = 10000;
     while (asset_ && budget-- > 0) {
         const auto* node = currentNode();
@@ -246,8 +273,8 @@ bool ConversationRunner::runUntilBlocked(std::string* error) {
                 const ConversationAsset* target = assetResolver_(node->target);
                 if (!target)
                     return fail(error, "conversation: missing called asset '" + node->target + "'");
-                std::string validationError;
-                if (!target->validate(&validationError)) return fail(error, validationError);
+                auto validated = target->validate();
+                if (!validated) return fail(error, validated.status().describe());
                 Frame frame;
                 frame.asset = asset_;
                 frame.returnNode = node->returnNode.empty() ? node->next : node->returnNode;
@@ -336,7 +363,7 @@ StateValue captureFrame(const ConversationAsset* asset, const std::string& node,
 
 }  // namespace
 
-bool ConversationRunner::captureState(StateValue& out) const {
+bool ConversationRunner::captureStateImpl(StateValue& out) const {
     out = StateValue::object();
     out.set("schema", StateValue::string(std::string(SaveSchema)));
     out.set("schemaVersion", StateValue::integer(SaveVersion));
@@ -354,7 +381,7 @@ bool ConversationRunner::captureState(StateValue& out) const {
     return true;
 }
 
-bool ConversationRunner::restoreState(const StateValue& in, std::string* error) {
+bool ConversationRunner::restoreStateImpl(const StateValue& in, std::string* error) {
     if (!in.isObject()) return fail(error, "conversation: runner state must be an object");
     const StateValue* schema        = in.find("schema");
     const StateValue* schemaVersion = in.find("schemaVersion");
@@ -450,6 +477,34 @@ bool ConversationRunner::restoreState(const StateValue& in, std::string* error) 
     return true;
 }
 
+eve::Result<StateValue> ConversationRunner::captureStateChecked() const {
+    StateValue state;
+    if (!captureStateImpl(state))
+        return eve::Result<StateValue>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::SerializationError, "conversation: runner state capture failed", "runner.save",
+            {}, "dialogue.persistence"));
+    return eve::Result<StateValue>::success(std::move(state));
+}
+
+eve::Result<void> ConversationRunner::restoreStateChecked(const StateValue& in) {
+    const StateValue* schema = in.isObject() ? in.find("schema") : nullptr;
+    const StateValue* version = in.isObject() ? in.find("schemaVersion") : nullptr;
+    if (!schema || !schema->isString() || schema->asString() != SaveSchema || !version || !version->isInt() ||
+        version->asInt() != SaveVersion) {
+        return runnerFailure(eve::DiagnosticCode::UnknownVersion,
+                             "conversation: unsupported runner save schema or version", "runner.schemaVersion");
+    }
+    StateValue before;
+    captureStateImpl(before);
+    std::string error;
+    if (restoreStateImpl(in, &error)) return eve::Result<void>::success();
+    std::string ignored;
+    restoreStateImpl(before, &ignored);
+    return runnerFailure(eve::DiagnosticCode::SerializationError,
+                         error.empty() ? "conversation: runner state restore failed" : std::move(error),
+                         "runner.save");
+}
+
 eve::Result<void> ConversationRunner::resumeCommand(const std::string& requestId, StateValue result) {
     const auto* node = currentNode();
     if (!node || !blocked_ || !waitingCommand_ ||
@@ -461,15 +516,15 @@ eve::Result<void> ConversationRunner::resumeCommand(const std::string& requestId
                              "conversation: command request id is stale or does not match", "command.requestId");
 
     StateValue before;
-    if (!captureState(before))
+    if (!captureStateImpl(before))
         return runnerFailure(eve::DiagnosticCode::Failed, "conversation: could not capture command state", "command");
     if (!node->expression.empty()) locals_.set(node->expression, std::move(result));
     std::string error;
-    if (enter(node->next, &error) && runUntilBlocked(&error))
+    if (enter(node->next, &error) && runUntilBlockedImpl(&error))
         return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
 
     std::string restoreError;
-    if (!restoreState(before, &restoreError) && error.empty()) error = restoreError;
+    if (!restoreStateImpl(before, &restoreError) && error.empty()) error = restoreError;
     return runnerFailure(eve::DiagnosticCode::Failed,
                          error.empty() ? "conversation: command resume failed" : std::move(error), "command");
 }
@@ -478,17 +533,28 @@ eve::Result<void> ConversationRunner::resumeCommand(const std::string& requestId
     return resumeCommand(requestId, toDialogueStateValue(result));
 }
 
-bool ConversationRunner::advance(std::string* error) {
+bool ConversationRunner::advanceImpl(std::string* error) {
     const auto* node = currentNode();
     if (!node || !blocked_) return fail(error, "conversation: runner is not blocked");
     if (waitingCommand_) return fail(error, "conversation: resume the pending command instead");
     if (node->kind == ConversationAsset::Node::Kind::Choice)
         return fail(error, "conversation: select a choice route instead");
     const std::string next = node->next;
-    return enter(next, error) && runUntilBlocked(error);
+    return enter(next, error) && runUntilBlockedImpl(error);
 }
 
-bool ConversationRunner::select(const std::string& routeId, std::string* error) {
+eve::Result<void> ConversationRunner::advanceChecked() {
+    StateValue before;
+    captureStateImpl(before);
+    std::string error;
+    if (advanceImpl(&error)) return eve::Result<void>::success();
+    std::string ignored;
+    restoreStateImpl(before, &ignored);
+    return runnerFailure(eve::DiagnosticCode::PreconditionViolation,
+                         error.empty() ? "conversation: advance failed" : std::move(error), "cursor");
+}
+
+bool ConversationRunner::selectImpl(const std::string& routeId, std::string* error) {
     const auto* node = currentNode();
     if (node) {
         for (const auto& route : node->routes) {
@@ -503,6 +569,17 @@ bool ConversationRunner::select(const std::string& routeId, std::string* error) 
     }
     if (error) *error = result.status().describe();
     return false;
+}
+
+eve::Result<void> ConversationRunner::selectChecked(const std::string& routeId) {
+    StateValue before;
+    captureStateImpl(before);
+    std::string error;
+    if (selectImpl(routeId, &error)) return eve::Result<void>::success();
+    std::string ignored;
+    restoreStateImpl(before, &ignored);
+    return runnerFailure(eve::DiagnosticCode::DialogueRouteNotFound,
+                         error.empty() ? "conversation: choice selection failed" : std::move(error), "route");
 }
 
 eve::Result<void> ConversationRunner::selectRouteForTransaction(const std::string& routeId) {
@@ -527,14 +604,14 @@ eve::Result<void> ConversationRunner::selectRouteForTransaction(const std::strin
         }
 
         StateValue before;
-        if (!captureState(before))
+        if (!captureStateImpl(before))
             return runnerFailure(eve::DiagnosticCode::Failed, "conversation: could not capture choice state", "route");
         std::string error;
-        if (enter(route.second, &error) && runUntilBlocked(&error))
+        if (enter(route.second, &error) && runUntilBlockedImpl(&error))
             return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
 
         std::string restoreError;
-        if (!restoreState(before, &restoreError) && error.empty()) error = restoreError;
+        if (!restoreStateImpl(before, &restoreError) && error.empty()) error = restoreError;
         return runnerFailure(eve::DiagnosticCode::Failed,
                              error.empty() ? "conversation: choice selection failed" : std::move(error), "route");
     }

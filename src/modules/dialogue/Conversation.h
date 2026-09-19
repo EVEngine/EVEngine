@@ -22,6 +22,8 @@ namespace eve::dialogue {
  * it is not interpreted by a dialogue-local condition language.
  */
 struct ConversationRoute {
+    int sourceLine = 0;
+    int sourceColumn = 0;
     /** @brief Stable route identifier, independent from presentation text. */
     std::string id;
     /** @brief Source-language display text. */
@@ -55,6 +57,8 @@ struct ConversationAsset {
         Type type = Type::Any;
         bool required = true;
         StateValue defaultValue = StateValue::null();
+        int sourceLine = 0;
+        int sourceColumn = 0;
         Parameter() = default;
         Parameter(std::string parameterName) : name(std::move(parameterName)) {}
     };
@@ -80,6 +84,8 @@ struct ConversationAsset {
         PaymentSpec payment;
         /** @brief Optional authoritative mutations committed with a command. */
         std::vector<eve::StateMutation> stateMutations;
+        int sourceLine = 0;
+        int sourceColumn = 0;
     };
 
     std::string id;
@@ -87,11 +93,13 @@ struct ConversationAsset {
     std::string entry;
     std::vector<Parameter> parameters;
     std::vector<Node> nodes;
+    int sourceLine = 0;
+    int sourceColumn = 0;
 
     /** @brief Find a node by its stable identifier. */
     const Node* findNode(const std::string& nodeId) const;
     /** @brief Validate stable IDs, entry point, and node references. */
-    bool validate(std::string* error = nullptr) const;
+    [[nodiscard]] eve::Result<void> validate() const;
 };
 
 /** @brief Explicit conversation executor whose suspension points are node IDs. */
@@ -122,14 +130,14 @@ public:
     using CommandRequestDispatcher = std::function<CommandResponse(const CommandRequest&)>;
     using EventSink = std::function<void(const Event&)>;
 
-    /** @brief Start an asset with serializable parameter bindings. */
-    bool start(const ConversationAsset* asset, StateValue bindings, std::string* error = nullptr);
+    /** @brief Start an asset with validated serializable parameter bindings. */
+    [[nodiscard]] eve::Result<void> startChecked(const ConversationAsset* asset, StateValue bindings);
     /** @brief Execute non-blocking nodes until a line, choice, wait, or end is reached. */
-    bool runUntilBlocked(std::string* error = nullptr);
+    [[nodiscard]] eve::Result<void> runUntilBlockedChecked();
     /** @brief Continue from the current blocking node. */
-    bool advance(std::string* error = nullptr);
+    [[nodiscard]] eve::Result<void> advanceChecked();
     /** @brief Select a route on the current choice node. */
-    bool select(const std::string& routeId, std::string* error = nullptr);
+    [[nodiscard]] eve::Result<void> selectChecked(const std::string& routeId);
     /**
      * @brief Select a route from an already prepared Dialogue transaction.
      * @param routeId Stable route identifier on the current choice node.
@@ -156,10 +164,10 @@ public:
     [[nodiscard]] eve::Result<void> resumeCommand(const std::string& requestId, eve::Value result);
     /** @brief Stop and clear the active instance. */
     void stop();
-    /** @brief Capture the complete cursor, locals, bindings, and call stack. */
-    bool captureState(StateValue& out) const;
+    /** @brief Capture the complete cursor, locals, bindings, pending command and call stack. */
+    [[nodiscard]] eve::Result<StateValue> captureStateChecked() const;
     /** @brief Restore a captured runner using the configured asset resolver. */
-    bool restoreState(const StateValue& in, std::string* error = nullptr);
+    [[nodiscard]] eve::Result<void> restoreStateChecked(const StateValue& in);
 
     void setAssetResolver(AssetResolver resolver) { assetResolver_ = std::move(resolver); }
     void setExpressionEvaluator(ExpressionEvaluator evaluator) {
@@ -229,6 +237,12 @@ private:
     };
 
     bool fail(std::string* error, const std::string& message) const;
+    bool startImpl(const ConversationAsset* asset, StateValue bindings, std::string* error);
+    bool runUntilBlockedImpl(std::string* error);
+    bool advanceImpl(std::string* error);
+    bool selectImpl(const std::string& routeId, std::string* error);
+    bool captureStateImpl(StateValue& out) const;
+    bool restoreStateImpl(const StateValue& in, std::string* error);
     bool enter(const std::string& nodeId, std::string* error);
     std::string evaluateRoute(const ConversationAsset::Node& node, std::string* error);
     void emit(Event::Kind kind, const ConversationAsset::Node* node = nullptr,

@@ -52,16 +52,16 @@ TEST_CASE("dialogueConversation.typedDefaultsAndExcessBindings") {
                    {"end", ConversationAsset::Node::Kind::End}};
     ConversationRunner runner;
     std::string error;
-    REQUIRE(runner.start(&asset, StateValue::object(), &error));
+    REQUIRE(runner.startChecked(&asset, StateValue::object()).ok());
     REQUIRE(runner.bindings().find("count") != nullptr);
     CHECK_EQ(runner.bindings().find("count")->asInt(), 3);
     runner.stop();
     StateValue wrongType = StateValue::object();
     wrongType.set("count", StateValue::string("bad"));
-    CHECK(!runner.start(&asset, std::move(wrongType), &error));
+    CHECK(!runner.startChecked(&asset, std::move(wrongType)).ok());
     StateValue excess = StateValue::object();
     excess.set("extra", StateValue::integer(1));
-    CHECK(!runner.start(&asset, std::move(excess), &error));
+    CHECK(!runner.startChecked(&asset, std::move(excess)).ok());
 }
 
 TEST_CASE("dialogueConversation.parameterizedRunner") {
@@ -80,12 +80,11 @@ TEST_CASE("dialogueConversation.parameterizedRunner") {
     CHECK(bindings.setPath("listener.id", StateValue::string("player")));
     bindings.set("location", StateValue::string("village"));
     std::string error;
-    CHECK(runner.start(&asset, std::move(bindings), &error));
-    CHECK(error.empty());
+    CHECK(runner.startChecked(&asset, std::move(bindings)).ok());
     CHECK(runner.isBlocked());
     CHECK(runner.currentNodeId() == "friendly");
     CHECK(runner.currentNode()->pool == "greeting.friendly");
-    CHECK(runner.advance(&error));
+    CHECK(runner.advanceChecked().ok());
     CHECK(!runner.isActive());
 }
 
@@ -96,21 +95,23 @@ TEST_CASE("dialogueConversation.rejectsMissingAndUndeclaredBindings") {
     bindings.set("speaker", StateValue::object());
     bindings.set("listener", StateValue::object());
     std::string error;
-    CHECK(!runner.start(&asset, bindings, &error));
-    CHECK(error.find("missing required binding 'location'") != std::string::npos);
+    auto missing = runner.startChecked(&asset, bindings);
+    CHECK(!missing.ok());
+    CHECK(missing.status().describe().find("missing required binding 'location'") != std::string::npos);
 
     bindings.set("location", StateValue::string("village"));
     bindings.set("unexpected", StateValue::boolean(true));
-    CHECK(!runner.start(&asset, bindings, &error));
-    CHECK(error.find("undeclared binding 'unexpected'") != std::string::npos);
+    auto excess = runner.startChecked(&asset, bindings);
+    CHECK(!excess.ok());
+    CHECK(excess.status().describe().find("undeclared binding 'unexpected'") != std::string::npos);
 }
 
 TEST_CASE("dialogueConversation.validation") {
     ConversationAsset asset = makeGreeting();
     asset.nodes.back().id = "friendly";
-    std::string error;
-    CHECK(!asset.validate(&error));
-    CHECK(error.find("duplicate node id") != std::string::npos);
+    auto invalid = asset.validate();
+    CHECK(!invalid.ok());
+    CHECK(invalid.status().describe().find("duplicate node id") != std::string::npos);
 }
 
 TEST_CASE("dialogueConversation.expressionFailureDoesNotSelectElse") {
@@ -125,9 +126,10 @@ TEST_CASE("dialogueConversation.expressionFailureDoesNotSelectElse") {
     bindings.set("listener", StateValue::object());
     bindings.set("location", StateValue::string("village"));
     std::string error;
-    CHECK(!runner.start(&asset, std::move(bindings), &error));
-    CHECK(error.find("expression failed") != std::string::npos);
-    CHECK(runner.currentNodeId() == "decide");
+    auto failed = runner.startChecked(&asset, std::move(bindings));
+    CHECK(!failed.ok());
+    CHECK(failed.status().describe().find("expression failed") != std::string::npos);
+    CHECK(!runner.isActive());
 }
 
 TEST_CASE("dialogueConversation.callStackStateRoundtrip") {
@@ -170,18 +172,19 @@ TEST_CASE("dialogueConversation.callStackStateRoundtrip") {
     ConversationRunner original;
     original.setAssetResolver(resolve);
     std::string error;
-    CHECK(original.start(&parent, StateValue::object(), &error));
+    CHECK(original.startChecked(&parent, StateValue::object()).ok());
     CHECK(original.currentNodeId() == "line");
     original.locals().set("calculatedPrice", StateValue::integer(42));
-    StateValue saved;
-    CHECK(original.captureState(saved));
+    auto captured = original.captureStateChecked();
+    REQUIRE(captured.ok());
+    StateValue saved = std::move(captured).takeValue();
 
     ConversationRunner restored;
     restored.setAssetResolver(resolve);
-    CHECK(restored.restoreState(saved, &error));
+    CHECK(restored.restoreStateChecked(saved).ok());
     CHECK(restored.currentNodeId() == "line");
     CHECK(restored.locals().find("calculatedPrice")->asInt() == 42);
-    CHECK(restored.advance(&error));
+    CHECK(restored.advanceChecked().ok());
     CHECK(restored.currentNodeId() == "after");
 }
 
@@ -215,7 +218,7 @@ TEST_CASE("dialogueConversation.commandsAndEvents") {
             return result;
         });
     std::string error;
-    CHECK(runner.start(&asset, StateValue::object(), &error));
+    CHECK(runner.startChecked(&asset, StateValue::object()).ok());
     CHECK(runner.currentNodeId() == "line");
     CHECK(runner.locals().find("quote")->asInt() == 125);
     CHECK(events.size() >= 5);
@@ -243,19 +246,20 @@ TEST_CASE("dialogueConversation.asyncCommand") {
             return result;
         });
     std::string error;
-    CHECK(runner.start(&asset, StateValue::object(), &error));
+    CHECK(runner.startChecked(&asset, StateValue::object()).ok());
     CHECK(runner.isBlocked());
     const std::string requestId = runner.pendingCommandRequestId();
     CHECK(!requestId.empty());
-    StateValue saved;
-    REQUIRE(runner.captureState(saved));
+    auto captured = runner.captureStateChecked();
+    REQUIRE(captured.ok());
+    StateValue saved = std::move(captured).takeValue();
     ConversationRunner restored;
     restored.setAssetResolver([&](const std::string& id) { return id == asset.id ? &asset : nullptr; });
     int restoredCommands = 0;
     restored.setEventSink([&](const ConversationRunner::Event& event) {
         if (event.kind == ConversationRunner::Event::Kind::Command) ++restoredCommands;
     });
-    REQUIRE(restored.restoreState(saved, &error));
+    REQUIRE(restored.restoreStateChecked(saved).ok());
     REQUIRE(restored.lastCommandRequest() != nullptr);
     CHECK_EQ(restored.lastCommandRequest()->requestId, requestId);
     CHECK_EQ(restoredCommands, 1);
@@ -281,7 +285,7 @@ TEST_CASE("dialogueConversation.mutationsExposeStableDiagnostics") {
 
     ConversationRunner runner;
     std::string        error;
-    REQUIRE(runner.start(&asset, StateValue::object(), &error));
+    REQUIRE(runner.startChecked(&asset, StateValue::object()).ok());
     auto missing = runner.selectRouteForTransaction("missing");
     REQUIRE(!missing.ok());
     CHECK_EQ(static_cast<int>(missing.error()->code()), static_cast<int>(eve::DiagnosticCode::DialogueRouteNotFound));

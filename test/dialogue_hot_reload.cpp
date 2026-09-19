@@ -79,7 +79,7 @@ node end end
 )";
     CHECK(flow.reloadDnutChecked(validReference, "greeting.dnut").ok());
     CHECK(flow.getLastLoadChanged());
-    CHECK(flow.lintAll());
+    CHECK(flow.lintAllChecked().ok());
 }
 
 TEST_CASE("dialogueHotReload.rejectsDuplicateCrossSourceOwnership") {
@@ -94,7 +94,7 @@ node end end
     REQUIRE(flow.loadDnutChecked(source, "first.dnut").ok());
     CHECK(!flow.loadDnutChecked(source, "second.dnut").ok());
     CHECK(flow.hasConversation("shared.id"));
-    CHECK(flow.removeSource("first.dnut"));
+    CHECK(flow.removeSourceChecked("first.dnut").ok());
     CHECK(!flow.hasConversation("shared.id"));
 }
 
@@ -120,6 +120,52 @@ conversation other.scene entry=end { node end end }
     CHECK(!flow.loadDnutChecked(duplicate, "other.dnut").ok());
     CHECK(!flow.hasConversation("other.scene"));
     CHECK(dialogue->hasPool("greeting"));
-    CHECK(flow.removeSource("mixed.dnut"));
+    CHECK(flow.removeSourceChecked("mixed.dnut").ok());
     CHECK(!dialogue->hasPool("greeting"));
+}
+
+TEST_CASE("dialogueHotReload.exposesStableRuntimeLintDiagnostics") {
+    DialogueFlow flow;
+    const std::string source = R"(
+schema "eve.dnut"
+version 1
+conversation diagnostics entry=speak {
+node speak line speaker=guide text="Hello" next=invoke
+node invoke command kind=operation target="world.open" next=end
+node end end
+}
+)";
+    REQUIRE(flow.loadDnutChecked(source, "diagnostics.dnut").ok());
+    CHECK(!flow.lintAllChecked().ok());
+    bool sawHandler = false;
+    bool sawLocalization = false;
+    bool sawVoice = false;
+    for (int index = 0; index < flow.getDiagnosticCount(); ++index) {
+        CHECK(flow.getDiagnosticLine(index) > 0);
+        CHECK(flow.getDiagnosticColumn(index) > 0);
+        if (flow.getDiagnosticCode(index) == "MissingCommandHandler") {
+            sawHandler = true;
+            CHECK(flow.getDiagnosticAssetPath(index) == "diagnostics/invoke");
+        } else if (flow.getDiagnosticCode(index) == "MissingLocalizationReference") {
+            sawLocalization = true;
+            CHECK(flow.getDiagnosticAssetPath(index) == "diagnostics/speak");
+        } else if (flow.getDiagnosticCode(index) == "MissingVoiceReference") {
+            sawVoice = true;
+            CHECK(flow.getDiagnosticAssetPath(index) == "diagnostics/speak");
+        }
+    }
+    CHECK(sawHandler);
+    CHECK(sawLocalization);
+    CHECK(sawVoice);
+    flow.setManualCommandMode(true);
+    CHECK(flow.lintAllChecked().ok());
+}
+
+TEST_CASE("dialogueHotReload.rejectsUnsupportedDnutVersionWithStableDiagnostic") {
+    DialogueFlow flow;
+    CHECK(!flow.loadDnutChecked("schema \"eve.dnut\"\nversion 999\n", "future.dnut").ok());
+    REQUIRE(flow.getDiagnosticCount() == 1);
+    CHECK(flow.getDiagnosticCode(0) == "UnsupportedSchemaVersion");
+    CHECK(flow.getDiagnosticLine(0) > 0);
+    CHECK(flow.getDiagnosticColumn(0) > 0);
 }
