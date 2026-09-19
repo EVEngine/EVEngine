@@ -1,5 +1,34 @@
 # Hex terrain capability audit
 
+## Status
+
+This document is an append-only log of an investigation, so its sections record what was
+believed when they were written. Read them with that in mind; these are the ones the later
+sections superseded.
+
+**Current verified state of the two meshers.** Both are closed and consistently wound. The
+sphere is watertight at subdivisions 1, 2 and 4 for every seed the suite covers, with zero
+doubled directed edges, zero boundary edges, zero non-manifold edges and no duplicate
+triangles. The planar builder is closed on all nine elevation patterns it is checked
+against. `hexmap` is 70 of 70 cases green.
+
+Three claims below are history rather than current state:
+
+- `### Where the remaining winding defect actually is` and `### What the winding work achieved,
+  and what it did not` count 51 and 298 open edges. Both are zero now; the cliff corner's own
+  tiling was the missing piece, and `#### The cliff corner, fixed` derives it.
+- `#### The remaining 114 are T-junctions between neighbouring corner slivers` is a
+  **disproved hypothesis**. The holes were missing surface, not mismatched tessellation, and
+  `#### The planar builder is not the reference it was taken for` is what reframed them.
+- `## Open defect: the corner family has no single winding convention` is resolved: the
+  family takes its winding from the parity of the elevation sort, and the sphere's census
+  measures zero doubled edges in every configuration.
+
+One assertion is deliberately a **bound rather than zero**: a handful of triangles are folded
+by the tangential wobble. `#### What is left: five sheared slivers, bounded rather than zero`
+records the numbers, the sweep that shows zero is only reachable at a wobble six times
+smoother than the planar backend's, and the removal condition.
+
 ## Result
 
 EVEngine can generate and render a medium-size Civilization-style hex terrain
@@ -124,8 +153,8 @@ dedicated module rather than another procgen recipe, because an *editable* map n
 authoritative cell data and incremental mesh updates that a one-shot generator
 cannot provide. `docs/usr/modules/hexmap.md` is the module contract;
 `examples/hex-terrain-3d` is the interactive editor over it. It deliberately lives
-in its own directory so that `examples/hex-terrain` â€” the `mesh.hexterrain` proof
-described above â€” keeps shipping unchanged.
+in its own directory so that `examples/hex-terrain` â€?the `mesh.hexterrain` proof
+described above â€?keeps shipping unchanged.
 
 What that closes from the gap list above:
 
@@ -306,7 +335,7 @@ one flat sky-blue disc - exactly the look the comment says the term exists to av
 winding corrected the ocean shades as deep water, lightens at the shore, and only mirrors the
 sky at the limb.
 
-## Open defect: the corner family has no single winding convention
+## Open defect: the corner family has no single winding convention (resolved; see Status)
 
 A rendered planet still shows a small dark triangle missing at **every** height step, and the
 mesh censuses above cannot see it. `analyseWeld` counts an edge as an *unordered* vertex pair, so
@@ -366,10 +395,10 @@ make build/win32-debug JOBS=4 CMAKE_EXTRA_ARGS="<third-party args> -DEVENGINE_CO
 
 run from a shell where `vcvars64.bat` has been called. Two related traps: clearing
 `CMAKE_C_COMPILER_LAUNCHER`/`CMAKE_CXX_COMPILER_LAUNCHER` alone does not disable sccache (the
-project re-derives it at generate time â€” use `EVENGINE_COMPILER_CACHE`), and killing the sccache
+project re-derives it at generate time â€?use `EVENGINE_COMPILER_CACHE`), and killing the sccache
 server leaves a stale one holding its socket that `taskkill` cannot remove without elevation.
 
-### Where the remaining winding defect actually is
+### Where the remaining winding defect actually is (historical; see Status)
 
 Measured with the directed-edge census at subdivision 1, scattering elevations 0/1/3:
 
@@ -388,7 +417,7 @@ dispatch: it is in the argument order the corner sub-functions (`cornerTerraces`
 `cornerTerracesCliff`, `cornerCliffTerraces`, `appendBoundaryTriangle`) hand to
 `emitQuadForward`/`emitTriangleFrom`. That is the thing to unify.
 
-### What the winding work achieved, and what it did not
+### What the winding work achieved, and what it did not (historical; see Status)
 
 The spherical corner family now satisfies one winding convention. Measured by the directed-edge
 census at subdivisions 1, 2 and 4 with two seeds each, with elevations scattered 0/1/3:
@@ -473,7 +502,7 @@ cliff-only pattern reproduces it, so the remaining cases are the corners where o
 and another a cliff, which are the branches 4/5/6 that have not been audited against the planar
 builder yet.
 
-#### The remaining 114 are T-junctions between neighbouring corner slivers
+#### The remaining 114 are T-junctions between neighbouring corner slivers (disproved; see Status)
 
 Owner census of the 114 boundary edges at subdivision 1 (each edge attributed to the emitter that
 produced it):
