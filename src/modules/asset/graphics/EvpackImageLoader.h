@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /** @file EvpackImageLoader.h @brief Transactional EVIMG runtime texture loading. */
 
@@ -52,7 +54,7 @@ private:
 };
 
 /** @brief Capability-aware adapter from admitted EVIMG assets to backend textures. */
-class EvpackImageLoader {
+class EVENGINE_API_WORLD EvpackImageLoader {
 public:
     /** @brief Bind borrowed reader and image factory; both must outlive this loader. */
     EvpackImageLoader(const asset::EvpackResourceReader& reader,

@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "asset/import/UnitySource.h"
 #include "common/Utf8Validation.h"
@@ -13,7 +15,7 @@ struct UnityExpandedPrefab {
     std::vector<ImportFinding> findings;
 };
 /** @brief Resolve bounded nested prefab references into an unpublished owning text candidate. */
-[[nodiscard]] Result<UnityExpandedPrefab> expandUnityPrefab(const UnityProjectImportRequest&, const UnitySourceIndex&,
+[[nodiscard]] EVENGINE_API_PLATFORM Result<UnityExpandedPrefab> expandUnityPrefab(const UnityProjectImportRequest&, const UnitySourceIndex&,
                                                             const UnitySourceAsset&);
 /** @brief Convert an explicit SpriteRenderer timeline and referenced metadata into an owning canonical candidate. */
 [[nodiscard]] Result<PreparedAssetImport> prepareUnitySpriteAnimation(const UnityProjectImportRequest& request,
@@ -25,10 +27,10 @@ struct UnityExpandedPrefab {
 [[nodiscard]] Result<PreparedAssetImport> prepareUnityPrefab(const UnityProjectImportRequest& request,
                                                              const std::string&               path);
 /** @brief Convert a static FBX with explicit Unity importer settings and hashed subasset identities. */
-[[nodiscard]] Result<PreparedAssetImport> prepareUnityFbx(const UnityProjectImportRequest& request,
+[[nodiscard]] EVENGINE_API_PLATFORM Result<PreparedAssetImport> prepareUnityFbx(const UnityProjectImportRequest& request,
                                                           const UnitySourceAsset&          source);
 /** @brief Decode a bounded static Unity text Mesh into owning canonical submesh candidates. */
-[[nodiscard]] Result<PreparedAssetImport> prepareUnityNativeMesh(const UnityProjectImportRequest&,
+[[nodiscard]] EVENGINE_API_PLATFORM Result<PreparedAssetImport> prepareUnityNativeMesh(const UnityProjectImportRequest&,
                                                                  const UnitySourceAsset&);
 /** @brief Convert supported built-in Standard material properties to canonical PBR data. */
 [[nodiscard]] Result<PreparedAssetImport> prepareUnityMaterial(const UnityProjectImportRequest& request,

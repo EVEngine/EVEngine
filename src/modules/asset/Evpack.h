@@ -159,7 +159,7 @@ struct EvpackVariantSelection {
  * @brief Fully admitted owning runtime pack.
  * @remarks Chunk views remain valid until this object is moved, assigned, or destroyed.
  */
-class Evpack {
+class EVENGINE_API_FOUNDATION Evpack {
 public:
     /** @brief Stable package identity from the verified header. */
     [[nodiscard]] const PersistentId& packageId() const noexcept { return packageId_; }
@@ -202,7 +202,7 @@ private:
 };
 
 /** @brief Build deterministic little-endian `.evpack` bytes from validated Cook output. */
-[[nodiscard]] Result<std::vector<std::uint8_t>> buildEvpack(
+[[nodiscard]] EVENGINE_API_FOUNDATION Result<std::vector<std::uint8_t>> buildEvpack(
     EvpackBuild build, const EvpackLimits& limits = {});
 
 /** @brief Parse, bound-check and hash-verify a complete untrusted `.evpack`. */
@@ -225,7 +225,7 @@ private:
  * @brief Select the first explicitly ordered variant satisfied by device capabilities.
  * @return Selected index and whether an ordered fallback after index zero was used.
  */
-[[nodiscard]] Result<EvpackVariantSelection> selectEvpackVariant(
+[[nodiscard]] EVENGINE_API_FOUNDATION Result<EvpackVariantSelection> selectEvpackVariant(
     const Evpack& pack, const EvpackCapabilities& capabilities);
 
 }  // namespace eve::asset

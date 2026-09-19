@@ -110,7 +110,7 @@ struct VoxelPick {
 [[nodiscard]] EVENGINE_API_ORCHESTRATION const char* voxelSocketKindName(VoxelSocketKind kind);
 
 /** @brief True when two facing sockets may join. */
-[[nodiscard]] bool canJoinVoxelSockets(const VoxelSocket& a, const VoxelSocket& b);
+[[nodiscard]] EVENGINE_API_ORCHESTRATION bool canJoinVoxelSockets(const VoxelSocket& a, const VoxelSocket& b);
 
 /** @brief Opposite FaceDir index in PosX/NegX/PosY/NegY/PosZ/NegZ order. */
 [[nodiscard]] int voxelOppositeFace(int face);

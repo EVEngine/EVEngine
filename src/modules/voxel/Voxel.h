@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/Module.h"
 #include "voxel/CubeTypeRegistry.h"
@@ -26,7 +28,7 @@ namespace eve::voxel {
  *
  * Script: `voxel <- eve.Voxel(); types <- voxel.newCubeTypes(); world <- voxel.newWorld(types);`
  */
-class Voxel : public Module {
+class EVENGINE_API_DOMAINS Voxel : public Module {
 public:
     Module_REG(Voxel);
     Voxel() = default;

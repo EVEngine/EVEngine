@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/Result.h"
 #include "common/Snapshot.h"
@@ -21,7 +23,7 @@ enum class PixelChunkArchiveCodec : std::uint8_t { None = 0, Zstd = 1 };
  * @param hashProvider Injected digest used by the envelope and every decoded Chunk.
  * @return Integrity-sealed archive with independently compressed Chunk records.
  */
-[[nodiscard]] eve::Result<eve::SnapshotEnvelope> archiveChunkBatch(
+[[nodiscard]] EVENGINE_API_PLATFORM eve::Result<eve::SnapshotEnvelope> archiveChunkBatch(
     const eve::pixelworld::PixelChunkBatch& batch, eve::PersistentId instanceId,
     PixelChunkArchiveCodec codec, const eve::SnapshotHashProvider& hashProvider);
 
@@ -31,7 +33,7 @@ enum class PixelChunkArchiveCodec : std::uint8_t { None = 0, Zstd = 1 };
  * `sourceLastEditSequence == 0`; versions 1 and 2 migrate with `fullResync == false`.
  * Bad envelope/Chunk hashes fail before any authority write.
  */
-[[nodiscard]] eve::Result<eve::pixelworld::PixelChunkBatch> decodeChunkBatchArchive(
+[[nodiscard]] EVENGINE_API_PLATFORM eve::Result<eve::pixelworld::PixelChunkBatch> decodeChunkBatchArchive(
     const eve::SnapshotEnvelope& snapshot, const eve::SnapshotHashProvider& hashProvider);
 
 /** @brief One interest-stream update suitable for persistence or network transport. */
@@ -50,7 +52,7 @@ struct PixelChunkStreamUpdate {
  * known Chunk coordinates. PixelWorld remains the sole material authority. APIs
  * are simulation-thread affine, retain no world pointer and invoke no callbacks.
  */
-class PixelChunkStreamCursor {
+class EVENGINE_API_PLATFORM PixelChunkStreamCursor {
 public:
     /**
      * @brief Capture changed/entered Chunks and eviction tombstones for an interest region.

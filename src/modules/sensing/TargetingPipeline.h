@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @file TargetingPipeline.h
@@ -90,10 +92,16 @@ public:
  * @thread Not synchronized; use on one simulation thread.
  * @reentrancy Tasks must not re-enter executePreset on the same pipeline.
  */
-class TargetingPipeline {
+class EVENGINE_API_PLATFORM TargetingPipeline {
 public:
     /** @brief Creates an empty pipeline. */
     TargetingPipeline() = default;
+    // Class-level dllexport instantiates every member; `tasks_` is a map of
+    // unique_ptr, so the implicit copy assignment would be a hard C2280.
+    TargetingPipeline(const TargetingPipeline&) = delete;
+    TargetingPipeline& operator=(const TargetingPipeline&) = delete;
+    TargetingPipeline(TargetingPipeline&&) = default;
+    TargetingPipeline& operator=(TargetingPipeline&&) = default;
 
     /** @brief Creates a pipeline with built-in sensing tasks and one coneSelect preset. */
     [[nodiscard]] static TargetingPipeline withBuiltins();

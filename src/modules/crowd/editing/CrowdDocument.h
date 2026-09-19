@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "editing/EditingAuthority.h"
 #include "editing/EditableTarget.h"
@@ -75,7 +77,7 @@ struct CrowdOverlayResult {
 };
 
 /** @brief UI-neutral agent/zone/path document with reversible domain operations. */
-class CrowdDocumentTarget final : public virtual IEditableTarget,
+class EVENGINE_API_BACKENDS CrowdDocumentTarget final : public virtual IEditableTarget,
                                   public IDomainOperationTarget,
                                   public IDomainOperationTargetStaging {
 public:
@@ -137,7 +139,7 @@ namespace eve::crowd { class Crowd; }
 namespace eve::crowd_editing {
 
 /** @brief Applies a complete crowd authoring snapshot to an isolated or live Crowd runtime. */
-class CrowdRuntimeApplier {
+class EVENGINE_API_BACKENDS CrowdRuntimeApplier {
 public:
     /** @brief Replace runtime agents from a validated document; path agents seek their first waypoint. */
     EditorResult<void> apply(const CrowdDocumentTarget& document, crowd::Crowd* runtime) const;

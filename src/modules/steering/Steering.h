@@ -1,4 +1,6 @@
 #pragma once
+
+#include "common/Export.h"
 #include <string>
 #include "common/Module.h"
 namespace eve::steering {
@@ -7,7 +9,7 @@ struct Vec2 {
     float x = 0, y = 0;
 };
 /** @brief Stateless, gameplay-neutral 2D steering math. */
-class Steering : public Module {
+class EVENGINE_API_FOUNDATION Steering : public Module {
 public:
     Module_REG(Steering);
     /** @brief Desired velocity toward a target. */ static Vec2    seek(float x, float y, float tx, float ty,

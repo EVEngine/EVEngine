@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "network/UdpLink.h"
 
@@ -22,7 +24,7 @@ class NetReader;
  * C++ handlers receive NetReader&; script handlers receive the raw payload as
  * a Squirrel string (build a NetReader with eve.Network().newReader(bytes)).
  */
-class NetRpc {
+class EVENGINE_API_PLATFORM NetRpc {
 public:
     explicit NetRpc(UdpLink* link);
     ~NetRpc();

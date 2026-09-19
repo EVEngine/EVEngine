@@ -1,4 +1,6 @@
 #pragma once
+
+#include "common/Export.h"
 #include "editing/EditingProtocol.h"
 #include <cstddef>
 #include <cstdint>
@@ -16,7 +18,7 @@ struct NetworkTelemetrySample {
     double timeSeconds=0,sendBytesPerSecond=0,receiveBytesPerSecond=0,errorRate=0;
 };
 /** @brief UI-independent bounded history and network health diagnostics. */
-class NetworkTelemetryModel {
+class EVENGINE_API_BACKENDS NetworkTelemetryModel {
 public:
     explicit NetworkTelemetryModel(std::size_t capacity=300);
     EditorResult<void> ingest(NetworkTelemetrySample);

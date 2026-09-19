@@ -400,3 +400,21 @@ debug SDK（`make sdk/win32-debug`）**沿用开发配置，即动态**：它从
 - 同名重载要判 AMBIGUOUS 并交给人工（`ParticleEmitter.h` 的 `advanceEmitterSim` 两行），不要乱挑一个。
 
 **particles 的 9 个失败是 DLL 拆分本身造成的（不是标注问题）**：全部报 `SDL_Vulkan_GetInstanceExtensions failed: Video subsystem has not been initialized`。根因是第三方静态状态被复制——`build.ninja` 里 7 条组 DLL 链接语句都链了 SDL2 静态库，实测 7 个组 DLL 与测试 exe 每个都各含一份 SDL，而 SDL 的 `_this` 是 `SDL_video.c` 的静态全局：`SDL_InitSubSystem(SDL_INIT_VIDEO)` 发生在 window 模块（EVPlatform 组 DLL 的副本），`SDL_Vulkan_GetInstanceExtensions` 却跑在 graphics 模块（EVBackends 组 DLL 的副本）里。平台域之所以 27/27 是因为它没有 Vulkan 窗口用例。**结论：窗口/Vulkan 类域要真正跑通，必须先做 §7.3 的第三方共享化（EVThirdParty 收进一个共享库）或把 Vulkan 实例创建与 SDL video 初始化收进同一组 DLL**；这一步不能靠补标注解决。
+### 7.8 SHARED 测试面标注：第二批六个域（2026-09-20）
+
+| 域 | LNK1120 前→后 | exe | ctest（`-E '^bundle/'`） |
+| --- | --- | --- | --- |
+| tensor | 34 → 0 | 4.83 MiB | 18/18 通过 |
+| pixelworld | 39 → 0 | 5.95 MiB | 59/59 通过 |
+| asset | 52 → 0 | 26.94 MiB | 122/122 通过 |
+| npc_ai | 67 → 0 | 6.13 MiB | 53/53 通过 |
+| network | 77 → 0 | 4.96 MiB | 26/26 通过 |
+| voxel | 33 → **1** | 未生成 | 未运行（见下） |
+
+合计 302 → 1，已链通的五个域 ctest **278/278 通过、0 失败**。改动 91 个站点 / 70 个头文件（类 55 + 自由函数 36）、63 处 `Export.h` include、`_INLINE` 0、手工 3 处 C2280 四特殊成员（`TcpSocket`、`TargetingPipeline`、`ReliablePixelChunkReceiver`）、2 处 friend 补宏。`C:\evs` 的 OBJECT `ninja eve` exit 0。
+
+两条新坑（§7.5 的第 2/3 步再次修正）：
+- **同一实体的每条声明都要带宏**：类内 `friend` 前置声明与命名空间声明各出现一次时只给后者加宏会 `C2375 重定义；不同的链接`（asset 2 处）。跨文件同名扫描有大半是不同命名空间的同名成员函数，不能自动套用。
+- **`_INLINE` 判据不能用字符窗口**：按"声明后 300 字符内出现 `(`…`)`"判断会把长参数表的 `EvpackGraphicsLoader::loadMesh` 误判成 header-only，给出 `_INLINE` 后消费方不导入 —— 正是 `_INLINE` 要避免的 LNK2019。权威判据是"该类型在某个 .cpp 里出现过 `Name::` 定义"。
+
+**测试侧跨 link unit 的依赖（新面）**：`voxel` 只差 `?saveImagePng@@YA_N…` —— 声明在 `test/RenderImageAudit.h:88`、定义在 `test/RenderImageAudit.cpp:572`，该 .cpp 归 **graphics 域**，而 `voxel_render_scenes.cpp`（经 `VoxelRenderFixtures.h`）在 **voxel 域**，跨 link unit，加任何引擎宏都无效。同形状风险还有 `test/water_scene_fixture.h::createStylizedWaterScene`（graphics+procgen）、`GraphicsParitySupport.h`（graphics+weather）、`ScriptTest.h`（12 个域）。修法二选一：给每个域都编一份共享测试 TU（照 `test/main.cpp` / `nut_scripts.cpp` 的 `SHARED_RUNNER` 机制，需同步改 `test/CMakeLists.txt` 与 `scripts/test_domains.py` 的共享文件表），或把这族辅助改成 header-inline。

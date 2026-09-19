@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/Result.h"
 #include "common/RuntimeHandle.h"
@@ -70,7 +72,7 @@ public:
  * are keyed by agent, state and task identity. Destruction and stop abandon every
  * outstanding ticket, so provider results cannot target a later task incarnation.
  */
-class NavigationTaskService final : public ITaskService {
+class EVENGINE_API_PLATFORM NavigationTaskService final : public ITaskService {
 public:
     /** @brief Validates and transfers both required owners into a task service. */
     [[nodiscard]] static Result<std::unique_ptr<NavigationTaskService>> create(

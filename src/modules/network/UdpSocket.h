@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "NetTypes.h"
 
@@ -21,7 +23,7 @@ namespace eve::network {
 class Network;
 
 /** @brief UDP socket backed by Poco::Net; supports connect/bind and datagram send. */
-class UdpSocket {
+class EVENGINE_API_PLATFORM UdpSocket {
 public:
     /** @brief Creates an unbound socket owned by the given module. */
     explicit UdpSocket(Network* net);

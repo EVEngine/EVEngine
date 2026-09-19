@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "editing/EditableTarget.h"
 #include "editing/EditingAuthority.h"
@@ -50,7 +52,7 @@ struct VoxelPaletteEntryValue {
 };
 
 /** @brief Revisioned Voxel CubeType palette with face-material Inspector. */
-class VoxelPaletteTarget final : public virtual IEditableTarget,
+class EVENGINE_API_ORCHESTRATION VoxelPaletteTarget final : public virtual IEditableTarget,
                                  public IDomainOperationTarget,
                                  public IDomainOperationTargetStaging,
                                  public IPropertyProvider {
@@ -104,7 +106,7 @@ struct VoxelPalettePublishedEntry {
 };
 
 /** @brief Candidate-first CubeTypeRegistry publication. */
-class VoxelPaletteRuntime {
+class EVENGINE_API_ORCHESTRATION VoxelPaletteRuntime {
 public:
     VoxelPaletteRuntime();
     ~VoxelPaletteRuntime();

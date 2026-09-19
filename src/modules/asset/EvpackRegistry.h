@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @file EvpackRegistry.h
@@ -83,7 +85,7 @@ public:
     [[nodiscard]] const PersistentId& buildId() const noexcept { return pack_->buildId(); }
 
 private:
-    friend Result<PreparedEvpackMount> prepareEvpackMount(
+    friend EVENGINE_API_FOUNDATION Result<PreparedEvpackMount> prepareEvpackMount(
         std::span<const std::uint8_t>, const EvpackLimits&, const EvpackTrust&);
     friend class EvpackRegistry;
     explicit PreparedEvpackMount(std::shared_ptr<const Evpack> pack) : pack_(std::move(pack)) {}
@@ -98,12 +100,12 @@ private:
  * @thread Worker-safe.
  * @reentrancy Does not invoke callbacks.
  */
-[[nodiscard]] Result<PreparedEvpackMount> prepareEvpackMount(
+[[nodiscard]] EVENGINE_API_FOUNDATION Result<PreparedEvpackMount> prepareEvpackMount(
     std::span<const std::uint8_t> bytes, const EvpackLimits& limits = {},
     const EvpackTrust& trust = {});
 
 /** @brief Thread-safe owner of current runtime package generations. */
-class EvpackRegistry {
+class EVENGINE_API_FOUNDATION EvpackRegistry {
 public:
     using Callback = std::function<Result<void>(const EvpackRegistryEvent&)>;
 

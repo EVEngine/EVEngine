@@ -26,7 +26,7 @@ struct RuntimeDefinitionLimits {
  * @return Canonical little-endian bytes; object keys use Value's sorted order.
  * @thread Worker-safe when value is not concurrently mutated.
  */
-[[nodiscard]] Result<std::vector<std::uint8_t>> encodeRuntimeDefinition(
+[[nodiscard]] EVENGINE_API_FOUNDATION Result<std::vector<std::uint8_t>> encodeRuntimeDefinition(
     const Value& value, const RuntimeDefinitionLimits& limits = {});
 
 /**

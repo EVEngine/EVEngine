@@ -266,7 +266,7 @@ struct SensingWorldHandleTag {};
 using SensingWorldHandleRef = eve::script::RuntimeHandleRef<SensingWorldHandleTag>;
 
 /** @brief Script factory for independent sensing worlds. */
-class Sensing : public Module {
+class EVENGINE_API_PLATFORM Sensing : public Module {
 public:
     Module_REG(Sensing);
     /**

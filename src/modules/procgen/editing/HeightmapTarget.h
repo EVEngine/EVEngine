@@ -13,7 +13,7 @@ namespace eve::procgen { class Heightmap; }
 namespace eve::procgen_editing {
 
 /** @brief Non-owning scalar-field adapter for a live procedural heightmap. */
-class HeightmapTarget final : public editing::IEditableTarget, public editing::IScalarFieldTarget {
+class EVENGINE_API_ORCHESTRATION HeightmapTarget final : public editing::IEditableTarget, public editing::IScalarFieldTarget {
 public:
     /** @brief Bind a live heightmap which must outlive this adapter. */
     HeightmapTarget(std::string id, procgen::Heightmap* heightmap);

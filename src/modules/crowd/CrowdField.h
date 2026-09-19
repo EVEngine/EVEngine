@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 // 连续流场：Dijkstra 积分场 + 梯度方向场 + 双线性采样。
 // 与 map/FlowField 的区别：map 的流场是格级 next 指针，本类是连续方向向量，
@@ -17,7 +19,7 @@ namespace eve::crowd {
  * （沿代价下降方向）。flowAtWorld() 用双线性插值给出任意世界坐标的方向，
  * 供单位逐帧采样跟随。
  */
-class CrowdField {
+class EVENGINE_API_FOUNDATION CrowdField {
 public:
     /** @brief 不可达/阻挡的积分代价。 */
     static constexpr float kUnreachable = 3.4e38f;

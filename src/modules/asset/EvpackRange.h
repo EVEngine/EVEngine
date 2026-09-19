@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @file EvpackRange.h
@@ -45,7 +47,7 @@ private:
  * @brief Admitted metadata plus an immutable range source retained by shared ownership.
  * @remarks Every returned chunk is owning and SHA-256 verified before exposure.
  */
-class EvpackRangeMount {
+class EVENGINE_API_FOUNDATION EvpackRangeMount {
 public:
     /** @brief Verified package metadata and random-access TOC. */
     [[nodiscard]] const Evpack& index() const noexcept { return index_; }
@@ -54,7 +56,7 @@ public:
     [[nodiscard]] Result<std::vector<std::uint8_t>> readChunk(std::size_t index) const;
 
 private:
-    friend Result<EvpackRangeMount> prepareEvpackRangeMount(
+    friend EVENGINE_API_FOUNDATION Result<EvpackRangeMount> prepareEvpackRangeMount(
         std::shared_ptr<const EvpackRangeSource>, const EvpackLimits&, const EvpackTrust&);
     EvpackRangeMount(std::shared_ptr<const EvpackRangeSource> source, Evpack index,
                      EvpackLimits limits)
@@ -70,7 +72,7 @@ private:
  * @param limits Metadata and chunk budgets.
  * @return Prepared range mount; no chunk payload has been fetched yet.
  */
-[[nodiscard]] Result<EvpackRangeMount> prepareEvpackRangeMount(
+[[nodiscard]] EVENGINE_API_FOUNDATION Result<EvpackRangeMount> prepareEvpackRangeMount(
     std::shared_ptr<const EvpackRangeSource> source, const EvpackLimits& limits = {},
     const EvpackTrust& trust = {});
 

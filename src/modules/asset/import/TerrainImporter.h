@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @file TerrainImporter.h
@@ -59,7 +61,7 @@ struct CanonicalTerrainInput {
  * @param limits Allocation limits shared with source parsers.
  * @return Owning `.eva` candidate with typed binary height/instance blobs.
  */
-[[nodiscard]] Result<PreparedAssetImport> prepareCanonicalTerrainImport(
+[[nodiscard]] EVENGINE_API_PLATFORM Result<PreparedAssetImport> prepareCanonicalTerrainImport(
     const ImportPackageIdentity& package, const CanonicalTerrainInput& terrain,
     std::string_view importer, const AssetImportLimits& limits = {});
 

@@ -12,7 +12,7 @@
 namespace eve::asset {
 
 /** @brief Return the current supported definition version for a canonical asset type. */
-[[nodiscard]] Result<SchemaVersion> currentAssetSchemaVersion(std::string_view type);
+[[nodiscard]] EVENGINE_API_FOUNDATION Result<SchemaVersion> currentAssetSchemaVersion(std::string_view type);
 
 /**
  * @brief Migrate every definition in an owning archive to its current schema.
