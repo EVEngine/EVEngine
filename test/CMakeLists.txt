@@ -229,6 +229,17 @@ else()
       ${CMAKE_CURRENT_BINARY_DIR}/nut_scripts.cpp
     )
     target_link_libraries(${_eve_test_target} eve_engine_includes)
+    # CTest includes <target>_zeroerr_tests.cmake, which that target's POST_BUILD
+    # discovery step writes. Seed an empty stub at configure time when it is
+    # absent: otherwise ctest refuses to run at all ("include" error) until every
+    # domain has been built once, which defeats building and running a single
+    # domain. The real file replaces the stub as soon as the target is linked.
+    set(_eve_test_discovery
+      "${CMAKE_CURRENT_BINARY_DIR}/${_eve_test_target}_zeroerr_tests.cmake")
+    if(NOT EXISTS "${_eve_test_discovery}")
+      file(WRITE "${_eve_test_discovery}"
+        "# populated when ${_eve_test_target} is built\n")
+    endif()
     list(APPEND EVE_TEST_TARGETS ${_eve_test_target})
   endforeach()
   list(LENGTH EVE_TEST_TARGETS _eve_test_target_count)
