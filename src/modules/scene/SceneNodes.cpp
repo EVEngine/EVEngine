@@ -294,7 +294,7 @@ bool Scene::setNodeQuaternionAt(const std::string &hostName, const std::string &
     SceneNode *n = h ? borrowSceneResult(h->findById(nodeId)) : nullptr;
     if (!h || !n) return false;
     glm::quat q(qw, qx, qy, qz);
-    eulerYxzFromQuat(q, n->yaw, n->pitch, n->roll);
+    eve::eulerYxzFromQuat(q, n->yaw, n->pitch, n->roll);
     h->markSubtreeDirtyById(nodeId);
     return true;
 }
@@ -324,7 +324,7 @@ bool Scene::setNodeLookAtAt(const std::string &hostName, const std::string &node
     glm::vec3 up2 = glm::normalize(glm::cross(f, right));
     glm::mat3 rot(right, up2, f);
     glm::quat q = glm::quat_cast(rot);
-    eulerYxzFromQuat(q, n->yaw, n->pitch, n->roll);
+    eve::eulerYxzFromQuat(q, n->yaw, n->pitch, n->roll);
     h->markSubtreeDirtyById(nodeId);
     return true;
 }

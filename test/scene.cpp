@@ -51,6 +51,7 @@
 
 #include <cmath>
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/quaternion.hpp>
 #include <string>
 #include <utility>
 
@@ -501,6 +502,35 @@ TEST_CASE("Scene.link.syncRenderable2DWorld") {
     CHECK(approxEq(r->transform()->y, 8.f));
 }
 
+TEST_CASE("Scene.link.syncRenderable3DWorldRotation") {
+    // The node sync has to decompose the world matrix with the inverse of the order
+    // the renderer recomposes it (RenderSystem3D's modelFromTransform is
+    // T*Ry(yaw)*Rx(pitch)*Rz(roll)*S). Extracting with glm::eulerAngles() instead
+    // returns a different Euler family, so a multi-axis node rendered at a wrong
+    // orientation. A single-axis rotation happens to survive either way, hence the
+    // three-axis angles here.
+    SceneHost* h = sceneValue(SceneHost::createHost("link3d"));
+    h->setTree(
+        node("root",
+             {node("mesh").withPosition(1.f, 2.f, 3.f).withRotation(0.5f, 0.25f, 0.1f).withScaleXYZ(2.f, 3.f, 4.f)}));
+
+    auto* r = eve::graphics::Renderable3D::create();
+    REQUIRE(r != nullptr);
+    CHECK(h->linkRenderable3D("mesh", r));
+    TransformSystem::updateHost(h);
+
+    const auto t = r->transform();
+    REQUIRE(approxEq(t->x, 1.f));
+    REQUIRE(approxEq(t->y, 2.f));
+    REQUIRE(approxEq(t->z, 3.f));
+    REQUIRE(approxEq(t->sx, 2.f));
+    REQUIRE(approxEq(t->sy, 3.f));
+    REQUIRE(approxEq(t->sz, 4.f));
+    REQUIRE(approxEq(t->yaw, 0.5f));
+    REQUIRE(approxEq(t->pitch, 0.25f));
+    REQUIRE(approxEq(t->roll, 0.1f));
+}
+
 TEST_CASE("Scene.query.pathParentChildren") {
     SceneHost *h = sceneValue(SceneHost::createHost("query"));
     h->setTree(node("root",
@@ -808,6 +838,36 @@ TEST_CASE("Scene.link.physics2D") {
 
     CHECK(h->unlink("p", findLinkKind("physics2d")));
     CHECK_EQ(h->linkCount("p"), 0);
+    w.destroy();
+}
+
+TEST_CASE("Scene.link.body3DPullRoundTripsEuler") {
+    // pushBody3D composes Ry(yaw)*Rx(pitch)*Rz(roll) onto the body, so pullBody3D has
+    // to invert exactly that order. glm::eulerAngles() returns a different Euler
+    // family, which handed a body-authoritative node the wrong angles for any
+    // multi-axis rotation; localMatrix() then rebuilt a different orientation than
+    // the body actually has. Single-axis values agree either way, hence three axes.
+    SceneHost* h = sceneValue(SceneHost::createHost("link3drot"));
+    h->setTree(node("root", {node("rig")}));
+
+    eve::physics::World3D w(0.f, -9.8f, 0.f, true);
+    eve::physics::Body3D* b = w.newBody("kinematic", 0.f, 0.f, 0.f);
+    REQUIRE(b != nullptr);
+
+    const float     yaw = 0.5f, pitch = 0.25f, roll = 0.1f;
+    const glm::quat q = glm::angleAxis(yaw, glm::vec3(0.f, 1.f, 0.f)) *
+                        glm::angleAxis(pitch, glm::vec3(1.f, 0.f, 0.f)) *
+                        glm::angleAxis(roll, glm::vec3(0.f, 0.f, 1.f));
+    b->setRotation(q.x, q.y, q.z, q.w);
+
+    CHECK(h->linkPhysics3D("rig", b, 1));  // body-authoritative: pull into the node
+    TransformSystem::updateHost(h);
+
+    SceneNode* n = sceneValue(h->findById("rig"));
+    REQUIRE(n != nullptr);
+    REQUIRE(approxEq(n->yaw, yaw));
+    REQUIRE(approxEq(n->pitch, pitch));
+    REQUIRE(approxEq(n->roll, roll));
     w.destroy();
 }
 

@@ -2,10 +2,11 @@
 
 #include "common/Exception.h"
 #include "common/Time.h"
+#include "common/TransformEuler.h"
 #include "physics/Body3D.h"
 #include "physics/Shape3D.h"
-#include "physics/backend/SimulationBackend.h"
 #include "physics/World3D.h"
+#include "physics/backend/SimulationBackend.h"
 
 #include <algorithm>
 #include <cmath>
@@ -570,10 +571,11 @@ editing::Result<PhysicsPlacementFrame> ScenePhysicsPlacementBackend::placementFr
         captured.transform.z            = object.body->getZ();
         const glm::quat rotation(object.body->getRotW(), object.body->getRotX(), object.body->getRotY(),
                                  object.body->getRotZ());
-        const glm::vec3 euler        = glm::eulerAngles(rotation);
-        captured.transform.rotationX = euler.x;
-        captured.transform.rotationY = euler.y;
-        captured.transform.rotationZ = euler.z;
+        float           yaw = 0.f, pitch = 0.f, roll = 0.f;
+        eve::eulerYxzFromQuat(rotation, yaw, pitch, roll);
+        captured.transform.rotationX = pitch;
+        captured.transform.rotationY = yaw;
+        captured.transform.rotationZ = roll;
         captured.transform.scaleX    = object.appliedScale.x;
         captured.transform.scaleY    = object.appliedScale.y;
         captured.transform.scaleZ    = object.appliedScale.z;
