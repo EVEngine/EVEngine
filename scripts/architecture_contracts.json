@@ -727,6 +727,37 @@
       }
     },
     {
+      "id": "weapon-module-interface",
+      "rule": "module-interface",
+      "scope": "src/modules/weapon/**",
+      "owner": "weapon",
+      "issue": "EVENGINE-ARCH-MODULE-INTERFACE",
+      "reason": "The projectile logic consumes IProjectileService through cap::query and the script seam answers it through cap::provide, so the same capability appears on both faces; recording them makes the next provider or consumer declare itself instead of silently displacing the single-provider slot.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/weapon/WeaponLogic.h",
+        "src/modules/weapon/WeaponSystem.cpp"
+      ],
+      "tests": [
+        "scripts/tests/test_architecture_contracts.py"
+      ],
+      "provides": [
+        "IProjectileService"
+      ],
+      "requires": [
+        "IProjectileService"
+      ],
+      "emits": [],
+      "observes": [],
+      "binds": [
+        "eve.Weapon, eve.WeaponEntity, eve.WeaponMountEntity, eve.WeaponRigEntity, eve.AmmoPoolEntity; eve.provider.publishFor('IProjectileService', name, instance)"
+      ],
+      "trim": {
+        "absent_profile": "not yet recorded; this entry is filled in on first touch (spec 8.3)",
+        "layer": "L3 runtime"
+      }
+    },
+    {
       "id": "quality-debt-policy",
       "rule": "debt-metadata",
       "scope": "scripts/**",

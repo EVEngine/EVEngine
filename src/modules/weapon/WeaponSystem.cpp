@@ -1,12 +1,18 @@
 #include "weapon/WeaponSystem.h"
 
 #include "common/Capability.h"
+#include "common/CrashLog.h"
+#include "common/ScriptProvider.h"
 #include "weapon/WeaponAttributes.h"
 #include "weapon/WeaponLogic.h"
 
 #include <algorithm>
 #include <cmath>
+#include <cstdint>
+#include <memory>
+#include <string>
 #include <unordered_map>
+#include <utility>
 #include <vector>
 
 namespace eve::weapon {
@@ -463,4 +469,142 @@ struct BuiltinLogicRegistrar {
 BuiltinLogicRegistrar gBuiltinRegistrar;
 
 }  // namespace
+}  // namespace eve::weapon
+
+// ---------------------------------------------------------------------------
+// IProjectileService 的脚本接缝（阶段 4 的第二个插座：形状与标量 sink 不同）
+// ---------------------------------------------------------------------------
+namespace eve::weapon {
+namespace {
+
+/**
+ * @brief 把 `IProjectileService` 转成一次脚本调用的适配器。
+ *
+ * 编组由拥有接口的模块做（`R-COHESION-6`）：两个结构体按字段摊平成位置标量，脚本按
+ * `spawnProjectile(weaponId, defId, ownerId, yaw, pitch, shooterId, hasTarget,
+ * targetX, targetY, targetZ, muzzleX, muzzleY, muzzleZ, spread, pelletIndex,
+ * pelletCount)` 接收。摊平哪些字段是**模块的接口设计选择**：这里给的是"生成一枚投射物
+ * 真正需要的量"，其余（弹匣、装填、阶段机等）脚本可以按 id 查 `eve.WeaponEntity`。
+ *
+ * @ownership 适配器由 `ScriptProjectileProviders` 持有；接口调用方只借用。
+ * @lifetime `handle_` 标识一代脚本提供方；提供方被卸载后调用会得到 `StaleHandle`。
+ * @thread 只在拥有 `WeaponSystem` 的线程上被调用（`ProjectileLogic::fire`）。
+ * @reentrancy 本适配器**会**调用脚本（这正是它的职责）；因此它在调用前把标识拷出来，
+ *             并在调用后不再触碰 `w`——脚本可以改动 ECS 世界。
+ * @cost 每次开火一次解释器调用 + 16 个标量压栈；开火不是每帧每实体路径（见方案 §6）。
+ */
+class ScriptProjectileService final : public IProjectileService {
+public:
+    explicit ScriptProjectileService(ScriptProviderHandle handle) : handle_(std::move(handle)) {}
+
+    /** @brief 本适配器所服务的那一代脚本提供方。 */
+    [[nodiscard]] const ScriptProviderHandle& handle() const noexcept { return handle_; }
+
+    void spawnProjectile(const WeaponEntity& w, const AttackRequest& req) override {
+        // 接口借出的是 const 引用（提供方不该改武器），而 ECS 的组件访问器按宏设计就是
+        // 非 const（`external/ECS.hpp` 的 `COMPONENT(T,name)`）。这里只转一次、只读：
+        // 下面不写 `w` 的任何字段，并在脚本运行前把需要的值全部拷进 ScriptArg。
+        WeaponEntity& mutableWeapon = const_cast<WeaponEntity&>(w);
+        const auto    identity      = mutableWeapon.identity();
+
+        const ScriptArg args[] = {
+            ScriptArg::fromText(identity->id),          ScriptArg::fromText(identity->defId),
+            ScriptArg::fromInteger(identity->ownerId),  ScriptArg::fromNumber(double(req.yaw)),
+            ScriptArg::fromNumber(double(req.pitch)),   ScriptArg::fromInteger(req.shooterId),
+            ScriptArg::fromBoolean(req.hasTarget),      ScriptArg::fromNumber(double(req.targetX)),
+            ScriptArg::fromNumber(double(req.targetY)), ScriptArg::fromNumber(double(req.targetZ)),
+            ScriptArg::fromNumber(double(req.muzzleX)), ScriptArg::fromNumber(double(req.muzzleY)),
+            ScriptArg::fromNumber(double(req.muzzleZ)), ScriptArg::fromNumber(double(req.spread)),
+            ScriptArg::fromInteger(req.pelletIndex),    ScriptArg::fromInteger(req.pelletCount),
+        };
+
+        auto spawned = ScriptProviderRegistry::instance().call(handle_, "spawnProjectile", args);
+        if (!spawned) {
+            // Fail visibly, once per generation: a provider that raises or declares the wrong
+            // arity means "no projectile appeared", and silence would look like a weapon that
+            // simply does not fire.
+            if (reportedGeneration_ != handle_.generation) {
+                reportedGeneration_ = handle_.generation;
+                recordLogEvent("error", "projectile provider '" + handle_.name +
+                                            "' failed and no projectile was spawned: " + spawned.status().describe());
+            }
+        }
+    }
+
+private:
+    ScriptProviderHandle handle_;
+    /** @brief 已经上报过失败的那一代；0 表示还没有。 */
+    std::uint64_t reportedGeneration_ = 0;
+};
+
+/**
+ * @brief 进程级持有脚本投射物适配器。
+ *
+ * 进程级是刻意的：能力表本身是进程级的，所以适配器的簿记必须比任何单个 `Weapon` 实例
+ * 活得久；而在自己回调里被卸载的适配器，必须活到那次开火返回为止——`ProjectileLogic::
+ * fire` 拿到指针后立刻调用，脚本在调用里卸载自己时指针仍然有效，之后查询只会得到
+ * `StaleHandle`。`retired` 因此保留对象、只摘掉注册。代价是每次卸载一个小对象，
+ * 而卸载只发生在脚本加载/热重载时。
+ */
+struct ScriptProjectileProviders {
+    std::vector<std::unique_ptr<ScriptProjectileService>> live;
+    std::vector<std::unique_ptr<ScriptProjectileService>> retired;
+};
+
+ScriptProjectileProviders& scriptProjectileProviders() {
+    static ScriptProjectileProviders state;
+    return state;
+}
+
+}  // namespace
+
+void declareScriptProjectileSeam() {
+    ScriptProjectileProviders& owned = scriptProjectileProviders();
+    ScriptProviderRegistry::instance().declareCapability(
+        IProjectileService::capabilityName,
+        [&owned](const ScriptProviderHandle& handle) -> eve::Result<void> {
+            // 单实现槽位：`provide` 会顶掉当前实现。顶掉必须可见，否则原生提供方会
+            // "悄悄失效"，而症状只是投射物不再生成。
+            if (eve::cap::query<IProjectileService>() != nullptr) {
+                recordLogEvent("warn", "script projectile provider '" + handle.name +
+                                           "' replaced the provider that owned IProjectileService");
+            }
+            auto                     adapter = std::make_unique<ScriptProjectileService>(handle);
+            ScriptProjectileService* raw     = adapter.get();
+            // 先注册再交所有权：从这里起能力槽位持有裸指针，`owned.live` 是让它有效的唯一原因。
+            eve::cap::provide<IProjectileService>(raw);
+            owned.live.push_back(std::move(adapter));
+            return eve::Result<void>::success();
+        },
+        [&owned](const ScriptProviderHandle& handle) -> eve::Result<void> {
+            const auto match = std::find_if(owned.live.begin(), owned.live.end(),
+                                            [&handle](const std::unique_ptr<ScriptProjectileService>& adapter) {
+                                                return adapter->handle() == handle;
+                                            });
+            if (match == owned.live.end()) {
+                // 幂等：后置条件是"这一代没有适配器"，而模块退出时可能已经撤过了。
+                // 这里返回失败会让"再发布一次同名提供方"因为一个已经正确的状态而失败。
+                return eve::Result<void>::success();
+            }
+            eve::cap::revoke<IProjectileService>(match->get());
+            owned.retired.push_back(std::move(*match));
+            owned.live.erase(match);
+            return eve::Result<void>::success();
+        });
+}
+
+void withdrawScriptProjectileSeam() {
+    ScriptProjectileProviders& owned = scriptProjectileProviders();
+    for (auto& adapter : owned.live) {
+        eve::cap::revoke<IProjectileService>(adapter.get());
+        owned.retired.push_back(std::move(adapter));
+    }
+    owned.live.clear();
+
+    // 连声明一起撤回：没有消费方了，留着接缝只会宣传一个"绑上去也永远不会被调用"的插座。
+    ScriptProviderRegistry::instance()
+        .removeCapability(IProjectileService::capabilityName)
+        .ignore("module teardown may already have dropped this seam");
+}
+
 }  // namespace eve::weapon
