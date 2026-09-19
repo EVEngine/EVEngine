@@ -50,6 +50,13 @@ struct MeshWeldReport {
      * that was emitted in the wrong order.
      */
     std::size_t downwardTriangles = 0;
+    /**
+     * @brief TEMPORARY DIAGNOSTIC: the first few open borders, as their two welded endpoints.
+     *
+     * `boundaryEdges` alone says how many seams there are, not where; this is what turns the count
+     * into a location. Capped so a flat patch's 700-edge perimeter cannot flood the log.
+     */
+    std::vector<std::array<std::array<std::int64_t, 3>, 2>> openBorders;
 };
 
 /** @brief Builds the terrain mesh of every chunk of `map`. */
@@ -123,7 +130,20 @@ struct MeshWeldReport {
             const std::uint32_t a = vertexId[indices[index]];
             const std::uint32_t b = vertexId[indices[index + 1u]];
             const std::uint32_t c = vertexId[indices[index + 2u]];
-            if (pointsDown(weldedPosition, a, b, c)) ++downward;
+            if (pointsDown(weldedPosition, a, b, c)) {
+                ++downward;
+                if (std::getenv("EVP_DIAG_DOWN") != nullptr && downward <= 8u) {
+                    const auto& pa = weldedPosition[a];
+                    const auto& pb = weldedPosition[b];
+                    const auto& pc = weldedPosition[c];
+                    std::printf("[down] (%.3f %.3f %.3f) (%.3f %.3f %.3f) (%.3f %.3f %.3f)\n",
+                                static_cast<double>(pa[0]) / 1000.0, static_cast<double>(pa[1]) / 1000.0,
+                                static_cast<double>(pa[2]) / 1000.0, static_cast<double>(pb[0]) / 1000.0,
+                                static_cast<double>(pb[1]) / 1000.0, static_cast<double>(pb[2]) / 1000.0,
+                                static_cast<double>(pc[0]) / 1000.0, static_cast<double>(pc[1]) / 1000.0,
+                                static_cast<double>(pc[2]) / 1000.0);
+                }
+            }
             Triangle triangle{a, b, c};
             std::sort(triangle.begin(), triangle.end());
             ++triangleUse[triangle];
@@ -138,8 +158,10 @@ struct MeshWeldReport {
     MeshWeldReport report;
     report.downwardTriangles = downward;
     for (const auto& [edge, uses] : edgeUse) {
-        (void)edge;
-        if (uses == 1u) ++report.boundaryEdges;
+        if (uses == 1u) {
+            ++report.boundaryEdges;
+            report.openBorders.push_back({weldedPosition[edge.first], weldedPosition[edge.second]});
+        }
         if (uses > 2u) ++report.nonManifoldEdges;
     }
     for (const auto& [triangle, uses] : triangleUse) {
@@ -155,12 +177,29 @@ struct MeshWeldReport {
  * `expectedBoundary` is the flat patch's own count: a patch is open along its outer
  * perimeter and nowhere else, so any configuration of elevations must reproduce it.
  */
-void checkClosedPatch(const HexMap& map, std::size_t expectedBoundary) {
+[[nodiscard]] bool checkClosedPatch(const HexMap& map, std::size_t expectedBoundary) {
     const MeshWeldReport report = analyseMeshWeld(collectTerrainChunks(map));
-    REQUIRE_EQ(report.duplicateTriangles, 0u);
-    REQUIRE_EQ(report.downwardTriangles, 0u);
-    REQUIRE_EQ(report.nonManifoldEdges, 0u);
-    REQUIRE_EQ(report.boundaryEdges, expectedBoundary);
+    // Returned, not asserted: zeroerr's REQUIRE inside a helper that takes no TestContext is
+    // logged without reaching the process exit status, which is the only thing CTest checks for a
+    // test outside `resourceFormats.` - asserting here made every one of the five call sites a
+    // false pass while the sphere counterpart was reporting 298 missing faces.
+    if (report.duplicateTriangles != 0u || report.downwardTriangles != 0u || report.nonManifoldEdges != 0u ||
+        report.boundaryEdges != expectedBoundary) {
+        std::printf("[patch] duplicate %zu downward %zu nonManifold %zu boundary %zu (expected %zu)\n",
+                    report.duplicateTriangles, report.downwardTriangles, report.nonManifoldEdges, report.boundaryEdges,
+                    expectedBoundary);
+        std::size_t printed = 0;
+        for (const auto& border : report.openBorders) {
+            if (printed++ >= 16u) break;
+            std::printf("[open] (%.3f %.3f %.3f) -> (%.3f %.3f %.3f)\n", static_cast<double>(border[0][0]) / 1000.0,
+                        static_cast<double>(border[0][1]) / 1000.0, static_cast<double>(border[0][2]) / 1000.0,
+                        static_cast<double>(border[1][0]) / 1000.0, static_cast<double>(border[1][1]) / 1000.0,
+                        static_cast<double>(border[1][2]) / 1000.0);
+        }
+        std::fflush(stdout);
+        return false;
+    }
+    return true;
 }
 
 }  // namespace
@@ -1023,7 +1062,7 @@ TEST_CASE("hexmap.mesh.terrainIsWeldClosedAndFreeOfDuplicateCorners") {
     // chord leaves a seam along the wall's foot.
     HexMap cliffMap = makeMap(20, 15, 23u);
     REQUIRE(cliffMap.setElevation(HexCoordinates::fromOffset(7, 7), 3).ok());
-    checkClosedPatch(cliffMap, flatReport.boundaryEdges);
+    REQUIRE(checkClosedPatch(cliffMap, flatReport.boundaryEdges));
 
     // A one-step *slope* runs a terrace ladder along both the edges and the corners instead.
     // Every ladder is parameterized from the lower cell so it meets its neighbours, and every
@@ -1031,14 +1070,14 @@ TEST_CASE("hexmap.mesh.terrainIsWeldClosedAndFreeOfDuplicateCorners") {
     // convention.
     HexMap slopeMap = makeMap(20, 15, 23u);
     REQUIRE(slopeMap.setElevation(HexCoordinates::fromOffset(7, 7), 1).ok());
-    checkClosedPatch(slopeMap, flatReport.boundaryEdges);
+    REQUIRE(checkClosedPatch(slopeMap, flatReport.boundaryEdges));
 
     // A two-cell plateau is what reaches the corner branch where *both* sides of the lowest
     // cell are slopes, which a single raised cell never does.
     HexMap plateau = makeMap(20, 15, 23u);
     REQUIRE(plateau.setElevation(HexCoordinates::fromOffset(7, 7), 1).ok());
     REQUIRE(plateau.setElevation(HexCoordinates::fromOffset(8, 7), 1).ok());
-    checkClosedPatch(plateau, flatReport.boundaryEdges);
+    REQUIRE(checkClosedPatch(plateau, flatReport.boundaryEdges));
 
     // A pit surrounded by raised cells is the cliff corner case: both edges out of the lowest
     // cell rise by more than one step, so the corner takes the plain "flat" branch with three
@@ -1050,7 +1089,7 @@ TEST_CASE("hexmap.mesh.terrainIsWeldClosedAndFreeOfDuplicateCorners") {
             REQUIRE(ring.setElevation(neighbour, 3).ok());
         }
     }
-    checkClosedPatch(ring, flatReport.boundaryEdges);
+    REQUIRE(checkClosedPatch(ring, flatReport.boundaryEdges));
 
     // Scattered heights reach every corner branch at once, which is the point: the elevation
     // sort permutes each of them differently.
@@ -1059,7 +1098,94 @@ TEST_CASE("hexmap.mesh.terrainIsWeldClosedAndFreeOfDuplicateCorners") {
     for (std::int32_t i = 0; i < 10; ++i) {
         REQUIRE(scattered.setElevation(HexCoordinates::fromOffset(4 + i, 6 + (i % 3)), heights[i]).ok());
     }
-    checkClosedPatch(scattered, flatReport.boundaryEdges);
+    REQUIRE(checkClosedPatch(scattered, flatReport.boundaryEdges));
+
+    // A one-step terrace beside a multi-step cliff is the `(Slope, Cliff)` arm of the corner
+    // dispatch, and it was the one arm none of the patterns above reached: a single raised cell
+    // only ever produces `(Flat, Cliff)`, and a two-cell plateau only `(Slope, Slope)`. On the
+    // plane this arm tears - `boundary 738` against the flat 700 - and emits four to eight
+    // downward-facing triangles, which is the same defect the spherical census attributes 84 of
+    // its 114 missing faces to. The plane is where it is cheapest to fix, since its "up" is Y.
+    struct SlopeCliff {
+        const char*  name;
+        std::int32_t ax;
+        std::int32_t az;
+        std::int32_t bx;
+        std::int32_t bz;
+        std::int32_t a;
+        std::int32_t b;
+    };
+    const SlopeCliff patterns[] = {
+        {"one step beside a cliff", 7, 7, 8, 7, 1, 3},
+        {"a cliff beside one step", 7, 7, 8, 7, 3, 1},
+        {"diagonally", 7, 7, 8, 8, 1, 3},
+        {"one step beside a two-step rise", 7, 7, 8, 7, 1, 2},
+    };
+    for (const SlopeCliff& pattern : patterns) {
+        HexMap map = makeMap(20, 15, 23u);
+        REQUIRE(map.setElevation(HexCoordinates::fromOffset(pattern.ax, pattern.az), pattern.a).ok());
+        REQUIRE(map.setElevation(HexCoordinates::fromOffset(pattern.bx, pattern.bz), pattern.b).ok());
+        std::printf("[pattern] %s\n", pattern.name);
+        REQUIRE(checkClosedPatch(map, flatReport.boundaryEdges));
+    }
+}
+
+// TEMPORARY DIAGNOSTIC: which open borders does the slope-cliff pattern add to the flat map's?
+//
+// The perimeter is identical between the two maps, so the difference between their border sets is
+// exactly the seam the corner patch leaves behind, with its location.
+TEST_CASE("hexmap.mesh.diagOpenBorders") {
+    using Key    = std::array<std::int64_t, 3>;
+    using Border = std::array<Key, 2>;
+
+    const auto canonical = [](const Border& border) {
+        return border[0] < border[1] ? Border{border[0], border[1]} : Border{border[1], border[0]};
+    };
+    const auto print = [](const Border& border) {
+        std::printf("[new] (%.3f %.3f %.3f) -> (%.3f %.3f %.3f)\n", static_cast<double>(border[0][0]) / 1000.0,
+                    static_cast<double>(border[0][1]) / 1000.0, static_cast<double>(border[0][2]) / 1000.0,
+                    static_cast<double>(border[1][0]) / 1000.0, static_cast<double>(border[1][1]) / 1000.0,
+                    static_cast<double>(border[1][2]) / 1000.0);
+    };
+
+    HexMap               flat       = makeMap(20, 15, 23u);
+    const MeshWeldReport flatReport = analyseMeshWeld(collectTerrainChunks(flat));
+    std::map<Border, bool> flatBorders;
+    for (const auto& border : flatReport.openBorders) flatBorders.emplace(canonical(border), true);
+
+    HexMap pattern = makeMap(20, 15, 23u);
+    REQUIRE(pattern.setElevation(HexCoordinates::fromOffset(7, 7), 1).ok());
+    REQUIRE(pattern.setElevation(HexCoordinates::fromOffset(8, 7), 3).ok());
+    const MeshWeldReport report = analyseMeshWeld(collectTerrainChunks(pattern));
+
+    std::printf("[diff] flat %zu pattern %zu\n", flatReport.openBorders.size(), report.openBorders.size());
+    std::size_t shown = 0;
+    for (const auto& border : report.openBorders) {
+        const Border key = canonical(border);
+        if (flatBorders.count(key) != 0u) continue;
+        print(key);
+        // Which cell sits under this seam, and what does its neighbourhood look like. A seam is
+        // only meaningful together with the elevation pattern that produced it.
+        const HexVec3 midpoint{static_cast<float>(key[0][0] + key[1][0]) / 2000.f,
+                               static_cast<float>(key[0][1] + key[1][1]) / 2000.f,
+                               static_cast<float>(key[0][2] + key[1][2]) / 2000.f};
+        const auto picked = pattern.pickCell(midpoint + HexVec3{0.f, 50.f, 0.f}, HexVec3{0.f, -1.f, 0.f});
+        if (picked.ok()) {
+            std::string ring;
+            for (std::int32_t d = 0; d < kHexDirectionCount; ++d) {
+                HexCoordinates neighbour{};
+                if (pattern.getNeighbor(picked.value(), static_cast<HexDirection>(d), neighbour)) {
+                    ring += std::to_string(pattern.elevation(neighbour));
+                }
+            }
+            std::printf("[cell] elev %d ring %s\n", pattern.elevation(picked.value()), ring.c_str());
+        } else {
+            std::printf("[cell] no cell under the seam\n");
+        }
+        if (++shown >= 24u) break;
+    }
+    std::printf("[diff] shown %zu\n", shown);
+    std::fflush(stdout);
 }
 
 // --- water mesh -------------------------------------------------------------
