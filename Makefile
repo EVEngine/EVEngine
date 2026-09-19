@@ -196,6 +196,12 @@ check/bindings:
 check/quality-metadata:
 	python3 scripts/check_quality_metadata.py
 
+# Verify no source line declares two test cases. zeroerr registers cases into a
+# std::set ordered only by (file, line), so the second case on a line is dropped
+# silently and never runs (see scripts/check_test_case_lines.py).
+check/test-case-lines:
+	python3 scripts/check_test_case_lines.py
+
 # Compile-fail diagnostics for critical Result/ID/Subscription returns. This
 # is a source-only check and does not configure or build the engine.
 check/nodiscard:
@@ -231,7 +237,7 @@ check/profile-matrix:
 	python3 scripts/profile_matrix.py --check
 
 # Fast local quality gate for the profile and debt contracts.
-check/quality: check/quality-metadata check/profile-matrix check/nodiscard check/architecture-contracts
+check/quality: check/quality-metadata check/profile-matrix check/nodiscard check/architecture-contracts check/test-case-lines
 
 # Profile stages are separate so CI can report configure, build, and
 # independent capability smoke failures independently. The default build root

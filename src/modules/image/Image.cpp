@@ -168,7 +168,8 @@ std::vector<eve::ref<ImageData>> Image::newVolumeLayers(ImageData* src) {
 }
 
 void Image::expose(ssq::Table& table) {
-    auto cls = table.addClass(name, Image::create, false);
+    const HSQUIRRELVM vm  = table.getHandle();
+    auto              cls = table.addClass(name, Image::create, false);
     expose(cls);
 
     // Single ImageData class for every module that hands image::ImageData*
@@ -185,6 +186,27 @@ void Image::expose(ssq::Table& table) {
     img.addFunc("clone", &image::ImageData::clone);
     img.addFunc("paste", &image::ImageData::paste);
     img.addFunc("rotate", &image::ImageData::rotate);
+    // scalePcg takes its filter as a C++ enum; scripts name it as a string (Squirrel has
+    // no enums), the same shape ImageData::rotate already uses for its filter. An
+    // unrecognised name is forwarded as a value that is neither Point nor Bilinear so
+    // ImageData::scalePcg keeps ownership of validating it (and of the message) and the
+    // image is left untouched, which is what a caller expects from a rejected filter.
+    const auto projectPixels = [](int pixels) { return Value::integer(int64_t(pixels)); };
+    img.addFunc("scalePcg", [vm, projectPixels](image::ImageData* self, int newWidth, int newHeight,
+                                                const std::string& filter) {
+        if (!self)
+            return script::projectResult(
+                vm,
+                eve::Result<int>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                            "Pcg texture scale requires an image", "image.scalePcg")),
+                projectPixels);
+        image::ImageScaleFilter resolved = static_cast<image::ImageScaleFilter>(2);
+        if (filter == "point")
+            resolved = image::ImageScaleFilter::Point;
+        else if (filter == "bilinear")
+            resolved = image::ImageScaleFilter::Bilinear;
+        return script::projectResult(vm, self->scalePcg(newWidth, newHeight, resolved), projectPixels);
+    });
     img.addFunc("getPixelR", [](image::ImageData* self, int x, int y) -> float {
         if (!self) return 0.f;
         return self->getPixel(x, y).r;
