@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include <string>
 #include <string_view>
@@ -37,7 +39,7 @@
 
 namespace eve::filesystem {
 
-class Filesystem : public Module, public eve::service::IFileSystem {
+class EVENGINE_API Filesystem : public Module, public eve::service::IFileSystem {
 public:
     Module_REG(Filesystem);
 

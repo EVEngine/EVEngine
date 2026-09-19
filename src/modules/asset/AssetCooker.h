@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @file AssetCooker.h
@@ -40,7 +42,7 @@ struct AssetCookReceipt {
  * @return A local-inspection profile, or Unsupported for an unknown target.
  * @thread Worker-safe; returns an owning value and uses no shared mutable state.
  */
-[[nodiscard]] Result<AssetCookProfile> assetCookProfileForTarget(std::string_view target);
+[[nodiscard]] EVENGINE_API Result<AssetCookProfile> assetCookProfileForTarget(std::string_view target);
 
 /**
  * @brief Cook an admitted source archive into one target-specific runtime pack.
@@ -52,7 +54,7 @@ struct AssetCookReceipt {
  * @thread Worker-safe when source is not concurrently mutated.
  * @reentrancy Does not execute scripts, tools, network requests or callbacks.
  */
-[[nodiscard]] Result<AssetCookReceipt> cookEvaToEvpack(
+[[nodiscard]] EVENGINE_API Result<AssetCookReceipt> cookEvaToEvpack(
     const EvaArchive& source, const AssetCookProfile& profile,
     const EvaArchiveLimits& evaLimits = {}, const EvpackLimits& evpackLimits = {});
 

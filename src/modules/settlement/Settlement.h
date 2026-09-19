@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @file Settlement.h
@@ -128,7 +130,7 @@ struct SettlementResult {
  * append fails.  The object is synchronous and must not retain temporary
  * request/context references.
  */
-class PreparedApply {
+class EVENGINE_API PreparedApply {
 public:
     using CommitFunction   = std::function<eve::Result<void>()>;
     using RollbackFunction = std::function<void()>;
@@ -182,7 +184,7 @@ class ISettlementPolicy;
  * pipeline violation instead of silently creating stale prepared data.  All
  * methods are synchronous and the frame must not escape a settle call.
  */
-class SettlementContext {
+class EVENGINE_API SettlementContext {
 public:
     /** @brief Return the immutable request currently being settled. */
     [[nodiscard]] const SettlementRequest& request() const noexcept { return request_; }
@@ -325,7 +327,7 @@ private:
  * observable trigger work is represented by the committed event and can be
  * consumed by the owning domain after settlement returns.
  */
-class ISettlementPolicy {
+class EVENGINE_API ISettlementPolicy {
 public:
     virtual ~ISettlementPolicy() = default;
 

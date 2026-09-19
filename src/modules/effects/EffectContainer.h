@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/Time.h"
 
@@ -28,7 +30,7 @@ class EffectExecutor;
  * container.  All methods are simulation-thread confined unless the caller
  * provides external synchronization; callbacks are not invoked by this type.
  */
-class EffectContainer {
+class EVENGINE_API EffectContainer {
 public:
     /**
      * @brief Construct an empty effect container.

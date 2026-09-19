@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @brief 运行时容器：固定格数的背包 / 箱子 / 商店栏等。
@@ -16,7 +18,7 @@ namespace eve::inventory {
 class InventorySaveSession;
 
 /** @brief 格子型物品容器（脚本可直接操作）。 */
-class Bag {
+class EVENGINE_API Bag {
 public:
     /** @brief 创建指定格数的空容器。 */
     Bag(int slotCount);

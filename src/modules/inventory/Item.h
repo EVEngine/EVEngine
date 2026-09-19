@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 // 物品定义注册表：数据驱动的 ItemDefinition（C++ 注册或 JSON 批量加载）。
 
@@ -9,7 +11,7 @@
 
 namespace eve::inventory {
 
-class ItemRegistry {
+class EVENGINE_API ItemRegistry {
 public:
     static void registerItem(const ItemDefinition &def);
     static const ItemDefinition *find(const std::string &id);

@@ -44,7 +44,8 @@ struct ShaderAssetLimits {
  * No version zero format exists; future versions require explicit migration.
  * @thread Worker-safe with immutable input. No callbacks, GPU objects, or live-state mutation.
  */
-[[nodiscard]] Result<ShaderAsset> decodeShaderAsset(const Value& definition, const ShaderAssetLimits& limits = {});
+[[nodiscard]] EVENGINE_API Result<ShaderAsset> decodeShaderAsset(const Value& definition,
+                                                                const ShaderAssetLimits& limits = {});
 
 /**
  * @brief Read and decode one capability-selected `eve.shader/1` from an admitted runtime package.

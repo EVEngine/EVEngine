@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "spatial/Bounds.h"
 #include "spatial/QueryIds.h"
@@ -13,7 +15,7 @@ namespace eve::spatial {
  * @brief Uniform-grid spatial hash for 2D AABB queries (map / particle / entity culling).
  * Items are registered in every overlapped cell.
  */
-class SpatialHash2D {
+class EVENGINE_API SpatialHash2D {
 public:
     explicit SpatialHash2D(float cellSize = 64.f);
     ~SpatialHash2D() = default;

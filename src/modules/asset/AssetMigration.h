@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @file AssetMigration.h
@@ -19,7 +21,7 @@ namespace eve::asset {
  * @remarks Supports the current version and N-1. Unknown newer versions and downgrade
  * requests are rejected. No files or registries are mutated by this operation.
  */
-[[nodiscard]] Result<EvaArchive> migrateEvaArchive(EvaArchive source,
+[[nodiscard]] EVENGINE_API Result<EvaArchive> migrateEvaArchive(EvaArchive source,
                                                    const EvaArchiveLimits& limits = {});
 
 }  // namespace eve::asset

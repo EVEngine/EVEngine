@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/Data.h"
 
@@ -8,7 +10,7 @@ namespace eve {
 namespace data {
 
 /** @brief In-memory byte buffer implementing eve::Data (ref-counted). */
-class ByteData : public eve::Data {
+class EVENGINE_API ByteData : public eve::Data {
 public:
     /** @brief Allocates an uninitialized buffer of the given size. */
     ByteData(size_t size);

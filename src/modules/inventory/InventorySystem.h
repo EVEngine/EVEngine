@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 // 库存操作静态入口 + 可插拔接纳 / 容量 / 堆叠 / 变更钩子。
 //
@@ -31,7 +33,7 @@ struct InventoryItemGrant {
  * @remarks Preparation does not mutate the Bag or publish events. The object is
  * bound to the Bag state observed during preparation and may be committed once.
  */
-class PreparedInventoryAdd {
+class EVENGINE_API PreparedInventoryAdd {
 public:
     PreparedInventoryAdd();
     ~PreparedInventoryAdd();
@@ -51,7 +53,7 @@ private:
  * @remarks Preparation neither mutates the Bag nor publishes events. Commit
  * rejects a Bag that no longer matches the observed baseline.
  */
-class PreparedInventoryRemove {
+class EVENGINE_API PreparedInventoryRemove {
 public:
     PreparedInventoryRemove();
     ~PreparedInventoryRemove();
@@ -66,7 +68,7 @@ private:
     friend class InventorySystem;
 };
 
-class InventorySystem {
+class EVENGINE_API InventorySystem {
 public:
     using AcceptFn =
         std::function<bool(const Bag &bag, const ItemDefinition &def, int quantity, std::string *reason)>;

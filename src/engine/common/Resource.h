@@ -1,4 +1,6 @@
 #pragma once
+
+#include "common/Export.h"
 #include "Object.h"
 #include "common/AssetReloader.h"
 #include "common/BorrowedRef.h"
@@ -97,7 +99,7 @@ protected:
  * waitFor joins that job. `get()` waits for an in-flight request of the same
  * key so a prefetch cannot race a later synchronous load into a double decode.
  */
-class ResourceManager : public eve::caps::IAssetReloader {
+class EVENGINE_API ResourceManager : public eve::caps::IAssetReloader {
 public:
 	static ResourceManager& getInstance();
 

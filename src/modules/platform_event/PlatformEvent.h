@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include <cstdint>
 #include <functional>
@@ -69,7 +71,7 @@ struct Variant {
  * Pushed messages are heap-allocated; the queue owns them until polled,
  * after which the caller is responsible for deleting them.
  */
-class Message {
+class EVENGINE_API Message {
 public:
     /**
      * @brief Creates an event message.
@@ -83,7 +85,7 @@ public:
     const std::vector<Variant> args;
 };
 
-class PlatformEvent : public Module {
+class EVENGINE_API PlatformEvent : public Module {
 public:
     Module_REG(PlatformEvent);
     virtual ~PlatformEvent();

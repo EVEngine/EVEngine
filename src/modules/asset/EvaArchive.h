@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @file EvaArchive.h
@@ -58,7 +60,7 @@ struct EvaArchive {
  * @thread Worker-safe; no state is retained across calls.
  * @reentrancy Does not invoke callbacks.
  */
-[[nodiscard]] Result<EvaArchive> parseEvaArchive(
+[[nodiscard]] EVENGINE_API Result<EvaArchive> parseEvaArchive(
     std::span<const std::uint8_t> bytes, const EvaArchiveLimits& limits = {});
 
 }  // namespace eve::asset

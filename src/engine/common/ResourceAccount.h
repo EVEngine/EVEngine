@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @file ResourceAccount.h
@@ -109,7 +111,7 @@ private:
 };
 
 /** @brief One positive resource and quantity pair in a canonical cost. */
-struct ResourceCost {
+struct EVENGINE_API ResourceCost {
     ResourceId resource;
     Amount     amount;
 
@@ -137,7 +139,7 @@ struct CostInput {
  * checked arithmetic. Empty costs and zero/negative items are rejected, so a
  * successful CostSpec is safe to use in reserve/debit/credit operations.
  */
-class CostSpec {
+class EVENGINE_API CostSpec {
 public:
     /** @brief Construct an invalid empty cost; use create/from/single for input. */
     CostSpec() = default;
