@@ -32,6 +32,10 @@ BASELINE = Path("scripts/sq_call_sites_baseline.json")
 SOURCE_ROOT = Path("src")
 CALL = re.compile(r"\bsq_call\s*\(")
 
+# The sanitised wrapper itself is the one place that must call sq_call directly; it is
+# the implementation the baseline steers new code towards, not a hand-counted site.
+EXCLUDED_FILES = {"src/engine/common/SquirrelBinding.h"}
+
 
 def normalize(line: str) -> str:
     return re.sub(r"\s+", " ", line.strip())
@@ -48,10 +52,24 @@ def scan(root: Path) -> list[str]:
     for path in sorted(root.rglob("*")):
         if path.suffix not in {".cpp", ".h", ".hpp"}:
             continue
+        if path.as_posix() in EXCLUDED_FILES:
+            continue
         text = path.read_text(encoding="utf-8")
         seen: dict[str, int] = {}
+        in_block_comment = False
         for line in text.splitlines():
-            if line.lstrip().startswith("//"):
+            stripped = line.strip()
+            # Comments are skipped in full: a doc comment that *mentions* sq_call is not a
+            # call site, and counting it would both inflate the baseline and make the
+            # checker fail on prose.
+            if in_block_comment:
+                if "*/" in stripped:
+                    in_block_comment = False
+                continue
+            if stripped.startswith("/*"):
+                in_block_comment = "*/" not in stripped
+                continue
+            if stripped.startswith("//"):
                 continue
             if not CALL.search(line):
                 continue

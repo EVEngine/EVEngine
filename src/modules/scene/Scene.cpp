@@ -262,18 +262,28 @@ eve.SceneComponent <- class {
 }
 )SQ";
 
-void injectSceneComponentClass(ssq::Table &eveTable) {
-    HSQUIRRELVM vm = eveTable.getHandle();
+/**
+ * @brief Compile and run one embedded bootstrap chunk, reporting a failed run.
+ *
+ * These chunks define the script-facing Scene classes (SceneComponent, SceneEntity), so
+ * a failed run used to leave the class missing with no signal at all: the old code
+ * called `sq_call(vm, 1, SQFalse, SQTrue)` and dropped the result. Going through
+ * script::callFunction derives the count and reports the script error.
+ */
+void runInjectionChunk(HSQUIRRELVM vm, const char* name, const char* source) {
     const SQInteger top = sq_gettop(vm);
-    if (SQ_FAILED(sq_compilebuffer(vm, kSceneComponentScript,
-                                   static_cast<SQInteger>(std::strlen(kSceneComponentScript)),
-                                   "SceneComponent.nut", SQTrue))) {
+    if (SQ_FAILED(sq_compilebuffer(vm, source, static_cast<SQInteger>(std::strlen(source)), name, SQTrue))) {
         sq_settop(vm, top);
         return;
     }
-    sq_pushroottable(vm);
-    sq_call(vm, 1, SQFalse, SQTrue);
+    HSQOBJECT chunk;
+    sq_getstackobj(vm, -1, &chunk);  // borrowed: still rooted by `top` until the call ends
+    (void)script::callFunction(vm, chunk, script::rootTable);
     sq_settop(vm, top);
+}
+
+void injectSceneComponentClass(ssq::Table& eveTable) {
+    runInjectionChunk(eveTable.getHandle(), "SceneComponent.nut", kSceneComponentScript);
 }
 
 /**
@@ -609,31 +619,11 @@ eve.SceneNodeRef["getBounds"] <- function() {
 )SQ";
 
 void injectSceneEntityBase(ssq::Table &eveTable) {
-    HSQUIRRELVM vm = eveTable.getHandle();
-    const SQInteger top = sq_gettop(vm);
-    if (SQ_FAILED(sq_compilebuffer(vm, kSceneEntityBaseScript,
-                                   static_cast<SQInteger>(std::strlen(kSceneEntityBaseScript)),
-                                   "SceneEntity.nut", SQTrue))) {
-        sq_settop(vm, top);
-        return;
-    }
-    sq_pushroottable(vm);
-    sq_call(vm, 1, SQFalse, SQTrue);
-    sq_settop(vm, top);
+    runInjectionChunk(eveTable.getHandle(), "SceneEntity.nut", kSceneEntityBaseScript);
 }
 
 void injectSceneEntityScript(ssq::Table &eveTable) {
-    HSQUIRRELVM vm = eveTable.getHandle();
-    const SQInteger top = sq_gettop(vm);
-    if (SQ_FAILED(sq_compilebuffer(vm, kSceneEntityScript,
-                                   static_cast<SQInteger>(std::strlen(kSceneEntityScript)),
-                                   "SceneEntity.nut", SQTrue))) {
-        sq_settop(vm, top);
-        return;
-    }
-    sq_pushroottable(vm);
-    sq_call(vm, 1, SQFalse, SQTrue);
-    sq_settop(vm, top);
+    runInjectionChunk(eveTable.getHandle(), "SceneEntity.nut", kSceneEntityScript);
 }
 
 [[maybe_unused]] const bool g_sceneEntityHookRegistered = []() {
