@@ -37,7 +37,7 @@ enum ContainerType
  *              Specific formats may not use every level.
  * @return The newly compressed data.
  **/
-CompressedData *compress(std::string format, const char *rawbytes, size_t rawsize, int level = -1);
+EVENGINE_API_FOUNDATION CompressedData *compress(std::string format, const char *rawbytes, size_t rawsize, int level = -1);
 
 /**
  * @brief Decompresses existing compressed data into raw bytes.
@@ -46,7 +46,7 @@ CompressedData *compress(std::string format, const char *rawbytes, size_t rawsiz
  * @param[out] decompressedsize The size in bytes of the decompressed data.
  * @return The newly decompressed data (allocated with new[]).
  **/
-char *decompress(CompressedData *data, size_t &decompressedsize);
+EVENGINE_API_FOUNDATION char *decompress(CompressedData *data, size_t &decompressedsize);
 
 /**
  * @brief Decompresses existing compressed data into raw bytes.
@@ -72,7 +72,7 @@ EVENGINE_API_FOUNDATION char *decompress(std::string format, const char *cbytes,
  * @return The newly allocated encoded buffer (allocated with new[]; caller frees).
  * @throws eve::Exception on an unsupported format.
  **/
-char *encode(std::string format, const char *src, size_t srclen, size_t &dstlen, size_t linelen = 0);
+EVENGINE_API_FOUNDATION char *encode(std::string format, const char *src, size_t srclen, size_t &dstlen, size_t linelen = 0);
 
 /**
  * @brief Decodes a text buffer (hex / base64) back into raw bytes.
@@ -93,10 +93,11 @@ EVENGINE_API_FOUNDATION char *decode(std::string format, const char *src, size_t
  * @return An std::string of bytes, representing the result of the hash
  *         function.
  **/
-std::string hash(std::string function, Data *input);
-std::string hash(std::string function, const char *input, uint64_t size);
-void hash(std::string function, Data *input, HashFunction::Value &output);
-void hash(std::string function, const char *input, uint64_t size, HashFunction::Value &output);
+EVENGINE_API_FOUNDATION std::string hash(std::string function, Data *input);
+EVENGINE_API_FOUNDATION std::string hash(std::string function, const char *input, uint64_t size);
+EVENGINE_API_FOUNDATION void hash(std::string function, Data *input, HashFunction::Value &output);
+EVENGINE_API_FOUNDATION void hash(std::string function, const char *input, uint64_t size,
+                                   HashFunction::Value &output);
 
 
 

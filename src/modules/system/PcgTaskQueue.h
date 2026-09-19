@@ -1,4 +1,6 @@
 #pragma once
+
+#include "common/Export.h"
 #include "common/Result.h"
 #include <cstdint>
 #include <vector>
@@ -11,7 +13,7 @@ enum class PcgTaskQueueStatus { Idle = 0, Waiting = 1, Ready = 2 };
  * @details tick() only publishes a ready task ID. The caller executes work outside the queue and calls resolveReady().
  * @thread Owning thread only; no pointers or callbacks are retained.
  */
-class PcgTaskQueue {
+class EVENGINE_API_FOUNDATION PcgTaskQueue {
 public:
     /** @brief Append a task with Pcg's default 0.25-second delay unless overridden. */
     [[nodiscard]] Result<std::uint64_t> add(double waitSeconds = 0.25);

@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "editor/EditorAuthority.h"
 #include "editing/EditableTarget.h"
@@ -20,7 +22,7 @@ struct PluginPermissionGrant {
 };
 
 /** @brief Revisioned plugin permission policy with reversible, auditable grants. */
-class PluginPermissionTarget final : public virtual IEditableTarget,
+class EVENGINE_API_ORCHESTRATION PluginPermissionTarget final : public virtual IEditableTarget,
                                      public IDomainOperationTarget,
                                      public IDomainOperationTargetStaging {
 public:

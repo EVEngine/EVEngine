@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "editor/EditorProtocol.h"
 
@@ -45,7 +47,7 @@ public:
 };
 
 /** @brief Pause/single-step/bake controller shared by simulation editor modules. */
-class SimulationPreviewController {
+class EVENGINE_API_ORCHESTRATION SimulationPreviewController {
 public:
     /** @brief Set the fixed preview delta in seconds. */
     EditorResult<void> setFixedDelta(double seconds);

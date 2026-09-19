@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "editor/EditorHostProfile.h"
 #include "editor/EditorPropertyPresenter.h"
@@ -33,7 +35,7 @@ enum class PropertyModelSurface { Developer, Runtime };
  * a complete snapshot is published; reentrant notifications are queued until
  * the current notification batch completes.
  */
-class EditorPropertyModel final : public property_access::IPropertyAccess {
+class EVENGINE_API_ORCHESTRATION EditorPropertyModel final : public property_access::IPropertyAccess {
 public:
     using EditSink = std::function<EditorResult<void>(const PropertyEditIntent &)>;
 

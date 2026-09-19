@@ -128,7 +128,7 @@ struct EVENGINE_API_WORLD Theme {
 
 EVENGINE_API_WORLD Theme &globalTheme();
 /** @brief Current preset name: "dark", "light", or "custom". */
-const std::string &globalThemeName();
+EVENGINE_API_WORLD const std::string &globalThemeName();
 
 EVENGINE_API_WORLD void setGlobalTheme(const Theme &theme);
 EVENGINE_API_WORLD void setGlobalTheme(const Theme &theme, const std::string &name);

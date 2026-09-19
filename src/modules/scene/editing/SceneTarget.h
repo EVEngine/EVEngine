@@ -200,14 +200,14 @@ private:
 };
 
 /** @brief Backend-neutral placement logic suitable for a Tool, script or command handler. */
-class ScenePlacementToolLogic {
+class EVENGINE_API_BACKENDS ScenePlacementToolLogic {
 public:
     /** @brief Query hierarchy capability and build a create operation. */
     EditorResult<DomainOperation> plan(IEditableTarget& target, const CreateSceneObjectRequest& request) const;
 };
 
 /** @brief Backend-neutral hierarchy editing logic for outliner-style tools. */
-class SceneHierarchyToolLogic {
+class EVENGINE_API_BACKENDS SceneHierarchyToolLogic {
 public:
     /** @brief Query hierarchy capability and build a leaf deletion operation. */
     EditorResult<DomainOperation> planDelete(IEditableTarget& target, const ObjectId& object) const;
@@ -220,7 +220,7 @@ public:
 };
 
 /** @brief Backend-neutral transform logic suitable for a Tool, script or command handler. */
-class SceneTransformToolLogic {
+class EVENGINE_API_BACKENDS SceneTransformToolLogic {
 public:
     /** @brief Query transform capability and build a transform operation. */
     EditorResult<DomainOperation> plan(IEditableTarget& target, const ObjectId& object,
@@ -228,7 +228,7 @@ public:
 };
 
 /** @brief Property adapter exposing scene TRS to generic inspector presenters. */
-class ScenePropertyProvider final : public IPropertyProvider {
+class EVENGINE_API_BACKENDS ScenePropertyProvider final : public IPropertyProvider {
 public:
     explicit ScenePropertyProvider(const SceneTargetBase* target) : target_(target) {}
 

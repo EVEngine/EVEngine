@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "editor/EditorAuthority.h"
 #include "editor/EditorTarget.h"
@@ -53,7 +55,7 @@ public:
 };
 
 /** @brief UI-neutral reversible curve and gradient timeline document. */
-class EditorCurveDocument final : public virtual IEditableTarget,
+class EVENGINE_API_ORCHESTRATION EditorCurveDocument final : public virtual IEditableTarget,
                                   public IDomainOperationTarget,
                                   public IDomainOperationTargetStaging,
                                   public ICurveDocumentEditTarget {

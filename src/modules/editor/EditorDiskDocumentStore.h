@@ -55,7 +55,7 @@ struct AutosaveDraft {
 };
 
 /** @brief Autosave coordinator that never overwrites the formal document URI. */
-class AutosaveService {
+class EVENGINE_API_ORCHESTRATION AutosaveService {
 public:
     /**
      * @brief Create an autosave namespace.

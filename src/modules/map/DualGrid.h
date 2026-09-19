@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/Result.h"
 #include "map/TileLayer.h"
@@ -67,7 +69,7 @@ struct DualGridMaskConfig {
  * bake a sprite atlas, or derive
  * coast bands without changing logical terrain state.
  */
-struct DualGridMaskAtlas {
+struct EVENGINE_API_WORLD DualGridMaskAtlas {
     int                width  = 0;
     int                height = 0;
     std::vector<float> coverage;
@@ -98,7 +100,7 @@ struct DualGridRgbaImage {
  * @determinism Bit-stable for the same
  * config on IEEE-754 implementations.
  */
-[[nodiscard]] eve::Result<DualGridMaskAtlas> generateDualGridMaskAtlas(const DualGridMaskConfig& config);
+[[nodiscard]] EVENGINE_API_WORLD eve::Result<DualGridMaskAtlas> generateDualGridMaskAtlas(const DualGridMaskConfig& config);
 
 /**
  * @brief Bake two ordinary same-size RGBA8 tiles into a row-major 4x4 transition atlas.
@@ -118,7 +120,7 @@ struct DualGridRgbaImage {
  * @cost O(16 * width * height), intended
  * for import/load time and cacheable by content hash.
  */
-[[nodiscard]] eve::Result<DualGridRgbaImage> bakeDualGridTransitionAtlas(const DualGridRgbaImage&  terrainA,
+[[nodiscard]] EVENGINE_API_WORLD eve::Result<DualGridRgbaImage> bakeDualGridTransitionAtlas(const DualGridRgbaImage&  terrainA,
                                                                          const DualGridRgbaImage&  terrainB,
                                                                          const DualGridMaskConfig& config);
 

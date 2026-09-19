@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/Resource.h"
 
@@ -20,7 +22,7 @@ namespace font {
  * @brief CPU-side decoded font face (FreeType FT_Face + owned font bytes).
  * Does not upload to GPU — rasterize glyphs to ImageData for graphics::Texture.
  */
-class FontData : public Resource {
+class EVENGINE_API_BACKENDS FontData : public Resource {
 public:
     /** @brief 从字体字节创建指定像素尺寸的字体面。 */
     FontData(std::vector<uint8_t> bytes, int pixelSize, std::string uri = "");

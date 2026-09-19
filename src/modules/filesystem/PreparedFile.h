@@ -15,7 +15,7 @@ class FileData;
  * @ownership ResourceManager owns the job and its snapshot. Workers do no VM/GPU work.
  * @thread Game-thread submission; no callbacks. Decode jobs finish before filesystem teardown.
  */
-[[nodiscard]] Result<void> requestPreparedFile(const std::string& path);
+[[nodiscard]] EVENGINE_API_FOUNDATION Result<void> requestPreparedFile(const std::string& path);
 /** @brief Join a queued read or synchronously read an immutable file snapshot.
  * @param path VFS path. @param limit Maximum accepted byte length, at most 1 GiB.
  * @return Shared immutable bytes, valid after cache unload/reload until the last reader releases them.

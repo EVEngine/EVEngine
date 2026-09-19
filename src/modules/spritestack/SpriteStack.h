@@ -111,7 +111,7 @@ private:
 };
 
 /** @brief Collection of 2D stacks; Graphics performs texture batching. */
-class SpriteStackBatch {
+class EVENGINE_API_WORLD SpriteStackBatch {
 public:
     void add(SpriteStack2D *stack);
     void remove(SpriteStack2D *stack);
@@ -124,7 +124,7 @@ private:
 };
 
 /** @brief SpriteStack module: horizontal slice baking plus pure-2D rendering. */
-class SpriteStack : public Module {
+class EVENGINE_API_WORLD SpriteStack : public Module {
 public:
     Module_REG(SpriteStack);
     SpriteStack() = default;

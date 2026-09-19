@@ -58,7 +58,7 @@ private:
 struct ScalarFieldChange { int x = 0, y = 0; float before = 0.f, after = 0.f; };
 
 /** @brief Reversible edits to any target exposing IScalarFieldTarget. */
-class ScalarFieldEditCommand final : public IEditCommand {
+class EVENGINE_API_ORCHESTRATION ScalarFieldEditCommand final : public IEditCommand {
 public:
     ScalarFieldEditCommand(std::string name, IEditableTarget *target);
     const std::string &name() const override { return name_; }

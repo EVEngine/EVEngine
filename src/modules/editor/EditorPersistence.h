@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "editor/EditorDocumentService.h"
 #include "editor/EditorProtocol.h"
@@ -24,7 +26,7 @@ struct EditorPersistenceSnapshot {
  * use DiskAtomicDocumentStore for scene documents and adapt their game save
  * service to IAtomicDocumentStore for savegame slots.
  */
-class EditorPersistenceAdapter {
+class EVENGINE_API_ORCHESTRATION EditorPersistenceAdapter {
 public:
     /**
      * @brief Bind one logical persistence target.

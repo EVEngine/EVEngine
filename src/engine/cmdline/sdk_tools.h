@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/Result.h"
 
@@ -33,7 +35,7 @@ void setEnv(const std::string& name, const std::string& value);
  * @brief 当前 eve 版本对应的发布 tag（v0.1.0-dev → v0.1.0）。
  * 可用 EVE_SDK_TAG 覆盖（dev 构建 / 测试）。解析失败时返回空串。
  */
-std::string sdkVersionTag();
+EVENGINE_API_FOUNDATION std::string sdkVersionTag();
 
 /**
  * @brief EVEngine 官方 SDK 安装根目录（Windows: %LOCALAPPDATA%/EVEngine/sdk，
@@ -53,7 +55,7 @@ std::string eveSdkBaseUrl();
  * @return 摘要文本；文件无法读取时为空。
  * @note 可重入，各调用独立持有摘要状态，不生成临时文件或启动子进程。
  */
-std::string fileSha256(const std::string& path);
+EVENGINE_API_FOUNDATION std::string fileSha256(const std::string& path);
 
 /**
  * @brief 定位 EVEngine SDK 根目录：--sdk 参数 > $EVENGINE_SDK > 可执行文件
@@ -94,7 +96,7 @@ bool isAndroidSdkInstalled(const std::string& root);
  * @ownership 安装过程只在内部拥有临时文件；失败不会发布半安装的 SDK。
  * @thread 调用线程；该操作同步执行，不可并发调用同一安装根目录。
  */
-[[nodiscard]] eve::Result<void> installEveSdk(Platform p);
+[[nodiscard]] EVENGINE_API_FOUNDATION eve::Result<void> installEveSdk(Platform p);
 
 /**
  * @brief 自动下载并安装 Android 工具链：EVEngine 官方 android SDK +

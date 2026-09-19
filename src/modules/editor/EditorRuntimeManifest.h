@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "editor/EditorAssetDatabase.h"
 #include "editor/EditorExtension.h"
@@ -27,7 +29,7 @@ struct RuntimeEditorPackage {
 };
 
 /** @brief Validates an explicit manifest and resolves its runtime dependency closure. */
-class RuntimeEditorPublisher {
+class EVENGINE_API_ORCHESTRATION RuntimeEditorPublisher {
 public:
     /**
      * @brief Build a deny-by-default runtime package.

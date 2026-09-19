@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "graphics/material/editor/EditorMaterialPreview.h"
 #include "editor/EditorTransactionService.h"
@@ -35,7 +37,7 @@ struct MaterialStudioState {
  * @threadaffinity Owner thread only; preview rendering and transaction callbacks are synchronous.
  * @reentrancy Do not call this controller again from renderer or transaction callbacks.
  */
-class MaterialStudioController {
+class EVENGINE_API_EDITORS MaterialStudioController {
 public:
     MaterialStudioController(DocumentId document, MaterialPublishingTarget& target,
                              IEditorTransactionBackend& transactions, MaterialPreviewService& previews,

@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "editor/EditorHostProfile.h"
 #include "editor/EditorProperty.h"
@@ -27,7 +29,7 @@ struct PropertyEditIntent {
 };
 
 /** @brief Shared presenter logic that exposes developer-oriented property rows. */
-class DeveloperPropertyPresenter {
+class EVENGINE_API_ORCHESTRATION DeveloperPropertyPresenter {
 public:
     /** @brief Read every schema property, including advanced/editor-only rows. */
     PropertyPresentation present(const PropertySchema& schema, const SelectionSnapshot& selection,
@@ -39,7 +41,7 @@ public:
 };
 
 /** @brief Shared presenter logic that exposes only runtime-safe property rows. */
-class RuntimePropertyPresenter {
+class EVENGINE_API_ORCHESTRATION RuntimePropertyPresenter {
 public:
     /** @brief Read properties marked Runtime and not marked EditorOnly. */
     PropertyPresentation present(const PropertySchema& schema, const SelectionSnapshot& selection,

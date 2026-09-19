@@ -94,7 +94,7 @@ private:
 };
 
 /** @brief Serializable property target matching graphics::Light3D. */
-class Light3DDocumentTarget final : public LightingPropertyTargetBase {
+class EVENGINE_API_DOMAINS Light3DDocumentTarget final : public LightingPropertyTargetBase {
 public:
     explicit Light3DDocumentTarget(std::string id);
     /** @brief Validate direction, shadow and point/directional cross-field rules. */

@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "editor/EditorProtocol.h"
 
@@ -42,7 +44,7 @@ struct EditorTimelinePage {
 };
 
 /** @brief Bounded copied event timeline with stale-page detection and correlation filtering. */
-class EditorEventTimeline {
+class EVENGINE_API_ORCHESTRATION EditorEventTimeline {
 public:
     /** @brief Set retained event capacity; shrinking drops oldest events. */
     EditorResult<void> setCapacity(std::size_t capacity);

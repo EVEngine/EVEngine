@@ -58,7 +58,7 @@ private:
 };
 
 /** @brief Authority that permits discovery and dry-run but rejects commits. */
-class ReadOnlyAuthority final : public IEditAuthority {
+class EVENGINE_API_PLATFORM ReadOnlyAuthority final : public IEditAuthority {
 public:
     Result<AuthorityPlan>      preflight(const TransactionSpec&           transaction,
                                                std::span<const DomainOperation> operations) override;

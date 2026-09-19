@@ -111,7 +111,7 @@ struct ImportTicket {
 };
 
 /** @brief Small coordinator that validates importer output before atomic index publication. */
-class ImportCoordinator {
+class EVENGINE_API_ORCHESTRATION ImportCoordinator {
 public:
     explicit ImportCoordinator(MemoryAssetDatabase* database) : database_(database) {}
     /** @brief Validate and publish a completed import product. */

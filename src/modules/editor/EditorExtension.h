@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "editor/EditorCommandService.h"
 
@@ -86,7 +88,7 @@ public:
  * The command service is non-owning and must outlive this registry. Extension
  * unload removes every command and descriptor owned by the module.
  */
-class EditorExtensionRegistry final : public IEditorExtensionRegistry {
+class EVENGINE_API_ORCHESTRATION EditorExtensionRegistry final : public IEditorExtensionRegistry {
 public:
     explicit EditorExtensionRegistry(EditorCommandService* commands) : commands_(commands) {}
 

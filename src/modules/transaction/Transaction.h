@@ -230,7 +230,7 @@ struct Event {
  * The plan records intent and validation results only. It deliberately does
  * not execute operations against other engine modules.
  */
-class Plan {
+class EVENGINE_API_FOUNDATION Plan {
 public:
     /** @brief Returns the stable ledger-local transaction identifier. */
     const std::string& id() const;
@@ -334,11 +334,20 @@ private:
 };
 
 /** @brief Deterministic owner and identifier allocator for transaction plans. */
-class Ledger {
+class EVENGINE_API_FOUNDATION Ledger {
 public:
     /** @brief Creates an empty ledger with an optional persistent identity. */
     explicit Ledger(eve::PersistentId instanceId = {}, eve::UuidEntropySource transactionEntropy = {},
                     eve::UuidClock transactionClock = {});
+
+    // std::vector<std::unique_ptr<Plan>> makes the implicit copy operations
+    // ill-formed (C2280) as soon as a class-level dllexport instantiates them;
+    // spell the four out so the export surface stays defined. Semantics unchanged:
+    // the ledger was never copyable in practice.
+    Ledger(const Ledger&) = delete;
+    Ledger& operator=(const Ledger&) = delete;
+    Ledger(Ledger&&)                 = default;
+    Ledger& operator=(Ledger&&) = default;
     /**
      * @brief Creates an open plan with a UUID-backed identity.
      * @param correlation Stable business-chain projection.
@@ -398,14 +407,23 @@ private:
 };
 
 /** @brief Returns the stable lowercase name of a transaction state. */
-std::string stateName(State state);
+EVENGINE_API_FOUNDATION std::string stateName(State state);
 
 /** @brief Script module factory for generic transaction ledgers. */
-class Transaction : public Module {
+class EVENGINE_API_FOUNDATION Transaction : public Module {
 public:
     Module_REG(Transaction);
     Transaction()           = default;
     ~Transaction() override = default;
+
+    // std::vector<std::unique_ptr<Ledger>> makes the implicit copy operations
+    // ill-formed (C2280) as soon as a class-level dllexport instantiates them;
+    // spell the four out so the export surface stays defined. Semantics unchanged:
+    // a module instance was never copyable in practice.
+    Transaction(const Transaction&) = delete;
+    Transaction& operator=(const Transaction&) = delete;
+    Transaction(Transaction&&)                 = default;
+    Transaction& operator=(Transaction&&) = default;
 
     /**
      * @brief Allocates a module-owned transaction ledger.

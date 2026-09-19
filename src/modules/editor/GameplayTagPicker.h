@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /** @file GameplayTagPicker.h @brief UI-neutral gameplay-tag picker projection. */
 
@@ -26,7 +28,7 @@ struct GameplayTagPickerEntry {
  * only and invoke no callbacks. Results own their strings and remain valid after
  * subsequent registry mutation.
  */
-class GameplayTagPicker {
+class EVENGINE_API_ORCHESTRATION GameplayTagPicker {
 public:
     /** @brief Construct a picker borrowing the canonical registry. */
     explicit GameplayTagPicker(const tags::GameplayTagRegistry& registry) : registry_(registry) {}

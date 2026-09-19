@@ -482,3 +482,17 @@ debug SDK（`make sdk/win32-debug`）**沿用开发配置，即动态**：它从
 2. 统计 failed 之前先确认日志覆盖了全部用例：截断的日志会漏报挂起用例（本轮 `ui` 4 → 6）。
 
 **回归对账（本批标注未破坏已迁移域）**：platform 27/27、particles 25/34（9 个仍是 SDL `_this` 族）、scene 69/70（ECS 族）、building 92/96（ECS 族）——与 §7.7/§7.9/§7.10 记录**逐项一致**。静态 `ninja -C C:\evs eve` exit 0（`eve.exe` 221.25 MiB）。ECS 单例对象级取证：2437 个 `.obj` / 259 个目标中 173 个 `.obj` / 27 个目标各持一份（`unit_test_ui` 1、`unit_test_tactics_rts` 1、`EVUI` 15、`EVRts` 11、`EVTactics` 1、`EVGraphics` 44…）；SDL 取证：7 个组 DLL + 全部 30 个测试 exe 各含一份 SDL video 静态状态。本批日志前缀 `b5a2-`。
+### 7.13 SHARED 测试面标注：editor / core（2026-09-20）
+
+| 域 | ctest（`-E "^bundle/" --timeout 120`） |
+| --- | --- |
+| editor | **181/181 通过** |
+| core | **506/507** |
+
+两域在第一次构建时都先在编译期撞上同一个 **C2280**（`eve::level_editing::LevelLayer::operator=`，类级 dllexport 强制实例化隐式拷贝赋值 —— §7.5/§7.10 已记录的陷阱），按四件套（删拷贝 + default 移动）修好后链通；`editor` 曾出现过 `b5b-ecs-copies-editor.log` 的 ECS 单例取证。
+
+**`core` 的唯一失败不是标注问题、也不是静态状态复制族**：`plugins.load.nativeLibraryAndInstantiateCppModule` → `LoadLibrary failed for 'C:/evt/build/win32-debug/test/native_test_plugin.dll' (err=126 = ERROR_MOD_NOT_FOUND)`。这是**插件的运行时依赖发现**问题（插件用完整路径加载时，其依赖只按"应用目录 + PATH"搜索，不按插件所在目录；或插件本身是陈旧产物），属于可修的一类，与 SDL/ECS/ImGui 的每二进制副本不同。待定性。
+
+**回归对账**：platform 27/27、particles 25/34、scene 69/70、building 92/96 —— 与记录逐项一致，本批标注无回归；静态 OBJECT `ninja -C C:\evs eve` 正常。
+
+进度：30 个域中 **21 个已链通**（19 个全绿）；仍待迁移 `animation` / `physics` / `rpg` / `procgen` / `graphics`。

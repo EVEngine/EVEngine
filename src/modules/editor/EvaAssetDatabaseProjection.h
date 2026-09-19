@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @file EvaAssetDatabaseProjection.h
@@ -20,7 +22,7 @@ namespace eve::editor {
  * @thread Uses the thread-affinity contract of `MemoryAssetDatabase`.
  * @reentrancy Does not invoke callbacks.
  */
-[[nodiscard]] EditorResult<std::vector<AssetRecord>> publishEvaAssetProjection(
+[[nodiscard]] EVENGINE_API_ORCHESTRATION EditorResult<std::vector<AssetRecord>> publishEvaAssetProjection(
     MemoryAssetDatabase& database, const asset::EvaManifest& manifest, std::string archiveUri,
     std::string importerId);
 
