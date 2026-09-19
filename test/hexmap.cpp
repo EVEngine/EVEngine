@@ -51,10 +51,10 @@ struct MeshWeldReport {
      */
     std::size_t downwardTriangles = 0;
     /**
-     * @brief TEMPORARY DIAGNOSTIC: the first few open borders, as their two welded endpoints.
+     * @brief The open borders themselves, as their two welded endpoints.
      *
-     * `boundaryEdges` alone says how many seams there are, not where; this is what turns the count
-     * into a location. Capped so a flat patch's 700-edge perimeter cannot flood the log.
+     * `boundaryEdges` alone says how many seams there are, not where; this is what turns a failure
+     * into a location on the map. Capped, so a flat patch's own perimeter cannot flood the log.
      */
     std::vector<std::array<std::array<std::int64_t, 3>, 2>> openBorders;
 };
@@ -132,17 +132,6 @@ struct MeshWeldReport {
             const std::uint32_t c = vertexId[indices[index + 2u]];
             if (pointsDown(weldedPosition, a, b, c)) {
                 ++downward;
-                if (std::getenv("EVP_DIAG_DOWN") != nullptr && downward <= 8u) {
-                    const auto& pa = weldedPosition[a];
-                    const auto& pb = weldedPosition[b];
-                    const auto& pc = weldedPosition[c];
-                    std::printf("[down] (%.3f %.3f %.3f) (%.3f %.3f %.3f) (%.3f %.3f %.3f)\n",
-                                static_cast<double>(pa[0]) / 1000.0, static_cast<double>(pa[1]) / 1000.0,
-                                static_cast<double>(pa[2]) / 1000.0, static_cast<double>(pb[0]) / 1000.0,
-                                static_cast<double>(pb[1]) / 1000.0, static_cast<double>(pb[2]) / 1000.0,
-                                static_cast<double>(pc[0]) / 1000.0, static_cast<double>(pc[1]) / 1000.0,
-                                static_cast<double>(pc[2]) / 1000.0);
-                }
             }
             Triangle triangle{a, b, c};
             std::sort(triangle.begin(), triangle.end());
@@ -1128,64 +1117,6 @@ TEST_CASE("hexmap.mesh.terrainIsWeldClosedAndFreeOfDuplicateCorners") {
         std::printf("[pattern] %s\n", pattern.name);
         REQUIRE(checkClosedPatch(map, flatReport.boundaryEdges));
     }
-}
-
-// TEMPORARY DIAGNOSTIC: which open borders does the slope-cliff pattern add to the flat map's?
-//
-// The perimeter is identical between the two maps, so the difference between their border sets is
-// exactly the seam the corner patch leaves behind, with its location.
-TEST_CASE("hexmap.mesh.diagOpenBorders") {
-    using Key    = std::array<std::int64_t, 3>;
-    using Border = std::array<Key, 2>;
-
-    const auto canonical = [](const Border& border) {
-        return border[0] < border[1] ? Border{border[0], border[1]} : Border{border[1], border[0]};
-    };
-    const auto print = [](const Border& border) {
-        std::printf("[new] (%.3f %.3f %.3f) -> (%.3f %.3f %.3f)\n", static_cast<double>(border[0][0]) / 1000.0,
-                    static_cast<double>(border[0][1]) / 1000.0, static_cast<double>(border[0][2]) / 1000.0,
-                    static_cast<double>(border[1][0]) / 1000.0, static_cast<double>(border[1][1]) / 1000.0,
-                    static_cast<double>(border[1][2]) / 1000.0);
-    };
-
-    HexMap               flat       = makeMap(20, 15, 23u);
-    const MeshWeldReport flatReport = analyseMeshWeld(collectTerrainChunks(flat));
-    std::map<Border, bool> flatBorders;
-    for (const auto& border : flatReport.openBorders) flatBorders.emplace(canonical(border), true);
-
-    HexMap pattern = makeMap(20, 15, 23u);
-    REQUIRE(pattern.setElevation(HexCoordinates::fromOffset(7, 7), 1).ok());
-    REQUIRE(pattern.setElevation(HexCoordinates::fromOffset(8, 7), 3).ok());
-    const MeshWeldReport report = analyseMeshWeld(collectTerrainChunks(pattern));
-
-    std::printf("[diff] flat %zu pattern %zu\n", flatReport.openBorders.size(), report.openBorders.size());
-    std::size_t shown = 0;
-    for (const auto& border : report.openBorders) {
-        const Border key = canonical(border);
-        if (flatBorders.count(key) != 0u) continue;
-        print(key);
-        // Which cell sits under this seam, and what does its neighbourhood look like. A seam is
-        // only meaningful together with the elevation pattern that produced it.
-        const HexVec3 midpoint{static_cast<float>(key[0][0] + key[1][0]) / 2000.f,
-                               static_cast<float>(key[0][1] + key[1][1]) / 2000.f,
-                               static_cast<float>(key[0][2] + key[1][2]) / 2000.f};
-        const auto picked = pattern.pickCell(midpoint + HexVec3{0.f, 50.f, 0.f}, HexVec3{0.f, -1.f, 0.f});
-        if (picked.ok()) {
-            std::string ring;
-            for (std::int32_t d = 0; d < kHexDirectionCount; ++d) {
-                HexCoordinates neighbour{};
-                if (pattern.getNeighbor(picked.value(), static_cast<HexDirection>(d), neighbour)) {
-                    ring += std::to_string(pattern.elevation(neighbour));
-                }
-            }
-            std::printf("[cell] elev %d ring %s\n", pattern.elevation(picked.value()), ring.c_str());
-        } else {
-            std::printf("[cell] no cell under the seam\n");
-        }
-        if (++shown >= 24u) break;
-    }
-    std::printf("[diff] shown %zu\n", shown);
-    std::fflush(stdout);
 }
 
 // --- water mesh -------------------------------------------------------------

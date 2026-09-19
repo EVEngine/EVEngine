@@ -790,34 +790,6 @@ struct OrientationReport {
         if (back == 0) ++report.boundaryEdges;
     }
 
-    // Diagnostics: name where the bad edges are, so a failure points at a place on the sphere.
-    // Written to a file as well as stdout: the orientation case passes now, and CTest hides a
-    // passing test's output.
-    if (const char* verbose = std::getenv("EVP_DIAG_DUMP")) {
-        (void)verbose;
-        std::map<std::uint32_t, HexVec3> positionOfId;
-        for (std::size_t i = 0; i < count; ++i) {
-            const HexVec3 position{positions[i * 3u], positions[i * 3u + 1u], positions[i * 3u + 2u]};
-            positionOfId.emplace(ids[i], position);
-        }
-        std::FILE* log = std::fopen("hexmap-census-dump.txt", "a");
-        for (const auto& [edge, uses] : directed) {
-            const bool hasReverse = directed.find({edge.second, edge.first}) != directed.end();
-            if (uses <= 1 && hasReverse) continue;
-            const HexVec3 a = positionOfId[edge.first];
-            const HexVec3 b = positionOfId[edge.second];
-            const double  len =
-                std::sqrt((a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y) + (a.z - b.z) * (a.z - b.z));
-            for (std::FILE* out : {stdout, log}) {
-                if (out == nullptr) continue;
-                std::fprintf(out, "[bad] %s id %u->%u uses %d  (%.3f %.3f %.3f) -> (%.3f %.3f %.3f) len=%.4f\n",
-                             hasReverse ? "doubled" : "boundary", edge.first, edge.second, uses, a.x, a.y, a.z, b.x,
-                             b.y, b.z, len);
-            }
-        }
-        if (log != nullptr) std::fclose(log);
-        std::fflush(stdout);
-    }
     return report;
 }
 
@@ -878,30 +850,6 @@ struct OrientationReport {
         const float d = n.x * (a.x + b.x + c.x) + n.y * (a.y + b.y + c.y) + n.z * (a.z + b.z + c.z);
         if (d < 0.f) {
             ++inward;
-            if (std::getenv("EVP_DIAG_INWARD") != nullptr && inward <= 20u) {
-                const HexVec3 centroid{(a.x + b.x + c.x) / 3.f, (a.y + b.y + c.y) / 3.f, (a.z + b.z + c.z) / 3.f};
-                const float   normalLength = std::sqrt(n.x * n.x + n.y * n.y + n.z * n.z);
-                const float   radialLength =
-                    std::sqrt(centroid.x * centroid.x + centroid.y * centroid.y + centroid.z * centroid.z);
-                // Longest edge and the width implied by the area: a shear folds a triangle when the
-                // displacement difference across its length exceeds that width, so the two numbers
-                // together say whether a given wobble can fold it at all.
-                const auto edgeLength = [](HexVec3 p, HexVec3 q) {
-                    return std::sqrt((p.x - q.x) * (p.x - q.x) + (p.y - q.y) * (p.y - q.y) + (p.z - q.z) * (p.z - q.z));
-                };
-                const float longest =
-                    std::max({edgeLength(a, b), edgeLength(b, c), edgeLength(c, a)});
-                const float width = longest > 0.f ? normalLength / longest : 0.f;
-                std::printf("[inward] cos %.4f  |n| %.4f  r %.2f  longest %.4f  width %.5f  aspect %.5f  at "
-                            "(%.2f %.2f %.2f)  vertexUse %zu/%zu/%zu\n",
-                            static_cast<double>(d / (3.f * normalLength * radialLength)),
-                            static_cast<double>(normalLength), static_cast<double>(radialLength),
-                            static_cast<double>(longest), static_cast<double>(width),
-                            static_cast<double>(width / longest), static_cast<double>(centroid.x),
-                            static_cast<double>(centroid.y), static_cast<double>(centroid.z),
-                            vertexUse[ids[indices[t]]], vertexUse[ids[indices[t + 1u]]],
-                            vertexUse[ids[indices[t + 2u]]]);
-            }
         }
     }
     return inward;
@@ -1035,40 +983,12 @@ TEST_CASE("hexmap.sphereMesh.waterCapsFaceOutwardAndCoverEveryFloodedCell") {
 }
 
 TEST_CASE("hexmap.sphereMesh.everySharedEdgeIsTraversedBothWays") {
-    // TEMPORARY: scopes the missing-surface defect to a slope-only or cliff-only elevation
-    // pattern, so the fix knows which path to look at.
-    if (const char* mode = std::getenv("EVP_DIAG_ELEV")) {
-        const bool cliffs = std::string(mode) == "cliff";
-        HexSphereMap map  = makeMap(1, 100.f, 4u);
-        for (HexSphereCell cell = 0; cell < map.cellCount(); ++cell) {
-            const std::int32_t level = cliffs ? ((cell % 5 == 0) ? 3 : 0) : (cell % 2);
-            REQUIRE(map.setElevation(cell, level).ok());
-        }
-        HexMeshData mesh;
-        buildSphereTerrainMesh(map, mesh);
-        const OrientationReport r = analyseOrientation(mesh);
-        std::printf("[elev-%s] triangles %zu doubled %zu boundary %zu\n", mode, r.triangles, r.doubledEdges,
-                    r.boundaryEdges);
-        std::fflush(stdout);
-    }
-    // TEMPORARY: the flat sphere is the smallest reproduction of the boundary edges, so it can be
-    // dumped on its own with EVP_DIAG_FLAT=1 EVP_DIAG_DUMP=1.
-    if (std::getenv("EVP_DIAG_FLAT") != nullptr) {
-        HexSphereMap map = makeMap(1, 100.f, 4u);
-        HexMeshData  mesh;
-        buildSphereTerrainMesh(map, mesh);
-        const OrientationReport flat = analyseOrientation(mesh);
-        std::printf("[flat] triangles %zu doubled %zu boundary %zu\n", flat.triangles, flat.doubledEdges,
-                    flat.boundaryEdges);
-        std::fflush(stdout);
-    }
     // Every configuration is measured first and asserted afterwards: a mesh that fails the
     // watertightness clause early would otherwise hide whether its winding is consistent.
     for (const std::int32_t subdivision : {1, 2, 4}) {
         for (const std::uint32_t seed : {4u, 6u, 9u}) {
             // The scoping block above builds its own map; skip the main sweep so its dump is the
             // only thing in the log.
-            if (std::getenv("EVP_DIAG_ELEV") != nullptr) break;
             HexSphereMap map = makeMap(subdivision, 100.f, seed);
             scatterElevation(map);
 
