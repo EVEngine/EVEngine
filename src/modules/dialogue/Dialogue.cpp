@@ -590,13 +590,14 @@ int Dialogue::loadPoolsFromData(const DataValue &root) {
     }
 
     int registered = 0;
+    std::vector<Pool> candidate = pools_;
     const auto *poolFields = pools->getIf<DataValue::Object>();
     for (const auto &kv : *poolFields) {
         Pool pool;
         pool.id = kv.first;
         if (kv.second.kind() != DataValue::Kind::Object) {
             lastPoolsError_ = "pool '" + kv.first + "': expected object";
-            continue;
+            return 0;
         }
         if (const DataValue *nr = kv.second.find("noRepeat")) {
             if (nr->kind() == DataValue::Kind::Int)
@@ -608,7 +609,7 @@ int Dialogue::loadPoolsFromData(const DataValue &root) {
         const DataValue *lines = kv.second.find("lines");
         if (!lines || lines->kind() != DataValue::Kind::Array) {
             lastPoolsError_ = "pool '" + kv.first + "': missing lines array";
-            continue;
+            return 0;
         }
         int lineIndex = 1;
         for (size_t i = 0; i < lines->arraySize(); ++i) {
@@ -616,16 +617,19 @@ int Dialogue::loadPoolsFromData(const DataValue &root) {
             Line line;
             std::string error;
             if (!parseLineData(pool.id, lv, lineIndex, line, error)) {
-                if (lastPoolsError_.empty()) lastPoolsError_ = error;
-                continue;
+                lastPoolsError_ = error;
+                return 0;
             }
             pool.lines.push_back(std::move(line));
             ++lineIndex;
         }
-        if (Pool *existing = findPool(pool.id)) *existing = std::move(pool);
-        else pools_.push_back(std::move(pool));
+        auto existing = std::find_if(candidate.begin(), candidate.end(),
+                                     [&](const Pool& item) { return item.id == pool.id; });
+        if (existing != candidate.end()) *existing = std::move(pool);
+        else candidate.push_back(std::move(pool));
         ++registered;
     }
+    pools_ = std::move(candidate);
     return registered;
 }
 

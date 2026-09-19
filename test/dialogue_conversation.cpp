@@ -11,7 +11,9 @@ ConversationAsset makeGreeting() {
     ConversationAsset asset;
     asset.id = "common.greeting";
     asset.entry = "decide";
-    asset.parameters = {"speaker", "listener", "location"};
+    asset.parameters = {ConversationAsset::Parameter{"speaker"},
+                        ConversationAsset::Parameter{"listener"},
+                        ConversationAsset::Parameter{"location"}};
     ConversationAsset::Node decide;
     decide.id = "decide";
     decide.kind = ConversationAsset::Node::Kind::Branch;
@@ -76,7 +78,7 @@ TEST_CASE("dialogueConversation.parameterizedRunner") {
     StateValue bindings = StateValue::object();
     CHECK(bindings.setPath("speaker.mood", StateValue::string("happy")));
     CHECK(bindings.setPath("listener.id", StateValue::string("player")));
-    CHECK(bindings.set("location", StateValue::string("village")));
+    bindings.set("location", StateValue::string("village"));
     std::string error;
     CHECK(runner.start(&asset, std::move(bindings), &error));
     CHECK(error.empty());
@@ -91,14 +93,14 @@ TEST_CASE("dialogueConversation.rejectsMissingAndUndeclaredBindings") {
     ConversationAsset  asset = makeGreeting();
     ConversationRunner runner;
     StateValue         bindings = StateValue::object();
-    CHECK(bindings.set("speaker", StateValue::object()));
-    CHECK(bindings.set("listener", StateValue::object()));
+    bindings.set("speaker", StateValue::object());
+    bindings.set("listener", StateValue::object());
     std::string error;
     CHECK(!runner.start(&asset, bindings, &error));
     CHECK(error.find("missing required binding 'location'") != std::string::npos);
 
-    CHECK(bindings.set("location", StateValue::string("village")));
-    CHECK(bindings.set("unexpected", StateValue::boolean(true)));
+    bindings.set("location", StateValue::string("village"));
+    bindings.set("unexpected", StateValue::boolean(true));
     CHECK(!runner.start(&asset, bindings, &error));
     CHECK(error.find("undeclared binding 'unexpected'") != std::string::npos);
 }
@@ -119,9 +121,9 @@ TEST_CASE("dialogueConversation.expressionFailureDoesNotSelectElse") {
             eve::DiagnosticCode::Failed, "expression failed", "expression", {}, "dialogue.test"));
     });
     StateValue bindings = StateValue::object();
-    CHECK(bindings.set("speaker", StateValue::object()));
-    CHECK(bindings.set("listener", StateValue::object()));
-    CHECK(bindings.set("location", StateValue::string("village")));
+    bindings.set("speaker", StateValue::object());
+    bindings.set("listener", StateValue::object());
+    bindings.set("location", StateValue::string("village"));
     std::string error;
     CHECK(!runner.start(&asset, std::move(bindings), &error));
     CHECK(error.find("expression failed") != std::string::npos);

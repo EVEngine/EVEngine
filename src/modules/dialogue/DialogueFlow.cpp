@@ -223,7 +223,7 @@ const ConversationAsset* DialogueFlow::find(const std::string& id) const {
     return nullptr;
 }
 
-int DialogueFlow::loadFromDnut(const std::string& source, const std::string& path) {
+int DialogueFlow::loadDnutImpl(const std::string& source, const std::string& path) {
     if (const auto it = sourceTexts_.find(path); it != sourceTexts_.end() && it->second == source) {
         lastLoadChanged_ = false;
         failureMessage_.clear();
@@ -270,7 +270,7 @@ int DialogueFlow::loadFromDnut(const std::string& source, const std::string& pat
     return static_cast<int>(compiled.size());
 }
 
-int DialogueFlow::reloadFromDnut(const std::string& source, const std::string& path) {
+int DialogueFlow::reloadDnutImpl(const std::string& source, const std::string& path) {
     if (const auto cached = sourceTexts_.find(path); cached != sourceTexts_.end() && cached->second == source) {
         lastLoadChanged_ = false;
         failureMessage_.clear();
@@ -397,7 +397,7 @@ bool DialogueFlow::renameNode(const std::string& conversationId, const std::stri
     return renameConversationNode(assets_, conversationId, oldId, newId, &failureMessage_);
 }
 
-int DialogueFlow::loadFromDnutFile(const std::string& path) {
+int DialogueFlow::loadDnutFileImpl(const std::string& path) {
     std::string source;
     if (contentReader_) {
         auto content = contentReader_(path);
@@ -415,7 +415,40 @@ int DialogueFlow::loadFromDnutFile(const std::string& path) {
         }
         source.assign(reinterpret_cast<const char*>(bytes.data()), bytes.size());
     }
-    return loadFromDnut(source, path);
+    return loadDnutImpl(source, path);
+}
+
+namespace {
+eve::Result<int> dnutLoadResult(int count, const std::string& error, const std::string& sourceId) {
+    if (count > 0 || error.empty()) return eve::Result<int>::success(count);
+    return eve::Result<int>::failure(eve::Diagnostic::error(
+        eve::DiagnosticCode::Failed, error.empty() ? "dnut load failed" : error, sourceId, {}, "dialogue.dnut"));
+}
+}  // namespace
+
+eve::Result<int> DialogueFlow::loadDnutChecked(const std::string& source, const std::string& sourceId) {
+    return dnutLoadResult(loadDnutImpl(source, sourceId), failureMessage_, sourceId);
+}
+
+eve::Result<int> DialogueFlow::reloadDnutChecked(const std::string& source, const std::string& sourceId) {
+    return dnutLoadResult(reloadDnutImpl(source, sourceId), failureMessage_, sourceId);
+}
+
+eve::Result<int> DialogueFlow::loadDnutFileChecked(const std::string& path) {
+    return dnutLoadResult(loadDnutFileImpl(path), failureMessage_, path);
+}
+
+int DialogueFlow::loadDnutScript(const std::string& source, const std::string& sourceId) {
+    auto result = loadDnutChecked(source, sourceId);
+    return result ? result.value() : 0;
+}
+int DialogueFlow::reloadDnutScript(const std::string& source, const std::string& sourceId) {
+    auto result = reloadDnutChecked(source, sourceId);
+    return result ? result.value() : 0;
+}
+int DialogueFlow::loadDnutFileScript(const std::string& path) {
+    auto result = loadDnutFileChecked(path);
+    return result ? result.value() : 0;
 }
 
 int DialogueFlow::mergeImported(std::vector<ConversationAsset> imported) {
@@ -895,9 +928,9 @@ void DialogueFlow::expose(ssq::Table& table) {
 
 void DialogueFlow::expose(ssq::Class& cls) {
     cls.addFunc("getName", &DialogueFlow::getName);
-    cls.addFunc("loadFromDnut", &DialogueFlow::loadFromDnut);
-    cls.addFunc("reloadFromDnut", &DialogueFlow::reloadFromDnut);
-    cls.addFunc("loadFromDnutFile", &DialogueFlow::loadFromDnutFile);
+    cls.addFunc("loadDnutChecked", &DialogueFlow::loadDnutScript);
+    cls.addFunc("reloadDnutChecked", &DialogueFlow::reloadDnutScript);
+    cls.addFunc("loadDnutFileChecked", &DialogueFlow::loadDnutFileScript);
     cls.addFunc("importYarn", &DialogueFlow::importYarn);
     cls.addFunc("importTwee", &DialogueFlow::importTwee);
     cls.addFunc("removeSource", &DialogueFlow::removeSource);

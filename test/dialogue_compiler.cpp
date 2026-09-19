@@ -33,7 +33,7 @@ conversation greeting.scene entry=end {
 }
 
 TEST_CASE("dialogueCompiler.parameterizedExpressionsAndLocalization") {
-    const std::string source = R"(
+    const std::string source = R"DNUT(
 schema "eve.dnut"
 version 1
 conversation common.greeting version=3 entry=decide {
@@ -49,7 +49,7 @@ node formal line speaker=speaker text="Good day, {listener.name}." i18n=dialogue
 node unused end
 node end end
 }
-)";
+)DNUT";
     std::vector<ConversationAsset> assets;
     std::vector<ConversationDiagnostic> diagnostics;
     CHECK(compileDnutConversations(source, "greeting.dnut", assets, diagnostics));

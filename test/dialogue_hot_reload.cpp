@@ -22,11 +22,11 @@ public:
 TEST_CASE("dialogueHotReload.fileLoadingUsesInjectedCapability") {
     eve::cap::detail::clearAllRaw();
     DialogueFlow flow;
-    CHECK_EQ(flow.loadFromDnutFile("missing.dnut"), 0);
+    CHECK(!flow.loadDnutFileChecked("missing.dnut").ok());
     DialogueMemoryFileSystem filesystem;
     filesystem.content = "schema \"eve.dnut\"\nversion 1\nconversation loaded entry=end {\nnode end end\n}\n";
     eve::cap::provide<eve::service::IFileSystem>(&filesystem);
-    CHECK_EQ(flow.loadFromDnutFile("memory.dnut"), 1);
+    REQUIRE(flow.loadDnutFileChecked("memory.dnut").ok());
     CHECK(flow.hasConversation("loaded"));
     eve::cap::revoke<eve::service::IFileSystem>(&filesystem);
 }
@@ -41,10 +41,10 @@ node line line text="hello" next=end
 node end end
 }
 )";
-    REQUIRE(flow.loadFromDnut(greeting, "greeting.dnut") == 1);
+    REQUIRE(flow.loadDnutChecked(greeting, "greeting.dnut").ok());
     CHECK(flow.hasConversation("greeting"));
 
-    CHECK(flow.reloadFromDnut("not a conversation", "greeting.dnut") == 0);
+    CHECK(!flow.reloadDnutChecked("not a conversation", "greeting.dnut").ok());
     CHECK(flow.hasConversation("greeting"));
     CHECK(!flow.getLastLoadChanged());
 
@@ -56,7 +56,7 @@ node call call target=missing next=end
 node end end
 }
 )";
-    CHECK(flow.reloadFromDnut(brokenReference, "greeting.dnut") == 0);
+    CHECK(!flow.reloadDnutChecked(brokenReference, "greeting.dnut").ok());
     CHECK(flow.hasConversation("greeting"));
     CHECK(flow.getDiagnosticMessage(0).find("missing conversation") != std::string::npos);
 
@@ -67,7 +67,7 @@ conversation shared entry=end {
 node end end
 }
 )";
-    REQUIRE(flow.loadFromDnut(shared, "shared.dnut") == 1);
+    REQUIRE(flow.loadDnutChecked(shared, "shared.dnut").ok());
     const std::string validReference = R"(
 schema "eve.dnut"
 version 1
@@ -76,7 +76,7 @@ node call call target=shared next=end
 node end end
 }
 )";
-    CHECK(flow.reloadFromDnut(validReference, "greeting.dnut") == 1);
+    CHECK(flow.reloadDnutChecked(validReference, "greeting.dnut").ok());
     CHECK(flow.getLastLoadChanged());
     CHECK(flow.lintAll());
 }
@@ -90,8 +90,8 @@ conversation shared.id entry=end {
 node end end
 }
 )";
-    REQUIRE(flow.loadFromDnut(source, "first.dnut") == 1);
-    CHECK(flow.loadFromDnut(source, "second.dnut") == 0);
+    REQUIRE(flow.loadDnutChecked(source, "first.dnut").ok());
+    CHECK(!flow.loadDnutChecked(source, "second.dnut").ok());
     CHECK(flow.hasConversation("shared.id"));
     CHECK(flow.removeSource("first.dnut"));
     CHECK(!flow.hasConversation("shared.id"));

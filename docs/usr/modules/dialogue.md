@@ -169,17 +169,23 @@ locale 精确匹配失败时回退到空 locale 的默认语音。Source 的生�
 可保存的显式 Runner 执行。台词池与 conversation 块可以共存于同一文件。
 
 ```dnut
-conversation common.greeting version=1 entry=decide params=speaker,listener,location
-node decide branch
-when score(speaker, listener, location) >= threshold(speaker.personality) -> friendly
-else -> formal
+schema "eve.dnut"
+version 1
+conversation common.greeting version=1 entry=decide {
+parameter speaker string required
+parameter listener string required
+parameter location string required
+node decide branch {
+route friendly when="score(speaker, listener, location) >= threshold(speaker.personality)" target=friendly
+route formal target=formal
+}
 node friendly line speaker=speaker pool=greeting.friendly i18n=dialogue.greeting.friendly next=end
 node formal line speaker=speaker text="Good day, {listener.name}." next=end
 node end end
-endconversation
+}
 ```
 
-- 内容：`loadFromDnut/loadFromDnutFile`、`importYarn/importTwee`、`clear`、
+- 内容：`loadDnutChecked/loadDnutFileChecked`、`importYarn/importTwee`、`clear`、
   `getConversationCount()`、`getConversationId(index)`、`hasConversation`；失败详情通过诊断查询 API 获取。
 - 外部格式：Yarn Spinner 节点和 Twine Twee 3 passages 会转换为相同的稳定节点模型；
   角色前缀、参数占位符、双向 Twine 链接、Yarn shortcut options、`jump/stop/wait/call/set`
@@ -187,13 +193,13 @@ endconversation
   `StoryTitle/StoryData` 元数据 passages 会自动忽略。
 - 校验：`getDiagnosticCount`、`getDiagnosticSeverity/getDiagnosticPath/getDiagnosticLine/getDiagnosticMessage`；编译检查
   重复或缺失 ID、无效引用，并报告不可达节点。
-- 工具链：相同 path、相同内容的 `loadFromDnut` 会命中内存增量缓存，
+- 工具链：相同 source ID、相同内容的 `loadDnutChecked` 会命中内存增量缓存，
   `getLastLoadChanged()` 可判断是否重编译；`removeSource(path)` 卸载该来源产生的资产；
   `lintAll()` 批量检查全库并验证跨文件 call；`renameConversation/renameNode` 自动改写引用，
   同时提升资产版本以显式拒绝不兼容的旧执行游标。
-- 热重载：`reloadFromDnut(source, path)` 在临时工作区编译并执行全库跨文件引用校验；
+- 热重载：`reloadDnutChecked(source, sourceId)` 在临时工作区编译并执行全库跨文件引用校验；
   编译、引用校验或活动游标迁移任一失败时，会保留旧资产和旧执行位置。成功时则结合
-  `registerMigration` 恢复当前对话和全部调用栈。普通 `loadFromDnut` 仍允许按任意顺序初次
+  `registerMigration` 恢复当前对话和全部调用栈。普通 `loadDnutChecked` 仍允许按任意顺序初次
   装入互相引用的文件，全部装入后用 `lintAll()` 做一次完整校验。
 - 本地化：`exportLocalizationCsv()` 返回带 conversation/node 稳定 ID、i18n key、
   speaker、源文和 voice key 的 RFC4180 CSV。

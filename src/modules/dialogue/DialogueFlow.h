@@ -103,9 +103,12 @@ public:
     [[nodiscard]] eve::Result<eve::MutationReceipt> applyStateMutations(std::span<const eve::StateMutation> mutations,
                                                                         const eve::MutationContext& context) const;
 
-    int         loadFromDnut(const std::string& source, const std::string& path);
-    int         reloadFromDnut(const std::string& source, const std::string& path);
-    int         loadFromDnutFile(const std::string& path);
+    /** @brief Compile, validate, and atomically commit one versioned dnut document. */
+    [[nodiscard]] eve::Result<int> loadDnutChecked(const std::string& source, const std::string& sourceId);
+    /** @brief Transactionally replace one source while preserving a migratable active runner. */
+    [[nodiscard]] eve::Result<int> reloadDnutChecked(const std::string& source, const std::string& sourceId);
+    /** @brief Read through the injected filesystem capability and call loadDnutChecked. */
+    [[nodiscard]] eve::Result<int> loadDnutFileChecked(const std::string& path);
     int         importYarn(const std::string& source, const std::string& path);
     int         importTwee(const std::string& source, const std::string& path);
     bool        removeSource(const std::string& path);
@@ -218,6 +221,12 @@ public:
     void        clearToneRules() { textRenderer_.clearToneRules(); }
 
 private:
+    int loadDnutScript(const std::string& source, const std::string& sourceId);
+    int reloadDnutScript(const std::string& source, const std::string& sourceId);
+    int loadDnutFileScript(const std::string& path);
+    int loadDnutImpl(const std::string& source, const std::string& sourceId);
+    int reloadDnutImpl(const std::string& source, const std::string& sourceId);
+    int loadDnutFileImpl(const std::string& path);
     int                      mergeImported(std::vector<ConversationAsset> imported);
     const ConversationAsset* find(const std::string& id) const;
     [[nodiscard]] eve::Result<StateValue> evaluate(const std::string& expression, const StateValue& bindings,
