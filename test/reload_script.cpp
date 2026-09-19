@@ -260,7 +260,7 @@ TEST_CASE("reloadScript.migrationHelpersComeFromTheBootstrap") {
     const std::string source = migrationHelpersSource();
     REQUIRE(!source.empty());
     REQUIRE(source.rfind("function migrate_instance(", 0) == 0);
-    CHECK(source.find("function remap_instances(") != std::string::npos);
+    REQUIRE(source.find("function remap_instances(") != std::string::npos);
 }
 
 TEST_CASE("reloadScript.embeddedLoadScriptCompiles") {
@@ -342,13 +342,13 @@ TEST_CASE("reloadScript.failedCommitCanStillAbort") {
     auto&       session = eve::dev::ReloadSession::instance();
     std::string err;
     REQUIRE(session.begin(vm.getHandle(), &err));
-    CHECK(!session.commit(vm.getHandle(), &err));
-    CHECK_EQ(provider.restoreCount, 1);
+    REQUIRE(!session.commit(vm.getHandle(), &err));
+    REQUIRE_EQ(provider.restoreCount, 1);
 
     err.clear();
-    CHECK(session.abort(vm.getHandle(), &err));
-    CHECK(err.empty());
-    CHECK_EQ(provider.restoreCount, 2);
+    REQUIRE(session.abort(vm.getHandle(), &err));
+    REQUIRE(err.empty());
+    REQUIRE_EQ(provider.restoreCount, 2);
 
     eve::cap::removeListener<eve::caps::IStateProvider>(&provider);
 }
@@ -363,10 +363,10 @@ TEST_CASE("reloadScript.nativeResetPolicySkipsCaptureAndResets") {
     auto&       session = eve::dev::ReloadSession::instance();
     std::string err;
     REQUIRE(session.begin(vm.getHandle(), &err));
-    CHECK(session.commit(vm.getHandle(), &err));
-    CHECK_EQ(provider.captureCount, 0);
-    CHECK_EQ(provider.restoreCount, 0);
-    CHECK_EQ(provider.resetCount, 1);
+    REQUIRE(session.commit(vm.getHandle(), &err));
+    REQUIRE_EQ(provider.captureCount, 0);
+    REQUIRE_EQ(provider.restoreCount, 0);
+    REQUIRE_EQ(provider.resetCount, 1);
 
     eve::cap::removeListener<eve::caps::IStateProvider>(&provider);
 }

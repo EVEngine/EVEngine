@@ -70,19 +70,19 @@ TEST_CASE_FIXTURE(ScriptProviderTest, "ScriptProvider.publishAndCallNumber") {
 
     auto published = registry.publish("test.counter", vm.find("provider"));
     REQUIRE(published.ok());
-    CHECK(published.value().name == std::string("test.counter"));
-    CHECK(published.value().generation != 0);
-    CHECK_EQ(registry.size(), std::size_t{1});
-    CHECK(registry.contains("test.counter"));
+    REQUIRE(published.value().name == std::string("test.counter"));
+    REQUIRE(published.value().generation != 0);
+    REQUIRE_EQ(registry.size(), std::size_t{1});
+    REQUIRE(registry.contains("test.counter"));
 
     auto first = registry.callNumber(published.value(), "onTick", 0.5);
     REQUIRE(first.ok());
-    CHECK(std::abs(first.value() - 0.5) < 1e-6);
+    REQUIRE(std::abs(first.value() - 0.5) < 1e-6);
 
     // The call runs on the live instance, so state persists across invocations.
     auto second = registry.callNumber(published.value(), "onTick", 0.25);
     REQUIRE(second.ok());
-    CHECK(std::abs(second.value() - 0.75) < 1e-6);
+    REQUIRE(std::abs(second.value() - 0.75) < 1e-6);
 }
 
 TEST_CASE_FIXTURE(ScriptProviderTest, "ScriptProvider.voidCallAndMethodFailures") {
@@ -93,17 +93,17 @@ TEST_CASE_FIXTURE(ScriptProviderTest, "ScriptProvider.voidCallAndMethodFailures"
     REQUIRE(registry.call(published.value(), "ping").ok());
     auto ticks = registry.callNumber(published.value(), "onTick", 0.0);
     REQUIRE(ticks.ok());
-    CHECK(std::abs(ticks.value() - 1.0) < 1e-6);
+    REQUIRE(std::abs(ticks.value() - 1.0) < 1e-6);
 
     // A method the provider does not implement is Unsupported, never a silent no-op
     // and never a crash.
     auto missing = registry.call(published.value(), "notAMethod");
-    CHECK(!missing.ok());
-    CHECK_EQ(firstDiagnosticCode(missing.status()), eve::DiagnosticCode::Unsupported);
+    REQUIRE(!missing.ok());
+    REQUIRE_EQ(firstDiagnosticCode(missing.status()), eve::DiagnosticCode::Unsupported);
 
     auto nonNumeric = registry.callNumber(published.value(), "label", 0.0);
-    CHECK(!nonNumeric.ok());
-    CHECK_EQ(firstDiagnosticCode(nonNumeric.status()), eve::DiagnosticCode::InvalidArgument);
+    REQUIRE(!nonNumeric.ok());
+    REQUIRE_EQ(firstDiagnosticCode(nonNumeric.status()), eve::DiagnosticCode::InvalidArgument);
 }
 
 TEST_CASE_FIXTURE(ScriptProviderTest, "ScriptProvider.scriptErrorsAreReportedNotRaised") {
@@ -115,14 +115,14 @@ TEST_CASE_FIXTURE(ScriptProviderTest, "ScriptProvider.scriptErrorsAreReportedNot
     REQUIRE(published.ok());
 
     auto raised = registry.call(published.value(), "boom", 0.0);
-    CHECK(!raised.ok());
-    CHECK_EQ(firstDiagnosticCode(raised.status()), eve::DiagnosticCode::Failed);
-    CHECK(raised.status().describe().find("deliberate provider failure") != std::string::npos);
+    REQUIRE(!raised.ok());
+    REQUIRE_EQ(firstDiagnosticCode(raised.status()), eve::DiagnosticCode::Failed);
+    REQUIRE(raised.status().describe().find("deliberate provider failure") != std::string::npos);
 
     // The provider is still usable afterwards: the failed call restored the stack.
     auto recovered = registry.callNumber(published.value(), "onTick", 2.0);
     REQUIRE(recovered.ok());
-    CHECK(std::abs(recovered.value() - 2.0) < 1e-6);
+    REQUIRE(std::abs(recovered.value() - 2.0) < 1e-6);
 }
 
 TEST_CASE_FIXTURE(ScriptProviderTest, "ScriptProvider.retirementIsNeverAliased") {
@@ -132,35 +132,35 @@ TEST_CASE_FIXTURE(ScriptProviderTest, "ScriptProvider.retirementIsNeverAliased")
     REQUIRE(first.ok());
     auto second = registry.publish("test.counter", vm.find("provider"));
     REQUIRE(second.ok());
-    CHECK(second.value().generation > first.value().generation);
-    CHECK_EQ(registry.generationOf("test.counter"), second.value().generation);
+    REQUIRE(second.value().generation > first.value().generation);
+    REQUIRE_EQ(registry.generationOf("test.counter"), second.value().generation);
 
     // Republishing retires the older generation rather than aliasing it.
     auto superseded = registry.call(first.value(), "ping");
-    CHECK(!superseded.ok());
-    CHECK_EQ(firstDiagnosticCode(superseded.status()), eve::DiagnosticCode::StaleHandle);
+    REQUIRE(!superseded.ok());
+    REQUIRE_EQ(firstDiagnosticCode(superseded.status()), eve::DiagnosticCode::StaleHandle);
 
     REQUIRE(registry.unload(second.value()).ok());
-    CHECK(!registry.contains("test.counter"));
-    CHECK_EQ(registry.generationOf("test.counter"), std::uint64_t{0});
-    CHECK_EQ(registry.size(), std::size_t{0});
+    REQUIRE(!registry.contains("test.counter"));
+    REQUIRE_EQ(registry.generationOf("test.counter"), std::uint64_t{0});
+    REQUIRE_EQ(registry.size(), std::size_t{0});
 
     auto retired = registry.call(second.value(), "ping");
-    CHECK(!retired.ok());
-    CHECK_EQ(firstDiagnosticCode(retired.status()), eve::DiagnosticCode::StaleHandle);
+    REQUIRE(!retired.ok());
+    REQUIRE_EQ(firstDiagnosticCode(retired.status()), eve::DiagnosticCode::StaleHandle);
 
     // Retiring twice is stale, not a silent success.
     auto again = registry.unload(second.value());
-    CHECK(!again.ok());
-    CHECK_EQ(firstDiagnosticCode(again.status()), eve::DiagnosticCode::StaleHandle);
+    REQUIRE(!again.ok());
+    REQUIRE_EQ(firstDiagnosticCode(again.status()), eve::DiagnosticCode::StaleHandle);
 
     // A later publish must not let either old handle resolve against it.
     auto third = registry.publish("test.counter", vm.find("provider"));
     REQUIRE(third.ok());
     for (const auto& stale : {first.value(), second.value()}) {
         auto refused = registry.call(stale, "ping");
-        CHECK(!refused.ok());
-        CHECK_EQ(firstDiagnosticCode(refused.status()), eve::DiagnosticCode::StaleHandle);
+        REQUIRE(!refused.ok());
+        REQUIRE_EQ(firstDiagnosticCode(refused.status()), eve::DiagnosticCode::StaleHandle);
     }
 }
 
@@ -208,41 +208,41 @@ TEST_CASE_FIXTURE(ScriptProviderTest, "ScriptProvider.capabilitySeamRequiresDecl
 
     // Without a declared seam the capability is not answerable, and the refusal is
     // visible rather than a published provider that serves nothing.
-    CHECK(!registry.hasCapabilitySeam(kSeamCapability));
+    REQUIRE(!registry.hasCapabilitySeam(kSeamCapability));
     auto refused = registry.publishForCapability(kSeamCapability, "test.seam", vm.find("provider"));
-    CHECK(!refused.ok());
-    CHECK_EQ(firstDiagnosticCode(refused.status()), eve::DiagnosticCode::NotFound);
-    CHECK_EQ(registry.size(), std::size_t{0});
+    REQUIRE(!refused.ok());
+    REQUIRE_EQ(firstDiagnosticCode(refused.status()), eve::DiagnosticCode::NotFound);
+    REQUIRE_EQ(registry.size(), std::size_t{0});
 
     // The declaration is what makes it answerable, and it is discoverable.
     registry.declareCapability(
         kSeamCapability, [](const eve::ScriptProviderHandle&) { return eve::Result<void>::success(); },
         [](const eve::ScriptProviderHandle&) { return eve::Result<void>::success(); });
-    CHECK(registry.hasCapabilitySeam(kSeamCapability));
+    REQUIRE(registry.hasCapabilitySeam(kSeamCapability));
     const auto available = registry.capabilities();
-    CHECK(std::find(available.begin(), available.end(), std::string(kSeamCapability)) != available.end());
+    REQUIRE(std::find(available.begin(), available.end(), std::string(kSeamCapability)) != available.end());
 
     auto published = registry.publishForCapability(kSeamCapability, "test.seam", vm.find("provider"));
     REQUIRE(published.ok());
-    CHECK_EQ(published.value().name, std::string("test.seam"));
+    REQUIRE_EQ(published.value().name, std::string("test.seam"));
 
     const auto listed = registry.published();
     REQUIRE_EQ(listed.size(), std::size_t{1});
-    CHECK_EQ(listed.front().capability, std::string(kSeamCapability));
+    REQUIRE_EQ(listed.front().capability, std::string(kSeamCapability));
 
     // Withdrawing the seam stops further binding but leaves the live generation
     // usable, so a provider can still be retired through the handle it was given.
     REQUIRE(registry.removeCapability(kSeamCapability).ok());
-    CHECK(!registry.hasCapabilitySeam(kSeamCapability));
+    REQUIRE(!registry.hasCapabilitySeam(kSeamCapability));
     auto afterWithdrawal = registry.publishForCapability(kSeamCapability, "test.seam2", vm.find("provider"));
-    CHECK(!afterWithdrawal.ok());
-    CHECK_EQ(firstDiagnosticCode(afterWithdrawal.status()), eve::DiagnosticCode::NotFound);
-    CHECK(registry.call(published.value(), "ping").ok());
+    REQUIRE(!afterWithdrawal.ok());
+    REQUIRE_EQ(firstDiagnosticCode(afterWithdrawal.status()), eve::DiagnosticCode::NotFound);
+    REQUIRE(registry.call(published.value(), "ping").ok());
     REQUIRE(registry.unload(published.value()).ok());
 
     auto again = registry.removeCapability(kSeamCapability);
-    CHECK(!again.ok());
-    CHECK_EQ(firstDiagnosticCode(again.status()), eve::DiagnosticCode::NotFound);
+    REQUIRE(!again.ok());
+    REQUIRE_EQ(firstDiagnosticCode(again.status()), eve::DiagnosticCode::NotFound);
 }
 
 TEST_CASE_FIXTURE(ScriptProviderTest, "ScriptProvider.capabilitySeamBindsAndUnbinds") {
@@ -256,19 +256,19 @@ TEST_CASE_FIXTURE(ScriptProviderTest, "ScriptProvider.capabilitySeamBindsAndUnbi
     auto published = registry.publishForCapability(kSeamCapability, "test.seam", vm.find("provider"));
     REQUIRE(published.ok());
     REQUIRE_EQ(recorder->bound.size(), std::size_t{1});
-    CHECK_EQ(recorder->bound.front(), std::string("test.seam"));
-    CHECK(recorder->unbound.empty());
+    REQUIRE_EQ(recorder->bound.front(), std::string("test.seam"));
+    REQUIRE(recorder->unbound.empty());
 
     // Superseding runs the unbinder for the retired generation, then binds the new one.
     auto superseded = registry.publishForCapability(kSeamCapability, "test.seam", vm.find("provider"));
     REQUIRE(superseded.ok());
     REQUIRE_EQ(recorder->unbound.size(), std::size_t{1});
-    CHECK_EQ(recorder->unbound.front(), std::string("test.seam"));
+    REQUIRE_EQ(recorder->unbound.front(), std::string("test.seam"));
     REQUIRE_EQ(recorder->bound.size(), std::size_t{2});
 
     REQUIRE(registry.unload(superseded.value()).ok());
     REQUIRE_EQ(recorder->unbound.size(), std::size_t{2});
-    CHECK_EQ(registry.size(), std::size_t{0});
+    REQUIRE_EQ(registry.size(), std::size_t{0});
 }
 
 TEST_CASE_FIXTURE(ScriptProviderTest, "ScriptProvider.failedBindIsRolledBack") {
@@ -329,14 +329,14 @@ TEST_CASE_FIXTURE(ScriptProviderTest, "ScriptProvider.callsCarryScalarArguments"
     };
     auto scaled = registry.callNumber(published.value(), "scaleDamage", args);
     REQUIRE(scaled.ok());
-    CHECK(std::abs(scaled.value() - 6.25) < 1e-6);
+    REQUIRE(std::abs(scaled.value() - 6.25) < 1e-6);
 
     // Wrong arity is a reported failure, and it leaves the provider usable.
     const eve::ScriptArg tooFew[] = {eve::ScriptArg::fromText("tank#1")};
     auto                 arity    = registry.callNumber(published.value(), "scaleDamage", tooFew);
-    CHECK(!arity.ok());
-    CHECK_EQ(firstDiagnosticCode(arity.status()), eve::DiagnosticCode::Failed);
-    CHECK(registry.call(published.value(), "ping").ok());
+    REQUIRE(!arity.ok());
+    REQUIRE_EQ(firstDiagnosticCode(arity.status()), eve::DiagnosticCode::Failed);
+    REQUIRE(registry.call(published.value(), "ping").ok());
 }
 
 TEST_CASE_FIXTURE(ScriptProviderTest, "ScriptProvider.callSetupErrorsStayReported") {
@@ -350,16 +350,16 @@ TEST_CASE_FIXTURE(ScriptProviderTest, "ScriptProvider.callSetupErrorsStayReporte
     REQUIRE(published.ok());
 
     auto tooMany = registry.call(published.value(), "ping", 1.0);
-    CHECK(!tooMany.ok());
-    CHECK_EQ(firstDiagnosticCode(tooMany.status()), eve::DiagnosticCode::Failed);
-    CHECK(tooMany.status().describe().find("parameters") != std::string::npos);
+    REQUIRE(!tooMany.ok());
+    REQUIRE_EQ(firstDiagnosticCode(tooMany.status()), eve::DiagnosticCode::Failed);
+    REQUIRE(tooMany.status().describe().find("parameters") != std::string::npos);
 
     auto tooFew = registry.call(published.value(), "onTick");
-    CHECK(!tooFew.ok());
-    CHECK_EQ(firstDiagnosticCode(tooFew.status()), eve::DiagnosticCode::Failed);
+    REQUIRE(!tooFew.ok());
+    REQUIRE_EQ(firstDiagnosticCode(tooFew.status()), eve::DiagnosticCode::Failed);
 
     // Both failures left the VM stack intact: the provider still answers.
     auto recovered = registry.callNumber(published.value(), "onTick", 3.0);
     REQUIRE(recovered.ok());
-    CHECK(std::abs(recovered.value() - 3.0) < 1e-6);
+    REQUIRE(std::abs(recovered.value() - 3.0) < 1e-6);
 }

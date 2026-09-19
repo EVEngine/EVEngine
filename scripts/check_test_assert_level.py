@@ -24,6 +24,11 @@ asserts with `REQUIRE`/`ASSERT` can fail, so it is not reported. Delegation to a
 another file or a header cannot be seen from the source alone; such a case is reported, and
 the author can either state the decisive assertion with `REQUIRE` or record the case in the
 baseline.
+
+The baseline freezes *whole* cases only, so one incidental `REQUIRE(x != nullptr)` exempts a
+case whose decisive assertions are all `CHECK`. Files listed in `STRICT_FILES` are the
+exception: they are evidence for a contract rather than incidental module coverage, so a
+warning-level assertion there is a failure even when the case has a `REQUIRE` too.
 """
 
 from __future__ import annotations
@@ -32,12 +37,23 @@ import argparse
 import json
 import re
 import sys
+from collections.abc import Sequence
 from pathlib import Path
 
 import utf8_stdio
 
 BASELINE = Path("scripts/test_assert_level_baseline.json")
 SOURCE_ROOT = Path("test")
+
+# Files whose cases are the *evidence* for a contract, so every one of them must be able to
+# fail. Add a file here only when all of its cases are evidence; a module's general coverage
+# belongs in the baseline instead. `test/script_provider.cpp` earned its place when
+# `ScriptProvider.failedBindIsRolledBack` asserted the documented rollback with `CHECK`s
+# while the rollback never ran (plan doc 2026-09-19-...md 9.50/9.51).
+STRICT_FILES: tuple[str, ...] = (
+    "test/script_provider.cpp",
+    "test/reload_script.cpp",
+)
 
 CASE_MACRO = re.compile(r"\b(TEST_CASE|TEST_CASE_FIXTURE|TEST_CASE_METHOD)\s*\(")
 # Warning-level: the case keeps passing. Anything CHECK*-shaped is ZEROERR_WARN.
@@ -208,6 +224,42 @@ def scan(root: Path) -> list[str]:
     return sorted(keys)
 
 
+def enclosing_case(masked: str, text: str, index: int) -> str:
+    """Name of the case whose body contains `index` (the last one that does)."""
+    name = "<outside any case>"
+    for match in CASE_MACRO.finditer(masked):
+        if match.start() > index:
+            break
+        body_start = masked.find("{", match.end())
+        if body_start == -1:
+            continue
+        body_end = match_brace(masked, body_start)
+        if body_end == -1 or body_end < index:
+            continue
+        name = case_name(text, match.end())
+    return name
+
+
+def strict_violations(files: Sequence[str] = STRICT_FILES) -> list[str]:
+    """Warning-level assertions in a file that has to be able to fail.
+
+    Returns `path|case|line`, or `path|<missing>|0` when the file is gone, so the list
+    cannot silently stop covering anything.
+    """
+    found: list[str] = []
+    for name in files:
+        path = Path(name)
+        if not path.exists():
+            found.append(f"{name}|<missing>|0")
+            continue
+        text = path.read_text(encoding="utf-8")
+        masked = mask_non_code(text)
+        for match in WARN_ASSERT.finditer(masked):
+            line = text.count("\n", 0, match.start()) + 1
+            found.append(f"{name}|{enclosing_case(masked, text, match.start())}|{line}")
+    return found
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
@@ -237,18 +289,28 @@ def main() -> int:
     current = set(found)
     added = sorted(current - known)
     stale = sorted(known - current)
+    strict = strict_violations()
 
     for key in added:
         print(f"NEW warning-only test case (add a REQUIRE for the decisive assertion): {key}")
+    for key in strict:
+        path, case, line = key.split("|")
+        if case == "<missing>":
+            print(f"must-fail evidence file is missing (update STRICT_FILES): {path}")
+        else:
+            print(
+                f"warning-level assertion in a must-fail evidence file "
+                f"({path}:{line}, {case}): use REQUIRE so the case can fail"
+            )
     # Stale entries are informational, not failures: an entry goes stale when a case is
     # renamed, removed or made fail-able, and none of those needs re-review. Failing on them
     # would make every test rename touch this baseline. `--write-baseline` prunes them.
     for key in stale:
         print(f"note: baselined case changed or removed (pruned by --write-baseline): {key}")
-    if added:
+    if added or strict:
         print(
-            f"test assert level check: {len(added)} new warning-only cases "
-            f"({len(known)} baselined, {len(stale)} stale)"
+            f"test assert level check: {len(added)} new warning-only cases, "
+            f"{len(strict)} strict-file violations ({len(known)} baselined, {len(stale)} stale)"
         )
         return 1
     print(

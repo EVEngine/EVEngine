@@ -123,5 +123,51 @@ class AssertLevelTests(unittest.TestCase):
         self.assertEqual([name for _, name in self.scan(source)], ["a.afterStray"])
 
 
+class StrictFileTests(unittest.TestCase):
+    """`STRICT_FILES` evidence must be able to fail even when a case also has a REQUIRE.
+
+    The baseline only freezes whole cases whose assertions are all warning-level, so one
+    incidental `REQUIRE(x != nullptr)` hides a case whose decisive assertions are `CHECK`.
+    A file listed in `STRICT_FILES` closes that gap; these tests pin the rule and its report.
+    """
+
+    def strict(self, source: str) -> list[str]:
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "evidence.cpp"
+            path.write_text(source, encoding="utf-8")
+            return checker.strict_violations([str(path)])
+
+    def test_check_is_a_violation_even_beside_a_require(self):
+        source = (
+            'TEST_CASE("a.mixed") {\n'
+            "    const char* s = \"x\";\n"
+            "    REQUIRE(s != nullptr);\n"
+            "    CHECK_EQ(s[0], 'x');\n"
+            "}\n"
+        )
+        violations = self.strict(source)
+        self.assertEqual(len(violations), 1)
+        path, case, line = violations[0].split("|")
+        self.assertTrue(path.endswith("evidence.cpp"))
+        self.assertEqual(case, "a.mixed")
+        self.assertEqual(line, "4")
+
+    def test_require_only_file_is_clean(self):
+        self.assertEqual(self.strict('TEST_CASE("a.ok") { REQUIRE(true); }\n'), [])
+
+    def test_warning_level_assertions_outside_any_case_are_reported(self):
+        self.assertEqual(len(self.strict("CHECK(true);\n")), 1)
+
+    def test_missing_file_is_a_violation(self):
+        # A renamed/deleted evidence file must not silently drop the requirement.
+        violations = checker.strict_violations(["does/not/exist.cpp"])
+        self.assertEqual(violations, ["does/not/exist.cpp|<missing>|0"])
+
+    def test_the_repository_list_is_actually_clean(self):
+        # The rule is only useful while the checked-in list passes; a failure here means the
+        # gate is red on the repository, not that this test is wrong.
+        self.assertEqual(checker.strict_violations(), [])
+
+
 if __name__ == "__main__":
     unittest.main()
