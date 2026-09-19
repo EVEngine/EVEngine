@@ -49,7 +49,7 @@ public:
     // ---- OS window -------------------------------------------------------
     std::string openWindow(const std::string& title, int width, int height);
     std::string closeWindow();
-    bool        windowOpen() const;
+    bool        isWindowOpen() const;
     std::string windowState() const;
 
     // ---- editors (View) --------------------------------------------------

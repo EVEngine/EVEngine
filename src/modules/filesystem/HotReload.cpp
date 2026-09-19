@@ -156,7 +156,7 @@ int watchTreeOs(Filesystem *fs, const std::filesystem::path &realRoot) {
     };
 
     int added = 0;
-    if (fs->watchRealDirectory(pathToUtf8(realRoot), reportFor(realRoot))) ++added;
+    if (fs->watchRealDirectory(pathToUtf8(realRoot), reportFor(realRoot)).ok()) ++added;
 
     auto it = std::filesystem::recursive_directory_iterator(
         realRoot, std::filesystem::directory_options::skip_permission_denied, ec);
@@ -185,7 +185,7 @@ int watchTreeOs(Filesystem *fs, const std::filesystem::path &realRoot) {
         }
         const std::string report = reportFor(dir);
         if (report.empty() || report.find("..") != std::string::npos) continue;
-        if (fs->watchRealDirectory(pathToUtf8(dir), report)) ++added;
+        if (fs->watchRealDirectory(pathToUtf8(dir), report).ok()) ++added;
     }
     return added;
 }

@@ -11,6 +11,7 @@
 #include "common/b64.h"
 #include "common/utf8.h"
 #include "common/Exception.h"
+#include "common/Diagnostic.h"
 #include "cmdline/cmdline.h"
 
 // PhysFS
@@ -814,10 +815,21 @@ bool Filesystem::watch(std::string path) {
     return watchers().add(realDir, filter, report, 1);
 }
 
-bool Filesystem::watchRealDirectory(std::string realDir, std::string reportPath) {
-    if (realDir.empty() || reportPath.empty()) return false;
-    if (!isRealDirectory(realDir)) return false;
-    return watchers().add(std::move(realDir), "", std::move(reportPath), 1);
+eve::Result<void> Filesystem::watchRealDirectory(std::string realDir, std::string reportPath) {
+    if (realDir.empty() || reportPath.empty()) {
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument,
+            "watchRealDirectory requires a real directory and a report path"));
+    }
+    if (!isRealDirectory(realDir)) {
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::NotFound, "watchRealDirectory path is not a directory", realDir));
+    }
+    if (!watchers().add(std::move(realDir), "", std::move(reportPath), 1)) {
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Failed, "watchRealDirectory could not add an OS watcher"));
+    }
+    return eve::Result<void>::success();
 }
 
 bool Filesystem::unwatch(std::string path) { return watchers().remove(path); }

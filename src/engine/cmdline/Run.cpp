@@ -541,12 +541,12 @@ int Cmdline::Run(std::string path, std::string root, bool debug, int dapPort, in
                 std::cerr << "config.editorHost=true but the editor host is unavailable\n";
                 return 3;
             }
-            if (!host->windowOpen()) {
+            if (!host->isWindowOpen()) {
                 std::cerr << "editor host did not open a window "
                              "(eve_init should call eve.host.applyEditor)\n";
                 return 3;
             }
-            while (!host->exitRequested() && host->windowOpen()) host->frame();
+            while (!host->exitRequested() && host->isWindowOpen()) host->frame();
             host->stop();
         }
 #endif

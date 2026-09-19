@@ -17,7 +17,7 @@ EditorHost::EditorHost() = default;
 EditorHost::~EditorHost() = default;
 void        EditorHost::start(ssq::VM&, const std::string&, bool) {}
 void        EditorHost::stop() {}
-bool        EditorHost::windowOpen() const { return false; }
+bool        EditorHost::isWindowOpen() const { return false; }
 std::string EditorHost::openWindow(const std::string&, int, int) {
     return "error: editor host unavailable on this platform";
 }
@@ -650,7 +650,7 @@ std::string EditorHost::closeWindow() {
     return "ok";
 }
 
-bool EditorHost::windowOpen() const {
+bool EditorHost::isWindowOpen() const {
     return impl_ && impl_->windowOpen;
 }
 
