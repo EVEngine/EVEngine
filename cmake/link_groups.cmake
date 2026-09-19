@@ -58,6 +58,16 @@ foreach(_eve_group IN LISTS EVE_LINK_GROUP_NAMES)
     target_link_libraries(${_eve_group} PRIVATE
         EVScripts zeroerr ${_eve_group_tp_libs} ${_eve_group_system_libs}
         ${EVENGINE_VULKAN_LIB} ${EVENGINE_WEBGPU_LIB})
+    if(MSVC)
+        # MSVC pulls the CRT from /DEFAULTLIB directives carried by the objects.
+        # A shared library whose sources are all $<TARGET_OBJECTS:...> does not
+        # reliably end up with the debug UCRT import library, and the static
+        # debug third-party archives reference the import thunks directly
+        # (__imp__calloc_dbg from Poco), so name it explicitly.
+        target_link_libraries(${_eve_group} PRIVATE
+            $<$<CONFIG:Debug>:ucrtd>
+            $<$<NOT:$<CONFIG:Debug>>:ucrt>)
+    endif()
     if(NOT EVENGINE_PROFILE_HOSTLESS)
         add_dependencies(${_eve_group} third-party)
     endif()
