@@ -31,6 +31,8 @@ from collections import defaultdict
 from dataclasses import dataclass, field
 from pathlib import Path
 
+import utf8_stdio
+
 REPO = Path(__file__).resolve().parent.parent
 MANIFEST_DIR = REPO / "cmake" / "module_manifest"
 CONTRACT_CATALOGUE = REPO / "scripts" / "architecture_contracts.json"
@@ -866,4 +868,5 @@ def main() -> int:
 
 
 if __name__ == "__main__":
+    utf8_stdio.enable_utf8_stdio()
     raise SystemExit(main())
