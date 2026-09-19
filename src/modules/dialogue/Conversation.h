@@ -7,6 +7,7 @@
 #include <functional>
 #include <cstdint>
 #include <string>
+#include <string_view>
 #include <unordered_map>
 #include <utility>
 #include <vector>
@@ -78,6 +79,9 @@ struct ConversationAsset {
 /** @brief Explicit conversation executor whose suspension points are node IDs. */
 class ConversationRunner {
 public:
+    static constexpr std::string_view SaveSchema  = "eve.dialogue.runner";
+    static constexpr std::int64_t     SaveVersion = 2;
+
     using AssetResolver = std::function<const ConversationAsset*(const std::string&)>;
     using ExpressionEvaluator =
         std::function<StateValue(const std::string&, const StateValue&, const StateValue&)>;

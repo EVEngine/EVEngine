@@ -310,6 +310,8 @@ StateValue captureFrame(const ConversationAsset* asset, const std::string& node,
 
 bool ConversationRunner::captureState(StateValue& out) const {
     out = StateValue::object();
+    out.set("schema", StateValue::string(std::string(SaveSchema)));
+    out.set("schemaVersion", StateValue::integer(SaveVersion));
     out.set("active", StateValue::boolean(asset_ != nullptr));
     if (!asset_) return true;
     out.set("current", captureFrame(asset_, nodeId_, bindings_, locals_));
@@ -326,6 +328,11 @@ bool ConversationRunner::captureState(StateValue& out) const {
 
 bool ConversationRunner::restoreState(const StateValue& in, std::string* error) {
     if (!in.isObject()) return fail(error, "conversation: runner state must be an object");
+    const StateValue* schema        = in.find("schema");
+    const StateValue* schemaVersion = in.find("schemaVersion");
+    if (!schema || !schema->isString() || schema->asString() != SaveSchema || !schemaVersion ||
+        !schemaVersion->isInt() || schemaVersion->asInt() != SaveVersion)
+        return fail(error, "conversation: unsupported runner save schema or version");
     const StateValue* active = in.find("active");
     if (!active || !active->isBool()) return fail(error, "conversation: state is missing active");
     if (!active->asBool()) {

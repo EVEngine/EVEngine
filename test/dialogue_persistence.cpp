@@ -70,3 +70,12 @@ TEST_CASE("dialoguePersistence.migratesCurrentAndCallFrames") {
     CHECK(restored.advance(&error));
     CHECK(restored.currentNodeId() == "after-renamed");
 }
+
+TEST_CASE("dialoguePersistence.rejectsLegacyUnversionedState") {
+    ConversationRunner runner;
+    StateValue         legacy = StateValue::object();
+    CHECK(legacy.set("active", StateValue::boolean(false)));
+    std::string error;
+    CHECK(!runner.restoreState(legacy, &error));
+    CHECK(error.find("unsupported runner save schema") != std::string::npos);
+}
