@@ -60,20 +60,19 @@ void callScriptHandler(ssq::Function &fn, const std::string &kind, const UIEvent
     const SQInteger top = sq_gettop(vm);
     sq_pushobject(vm, fn.getRaw());
     sq_pushroottable(vm);  // env
-    if (kind == "click") {
-        if (SQ_FAILED(sq_call(vm, 1, SQFalse, SQTrue))) {
-            sq_settop(vm, top);
-            return;
-        }
-    } else {
+    if (kind != "click") {
         sq_pushstring(vm, kind.c_str(), -1);
         if (kind == "toggle") sq_pushbool(vm, ev.toggleValue ? SQTrue : SQFalse);
         else if (kind == "value") sq_pushfloat(vm, ev.floatValue);
         else sq_pushstring(vm, ev.textValue.c_str(), -1);
-        if (SQ_FAILED(sq_call(vm, 3, SQFalse, SQTrue))) {
-            sq_settop(vm, top);
-            return;
-        }
+    }
+    // The payload is a runtime variant (bool / float / string), so the shared helper's
+    // typed-argument form does not fit; the count is derived instead, which is the same
+    // rule (R-FACE-7). A handler that throws used to be dropped without a word -- the
+    // two branches below each turned the failure into a bare `return`.
+    const SQInteger params = sq_gettop(vm) - top - 1;  // receiver + arguments
+    if (SQ_FAILED(sq_call(vm, params, SQFalse, SQTrue))) {
+        script::reportScriptCallFailure(vm, "ui.handler");
     }
     sq_settop(vm, top);
 }

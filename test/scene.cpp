@@ -1569,6 +1569,25 @@ function testCallbackFailureIsReported() {
     return visited == 1
 }
 
+function testUpdateFailureIsReported() {
+    class Boom extends eve.SceneEntity {
+        function update(dt) { throw "update exploded" }
+    }
+
+    local scene = eve.Scene()
+    scene.beginBuild()
+    scene.beginNode("root", "")
+    scene.addNode("n", "")
+    scene.end()
+    scene.mountBuildAs("updfail")
+    if (scene.attachEntity("n", Boom) == null) return false
+
+    // scene.update(dt) drives every rooted instance's update(dt); this one throws. The
+    // engine has to report that rather than treat it like an instance that returned early.
+    scene.update(0.016)
+    return true
+}
+
 )SQ";
 
 class SceneEcsBridgeFixture {
@@ -1624,6 +1643,14 @@ TEST_CASE_FIXTURE(SceneEcsBridgeFixture, "Scene.script.callbackFailureIsNotSilen
     // handler produced no signal at all (plan doc 10.8).
     eve::script::resetReportedScriptCallFailures();
     REQUIRE(vm.callFunc(vm.findFunc("testCallbackFailureIsReported"), vm).toBool());
+    REQUIRE(eve::script::reportedScriptCallFailures() >= 1);
+}
+
+TEST_CASE_FIXTURE(SceneEcsBridgeFixture, "Scene.script.updateFailureIsNotSilent") {
+    // The per-instance update(dt) path (Scene::callMethod) had the same gap as the
+    // forEachEntity callback: a throwing update() returned false and said nothing.
+    eve::script::resetReportedScriptCallFailures();
+    REQUIRE(vm.callFunc(vm.findFunc("testUpdateFailureIsReported"), vm).toBool());
     REQUIRE(eve::script::reportedScriptCallFailures() >= 1);
 }
 

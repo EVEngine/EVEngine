@@ -1124,14 +1124,15 @@ bool Scene::callMethod(HSQOBJECT inst, const char *name, float dt) {
         sq_settop(vm_, top);
         return false;
     }
-    sq_pushobject(vm_, inst);   // this
-    sq_pushfloat(vm_, SQFloat(dt));
-    if (SQ_FAILED(sq_call(vm_, 2, SQFalse, SQTrue))) {
-        sq_settop(vm_, top);
-        return false;
-    }
+    // Resolve the method, then call it through the helper: the receiver is the instance
+    // (`this`) and the single argument is dt. A script `update()` that throws used to be
+    // indistinguishable from one that returned early, because the failed call was turned
+    // into a bare `false` with no report.
+    HSQOBJECT method;
+    sq_getstackobj(vm_, -1, &method);
+    const SQRESULT result = script::callFunction(vm_, method, inst, dt);
     sq_settop(vm_, top);
-    return true;
+    return SQ_SUCCEEDED(result);
 }
 
 bool Scene::callMethod0(HSQOBJECT inst, const char *name) {
@@ -1148,13 +1149,12 @@ bool Scene::callMethod0(HSQOBJECT inst, const char *name) {
         sq_settop(vm_, top);
         return false;
     }
-    sq_pushobject(vm_, inst);   // this
-    if (SQ_FAILED(sq_call(vm_, 1, SQFalse, SQTrue))) {
-        sq_settop(vm_, top);
-        return false;
-    }
+    // Same as callMethod() with no arguments (onAttach / onDetach).
+    HSQOBJECT method;
+    sq_getstackobj(vm_, -1, &method);
+    const SQRESULT result = script::callFunction(vm_, method, inst);
     sq_settop(vm_, top);
-    return true;
+    return SQ_SUCCEEDED(result);
 }
 
 bool Scene::callCallback(HSQOBJECT fn, HSQOBJECT inst, int index) {
