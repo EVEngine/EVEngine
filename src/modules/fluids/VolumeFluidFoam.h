@@ -1,4 +1,6 @@
 #pragma once
+
+#include "common/Export.h"
 #include <cstdint>
 #include <string>
 #include "common/Result.h"
@@ -34,7 +36,7 @@ struct VolumeFluidFoamSnapshot {
  * @details Same checkpoint and call ordering repeats on one build; floating-point
  * field/position comparisons across platforms require tolerance. No ECS or links.
  */
-class VolumeFluidFoam final {
+class EVENGINE_API_DOMAINS VolumeFluidFoam final {
 public:
     /** @brief Emits after the caller steps the source and advects existing diffuse particles.
      * @param source Borrowed fluid; all its Liquid/Gas particles are eligible source sites.

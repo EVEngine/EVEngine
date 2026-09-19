@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "procgen/heightmap/Heightmap.h"
 
@@ -102,7 +104,7 @@ private:
 };
 
 /** @brief Deterministic CPU terrain baking stages shared by editors and runtime tools. */
-class TerrainPipeline {
+class EVENGINE_API_DOMAINS TerrainPipeline {
 public:
     /** @brief Relax slopes exceeding the configured talus angle while conserving mass. */
     static void erodeThermal(Heightmap &heightmap, const ThermalErosionSettings &settings = {});

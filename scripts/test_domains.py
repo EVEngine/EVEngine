@@ -33,6 +33,25 @@ DOMAIN_NAME_RE = re.compile(r"^\s*([a-z0-9_]+)\s*$", re.MULTILINE)
 # executable rather than testing one domain.
 SHARED_RUNNER = "main"
 
+# Test translation units compiled into more than one domain because a helper they
+# define is used across domains. A `test/*.h` declaration whose definition sits in
+# another domain's translation unit cannot be fixed with an engine export macro --
+# the symbol is test-side and each `unit_test_<domain>` is its own link unit -- so
+# the helper gets one translation unit without TEST_CASEs and every consumer
+# domain compiles it.
+#
+# Maps test-source stem (the basename without `.cpp`, exactly as SHARED_RUNNER is
+# spelled) -> the domains that must compile it, in table order. A shared source is
+# not partitioned: it belongs to no single domain, and the generated
+# `EVE_TEST_DOMAIN_<domain>_SHARED_SOURCES` lists carry it to test/CMakeLists.txt.
+SHARED_SOURCES: dict[str, tuple[str, ...]] = {
+    # saveImagePng: referenced by the graphics image-audit tests that own
+    # RenderImageAudit.cpp (plus ClassicScenes/decal/hex_level_simulation/
+    # procgen_*), by procgen.cpp, and by the voxel render tests through
+    # VoxelRenderFixtures.h.
+    "RenderImageAuditIo": ("graphics", "procgen", "voxel"),
+}
+
 
 def _table_body(text: str, name: str) -> str:
     """Return the text of `set(<name> ... )`, up to its CACHE INTERNAL trailer."""
@@ -108,6 +127,30 @@ def table_contract_errors(tables: dict[str, object]) -> list[str]:
                     f"EVE_TEST_PREFIX_DOMAIN rule '{rule}' ({domain}) is a prefix of "
                     f"'{other}' ({other_domain}); make one of them exact with '='"
                 )
+
+    errors.extend(shared_source_errors(known, TEST_DIR))
+    return errors
+
+
+def shared_source_errors(domains: set[str], test_dir: Path = TEST_DIR) -> list[str]:
+    """Return errors for a SHARED_SOURCES row naming an unknown domain or a
+    translation unit that does not exist.
+
+    A row nobody consumes is not harmful, but a row naming a missing file is:
+    the generated `EVE_TEST_DOMAIN_<domain>_SHARED_SOURCES` list would make every
+    consumer target fail to link with no hint about which helper went missing.
+    """
+    errors: list[str] = []
+    for stem, consumers in SHARED_SOURCES.items():
+        if not (test_dir / f"{stem}.cpp").is_file():
+            errors.append(
+                f"SHARED_SOURCES row '{stem}' is not a file under {test_dir.name}/"
+            )
+        for domain in consumers:
+            if domain not in domains:
+                errors.append(
+                    f"SHARED_SOURCES row '{stem}' names undeclared domain '{domain}'"
+                )
     return errors
 
 
@@ -148,6 +191,10 @@ def classify(
     """Return (domain, reason, error) for one test source."""
     if basename == SHARED_RUNNER:
         return None, "shared runner", None
+    if basename in SHARED_SOURCES:
+        # Compiled into every consumer domain instead of being partitioned into
+        # one; see SHARED_SOURCES.
+        return None, "shared helper", None
 
     module_domain = dict(tables["module_domain"])  # type: ignore[arg-type]
     package_override = dict(tables["package_override"])  # type: ignore[arg-type]
@@ -202,8 +249,12 @@ def partition(
     return classify_paths(sorted(test_dir.glob("*.cpp")), tables)
 
 
-def emit_cmake(buckets: dict[str, list[Path]], out_path: Path) -> None:
-    """Write one `set(EVE_TEST_DOMAIN_<domain>_SOURCES ...)` per non-empty domain.
+def emit_cmake(
+    buckets: dict[str, list[Path]], out_path: Path, test_dir: Path = TEST_DIR
+) -> None:
+    """Write one `set(EVE_TEST_DOMAIN_<domain>_SOURCES ...)` per non-empty domain,
+    plus `set(EVE_TEST_DOMAIN_<domain>_SHARED_SOURCES ...)` for the helper
+    translation units every consumer domain compiles (see SHARED_SOURCES).
 
     The real source paths are emitted verbatim rather than re-derived from the
     basename, so the generated partition cannot disagree with the list CMake
@@ -225,6 +276,12 @@ def emit_cmake(buckets: dict[str, list[Path]], out_path: Path) -> None:
             continue
         sources = "".join(f'  "{member.as_posix()}"\n' for member in members)
         lines.append(f"set(EVE_TEST_DOMAIN_{domain}_SOURCES\n{sources})\n")
+    for stem, consumers in SHARED_SOURCES.items():
+        for domain in consumers:
+            path = (test_dir / f"{stem}.cpp").resolve().as_posix()
+            lines.append(
+                f"set(EVE_TEST_DOMAIN_{domain}_SHARED_SOURCES\n  \"{path}\"\n)\n"
+            )
     out_path.write_text("\n".join(lines), encoding="utf-8")
 
 
@@ -287,7 +344,10 @@ def main(argv: list[str] | None = None) -> int:
     total = sum(len(members) for members in buckets.values())
     print(f"test domains: {len(buckets)} domains, {total} tests")
     for domain, members in buckets.items():
-        print(f"  {domain:14s} {len(members):4d}")
+        shared = [name for name, consumers in SHARED_SOURCES.items() if domain in consumers]
+        suffix = f"  + shared: {', '.join(shared)}" if shared else ""
+        print(f"  {domain:14s} {len(members):4d}{suffix}")
+    print(f"shared helper sources: {len(SHARED_SOURCES)}")
     return 0
 
 

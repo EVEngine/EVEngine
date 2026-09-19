@@ -82,7 +82,7 @@ private:
 };
 
 /** @brief Atomic bridge from a validated authoring document to a live solver. */
-class VolumeFluidRuntimeApplier {
+class EVENGINE_API_ORCHESTRATION VolumeFluidRuntimeApplier {
 public:
     /**
      * @brief Apply solver settings through the canonical snapshot restore transaction.

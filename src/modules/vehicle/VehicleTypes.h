@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @brief 载具模块数据模型：载具模板 / 命令 / 载具实体。
@@ -170,7 +172,7 @@ struct VehicleEvent {
 };
 
 /** @brief 载具实体：数据全部在组件里，行为在 VehicleSystem。 */
-class VehicleEntity : public ecs::Entity {
+class EVENGINE_API_DOMAINS VehicleEntity : public ecs::Entity {
 public:
     ENTITY(VehicleEntity, ecs::Entity)
 

@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @file RTSTypes.h
@@ -296,7 +298,7 @@ using SocialLink     = ServiceLink<SocialLinkTag>;
 using GameEventLink  = ServiceLink<GameEventLinkTag>;
 
 /** @brief Canonical attributes component adapter, backed by attributes::AttributeSet. */
-class AttributeComponent {
+class EVENGINE_API_DOMAINS AttributeComponent {
 public:
     AttributeComponent();
     ~AttributeComponent();
@@ -352,7 +354,7 @@ private:
 };
 
 /** @brief Generic orders component adapter; the queue remains the sole order owner. */
-class OrderComponent {
+class EVENGINE_API_DOMAINS OrderComponent {
 public:
     /** @brief Complete RTS order projection snapshot; entity handles must be rebound by the owning domain. */
     struct Snapshot {
@@ -402,7 +404,7 @@ private:
 };
 
 /** @brief Production adapter whose queue owns all task state. */
-class ProductionComponent {
+class EVENGINE_API_DOMAINS ProductionComponent {
 public:
     ProductionComponent();
     ~ProductionComponent();
@@ -449,7 +451,7 @@ private:
  * This class owns no generic gameplay behavior. Its components are the
  * composition points consumed by RTS systems and adapters.
  */
-class Unit : public ecs::Entity {
+class EVENGINE_API_DOMAINS Unit : public ecs::Entity {
 public:
     ENTITY(Unit, ecs::Entity)
 

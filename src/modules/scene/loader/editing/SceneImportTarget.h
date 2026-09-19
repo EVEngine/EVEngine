@@ -1,4 +1,6 @@
 #pragma once
+
+#include "common/Export.h"
 #include <string>
 #include <vector>
 #include "editing/EditableTarget.h"
@@ -21,7 +23,7 @@ struct SceneImportValue {
     bool        triangulate = true, generateNormals = true, joinVertices = true, flipUvs = true, improveCache = true;
     bool sharedMeshes = true, mipmaps = true, importLights = true, importCameras = false, importAnimations = true;
 };
-class SceneImportTarget final : public virtual IEditableTarget,
+class EVENGINE_API_ORCHESTRATION SceneImportTarget final : public virtual IEditableTarget,
                                 public IDomainOperationTarget,
                                 public IDomainOperationTargetStaging,
                                 public IPropertyProvider {
@@ -65,7 +67,7 @@ struct SceneImportPreflight {
     int                      nodes = 0, meshNodes = 0, added = 0, removed = 0, modified = 0, moved = 0;
     std::vector<std::string> warnings, sockets, collisions;
 };
-class SceneImportPreflightRuntime {
+class EVENGINE_API_ORCHESTRATION SceneImportPreflightRuntime {
 public:
     EditorResult<SceneImportPreflight> inspect(const SceneImportTarget&, sceneloader::SceneLoader*) const;
 };

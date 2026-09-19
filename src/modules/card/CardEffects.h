@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @file CardEffects.h
@@ -72,7 +74,7 @@ public:
 };
 
 /** @brief Card adapter composing the common lifecycle container with CardEffectExecutor. */
-class CardEffectAdapter {
+class EVENGINE_API_WORLD CardEffectAdapter {
 public:
     /**
      * @brief Seed the domain target before the first effect is applied.

@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "fluids/SurfaceFluidRenderData.h"
 
@@ -18,7 +20,7 @@ namespace eve::fluids {
  * sphere mesh + PBR path. On Vulkan this writes regular scene depth and receives
  * environment lighting; WebGPU consumes the same transforms through its standard path.
  */
-class SurfaceFluidSceneRenderer {
+class EVENGINE_API_DOMAINS SurfaceFluidSceneRenderer {
 public:
     /** @param graphics initialized graphics backend; it must outlive this object. */
     explicit SurfaceFluidSceneRenderer(graphics::Graphics* graphics);

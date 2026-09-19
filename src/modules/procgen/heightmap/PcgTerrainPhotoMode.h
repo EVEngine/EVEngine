@@ -1,4 +1,6 @@
 #pragma once
+
+#include "common/Export.h"
 #include "common/PcgPhotoModeApply.h"
 #include "procgen/heightmap/TerrainMesh.h"
 
@@ -15,7 +17,7 @@ struct PcgTerrainPhotoModeState {
 enum class PcgTerrainTextureTier { Detailed = 0, Basemap = 1 };
 
 /** @brief Explicit photo-mode owner for runtime terrain quality selection. */
-class PcgTerrainPhotoModeAuthority final : public IPhotoModeFieldSink {
+class EVENGINE_API_DOMAINS PcgTerrainPhotoModeAuthority final : public IPhotoModeFieldSink {
 public:
     ~PcgTerrainPhotoModeAuthority() override;
     /** @brief Register or revoke the unique terrain photo-mode authority. */

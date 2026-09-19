@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @brief 卡牌游戏 UI 工具模块：工厂 + 脚本绑定入口。
@@ -45,7 +47,7 @@ struct CardPresentationSnapshot {
 };
 
 /** @brief Maps a logical card canvas to a 3D parallelogram without depending on graphics. */
-class CardPlaneMapper {
+class EVENGINE_API_WORLD CardPlaneMapper {
 public:
     /** @brief Configure the logical rectangle represented by the world plane. */
     void setLogicalRect(float x, float y, float width, float height);
@@ -81,11 +83,20 @@ private:
 };
 
 /** @brief 卡牌模块入口（eve.Card）：定义注册、对象工厂与每帧 update/render。 */
-class Card : public Module {
+class EVENGINE_API_WORLD Card : public Module {
 public:
     Module_REG(Card);
     Card() = default;
     ~Card() override;
+
+    // The two `vector<unique_ptr<...>>` members make the implicit copy operations
+    // ill-formed (C2280) the moment a class-level dllexport instantiates them;
+    // spell the four out so the export surface stays defined. Semantics unchanged:
+    // a module instance was never copyable or assignable in practice.
+    Card(const Card &) = delete;
+    Card &operator=(const Card &) = delete;
+    Card(Card &&) = default;
+    Card &operator=(Card &&) = default;
 
     /** @brief 从 JSON 注册卡牌类型；返回成功注册数量。 */
     int registerCardsFromJson(const std::string &json);

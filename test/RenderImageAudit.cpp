@@ -569,22 +569,9 @@ void paintDefectOverlay(ImageData &img, const std::vector<RenderDefect> &defs) {
     }
 }
 
-bool saveImagePng(const ImageData &img, const std::string &path) {
-    [[maybe_unused]] auto *const imageModule = eve::image::Image::create();
-    eve::filesystem::FileData *png =
-        img.encode(medialoader::FormatHandler::ENCODED_PNG, path.c_str(), false);
-    if (!png) return false;
-    std::error_code ec;
-    std::filesystem::create_directories(std::filesystem::path(path).parent_path(), ec);
-    std::ofstream out(path, std::ios::binary);
-    const bool ok = out.good();
-    if (ok) {
-        out.write(static_cast<const char *>(png->getData()),
-                  static_cast<std::streamsize>(png->getSize()));
-    }
-    delete png;
-    return ok && out.good();
-}
+// saveImagePng is defined in RenderImageAuditIo.cpp: the voxel render tests use
+// it too, and a test helper cannot cross a domain link unit (see
+// SHARED_SOURCES in scripts/test_domains.py).
 
 void appendAuditReport(const std::string &outDir, const RenderAuditResult &r) {
     std::error_code ec;

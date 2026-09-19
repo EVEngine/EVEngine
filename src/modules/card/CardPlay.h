@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @file CardPlay.h
@@ -76,7 +78,7 @@ private:
 };
 
 /** @brief Evaluates one card play condition without moving or mutating a card. */
-class CardPlayConditionAdapter {
+class EVENGINE_API_WORLD CardPlayConditionAdapter {
 public:
     /**
      * @brief Evaluate a card definition's play condition against one instance.

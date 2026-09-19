@@ -26,10 +26,12 @@ import utf8_stdio
 # contract. The implementation is shared with the configure step.
 from test_domains import (  # noqa: F401
     DOMAIN_TABLE,
+    SHARED_SOURCES,
     TEST_DIR,
     classify,
     parse_domain_table,
     partition,
+    shared_source_errors,
     table_contract_errors,
 )
 
@@ -58,6 +60,9 @@ DEMO_APPEND_RE = re.compile(r"list\(APPEND\s+all_test_cpp\s+demo\.cpp\s*\)")
 DOMAIN_EMIT_RE = re.compile(r"test_domains\.py")
 DOMAIN_INCLUDE_RE = re.compile(r"test_domain_sources\.cmake")
 DOMAIN_INTERFACE_RE = re.compile(r"EVE_TEST_DOMAIN_\$\{")
+# A shared helper translation unit is useless unless the domain target compiles
+# it, so the generated *_SHARED_SOURCES list must reach add_executable().
+DOMAIN_SHARED_SOURCES_RE = re.compile(r"EVE_TEST_DOMAIN_\$\{[^}]*\}_SHARED_SOURCES")
 DISCOVER_PER_TARGET_RE = re.compile(r"zeroerr_discover_tests\(\s*\$\{")
 
 
@@ -103,6 +108,11 @@ def domain_wiring_errors(cmake_text: str) -> list[str]:
         errors.append(
             "every domain target must register its own zeroerr_discover_tests()"
         )
+    if SHARED_SOURCES and not DOMAIN_SHARED_SOURCES_RE.search(cmake_text):
+        errors.append(
+            "test/CMakeLists.txt must compile the shared helper translation units "
+            "listed in scripts/test_domains.py SHARED_SOURCES into their domains"
+        )
     return errors
 
 
@@ -135,10 +145,15 @@ def main() -> int:
         return 1
 
     total = sum(len(members) for members in buckets.values())
-    print(f"test auto-discovery OK: test_src.txt covers {total + 1} sources")
-    print(f"test domains OK: {len(buckets)} domains, {total} tests + 1 shared runner")
+    print(f"test auto-discovery OK: test_src.txt covers {total + 1 + len(SHARED_SOURCES)} sources")
+    print(
+        f"test domains OK: {len(buckets)} domains, {total} tests + 1 shared runner "
+        f"+ {len(SHARED_SOURCES)} shared helper TU"
+    )
     for name in tables["domains"]:  # type: ignore[union-attr]
-        print(f"  {name:14s} {len(buckets[name]):4d}")
+        shared = [base for base, consumers in SHARED_SOURCES.items() if name in consumers]
+        suffix = f"  + shared: {', '.join(shared)}" if shared else ""
+        print(f"  {name:14s} {len(buckets[name]):4d}{suffix}")
     empty = [name for name, members in buckets.items() if not members]
     if empty:
         print("note: domain(s) with no test in this profile: " + ", ".join(sorted(empty)))

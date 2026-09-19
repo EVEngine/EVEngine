@@ -1,4 +1,6 @@
 #pragma once
+
+#include "common/Export.h"
 #include "common/Result.h"
 #include <cstdint>
 #include <string>
@@ -12,7 +14,7 @@ enum class PcgPhotoModeValueType { Bool=0, Int=1, Float=2, String=3, Color=4 };
 using PcgPhotoModeValue=std::variant<bool,int64_t,float,std::string,PcgPhotoModeColor>;
 struct PcgPhotoModeField { std::string name; PcgPhotoModeValueType type; PcgPhotoModeValue defaultValue; };
 /** @brief Complete typed value set from Pcg PhotoModeProfile with exact defaults. */
-class PcgPhotoModeValues {
+class EVENGINE_API_WORLD PcgPhotoModeValues {
 public:
  PcgPhotoModeValues();
  /** @brief Restore all 102 Pcg defaults atomically. */ void resetDefaults();

@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @file RTSAttributes.h
@@ -21,7 +23,7 @@ class Unit;
  * position, speed, arrival radius, formation coordinates and order state stay
  * in their dedicated components and are never copied into AttributeSet.
  */
-class RTSUnitAttributeAdapter final {
+class EVENGINE_API_DOMAINS RTSUnitAttributeAdapter final {
 public:
     static constexpr std::string_view attackAttribute    = "attack";
     static constexpr std::string_view healthAttribute    = "health";

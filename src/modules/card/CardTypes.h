@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @brief 卡牌游戏 UI 工具模块：数据模型与渲染/交互逻辑（功能参考 ycarowr/UiCard）。
@@ -38,7 +40,7 @@ enum class CardState : uint8_t {
 };
 
 /** @brief 状态枚举的字符串名（用于脚本/调试）。 */
-const char *cardStateName(CardState state);
+EVENGINE_API_WORLD const char *cardStateName(CardState state);
 
 /** @brief UiCard 风格的布局配置（脚本可实时修改，对应 UiCard 的 Configs 面板）。 */
 struct LayoutConfig {
@@ -89,7 +91,7 @@ struct CardDefinition {
 };
 
 /** @brief 单张卡牌：ECS 实体，数据拆成 Identity / Stats / Visual / Layout / State。 */
-class CardData : public ecs::Entity {
+class EVENGINE_API_WORLD CardData : public ecs::Entity {
 public:
     ENTITY(CardData, ecs::Entity)
 
@@ -181,7 +183,7 @@ public:
 };
 
 /** @brief 牌库（栈顶在末尾）。 */
-class Deck : public ecs::Entity {
+class EVENGINE_API_WORLD Deck : public ecs::Entity {
 public:
     ENTITY(Deck, ecs::Entity)
 
@@ -214,7 +216,7 @@ public:
 };
 
 /** @brief 落牌区（手牌区 / 出牌区 / 弃牌区），用于拖放命中判定。 */
-class Zone : public ecs::Entity {
+class EVENGINE_API_WORLD Zone : public ecs::Entity {
 public:
     ENTITY(Zone, ecs::Entity)
 
@@ -262,7 +264,7 @@ struct CardEvent {
 };
 
 /** @brief 手牌：扇形布局 + 悬浮 + 拖拽 + 落区判定 + 渲染。 */
-class Hand : public ecs::Entity {
+class EVENGINE_API_WORLD Hand : public ecs::Entity {
 public:
     ENTITY(Hand, ecs::Entity)
 

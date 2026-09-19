@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "scene/editing/SceneEditingTypes.h"
 
@@ -53,7 +55,7 @@ public:
  * This adapter keeps no duplicate component values. It translates stable scene
  * component selections to the selection expected by the module-owned target.
  */
-class SceneComponentPropertyBindings final : public ISceneComponentPayloadProvider {
+class EVENGINE_API_BACKENDS SceneComponentPropertyBindings final : public ISceneComponentPayloadProvider {
 public:
     using Validator = std::function<std::vector<EditorDiagnostic>()>;
 
@@ -125,7 +127,7 @@ public:
 };
 
 /** @brief Non-owning registry and scene-facing router for component payload providers. */
-class SceneComponentPayloadRegistry final : public ISceneComponentPayloadTarget {
+class EVENGINE_API_BACKENDS SceneComponentPayloadRegistry final : public ISceneComponentPayloadTarget {
 public:
     /** @brief Register one provider; component types must be non-empty and unique. */
     EditorResult<void> registerProvider(ISceneComponentPayloadProvider* provider);
@@ -145,7 +147,7 @@ private:
 };
 
 /** @brief Build a property selection for one or more homogeneous component references. */
-EditorResult<SelectionSnapshot> makeSceneComponentSelection(
+EVENGINE_API_BACKENDS EditorResult<SelectionSnapshot> makeSceneComponentSelection(
     std::string channel, const std::vector<SceneComponentPayloadRef>& components,
     std::uint64_t sequence = 0);
 

@@ -418,3 +418,24 @@ debug SDK（`make sdk/win32-debug`）**沿用开发配置，即动态**：它从
 - **`_INLINE` 判据不能用字符窗口**：按"声明后 300 字符内出现 `(`…`)`"判断会把长参数表的 `EvpackGraphicsLoader::loadMesh` 误判成 header-only，给出 `_INLINE` 后消费方不导入 —— 正是 `_INLINE` 要避免的 LNK2019。权威判据是"该类型在某个 .cpp 里出现过 `Name::` 定义"。
 
 **测试侧跨 link unit 的依赖（新面）**：`voxel` 只差 `?saveImagePng@@YA_N…` —— 声明在 `test/RenderImageAudit.h:88`、定义在 `test/RenderImageAudit.cpp:572`，该 .cpp 归 **graphics 域**，而 `voxel_render_scenes.cpp`（经 `VoxelRenderFixtures.h`）在 **voxel 域**，跨 link unit，加任何引擎宏都无效。同形状风险还有 `test/water_scene_fixture.h::createStylizedWaterScene`（graphics+procgen）、`GraphicsParitySupport.h`（graphics+weather）、`ScriptTest.h`（12 个域）。修法二选一：给每个域都编一份共享测试 TU（照 `test/main.cpp` / `nut_scripts.cpp` 的 `SHARED_RUNNER` 机制，需同步改 `test/CMakeLists.txt` 与 `scripts/test_domains.py` 的共享文件表），或把这族辅助改成 header-inline。
+### 7.9 SHARED 测试面标注：第三批四个域 + 测试侧共享 TU（2026-09-20）
+
+| 域 | LNK1120 前→后 | exe | ctest（`-E '^bundle/'`） |
+| --- | --- | --- | --- |
+| weather | 84 → 0 | 5.45 MiB | 47/47 通过 |
+| fluids | 126 → 0 | 12.02 MiB | 239/239 通过 |
+| scene | 120 → 0 | 7.29 MiB | 69/70（1 失败，见下） |
+| card | 133 → 0 | 6.10 MiB | 30/30 通过 |
+| voxel（结构性修复后） | 1 → 0 | 7.73 MiB | 185/185 通过 |
+
+标注 69 个站点 / 66 个头文件、64 处 `Export.h`；手工 4 类：重载歧义（`VolumeFluidEmitter.h` 四条声明全标）、placer 漏点（`PcgGrowth.h:19`，行首被 doc 注释推成缩进）、C2280 四特殊成员（`Fluids`、`Card`）、以及下面第 2 条新坑。静态 `ninja -C C:\evs eve` exit 0。
+
+**两条必须加进 §7.5 流水线的新坑**：
+1. **声明上的宏只有在「定义所在 TU」看得见声明时才生效**。`graphics/GraphicsCapabilities.cpp` 定义 `registerGraphicsCapabilities()` 却不 include 自己的头，于是声明虽带 `EVENGINE_API_BACKENDS`，EVBackends.dll 仍不导出（dumpbin 无符号、.obj 无 `/EXPORT`）。类级宏天然免疫（成员定义必须 include 类头），**自由函数不免疫**；应固化一条「用 include 传递闭包复查被标注的自由函数」的检查。
+2. **Ninja 的 unscanned 规则让改头文件不触发重编**（模块 OBJECT 库没有 depfile）：标注完只重链会拿到陈旧 .obj，表现为"明明标了还 LNK"。本轮因此删掉 23 个受影响模块的 499 个 .obj（脚本 `b3_clean_modules.py`）才拿到真实结果。**每一刀标注后都应清理受影响模块对象再链接**，并把它写进流水线第 5 步。
+
+**测试侧跨 link unit 的结构性修复（已实施）**：`scripts/test_domains.py` 新增 `SHARED_SOURCES`（共享源不参与分区，输出 `EVE_TEST_DOMAIN_<domain>_SHARED_SOURCES`）+ `test/CMakeLists.txt` 消费 + `CMAKE_CONFIGURE_DEPENDS`（否则改规则表不会重新生成分区）；`saveImagePng` 从含大量 TEST_CASE 的 `RenderImageAudit.cpp` 拆到无 TEST_CASE 的新 TU `test/RenderImageAuditIo.cpp`，仅 graphics / procgen / voxel 三个消费域编译它；`check_test_manifest.py` 增加契约校验（16 个单测通过）。选共享 TU 而非 header-inline（避免把引擎头塞进 3 域 8 文件；同形状的 `test/water_scene_fixture.h` 只需一行表项）；shared test library 方案不可行（会把 graphics 用例带进每个域）。
+
+**修正 §7.8 的一处说法**：`test/ScriptTest.h` 不是跨 link-unit 问题 —— 该头全内联，唯一类外依赖 `ModuleManager::expose` 已是 `EVENGINE_API_FOUNDATION`；三个使用域（platform 27/27、scripts 72/72、card 30/30）都 0 未解析。
+
+**scene 的那 1 个失败属于跨 DLL 静态状态复制（与 §7.3/§7.7 同族）**：`editor.automation_publishes_material_transactions_to_live_renderable` 返回 `Renderable3D handle is missing or stale`。根因是 `external/ECS.hpp` 的 `inline Table &default_table(){ static Table t; … }` —— 头内联的函数局部静态单例，每个 link unit 一份：实体由 graphics（EVBackends）写进它那份 table，material_editor（EVEditors）读自己那份，于是判定 stale。引擎宏无解，必须等 §7.3 的第三方共享化或把默认 ECS table 收归引擎自持。窗口/Vulkan 类域还会叠加 SDL 的同类问题。

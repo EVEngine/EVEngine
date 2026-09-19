@@ -131,7 +131,12 @@ endif()
 # lives in scripts/test_domains.py, which scripts/check_test_manifest.py also
 # uses; CMake consumes the generated partition instead of re-implementing it so
 # the two cannot drift. A source matching no rule, or two rules, fails here with
-# the offending file named.
+# the offending file named. The rule file is a configure dependency: editing the
+# table (or SHARED_SOURCES) has to regenerate the partition, and nothing else in
+# this directory would notice.
+set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS
+  "${CMAKE_CURRENT_SOURCE_DIR}/test_domains.cmake"
+  "${CMAKE_SOURCE_DIR}/scripts/test_domains.py")
 include(${CMAKE_CURRENT_SOURCE_DIR}/test_domains.cmake)
 set(_eve_test_domain_input "${CMAKE_CURRENT_BINARY_DIR}/test_domain_input.txt")
 file(WRITE "${_eve_test_domain_input}" "")
@@ -214,7 +219,11 @@ else()
   # Desktop: one executable per domain, so an agent links only the domain it is
   # testing and no single link unit carries all 700+ test translation units. The
   # shared runner (main.cpp) and the generated script fixtures are compiled into
-  # each target exactly as the monolithic unit_test did.
+  # each target exactly as the monolithic unit_test did, and so are the shared
+  # helper translation units the partition marks for this domain
+  # (EVE_TEST_DOMAIN_<domain>_SHARED_SOURCES, see SHARED_SOURCES in
+  # scripts/test_domains.py): a test helper another domain defines cannot cross a
+  # link unit any other way.
   set(EVE_TEST_TARGETS "")
   set(_eve_test_runner "${CMAKE_CURRENT_SOURCE_DIR}/main.cpp")
   foreach(_eve_domain IN LISTS EVE_TEST_DOMAINS)
@@ -225,6 +234,7 @@ else()
     set(_eve_test_target "unit_test_${_eve_domain}")
     add_executable(${_eve_test_target}
       ${EVE_TEST_DOMAIN_${_eve_domain}_SOURCES}
+      ${EVE_TEST_DOMAIN_${_eve_domain}_SHARED_SOURCES}
       ${_eve_test_runner}
       ${CMAKE_CURRENT_BINARY_DIR}/nut_scripts.cpp
     )

@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/Module.h"
 #include "snow/SnowField.h"
@@ -21,7 +23,7 @@ namespace eve::snow {
  * final displaced surface used for mesh rebuilds. `out` is resized to match
  * `terrain`; values are not clamped (the terrain mesh scales them).
  */
-void applySnowToHeightmap(const SnowField &field, const procgen::Heightmap &terrain,
+EVENGINE_API_ORCHESTRATION void applySnowToHeightmap(const SnowField &field, const procgen::Heightmap &terrain,
                           procgen::Heightmap &out, float heightScale);
 
 /**

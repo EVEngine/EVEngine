@@ -1,7 +1,9 @@
 #pragma once
+#include "common/Export.h"
+
 
 namespace eve::graphics {
-void registerGraphicsCapabilities();
+EVENGINE_API_BACKENDS void registerGraphicsCapabilities();
 /** @brief Registers the backend-neutral generated-artifact graphics provider. */
 class Graphics;
 void registerGraphicsArtifactProvider(Graphics* graphics);

@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "editing/EditingResult.h"
 #include "editor/EditorSimulationPreview.h"
@@ -133,7 +135,7 @@ struct PhysicsPlacementFrame {
  * driven toward a shared handle while collision resolution remains authoritative
  * inside the preview. The class is owner-thread-only and invokes no callbacks.
  */
-class ScenePhysicsPlacementBackend final : public editor::IEditorSimulationBackend {
+class EVENGINE_API_EDITORS ScenePhysicsPlacementBackend final : public editor::IEditorSimulationBackend {
 public:
     ~ScenePhysicsPlacementBackend() override;
     ScenePhysicsPlacementBackend(const ScenePhysicsPlacementBackend&)            = delete;

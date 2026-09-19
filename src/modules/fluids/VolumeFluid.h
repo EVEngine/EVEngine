@@ -273,7 +273,7 @@ struct VolumeFluidContactEvent {
 };
 
 /** @brief Explicit bounded contact lifecycle tracker; owns no solver reference. */
-class VolumeFluidContactTracker final {
+class EVENGINE_API_DOMAINS VolumeFluidContactTracker final {
 public:
     /** @brief Diffs latest contacts against the preceding successful call.
      * @param contacts Borrowed latest-step contacts; at most 65536.

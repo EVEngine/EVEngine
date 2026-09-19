@@ -1,11 +1,13 @@
 #pragma once
+
+#include "common/Export.h"
 #include "common/PcgPhotoModeApply.h"
 #include "ui/PcgPhotoModeValues.h"
 #include <vector>
 namespace ssq { class Table; }
 namespace eve::ui {
 /** @brief Stable, reversible difference between two complete Pcg photo-mode snapshots. */
-class PcgPhotoModeApplyPlan {
+class EVENGINE_API_WORLD PcgPhotoModeApplyPlan {
 public:
  /** @brief Compile all changed fields in source declaration order. */
  [[nodiscard]] Result<void> compile(const PcgPhotoModeValues& before,const PcgPhotoModeValues& after);

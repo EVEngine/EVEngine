@@ -12,11 +12,14 @@ if str(SCRIPTS_DIR) not in sys.path:
 
 from check_test_manifest import (  # noqa: E402
     DOMAIN_TABLE,
+    SHARED_SOURCES,
     TEST_DIR,
     classify,
     discovery_contract_errors,
+    domain_wiring_errors,
     parse_domain_table,
     partition,
+    shared_source_errors,
     table_contract_errors,
 )
 
@@ -132,6 +135,48 @@ class CheckTestManifestTest(unittest.TestCase):
         self.assertIsNone(error)
         self.assertEqual(reason, "shared runner")
 
+    def test_shared_helper_is_not_a_domain_member(self):
+        # Every domain that needs a cross-domain helper must compile the same
+        # translation unit, so it belongs to no single domain.
+        tables = parse_domain_table(VALID_TABLE)
+        for basename in SHARED_SOURCES:
+            domain, reason, error = classify(basename, "#include <string>\n", tables)
+            self.assertIsNone(domain, basename)
+            self.assertIsNone(error, basename)
+            self.assertEqual(reason, "shared helper", basename)
+
+    def test_shared_source_names_a_real_file_and_domain(self):
+        # The consumer domains come from the real table: a SHARED_SOURCES row has
+        # to name domains that actually exist in test/test_domains.cmake.
+        declared = set(
+            parse_domain_table(DOMAIN_TABLE.read_text(encoding="utf-8"))["domains"]
+        )
+        self.assertEqual(shared_source_errors(declared, TEST_DIR), [])
+        for basename, consumers in SHARED_SOURCES.items():
+            # An undeclared consumer domain would silently drop the helper.
+            self.assertTrue(
+                any(basename in error for error in shared_source_errors(set(), TEST_DIR)),
+                basename,
+            )
+            # A missing file would only surface as a link failure in the consumer.
+            self.assertTrue(
+                any(
+                    basename in error
+                    for error in shared_source_errors(declared, TEST_DIR / "no-such-dir")
+                ),
+                basename,
+            )
+            self.assertTrue(consumers, basename)
+
+    def test_requires_cmake_to_compile_shared_helpers(self):
+        errors = domain_wiring_errors(VALID_CMAKE)
+        self.assertTrue(
+            any("SHARED_SOURCES" in error for error in errors),
+            errors,
+        )
+        valid = VALID_CMAKE + "\n${EVE_TEST_DOMAIN_${_eve_domain}_SHARED_SOURCES}\n"
+        self.assertFalse(any("SHARED_SOURCES" in error for error in domain_wiring_errors(valid)))
+
     def test_unclassified_source_is_an_error(self):
         tables = parse_domain_table(VALID_TABLE)
         domain, _reason, error = classify("mystery", "#include <string>\n", tables)
@@ -153,8 +198,9 @@ class CheckTestManifestTest(unittest.TestCase):
         self.assertEqual(table_contract_errors(tables), [])
         buckets, errors = partition(tables, TEST_DIR)
         self.assertEqual(errors, [])
-        # Every top-level test/*.cpp is either a domain member or the shared runner.
-        covered = sum(len(members) for members in buckets.values()) + 1
+        # Every top-level test/*.cpp is a domain member, the shared runner, or a
+        # shared helper compiled into its consumer domains.
+        covered = sum(len(members) for members in buckets.values()) + 1 + len(SHARED_SOURCES)
         self.assertEqual(covered, len(list(TEST_DIR.glob("*.cpp"))))
 
 
