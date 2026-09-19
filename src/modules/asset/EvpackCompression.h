@@ -12,7 +12,7 @@
 namespace eve::asset {
 
 /** @brief Compress decoded chunk bytes using the selected stable wire codec. */
-[[nodiscard]] EVENGINE_API Result<std::vector<std::uint8_t>> compressEvpackChunk(
+[[nodiscard]] EVENGINE_API_FOUNDATION Result<std::vector<std::uint8_t>> compressEvpackChunk(
     EvpackCodec codec, std::span<const std::uint8_t> decoded);
 
 /**
@@ -22,7 +22,7 @@ namespace eve::asset {
  * @param decodedSize Exact output size admitted from the TOC.
  * @param maximumDecodedBytes Caller budget checked before allocation.
  */
-[[nodiscard]] EVENGINE_API Result<std::vector<std::uint8_t>> decompressEvpackChunk(
+[[nodiscard]] EVENGINE_API_FOUNDATION Result<std::vector<std::uint8_t>> decompressEvpackChunk(
     EvpackCodec codec, std::span<const std::uint8_t> stored, std::uint64_t decodedSize,
     std::uint64_t maximumDecodedBytes);
 

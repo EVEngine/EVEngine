@@ -18,7 +18,7 @@ namespace eve::inventory {
 class InventorySaveSession;
 
 /** @brief 格子型物品容器（脚本可直接操作）。 */
-class EVENGINE_API Bag {
+class EVENGINE_API_FOUNDATION Bag {
 public:
     /** @brief 创建指定格数的空容器。 */
     Bag(int slotCount);

@@ -1,4 +1,5 @@
 #pragma once
+#include "common/Export.h"
 
 #include "common/Result.h"
 
@@ -136,10 +137,10 @@ public:
 };
 
 /** @brief Validate the complete owning policy before inference/import, with no mutation or callbacks. */
-[[nodiscard]] EVENGINE_API Result<void> validatePolicy(const Policy& policy);
+[[nodiscard]] EVENGINE_API_FOUNDATION Result<void> validatePolicy(const Policy& policy);
 
 /** @brief Return an owning backend label, or Unsupported if Tensor is unavailable; owner thread only. */
-[[nodiscard]] EVENGINE_API Result<std::string> backendName(Backend backend);
+[[nodiscard]] EVENGINE_API_FOUNDATION Result<std::string> backendName(Backend backend);
 
 /** @brief Owning search result; reward, coverage and failures remain separate evidence. */
 struct Report {
@@ -170,7 +171,7 @@ struct Report {
  * on the device, Cpu/Tensor use CPU SGD. GPU FP32 is tolerance-based, not bitwise
  * equivalent to CPU; stochastic action choices can amplify small numeric differences.
  */
-[[nodiscard]] EVENGINE_API Result<Report> run(const Config& config, IEnvironment& environment);
+[[nodiscard]] EVENGINE_API_FOUNDATION Result<Report> run(const Config& config, IEnvironment& environment);
 
 /**
  * @brief Compute masked action probabilities with validated version-1 owning weights.
@@ -180,7 +181,7 @@ struct Report {
  * @param backend CPU, eager Tensor or GPU; missing provider/device returns Unsupported.
  * @remarks No retained references; CPU is pure, Tensor calls are owner-thread affine.
  */
-[[nodiscard]] EVENGINE_API Result<std::vector<double>> infer(const Policy& policy, const Observation& observation,
+[[nodiscard]] EVENGINE_API_FOUNDATION Result<std::vector<double>> infer(const Policy& policy, const Observation& observation,
                                                              Backend backend = Backend::Cpu);
 
 /**
@@ -191,7 +192,7 @@ struct Report {
  * outcomes and findings must match exactly. Invalid trace is rejected before reset.
  * @return Conflict for divergence, or the original adapter failure; no locks/callback retention.
  */
-[[nodiscard]] EVENGINE_API Result<void> replay(const Trace& trace, IEnvironment& environment,
+[[nodiscard]] EVENGINE_API_FOUNDATION Result<void> replay(const Trace& trace, IEnvironment& environment,
                                                double absoluteTolerance = 1e-6);
 
 }  // namespace eve::agent

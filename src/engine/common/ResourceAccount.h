@@ -111,7 +111,7 @@ private:
 };
 
 /** @brief One positive resource and quantity pair in a canonical cost. */
-struct EVENGINE_API ResourceCost {
+struct EVENGINE_API_FOUNDATION ResourceCost {
     ResourceId resource;
     Amount     amount;
 
@@ -139,7 +139,7 @@ struct CostInput {
  * checked arithmetic. Empty costs and zero/negative items are rejected, so a
  * successful CostSpec is safe to use in reserve/debit/credit operations.
  */
-class EVENGINE_API CostSpec {
+class EVENGINE_API_FOUNDATION CostSpec {
 public:
     /** @brief Construct an invalid empty cost; use create/from/single for input. */
     CostSpec() = default;

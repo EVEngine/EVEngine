@@ -60,7 +60,7 @@ struct EvaArchive {
  * @thread Worker-safe; no state is retained across calls.
  * @reentrancy Does not invoke callbacks.
  */
-[[nodiscard]] EVENGINE_API Result<EvaArchive> parseEvaArchive(
+[[nodiscard]] EVENGINE_API_FOUNDATION Result<EvaArchive> parseEvaArchive(
     std::span<const std::uint8_t> bytes, const EvaArchiveLimits& limits = {});
 
 }  // namespace eve::asset

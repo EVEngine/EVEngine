@@ -45,7 +45,7 @@ void registerCppEntityView(const ssq::Class& cls, CppEntityViewFn fn);
  * 在 exposeECS / exposeECSToVM 末尾运行，早于任何游戏脚本。
  */
 using PostEcsHook = std::function<void(ssq::Table& table)>;
-EVENGINE_API void registerPostEcsHook(PostEcsHook fn);
+EVENGINE_API_FOUNDATION void registerPostEcsHook(PostEcsHook fn);
 
 /**
  * @brief Run post-ECS hooks that were registered after `exposeECS` already ran.

@@ -43,7 +43,7 @@ using SnapshotHashProvider = std::function<Result<ContentId>(std::string_view ca
  * Unknown payload fields remain the domain consumer's policy; unknown
  * envelope fields are rejected by the strict parser.
  */
-struct EVENGINE_API SnapshotEnvelope {
+struct EVENGINE_API_FOUNDATION_INLINE SnapshotEnvelope {
     std::string    type;
     LogicalId      schema;
     SchemaVersion  schemaVersion;
@@ -66,7 +66,7 @@ struct EVENGINE_API SnapshotEnvelope {
  * @param hashProvider Injected digest provider; must not be empty.
  * @return A sealed envelope, or a structured validation/hash failure.
  */
-[[nodiscard]] EVENGINE_API Result<SnapshotEnvelope> makeSnapshotEnvelope(std::string type, LogicalId schema,
+[[nodiscard]] EVENGINE_API_FOUNDATION Result<SnapshotEnvelope> makeSnapshotEnvelope(std::string type, LogicalId schema,
                                                                          SchemaVersion schemaVersion,
                                                                          PersistentId instanceId, Revision revision,
                                                                          SimulationTick tick, Value payload,
@@ -78,7 +78,7 @@ struct EVENGINE_API SnapshotEnvelope {
  * @return Deterministic JSON containing stable header fields and payload.
  * @remarks There is intentionally no `createdAt` or wall-clock field.
  */
-[[nodiscard]] EVENGINE_API Result<std::string> snapshotHashInput(const SnapshotEnvelope& snapshot);
+[[nodiscard]] EVENGINE_API_FOUNDATION Result<std::string> snapshotHashInput(const SnapshotEnvelope& snapshot);
 
 /**
  * @brief Verify an envelope's content hash without modifying it.
@@ -86,7 +86,7 @@ struct EVENGINE_API SnapshotEnvelope {
  * @param hashProvider Injected digest provider used when the envelope was sealed.
  * @return Success when the computed digest equals contentHash.
  */
-[[nodiscard]] EVENGINE_API Result<void> verifySnapshotEnvelope(const SnapshotEnvelope&     snapshot,
+[[nodiscard]] EVENGINE_API_FOUNDATION Result<void> verifySnapshotEnvelope(const SnapshotEnvelope&     snapshot,
                                                                const SnapshotHashProvider& hashProvider);
 
 /**
@@ -100,7 +100,7 @@ struct EVENGINE_API SnapshotEnvelope {
  *          helper gives legacy payloads one uniform compatibility rule before
  *          any consumer state is mutated.
  */
-[[nodiscard]] EVENGINE_API Result<void> validateSnapshotPayloadMetadata(const Value& payload, Revision revision,
+[[nodiscard]] EVENGINE_API_FOUNDATION Result<void> validateSnapshotPayloadMetadata(const Value& payload, Revision revision,
                                                                         SimulationTick tick);
 
 /**
@@ -108,7 +108,7 @@ struct EVENGINE_API SnapshotEnvelope {
  * @param snapshot Envelope to encode.
  * @return An owning object with exactly the public envelope fields.
  */
-[[nodiscard]] EVENGINE_API Result<Value> snapshotEnvelopeValue(const SnapshotEnvelope& snapshot);
+[[nodiscard]] EVENGINE_API_FOUNDATION Result<Value> snapshotEnvelopeValue(const SnapshotEnvelope& snapshot);
 
 /**
  * @brief Parse and verify an envelope from an owning Value.
@@ -116,7 +116,7 @@ struct EVENGINE_API SnapshotEnvelope {
  * @param hashProvider Provider used to verify contentHash.
  * @return A verified envelope, or a parse/version/hash failure.
  */
-[[nodiscard]] EVENGINE_API Result<SnapshotEnvelope> parseSnapshotEnvelopeValue(
+[[nodiscard]] EVENGINE_API_FOUNDATION Result<SnapshotEnvelope> parseSnapshotEnvelopeValue(
     const Value& value, const SnapshotHashProvider& hashProvider);
 
 /**
@@ -126,7 +126,7 @@ struct EVENGINE_API SnapshotEnvelope {
  * @remarks Serialization does not silently recalculate or repair contentHash;
  *          call verifySnapshotEnvelope when accepting an external envelope.
  */
-[[nodiscard]] EVENGINE_API Result<std::string> serializeSnapshotEnvelope(const SnapshotEnvelope& snapshot);
+[[nodiscard]] EVENGINE_API_FOUNDATION Result<std::string> serializeSnapshotEnvelope(const SnapshotEnvelope& snapshot);
 
 /**
  * @brief Parse and verify an envelope from canonical or compatible JSON text.
@@ -134,7 +134,7 @@ struct EVENGINE_API SnapshotEnvelope {
  * @param hashProvider Provider used to verify contentHash.
  * @return A verified envelope, or a parse/version/hash failure.
  */
-[[nodiscard]] EVENGINE_API Result<SnapshotEnvelope> parseSnapshotEnvelope(std::string_view            json,
+[[nodiscard]] EVENGINE_API_FOUNDATION Result<SnapshotEnvelope> parseSnapshotEnvelope(std::string_view            json,
                                                                           const SnapshotHashProvider& hashProvider);
 
 /**
@@ -143,7 +143,7 @@ struct EVENGINE_API SnapshotEnvelope {
  * Steps must move forward to a larger version.  The chain never guesses a
  * missing step and never accepts an envelope newer than the requested target.
  */
-class EVENGINE_API SnapshotMigrationChain {
+class EVENGINE_API_FOUNDATION SnapshotMigrationChain {
 public:
     using Migration = std::function<Result<Value>(const Value& payload)>;
 

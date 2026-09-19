@@ -11,7 +11,7 @@ namespace eve {
 namespace filesystem {
 
 /** @brief Data buffer paired with a filename (used for type identification). */
-class EVENGINE_API FileData : public Data {
+class EVENGINE_API_FOUNDATION FileData : public Data {
 public:
     /** @brief Allocates a buffer of the given size for the named file. */
     FileData(const std::string &filename, uint64_t size);

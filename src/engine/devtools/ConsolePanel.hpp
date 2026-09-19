@@ -13,7 +13,7 @@ typedef struct SQVM* HSQUIRRELVM;
 
 namespace eve::dev {
 
-struct EVENGINE_API ConsoleLine {
+struct EVENGINE_API_FOUNDATION_INLINE ConsoleLine {
     std::string timestamp;  // HH:MM:SS
     std::string level;      // debug | info | warn | error | print | cmd | result
     std::string text;
@@ -35,7 +35,7 @@ struct EVENGINE_API ConsoleLine {
  *
  * Desktop-only (part of EVDevTools); not shipped on Android/iOS trimmed runtimes.
  */
-class EVENGINE_API ConsolePanel {
+class EVENGINE_API_FOUNDATION ConsolePanel {
 public:
     static ConsolePanel& instance();
 

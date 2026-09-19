@@ -21,13 +21,13 @@ namespace eve::dev {
  * @param state Owning observation projection (typically `response.state`).
  * @return `fnv1a64:` plus 16 hex digits, or a serialization failure.
  */
-[[nodiscard]] EVENGINE_API Result<std::string> playObservationDigest(const Value& state);
+[[nodiscard]] EVENGINE_API_FOUNDATION Result<std::string> playObservationDigest(const Value& state);
 
 /**
  * @brief Parse and reject unknown fields on a Play Trace recording.
  * @param recording Object with schema id `evengine.play-trace` and version 1.
  */
-[[nodiscard]] EVENGINE_API Result<Value> parsePlayTrace(const Value& recording);
+[[nodiscard]] EVENGINE_API_FOUNDATION Result<Value> parsePlayTrace(const Value& recording);
 
 /**
  * @brief Replay a parsed recording against a host runtime.
@@ -36,10 +36,10 @@ namespace eve::dev {
  * @return Response with `status` `passed` or a structured mismatch/runtime failure.
  * @remarks Capture pixels are not compared. Observation digests must match exactly.
  */
-[[nodiscard]] EVENGINE_API Result<Value> replayPlayTrace(const Value& recording, IPlayHostRuntime& runtime);
+[[nodiscard]] EVENGINE_API_FOUNDATION Result<Value> replayPlayTrace(const Value& recording, IPlayHostRuntime& runtime);
 
 /** @brief RAII flag so nested Play requests during replay are not recorded. */
-class EVENGINE_API PlayReplayGuard final {
+class EVENGINE_API_FOUNDATION PlayReplayGuard final {
 public:
     PlayReplayGuard();
     ~PlayReplayGuard();
@@ -53,7 +53,7 @@ public:
  * Does not own game state. Replay sets a replaying flag so nested Play requests
  * do not record. Main-thread affinity; no callbacks.
  */
-class EVENGINE_API PlayTraceBuffer final {
+class EVENGINE_API_FOUNDATION PlayTraceBuffer final {
 public:
     static PlayTraceBuffer& instance();
 

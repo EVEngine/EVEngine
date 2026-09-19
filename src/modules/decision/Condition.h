@@ -98,7 +98,7 @@ enum class ConditionReasonCode : std::uint32_t {
  * @lifetime Process lifetime.
  * @thread Thread-safe and reentrant; no mutable state or callbacks are used.
  */
-[[nodiscard]] EVENGINE_API const char* conditionReasonCodeName(ConditionReasonCode code) noexcept;
+[[nodiscard]] EVENGINE_API_FOUNDATION const char* conditionReasonCodeName(ConditionReasonCode code) noexcept;
 
 /**
  * @brief Return the stable lowercase spelling of a condition node kind.
@@ -107,7 +107,7 @@ enum class ConditionReasonCode : std::uint32_t {
  * @lifetime Process lifetime.
  * @thread Thread-safe and reentrant; no mutable state or callbacks are used.
  */
-[[nodiscard]] EVENGINE_API const char* conditionKindName(ConditionKind kind) noexcept;
+[[nodiscard]] EVENGINE_API_FOUNDATION const char* conditionKindName(ConditionKind kind) noexcept;
 
 /**
  * @brief Return the stable lowercase spelling of a comparison operator.
@@ -116,7 +116,7 @@ enum class ConditionReasonCode : std::uint32_t {
  * @lifetime Process lifetime.
  * @thread Thread-safe and reentrant; no mutable state or callbacks are used.
  */
-[[nodiscard]] EVENGINE_API const char* compareOperatorName(CompareOperator op) noexcept;
+[[nodiscard]] EVENGINE_API_FOUNDATION const char* compareOperatorName(CompareOperator op) noexcept;
 
 /**
  * @brief Explain one condition evaluation in a UI- and log-friendly form.
@@ -188,7 +188,7 @@ public:
  * keys and values; it keeps no pointers into a domain object. Evaluation is
  * synchronous, const, and side-effect free.
  */
-class EVENGINE_API Condition {
+class EVENGINE_API_FOUNDATION Condition {
 public:
     /** @brief Construct an empty All node, which passes vacuously. */
     Condition() = default;

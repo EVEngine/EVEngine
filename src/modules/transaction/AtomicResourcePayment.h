@@ -26,7 +26,7 @@ namespace eve::transaction {
  * borrowed for the synchronous call and must remain valid until it returns.
  * The caller and both participants must use the same owner thread.
  */
-class EVENGINE_API AtomicResourcePayment final {
+class EVENGINE_API_FOUNDATION AtomicResourcePayment final {
 public:
     /**
      * @brief Execute already prepared domain participants as one transaction.

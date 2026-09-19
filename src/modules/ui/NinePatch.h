@@ -39,14 +39,14 @@ struct NinePatchInfo {
  * @return True when the marker frame is valid and has one contiguous stretch
  * run on both the top and left edges.
  */
-EVENGINE_API bool parseNinePatch(const image::ImageData &source, NinePatchInfo &out,
+EVENGINE_API_WORLD bool parseNinePatch(const image::ImageData &source, NinePatchInfo &out,
                                  std::string *error = nullptr);
 
 /**
  * @brief Copy the drawable interior of a parsed .9.png without marker pixels.
  * @return Caller-owned cropped image, or nullptr if dimensions are invalid.
  */
-EVENGINE_API std::unique_ptr<image::ImageData> stripNinePatchBorder(
+EVENGINE_API_WORLD std::unique_ptr<image::ImageData> stripNinePatchBorder(
     const image::ImageData &source);
 
 }  // namespace eve::ui

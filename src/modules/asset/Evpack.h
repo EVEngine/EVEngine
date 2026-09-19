@@ -188,7 +188,7 @@ public:
         std::size_t index, std::uint64_t maximumDecodedBytes) const;
 
 private:
-    friend EVENGINE_API Result<Evpack> parseEvpack(std::span<const std::uint8_t>,
+    friend EVENGINE_API_FOUNDATION Result<Evpack> parseEvpack(std::span<const std::uint8_t>,
                                                   const EvpackLimits&, const EvpackTrust&);
     friend Result<Evpack> parseEvpackMetadata(std::span<const std::uint8_t>, std::uint64_t,
                                               const EvpackLimits&, const EvpackTrust&);
@@ -206,7 +206,7 @@ private:
     EvpackBuild build, const EvpackLimits& limits = {});
 
 /** @brief Parse, bound-check and hash-verify a complete untrusted `.evpack`. */
-[[nodiscard]] EVENGINE_API Result<Evpack> parseEvpack(
+[[nodiscard]] EVENGINE_API_FOUNDATION Result<Evpack> parseEvpack(
     std::span<const std::uint8_t> bytes, const EvpackLimits& limits = {},
     const EvpackTrust& trust = {});
 

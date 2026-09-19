@@ -30,7 +30,7 @@ class EffectExecutor;
  * container.  All methods are simulation-thread confined unless the caller
  * provides external synchronization; callbacks are not invoked by this type.
  */
-class EVENGINE_API EffectContainer {
+class EVENGINE_API_FOUNDATION EffectContainer {
 public:
     /**
      * @brief Construct an empty effect container.

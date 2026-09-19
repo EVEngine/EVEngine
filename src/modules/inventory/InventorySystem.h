@@ -33,7 +33,7 @@ struct InventoryItemGrant {
  * @remarks Preparation does not mutate the Bag or publish events. The object is
  * bound to the Bag state observed during preparation and may be committed once.
  */
-class EVENGINE_API PreparedInventoryAdd {
+class EVENGINE_API_FOUNDATION PreparedInventoryAdd {
 public:
     PreparedInventoryAdd();
     ~PreparedInventoryAdd();
@@ -53,7 +53,7 @@ private:
  * @remarks Preparation neither mutates the Bag nor publishes events. Commit
  * rejects a Bag that no longer matches the observed baseline.
  */
-class EVENGINE_API PreparedInventoryRemove {
+class EVENGINE_API_FOUNDATION PreparedInventoryRemove {
 public:
     PreparedInventoryRemove();
     ~PreparedInventoryRemove();
@@ -68,7 +68,7 @@ private:
     friend class InventorySystem;
 };
 
-class EVENGINE_API InventorySystem {
+class EVENGINE_API_FOUNDATION InventorySystem {
 public:
     using AcceptFn =
         std::function<bool(const Bag &bag, const ItemDefinition &def, int quantity, std::string *reason)>;

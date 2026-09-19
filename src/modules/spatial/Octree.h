@@ -15,7 +15,7 @@ namespace eve::spatial {
  * @brief Region octree for 3D AABB broad-phase / scene culling.
  * Same storage rules as QuadTree (smallest fully-containing node).
  */
-class EVENGINE_API Octree {
+class EVENGINE_API_FOUNDATION Octree {
 public:
     /** @brief 创建覆盖 [minX..maxX]×[minY..maxY]×[minZ..maxZ] 的八叉树。 */
     Octree(float minX, float minY, float minZ, float maxX, float maxY, float maxZ,

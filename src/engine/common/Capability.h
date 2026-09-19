@@ -52,17 +52,17 @@ namespace eve::cap {
 
 namespace detail {
 
-EVENGINE_API void  provideRaw(const char* name, void* impl);
-EVENGINE_API void* queryRaw(const char* name);
-EVENGINE_API void  revokeRaw(const char* name, void* impl);
+EVENGINE_API_FOUNDATION void  provideRaw(const char* name, void* impl);
+EVENGINE_API_FOUNDATION void* queryRaw(const char* name);
+EVENGINE_API_FOUNDATION void  revokeRaw(const char* name, void* impl);
 
-EVENGINE_API void   addListenerRaw(const char* name, void* impl, int priority);
-EVENGINE_API void   removeListenerRaw(const char* name, void* impl);
-EVENGINE_API size_t listenerCountRaw(const char* name);
-EVENGINE_API void*  listenerAtRaw(const char* name, size_t index);
+EVENGINE_API_FOUNDATION void   addListenerRaw(const char* name, void* impl, int priority);
+EVENGINE_API_FOUNDATION void   removeListenerRaw(const char* name, void* impl);
+EVENGINE_API_FOUNDATION size_t listenerCountRaw(const char* name);
+EVENGINE_API_FOUNDATION void*  listenerAtRaw(const char* name, size_t index);
 
 /** Drops every registration. Test-only; resets state between cases. */
-EVENGINE_API void clearAllRaw();
+EVENGINE_API_FOUNDATION void clearAllRaw();
 
 }  // namespace detail
 

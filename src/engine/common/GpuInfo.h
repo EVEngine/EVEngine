@@ -14,7 +14,7 @@
 
 namespace eve::caps {
 
-class EVENGINE_API IGpuInfo {
+class EVENGINE_API_FOUNDATION_INLINE IGpuInfo {
 public:
     static constexpr const char* capabilityName = "IGpuInfo";
     virtual ~IGpuInfo() = default;

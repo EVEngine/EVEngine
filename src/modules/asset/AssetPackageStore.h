@@ -36,7 +36,7 @@ struct PackagePublishReceipt {
  * @remarks The optional gate is invoked after reopening the temporary file and before
  * replacement, without a store lock. It must not retain references to its path arguments.
  */
-class EVENGINE_API AtomicAssetPackageStore {
+class EVENGINE_API_FOUNDATION AtomicAssetPackageStore {
 public:
     using BeforeReplace = std::function<PackagePublishGateDecision(
         const std::filesystem::path& temporary, const std::filesystem::path& destination)>;

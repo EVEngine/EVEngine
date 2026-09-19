@@ -15,7 +15,7 @@ namespace eve::inventory {
 class Bag;
 class InventorySaveSession;
 
-class EVENGINE_API EquipmentSet {
+class EVENGINE_API_FOUNDATION EquipmentSet {
 public:
     EquipmentSet() = default;
     ~EquipmentSet() = default;

@@ -32,11 +32,11 @@ struct GameplayTagDefinition {
 };
 
 /** @brief Returns whether a name is a canonical dot-separated gameplay tag. */
-[[nodiscard]] EVENGINE_API bool isValidGameplayTagName(std::string_view name) noexcept;
+[[nodiscard]] EVENGINE_API_FOUNDATION bool isValidGameplayTagName(std::string_view name) noexcept;
 /** @brief Computes the stable 64-bit FNV-1a identifier of a canonical name. */
 [[nodiscard]] GameplayTagId gameplayTagId(std::string_view name) noexcept;
 /** @brief Tests exact or dot-boundary descendant membership. */
-[[nodiscard]] EVENGINE_API bool gameplayTagMatches(std::string_view candidate, std::string_view query,
+[[nodiscard]] EVENGINE_API_FOUNDATION bool gameplayTagMatches(std::string_view candidate, std::string_view query,
                                       GameplayTagMatch match) noexcept;
 
 /**

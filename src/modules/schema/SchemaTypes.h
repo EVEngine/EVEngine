@@ -19,7 +19,7 @@ enum class ValueType { Any, Null, Boolean, Integer, Number, String, Object, Arra
 enum class SchemaRegistrationStatus { Registered, Replaced, Conflict, Invalid };
 
 /** @brief Returns the stable lowercase name of a registration outcome. */
-EVENGINE_API const char* schemaRegistrationStatusName(SchemaRegistrationStatus status);
+EVENGINE_API_FOUNDATION const char* schemaRegistrationStatusName(SchemaRegistrationStatus status);
 
 /** @brief Writes the stable schema-registration status name. */
 inline std::ostream& operator<<(std::ostream& stream, SchemaRegistrationStatus status) {
@@ -27,10 +27,10 @@ inline std::ostream& operator<<(std::ostream& stream, SchemaRegistrationStatus s
 }
 
 /** @brief Converts a stable schema type name to its enum value. */
-EVENGINE_API std::optional<ValueType> valueTypeFromString(const std::string& name);
+EVENGINE_API_FOUNDATION std::optional<ValueType> valueTypeFromString(const std::string& name);
 
 /** @brief Returns the stable lowercase name of a schema value type. */
-EVENGINE_API const char* valueTypeName(ValueType type);
+EVENGINE_API_FOUNDATION const char* valueTypeName(ValueType type);
 
 struct SchemaDefinition;
 
@@ -44,7 +44,7 @@ struct SchemaDefinition;
  * JSON Pointer fragments, patternProperties, conditionals, tuple arrays,
  * unevaluatedProperties, or arbitrary keyword composition.
  */
-struct EVENGINE_API SchemaNode {
+struct EVENGINE_API_FOUNDATION_INLINE SchemaNode {
     /** @brief The value kind accepted by this node. */
     ValueType type = ValueType::Any;
     /** @brief Legacy homogeneous array constraint retained for compatibility. */
@@ -74,7 +74,7 @@ struct EVENGINE_API SchemaNode {
 };
 
 /** @brief Metadata and validation constraints for one object member. */
-struct EVENGINE_API FieldDefinition : SchemaNode {
+struct EVENGINE_API_FOUNDATION_INLINE FieldDefinition : SchemaNode {
     std::string name;
     bool        required = false;
     std::string title;
@@ -90,7 +90,7 @@ struct EVENGINE_API FieldDefinition : SchemaNode {
  * may spell this member `schemaVersion`; the legacy `version` spelling is
  * accepted by the compatibility facade.
  */
-struct EVENGINE_API SchemaDefinition {
+struct EVENGINE_API_FOUNDATION_INLINE SchemaDefinition {
     std::string                  id;
     int                          version = 1;
     std::string                  title;
@@ -100,7 +100,7 @@ struct EVENGINE_API SchemaDefinition {
 };
 
 /** @brief One machine-readable validation failure. */
-struct EVENGINE_API ValidationError {
+struct EVENGINE_API_FOUNDATION_INLINE ValidationError {
     std::string path;
     std::string code;
     std::string message;

@@ -111,7 +111,7 @@ struct WriteResult {
  * adapters. Host-specific adapters may translate its diagnostics, but must not
  * reimplement kind, enum, finite or numeric-range validation.
  */
-EVENGINE_API WriteResult validatePropertyValue(const PropertyDescriptor &property, const Value &value);
+EVENGINE_API_FOUNDATION WriteResult validatePropertyValue(const PropertyDescriptor &property, const Value &value);
 
 /** @brief Availability of a property in an immutable model snapshot. */
 enum class PropertyChangeState { Value, Mixed, Missing };
@@ -140,7 +140,7 @@ using Subscription = eve::Subscription;
  * targets or remote automation. Writes express intent; the implementation
  * decides whether to assign directly, dispatch a command, or reject it.
  */
-class EVENGINE_API IPropertyAccess {
+class EVENGINE_API_FOUNDATION_INLINE IPropertyAccess {
 public:
     using ChangeCallback = std::function<void(const PropertyChange &)>;
 

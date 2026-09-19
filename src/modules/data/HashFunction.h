@@ -13,7 +13,7 @@ namespace eve
 namespace data
 {
 
-class EVENGINE_API HashFunction
+class EVENGINE_API_FOUNDATION HashFunction
 {
 public:
 

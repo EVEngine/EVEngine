@@ -1,4 +1,5 @@
 #pragma once
+#include "common/Export.h"
 
 #include "common/ResourceRef.h"
 #include "common/Value.h"
@@ -44,7 +45,7 @@ struct ShaderAssetLimits {
  * No version zero format exists; future versions require explicit migration.
  * @thread Worker-safe with immutable input. No callbacks, GPU objects, or live-state mutation.
  */
-[[nodiscard]] EVENGINE_API Result<ShaderAsset> decodeShaderAsset(const Value& definition,
+[[nodiscard]] EVENGINE_API_FOUNDATION Result<ShaderAsset> decodeShaderAsset(const Value& definition,
                                                                 const ShaderAssetLimits& limits = {});
 
 /**

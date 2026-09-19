@@ -39,7 +39,7 @@
 
 namespace eve::filesystem {
 
-class EVENGINE_API Filesystem : public Module, public eve::service::IFileSystem {
+class EVENGINE_API_FOUNDATION Filesystem : public Module, public eve::service::IFileSystem {
 public:
     Module_REG(Filesystem);
 

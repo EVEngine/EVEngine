@@ -410,7 +410,7 @@ private:
  * case-sensitive ASCII (`[A-Za-z0-9][A-Za-z0-9_.-]*`). This prevents modules
  * from inventing incompatible namespace spellings at a persistence boundary.
  */
-class EVENGINE_API LogicalId {
+class EVENGINE_API_FOUNDATION LogicalId {
 public:
     /** @brief Constructs an empty, invalid logical ID. */
     LogicalId() = default;
@@ -477,7 +477,7 @@ using UuidClock = std::function<std::chrono::system_clock::time_point()>;
  * assembles the value but does not provide entropy itself.  The caller owns
  * the security and availability properties of the injected entropy source.
  */
-class EVENGINE_API UuidV7Generator {
+class EVENGINE_API_FOUNDATION UuidV7Generator {
 public:
     /**
      * @brief Creates a generator with an injected entropy source and optional clock.
@@ -510,7 +510,7 @@ private:
  * @param entropy Source for the UUID random portion.
  * @return A generated PersistentId, or empty when entropy/time is unavailable or out of range.
  */
-[[nodiscard]] EVENGINE_API std::optional<PersistentId> generateUuidV7(std::chrono::system_clock::time_point timestamp,
+[[nodiscard]] EVENGINE_API_FOUNDATION std::optional<PersistentId> generateUuidV7(std::chrono::system_clock::time_point timestamp,
                                                                       const UuidEntropySource&              entropy);
 
 }  // namespace eve

@@ -49,16 +49,16 @@ struct LinkOps {
  * returns the first id and leaves the original operations in place, so a
  * module reloaded as a plugin cannot silently swap them out.
  */
-EVENGINE_API int registerLinkKind(const LinkOps& ops);
+EVENGINE_API_PLATFORM int registerLinkKind(const LinkOps& ops);
 
 /** Id for a previously registered kind, or -1. */
-EVENGINE_API int findLinkKind(const char* kind);
+EVENGINE_API_PLATFORM int findLinkKind(const char* kind);
 
 /** Operations for an id, or nullptr when the id is unknown. */
-EVENGINE_API const LinkOps* linkOps(int kindId);
+EVENGINE_API_PLATFORM const LinkOps* linkOps(int kindId);
 
 /** Name for an id, or "" when the id is unknown. */
-EVENGINE_API const char* linkKindName(int kindId);
+EVENGINE_API_PLATFORM const char* linkKindName(int kindId);
 
 /**
  * One link between a scene node and an external object. The node may hold

@@ -109,7 +109,7 @@ public:
 };
 
 /** @brief Base contract for a consumer-owned artifact provider. */
-class EVENGINE_API ProviderContract {
+class EVENGINE_API_FOUNDATION ProviderContract {
 public:
     virtual ~ProviderContract() = default;
 

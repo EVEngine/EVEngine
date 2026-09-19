@@ -11,7 +11,7 @@
 
 namespace eve::inventory {
 
-class EVENGINE_API ItemRegistry {
+class EVENGINE_API_FOUNDATION ItemRegistry {
 public:
     static void registerItem(const ItemDefinition &def);
     static const ItemDefinition *find(const std::string &id);

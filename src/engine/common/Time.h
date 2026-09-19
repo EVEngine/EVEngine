@@ -38,7 +38,7 @@ using FrameIndex = detail::StrongUint64<detail::FrameIndexTag>;
  * error in deterministic state.  Conversion from seconds validates finiteness
  * and range and returns a checked Result.
  */
-class EVENGINE_API Duration {
+class EVENGINE_API_FOUNDATION Duration {
 public:
     /** @brief Construct a zero duration. */
     constexpr Duration() noexcept = default;
@@ -98,7 +98,7 @@ private:
  * a timestamp produced by another source.  It is appropriate for measuring
  * elapsed real time at the scheduler boundary.
  */
-class EVENGINE_API MonotonicTimestamp {
+class EVENGINE_API_FOUNDATION MonotonicTimestamp {
 public:
     /** @brief Construct the zero timestamp. */
     constexpr MonotonicTimestamp() noexcept = default;
@@ -131,7 +131,7 @@ private:
  * The value is nanoseconds since the Unix epoch.  It must not appear in
  * deterministic simulation state, replay keys, or simulation hashes.
  */
-class EVENGINE_API WallClockTimestamp {
+class EVENGINE_API_FOUNDATION_INLINE WallClockTimestamp {
 public:
     /** @brief Construct the Unix epoch timestamp. */
     constexpr WallClockTimestamp() noexcept = default;
@@ -150,7 +150,7 @@ private:
 };
 
 /** @brief One deterministic fixed-step emitted by SimulationClock. */
-struct EVENGINE_API SimulationStep {
+struct EVENGINE_API_FOUNDATION_INLINE SimulationStep {
     /** @brief Tick reached after this step is applied. */
     SimulationTick tick = SimulationTick::zero();
     /** @brief Fixed simulation duration for this step. */
@@ -165,7 +165,7 @@ struct EVENGINE_API SimulationStep {
  * interface never advances simulation state and never exposes a wall clock to
  * simulation consumers.
  */
-class EVENGINE_API ITimeSource {
+class EVENGINE_API_FOUNDATION_INLINE ITimeSource {
 public:
     static constexpr const char* capabilityName = "ITimeSource";
     virtual ~ITimeSource()                      = default;
@@ -192,7 +192,7 @@ public:
  * rate scales accumulated simulation time while emitted steps remain fixed.
  * The scheduler is not thread-safe; one owner thread must serialize all calls.
  */
-class EVENGINE_API SimulationClock {
+class EVENGINE_API_FOUNDATION SimulationClock {
 public:
     /**
      * @brief Construct a fixed-step clock without reading the source.

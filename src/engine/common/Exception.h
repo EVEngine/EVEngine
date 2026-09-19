@@ -10,7 +10,7 @@ namespace eve
 {
     
 
-class EVENGINE_API Exception : public std::exception
+class EVENGINE_API_FOUNDATION Exception : public std::exception
 {
 public:
     Exception(const char *fmt, ...);

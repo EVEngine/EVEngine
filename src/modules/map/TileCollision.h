@@ -7,7 +7,7 @@
 namespace eve::map {
 
 /** @brief One greedily merged solid tile rectangle in world coordinates. */
-struct EVENGINE_API TileCollisionRect {
+struct EVENGINE_API_WORLD_INLINE TileCollisionRect {
     float x      = 0.f;
     float y      = 0.f;
     float width  = 0.f;
@@ -15,7 +15,7 @@ struct EVENGINE_API TileCollisionRect {
 };
 
 /** @brief Optional sink implemented by a physics or project adapter. */
-class EVENGINE_API ITileCollisionSink {
+class EVENGINE_API_WORLD_INLINE ITileCollisionSink {
 public:
     static constexpr const char* capabilityName = "ITileCollisionSink";
     virtual ~ITileCollisionSink()               = default;

@@ -35,7 +35,7 @@ namespace eve {
  * Idempotent: subsequent calls are no-ops. If the file cannot be opened, logging
  * silently stays disabled (stderr output is unaffected).
  */
-EVENGINE_API void initSystemLogging(const std::string& logDir = {});
+EVENGINE_API_FOUNDATION void initSystemLogging(const std::string& logDir = {});
 
 /**
  * @brief Appends a timestamped event line to the crash/error log.
@@ -45,7 +45,7 @@ EVENGINE_API void initSystemLogging(const std::string& logDir = {});
  * Thread-safe and blocking so normal error reporting never drops a line. No-op
  * (besides the implicit lazy open) when logging is unavailable.
  */
-EVENGINE_API void recordLogEvent(const std::string& level, const std::string& message);
+EVENGINE_API_FOUNDATION void recordLogEvent(const std::string& level, const std::string& message);
 
 /**
  * @brief Records a crash report, safe to call from a crash/exception handler.
@@ -55,12 +55,12 @@ EVENGINE_API void recordLogEvent(const std::string& level, const std::string& me
  * log mutex; on contention the report is dropped rather than hanging. Best used
  * by the unhandled-exception filter, which also prints the same report to stderr.
  */
-EVENGINE_API void recordCrashEvent(const std::string& report);
+EVENGINE_API_FOUNDATION void recordCrashEvent(const std::string& report);
 
 /**
  * @brief Path of the open crash/error log file.
  * @return Absolute/relative path as opened; empty when logging is not available.
  */
-EVENGINE_API std::string crashLogPath();
+EVENGINE_API_FOUNDATION std::string crashLogPath();
 
 }  // namespace eve

@@ -14,7 +14,7 @@ class VM;
 namespace eve {
 
 /** @brief Declarative editor-host control (provided by the ui module). */
-class EVENGINE_API IEditorHost {
+class EVENGINE_API_FOUNDATION_INLINE IEditorHost {
 public:
     static constexpr const char* capabilityName = "IEditorHost";
 

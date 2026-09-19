@@ -71,7 +71,7 @@ struct Variant {
  * Pushed messages are heap-allocated; the queue owns them until polled,
  * after which the caller is responsible for deleting them.
  */
-class EVENGINE_API Message {
+class EVENGINE_API_FOUNDATION Message {
 public:
     /**
      * @brief Creates an event message.
@@ -85,7 +85,7 @@ public:
     const std::vector<Variant> args;
 };
 
-class EVENGINE_API PlatformEvent : public Module {
+class EVENGINE_API_FOUNDATION PlatformEvent : public Module {
 public:
     Module_REG(PlatformEvent);
     virtual ~PlatformEvent();

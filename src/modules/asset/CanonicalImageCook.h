@@ -27,7 +27,7 @@ struct CookedCanonicalImage {
  * @return Owning runtime candidate; JPEG and unsupported PNG modes fail explicitly.
  * @thread Worker-safe; uses no global decoder state.
  */
-[[nodiscard]] EVENGINE_API Result<CookedCanonicalImage> cookCanonicalImageRgba8(
+[[nodiscard]] EVENGINE_API_FOUNDATION Result<CookedCanonicalImage> cookCanonicalImageRgba8(
     std::span<const std::uint8_t> definition,
     std::span<const std::uint8_t> encodedSource,
     std::uint64_t maximumDecodedBytes);

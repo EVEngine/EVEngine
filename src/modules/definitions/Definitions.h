@@ -55,7 +55,7 @@ struct DefinitionEvent {
  * removed, or until restoreJson() replaces registry state. The reference is a
  * synchronous borrow; callers must not retain it across registry mutation.
  */
-class EVENGINE_API DefinitionRegistry {
+class EVENGINE_API_FOUNDATION DefinitionRegistry {
 public:
     /**
      * @brief Creates a definition registry with an optional persistent identity.

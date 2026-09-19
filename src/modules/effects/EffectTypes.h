@@ -60,7 +60,7 @@ struct EffectPolicy {
 };
 
 /** @brief Deterministic JSON-compatible payload carried by a definition or instance. */
-class EVENGINE_API EffectPayload {
+class EVENGINE_API_FOUNDATION EffectPayload {
 public:
     /** @brief Sets a JSON string field. */
     void setString(const std::string& key, const std::string& value);
@@ -124,7 +124,7 @@ struct EffectDefinition {
  * This object has lifecycle state only.  It does not know how magnitude is
  * settled, how tags affect an actor, or how a period causes damage/healing.
  */
-struct EVENGINE_API EffectInstance {
+struct EVENGINE_API_FOUNDATION EffectInstance {
     std::string id;
     std::string subject;
     std::string type;

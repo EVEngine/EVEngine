@@ -14,7 +14,7 @@
 namespace eve {
 
 /** @brief Serializable snapshot of one scene node (value type, no scene types). */
-struct EVENGINE_API SceneNodeInfo {
+struct EVENGINE_API_FOUNDATION_INLINE SceneNodeInfo {
     std::string id;
     std::string name;
     std::string path;
@@ -27,7 +27,7 @@ struct EVENGINE_API SceneNodeInfo {
 };
 
 /** @brief Scene graph query/mutation surface (provided by the scene module). */
-class EVENGINE_API ISceneQuery {
+class EVENGINE_API_FOUNDATION ISceneQuery {
 public:
     static constexpr const char* capabilityName = "ISceneQuery";
 

@@ -31,7 +31,7 @@ enum class UriScheme : std::uint8_t {
 };
 
 /** @brief Return the stable lower-case spelling of a resource URI scheme. */
-[[nodiscard]] EVENGINE_API const char* uriSchemeName(UriScheme scheme) noexcept;
+[[nodiscard]] EVENGINE_API_FOUNDATION const char* uriSchemeName(UriScheme scheme) noexcept;
 
 /**
  * @brief An immutable, canonical URI value.
@@ -41,7 +41,7 @@ enum class UriScheme : std::uint8_t {
  * and are safe to retain across frames; they contain no borrowed pointers and
  * have no thread affinity.
  */
-class EVENGINE_API Uri {
+class EVENGINE_API_FOUNDATION Uri {
 public:
     /**
      * @brief Parse and canonicalize a resource URI.
@@ -98,7 +98,7 @@ private:
  * arbitrary future URI value from being passed where a resource locator is
  * expected, while retaining one canonical representation internally.
  */
-class EVENGINE_API ResourceUri {
+class EVENGINE_API_FOUNDATION ResourceUri {
 public:
     /**
      * @brief Parse a supported resource URI.

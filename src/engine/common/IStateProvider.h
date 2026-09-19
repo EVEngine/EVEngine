@@ -25,7 +25,7 @@ enum class StateReloadPolicy {
  * Modules that do not register a provider are treated as stateless and are
  * simply skipped — the same trimming story as IAssetReloader.
  */
-class EVENGINE_API IStateProvider {
+class EVENGINE_API_FOUNDATION_INLINE IStateProvider {
 public:
     static constexpr const char* capabilityName = "IStateProvider";
     virtual ~IStateProvider()                   = default;

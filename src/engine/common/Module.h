@@ -47,13 +47,13 @@ namespace eve {
 
 class Runtime;
 
-class EVENGINE_API Module {
+class EVENGINE_API_FOUNDATION Module {
 public:
     virtual ~Module() {}
     virtual std::string getName() const = 0;
 };
 
-class EVENGINE_API ModuleManager {
+class EVENGINE_API_FOUNDATION ModuleManager {
 public:
     typedef Module* (*creator_t)();
     typedef void    (*exposer_t)(ssq::Table&);
@@ -195,7 +195,7 @@ protected:
     friend struct ModuleBindAccess;
 };
 
-struct EVENGINE_API ModuleRegister {
+struct EVENGINE_API_FOUNDATION ModuleRegister {
     ModuleRegister(const char* name, ModuleManager::creator_t c, ModuleManager::exposer_t e);
 };
 
