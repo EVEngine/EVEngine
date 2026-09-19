@@ -14,13 +14,11 @@ Result<asset_import::PreparedAssetImport> prepareMeshVfxPackage(
     if (!manifest) return Result<PreparedAssetImport>::failure(manifest.status());
     if (effect.layers.size() > 32 || effect.trail || effect.trailBinding || !effect.animationTriggers.play.empty() ||
         !effect.animationTriggers.stop.empty() || !effect.animationTriggers.trailBreak.empty())
-        return asset_import::detail::failure<PreparedAssetImport>(
-            DiagnosticCode::Unsupported, "Package supports up to 32 mesh layers without gameplay attachments");
+        return Result<PreparedAssetImport>::failure(Diagnostic::error(DiagnosticCode::Unsupported, "Package supports up to 32 mesh layers without gameplay attachments", {}, {}, "asset.import"));
     for (const auto& layer : effect.layers) {
         const float cycle = layer.playback.fadeIn + layer.playback.duration + layer.playback.fadeOut;
         if (!std::isfinite(cycle) || (layer.playback.loop && cycle <= 0))
-            return asset_import::detail::failure<PreparedAssetImport>(DiagnosticCode::InvalidArgument,
-                                                                      "Invalid playback cycle");
+            return Result<PreparedAssetImport>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Invalid playback cycle", {}, {}, "asset.import"));
     }
     auto effectJson = effect.toJson();
     if (!effectJson) return Result<PreparedAssetImport>::failure(effectJson.status());
@@ -39,17 +37,14 @@ Result<asset_import::PreparedAssetImport> prepareMeshVfxPackage(
     std::map<std::string, std::map<std::string, float>> defaults;
     for (const auto& [ref, value] : shaders) {
         if (ref.id().isNil() || ref == effectRef.value() || defaults.contains(ref.format()))
-            return asset_import::detail::failure<PreparedAssetImport>(DiagnosticCode::InvalidArgument,
-                                                                      "Invalid shader identity");
+            return Result<PreparedAssetImport>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Invalid shader identity", {}, {}, "asset.import"));
         auto shader = asset::decodeShaderAsset(value);
         if (!shader) return Result<PreparedAssetImport>::failure(shader.status());
         if (shader.value().interface != asset::ShaderAssetInterface::Mesh3D)
-            return asset_import::detail::failure<PreparedAssetImport>(DiagnosticCode::TypeMismatch,
-                                                                      "Mesh effect requires mesh shaders");
+            return Result<PreparedAssetImport>::failure(Diagnostic::error(DiagnosticCode::TypeMismatch, "Mesh effect requires mesh shaders", {}, {}, "asset.import"));
         for (const auto& parameter : shader.value().parameters) {
             if (parameter.defaults.size() != 1)
-                return asset_import::detail::failure<PreparedAssetImport>(DiagnosticCode::Unsupported,
-                                                                          "Mesh effect requires scalar parameters");
+                return Result<PreparedAssetImport>::failure(Diagnostic::error(DiagnosticCode::Unsupported, "Mesh effect requires scalar parameters", {}, {}, "asset.import"));
             defaults[ref.format()][parameter.name] = parameter.defaults[0];
         }
         defaults.try_emplace(ref.format());
@@ -62,8 +57,7 @@ Result<asset_import::PreparedAssetImport> prepareMeshVfxPackage(
         if (!ref) return Result<PreparedAssetImport>::failure(ref.status());
         if (std::none_of(shaders.begin(), shaders.end(),
                          [&](const auto& shader) { return shader.first == ref.value(); }))
-            return asset_import::detail::failure<PreparedAssetImport>(DiagnosticCode::NotFound,
-                                                                      "Required layer shader is missing");
+            return Result<PreparedAssetImport>::failure(Diagnostic::error(DiagnosticCode::NotFound, "Required layer shader is missing", {}, {}, "asset.import"));
         result.manifest.dependencies.push_back({effectRef.value(),
                                                 ref.value(),
                                                 asset::EvaDependencyKind::RuntimeRequired,

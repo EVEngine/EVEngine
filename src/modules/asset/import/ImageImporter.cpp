@@ -36,14 +36,13 @@ Result<ImageInfo> inspectImage(std::span<const std::uint8_t> bytes, std::uint64_
         std::string_view(reinterpret_cast<const char*>(bytes.data() + 12), 4) == "IHDR") {
         ImageInfo info{"png", big32(bytes.data() + 16), big32(bytes.data() + 20)};
         if (info.width == 0 || info.height == 0)
-            return detail::failure<ImageInfo>(DiagnosticCode::ParseError, "PNG dimensions must be positive");
+            return Result<ImageInfo>::failure(Diagnostic::error(DiagnosticCode::ParseError, "PNG dimensions must be positive", {}, {}, "asset.import"));
         return Result<ImageInfo>::success(std::move(info));
     }
     if (bytes.size() >= 4 && bytes[0] == 0xff && bytes[1] == 0xd8) {
         std::size_t cursor = 2;
         while (cursor + 4 <= bytes.size()) {
-            if (bytes[cursor] != 0xff) return detail::failure<ImageInfo>(DiagnosticCode::ParseError,
-                                                                        "JPEG marker stream is malformed");
+            if (bytes[cursor] != 0xff) return Result<ImageInfo>::failure(Diagnostic::error(DiagnosticCode::ParseError, "JPEG marker stream is malformed", {}, {}, "asset.import"));
             while (cursor < bytes.size() && bytes[cursor] == 0xff) ++cursor;
             if (cursor >= bytes.size()) break;
             const std::uint8_t marker = bytes[cursor++];
@@ -65,29 +64,25 @@ Result<ImageInfo> inspectImage(std::span<const std::uint8_t> bytes, std::uint64_
             }
             cursor += length;
         }
-        return detail::failure<ImageInfo>(DiagnosticCode::ParseError, "JPEG dimensions are missing or malformed");
+        return Result<ImageInfo>::failure(Diagnostic::error(DiagnosticCode::ParseError, "JPEG dimensions are missing or malformed", {}, {}, "asset.import"));
     }
-    return detail::failure<ImageInfo>(DiagnosticCode::Unsupported,
-                                      "image importer supports PNG, JPEG and admitted TIFF/TGA encoded sources");
+    return Result<ImageInfo>::failure(Diagnostic::error(DiagnosticCode::Unsupported, "image importer supports PNG, JPEG and admitted TIFF/TGA encoded sources", {}, {}, "asset.import"));
 }
 
 }  // namespace
 
 Result<PreparedAssetImport> prepareImageImport(const ImageImportRequest& request) {
     if (request.encodedBytes.empty() || request.sourceName.empty() || request.usage.empty())
-        return detail::failure<PreparedAssetImport>(DiagnosticCode::InvalidArgument,
-                                                    "image source name, bytes and usage are required");
+        return Result<PreparedAssetImport>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "image source name, bytes and usage are required", {}, {}, "asset.import"));
     if (request.encodedBytes.size() > request.limits.maximumSourceBytes ||
         request.sourceName.size() > request.limits.maximumStringBytes ||
         request.usage.size() > request.limits.maximumStringBytes)
-        return detail::failure<PreparedAssetImport>(DiagnosticCode::InvalidArgument,
-                                                    "image import budget is exceeded");
+        return Result<PreparedAssetImport>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "image import budget is exceeded", {}, {}, "asset.import"));
     auto info = inspectImage(request.encodedBytes, request.limits.maximumDecodedBytes);
     if (!info) return Result<PreparedAssetImport>::failure(info.status());
     const std::uint64_t pixels = std::uint64_t(info.value().width) * info.value().height;
     if (pixels > request.limits.maximumDecodedBytes / 4)
-        return detail::failure<PreparedAssetImport>(DiagnosticCode::InvalidArgument,
-                                                    "decoded image budget is exceeded");
+        return Result<PreparedAssetImport>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "decoded image budget is exceeded", {}, {}, "asset.import"));
     auto manifestResult = detail::baseManifest(request.package, "eve.image");
     if (!manifestResult) return Result<PreparedAssetImport>::failure(manifestResult.status());
     auto manifest = std::move(manifestResult).takeValue();

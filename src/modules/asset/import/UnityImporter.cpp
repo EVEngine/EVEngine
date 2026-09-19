@@ -15,12 +15,11 @@ namespace {
 Result<std::string> textFile(const UnityProjectImportRequest& request, const std::string& path) {
     const auto found = request.files.find(path);
     if (found == request.files.end())
-        return detail::failure<std::string>(DiagnosticCode::NotFound, "Unity source file was not supplied", path);
+        return Result<std::string>::failure(Diagnostic::error(DiagnosticCode::NotFound, "Unity source file was not supplied", path, {}, "asset.import"));
     if (found->second.size() > request.limits.maximumSourceBytes)
-        return detail::failure<std::string>(DiagnosticCode::InvalidArgument, "Unity source exceeds budget", path);
+        return Result<std::string>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Unity source exceeds budget", path, {}, "asset.import"));
     if (std::find(found->second.begin(), found->second.end(), std::uint8_t(0)) != found->second.end())
-        return detail::failure<std::string>(DiagnosticCode::Unsupported,
-                                            "Unity adapter requires Force Text serialization", path);
+        return Result<std::string>::failure(Diagnostic::error(DiagnosticCode::Unsupported, "Unity adapter requires Force Text serialization", path, {}, "asset.import"));
     return Result<std::string>::success({found->second.begin(), found->second.end()});
 }
 
@@ -43,7 +42,7 @@ Result<float> parseFloat(std::string_view text, std::string path) {
     errno             = 0;
     const float value = std::strtof(owned.c_str(), &end);
     if (errno != 0 || end != owned.c_str() + owned.size() || !std::isfinite(value))
-        return detail::failure<float>(DiagnosticCode::ParseError, "Unity numeric value is invalid", std::move(path));
+        return Result<float>::failure(Diagnostic::error(DiagnosticCode::ParseError, "Unity numeric value is invalid", std::move(path), {}, "asset.import"));
     return Result<float>::success(value);
 }
 
@@ -77,23 +76,18 @@ Result<void> appendTerrainDetailInstances(const UnityProjectImportRequest& reque
     if (!schema || !schema->isString() || schema->asString() != "eve.unity-terrain-details" || !version ||
         !version->isInt64() || (version->asInt() != 1 && version->asInt() != 2 && version->asInt() != 3) ||
         !instances || !prototypes)
-        return detail::failure<void>(DiagnosticCode::Unsupported,
-                                     "terrain detail sidecar must use eve.unity-terrain-details/1, /2 or /3",
-                                     detailsPath);
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::Unsupported, "terrain detail sidecar must use eve.unity-terrain-details/1, /2 or /3", detailsPath, {}, "asset.import"));
     if (instances->size() > request.limits.maximumAssets || prototypes->size() > request.limits.maximumAssets ||
         terrain.instances.size() > request.limits.maximumAssets - instances->size())
-        return detail::failure<void>(DiagnosticCode::InvalidArgument,
-                                     "terrain detail instance count exceeds import budget", detailsPath);
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "terrain detail instance count exceeds import budget", detailsPath, {}, "asset.import"));
     auto number = [&](const Value::Object& object, std::string_view name, std::size_t index) -> Result<float> {
         const Value* value = member(object, name);
         if (!value || !value->isNumeric())
-            return detail::failure<float>(DiagnosticCode::ParseError, "terrain detail number is invalid",
-                                          "$.prototypes[" + std::to_string(index) + "]." + std::string(name));
+            return Result<float>::failure(Diagnostic::error(DiagnosticCode::ParseError, "terrain detail number is invalid", "$.prototypes[" + std::to_string(index) + "]." + std::string(name), {}, "asset.import"));
         const double parsed = value->isInt64() ? double(value->asInt()) : value->asDouble();
         if (!std::isfinite(parsed) || parsed < -std::numeric_limits<float>::max() ||
             parsed > std::numeric_limits<float>::max())
-            return detail::failure<float>(DiagnosticCode::ParseError, "terrain detail number is non-finite",
-                                          "$.prototypes[" + std::to_string(index) + "]." + std::string(name));
+            return Result<float>::failure(Diagnostic::error(DiagnosticCode::ParseError, "terrain detail number is non-finite", "$.prototypes[" + std::to_string(index) + "]." + std::string(name), {}, "asset.import"));
         return Result<float>::success(static_cast<float>(parsed));
     };
     if (version->asInt() == 3) {
@@ -102,14 +96,10 @@ Result<void> appendTerrainDetailInstances(const UnityProjectImportRequest& reque
         auto rootNumber = [&](std::string_view name) -> Result<float> {
             const Value* value = wind ? member(*wind, name) : nullptr;
             if (!value || !value->isNumeric())
-                return detail::failure<float>(DiagnosticCode::ParseError,
-                                              "terrain waving grass number is invalid",
-                                              "$.wavingGrass." + std::string(name));
+                return Result<float>::failure(Diagnostic::error(DiagnosticCode::ParseError, "terrain waving grass number is invalid", "$.wavingGrass." + std::string(name), {}, "asset.import"));
             const double parsed = value->isInt64() ? double(value->asInt()) : value->asDouble();
             if (!std::isfinite(parsed) || parsed < 0.0 || parsed > std::numeric_limits<float>::max())
-                return detail::failure<float>(DiagnosticCode::InvalidArgument,
-                                              "terrain waving grass number must be finite and nonnegative",
-                                              "$.wavingGrass." + std::string(name));
+                return Result<float>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "terrain waving grass number must be finite and nonnegative", "$.wavingGrass." + std::string(name), {}, "asset.import"));
             return Result<float>::success(static_cast<float>(parsed));
         };
         auto amount = rootNumber("amount");
@@ -119,18 +109,14 @@ Result<void> appendTerrainDetailInstances(const UnityProjectImportRequest& reque
         const auto* tint = tintValue ? tintValue->getIf<Value::Array>() : nullptr;
         if (!amount || !speed || !strength || !tint || tint->size() != 4)
             return Result<void>::failure(!amount ? amount.status() : !speed ? speed.status() : !strength ? strength.status()
-                : detail::failure<void>(DiagnosticCode::ParseError, "terrain waving grass tint is invalid",
-                                        "$.wavingGrass.tint").status());
+                : Result<void>::failure(Diagnostic::error(DiagnosticCode::ParseError, "terrain waving grass tint is invalid", "$.wavingGrass.tint", {}, "asset.import")).status());
         for (std::size_t component = 0; component < 4; ++component) {
             if (!(*tint)[component].isNumeric())
-                return detail::failure<void>(DiagnosticCode::ParseError, "terrain waving grass tint is invalid",
-                                             "$.wavingGrass.tint");
+                return Result<void>::failure(Diagnostic::error(DiagnosticCode::ParseError, "terrain waving grass tint is invalid", "$.wavingGrass.tint", {}, "asset.import"));
             const double value = (*tint)[component].isInt64() ? double((*tint)[component].asInt())
                                                                : (*tint)[component].asDouble();
             if (!std::isfinite(value) || value < 0.0 || value > 1.0)
-                return detail::failure<void>(DiagnosticCode::InvalidArgument,
-                                             "terrain waving grass tint must be normalized RGBA",
-                                             "$.wavingGrass.tint");
+                return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "terrain waving grass tint must be normalized RGBA", "$.wavingGrass.tint", {}, "asset.import"));
             terrain.wavingGrassTint[component] = static_cast<float>(value);
         }
         terrain.hasWavingGrass = true;
@@ -154,8 +140,7 @@ Result<void> appendTerrainDetailInstances(const UnityProjectImportRequest& reque
             !mode || !mode->isString() ||
             (mode->asString() != "GrassBillboard" && mode->asString() != "Grass" && mode->asString() != "VertexLit") ||
             !mesh || !mesh->isBool() || !instancing || !instancing->isBool() || !seed || !seed->isInt64())
-            return detail::failure<void>(DiagnosticCode::ParseError, "terrain detail prototype metadata is invalid",
-                                         "$.prototypes[" + std::to_string(index) + "]");
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::ParseError, "terrain detail prototype metadata is invalid", "$.prototypes[" + std::to_string(index) + "]", {}, "asset.import"));
         CanonicalTerrainDetailPrototype prototype;
         prototype.prototype        = id->asString();
         prototype.renderMode       = mode->asString();
@@ -175,9 +160,7 @@ Result<void> appendTerrainDetailInstances(const UnityProjectImportRequest& reque
             if (!resource) return Result<void>::failure(resource.status());
             prototype.resourceAsset = resource.value().format();
         } else {
-            return detail::failure<void>(DiagnosticCode::ParseError,
-                                         "terrain detail prototype resource kind is inconsistent",
-                                         "$.prototypes[" + std::to_string(index) + "].prototype");
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::ParseError, "terrain detail prototype resource kind is inconsistent", "$.prototypes[" + std::to_string(index) + "].prototype", {}, "asset.import"));
         }
         auto minWidth              = number(*object, "minWidth", index);
         auto maxWidth              = number(*object, "maxWidth", index);
@@ -209,16 +192,14 @@ Result<void> appendTerrainDetailInstances(const UnityProjectImportRequest& reque
                 const Value* value = member(*object, name);
                 const auto* array = value ? value->getIf<Value::Array>() : nullptr;
                 if (!array || array->size() != 4)
-                    return detail::failure<void>(DiagnosticCode::ParseError, "terrain detail color is invalid",
-                                                  "$.prototypes[" + std::to_string(index) + "]." + std::string(name));
+                    return Result<void>::failure(Diagnostic::error(DiagnosticCode::ParseError, "terrain detail color is invalid", "$.prototypes[" + std::to_string(index) + "]." + std::string(name), {}, "asset.import"));
                 for (std::size_t component = 0; component < 4; ++component) {
                     if (!(*array)[component].isNumeric())
-                        return detail::failure<void>(DiagnosticCode::ParseError, "terrain detail color is invalid");
+                        return Result<void>::failure(Diagnostic::error(DiagnosticCode::ParseError, "terrain detail color is invalid", {}, {}, "asset.import"));
                     const double value = (*array)[component].isInt64() ? double((*array)[component].asInt())
                                                                        : (*array)[component].asDouble();
                     if (!std::isfinite(value) || value < 0.0 || value > 1.0)
-                        return detail::failure<void>(DiagnosticCode::InvalidArgument,
-                                                     "terrain detail color must be finite normalized RGBA");
+                        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "terrain detail color must be finite normalized RGBA", {}, {}, "asset.import"));
                     output[component] = static_cast<float>(value);
                 }
                 return Result<void>::success();
@@ -231,8 +212,7 @@ Result<void> appendTerrainDetailInstances(const UnityProjectImportRequest& reque
             if (!healthy || !dry || !bend || !padding || !densityScaling || !densityScaling->isBool())
                 return Result<void>::failure(!healthy ? healthy.status() : !dry ? dry.status() : !bend ? bend.status()
                                              : !padding ? padding.status()
-                                                        : detail::failure<void>(DiagnosticCode::ParseError,
-                                                                               "terrain detail density scaling is invalid").status());
+                                                        : Result<void>::failure(Diagnostic::error(DiagnosticCode::ParseError, "terrain detail density scaling is invalid", {}, {}, "asset.import")).status());
             prototype.bendFactor = bend.value();
             prototype.holeEdgePadding = padding.value();
             prototype.useDensityScaling = densityScaling->asBool();
@@ -244,18 +224,15 @@ Result<void> appendTerrainDetailInstances(const UnityProjectImportRequest& reque
         const Value* value = member(object, name);
         const auto*  array = value ? value->getIf<Value::Array>() : nullptr;
         if (!array || array->size() != count)
-            return detail::failure<void>(DiagnosticCode::ParseError, "terrain detail vector is invalid",
-                                         "$.instances[" + std::to_string(index) + "]." + std::string(name));
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::ParseError, "terrain detail vector is invalid", "$.instances[" + std::to_string(index) + "]." + std::string(name), {}, "asset.import"));
         for (std::size_t component = 0; component < count; ++component) {
             if (!(*array)[component].isNumeric())
-                return detail::failure<void>(DiagnosticCode::ParseError, "terrain detail vector is non-numeric",
-                                             "$.instances[" + std::to_string(index) + "]." + std::string(name));
+                return Result<void>::failure(Diagnostic::error(DiagnosticCode::ParseError, "terrain detail vector is non-numeric", "$.instances[" + std::to_string(index) + "]." + std::string(name), {}, "asset.import"));
             const double number =
                 (*array)[component].isInt64() ? double((*array)[component].asInt()) : (*array)[component].asDouble();
             if (!std::isfinite(number) || number < -std::numeric_limits<float>::max() ||
                 number > std::numeric_limits<float>::max())
-                return detail::failure<void>(DiagnosticCode::ParseError, "terrain detail vector is non-finite",
-                                             "$.instances[" + std::to_string(index) + "]." + std::string(name));
+                return Result<void>::failure(Diagnostic::error(DiagnosticCode::ParseError, "terrain detail vector is non-finite", "$.instances[" + std::to_string(index) + "]." + std::string(name), {}, "asset.import"));
             output[component] = static_cast<float>(number);
         }
         return Result<void>::success();
@@ -268,11 +245,9 @@ Result<void> appendTerrainDetailInstances(const UnityProjectImportRequest& reque
         if (!object || !prototype || !prototype->isString() || prototype->asString().empty() ||
             prototype->asString().size() > request.limits.maximumStringBytes ||
             !isValidUtf8(prototype->asString(), Utf8NullPolicy::Reject))
-            return detail::failure<void>(DiagnosticCode::ParseError, "terrain detail prototype is invalid",
-                                         "$.instances[" + std::to_string(index) + "].prototype");
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::ParseError, "terrain detail prototype is invalid", "$.instances[" + std::to_string(index) + "].prototype", {}, "asset.import"));
         if (!prototypeIds.contains(prototype->asString()))
-            return detail::failure<void>(DiagnosticCode::NotFound, "terrain detail instance prototype is undeclared",
-                                         "$.instances[" + std::to_string(index) + "].prototype");
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::NotFound, "terrain detail instance prototype is undeclared", "$.instances[" + std::to_string(index) + "].prototype", {}, "asset.import"));
         CanonicalTerrainInstance instance;
         instance.prototype = prototype->asString();
         auto position      = vector(*object, "position", 3, instance.position, index);
@@ -350,28 +325,24 @@ Result<CanonicalTerrainInput> parseTerrain(const UnityProjectImportRequest&     
         firstMatch(yaml, std::regex(R"(m_HeightmapScale:\s*\{x:\s*([^,]+),\s*y:\s*([^,]+),\s*z:\s*([^}]+)\})"), 3);
     auto heightsHex = firstMatch(yaml, std::regex(R"(m_Heights:\s*([0-9a-fA-F]+))"));
     if (!resolutionText || !scaleMatchX || !scaleMatchY || !scaleMatchZ || !heightsHex)
-        return detail::failure<CanonicalTerrainInput>(
-            DiagnosticCode::ParseError, "Unity TerrainData heightmap fields are incomplete", request.terrainDataPath);
+        return Result<CanonicalTerrainInput>::failure(Diagnostic::error(DiagnosticCode::ParseError, "Unity TerrainData heightmap fields are incomplete", request.terrainDataPath, {}, "asset.import"));
     std::uint64_t resolution = 0;
     for (char digit : *resolutionText) {
         if (resolution > (std::numeric_limits<std::uint32_t>::max() - (digit - '0')) / 10)
-            return detail::failure<CanonicalTerrainInput>(DiagnosticCode::InvalidArgument,
-                                                          "Unity terrain resolution overflows");
+            return Result<CanonicalTerrainInput>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Unity terrain resolution overflows", {}, {}, "asset.import"));
         resolution = resolution * 10 + (digit - '0');
     }
     if (resolution < 2 || resolution > request.limits.maximumVerticesPerPrimitive ||
         resolution > std::numeric_limits<std::uint64_t>::max() / resolution)
-        return detail::failure<CanonicalTerrainInput>(DiagnosticCode::InvalidArgument,
-                                                      "Unity terrain resolution is outside limits");
+        return Result<CanonicalTerrainInput>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Unity terrain resolution is outside limits", {}, {}, "asset.import"));
     const std::uint64_t samples = resolution * resolution;
     if (heightsHex->size() != samples * 4)
-        return detail::failure<CanonicalTerrainInput>(
-            DiagnosticCode::ParseError, "Unity m_Heights must contain one little-endian UInt16 per sample");
+        return Result<CanonicalTerrainInput>::failure(Diagnostic::error(DiagnosticCode::ParseError, "Unity m_Heights must contain one little-endian UInt16 per sample", {}, {}, "asset.import"));
     auto spacingX = parseFloat(*scaleMatchX, "m_HeightmapScale.x");
     auto scaleY   = parseFloat(*scaleMatchY, "m_HeightmapScale.y");
     auto spacingZ = parseFloat(*scaleMatchZ, "m_HeightmapScale.z");
     if (!spacingX || !scaleY || !spacingZ)
-        return detail::failure<CanonicalTerrainInput>(DiagnosticCode::ParseError, "Unity terrain scale is invalid");
+        return Result<CanonicalTerrainInput>::failure(Diagnostic::error(DiagnosticCode::ParseError, "Unity terrain scale is invalid", {}, {}, "asset.import"));
     const auto nibble = [](char value) -> int {
         if (value >= '0' && value <= '9') return value - '0';
         if (value >= 'a' && value <= 'f') return value - 'a' + 10;
@@ -412,8 +383,7 @@ Result<CanonicalTerrainInput> parseTerrain(const UnityProjectImportRequest&     
     }
     const auto controls = sectionEntries(yaml, "m_AlphamapTextures:");
     if (controls.size() > terrain.controlSources.size())
-        return detail::failure<CanonicalTerrainInput>(
-            DiagnosticCode::Unsupported, "TVE terrain supports at most four control textures", request.terrainDataPath);
+        return Result<CanonicalTerrainInput>::failure(Diagnostic::error(DiagnosticCode::Unsupported, "TVE terrain supports at most four control textures", request.terrainDataPath, {}, "asset.import"));
     for (std::size_t index = 0; index < controls.size(); ++index) {
         if (auto guid = firstMatch(controls[index], std::regex(R"(guid:\s*([0-9a-fA-F]{32}))"))) {
             terrain.controlSources[index] = "unity-guid:" + unity_detail::foldAscii(*guid);
@@ -469,8 +439,7 @@ Result<CanonicalTerrainInput> parseTerrain(const UnityProjectImportRequest&     
                     auto x = parseFloat(tileMatch[1].str(), resolved->second + ".m_TileSize.x");
                     auto y = parseFloat(tileMatch[2].str(), resolved->second + ".m_TileSize.y");
                     if (!x || !y)
-                        return detail::failure<CanonicalTerrainInput>(DiagnosticCode::ParseError,
-                                                                      "Unity terrain tile size is invalid");
+                        return Result<CanonicalTerrainInput>::failure(Diagnostic::error(DiagnosticCode::ParseError, "Unity terrain tile size is invalid", {}, {}, "asset.import"));
                     layer.tileScaleMeters = {x.value(), y.value()};
                     layer.tileSizeMeters  = x.value();
                 }
@@ -480,8 +449,7 @@ Result<CanonicalTerrainInput> parseTerrain(const UnityProjectImportRequest&     
                     auto x = parseFloat(offsetMatch[1].str(), resolved->second + ".m_TileOffset.x");
                     auto y = parseFloat(offsetMatch[2].str(), resolved->second + ".m_TileOffset.y");
                     if (!x || !y)
-                        return detail::failure<CanonicalTerrainInput>(DiagnosticCode::ParseError,
-                                                                      "Unity terrain tile offset is invalid");
+                        return Result<CanonicalTerrainInput>::failure(Diagnostic::error(DiagnosticCode::ParseError, "Unity terrain tile offset is invalid", {}, {}, "asset.import"));
                     layer.tileOffsetMeters = {x.value(), y.value()};
                 }
                 for (auto [name, target] : {std::pair{"m_Metallic", &layer.metallic},
@@ -513,14 +481,13 @@ Result<CanonicalTerrainInput> parseTerrain(const UnityProjectImportRequest&     
         if (!x || !y || !z || !prototype) continue;
         const auto prototypeValue = parseUnsignedText(*prototype);
         if (!prototypeValue || *prototypeValue >= prototypes.size())
-            return detail::failure<CanonicalTerrainInput>(DiagnosticCode::ParseError,
-                                                          "Unity tree prototype index is invalid");
+            return Result<CanonicalTerrainInput>::failure(Diagnostic::error(DiagnosticCode::ParseError, "Unity tree prototype index is invalid", {}, {}, "asset.import"));
         const std::size_t prototypeIndex = static_cast<std::size_t>(*prototypeValue);
         auto              px             = parseFloat(*x, "tree.position.x");
         auto              py             = parseFloat(*y, "tree.position.y");
         auto              pz             = parseFloat(*z, "tree.position.z");
         if (!px || !py || !pz)
-            return detail::failure<CanonicalTerrainInput>(DiagnosticCode::ParseError, "Unity tree position is invalid");
+            return Result<CanonicalTerrainInput>::failure(Diagnostic::error(DiagnosticCode::ParseError, "Unity tree position is invalid", {}, {}, "asset.import"));
         CanonicalTerrainInstance instance;
         instance.prototype   = prototypes[prototypeIndex];
         instance.position[0] = px.value() * spacingX.value() * float(resolution - 1);
@@ -599,17 +566,14 @@ Result<void> appendPrefab(const UnityProjectImportRequest& request, PreparedAsse
     auto text = textFile(request, prefabPath);
     if (!text) return Result<void>::failure(text.status());
     if (std::regex_search(text.value(), std::regex(R"((?:^|\n)---\s*!u!(?:1|4|224)\s*&-)")))
-        return detail::failure<void>(
-            DiagnosticCode::Unsupported,
-            "prefab signed hierarchy IDs are indexed but cannot yet be represented by scene-template", prefabPath);
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::Unsupported, "prefab signed hierarchy IDs are indexed but cannot yet be represented by scene-template", prefabPath, {}, "asset.import"));
     const auto prefabGuid = guidFromMeta(request, prefabPath);
     if (!prefabGuid)
         return Result<void>::failure(Diagnostic::error(DiagnosticCode::NotFound, "Unity prefab .meta GUID is required",
                                                        prefabPath + ".meta", {}, "asset.import.unity"));
     const auto objects = documents(text.value());
     if (objects.size() > request.limits.maximumAssets)
-        return detail::failure<void>(DiagnosticCode::InvalidArgument, "Unity prefab object count exceeds budget",
-                                     prefabPath);
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Unity prefab object count exceeds budget", prefabPath, {}, "asset.import"));
     std::map<std::uint64_t, std::string> gameNames;
     std::map<std::uint64_t, bool>        gameVisibility;
     for (const auto& object : objects) {
@@ -682,9 +646,7 @@ Result<void> appendPrefab(const UnityProjectImportRequest& request, PreparedAsse
         nodes.emplace_back(std::move(node));
     }
     if (nodes.empty())
-        return detail::failure<void>(
-            DiagnosticCode::Unsupported,
-            "prefab has no directly convertible Transform nodes; nested prefab expansion is required", prefabPath);
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::Unsupported, "prefab has no directly convertible Transform nodes; nested prefab expansion is required", prefabPath, {}, "asset.import"));
     const PersistentId sceneId = request.package.packageId.child("unity-prefab:" + *prefabGuid);
     Value::Object      definition;
     definition["schema"]           = Value("eve.scene-template");
@@ -733,8 +695,7 @@ Result<PreparedAssetImport> prepareUnityPrefab(const UnityProjectImportRequest& 
 
 Result<PreparedAssetImport> prepareUnityProjectImport(const UnityProjectImportRequest& request) {
     if (request.files.empty() || request.package.packageId.isNil())
-        return detail::failure<PreparedAssetImport>(DiagnosticCode::InvalidArgument,
-                                                    "Unity project files and package identity are required");
+        return Result<PreparedAssetImport>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Unity project files and package identity are required", {}, {}, "asset.import"));
     auto sourceIndex = indexUnitySources(request.files, request.limits);
     if (!sourceIndex) return Result<PreparedAssetImport>::failure(sourceIndex.status());
     if (request.terrainDataPath.empty() && request.prefabPath.empty())

@@ -32,34 +32,6 @@ eve::Diagnostic invariantFailure(std::string message, std::string path = {}) {
     return eve::Diagnostic::error(eve::DiagnosticCode::InvariantViolation, std::move(message), std::move(path));
 }
 
-template <class T>
-eve::Result<T> exceptionFailure(std::string_view operation, const std::exception& exception) {
-    return eve::Result<T>::failure(eve::Diagnostic::error(
-        eve::DiagnosticCode::Failed,
-        std::string(operation) + " failed while staging an atomic candidate: " + exception.what(), "resource.account"));
-}
-
-template <>
-eve::Result<void> exceptionFailure<void>(std::string_view operation, const std::exception& exception) {
-    return eve::Result<void>::failure(eve::Diagnostic::error(
-        eve::DiagnosticCode::Failed,
-        std::string(operation) + " failed while staging an atomic candidate: " + exception.what(), "resource.account"));
-}
-
-template <class T>
-eve::Result<T> unknownExceptionFailure(std::string_view operation) {
-    return eve::Result<T>::failure(eve::Diagnostic::error(
-        eve::DiagnosticCode::Failed, std::string(operation) + " failed while staging an atomic candidate",
-        "resource.account"));
-}
-
-template <>
-eve::Result<void> unknownExceptionFailure<void>(std::string_view operation) {
-    return eve::Result<void>::failure(eve::Diagnostic::error(
-        eve::DiagnosticCode::Failed, std::string(operation) + " failed while staging an atomic candidate",
-        "resource.account"));
-}
-
 eve::Result<void> validateCost(const CostSpec& cost) {
     if (!cost.isValid())
         return eve::Result<void>::failure(
@@ -173,9 +145,13 @@ eve::Result<Affordability> AttributeSetResourceAccount::canAfford(const CostSpec
         }
         return eve::Result<Affordability>::success(std::move(result));
     } catch (const std::exception& exception) {
-        return exceptionFailure<Affordability>("canAfford", exception);
+        return eve::Result<Affordability>::failure(eve::Diagnostic::error(
+        eve::DiagnosticCode::Failed,
+        std::string("canAfford") + " failed while staging an atomic candidate: " + exception.what(), "resource.account"));
     } catch (...) {
-        return unknownExceptionFailure<Affordability>("canAfford");
+        return eve::Result<Affordability>::failure(eve::Diagnostic::error(
+        eve::DiagnosticCode::Failed, std::string("canAfford") + " failed while staging an atomic candidate",
+        "resource.account"));
     }
 }
 
@@ -199,9 +175,13 @@ eve::Result<Reservation> AttributeSetResourceAccount::reserve(const CostSpec& co
         return eve::Result<Reservation>::success(Reservation{accountNonce_, id, it->second.cost},
                                                  eve::Status::success(eve::StatusCode::Applied));
     } catch (const std::exception& exception) {
-        return exceptionFailure<Reservation>("reserve", exception);
+        return eve::Result<Reservation>::failure(eve::Diagnostic::error(
+        eve::DiagnosticCode::Failed,
+        std::string("reserve") + " failed while staging an atomic candidate: " + exception.what(), "resource.account"));
     } catch (...) {
-        return unknownExceptionFailure<Reservation>("reserve");
+        return eve::Result<Reservation>::failure(eve::Diagnostic::error(
+        eve::DiagnosticCode::Failed, std::string("reserve") + " failed while staging an atomic candidate",
+        "resource.account"));
     }
 }
 
@@ -230,9 +210,13 @@ eve::Result<void> AttributeSetResourceAccount::applyDelta(const CostSpec& cost, 
         attributes_ = std::move(candidate);
         return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
     } catch (const std::exception& exception) {
-        return exceptionFailure<void>("applyDelta", exception);
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+        eve::DiagnosticCode::Failed,
+        std::string("applyDelta") + " failed while staging an atomic candidate: " + exception.what(), "resource.account"));
     } catch (...) {
-        return unknownExceptionFailure<void>("applyDelta");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+        eve::DiagnosticCode::Failed, std::string("applyDelta") + " failed while staging an atomic candidate",
+        "resource.account"));
     }
 }
 
@@ -251,9 +235,13 @@ eve::Result<Receipt> AttributeSetResourceAccount::debit(const CostSpec& cost) {
         nextReceipt_ = eve::resource::ReceiptId(nextReceipt_.value() + 1);
         return eve::Result<Receipt>::success(std::move(receipt), eve::Status::success(eve::StatusCode::Applied));
     } catch (const std::exception& exception) {
-        return exceptionFailure<Receipt>("debit", exception);
+        return eve::Result<Receipt>::failure(eve::Diagnostic::error(
+        eve::DiagnosticCode::Failed,
+        std::string("debit") + " failed while staging an atomic candidate: " + exception.what(), "resource.account"));
     } catch (...) {
-        return unknownExceptionFailure<Receipt>("debit");
+        return eve::Result<Receipt>::failure(eve::Diagnostic::error(
+        eve::DiagnosticCode::Failed, std::string("debit") + " failed while staging an atomic candidate",
+        "resource.account"));
     }
 }
 
@@ -278,9 +266,13 @@ eve::Result<Receipt> AttributeSetResourceAccount::credit(const CostSpec& cost) {
         nextReceipt_ = eve::resource::ReceiptId(nextReceipt_.value() + 1);
         return eve::Result<Receipt>::success(std::move(receipt), eve::Status::success(eve::StatusCode::Applied));
     } catch (const std::exception& exception) {
-        return exceptionFailure<Receipt>("credit", exception);
+        return eve::Result<Receipt>::failure(eve::Diagnostic::error(
+        eve::DiagnosticCode::Failed,
+        std::string("credit") + " failed while staging an atomic candidate: " + exception.what(), "resource.account"));
     } catch (...) {
-        return unknownExceptionFailure<Receipt>("credit");
+        return eve::Result<Receipt>::failure(eve::Diagnostic::error(
+        eve::DiagnosticCode::Failed, std::string("credit") + " failed while staging an atomic candidate",
+        "resource.account"));
     }
 }
 
@@ -302,9 +294,13 @@ eve::Result<void> AttributeSetResourceAccount::activeReservationsAreCovered() co
         }
         return eve::Result<void>::success();
     } catch (const std::exception& exception) {
-        return exceptionFailure<void>("reservation coverage check", exception);
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+        eve::DiagnosticCode::Failed,
+        std::string("reservation coverage check") + " failed while staging an atomic candidate: " + exception.what(), "resource.account"));
     } catch (...) {
-        return unknownExceptionFailure<void>("reservation coverage check");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+        eve::DiagnosticCode::Failed, std::string("reservation coverage check") + " failed while staging an atomic candidate",
+        "resource.account"));
     }
 }
 
@@ -332,9 +328,13 @@ eve::Result<Receipt> AttributeSetResourceAccount::commit(const Reservation& rese
         nextReceipt_     = eve::resource::ReceiptId(nextReceipt_.value() + 1);
         return eve::Result<Receipt>::success(std::move(receipt), eve::Status::success(eve::StatusCode::Applied));
     } catch (const std::exception& exception) {
-        return exceptionFailure<Receipt>("commit", exception);
+        return eve::Result<Receipt>::failure(eve::Diagnostic::error(
+        eve::DiagnosticCode::Failed,
+        std::string("commit") + " failed while staging an atomic candidate: " + exception.what(), "resource.account"));
     } catch (...) {
-        return unknownExceptionFailure<Receipt>("commit");
+        return eve::Result<Receipt>::failure(eve::Diagnostic::error(
+        eve::DiagnosticCode::Failed, std::string("commit") + " failed while staging an atomic candidate",
+        "resource.account"));
     }
 }
 
@@ -352,9 +352,13 @@ eve::Result<void> AttributeSetResourceAccount::rollback(const Reservation& reser
         it->second.state = ReservationState::RolledBack;
         return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
     } catch (const std::exception& exception) {
-        return exceptionFailure<void>("rollback", exception);
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+        eve::DiagnosticCode::Failed,
+        std::string("rollback") + " failed while staging an atomic candidate: " + exception.what(), "resource.account"));
     } catch (...) {
-        return unknownExceptionFailure<void>("rollback");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+        eve::DiagnosticCode::Failed, std::string("rollback") + " failed while staging an atomic candidate",
+        "resource.account"));
     }
 }
 

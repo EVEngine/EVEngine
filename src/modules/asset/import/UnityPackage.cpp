@@ -11,11 +11,10 @@ using namespace unity_detail;
 
 Result<std::vector<std::uint8_t>> inflatePackage(std::span<const std::uint8_t> input, const AssetImportLimits& limits) {
     if (input.empty() || input.size() > limits.maximumSourceBytes)
-        return failure<std::vector<std::uint8_t>>(DiagnosticCode::InvalidArgument,
-                                                  "Unity package compressed size exceeds budget or is empty");
+        return Result<std::vector<std::uint8_t>>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Unity package compressed size exceeds budget or is empty", {}, {}, "asset.import.unity"));
     z_stream stream{};
     if (inflateInit2(&stream, 16 + MAX_WBITS) != Z_OK)
-        return failure<std::vector<std::uint8_t>>(DiagnosticCode::Failed, "cannot initialize Unity gzip decoder");
+        return Result<std::vector<std::uint8_t>>::failure(Diagnostic::error(DiagnosticCode::Failed, "cannot initialize Unity gzip decoder", {}, {}, "asset.import.unity"));
     struct EndInflate {
         z_stream& stream;
         ~EndInflate() { inflateEnd(&stream); }
@@ -35,18 +34,15 @@ Result<std::vector<std::uint8_t>> inflatePackage(std::span<const std::uint8_t> i
         const int  code     = inflate(&stream, Z_NO_FLUSH);
         const auto produced = buffer.size() - stream.avail_out;
         if (produced > limits.maximumDecodedBytes || out.size() > limits.maximumDecodedBytes - produced)
-            return failure<std::vector<std::uint8_t>>(DiagnosticCode::InvalidArgument,
-                                                      "Unity package decompressed size exceeds budget");
+            return Result<std::vector<std::uint8_t>>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Unity package decompressed size exceeds budget", {}, {}, "asset.import.unity"));
         out.insert(out.end(), buffer.begin(), buffer.begin() + produced);
         if (code == Z_STREAM_END) {
             if (stream.avail_in != 0 || cursor != input.size())
-                return failure<std::vector<std::uint8_t>>(DiagnosticCode::ParseError,
-                                                          "Unity package has trailing or concatenated gzip data");
+                return Result<std::vector<std::uint8_t>>::failure(Diagnostic::error(DiagnosticCode::ParseError, "Unity package has trailing or concatenated gzip data", {}, {}, "asset.import.unity"));
             return Result<std::vector<std::uint8_t>>::success(std::move(out));
         }
         if (code != Z_OK || (produced == 0 && stream.avail_in == 0 && cursor == input.size()))
-            return failure<std::vector<std::uint8_t>>(DiagnosticCode::ParseError,
-                                                      "Unity package gzip is truncated or corrupt");
+            return Result<std::vector<std::uint8_t>>::failure(Diagnostic::error(DiagnosticCode::ParseError, "Unity package gzip is truncated or corrupt", {}, {}, "asset.import.unity"));
     }
 }
 
@@ -64,7 +60,7 @@ Result<std::uint64_t> octal(std::span<const std::uint8_t> bytes) {
             continue;
         }
         if (ended || byte < '0' || byte > '7' || value > (std::numeric_limits<std::uint64_t>::max() - (byte - '0')) / 8)
-            return failure<std::uint64_t>(DiagnosticCode::ParseError, "invalid Unity tar numeric field");
+            return Result<std::uint64_t>::failure(Diagnostic::error(DiagnosticCode::ParseError, "invalid Unity tar numeric field", {}, {}, "asset.import.unity"));
         digit = true;
         value = value * 8 + (byte - '0');
     }
@@ -77,7 +73,7 @@ struct PackageAsset {
 
 Result<UnitySourceFiles> unpack(std::span<const std::uint8_t> tar, const AssetImportLimits& limits) {
     if (tar.size() < 1024 || tar.size() % 512 != 0)
-        return failure<UnitySourceFiles>(DiagnosticCode::ParseError, "Unity tar block size is invalid");
+        return Result<UnitySourceFiles>::failure(Diagnostic::error(DiagnosticCode::ParseError, "Unity tar block size is invalid", {}, {}, "asset.import.unity"));
     std::map<std::string, PackageAsset> assets;
     std::set<std::string>               memberNames;
     bool                                ended = false;
@@ -86,7 +82,7 @@ Result<UnitySourceFiles> unpack(std::span<const std::uint8_t> tar, const AssetIm
         if (std::all_of(header.begin(), header.end(), [](auto b) { return b == 0; })) {
             if (tar.size() - cursor < 1024 ||
                 !std::all_of(tar.begin() + cursor, tar.end(), [](auto b) { return b == 0; }))
-                return failure<UnitySourceFiles>(DiagnosticCode::ParseError, "Unity tar termination is invalid");
+                return Result<UnitySourceFiles>::failure(Diagnostic::error(DiagnosticCode::ParseError, "Unity tar termination is invalid", {}, {}, "asset.import.unity"));
             ended = true;
             break;
         }
@@ -95,17 +91,17 @@ Result<UnitySourceFiles> unpack(std::span<const std::uint8_t> tar, const AssetIm
         std::uint64_t sum = 0;
         for (std::size_t i = 0; i < 512; ++i) sum += i >= 148 && i < 156 ? ' ' : header[i];
         if (sum != storedSum.value())
-            return failure<UnitySourceFiles>(DiagnosticCode::ParseError, "Unity tar checksum mismatch");
+            return Result<UnitySourceFiles>::failure(Diagnostic::error(DiagnosticCode::ParseError, "Unity tar checksum mismatch", {}, {}, "asset.import.unity"));
         auto sizeResult = octal(header.subspan(124, 12));
         if (!sizeResult) return Result<UnitySourceFiles>::failure(sizeResult.status());
         const auto size = sizeResult.value();
         cursor += 512;
         if (size > limits.maximumSourceBytes || size > tar.size() - cursor)
-            return failure<UnitySourceFiles>(DiagnosticCode::InvalidArgument, "Unity tar entry size exceeds bounds");
+            return Result<UnitySourceFiles>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Unity tar entry size exceeds bounds", {}, {}, "asset.import.unity"));
         const auto payload = tar.subspan(cursor, static_cast<std::size_t>(size));
         const auto padding = (512 - size % 512) % 512;
         if (size + padding > tar.size() - cursor)
-            return failure<UnitySourceFiles>(DiagnosticCode::ParseError, "Unity tar padding is truncated");
+            return Result<UnitySourceFiles>::failure(Diagnostic::error(DiagnosticCode::ParseError, "Unity tar padding is truncated", {}, {}, "asset.import.unity"));
         cursor += static_cast<std::size_t>(size + padding);
         auto name = tarString(header.first(100));
         if (tarString(header.subspan(257, 6)) == "ustar") {
@@ -115,49 +111,45 @@ Result<UnitySourceFiles> unpack(std::span<const std::uint8_t> tar, const AssetIm
         if (name.starts_with("./")) name.erase(0, 2);
         const auto type = header[156];
         if (type != 0 && type != '0' && type != '5')
-            return failure<UnitySourceFiles>(DiagnosticCode::Unsupported,
-                                             "Unity tar links and extended entry types are not accepted", name);
+            return Result<UnitySourceFiles>::failure(Diagnostic::error(DiagnosticCode::Unsupported, "Unity tar links and extended entry types are not accepted", name, {}, "asset.import.unity"));
         if (type == '5' && name.ends_with('/')) name.pop_back();
         if (type == '5' && (name.empty() || name == ".")) continue;
         if (!validPath(name, limits) || !memberNames.insert(name).second)
-            return failure<UnitySourceFiles>(DiagnosticCode::Conflict, "unsafe or duplicate Unity tar path", name);
+            return Result<UnitySourceFiles>::failure(Diagnostic::error(DiagnosticCode::Conflict, "unsafe or duplicate Unity tar path", name, {}, "asset.import.unity"));
         if (memberNames.size() > std::uint64_t(limits.maximumAssets) * 6)
-            return failure<UnitySourceFiles>(DiagnosticCode::InvalidArgument, "Unity tar entry count exceeds budget");
+            return Result<UnitySourceFiles>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Unity tar entry count exceeds budget", {}, {}, "asset.import.unity"));
         // Package thumbnail, like per-asset preview.png, is not an import source.
         if (name == ".icon.png" && type != '5') continue;
         const auto slash = name.find('/');
         const auto guid  = foldAscii(name.substr(0, slash));
         if (!validGuid(guid) && guid != "packagemanagermanifest")
-            return failure<UnitySourceFiles>(DiagnosticCode::ParseError, "Unity tar entry needs a GUID directory",
-                                             name);
+            return Result<UnitySourceFiles>::failure(Diagnostic::error(DiagnosticCode::ParseError, "Unity tar entry needs a GUID directory", name, {}, "asset.import.unity"));
         if (type == '5') {
             if (slash != std::string::npos || size != 0)
-                return failure<UnitySourceFiles>(DiagnosticCode::ParseError, "invalid Unity tar directory", name);
+                return Result<UnitySourceFiles>::failure(Diagnostic::error(DiagnosticCode::ParseError, "invalid Unity tar directory", name, {}, "asset.import.unity"));
             continue;
         }
         if (slash == std::string::npos)
-            return failure<UnitySourceFiles>(DiagnosticCode::ParseError, "Unity tar entry has no member name", name);
+            return Result<UnitySourceFiles>::failure(Diagnostic::error(DiagnosticCode::ParseError, "Unity tar entry has no member name", name, {}, "asset.import.unity"));
         const auto member = name.substr(slash + 1);
         if (member != "asset" && member != "asset.meta" && member != "pathname" && member != "preview.png")
-            return failure<UnitySourceFiles>(DiagnosticCode::Unsupported, "unknown Unity package member", name);
+            return Result<UnitySourceFiles>::failure(Diagnostic::error(DiagnosticCode::Unsupported, "unknown Unity package member", name, {}, "asset.import.unity"));
         if (!assets[guid].members.emplace(member, payload).second)
-            return failure<UnitySourceFiles>(DiagnosticCode::Conflict, "duplicate Unity package member", name);
+            return Result<UnitySourceFiles>::failure(Diagnostic::error(DiagnosticCode::Conflict, "duplicate Unity package member", name, {}, "asset.import.unity"));
         if (assets.size() > limits.maximumAssets)
-            return failure<UnitySourceFiles>(DiagnosticCode::InvalidArgument,
-                                             "Unity package asset count exceeds budget");
+            return Result<UnitySourceFiles>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Unity package asset count exceeds budget", {}, {}, "asset.import.unity"));
     }
     if (!ended || assets.empty())
-        return failure<UnitySourceFiles>(DiagnosticCode::ParseError, "Unity tar is empty or unterminated");
+        return Result<UnitySourceFiles>::failure(Diagnostic::error(DiagnosticCode::ParseError, "Unity tar is empty or unterminated", {}, {}, "asset.import.unity"));
     UnitySourceFiles      files;
     std::set<std::string> paths;
     for (const auto& [guid, entry] : assets) {
         const auto pathname = entry.members.find("pathname"), meta = entry.members.find("asset.meta");
         const bool dependencyManifest = guid == "packagemanagermanifest";
         if (pathname == entry.members.end() || (!dependencyManifest && meta == entry.members.end()))
-            return failure<UnitySourceFiles>(DiagnosticCode::NotFound, "Unity package needs pathname and asset.meta",
-                                             guid);
+            return Result<UnitySourceFiles>::failure(Diagnostic::error(DiagnosticCode::NotFound, "Unity package needs pathname and asset.meta", guid, {}, "asset.import.unity"));
         if (pathname->second.size() > limits.maximumStringBytes + std::uint64_t(4))
-            return failure<UnitySourceFiles>(DiagnosticCode::InvalidArgument, "Unity pathname exceeds budget", guid);
+            return Result<UnitySourceFiles>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Unity pathname exceeds budget", guid, {}, "asset.import.unity"));
         std::string path(pathname->second.begin(), pathname->second.end());
         // Legacy Asset Store exports append this exact trailer to the pathname record.
         if (path.ends_with("\n00"))
@@ -169,23 +161,20 @@ Result<UnitySourceFiles> unpack(std::span<const std::uint8_t> tar, const AssetIm
             const auto asset = entry.members.find("asset");
             if (!validPath(path, limits) || path != "Packages/manifest.json" || asset == entry.members.end() ||
                 entry.members.size() != 2)
-                return failure<UnitySourceFiles>(DiagnosticCode::ParseError,
-                                                 "invalid Unity package dependency manifest", path);
+                return Result<UnitySourceFiles>::failure(Diagnostic::error(DiagnosticCode::ParseError, "invalid Unity package dependency manifest", path, {}, "asset.import.unity"));
             // Preserve as source data; it never authorizes package installation.
             files.emplace(path, std::vector<std::uint8_t>(asset->second.begin(), asset->second.end()));
             continue;
         }
         if (!validPath(path, limits) || !(path == "Assets" || path.starts_with("Assets/")))
-            return failure<UnitySourceFiles>(DiagnosticCode::InvalidArgument, "Unity pathname must be inside Assets",
-                                             path);
+            return Result<UnitySourceFiles>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Unity pathname must be inside Assets", path, {}, "asset.import.unity"));
         for (const auto& candidate : {path, path + ".meta"})
             if (!paths.insert(foldAscii(candidate)).second)
-                return failure<UnitySourceFiles>(DiagnosticCode::Conflict, "duplicate Unity destination path", path);
+                return Result<UnitySourceFiles>::failure(Diagnostic::error(DiagnosticCode::Conflict, "duplicate Unity destination path", path, {}, "asset.import.unity"));
         auto metaGuid = metaScalar(meta->second, "guid", path);
         if (!metaGuid) return Result<UnitySourceFiles>::failure(metaGuid.status());
         if (foldAscii(metaGuid.value()) != guid)
-            return failure<UnitySourceFiles>(DiagnosticCode::Conflict, "Unity directory GUID disagrees with .meta",
-                                             path);
+            return Result<UnitySourceFiles>::failure(Diagnostic::error(DiagnosticCode::Conflict, "Unity directory GUID disagrees with .meta", path, {}, "asset.import.unity"));
         files.emplace(path + ".meta", std::vector<std::uint8_t>(meta->second.begin(), meta->second.end()));
         const auto asset = entry.members.find("asset");
         if (asset != entry.members.end())

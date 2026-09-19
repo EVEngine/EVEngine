@@ -10,12 +10,6 @@
 namespace eve::heightmap_target {
 namespace {
 
-template <class T>
-editor::EditorResult<T> rejected(std::string message) {
-    return editing::failed<T>(editor::EditorStatus::Rejected, editor::RuleId("editor.terrain.document-invalid"),
-                              std::move(message));
-}
-
 const editor::EditorValue* field(const editor::EditorValue::Object& object, std::string_view name) {
     const auto found = object.find(std::string(name));
     return found == object.end() ? nullptr : &found->second;
@@ -54,11 +48,13 @@ editor::EditorResult<editor::EditorValue> encodeTerrainDocument(const procgen::H
     if (width == 0 || height == 0 || width > limits.maximumDimension || height > limits.maximumDimension ||
         samples > limits.maximumSamples || !std::isfinite(spacingX) || !std::isfinite(spacingZ) || spacingX <= 0.0F ||
         spacingZ <= 0.0F || samples != heightmap.data().size())
-        return rejected<editor::EditorValue>("Terrain dimensions, spacing, or sample count is invalid");
+        return editing::failed<editor::EditorValue>(editor::EditorStatus::Rejected, editor::RuleId("editor.terrain.document-invalid"),
+                              "Terrain dimensions, spacing, or sample count is invalid");
     editor::EditorValue::Array heights;
     heights.reserve(heightmap.data().size());
     for (float value : heightmap.data()) {
-        if (!std::isfinite(value)) return rejected<editor::EditorValue>("Terrain contains a non-finite height");
+        if (!std::isfinite(value)) return editing::failed<editor::EditorValue>(editor::EditorStatus::Rejected, editor::RuleId("editor.terrain.document-invalid"),
+                              "Terrain contains a non-finite height");
         heights.emplace_back(static_cast<double>(value));
     }
     return editing::applied<editor::EditorValue>(
@@ -77,29 +73,34 @@ editor::EditorResult<TerrainDocumentData> decodeTerrainDocument(const editor::Ed
     static const std::set<std::string, std::less<>> allowed{"schema",   "schemaVersion", "width",  "height",
                                                             "spacingX", "spacingZ",      "heights"};
     if (!object || object->size() != allowed.size())
-        return rejected<TerrainDocumentData>("Terrain document fields do not match schema version 1");
+        return editing::failed<TerrainDocumentData>(editor::EditorStatus::Rejected, editor::RuleId("editor.terrain.document-invalid"),
+                              "Terrain document fields do not match schema version 1");
     for (const auto& [name, ignored] : *object) {
         (void)ignored;
         if (!allowed.contains(name))
-            return rejected<TerrainDocumentData>("Terrain document contains an unknown field: " + name);
+            return editing::failed<TerrainDocumentData>(editor::EditorStatus::Rejected, editor::RuleId("editor.terrain.document-invalid"),
+                              "Terrain document contains an unknown field: " + name);
     }
     const auto* schema        = field(*object, "schema");
     const auto* version       = field(*object, "schemaVersion");
     const auto* schemaText    = schema ? schema->getIf<std::string>() : nullptr;
     const auto* versionNumber = version ? version->getIf<std::int64_t>() : nullptr;
     if (!schemaText || *schemaText != "eve.terrain-editor-document" || !versionNumber || *versionNumber != 1)
-        return rejected<TerrainDocumentData>("Terrain document schema or version is unsupported");
+        return editing::failed<TerrainDocumentData>(editor::EditorStatus::Rejected, editor::RuleId("editor.terrain.document-invalid"),
+                              "Terrain document schema or version is unsupported");
     std::uint32_t width = 0, height = 0;
     float         spacingX = 0.0F, spacingZ = 0.0F;
     if (!dimension(field(*object, "width"), width) || !dimension(field(*object, "height"), height) ||
         width > limits.maximumDimension || height > limits.maximumDimension ||
         std::uint64_t(width) * height > limits.maximumSamples || !finiteNumber(field(*object, "spacingX"), spacingX) ||
         !finiteNumber(field(*object, "spacingZ"), spacingZ) || spacingX <= 0.0F || spacingZ <= 0.0F)
-        return rejected<TerrainDocumentData>("Terrain document dimensions or spacing is invalid");
+        return editing::failed<TerrainDocumentData>(editor::EditorStatus::Rejected, editor::RuleId("editor.terrain.document-invalid"),
+                              "Terrain document dimensions or spacing is invalid");
     const auto* heightsValue = field(*object, "heights");
     const auto* heights      = heightsValue ? heightsValue->getIf<editor::EditorValue::Array>() : nullptr;
     if (!heights || heights->size() != std::uint64_t(width) * height)
-        return rejected<TerrainDocumentData>("Terrain document height count does not match dimensions");
+        return editing::failed<TerrainDocumentData>(editor::EditorStatus::Rejected, editor::RuleId("editor.terrain.document-invalid"),
+                              "Terrain document height count does not match dimensions");
     TerrainDocumentData result;
     result.heightmap.resize(static_cast<int>(width), static_cast<int>(height));
     result.spacingX = spacingX;
@@ -107,7 +108,8 @@ editor::EditorResult<TerrainDocumentData> decodeTerrainDocument(const editor::Ed
     for (std::size_t index = 0; index < heights->size(); ++index) {
         float sample = 0.0F;
         if (!finiteNumber(&(*heights)[index], sample))
-            return rejected<TerrainDocumentData>("Terrain document contains a non-finite height");
+            return editing::failed<TerrainDocumentData>(editor::EditorStatus::Rejected, editor::RuleId("editor.terrain.document-invalid"),
+                              "Terrain document contains a non-finite height");
         result.heightmap.data()[index] = sample;
     }
     return editing::applied<TerrainDocumentData>(std::move(result));

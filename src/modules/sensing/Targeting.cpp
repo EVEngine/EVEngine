@@ -12,21 +12,6 @@
 namespace eve::sensing {
 namespace {
 
-template <class T>
-Result<T> failure(DiagnosticCode code, std::string message, std::string path = {}) {
-    return Result<T>::failure(Diagnostic::error(code, std::move(message), std::move(path)));
-}
-
-template <class T>
-Result<T> failure(Status status) {
-    return Result<T>::failure(std::move(status));
-}
-
-template <class T>
-Result<T> unsupported(std::string message, std::string path = {}) {
-    return failure<T>(DiagnosticCode::Unsupported, std::move(message), std::move(path));
-}
-
 bool isWorldSpace(CoordinateSpace space) noexcept {
     return space == CoordinateSpace::World2D || space == CoordinateSpace::World3D;
 }
@@ -109,23 +94,19 @@ bool matches(const TargetingQuery& query, const TargetCandidate& candidate) {
 Result<void> validateWorldPair(WorldPoint minimum, WorldPoint maximum, CoordinateSpace expected,
                                const char* operation) {
     if (!minimum.isValid() || !maximum.isValid() || minimum.space() != expected || maximum.space() != expected)
-        return failure<void>(DiagnosticCode::InvalidArgument,
-                             std::string(operation) + " requires two points in the same coordinate space");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::string(operation) + " requires two points in the same coordinate space", {}));
     if (minimum.x() > maximum.x() || minimum.y() > maximum.y() ||
         (expected == CoordinateSpace::World3D && minimum.z() > maximum.z()))
-        return failure<void>(DiagnosticCode::InvalidArgument,
-                             std::string(operation) + " requires minimum coordinates not greater than maximum");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::string(operation) + " requires minimum coordinates not greater than maximum", {}));
     return Result<void>::success();
 }
 
 Result<void> validateGridPair(GridPoint minimum, GridPoint maximum, CoordinateSpace expected, const char* operation) {
     if (!minimum.isValid() || !maximum.isValid() || minimum.space() != expected || maximum.space() != expected)
-        return failure<void>(DiagnosticCode::InvalidArgument,
-                             std::string(operation) + " requires two points in the same grid space");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::string(operation) + " requires two points in the same grid space", {}));
     if (minimum.x() > maximum.x() || minimum.y() > maximum.y() ||
         (expected == CoordinateSpace::Grid3D && minimum.z() > maximum.z()))
-        return failure<void>(DiagnosticCode::InvalidArgument,
-                             std::string(operation) + " requires minimum cells not greater than maximum");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::string(operation) + " requires minimum cells not greater than maximum", {}));
     return Result<void>::success();
 }
 
@@ -138,13 +119,13 @@ std::optional<ZoneRef> ZoneRef::fromLogicalId(LogicalId id) {
 
 Result<WorldPoint> WorldPoint::world2D(float x, float y) {
     if (!std::isfinite(x) || !std::isfinite(y))
-        return failure<WorldPoint>(DiagnosticCode::InvalidArgument, "World2D coordinates must be finite");
+        return Result<WorldPoint>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "World2D coordinates must be finite", {}));
     return Result<WorldPoint>::success(WorldPoint(CoordinateSpace::World2D, x, y, 0.f));
 }
 
 Result<WorldPoint> WorldPoint::world3D(float x, float y, float z) {
     if (!std::isfinite(x) || !std::isfinite(y) || !std::isfinite(z))
-        return failure<WorldPoint>(DiagnosticCode::InvalidArgument, "World3D coordinates must be finite");
+        return Result<WorldPoint>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "World3D coordinates must be finite", {}));
     return Result<WorldPoint>::success(WorldPoint(CoordinateSpace::World3D, x, y, z));
 }
 
@@ -158,27 +139,25 @@ GridPoint GridPoint::grid3D(std::int32_t x, std::int32_t y, std::int32_t z) noex
 
 Result<WorldArea> WorldArea::circle2D(WorldPoint center, float radius) {
     if (!center.isValid() || center.space() != CoordinateSpace::World2D || !std::isfinite(radius) || radius < 0.f)
-        return failure<WorldArea>(DiagnosticCode::InvalidArgument,
-                                  "WorldArea.circle2D requires a finite World2D center and non-negative radius");
+        return Result<WorldArea>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "WorldArea.circle2D requires a finite World2D center and non-negative radius", {}));
     return Result<WorldArea>::success(WorldArea(Shape::Circle2D, center, {}, radius));
 }
 
 Result<WorldArea> WorldArea::box2D(WorldPoint minimum, WorldPoint maximum) {
     auto valid = validateWorldPair(minimum, maximum, CoordinateSpace::World2D, "WorldArea.box2D");
-    if (!valid) return failure<WorldArea>(valid.status());
+    if (!valid) return Result<WorldArea>::failure(valid.status());
     return Result<WorldArea>::success(WorldArea(Shape::Box2D, minimum, maximum, 0.f));
 }
 
 Result<WorldArea> WorldArea::sphere3D(WorldPoint center, float radius) {
     if (!center.isValid() || center.space() != CoordinateSpace::World3D || !std::isfinite(radius) || radius < 0.f)
-        return failure<WorldArea>(DiagnosticCode::InvalidArgument,
-                                  "WorldArea.sphere3D requires a finite World3D center and non-negative radius");
+        return Result<WorldArea>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "WorldArea.sphere3D requires a finite World3D center and non-negative radius", {}));
     return Result<WorldArea>::success(WorldArea(Shape::Sphere3D, center, {}, radius));
 }
 
 Result<WorldArea> WorldArea::box3D(WorldPoint minimum, WorldPoint maximum) {
     auto valid = validateWorldPair(minimum, maximum, CoordinateSpace::World3D, "WorldArea.box3D");
-    if (!valid) return failure<WorldArea>(valid.status());
+    if (!valid) return Result<WorldArea>::failure(valid.status());
     return Result<WorldArea>::success(WorldArea(Shape::Box3D, minimum, maximum, 0.f));
 }
 
@@ -186,12 +165,10 @@ Result<WorldArea> WorldArea::cone2D(WorldPoint apex, float dirX, float dirY, flo
     if (!apex.isValid() || apex.space() != CoordinateSpace::World2D || !std::isfinite(dirX) || !std::isfinite(dirY) ||
         !std::isfinite(halfAngleRadians) || !std::isfinite(range) || halfAngleRadians < 0.f ||
         halfAngleRadians > 3.14159265f || range < 0.f || !(std::hypot(dirX, dirY) > 0.f)) {
-        return failure<WorldArea>(
-            DiagnosticCode::InvalidArgument,
-            "WorldArea.cone2D requires World2D apex, non-zero dir, halfAngle in [0,pi], non-negative range");
+        return Result<WorldArea>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "WorldArea.cone2D requires World2D apex, non-zero dir, halfAngle in [0,pi], non-negative range", {}));
     }
     auto direction = WorldPoint::world2D(dirX, dirY);
-    if (!direction) return failure<WorldArea>(direction.status());
+    if (!direction) return Result<WorldArea>::failure(direction.status());
     return Result<WorldArea>::success(
         WorldArea(Shape::Cone2D, apex, direction.value(), range, halfAngleRadians));
 }
@@ -227,13 +204,13 @@ bool WorldArea::contains(WorldPoint point) const noexcept {
 
 Result<GridArea> GridArea::box2D(GridPoint minimum, GridPoint maximum) {
     auto valid = validateGridPair(minimum, maximum, CoordinateSpace::Grid2D, "GridArea.box2D");
-    if (!valid) return failure<GridArea>(valid.status());
+    if (!valid) return Result<GridArea>::failure(valid.status());
     return Result<GridArea>::success(GridArea(Shape::Box2D, minimum, maximum));
 }
 
 Result<GridArea> GridArea::box3D(GridPoint minimum, GridPoint maximum) {
     auto valid = validateGridPair(minimum, maximum, CoordinateSpace::Grid3D, "GridArea.box3D");
-    if (!valid) return failure<GridArea>(valid.status());
+    if (!valid) return Result<GridArea>::failure(valid.status());
     return Result<GridArea>::success(GridArea(Shape::Box3D, minimum, maximum));
 }
 
@@ -246,45 +223,44 @@ bool GridArea::contains(GridPoint point) const noexcept {
 
 Result<void> TargetingSpec::validate() const {
     if ((isWorldSpace(space) && gridArea) || (isGridSpace(space) && worldArea))
-        return failure<void>(DiagnosticCode::InvalidArgument, "TargetingSpec area uses a different coordinate space");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "TargetingSpec area uses a different coordinate space", {}));
     if (worldArea && !worldArea->isValid())
-        return failure<void>(DiagnosticCode::InvalidArgument, "TargetingSpec world area must be valid");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "TargetingSpec world area must be valid", {}));
     if (gridArea && !gridArea->isValid())
-        return failure<void>(DiagnosticCode::InvalidArgument, "TargetingSpec grid area must be valid");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "TargetingSpec grid area must be valid", {}));
     if (worldArea && worldArea->space() != space)
-        return failure<void>(DiagnosticCode::InvalidArgument, "TargetingSpec world area does not match its space");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "TargetingSpec world area does not match its space", {}));
     if (gridArea && gridArea->space() != space)
-        return failure<void>(DiagnosticCode::InvalidArgument, "TargetingSpec grid area does not match its space");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "TargetingSpec grid area does not match its space", {}));
     if (minCount > maxCount)
-        return failure<void>(DiagnosticCode::InvalidArgument, "TargetingSpec minCount exceeds maxCount");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "TargetingSpec minCount exceeds maxCount", {}));
     if (!std::isfinite(minRange) ||
         (!(std::isfinite(maxRange) || maxRange == std::numeric_limits<float>::infinity())) || minRange < 0.f ||
         maxRange < minRange)
-        return failure<void>(DiagnosticCode::InvalidArgument, "TargetingSpec range must be finite and ordered");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "TargetingSpec range must be finite and ordered", {}));
     if (zone && !zone->isValid())
-        return failure<void>(DiagnosticCode::InvalidArgument, "TargetingSpec zone must be valid");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "TargetingSpec zone must be valid", {}));
     for (const auto& tag : requiredTags)
         if (tag.empty())
-            return failure<void>(DiagnosticCode::InvalidArgument, "requiredTags cannot contain empty keys");
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "requiredTags cannot contain empty keys", {}));
     for (const auto& tag : excludedTags)
         if (tag.empty())
-            return failure<void>(DiagnosticCode::InvalidArgument, "excludedTags cannot contain empty keys");
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "excludedTags cannot contain empty keys", {}));
     return Result<void>::success();
 }
 
 Result<void> TargetingQuery::validate() const {
     auto specResult = spec.validate();
-    if (!specResult) return failure<void>(specResult.status());
+    if (!specResult) return Result<void>::failure(specResult.status());
     if (!origin.isValid())
-        return failure<void>(DiagnosticCode::InvalidArgument, "TargetingQuery origin must be non-nil");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "TargetingQuery origin must be non-nil", {}));
     if (!sameSpace(originLocation, spec.space))
-        return failure<void>(DiagnosticCode::InvalidArgument,
-                             "TargetingQuery origin and spec use different coordinate spaces");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "TargetingQuery origin and spec use different coordinate spaces", {}));
     return Result<void>::success();
 }
 
 Result<void> TargetSet::addSubject(SubjectRef subject) {
-    if (!subject.isValid()) return failure<void>(DiagnosticCode::InvalidArgument, "TargetSet subject must be non-nil");
+    if (!subject.isValid()) return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "TargetSet subject must be non-nil", {}));
     if (std::find(subjects_.begin(), subjects_.end(), subject) != subjects_.end())
         return Result<void>::success(Status::success(StatusCode::NoOp));
     subjects_.push_back(subject);
@@ -292,68 +268,68 @@ Result<void> TargetSet::addSubject(SubjectRef subject) {
 }
 
 Result<void> TargetSet::setPrimary(SubjectRef subject) {
-    if (!subject.isValid()) return failure<void>(DiagnosticCode::InvalidArgument, "TargetSet primary must be non-nil");
+    if (!subject.isValid()) return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "TargetSet primary must be non-nil", {}));
     if (std::find(subjects_.begin(), subjects_.end(), subject) == subjects_.end())
-        return failure<void>(DiagnosticCode::NotFound, "TargetSet primary must already be a member");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::NotFound, "TargetSet primary must already be a member", {}));
     primary_ = subject;
     return Result<void>::success(Status::success(StatusCode::Applied));
 }
 
 Result<void> TargetSet::setPoint(TargetLocation point) {
     if (!std::visit([](const auto& value) { return value.isValid(); }, point))
-        return failure<void>(DiagnosticCode::InvalidArgument, "TargetSet point must be valid");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "TargetSet point must be valid", {}));
     if (point_ && !sameSpace(*point_, point))
-        return failure<void>(DiagnosticCode::InvalidArgument, "TargetSet points cannot mix coordinate spaces");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "TargetSet points cannot mix coordinate spaces", {}));
     if (worldArea_ && (!std::get_if<WorldPoint>(&point) || std::get<WorldPoint>(point).space() != worldArea_->space()))
-        return failure<void>(DiagnosticCode::InvalidArgument, "TargetSet point and world area use different spaces");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "TargetSet point and world area use different spaces", {}));
     if (gridArea_ && (!std::get_if<GridPoint>(&point) || std::get<GridPoint>(point).space() != gridArea_->space()))
-        return failure<void>(DiagnosticCode::InvalidArgument, "TargetSet point and grid area use different spaces");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "TargetSet point and grid area use different spaces", {}));
     point_ = std::move(point);
     return Result<void>::success(Status::success(StatusCode::Applied));
 }
 
 Result<void> TargetSet::setArea(WorldArea area) {
-    if (!area.isValid()) return failure<void>(DiagnosticCode::InvalidArgument, "TargetSet world area must be valid");
-    if (gridArea_) return failure<void>(DiagnosticCode::InvalidArgument, "TargetSet cannot mix world and grid areas");
+    if (!area.isValid()) return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "TargetSet world area must be valid", {}));
+    if (gridArea_) return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "TargetSet cannot mix world and grid areas", {}));
     if (point_ && (!std::get_if<WorldPoint>(&*point_) || std::get<WorldPoint>(*point_).space() != area.space()))
-        return failure<void>(DiagnosticCode::InvalidArgument, "TargetSet point and world area use different spaces");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "TargetSet point and world area use different spaces", {}));
     worldArea_ = std::move(area);
     return Result<void>::success(Status::success(StatusCode::Applied));
 }
 
 Result<void> TargetSet::setArea(GridArea area) {
-    if (!area.isValid()) return failure<void>(DiagnosticCode::InvalidArgument, "TargetSet grid area must be valid");
-    if (worldArea_) return failure<void>(DiagnosticCode::InvalidArgument, "TargetSet cannot mix world and grid areas");
+    if (!area.isValid()) return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "TargetSet grid area must be valid", {}));
+    if (worldArea_) return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "TargetSet cannot mix world and grid areas", {}));
     if (point_ && (!std::get_if<GridPoint>(&*point_) || std::get<GridPoint>(*point_).space() != area.space()))
-        return failure<void>(DiagnosticCode::InvalidArgument, "TargetSet point and grid area use different spaces");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "TargetSet point and grid area use different spaces", {}));
     gridArea_ = std::move(area);
     return Result<void>::success(Status::success(StatusCode::Applied));
 }
 
 Result<void> SensingCandidateProvider::upsert(TargetCandidate candidate) {
     if (!candidate.subject.isValid())
-        return failure<void>(DiagnosticCode::InvalidArgument, "candidate subject must be non-nil");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "candidate subject must be non-nil", {}));
     if (!std::visit([](const auto& value) { return value.isValid(); }, candidate.location))
-        return failure<void>(DiagnosticCode::InvalidArgument, "candidate location must be valid");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "candidate location must be valid", {}));
     for (const auto& tag : candidate.tags)
         if (tag.empty())
-            return failure<void>(DiagnosticCode::InvalidArgument, "candidate tags cannot contain empty keys");
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "candidate tags cannot contain empty keys", {}));
     for (const auto& zone : candidate.zones)
-        if (!zone.isValid()) return failure<void>(DiagnosticCode::InvalidArgument, "candidate zones must be valid");
+        if (!zone.isValid()) return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "candidate zones must be valid", {}));
     candidates_[candidate.subject.format()] = std::move(candidate);
     return Result<void>::success(Status::success(StatusCode::Applied));
 }
 
 Result<void> SensingCandidateProvider::remove(SubjectRef subject) {
-    if (!subject.isValid()) return failure<void>(DiagnosticCode::InvalidArgument, "candidate subject must be non-nil");
+    if (!subject.isValid()) return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "candidate subject must be non-nil", {}));
     if (candidates_.erase(subject.format()) == 0)
-        return failure<void>(DiagnosticCode::NotFound, "candidate subject was not registered");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::NotFound, "candidate subject was not registered", {}));
     return Result<void>::success(Status::success(StatusCode::Applied));
 }
 
 Result<std::vector<TargetCandidate>> SensingCandidateProvider::query(const TargetingQuery& query) const {
     auto valid = query.validate();
-    if (!valid) return failure<std::vector<TargetCandidate>>(valid.status());
+    if (!valid) return Result<std::vector<TargetCandidate>>::failure(valid.status());
     std::vector<TargetCandidate> result;
     result.reserve(candidates_.size());
     for (const auto& [key, candidate] : candidates_) {
@@ -365,21 +341,19 @@ Result<std::vector<TargetCandidate>> SensingCandidateProvider::query(const Targe
 
 Result<std::vector<TargetCandidate>> SensingWorldCandidateProvider::query(const TargetingQuery& query) const {
     auto valid = query.validate();
-    if (!valid) return failure<std::vector<TargetCandidate>>(valid.status());
+    if (!valid) return Result<std::vector<TargetCandidate>>::failure(valid.status());
     if (world_ == nullptr)
-        return unsupported<std::vector<TargetCandidate>>("SensingWorldCandidateProvider has no bound SensingWorld");
+        return Result<std::vector<TargetCandidate>>::failure(Diagnostic::error(DiagnosticCode::Unsupported, "SensingWorldCandidateProvider has no bound SensingWorld", {}));
     if (query.spec.space != CoordinateSpace::World2D)
-        return unsupported<std::vector<TargetCandidate>>("SensingWorldCandidateProvider supports World2D only");
+        return Result<std::vector<TargetCandidate>>::failure(Diagnostic::error(DiagnosticCode::Unsupported, "SensingWorldCandidateProvider supports World2D only", {}));
     if (query.spec.gridArea)
-        return unsupported<std::vector<TargetCandidate>>("SensingWorldCandidateProvider does not support grid areas");
+        return Result<std::vector<TargetCandidate>>::failure(Diagnostic::error(DiagnosticCode::Unsupported, "SensingWorldCandidateProvider does not support grid areas", {}));
     if (query.spec.domain != TargetDomain::Any && !relation_)
-        return unsupported<std::vector<TargetCandidate>>(
-            "TargetDomain filters require an injected FactionRelationFn on SensingWorldCandidateProvider");
+        return Result<std::vector<TargetCandidate>>::failure(Diagnostic::error(DiagnosticCode::Unsupported, "TargetDomain filters require an injected FactionRelationFn on SensingWorldCandidateProvider", {}));
 
     const auto* originPoint = std::get_if<WorldPoint>(&query.originLocation);
     if (originPoint == nullptr || !originPoint->isValid() || originPoint->space() != CoordinateSpace::World2D)
-        return failure<std::vector<TargetCandidate>>(DiagnosticCode::InvalidArgument,
-                                                     "SensingWorldCandidateProvider origin must be a World2D point");
+        return Result<std::vector<TargetCandidate>>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "SensingWorldCandidateProvider origin must be a World2D point", {}));
 
     QuerySpec spec;
     spec.minRange        = query.spec.minRange;
@@ -392,7 +366,7 @@ Result<std::vector<TargetCandidate>> SensingWorldCandidateProvider::query(const 
     spec.sortKey         = SortKey::DistanceAscending;
 
     auto queried = world_->query(QueryOrigin{originPoint->x(), originPoint->y(), query.origin.format()}, spec);
-    if (!queried) return failure<std::vector<TargetCandidate>>(queried.status());
+    if (!queried) return Result<std::vector<TargetCandidate>>::failure(queried.status());
 
     std::string originFaction;
     if (const auto found = world_->subjects().find(query.origin.format()); found != world_->subjects().end())
@@ -403,11 +377,9 @@ Result<std::vector<TargetCandidate>> SensingWorldCandidateProvider::query(const 
     for (const auto& ranked : queried.value().ranked()) {
         auto persistent = PersistentId::parse(ranked.id);
         if (!persistent)
-            return failure<std::vector<TargetCandidate>>(
-                DiagnosticCode::InvalidArgument,
-                "SensingWorld subject id must be a PersistentId UUID for Targeting adapters", "subject.id");
+            return Result<std::vector<TargetCandidate>>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "SensingWorld subject id must be a PersistentId UUID for Targeting adapters", "subject.id"));
         auto location = WorldPoint::world2D(ranked.x, ranked.y);
-        if (!location) return failure<std::vector<TargetCandidate>>(location.status());
+        if (!location) return Result<std::vector<TargetCandidate>>::failure(location.status());
         if (query.spec.worldArea && !query.spec.worldArea->contains(location.value())) continue;
 
         TargetDomain domain = TargetDomain::Neutral;
@@ -416,7 +388,7 @@ Result<std::vector<TargetCandidate>> SensingWorldCandidateProvider::query(const 
             const std::string_view candidateFaction =
                 subjectIt == world_->subjects().end() ? std::string_view{} : std::string_view{subjectIt->second.faction};
             auto related = relation_(originFaction, candidateFaction);
-            if (!related) return failure<std::vector<TargetCandidate>>(related.status());
+            if (!related) return Result<std::vector<TargetCandidate>>::failure(related.status());
             domain = std::move(related).takeValue();
         }
         if (query.spec.domain != TargetDomain::Any && domain != query.spec.domain) continue;
@@ -432,14 +404,10 @@ Result<std::vector<TargetCandidate>> SensingWorldCandidateProvider::query(const 
         for (const auto& zoneText : subjectFacts.zones) {
             auto logical = LogicalId::parse(zoneText);
             if (!logical)
-                return failure<std::vector<TargetCandidate>>(
-                    DiagnosticCode::InvalidArgument,
-                    "SensingWorld subject zone must be a valid LogicalId", "subject.zones");
+                return Result<std::vector<TargetCandidate>>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "SensingWorld subject zone must be a valid LogicalId", "subject.zones"));
             auto zone = ZoneRef::fromLogicalId(*logical);
             if (!zone)
-                return failure<std::vector<TargetCandidate>>(
-                    DiagnosticCode::InvalidArgument,
-                    "SensingWorld subject zone must form a valid ZoneRef", "subject.zones");
+                return Result<std::vector<TargetCandidate>>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "SensingWorld subject zone must form a valid ZoneRef", "subject.zones"));
             candidate.zones.push_back(*zone);
         }
         if (query.spec.zone && !inZone(candidate, query.spec.zone)) continue;
@@ -450,19 +418,19 @@ Result<std::vector<TargetCandidate>> SensingWorldCandidateProvider::query(const 
 
 Result<TargetSet> TargetingResolver::resolve(const TargetingQuery& query) const {
     auto valid = query.validate();
-    if (!valid) return failure<TargetSet>(valid.status());
+    if (!valid) return Result<TargetSet>::failure(valid.status());
 
     auto* provider = cap::query<ISensingCandidateProvider>();
-    if (!provider) return unsupported<TargetSet>("Targeting requires an ISensingCandidateProvider");
+    if (!provider) return Result<TargetSet>::failure(Diagnostic::error(DiagnosticCode::Unsupported, "Targeting requires an ISensingCandidateProvider", {}));
 
     auto candidateResult = provider->query(query);
-    if (!candidateResult) return failure<TargetSet>(candidateResult.status());
+    if (!candidateResult) return Result<TargetSet>::failure(candidateResult.status());
     auto candidates = std::move(candidateResult).takeValue();
 
     ILineOfSightQuery* los = nullptr;
     if (query.spec.lineOfSight == LineOfSightMode::Required) {
         los = cap::query<ILineOfSightQuery>();
-        if (!los) return unsupported<TargetSet>("Targeting line-of-sight was requested but no provider is registered");
+        if (!los) return Result<TargetSet>::failure(Diagnostic::error(DiagnosticCode::Unsupported, "Targeting line-of-sight was requested but no provider is registered", {}));
     }
 
     struct Ranked {
@@ -474,14 +442,13 @@ Result<TargetSet> TargetingResolver::resolve(const TargetingQuery& query) const 
     for (const auto& candidate : candidates) {
         if (!candidate.subject.isValid() ||
             !std::visit([](const auto& value) { return value.isValid(); }, candidate.location))
-            return failure<TargetSet>(DiagnosticCode::InvariantViolation,
-                                      "candidate provider returned an invalid candidate");
+            return Result<TargetSet>::failure(Diagnostic::error(DiagnosticCode::InvariantViolation, "candidate provider returned an invalid candidate", {}));
         if (!sameSpace(candidate.location, query.spec.space))
-            return failure<TargetSet>(DiagnosticCode::InvariantViolation, "candidate provider mixed coordinate spaces");
+            return Result<TargetSet>::failure(Diagnostic::error(DiagnosticCode::InvariantViolation, "candidate provider mixed coordinate spaces", {}));
         if (!matches(query, candidate)) continue;
         if (los) {
             auto visible = los->query(query.originLocation, candidate.location);
-            if (!visible) return failure<TargetSet>(visible.status());
+            if (!visible) return Result<TargetSet>::failure(visible.status());
             if (!std::move(visible).takeValue().visible) continue;
         }
         accepted.push_back(Ranked{candidate, std::sqrt(distanceSquared(query.originLocation, candidate.location))});
@@ -495,12 +462,10 @@ Result<TargetSet> TargetingResolver::resolve(const TargetingQuery& query) const 
         if (accepted.size() > static_cast<std::size_t>(query.spec.maxCount))
             accepted.resize(static_cast<std::size_t>(query.spec.maxCount));
         if (accepted.size() < static_cast<std::size_t>(query.spec.minCount))
-            return failure<TargetSet>(DiagnosticCode::PreconditionViolation,
-                                      "target candidate count is below TargetingSpec.minCount after truncation");
+            return Result<TargetSet>::failure(Diagnostic::error(DiagnosticCode::PreconditionViolation, "target candidate count is below TargetingSpec.minCount after truncation", {}));
     } else if (accepted.size() < static_cast<std::size_t>(query.spec.minCount) ||
                accepted.size() > static_cast<std::size_t>(query.spec.maxCount)) {
-        return failure<TargetSet>(DiagnosticCode::PreconditionViolation,
-                                  "target candidate count violates TargetingSpec");
+        return Result<TargetSet>::failure(Diagnostic::error(DiagnosticCode::PreconditionViolation, "target candidate count violates TargetingSpec", {}));
     }
 
     TargetSet result;

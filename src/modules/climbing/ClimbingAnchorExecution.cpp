@@ -14,12 +14,6 @@ namespace {
 
 constexpr float epsilon = 1e-5f;
 
-template <class T>
-eve::Result<T> failure(eve::DiagnosticCode code, std::string message, std::string path = {}) {
-    return eve::Result<T>::failure(
-        eve::Diagnostic::error(code, std::move(message), std::move(path), {}, "climbing.anchor_execution"));
-}
-
 Vec3 subtract(Vec3 lhs, Vec3 rhs) { return {lhs.x - rhs.x, lhs.y - rhs.y, lhs.z - rhs.z}; }
 Vec3 add(Vec3 lhs, Vec3 rhs) { return {lhs.x + rhs.x, lhs.y + rhs.y, lhs.z + rhs.z}; }
 Vec3 scale(Vec3 value, float amount) { return {value.x * amount, value.y * amount, value.z * amount}; }
@@ -94,8 +88,8 @@ eve::Result<void> validatePath(physics::World3D& world, Vec3 start, const Climbi
         if (!moved) return eve::Result<void>::failure(moved.status());
         const Vec3 actual{moved.value().deltaX, moved.value().deltaY, moved.value().deltaZ};
         if (length(subtract(desired, actual)) > profile.skin + 0.001f)
-            return failure<void>(eve::DiagnosticCode::PreconditionViolation,
-                                 "climbing.anchor.path_blocked", "candidate.path." + std::to_string(segment));
+            return eve::Result<void>::failure(
+        eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation, "climbing.anchor.path_blocked", "candidate.path." + std::to_string(segment), {}, "climbing.anchor_execution"));
         current = target;
     }
     return eve::Result<void>::success();
@@ -108,8 +102,8 @@ eve::Result<ClimbingCandidate> makeCandidate(physics::World3D& world, ClimbingAn
                                              const ClimbingPose& pose, std::uint64_t definitionGeneration) {
     physics::Body3D* body = world.findBody(graph.body());
     if (!body)
-        return failure<ClimbingCandidate>(eve::DiagnosticCode::StaleHandle,
-                                          "anchor graph target body is stale", "graph.body");
+        return eve::Result<ClimbingCandidate>::failure(
+        eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle, "anchor graph target body is stale", "graph.body", {}, "climbing.anchor_execution"));
     ClimbingCandidate candidate;
     candidate.actionId = action.id;
     candidate.definitionGeneration = definitionGeneration;
@@ -158,8 +152,8 @@ eve::Result<void> ClimbingRuntime::releaseAnchorReservation() {
         execution_->anchorReservation = {};
         execution_->anchorGraph = {};
         execution_->anchorNode = {};
-        return failure<void>(eve::DiagnosticCode::StaleHandle,
-                             "anchor graph instance is stale while releasing occupancy", "execution.anchorGraph");
+        return eve::Result<void>::failure(
+        eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle, "anchor graph instance is stale while releasing occupancy", "execution.anchorGraph", {}, "climbing.anchor_execution"));
     }
     auto released = graph->release(execution_->anchorReservation);
     if (released || (released.error() &&
@@ -177,8 +171,8 @@ eve::Result<void> ClimbingRuntime::releaseAnchorReservation() {
 
 eve::Result<ClimbingAnchorNodeRef> ClimbingRuntime::currentAnchor() const {
     if (!execution_ || !execution_->anchorGraph.isValid() || execution_->anchorReservation.id.isZero())
-        return failure<ClimbingAnchorNodeRef>(eve::DiagnosticCode::NotFound,
-                                              "active execution is not bound to an anchor graph", "execution.anchor");
+        return eve::Result<ClimbingAnchorNodeRef>::failure(
+        eve::Diagnostic::error(eve::DiagnosticCode::NotFound, "active execution is not bound to an anchor graph", "execution.anchor", {}, "climbing.anchor_execution"));
     return eve::Result<ClimbingAnchorNodeRef>::success(execution_->anchorNode);
 }
 
@@ -186,34 +180,33 @@ eve::Result<ClimbingCandidate> ClimbingRuntime::tryBeginAnchor(
     physics::World3D& world, ClimbingAnchorGraphHandleRef graphReference, const ClimbingAnchorNodeRef& nodeReference,
     ClimbingAnchorAgentId agentId, std::string_view actionId, const ClimbingPose& pose, eve::SimulationTick tick) {
     if (activePhase(phase_) || execution_)
-        return failure<ClimbingCandidate>(eve::DiagnosticCode::Conflict,
-                                          "a climbing execution is already active", "runtime.phase");
+        return eve::Result<ClimbingCandidate>::failure(
+        eve::Diagnostic::error(eve::DiagnosticCode::Conflict, "a climbing execution is already active", "runtime.phase", {}, "climbing.anchor_execution"));
     if (nextExecutionId_ == 0 || nextExecutionId_ == std::numeric_limits<std::uint64_t>::max())
-        return failure<ClimbingCandidate>(eve::DiagnosticCode::PreconditionViolation,
-                                          "climbing execution id space is exhausted", "runtime.nextExecutionId");
+        return eve::Result<ClimbingCandidate>::failure(
+        eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation, "climbing execution id space is exhausted", "runtime.nextExecutionId", {}, "climbing.anchor_execution"));
     if (agentId.isZero())
-        return failure<ClimbingCandidate>(eve::DiagnosticCode::InvalidArgument,
-                                          "anchor execution requires a stable non-zero agent id", "agentId");
+        return eve::Result<ClimbingCandidate>::failure(
+        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "anchor execution requires a stable non-zero agent id", "agentId", {}, "climbing.anchor_execution"));
     auto graph = Climbing::resolveAnchorGraph(graphReference);
     if (!graph.isBound())
-        return failure<ClimbingCandidate>(eve::DiagnosticCode::StaleHandle,
-                                          "anchor graph instance handle is stale", "graph");
+        return eve::Result<ClimbingCandidate>::failure(
+        eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle, "anchor graph instance handle is stale", "graph", {}, "climbing.anchor_execution"));
     auto resolved = graph->resolveNode(world, nodeReference);
     if (!resolved) return eve::Result<ClimbingCandidate>::failure(resolved.status());
     const ClimbingActionDefinition* action = findAction(profile_, actionId);
     if (!action || !startKindMatches(resolved.value().kind, action->kind))
-        return failure<ClimbingCandidate>(eve::DiagnosticCode::InvalidArgument,
-                                          "action kind cannot approach the requested anchor node", "actionId");
+        return eve::Result<ClimbingCandidate>::failure(
+        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "action kind cannot approach the requested anchor node", "actionId", {}, "climbing.anchor_execution"));
     if (!action->requiredNotifies.empty() && !validatedAnimationActions_.contains(action->id))
-        return failure<ClimbingCandidate>(eve::DiagnosticCode::PreconditionViolation,
-                                          "climbing.animation.notify_missing: action clip contract was not validated",
-                                          "actionId");
+        return eve::Result<ClimbingCandidate>::failure(
+        eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation, "climbing.animation.notify_missing: action clip contract was not validated", "actionId", {}, "climbing.anchor_execution"));
     auto candidate = makeCandidate(world, *graph, resolved.value(), *action, profile_, pose, definitionGeneration_);
     if (!candidate) return candidate;
     if (candidate.value().obstacleHeight + epsilon < action->minHeight ||
         candidate.value().obstacleHeight - epsilon > action->maxHeight)
-        return failure<ClimbingCandidate>(eve::DiagnosticCode::PreconditionViolation,
-                                          "anchor approach lies outside the action geometry range", "action.height");
+        return eve::Result<ClimbingCandidate>::failure(
+        eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation, "anchor approach lies outside the action geometry range", "action.height", {}, "climbing.anchor_execution"));
     auto path = validatePath(world, pose.feet, candidate.value(), *action, profile_, lastQueryCount_);
     if (!path) return eve::Result<ClimbingCandidate>::failure(path.status());
     auto eventCapacity = requireEventCapacity(1, tick);
@@ -250,18 +243,18 @@ eve::Result<void> ClimbingRuntime::transitionAnchor(physics::World3D& world,
     if ((phase_ != ClimbingPhase::Hanging && phase_ != ClimbingPhase::Balanced &&
          phase_ != ClimbingPhase::Swinging) || !execution_ || !execution_->anchorGraph.isValid() ||
         execution_->anchorReservation.id.isZero())
-        return failure<void>(eve::DiagnosticCode::PreconditionViolation,
-                             "anchor transition requires a graph-bound hanging execution", "runtime.phase");
+        return eve::Result<void>::failure(
+        eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation, "anchor transition requires a graph-bound hanging execution", "runtime.phase", {}, "climbing.anchor_execution"));
     if (!execution_->branchWindowOpen)
-        return failure<void>(eve::DiagnosticCode::PreconditionViolation,
-                             "anchor transition branch window is closed", "execution.branchWindow");
+        return eve::Result<void>::failure(
+        eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation, "anchor transition branch window is closed", "execution.branchWindow", {}, "climbing.anchor_execution"));
     if (tick <= execution_->lastTick)
-        return failure<void>(eve::DiagnosticCode::Conflict,
-                             "anchor transition tick must be newer than the last execution tick", "tick");
+        return eve::Result<void>::failure(
+        eve::Diagnostic::error(eve::DiagnosticCode::Conflict, "anchor transition tick must be newer than the last execution tick", "tick", {}, "climbing.anchor_execution"));
     auto graph = Climbing::resolveAnchorGraph(execution_->anchorGraph);
     if (!graph.isBound())
-        return failure<void>(eve::DiagnosticCode::StaleHandle,
-                             "anchor graph instance handle is stale", "execution.anchorGraph");
+        return eve::Result<void>::failure(
+        eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle, "anchor graph instance handle is stale", "execution.anchorGraph", {}, "climbing.anchor_execution"));
     auto reservationValid = graph->validateReservation(execution_->anchorReservation);
     if (!reservationValid) return reservationValid;
     auto edges = graph->edgesFrom(execution_->anchorNode);
@@ -270,20 +263,20 @@ eve::Result<void> ClimbingRuntime::transitionAnchor(physics::World3D& world,
         return candidate.to == target.nodeId && candidate.kind == edgeKind;
     });
     if (edge == edges.value().end())
-        return failure<void>(eve::DiagnosticCode::NotFound,
-                             "no authored edge connects the current and requested anchors", "target");
+        return eve::Result<void>::failure(
+        eve::Diagnostic::error(eve::DiagnosticCode::NotFound, "no authored edge connects the current and requested anchors", "target", {}, "climbing.anchor_execution"));
     auto resolved = graph->resolveNode(world, target);
     if (!resolved) return eve::Result<void>::failure(resolved.status());
     if (!tagsContain(resolved.value().tags, edge->requiredTags))
-        return failure<void>(eve::DiagnosticCode::PreconditionViolation,
-                             "target anchor does not satisfy the edge tag contract", "target.tags");
+        return eve::Result<void>::failure(
+        eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation, "target anchor does not satisfy the edge tag contract", "target.tags", {}, "climbing.anchor_execution"));
     const ClimbingActionDefinition* action = findAction(profile_, actionId);
     if (!action || !edgeKindMatches(edgeKind, action->kind))
-        return failure<void>(eve::DiagnosticCode::InvalidArgument,
-                             "action kind does not match the authored anchor edge", "actionId");
+        return eve::Result<void>::failure(
+        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "action kind does not match the authored anchor edge", "actionId", {}, "climbing.anchor_execution"));
     if (!action->requiredNotifies.empty() && !validatedAnimationActions_.contains(action->id))
-        return failure<void>(eve::DiagnosticCode::PreconditionViolation,
-                             "climbing.animation.notify_missing: action clip contract was not validated", "actionId");
+        return eve::Result<void>::failure(
+        eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation, "climbing.animation.notify_missing: action clip contract was not validated", "actionId", {}, "climbing.anchor_execution"));
     ClimbingPose pose;
     pose.feet = execution_->currentFeet;
     pose.forward = scale(execution_->candidate.surfaceNormal, -1.f);
@@ -294,8 +287,8 @@ eve::Result<void> ClimbingRuntime::transitionAnchor(physics::World3D& world,
     const float span = length(subtract(candidate.value().landingFeet, execution_->currentFeet));
     candidate.value().obstacleHeight = span;
     if (span + epsilon < action->minHeight || span - epsilon > action->maxHeight)
-        return failure<void>(eve::DiagnosticCode::PreconditionViolation,
-                             "anchor transition lies outside the action geometry range", "action.height");
+        return eve::Result<void>::failure(
+        eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation, "anchor transition lies outside the action geometry range", "action.height", {}, "climbing.anchor_execution"));
     auto path = validatePath(world, execution_->currentFeet, candidate.value(), *action, profile_, lastQueryCount_);
     if (!path) return eve::Result<void>::failure(path.status());
     auto eventCapacity = requireEventCapacity(1, tick);

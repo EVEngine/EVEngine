@@ -64,13 +64,9 @@ void ClimbingCandidateSet::swap(ClimbingCandidateSet& other) noexcept {
 
 eve::Result<void> ClimbingRuntime::requireEventCapacity(std::size_t count, eve::SimulationTick tick) const {
     if (count > PendingEventCapacity - pendingEvents_.size())
-        return climbingFailure<void>(eve::DiagnosticCode::Conflict,
-                                     "climbing event queue must be drained before simulation can continue",
-                                     "runtime.pendingEvents");
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::Conflict, "climbing event queue must be drained before simulation can continue", "runtime.pendingEvents", {}, "climbing"));
     if (!pendingEvents_.empty() && tick < pendingEvents_.back().tick)
-        return climbingFailure<void>(eve::DiagnosticCode::Conflict,
-                                     "climbing event tick must not precede an undelivered event",
-                                     "runtime.pendingEvents.tick");
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::Conflict, "climbing event tick must not precede an undelivered event", "runtime.pendingEvents.tick", {}, "climbing"));
     return eve::Result<void>::success();
 }
 
@@ -103,18 +99,15 @@ eve::Result<void> ClimbingRuntime::publishProfile(ClimbingProfile profile, bool 
     auto valid = validateClimbingProfileDefinition(profile);
     if (!valid) return eve::Result<void>::failure(valid.status());
     if (!allowActiveExecution && isActivePhase(phase_))
-        return climbingFailure<void>(eve::DiagnosticCode::Conflict,
-                                     "profile cannot change while an execution is active", "runtime.phase");
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::Conflict, "profile cannot change while an execution is active", "runtime.phase", {}, "climbing"));
     if (definitionGeneration_ == std::numeric_limits<std::uint64_t>::max())
-        return climbingFailure<void>(eve::DiagnosticCode::PreconditionViolation,
-                                     "climbing definition generation is exhausted", "runtime.definitionGeneration");
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation, "climbing definition generation is exhausted", "runtime.definitionGeneration", {}, "climbing"));
     std::sort(profile.actions.begin(), profile.actions.end(),
               [](const auto& lhs, const auto& rhs) { return lhs.id < rhs.id; });
     const auto duplicate = std::adjacent_find(profile.actions.begin(), profile.actions.end(),
                                               [](const auto& lhs, const auto& rhs) { return lhs.id == rhs.id; });
     if (duplicate != profile.actions.end())
-        return climbingFailure<void>(eve::DiagnosticCode::Conflict, "profile contains duplicate action ids",
-                                     "profile.actions");
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::Conflict, "profile contains duplicate action ids", "profile.actions", {}, "climbing"));
     profile_ = std::move(profile);
     validatedAnimationActions_.clear();
     ++definitionGeneration_;
@@ -125,8 +118,7 @@ eve::Result<void> ClimbingRuntime::upsertAction(ClimbingActionDefinition action)
     auto valid = validateClimbingActionDefinition(action);
     if (!valid) return eve::Result<void>::failure(valid.status());
     if (definitionGeneration_ == std::numeric_limits<std::uint64_t>::max())
-        return climbingFailure<void>(eve::DiagnosticCode::PreconditionViolation,
-                                     "climbing definition generation is exhausted", "runtime.definitionGeneration");
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation, "climbing definition generation is exhausted", "runtime.definitionGeneration", {}, "climbing"));
     const std::string actionId = action.id;
     auto              found = std::lower_bound(profile_.actions.begin(), profile_.actions.end(), action.id,
                                                [](const auto& entry, const std::string& id) { return entry.id < id; });
@@ -143,16 +135,12 @@ eve::Result<void> ClimbingRuntime::validateAnimationBinding(std::string_view    
                                                             const animation::AnimClip& clip) {
     const ClimbingActionDefinition* action = findAction(profile_, actionId);
     if (!action)
-        return climbingFailure<void>(eve::DiagnosticCode::NotFound, "animation binding references an unknown action",
-                                     "actionId");
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::NotFound, "animation binding references an unknown action", "actionId", {}, "climbing"));
     if (!action->animation.clipId.empty() && clip.getName() != action->animation.clipId)
-        return climbingFailure<void>(eve::DiagnosticCode::PreconditionViolation,
-                                     "animation clip does not match the action binding", "action.animation.clipId");
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation, "animation clip does not match the action binding", "action.animation.clipId", {}, "climbing"));
     auto validated = clip.validateNotifyContract(action->requiredNotifies);
     if (!validated)
-        return climbingFailure<void>(eve::DiagnosticCode::PreconditionViolation,
-                                     "climbing.animation.notify_missing: " + validated.status().describe(),
-                                     "action.requiredNotifies");
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation, "climbing.animation.notify_missing: " + validated.status().describe(), "action.requiredNotifies", {}, "climbing"));
     validatedAnimationActions_.insert(action->id);
     return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
 }
@@ -181,16 +169,13 @@ eve::Result<void> ClimbingRuntime::probeInto(physics::World3D& world, const Clim
     auto valid      = validateClimbingProfileDefinition(profile_);
     if (!valid) return eve::Result<void>::failure(valid.status());
     if (!world.isValid())
-        return climbingFailure<void>(eve::DiagnosticCode::StaleHandle,
-                                     "physics world is no longer valid", "world");
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle, "physics world is no longer valid", "world", {}, "climbing"));
     if (!isFinite(pose.feet) || !isFinite(pose.forward) || !isFinite(pose.speed) || pose.speed < 0.f ||
         !isFinite(pose.verticalSpeed) || !isFinite(pose.moveIntent) || !isFinite(pose.lookIntent))
-        return climbingFailure<void>(
-            eve::DiagnosticCode::InvalidArgument, "pose values must be finite and speed non-negative", "pose");
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "pose values must be finite and speed non-negative", "pose", {}, "climbing"));
     const Vec3 forward = normalizedHorizontal(pose.forward);
     if (lengthSquared(forward) <= epsilon)
-        return climbingFailure<void>(
-            eve::DiagnosticCode::InvalidArgument, "pose forward must have a horizontal direction", "pose.forward");
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "pose forward must have a horizontal direction", "pose.forward", {}, "climbing"));
 
     ClimbingCandidateSet& candidates = probeScratch_;
     candidates.clear();
@@ -645,11 +630,9 @@ eve::Result<void> ClimbingRuntime::probeInto(physics::World3D& world, const Clim
 
 eve::Result<void> ClimbingRuntime::drop(eve::SimulationTick tick) {
     if (phase_ != ClimbingPhase::Hanging || !execution_)
-        return climbingFailure<void>(eve::DiagnosticCode::PreconditionViolation, "drop requires a hanging execution",
-                                     "runtime.phase");
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation, "drop requires a hanging execution", "runtime.phase", {}, "climbing"));
     if (tick <= execution_->lastTick)
-        return climbingFailure<void>(eve::DiagnosticCode::Conflict,
-                                     "drop tick must be newer than the last execution tick", "tick");
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::Conflict, "drop tick must be newer than the last execution tick", "tick", {}, "climbing"));
     auto eventCapacity = requireEventCapacity(1, tick);
     if (!eventCapacity) return eventCapacity;
     if (execution_->anchorGraph.isValid()) {
@@ -671,19 +654,16 @@ eve::Result<void> ClimbingRuntime::drop(eve::SimulationTick tick) {
 
 eve::Result<void> ClimbingRuntime::climbUp(eve::SimulationTick tick) {
     if (phase_ != ClimbingPhase::Hanging || !execution_)
-        return climbingFailure<void>(eve::DiagnosticCode::PreconditionViolation,
-                                     "climb up requires a hanging execution", "runtime.phase");
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation, "climb up requires a hanging execution", "runtime.phase", {}, "climbing"));
     if (tick <= execution_->lastTick)
-        return climbingFailure<void>(eve::DiagnosticCode::Conflict,
-                                     "climb-up tick must be newer than the last execution tick", "tick");
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::Conflict, "climb-up tick must be newer than the last execution tick", "tick", {}, "climbing"));
     const auto found = std::find_if(profile_.actions.begin(), profile_.actions.end(), [&](const auto& action) {
         return (action.kind == ClimbingActionKind::ClimbUp || action.kind == ClimbingActionKind::Mantle) &&
                execution_->candidate.obstacleHeight + epsilon >= action.minHeight &&
                execution_->candidate.obstacleHeight - epsilon <= action.maxHeight;
     });
     if (found == profile_.actions.end())
-        return climbingFailure<void>(eve::DiagnosticCode::NotFound, "no compatible climb-up action is registered",
-                                     "profile.actions");
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::NotFound, "no compatible climb-up action is registered", "profile.actions", {}, "climbing"));
     if (execution_->anchorGraph.isValid()) {
         auto released = releaseAnchorReservation();
         if (!released && released.error() && released.error()->code() != eve::DiagnosticCode::StaleHandle &&
@@ -714,11 +694,9 @@ eve::Result<void> ClimbingRuntime::climbUp(eve::SimulationTick tick) {
 
 eve::Result<void> ClimbingRuntime::cancel(ClimbingCancelReason reason, eve::SimulationTick tick) {
     if (!isActivePhase(phase_) || !execution_)
-        return climbingFailure<void>(eve::DiagnosticCode::PreconditionViolation, "no climbing execution is active",
-                                     "runtime.phase");
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation, "no climbing execution is active", "runtime.phase", {}, "climbing"));
     if (tick < execution_->lastTick)
-        return climbingFailure<void>(eve::DiagnosticCode::Conflict,
-                                     "cancel tick must not precede the last execution tick", "tick");
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::Conflict, "cancel tick must not precede the last execution tick", "tick", {}, "climbing"));
     const ClimbingActionDefinition& action = execution_->action;
     const float                     t =
         action.duration.nanoseconds() > 0
@@ -726,9 +704,7 @@ eve::Result<void> ClimbingRuntime::cancel(ClimbingCancelReason reason, eve::Simu
             : 0.f;
     if (phase_ != ClimbingPhase::Hanging && phase_ != ClimbingPhase::Dropping &&
         (t < action.cancelWindowStart || t > action.cancelWindowEnd))
-        return climbingFailure<void>(eve::DiagnosticCode::PreconditionViolation,
-                                     "the active definition does not allow cancellation in this window",
-                                     "action.cancelWindow");
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation, "the active definition does not allow cancellation in this window", "action.cancelWindow", {}, "climbing"));
     auto eventCapacity = requireEventCapacity(1, tick);
     if (!eventCapacity) return eventCapacity;
     if (execution_->anchorGraph.isValid()) {

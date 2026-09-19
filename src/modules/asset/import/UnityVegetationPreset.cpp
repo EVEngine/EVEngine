@@ -36,8 +36,7 @@ struct Parser {
 
     Result<Value::Array> block(bool nested) {
         if (++depth > 64)
-            return unity_detail::failure<Value::Array>(DiagnosticCode::InvalidArgument,
-                                                       "TVE preset condition nesting exceeds budget", source.path);
+            return Result<Value::Array>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "TVE preset condition nesting exceeds budget", source.path, {}, "asset.import.unity"));
         Value::Array result;
         while (at < lines.size()) {
             auto line = trim(lines[at++]);
@@ -45,20 +44,17 @@ struct Parser {
             if (line == "}") {
                 --depth;
                 if (!nested)
-                    return unity_detail::failure<Value::Array>(DiagnosticCode::ParseError,
-                                                               "unexpected TVE preset closing brace", source.path);
+                    return Result<Value::Array>::failure(Diagnostic::error(DiagnosticCode::ParseError, "unexpected TVE preset closing brace", source.path, {}, "asset.import.unity"));
                 return Result<Value::Array>::success(std::move(result));
             }
             if (++statements > limits.maximumAssets * 64ull)
-                return unity_detail::failure<Value::Array>(DiagnosticCode::InvalidArgument,
-                                                           "TVE preset statement count exceeds budget", source.path);
+                return Result<Value::Array>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "TVE preset statement count exceeds budget", source.path, {}, "asset.import.unity"));
             if (line.starts_with("if ") || line.starts_with("f ")) {
                 const bool recoveredTypo = line.starts_with("f ");
                 if (recoveredTypo) ++recoveredConditionTypos;
                 auto tokens = words(trim(line.substr(recoveredTypo ? 2 : 3)));
                 if (tokens.empty() || at >= lines.size() || trim(lines[at++]) != "{")
-                    return unity_detail::failure<Value::Array>(
-                        DiagnosticCode::ParseError, "TVE preset condition requires a following block", source.path);
+                    return Result<Value::Array>::failure(Diagnostic::error(DiagnosticCode::ParseError, "TVE preset condition requires a following block", source.path, {}, "asset.import.unity"));
                 auto body = block(true);
                 if (!body) return body;
                 auto       predicate = tokens.front().asString();
@@ -73,8 +69,7 @@ struct Parser {
                 continue;
             }
             if (line == "{")
-                return unity_detail::failure<Value::Array>(DiagnosticCode::ParseError,
-                                                           "unexpected TVE preset opening brace", source.path);
+                return Result<Value::Array>::failure(Diagnostic::error(DiagnosticCode::ParseError, "unexpected TVE preset opening brace", source.path, {}, "asset.import.unity"));
             const auto split          = line.find_first_of(" \t");
             const auto domain         = line.substr(0, split);
             auto       remainder      = split == std::string_view::npos ? std::string_view{} : trim(line.substr(split));
@@ -89,8 +84,7 @@ struct Parser {
         }
         --depth;
         if (nested)
-            return unity_detail::failure<Value::Array>(DiagnosticCode::ParseError,
-                                                       "unterminated TVE preset condition block", source.path);
+            return Result<Value::Array>::failure(Diagnostic::error(DiagnosticCode::ParseError, "unterminated TVE preset condition block", source.path, {}, "asset.import.unity"));
         return Result<Value::Array>::success(std::move(result));
     }
 };
@@ -102,8 +96,7 @@ Result<PreparedAssetImport> prepareUnityVegetationPreset(const UnityProjectImpor
     const auto&            bytes = request.files.at(source.path);
     const std::string_view raw(reinterpret_cast<const char*>(bytes.data()), bytes.size());
     if (bytes.empty() || bytes.size() > request.limits.maximumSourceBytes || !isValidUtf8(raw, Utf8NullPolicy::Reject))
-        return unity_detail::failure<PreparedAssetImport>(DiagnosticCode::ParseError,
-                                                          "TVE preset must be bounded UTF-8 text", source.path);
+        return Result<PreparedAssetImport>::failure(Diagnostic::error(DiagnosticCode::ParseError, "TVE preset must be bounded UTF-8 text", source.path, {}, "asset.import.unity"));
     std::string_view text = raw;
     if (text.starts_with("\xef\xbb\xbf")) text.remove_prefix(3);
     Parser parser{source, request.limits};
@@ -113,8 +106,7 @@ Result<PreparedAssetImport> prepareUnityVegetationPreset(const UnityProjectImpor
         auto line = text.substr(begin, end - begin);
         if (!line.empty() && line.back() == '\r') line.remove_suffix(1);
         if (line.size() > request.limits.maximumStringBytes)
-            return unity_detail::failure<PreparedAssetImport>(DiagnosticCode::InvalidArgument,
-                                                              "TVE preset line exceeds string budget", source.path);
+            return Result<PreparedAssetImport>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "TVE preset line exceeds string budget", source.path, {}, "asset.import.unity"));
         parser.lines.push_back(line);
         if (end == text.size()) break;
         begin = end + 1;

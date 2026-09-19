@@ -5,19 +5,13 @@
 namespace eve::climbing {
 namespace {
 
-template <class T>
-eve::Result<T> failure(eve::DiagnosticCode code, std::string message, std::string path) {
-    return eve::Result<T>::failure(
-        eve::Diagnostic::error(code, std::move(message), std::move(path), {}, "climbing.ecs"));
-}
-
 }  // namespace
 
 eve::Result<void> ClimbingCandidateBuffer::replace(std::span<const ClimbingCandidate> candidates,
                                                     eve::SimulationTick tick) {
     if (candidates.size() > Capacity)
-        return failure<void>(eve::DiagnosticCode::PreconditionViolation,
-                             "climbing candidate buffer capacity exceeded", "candidates");
+        return eve::Result<void>::failure(
+        eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation, "climbing candidate buffer capacity exceeded", "candidates", {}, "climbing.ecs"));
     ClimbingCandidateSet replacement;
     for (const ClimbingCandidate& candidate : candidates) replacement.consider(candidate);
     replacement.sortAndLimit(Capacity);
@@ -44,8 +38,8 @@ eve::Result<ClimbingState> ClimbingState::create() {
 
 eve::Result<void> ClimbingState::releaseRuntime() {
     if (!runtime.isValid())
-        return failure<void>(eve::DiagnosticCode::InvalidArgument,
-                             "climbing state has no runtime to release", "state.runtime");
+        return eve::Result<void>::failure(
+        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "climbing state has no runtime to release", "state.runtime", {}, "climbing.ecs"));
     auto released = Climbing::release(runtime);
     if (!released) return eve::Result<void>::failure(released.status());
     runtime = {};
@@ -57,8 +51,8 @@ eve::Result<void> ClimbingState::releaseRuntime() {
 eve::Result<void> ClimbingEventBatch::replace(std::span<const ClimbingEvent> events,
                                                eve::SimulationTick tick) {
     if (events.size() > Capacity)
-        return failure<void>(eve::DiagnosticCode::PreconditionViolation,
-                             "climbing event batch capacity exceeded", "events");
+        return eve::Result<void>::failure(
+        eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation, "climbing event batch capacity exceeded", "events", {}, "climbing.ecs"));
     std::array<ClimbingEvent, Capacity> replacement{};
     std::copy(events.begin(), events.end(), replacement.begin());
     values_ = std::move(replacement);

@@ -12,12 +12,6 @@
 namespace eve::climbing {
 namespace {
 
-template <class T>
-eve::Result<T> failure(eve::DiagnosticCode code, std::string message, std::string path = {}) {
-    return eve::Result<T>::failure(
-        eve::Diagnostic::error(code, std::move(message), std::move(path), {}, "climbing.prediction"));
-}
-
 constexpr std::uint64_t fnvOffset = 14695981039346656037ull;
 constexpr std::uint64_t fnvPrime = 1099511628211ull;
 
@@ -181,13 +175,11 @@ eve::Result<void> validateSnapshotEnvelope(const eve::Value& value) {
     if (!object || !readString(*object, "schemaId", schemaId) ||
         schemaId != ClimbingRuntime::SnapshotSchemaId ||
         !readInt64(*object, "schemaVersion", schemaVersion) || schemaVersion < 0)
-        return failure<void>(eve::DiagnosticCode::ParseError,
-                             "authoritative snapshot has an invalid climbing runtime envelope",
-                             "authoritativeSnapshot");
+        return eve::Result<void>::failure(
+        eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "authoritative snapshot has an invalid climbing runtime envelope", "authoritativeSnapshot", {}, "climbing.prediction"));
     if (schemaVersion > ClimbingRuntime::SnapshotSchemaVersion)
-        return failure<void>(eve::DiagnosticCode::UnknownVersion,
-                             "authoritative snapshot version is newer than this runtime",
-                             "authoritativeSnapshot.schemaVersion");
+        return eve::Result<void>::failure(
+        eve::Diagnostic::error(eve::DiagnosticCode::UnknownVersion, "authoritative snapshot version is newer than this runtime", "authoritativeSnapshot.schemaVersion", {}, "climbing.prediction"));
     return eve::Result<void>::success();
 }
 
@@ -203,19 +195,19 @@ bool consistentDecision(const ClimbingPredictionDecision& decision) {
 eve::Result<eve::Value::Object> readEnvelope(const eve::Value& value, std::string_view schemaId) {
     const auto* object = value.getIf<eve::Value::Object>();
     if (!object)
-        return failure<eve::Value::Object>(eve::DiagnosticCode::ParseError,
-                                           "prediction payload must be an object");
+        return eve::Result<eve::Value::Object>::failure(
+        eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "prediction payload must be an object", {}, {}, "climbing.prediction"));
     std::string actualSchema;
     std::int64_t version = 0;
     if (!readString(*object, "schemaId", actualSchema) || actualSchema != schemaId)
-        return failure<eve::Value::Object>(eve::DiagnosticCode::ParseError,
-                                           "prediction schemaId is missing or mismatched", "schemaId");
+        return eve::Result<eve::Value::Object>::failure(
+        eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "prediction schemaId is missing or mismatched", "schemaId", {}, "climbing.prediction"));
     if (!readInt64(*object, "schemaVersion", version))
-        return failure<eve::Value::Object>(eve::DiagnosticCode::ParseError,
-                                           "prediction schemaVersion must be an integer", "schemaVersion");
+        return eve::Result<eve::Value::Object>::failure(
+        eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "prediction schemaVersion must be an integer", "schemaVersion", {}, "climbing.prediction"));
     if (version != 1)
-        return failure<eve::Value::Object>(eve::DiagnosticCode::UnknownVersion,
-                                           "prediction schema version is unsupported", "schemaVersion");
+        return eve::Result<eve::Value::Object>::failure(
+        eve::Diagnostic::error(eve::DiagnosticCode::UnknownVersion, "prediction schema version is unsupported", "schemaVersion", {}, "climbing.prediction"));
     return eve::Result<eve::Value::Object>::success(*object);
 }
 
@@ -257,8 +249,8 @@ ClimbingCandidateKey makeClimbingCandidateKey(const ClimbingCandidate& candidate
 
 eve::Result<eve::Value> encodeClimbingPredictionRequest(const ClimbingPredictionRequest& request) {
     if (request.sequence.isZero() || !validKey(request.candidate))
-        return failure<eve::Value>(eve::DiagnosticCode::InvalidArgument,
-                                   "prediction request requires a non-zero sequence and candidate key", "request");
+        return eve::Result<eve::Value>::failure(
+        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "prediction request requires a non-zero sequence and candidate key", "request", {}, "climbing.prediction"));
     eve::Value::Object object = request.extensionMetadata;
     object["schemaId"] = eve::Value(std::string(ClimbingPredictionRequest::SchemaId));
     object["schemaVersion"] = eve::Value(ClimbingPredictionRequest::SchemaVersion);
@@ -278,8 +270,8 @@ eve::Result<ClimbingPredictionRequest> decodeClimbingPredictionRequest(const eve
     if (!readUint64String(root.value(), "sequence", sequence) || sequence == 0 ||
         !readUint64String(root.value(), "clientTick", clientTick) || !candidate ||
         !decodeKey(*candidate, request.candidate) || !validKey(request.candidate))
-        return failure<ClimbingPredictionRequest>(eve::DiagnosticCode::ParseError,
-                                                  "prediction request has missing or invalid fields", "request");
+        return eve::Result<ClimbingPredictionRequest>::failure(
+        eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "prediction request has missing or invalid fields", "request", {}, "climbing.prediction"));
     request.sequence = ClimbingPredictionSequence(sequence);
     request.clientTick = eve::SimulationTick(clientTick);
     request.extensionMetadata = unknownFields(root.value(),
@@ -289,8 +281,8 @@ eve::Result<ClimbingPredictionRequest> decodeClimbingPredictionRequest(const eve
 
 eve::Result<eve::Value> encodeClimbingPredictionDecision(const ClimbingPredictionDecision& decision) {
     if (!consistentDecision(decision))
-        return failure<eve::Value>(eve::DiagnosticCode::InvalidArgument,
-                                   "prediction decision fields are inconsistent", "decision");
+        return eve::Result<eve::Value>::failure(
+        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "prediction decision fields are inconsistent", "decision", {}, "climbing.prediction"));
     auto snapshotEnvelope = validateSnapshotEnvelope(decision.authoritativeSnapshot);
     if (!snapshotEnvelope) return eve::Result<eve::Value>::failure(snapshotEnvelope.status());
     eve::Value::Object object = decision.extensionMetadata;
@@ -324,14 +316,14 @@ eve::Result<ClimbingPredictionDecision> decodeClimbingPredictionDecision(const e
         !readDisposition(disposition, decision.disposition) || !readString(root.value(), "reason", reason) ||
         !readReason(reason, decision.reason) || !key || !decodeKey(*key, decision.authoritativeCandidate) ||
         !snapshot)
-        return failure<ClimbingPredictionDecision>(eve::DiagnosticCode::ParseError,
-                                                    "prediction decision has missing or invalid fields", "decision");
+        return eve::Result<ClimbingPredictionDecision>::failure(
+        eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "prediction decision has missing or invalid fields", "decision", {}, "climbing.prediction"));
     decision.sequence = ClimbingPredictionSequence(sequence);
     decision.clientTick = eve::SimulationTick(clientTick);
     decision.serverTick = eve::SimulationTick(serverTick);
     if (!consistentDecision(decision))
-        return failure<ClimbingPredictionDecision>(eve::DiagnosticCode::ParseError,
-                                                    "prediction decision fields are inconsistent", "decision");
+        return eve::Result<ClimbingPredictionDecision>::failure(
+        eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "prediction decision fields are inconsistent", "decision", {}, "climbing.prediction"));
     decision.authoritativeSnapshot = *snapshot;
     auto snapshotEnvelope = validateSnapshotEnvelope(decision.authoritativeSnapshot);
     if (!snapshotEnvelope)

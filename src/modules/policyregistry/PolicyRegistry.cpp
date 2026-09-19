@@ -14,11 +14,6 @@
 namespace eve::policyregistry {
 namespace {
 
-template <class T>
-eve::Result<T> failure(eve::DiagnosticCode code, std::string message) {
-    return eve::Result<T>::failure(eve::Diagnostic::error(code, std::move(message)));
-}
-
 const eve::Value* field(const eve::Value::Object& object, std::string_view name) {
     const auto it = object.find(std::string(name));
     return it == object.end() ? nullptr : &it->second;
@@ -89,21 +84,19 @@ eve::Result<PolicyDescriptor> makeDescriptor(const std::string& domain, const st
                                              int priority, bool enabled, const std::string& kindName,
                                              const std::string& schemaId, const std::string& metadataJson) {
     if (domain.empty() || name.empty())
-        return failure<PolicyDescriptor>(eve::DiagnosticCode::InvalidArgument,
-                                         "policy domain and name must not be empty");
+        return eve::Result<PolicyDescriptor>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "policy domain and name must not be empty"));
     if (version <= 0)
-        return failure<PolicyDescriptor>(eve::DiagnosticCode::InvalidArgument,
-                                         "policy schema version must be positive");
+        return eve::Result<PolicyDescriptor>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "policy schema version must be positive"));
 
     ImplementationKind kind = ImplementationKind::Builtin;
     if (!parseImplementationKind(kindName, kind))
-        return failure<PolicyDescriptor>(eve::DiagnosticCode::InvalidArgument, "invalid implementation kind");
+        return eve::Result<PolicyDescriptor>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "invalid implementation kind"));
 
     auto metadata = eve::Value::fromJson(metadataJson);
     if (!metadata.ok()) return eve::Result<PolicyDescriptor>::failure(metadata.status());
     auto metadataValue = std::move(metadata).takeValue();
     if (!metadataValue.isObject())
-        return failure<PolicyDescriptor>(eve::DiagnosticCode::InvalidArgument, "policy metadata must be a JSON object");
+        return eve::Result<PolicyDescriptor>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "policy metadata must be a JSON object"));
     auto canonical = metadataValue.toJson();
     if (!canonical.ok()) return eve::Result<PolicyDescriptor>::failure(canonical.status());
 
@@ -151,12 +144,6 @@ eve::Value policyDescriptorValue(const PolicyDescriptor& descriptor) {
         {"metadataJson", eve::Value(descriptor.metadataJson)},
         {"generation", eve::Value(static_cast<std::int64_t>(descriptor.generation.value()))},
     });
-}
-
-template <class T>
-eve::Result<T> registryFailure(eve::DiagnosticCode code, std::string message, std::string path = {}) {
-    return eve::Result<T>::failure(
-        eve::Diagnostic::error(code, std::move(message), std::move(path), {}, "policyregistry"));
 }
 
 }  // namespace
@@ -459,7 +446,7 @@ eve::Result<void> PolicyRegistry::restoreJson(const std::string& json) {
     const eve::Value value = std::move(parsed).takeValue();
     const auto*      root  = value.getIf<eve::Value::Object>();
     if (!root) {
-        return failure<void>(eve::DiagnosticCode::ParseError, "policy snapshot must be an object");
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "policy snapshot must be an object"));
     }
     const auto*   snapshotVersion   = field(*root, "version");
     const auto*   versionNumber     = snapshotVersion ? snapshotVersion->getIf<std::int64_t>() : nullptr;
@@ -473,7 +460,7 @@ eve::Result<void> PolicyRegistry::restoreJson(const std::string& json) {
     std::uint64_t nextSequence      = 0;
     if (!versionNumber || *versionNumber != 1 || !descriptorArray || !generationArray || !eventArray ||
         !nextSequenceValue || !readUint64String(*nextSequenceValue, nextSequence) || nextSequence == 0) {
-        return failure<void>(eve::DiagnosticCode::ParseError, "invalid policy snapshot fields");
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "invalid policy snapshot fields"));
     }
 
     Storage::State candidate;
@@ -487,8 +474,7 @@ eve::Result<void> PolicyRegistry::restoreJson(const std::string& json) {
             name.empty() || !generationField || !readUint64String(*generationField, generation) || generation == 0 ||
             !candidate.entries.emplace(Key{domain, name}, Storage::Entry{eve::Generation(generation), std::nullopt})
                  .second) {
-            return failure<void>(eve::DiagnosticCode::ParseError,
-                                 "invalid policy generation at index " + std::to_string(index));
+            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "invalid policy generation at index " + std::to_string(index)));
         }
     }
 
@@ -514,15 +500,13 @@ eve::Result<void> PolicyRegistry::restoreJson(const std::string& json) {
             !readUint64String(*generationField, generation) || generation == 0 ||
             !readString(*item, "kind", kindName) || !parseImplementationKind(kindName, kind) || !metadata ||
             !metadata->isObject() || !readString(*item, "schemaId", schemaId)) {
-            return failure<void>(eve::DiagnosticCode::ParseError,
-                                 "invalid policy descriptor at index " + std::to_string(index));
+            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "invalid policy descriptor at index " + std::to_string(index)));
         }
         enabled    = *enabledField->getIf<bool>();
         auto entry = candidate.entries.find(Key{domain, name});
         if (entry == candidate.entries.end() || entry->second.generation != eve::Generation(generation) ||
             entry->second.value.has_value()) {
-            return failure<void>(eve::DiagnosticCode::InvariantViolation,
-                                 "inconsistent policy generation at index " + std::to_string(index));
+            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvariantViolation, "inconsistent policy generation at index " + std::to_string(index)));
         }
         auto metadataJson = metadata->toJson();
         if (!metadataJson.ok()) {
@@ -562,12 +546,10 @@ eve::Result<void> PolicyRegistry::restoreJson(const std::string& json) {
             (!previousSequence.isZero() && eve::EventSequence(sequence) <= previousSequence) || !generationField ||
             !readUint64String(*generationField, generation) || generation == 0 || !enabledField ||
             !enabledField->isBool()) {
-            return failure<void>(eve::DiagnosticCode::ParseError,
-                                 "invalid policy event at index " + std::to_string(index));
+            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "invalid policy event at index " + std::to_string(index)));
         }
         if (versionField && !readPositiveSchemaVersion(*versionField, version)) {
-            return failure<void>(eve::DiagnosticCode::ParseError,
-                                 "invalid policy event version at index " + std::to_string(index));
+            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "invalid policy event version at index " + std::to_string(index)));
         }
         Storage::Event event;
         event.sequence     = eve::EventSequence(sequence);
@@ -584,8 +566,7 @@ eve::Result<void> PolicyRegistry::restoreJson(const std::string& json) {
         previousSequence = eve::EventSequence(sequence);
     }
     if (!previousSequence.isZero() && eve::EventSequence(nextSequence) <= previousSequence) {
-        return failure<void>(eve::DiagnosticCode::InvariantViolation,
-                             "next event sequence must exceed retained events");
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvariantViolation, "next event sequence must exceed retained events"));
     }
     candidate.nextEventSequence = eve::EventSequence(nextSequence);
 
@@ -609,11 +590,9 @@ eve::Result<eve::SnapshotEnvelope> PolicyRegistry::snapshot(const eve::SnapshotH
 eve::Result<void> PolicyRegistry::restoreSnapshot(const eve::SnapshotEnvelope&     source,
                                                   const eve::SnapshotHashProvider& hashProvider) {
     if (source.type != "policyregistry.registry" || source.schema != policySchema())
-        return failure<void>(eve::DiagnosticCode::InvalidArgument,
-                             "snapshot does not belong to policyregistry::PolicyRegistry");
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "snapshot does not belong to policyregistry::PolicyRegistry"));
     if (!instanceId_.isNil() && source.instanceId != instanceId_)
-        return failure<void>(eve::DiagnosticCode::Conflict,
-                             "snapshot instanceId does not match policyregistry::PolicyRegistry");
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::Conflict, "snapshot instanceId does not match policyregistry::PolicyRegistry"));
     auto migrated = policyMigrations().migrate(source, eve::SchemaVersion(1), hashProvider);
     if (!migrated.ok()) return eve::Result<void>::failure(migrated.status());
     auto payload = migrated.value().payload.toJson();
@@ -697,8 +676,8 @@ void PolicyRegistryModule::expose(ssq::Table& table) {
         if (!value)
             return eve::script::projectResult(
                 vm,
-                registryFailure<PolicyHandle>(eve::DiagnosticCode::InvalidArgument, "policy registry must not be null",
-                                              "registry"),
+                eve::Result<PolicyHandle>::failure(
+        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "policy registry must not be null", "registry", {}, "policyregistry")),
                 [](PolicyHandle&& handle) { return policyHandleValue(handle); });
         return eve::script::projectResult(
             vm, value->insert(domain, policyName, version, priority, enabled, kind, schemaId, metadataJson),
@@ -710,8 +689,8 @@ void PolicyRegistryModule::expose(ssq::Table& table) {
         if (!value)
             return eve::script::projectResult(
                 vm,
-                registryFailure<PolicyHandle>(eve::DiagnosticCode::InvalidArgument, "policy registry must not be null",
-                                              "registry"),
+                eve::Result<PolicyHandle>::failure(
+        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "policy registry must not be null", "registry", {}, "policyregistry")),
                 [](PolicyHandle&& handle) { return policyHandleValue(handle); });
         return eve::script::projectResult(
             vm, value->replace(domain, policyName, version, priority, enabled, kind, schemaId, metadataJson),
@@ -721,8 +700,8 @@ void PolicyRegistryModule::expose(ssq::Table& table) {
         if (!value)
             return eve::script::projectResult(
                 vm,
-                registryFailure<PolicyHandle>(eve::DiagnosticCode::InvalidArgument, "policy registry must not be null",
-                                              "registry"),
+                eve::Result<PolicyHandle>::failure(
+        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "policy registry must not be null", "registry", {}, "policyregistry")),
                 [](PolicyHandle&& handle) { return policyHandleValue(handle); });
         return eve::script::projectResult(vm, value->remove(domain, policyName),
                                           [](PolicyHandle&& handle) { return policyHandleValue(handle); });
@@ -732,8 +711,8 @@ void PolicyRegistryModule::expose(ssq::Table& table) {
             if (!value)
                 return eve::script::projectResult(
                     vm,
-                    registryFailure<PolicyHandle>(eve::DiagnosticCode::InvalidArgument,
-                                                  "policy registry must not be null", "registry"),
+                    eve::Result<PolicyHandle>::failure(
+        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "policy registry must not be null", "registry", {}, "policyregistry")),
                     [](PolicyHandle&& handle) { return policyHandleValue(handle); });
             return eve::script::projectResult(vm, value->enable(domain, policyName, enabled),
                                               [](PolicyHandle&& handle) { return policyHandleValue(handle); });
@@ -742,8 +721,8 @@ void PolicyRegistryModule::expose(ssq::Table& table) {
         if (!value)
             return eve::script::projectResult(
                 vm,
-                registryFailure<std::reference_wrapper<const PolicyDescriptor>>(
-                    eve::DiagnosticCode::InvalidArgument, "policy registry must not be null", "registry"),
+                eve::Result<std::reference_wrapper<const PolicyDescriptor>>::failure(
+        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "policy registry must not be null", "registry", {}, "policyregistry")),
                 [](std::reference_wrapper<const PolicyDescriptor>&& descriptor) {
                     return policyDescriptorValue(descriptor.get());
                 });
@@ -758,14 +737,14 @@ void PolicyRegistryModule::expose(ssq::Table& table) {
         if (!value)
             return eve::script::projectResult(
                 vm,
-                registryFailure<DescriptorRef>(eve::DiagnosticCode::InvalidArgument, "policy registry must not be null",
-                                               "registry"),
+                eve::Result<DescriptorRef>::failure(
+        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "policy registry must not be null", "registry", {}, "policyregistry")),
                 [](DescriptorRef&& descriptor) { return policyDescriptorValue(descriptor.get()); });
         if (generation <= 0)
             return eve::script::projectResult(
                 vm,
-                registryFailure<DescriptorRef>(eve::DiagnosticCode::InvalidArgument,
-                                               "policy generation must be positive", "generation"),
+                eve::Result<DescriptorRef>::failure(
+        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "policy generation must be positive", "generation", {}, "policyregistry")),
                 [](DescriptorRef&& descriptor) { return policyDescriptorValue(descriptor.get()); });
         return eve::script::projectResult(
             vm,
@@ -777,8 +756,8 @@ void PolicyRegistryModule::expose(ssq::Table& table) {
         if (!value)
             return eve::script::projectResult(
                 vm,
-                registryFailure<PolicyHandle>(eve::DiagnosticCode::InvalidArgument, "policy registry must not be null",
-                                              "registry"),
+                eve::Result<PolicyHandle>::failure(
+        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "policy registry must not be null", "registry", {}, "policyregistry")),
                 [](PolicyHandle&& handle) { return policyHandleValue(handle); });
         return eve::script::projectResult(vm, value->handle(domain, policyName),
                                           [](PolicyHandle&& handle) { return policyHandleValue(handle); });
@@ -803,8 +782,8 @@ void PolicyRegistryModule::expose(ssq::Table& table) {
     registry.addFunc("restoreJson", [vm](PolicyRegistry* value, const std::string& json) {
         if (!value)
             return eve::script::projectResult(
-                vm, registryFailure<void>(eve::DiagnosticCode::InvalidArgument, "policy registry must not be null",
-                                          "registry"));
+                vm, eve::Result<void>::failure(
+        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "policy registry must not be null", "registry", {}, "policyregistry")));
         return eve::script::projectResult(vm, value->restoreJson(json));
     });
     registry.addFunc("generationOf", [vm](PolicyRegistry* value, const std::string& domain,
@@ -812,8 +791,8 @@ void PolicyRegistryModule::expose(ssq::Table& table) {
         if (!value)
             return eve::script::projectResult(
                 vm,
-                registryFailure<eve::Generation>(eve::DiagnosticCode::InvalidArgument,
-                                                 "policy registry must not be null", "registry"),
+                eve::Result<eve::Generation>::failure(
+        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "policy registry must not be null", "registry", {}, "policyregistry")),
                 [](eve::Generation generation) { return eve::Value(static_cast<std::int64_t>(generation.value())); });
         return eve::script::projectResult(vm, value->generationOf(domain, policyName), [](eve::Generation generation) {
             return eve::Value(static_cast<std::int64_t>(generation.value()));

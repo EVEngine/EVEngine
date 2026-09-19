@@ -62,7 +62,7 @@ Result<double> number(std::string_view body, std::string_view name, double fallb
         if (end != token.size() || !std::isfinite(value)) throw std::invalid_argument("number");
         return Result<double>::success(value);
     } catch (...) {
-        return detail::failure<double>(DiagnosticCode::ParseError, "TVE scene number is invalid", std::string(name));
+        return Result<double>::failure(Diagnostic::error(DiagnosticCode::ParseError, "TVE scene number is invalid", std::string(name), {}, "asset.import"));
     }
 }
 
@@ -92,7 +92,7 @@ Result<Value> color(std::string_view body, std::string_view name, std::array<dou
             if (end != token.size() || !std::isfinite(value)) throw std::invalid_argument("color");
             result.emplace_back(value);
         } catch (...) {
-            return detail::failure<Value>(DiagnosticCode::ParseError, "TVE scene color is invalid", std::string(name));
+            return Result<Value>::failure(Diagnostic::error(DiagnosticCode::ParseError, "TVE scene color is invalid", std::string(name), {}, "asset.import"));
         }
     }
     return Result<Value>::success(Value(std::move(result)));
@@ -123,7 +123,7 @@ Result<Value> details(std::string_view body) {
                interactionOk = bool(interaction);
     if (!layersOk || !globalOk || !colorMaskOk || !overlayMaskOk || !perspectiveOk || !highlightOk || !bendingOk ||
         !flutterOk || !alphaOk || !interactionOk)
-        return detail::failure<Value>(DiagnosticCode::ParseError, "TVE Global Details is malformed");
+        return Result<Value>::failure(Diagnostic::error(DiagnosticCode::ParseError, "TVE Global Details is malformed", {}, {}, "asset.import"));
     auto highlightValue = std::move(highlight).takeValue();
     highlightValue.getIf<Value::Array>()->pop_back();
     return Result<Value>::success(Value::object({
@@ -146,7 +146,7 @@ Result<Value> control(std::string_view body) {
                                 {"defaultConformHeight", 0}});
     const bool tintOk = bool(tint), overlayOk = bool(overlay), valuesOk = bool(values);
     if (!tintOk || !overlayOk || !valuesOk)
-        return detail::failure<Value>(DiagnosticCode::ParseError, "TVE Global Control is malformed");
+        return Result<Value>::failure(Diagnostic::error(DiagnosticCode::ParseError, "TVE Global Control is malformed", {}, {}, "asset.import"));
     return Result<Value>::success(Value::object({
         {"values", std::move(values).takeValue()}, {"globalColor", std::move(tint).takeValue()},
         {"overlayColor", std::move(overlay).takeValue()}, {"overlayAlbedoGuid", guid(body, "overlayAlbedo")},
@@ -280,8 +280,7 @@ Result<std::array<double, 4>> normalized(std::array<double, 4> value) {
     const double length = std::sqrt(value[0] * value[0] + value[1] * value[1] + value[2] * value[2] +
                                     value[3] * value[3]);
     if (!std::isfinite(length) || length <= 1e-12)
-        return detail::failure<std::array<double, 4>>(DiagnosticCode::ParseError,
-                                                      "TVE element Transform rotation is invalid");
+        return Result<std::array<double, 4>>::failure(Diagnostic::error(DiagnosticCode::ParseError, "TVE element Transform rotation is invalid", {}, {}, "asset.import"));
     for (auto& component : value) component /= length;
     return Result<std::array<double, 4>>::success(value);
 }
@@ -298,15 +297,14 @@ Result<WorldTransform> worldTransform(const std::map<std::int64_t, SceneTransfor
     auto found = std::find_if(sceneTransforms.begin(), sceneTransforms.end(),
                               [&](const auto& entry) { return entry.second.gameObject == gameObject; });
     if (found == sceneTransforms.end())
-        return detail::failure<WorldTransform>(DiagnosticCode::NotFound, "TVE element Transform is missing");
+        return Result<WorldTransform>::failure(Diagnostic::error(DiagnosticCode::NotFound, "TVE element Transform is missing", {}, {}, "asset.import"));
     std::vector<const SceneTransform*> chain{&found->second};
     std::set<std::int64_t> visited{found->first};
     auto parent = found->second.parent;
     while (parent != 0) {
         const auto ancestor = sceneTransforms.find(parent);
         if (ancestor == sceneTransforms.end() || !visited.emplace(parent).second)
-            return detail::failure<WorldTransform>(DiagnosticCode::ParseError,
-                                                   "TVE element Transform hierarchy is invalid");
+            return Result<WorldTransform>::failure(Diagnostic::error(DiagnosticCode::ParseError, "TVE element Transform hierarchy is invalid", {}, {}, "asset.import"));
         chain.push_back(&ancestor->second);
         parent = ancestor->second.parent;
     }
@@ -371,19 +369,17 @@ Result<Value> materialProperties(std::string_view body) {
         const auto block = body.substr(cursor, next == std::string_view::npos ? body.size() - cursor : next - cursor);
         std::cmatch name;
         if (!std::regex_search(block.data(), block.data() + block.size(), name, namePattern))
-            return detail::failure<Value>(DiagnosticCode::ParseError, "TVE element property name is malformed");
+            return Result<Value>::failure(Diagnostic::error(DiagnosticCode::ParseError, "TVE element property name is malformed", {}, {}, "asset.import"));
         auto type = number(block, "  - type", -1), value = number(block, "    value", 0);
         auto vector = color(block, "    vector", {0, 0, 0, 0});
         if (!type || !value || !vector || std::floor(type.value()) != type.value() || type.value() < 0 ||
             type.value() > 2)
-            return detail::failure<Value>(DiagnosticCode::ParseError, "TVE element property value is malformed",
-                                          name[1].str());
+            return Result<Value>::failure(Diagnostic::error(DiagnosticCode::ParseError, "TVE element property value is malformed", name[1].str(), {}, "asset.import"));
         output.push_back(Value::object({{"name", name[1].str()}, {"type", std::int64_t(type.value())},
                                         {"textureGuid", guid(block, "    texture")},
                                         {"vector", std::move(vector).takeValue()}, {"value", value.value()}}));
         if (output.size() > 256)
-            return detail::failure<Value>(DiagnosticCode::InvalidArgument,
-                                          "TVE element property count exceeds 256");
+            return Result<Value>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "TVE element property count exceeds 256", {}, {}, "asset.import"));
         cursor = next == std::string_view::npos ? body.size() : next + 1;
     }
     return Result<Value>::success(Value(std::move(output)));
@@ -489,8 +485,7 @@ Result<Value> elements(std::string_view source, std::vector<ImportFinding>& find
         } else {
             const auto legacyLayer = materialNumber(component.body, "_ElementLayer", 0);
             if (legacyLayer < 0 || legacyLayer > 8 || std::floor(legacyLayer) != legacyLayer)
-                return detail::failure<Value>(DiagnosticCode::InvalidArgument,
-                                              "TVE legacy element layer is outside 0..8", std::string(path));
+                return Result<Value>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "TVE legacy element layer is outside 0..8", std::string(path), {}, "asset.import"));
             layerMask = double(std::uint16_t(1u << std::uint32_t(legacyLayer)));
         }
         const auto seasonal = materialNumber(component.body, "_ElementMode", 0) >= .5;
@@ -568,30 +563,27 @@ Result<Value> motionDirection(std::string_view source, std::string_view body) {
     auto found = std::find_if(sceneTransforms.begin(), sceneTransforms.end(),
                               [&](const auto& entry) { return entry.second.gameObject == gameObject; });
     if (found == sceneTransforms.end())
-        return detail::failure<Value>(DiagnosticCode::NotFound, "TVE motion direction Transform is missing",
-                                      "mainDirection");
+        return Result<Value>::failure(Diagnostic::error(DiagnosticCode::NotFound, "TVE motion direction Transform is missing", "mainDirection", {}, "asset.import"));
     auto rotation = found->second.rotation;
     std::set<std::int64_t> visited{found->first};
     auto parent = found->second.parent;
     while (parent != 0) {
         const auto ancestor = sceneTransforms.find(parent);
         if (ancestor == sceneTransforms.end() || !visited.emplace(parent).second)
-            return detail::failure<Value>(DiagnosticCode::ParseError,
-                                          "TVE motion direction Transform hierarchy is invalid", "mainDirection");
+            return Result<Value>::failure(Diagnostic::error(DiagnosticCode::ParseError, "TVE motion direction Transform hierarchy is invalid", "mainDirection", {}, "asset.import"));
         rotation = multiply(ancestor->second.rotation, rotation);
         parent = ancestor->second.parent;
     }
     const double length = std::sqrt(rotation[0] * rotation[0] + rotation[1] * rotation[1] +
                                     rotation[2] * rotation[2] + rotation[3] * rotation[3]);
     if (!std::isfinite(length) || length <= 1e-12)
-        return detail::failure<Value>(DiagnosticCode::ParseError, "TVE motion direction rotation is invalid",
-                                      "mainDirection");
+        return Result<Value>::failure(Diagnostic::error(DiagnosticCode::ParseError, "TVE motion direction rotation is invalid", "mainDirection", {}, "asset.import"));
     for (auto& value : rotation) value /= length;
     const double unityX = 2.0 * (rotation[0] * rotation[2] + rotation[3] * rotation[1]);
     const double unityZ = 1.0 - 2.0 * (rotation[0] * rotation[0] + rotation[1] * rotation[1]);
     const double horizontal = std::hypot(unityX, unityZ);
     if (!std::isfinite(horizontal) || horizontal <= 1e-12)
-        return detail::failure<Value>(DiagnosticCode::ParseError, "TVE motion direction is vertical", "mainDirection");
+        return Result<Value>::failure(Diagnostic::error(DiagnosticCode::ParseError, "TVE motion direction is vertical", "mainDirection", {}, "asset.import"));
     return Result<Value>::success(Value::array({-unityX / horizontal, -unityZ / horizontal}));
 }
 
@@ -604,21 +596,19 @@ Result<Value> volumeChannel(std::string_view body, std::string_view name) {
             return Result<Value>::success(
                 Value::array({Value(std::int64_t{10}), Value(resolution), Value(resolution)}));
         } catch (...) {
-            return detail::failure<Value>(DiagnosticCode::ParseError, "TVE legacy volume resolution is invalid",
-                                          std::string(name));
+            return Result<Value>::failure(Diagnostic::error(DiagnosticCode::ParseError, "TVE legacy volume resolution is invalid", std::string(name), {}, "asset.import"));
         }
     }
     std::cmatch match;
     const std::regex section("(?:^|\\n)  " + std::string(name) + R"(:\s*\n([\s\S]*?)(?=\n  [A-Za-z_][^\n]*:|$))");
     if (!std::regex_search(body.data(), body.data() + body.size(), match, section))
-        return detail::failure<Value>(DiagnosticCode::ParseError, "TVE volume channel is missing", std::string(name));
+        return Result<Value>::failure(Diagnostic::error(DiagnosticCode::ParseError, "TVE volume channel is missing", std::string(name), {}, "asset.import"));
     const auto nested = match[1].str();
     auto read = [&](std::string_view field) -> Result<double> {
         std::cmatch value;
         const std::regex pattern("(?:^|\\n)    " + std::string(field) + R"(: *([^\r\n]+))");
         if (!std::regex_search(nested.data(), nested.data() + nested.size(), value, pattern))
-            return detail::failure<double>(DiagnosticCode::ParseError, "TVE volume channel field is missing",
-                                           std::string(name) + "." + std::string(field));
+            return Result<double>::failure(Diagnostic::error(DiagnosticCode::ParseError, "TVE volume channel field is missing", std::string(name) + "." + std::string(field), {}, "asset.import"));
         try {
             std::size_t end = 0;
             const auto token = value[1].str();
@@ -626,8 +616,7 @@ Result<Value> volumeChannel(std::string_view body, std::string_view name) {
             if (end != token.size() || !std::isfinite(decoded)) throw std::invalid_argument("number");
             return Result<double>::success(decoded);
         } catch (...) {
-            return detail::failure<double>(DiagnosticCode::ParseError, "TVE volume channel field is invalid",
-                                           std::string(name) + "." + std::string(field));
+            return Result<double>::failure(Diagnostic::error(DiagnosticCode::ParseError, "TVE volume channel field is invalid", std::string(name) + "." + std::string(field), {}, "asset.import"));
         }
     };
     auto mode = read("renderMode"), width = read("textureWidth"), height = read("textureHeight");
@@ -665,19 +654,16 @@ Result<PreparedAssetImport> prepareUnityVegetationScene(const UnityProjectImport
     const auto controlBody = component(text, controlGuid), detailsBody = component(text, detailsGuid),
                motionBody = component(text, motionGuid), volumeBody = component(text, volumeGuid);
     if (!controlBody && !detailsBody && !motionBody && !volumeBody)
-        return detail::failure<PreparedAssetImport>(DiagnosticCode::Unsupported,
-                                                    "Unity scene has no TVE runtime manager components", source.path);
+        return Result<PreparedAssetImport>::failure(Diagnostic::error(DiagnosticCode::Unsupported, "Unity scene has no TVE runtime manager components", source.path, {}, "asset.import"));
     if (!controlBody || !detailsBody || !motionBody || !volumeBody)
-        return detail::failure<PreparedAssetImport>(DiagnosticCode::ParseError,
-                                                    "TVE scene manager component set is incomplete", source.path);
+        return Result<PreparedAssetImport>::failure(Diagnostic::error(DiagnosticCode::ParseError, "TVE scene manager component set is incomplete", source.path, {}, "asset.import"));
     std::vector<ImportFinding> elementFindings;
     auto controlValue = control(*controlBody), detailsValue = details(*detailsBody), motionValue = motion(*motionBody),
          volumeValue = volume(*volumeBody), elementsValue = elements(text, elementFindings, source.path);
     const bool controlOk = bool(controlValue), detailsOk = bool(detailsValue), motionOk = bool(motionValue),
                volumeOk = bool(volumeValue), elementsOk = bool(elementsValue);
     if (!controlOk || !detailsOk || !motionOk || !volumeOk || !elementsOk)
-        return detail::failure<PreparedAssetImport>(DiagnosticCode::ParseError,
-                                                    "TVE scene manager data is malformed", source.path);
+        return Result<PreparedAssetImport>::failure(Diagnostic::error(DiagnosticCode::ParseError, "TVE scene manager data is malformed", source.path, {}, "asset.import"));
     auto directionValue = motionDirection(text, *motionBody);
     if (!directionValue) return Result<PreparedAssetImport>::failure(directionValue.status());
     (*motionValue.value().getIf<Value::Object>())["direction"] = std::move(directionValue).takeValue();
@@ -732,9 +718,7 @@ Result<PreparedAssetImport> prepareUnityVegetationScene(const UnityProjectImport
                                                 return asset.type == "eve.scene-template";
                                             });
     if (templateAsset == hierarchy.value().manifest.assets.end())
-        return detail::failure<PreparedAssetImport>(DiagnosticCode::InvariantViolation,
-                                                    "Unity manager scene hierarchy produced no scene template",
-                                                    source.path);
+        return Result<PreparedAssetImport>::failure(Diagnostic::error(DiagnosticCode::InvariantViolation, "Unity manager scene hierarchy produced no scene template", source.path, {}, "asset.import"));
     const AssetRef templateRef = templateAsset->asset;
     out.manifest.dependencies.push_back({templateRef, ref.value(), asset::EvaDependencyKind::RuntimeRequired,
                                          "vegetationScene", {}, "eve.vegetation-scene/1", {}});

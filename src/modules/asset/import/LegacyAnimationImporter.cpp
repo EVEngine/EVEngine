@@ -55,7 +55,7 @@ bool complete(std::istringstream& line) { line >> std::ws; return line.eof(); }
 
 Result<Fixture> parseFixture(const LegacyAnimationImportRequest& request) {
     if (request.text.size() > request.limits.maximumSourceBytes)
-        return detail::failure<Fixture>(DiagnosticCode::InvalidArgument, "animation fixture exceeds source budget");
+        return Result<Fixture>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "animation fixture exceeds source budget", {}, {}, "asset.import"));
     Fixture result;
     std::istringstream input(request.text);
     std::string text;
@@ -74,95 +74,93 @@ Result<Fixture> parseFixture(const LegacyAnimationImportRequest& request) {
         if (!magic) {
             int version = 0;
             if (tag != "EVA" || !(line >> version) || version != 1 || !complete(line))
-                return detail::failure<Fixture>(DiagnosticCode::UnknownVersion,
-                                                "legacy animation must begin with EVA 1", path);
+                return Result<Fixture>::failure(Diagnostic::error(DiagnosticCode::UnknownVersion, "legacy animation must begin with EVA 1", path, {}, "asset.import"));
             magic = true;
         } else if (tag == "skeleton") {
             if (!(line >> declaredBones) || declaredBones == 0 ||
                 declaredBones > request.limits.maximumAssets || !complete(line))
-                return detail::failure<Fixture>(DiagnosticCode::ParseError, "invalid skeleton count", path);
+                return Result<Fixture>::failure(Diagnostic::error(DiagnosticCode::ParseError, "invalid skeleton count", path, {}, "asset.import"));
             result.bones.reserve(declaredBones);
         } else if (tag == "bone") {
             std::uint32_t index = 0;
             Bone bone;
             if (!(line >> index >> bone.parent) || index != result.bones.size())
-                return detail::failure<Fixture>(DiagnosticCode::ParseError, "invalid bone index", path);
+                return Result<Fixture>::failure(Diagnostic::error(DiagnosticCode::ParseError, "invalid bone index", path, {}, "asset.import"));
             std::getline(line, bone.name); bone.name = trim(std::move(bone.name));
             if (bone.name.empty() || bone.name.size() > request.limits.maximumStringBytes ||
                 bone.parent >= static_cast<std::int32_t>(index) || bone.parent < -1)
-                return detail::failure<Fixture>(DiagnosticCode::ParseError, "invalid bone hierarchy", path);
+                return Result<Fixture>::failure(Diagnostic::error(DiagnosticCode::ParseError, "invalid bone hierarchy", path, {}, "asset.import"));
             result.bones.push_back(std::move(bone));
         } else if (tag == "bind") {
             std::uint32_t index = 0;
             if (!(line >> index) || index >= result.bones.size())
-                return detail::failure<Fixture>(DiagnosticCode::ParseError, "invalid bind index", path);
+                return Result<Fixture>::failure(Diagnostic::error(DiagnosticCode::ParseError, "invalid bind index", path, {}, "asset.import"));
             auto& bone = result.bones[index];
             if (!(line >> bone.position[0] >> bone.position[1] >> bone.position[2] >>
                   bone.rotation[0] >> bone.rotation[1] >> bone.rotation[2] >> bone.rotation[3] >>
                   bone.scale[0] >> bone.scale[1] >> bone.scale[2]) || !complete(line))
-                return detail::failure<Fixture>(DiagnosticCode::ParseError, "invalid bind transform", path);
+                return Result<Fixture>::failure(Diagnostic::error(DiagnosticCode::ParseError, "invalid bind transform", path, {}, "asset.import"));
             bone.hasBind = true;
         } else if (tag == "clip") {
             std::getline(line, result.clipName); result.clipName = trim(std::move(result.clipName));
             if (result.clipName.empty() || result.clipName.size() > request.limits.maximumStringBytes)
-                return detail::failure<Fixture>(DiagnosticCode::ParseError, "invalid clip name", path);
+                return Result<Fixture>::failure(Diagnostic::error(DiagnosticCode::ParseError, "invalid clip name", path, {}, "asset.import"));
         } else if (tag == "duration") {
             if (!(line >> result.duration) || !complete(line) || !finite(result.duration) || result.duration < 0)
-                return detail::failure<Fixture>(DiagnosticCode::ParseError, "invalid clip duration", path);
+                return Result<Fixture>::failure(Diagnostic::error(DiagnosticCode::ParseError, "invalid clip duration", path, {}, "asset.import"));
         } else if (tag == "rate") {
             if (!(line >> result.rate) || !complete(line) || !finite(result.rate) || result.rate <= 0)
-                return detail::failure<Fixture>(DiagnosticCode::ParseError, "invalid sample rate", path);
+                return Result<Fixture>::failure(Diagnostic::error(DiagnosticCode::ParseError, "invalid sample rate", path, {}, "asset.import"));
         } else if (tag == "loop") {
             int value = 0;
             if (!(line >> value) || (value != 0 && value != 1) || !complete(line))
-                return detail::failure<Fixture>(DiagnosticCode::ParseError, "invalid loop flag", path);
+                return Result<Fixture>::failure(Diagnostic::error(DiagnosticCode::ParseError, "invalid loop flag", path, {}, "asset.import"));
             result.loop = value != 0;
         } else if (tag == "sync") {
             Marker marker;
             if (!(line >> marker.time) || !finite(marker.time))
-                return detail::failure<Fixture>(DiagnosticCode::ParseError, "invalid sync marker", path);
+                return Result<Fixture>::failure(Diagnostic::error(DiagnosticCode::ParseError, "invalid sync marker", path, {}, "asset.import"));
             std::getline(line, marker.name); marker.name = trim(std::move(marker.name));
-            if (marker.name.empty()) return detail::failure<Fixture>(DiagnosticCode::ParseError,
-                                                                     "empty sync marker", path);
+            if (marker.name.empty()) return Result<Fixture>::failure(Diagnostic::error(DiagnosticCode::ParseError, "empty sync marker", path, {}, "asset.import"));
             result.markers.push_back(std::move(marker));
             if (result.markers.size() > request.limits.maximumAssets)
-                return detail::failure<Fixture>(DiagnosticCode::InvalidArgument, "too many sync markers", path);
+                return Result<Fixture>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "too many sync markers", path, {}, "asset.import"));
         } else if (tag == "track") {
             Track value;
             if (!(line >> value.bone >> value.expectedPosition >> value.expectedRotation >> value.expectedScale) ||
                 !complete(line) || value.bone >= result.bones.size())
-                return detail::failure<Fixture>(DiagnosticCode::ParseError, "invalid track header", path);
+                return Result<Fixture>::failure(Diagnostic::error(DiagnosticCode::ParseError, "invalid track header", path, {}, "asset.import"));
             result.tracks.push_back(std::move(value)); track = &result.tracks.back();
             if (result.tracks.size() > request.limits.maximumAssets)
-                return detail::failure<Fixture>(DiagnosticCode::InvalidArgument, "too many animation tracks", path);
+                return Result<Fixture>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "too many animation tracks", path, {}, "asset.import"));
         } else if (tag == "p" || tag == "s") {
             VecKey key;
             if (!track || !(line >> key.time >> key.value[0] >> key.value[1] >> key.value[2]) ||
                 !complete(line) || !finite(key.time) || !finite(key.value[0]) || !finite(key.value[1]) || !finite(key.value[2]))
-                return detail::failure<Fixture>(DiagnosticCode::ParseError, "invalid vector key", path);
+                return Result<Fixture>::failure(Diagnostic::error(DiagnosticCode::ParseError, "invalid vector key", path, {}, "asset.import"));
             (tag == "p" ? track->position : track->scale).push_back(key);
         } else if (tag == "r") {
             RotKey key;
             if (!track || !(line >> key.time >> key.value[0] >> key.value[1] >> key.value[2] >> key.value[3]) ||
                 !complete(line) || !finite(key.time) || !finite(key.value[0]) || !finite(key.value[1]) ||
                 !finite(key.value[2]) || !finite(key.value[3]))
-                return detail::failure<Fixture>(DiagnosticCode::ParseError, "invalid rotation key", path);
+                return Result<Fixture>::failure(Diagnostic::error(DiagnosticCode::ParseError, "invalid rotation key", path, {}, "asset.import"));
             track->rotation.push_back(key);
         } else if (tag == "end") {
-            if (!complete(line)) return detail::failure<Fixture>(DiagnosticCode::ParseError, "invalid end", path);
+            if (!complete(line)) return Result<Fixture>::failure(Diagnostic::error(DiagnosticCode::ParseError, "invalid end", path, {}, "asset.import"));
             ended = true; break;
         } else {
-            return detail::failure<Fixture>(DiagnosticCode::ParseError, "unknown animation fixture record", path);
+            return Result<Fixture>::failure(Diagnostic::error(DiagnosticCode::ParseError, "unknown animation fixture record", path, {}, "asset.import"));
         }
     }
     if (!magic || !ended || result.bones.size() != declaredBones || result.clipName.empty() || result.rate <= 0)
-        return detail::failure<Fixture>(DiagnosticCode::ParseError, "animation fixture is incomplete");
+        return Result<Fixture>::failure(Diagnostic::error(DiagnosticCode::ParseError, "animation fixture is incomplete", {}, {}, "asset.import"));
     for (const auto& bone : result.bones)
-        if (!bone.hasBind) return detail::failure<Fixture>(DiagnosticCode::ParseError, "bone bind is missing", bone.name);
+        if (!bone.hasBind) return Result<Fixture>::failure(Diagnostic::error(DiagnosticCode::ParseError, "bone bind is missing", bone.name, {}, "asset.import"));
     for (const auto& value : result.tracks)
         if (value.position.size() != value.expectedPosition || value.rotation.size() != value.expectedRotation ||
             value.scale.size() != value.expectedScale)
-            return detail::failure<Fixture>(DiagnosticCode::ParseError, "track key count does not match declaration");
+            return Result<Fixture>::failure(Diagnostic::error(DiagnosticCode::ParseError, "track key count does not match declaration", {}, {}, "asset.import"));
     std::set<std::uint32_t> trackBones;
     std::uint64_t decodedBytes = 0;
     const auto validTimes = [&](const auto& keys) {
@@ -176,13 +174,11 @@ Result<Fixture> parseFixture(const LegacyAnimationImportRequest& request) {
     for (const auto& value : result.tracks) {
         if (!trackBones.emplace(value.bone).second || !validTimes(value.position) ||
             !validTimes(value.rotation) || !validTimes(value.scale))
-            return detail::failure<Fixture>(DiagnosticCode::Conflict,
-                                            "tracks must be unique and key times canonical");
+            return Result<Fixture>::failure(Diagnostic::error(DiagnosticCode::Conflict, "tracks must be unique and key times canonical", {}, {}, "asset.import"));
         const std::uint64_t keys = value.position.size() + value.rotation.size() + value.scale.size();
         if (keys > request.limits.maximumDecodedBytes / 24 ||
             decodedBytes > request.limits.maximumDecodedBytes - keys * 24)
-            return detail::failure<Fixture>(DiagnosticCode::InvalidArgument,
-                                            "animation key data exceeds decoded budget");
+            return Result<Fixture>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "animation key data exceeds decoded budget", {}, {}, "asset.import"));
         decodedBytes += keys * 24;
     }
     return Result<Fixture>::success(std::move(result));

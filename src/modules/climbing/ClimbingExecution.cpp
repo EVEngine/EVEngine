@@ -17,38 +17,28 @@ eve::Result<ClimbingAdvance> ClimbingRuntime::advance(physics::World3D& world, e
     lastCounters_.queryBudget = ClimbingQueryBudgets::Active;
     RuntimeTelemetryScope telemetryScope(telemetry_, lastCounters_, step.tick);
     if (!isActivePhase(phase_) || !execution_)
-        return climbingFailure<ClimbingAdvance>(eve::DiagnosticCode::PreconditionViolation,
-                                                "no climbing execution is active", "runtime.phase");
+        return eve::Result<ClimbingAdvance>::failure(eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation, "no climbing execution is active", "runtime.phase", {}, "climbing"));
     Execution& execution       = *execution_;
     lastCounters_.selectedCost = execution.candidate.score;
     if (world.runtimeHandle() != execution.candidate.world)
-        return climbingFailure<ClimbingAdvance>(eve::DiagnosticCode::StaleHandle,
-                                                "execution belongs to another or stale physics world", "world");
+        return eve::Result<ClimbingAdvance>::failure(eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle, "execution belongs to another or stale physics world", "world", {}, "climbing"));
     if (step.tick <= execution.lastTick)
-        return climbingFailure<ClimbingAdvance>(eve::DiagnosticCode::Conflict,
-                                                "simulation tick must increase exactly once per update", "step.tick");
+        return eve::Result<ClimbingAdvance>::failure(eve::Diagnostic::error(eve::DiagnosticCode::Conflict, "simulation tick must increase exactly once per update", "step.tick", {}, "climbing"));
     if (step.delta.nanoseconds() <= 0)
-        return climbingFailure<ClimbingAdvance>(eve::DiagnosticCode::InvalidArgument,
-                                                "simulation delta must be positive", "step.delta");
+        return eve::Result<ClimbingAdvance>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "simulation delta must be positive", "step.delta", {}, "climbing"));
     if ((motion.rootMotionPolicy != ClimbingRootMotionPolicy::ApplyActionWarp &&
          motion.rootMotionPolicy != ClimbingRootMotionPolicy::PreserveSuppliedDelta) ||
         (motion.obstacleCollision != ClimbingObstacleCollision::Collide &&
          motion.obstacleCollision != ClimbingObstacleCollision::IgnoreTraversedShape) ||
         (!motion.hasRootMotion && (motion.rootMotionPolicy != ClimbingRootMotionPolicy::ApplyActionWarp ||
                                    motion.obstacleCollision != ClimbingObstacleCollision::Collide)))
-        return climbingFailure<ClimbingAdvance>(eve::DiagnosticCode::InvalidArgument,
-                                                "motion policies require valid enum values and authored root motion",
-                                                "motion.policy");
+        return eve::Result<ClimbingAdvance>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "motion policies require valid enum values and authored root motion", "motion.policy", {}, "climbing"));
     if (!isFinite(motion.rootTranslation) || !isFinite(motion.facing) || !isFinite(motion.pelvisOffset) ||
         !isFinite(motion.rootYawRadians) || length(motion.pelvisOffset) > profile_.maxPelvisDeviation + epsilon)
-        return climbingFailure<ClimbingAdvance>(
-            eve::DiagnosticCode::InvalidArgument,
-            "authored motion must be finite and pelvis deviation must remain inside the profile limit", "motion");
+        return eve::Result<ClimbingAdvance>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "authored motion must be finite and pelvis deviation must remain inside the profile limit", "motion", {}, "climbing"));
     if (motion.obstacleCollision == ClimbingObstacleCollision::IgnoreTraversedShape &&
         !world.findShape(execution.candidate.obstacleShape))
-        return climbingFailure<ClimbingAdvance>(eve::DiagnosticCode::StaleHandle,
-                                                "traversed shape is stale; collision exclusion was not applied",
-                                                "motion.obstacleCollision");
+        return eve::Result<ClimbingAdvance>::failure(eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle, "traversed shape is stale; collision exclusion was not applied", "motion.obstacleCollision", {}, "climbing"));
     auto eventCapacity = requireEventCapacity(4, step.tick);
     if (!eventCapacity) return eve::Result<ClimbingAdvance>::failure(eventCapacity.status());
 
@@ -57,13 +47,10 @@ eve::Result<ClimbingAdvance> ClimbingRuntime::advance(physics::World3D& world, e
     if (graphBound) {
         auto graph    = Climbing::resolveAnchorGraph(execution.anchorGraph);
         auto resolved = graph.isBound() ? graph->resolveNodeKinematics(world, execution.anchorNode)
-                                        : climbingFailure<ResolvedClimbingAnchorNode>(
-                                              eve::DiagnosticCode::StaleHandle, "anchor graph instance handle is stale",
-                                              "execution.anchorGraph");
+                                        : eve::Result<ResolvedClimbingAnchorNode>::failure(eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle, "anchor graph instance handle is stale", "execution.anchorGraph", {}, "climbing"));
         auto reservation =
             graph.isBound() ? graph->validateReservation(execution.anchorReservation)
-                            : climbingFailure<void>(eve::DiagnosticCode::StaleHandle,
-                                                    "anchor graph instance handle is stale", "execution.anchorGraph");
+                            : eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle, "anchor graph instance handle is stale", "execution.anchorGraph", {}, "climbing"));
         if (!resolved || !reservation) {
             enqueueEvent(
                 {ClimbingEventKind::Cancelled, execution.candidate.actionId, step.tick, execution.executionId});
@@ -74,8 +61,7 @@ eve::Result<ClimbingAdvance> ClimbingRuntime::advance(physics::World3D& world, e
                 released.ignore("stale graph anchor resolution releases live occupancy");
             }
             execution_.reset();
-            return climbingFailure<ClimbingAdvance>(
-                eve::DiagnosticCode::StaleHandle, "graph anchor or occupancy reservation is stale", "execution.anchor");
+            return eve::Result<ClimbingAdvance>::failure(eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle, "graph anchor or occupancy reservation is stale", "execution.anchor", {}, "climbing"));
         }
         execution.candidate.obstacleBody    = resolved.value().body;
         execution.candidate.topPoint        = resolved.value().position;
@@ -106,8 +92,7 @@ eve::Result<ClimbingAdvance> ClimbingRuntime::advance(physics::World3D& world, e
             released.ignore("destroyed anchor body releases graph occupancy");
         }
         execution_.reset();
-        return climbingFailure<ClimbingAdvance>(eve::DiagnosticCode::StaleHandle, "climbing target handle is stale",
-                                                "execution.candidate.obstacleBody");
+        return eve::Result<ClimbingAdvance>::failure(eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle, "climbing target handle is stale", "execution.candidate.obstacleBody", {}, "climbing"));
     }
     const float platformSpeed = graphPointSpeed >= 0.f
                                     ? graphPointSpeed
@@ -123,9 +108,7 @@ eve::Result<ClimbingAdvance> ClimbingRuntime::advance(physics::World3D& world, e
             released.ignore("unsafe anchor platform speed releases graph occupancy");
         }
         execution_.reset();
-        return climbingFailure<ClimbingAdvance>(eve::DiagnosticCode::PreconditionViolation,
-                                                "climbing target exceeded the platform speed limit",
-                                                "execution.candidate.obstacleBody");
+        return eve::Result<ClimbingAdvance>::failure(eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation, "climbing target exceeded the platform speed limit", "execution.candidate.obstacleBody", {}, "climbing"));
     }
     if (!graphBound) {
         auto worldTop = obstacle->localToWorldPointOwned(
@@ -170,8 +153,7 @@ eve::Result<ClimbingAdvance> ClimbingRuntime::advance(physics::World3D& world, e
                 released.ignore("blocked hanging clearance releases graph occupancy");
             }
             execution_.reset();
-            return climbingFailure<ClimbingAdvance>(eve::DiagnosticCode::PreconditionViolation,
-                                                    "hanging capsule clearance became blocked", "execution.clearance");
+            return eve::Result<ClimbingAdvance>::failure(eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation, "hanging capsule clearance became blocked", "execution.clearance", {}, "climbing"));
         }
         execution.lastTick = step.tick;
         ClimbingAdvance output{phase_, execution.candidate.actionId, execution.currentFeet, {}, {}, {}, 1.f, false,

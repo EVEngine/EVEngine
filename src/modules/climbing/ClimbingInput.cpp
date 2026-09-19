@@ -7,12 +7,6 @@
 namespace eve::climbing {
 namespace {
 
-template <class T>
-eve::Result<T> failure(eve::DiagnosticCode code, std::string message, std::string path = {}) {
-    return eve::Result<T>::failure(
-        eve::Diagnostic::error(code, std::move(message), std::move(path), {}, "climbing.input"));
-}
-
 bool commandLess(const BufferedClimbingCommand& lhs, const BufferedClimbingCommand& rhs) {
     if (lhs.pressedTick != rhs.pressedTick) return lhs.pressedTick < rhs.pressedTick;
     return static_cast<std::uint8_t>(lhs.command) < static_cast<std::uint8_t>(rhs.command);
@@ -23,16 +17,19 @@ bool commandLess(const BufferedClimbingCommand& lhs, const BufferedClimbingComma
 eve::Result<void> ClimbingInputSystem::submit(ClimbingIntent& intent, ClimbingCommand command,
                                               eve::SimulationTick pressedTick, std::uint64_t bufferTicks) {
     if (bufferTicks == 0)
-        return failure<void>(eve::DiagnosticCode::InvalidArgument, "input buffer must contain at least one tick",
-                             "bufferTicks");
+        return eve::Result<void>::failure(
+        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "input buffer must contain at least one tick", "bufferTicks", {}, "climbing.input"));
     if (pressedTick.value() > std::numeric_limits<std::uint64_t>::max() - bufferTicks)
-        return failure<void>(eve::DiagnosticCode::InvalidArgument, "input expiry tick would overflow", "pressedTick");
+        return eve::Result<void>::failure(
+        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "input expiry tick would overflow", "pressedTick", {}, "climbing.input"));
     (void)prune(intent, pressedTick);
     if (std::any_of(intent.commands.begin(), intent.commands.end(),
                     [&](const auto& entry) { return entry.command == command && entry.pressedTick == pressedTick; }))
-        return failure<void>(eve::DiagnosticCode::Conflict, "duplicate edge command for the same tick", "command");
+        return eve::Result<void>::failure(
+        eve::Diagnostic::error(eve::DiagnosticCode::Conflict, "duplicate edge command for the same tick", "command", {}, "climbing.input"));
     if (intent.commands.size() >= MaxBufferedCommands)
-        return failure<void>(eve::DiagnosticCode::PreconditionViolation, "climbing input buffer is full", "commands");
+        return eve::Result<void>::failure(
+        eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation, "climbing input buffer is full", "commands", {}, "climbing.input"));
     intent.commands.push_back(
         {command, pressedTick, eve::SimulationTick(pressedTick.value() + bufferTicks), ClimbingExecutionId::zero()});
     std::stable_sort(intent.commands.begin(), intent.commands.end(), commandLess);
@@ -58,8 +55,8 @@ eve::Result<std::optional<BufferedClimbingCommand>> ClimbingInputSystem::consume
                                                                                  eve::SimulationTick currentTick,
                                                                                  ClimbingExecutionId executionId) {
     if (executionId.isZero())
-        return failure<std::optional<BufferedClimbingCommand>>(
-            eve::DiagnosticCode::InvalidArgument, "consuming execution id must be non-zero", "executionId");
+        return eve::Result<std::optional<BufferedClimbingCommand>>::failure(
+        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "consuming execution id must be non-zero", "executionId", {}, "climbing.input"));
     (void)prune(intent, currentTick);
     const auto found = std::find_if(intent.commands.begin(), intent.commands.end(), [&](const auto& entry) {
         return entry.command == command && entry.pressedTick <= currentTick && currentTick <= entry.expiryTick &&

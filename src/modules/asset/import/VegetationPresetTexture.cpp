@@ -6,11 +6,6 @@
 
 namespace eve::asset_import {
 namespace {
-template <class T>
-Result<T> failure(DiagnosticCode code, std::string message) {
-    return Result<T>::failure(
-        Diagnostic::error(code, std::move(message), {}, {}, "asset.import.vegetation-preset.texture"));
-}
 
 bool valid(const VegetationPresetImage& image, std::uint64_t maximumPixels) {
     const auto count = std::uint64_t(image.width) * image.height;
@@ -45,11 +40,13 @@ Result<float> sample(const VegetationPresetImage& image, const VegetationTexture
     else if (recipe.selector == "GET_GRAY" || recipe.selector == "GET_GREY")
         value = (channel(image, u, v, 0) + channel(image, u, v, 1) + channel(image, u, v, 2)) / 3.f;
     else
-        return failure<float>(DiagnosticCode::Unsupported, "unsupported texture channel selector: " + recipe.selector);
+        return Result<float>::failure(
+        Diagnostic::error(DiagnosticCode::Unsupported, "unsupported texture channel selector: " + recipe.selector, {}, {}, "asset.import.vegetation-preset.texture"));
     if (recipe.action == "ACTION_ONE_MINUS")
         value = 1.f - value;
     else if (!recipe.action.empty())
-        return failure<float>(DiagnosticCode::Unsupported, "unsupported texture channel action: " + recipe.action);
+        return Result<float>::failure(
+        Diagnostic::error(DiagnosticCode::Unsupported, "unsupported texture channel action: " + recipe.action, {}, {}, "asset.import.vegetation-preset.texture"));
     return Result<float>::success(std::clamp(value, 0.f, 1.f));
 }
 
@@ -68,8 +65,8 @@ Result<void> transformNormalMap(VegetationPresetImage& image, const asset::Canon
     if (!count || mesh.normals.size() != count * 3 || tangent == mesh.attributes.end() ||
         tangent->second.components != 4 || tangent->second.values.size() != count * 4 || uv == mesh.texcoords.end() ||
         uv->second.size() != count * 2 || mesh.indices.size() % 3)
-        return failure<void>(DiagnosticCode::InvalidArgument,
-                             "normal-space transform requires normals, tangent float4, UV0 and triangles");
+        return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "normal-space transform requires normals, tangent float4, UV0 and triangles", {}, {}, "asset.import.vegetation-preset.texture"));
     auto norm = [](float& x, float& y, float& z) {
         const float l = std::sqrt(x * x + y * y + z * z);
         if (l < 1e-8f) return false;
@@ -99,12 +96,14 @@ Result<void> transformNormalMap(VegetationPresetImage& image, const asset::Canon
     for (std::size_t k = 0; k < mesh.indices.size(); k += 3) {
         const auto a = mesh.indices[k], b = mesh.indices[k + 1], c = mesh.indices[k + 2];
         if (a >= count || b >= count || c >= count)
-            return failure<void>(DiagnosticCode::InvalidArgument, "normal-space mesh index out of range");
+            return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "normal-space mesh index out of range", {}, {}, "asset.import.vegetation-preset.texture"));
         const float ax = uv->second[a * 2], ay = uv->second[a * 2 + 1], bx = uv->second[b * 2],
                     by = uv->second[b * 2 + 1], cx = uv->second[c * 2], cy = uv->second[c * 2 + 1];
         if (!std::isfinite(ax) || !std::isfinite(ay) || !std::isfinite(bx) || !std::isfinite(by) ||
             !std::isfinite(cx) || !std::isfinite(cy))
-            return failure<void>(DiagnosticCode::InvalidArgument, "normal-space mesh contains nonfinite UVs");
+            return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "normal-space mesh contains nonfinite UVs", {}, {}, "asset.import.vegetation-preset.texture"));
         const float determinant = (by - cy) * (ax - cx) + (cx - bx) * (ay - cy);
         if (std::abs(determinant) < 1e-10f) continue;
         const int minX = std::max(0, int(std::ceil(std::min({ax, bx, cx}) * image.width - .5f)));
@@ -114,14 +113,16 @@ Result<void> transformNormalMap(VegetationPresetImage& image, const asset::Canon
         if (minX > maxX || minY > maxY) continue;
         rasterWork += std::uint64_t(maxX - minX + 1) * std::uint64_t(maxY - minY + 1);
         if (rasterWork > 512ull * 1024ull * 1024ull)
-            return failure<void>(DiagnosticCode::InvalidArgument, "normal-space raster work budget exceeded");
+            return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "normal-space raster work budget exceeded", {}, {}, "asset.import.vegetation-preset.texture"));
         const auto triangleIndex = std::uint32_t(triangles.size());
         triangles.push_back({a, b, c, ax, ay, bx, by, cx, cy, determinant, minX, maxX, minY, maxY});
         const auto firstTileX = std::uint32_t(minX) / tileSize, lastTileX = std::uint32_t(maxX) / tileSize;
         const auto firstTileY = std::uint32_t(minY) / tileSize, lastTileY = std::uint32_t(maxY) / tileSize;
         binReferences += std::uint64_t(lastTileX - firstTileX + 1) * (lastTileY - firstTileY + 1);
         if (binReferences > 32ull * 1024ull * 1024ull)
-            return failure<void>(DiagnosticCode::InvalidArgument, "normal-space triangle-bin budget exceeded");
+            return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "normal-space triangle-bin budget exceeded", {}, {}, "asset.import.vegetation-preset.texture"));
         for (auto tileY = firstTileY; tileY <= lastTileY; ++tileY)
             for (auto tileX = firstTileX; tileX <= lastTileX; ++tileX)
                 bins[std::size_t(tileY) * tilesX + tileX].push_back(triangleIndex);
@@ -162,7 +163,8 @@ Result<void> transformNormalMap(VegetationPresetImage& image, const asset::Canon
             float tx = interp(tangent->second.values, 4, 0), ty = interp(tangent->second.values, 4, 1),
                   tz = interp(tangent->second.values, 4, 2);
             if (!norm(nx, ny, nz) || !norm(tx, ty, tz))
-                return failure<void>(DiagnosticCode::InvalidArgument, "degenerate normal-space frame");
+                return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "degenerate normal-space frame", {}, {}, "asset.import.vegetation-preset.texture"));
             const float sign = interp(tangent->second.values, 4, 3) >= 0 ? 1.f : -1.f;
             float bx = (ny * tz - nz * ty) * sign, by = (nz * tx - nx * tz) * sign, bz = (nx * ty - ny * tx) * sign;
             norm(bx, by, bz);
@@ -179,7 +181,8 @@ Result<void> transformNormalMap(VegetationPresetImage& image, const asset::Canon
                 oy = ty * x + by * y + ny * z;
                 oz = tz * x + bz * y + nz * z;
             }
-            if (!norm(ox, oy, oz)) return failure<void>(DiagnosticCode::InvalidArgument, "zero normal-map direction");
+            if (!norm(ox, oy, oz)) return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "zero normal-map direction", {}, {}, "asset.import.vegetation-preset.texture"));
             image.pixels[at]     = std::uint8_t(std::clamp(ox * .5f + .5f, 0.f, 1.f) * 255 + .5f);
             image.pixels[at + 1] = std::uint8_t(std::clamp(oy * .5f + .5f, 0.f, 1.f) * 255 + .5f);
             image.pixels[at + 2] = std::uint8_t(std::clamp(oz * .5f + .5f, 0.f, 1.f) * 255 + .5f);
@@ -192,33 +195,33 @@ Result<std::map<std::string, VegetationPresetImage>> executeVegetationTexturePac
     const VegetationConversionCandidate& candidate, const std::map<std::string, VegetationPresetImage>& sources,
     std::uint64_t maximumPixels) {
     if (!maximumPixels)
-        return failure<std::map<std::string, VegetationPresetImage>>(DiagnosticCode::InvalidArgument,
-                                                                     "texture pixel budget must be positive");
+        return Result<std::map<std::string, VegetationPresetImage>>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "texture pixel budget must be positive", {}, {}, "asset.import.vegetation-preset.texture"));
     try {
         std::map<std::string, VegetationPresetImage> outputs;
         for (const auto& recipe : candidate.texturePacks) {
             if (recipe.targetProperty.empty())
-                return failure<std::map<std::string, VegetationPresetImage>>(DiagnosticCode::ParseError,
-                                                                             "texture recipe has no target property");
+                return Result<std::map<std::string, VegetationPresetImage>>::failure(
+        Diagnostic::error(DiagnosticCode::ParseError, "texture recipe has no target property", {}, {}, "asset.import.vegetation-preset.texture"));
             if (recipe.transformSpace == "OBJECT_TO_TANGENT" || recipe.transformSpace == "TANGENT_TO_OBJECT")
-                return failure<std::map<std::string, VegetationPresetImage>>(
-                    DiagnosticCode::Unsupported, "texture tangent-space conversion requires a mesh execution context");
+                return Result<std::map<std::string, VegetationPresetImage>>::failure(
+        Diagnostic::error(DiagnosticCode::Unsupported, "texture tangent-space conversion requires a mesh execution context", {}, {}, "asset.import.vegetation-preset.texture"));
             std::uint32_t width = 0, height = 0;
             for (const auto& instruction : recipe.channels) {
                 if (instruction.selector.empty() || instruction.selector == "NONE") continue;
                 const auto found = sources.find(instruction.sourceProperty);
                 if (found == sources.end()) continue;
                 if (!valid(found->second, maximumPixels))
-                    return failure<std::map<std::string, VegetationPresetImage>>(DiagnosticCode::InvalidArgument,
-                                                                                 "invalid source texture image");
+                    return Result<std::map<std::string, VegetationPresetImage>>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "invalid source texture image", {}, {}, "asset.import.vegetation-preset.texture"));
                 width  = std::max(width, found->second.width);
                 height = std::max(height, found->second.height);
             }
             const auto count = std::uint64_t(width) * height;
             if (!width || !height) continue;
             if (count > maximumPixels || count > SIZE_MAX / 4)
-                return failure<std::map<std::string, VegetationPresetImage>>(DiagnosticCode::InvalidArgument,
-                                                                             "texture recipe exceeds pixel budget");
+                return Result<std::map<std::string, VegetationPresetImage>>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "texture recipe exceeds pixel budget", {}, {}, "asset.import.vegetation-preset.texture"));
             VegetationPresetImage output{width, height, std::vector<std::uint8_t>(std::size_t(count) * 4, 0)};
             for (std::uint32_t y = 0; y < height; ++y) {
                 for (std::uint32_t x = 0; x < width; ++x) {
@@ -236,9 +239,8 @@ Result<std::map<std::string, VegetationPresetImage>> executeVegetationTexturePac
                         else if (recipe.transformSpace == "LINEAR_TO_GAMMA")
                             component = linearToGamma(component);
                         else if (!recipe.transformSpace.empty() && recipe.transformSpace != "NONE")
-                            return failure<std::map<std::string, VegetationPresetImage>>(
-                                DiagnosticCode::Unsupported,
-                                "unsupported texture transform space: " + recipe.transformSpace);
+                            return Result<std::map<std::string, VegetationPresetImage>>::failure(
+        Diagnostic::error(DiagnosticCode::Unsupported, "unsupported texture transform space: " + recipe.transformSpace, {}, {}, "asset.import.vegetation-preset.texture"));
                         output.pixels[(std::size_t(y) * width + x) * 4 + c] =
                             std::uint8_t(std::clamp(component, 0.f, 1.f) * 255.f + 0.5f);
                     }
@@ -248,8 +250,8 @@ Result<std::map<std::string, VegetationPresetImage>> executeVegetationTexturePac
         }
         return Result<std::map<std::string, VegetationPresetImage>>::success(std::move(outputs));
     } catch (const std::bad_alloc&) {
-        return failure<std::map<std::string, VegetationPresetImage>>(DiagnosticCode::Failed,
-                                                                     "texture packing allocation failed");
+        return Result<std::map<std::string, VegetationPresetImage>>::failure(
+        Diagnostic::error(DiagnosticCode::Failed, "texture packing allocation failed", {}, {}, "asset.import.vegetation-preset.texture"));
     }
 }
 
@@ -272,8 +274,8 @@ Result<std::map<std::string, VegetationPresetImage>> executeVegetationTexturePac
         }
         return outputs;
     } catch (const std::bad_alloc&) {
-        return failure<std::map<std::string, VegetationPresetImage>>(
-            DiagnosticCode::Failed, "normal-space texture conversion allocation failed");
+        return Result<std::map<std::string, VegetationPresetImage>>::failure(
+        Diagnostic::error(DiagnosticCode::Failed, "normal-space texture conversion allocation failed", {}, {}, "asset.import.vegetation-preset.texture"));
     }
 }
 }  // namespace eve::asset_import

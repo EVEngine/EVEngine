@@ -8,11 +8,6 @@
 
 namespace eve::asset_import {
 namespace {
-template <class T>
-Result<T> failure(DiagnosticCode code, std::string message, const std::string& path) {
-    return Result<T>::failure(
-        Diagnostic::error(code, std::move(message), path, {}, "asset.import.vegetation-preset.source"));
-}
 
 Result<double> number(std::string_view text, const std::string& path) {
     std::string value(text);
@@ -20,14 +15,16 @@ Result<double> number(std::string_view text, const std::string& path) {
     errno             = 0;
     const auto parsed = std::strtod(value.c_str(), &end);
     if (errno || end != value.c_str() + value.size() || !std::isfinite(parsed))
-        return failure<double>(DiagnosticCode::ParseError, "Unity material number is invalid", path);
+        return Result<double>::failure(
+        Diagnostic::error(DiagnosticCode::ParseError, "Unity material number is invalid", path, {}, "asset.import.vegetation-preset.source"));
     return Result<double>::success(parsed);
 }
 
 template <class Map, class ValueType>
 Result<void> insertUnique(Map& values, std::string name, ValueType value, const std::string& path) {
     if (!values.emplace(std::move(name), std::move(value)).second)
-        return failure<void>(DiagnosticCode::Conflict, "duplicate Unity material saved property", path);
+        return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::Conflict, "duplicate Unity material saved property", path, {}, "asset.import.vegetation-preset.source"));
     return Result<void>::success();
 }
 }  // namespace
@@ -36,13 +33,13 @@ Result<VegetationConversionCandidate> decodeUnityVegetationConversionCandidate(s
                                                                                std::string                   sourcePath,
                                                                                std::uint64_t maximumBytes) {
     if (yaml.empty() || yaml.size() > maximumBytes)
-        return failure<VegetationConversionCandidate>(DiagnosticCode::InvalidArgument,
-                                                      "Unity material source exceeds parsing budget", sourcePath);
+        return Result<VegetationConversionCandidate>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "Unity material source exceeds parsing budget", sourcePath, {}, "asset.import.vegetation-preset.source"));
     try {
         const std::string text(reinterpret_cast<const char*>(yaml.data()), yaml.size());
         if (text.find("\nMaterial:") == std::string::npos && !text.starts_with("Material:"))
-            return failure<VegetationConversionCandidate>(DiagnosticCode::TypeMismatch,
-                                                          "Unity source is not a text Material", sourcePath);
+            return Result<VegetationConversionCandidate>::failure(
+        Diagnostic::error(DiagnosticCode::TypeMismatch, "Unity source is not a text Material", sourcePath, {}, "asset.import.vegetation-preset.source"));
         VegetationConversionCandidate out;
         const std::regex scalarPattern(R"((?:^|\n)[ \t]*-[ \t]+([A-Za-z_][A-Za-z0-9_]*):[ \t]*([-+0-9.eE]+))");
         for (auto i = std::sregex_iterator(text.begin(), text.end(), scalarPattern); i != std::sregex_iterator(); ++i) {
@@ -73,8 +70,8 @@ Result<VegetationConversionCandidate> decodeUnityVegetationConversionCandidate(s
             const auto name = (*i)[1].str();
             if ((*i)[2].str() != "0") {
                 if (!(*i)[3].matched)
-                    return failure<VegetationConversionCandidate>(DiagnosticCode::ParseError,
-                                                                  "Unity texture reference lacks a GUID", sourcePath);
+                    return Result<VegetationConversionCandidate>::failure(
+        Diagnostic::error(DiagnosticCode::ParseError, "Unity texture reference lacks a GUID", sourcePath, {}, "asset.import.vegetation-preset.source"));
                 auto guid = (*i)[3].str();
                 std::transform(guid.begin(), guid.end(), guid.begin(),
                                [](unsigned char value) { return static_cast<char>(std::tolower(value)); });
@@ -94,8 +91,8 @@ Result<VegetationConversionCandidate> decodeUnityVegetationConversionCandidate(s
             R"((?:^|\n)[ \t]*m_Shader:[ \t]*\{fileID:[ \t]*[0-9]+,[ \t]*guid:[ \t]*([0-9a-fA-F]{32}),[ \t]*type:[ \t]*[0-9]+\})");
         std::smatch shader;
         if (!std::regex_search(text, shader, shaderPattern))
-            return failure<VegetationConversionCandidate>(DiagnosticCode::ParseError,
-                                                          "Unity material shader GUID is missing", sourcePath);
+            return Result<VegetationConversionCandidate>::failure(
+        Diagnostic::error(DiagnosticCode::ParseError, "Unity material shader GUID is missing", sourcePath, {}, "asset.import.vegetation-preset.source"));
         out.materialShader = shader[1].str();
         std::transform(out.materialShader.begin(), out.materialShader.end(), out.materialShader.begin(),
                        [](unsigned char value) { return static_cast<char>(std::tolower(value)); });
@@ -127,11 +124,11 @@ Result<VegetationConversionCandidate> decodeUnityVegetationConversionCandidate(s
         }
         return Result<VegetationConversionCandidate>::success(std::move(out));
     } catch (const std::regex_error&) {
-        return failure<VegetationConversionCandidate>(DiagnosticCode::Failed, "Unity material parser expression failed",
-                                                      sourcePath);
+        return Result<VegetationConversionCandidate>::failure(
+        Diagnostic::error(DiagnosticCode::Failed, "Unity material parser expression failed", sourcePath, {}, "asset.import.vegetation-preset.source"));
     } catch (const std::bad_alloc&) {
-        return failure<VegetationConversionCandidate>(DiagnosticCode::Failed,
-                                                      "Unity material candidate allocation failed", sourcePath);
+        return Result<VegetationConversionCandidate>::failure(
+        Diagnostic::error(DiagnosticCode::Failed, "Unity material candidate allocation failed", sourcePath, {}, "asset.import.vegetation-preset.source"));
     }
 }
 
