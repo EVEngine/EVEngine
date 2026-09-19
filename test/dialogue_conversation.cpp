@@ -217,6 +217,18 @@ TEST_CASE("dialogueConversation.asyncCommand") {
     CHECK(runner.isBlocked());
     const std::string requestId = runner.pendingCommandRequestId();
     CHECK(!requestId.empty());
+    StateValue saved;
+    REQUIRE(runner.captureState(saved));
+    ConversationRunner restored;
+    restored.setAssetResolver([&](const std::string& id) { return id == asset.id ? &asset : nullptr; });
+    int restoredCommands = 0;
+    restored.setEventSink([&](const ConversationRunner::Event& event) {
+        if (event.kind == ConversationRunner::Event::Kind::Command) ++restoredCommands;
+    });
+    REQUIRE(restored.restoreState(saved, &error));
+    REQUIRE(restored.lastCommandRequest() != nullptr);
+    CHECK_EQ(restored.lastCommandRequest()->requestId, requestId);
+    CHECK_EQ(restoredCommands, 1);
     auto stale = runner.resumeCommand("stale", StateValue::string("ignored"));
     CHECK(!stale.ok());
     auto resumed = runner.resumeCommand(requestId, StateValue::string("finished"));

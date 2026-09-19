@@ -396,15 +396,34 @@ bool ConversationRunner::restoreState(const StateValue& in, std::string* error) 
         return fail(error, "conversation: pending command state is malformed");
     if ((waitingCommand && waitingCommand->asBool()) != !pendingRequestId->asString().empty())
         return fail(error, "conversation: pending command identity does not match waiting state");
+    const bool restoredWaitingCommand = waitingCommand && waitingCommand->asBool();
+    const auto* restoredCommand = restoredAsset->findNode(nodeId);
+    if (restoredWaitingCommand &&
+        (!restoredCommand || restoredCommand->kind != ConversationAsset::Node::Kind::Command))
+        return fail(error, "conversation: pending command cursor is not a command node");
     asset_ = restoredAsset;
     nodeId_ = std::move(nodeId);
     bindings_ = *savedBindings;
     locals_ = *savedLocals;
     blocked_ = blocked->asBool();
-    waitingCommand_ = waitingCommand && waitingCommand->asBool();
+    waitingCommand_ = restoredWaitingCommand;
     pendingCommandRequestId_ = pendingRequestId->asString();
     commandSequence_ = static_cast<std::uint64_t>(commandSequence->asInt());
     callStack_ = std::move(restoredStack);
+    lastCommandRequest_.reset();
+    if (waitingCommand_) {
+        CommandRequest request;
+        request.requestId      = pendingCommandRequestId_;
+        request.name           = restoredCommand->target;
+        request.kind           = restoredCommand->commandKind;
+        request.arguments      = toCanonicalValue(restoredCommand->arguments);
+        request.bindings       = toCanonicalValue(bindings_);
+        request.locals         = toCanonicalValue(locals_);
+        request.payment        = restoredCommand->payment;
+        request.stateMutations = restoredCommand->stateMutations;
+        lastCommandRequest_    = std::move(request);
+        emit(Event::Kind::Command, restoredCommand, restoredCommand->target);
+    }
     return true;
 }
 
