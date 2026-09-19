@@ -19,6 +19,24 @@ Module_IMPL(DialogueFlow, new DialogueFlow());
 
 namespace {
 
+bool buildPoolWorkspace(const std::unordered_map<std::string, DataValue>& sources, DataValue& root,
+                        std::string& error) {
+    DataValue::Object combined;
+    for (const auto& [sourceId, sourceRoot] : sources) {
+        const DataValue* pools = sourceRoot.find("pools");
+        if (!pools || !pools->isObject()) continue;
+        for (const auto& poolId : pools->keys()) {
+            if (combined.contains(poolId)) {
+                error = "pool '" + poolId + "' has multiple source owners (including '" + sourceId + "')";
+                return false;
+            }
+            combined.emplace(poolId, *pools->find(poolId));
+        }
+    }
+    root = DataValue::object({{"pools", DataValue::object(std::move(combined))}});
+    return true;
+}
+
 bool squirrelToState(HSQUIRRELVM vm, SQInteger index, StateValue& out) {
     switch (sq_gettype(vm, index)) {
         case OT_NULL: out = StateValue::null(); return true;
@@ -203,7 +221,8 @@ void DialogueFlow::configureIntegration(IntegrationConfig config) {
             [this](const eve::Value& specification) { return stateContext_.evaluate(specification); });
     }
 
-    if (operationRequestHandler_ || gameplayActionHandler_ || commandParticipantFactory_ || stateMutationProvider_) {
+    if (operationRequestHandler_ || gameplayActionHandler_ || commandParticipantFactory_ || stateMutationProvider_ ||
+        manualCommandMode_) {
         runner_.setCommandRequestDispatcher([this](const CommandRequest& request) { return dispatchCommand(request); });
     } else {
         runner_.clearCommandRequestDispatcher();
@@ -229,12 +248,14 @@ int DialogueFlow::loadDnutImpl(const std::string& source, const std::string& pat
         failureMessage_.clear();
         return static_cast<int>(sourceAssets_[path].size());
     }
-    std::vector<ConversationAsset> compiled;
     diagnostics_.clear();
-    if (!compileDnutConversations(source, path, compiled, diagnostics_)) {
+    auto compiledDocument = compileDnutDocument(source, path, diagnostics_);
+    if (!compiledDocument) {
         failureMessage_ = diagnostics_.empty() ? "conversation compilation failed" : diagnostics_.front().message;
         return 0;
     }
+    DnutDocument document = std::move(compiledDocument).takeValue();
+    std::vector<ConversationAsset> compiled = std::move(document.conversations);
     for (const auto& asset : compiled) {
         const auto owner = assetSources_.find(asset.id);
         if (owner != assetSources_.end() && owner->second != path) {
@@ -243,6 +264,19 @@ int DialogueFlow::loadDnutImpl(const std::string& source, const std::string& pat
             failureMessage_ = diagnostics_.back().message;
             return 0;
         }
+    }
+    if (runner_.isActive()) {
+        failureMessage_ = "cannot load a dnut source while a conversation is active; use transactional reload";
+        return 0;
+    }
+    auto candidatePoolSources = sourcePools_;
+    candidatePoolSources[path] = std::move(document.poolRoot);
+    DataValue poolWorkspace;
+    if (!buildPoolWorkspace(candidatePoolSources, poolWorkspace, failureMessage_)) return 0;
+    Dialogue* dialogue = Dialogue::create();
+    if (!dialogue || (dialogue->replacePoolsFromData(poolWorkspace) == 0 && !dialogue->getLastPoolsError().empty())) {
+        failureMessage_ = dialogue ? dialogue->getLastPoolsError() : "dialogue pool runtime is unavailable";
+        return 0;
     }
     runner_.stop();
     if (const auto old = sourceAssets_.find(path); old != sourceAssets_.end()) {
@@ -263,6 +297,7 @@ int DialogueFlow::loadDnutImpl(const std::string& source, const std::string& pat
             *it = std::move(asset);
     }
     sourceTexts_[path] = source;
+    sourcePools_         = std::move(candidatePoolSources);
     sourceAssets_[path] = std::move(compiledIds);
     for (const auto& id : sourceAssets_[path]) assetSources_[id] = path;
     lastLoadChanged_    = true;
@@ -276,14 +311,16 @@ int DialogueFlow::reloadDnutImpl(const std::string& source, const std::string& p
         failureMessage_.clear();
         return static_cast<int>(sourceAssets_[path].size());
     }
-    std::vector<ConversationAsset>      compiled;
     std::vector<ConversationDiagnostic> candidateDiagnostics;
-    if (!compileDnutConversations(source, path, compiled, candidateDiagnostics)) {
+    auto compiledDocument = compileDnutDocument(source, path, candidateDiagnostics);
+    if (!compiledDocument) {
         diagnostics_     = std::move(candidateDiagnostics);
         failureMessage_  = diagnostics_.empty() ? "conversation compilation failed" : diagnostics_.front().message;
         lastLoadChanged_ = false;
         return 0;
     }
+    DnutDocument document = std::move(compiledDocument).takeValue();
+    std::vector<ConversationAsset> compiled = std::move(document.conversations);
     for (const auto& asset : compiled) {
         const auto owner = assetSources_.find(asset.id);
         if (owner != assetSources_.end() && owner->second != path) {
@@ -327,6 +364,16 @@ int DialogueFlow::reloadDnutImpl(const std::string& source, const std::string& p
     const bool hadActive = runner_.isActive();
     if (hadActive) runner_.captureState(activeState);
     std::vector<ConversationAsset> previous = assets_;
+    auto candidatePoolSources = sourcePools_;
+    candidatePoolSources[path] = std::move(document.poolRoot);
+    DataValue candidatePoolWorkspace;
+    if (!buildPoolWorkspace(candidatePoolSources, candidatePoolWorkspace, failureMessage_)) return 0;
+    Dialogue* dialogue = Dialogue::create();
+    if (!dialogue ||
+        (dialogue->replacePoolsFromData(candidatePoolWorkspace) == 0 && !dialogue->getLastPoolsError().empty())) {
+        failureMessage_ = dialogue ? dialogue->getLastPoolsError() : "dialogue pool runtime is unavailable";
+        return 0;
+    }
     runner_.stop();
     assets_ = std::move(candidate);
     if (hadActive) {
@@ -337,6 +384,10 @@ int DialogueFlow::reloadDnutImpl(const std::string& source, const std::string& p
             !runner_.restoreState(migrated, &restoreError)) {
             assets_ = std::move(previous);
             runner_.restoreState(activeState, nullptr);
+            DataValue previousPools;
+            std::string ignored;
+            if (dialogue && buildPoolWorkspace(sourcePools_, previousPools, ignored))
+                dialogue->replacePoolsFromData(previousPools);
             failureMessage_  = "conversation hot reload rolled back: " + restoreError;
             lastLoadChanged_ = false;
             return 0;
@@ -346,6 +397,7 @@ int DialogueFlow::reloadDnutImpl(const std::string& source, const std::string& p
     if (const auto old = sourceAssets_.find(path); old != sourceAssets_.end())
         for (const auto& id : old->second) assetSources_.erase(id);
     sourceTexts_[path] = source;
+    sourcePools_         = std::move(candidatePoolSources);
     sourceAssets_[path] = std::move(compiledIds);
     for (const auto& id : sourceAssets_[path]) assetSources_[id] = path;
     lastLoadChanged_    = true;
@@ -356,7 +408,19 @@ int DialogueFlow::reloadDnutImpl(const std::string& source, const std::string& p
 bool DialogueFlow::removeSource(const std::string& path) {
     const auto source = sourceAssets_.find(path);
     if (source == sourceAssets_.end()) return false;
-    runner_.stop();
+    if (runner_.isActive()) {
+        failureMessage_ = "cannot remove a dnut source while a conversation is active";
+        return false;
+    }
+    auto candidatePoolSources = sourcePools_;
+    candidatePoolSources.erase(path);
+    DataValue poolWorkspace;
+    if (!buildPoolWorkspace(candidatePoolSources, poolWorkspace, failureMessage_)) return false;
+    Dialogue* dialogue = Dialogue::create();
+    if (!dialogue || (dialogue->replacePoolsFromData(poolWorkspace) == 0 && !dialogue->getLastPoolsError().empty())) {
+        failureMessage_ = dialogue ? dialogue->getLastPoolsError() : "dialogue pool runtime is unavailable";
+        return false;
+    }
     assets_.erase(std::remove_if(assets_.begin(), assets_.end(),
                                  [&](const auto& asset) {
                                      return std::find(source->second.begin(), source->second.end(), asset.id) !=
@@ -366,6 +430,7 @@ bool DialogueFlow::removeSource(const std::string& path) {
     const std::vector<std::string> removedIds = source->second;
     sourceAssets_.erase(source);
     sourceTexts_.erase(path);
+    sourcePools_ = std::move(candidatePoolSources);
     for (const auto& id : removedIds) assetSources_.erase(id);
     lastLoadChanged_ = true;
     return true;
@@ -379,8 +444,19 @@ bool DialogueFlow::lintAll() {
 }
 
 bool DialogueFlow::renameConversation(const std::string& oldId, const std::string& newId) {
-    runner_.stop();
-    if (!renameConversationAsset(assets_, oldId, newId, &failureMessage_)) return false;
+    if (runner_.isActive()) {
+        failureMessage_ = "cannot rename a conversation while a conversation is active";
+        return false;
+    }
+    std::vector<ConversationAsset> candidate = assets_;
+    if (!renameConversationAsset(candidate, oldId, newId, &failureMessage_)) return false;
+    std::vector<ConversationDiagnostic> candidateDiagnostics;
+    if (!lintConversationWorkspace(candidate, "<dialogue-workspace>", candidateDiagnostics)) {
+        diagnostics_ = std::move(candidateDiagnostics);
+        failureMessage_ = diagnostics_.empty() ? "conversation rename validation failed" : diagnostics_.front().message;
+        return false;
+    }
+    assets_ = std::move(candidate);
     if (const auto owner = assetSources_.find(oldId); owner != assetSources_.end()) {
         const std::string path = owner->second;
         assetSources_.erase(owner);
@@ -393,8 +469,20 @@ bool DialogueFlow::renameConversation(const std::string& oldId, const std::strin
 }
 
 bool DialogueFlow::renameNode(const std::string& conversationId, const std::string& oldId, const std::string& newId) {
-    runner_.stop();
-    return renameConversationNode(assets_, conversationId, oldId, newId, &failureMessage_);
+    if (runner_.isActive()) {
+        failureMessage_ = "cannot rename a node while a conversation is active";
+        return false;
+    }
+    std::vector<ConversationAsset> candidate = assets_;
+    if (!renameConversationNode(candidate, conversationId, oldId, newId, &failureMessage_)) return false;
+    std::vector<ConversationDiagnostic> candidateDiagnostics;
+    if (!lintConversationWorkspace(candidate, "<dialogue-workspace>", candidateDiagnostics)) {
+        diagnostics_ = std::move(candidateDiagnostics);
+        failureMessage_ = diagnostics_.empty() ? "node rename validation failed" : diagnostics_.front().message;
+        return false;
+    }
+    assets_ = std::move(candidate);
+    return true;
 }
 
 int DialogueFlow::loadDnutFileImpl(const std::string& path) {
@@ -491,6 +579,9 @@ void DialogueFlow::clear() {
     sourceTexts_.clear();
     sourceAssets_.clear();
     assetSources_.clear();
+    sourcePools_.clear();
+    if (Dialogue* dialogue = Dialogue::create())
+        dialogue->replacePoolsFromData(DataValue::object({{"pools", DataValue::object({})}}));
     localization_.clear();
     migrations_.clear();
     textRenderer_.clearToneRules();
@@ -685,6 +776,12 @@ CommandResponse DialogueFlow::dispatchCommand(const CommandRequest& request) {
         request.kind == CommandRequestKind::Operation ? &operationRequestHandler_ : &gameplayActionHandler_;
     if (!transactional && *legacy) return (*legacy)(request);
 
+    if (!transactional && manualCommandMode_) {
+        CommandResponse response;
+        response.status = CommandResponse::Status::Blocked;
+        return response;
+    }
+
     if (!transactional && !commandParticipantFactory_) {
         CommandResponse response;
         response.status = CommandResponse::Status::Failed;
@@ -829,6 +926,7 @@ eve::Result<StateValue> DialogueFlow::evaluate(const std::string& expression, co
             "dialogue.expression"));
     const SQInteger top = sq_gettop(vm_);
     sq_pushobject(vm_, evaluator_);
+    sq_pushroottable(vm_);
     sq_newtable(vm_);
     sq_pushstring(vm_, "expression", -1);
     sq_pushstring(vm_, expression.c_str(), expression.size());
@@ -839,7 +937,7 @@ eve::Result<StateValue> DialogueFlow::evaluate(const std::string& expression, co
     sq_pushstring(vm_, "locals", -1);
     pushState(vm_, locals);
     sq_newslot(vm_, -3, SQFalse);
-    if (SQ_FAILED(sq_call(vm_, 1, SQTrue, SQTrue))) {
+    if (SQ_FAILED(sq_call(vm_, 2, SQTrue, SQTrue))) {
         sq_settop(vm_, top);
         return eve::Result<StateValue>::failure(eve::Diagnostic::error(
             eve::DiagnosticCode::Failed, "dialogue expression evaluator raised an exception", "expression", {},
@@ -854,6 +952,22 @@ eve::Result<StateValue> DialogueFlow::evaluate(const std::string& expression, co
     }
     sq_settop(vm_, top);
     return eve::Result<StateValue>::success(std::move(result));
+}
+
+std::string DialogueFlow::getRouteText(int index) const {
+    const auto* node = runner_.currentNode();
+    if (!node || index < 0 || static_cast<size_t>(index) >= node->routes.size()) return {};
+    const auto& route = node->routes[static_cast<size_t>(index)];
+    return localization_.resolveText(route.i18nKey, locale_, route.text.empty() ? route.id : route.text);
+}
+
+void DialogueFlow::setManualCommandMode(bool enabled) {
+    manualCommandMode_ = enabled;
+    if (operationRequestHandler_ || gameplayActionHandler_ || commandParticipantFactory_ || stateMutationProvider_ ||
+        manualCommandMode_)
+        runner_.setCommandRequestDispatcher([this](const CommandRequest& request) { return dispatchCommand(request); });
+    else
+        runner_.clearCommandRequestDispatcher();
 }
 
 bool DialogueFlow::restoreState(const StateValue& in, std::string* error) { return runner_.restoreState(in, error); }
@@ -1018,6 +1132,8 @@ void DialogueFlow::expose(ssq::Class& cls) {
     cls.addFunc("getVoiceDuration", &DialogueFlow::getVoiceDuration);
     cls.addFunc("getRouteCount", &DialogueFlow::getRouteCount);
     cls.addFunc("getRouteId", &DialogueFlow::getRouteId);
+    cls.addFunc("getRouteText", &DialogueFlow::getRouteText);
+    cls.addFunc("setManualCommandMode", &DialogueFlow::setManualCommandMode);
     cls.addFunc("setExpressionEvaluator", &DialogueFlow::setExpressionEvaluator);
     cls.addFunc("clearExpressionEvaluator", &DialogueFlow::clearExpressionEvaluator);
     cls.addFunc("captureStateJson", &DialogueFlow::captureStateJson);

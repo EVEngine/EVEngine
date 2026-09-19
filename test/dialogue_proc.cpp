@@ -3,6 +3,7 @@
 
 #include "avatar/Avatar.h"
 #include "dialogue/Dialogue.h"
+#include "dialogue/DnutParser.h"
 #include "i18n/I18n.h"
 #include "scene/NodeDesc.h"
 #include "scene/Scene.h"
@@ -370,7 +371,10 @@ TEST_CASE("dialogueProc.dnutParser") {
         "    - \"远处传来钟声。\"\n"
         "}\n";
 
-    CHECK_EQ(dlg->loadPoolsFromDnut(src, "pools.dnut"), 1);
+    DnutDocument document;
+    std::vector<ConversationDiagnostic> diagnostics;
+    REQUIRE(parseDnutDocument(src, "pools.dnut", document, diagnostics));
+    CHECK_EQ(dlg->loadPoolsFromData(document.poolRoot), 1);
     CHECK(dlg->hasPool("alice.greet"));
     CHECK(dlg->getLastPoolsError().empty());
 
@@ -419,23 +423,33 @@ TEST_CASE("dialogueProc.dnutAttrsAndErrors") {
         "pool x {\n"
         "    alice: \"hi\" weight=3 i18n=\"line.hi\" id=\"custom\"\n"
         "}\n";
-    CHECK_EQ(dlg->loadPoolsFromDnut(src, "a.dnut"), 1);
+    DnutDocument document;
+    std::vector<ConversationDiagnostic> diagnostics;
+    REQUIRE(parseDnutDocument(src, "a.dnut", document, diagnostics));
+    CHECK_EQ(dlg->loadPoolsFromData(document.poolRoot), 1);
     CHECK(dlg->playLineWithParams("custom", {}));
     CHECK_EQ(dlg->getCurrentLineId(), std::string("custom"));
     // weight=3 参与随机（相对池内其它行权重更高）；这里单行池直接命中。
     CHECK_EQ(dlg->pickLineWithParams("x", {}), std::string("custom"));
 
     // 语法错误：行号与路径出现在 getLastPoolsError。
-    CHECK_EQ(dlg->loadPoolsFromDnut("schema \"eve.dnut\"\nversion 1\npool x {\n  alice: hi\n}\n", "bad.dnut"), 0);
-    CHECK(dlg->getLastPoolsError().find("bad.dnut:4") != std::string::npos);
+    CHECK(!parseDnutDocument("schema \"eve.dnut\"\nversion 1\npool x {\n  alice: hi\n}\n", "bad.dnut",
+                             document, diagnostics));
+    REQUIRE(!diagnostics.empty());
+    CHECK(diagnostics.back().message.find("bad.dnut:4") != std::string::npos);
 
     // 未知属性。
-    CHECK_EQ(dlg->loadPoolsFromDnut("schema \"eve.dnut\"\nversion 1\npool x { alice: \"hi\" bogus=1 }\n", "bad2.dnut"), 0);
-    CHECK(!dlg->getLastPoolsError().empty());
+    diagnostics.clear();
+    CHECK(!parseDnutDocument("schema \"eve.dnut\"\nversion 1\npool x { alice: \"hi\" bogus=1 }\n",
+                             "bad2.dnut", document, diagnostics));
+    CHECK(!diagnostics.empty());
 
     // 未闭合的 pool。
-    CHECK_EQ(dlg->loadPoolsFromDnut("schema \"eve.dnut\"\nversion 1\npool x {\n  alice: \"hi\"\n", "bad3.dnut"), 0);
-    CHECK(dlg->getLastPoolsError().find("bad3.dnut") != std::string::npos);
+    diagnostics.clear();
+    CHECK(!parseDnutDocument("schema \"eve.dnut\"\nversion 1\npool x {\n  alice: \"hi\"\n", "bad3.dnut",
+                             document, diagnostics));
+    REQUIRE(!diagnostics.empty());
+    CHECK(diagnostics.back().message.find("bad3.dnut") != std::string::npos);
 
     resetDialogue(dlg);
 }

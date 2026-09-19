@@ -88,6 +88,7 @@ ConversationAsset makeWorldBranchAsset() {
     ConversationAsset asset;
     asset.id    = "p1.world-branch";
     asset.entry = "branch";
+    asset.parameters.push_back(ConversationAsset::Parameter{"mood"});
 
     ConversationAsset::Node branch;
     branch.id   = "branch";

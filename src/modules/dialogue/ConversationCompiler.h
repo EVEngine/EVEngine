@@ -8,6 +8,10 @@
 
 namespace eve::dialogue {
 
+/** @brief Compile and lint the complete pools-plus-conversations dnut document. */
+[[nodiscard]] eve::Result<DnutDocument> compileDnutDocument(
+    const std::string& source, const std::string& path, std::vector<ConversationDiagnostic>& diagnostics);
+
 /** @brief Compile parameterized conversation blocks embedded in .dnut text. */
 bool compileDnutConversations(const std::string& source, const std::string& path,
                               std::vector<ConversationAsset>& assets,

@@ -29,8 +29,33 @@ bool lintConversationWorkspace(const std::vector<ConversationAsset>& assets, con
             if (assetIds.find(node.target) == assetIds.end()) {
                 diagnostics.push_back({ConversationDiagnostic::Severity::Error, label, 0,
                                        "conversation '" + asset.id + "': call node '" + node.id +
-                                           "' references missing conversation '" + node.target + "'"});
+                                           "' references missing conversation '" + node.target + "'",
+                                       "MissingConversation", 0, asset.id + "/" + node.id});
                 valid = false;
+                continue;
+            }
+            const auto target = std::find_if(assets.begin(), assets.end(), [&](const auto& candidate) {
+                return candidate.id == node.target;
+            });
+            for (const auto& parameter : target->parameters) {
+                if (parameter.required && !node.arguments.find(parameter.name)) {
+                    diagnostics.push_back({ConversationDiagnostic::Severity::Error, label, 0,
+                                           "conversation '" + asset.id + "': call node '" + node.id +
+                                               "' omits required argument '" + parameter.name + "'",
+                                           "MissingCallArgument", 0, asset.id + "/" + node.id});
+                    valid = false;
+                }
+            }
+            for (const auto& argument : node.arguments.keys()) {
+                if (std::none_of(target->parameters.begin(), target->parameters.end(), [&](const auto& parameter) {
+                        return parameter.name == argument;
+                    })) {
+                    diagnostics.push_back({ConversationDiagnostic::Severity::Error, label, 0,
+                                           "conversation '" + asset.id + "': call node '" + node.id +
+                                               "' passes undeclared argument '" + argument + "'",
+                                           "UnexpectedCallArgument", 0, asset.id + "/" + node.id});
+                    valid = false;
+                }
             }
         }
     }

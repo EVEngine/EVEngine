@@ -27,9 +27,23 @@ bool compileDnutConversations(const std::string& source, const std::string& path
                               std::vector<ConversationAsset>& assets,
                               std::vector<ConversationDiagnostic>& diagnostics) {
     DnutDocument document;
-    if (!parseDnutDocument(source, path, document, diagnostics)) return false;
+    auto compiled = compileDnutDocument(source, path, diagnostics);
+    if (!compiled) return false;
+    document = std::move(compiled).takeValue();
     assets = std::move(document.conversations);
-    return lintConversations(assets, path, diagnostics);
+    return true;
+}
+
+eve::Result<DnutDocument> compileDnutDocument(const std::string& source, const std::string& path,
+                                              std::vector<ConversationDiagnostic>& diagnostics) {
+    DnutDocument document;
+    if (!parseDnutDocument(source, path, document, diagnostics) ||
+        !lintConversations(document.conversations, path, diagnostics)) {
+        const std::string message = diagnostics.empty() ? "dnut compilation failed" : diagnostics.front().message;
+        return eve::Result<DnutDocument>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, message, path, {}, "dialogue.dnut.compile"));
+    }
+    return eve::Result<DnutDocument>::success(std::move(document));
 }
 
 bool lintConversations(const std::vector<ConversationAsset>& assets, const std::string& path,
@@ -39,12 +53,14 @@ bool lintConversations(const std::vector<ConversationAsset>& assets, const std::
     for (const auto& asset : assets) {
         if (!assetIds.insert(asset.id).second) {
             diagnostics.push_back({ConversationDiagnostic::Severity::Error, path, 0,
-                                   "duplicate conversation id '" + asset.id + "'"});
+                                   "duplicate conversation id '" + asset.id + "'", "DuplicateAssetId", 0,
+                                   asset.id});
             valid = false;
         }
         std::string error;
         if (!asset.validate(&error)) {
-            diagnostics.push_back({ConversationDiagnostic::Severity::Error, path, 0, error});
+            diagnostics.push_back(
+                {ConversationDiagnostic::Severity::Error, path, 0, error, "InvalidConversation", 0, asset.id});
             valid = false;
             continue;
         }
@@ -64,7 +80,37 @@ bool lintConversations(const std::vector<ConversationAsset>& assets, const std::
             if (reached.find(node.id) == reached.end())
                 diagnostics.push_back({ConversationDiagnostic::Severity::Warning, path, 0,
                                        "conversation '" + asset.id + "': unreachable node '" +
-                                           node.id + "'"});
+                                           node.id + "'",
+                                       "UnreachableNode", 0, asset.id + "/" + node.id});
+        }
+
+        std::unordered_set<std::string> canExit;
+        for (const auto& node : asset.nodes)
+            if (node.kind == ConversationAsset::Node::Kind::End) canExit.insert(node.id);
+        bool changed = true;
+        while (changed) {
+            changed = false;
+            for (const auto& node : asset.nodes) {
+                if (canExit.contains(node.id)) continue;
+                bool exits = (!node.next.empty() && canExit.contains(node.next)) ||
+                             (!node.returnNode.empty() && canExit.contains(node.returnNode));
+                for (const auto& route : node.routes) exits = exits || canExit.contains(route.second);
+                if (exits) changed = canExit.insert(node.id).second;
+            }
+        }
+        bool allReachableHaveOutgoing = true;
+        for (const auto& node : asset.nodes) {
+            if (!reached.contains(node.id) || canExit.contains(node.id)) continue;
+            if (node.next.empty() && node.returnNode.empty() && node.routes.empty()) {
+                allReachableHaveOutgoing = false;
+                break;
+            }
+        }
+        if (!canExit.contains(asset.entry) && allReachableHaveOutgoing) {
+            diagnostics.push_back({ConversationDiagnostic::Severity::Error, path, 0,
+                                   "conversation '" + asset.id + "' contains a reachable loop with no exit",
+                                   "NoExitLoop", 0, asset.id});
+            valid = false;
         }
     }
     return valid && std::none_of(diagnostics.begin(), diagnostics.end(), [](const auto& item) {

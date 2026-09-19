@@ -204,6 +204,10 @@ public:
     float                           getVoiceDuration() const;
     int                             getRouteCount() const;
     std::string                     getRouteId(int index) const;
+    /** @brief Return localized presentation text independently from the stable route id. */
+    std::string                     getRouteText(int index) const;
+    /** @brief Suspend handler-less commands until resumeCommandChecked is called. */
+    void                            setManualCommandMode(bool enabled);
 
     /** @brief Register one pure Squirrel evaluator receiving {expression,bindings,locals}. */
     bool setExpressionEvaluator(ssq::Object fn);
@@ -250,9 +254,11 @@ private:
     HSQUIRRELVM                                               vm_ = nullptr;
     HSQOBJECT                                                 evaluator_{};
     bool                                                      hasEvaluator_ = false;
+    bool                                                      manualCommandMode_ = false;
     std::unordered_map<std::string, std::string>              sourceTexts_;
     std::unordered_map<std::string, std::vector<std::string>> sourceAssets_;
     std::unordered_map<std::string, std::string>              assetSources_;
+    std::unordered_map<std::string, DataValue>                sourcePools_;
     bool                                                      lastLoadChanged_ = false;
     ConversationLocalizationCatalog                           localization_;
     std::string                                               locale_;

@@ -55,8 +55,8 @@ generator 的 yield 值。完整可运行示例见
   `getChoiceCount/getChoiceId/getChoiceLabel/selectChoice/getSelectedChoiceId`。
 - 变量：`setVar/getVarType/getVarInt/getVarFloat/getVarBool/getVarString/hasVar/clearVar/clearVars`。
 - 条件：`registerCondition(name, fn)/unregisterCondition/evalCondition`。
-- 台词池：`loadPoolsFromTable(table)`、`loadPoolsFromDnut(src)`、
-  `loadPoolsFromDnutFile(path)`、`clearPools`、`getPoolCount/getPoolId/hasPool`、
+- 台词池运行时：pool 内容只由 `DialogueFlow.loadDnutChecked/loadDnutFileChecked` 的统一工作区提交；
+  `clearPools`、`getPoolCount/getPoolId/hasPool`、
   `getLastPoolsError`、`setRandomSeed/getRandomSeed`、`pickLine/playLine/playPool`、
   `getCurrentLineId/getCurrentLineMeta/getCurrentLineTags`。
 - 驱动：`update(dt)`、`reset()`。
@@ -224,7 +224,9 @@ node end end
   request ID；完成时调用 `resumeCommandChecked(requestId, value)`。错误、过期或重复的 ID
   会返回结构化冲突诊断且不移动游标；等待命令期间 `advanceChecked()` 不会越过该节点。
 - 当前节点：`getSpeaker/getText/getPool/getI18nKey/getVoice`、
-  `getRouteCount/getRouteId`。
+  `getRouteCount/getRouteId/getRouteText`。route ID 是稳定控制标识，显示文本与 i18n key 独立。
+- 手动异步桥：`setManualCommandMode(true)` 让没有原生 handler 的 command 明确进入 blocked，
+  供脚本在外部工作完成后用 `resumeCommandChecked` 恢复；关闭后缺失 handler 仍是运行错误。
 - 复杂条件：`setExpressionEvaluator(fn)` 注册纯计算函数，fn 接收
   `{ expression, bindings, locals }` 并返回 bool 或结构化值；
   `clearExpressionEvaluator` 解除注册。表达式文本不会被编译器限制成简单比较式。
@@ -286,4 +288,4 @@ if (doc.validate()) dialogueFlow.applyDocument(doc);
 - 角色注册幂等（重复注册覆盖显示名）；`bindAvatar` 接受 `avatar.newImageAvatar()`
   等任何 `AvatarInstance`。
 - `update(dt)` 推进打字机/口型/舞台同步；选项选择前先 `isWaitingChoice()` 判空。
-- `loadPoolsFromDnutFile` 解析 `.dnut`（剧本数据文件），错误看 `getLastPoolsError`。
+- `.dnut` 只通过 `DialogueFlow` 的 checked API 编译；pool 与 conversation 共享一次解析、校验和原子提交。

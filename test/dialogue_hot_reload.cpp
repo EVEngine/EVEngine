@@ -1,4 +1,5 @@
 #include "dialogue/DialogueFlow.h"
+#include "dialogue/Dialogue.h"
 #include "common/Capability.h"
 #include "common/ServiceInterfaces.h"
 #include "zeroerr/assert.h"
@@ -95,4 +96,30 @@ node end end
     CHECK(flow.hasConversation("shared.id"));
     CHECK(flow.removeSource("first.dnut"));
     CHECK(!flow.hasConversation("shared.id"));
+}
+
+TEST_CASE("dialogueHotReload.commitsPoolsAndConversationsAsOneWorkspace") {
+    DialogueFlow flow;
+    Dialogue* dialogue = Dialogue::create();
+    const std::string source = R"(
+schema "eve.dnut"
+version 1
+pool greeting { guide: "hello" }
+conversation greeting.scene entry=end { node end end }
+)";
+    REQUIRE(flow.loadDnutChecked(source, "mixed.dnut").ok());
+    CHECK(dialogue->hasPool("greeting"));
+    CHECK(flow.hasConversation("greeting.scene"));
+
+    const std::string duplicate = R"(
+schema "eve.dnut"
+version 1
+pool greeting { guide: "duplicate" }
+conversation other.scene entry=end { node end end }
+)";
+    CHECK(!flow.loadDnutChecked(duplicate, "other.dnut").ok());
+    CHECK(!flow.hasConversation("other.scene"));
+    CHECK(dialogue->hasPool("greeting"));
+    CHECK(flow.removeSource("mixed.dnut"));
+    CHECK(!dialogue->hasPool("greeting"));
 }

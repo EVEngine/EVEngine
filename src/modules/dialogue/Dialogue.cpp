@@ -577,7 +577,11 @@ bool Dialogue::parseLineData(const std::string &poolId, const DataValue &v, int 
     return true;
 }
 
-int Dialogue::loadPoolsFromData(const DataValue &root) {
+int Dialogue::loadPoolsFromData(const DataValue &root) { return applyPoolsFromData(root, false); }
+
+int Dialogue::replacePoolsFromData(const DataValue& root) { return applyPoolsFromData(root, true); }
+
+int Dialogue::applyPoolsFromData(const DataValue &root, bool replace) {
     lastPoolsError_.clear();
     if (root.kind() != DataValue::Kind::Object) {
         lastPoolsError_ = "pools root must be an object";
@@ -590,7 +594,7 @@ int Dialogue::loadPoolsFromData(const DataValue &root) {
     }
 
     int registered = 0;
-    std::vector<Pool> candidate = pools_;
+    std::vector<Pool> candidate = replace ? std::vector<Pool>{} : pools_;
     const auto *poolFields = pools->getIf<DataValue::Object>();
     for (const auto &kv : *poolFields) {
         Pool pool;
@@ -631,37 +635,6 @@ int Dialogue::loadPoolsFromData(const DataValue &root) {
     }
     pools_ = std::move(candidate);
     return registered;
-}
-
-int Dialogue::loadPoolsFromDnut(const std::string &source, const std::string &path) {
-    DataValue root;
-    std::string error;
-    if (!parseDnut(source, path.empty() ? "<dnut>" : path, root, error)) {
-        lastPoolsError_ = error;
-        return 0;
-    }
-    return loadPoolsFromData(root);
-}
-
-int Dialogue::loadPoolsFromDnutFile(const std::string &path) {
-    auto *fs = eve::ModuleManager::getInstance<eve::filesystem::Filesystem>("Filesystem");
-    if (!fs) fs = eve::filesystem::Filesystem::create();
-    eve::filesystem::FileData *fd = nullptr;
-    try {
-        fd = fs->read(path);
-    } catch (...) {
-        delete fd;
-        lastPoolsError_ = path + ": 读取失败";
-        return 0;
-    }
-    if (fd == nullptr || fd->getData() == nullptr || fd->getSize() == 0) {
-        delete fd;
-        lastPoolsError_ = path + ": 读取失败";
-        return 0;
-    }
-    const std::string text(static_cast<const char *>(fd->getData()), fd->getSize());
-    delete fd;
-    return loadPoolsFromDnut(text, path);
 }
 
 void Dialogue::clearPools() { pools_.clear(); }
@@ -1429,9 +1402,6 @@ void Dialogue::expose(ssq::Class &cls) {
     cls.addFunc("unregisterCondition", &Dialogue::unregisterCondition);
     cls.addFunc("evalCondition", &Dialogue::evalCondition);
 
-    cls.addFunc("loadPoolsFromTable", &Dialogue::loadPoolsFromTable);
-    cls.addFunc("loadPoolsFromDnut", &Dialogue::loadPoolsFromDnut);
-    cls.addFunc("loadPoolsFromDnutFile", &Dialogue::loadPoolsFromDnutFile);
     cls.addFunc("clearPools", &Dialogue::clearPools);
     cls.addFunc("getPoolCount", &Dialogue::getPoolCount);
     cls.addFunc("getPoolId", &Dialogue::getPoolId);

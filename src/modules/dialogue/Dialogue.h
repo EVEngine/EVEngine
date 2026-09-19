@@ -135,10 +135,8 @@ public:
     // ---- content pools ----
     int loadPoolsFromTable(ssq::Object table);
     int loadPoolsFromData(const DataValue &root);
-    /** 解析 .dnut 源码并注册台词池；path 用于错误信息（可传 ""）。 */
-    int loadPoolsFromDnut(const std::string &source, const std::string &path);
-    /** 读取 .dnut 文件并解析注册（经 eve.Filesystem）。 */
-    int loadPoolsFromDnutFile(const std::string &path);
+    /** @brief Atomically replace all pools from a validated unified dnut workspace. */
+    int replacePoolsFromData(const DataValue& root);
     void clearPools();
     int getPoolCount() const;
     std::string getPoolId(int index) const;
@@ -184,6 +182,7 @@ public:
     bool resetToDefaults();
 
 private:
+    int applyPoolsFromData(const DataValue& root, bool replace);
     struct Character {
         std::string id;
         std::string displayName;

@@ -54,17 +54,6 @@ class Parser {
 public:
     Parser(std::string source, std::string path) : source_(std::move(source)), path_(std::move(path)) {}
 
-    bool parse(DataValue &out, std::string &error) {
-        try {
-            tokenize();
-            out = parsePools();
-            return true;
-        } catch (const ParseError &e) {
-            error = e.what();
-            return false;
-        }
-    }
-
     bool parseDocument(DnutDocument& out, std::vector<ConversationDiagnostic>& diagnostics) {
         try {
             tokenize();
@@ -599,6 +588,7 @@ private:
         expectIdent("route");
         ConversationRoute route;
         route.first = expectIdent("稳定 route ID");
+        route.id = route.first;
         bool hasTarget = false;
         while (cur().kind != Tok::Eof && cur().line == line && !isPunct("}")) {
             const std::string key = expectIdent("route 字段");
@@ -702,27 +692,9 @@ private:
         return asset;
     }
 
-    DataValue parsePools() {
-        DataValue::Object pools;
-        while (cur().kind != Tok::Eof) parsePool(pools);
-        return DataValue::object({{"pools", DataValue::object(std::move(pools))}});
-    }
 };
 
 }  // namespace
-
-bool parseDnut(const std::string &source, const std::string &path, DataValue &outRoot,
-               std::string &error) {
-    Parser parser(source, path);
-    DnutDocument document;
-    std::vector<ConversationDiagnostic> diagnostics;
-    if (!parser.parseDocument(document, diagnostics)) {
-        error = diagnostics.empty() ? path + ": dnut parse failed" : diagnostics.front().message;
-        return false;
-    }
-    outRoot = std::move(document.poolRoot);
-    return true;
-}
 
 bool parseDnutDocument(const std::string& source, const std::string& path, DnutDocument& out,
                        std::vector<ConversationDiagnostic>& diagnostics) {
