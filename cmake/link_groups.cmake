@@ -65,29 +65,6 @@ foreach(_eve_group IN LISTS EVE_LINK_GROUP_NAMES)
     target_link_libraries(${_eve_group} PRIVATE
         EVScripts zeroerr ${_eve_group_tp_libs} ${_eve_group_system_libs}
         ${EVENGINE_VULKAN_LIB} ${EVENGINE_WEBGPU_LIB})
-    if(MSVC)
-        # MSVCRTD.lib's startup object (utility.obj) references __acrt_initialize
-        # and __vcrt_initialize. Those are NOT in the import libraries
-        # (ucrtd.lib / vcruntimed.lib): searching the installed libraries shows
-        # __acrt_initialize in libucrt(d).lib -- the static UCRT in the Windows
-        # SDK's ucrt/<arch> directory -- and __vcrt_initialize in
-        # libvcruntime(d).lib (the static VC runtime). A normal translation unit
-        # reaches them through /DEFAULTLIB chains; a target whose own sources do
-        # not include CRT headers never asks for them, and the shared library link
-        # then stops on 11 CRT startup internals. Naming the static partners fixes
-        # exactly those.
-        #
-        # box3dd.lib is also the one third-party archive carrying
-        # /DEFAULTLIB:LIBCMTD -- the static debug CRT -- while every other archive
-        # and every compile step uses the dynamic /MDd CRT; /NODEFAULTLIB is the
-        # documented LNK4098 remedy, and keeps a second static CRT out of the link.
-        target_link_libraries(${_eve_group} PRIVATE
-            $<$<CONFIG:Debug>:libucrtd libvcruntimed>
-            $<$<NOT:$<CONFIG:Debug>>:libucrt libvcruntime>)
-        target_link_options(${_eve_group} PRIVATE
-            $<$<CONFIG:Debug>:/NODEFAULTLIB:LIBCMTD>
-            $<$<NOT:$<CONFIG:Debug>>:/NODEFAULTLIB:LIBCMT>)
-    endif()
     if(NOT EVENGINE_PROFILE_HOSTLESS)
         add_dependencies(${_eve_group} third-party)
     endif()

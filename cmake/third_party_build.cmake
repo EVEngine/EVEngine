@@ -369,6 +369,18 @@ function(check_third_party_project name repo)
             -DPATCH=${CMAKE_SOURCE_DIR}/cmake/patches/mpg123-apple-fpu-detection.patch
             -DPATCH_DIR=${CMAKE_CURRENT_SOURCE_DIR}/${name}/medialoader
             -P ${CMAKE_SOURCE_DIR}/cmake/patch_third_party.cmake)
+    # Eleventh patch: Box3D upstream selects the STATIC MSVC CRT so that
+    # _crtBreakAlloc leak checking works standalone, while the engine and every
+    # other third-party archive use the dynamic CRT. An executable link only warns
+    # about that mix (LNK4098); a shared library cannot link at all, because
+    # MSVCRTD.lib's startup object cannot resolve __acrt_initialize /
+    # __vcrt_initialize once the static CRT is also in the image. Paths are
+    # relative to the box3d submodule root.
+    set(_eve_tp_patch_cmd ${_eve_tp_patch_cmd}
+        COMMAND ${CMAKE_COMMAND}
+            -DPATCH=${CMAKE_SOURCE_DIR}/cmake/patches/box3d-dynamic-crt.patch
+            -DPATCH_DIR=${CMAKE_CURRENT_SOURCE_DIR}/${name}/box3d
+            -P ${CMAKE_SOURCE_DIR}/cmake/patch_third_party.cmake)
 
     # Stamp the git versions into the install tree after every install so
     # prebuilt-mode consumers (and eve's build info) can report exactly which
