@@ -301,7 +301,7 @@ eve.SceneEntity <- class extends eve.Entity {
  * eve.Scene / eve.SceneNodeRef wrappers over native primitives. Applied after
  * those classes have been addClass'd (on first use of eve.Scene).
  */
-const char *kSceneEntityScript = R"SQ(
+const char* kSceneEntityScript = R"SQ(
 // ---- eve.Scene: per-node entity API (script wrappers over native primitives) ----
 
 eve.Scene["getNodeRef"] <- function(nodeId, hostName = null) {
@@ -319,7 +319,11 @@ eve.Scene["attachEntity"] <- function(nodeId, cls) {
 
 eve.Scene["attachEntityAt"] <- function(hostName, nodeId, cls) {
     if (typeof cls != "class") return null
-    if (!eve.isSubclass(cls, eve.Entity)) return null
+    // Must be an eve.SceneEntity, not merely an eve.Entity: the body below stores the
+    // host binding in `_scene`, `hostName` and `nodeId`, which only SceneEntity
+    // declares. Accepting a plain Entity subclass used to die mid-call with
+    // "the index '_scene' does not exist" instead of taking this rejection path.
+    if (!eve.isSubclass(cls, eve.SceneEntity)) return null
     local old = getEntityAt(hostName, nodeId, cls)
     if (old != null) detachEntityAt(hostName, nodeId, old)
     local inst = cls.create()

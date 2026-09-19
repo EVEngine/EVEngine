@@ -1416,6 +1416,26 @@ function testSceneSerializeAndPick() {
     if (scene.pickRay(0.0, 0.0, 5.0, 0.0, 0.0, -1.0) != "target") return false
     return true
 }
+function testAttachRejectsPlainEntity() {
+    // Touch an ECS class first: eve.SceneEntity is installed by a post-ECS hook, so a
+    // script whose very first ECS name is SceneEntity does not find it.
+    class Marker extends eve.Component { v = 0 }
+    class PlainEntity extends eve.Entity { mark = Marker }
+
+    local scene = eve.Scene()
+    scene.beginBuild()
+    scene.beginNode("root", "")
+    scene.addNode("n", "")
+    scene.end()
+    scene.mountBuildAs("guard")
+
+    // A plain Entity is not a script scene entity. This used to die mid-call with
+    // "the index '_scene' does not exist" because the body stores the host binding in
+    // members only eve.SceneEntity declares.
+    if (scene.attachEntity("n", PlainEntity) != null) return false
+    return scene.entitiesOf("n").len() == 0
+}
+
 )SQ";
 
 class SceneEcsBridgeFixture {
@@ -1465,6 +1485,10 @@ TEST_CASE_FIXTURE(SceneEcsBridgeFixture, "Scene.script.componentOnMount") {
 
 TEST_CASE_FIXTURE(SceneEcsBridgeFixture, "Scene.script.errorSemantics") {
     REQUIRE(vm.callFunc(vm.findFunc("testSceneErrorSemantics"), vm).toBool());
+}
+
+TEST_CASE_FIXTURE(SceneEcsBridgeFixture, "Scene.script.attachRejectsPlainEntity") {
+    REQUIRE(vm.callFunc(vm.findFunc("testAttachRejectsPlainEntity"), vm).toBool());
 }
 
 TEST_CASE_FIXTURE(SceneEcsBridgeFixture, "Scene.script.serializeAndPick") {
