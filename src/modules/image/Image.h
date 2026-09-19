@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/Module.h"
 #include "image/ImageData.h"
@@ -17,7 +19,7 @@ namespace image
  * This module does not know how to draw images on screen; only love.graphics
  * knows that.
  **/
-class Image : public Module
+class EVENGINE_API_PLATFORM Image : public Module
 {
 public:
 	using FormatHandler = medialoader::FormatHandler;

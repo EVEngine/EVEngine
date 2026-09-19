@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/BorrowedRef.h"
 #include "common/Module.h"
@@ -31,7 +33,7 @@ enum class OrderState { Queued, Active, Completed, Failed, Cancelled };
  * Values use the engine's canonical owning dynamic type. JSON text is accepted
  * only at the parsing boundary and becomes typed data before storage.
  */
-class OrderPayload {
+class EVENGINE_API OrderPayload {
 public:
     /** @brief Sets a JSON string value. */
     void setString(const std::string& key, const std::string& value);
@@ -84,7 +86,7 @@ struct OrderEvent : eve::scheduling::EventMetadata {
  * Queued orders are selected by descending priority and then insertion order.
  * The queue owns returned Order pointers; pointers remain valid until clear().
  */
-class CommandQueue {
+class EVENGINE_API CommandQueue {
 public:
     /** @brief Appends a command and returns its stable identity or validation failure. */
     [[nodiscard]] eve::Result<std::string> append(const std::string& kind, int priority = 0,
@@ -222,7 +224,7 @@ private:
 };
 
 /** @brief Returns the stable lowercase name of a state. */
-std::string stateName(OrderState state);
+EVENGINE_API std::string stateName(OrderState state);
 
 /** @brief Script module factory for generic CommandQueue objects. */
 class Orders : public Module {

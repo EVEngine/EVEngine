@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include <cstdlib>
 #include <cstring>
@@ -16,7 +18,7 @@ namespace filesystem {
 namespace physfs {
 
 /** @brief PhysFS 文件系统后端实现（挂载/解挂、读写、热重载）。 */
-class Filesystem final : public eve::filesystem::Filesystem {
+class EVENGINE_API Filesystem final : public eve::filesystem::Filesystem {
 public:
     Filesystem();
     ~Filesystem() override;

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "common/Export.h"
 #include "common/config.h"
 
 #include <stddef.h>
@@ -18,7 +19,7 @@ namespace eve
  * @param dstlen The length of the encoded string is stored here.
  * @return A string containing the base64-encoded data (allocated with new[]).
  */
-char *b64_encode(const char *src, size_t srclen, size_t linelen, size_t &dstlen);
+EVENGINE_API_FOUNDATION char *b64_encode(const char *src, size_t srclen, size_t linelen, size_t &dstlen);
 
 /**
  * @brief Decode base64 encoded data.
@@ -28,7 +29,7 @@ char *b64_encode(const char *src, size_t srclen, size_t linelen, size_t &dstlen)
  * @param dstlen The size of the binary data is stored here.
  * @return A chunk of memory containing the binary data (allocated with new[]).
  */
-char *b64_decode(const char *src, size_t srclen, size_t &dstlen);
+EVENGINE_API_FOUNDATION char *b64_decode(const char *src, size_t srclen, size_t &dstlen);
 
 } // eve
 

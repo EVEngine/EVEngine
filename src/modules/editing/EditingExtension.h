@@ -1,5 +1,6 @@
 #pragma once
 
+#include "common/Export.h"
 #include "editing/EditingIds.h"
 #include "editing/EditingResult.h"
 
@@ -95,7 +96,7 @@ private:
  * @param implementation Type-erased owning capability implementation.
  * @return Generation-qualified provider handle.
  */
-[[nodiscard]] Result<ProviderHandle> registerStaticProvider(
+[[nodiscard]] EVENGINE_API_PLATFORM Result<ProviderHandle> registerStaticProvider(
     ExtensionProviderRegistry& registry, ExtensionDescriptor descriptor,
     CapabilityId capability, std::shared_ptr<void> implementation);
 

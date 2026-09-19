@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /** @file AbilitySystem.h @brief Grants, cooldowns, instancing, activation groups and gameplay-event triggers. */
 
@@ -26,7 +28,7 @@ struct AbilityTrigger {
 };
 
 /** @brief Canonical immutable-by-convention definition of a grantable ability. */
-struct AbilityDefinition {
+struct EVENGINE_API AbilityDefinition {
     LogicalId                   id;
     ActionDefinition            action;
     Duration                    cooldown        = Duration::zero();
@@ -73,7 +75,7 @@ struct AbilityActivation {
  * ActionRuntime remains the sole owner of action phase state. The borrowed
  * runtime must outlive this system. No method reads a clock or invokes scripts.
  */
-class AbilityRuntime {
+class EVENGINE_API AbilityRuntime {
 public:
     /** @brief Construct a system borrowing the action runtime used for submissions. */
     explicit AbilityRuntime(ActionRuntime& runtime) : runtime_(runtime) {}

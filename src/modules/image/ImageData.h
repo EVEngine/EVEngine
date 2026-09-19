@@ -1,5 +1,7 @@
 
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/Data.h"
 #include "common/Resource.h"
@@ -33,7 +35,7 @@ struct UvPaintReceipt {
 /**
  * @brief Represents raw pixel data.
  **/
-class ImageData : public Resource
+class EVENGINE_API ImageData : public Resource
 {
 public:
 	using float16 = medialoader::float16;

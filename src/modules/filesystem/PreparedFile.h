@@ -1,4 +1,6 @@
 #pragma once
+
+#include "common/Export.h"
 #include <memory>
 #include <string>
 #include "common/Result.h"
@@ -19,7 +21,7 @@ class FileData;
  * @return Shared immutable bytes, valid after cache unload/reload until the last reader releases them.
  * @thread Game-thread read; no callbacks. Failure publishes no partial snapshot.
  */
-[[nodiscard]] Result<std::shared_ptr<const FileData>> readPreparedFile(const std::string& path, size_t limit);
+[[nodiscard]] EVENGINE_API Result<std::shared_ptr<const FileData>> readPreparedFile(const std::string& path, size_t limit);
 /** @brief Install game-thread script submission bindings; retains no class borrow. */
 void exposePreparedFileBindings(ssq::Class& cls);
 }  // namespace eve::filesystem

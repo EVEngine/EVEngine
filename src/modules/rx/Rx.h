@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include <functional>
 #include <memory>
@@ -87,7 +89,7 @@ public:
  * @brief RAII-style dispose handle for an active stream subscription.
  * Disposing unsubscribes from the source; move-only.
  */
-class Subscription {
+class EVENGINE_API Subscription {
 public:
     Subscription() = default;
     /** @brief Wraps a dispose callback (usually unsubscribing from a Subject). */

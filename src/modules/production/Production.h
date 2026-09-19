@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/BorrowedRef.h"
 #include "common/Module.h"
@@ -51,8 +53,17 @@ struct ProductionEvent : eve::scheduling::EventMetadata {
 };
 
 /** @brief Generic multi-owner, multi-slot continuous-progress work queue. */
-class WorkQueue {
+class EVENGINE_API_FOUNDATION WorkQueue {
 public:
+    // The queue owns move-only members (std::deque<std::unique_ptr<ProductionTask>>),
+    // so it is not copyable; dllexport must not instantiate the implicitly declared
+    // copy operations, whose bodies cannot compile. Deleting the copies is a no-op and
+    // the defaulted moves keep the previous implicit behaviour.
+    WorkQueue(const WorkQueue&) = delete;
+    WorkQueue& operator=(const WorkQueue&) = delete;
+    WorkQueue(WorkQueue&&) = default;
+    WorkQueue& operator=(WorkQueue&&) = default;
+
     /** @brief Creates an empty queue with an optional persistent identity. */
     explicit WorkQueue(eve::PersistentId instanceId = {});
     /**
@@ -166,11 +177,11 @@ private:
 };
 
 /** @brief Returns the stable lowercase name of a task state. */
-std::string_view taskStateName(TaskState state);
+EVENGINE_API std::string_view taskStateName(TaskState state);
 /** @brief Writes the stable task-state spelling to a stream. */
 inline std::ostream& operator<<(std::ostream& stream, TaskState state) { return stream << taskStateName(state); }
 /** @brief Returns the stable lowercase name of an event kind. */
-std::string_view eventKindName(ProductionEventKind kind);
+EVENGINE_API std::string_view eventKindName(ProductionEventKind kind);
 
 /** @brief Script module factory for generic production queues. */
 class Production : public Module {

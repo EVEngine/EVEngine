@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include <cstdint>
 #include <map>
@@ -14,7 +16,7 @@ namespace eve::editing {
  * Objects use std::map so serialization and equality do not depend on insertion
  * order. Native pointers and runtime handles are intentionally excluded.
  */
-class Value {
+class EVENGINE_API Value {
 public:
     using Array   = std::vector<Value>;
     using Object  = std::map<std::string, Value>;

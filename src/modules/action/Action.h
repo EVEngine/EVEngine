@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @file Action.h
@@ -51,7 +53,7 @@ enum class ActionPhase : std::uint8_t {
  * @return Borrowed static storage valid for the lifetime of the process.
  * @borrowed The returned pointer must not be freed or retained as mutable data.
  */
-[[nodiscard]] const char* actionPhaseName(ActionPhase phase) noexcept;
+[[nodiscard]] EVENGINE_API const char* actionPhaseName(ActionPhase phase) noexcept;
 
 /** @brief Selects how an action obtains its target set. */
 enum class TargetingMode : std::uint8_t {
@@ -473,7 +475,7 @@ private:
  * duration. Structural execution storage is owned here; adapters only submit
  * requests and observe results.
  */
-class ActionRuntime {
+class EVENGINE_API ActionRuntime {
 public:
     /**
      * @brief Bind borrowed composition ports to this owner-thread runtime.
