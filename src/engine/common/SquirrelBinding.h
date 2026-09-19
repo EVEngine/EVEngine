@@ -123,6 +123,27 @@ EVENGINE_API void reportScriptCallFailure(HSQUIRRELVM vm, const char* what);
 EVENGINE_API void resetReportedScriptCallFailures();
 
 /**
+ * @brief Compile and run one embedded script chunk against the root table.
+ *
+ * Modules install their script-facing base classes by compiling an embedded chunk and
+ * running it (`SceneComponent.nut`, `SceneEntity.nut`, `UIComponent.nut`, ...). That
+ * shape had been copied per module and had drifted: two copies discarded `sq_call`'s
+ * result, so a chunk that failed to run left its class missing with no signal from the
+ * engine -- the only symptom showed up much later as "the index 'SceneEntity' does not
+ * exist". This is the one implementation, and both the compile failure and the run
+ * failure are reported.
+ *
+ * @param vm Active Squirrel VM.
+ * @param name Chunk name, used for compile diagnostics and the failure report.
+ * @param source NUL-terminated script text; must not be null.
+ * @return SQ_OK, or SQ_ERROR with the VM stack restored and the failure reported.
+ * @note Ownership/lifetime: compiles and runs immediately; nothing is retained.
+ * @note Thread affinity: the owning VM's thread only.
+ * @note Reentrancy: runs script, so do not hold a lock across the call.
+ */
+EVENGINE_API SQRESULT compileAndRunChunk(HSQUIRRELVM vm, const char* name, const char* source);
+
+/**
  * @brief Call a script function, deriving `sq_call`'s parameter count from the pushes.
  *
  * `sq_call(vm, params, ...)` takes the callee at `-(params)-1`, so `params` counts the

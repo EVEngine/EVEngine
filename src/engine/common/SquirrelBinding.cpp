@@ -9,6 +9,7 @@
 #include <cmath>
 #include <cstdint>
 #include <cstdio>
+#include <cstring>
 #include <limits>
 #include <mutex>
 #include <string_view>
@@ -34,18 +35,37 @@ ScriptCallFailureLog& scriptCallFailureLog() {
     static ScriptCallFailureLog log;
     return log;
 }
-}  // namespace
 
-void reportScriptCallFailure(HSQUIRRELVM vm, const char* what) {
-    const ScriptErrorContext context = takeLastScriptError(vm);
-    const std::string        text = context.empty() ? std::string("unknown script error") : formatScriptError(context);
-
+/** @brief Record and (when the text changed) print one failure. */
+void reportFailureText(const char* what, const std::string& text) {
     ScriptCallFailureLog&       log = scriptCallFailureLog();
     std::lock_guard<std::mutex> lock(log.mutex);
     ++log.count;
     if (text == log.lastMessage) return;
     log.lastMessage = text;
     std::fprintf(stderr, "EVEngine: script call failed (%s): %s\n", what ? what : "?", text.c_str());
+}
+}  // namespace
+
+void reportScriptCallFailure(HSQUIRRELVM vm, const char* what) {
+    const ScriptErrorContext context = takeLastScriptError(vm);
+    reportFailureText(what, context.empty() ? std::string("unknown script error") : formatScriptError(context));
+}
+
+SQRESULT compileAndRunChunk(HSQUIRRELVM vm, const char* name, const char* source) {
+    if (!vm || !source) return SQ_ERROR;
+    const SQInteger top = sq_gettop(vm);
+    if (SQ_FAILED(sq_compilebuffer(vm, source, static_cast<SQInteger>(std::strlen(source)), name, SQTrue))) {
+        const ScriptErrorContext context = captureCompileError(vm);
+        reportFailureText(name, context.empty() ? std::string("unknown compile error") : formatScriptError(context));
+        sq_settop(vm, top);
+        return SQ_ERROR;
+    }
+    HSQOBJECT chunk;
+    sq_getstackobj(vm, -1, &chunk);  // borrowed: still rooted by `top` until the call ends
+    const SQRESULT result = callFunction(vm, chunk, rootTable);
+    sq_settop(vm, top);
+    return result;
 }
 
 int reportedScriptCallFailures() {

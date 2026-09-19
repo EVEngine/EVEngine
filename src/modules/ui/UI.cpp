@@ -194,17 +194,9 @@ eve.UIComponent <- class {
 )SQ";
 
 void injectUIComponentClass(ssq::Table &eveTable) {
-    HSQUIRRELVM vm = eveTable.getHandle();
-    const SQInteger top = sq_gettop(vm);
-    if (SQ_FAILED(sq_compilebuffer(vm, kUIComponentScript,
-                                   static_cast<SQInteger>(std::strlen(kUIComponentScript)),
-                                   "UIComponent.nut", SQTrue))) {
-        sq_settop(vm, top);
-        return;
-    }
-    sq_pushroottable(vm);
-    sq_call(vm, 1, SQFalse, SQTrue);
-    sq_settop(vm, top);
+    // A failed run used to be discarded, so a broken UIComponent.nut left eve.UIComponent
+    // missing with no signal (same shape the Scene injections had).
+    (void)script::compileAndRunChunk(eveTable.getHandle(), "UIComponent.nut", kUIComponentScript);
 }
 
 }  // namespace
@@ -1859,8 +1851,11 @@ ssq::Object UI::callPickHandler() {
         sq_settop(squirrel, top);
         return {};
     }
-    sq_pushroottable(squirrel);  // environment
-    if (SQ_FAILED(sq_call(squirrel, 1, SQTrue, SQTrue))) {
+    // The handler is the value we just looked up; call it with the root table as receiver
+    // and keep its return value on top for the instance check below.
+    HSQOBJECT handler;
+    sq_getstackobj(squirrel, -1, &handler);
+    if (SQ_FAILED(script::callFunctionResult(squirrel, handler, script::rootTable))) {
         sq_settop(squirrel, top);
         return {};
     }
@@ -2016,9 +2011,12 @@ void UI::callScenePickHandler(const std::string &nodeId) {
         sq_settop(squirrel, top);
         return;
     }
-    sq_pushroottable(squirrel);                    // environment
-    sq_pushstring(squirrel, nodeId.c_str(), -1);   // node id argument
-    sq_call(squirrel, 2, SQFalse, SQTrue);
+    // Same shape as the inspector handler above: the looked-up closure, called with the
+    // root table as receiver and the node id as its argument. A failed call used to be
+    // discarded here too.
+    HSQOBJECT handler;
+    sq_getstackobj(squirrel, -1, &handler);
+    (void)script::callFunction(squirrel, handler, script::rootTable, nodeId);
     sq_settop(squirrel, top);
 }
 
