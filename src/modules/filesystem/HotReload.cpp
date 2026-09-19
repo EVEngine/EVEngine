@@ -94,8 +94,8 @@ bool isPathPrefix(const std::filesystem::path &prefix, const std::filesystem::pa
     if (ec) a = prefix.lexically_normal();
     auto b = std::filesystem::weakly_canonical(full, ec);
     if (ec) b = full.lexically_normal();
-    const std::string as = a.generic_string();
-    const std::string bs = b.generic_string();
+    std::string as = a.generic_string();
+    std::string bs = b.generic_string();
     if (as.size() > bs.size()) return false;
 #ifdef _WIN32
     for (char &ch : as) ch = static_cast<char>(std::tolower(static_cast<unsigned char>(ch)));
