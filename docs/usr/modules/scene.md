@@ -80,6 +80,31 @@ scene.unlinkNode("soldier")                          // 拆全部
 
 物理 2D 同步的是 local x/y/roll（像素 + 弧度），物理 3D 同步 local x/y/z + 欧拉角（四元数内部转换）；body→node 模式适合根级节点（local≈world）。link 在 reconcile / 全量 rebuild 后按 id 保留；`SceneLoader` 导入的模型节点同样可挂 link，热重载后保留。
 
+#### 脚本 link kind：让自己的对象跟随节点
+
+上面几类都由引擎实现；`linkScriptAt()` 让你把**自己的脚本对象**挂进同一条变换管线，不需要写 C++：
+
+```squirrel
+class Follower {
+    function onNodeTransform(nodeId, x, y, z, yaw, pitch, roll, sx, sy, sz) {
+        // syncMode "node"：节点每次脏了就被调用
+    }
+    function nodeTransform() {
+        // syncMode "body"：返回 [x, y, z, yaw, pitch, roll]（local），节点被移动过去
+        return [0.0, 1.5, 0.0, 0.0, 0.0, 0.0]
+    }
+}
+
+local follower = Follower()
+eve.provider.publish("my.follower", follower)          // 先发布，再 link
+scene.linkScriptAt("host", "soldier", "my.follower", "node")   // 或 "body"
+```
+
+- **`mode`**：`"node"` = 节点驱动脚本（对每个脏节点调用 `onNodeTransform`）；`"body"` = 脚本驱动节点（在 world 传播前调用 `nodeTransform()`，节点被移到它返回的 local 变换）。只有对应模式的方法会被调用，两个都写也可以。
+- **provider 必须先发布**：`linkScriptAt` 解析的是 `eve.provider` 里的**具名提供方**，并记录它的 generation，所以退役后旧链接会被报成"死链"，而不会悄悄接到同名的新对象上。
+- **跨 host 用 `linkScriptAt(hostName, …)`**：它本身就带 host 参数（selected host 也走这个签名）。
+- **失败语义**：host 不存在、provider 未发布、节点不存在都返回 `Result` 表（`ok=false` + `code`），不抛异常。
+
 ### 变换读写 / 空间换算 / 层级操作
 
 与 `setNode*` 配套的 getter 与换算已补齐（selected host；跨 host 用 `*At` 变体）：

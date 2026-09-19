@@ -4512,6 +4512,24 @@ void Procgen::expose(ssq::Class& cls) {
                                                            "Procgen module is no longer loaded", "pointGraph");
             });
     });
+    cls.addFunc("newShapeGrammar", [vm = cls.getHandle()](Procgen* value) -> ssq::Table {
+        if (!value)
+            return eve::script::projectStatusResult(
+                vm,
+                procgenBindingFailure<void>(eve::DiagnosticCode::InvalidArgument, "Procgen module must not be null",
+                                            "procgen")
+                    .status(),
+                false, false);
+        return makeOwnedNativeProxy<ShapeGrammar>(
+            vm, value->newShapeGrammarHandle(),
+            [value](ProcgenShapeGrammarHandleRef ref) { return value->resolveShapeGrammar(ref); },
+            [](ProcgenShapeGrammarHandleRef ref) {
+                auto* owner = ModuleManager::getInstance<Procgen>("Procgen");
+                return owner ? owner->release(ref)
+                             : procgenBindingFailure<void>(eve::DiagnosticCode::StaleHandle,
+                                                           "Procgen module is no longer loaded", "shapeGrammar");
+            });
+    });
     cls.addFunc("newMeshModifierGraph", [vm = cls.getHandle()](Procgen* value) -> ssq::Table {
         if (!value)
             return eve::script::projectStatusResult(

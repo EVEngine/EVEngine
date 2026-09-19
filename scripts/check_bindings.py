@@ -42,6 +42,8 @@ ROOT = Path(__file__).resolve().parent.parent
 MODULES = ROOT / "src" / "modules"
 DOCS = ROOT / "docs" / "usr" / "modules"
 GAPS_FILE = Path(__file__).resolve().parent / "check_bindings_gaps.txt"
+# Scripts the engine ships to every game; their members are user-facing too.
+SHIPPED_SCRIPTS = ROOT / "src" / "scripts"
 
 # CMake module NAME -> user-doc chapter (doc filename without .md).
 DOC_ALIASES = {
@@ -52,6 +54,24 @@ DOC_ALIASES = {
 }
 
 ADDFUNC_RE = re.compile(r'\badd(?:Func|Var)\(\s*"([^"]+)"')
+
+# Script-side members are part of the same script surface, and the engine defines
+# much of it with Squirrel syntax rather than `addFunc`: bootstrap chunks live in
+# C++ raw strings (kSceneEntityScript, kUIComponentScript, kEcsScript, ...) and more
+# ships in src/scripts/*.nut. The *reverse* check has to see those definitions or it
+# reports most of the documented surface as drift -- it listed 221 names, dominated
+# by `onMount` / `ui()` / `node()` / `pickRay()` and friends, all of which do exist.
+#
+# Deliberately asymmetric: script-defined names only *suppress* a "documented but not
+# bound" warning. They are not required to be documented themselves, because the
+# bootstrap chunks are full of internal helpers (`currentHostName`, `note`, ...) and
+# charging the doc chapters with those would drown the forward check.
+SCRIPT_DEF_RES = (
+    re.compile(r"\bfunction\s+([A-Za-z_][A-Za-z0-9_]*)\s*\("),
+    re.compile(r"\b([A-Za-z_][A-Za-z0-9_]*)\s*<-\s*(?:function|class)\b"),
+    re.compile(r'\[\s*"([A-Za-z_][A-Za-z0-9_]*)"\s*\]\s*<-'),
+    re.compile(r'\baddClass(?:\s*<[^>]*>)?\(\s*"([^"]+)"'),
+)
 
 
 def load_gaps() -> set[str]:
@@ -137,6 +157,33 @@ def bound_names(module_dir: Path, skip_heads: set[str]) -> set[str]:
     return names
 
 
+def module_sources(module_dir: Path, skip_heads: set[str]) -> list[Path]:
+    """Module .cpp/.h/.hpp, so Squirrel chunks in headers are seen too."""
+    files = list(iter_module_cpp(module_dir, skip_heads))
+    for suffix in ("*.h", "*.hpp"):
+        for header in module_dir.rglob(suffix):
+            if "third-party" in header.as_posix():
+                continue
+            rel = header.relative_to(module_dir)
+            if rel.parts and rel.parts[0] in skip_heads:
+                continue
+            files.append(header)
+    return files
+
+
+def script_defined_names(module_dir: Path, skip_heads: set[str]) -> set[str]:
+    """Names the engine defines in Squirrel: module chunks plus the shipped scripts."""
+    names: set[str] = set()
+    paths = module_sources(module_dir, skip_heads)
+    if SHIPPED_SCRIPTS.is_dir():
+        paths.extend(sorted(SHIPPED_SCRIPTS.rglob("*.nut")))
+    for path in paths:
+        text = path.read_text(encoding="utf-8", errors="replace")
+        for pattern in SCRIPT_DEF_RES:
+            names.update(pattern.findall(text))
+    return names
+
+
 def doc_for(module: str) -> Path | None:
     doc = DOC_ALIASES.get(module, module)
     p = DOCS / f"{doc}.md"
@@ -199,12 +246,16 @@ def main() -> int:
             if not args.quiet:
                 print(f"ok  {module}: {len(names)} bindings documented")
 
-    # Doc-only names: bound surface shrank but the doc still lists old methods.
+    # Doc-only names: the script surface shrank but the doc still lists old methods.
+    # Script-side definitions count as existing (see SCRIPT_DEF_RES). Unlike the
+    # forward check, this one scans *nested* satellite dirs too (`skip_heads` empty):
+    # a host chapter may legitimately document its satellite (physics.md documents the
+    # cloth API, which is bound under physics/cloth), and those names do exist.
     for module, d, skip in modules:
         doc = doc_for(module)
         if doc is None:
             continue
-        names = bound_names(d, skip)
+        names = bound_names(d, set()) | script_defined_names(d, set())
         text = doc_text(doc)
         doc_names = set(ADDFUNC_RE.findall(text)) | {
             m for m in re.findall(r"`([a-zA-Z][a-zA-Z0-9_]*)\(\)", text)
