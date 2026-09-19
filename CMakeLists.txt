@@ -108,6 +108,23 @@ option(EVENGINE_BUILD_RENDER_BENCHMARK
 option(EVENGINE_BUILD_DEMO "Build optional Demo module (procedural demo assets + default demo.nut)" ON)
 option(EVENGINE_VULKAN_USE_VMA
     "Use the bundled Vulkan Memory Allocator for VKBuilder buffers" ON)
+# Per-module shared libraries. Modules are OBJECT libraries by default, so every
+# consumer (eve, each unit_test_<domain>) absorbs all engine objects and pays the
+# engine's debug information again: a per-domain test PDB measured 1.2 GB of
+# which only ~0.8 MB per test file is the test code. As SHARED, the engine debug
+# info stays in one PDB per module and consumers link import libraries.
+#
+# A single whole-engine DLL is not an option: it would need
+# WINDOWS_EXPORT_ALL_SYMBOLS, which the engine already exceeds (MSVC LNK1189,
+# 65535 exports; see src/engine/CMakeLists.txt). Per module the export surface is
+# only that module's own symbols, well inside the limit.
+set(EVENGINE_MODULE_LINKAGE "OBJECT" CACHE STRING
+    "How each manifest module is built: OBJECT (default) or SHARED (one DLL per module)")
+set_property(CACHE EVENGINE_MODULE_LINKAGE PROPERTY STRINGS OBJECT SHARED)
+if(NOT EVENGINE_MODULE_LINKAGE MATCHES "^(OBJECT|SHARED)$")
+    message(FATAL_ERROR
+        "EVENGINE_MODULE_LINKAGE must be OBJECT or SHARED (got: ${EVENGINE_MODULE_LINKAGE})")
+endif()
 set(EVENGINE_THIRD_PARTY_BINARY_DIR "" CACHE PATH
     "Use a prebuilt third-party install tree (include/lib/bin) without rebuilding or modifying it")
 set(EVENGINE_PREBUILT_THIRD_PARTY "" CACHE PATH
@@ -596,12 +613,44 @@ macro(create_module libname folder)
     # like Window.cpp). Use STATIC archives under Xcode to keep linking stable.
     if(CMAKE_GENERATOR MATCHES "Xcode")
         add_library(${libname} STATIC ${module_src})
+    elseif(EVENGINE_MODULE_LINKAGE STREQUAL "SHARED")
+        add_library(${libname} SHARED ${module_src})
+        if(WIN32)
+            # Per-module .def built from this module's objects only. The symbol
+            # count is a few hundred to a few thousand, far below MSVC's 65535
+            # export limit that a single whole-engine DLL would exceed.
+            set_target_properties(${libname} PROPERTIES
+                WINDOWS_EXPORT_ALL_SYMBOLS ON)
+        else()
+            # ELF/Mach-O need default visibility for the module boundary to be
+            # usable by consumers; inline code stays hidden so it is emitted in
+            # the consumer instead of duplicated in every module.
+            set_target_properties(${libname} PROPERTIES
+                CXX_VISIBILITY_PRESET default
+                VISIBILITY_INLINES_HIDDEN OFF)
+        endif()
     else()
         add_library(${libname} OBJECT ${module_src})
     endif()
     # Opt the module into the shared engine include set (was global
     # include_directories before; see eve_engine_includes in main()).
     target_link_libraries(${libname} PUBLIC eve_engine_includes)
+
+    # Materialize the manifest DEPS as real link edges. OBJECT libraries never
+    # needed them -- every consumer absorbed every object -- but a module DLL has
+    # to link the module DLLs it calls into. `folder` is the module name at every
+    # call site (the manifest passes ${_mod}, src/engine passes the module name),
+    # so no call site has to change. PRIVATE: EVELIBS already links every enabled
+    # module into every consumer, so nothing depends on this propagating.
+    if(EVENGINE_MODULE_LINKAGE STREQUAL "SHARED"
+       AND DEFINED EVE_MODULE_${folder}_DEPS)
+        foreach(_eve_dep IN LISTS EVE_MODULE_${folder}_DEPS
+                                EVE_MODULE_${folder}_OPTIONAL_DEPS)
+            if(TARGET "${EVE_MODULE_${_eve_dep}_LIB}")
+                target_link_libraries(${libname} PRIVATE "${EVE_MODULE_${_eve_dep}_LIB}")
+            endif()
+        endforeach()
+    endif()
 
     if(NOT EVENGINE_PROFILE_HOSTLESS)
         add_dependencies(${libname} third-party)
