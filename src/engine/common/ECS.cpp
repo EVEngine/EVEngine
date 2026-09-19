@@ -314,6 +314,18 @@ function eve::_ecsCollectInstances(cls, out) {
             }
         }
     }
+    // 稳定顺序：按实体 id 升序（= 创建顺序）。
+    //
+    // `_ecsUnregisterInstance` 用 swap-remove 保持 O(1) 销毁，所以 instances 数组本身的
+    // 顺序在删除后会变——实测 [1,2,3,4] 删掉 2 得到 [1,4,3]。而 GPU System 按**视图顺序**
+    // 把实体打包成 buffer 的行，回读时又按同一顺序写回（`unpackEcsFloats(ents, …)`），
+    // `requestUploadRange/requestReadbackRange(first, count)` 更是直接按行号寻址：顺序一变，
+    // "第 i 行是哪个实体"就变了，回读的值会落到另一个实体上。
+    //
+    // id 由 `eve.allocEntityId()` 单调分配且**不复用**，所以按 id 排序给出一个跨子类也
+    // 成立的全序；`_ecsTypes` 的散列遍历顺序因此不再影响结果。排序只发生在缓存重建时
+    // （结构性变更后第一次取视图），每帧取视图仍然是 O(n) 拷贝。
+    out.sort(function(a, b) { return a._eid - b._eid })
 }
 
 eve.Component <- class {
@@ -799,6 +811,11 @@ function eve::view(entityClass) {
         for (local i = 0; i < count; ++i) out[i] = cached[i]
     }
     if ("_cppCollect" in this) this._cppCollect(entityClass, out)
+    // No sort here. Entities appended by a registered C++ collector
+    // (registerCppEntityView) are not `eve.Entity` instances and have no `_eid`; sorting them
+    // threw "the index '_eid' does not exist" (caught by ECS.script.cppCreatedEntitiesVisible).
+    // The collector owns their order; the id-ordered contract covers script instances, which
+    // `_ecsCollectInstances` already sorted.
     return out
 }
 

@@ -515,6 +515,75 @@ function testGpuDrivenBindingSurface() {
     return gpu.getGpuDrivenInstanceStride() == 160 &&
            gpu.getGpuResidentOffsetAlignment() == 256
 }
+
+// 视图顺序 = 实体 id 升序（= 创建顺序）。
+//
+// `_ecsUnregisterInstance` 用 swap-remove 保持 O(1) 销毁，数组本身在删除后会失序（实测
+// [1,2,3,4] 删掉 2 得到 [1,4,3]），而 GPU System 按视图顺序打包成 buffer 的行、回读时又按
+// 同一顺序写回，`requestUploadRange/ReadbackRange(first, count)` 直接按行号寻址——顺序一变，
+// 回读的值会落到另一个实体上。所以这里把顺序钉死。
+function testViewOrderIsEntityIdOrder() {
+    class Node extends eve.Entity { }
+    local a = Node.create()
+    local b = Node.create()
+    local c = Node.create()
+    local d = Node.create()
+    local removedId = b.getId()
+
+    local seen = []
+    foreach (e in eve.view(Node)) seen.push(e.getId())
+    if (seen.len() != 4) return false
+    for (local i = 1; i < seen.len(); ++i) if (seen[i] <= seen[i - 1]) return false
+
+    // 删掉中间一个：幸存者仍按 id 升序（改前这里是 1,4,3）
+    b.destroy()
+    seen = []
+    foreach (e in eve.view(Node)) seen.push(e.getId())
+    if (seen.len() != 3) return false
+    for (local i = 1; i < seen.len(); ++i) if (seen[i] <= seen[i - 1]) return false
+    if (seen.find(a.getId()) == null || seen.find(c.getId()) == null || seen.find(d.getId()) == null) return false
+
+    // 新建实体排在最后；删除最新的一个不影响幸存者的相对顺序
+    local e5 = Node.create()
+    seen = []
+    foreach (e in eve.view(Node)) seen.push(e.getId())
+    if (seen.len() != 4 || seen[3] != e5.getId()) return false
+    e5.destroy()
+    seen = []
+    foreach (e in eve.view(Node)) seen.push(e.getId())
+    if (seen.len() != 3 || seen[2] != d.getId()) return false
+
+    // id 不复用：这是"按 id 排序"能当稳定键的前提
+    for (local i = 0; i < 8; ++i) if (Node.create().getId() == removedId) return false
+
+    // 同一类两次取视图顺序一致
+    local first = []
+    local second = []
+    foreach (e in eve.view(Node)) first.push(e.getId())
+    foreach (e in eve.view(Node)) second.push(e.getId())
+    if (first.len() != second.len()) return false
+    for (local i = 0; i < first.len(); ++i) if (first[i] != second[i]) return false
+    return true
+}
+
+// 跨子类的视图同样按创建顺序交错：此前按 `_ecsTypes` 的散列顺序分组，同类会聚在一起
+// （例如 Left,Left,Right,Right 而不是创建顺序），于是 id 序列不是升序。
+function testViewOrderSpansSubclassesByCreation() {
+    class Base extends eve.Entity { }
+    class Left extends Base { }
+    class Right extends Base { }
+
+    Left.create()
+    Right.create()
+    Left.create()
+    Right.create()
+
+    local seen = []
+    foreach (e in eve.view(Base)) seen.push(e.getId())
+    if (seen.len() != 4) return false
+    for (local i = 1; i < seen.len(); ++i) if (seen[i] <= seen[i - 1]) return false
+    return true
+}
 )SQ";
 
 UnitSciptTest(ScriptEcsTest, kScriptEcsContent);
@@ -579,4 +648,12 @@ TEST_CASE_FIXTURE(ScriptEcsTest, "ScriptECS.registryOnlySlotHasNoField") {
 
 TEST_CASE_FIXTURE(ScriptEcsTest, "ScriptECS.gpuDrivenBindingSurface") {
     REQUIRE(callScript("testGpuDrivenBindingSurface"));
+}
+
+TEST_CASE_FIXTURE(ScriptEcsTest, "ScriptECS.viewOrderIsEntityIdOrder") {
+    REQUIRE(callScript("testViewOrderIsEntityIdOrder"));
+}
+
+TEST_CASE_FIXTURE(ScriptEcsTest, "ScriptECS.viewOrderSpansSubclassesByCreation") {
+    REQUIRE(callScript("testViewOrderSpansSubclassesByCreation"));
 }
