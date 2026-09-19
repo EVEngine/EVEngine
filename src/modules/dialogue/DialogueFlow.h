@@ -67,6 +67,12 @@ public:
                 const CommandRequest&)>;
         /** @brief Optional factory used to stage an atomic operation or Action. */
         CommandParticipantFactory commandParticipantFactory;
+        /**
+         * @brief Injected UTF-8 content reader used by loadDnutFileChecked.
+         * @remarks The callback runs synchronously on the owner thread and must
+         *          not re-enter DialogueFlow. Dialogue has no filesystem-module dependency.
+         */
+        std::function<eve::Result<std::string>(const std::string&)> contentReader;
     };
 
     Module_REG(DialogueFlow);
@@ -227,6 +233,7 @@ private:
     CommandRequestHandler                                     operationRequestHandler_;
     CommandRequestHandler                                     gameplayActionHandler_;
     IntegrationConfig::CommandParticipantFactory              commandParticipantFactory_;
+    std::function<eve::Result<std::string>(const std::string&)> contentReader_;
     eve::IStateMutation*                                      stateMutationProvider_ = nullptr;
     DialoguePaymentAdapter                                    paymentAdapter_;
     std::uint64_t                                             transactionSequence_ = 1;

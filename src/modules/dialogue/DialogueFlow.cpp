@@ -1,10 +1,11 @@
 #include "dialogue/DialogueFlow.h"
 
 #include "common/SquirrelBinding.h"
+#include "common/Capability.h"
+#include "common/ServiceInterfaces.h"
 #include "dialogue/ConversationAuthoring.h"
 #include "dialogue/ConversationImporter.h"
 #include "dialogue/ConversationToolchain.h"
-#include "filesystem/Filesystem.h"
 #include "i18n/I18n.h"
 
 #include <algorithm>
@@ -191,6 +192,7 @@ void DialogueFlow::configureIntegration(IntegrationConfig config) {
     operationRequestHandler_      = std::move(config.operationHandler);
     gameplayActionHandler_        = std::move(config.gameplayActionHandler);
     commandParticipantFactory_    = std::move(config.commandParticipantFactory);
+    contentReader_                = std::move(config.contentReader);
     stateMutationProvider_        = config.stateMutation;
     paymentAdapter_.setBindings(std::move(config.accounts));
 
@@ -396,24 +398,24 @@ bool DialogueFlow::renameNode(const std::string& conversationId, const std::stri
 }
 
 int DialogueFlow::loadFromDnutFile(const std::string& path) {
-    auto* filesystem = eve::ModuleManager::getInstance<eve::filesystem::Filesystem>("Filesystem");
-    if (!filesystem) filesystem = eve::filesystem::Filesystem::create();
-    eve::filesystem::FileData* data = nullptr;
-    try {
-        data = filesystem->read(path);
-    } catch (...) {
-        delete data;
-        failureMessage_ = path + ": read failed";
-        return 0;
+    std::string source;
+    if (contentReader_) {
+        auto content = contentReader_(path);
+        if (!content) {
+            failureMessage_ = content.status().describe();
+            return 0;
+        }
+        source = std::move(content).takeValue();
+    } else {
+        auto* filesystem = eve::cap::query<eve::service::IFileSystem>();
+        std::vector<std::uint8_t> bytes;
+        if (!filesystem || !filesystem->readFile(path, bytes)) {
+            failureMessage_ = path + ": dialogue content read failed";
+            return 0;
+        }
+        source.assign(reinterpret_cast<const char*>(bytes.data()), bytes.size());
     }
-    if (!data || !data->getData()) {
-        delete data;
-        failureMessage_ = path + ": read failed";
-        return 0;
-    }
-    const std::string text(static_cast<const char*>(data->getData()), data->getSize());
-    delete data;
-    return loadFromDnut(text, path);
+    return loadFromDnut(source, path);
 }
 
 int DialogueFlow::mergeImported(std::vector<ConversationAsset> imported) {

@@ -1,8 +1,35 @@
 #include "dialogue/DialogueFlow.h"
+#include "common/Capability.h"
+#include "common/ServiceInterfaces.h"
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
 using namespace eve::dialogue;
+
+namespace {
+class DialogueMemoryFileSystem final : public eve::service::IFileSystem {
+public:
+    std::string content;
+    bool readFile(const std::string&, std::vector<std::uint8_t>& out) override {
+        out.assign(content.begin(), content.end());
+        return true;
+    }
+    bool writeFile(const std::string&, const void*, size_t) override { return false; }
+    bool fileExists(const std::string&) override { return true; }
+};
+}  // namespace
+
+TEST_CASE("dialogueHotReload.fileLoadingUsesInjectedCapability") {
+    eve::cap::detail::clearAllRaw();
+    DialogueFlow flow;
+    CHECK_EQ(flow.loadFromDnutFile("missing.dnut"), 0);
+    DialogueMemoryFileSystem filesystem;
+    filesystem.content = "conversation loaded entry=end\nnode end end\nendconversation\n";
+    eve::cap::provide<eve::service::IFileSystem>(&filesystem);
+    CHECK_EQ(flow.loadFromDnutFile("memory.dnut"), 1);
+    CHECK(flow.hasConversation("loaded"));
+    eve::cap::revoke<eve::service::IFileSystem>(&filesystem);
+}
 
 TEST_CASE("dialogueHotReload.transactionalCrossFileValidation") {
     DialogueFlow      flow;
