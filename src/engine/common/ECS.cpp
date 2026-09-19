@@ -145,7 +145,12 @@ void registerScriptComponent(const std::string& name, ssq::Object cls) {
     auto& m = scriptComponents();
     auto it = m.find(name);
     if (it != m.end()) {
-        if (it->second.vm) sq_release(it->second.vm, &it->second.cls);
+        // Only release a reference that belongs to *this* VM. A stale entry from
+        // another VM must not be released: that VM may already be destroyed, and
+        // sq_release() would dereference its freed RefTable (measured access
+        // violation, see the plan doc §9.49). Stale entries are normally dropped
+        // by prepareEcsScriptInjection(); this guard covers two live VMs.
+        if (it->second.vm == vm) sq_release(it->second.vm, &it->second.cls);
         it->second = ScriptComponentReg(vm, o);
     } else {
         m.emplace(name, ScriptComponentReg(vm, o));
@@ -931,6 +936,11 @@ void prepareEcsScriptInjection() {
     // Class identities belong to one VM. Clear them when a new eve table is
     // prepared, before any lazy/native exposer registers the next VM's classes.
     cppEntityViews().clear();
+    // Script component registrations (eve.component) hold a Squirrel reference
+    // into the VM that made them. By the time the next table is prepared that VM
+    // is already destroyed, so the entries must be dropped **without** releasing:
+    // sq_release() on a destroyed VM is a use-after-free (see the plan doc §9.49).
+    scriptComponents().clear();
     ecsScriptInjected()  = false;
     postEcsHooksFlushed() = 0;
 }

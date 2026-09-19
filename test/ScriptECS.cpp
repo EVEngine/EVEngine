@@ -682,3 +682,41 @@ TEST_CASE_FIXTURE(ScriptEcsTest, "ScriptECS.viewOrderIsEntityIdOrder") {
 TEST_CASE_FIXTURE(ScriptEcsTest, "ScriptECS.viewOrderSpansSubclassesByCreation") {
     REQUIRE(callScript("testViewOrderSpansSubclassesByCreation"));
 }
+
+static const char* kComponentRegistryScript = R"SQ(
+function registerProbeComponent() {
+    class Probe extends eve.Component { v = 0 }
+    eve.component("Probe", Probe)
+    return true
+}
+
+// 同一个 VM 内用同名再注册一次：走"替换旧条目"分支，此时旧引用属于**当前** VM，
+// 必须照常释放——跨 VM 的修复不能把这条正常路径也一起关掉。
+function registerProbeComponentAgain() {
+    class Probe extends eve.Component { v = 1 }
+    eve.component("Probe", Probe)
+    return true
+}
+)SQ";
+
+// `callScript` 是 protected，而本用例需要在同一个 TEST_CASE 里先后构造两个 VM。
+class ComponentRegistryTwiceTest : public ScriptTest {
+public:
+    ComponentRegistryTwiceTest() : ScriptTest(kComponentRegistryScript) {}
+    bool registerProbeComponent() { return callScript("registerProbeComponent"); }
+    bool registerProbeComponentAgain() { return callScript("registerProbeComponentAgain"); }
+};
+
+TEST_CASE("ScriptECS.componentRegistrationCrossesVmsSafely") {
+    {
+        ComponentRegistryTwiceTest first;
+        REQUIRE(first.registerProbeComponent());
+        REQUIRE(first.registerProbeComponentAgain());  // 同 VM 替换：照常释放
+    }
+    // 第一个 VM 已在此处销毁。用同一个名字在第二个 VM 里再注册一次：
+    // 注册表是进程级静态、名字相同就会走"替换旧条目"的分支，若那条分支去释放
+    // 属于已销毁 VM 的引用，就是 use-after-free（见方案文档 §9.49）。
+    ComponentRegistryTwiceTest second;
+    REQUIRE(second.registerProbeComponent());
+    REQUIRE(second.registerProbeComponentAgain());
+}
