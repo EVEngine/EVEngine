@@ -251,7 +251,10 @@ VehicleEntity* Vehicle::newVehicle(const std::string& defId, float x, float y, f
     v->health()->hp        = def.maxHealth;
 
     if (!def.mounts.empty()) {
-        if (eve::weapon::Weapon* wmod = requireModInst(eve::weapon, Weapon)) {
+        // Composition boundary: this factory is the single place Vehicle resolves the
+        // Weapon module, and mounts cannot be built before it exists. Spelled out
+        // rather than through the non-runtime `requireModInst` macro (R-MECH-3).
+        if (eve::weapon::Weapon* wmod = eve::ModuleManager::requireInstance<eve::weapon::Weapon>("Weapon")) {
             for (const MountDef& md : def.mounts) {
                 eve::weapon::WeaponMountEntity* m = wmod->newMount(md.name, md.type);
                 if (m == nullptr) continue;

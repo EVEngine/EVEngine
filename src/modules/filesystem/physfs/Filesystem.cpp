@@ -76,7 +76,8 @@ namespace physfs {
 Filesystem::Filesystem() : fused(false), fusedSet(false) {
     requirePath  = {"?.lua", "?/init.lua"};
     cRequirePath = {"??"};
-    if (auto* c = getModInst(eve::cmd,Cmdline)) {
+    // Composition boundary: this constructor resolves Cmdline so argv can seed PhysFS.
+    if (auto* c = eve::ModuleManager::getInstance<eve::cmd::Cmdline>("Cmdline")) {
         // unit_test / embedders never call Cmdline::runArgs: argv stays empty.
         const std::string a0 = c->getArgv(0);
         if (a0.empty()) init(NULL);

@@ -7,6 +7,17 @@
 
 namespace eve::keyboard::sdl {
 
+namespace {
+
+/** Composition boundary: the single place this module resolves the Window module for
+ *  DPI conversion, spelled out rather than through the non-runtime `getModInst`
+ *  macro, so the input methods below stay free of per-call lookups (R-MECH-3). */
+eve::window::Window *windowOrNull() {
+    return eve::ModuleManager::getInstance<eve::window::Window>("Window");
+}
+
+}  // namespace
+
 Keyboard::Keyboard() {
     // Video subsystem owns the keyboard state / text input on most backends.
     SDL_InitSubSystem(SDL_INIT_VIDEO);
@@ -83,10 +94,10 @@ void Keyboard::setTextInput(bool enable) {
 
 void Keyboard::setTextInput(bool enable, double x, double y, double w, double h) {
     // SDL_SetTextInputRect expects window coords; API takes pixels.
-    auto* window = getModInst(window, Window);
-    if (window) {
-        window->DPIToWindowCoords(&x, &y);
-        window->DPIToWindowCoords(&w, &h);
+    auto* win = windowOrNull();
+    if (win) {
+        win->DPIToWindowCoords(&x, &y);
+        win->DPIToWindowCoords(&w, &h);
     }
 
     SDL_Rect rect = {static_cast<int>(x), static_cast<int>(y), static_cast<int>(w),

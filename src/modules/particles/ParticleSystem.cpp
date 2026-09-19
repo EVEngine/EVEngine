@@ -174,8 +174,16 @@ int appendRibbonItems(const ParticleEmitter::Config& cfg, const ParticleEmitter:
     return segments;
 }
 
-/** True when the emitter center is well outside the camera view (skip sim). */
-bool emitterOffscreen(const ParticleEmitter::Config &cfg, const ParticleEmitter::Draw &draw) {
+/**
+ * True when the emitter center is well outside the camera view (skip sim).
+ *
+ * @param gfx Resolved Graphics provider. This runs once per emitter per frame, so
+ *            the caller resolves the provider once and passes it in; looking it up
+ *            here would be a string-keyed module probe on the per-emitter path.
+ *            Null skips the viewport test.
+ */
+bool emitterOffscreen(graphics::Graphics *gfx, const ParticleEmitter::Config &cfg,
+                      const ParticleEmitter::Draw &draw) {
     auto *cam = draw.camera;
     if (!cam) return false;
     if (cfg.cullDistance > 0.f) {
@@ -183,7 +191,6 @@ bool emitterOffscreen(const ParticleEmitter::Config &cfg, const ParticleEmitter:
         const float dy = cfg.y - cam->data()->y;
         if (dx * dx + dy * dy > cfg.cullDistance * cfg.cullDistance) return true;
     }
-    auto *gfx = eve::ModuleManager::getInstance<eve::graphics::Graphics>("Graphics");
     if (!gfx) return false;
     const float viewW = draw.canvas ? float(draw.canvas->getWidth()) : float(gfx->getWidth());
     const float viewH = draw.canvas ? float(draw.canvas->getHeight()) : float(gfx->getHeight());
@@ -408,7 +415,7 @@ eve::Result<void> runParticleSimulation(const eve::SimulationStep &step, bool le
             continue;
         }
 
-        const bool offscreen = emitterOffscreen(*cfg, *draw);
+        const bool offscreen = emitterOffscreen(gfx, *cfg, *draw);
         const bool culled    = cfg->cullingMode == "pause"    ? offscreen
                                : cfg->cullingMode == "always" ? false
                                                               : (aliveBefore <= 0 && offscreen);
@@ -514,7 +521,7 @@ int appendOneEmitter(graphics::Graphics& gfx, ParticleEmitter& emitter,
     if (!draw->visible || alive <= 0) return 0;
     const auto& budget = particleBudgetConfig();
     if (respectSceneCulling &&
-        (budget.qualityLevel < cfg->minimumQuality || emitterOffscreen(*cfg, *draw))) {
+        (budget.qualityLevel < cfg->minimumQuality || emitterOffscreen(&gfx, *cfg, *draw))) {
         culled = true; return 0;
     }
     if (gpu->residentActive) {
