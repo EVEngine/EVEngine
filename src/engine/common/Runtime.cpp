@@ -6,6 +6,7 @@
 #include "common/ScriptCompiler.h"
 #include "common/ScriptError.h"
 #include "common/ScriptModule.h"
+#include "common/ScriptProvider.h"
 
 #include <squirrel.h>
 
@@ -462,6 +463,9 @@ void Runtime::shutdown() noexcept {
     initialized_ = false;
     script_compiler_.reset();
     script_modules_.reset();
+    // A published script provider holds a rooted ssq::Object, which must not outlive
+    // its VM: release every one before the VM goes away.
+    ScriptProviderRegistry::instance().clearAll();
     vm_.reset();
     stopped_ = true;
     shutting_down_ = false;
