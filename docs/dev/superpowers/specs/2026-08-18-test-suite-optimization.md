@@ -346,3 +346,14 @@ DLL 搜索不会去找 `${CMAKE_BINARY_DIR}`，所以组 DLL 在**运行时**还
 
 其余待办：EVThirdParty（把第三方库也收进一个共享库）；按域裁剪链接闭包（否则每个域仍要拉 7 个
 组 DLL 的全部导出）；`DEPS` 与真实调用对齐后重定 `LAYER`（`rpg` 可放宽到 [1..99]，`npc_ai` ≤1）。
+
+**链接策略（2026-09-19 定，已落进 `Makefile` / `CMakeLists.txt` / `AGENTS.md`）**：开发用动态
+（`EVENGINE_MODULE_LINKAGE=SHARED`，改一个域只重链测试可执行文件），release / SDK 用静态 ——
+`Makefile` 的 `WIN32_CMAKE_ARGS` 显式传 `-DEVENGINE_MODULE_LINKAGE=OBJECT`，所以 `make build/win32`
+与 `make sdk/win32` 的产物一定是单个 exe、旁边不带引擎 DLL。CMake 默认值仍是 `OBJECT`，等 7 个组
+DLL 真正链通（= §7.2 的跨组 `EVENGINE_API` 标注完成）后再把它翻成 `SHARED`；在那之前可用
+`CMAKE_EXTRA_ARGS="-DEVENGINE_MODULE_LINKAGE=SHARED"` 自行启用，但要知道：SHARED 下每个测试目标对
+`EVE_LINK_TARGETS` 有 order-only 依赖，组 DLL 没链通前**任何测试都编不出来**。
+
+debug SDK（`make sdk/win32-debug`）**沿用开发配置，即动态**：它从 `build/win32-debug` 安装，会连 7 个
+组 DLL 一起发布，所以「运行时 DLL 发现」必须先解决（§7.3）。只有 release SDK 承诺单个自包含 exe。

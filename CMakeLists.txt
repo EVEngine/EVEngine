@@ -118,8 +118,19 @@ option(EVENGINE_VULKAN_USE_VMA
 # WINDOWS_EXPORT_ALL_SYMBOLS, which the engine already exceeds (MSVC LNK1189,
 # 65535 exports; see src/engine/CMakeLists.txt). Per module the export surface is
 # only that module's own symbols, well inside the limit.
+#
+# Policy: development builds take the dynamic route (SHARED) so that iterating on
+# a domain test relinks a test executable instead of the whole engine; release and
+# SDK builds pass OBJECT explicitly (Makefile WIN32_CMAKE_ARGS) so the shipped
+# artifact is one exe with no engine DLLs beside it. The default below stays
+# OBJECT until the link groups actually link: every consumer still depends on
+# EVE_LINK_TARGETS, and the cross-group EVENGINE_API annotations are what make the
+# group DLLs linkable (see
+# docs/dev/superpowers/specs/2026-08-18-test-suite-optimization.md section 7.2).
+# Development already opts in with
+# CMAKE_EXTRA_ARGS="-DEVENGINE_MODULE_LINKAGE=SHARED".
 set(EVENGINE_MODULE_LINKAGE "OBJECT" CACHE STRING
-    "How each manifest module is built: OBJECT (default) or SHARED (one DLL per module)")
+    "How each manifest module is built: OBJECT (default; release/SDK) or SHARED (dev link groups)")
 set_property(CACHE EVENGINE_MODULE_LINKAGE PROPERTY STRINGS OBJECT SHARED)
 if(NOT EVENGINE_MODULE_LINKAGE MATCHES "^(OBJECT|SHARED)$")
     message(FATAL_ERROR

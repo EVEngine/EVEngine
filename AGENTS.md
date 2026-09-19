@@ -103,8 +103,19 @@ checkout is on that commit.
 ### Building
 - Debug (Ninja + MSVC `cl`, fastest local iteration):
   `make build/win32-debug`
-- Release (Visual Studio generator):
+- Release (Ninja + MSVC `cl`):
   `make build/win32`
+- **Module linkage policy**: development builds take the dynamic route
+  (`EVENGINE_MODULE_LINKAGE=SHARED`, one DLL per link group) so iterating on a
+  domain test relinks a test executable instead of the whole engine. Release and
+  the release SDK pin `OBJECT` (`Makefile WIN32_CMAKE_ARGS`, so `make build/win32`
+  and `make sdk/win32`) because the shipped artifact must be a single exe with no
+  engine DLLs beside it; the debug SDK intentionally follows the development
+  configuration and therefore ships the link-group DLLs. The CMake default is
+  still `OBJECT` until the link groups link (they need the cross-group
+  `EVENGINE_API` annotations); opt in locally with
+  `CMAKE_EXTRA_ARGS="-DEVENGINE_MODULE_LINKAGE=SHARED"`. See
+  `docs/dev/superpowers/specs/2026-08-18-test-suite-optimization.md` §7.
 - Do not invoke `cl.exe` manually outside a Developer prompt; the `cmake\with-msvc.cmd`
   wrapper calls vcvars64 before CMake so the MSVC compiler and STL are found.
 - First build compiles third-party through the `deps` target — slow once, cached
