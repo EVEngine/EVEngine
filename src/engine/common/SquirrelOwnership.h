@@ -145,6 +145,24 @@ private:
 }
 
 /**
+ * @brief Releases C++-owned Squirrel roots before Runtime destroys its VM.
+ *
+ * Providers register with `eve::cap::addListener<ISquirrelRootReleaser>()`.
+ * `Runtime::shutdown()` notifies every listener while the VM is still alive.
+ */
+class EVENGINE_API ISquirrelRootReleaser {
+public:
+    static constexpr const char* capabilityName = "eve.script.ISquirrelRootReleaser";
+    virtual ~ISquirrelRootReleaser() = default;
+    /**
+     * @brief Drops every C++-owned Squirrel root this listener still holds.
+     * @remarks Called from Runtime::shutdown() while the VM is still alive.
+     *          Implementations must not throw.
+     */
+    virtual void releaseSquirrelRoots() noexcept = 0;
+};
+
+/**
  * @brief A rooted Squirrel reference owned by the C++ holder.
  *
  * This wrapper is move-only to make ownership transfer visible in C++ code.

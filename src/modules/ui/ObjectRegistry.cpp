@@ -1,11 +1,13 @@
 #include "ui/ObjectRegistry.h"
 
+#include "common/Capability.h"
 #include "common/Module.h"
 #include "common/Runtime.h"
 #include "common/SquirrelOwnership.h"
 
 #include <algorithm>
 #include <exception>
+#include <squirrel.h>
 #include <utility>
 
 namespace eve::ui {
@@ -16,11 +18,53 @@ eve::Result<T> registryFailure(eve::DiagnosticCode code, std::string message) {
     return eve::Result<T>::failure(eve::Diagnostic::error(code, std::move(message)));
 }
 
+void abandonSquirrelObject(ssq::Object& object) noexcept {
+    // Null the HSQOBJECT so ssq::Object::reset() will not call sq_release on a
+    // VM that has already been destroyed. The VM owns the remaining cells.
+    sq_resetobject(&object.getRaw());
+}
+
+class RegistryRootReleaser final : public eve::script::ISquirrelRootReleaser {
+public:
+    void releaseSquirrelRoots() noexcept override {
+        try {
+            ObjectRegistry::instance().clearAll();
+        } catch (...) {
+        }
+    }
+};
+
+RegistryRootReleaser& registryRootReleaser() {
+    static RegistryRootReleaser releaser;
+    return releaser;
+}
+
+void ensureRegistryRootReleaser() {
+    auto& releaser = registryRootReleaser();
+    eve::cap::removeListener<eve::script::ISquirrelRootReleaser>(&releaser);
+    eve::cap::addListener<eve::script::ISquirrelRootReleaser>(&releaser);
+}
+
 }  // namespace
 
 ObjectRegistry& ObjectRegistry::instance() {
     static ObjectRegistry registry;
+    ensureRegistryRootReleaser();
     return registry;
+}
+
+ObjectRegistry::~ObjectRegistry() {
+    if (ModuleManager::runtime()) {
+        clearAll();
+        return;
+    }
+    for (auto& target : slots_) {
+        if (target.entry) abandonSquirrelObject(target.entry->object);
+        target.entry.reset();
+    }
+    slots_.clear();
+    freeSlots_.clear();
+    byClass_.clear();
 }
 
 ObjectRegistry::Slot* ObjectRegistry::slot(ObjectHandle handle) noexcept {
