@@ -55,7 +55,8 @@ struct HouseKitComponentValue {
 };
 
 /** @brief Revisioned component-kit and deterministic generation-request asset. */
-class HouseGenDocumentTarget final : public ::eve::editing::EditableTargetState, public virtual IEditableTarget,
+class HouseGenDocumentTarget final : public ::eve::editing::EditableTargetState,
+                                     public virtual IEditableTarget,
                                      public IDomainOperationTarget,
                                      public IDomainOperationTargetStaging,
                                      public IPropertyProvider {

@@ -20,7 +20,8 @@ struct PluginPermissionGrant {
 };
 
 /** @brief Revisioned plugin permission policy with reversible, auditable grants. */
-class PluginPermissionTarget final : public ::eve::editing::EditableTargetState, public virtual IEditableTarget,
+class PluginPermissionTarget final : public ::eve::editing::EditableTargetState,
+                                     public virtual IEditableTarget,
                                      public IDomainOperationTarget,
                                      public IDomainOperationTargetStaging {
 public:
@@ -46,7 +47,7 @@ public:
     /** @brief Atomically load a validated permission policy. */
     EditorResult<void> loadSnapshot(const EditorValue& snapshot);
 private:
-    std::string id_;
+    std::string                               id_;
     std::map<StableId, PluginPermissionGrant> grants_;
 };
 

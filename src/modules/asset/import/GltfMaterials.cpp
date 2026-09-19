@@ -318,7 +318,8 @@ Result<void> appendMaterials(const GltfImportRequest& request, const Value::Obje
         append(request, root, buffers, output);
         return Result<void>::success();
     } catch (const Rejection& error) {
-        return Result<void>::failure(Diagnostic::error(DiagnosticCode::Unsupported, error.message, {}, {}, "asset.import"));
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::Unsupported, error.message, {}, {}, "asset.import"));
     }
 }
 }  // namespace eve::asset_import::gltf

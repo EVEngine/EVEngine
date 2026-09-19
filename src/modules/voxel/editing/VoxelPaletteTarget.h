@@ -50,7 +50,8 @@ struct VoxelPaletteEntryValue {
 };
 
 /** @brief Revisioned Voxel CubeType palette with face-material Inspector. */
-class VoxelPaletteTarget final : public ::eve::editing::EditableTargetState, public virtual IEditableTarget,
+class VoxelPaletteTarget final : public ::eve::editing::EditableTargetState,
+                                 public virtual IEditableTarget,
                                  public IDomainOperationTarget,
                                  public IDomainOperationTargetStaging,
                                  public IPropertyProvider {

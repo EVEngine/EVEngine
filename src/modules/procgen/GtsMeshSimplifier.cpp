@@ -36,7 +36,9 @@ Result<int> simplifyGtsMesh(MeshBuild& output, const MeshBuild& source, float qu
     if (!valid(source) || !std::isfinite(quality) || quality < 0 || quality > 1 || o.maxIterationCount <= 0 ||
         !std::isfinite(o.vertexLinkDistance) || o.vertexLinkDistance < 0 || !std::isfinite(o.aggressiveness) ||
         o.aggressiveness <= 0)
-        return Result<int>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "invalid GTS mesh simplification input or options", "procgen.gtsMeshSimplify"));
+        return Result<int>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                      "invalid GTS mesh simplification input or options",
+                                                      "procgen.gtsMeshSimplify"));
     std::vector<V> vs;
     vs.reserve(source.getVertexCount());
     for (int i = 0; i < source.getVertexCount(); ++i) {
@@ -45,7 +47,9 @@ Result<int> simplifyGtsMesh(MeshBuild& output, const MeshBuild& source, float qu
                         source.getColor(i, 0),  source.getColor(i, 1),  source.getColor(i, 2),  source.getColor(i, 3)};
         const double* p = &v.x;
         for (int k = 0; k < 12; ++k)
-            if (!std::isfinite(p[k])) return Result<int>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "mesh attributes must be finite", "procgen.gtsMeshSimplify"));
+            if (!std::isfinite(p[k]))
+                return Result<int>::failure(Diagnostic::error(
+                    DiagnosticCode::InvalidArgument, "mesh attributes must be finite", "procgen.gtsMeshSimplify"));
         vs.push_back(v);
     }
     std::vector<T> ts;
@@ -53,7 +57,9 @@ Result<int> simplifyGtsMesh(MeshBuild& output, const MeshBuild& source, float qu
         int a = source.getIndex(i), b = source.getIndex(i + 1), c = source.getIndex(i + 2);
         if (a < 0 || b < 0 || c < 0 || a >= int(vs.size()) || b >= int(vs.size()) || c >= int(vs.size()) || a == b ||
             b == c || a == c)
-            return Result<int>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "mesh triangles must be valid and non-degenerate", "procgen.gtsMeshSimplify"));
+            return Result<int>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                          "mesh triangles must be valid and non-degenerate",
+                                                          "procgen.gtsMeshSimplify"));
         ts.push_back({uint32_t(a), uint32_t(b), uint32_t(c), uint32_t(a), uint32_t(b), uint32_t(c),
                       source.getTriangleGroup(i / 3)});
     }
@@ -65,7 +71,9 @@ Result<int> simplifyGtsMesh(MeshBuild& output, const MeshBuild& source, float qu
         double ux = b.x - a.x, uy = b.y - a.y, uz = b.z - a.z, vx = c.x - a.x, vy = c.y - a.y, vz = c.z - a.z;
         double nx = uy * vz - uz * vy, ny = uz * vx - ux * vz, nz = ux * vy - uy * vx,
                l = sqrt(nx * nx + ny * ny + nz * nz);
-        if (l < 1e-12) return Result<int>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "mesh contains a zero-area triangle", "procgen.gtsMeshSimplify"));
+        if (l < 1e-12)
+            return Result<int>::failure(Diagnostic::error(
+                DiagnosticCode::InvalidArgument, "mesh contains a zero-area triangle", "procgen.gtsMeshSimplify"));
         nx /= l;
         ny /= l;
         nz /= l;
@@ -242,7 +250,9 @@ Result<int> simplifyGtsMesh(MeshBuild& output, const MeshBuild& source, float qu
             next.addTriangle(out[0], out[1], out[2]);
         }
     if (!colors.empty()) next.setVertexColors(std::move(colors)).ignore("validated simplified color stream");
-    if (next.empty()) return Result<int>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "simplification removed the complete mesh", "procgen.gtsMeshSimplify"));
+    if (next.empty())
+        return Result<int>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "simplification removed the complete mesh", "procgen.gtsMeshSimplify"));
     output = std::move(next);
     return Result<int>::success(alive);
 }

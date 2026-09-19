@@ -24,7 +24,9 @@ Result<void> finalizeImportReport(PreparedAssetImport& prepared,
                                   std::string_view sourceVersion,
                                   Value::Object options) {
     if (sourceEngine.empty() || prepared.manifest.assets.empty())
-        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "import report requires source engine and canonical assets", {}, {}, "asset.import"));
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                       "import report requires source engine and canonical assets", {},
+                                                       {}, "asset.import"));
     std::sort(prepared.sourceMappings.begin(), prepared.sourceMappings.end(),
               [](const auto& left, const auto& right) {
                   if (left.sourceObject != right.sourceObject)
@@ -35,7 +37,9 @@ Result<void> finalizeImportReport(PreparedAssetImport& prepared,
         if (prepared.sourceMappings[index - 1].sourceObject ==
                 prepared.sourceMappings[index].sourceObject &&
             prepared.sourceMappings[index - 1].asset == prepared.sourceMappings[index].asset)
-            return Result<void>::failure(Diagnostic::error(DiagnosticCode::AlreadyExists, "duplicate import source mapping", prepared.sourceMappings[index].sourceObject, {}, "asset.import"));
+            return Result<void>::failure(
+                Diagnostic::error(DiagnosticCode::AlreadyExists, "duplicate import source mapping",
+                                  prepared.sourceMappings[index].sourceObject, {}, "asset.import"));
     }
     std::sort(prepared.findings.begin(), prepared.findings.end(), [](const auto& left, const auto& right) {
         return std::tie(left.sourcePath, left.feature, left.disposition, left.message) <

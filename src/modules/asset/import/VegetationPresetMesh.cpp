@@ -54,8 +54,8 @@ Result<int> integer(std::string_view value) {
     int result     = 0;
     auto [end, ec] = std::from_chars(value.data(), value.data() + value.size(), result);
     if (ec != std::errc{} || end != value.data() + value.size())
-        return Result<int>::failure(
-        Diagnostic::error(DiagnosticCode::ParseError, "mesh rule option is not an integer", {}, {}, "asset.import.vegetation-preset.mesh"));
+        return Result<int>::failure(Diagnostic::error(DiagnosticCode::ParseError, "mesh rule option is not an integer",
+                                                      {}, {}, "asset.import.vegetation-preset.mesh"));
     return Result<int>::success(result);
 }
 
@@ -64,8 +64,9 @@ Result<std::vector<float>> mask(const asset::CanonicalMeshData& mesh, const std:
                                 float radius, float height, float seed) {
     std::vector<float> result(count, 1.f);
     if (rule.empty() || rule[0] == "NONE") return Result<std::vector<float>>::success(std::move(result));
-    if (rule.size() < 2) return Result<std::vector<float>>::failure(
-        Diagnostic::error(DiagnosticCode::ParseError, "mesh mask rule lacks option", {}, {}, "asset.import.vegetation-preset.mesh"));
+    if (rule.size() < 2)
+        return Result<std::vector<float>>::failure(Diagnostic::error(
+            DiagnosticCode::ParseError, "mesh mask rule lacks option", {}, {}, "asset.import.vegetation-preset.mesh"));
     auto option = integer(rule[1]);
     if (!option) return Result<std::vector<float>>::failure(option.status());
     if (rule[0] == "GET_MASK_FROM_CHANNEL") {
@@ -134,20 +135,23 @@ Result<std::vector<float>> mask(const asset::CanonicalMeshData& mesh, const std:
                 case 20: result[i] = z / std::max(radius, 1e-6f); break;
                 default:
                     return Result<std::vector<float>>::failure(
-        Diagnostic::error(DiagnosticCode::Unsupported, "unsupported procedural mesh mask mode", {}, {}, "asset.import.vegetation-preset.mesh"));
+                        Diagnostic::error(DiagnosticCode::Unsupported, "unsupported procedural mesh mask mode", {}, {},
+                                          "asset.import.vegetation-preset.mesh"));
             }
         }
     } else if (rule[0] == "GET_MASK_FROM_TEXTURE") {
         if (rule.size() < 3)
-            return Result<std::vector<float>>::failure(
-        Diagnostic::error(DiagnosticCode::ParseError, "texture mask lacks property", {}, {}, "asset.import.vegetation-preset.mesh"));
+            return Result<std::vector<float>>::failure(Diagnostic::error(DiagnosticCode::ParseError,
+                                                                         "texture mask lacks property", {}, {},
+                                                                         "asset.import.vegetation-preset.mesh"));
         const auto image = textures.find(rule[2]);
         if (image == textures.end()) return Result<std::vector<float>>::success(std::move(result));
         const auto pixels = std::uint64_t(image->second.width) * image->second.height;
         if (!image->second.width || !image->second.height || pixels > 16ull * 1024ull * 1024ull ||
             image->second.pixels.size() != std::size_t(pixels) * 4 || option.value() < 0 || option.value() > 3)
-            return Result<std::vector<float>>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, "invalid texture mask input", {}, {}, "asset.import.vegetation-preset.mesh"));
+            return Result<std::vector<float>>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                                         "invalid texture mask input", {}, {},
+                                                                         "asset.import.vegetation-preset.mesh"));
         int coord = 0;
         for (std::size_t i = 3; i + 1 < rule.size(); ++i)
             if (rule[i] == "GET_COORD") {
@@ -196,12 +200,14 @@ Result<std::vector<float>> mask(const asset::CanonicalMeshData& mesh, const std:
                                                         (uv1[i * 4 + 3] * uv3[i * 4 + 3]) / std::max(radius, 1e-6f);
             } else {
                 return Result<std::vector<float>>::failure(
-        Diagnostic::error(DiagnosticCode::Unsupported, "unsupported third-party vegetation mask mode", {}, {}, "asset.import.vegetation-preset.mesh"));
+                    Diagnostic::error(DiagnosticCode::Unsupported, "unsupported third-party vegetation mask mode", {},
+                                      {}, "asset.import.vegetation-preset.mesh"));
             }
         }
     } else {
         return Result<std::vector<float>>::failure(
-        Diagnostic::error(DiagnosticCode::Unsupported, "mesh mask source requires texture or vendor adapter", {}, {}, "asset.import.vegetation-preset.mesh"));
+            Diagnostic::error(DiagnosticCode::Unsupported, "mesh mask source requires texture or vendor adapter", {},
+                              {}, "asset.import.vegetation-preset.mesh"));
     }
     if (rule.size() >= 3 && rule.back().starts_with("ACTION_")) {
         const auto& action = rule.back();
@@ -224,8 +230,9 @@ Result<std::vector<float>> mask(const asset::CanonicalMeshData& mesh, const std:
             const float range = *hi - *lo;
             for (auto& v : result) v = range == 0 ? 0 : (v - *lo) / range;
         } else
-            return Result<std::vector<float>>::failure(
-        Diagnostic::error(DiagnosticCode::Unsupported, "unsupported mesh mask action", {}, {}, "asset.import.vegetation-preset.mesh"));
+            return Result<std::vector<float>>::failure(Diagnostic::error(DiagnosticCode::Unsupported,
+                                                                         "unsupported mesh mask action", {}, {},
+                                                                         "asset.import.vegetation-preset.mesh"));
     }
     return Result<std::vector<float>>::success(std::move(result));
 }
@@ -243,20 +250,21 @@ void normalize3(float& x, float& y, float& z) {
 
 Result<void> applyNormals(asset::CanonicalMeshData& mesh, const std::vector<std::string>& rule, float height) {
     if (rule.size() != 2 || rule[0] != "GET_NORMALS_PROCEDURAL")
-        return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::Unsupported, "unsupported normal rule", {}, {}, "asset.import.vegetation-preset.mesh"));
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::Unsupported, "unsupported normal rule", {}, {},
+                                                       "asset.import.vegetation-preset.mesh"));
     auto mode = integer(rule[1]);
     if (!mode || mode.value() < 0 || mode.value() > 6)
-        return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::ParseError, "invalid normal mode", {}, {}, "asset.import.vegetation-preset.mesh"));
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::ParseError, "invalid normal mode", {}, {},
+                                                       "asset.import.vegetation-preset.mesh"));
     const std::size_t count = mesh.positions.size() / 3;
     if (mode.value() == 0) {
         std::fill(mesh.normals.begin(), mesh.normals.end(), 0.f);
         for (std::size_t i = 0; i + 2 < mesh.indices.size(); i += 3) {
             const auto a = mesh.indices[i], b = mesh.indices[i + 1], c = mesh.indices[i + 2];
             if (a >= count || b >= count || c >= count)
-                return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, "mesh index out of range", {}, {}, "asset.import.vegetation-preset.mesh"));
+                return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                               "mesh index out of range", {}, {},
+                                                               "asset.import.vegetation-preset.mesh"));
             const float ax = mesh.positions[b * 3] - mesh.positions[a * 3],
                         ay = mesh.positions[b * 3 + 1] - mesh.positions[a * 3 + 1],
                         az = mesh.positions[b * 3 + 2] - mesh.positions[a * 3 + 2];
@@ -302,14 +310,16 @@ Result<void> recalculateTangents(asset::CanonicalMeshData& mesh) {
         return Result<void>::success();
     }
     if (uv->second.size() != count * 2)
-        return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, "canonical UV0 has an invalid tangent input size", {}, {}, "asset.import.vegetation-preset.mesh"));
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                       "canonical UV0 has an invalid tangent input size", {}, {},
+                                                       "asset.import.vegetation-preset.mesh"));
     std::vector<float> tan1(count * 3), tan2(count * 3);
     for (std::size_t k = 0; k + 2 < mesh.indices.size(); k += 3) {
         const auto a = mesh.indices[k], b = mesh.indices[k + 1], c = mesh.indices[k + 2];
         if (a >= count || b >= count || c >= count)
-            return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, "mesh index out of range while rebuilding tangents", {}, {}, "asset.import.vegetation-preset.mesh"));
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                           "mesh index out of range while rebuilding tangents", {}, {},
+                                                           "asset.import.vegetation-preset.mesh"));
         const float x1 = mesh.positions[b * 3] - mesh.positions[a * 3],
                     x2 = mesh.positions[c * 3] - mesh.positions[a * 3],
                     y1 = mesh.positions[b * 3 + 1] - mesh.positions[a * 3 + 1],
@@ -369,8 +379,9 @@ Result<asset::CanonicalMeshData> executeVegetationMeshRules(
     const std::size_t count = source.positions.size() / 3;
     if (!count || source.positions.size() != count * 3 || source.normals.size() != count * 3 ||
         !std::isfinite(variationSeed))
-        return Result<asset::CanonicalMeshData>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, "invalid mesh geometry or seed", {}, {}, "asset.import.vegetation-preset.mesh"));
+        return Result<asset::CanonicalMeshData>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                                           "invalid mesh geometry or seed", {}, {},
+                                                                           "asset.import.vegetation-preset.mesh"));
     try {
         float radius = 0, height = 0;
         for (std::size_t i = 0; i < count; ++i) {
@@ -432,7 +443,8 @@ Result<asset::CanonicalMeshData> executeVegetationMeshRules(
             } else {
                 if (found->second.size() != 2 || found->second[0] != "GET_PIVOTS_PROCEDURAL" || found->second[1] != "0")
                     return Result<asset::CanonicalMeshData>::failure(
-        Diagnostic::error(DiagnosticCode::Unsupported, "unsupported pivot rule", {}, {}, "asset.import.vegetation-preset.mesh"));
+                        Diagnostic::error(DiagnosticCode::Unsupported, "unsupported pivot rule", {}, {},
+                                          "asset.import.vegetation-preset.mesh"));
                 const auto               ids    = elementIds(source, count);
                 const auto               groups = *std::max_element(ids.begin(), ids.end()) + 1;
                 std::vector<double>      sumX(groups), sumZ(groups);
@@ -461,8 +473,9 @@ Result<asset::CanonicalMeshData> executeVegetationMeshRules(
         }
         return Result<asset::CanonicalMeshData>::success(std::move(source));
     } catch (const std::bad_alloc&) {
-        return Result<asset::CanonicalMeshData>::failure(
-        Diagnostic::error(DiagnosticCode::Failed, "mesh conversion allocation failed", {}, {}, "asset.import.vegetation-preset.mesh"));
+        return Result<asset::CanonicalMeshData>::failure(Diagnostic::error(DiagnosticCode::Failed,
+                                                                           "mesh conversion allocation failed", {}, {},
+                                                                           "asset.import.vegetation-preset.mesh"));
     }
 }
 

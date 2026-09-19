@@ -35,7 +35,7 @@ TargetDescriptor MaterialDocumentTarget::describe() const {
     TargetDescriptor result;
     result.id = TargetId(id_);
     result.type = "material-document";
-    result.revision = revisionValue();
+    result.revision     = revisionValue();
     result.capabilities = {IPropertyProvider::editingCapabilityId(),
                            eve::editing::IEditingSnapshotProvider::editingCapabilityId()};
     return result;

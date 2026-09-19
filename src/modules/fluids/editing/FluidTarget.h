@@ -70,7 +70,8 @@ struct FluidSimulationPreview {
 };
 
 /** @brief Reversible property document for fluid simulation authoring. */
-class FluidSimulationTarget final : public ::eve::editing::EditableTargetState, public virtual IEditableTarget,
+class FluidSimulationTarget final : public ::eve::editing::EditableTargetState,
+                                    public virtual IEditableTarget,
                                     public IDomainOperationTarget,
                                     public IPropertyProvider {
 public:

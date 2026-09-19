@@ -13,8 +13,11 @@ using EditorStatus = eve::editing::Status;
 using EditorDiagnostic = eve::editing::Diagnostic;
 template<class T> using EditorResult = eve::editing::Result<T>;
 /** @brief Revisioned, schema-driven procedural texture recipe asset. */
-class TextureRecipeTarget final : public ::eve::editing::EditableTargetState, public virtual IEditableTarget, public IDomainOperationTarget,
-                                  public IDomainOperationTargetStaging, public IPropertyProvider {
+class TextureRecipeTarget final : public ::eve::editing::EditableTargetState,
+                                  public virtual IEditableTarget,
+                                  public IDomainOperationTarget,
+                                  public IDomainOperationTargetStaging,
+                                  public IPropertyProvider {
 public:
     /** @brief Construct a registered procedural texture recipe target. @throws std::invalid_argument When recipe is not registered. */
     TextureRecipeTarget(std::string id, std::string recipe);

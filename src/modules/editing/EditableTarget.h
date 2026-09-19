@@ -141,11 +141,20 @@ protected:
     /** @brief Replace the dirty region wholesale, without advancing the revision. */
     void setDirtyRegion(const EditRegion& region) { dirty_ = region; }
     /** @brief Include one cell in the dirty region and advance the revision. */
-    void markDirty(int x, int y) { widenDirty(x, y); bumpRevision(); }
+    void markDirty(int x, int y) {
+        widenDirty(x, y);
+        bumpRevision();
+    }
     /** @brief Include a whole region and advance the revision. */
-    void markDirty(const EditRegion& region) { widenDirty(region); bumpRevision(); }
+    void markDirty(const EditRegion& region) {
+        widenDirty(region);
+        bumpRevision();
+    }
     /** @brief Mark an unknown area dirty and advance the revision. */
-    void markDirty() { widenDirty(); bumpRevision(); }
+    void markDirty() {
+        widenDirty();
+        bumpRevision();
+    }
 
 private:
     EditRegion dirty_;

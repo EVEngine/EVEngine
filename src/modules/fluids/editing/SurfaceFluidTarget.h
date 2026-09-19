@@ -61,7 +61,8 @@ struct SurfaceFluidSettings {
 };
 
 /** @brief Reversible document for surface droplets, wet traces and material response. */
-class SurfaceFluidTarget final : public ::eve::editing::EditableTargetState, public virtual IEditableTarget,
+class SurfaceFluidTarget final : public ::eve::editing::EditableTargetState,
+                                 public virtual IEditableTarget,
                                  public IDomainOperationTarget,
                                  public IPropertyProvider {
 public:

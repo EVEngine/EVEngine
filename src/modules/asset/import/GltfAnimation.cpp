@@ -381,7 +381,8 @@ Result<void> appendAnimation(const GltfImportRequest& request, const Value::Obje
     try {
         append(request, root, buffers, output);
     } catch (const Rejection& rejected) {
-        return Result<void>::failure(Diagnostic::error(rejected.code, rejected.message, request.sourceName, {}, "asset.import"));
+        return Result<void>::failure(
+            Diagnostic::error(rejected.code, rejected.message, request.sourceName, {}, "asset.import"));
     }
     return Result<void>::success();
 }

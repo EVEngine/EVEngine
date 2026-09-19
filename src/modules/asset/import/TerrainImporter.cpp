@@ -51,15 +51,19 @@ Result<PreparedAssetImport> prepareCanonicalTerrainImport(const ImportPackageIde
     if (terrain.width < 2 || terrain.height < 2 || !std::isfinite(terrain.spacingX) ||
         !std::isfinite(terrain.spacingZ) || terrain.spacingX <= 0 || terrain.spacingZ <= 0 ||
         terrain.heightsMeters.size() != std::uint64_t(terrain.width) * terrain.height)
-        return Result<PreparedAssetImport>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "terrain dimensions, spacing or height count is invalid", {}, {}, "asset.import"));
+        return Result<PreparedAssetImport>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "terrain dimensions, spacing or height count is invalid",
+                              {}, {}, "asset.import"));
     const std::uint64_t heightBytes = std::uint64_t(terrain.heightsMeters.size()) * sizeof(float) + 24;
     if (heightBytes > limits.maximumDecodedBytes || terrain.layers.size() > limits.maximumAssets ||
         terrain.scatterRules.size() > limits.maximumAssets || terrain.detailPrototypes.size() > limits.maximumAssets ||
         terrain.instances.size() > limits.maximumAssets)
-        return Result<PreparedAssetImport>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "terrain import budget is exceeded", {}, {}, "asset.import"));
+        return Result<PreparedAssetImport>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "terrain import budget is exceeded", {}, {}, "asset.import"));
     for (const float height : terrain.heightsMeters)
         if (!std::isfinite(height))
-            return Result<PreparedAssetImport>::failure(Diagnostic::error(DiagnosticCode::ParseError, "terrain height contains a non-finite value", {}, {}, "asset.import"));
+            return Result<PreparedAssetImport>::failure(Diagnostic::error(
+                DiagnosticCode::ParseError, "terrain height contains a non-finite value", {}, {}, "asset.import"));
     auto manifest = detail::baseManifest(package, importer);
     if (!manifest) return Result<PreparedAssetImport>::failure(manifest.status());
     PreparedAssetImport output;
@@ -102,7 +106,9 @@ Result<PreparedAssetImport> prepareCanonicalTerrainImport(const ImportPackageIde
                 !std::isfinite(layer.normalScale) || layer.normalScale < -8 || layer.normalScale > 8 ||
                 !std::isfinite(layer.metallic) || layer.metallic < 0 || layer.metallic > 1 ||
                 !std::isfinite(layer.smoothness) || layer.smoothness < 0 || layer.smoothness > 1)
-                return Result<PreparedAssetImport>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "terrain layer metadata is invalid", layer.name, {}, "asset.import"));
+                return Result<PreparedAssetImport>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                                              "terrain layer metadata is invalid",
+                                                                              layer.name, {}, "asset.import"));
             auto vector = [](const auto& source) {
                 Value::Array result;
                 for (float value : source) {
@@ -112,10 +118,13 @@ Result<PreparedAssetImport> prepareCanonicalTerrainImport(const ImportPackageIde
                 return result;
             };
             if (layer.tileScaleMeters[0] <= 0 || layer.tileScaleMeters[1] <= 0)
-                return Result<PreparedAssetImport>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "terrain layer scale is invalid", layer.name, {}, "asset.import"));
+                return Result<PreparedAssetImport>::failure(Diagnostic::error(
+                    DiagnosticCode::InvalidArgument, "terrain layer scale is invalid", layer.name, {}, "asset.import"));
             for (const auto* image : {&layer.diffuseAsset, &layer.normalAsset, &layer.weightAsset, &layer.maskAsset})
                 if (!image->empty() && !AssetRef::parse(*image))
-                    return Result<PreparedAssetImport>::failure(Diagnostic::error(DiagnosticCode::ParseError, "terrain image AssetRef is invalid", layer.name, {}, "asset.import"));
+                    return Result<PreparedAssetImport>::failure(Diagnostic::error(DiagnosticCode::ParseError,
+                                                                                  "terrain image AssetRef is invalid",
+                                                                                  layer.name, {}, "asset.import"));
             Value::Object value;
             value["name"]             = Value(layer.name);
             value["diffuseSource"]    = Value(layer.diffuseSource);
@@ -135,7 +144,9 @@ Result<PreparedAssetImport> prepareCanonicalTerrainImport(const ImportPackageIde
                 value["maskRemapMaximum"] = Value(vector(layer.maskRemapMaximum));
                 value["specular"]         = Value(vector(layer.specular));
             } catch (const std::invalid_argument&) {
-                return Result<PreparedAssetImport>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "terrain layer vector is non-finite", layer.name, {}, "asset.import"));
+                return Result<PreparedAssetImport>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                                              "terrain layer vector is non-finite",
+                                                                              layer.name, {}, "asset.import"));
             }
             value["metallic"]    = Value(double(layer.metallic));
             value["normalScale"] = Value(double(layer.normalScale));
@@ -147,7 +158,8 @@ Result<PreparedAssetImport> prepareCanonicalTerrainImport(const ImportPackageIde
         definition["schemaVersion"] = Value(std::int64_t(3));
         definition["layers"]        = Value(std::move(layers));
         if (!terrain.holesAsset.empty() && !AssetRef::parse(terrain.holesAsset))
-            return Result<PreparedAssetImport>::failure(Diagnostic::error(DiagnosticCode::ParseError, "terrain holes AssetRef is invalid", {}, {}, "asset.import"));
+            return Result<PreparedAssetImport>::failure(Diagnostic::error(
+                DiagnosticCode::ParseError, "terrain holes AssetRef is invalid", {}, {}, "asset.import"));
         definition["holesSource"] = Value(terrain.holesSource);
         definition["holesAsset"]  = Value(terrain.holesAsset);
         Value::Array controls;
@@ -155,13 +167,16 @@ Result<PreparedAssetImport> prepareCanonicalTerrainImport(const ImportPackageIde
         for (std::size_t index = 0; index < terrain.controlSources.size(); ++index) {
             controls.emplace_back(terrain.controlSources[index]);
             if (!terrain.controlAssets[index].empty() && !AssetRef::parse(terrain.controlAssets[index]))
-                return Result<PreparedAssetImport>::failure(Diagnostic::error(DiagnosticCode::ParseError, "terrain control AssetRef is invalid", std::to_string(index), {}, "asset.import"));
+                return Result<PreparedAssetImport>::failure(
+                    Diagnostic::error(DiagnosticCode::ParseError, "terrain control AssetRef is invalid",
+                                      std::to_string(index), {}, "asset.import"));
             controlAssets.emplace_back(terrain.controlAssets[index]);
         }
         definition["controlSources"] = Value(std::move(controls));
         definition["controlAssets"]  = Value(std::move(controlAssets));
         if (!std::isfinite(terrain.boundsMultiplier) || terrain.boundsMultiplier <= 0)
-            return Result<PreparedAssetImport>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "terrain bounds multiplier is invalid", {}, {}, "asset.import"));
+            return Result<PreparedAssetImport>::failure(Diagnostic::error(
+                DiagnosticCode::InvalidArgument, "terrain bounds multiplier is invalid", {}, {}, "asset.import"));
         definition["boundsMultiplier"] = Value(double(terrain.boundsMultiplier));
         auto added = addAsset(output, materialId, "eve.terrain-material", std::move(definition), {}, {},
                               {"terrain", "material"}, SchemaVersion(3));
@@ -176,7 +191,8 @@ Result<PreparedAssetImport> prepareCanonicalTerrainImport(const ImportPackageIde
                 !std::isfinite(rule.densityPerSquareMeter) || rule.densityPerSquareMeter < 0 ||
                 !std::isfinite(rule.minimumSlopeRadians) || !std::isfinite(rule.maximumSlopeRadians) ||
                 rule.minimumSlopeRadians > rule.maximumSlopeRadians)
-                return Result<PreparedAssetImport>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "terrain scatter rule is invalid", rule.id, {}, "asset.import"));
+                return Result<PreparedAssetImport>::failure(Diagnostic::error(
+                    DiagnosticCode::InvalidArgument, "terrain scatter rule is invalid", rule.id, {}, "asset.import"));
             Value::Object value;
             value["id"]                    = Value(rule.id);
             value["prototype"]             = Value(rule.prototype);
@@ -204,32 +220,39 @@ Result<PreparedAssetImport> prepareCanonicalTerrainImport(const ImportPackageIde
         for (const auto& instance : terrain.instances) {
             if (instance.prototype.empty() || instance.prototype.size() > limits.maximumStringBytes ||
                 !isValidUtf8(instance.prototype, Utf8NullPolicy::Reject))
-                return Result<PreparedAssetImport>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "terrain instance prototype is invalid", {}, {}, "asset.import"));
+                return Result<PreparedAssetImport>::failure(Diagnostic::error(
+                    DiagnosticCode::InvalidArgument, "terrain instance prototype is invalid", {}, {}, "asset.import"));
             const float rotationLength =
                 std::sqrt(instance.rotation[0] * instance.rotation[0] + instance.rotation[1] * instance.rotation[1] +
                           instance.rotation[2] * instance.rotation[2] + instance.rotation[3] * instance.rotation[3]);
             if (!std::isfinite(rotationLength) || rotationLength < 0.999f || rotationLength > 1.001f ||
                 instance.scale[0] == 0.f || instance.scale[1] == 0.f || instance.scale[2] == 0.f)
-                return Result<PreparedAssetImport>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "terrain instance rotation or scale is invalid", instance.prototype, {}, "asset.import"));
+                return Result<PreparedAssetImport>::failure(
+                    Diagnostic::error(DiagnosticCode::InvalidArgument, "terrain instance rotation or scale is invalid",
+                                      instance.prototype, {}, "asset.import"));
             putString(instances, instance.prototype);
             for (float value : instance.position) {
                 if (!std::isfinite(value))
-                    return Result<PreparedAssetImport>::failure(Diagnostic::error(DiagnosticCode::ParseError, "instance position is non-finite", {}, {}, "asset.import"));
+                    return Result<PreparedAssetImport>::failure(Diagnostic::error(
+                        DiagnosticCode::ParseError, "instance position is non-finite", {}, {}, "asset.import"));
                 putFloat(instances, value);
             }
             for (float value : instance.rotation) {
                 if (!std::isfinite(value))
-                    return Result<PreparedAssetImport>::failure(Diagnostic::error(DiagnosticCode::ParseError, "instance rotation is non-finite", {}, {}, "asset.import"));
+                    return Result<PreparedAssetImport>::failure(Diagnostic::error(
+                        DiagnosticCode::ParseError, "instance rotation is non-finite", {}, {}, "asset.import"));
                 putFloat(instances, value);
             }
             for (float value : instance.scale) {
                 if (!std::isfinite(value))
-                    return Result<PreparedAssetImport>::failure(Diagnostic::error(DiagnosticCode::ParseError, "instance scale is non-finite", {}, {}, "asset.import"));
+                    return Result<PreparedAssetImport>::failure(Diagnostic::error(
+                        DiagnosticCode::ParseError, "instance scale is non-finite", {}, {}, "asset.import"));
                 putFloat(instances, value);
             }
         }
         if (instances.size() > limits.maximumDecodedBytes)
-            return Result<PreparedAssetImport>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "terrain instance blob exceeds budget", {}, {}, "asset.import"));
+            return Result<PreparedAssetImport>::failure(Diagnostic::error(
+                DiagnosticCode::InvalidArgument, "terrain instance blob exceeds budget", {}, {}, "asset.import"));
         Value::Object definition;
         definition["schema"]        = Value("eve.instance-set");
         definition["schemaVersion"] = Value(std::int64_t(5));
@@ -241,7 +264,8 @@ Result<PreparedAssetImport> prepareCanonicalTerrainImport(const ImportPackageIde
                                       std::all_of(terrain.wavingGrassTint.begin(), terrain.wavingGrassTint.end(),
                                                   [](float value) { return std::isfinite(value) && value >= 0.f && value <= 1.f; });
         if (!validWavingGrass)
-            return Result<PreparedAssetImport>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "terrain waving grass settings are invalid", {}, {}, "asset.import"));
+            return Result<PreparedAssetImport>::failure(Diagnostic::error(
+                DiagnosticCode::InvalidArgument, "terrain waving grass settings are invalid", {}, {}, "asset.import"));
         definition["wavingGrass"] = Value(Value::Object{
             {"amount", Value(double(terrain.wavingGrassAmount))},
             {"speed", Value(double(terrain.wavingGrassSpeed))},
@@ -274,7 +298,9 @@ Result<PreparedAssetImport> prepareCanonicalTerrainImport(const ImportPackageIde
                 prototype.holeEdgePadding < 0 || prototype.holeEdgePadding > 1 || prototype.resourceAsset.empty() ||
                 !AssetRef::parse(prototype.resourceAsset) ||
                 (prototype.usePrototypeMesh != prototype.prototype.starts_with("unity-guid:")))
-                return Result<PreparedAssetImport>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "terrain detail prototype is invalid", prototype.prototype, {}, "asset.import"));
+                return Result<PreparedAssetImport>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                                              "terrain detail prototype is invalid",
+                                                                              prototype.prototype, {}, "asset.import"));
             detailPrototypes.emplace_back(Value::Object{{"prototype", Value(prototype.prototype)},
                                                         {"renderMode", Value(prototype.renderMode)},
                                                         {"usePrototypeMesh", Value(prototype.usePrototypeMesh)},
@@ -299,7 +325,9 @@ Result<PreparedAssetImport> prepareCanonicalTerrainImport(const ImportPackageIde
             if ((instance.prototype.starts_with("unity-texture-guid:") ||
                  (instance.prototype.starts_with("unity-guid:") && !terrain.detailPrototypes.empty())) &&
                 !detailPrototypeIds.contains(instance.prototype))
-                return Result<PreparedAssetImport>::failure(Diagnostic::error(DiagnosticCode::NotFound, "terrain detail instance prototype is undeclared", instance.prototype, {}, "asset.import"));
+                return Result<PreparedAssetImport>::failure(
+                    Diagnostic::error(DiagnosticCode::NotFound, "terrain detail instance prototype is undeclared",
+                                      instance.prototype, {}, "asset.import"));
         definition["prototypes"] = Value(std::move(detailPrototypes));
         auto added = addAsset(output, instancesId, "eve.instance-set", std::move(definition), std::move(instances),
                               "instances.bin", {"terrain", "instances"}, SchemaVersion(5));

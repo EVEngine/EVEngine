@@ -38,7 +38,8 @@ struct VolumeFluidAuthoringPreview {
  * @thread Editor-thread affine.
  * @reentrancy Does not invoke callbacks.
  */
-class VolumeFluidTarget final : public ::eve::editing::EditableTargetState, public virtual IEditableTarget,
+class VolumeFluidTarget final : public ::eve::editing::EditableTargetState,
+                                public virtual IEditableTarget,
                                 public IDomainOperationTarget,
                                 public IPropertyProvider {
 public:

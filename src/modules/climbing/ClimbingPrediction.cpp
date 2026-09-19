@@ -175,11 +175,13 @@ eve::Result<void> validateSnapshotEnvelope(const eve::Value& value) {
     if (!object || !readString(*object, "schemaId", schemaId) ||
         schemaId != ClimbingRuntime::SnapshotSchemaId ||
         !readInt64(*object, "schemaVersion", schemaVersion) || schemaVersion < 0)
-        return eve::Result<void>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "authoritative snapshot has an invalid climbing runtime envelope", "authoritativeSnapshot", {}, "climbing.prediction"));
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::ParseError, "authoritative snapshot has an invalid climbing runtime envelope",
+            "authoritativeSnapshot", {}, "climbing.prediction"));
     if (schemaVersion > ClimbingRuntime::SnapshotSchemaVersion)
-        return eve::Result<void>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::UnknownVersion, "authoritative snapshot version is newer than this runtime", "authoritativeSnapshot.schemaVersion", {}, "climbing.prediction"));
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::UnknownVersion, "authoritative snapshot version is newer than this runtime",
+            "authoritativeSnapshot.schemaVersion", {}, "climbing.prediction"));
     return eve::Result<void>::success();
 }
 
@@ -195,19 +197,22 @@ bool consistentDecision(const ClimbingPredictionDecision& decision) {
 eve::Result<eve::Value::Object> readEnvelope(const eve::Value& value, std::string_view schemaId) {
     const auto* object = value.getIf<eve::Value::Object>();
     if (!object)
-        return eve::Result<eve::Value::Object>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "prediction payload must be an object", {}, {}, "climbing.prediction"));
+        return eve::Result<eve::Value::Object>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::ParseError, "prediction payload must be an object", {}, {}, "climbing.prediction"));
     std::string actualSchema;
     std::int64_t version = 0;
     if (!readString(*object, "schemaId", actualSchema) || actualSchema != schemaId)
         return eve::Result<eve::Value::Object>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "prediction schemaId is missing or mismatched", "schemaId", {}, "climbing.prediction"));
+            eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "prediction schemaId is missing or mismatched",
+                                   "schemaId", {}, "climbing.prediction"));
     if (!readInt64(*object, "schemaVersion", version))
         return eve::Result<eve::Value::Object>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "prediction schemaVersion must be an integer", "schemaVersion", {}, "climbing.prediction"));
+            eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "prediction schemaVersion must be an integer",
+                                   "schemaVersion", {}, "climbing.prediction"));
     if (version != 1)
         return eve::Result<eve::Value::Object>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::UnknownVersion, "prediction schema version is unsupported", "schemaVersion", {}, "climbing.prediction"));
+            eve::Diagnostic::error(eve::DiagnosticCode::UnknownVersion, "prediction schema version is unsupported",
+                                   "schemaVersion", {}, "climbing.prediction"));
     return eve::Result<eve::Value::Object>::success(*object);
 }
 
@@ -249,8 +254,9 @@ ClimbingCandidateKey makeClimbingCandidateKey(const ClimbingCandidate& candidate
 
 eve::Result<eve::Value> encodeClimbingPredictionRequest(const ClimbingPredictionRequest& request) {
     if (request.sequence.isZero() || !validKey(request.candidate))
-        return eve::Result<eve::Value>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "prediction request requires a non-zero sequence and candidate key", "request", {}, "climbing.prediction"));
+        return eve::Result<eve::Value>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "prediction request requires a non-zero sequence and candidate key",
+            "request", {}, "climbing.prediction"));
     eve::Value::Object object = request.extensionMetadata;
     object["schemaId"] = eve::Value(std::string(ClimbingPredictionRequest::SchemaId));
     object["schemaVersion"] = eve::Value(ClimbingPredictionRequest::SchemaVersion);
@@ -271,7 +277,8 @@ eve::Result<ClimbingPredictionRequest> decodeClimbingPredictionRequest(const eve
         !readUint64String(root.value(), "clientTick", clientTick) || !candidate ||
         !decodeKey(*candidate, request.candidate) || !validKey(request.candidate))
         return eve::Result<ClimbingPredictionRequest>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "prediction request has missing or invalid fields", "request", {}, "climbing.prediction"));
+            eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "prediction request has missing or invalid fields",
+                                   "request", {}, "climbing.prediction"));
     request.sequence = ClimbingPredictionSequence(sequence);
     request.clientTick = eve::SimulationTick(clientTick);
     request.extensionMetadata = unknownFields(root.value(),
@@ -281,8 +288,9 @@ eve::Result<ClimbingPredictionRequest> decodeClimbingPredictionRequest(const eve
 
 eve::Result<eve::Value> encodeClimbingPredictionDecision(const ClimbingPredictionDecision& decision) {
     if (!consistentDecision(decision))
-        return eve::Result<eve::Value>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "prediction decision fields are inconsistent", "decision", {}, "climbing.prediction"));
+        return eve::Result<eve::Value>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                       "prediction decision fields are inconsistent",
+                                                                       "decision", {}, "climbing.prediction"));
     auto snapshotEnvelope = validateSnapshotEnvelope(decision.authoritativeSnapshot);
     if (!snapshotEnvelope) return eve::Result<eve::Value>::failure(snapshotEnvelope.status());
     eve::Value::Object object = decision.extensionMetadata;
@@ -317,13 +325,15 @@ eve::Result<ClimbingPredictionDecision> decodeClimbingPredictionDecision(const e
         !readReason(reason, decision.reason) || !key || !decodeKey(*key, decision.authoritativeCandidate) ||
         !snapshot)
         return eve::Result<ClimbingPredictionDecision>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "prediction decision has missing or invalid fields", "decision", {}, "climbing.prediction"));
+            eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "prediction decision has missing or invalid fields",
+                                   "decision", {}, "climbing.prediction"));
     decision.sequence = ClimbingPredictionSequence(sequence);
     decision.clientTick = eve::SimulationTick(clientTick);
     decision.serverTick = eve::SimulationTick(serverTick);
     if (!consistentDecision(decision))
         return eve::Result<ClimbingPredictionDecision>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "prediction decision fields are inconsistent", "decision", {}, "climbing.prediction"));
+            eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "prediction decision fields are inconsistent",
+                                   "decision", {}, "climbing.prediction"));
     decision.authoritativeSnapshot = *snapshot;
     auto snapshotEnvelope = validateSnapshotEnvelope(decision.authoritativeSnapshot);
     if (!snapshotEnvelope)

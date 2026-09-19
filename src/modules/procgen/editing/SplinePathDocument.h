@@ -83,7 +83,8 @@ public:
  *
  * Unknown snapshot fields are ignored. Known fields are validated into an isolated candidate before commit.
  */
-class SplinePathDocument final : public ::eve::editing::EditableTargetState, public virtual IEditableTarget,
+class SplinePathDocument final : public ::eve::editing::EditableTargetState,
+                                 public virtual IEditableTarget,
                                  public IDomainOperationTarget,
                                  public IDomainOperationTargetStaging,
                                  public ISplinePathDocumentEditTarget {

@@ -55,7 +55,8 @@ using editing::validatePropertyValue;
     std::vector<BiomeAssetValue> assets;
 };
 /** @brief Revisioned BiomeRules asset. */
-class BiomeDocumentTarget final : public ::eve::editing::EditableTargetState, public virtual IEditableTarget,
+class BiomeDocumentTarget final : public ::eve::editing::EditableTargetState,
+                                  public virtual IEditableTarget,
                                   public IDomainOperationTarget,
                                   public IDomainOperationTargetStaging,
                                   public IPropertyProvider,

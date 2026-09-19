@@ -9,7 +9,8 @@
 namespace eve::audio_editing {
 
 /** @brief Serializable audio-source authoring target independent of OpenAL handles. */
-class AudioSourceTarget final : public ::eve::editing::EditableTargetState, public virtual IEditableTarget,
+class AudioSourceTarget final : public ::eve::editing::EditableTargetState,
+                                public virtual IEditableTarget,
                                 public IDomainOperationTarget,
                                 public IDomainOperationTargetStaging,
                                 public IPropertyProvider,
@@ -115,7 +116,8 @@ struct AudioBusSnapshot {
 };
 
 /** @brief Serializable mixer-bus hierarchy, including master bus. */
-class AudioMixerTarget final : public ::eve::editing::EditableTargetState, public virtual IEditableTarget,
+class AudioMixerTarget final : public ::eve::editing::EditableTargetState,
+                               public virtual IEditableTarget,
                                public IDomainOperationTarget,
                                public IDomainOperationTargetStaging {
 public:

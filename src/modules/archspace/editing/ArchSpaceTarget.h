@@ -51,7 +51,8 @@ using editing::validatePropertyValue;
  * operations. High-level helpers (bootstrap/room/opening/item) plan those
  * replacements without bypassing validation.
  */
-class ArchSpaceDocumentTarget final : public ::eve::editing::EditableTargetState, public virtual IEditableTarget,
+class ArchSpaceDocumentTarget final : public ::eve::editing::EditableTargetState,
+                                      public virtual IEditableTarget,
                                       public IDomainOperationTarget,
                                       public IDomainOperationTargetStaging,
                                       public IPropertyProvider,

@@ -51,7 +51,8 @@ struct UiThemeAsset {
 };
 
 /** @brief Serializable catalog of named UI themes with one active publication slot. */
-class UiThemeCatalogTarget final : public ::eve::editing::EditableTargetState, public virtual IEditableTarget,
+class UiThemeCatalogTarget final : public ::eve::editing::EditableTargetState,
+                                   public virtual IEditableTarget,
                                    public IDomainOperationTarget,
                                    public IDomainOperationTargetStaging,
                                    public IPropertyProvider,

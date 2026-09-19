@@ -16,7 +16,9 @@ using editing::Revision;
 using editing::TargetId;
 
 /** @brief Non-owning IIntFieldTarget adapter for TileBuffer. */
-class TileBufferTarget final : public ::eve::editing::EditableTargetState, public virtual IEditableTarget, public IIntFieldTarget {
+class TileBufferTarget final : public ::eve::editing::EditableTargetState,
+                               public virtual IEditableTarget,
+                               public IIntFieldTarget {
 public:
     /** @brief Adapt a borrowed buffer that must outlive this target. @thread Owner-thread only. */
     TileBufferTarget(std::string id, TileBuffer *buffer);

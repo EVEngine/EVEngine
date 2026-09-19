@@ -161,8 +161,11 @@ PropertyDescriptor descriptor(const char* path, PropertyType type, EditorValue d
 
 SurfaceFluidTarget::SurfaceFluidTarget(std::string id) : id_(std::move(id)) {}
 TargetDescriptor SurfaceFluidTarget::describe() const {
-    return {
-        TargetId(id_), "surface-fluid", revisionValue(), false, {CapabilityId("eve.editor.target.surface-fluid-properties")}};
+    return {TargetId(id_),
+            "surface-fluid",
+            revisionValue(),
+            false,
+            {CapabilityId("eve.editor.target.surface-fluid-properties")}};
 }
 void* SurfaceFluidTarget::queryCapability(const CapabilityId& c) {
     return c == CapabilityId("eve.editor.target.surface-fluid-properties") ? static_cast<IPropertyProvider*>(this)

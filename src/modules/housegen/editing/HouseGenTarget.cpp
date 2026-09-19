@@ -280,7 +280,11 @@ bool hasErrors(const std::vector<EditorDiagnostic>& values) {
 
 HouseGenDocumentTarget::HouseGenDocumentTarget(std::string id) : id_(std::move(id)) {}
 TargetDescriptor HouseGenDocumentTarget::describe() const {
-    return {TargetId(id_), "housegen-asset", revisionValue(), false, {CapabilityId("eve.editor.target.housegen-properties")}};
+    return {TargetId(id_),
+            "housegen-asset",
+            revisionValue(),
+            false,
+            {CapabilityId("eve.editor.target.housegen-properties")}};
 }
 void* HouseGenDocumentTarget::queryCapability(const CapabilityId& c) {
     return c == CapabilityId("eve.editor.target.housegen-properties") ? static_cast<IPropertyProvider*>(this) : nullptr;

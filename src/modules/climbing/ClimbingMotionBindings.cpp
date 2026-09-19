@@ -10,15 +10,17 @@ void exposeClimbingMotionBindings(ssq::Class& runtime, HSQUIRRELVM vm) {
             if (!value || !world || tick < 0)
                 return eve::script::projectResult(
                     vm,
-                    eve::Result<ClimbingAdvance>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "runtime, world, and non-negative tick are required", "advance", {}, "climbing.binding")),
+                    eve::Result<ClimbingAdvance>::failure(eve::Diagnostic::error(
+                        eve::DiagnosticCode::InvalidArgument, "runtime, world, and non-negative tick are required",
+                        "advance", {}, "climbing.binding")),
                     projectClimbingAdvance);
             auto resolved = Climbing::resolve(value->reference);
             if (!resolved.isBound())
                 return eve::script::projectResult(
                     vm,
-                    eve::Result<ClimbingAdvance>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle, "climbing runtime handle is stale", "runtime", {}, "climbing.binding")),
+                    eve::Result<ClimbingAdvance>::failure(eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle,
+                                                                                 "climbing runtime handle is stale",
+                                                                                 "runtime", {}, "climbing.binding")),
                     projectClimbingAdvance);
             auto duration = eve::Duration::fromSeconds(deltaSeconds);
             if (!duration) return eve::script::projectStatusResult(vm, duration.status(), false, false);
@@ -34,16 +36,17 @@ void exposeClimbingMotionBindings(ssq::Class& runtime, HSQUIRRELVM vm) {
         if (!value || !world || tick < 0)
             return eve::script::projectResult(
                 vm,
-                eve::Result<ClimbingAdvance>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "runtime, world, and nonnegative tick required", "advanceWarped", {}, "climbing.binding")),
+                eve::Result<ClimbingAdvance>::failure(eve::Diagnostic::error(
+                    eve::DiagnosticCode::InvalidArgument, "runtime, world, and nonnegative tick required",
+                    "advanceWarped", {}, "climbing.binding")),
                 projectClimbingAdvance);
         auto resolved = Climbing::resolve(value->reference);
         if (!resolved.isBound())
-            return eve::script::projectResult(
-                vm,
-                eve::Result<ClimbingAdvance>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle, "climbing runtime handle is stale", "runtime", {}, "climbing.binding")),
-                projectClimbingAdvance);
+            return eve::script::projectResult(vm,
+                                              eve::Result<ClimbingAdvance>::failure(eve::Diagnostic::error(
+                                                  eve::DiagnosticCode::StaleHandle, "climbing runtime handle is stale",
+                                                  "runtime", {}, "climbing.binding")),
+                                              projectClimbingAdvance);
         auto duration = eve::Duration::fromSeconds(dt);
         if (!duration) return eve::script::projectStatusResult(vm, duration.status(), false, false);
         ClimbingMotionInput motion;

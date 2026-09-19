@@ -5,7 +5,8 @@
 namespace eve::asset_import {
 Result<PreparedAssetImport> prepareShaderImport(const ImportPackageIdentity& package, std::string_view json) {
     if (json.size() > 8 * 1024 * 1024)
-        return Result<PreparedAssetImport>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Shader source exceeds budget", {}, {}, "asset.import"));
+        return Result<PreparedAssetImport>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "Shader source exceeds budget", {}, {}, "asset.import"));
     auto definition = Value::fromJson(json);
     if (!definition) return Result<PreparedAssetImport>::failure(definition.status());
     auto shader = asset::decodeShaderAsset(definition.value());

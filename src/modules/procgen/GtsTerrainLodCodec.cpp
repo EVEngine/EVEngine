@@ -11,7 +11,7 @@ namespace eve::procgen {
 namespace {
 constexpr std::size_t kMaxJsonBytes = 256U * 1024U * 1024U, kMaxTiles = 65536, kMaxLevels = 32,
                       kMaxVertices = 8U * 1024U * 1024U;
-bool                  exact(const Value::Object& o, std::initializer_list<const char*> names) {
+bool exact(const Value::Object& o, std::initializer_list<const char*> names) {
     if (o.size() != names.size()) return false;
     for (auto* n : names)
         if (!o.contains(n)) return false;

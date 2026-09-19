@@ -116,7 +116,9 @@ EditorResult<void> EditorCurveDocument::applyDomainOperation(const DomainOperati
     } else
         return eve::editing::failed<void>(EditorStatus::Unsupported, RuleId("editor.curve.operation-unsupported"),
                                           "Curve operation is unsupported");
-    bumpRevision(); widenDirty(0, 0); return eve::editing::applied<void>();
+    bumpRevision();
+    widenDirty(0, 0);
+    return eve::editing::applied<void>();
 }
 
 std::unique_ptr<IDomainOperationTarget> EditorCurveDocument::cloneDomainState() const {
@@ -194,7 +196,8 @@ std::array<double, 4> EditorCurveDocument::sampleGradient(double time) const {
 }
 
 EditorCurvePreview EditorCurveDocument::preview(int sampleCount, int maximumSamples) const {
-    EditorCurvePreview result; result.documentRevision = revisionValue();
+    EditorCurvePreview result;
+    result.documentRevision = revisionValue();
     if (sampleCount < 2 || maximumSamples < 2 || sampleCount > maximumSamples) {
         result.status = EditorStatus::Rejected;
         result.diagnostics.push_back(editing::ruleDiagnostic(
@@ -234,7 +237,10 @@ EditorResult<void> EditorCurveDocument::loadSnapshot(const EditorValue& snapshot
                                               "Curve snapshot contains invalid or duplicate stops");
         candidate.stops_[parsed.value().id] = std::move(parsed.value());
     }
-    candidate.setRevision(revisionValue() + 1); candidate.clearDirtyRegion(); *this = std::move(candidate); return eve::editing::applied<void>();
+    candidate.setRevision(revisionValue() + 1);
+    candidate.clearDirtyRegion();
+    *this = std::move(candidate);
+    return eve::editing::applied<void>();
 }
 
 }  // namespace eve::editor

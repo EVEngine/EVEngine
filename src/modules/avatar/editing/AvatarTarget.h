@@ -71,7 +71,8 @@ struct AvatarExpressionValue {
 };
 
 /** @brief Revisioned image/Live2D/VRoid Avatar authoring asset. */
-class AvatarDocumentTarget final : public ::eve::editing::EditableTargetState, public virtual IEditableTarget,
+class AvatarDocumentTarget final : public ::eve::editing::EditableTargetState,
+                                   public virtual IEditableTarget,
                                    public IDomainOperationTarget,
                                    public IDomainOperationTargetStaging,
                                    public IPropertyProvider {

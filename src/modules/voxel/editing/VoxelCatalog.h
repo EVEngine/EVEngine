@@ -127,7 +127,8 @@ struct VoxelPick {
                                        float dz, float maxDistance);
 
 /** @brief Revisioned project of MagicaVoxel-style sculpted models. */
-class VoxelCatalogTarget final : public ::eve::editing::EditableTargetState, public virtual IEditableTarget,
+class VoxelCatalogTarget final : public ::eve::editing::EditableTargetState,
+                                 public virtual IEditableTarget,
                                  public IDomainOperationTarget,
                                  public IDomainOperationTargetStaging,
                                  public IPropertyProvider,

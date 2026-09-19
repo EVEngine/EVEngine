@@ -175,7 +175,9 @@ Result<AttributeTable::Column*> AttributeTable::ensureColumn(std::string_view na
         case ProcgenAttributeType::Float: replacement.storage = std::vector<std::optional<float>>(rows_); break;
         case ProcgenAttributeType::Int: replacement.storage = std::vector<std::optional<std::int64_t>>(rows_); break;
         case ProcgenAttributeType::Bool: replacement.storage = std::vector<std::optional<bool>>(rows_); break;
-        case ProcgenAttributeType::Vector: replacement.storage = std::vector<std::optional<ProcgenAttributeVector>>(rows_); break;
+        case ProcgenAttributeType::Vector:
+            replacement.storage = std::vector<std::optional<ProcgenAttributeVector>>(rows_);
+            break;
         case ProcgenAttributeType::String: replacement.storage = std::vector<std::optional<std::string>>(rows_); break;
     }
     auto inserted = columns_.emplace(key, std::move(replacement));

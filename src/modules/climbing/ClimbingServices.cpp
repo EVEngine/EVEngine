@@ -22,11 +22,12 @@ eve::Result<ClimbingServiceStart> ClimbingServiceSelectionSystem::tryStart(
     ClimbingCommand command, eve::SimulationTick tick, eve::SimulationTick lastGroundedTick,
     ClimbingServiceSubject subject) {
     if (subject.isZero())
-        return eve::Result<ClimbingServiceStart>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "service subject must be non-zero", "subject", {}, "climbing.services"));
+        return eve::Result<ClimbingServiceStart>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                                 "service subject must be non-zero",
+                                                                                 "subject", {}, "climbing.services"));
     if (!ClimbingInputSystem::peek(intent, command, tick))
-        return eve::Result<ClimbingServiceStart>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::NotFound, "climbing.input.no_match", "intent.commands", {}, "climbing.services"));
+        return eve::Result<ClimbingServiceStart>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::NotFound, "climbing.input.no_match", "intent.commands", {}, "climbing.services"));
 
     ClimbingPose effectivePose = pose;
     if (!effectivePose.grounded && command != ClimbingCommand::Drop &&
@@ -36,19 +37,22 @@ eve::Result<ClimbingServiceStart> ClimbingServiceSelectionSystem::tryStart(
     auto prepared = runtime.prepareBegin(world, effectivePose, tick);
     if (!prepared) return eve::Result<ClimbingServiceStart>::failure(prepared.status());
     if (!commandMatches(prepared.value().action.requiredCommand, command))
-        return eve::Result<ClimbingServiceStart>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::NotFound, "selected action does not accept the buffered command", "action.requiredCommand", {}, "climbing.services"));
+        return eve::Result<ClimbingServiceStart>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::NotFound, "selected action does not accept the buffered command",
+            "action.requiredCommand", {}, "climbing.services"));
 
     if (!prepared.value().action.requiredConditionTags.empty()) {
         IClimbingConditionAuthority* conditions = eve::cap::query<IClimbingConditionAuthority>();
         if (!conditions)
-            return eve::Result<ClimbingServiceStart>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::Unsupported, "required climbing condition provider is absent", "conditions", {}, "climbing.services"));
+            return eve::Result<ClimbingServiceStart>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::Unsupported, "required climbing condition provider is absent", "conditions", {},
+                "climbing.services"));
         auto decision = conditions->evaluate(subject, prepared.value().action.requiredConditionTags, tick);
         if (!decision) return eve::Result<ClimbingServiceStart>::failure(decision.status());
         if (decision.value() != ClimbingConditionDecision::Allowed)
-            return eve::Result<ClimbingServiceStart>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation, "climbing action conditions were denied", "conditions", {}, "climbing.services"));
+            return eve::Result<ClimbingServiceStart>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::PreconditionViolation, "climbing action conditions were denied", "conditions", {},
+                "climbing.services"));
         prepared.value().conditionsSatisfied = true;
     }
 
@@ -60,20 +64,23 @@ eve::Result<ClimbingServiceStart> ClimbingServiceSelectionSystem::tryStart(
         stamina = eve::cap::query<IClimbingStaminaAuthority>();
         if (!stamina && runtime.profile_.staminaPolicy == ClimbingStaminaPolicy::RequireProvider)
             return eve::Result<ClimbingServiceStart>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::Unsupported, "required climbing stamina provider is absent", "stamina", {}, "climbing.services"));
+                eve::Diagnostic::error(eve::DiagnosticCode::Unsupported, "required climbing stamina provider is absent",
+                                       "stamina", {}, "climbing.services"));
         if (!stamina) {
             staminaState = ClimbingOptionalServiceState::ProviderAbsent;
         } else {
             if (!runtime.profile_.staminaAdapter.empty() &&
                 stamina->adapterId() != runtime.profile_.staminaAdapter)
-                return eve::Result<ClimbingServiceStart>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::Unsupported, "configured climbing stamina adapter is not available", "staminaAdapter", {}, "climbing.services"));
+                return eve::Result<ClimbingServiceStart>::failure(eve::Diagnostic::error(
+                    eve::DiagnosticCode::Unsupported, "configured climbing stamina adapter is not available",
+                    "staminaAdapter", {}, "climbing.services"));
             auto reserved = stamina->prepare(subject, prepared.value().action.staminaCost, tick);
             if (!reserved) return eve::Result<ClimbingServiceStart>::failure(reserved.status());
             reservation = reserved.value();
             if (reservation.isZero())
-                return eve::Result<ClimbingServiceStart>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::InvariantViolation, "stamina provider returned a zero reservation", "stamina", {}, "climbing.services"));
+                return eve::Result<ClimbingServiceStart>::failure(eve::Diagnostic::error(
+                    eve::DiagnosticCode::InvariantViolation, "stamina provider returned a zero reservation", "stamina",
+                    {}, "climbing.services"));
             staminaState = ClimbingOptionalServiceState::Applied;
         }
     }
@@ -85,7 +92,8 @@ eve::Result<ClimbingServiceStart> ClimbingServiceSelectionSystem::tryStart(
         if (stamina) stamina->cancelPrepared(reservation);
         if (!consumed) return eve::Result<ClimbingServiceStart>::failure(consumed.status());
         return eve::Result<ClimbingServiceStart>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::Conflict, "eligible climbing input changed before commit", "intent.commands", {}, "climbing.services"));
+            eve::Diagnostic::error(eve::DiagnosticCode::Conflict, "eligible climbing input changed before commit",
+                                   "intent.commands", {}, "climbing.services"));
     }
     auto committed = runtime.commitBegin(std::move(prepared).takeValue());
     if (!committed) {
@@ -102,7 +110,8 @@ eve::Result<ClimbingOptionalServiceState> dispatchClimbingEvents(
     ClimbingServiceSubject subject, std::span<const ClimbingEvent> events) {
     if (subject.isZero())
         return eve::Result<ClimbingOptionalServiceState>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "service subject must be non-zero", "subject", {}, "climbing.services"));
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "service subject must be non-zero", "subject",
+                                   {}, "climbing.services"));
     IClimbingEventSink* sink = eve::cap::query<IClimbingEventSink>();
     if (!sink)
         return eve::Result<ClimbingOptionalServiceState>::success(
@@ -117,7 +126,8 @@ eve::Result<ClimbingOptionalServiceState> applyClimbingPose(ClimbingServiceSubje
                                                             const ClimbingAdvance& advance) {
     if (subject.isZero())
         return eve::Result<ClimbingOptionalServiceState>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "service subject must be non-zero", "subject", {}, "climbing.services"));
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "service subject must be non-zero", "subject",
+                                   {}, "climbing.services"));
     IClimbingPoseAdapter* adapter = eve::cap::query<IClimbingPoseAdapter>();
     if (!adapter)
         return eve::Result<ClimbingOptionalServiceState>::success(

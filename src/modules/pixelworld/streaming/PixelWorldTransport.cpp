@@ -34,8 +34,9 @@ ReliablePixelChunkSender::ReliablePixelChunkSender(std::uint64_t streamId,
 eve::Result<ReliablePixelChunkSender> ReliablePixelChunkSender::create(
     std::uint64_t streamId, PixelChunkTransportConfig config) {
     if (streamId == 0 || !valid(config))
-        return eve::Result<ReliablePixelChunkSender>::failure(eve::Diagnostic::error(
-        eve::DiagnosticCode::InvalidArgument, "stream id or transport policy is invalid", "config", {}, "pixelworld.reliable-transport"));
+        return eve::Result<ReliablePixelChunkSender>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "stream id or transport policy is invalid",
+                                   "config", {}, "pixelworld.reliable-transport"));
     return eve::Result<ReliablePixelChunkSender>::success(
         ReliablePixelChunkSender(streamId, config));
 }
@@ -43,11 +44,13 @@ eve::Result<ReliablePixelChunkSender> ReliablePixelChunkSender::create(
 eve::Result<std::vector<PixelChunkTransferPart>> ReliablePixelChunkSender::capture(
     const eve::pixelworld::PixelWorld& source, eve::pixelworld::PixelChunkRegion interest) {
     if (inFlight_.size() >= config_.maximumInFlightTransfers)
-        return eve::Result<std::vector<PixelChunkTransferPart>>::failure(eve::Diagnostic::error(
-        eve::DiagnosticCode::PreconditionViolation, "reliable send window is full", "maximumInFlightTransfers", {}, "pixelworld.reliable-transport"));
+        return eve::Result<std::vector<PixelChunkTransferPart>>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation, "reliable send window is full",
+                                   "maximumInFlightTransfers", {}, "pixelworld.reliable-transport"));
     if (nextTransferId_ == std::numeric_limits<std::uint64_t>::max())
-        return eve::Result<std::vector<PixelChunkTransferPart>>::failure(eve::Diagnostic::error(
-        eve::DiagnosticCode::PreconditionViolation, "transfer id space is exhausted", "transferId", {}, "pixelworld.reliable-transport"));
+        return eve::Result<std::vector<PixelChunkTransferPart>>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation, "transfer id space is exhausted",
+                                   "transferId", {}, "pixelworld.reliable-transport"));
     auto candidateCursor = cursor_;
     auto captured = candidateCursor.capture(source, interest);
     if (!captured.ok())
@@ -63,8 +66,9 @@ eve::Result<std::vector<PixelChunkTransferPart>> ReliablePixelChunkSender::captu
     const std::size_t partCount = std::max<std::size_t>(
         1, (chunkCount + config_.maximumChunksPerPart - 1) / config_.maximumChunksPerPart);
     if (partCount > config_.maximumPartsPerTransfer)
-        return eve::Result<std::vector<PixelChunkTransferPart>>::failure(eve::Diagnostic::error(
-        eve::DiagnosticCode::PreconditionViolation, "captured update exceeds part budget", "maximumPartsPerTransfer", {}, "pixelworld.reliable-transport"));
+        return eve::Result<std::vector<PixelChunkTransferPart>>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation, "captured update exceeds part budget",
+                                   "maximumPartsPerTransfer", {}, "pixelworld.reliable-transport"));
     std::vector<PixelChunkTransferPart> parts;
     parts.reserve(partCount);
     for (std::size_t index = 0; index < partCount; ++index) {
@@ -107,19 +111,22 @@ std::vector<PixelChunkTransferPart> ReliablePixelChunkSender::pendingParts() con
 eve::Result<PixelChunkAckReceipt> ReliablePixelChunkSender::acknowledge(
     PixelChunkTransferAck ack) {
     if (ack.streamId != streamId_)
-        return eve::Result<PixelChunkAckReceipt>::failure(eve::Diagnostic::error(
-        eve::DiagnosticCode::Conflict, "ACK belongs to another stream", "streamId", {}, "pixelworld.reliable-transport"));
+        return eve::Result<PixelChunkAckReceipt>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::Conflict, "ACK belongs to another stream", "streamId", {},
+                                   "pixelworld.reliable-transport"));
     if (ack.acknowledgedThrough <= acknowledgedThrough_)
         return eve::Result<PixelChunkAckReceipt>::success(
             {0, 0, acknowledgedThrough_});
     if (ack.acknowledgedThrough >= nextTransferId_)
-        return eve::Result<PixelChunkAckReceipt>::failure(eve::Diagnostic::error(
-        eve::DiagnosticCode::Conflict, "ACK advances beyond the sent window", "acknowledgedThrough", {}, "pixelworld.reliable-transport"));
+        return eve::Result<PixelChunkAckReceipt>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::Conflict, "ACK advances beyond the sent window",
+                                   "acknowledgedThrough", {}, "pixelworld.reliable-transport"));
     const auto acknowledged = inFlight_.find(ack.acknowledgedThrough);
     if (acknowledged == inFlight_.end() || acknowledged->second.empty() ||
         acknowledged->second.front().batch.sourceRevision != ack.appliedRevision)
-        return eve::Result<PixelChunkAckReceipt>::failure(eve::Diagnostic::error(
-        eve::DiagnosticCode::Conflict, "ACK revision does not match the transfer", "appliedRevision", {}, "pixelworld.reliable-transport"));
+        return eve::Result<PixelChunkAckReceipt>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::Conflict, "ACK revision does not match the transfer",
+                                   "appliedRevision", {}, "pixelworld.reliable-transport"));
     PixelChunkAckReceipt receipt;
     for (auto iterator = inFlight_.begin(); iterator != inFlight_.end() &&
                                             iterator->first <= ack.acknowledgedThrough;) {
@@ -157,8 +164,9 @@ ReliablePixelChunkReceiver::ReliablePixelChunkReceiver(std::uint64_t streamId,
 eve::Result<ReliablePixelChunkReceiver> ReliablePixelChunkReceiver::create(
     std::uint64_t streamId, PixelChunkTransportConfig config) {
     if (streamId == 0 || !valid(config))
-        return eve::Result<ReliablePixelChunkReceiver>::failure(eve::Diagnostic::error(
-        eve::DiagnosticCode::InvalidArgument, "stream id or transport policy is invalid", "config", {}, "pixelworld.reliable-transport"));
+        return eve::Result<ReliablePixelChunkReceiver>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "stream id or transport policy is invalid",
+                                   "config", {}, "pixelworld.reliable-transport"));
     return eve::Result<ReliablePixelChunkReceiver>::success(
         ReliablePixelChunkReceiver(streamId, config));
 }
@@ -168,8 +176,9 @@ eve::Result<PixelChunkReceiveReceipt> ReliablePixelChunkReceiver::receive(
     if (part.streamId != streamId_ || part.transferId == 0 || part.partCount == 0 ||
         part.partCount > config_.maximumPartsPerTransfer || part.partIndex >= part.partCount ||
         part.batch.chunks.size() > config_.maximumChunksPerPart)
-        return eve::Result<PixelChunkReceiveReceipt>::failure(eve::Diagnostic::error(
-        eve::DiagnosticCode::InvalidArgument, "transfer part metadata exceeds policy", "part", {}, "pixelworld.reliable-transport"));
+        return eve::Result<PixelChunkReceiveReceipt>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "transfer part metadata exceeds policy",
+                                   "part", {}, "pixelworld.reliable-transport"));
     PixelChunkReceiveReceipt receipt;
     if (part.transferId < expectedTransferId_) {
         receipt.duplicate = true;
@@ -181,7 +190,8 @@ eve::Result<PixelChunkReceiveReceipt> ReliablePixelChunkReceiver::receive(
     if (found == buffered_.end()) {
         if (buffered_.size() >= config_.maximumBufferedTransfers)
             return eve::Result<PixelChunkReceiveReceipt>::failure(eve::Diagnostic::error(
-        eve::DiagnosticCode::PreconditionViolation, "out-of-order receive window is full", "maximumBufferedTransfers", {}, "pixelworld.reliable-transport"));
+                eve::DiagnosticCode::PreconditionViolation, "out-of-order receive window is full",
+                "maximumBufferedTransfers", {}, "pixelworld.reliable-transport"));
         Assembly assembly;
         assembly.partCount = part.partCount;
         assembly.parts.resize(part.partCount);
@@ -189,13 +199,15 @@ eve::Result<PixelChunkReceiveReceipt> ReliablePixelChunkReceiver::receive(
     }
     Assembly& assembly = found->second;
     if (assembly.partCount != part.partCount)
-        return eve::Result<PixelChunkReceiveReceipt>::failure(eve::Diagnostic::error(
-        eve::DiagnosticCode::Conflict, "transfer part count changed", "partCount", {}, "pixelworld.reliable-transport"));
+        return eve::Result<PixelChunkReceiveReceipt>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::Conflict, "transfer part count changed", "partCount", {},
+                                   "pixelworld.reliable-transport"));
     auto& slot = assembly.parts[part.partIndex];
     if (slot) {
         if (*slot != part)
-            return eve::Result<PixelChunkReceiveReceipt>::failure(eve::Diagnostic::error(
-        eve::DiagnosticCode::Conflict, "duplicate part payload conflicts", "part", {}, "pixelworld.reliable-transport"));
+            return eve::Result<PixelChunkReceiveReceipt>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::Conflict, "duplicate part payload conflicts", "part", {},
+                                       "pixelworld.reliable-transport"));
         receipt.duplicate = true;
     } else {
         slot = std::make_unique<PixelChunkTransferPart>(std::move(part));
@@ -213,7 +225,8 @@ eve::Result<PixelChunkReceiveReceipt> ReliablePixelChunkReceiver::receive(
         for (const auto& value : next->second.parts) {
             if (!sameMetadata(first, *value))
                 return eve::Result<PixelChunkReceiveReceipt>::failure(eve::Diagnostic::error(
-        eve::DiagnosticCode::Conflict, "transfer parts disagree on authority metadata", "part.batch", {}, "pixelworld.reliable-transport"));
+                    eve::DiagnosticCode::Conflict, "transfer parts disagree on authority metadata", "part.batch", {},
+                    "pixelworld.reliable-transport"));
             combined.chunks.insert(combined.chunks.end(), value->batch.chunks.begin(),
                                    value->batch.chunks.end());
         }

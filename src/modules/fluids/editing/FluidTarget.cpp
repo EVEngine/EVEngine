@@ -111,7 +111,11 @@ EditorValue setting(const FluidSimulationSettings& s, const std::string& path) {
 
 FluidSimulationTarget::FluidSimulationTarget(std::string id) : id_(std::move(id)) {}
 TargetDescriptor FluidSimulationTarget::describe() const {
-    return {TargetId(id_), "fluid-simulation", revisionValue(), false, {CapabilityId("eve.editor.target.fluid-properties")}};
+    return {TargetId(id_),
+            "fluid-simulation",
+            revisionValue(),
+            false,
+            {CapabilityId("eve.editor.target.fluid-properties")}};
 }
 void* FluidSimulationTarget::queryCapability(const CapabilityId& capability) {
     return capability == CapabilityId("eve.editor.target.fluid-properties") ? static_cast<IPropertyProvider*>(this)

@@ -406,17 +406,16 @@ private:
     int seed_ = 0;
 };
 
-static_assert(!std::is_default_constructible_v<StrictNode>,
-              "entity root must stay non-default-constructible");
+static_assert(!std::is_default_constructible_v<StrictNode>, "entity root must stay non-default-constructible");
 static_assert(!std::is_copy_constructible_v<StrictNode>, "entity root must stay move-only");
 
 /** @brief Component that is move-only but still default constructible. */
 struct MoveOnlyComponent {
     float x = 0.f;
 
-    MoveOnlyComponent()                                    = default;
-    MoveOnlyComponent(const MoveOnlyComponent&)            = delete;
-    MoveOnlyComponent& operator=(const MoveOnlyComponent&) = delete;
+    MoveOnlyComponent()                                        = default;
+    MoveOnlyComponent(const MoveOnlyComponent&)                = delete;
+    MoveOnlyComponent& operator=(const MoveOnlyComponent&)     = delete;
     MoveOnlyComponent(MoveOnlyComponent&&) noexcept            = default;
     MoveOnlyComponent& operator=(MoveOnlyComponent&&) noexcept = default;
 };
@@ -443,8 +442,7 @@ struct SeededComponent {
     SeededComponent& operator=(SeededComponent&&) noexcept = default;
 };
 
-static_assert(!std::is_default_constructible_v<SeededComponent>,
-              "component must stay non-default-constructible");
+static_assert(!std::is_default_constructible_v<SeededComponent>, "component must stay non-default-constructible");
 
 /** @brief Entity root carrying a component that must be constructed with an argument. */
 class SeededHolder : public ecs::Entity {
@@ -455,7 +453,7 @@ public:
 };
 
 TEST_CASE("ECS.moveOnlyEntityRootAndMoveOnlyComponent") {
-    ecs::Table world;
+    ecs::Table       world;
     ecs::ScopedTable guard(world);
 
     // A record whose constructor needs an argument, with copy deleted.
@@ -465,7 +463,7 @@ TEST_CASE("ECS.moveOnlyEntityRootAndMoveOnlyComponent") {
     // The existing first-touch idiom still materialises a component, even
     // though that component is move-only.
     MoveOnlyHolder* holder = MoveOnlyHolder::create();
-    holder->moveOnly()->x = 3.f;
+    holder->moveOnly()->x  = 3.f;
     CHECK(std::abs(holder->moveOnly()->x - 3.f) < 1e-5f);
 
     strict->release();
@@ -473,7 +471,7 @@ TEST_CASE("ECS.moveOnlyEntityRootAndMoveOnlyComponent") {
 }
 
 TEST_CASE("ECS.nonDefaultConstructibleComponentNeedsExplicitConstruction") {
-    ecs::Table world;
+    ecs::Table       world;
     ecs::ScopedTable guard(world);
 
     SeededHolder* seeded = SeededHolder::create();
@@ -492,7 +490,7 @@ TEST_CASE("ECS.nonDefaultConstructibleComponentNeedsExplicitConstruction") {
 
     // A View over such a component therefore yields only the entity that
     // really holds a value, rather than materialising one per entity.
-    int seen = 0;
+    int  seen = 0;
     auto view = ecs::View<SeededHolder, SeededComponent>();
     for (auto it = view.begin(); it != view.end(); ++it) {
         auto [component] = *it;
@@ -507,12 +505,12 @@ TEST_CASE("ECS.nonDefaultConstructibleComponentNeedsExplicitConstruction") {
 }
 
 TEST_CASE("ECS.deferredPublishTransfersNonDefaultComponent") {
-    ecs::Table world;
+    ecs::Table       world;
     ecs::ScopedTable guard(world);
 
     {
         ecs::ScopedDefer defer;
-        SeededHolder* staged = SeededHolder::create();
+        SeededHolder*    staged = SeededHolder::create();
         staged->seeded().emplace(11);
         CHECK((staged->flags & ecs::kEntityStaging) != 0);
         CHECK_EQ(staged->seeded()->value, 11);
@@ -520,12 +518,11 @@ TEST_CASE("ECS.deferredPublishTransfersNonDefaultComponent") {
 
     // The record and its component survived publish_from, which is the only
     // caller of transfer_slot.
-    int found = 0;
-    auto view = ecs::View<SeededHolder, SeededComponent>();
+    int  found = 0;
+    auto view  = ecs::View<SeededHolder, SeededComponent>();
     for (auto it = view.begin(); it != view.end(); ++it) {
         auto [component] = *it;
-        if (component->value == 11)
-            ++found;
+        if (component->value == 11) ++found;
     }
     CHECK_EQ(found, 1);
 }

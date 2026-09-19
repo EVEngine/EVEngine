@@ -9,10 +9,12 @@ namespace eve::asset_import::unity_detail {
 
 Result<std::string> metaScalar(std::span<const std::uint8_t> bytes, std::string_view key, std::string_view path) {
     if (std::find(bytes.begin(), bytes.end(), 0) != bytes.end())
-        return Result<std::string>::failure(Diagnostic::error(DiagnosticCode::ParseError, "binary Unity metadata", std::string(path), {}, "asset.import.unity"));
+        return Result<std::string>::failure(Diagnostic::error(DiagnosticCode::ParseError, "binary Unity metadata",
+                                                              std::string(path), {}, "asset.import.unity"));
     const std::string_view text(reinterpret_cast<const char*>(bytes.data()), bytes.size());
     if (!isValidUtf8(text, Utf8NullPolicy::Reject))
-        return Result<std::string>::failure(Diagnostic::error(DiagnosticCode::ParseError, "Unity metadata is not UTF-8", std::string(path), {}, "asset.import.unity"));
+        return Result<std::string>::failure(Diagnostic::error(DiagnosticCode::ParseError, "Unity metadata is not UTF-8",
+                                                              std::string(path), {}, "asset.import.unity"));
     std::string value;
     bool        found = false;
     for (std::size_t at = 0; at < text.size();) {
@@ -22,7 +24,9 @@ Result<std::string> metaScalar(std::span<const std::uint8_t> bytes, std::string_
         if (at == 0 && line.starts_with("\xef\xbb\xbf")) line.remove_prefix(3);
         if (line.starts_with(key) && line.size() > key.size() && line[key.size()] == ':') {
             if (found)
-                return Result<std::string>::failure(Diagnostic::error(DiagnosticCode::Conflict, "duplicate Unity metadata key: " + std::string(key), std::string(path), {}, "asset.import.unity"));
+                return Result<std::string>::failure(
+                    Diagnostic::error(DiagnosticCode::Conflict, "duplicate Unity metadata key: " + std::string(key),
+                                      std::string(path), {}, "asset.import.unity"));
             found = true;
             line.remove_prefix(key.size() + 1);
             const auto first = line.find_first_not_of(" \t\r");
@@ -83,19 +87,26 @@ Result<std::vector<UnitySourceReference>> references(std::span<const std::uint8_
         at = text[end] == '{' ? end : end + 1;
         if (text[end] != '}') continue;
         if (end - begin > limits.maximumStringBytes)
-            return Result<std::vector<UnitySourceReference>>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Unity serialized flow record exceeds string budget", path, {}, "asset.import.unity"));
+            return Result<std::vector<UnitySourceReference>>::failure(
+                Diagnostic::error(DiagnosticCode::InvalidArgument, "Unity serialized flow record exceeds string budget",
+                                  path, {}, "asset.import.unity"));
         const std::string ref(text.substr(begin, end - begin + 1));
         std::smatch       guid, id;
         if (!std::regex_search(ref, guid, guidField)) continue;
         if (!validGuid(guid[1].str()) || !std::regex_search(ref, id, idField))
-            return Result<std::vector<UnitySourceReference>>::failure(Diagnostic::error(DiagnosticCode::ParseError, "malformed Unity object reference", path, {}, "asset.import.unity"));
+            return Result<std::vector<UnitySourceReference>>::failure(Diagnostic::error(
+                DiagnosticCode::ParseError, "malformed Unity object reference", path, {}, "asset.import.unity"));
         const auto   idText = id[1].str();
         std::int64_t fileId = 0;
         auto         parsed = std::from_chars(idText.data(), idText.data() + idText.size(), fileId);
         if (parsed.ec != std::errc{} || parsed.ptr != idText.data() + idText.size())
-            return Result<std::vector<UnitySourceReference>>::failure(Diagnostic::error(DiagnosticCode::ParseError, "Unity reference fileID exceeds signed 64-bit range", path, {}, "asset.import.unity"));
+            return Result<std::vector<UnitySourceReference>>::failure(
+                Diagnostic::error(DiagnosticCode::ParseError, "Unity reference fileID exceeds signed 64-bit range",
+                                  path, {}, "asset.import.unity"));
         if (out.size() >= limits.maximumAssets)
-            return Result<std::vector<UnitySourceReference>>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Unity reference count exceeds budget", path, {}, "asset.import.unity"));
+            return Result<std::vector<UnitySourceReference>>::failure(
+                Diagnostic::error(DiagnosticCode::InvalidArgument, "Unity reference count exceeds budget", path, {},
+                                  "asset.import.unity"));
         out.push_back({foldAscii(guid[1].str()), fileId});
     }
     std::sort(out.begin(), out.end(),
@@ -109,16 +120,21 @@ Result<std::vector<UnitySourceReference>> references(std::span<const std::uint8_
 
 Result<UnitySourceIndex> indexUnitySources(const UnitySourceFiles& files, const AssetImportLimits& limits) {
     if (files.empty() || files.size() > std::uint64_t(limits.maximumAssets) * 2)
-        return Result<UnitySourceIndex>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Unity source count exceeds budget or is empty", {}, {}, "asset.import.unity"));
+        return Result<UnitySourceIndex>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                                   "Unity source count exceeds budget or is empty", {},
+                                                                   {}, "asset.import.unity"));
     std::uint64_t         total = 0;
     std::set<std::string> paths;
     for (const auto& [path, bytes] : files) {
         if (!validPath(path, limits) || bytes.size() > limits.maximumSourceBytes ||
             total > limits.maximumSourceBytes - bytes.size())
-            return Result<UnitySourceIndex>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Unity path or source budget is invalid", path, {}, "asset.import.unity"));
+            return Result<UnitySourceIndex>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                                       "Unity path or source budget is invalid", path,
+                                                                       {}, "asset.import.unity"));
         total += bytes.size();
         if (!paths.insert(foldAscii(path)).second)
-            return Result<UnitySourceIndex>::failure(Diagnostic::error(DiagnosticCode::Conflict, "Unity source paths differ only by case", path, {}, "asset.import.unity"));
+            return Result<UnitySourceIndex>::failure(Diagnostic::error(
+                DiagnosticCode::Conflict, "Unity source paths differ only by case", path, {}, "asset.import.unity"));
     }
     UnitySourceIndex                   index;
     std::map<std::string, std::string> guidPaths;
@@ -134,21 +150,26 @@ Result<UnitySourceIndex> indexUnitySources(const UnitySourceFiles& files, const 
         auto              guid       = metaScalar(bytes, "guid", path);
         if (!guid) return Result<UnitySourceIndex>::failure(guid.status());
         if (!validGuid(guid.value()) || builtin(foldAscii(guid.value())))
-            return Result<UnitySourceIndex>::failure(Diagnostic::error(DiagnosticCode::ParseError, "Unity .meta needs a non-reserved GUID", path, {}, "asset.import.unity"));
+            return Result<UnitySourceIndex>::failure(Diagnostic::error(
+                DiagnosticCode::ParseError, "Unity .meta needs a non-reserved GUID", path, {}, "asset.import.unity"));
         const auto normalizedGuid = foldAscii(guid.value());
         if (!guidPaths.emplace(normalizedGuid, sourcePath).second)
-            return Result<UnitySourceIndex>::failure(Diagnostic::error(DiagnosticCode::Conflict, "duplicate Unity GUID", path, {}, "asset.import.unity"));
+            return Result<UnitySourceIndex>::failure(
+                Diagnostic::error(DiagnosticCode::Conflict, "duplicate Unity GUID", path, {}, "asset.import.unity"));
         auto folder = metaScalar(bytes, "folderAsset", path);
         if (!folder) return Result<UnitySourceIndex>::failure(folder.status());
         const auto found = assetPaths.find(sourcePath);
         if (folder.value() == "yes") {
             if (found != assetPaths.end())
-                return Result<UnitySourceIndex>::failure(Diagnostic::error(DiagnosticCode::Conflict, "Unity folder also contains a file payload", path, {}, "asset.import.unity"));
+                return Result<UnitySourceIndex>::failure(Diagnostic::error(DiagnosticCode::Conflict,
+                                                                           "Unity folder also contains a file payload",
+                                                                           path, {}, "asset.import.unity"));
             index.assets.push_back({sourcePath, normalizedGuid, UnitySourceKind::Folder, {}, {}});
             continue;
         }
         if (found == assetPaths.end())
-            return Result<UnitySourceIndex>::failure(Diagnostic::error(DiagnosticCode::NotFound, "Unity metadata has no source payload", path, {}, "asset.import.unity"));
+            return Result<UnitySourceIndex>::failure(Diagnostic::error(
+                DiagnosticCode::NotFound, "Unity metadata has no source payload", path, {}, "asset.import.unity"));
         auto& source = index.assets[found->second];
         source.guid  = normalizedGuid;
         const std::string_view meta(reinterpret_cast<const char*>(bytes.data()), bytes.size());
@@ -166,17 +187,22 @@ Result<UnitySourceIndex> indexUnitySources(const UnitySourceFiles& files, const 
         source.references = std::move(refs).takeValue();
     }
     if (index.assets.size() > limits.maximumAssets)
-        return Result<UnitySourceIndex>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Unity asset count exceeds budget", {}, {}, "asset.import.unity"));
+        return Result<UnitySourceIndex>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "Unity asset count exceeds budget", {}, {}, "asset.import.unity"));
     std::map<std::string, UnitySourceKind> sourcePaths;
     for (const auto& entry : index.assets) {
         if (!sourcePaths.emplace(foldAscii(entry.path), entry.kind).second)
-            return Result<UnitySourceIndex>::failure(Diagnostic::error(DiagnosticCode::Conflict, "Unity source identities share a path", entry.path, {}, "asset.import.unity"));
+            return Result<UnitySourceIndex>::failure(Diagnostic::error(DiagnosticCode::Conflict,
+                                                                       "Unity source identities share a path",
+                                                                       entry.path, {}, "asset.import.unity"));
     }
     for (const auto& entry : index.assets) {
         for (auto slash = entry.path.find('/'); slash != std::string::npos; slash = entry.path.find('/', slash + 1)) {
             const auto parent = sourcePaths.find(foldAscii(entry.path.substr(0, slash)));
             if (parent != sourcePaths.end() && parent->second != UnitySourceKind::Folder)
-                return Result<UnitySourceIndex>::failure(Diagnostic::error(DiagnosticCode::Conflict, "Unity source file is also used as a directory", entry.path, {}, "asset.import.unity"));
+                return Result<UnitySourceIndex>::failure(
+                    Diagnostic::error(DiagnosticCode::Conflict, "Unity source file is also used as a directory",
+                                      entry.path, {}, "asset.import.unity"));
         }
     }
     std::sort(index.assets.begin(), index.assets.end(), [](const auto& a, const auto& b) { return a.path < b.path; });

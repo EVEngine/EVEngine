@@ -46,7 +46,11 @@ ProjectSettingsTarget::ProjectSettingsTarget(std::string id, ProjectSettingsSche
 }
 
 TargetDescriptor ProjectSettingsTarget::describe() const {
-    return {TargetId(id_), "project-settings", revisionValue(), false, {CapabilityId("eve.editor.target.project-settings")}};
+    return {TargetId(id_),
+            "project-settings",
+            revisionValue(),
+            false,
+            {CapabilityId("eve.editor.target.project-settings")}};
 }
 
 void* ProjectSettingsTarget::queryCapability(const CapabilityId& capability) {

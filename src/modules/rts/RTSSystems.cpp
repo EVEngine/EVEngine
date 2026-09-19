@@ -3338,7 +3338,7 @@ Result<std::size_t> ShieldSystem::step(const SimulationStep& step, const Lifecyc
             shield->cooldown < 0.0f)
             return Result<void>::failure(
                 Diagnostic::error(DiagnosticCode::InvalidArgument,
-                                  "RTS shield values must be finite and within configured ranges", "shield"));
+                                           "RTS shield values must be finite and within configured ranges", "shield"));
         if (!alive || shield->capacity == 0.0f) return Result<void>::success();
         const float beforeValue = shield->value;
         const float beforeCooldown = shield->cooldown;
@@ -3537,22 +3537,22 @@ Result<void> settleAbility(Unit& caster, const AbilitySpec& spec, ecs::EntityHan
         float shieldDelay = 0.0f;
         SubjectRef subject;
         if (auto* unit = dynamic_cast<Unit*>(entity)) {
-            state = &unit->durability()->state;
+            state          = &unit->durability()->state;
             alive          = &unit->durability()->alive;
-            faction = &unit->faction()->link;
+            faction        = &unit->faction()->link;
             effects        = &unit->effects()->values;
-            shield = &unit->shield()->value;
+            shield         = &unit->shield()->value;
             shieldCooldown = &unit->shield()->cooldown;
-            shieldDelay = unit->shield()->regenDelay;
+            shieldDelay    = unit->shield()->regenDelay;
             subject        = unit->identity()->subject;
         } else if (auto* building = dynamic_cast<Building*>(entity)) {
-            state = &building->integrity()->state;
+            state          = &building->integrity()->state;
             alive          = &building->integrity()->alive;
-            faction = &building->faction()->link;
+            faction        = &building->faction()->link;
             effects        = &building->effects()->values;
-            shield = &building->shield()->value;
+            shield         = &building->shield()->value;
             shieldCooldown = &building->shield()->cooldown;
-            shieldDelay = building->shield()->regenDelay;
+            shieldDelay    = building->shield()->regenDelay;
             subject        = building->identity()->subject;
         }
         if (state == nullptr || alive == nullptr || !*alive || !subject.isValid())

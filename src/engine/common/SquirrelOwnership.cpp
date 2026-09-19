@@ -20,8 +20,7 @@ namespace eve::script::detail {
 
 Diagnostic ownedInstanceArgumentDiagnostic() {
     return Diagnostic::error(DiagnosticCode::InvalidArgument,
-                             "owned Squirrel instance requires a VM and non-null object", {}, {},
-                             "squirrel.ownership");
+                             "owned Squirrel instance requires a VM and non-null object", {}, {}, "squirrel.ownership");
 }
 
 Result<ssq::Object> makeOwnedSquirrelInstanceRaw(HSQUIRRELVM vm, void* object, SquirrelReleaseHook releaseHook,
@@ -159,9 +158,8 @@ void* RuntimeSlotStore::resolve(std::uint32_t index, std::uint32_t generation,
 
 Result<void> RuntimeSlotStore::erase(std::uint32_t index, std::uint32_t generation, std::uint64_t ownerEpoch) {
     if (!coordinatesValid(index, generation)) {
-        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
-                                                       "cannot erase an invalid runtime handle", {}, {},
-                                                       "runtime.registry"));
+        return Result<void>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "cannot erase an invalid runtime handle", {}, {}, "runtime.registry"));
     }
     if (ownerEpoch != ownerEpoch_) return registryStale<void>();
     const auto slotIndex = findSlot(index, generation, ownerEpoch);
@@ -174,8 +172,8 @@ Result<void> RuntimeSlotStore::erase(std::uint32_t index, std::uint32_t generati
         try {
             freeSlots_.push_back(index);
         } catch (const std::exception& error) {
-            return registryFailure<void>(
-                DiagnosticCode::Failed, std::string("runtime registry release bookkeeping failed: ") + error.what());
+            return registryFailure<void>(DiagnosticCode::Failed,
+                                         std::string("runtime registry release bookkeeping failed: ") + error.what());
         } catch (...) {
             return registryFailure<void>(DiagnosticCode::Failed, "runtime registry release bookkeeping failed");
         }

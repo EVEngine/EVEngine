@@ -25,8 +25,11 @@ bool errors(const std::vector<EditorDiagnostic>& d) {
 }  // namespace
 SceneImportTarget::SceneImportTarget(std::string id) : id_(std::move(id)) {}
 TargetDescriptor SceneImportTarget::describe() const {
-    return {
-        TargetId(id_), "scene-import", revisionValue(), false, {CapabilityId("eve.editor.target.scene-import-properties")}};
+    return {TargetId(id_),
+            "scene-import",
+            revisionValue(),
+            false,
+            {CapabilityId("eve.editor.target.scene-import-properties")}};
 }
 void* SceneImportTarget::queryCapability(const CapabilityId& c) {
     return c == CapabilityId("eve.editor.target.scene-import-properties") ? static_cast<IPropertyProvider*>(this)

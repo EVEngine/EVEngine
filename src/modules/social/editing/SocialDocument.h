@@ -49,7 +49,8 @@ struct SocialEdgeRecord {
 };
 
 /** @brief UI-neutral revisioned social graph authoring document. */
-class SocialDocumentTarget final : public ::eve::editing::EditableTargetState, public virtual IEditableTarget,
+class SocialDocumentTarget final : public ::eve::editing::EditableTargetState,
+                                   public virtual IEditableTarget,
                                    public IDomainOperationTarget,
                                    public IDomainOperationTargetStaging {
 public:

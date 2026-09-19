@@ -21,7 +21,8 @@ struct SceneImportValue {
     bool        triangulate = true, generateNormals = true, joinVertices = true, flipUvs = true, improveCache = true;
     bool sharedMeshes = true, mipmaps = true, importLights = true, importCameras = false, importAnimations = true;
 };
-class SceneImportTarget final : public ::eve::editing::EditableTargetState, public virtual IEditableTarget,
+class SceneImportTarget final : public ::eve::editing::EditableTargetState,
+                                public virtual IEditableTarget,
                                 public IDomainOperationTarget,
                                 public IDomainOperationTargetStaging,
                                 public IPropertyProvider {

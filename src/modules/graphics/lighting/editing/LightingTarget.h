@@ -49,7 +49,8 @@ using TargetId                 = editing::TargetId;
 using editing::validatePropertyValue;
 
 /** @brief Shared property-document implementation for light and environment targets. */
-class LightingPropertyTargetBase : public ::eve::editing::EditableTargetState, public virtual IEditableTarget,
+class LightingPropertyTargetBase : public ::eve::editing::EditableTargetState,
+                                   public virtual IEditableTarget,
                                    public IDomainOperationTarget,
                                    public IPropertyProvider {
 public:

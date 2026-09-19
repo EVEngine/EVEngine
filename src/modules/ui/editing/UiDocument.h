@@ -128,7 +128,8 @@ public:
 };
 
 /** @brief Serializable UI authoring document with hierarchy and inspector capabilities. */
-class UiDocumentTarget final : public ::eve::editing::EditableTargetState, public virtual IEditableTarget,
+class UiDocumentTarget final : public ::eve::editing::EditableTargetState,
+                               public virtual IEditableTarget,
                                public IDomainOperationTarget,
                                public IDomainOperationTargetStaging,
                                public IUiDocumentEditTarget,

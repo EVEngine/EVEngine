@@ -48,14 +48,17 @@ Result<PreparedAssetImport> prepareUnityNativeVolumeTexture(const UnityProjectIm
     const auto&            bytes = request.files.at(source.path);
     const std::string_view text(reinterpret_cast<const char*>(bytes.data()), bytes.size());
     if (text.find("\nTexture3D:") == std::string_view::npos)
-        return Result<PreparedAssetImport>::failure(Diagnostic::error(DiagnosticCode::Unsupported, "native asset is not a text Texture3D", source.path, {}, "asset.import"));
+        return Result<PreparedAssetImport>::failure(Diagnostic::error(
+            DiagnosticCode::Unsupported, "native asset is not a text Texture3D", source.path, {}, "asset.import"));
     try {
         const auto width = volumeNumber(text, "m_Width"), height = volumeNumber(text, "m_Height"),
                    depth = volumeNumber(text, "m_Depth"), dataSize = volumeNumber(text, "m_DataSize");
         if (volumeNumber(text, "m_Format") != 5 || volumeNumber(text, "m_MipCount") != 1 ||
             volumeNumber(text, "m_ColorSpace") != 0 || volumeNumber(text, "size") != 0 ||
             !volumeField(text, "path").empty())
-            return Result<PreparedAssetImport>::failure(Diagnostic::error(DiagnosticCode::Unsupported, "requires an embedded linear R8 Texture3D with one mip and no stream data", source.path, {}, "asset.import"));
+            return Result<PreparedAssetImport>::failure(Diagnostic::error(
+                DiagnosticCode::Unsupported, "requires an embedded linear R8 Texture3D with one mip and no stream data",
+                source.path, {}, "asset.import"));
         if (!width || !height || !depth || width > UINT32_MAX || height > UINT32_MAX || depth > UINT32_MAX ||
             width > request.limits.maximumDecodedBytes / height ||
             width * height > request.limits.maximumDecodedBytes / depth)
@@ -118,7 +121,8 @@ Result<PreparedAssetImport> prepareUnityNativeVolumeTexture(const UnityProjectIm
         if (!report) return Result<PreparedAssetImport>::failure(report.status());
         return Result<PreparedAssetImport>::success(std::move(out));
     } catch (const std::exception& error) {
-        return Result<PreparedAssetImport>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, error.what(), source.path, {}, "asset.import"));
+        return Result<PreparedAssetImport>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, error.what(), source.path, {}, "asset.import"));
     }
 }
 

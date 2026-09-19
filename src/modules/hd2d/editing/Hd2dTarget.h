@@ -56,7 +56,8 @@ struct Hd2dAssetValue {
     std::array<float, 4> wallUv{0, 0, .05f, .05f};
 };
 /** @brief Revisioned HD-2D sprite/tilemap presentation asset. */
-class Hd2dDocumentTarget final : public ::eve::editing::EditableTargetState, public virtual IEditableTarget,
+class Hd2dDocumentTarget final : public ::eve::editing::EditableTargetState,
+                                 public virtual IEditableTarget,
                                  public IDomainOperationTarget,
                                  public IDomainOperationTargetStaging,
                                  public IPropertyProvider {

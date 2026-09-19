@@ -134,7 +134,7 @@ eve::editing::Result<void> EditorTargetCoordinator::registerPlannedCommand(
             Impl::TargetEntry* selected = state->entry(request.context.target);
             if (!selected || !selected->target)
                 return eve::editing::failed<CommandPlan>(EditorStatus::NotFound, RuleId("editor.target.not-found"),
-                                                         "Editing target is not registered");
+                                                                          "Editing target is not registered");
             EditorResult<CommandPlan> result = planner(*selected->target, request);
             if (result.ok()) result.value().targetGeneration = selected->generation;
             return result;

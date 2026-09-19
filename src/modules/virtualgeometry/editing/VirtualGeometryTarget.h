@@ -58,7 +58,8 @@ struct VirtualGeometryImportValue {
 };
 
 /** @brief Revisioned VirtualGeometry importer preset. */
-class VirtualGeometryDocumentTarget final : public ::eve::editing::EditableTargetState, public virtual IEditableTarget,
+class VirtualGeometryDocumentTarget final : public ::eve::editing::EditableTargetState,
+                                            public virtual IEditableTarget,
                                             public IDomainOperationTarget,
                                             public IDomainOperationTargetStaging,
                                             public IPropertyProvider {

@@ -68,7 +68,11 @@ PropertyDescriptor property(const std::string& path, PropertyType type, EditorVa
 
 StylizeRecipeTarget::StylizeRecipeTarget(std::string id) : id_(std::move(id)) {}
 TargetDescriptor StylizeRecipeTarget::describe() const {
-    return {TargetId(id_), "stylize-recipe", revisionValue(), false, {CapabilityId("eve.editor.target.stylize-properties")}};
+    return {TargetId(id_),
+            "stylize-recipe",
+            revisionValue(),
+            false,
+            {CapabilityId("eve.editor.target.stylize-properties")}};
 }
 void* StylizeRecipeTarget::queryCapability(const CapabilityId& c) {
     return c == CapabilityId("eve.editor.target.stylize-properties") ? static_cast<IPropertyProvider*>(this) : nullptr;

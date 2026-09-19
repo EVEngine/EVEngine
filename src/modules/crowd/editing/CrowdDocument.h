@@ -75,7 +75,8 @@ struct CrowdOverlayResult {
 };
 
 /** @brief UI-neutral agent/zone/path document with reversible domain operations. */
-class CrowdDocumentTarget final : public ::eve::editing::EditableTargetState, public virtual IEditableTarget,
+class CrowdDocumentTarget final : public ::eve::editing::EditableTargetState,
+                                  public virtual IEditableTarget,
                                   public IDomainOperationTarget,
                                   public IDomainOperationTargetStaging {
 public:

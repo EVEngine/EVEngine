@@ -501,15 +501,15 @@ EditorResult<DomainOperation> areaOperation(
 BuildingPlacementTarget::BuildingPlacementTarget(std::string id, building::PlacementWorld* world)
     : id_(std::move(id)), world_(world) {}
 
-BuildingPlacementTarget::BuildingPlacementTarget(
-    std::string id, std::unique_ptr<building::PlacementWorld> world, unsigned long long revision)
+BuildingPlacementTarget::BuildingPlacementTarget(std::string id, std::unique_ptr<building::PlacementWorld> world,
+                                                 unsigned long long revision)
     : EditableTargetState(revision), id_(std::move(id)), world_(world.get()), ownedWorld_(std::move(world)) {}
 
 TargetDescriptor BuildingPlacementTarget::describe() const {
     TargetDescriptor result;
     result.id = TargetId(id_);
     result.type = "building-placement-world";
-    result.revision = revisionValue();
+    result.revision     = revisionValue();
     result.readOnly = world_ == nullptr;
     result.capabilities = {editorCapabilityId()};
     return result;

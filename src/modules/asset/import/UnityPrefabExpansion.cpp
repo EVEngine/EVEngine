@@ -176,7 +176,8 @@ Result<UnityExpandedPrefab> expandUnityPrefab(const UnityProjectImportRequest& r
         }
         return Result<UnityExpandedPrefab>::success({{text.begin(), text.end()}, std::move(expander.findings)});
     } catch (const std::exception& e) {
-        return Result<UnityExpandedPrefab>::failure(Diagnostic::error(DiagnosticCode::ParseError, e.what(), source.path, {}, "asset.import.unity"));
+        return Result<UnityExpandedPrefab>::failure(
+            Diagnostic::error(DiagnosticCode::ParseError, e.what(), source.path, {}, "asset.import.unity"));
     }
 }
 }  // namespace eve::asset_import

@@ -151,7 +151,8 @@ struct BuildingPlacementPreview {
 };
 
 /** @brief Live PlacementWorld target with reversible place/move/remove operations. */
-class BuildingPlacementTarget final : public ::eve::editing::EditableTargetState, public virtual IEditableTarget,
+class BuildingPlacementTarget final : public ::eve::editing::EditableTargetState,
+                                      public virtual IEditableTarget,
                                       public IDomainOperationTarget,
                                       public editing::IDomainOperationTargetStaging {
 public:

@@ -73,7 +73,8 @@ public:
  * Concrete subclasses differ only in host-facing target type. The mutation
  * protocol and capabilities stay identical so tools contain no backend branch.
  */
-class SceneTargetBase : public ::eve::editing::EditableTargetState, public virtual IEditableTarget,
+class SceneTargetBase : public ::eve::editing::EditableTargetState,
+                        public virtual IEditableTarget,
                         public IDomainOperationTarget,
                         public IDomainOperationTargetStaging,
                         public eve::editing::IEditingSnapshotProvider,

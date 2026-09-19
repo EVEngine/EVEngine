@@ -208,33 +208,41 @@ Vec3 vectorFrom(physics::PhysicsVector3D value) { return {value.x, value.y, valu
 eve::Result<void> validateClimbingAnchorGraphDefinition(const ClimbingAnchorGraphDefinition& graph) {
     if (graph.id.empty() || graph.sourceGeometryContentId.empty() || graph.buildSettingsHash.empty())
         return eve::Result<void>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "graph id, source geometry content id, and build settings hash are required", "graph.identity", {}, "climbing.anchor_graph"));
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                   "graph id, source geometry content id, and build settings hash are required",
+                                   "graph.identity", {}, "climbing.anchor_graph"));
     if (graph.nodes.empty() || graph.nodes.size() > maxGraphNodes || graph.edges.size() > maxGraphEdges)
-        return eve::Result<void>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "anchor graph node and edge counts exceed supported bounds", "graph.topology", {}, "climbing.anchor_graph"));
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "anchor graph node and edge counts exceed supported bounds",
+            "graph.topology", {}, "climbing.anchor_graph"));
     std::unordered_set<std::string> nodeIds;
     for (std::size_t index = 0; index < graph.nodes.size(); ++index) {
         const auto& node = graph.nodes[index];
         const std::string path = "nodes." + std::to_string(index);
         if (node.id.empty() || !nodeIds.emplace(node.id).second)
-            return eve::Result<void>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::AlreadyExists, "anchor node ids must be non-empty and unique", path + ".id", {}, "climbing.anchor_graph"));
+            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::AlreadyExists,
+                                                                     "anchor node ids must be non-empty and unique",
+                                                                     path + ".id", {}, "climbing.anchor_graph"));
         if (!finite(node.localPosition) || !finite(node.localNormal) || !finite(node.localTangent) ||
             !finite(node.leftHandSocket) || !finite(node.rightHandSocket) || !finite(node.feetSocket))
-            return eve::Result<void>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "anchor frame and sockets must be finite", path, {}, "climbing.anchor_graph"));
+            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                     "anchor frame and sockets must be finite", path,
+                                                                     {}, "climbing.anchor_graph"));
         const float normalLength = lengthSquared(node.localNormal);
         const float tangentLength = lengthSquared(node.localTangent);
         if (std::fabs(normalLength - 1.f) > frameTolerance || std::fabs(tangentLength - 1.f) > frameTolerance ||
             std::fabs(dot(node.localNormal, node.localTangent)) > frameTolerance)
-            return eve::Result<void>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "anchor normal and tangent must form an orthonormal local frame", path + ".frame", {}, "climbing.anchor_graph"));
+            return eve::Result<void>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::InvalidArgument, "anchor normal and tangent must form an orthonormal local frame",
+                path + ".frame", {}, "climbing.anchor_graph"));
         if (node.occupancySlots == 0 || node.occupancySlots > maxOccupancySlots)
-            return eve::Result<void>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "anchor occupancy slots must be between one and eight", path + ".occupancySlots", {}, "climbing.anchor_graph"));
+            return eve::Result<void>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::InvalidArgument, "anchor occupancy slots must be between one and eight",
+                path + ".occupancySlots", {}, "climbing.anchor_graph"));
         if (!validUniqueStrings(node.tags))
-            return eve::Result<void>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "anchor tags must be non-empty and unique", path + ".tags", {}, "climbing.anchor_graph"));
+            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                     "anchor tags must be non-empty and unique",
+                                                                     path + ".tags", {}, "climbing.anchor_graph"));
     }
     std::vector<ClimbingAnchorEdgeDefinition> edges = graph.edges;
     std::sort(edges.begin(), edges.end(), [](const auto& lhs, const auto& rhs) {
@@ -247,14 +255,17 @@ eve::Result<void> validateClimbingAnchorGraphDefinition(const ClimbingAnchorGrap
         const std::string path = "edges." + std::to_string(index);
         if (edge.from.empty() || edge.to.empty() || edge.from == edge.to || !nodeIds.contains(edge.from) ||
             !nodeIds.contains(edge.to))
-            return eve::Result<void>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "anchor edge endpoints must name two distinct existing nodes", path, {}, "climbing.anchor_graph"));
+            return eve::Result<void>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::InvalidArgument, "anchor edge endpoints must name two distinct existing nodes",
+                path, {}, "climbing.anchor_graph"));
         if (index != 0 && sameEdgeIdentity(edges[index - 1], edge))
-            return eve::Result<void>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::AlreadyExists, "anchor edge identity must be unique", path, {}, "climbing.anchor_graph"));
+            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::AlreadyExists,
+                                                                     "anchor edge identity must be unique", path, {},
+                                                                     "climbing.anchor_graph"));
         if (!validUniqueStrings(edge.requiredTags))
-            return eve::Result<void>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "edge required tags must be non-empty and unique", path + ".requiredTags", {}, "climbing.anchor_graph"));
+            return eve::Result<void>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::InvalidArgument, "edge required tags must be non-empty and unique",
+                path + ".requiredTags", {}, "climbing.anchor_graph"));
     }
     return eve::Result<void>::success();
 }
@@ -306,7 +317,8 @@ eve::Result<ClimbingAnchorGraphDefinition> decodeClimbingAnchorGraphDefinition(c
     const auto* root = value.getIf<eve::Value::Object>();
     if (!root)
         return eve::Result<ClimbingAnchorGraphDefinition>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "anchor graph definition must be an object", {}, {}, "climbing.anchor_graph"));
+            eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "anchor graph definition must be an object", {}, {},
+                                   "climbing.anchor_graph"));
     ClimbingAnchorGraphDefinition graph;
     std::string schemaId;
     std::int64_t version = -1;
@@ -321,10 +333,12 @@ eve::Result<ClimbingAnchorGraphDefinition> decodeClimbingAnchorGraphDefinition(c
         !readString(*root, "sourceGeometryContentId", graph.sourceGeometryContentId) ||
         !readString(*root, "buildSettingsHash", graph.buildSettingsHash) || !nodes || !edges) {
         if (version > ClimbingAnchorGraphDefinition::SchemaVersion)
-            return eve::Result<ClimbingAnchorGraphDefinition>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::UnknownVersion, "anchor graph schema version is unsupported", "schemaVersion", {}, "climbing.anchor_graph"));
-        return eve::Result<ClimbingAnchorGraphDefinition>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "anchor graph envelope has missing or invalid known fields", {}, {}, "climbing.anchor_graph"));
+            return eve::Result<ClimbingAnchorGraphDefinition>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::UnknownVersion, "anchor graph schema version is unsupported", "schemaVersion", {},
+                "climbing.anchor_graph"));
+        return eve::Result<ClimbingAnchorGraphDefinition>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::ParseError, "anchor graph envelope has missing or invalid known fields", {}, {},
+            "climbing.anchor_graph"));
     }
     graph.nodes.reserve(nodes->size());
     for (std::size_t index = 0; index < nodes->size(); ++index) {
@@ -342,8 +356,9 @@ eve::Result<ClimbingAnchorGraphDefinition> decodeClimbingAnchorGraphDefinition(c
             !readInt64(*object, "occupancySlots", occupancySlots) || occupancySlots < 0 ||
             occupancySlots > std::numeric_limits<std::uint32_t>::max() ||
             !readStringArray(*object, "tags", node.tags))
-            return eve::Result<ClimbingAnchorGraphDefinition>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "anchor node has missing or invalid known fields", "nodes." + std::to_string(index), {}, "climbing.anchor_graph"));
+            return eve::Result<ClimbingAnchorGraphDefinition>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::ParseError, "anchor node has missing or invalid known fields",
+                "nodes." + std::to_string(index), {}, "climbing.anchor_graph"));
         node.occupancySlots = static_cast<std::uint32_t>(occupancySlots);
         node.extensionMetadata = unknownFields(*object, {"id", "kind", "localPosition", "localNormal",
                                                          "localTangent", "leftHandSocket", "rightHandSocket",
@@ -359,8 +374,9 @@ eve::Result<ClimbingAnchorGraphDefinition> decodeClimbingAnchorGraphDefinition(c
             !readString(*object, "kind", kind) || !readEdgeKind(kind, edge.kind) ||
             !readBool(*object, "bidirectional", edge.bidirectional) ||
             !readStringArray(*object, "requiredTags", edge.requiredTags))
-            return eve::Result<ClimbingAnchorGraphDefinition>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "anchor edge has missing or invalid known fields", "edges." + std::to_string(index), {}, "climbing.anchor_graph"));
+            return eve::Result<ClimbingAnchorGraphDefinition>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::ParseError, "anchor edge has missing or invalid known fields",
+                "edges." + std::to_string(index), {}, "climbing.anchor_graph"));
         edge.extensionMetadata = unknownFields(*object, {"from", "to", "kind", "bidirectional", "requiredTags"});
         graph.edges.push_back(std::move(edge));
     }
@@ -379,7 +395,8 @@ eve::Result<ClimbingAnchorGraphInstance> ClimbingAnchorGraphInstance::bind(Climb
     if (!valid) return eve::Result<ClimbingAnchorGraphInstance>::failure(valid.status());
     if (!body.isValid() || !world.findBody(body))
         return eve::Result<ClimbingAnchorGraphInstance>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle, "anchor graph target body handle is stale", "body", {}, "climbing.anchor_graph"));
+            eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle, "anchor graph target body handle is stale", "body",
+                                   {}, "climbing.anchor_graph"));
     canonicalize(graph);
     ClimbingAnchorGraphInstance instance;
     instance.graph_ = std::move(graph);
@@ -396,8 +413,8 @@ const ClimbingAnchorNodeDefinition* ClimbingAnchorGraphInstance::findNode(std::s
 
 eve::Result<ClimbingAnchorNodeRef> ClimbingAnchorGraphInstance::nodeRef(std::string_view nodeId) const {
     if (!findNode(nodeId))
-        return eve::Result<ClimbingAnchorNodeRef>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::NotFound, "anchor node was not found", "nodeId", {}, "climbing.anchor_graph"));
+        return eve::Result<ClimbingAnchorNodeRef>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::NotFound, "anchor node was not found", "nodeId", {}, "climbing.anchor_graph"));
     return eve::Result<ClimbingAnchorNodeRef>::success({graph_.id, std::string(nodeId), generation_});
 }
 
@@ -415,21 +432,26 @@ eve::Result<ResolvedClimbingAnchorNode> ClimbingAnchorGraphInstance::resolveNode
     physics::World3D& world, const ClimbingAnchorNodeRef& reference) const {
     if (reference.graphId != graph_.id)
         return eve::Result<ResolvedClimbingAnchorNode>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::Conflict, "anchor node reference belongs to another graph", "reference.graphId", {}, "climbing.anchor_graph"));
+            eve::Diagnostic::error(eve::DiagnosticCode::Conflict, "anchor node reference belongs to another graph",
+                                   "reference.graphId", {}, "climbing.anchor_graph"));
     if (reference.graphGeneration != generation_)
-        return eve::Result<ResolvedClimbingAnchorNode>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle, "anchor node reference belongs to a stale graph generation", "reference.graphGeneration", {}, "climbing.anchor_graph"));
+        return eve::Result<ResolvedClimbingAnchorNode>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::StaleHandle, "anchor node reference belongs to a stale graph generation",
+            "reference.graphGeneration", {}, "climbing.anchor_graph"));
     const auto* node = findNode(reference.nodeId);
     if (!node)
         return eve::Result<ResolvedClimbingAnchorNode>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::NotFound, "anchor node was not found", "reference.nodeId", {}, "climbing.anchor_graph"));
+            eve::Diagnostic::error(eve::DiagnosticCode::NotFound, "anchor node was not found", "reference.nodeId", {},
+                                   "climbing.anchor_graph"));
     if (world.runtimeHandle() != world_)
-        return eve::Result<ResolvedClimbingAnchorNode>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle, "anchor graph belongs to another or stale Physics world", "world", {}, "climbing.anchor_graph"));
+        return eve::Result<ResolvedClimbingAnchorNode>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::StaleHandle, "anchor graph belongs to another or stale Physics world", "world", {},
+            "climbing.anchor_graph"));
     physics::Body3D* body = world.findBody(body_);
     if (!body)
         return eve::Result<ResolvedClimbingAnchorNode>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle, "anchor graph target body handle is stale", "body", {}, "climbing.anchor_graph"));
+            eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle, "anchor graph target body handle is stale", "body",
+                                   {}, "climbing.anchor_graph"));
     ResolvedClimbingAnchorNode result;
     result.reference = reference;
     result.kind = node->kind;
@@ -468,13 +490,16 @@ eve::Result<std::vector<ClimbingAnchorEdgeDefinition>> ClimbingAnchorGraphInstan
     const ClimbingAnchorNodeRef& reference) const {
     if (reference.graphId != graph_.id)
         return eve::Result<std::vector<ClimbingAnchorEdgeDefinition>>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::Conflict, "anchor node reference belongs to another graph", "reference.graphId", {}, "climbing.anchor_graph"));
+            eve::Diagnostic::error(eve::DiagnosticCode::Conflict, "anchor node reference belongs to another graph",
+                                   "reference.graphId", {}, "climbing.anchor_graph"));
     if (reference.graphGeneration != generation_)
-        return eve::Result<std::vector<ClimbingAnchorEdgeDefinition>>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle, "anchor node reference belongs to a stale graph generation", "reference.graphGeneration", {}, "climbing.anchor_graph"));
+        return eve::Result<std::vector<ClimbingAnchorEdgeDefinition>>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::StaleHandle, "anchor node reference belongs to a stale graph generation",
+            "reference.graphGeneration", {}, "climbing.anchor_graph"));
     if (!findNode(reference.nodeId))
         return eve::Result<std::vector<ClimbingAnchorEdgeDefinition>>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::NotFound, "anchor node was not found", "reference.nodeId", {}, "climbing.anchor_graph"));
+            eve::Diagnostic::error(eve::DiagnosticCode::NotFound, "anchor node was not found", "reference.nodeId", {},
+                                   "climbing.anchor_graph"));
     std::vector<ClimbingAnchorEdgeDefinition> result;
     for (const auto& edge : graph_.edges) {
         if (edge.from == reference.nodeId)
@@ -496,28 +521,33 @@ eve::Result<ClimbingAnchorRoute> ClimbingAnchorGraphInstance::planRoute(
     const ClimbingAnchorRouteRequest& request) const {
     if (request.start.graphId != graph_.id || request.goal.graphId != graph_.id)
         return eve::Result<ClimbingAnchorRoute>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::Conflict, "route endpoints belong to another anchor graph", "request", {}, "climbing.anchor_graph"));
+            eve::Diagnostic::error(eve::DiagnosticCode::Conflict, "route endpoints belong to another anchor graph",
+                                   "request", {}, "climbing.anchor_graph"));
     if (request.start.graphGeneration != generation_ || request.goal.graphGeneration != generation_)
-        return eve::Result<ClimbingAnchorRoute>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle, "route endpoints belong to a stale graph generation", "request", {}, "climbing.anchor_graph"));
+        return eve::Result<ClimbingAnchorRoute>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::StaleHandle, "route endpoints belong to a stale graph generation", "request", {},
+            "climbing.anchor_graph"));
     if (!findNode(request.start.nodeId) || !findNode(request.goal.nodeId))
-        return eve::Result<ClimbingAnchorRoute>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::NotFound, "route endpoint was not found", "request", {}, "climbing.anchor_graph"));
+        return eve::Result<ClimbingAnchorRoute>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::NotFound, "route endpoint was not found", "request", {}, "climbing.anchor_graph"));
     if (request.maxVisitedNodes == 0 || request.maxVisitedNodes > 65536)
-        return eve::Result<ClimbingAnchorRoute>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "route maxVisitedNodes must be between one and 65536", "request.maxVisitedNodes", {}, "climbing.anchor_graph"));
+        return eve::Result<ClimbingAnchorRoute>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "route maxVisitedNodes must be between one and 65536",
+            "request.maxVisitedNodes", {}, "climbing.anchor_graph"));
     const bool requesterHasAgent = !request.requester.agentId.isZero();
     const bool requesterHasExecution = !request.requester.executionId.isZero();
     if (requesterHasAgent != requesterHasExecution)
-        return eve::Result<ClimbingAnchorRoute>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "route requester must provide both agent and execution ids", "request.requester", {}, "climbing.anchor_graph"));
+        return eve::Result<ClimbingAnchorRoute>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "route requester must provide both agent and execution ids",
+            "request.requester", {}, "climbing.anchor_graph"));
 
     std::vector<ClimbingAnchorEdgeKind> allowed = request.allowedEdgeKinds;
     std::sort(allowed.begin(), allowed.end());
     allowed.erase(std::unique(allowed.begin(), allowed.end()), allowed.end());
     if (!validUniqueStrings(request.availableTags))
-        return eve::Result<ClimbingAnchorRoute>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "route capability tags must be non-empty and unique", "request.availableTags", {}, "climbing.anchor_graph"));
+        return eve::Result<ClimbingAnchorRoute>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "route capability tags must be non-empty and unique",
+            "request.availableTags", {}, "climbing.anchor_graph"));
     std::vector<std::string> availableTags = request.availableTags;
     std::sort(availableTags.begin(), availableTags.end());
     const auto permits = [&allowed](ClimbingAnchorEdgeKind kind) {
@@ -548,8 +578,9 @@ eve::Result<ClimbingAnchorRoute> ClimbingAnchorGraphInstance::planRoute(
     bool found = request.start.nodeId == request.goal.nodeId;
     while (!queue.empty() && !found) {
         if (previous.size() > request.maxVisitedNodes)
-            return eve::Result<ClimbingAnchorRoute>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation, "route planning exceeded maxVisitedNodes", "request.maxVisitedNodes", {}, "climbing.anchor_graph"));
+            return eve::Result<ClimbingAnchorRoute>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::PreconditionViolation, "route planning exceeded maxVisitedNodes",
+                "request.maxVisitedNodes", {}, "climbing.anchor_graph"));
         const std::string current = std::move(queue.front());
         queue.pop_front();
         auto reference = nodeRef(current);
@@ -564,8 +595,9 @@ eve::Result<ClimbingAnchorRoute> ClimbingAnchorGraphInstance::planRoute(
             if (!permits(edge.kind) || !hasRequiredTags || previous.contains(edge.to) || isFull(edge.to))
                 continue;
             if (previous.size() >= request.maxVisitedNodes)
-                return eve::Result<ClimbingAnchorRoute>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation, "route planning exceeded maxVisitedNodes", "request.maxVisitedNodes", {}, "climbing.anchor_graph"));
+                return eve::Result<ClimbingAnchorRoute>::failure(eve::Diagnostic::error(
+                    eve::DiagnosticCode::PreconditionViolation, "route planning exceeded maxVisitedNodes",
+                    "request.maxVisitedNodes", {}, "climbing.anchor_graph"));
             previous.emplace(edge.to, Previous{current, edge.kind});
             if (edge.to == request.goal.nodeId) {
                 found = true;
@@ -576,7 +608,8 @@ eve::Result<ClimbingAnchorRoute> ClimbingAnchorGraphInstance::planRoute(
     }
     if (!found)
         return eve::Result<ClimbingAnchorRoute>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::NotFound, "no permitted anchor route reaches the goal", "request.goal", {}, "climbing.anchor_graph"));
+            eve::Diagnostic::error(eve::DiagnosticCode::NotFound, "no permitted anchor route reaches the goal",
+                                   "request.goal", {}, "climbing.anchor_graph"));
 
     std::vector<std::string> reversedNodes;
     std::vector<ClimbingAnchorEdgeKind> reversedKinds;
@@ -586,7 +619,8 @@ eve::Result<ClimbingAnchorRoute> ClimbingAnchorGraphInstance::planRoute(
         const auto foundPrevious = previous.find(cursor);
         if (foundPrevious == previous.end())
             return eve::Result<ClimbingAnchorRoute>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::InvariantViolation, "route predecessor chain is incomplete", "route", {}, "climbing.anchor_graph"));
+                eve::Diagnostic::error(eve::DiagnosticCode::InvariantViolation, "route predecessor chain is incomplete",
+                                       "route", {}, "climbing.anchor_graph"));
         reversedKinds.push_back(foundPrevious->second.kind);
         cursor = foundPrevious->second.from;
     }
@@ -608,34 +642,41 @@ eve::Result<ClimbingAnchorReservation> ClimbingAnchorGraphInstance::reserve(
     const ClimbingAnchorNodeRef& reference, ClimbingAnchorOccupant occupant) {
     if (reference.graphId != graph_.id)
         return eve::Result<ClimbingAnchorReservation>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::Conflict, "anchor node reference belongs to another graph", "reference.graphId", {}, "climbing.anchor_graph"));
+            eve::Diagnostic::error(eve::DiagnosticCode::Conflict, "anchor node reference belongs to another graph",
+                                   "reference.graphId", {}, "climbing.anchor_graph"));
     if (reference.graphGeneration != generation_)
-        return eve::Result<ClimbingAnchorReservation>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle, "anchor node reference belongs to a stale graph generation", "reference.graphGeneration", {}, "climbing.anchor_graph"));
+        return eve::Result<ClimbingAnchorReservation>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::StaleHandle, "anchor node reference belongs to a stale graph generation",
+            "reference.graphGeneration", {}, "climbing.anchor_graph"));
     const auto* node = findNode(reference.nodeId);
     if (!node)
         return eve::Result<ClimbingAnchorReservation>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::NotFound, "anchor node was not found", "reference.nodeId", {}, "climbing.anchor_graph"));
+            eve::Diagnostic::error(eve::DiagnosticCode::NotFound, "anchor node was not found", "reference.nodeId", {},
+                                   "climbing.anchor_graph"));
     if (occupant.agentId.isZero() || occupant.executionId.isZero())
-        return eve::Result<ClimbingAnchorReservation>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "anchor reservation requires non-zero agent and execution ids", "occupant", {}, "climbing.anchor_graph"));
+        return eve::Result<ClimbingAnchorReservation>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "anchor reservation requires non-zero agent and execution ids",
+            "occupant", {}, "climbing.anchor_graph"));
     std::vector<bool> occupied(node->occupancySlots, false);
     for (const auto& [id, record] : reservations_) {
         (void)id;
         if (record.nodeId != node->id) continue;
         if (record.occupant == occupant)
             return eve::Result<ClimbingAnchorReservation>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::Conflict, "occupant already owns a slot on this anchor", "occupant", {}, "climbing.anchor_graph"));
+                eve::Diagnostic::error(eve::DiagnosticCode::Conflict, "occupant already owns a slot on this anchor",
+                                       "occupant", {}, "climbing.anchor_graph"));
         if (record.slot < occupied.size()) occupied[record.slot] = true;
     }
     const auto free = std::find(occupied.begin(), occupied.end(), false);
     if (free == occupied.end())
         return eve::Result<ClimbingAnchorReservation>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::Conflict, "all anchor occupancy slots are reserved", "reference.nodeId", {}, "climbing.anchor_graph"));
+            eve::Diagnostic::error(eve::DiagnosticCode::Conflict, "all anchor occupancy slots are reserved",
+                                   "reference.nodeId", {}, "climbing.anchor_graph"));
     const auto next = nextReservationId_.incremented();
     if (!next)
-        return eve::Result<ClimbingAnchorReservation>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation, "anchor reservation identity is exhausted", "reservationId", {}, "climbing.anchor_graph"));
+        return eve::Result<ClimbingAnchorReservation>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::PreconditionViolation, "anchor reservation identity is exhausted", "reservationId", {},
+            "climbing.anchor_graph"));
     const ClimbingAnchorReservationId id = nextReservationId_;
     const std::uint32_t slot = static_cast<std::uint32_t>(std::distance(occupied.begin(), free));
     reservations_.emplace(id, ReservationRecord{node->id, slot, occupant, 1});
@@ -654,17 +695,20 @@ eve::Result<void> ClimbingAnchorGraphInstance::release(const ClimbingAnchorReser
 eve::Result<void> ClimbingAnchorGraphInstance::validateReservation(
     const ClimbingAnchorReservation& reservation) const {
     if (reservation.graphGeneration != generation_)
-        return eve::Result<void>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle, "anchor reservation belongs to a stale graph generation", "reservation.graphGeneration", {}, "climbing.anchor_graph"));
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::StaleHandle, "anchor reservation belongs to a stale graph generation",
+            "reservation.graphGeneration", {}, "climbing.anchor_graph"));
     const auto found = reservations_.find(reservation.id);
     if (found == reservations_.end())
-        return eve::Result<void>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::NotFound, "anchor reservation is not live", "reservation.id", {}, "climbing.anchor_graph"));
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::NotFound,
+                                                                 "anchor reservation is not live", "reservation.id", {},
+                                                                 "climbing.anchor_graph"));
     const auto& record = found->second;
     if (record.nodeId != reservation.nodeId || record.slot != reservation.slot ||
         record.occupant != reservation.occupant || record.claimGeneration != reservation.claimGeneration)
-        return eve::Result<void>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::Conflict, "anchor reservation credential does not match the live record", "reservation", {}, "climbing.anchor_graph"));
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Conflict, "anchor reservation credential does not match the live record",
+            "reservation", {}, "climbing.anchor_graph"));
     return eve::Result<void>::success();
 }
 
@@ -674,8 +718,9 @@ eve::Result<ClimbingAnchorReservation> ClimbingAnchorGraphInstance::transferRese
     if (!valid) return eve::Result<ClimbingAnchorReservation>::failure(valid.status());
     auto found = reservations_.find(reservation.id);
     if (found->second.claimGeneration == std::numeric_limits<std::uint64_t>::max())
-        return eve::Result<ClimbingAnchorReservation>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation, "anchor reservation claim generation is exhausted", "reservation.claimGeneration", {}, "climbing.anchor_graph"));
+        return eve::Result<ClimbingAnchorReservation>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::PreconditionViolation, "anchor reservation claim generation is exhausted",
+            "reservation.claimGeneration", {}, "climbing.anchor_graph"));
     ++found->second.claimGeneration;
     ClimbingAnchorReservation transferred = reservation;
     transferred.claimGeneration = found->second.claimGeneration;
@@ -686,16 +731,19 @@ eve::Result<ClimbingAnchorReservation> ClimbingAnchorGraphInstance::transferRese
 eve::Result<ClimbingAnchorReservation> ClimbingAnchorGraphInstance::restoreReservation(
     const ClimbingAnchorReservation& reservation) {
     if (reservation.graphGeneration != generation_)
-        return eve::Result<ClimbingAnchorReservation>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle, "snapshot reservation belongs to a stale graph generation", "reservation.graphGeneration", {}, "climbing.anchor_graph"));
+        return eve::Result<ClimbingAnchorReservation>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::StaleHandle, "snapshot reservation belongs to a stale graph generation",
+            "reservation.graphGeneration", {}, "climbing.anchor_graph"));
     const auto* node = findNode(reservation.nodeId);
     if (!node)
         return eve::Result<ClimbingAnchorReservation>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::NotFound, "snapshot reservation node was not found", "reservation.nodeId", {}, "climbing.anchor_graph"));
+            eve::Diagnostic::error(eve::DiagnosticCode::NotFound, "snapshot reservation node was not found",
+                                   "reservation.nodeId", {}, "climbing.anchor_graph"));
     if (reservation.id.isZero() || reservation.claimGeneration == 0 || reservation.occupant.agentId.isZero() ||
         reservation.occupant.executionId.isZero() || reservation.slot >= node->occupancySlots)
         return eve::Result<ClimbingAnchorReservation>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "snapshot reservation credential is invalid", "reservation", {}, "climbing.anchor_graph"));
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "snapshot reservation credential is invalid",
+                                   "reservation", {}, "climbing.anchor_graph"));
     if (const auto live = reservations_.find(reservation.id); live != reservations_.end()) {
         auto valid = validateReservation(reservation);
         if (!valid) return eve::Result<ClimbingAnchorReservation>::failure(valid.status());
@@ -705,13 +753,15 @@ eve::Result<ClimbingAnchorReservation> ClimbingAnchorGraphInstance::restoreReser
         (void)id;
         if (record.nodeId == reservation.nodeId &&
             (record.slot == reservation.slot || record.occupant == reservation.occupant))
-            return eve::Result<ClimbingAnchorReservation>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::Conflict, "snapshot anchor slot or occupant is already reserved", "reservation.slot", {}, "climbing.anchor_graph"));
+            return eve::Result<ClimbingAnchorReservation>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::Conflict, "snapshot anchor slot or occupant is already reserved",
+                "reservation.slot", {}, "climbing.anchor_graph"));
     }
     const auto next = nextReservationId_.incremented();
     if (!next)
-        return eve::Result<ClimbingAnchorReservation>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation, "anchor reservation identity is exhausted", "reservationId", {}, "climbing.anchor_graph"));
+        return eve::Result<ClimbingAnchorReservation>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::PreconditionViolation, "anchor reservation identity is exhausted", "reservationId", {},
+            "climbing.anchor_graph"));
     const ClimbingAnchorReservationId id = nextReservationId_;
     reservations_.emplace(id, ReservationRecord{reservation.nodeId, reservation.slot,
                                                  reservation.occupant, 1});
@@ -724,8 +774,9 @@ eve::Result<ClimbingAnchorReservation> ClimbingAnchorGraphInstance::restoreReser
 
 eve::Result<std::uint32_t> ClimbingAnchorGraphInstance::releaseOccupant(ClimbingAnchorOccupant occupant) {
     if (occupant.agentId.isZero() || occupant.executionId.isZero())
-        return eve::Result<std::uint32_t>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "release requires non-zero agent and execution ids", "occupant", {}, "climbing.anchor_graph"));
+        return eve::Result<std::uint32_t>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "release requires non-zero agent and execution ids", "occupant", {},
+            "climbing.anchor_graph"));
     std::uint32_t count = 0;
     for (auto iterator = reservations_.begin(); iterator != reservations_.end();) {
         if (iterator->second.occupant == occupant) {
@@ -744,7 +795,8 @@ eve::Result<ClimbingAnchorGraphReload> ClimbingAnchorGraphInstance::reload(Climb
     if (!valid) return eve::Result<ClimbingAnchorGraphReload>::failure(valid.status());
     if (generation_ == std::numeric_limits<std::uint64_t>::max())
         return eve::Result<ClimbingAnchorGraphReload>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation, "anchor graph generation is exhausted", "generation", {}, "climbing.anchor_graph"));
+            eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation, "anchor graph generation is exhausted",
+                                   "generation", {}, "climbing.anchor_graph"));
     canonicalize(graph);
     ClimbingAnchorGraphReload result;
     result.oldGeneration = generation_;

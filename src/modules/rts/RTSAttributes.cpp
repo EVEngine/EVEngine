@@ -54,12 +54,14 @@ eve::Result<void> RTSUnitAttributeAdapter::ensure(Unit& unit) {
 
 eve::Result<double> RTSUnitAttributeAdapter::read(Unit& unit, std::string_view attribute) {
     if (!selected(attribute))
-        return eve::Result<double>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::Unsupported, "RTS unit attribute is outside the selective combat projection", "attribute", {}, "rts.attributes"));
+        return eve::Result<double>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Unsupported, "RTS unit attribute is outside the selective combat projection",
+            "attribute", {}, "rts.attributes"));
     auto ready = ensure(unit);
-    if (!ready) return eve::Result<double>::failure(
-        eve::Status::failure(ready.code(), eve::Diagnostic::error(eve::DiagnosticCode::Failed, "RTS unit attributes are not available",
-                                                          "attributes", {}, "rts.attributes")));
+    if (!ready)
+        return eve::Result<double>::failure(eve::Status::failure(
+            ready.code(), eve::Diagnostic::error(eve::DiagnosticCode::Failed, "RTS unit attributes are not available",
+                                                 "attributes", {}, "rts.attributes")));
     return unit.attributes()->values.getFinal(attribute);
 }
 
@@ -76,13 +78,14 @@ eve::Result<eve::attributes::ModifierId> RTSUnitAttributeAdapter::addModifier(
     Unit& unit, std::string id, std::string_view attribute, std::string source,
     eve::attributes::AttributeOperation operation, double value, eve::attributes::ModifierPriority priority) {
     if (!selected(attribute) || source.empty())
-        return eve::Result<eve::attributes::ModifierId>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "RTS unit modifier requires a selected attribute and non-empty source", "modifier", {}, "rts.attributes"));
+        return eve::Result<eve::attributes::ModifierId>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument,
+            "RTS unit modifier requires a selected attribute and non-empty source", "modifier", {}, "rts.attributes"));
     auto ready = ensure(unit);
     if (!ready)
-        return eve::Result<eve::attributes::ModifierId>::failure(
-        eve::Status::failure(ready.code(), eve::Diagnostic::error(eve::DiagnosticCode::Failed, "RTS unit attributes are not available",
-                                                          "attributes", {}, "rts.attributes")));
+        return eve::Result<eve::attributes::ModifierId>::failure(eve::Status::failure(
+            ready.code(), eve::Diagnostic::error(eve::DiagnosticCode::Failed, "RTS unit attributes are not available",
+                                                 "attributes", {}, "rts.attributes")));
     return unit.attributes()->values.addModifier(eve::attributes::AttributeModifier(
         std::move(id), std::string(attribute), std::move(source), operation, value, priority));
 }
@@ -90,9 +93,9 @@ eve::Result<eve::attributes::ModifierId> RTSUnitAttributeAdapter::addModifier(
 eve::Result<eve::attributes::AttributeProjectionSnapshot> RTSUnitAttributeAdapter::snapshot(Unit& unit) {
     auto ready = ensure(unit);
     if (!ready)
-        return eve::Result<eve::attributes::AttributeProjectionSnapshot>::failure(
-        eve::Status::failure(ready.code(), eve::Diagnostic::error(eve::DiagnosticCode::Failed, "RTS unit attributes are not available",
-                                                          "attributes", {}, "rts.attributes")));
+        return eve::Result<eve::attributes::AttributeProjectionSnapshot>::failure(eve::Status::failure(
+            ready.code(), eve::Diagnostic::error(eve::DiagnosticCode::Failed, "RTS unit attributes are not available",
+                                                 "attributes", {}, "rts.attributes")));
     const auto names = selectedAttributes();
     return unit.attributes()->values.snapshot(names);
 }

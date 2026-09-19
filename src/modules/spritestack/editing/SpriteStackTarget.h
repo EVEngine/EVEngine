@@ -66,7 +66,8 @@ struct SpriteStackAssetValue {
 };
 
 /** @brief Revisioned SpriteStack bake preset with reusable Inspector metadata. */
-class SpriteStackDocumentTarget final : public ::eve::editing::EditableTargetState, public virtual IEditableTarget,
+class SpriteStackDocumentTarget final : public ::eve::editing::EditableTargetState,
+                                        public virtual IEditableTarget,
                                         public IDomainOperationTarget,
                                         public IDomainOperationTargetStaging,
                                         public IPropertyProvider {

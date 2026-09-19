@@ -181,9 +181,11 @@ public:
             return mutate(RegistryOperation::Insert, std::move(key), std::optional<Value>(std::move(value)),
                           std::move(data), std::move(label));
         } catch (const std::exception&) {
-            return Result<Handle>::failure(Diagnostic::error(DiagnosticCode::Failed, "registry mutation argument preparation failed"));
+            return Result<Handle>::failure(
+                Diagnostic::error(DiagnosticCode::Failed, "registry mutation argument preparation failed"));
         } catch (...) {
-            return Result<Handle>::failure(Diagnostic::error(DiagnosticCode::Failed, "registry mutation argument preparation failed"));
+            return Result<Handle>::failure(
+                Diagnostic::error(DiagnosticCode::Failed, "registry mutation argument preparation failed"));
         }
     }
 
@@ -200,9 +202,11 @@ public:
             return mutate(RegistryOperation::Replace, std::move(key), std::optional<Value>(std::move(value)),
                           std::move(data), std::move(label));
         } catch (const std::exception&) {
-            return Result<Handle>::failure(Diagnostic::error(DiagnosticCode::Failed, "registry mutation argument preparation failed"));
+            return Result<Handle>::failure(
+                Diagnostic::error(DiagnosticCode::Failed, "registry mutation argument preparation failed"));
         } catch (...) {
-            return Result<Handle>::failure(Diagnostic::error(DiagnosticCode::Failed, "registry mutation argument preparation failed"));
+            return Result<Handle>::failure(
+                Diagnostic::error(DiagnosticCode::Failed, "registry mutation argument preparation failed"));
         }
     }
 
@@ -217,9 +221,11 @@ public:
         try {
             return mutate(RegistryOperation::Remove, std::move(key), std::nullopt, std::move(data), std::move(label));
         } catch (const std::exception&) {
-            return Result<Handle>::failure(Diagnostic::error(DiagnosticCode::Failed, "registry mutation argument preparation failed"));
+            return Result<Handle>::failure(
+                Diagnostic::error(DiagnosticCode::Failed, "registry mutation argument preparation failed"));
         } catch (...) {
-            return Result<Handle>::failure(Diagnostic::error(DiagnosticCode::Failed, "registry mutation argument preparation failed"));
+            return Result<Handle>::failure(
+                Diagnostic::error(DiagnosticCode::Failed, "registry mutation argument preparation failed"));
         }
     }
 
@@ -231,7 +237,8 @@ public:
     [[nodiscard]] ResultRef<const Value> resolve(const Key& key) const {
         const auto it = state_.entries.find(key);
         if (it == state_.entries.end() || !it->second.value.has_value())
-            return Result<std::reference_wrapper<const Value>>::failure(Diagnostic::error(DiagnosticCode::NotFound, "registry key is not live"));
+            return Result<std::reference_wrapper<const Value>>::failure(
+                Diagnostic::error(DiagnosticCode::NotFound, "registry key is not live"));
         return ResultRef<const Value>::success(std::cref(*it->second.value));
     }
 
@@ -243,9 +250,11 @@ public:
     [[nodiscard]] ResultRef<const Value> resolve(const Handle& handle) const {
         const auto it = state_.entries.find(handle.key);
         if (it == state_.entries.end())
-            return Result<std::reference_wrapper<const Value>>::failure(Diagnostic::error(DiagnosticCode::NotFound, "registry key is not present"));
+            return Result<std::reference_wrapper<const Value>>::failure(
+                Diagnostic::error(DiagnosticCode::NotFound, "registry key is not present"));
         if (handle.generation.isZero() || it->second.generation != handle.generation || !it->second.value.has_value())
-            return Result<std::reference_wrapper<const Value>>::failure(Diagnostic::error(DiagnosticCode::StaleHandle, "registry handle is stale"));
+            return Result<std::reference_wrapper<const Value>>::failure(
+                Diagnostic::error(DiagnosticCode::StaleHandle, "registry handle is stale"));
         return ResultRef<const Value>::success(std::cref(*it->second.value));
     }
 
@@ -264,7 +273,8 @@ public:
     [[nodiscard]] Result<Generation> generationOf(const Key& key) const {
         const auto it = state_.entries.find(key);
         if (it == state_.entries.end())
-            return Result<Generation>::failure(Diagnostic::error(DiagnosticCode::NotFound, "registry key is not present"));
+            return Result<Generation>::failure(
+                Diagnostic::error(DiagnosticCode::NotFound, "registry key is not present"));
         return Result<Generation>::success(it->second.generation);
     }
 
@@ -372,33 +382,42 @@ public:
      */
     [[nodiscard]] Result<void> restoreState(State candidate) {
         if (candidate.nextEventSequence.isZero())
-            return Result<void>::failure(Diagnostic::error(DiagnosticCode::ParseError, "registry next event sequence must be positive"));
+            return Result<void>::failure(
+                Diagnostic::error(DiagnosticCode::ParseError, "registry next event sequence must be positive"));
 
         EventSequence previous{};
         try {
             for (auto& [key, entry] : candidate.entries) {
                 if (entry.generation.isZero())
-                    return Result<void>::failure(Diagnostic::error(DiagnosticCode::ParseError, "registry entry generation must be positive"));
+                    return Result<void>::failure(
+                        Diagnostic::error(DiagnosticCode::ParseError, "registry entry generation must be positive"));
                 if (entry.value.has_value()) generationProject(*entry.value, entry.generation);
             }
         } catch (const std::exception&) {
-            return Result<void>::failure(Diagnostic::error(DiagnosticCode::Failed, "registry generation projection failed"));
+            return Result<void>::failure(
+                Diagnostic::error(DiagnosticCode::Failed, "registry generation projection failed"));
         } catch (...) {
-            return Result<void>::failure(Diagnostic::error(DiagnosticCode::Failed, "registry generation projection failed"));
+            return Result<void>::failure(
+                Diagnostic::error(DiagnosticCode::Failed, "registry generation projection failed"));
         }
         for (const auto& event : candidate.events) {
             if (event.sequence.isZero() || (!previous.isZero() && event.sequence <= previous))
-                return Result<void>::failure(Diagnostic::error(DiagnosticCode::ParseError, "registry event sequence is not increasing"));
+                return Result<void>::failure(
+                    Diagnostic::error(DiagnosticCode::ParseError, "registry event sequence is not increasing"));
             if (event.generation.isZero())
-                return Result<void>::failure(Diagnostic::error(DiagnosticCode::ParseError, "registry event generation must be positive"));
+                return Result<void>::failure(
+                    Diagnostic::error(DiagnosticCode::ParseError, "registry event generation must be positive"));
             if (event.operation == RegistryOperation::Remove && !event.tombstone)
-                return Result<void>::failure(Diagnostic::error(DiagnosticCode::ParseError, "remove event must describe a tombstone"));
+                return Result<void>::failure(
+                    Diagnostic::error(DiagnosticCode::ParseError, "remove event must describe a tombstone"));
             if (event.operation != RegistryOperation::Remove && event.tombstone)
-                return Result<void>::failure(Diagnostic::error(DiagnosticCode::ParseError, "only remove events may describe tombstones"));
+                return Result<void>::failure(
+                    Diagnostic::error(DiagnosticCode::ParseError, "only remove events may describe tombstones"));
             previous = event.sequence;
         }
         if (!previous.isZero() && candidate.nextEventSequence <= previous)
-            return Result<void>::failure(Diagnostic::error(DiagnosticCode::ParseError, "next event sequence must exceed retained events"));
+            return Result<void>::failure(
+                Diagnostic::error(DiagnosticCode::ParseError, "next event sequence must exceed retained events"));
 
         state_.swap(candidate);
         return Result<void>::success();
@@ -425,7 +444,8 @@ private:
         if (!entry) return Result<Generation>::success(Generation(1));
         const auto next = entry->generation.incremented();
         if (!next || next->isZero())
-            return Result<Generation>::failure(Diagnostic::error(DiagnosticCode::Failed, "registry generation exhausted"));
+            return Result<Generation>::failure(
+                Diagnostic::error(DiagnosticCode::Failed, "registry generation exhausted"));
         return Result<Generation>::success(*next);
     }
 
@@ -440,19 +460,23 @@ private:
             auto       it        = candidate.entries.find(key);
             const bool live      = it != candidate.entries.end() && it->second.value.has_value();
             if (operation == RegistryOperation::Insert && live)
-                return Result<Handle>::failure(Diagnostic::error(DiagnosticCode::AlreadyExists, "registry key already exists"));
+                return Result<Handle>::failure(
+                    Diagnostic::error(DiagnosticCode::AlreadyExists, "registry key already exists"));
             if (operation == RegistryOperation::Replace && !live)
                 return Result<Handle>::failure(Diagnostic::error(DiagnosticCode::NotFound, "registry key is not live"));
             if (operation == RegistryOperation::Remove && !live)
                 return Result<Handle>::failure(Diagnostic::error(DiagnosticCode::NotFound, "registry key is not live"));
             if (operation != RegistryOperation::Remove && !value.has_value())
-                return Result<Handle>::failure(Diagnostic::error(DiagnosticCode::InvariantViolation, "live registry mutation has no value"));
+                return Result<Handle>::failure(
+                    Diagnostic::error(DiagnosticCode::InvariantViolation, "live registry mutation has no value"));
 
             const auto current = it == candidate.entries.end() ? nullptr : &it->second;
             auto       next    = nextGeneration(current);
             if (!next.ok()) return Result<Handle>::failure(next.status());
             const auto nextSequence = candidate.nextEventSequence.incremented();
-            if (!nextSequence) return Result<Handle>::failure(Diagnostic::error(DiagnosticCode::Failed, "registry event sequence exhausted"));
+            if (!nextSequence)
+                return Result<Handle>::failure(
+                    Diagnostic::error(DiagnosticCode::Failed, "registry event sequence exhausted"));
 
             if (operation != RegistryOperation::Remove) generationProject(*value, next.value());
 
@@ -504,9 +528,11 @@ private:
             }
             return Result<Handle>::success(std::move(handle), std::move(appliedStatus));
         } catch (const std::exception&) {
-            return Result<Handle>::failure(Diagnostic::error(DiagnosticCode::Failed, "registry mutation preparation failed"));
+            return Result<Handle>::failure(
+                Diagnostic::error(DiagnosticCode::Failed, "registry mutation preparation failed"));
         } catch (...) {
-            return Result<Handle>::failure(Diagnostic::error(DiagnosticCode::Failed, "registry mutation preparation failed"));
+            return Result<Handle>::failure(
+                Diagnostic::error(DiagnosticCode::Failed, "registry mutation preparation failed"));
         }
     }
 

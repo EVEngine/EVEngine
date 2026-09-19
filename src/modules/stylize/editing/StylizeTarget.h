@@ -59,7 +59,8 @@ struct StylizePassValue {
 };
 
 /** @brief Serializable ordered style recipe with dynamic parameter Inspector. */
-class StylizeRecipeTarget final : public ::eve::editing::EditableTargetState, public virtual IEditableTarget,
+class StylizeRecipeTarget final : public ::eve::editing::EditableTargetState,
+                                  public virtual IEditableTarget,
                                   public IDomainOperationTarget,
                                   public IDomainOperationTargetStaging,
                                   public IPropertyProvider {

@@ -62,7 +62,8 @@ struct CameraTimelineKeyValue {
 };
 
 /** @brief Revisioned camera-rig and director-timeline editing document. */
-class CameraDocumentTarget final : public ::eve::editing::EditableTargetState, public virtual IEditableTarget,
+class CameraDocumentTarget final : public ::eve::editing::EditableTargetState,
+                                   public virtual IEditableTarget,
                                    public IDomainOperationTarget,
                                    public IDomainOperationTargetStaging,
                                    public IPropertyProvider {
@@ -104,7 +105,7 @@ private:
     bool matches(const SelectionSnapshot& selection) const;
     EditorValue contentValue() const;
     EditorResult<DomainOperation> replacement(EditorValue content, std::string property = {}) const;
-    std::string id_;
+    std::string                   id_;
     std::vector<CameraRigValue> rigs_; std::vector<CameraTimelineKeyValue> keys_;
 };
 

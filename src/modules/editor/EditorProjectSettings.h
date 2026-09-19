@@ -26,7 +26,8 @@ struct ProjectSettingsSchema {
 };
 
 /** @brief Schema-driven, reversible settings target with secret-reference enforcement. */
-class ProjectSettingsTarget final : public ::eve::editing::EditableTargetState, public virtual IEditableTarget,
+class ProjectSettingsTarget final : public ::eve::editing::EditableTargetState,
+                                    public virtual IEditableTarget,
                                     public IDomainOperationTarget,
                                     public IPropertyProvider {
 public:

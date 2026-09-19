@@ -439,13 +439,13 @@ Result<std::map<std::string, graphics::VegetationMask>> loadVegetationSceneEleme
         if (guid.empty()) return Result<void>::success();
         if (asset.empty())
             return Result<void>::failure(Diagnostic::error(DiagnosticCode::NotFound,
-                                                           "vegetation element texture dependency is unavailable", guid,
-                                                           {}, "asset.graphics.vegetation-scene"));
+                                                                                         "vegetation element texture dependency is unavailable", guid,
+                                                                                         {}, "asset.graphics.vegetation-scene"));
         const auto [position, inserted] = required.emplace(guid, asset);
         if (!inserted && position->second != asset)
             return Result<void>::failure(Diagnostic::error(DiagnosticCode::Conflict,
-                                                           "vegetation element texture GUID has conflicting assets",
-                                                           guid, {}, "asset.graphics.vegetation-scene"));
+                                                                                         "vegetation element texture GUID has conflicting assets",
+                                                                                         guid, {}, "asset.graphics.vegetation-scene"));
         return Result<void>::success();
     };
     for (const auto& element : scene.elements) {

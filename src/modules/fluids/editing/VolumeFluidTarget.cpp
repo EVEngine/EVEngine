@@ -134,8 +134,11 @@ EditorValue setting(const VolumeFluidAuthoringSettings& s, const std::string& pa
 
 VolumeFluidTarget::VolumeFluidTarget(std::string id) : id_(std::move(id)) {}
 TargetDescriptor VolumeFluidTarget::describe() const {
-    return {
-        TargetId(id_), "volume-fluid", revisionValue(), false, {CapabilityId("eve.editor.target.volume-fluid-properties")}};
+    return {TargetId(id_),
+            "volume-fluid",
+            revisionValue(),
+            false,
+            {CapabilityId("eve.editor.target.volume-fluid-properties")}};
 }
 void* VolumeFluidTarget::queryCapability(const CapabilityId& capability) {
     return capability == CapabilityId("eve.editor.target.volume-fluid-properties")

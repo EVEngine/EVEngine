@@ -17,7 +17,8 @@ eve::script::Borrowed<ClimbingRuntime> Climbing::resolve(ClimbingRuntimeHandleRe
 eve::Result<void> Climbing::release(ClimbingRuntimeHandleRef reference) {
     Climbing* module = ModuleManager::getInstance<Climbing>("Climbing");
     if (!module)
-        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle, "Climbing module is no longer loaded", "runtime", {}, "climbing"));
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::StaleHandle, "Climbing module is no longer loaded", "runtime", {}, "climbing"));
     return module->runtimes_.erase(reference);
 }
 
@@ -45,7 +46,8 @@ eve::script::Borrowed<ClimbingAnchorGraphInstance> Climbing::resolveAnchorGraph(
 eve::Result<void> Climbing::releaseAnchorGraph(ClimbingAnchorGraphHandleRef reference) {
     Climbing* module = ModuleManager::getInstance<Climbing>("Climbing");
     if (!module)
-        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle, "Climbing module is no longer loaded", "anchorGraph", {}, "climbing"));
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::StaleHandle, "Climbing module is no longer loaded", "anchorGraph", {}, "climbing"));
     return module->anchorGraphs_.erase(reference);
 }
 

@@ -41,8 +41,7 @@ MeshVfxAssetTarget::MeshVfxAssetTarget(std::string id) : id_(std::move(id)) {
 MeshVfxAssetTarget::~MeshVfxAssetTarget() = default;
 
 MeshVfxAssetTarget::MeshVfxAssetTarget(const MeshVfxAssetTarget& other)
-    : id_(other.id_), EditableTargetState(other),
-      asset_(std::make_unique<stylize::MeshVfxAsset>(*other.asset_)) {}
+    : id_(other.id_), EditableTargetState(other), asset_(std::make_unique<stylize::MeshVfxAsset>(*other.asset_)) {}
 
 MeshVfxAssetTarget& MeshVfxAssetTarget::operator=(const MeshVfxAssetTarget& other) {
     if (this == &other) return *this;
@@ -54,7 +53,10 @@ MeshVfxAssetTarget& MeshVfxAssetTarget::operator=(const MeshVfxAssetTarget& othe
 }
 
 TargetDescriptor MeshVfxAssetTarget::describe() const {
-    return {TargetId(id_), "stylize.mesh-vfx", revisionValue(), false,
+    return {TargetId(id_),
+            "stylize.mesh-vfx",
+            revisionValue(),
+            false,
             {CapabilityId("eve.editor.target.stylize-mesh-vfx-properties")}};
 }
 

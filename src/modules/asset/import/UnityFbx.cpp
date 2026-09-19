@@ -5,7 +5,9 @@
 #if defined(__EMSCRIPTEN__)
 namespace eve::asset_import {
 Result<PreparedAssetImport> prepareUnityFbx(const UnityProjectImportRequest&, const UnitySourceAsset& source) {
-    return Result<PreparedAssetImport>::failure(Diagnostic::error(DiagnosticCode::Unsupported, "FBX conversion requires the desktop Assimp provider", source.path, {}, "asset.import"));
+    return Result<PreparedAssetImport>::failure(Diagnostic::error(DiagnosticCode::Unsupported,
+                                                                  "FBX conversion requires the desktop Assimp provider",
+                                                                  source.path, {}, "asset.import"));
 }
 }  // namespace eve::asset_import
 #else
@@ -79,7 +81,10 @@ Result<PreparedAssetImport> meshImport(const UnityProjectImportRequest& request,
                                        float scale) {
     if (!mesh.HasPositions() || !mesh.HasNormals() || !mesh.HasTextureCoords(0) || mesh.HasBones() ||
         mesh.mNumAnimMeshes)
-        return Result<PreparedAssetImport>::failure(Diagnostic::error(DiagnosticCode::Unsupported, "FBX static mesh requires positions, imported normals and UV0; skin/morph conversion is unavailable", source.path, {}, "asset.import"));
+        return Result<PreparedAssetImport>::failure(Diagnostic::error(
+            DiagnosticCode::Unsupported,
+            "FBX static mesh requires positions, imported normals and UV0; skin/morph conversion is unavailable",
+            source.path, {}, "asset.import"));
     std::uint64_t vertexFloats = 6;
     for (unsigned set = 0; set < AI_MAX_NUMBER_OF_TEXTURECOORDS; ++set)
         if (mesh.HasTextureCoords(set)) vertexFloats += 2;
@@ -91,7 +96,8 @@ Result<PreparedAssetImport> meshImport(const UnityProjectImportRequest& request,
         vertexFloats > request.limits.maximumDecodedBytes / 4 / mesh.mNumVertices ||
         std::uint64_t(mesh.mNumVertices) * vertexFloats * 4 + std::uint64_t(mesh.mNumFaces) * 12 >
             request.limits.maximumDecodedBytes)
-        return Result<PreparedAssetImport>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "FBX mesh exceeds budget", source.path, {}, "asset.import"));
+        return Result<PreparedAssetImport>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "FBX mesh exceeds budget", source.path, {}, "asset.import"));
     std::vector<std::uint8_t> buffer;
     auto                      scalar = [&](float value) { put32(buffer, std::bit_cast<std::uint32_t>(value)); };
     // Unity's FBX importer reflects X. The canonical right-handed basis then reflects Z.
@@ -167,7 +173,8 @@ Result<PreparedAssetImport> meshImport(const UnityProjectImportRequest& request,
     const auto indexOffset = buffer.size();
     for (unsigned i = 0; i < mesh.mNumFaces; ++i) {
         if (mesh.mFaces[i].mNumIndices != 3)
-            return Result<PreparedAssetImport>::failure(Diagnostic::error(DiagnosticCode::Unsupported, "FBX contains non-triangle primitives", source.path, {}, "asset.import"));
+            return Result<PreparedAssetImport>::failure(Diagnostic::error(
+                DiagnosticCode::Unsupported, "FBX contains non-triangle primitives", source.path, {}, "asset.import"));
         for (unsigned j = 0; j < 3; ++j) put32(buffer, mesh.mFaces[i].mIndices[j]);
     }
     const auto indexAccessor = std::int64_t(accessors.size());
@@ -209,23 +216,32 @@ Result<PreparedAssetImport> prepareUnityFbx(const UnityProjectImportRequest& req
     const auto generation = generationSetting.value_or(1.0);
     if ((generation != 1 && generation != 2) || !scale || *scale <= 0 || setting(meta, "useFileScale") != 1 ||
         setting(meta, "normalImportMode") != 0 || setting(meta, "swapUVChannels") != 0)
-        return Result<PreparedAssetImport>::failure(Diagnostic::error(DiagnosticCode::Unsupported, "FBX requires supported file IDs, positive scale, file units, imported normals and original UV0", source.path, {}, "asset.import"));
+        return Result<PreparedAssetImport>::failure(Diagnostic::error(
+            DiagnosticCode::Unsupported,
+            "FBX requires supported file IDs, positive scale, file units, imported normals and original UV0",
+            source.path, {}, "asset.import"));
     if (input.empty() || input.size() > request.limits.maximumSourceBytes)
-        return Result<PreparedAssetImport>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "FBX source exceeds budget", source.path, {}, "asset.import"));
+        return Result<PreparedAssetImport>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "FBX source exceeds budget", source.path, {}, "asset.import"));
     Assimp::Importer importer;
     importer.SetIOHandler(new NoExternalIO());
     const auto* scene = importer.ReadFileFromMemory(input.data(), input.size(),
                                                     aiProcess_Triangulate | aiProcess_CalcTangentSpace, "fbx");
     if (!scene || !scene->mRootNode)
-        return Result<PreparedAssetImport>::failure(Diagnostic::error(DiagnosticCode::ParseError, importer.GetErrorString(), source.path, {}, "asset.import"));
+        return Result<PreparedAssetImport>::failure(
+            Diagnostic::error(DiagnosticCode::ParseError, importer.GetErrorString(), source.path, {}, "asset.import"));
     if (scene->mNumAnimations || scene->mNumMeshes > request.limits.maximumAssets)
-        return Result<PreparedAssetImport>::failure(Diagnostic::error(DiagnosticCode::Unsupported, "FBX animation or mesh budget is unsupported", source.path, {}, "asset.import"));
+        return Result<PreparedAssetImport>::failure(Diagnostic::error(DiagnosticCode::Unsupported,
+                                                                      "FBX animation or mesh budget is unsupported",
+                                                                      source.path, {}, "asset.import"));
     std::uint64_t meshBytes = 0;
     for (unsigned i = 0; i < scene->mNumMeshes; ++i) {
         const auto& mesh  = *scene->mMeshes[i];
         const auto  bytes = std::uint64_t(mesh.mNumVertices) * 32 + std::uint64_t(mesh.mNumFaces) * 12;
         if (bytes > request.limits.maximumDecodedBytes || meshBytes > request.limits.maximumDecodedBytes - bytes)
-            return Result<PreparedAssetImport>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "aggregate FBX mesh budget exceeded", source.path, {}, "asset.import"));
+            return Result<PreparedAssetImport>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                                          "aggregate FBX mesh budget exceeded",
+                                                                          source.path, {}, "asset.import"));
         meshBytes += bytes;
     }
     double units      = 0;
@@ -236,7 +252,8 @@ Result<PreparedAssetImport> prepareUnityFbx(const UnityProjectImportRequest& req
     }
     const double factor = units * 0.01 * *scale;
     if (!std::isfinite(factor) || factor <= 0 || factor > std::numeric_limits<float>::max())
-        return Result<PreparedAssetImport>::failure(Diagnostic::error(DiagnosticCode::Unsupported, "FBX file unit scale is unavailable", source.path, {}, "asset.import"));
+        return Result<PreparedAssetImport>::failure(Diagnostic::error(
+            DiagnosticCode::Unsupported, "FBX file unit scale is unavailable", source.path, {}, "asset.import"));
     auto manifest = detail::baseManifest(request.package, "eve.unity-fbx/1");
     if (!manifest) return Result<PreparedAssetImport>::failure(manifest.status());
     PreparedAssetImport out;
@@ -252,18 +269,24 @@ Result<PreparedAssetImport> prepareUnityFbx(const UnityProjectImportRequest& req
         std::any_of(referencedIds.begin(), referencedIds.end(), [](std::int64_t id) {
             return id < 4300000 || id >= 4400000 || ((id - 4300000) & 1) != 0;
         }))
-        return Result<PreparedAssetImport>::failure(Diagnostic::error(DiagnosticCode::Unsupported, "legacy FBX has non-indexed mesh references that cannot be mapped to multiple nodes", source.path, {}, "asset.import"));
+        return Result<PreparedAssetImport>::failure(
+            Diagnostic::error(DiagnosticCode::Unsupported,
+                              "legacy FBX has non-indexed mesh references that cannot be mapped to multiple nodes",
+                              source.path, {}, "asset.import"));
     std::set<std::string>                                names;
     std::set<std::int64_t>                               ids;
     std::uint32_t                                        nodeCount = 0;
     std::function<Result<void>(const aiNode&, unsigned)> visit     = [&](const aiNode& node,
                                                                      unsigned      depth) -> Result<void> {
         if (++nodeCount > request.limits.maximumAssets || depth > 256)
-            return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "FBX hierarchy exceeds budget", source.path, {}, "asset.import"));
+            return Result<void>::failure(Diagnostic::error(
+                DiagnosticCode::InvalidArgument, "FBX hierarchy exceeds budget", source.path, {}, "asset.import"));
         if (node.mNumMeshes) {
             const std::string name(node.mName.C_Str());
             if (name.empty() || !names.insert(name).second)
-                return Result<void>::failure(Diagnostic::error(DiagnosticCode::Unsupported, "FBX requires unique mesh-bearing node names", source.path, {}, "asset.import"));
+                return Result<void>::failure(Diagnostic::error(DiagnosticCode::Unsupported,
+                                                               "FBX requires unique mesh-bearing node names",
+                                                               source.path, {}, "asset.import"));
             std::int64_t id = 0;
             if (generation == 2) {
                 const std::string key = "Type:Mesh->" + name + "0";
@@ -274,10 +297,12 @@ Result<PreparedAssetImport> prepareUnityFbx(const UnityProjectImportRequest& req
                 id = std::int64_t(4300000) + std::int64_t(node.mMeshes[0]) * 2;
             }
             if (id == 0 || !ids.insert(id).second)
-                return Result<void>::failure(Diagnostic::error(DiagnosticCode::Conflict, "FBX subasset identity collision", source.path, {}, "asset.import"));
+                return Result<void>::failure(Diagnostic::error(
+                    DiagnosticCode::Conflict, "FBX subasset identity collision", source.path, {}, "asset.import"));
             for (unsigned slot = 0; slot < node.mNumMeshes; ++slot) {
                 if (node.mMeshes[slot] >= scene->mNumMeshes)
-                    return Result<void>::failure(Diagnostic::error(DiagnosticCode::ParseError, "FBX mesh index is invalid", source.path, {}, "asset.import"));
+                    return Result<void>::failure(Diagnostic::error(
+                        DiagnosticCode::ParseError, "FBX mesh index is invalid", source.path, {}, "asset.import"));
                 const auto submesh = node.mNumMeshes > 1 ? std::optional<unsigned>(slot) : std::nullopt;
                 auto converted = meshImport(request, source, *scene->mMeshes[node.mMeshes[slot]], id, submesh,
                                             float(factor));
@@ -303,7 +328,8 @@ Result<PreparedAssetImport> prepareUnityFbx(const UnityProjectImportRequest& req
     auto traversed = visit(*scene->mRootNode, 0);
     if (!traversed) return Result<PreparedAssetImport>::failure(traversed.status());
     if (out.manifest.assets.empty())
-        return Result<PreparedAssetImport>::failure(Diagnostic::error(DiagnosticCode::Unsupported, "FBX contains no static meshes", source.path, {}, "asset.import"));
+        return Result<PreparedAssetImport>::failure(Diagnostic::error(
+            DiagnosticCode::Unsupported, "FBX contains no static meshes", source.path, {}, "asset.import"));
     out.findings.push_back({source.path, "FBX.vertexStreams", ImportDisposition::Translated,
                             "positions, imported normals, tangents, vertex colors and all available UV sets retained"});
     return Result<PreparedAssetImport>::success(std::move(out));

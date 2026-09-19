@@ -89,7 +89,8 @@ DomainOperation operation(const char* type, const char* inverse, const std::stri
 
 AudioEffectChainTarget::AudioEffectChainTarget(std::string id) : id_(std::move(id)) {}
 TargetDescriptor AudioEffectChainTarget::describe() const {
-    return {TargetId(id_), "audio-effect-chain", revisionValue(), false, {CapabilityId("eve.editor.target.audio-effects")}};
+    return {
+        TargetId(id_), "audio-effect-chain", revisionValue(), false, {CapabilityId("eve.editor.target.audio-effects")}};
 }
 void* AudioEffectChainTarget::queryCapability(const CapabilityId& capability) {
     return capability == CapabilityId("eve.editor.target.audio-effects") ? static_cast<AudioEffectChainTarget*>(this)

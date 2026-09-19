@@ -30,7 +30,10 @@ PropertyDescriptor property(const char* path, const char* label, const char* cat
 AudioSourceTarget::AudioSourceTarget(std::string id) : id_(std::move(id)), values_(defaults()) {}
 
 TargetDescriptor AudioSourceTarget::describe() const {
-    return {TargetId(id_), "audio-source", revisionValue(), false,
+    return {TargetId(id_),
+            "audio-source",
+            revisionValue(),
+            false,
             {editingCapabilityId(), IEditingSnapshotProvider::editingCapabilityId()}};
 }
 

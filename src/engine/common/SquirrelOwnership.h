@@ -432,9 +432,10 @@ using SquirrelReleaseHook = SQInteger (*)(SQUserPointer, SQInteger);
  *            live instance whose release hook will run. It never leaks and
  *            never double-frees.
  */
-[[nodiscard]] EVENGINE_API eve::Result<ssq::Object> makeOwnedSquirrelInstanceRaw(
-    HSQUIRRELVM vm, void* object, SquirrelReleaseHook releaseHook, OwnedInstanceDestroy destroy,
-    std::size_t typeHash);
+[[nodiscard]] EVENGINE_API eve::Result<ssq::Object> makeOwnedSquirrelInstanceRaw(HSQUIRRELVM vm, void* object,
+                                                                                 SquirrelReleaseHook  releaseHook,
+                                                                                 OwnedInstanceDestroy destroy,
+                                                                                 std::size_t          typeHash);
 
 }  // namespace detail
 
@@ -454,8 +455,7 @@ template <class T>
         return eve::Result<ssq::Object>::failure(detail::ownedInstanceArgumentDiagnostic());
     }
     return detail::makeOwnedSquirrelInstanceRaw(vm, static_cast<void*>(object.release()),
-                                                &detail::ownedInstanceReleaseHook<T>,
-                                                &detail::ownedInstanceDestroy<T>,
+                                                &detail::ownedInstanceReleaseHook<T>, &detail::ownedInstanceDestroy<T>,
                                                 detail::squirrelTypeHash<T*>());
 }
 

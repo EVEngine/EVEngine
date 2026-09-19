@@ -27,7 +27,9 @@ inline std::string sha256(std::span<const std::uint8_t> bytes) {
 inline Result<asset::EvaManifest> baseManifest(const ImportPackageIdentity& package,
                                                 std::string_view importer) {
     if (package.packageId.isNil() || package.packageName.empty() || package.packageVersion.empty())
-        return Result<asset::EvaManifest>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "package identity, name and version are required", {}, {}, "asset.import"));
+        return Result<asset::EvaManifest>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                                     "package identity, name and version are required",
+                                                                     {}, {}, "asset.import"));
     asset::EvaManifest manifest;
     manifest.packageId = package.packageId;
     manifest.packageName = package.packageName;

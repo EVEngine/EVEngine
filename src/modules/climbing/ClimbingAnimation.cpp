@@ -32,11 +32,13 @@ eve::Result<void> beginClimbingAnimation(animation::AnimPlayer& player, animatio
                                          int rootMotionBone) {
     animation::AnimSkeleton* skeleton = player.getSkeleton();
     if (!skeleton || rootMotionBone < 0 || rootMotionBone >= skeleton->getBoneCount())
-        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "root-motion bone is invalid", "rootMotionBone", {},
-                                                          "climbing.animation"));
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                 "root-motion bone is invalid", "rootMotionBone", {},
+                                                                 "climbing.animation"));
     if (!std::isfinite(clip.getDuration()) || clip.getDuration() <= 0.f)
-        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation, "climbing animation clip must have a positive finite duration", "clip.duration", {},
-                                                          "climbing.animation"));
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::PreconditionViolation, "climbing animation clip must have a positive finite duration",
+            "clip.duration", {}, "climbing.animation"));
     player.setRootMotionBone(rootMotionBone);
     player.setLoop(false);
     player.play(&clip);
@@ -46,16 +48,19 @@ eve::Result<void> beginClimbingAnimation(animation::AnimPlayer& player, animatio
 eve::Result<void> beginClimbingAnimation(animation::AnimPlayer& player, animation::AnimClip& clip,
                                          const ClimbingAnimationBinding& binding) {
     if (!binding.clipId.empty() && clip.getName() != binding.clipId)
-        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation, "animation clip does not match the climbing binding", "binding.clipId", {},
-                                                          "climbing.animation"));
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation,
+                                                                 "animation clip does not match the climbing binding",
+                                                                 "binding.clipId", {}, "climbing.animation"));
     animation::AnimSkeleton* skeleton = player.getSkeleton();
     if (!skeleton)
-        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation, "animation player has no skeleton", "player.skeleton", {},
-                                                          "climbing.animation"));
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation,
+                                                                 "animation player has no skeleton", "player.skeleton",
+                                                                 {}, "climbing.animation"));
     const int rootMotionBone = skeleton->findBone(binding.rootBone);
     if (rootMotionBone < 0)
-        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::NotFound, "climbing root-motion bone does not exist", "binding.rootBone", {},
-                                                          "climbing.animation"));
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::NotFound,
+                                                                 "climbing root-motion bone does not exist",
+                                                                 "binding.rootBone", {}, "climbing.animation"));
     return beginClimbingAnimation(player, clip, rootMotionBone);
 }
 
@@ -63,8 +68,9 @@ eve::Result<ClimbingAnimationFrame> advanceClimbingAnimation(animation::AnimPlay
                                                               const eve::SimulationStep& step, Vec3 facing,
                                                               Vec3 pelvisOffset) {
     if (!finite(facing) || !finite(pelvisOffset))
-        return eve::Result<ClimbingAnimationFrame>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "facing and pelvis offset must be finite", "animationInput", {},
-                                                          "climbing.animation"));
+        return eve::Result<ClimbingAnimationFrame>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "facing and pelvis offset must be finite",
+                                   "animationInput", {}, "climbing.animation"));
     auto advanced = player.advance(step);
     if (!advanced) return eve::Result<ClimbingAnimationFrame>::failure(advanced.status());
 
@@ -79,8 +85,9 @@ eve::Result<ClimbingAnimationFrame> advanceClimbingAnimation(animation::AnimPlay
     frame.motion.rootYawRadians   = std::atan2(2.f * (qw * qy + qx * qz), 1.f - 2.f * (qy * qy + qz * qz));
     frame.motion.hasRootMotion    = player.isPlaying();
     if (!finite(frame.motion.rootTranslation) || !std::isfinite(frame.motion.rootYawRadians))
-        return eve::Result<ClimbingAnimationFrame>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvariantViolation, "animation player produced non-finite root motion", "rootMotion", {},
-                                                          "climbing.animation"));
+        return eve::Result<ClimbingAnimationFrame>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvariantViolation, "animation player produced non-finite root motion", "rootMotion",
+            {}, "climbing.animation"));
 
     for (int index = 0; index < player.getEventCount(); ++index) {
         const auto parsed = parseNotify(player.getEventName(index));
@@ -98,19 +105,21 @@ eve::Result<ClimbingAnimationFrame> advanceClimbingAnimation(animation::AnimPlay
 eve::Result<ClimbingGraphProvider> driveClimbingGraph(animation::AnimGraph& graph, int oneShotNode,
                                                        ClimbingExecutionId executionId, ClimbingGraphState& state) {
     if (executionId.isZero())
-        return eve::Result<ClimbingGraphProvider>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "graph projection requires a committed execution id", "executionId", {},
-                                                          "climbing.animation"));
+        return eve::Result<ClimbingGraphProvider>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "graph projection requires a committed execution id", "executionId",
+            {}, "climbing.animation"));
     if (oneShotNode < 0 || oneShotNode >= graph.getNodeCount())
-        return eve::Result<ClimbingGraphProvider>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "climbing graph one-shot node is invalid", "oneShotNode", {},
-                                                          "climbing.animation"));
+        return eve::Result<ClimbingGraphProvider>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "climbing graph one-shot node is invalid",
+                                   "oneShotNode", {}, "climbing.animation"));
     if (state.activeExecutionId == executionId && state.provider == ClimbingGraphProvider::AnimGraph)
         return eve::Result<ClimbingGraphProvider>::success(ClimbingGraphProvider::AnimGraph,
                                                             eve::Status::success(eve::StatusCode::NoOp));
     try {
         graph.trigger(oneShotNode);
     } catch (const eve::Exception& exception) {
-        return eve::Result<ClimbingGraphProvider>::failure(eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation, exception.what(), "oneShotNode", {},
-                                                          "climbing.animation"));
+        return eve::Result<ClimbingGraphProvider>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::PreconditionViolation, exception.what(), "oneShotNode", {}, "climbing.animation"));
     }
     state.activeExecutionId = executionId;
     state.provider          = ClimbingGraphProvider::AnimGraph;
@@ -122,8 +131,9 @@ eve::Result<ClimbingGraphProvider> driveClimbingMotionMatching(
     animation::MotionMatcher& matcher, const eve::SimulationStep& step, Vec3 desiredVelocity,
     float desiredYaw, ClimbingGraphState& state) {
     if (!finite(desiredVelocity) || !std::isfinite(desiredYaw))
-        return eve::Result<ClimbingGraphProvider>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "motion-matching intent must be finite", "motionMatching.intent", {},
-                                                          "climbing.animation"));
+        return eve::Result<ClimbingGraphProvider>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "motion-matching intent must be finite",
+                                   "motionMatching.intent", {}, "climbing.animation"));
     matcher.setDesiredVelocity(desiredVelocity.x, desiredVelocity.z);
     matcher.setDesiredYaw(desiredYaw);
     auto advanced = matcher.advance(step);

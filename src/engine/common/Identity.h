@@ -355,9 +355,7 @@ public:
     [[nodiscard]] bool empty() const noexcept { return state_.spelling.empty(); }
 
     /** @brief True when the value is an empty or UUID nil identity. */
-    [[nodiscard]] bool isNil() const noexcept {
-        return state_.spelling.empty() || Uuid(state_.uuid).isNil();
-    }
+    [[nodiscard]] bool isNil() const noexcept { return state_.spelling.empty() || Uuid(state_.uuid).isNil(); }
 
     /** @brief True when the input was canonical UUID text rather than legacy text. */
     [[nodiscard]] bool isCanonicalUuid() const noexcept { return state_.canonical; }

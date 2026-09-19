@@ -26,7 +26,8 @@ using EditorStatus=editing::Status; using EditorValue=editing::Value; using Edit
 using EditorGizmoSnapshot=editing::GizmoSnapshot; using EditorGizmoPrimitive=editing::GizmoPrimitive;
 
 /** @brief Stable, serializable authoring document for one projected decal. */
-class DecalDocumentTarget final : public ::eve::editing::EditableTargetState, public virtual IEditableTarget,
+class DecalDocumentTarget final : public ::eve::editing::EditableTargetState,
+                                  public virtual IEditableTarget,
                                   public IDomainOperationTarget,
                                   public IDomainOperationTargetStaging,
                                   public IPropertyProvider {
@@ -58,7 +59,7 @@ private:
     bool matches(const SelectionSnapshot& selection) const;
     static PropertySchema decalSchema();
     static std::map<std::string,EditorValue> defaults();
-    std::string id_;
+    std::string                              id_;
     std::map<std::string,EditorValue> values_;
 };
 

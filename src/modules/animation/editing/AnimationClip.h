@@ -95,7 +95,8 @@ public:
 };
 
 /** @brief UI-neutral animation clip document with reversible stable-id timeline edits. */
-class AnimationClipDocumentTarget final : public ::eve::editing::EditableTargetState, public virtual IEditableTarget,
+class AnimationClipDocumentTarget final : public ::eve::editing::EditableTargetState,
+                                          public virtual IEditableTarget,
                                           public IDomainOperationTarget,
                                           public IDomainOperationTargetStaging,
                                           public eve::editing::IEditingSnapshotProvider,

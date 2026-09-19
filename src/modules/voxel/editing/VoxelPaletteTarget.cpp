@@ -69,8 +69,11 @@ bool errors(const std::vector<EditorDiagnostic>& d) {
 }  // namespace
 VoxelPaletteTarget::VoxelPaletteTarget(std::string id) : id_(std::move(id)) {}
 TargetDescriptor VoxelPaletteTarget::describe() const {
-    return {
-        TargetId(id_), "voxel-palette", revisionValue(), false, {CapabilityId("eve.editor.target.voxel-palette-properties")}};
+    return {TargetId(id_),
+            "voxel-palette",
+            revisionValue(),
+            false,
+            {CapabilityId("eve.editor.target.voxel-palette-properties")}};
 }
 void* VoxelPaletteTarget::queryCapability(const CapabilityId& c) {
     return c == CapabilityId("eve.editor.target.voxel-palette-properties") ? static_cast<IPropertyProvider*>(this)

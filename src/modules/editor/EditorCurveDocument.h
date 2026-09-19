@@ -53,7 +53,8 @@ public:
 };
 
 /** @brief UI-neutral reversible curve and gradient timeline document. */
-class EditorCurveDocument final : public ::eve::editing::EditableTargetState, public virtual IEditableTarget,
+class EditorCurveDocument final : public ::eve::editing::EditableTargetState,
+                                  public virtual IEditableTarget,
                                   public IDomainOperationTarget,
                                   public IDomainOperationTargetStaging,
                                   public ICurveDocumentEditTarget {

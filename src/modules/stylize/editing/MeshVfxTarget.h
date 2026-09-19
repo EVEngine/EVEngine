@@ -40,7 +40,8 @@ using EditorResult = editing::Result<T>;
  * @thread Editor-thread affine and not internally synchronized.
  * @reentrancy Does not invoke callbacks.
  */
-class MeshVfxAssetTarget final : public ::eve::editing::EditableTargetState, public virtual IEditableTarget,
+class MeshVfxAssetTarget final : public ::eve::editing::EditableTargetState,
+                                 public virtual IEditableTarget,
                                  public IDomainOperationTarget,
                                  public IDomainOperationTargetStaging,
                                  public IPropertyProvider {

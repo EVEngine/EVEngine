@@ -31,7 +31,8 @@ PropertyDescriptor jointProperty(const char* path, const char* label, const char
 PhysicsJointTarget::PhysicsJointTarget(std::string id) : id_(std::move(id)), values_(defaults()) {}
 
 TargetDescriptor PhysicsJointTarget::describe() const {
-    return {TargetId(id_), "physics-joint-3d", revisionValue(), false, {CapabilityId("eve.editor.target.physics-joint")}};
+    return {
+        TargetId(id_), "physics-joint-3d", revisionValue(), false, {CapabilityId("eve.editor.target.physics-joint")}};
 }
 
 void* PhysicsJointTarget::queryCapability(const CapabilityId& capability) {

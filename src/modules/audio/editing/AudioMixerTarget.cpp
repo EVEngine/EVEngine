@@ -19,8 +19,7 @@ AudioMixerTarget::AudioMixerTarget(std::string id) : id_(std::move(id)) {
 }
 
 TargetDescriptor AudioMixerTarget::describe() const {
-    return {TargetId(id_), "audio-mixer", revisionValue(), false,
-            {CapabilityId("eve.editor.target.audio-mixer")}};
+    return {TargetId(id_), "audio-mixer", revisionValue(), false, {CapabilityId("eve.editor.target.audio-mixer")}};
 }
 
 void* AudioMixerTarget::queryCapability(const CapabilityId& capability) {

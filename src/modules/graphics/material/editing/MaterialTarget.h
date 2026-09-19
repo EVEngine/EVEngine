@@ -22,7 +22,8 @@ template <class T> using EditorResult = editing::Result<T>;
 using EditorStatus = editing::Status; using EditorValue = editing::Value; using EditorDiagnostic = editing::Diagnostic;
 
 /** @brief UI-neutral, serializable material authoring target. */
-class MaterialDocumentTarget final : public ::eve::editing::EditableTargetState, public virtual IEditableTarget,
+class MaterialDocumentTarget final : public ::eve::editing::EditableTargetState,
+                                     public virtual IEditableTarget,
                                      public IDomainOperationTarget,
                                      public IDomainOperationTargetStaging,
                                      public eve::editing::IEditingSnapshotProvider,

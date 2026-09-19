@@ -141,7 +141,7 @@ std::vector<SocialEdgeRecord>          SocialDocumentTarget::edges() const { ret
 EditorResult<DomainOperation> SocialDocumentTarget::makeSetEntity(const SocialEntityRecord& e) const {
     if (!parseEntity(entityValue(e)).ok())
         return eve::editing::failed<DomainOperation>(EditorStatus::Rejected, RuleId("editor.social.invalid-entity"),
-                                                     "Cannot plan invalid entity");
+                                                              "Cannot plan invalid entity");
     const auto f = entities_.find(e.id);
     return eve::editing::applied<DomainOperation>(
         op("social.entity.set.v1", f == entities_.end() ? "social.entity.delete.v1" : "social.entity.set.v1", id_,

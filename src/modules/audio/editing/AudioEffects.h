@@ -19,7 +19,8 @@ struct AudioEffectRecord {
 };
 
 /** @brief Revisioned reversible serial effect chain independent of an audio backend. */
-class AudioEffectChainTarget final : public ::eve::editing::EditableTargetState, public virtual IEditableTarget,
+class AudioEffectChainTarget final : public ::eve::editing::EditableTargetState,
+                                     public virtual IEditableTarget,
                                      public IDomainOperationTarget,
                                      public IDomainOperationTargetStaging {
 public:
@@ -49,7 +50,7 @@ public:
     EditorResult<DomainOperation> makeAssignToBus(const AudioMixerTarget& mixer,
                                                    const ObjectId& bus) const;
 private:
-    std::string id_;
+    std::string                           id_;
     std::map<StableId, AudioEffectRecord> effects_;
     std::vector<StableId> order_;
 };
