@@ -1,0 +1,935 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::animation::MontageCoordinator类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1animation.html">animation</a></li><li class="navelem"><a class="el" href="classeve_1_1animation_1_1MontageCoordinator.html">MontageCoordinator</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1animation_1_1MontageCoordinator-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::animation::MontageCoordinator类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Owns a fixed two-slot ping-pong topology for every animation layer.  
+ <a href="classeve_1_1animation_1_1MontageCoordinator.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="MontageCoordinator_8h_source.html">MontageCoordinator.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:aa36883a13c5ee85b0071c7848fbd893f" id="r_aa36883a13c5ee85b0071c7848fbd893f"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1MontageCoordinator.html#aa36883a13c5ee85b0071c7848fbd893f">MontageCoordinator</a> (<a class="el" href="classeve_1_1animation_1_1AnimSkeleton.html">AnimSkeleton</a> &amp;skeleton)</td></tr>
+<tr class="memdesc:aa36883a13c5ee85b0071c7848fbd893f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct over a skeleton that must outlive this coordinator.  <br /></td></tr>
+<tr class="separator:aa36883a13c5ee85b0071c7848fbd893f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a63108712529c6ddcc82c733e9bf92054" id="r_a63108712529c6ddcc82c733e9bf92054"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="namespaceeve_1_1animation.html#ab3bc1962bb351220a8966cc647e1f67e">MontageHandle</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1MontageCoordinator.html#a63108712529c6ddcc82c733e9bf92054">play</a> (std::size_t <a class="el" href="Pathfinder_8cpp.html#ac84a36ae433419b622c91ac3022cf1c9">layer</a>, <a class="el" href="structeve_1_1action_1_1ActionTimeline.html">action::ActionTimeline</a> timeline, std::vector&lt; <a class="el" href="structeve_1_1animation_1_1MontageClipAsset.html">MontageClipAsset</a> &gt; &amp;&amp;clips, <a class="el" href="namespaceeve_1_1action.html#a96ab42e2e0a0c22be2fd2a059a3dc272">action::ActionExecutionId</a> <a class="el" href="AudioCapabilities_8cpp.html#a1e11c85f1aad307665738c1449cb9546">executionId</a>, <a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">SimulationTick</a> <a class="el" href="TacticsPersistence_8cpp.html#a9be293222289c40e0ca1ad953cb5a07e">tick</a>)</td></tr>
+<tr class="memdesc:a63108712529c6ddcc82c733e9bf92054"><td class="mdescLeft">&#160;</td><td class="mdescRight">Prepare and play a montage in the opposite slot of a layer.  <br /></td></tr>
+<tr class="separator:a63108712529c6ddcc82c733e9bf92054"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a28e138183576603e1b29f3444cddb45c" id="r_a28e138183576603e1b29f3444cddb45c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::reference_wrapper&lt; <a class="el" href="classeve_1_1animation_1_1MontagePlayer.html">MontagePlayer</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1MontageCoordinator.html#a28e138183576603e1b29f3444cddb45c">resolve</a> (<a class="el" href="namespaceeve_1_1animation.html#ab3bc1962bb351220a8966cc647e1f67e">MontageHandle</a> <a class="el" href="PrimitiveScriptBindings_8cpp.html#afb09dcd532f47a3a9fa9eed7d5a09e93">handle</a>)</td></tr>
+<tr class="memdesc:a28e138183576603e1b29f3444cddb45c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resolve a live handle for immediate synchronous use.  <br /></td></tr>
+<tr class="separator:a28e138183576603e1b29f3444cddb45c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a742b12ae9bd9c2cd35615f24e70a915d" id="r_a742b12ae9bd9c2cd35615f24e70a915d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::reference_wrapper&lt; const <a class="el" href="classeve_1_1animation_1_1MontagePlayer.html">MontagePlayer</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1MontageCoordinator.html#a742b12ae9bd9c2cd35615f24e70a915d">resolve</a> (<a class="el" href="namespaceeve_1_1animation.html#ab3bc1962bb351220a8966cc647e1f67e">MontageHandle</a> <a class="el" href="PrimitiveScriptBindings_8cpp.html#afb09dcd532f47a3a9fa9eed7d5a09e93">handle</a>) const</td></tr>
+<tr class="memdesc:a742b12ae9bd9c2cd35615f24e70a915d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resolve a live handle for immediate synchronous read-only use.  <br /></td></tr>
+<tr class="separator:a742b12ae9bd9c2cd35615f24e70a915d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae6981288093197480ca2c6e759374bf6" id="r_ae6981288093197480ca2c6e759374bf6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1animation_1_1MontageAdvance.html">MontageAdvance</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1MontageCoordinator.html#ae6981288093197480ca2c6e759374bf6">present</a> (<a class="el" href="namespaceeve_1_1animation.html#ab3bc1962bb351220a8966cc647e1f67e">MontageHandle</a> <a class="el" href="PrimitiveScriptBindings_8cpp.html#afb09dcd532f47a3a9fa9eed7d5a09e93">handle</a>, const <a class="el" href="structeve_1_1action_1_1ActionAdvance.html">action::ActionAdvance</a> &amp;advance, <a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">SimulationTick</a> <a class="el" href="TacticsPersistence_8cpp.html#a9be293222289c40e0ca1ad953cb5a07e">tick</a>)</td></tr>
+<tr class="memdesc:ae6981288093197480ca2c6e759374bf6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Present one authoritative action advance through a live slot.  <br /></td></tr>
+<tr class="separator:ae6981288093197480ca2c6e759374bf6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac3a418babf8bc6e67aa0224a09614c83" id="r_ac3a418babf8bc6e67aa0224a09614c83"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1MontageCoordinator.html#ac3a418babf8bc6e67aa0224a09614c83">advanceBlendOuts</a> (<a class="el" href="classeve_1_1Duration.html">Duration</a> delta, <a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">SimulationTick</a> <a class="el" href="TacticsPersistence_8cpp.html#a9be293222289c40e0ca1ad953cb5a07e">tick</a>, <a class="el" href="namespaceeve_1_1animation.html#ab3bc1962bb351220a8966cc647e1f67e">MontageHandle</a> except=<a class="el" href="classeve_1_1RuntimeHandle.html#ad4f1ab6695f0eef5d1c5d84db3b2161a">MontageHandle::invalid</a>())</td></tr>
+<tr class="memdesc:ac3a418babf8bc6e67aa0224a09614c83"><td class="mdescLeft">&#160;</td><td class="mdescRight">Advance every fading slot except an optional slot already advanced by its owner.  <br /></td></tr>
+<tr class="separator:ac3a418babf8bc6e67aa0224a09614c83"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa47567154ec0889f62a5ac58adc8cb34" id="r_aa47567154ec0889f62a5ac58adc8cb34"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1animation_1_1MontageAdvance.html">MontageAdvance</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1MontageCoordinator.html#aa47567154ec0889f62a5ac58adc8cb34">stop</a> (<a class="el" href="namespaceeve_1_1animation.html#ab3bc1962bb351220a8966cc647e1f67e">MontageHandle</a> <a class="el" href="PrimitiveScriptBindings_8cpp.html#afb09dcd532f47a3a9fa9eed7d5a09e93">handle</a>, <a class="el" href="classeve_1_1Duration.html">Duration</a> blendOut, <a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">SimulationTick</a> <a class="el" href="TacticsPersistence_8cpp.html#a9be293222289c40e0ca1ad953cb5a07e">tick</a>)</td></tr>
+<tr class="memdesc:aa47567154ec0889f62a5ac58adc8cb34"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stop one live slot with a continuous blend-out.  <br /></td></tr>
+<tr class="separator:aa47567154ec0889f62a5ac58adc8cb34"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a489ed501001a8b0e8a8d1f51a5890167" id="r_a489ed501001a8b0e8a8d1f51a5890167"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1MontageCoordinator.html#a489ed501001a8b0e8a8d1f51a5890167">setLayerBoneMask</a> (std::size_t <a class="el" href="Pathfinder_8cpp.html#ac84a36ae433419b622c91ac3022cf1c9">layer</a>, std::vector&lt; float &gt; <a class="el" href="TerrainImageAdapter_8cpp.html#a633d91a1601098fad1287d3764b947f4">weights</a>)</td></tr>
+<tr class="memdesc:a489ed501001a8b0e8a8d1f51a5890167"><td class="mdescLeft">&#160;</td><td class="mdescRight">Atomically replace one layer's owning per-bone blend weights.  <br /></td></tr>
+<tr class="separator:a489ed501001a8b0e8a8d1f51a5890167"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a495be3628baa01dbfd0bf5cfade0403a" id="r_a495be3628baa01dbfd0bf5cfade0403a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1MontageCoordinator.html#a495be3628baa01dbfd0bf5cfade0403a">setLayerBoneMask</a> (std::size_t <a class="el" href="Pathfinder_8cpp.html#ac84a36ae433419b622c91ac3022cf1c9">layer</a>, const <a class="el" href="classeve_1_1animation_1_1AnimBoneMask.html">AnimBoneMask</a> &amp;<a class="el" href="BuildingFx_8cpp.html#ab77cc972f3ee899689ba053015472ccd">mask</a>)</td></tr>
+<tr class="memdesc:a495be3628baa01dbfd0bf5cfade0403a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Snapshot an existing animation bone mask into one montage layer.  <br /></td></tr>
+<tr class="separator:a495be3628baa01dbfd0bf5cfade0403a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6c6b3ef79d0a3ae05d22bd3dbfeb4b93" id="r_a6c6b3ef79d0a3ae05d22bd3dbfeb4b93"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1MontageCoordinator.html#a6c6b3ef79d0a3ae05d22bd3dbfeb4b93">clearLayerBoneMask</a> (std::size_t <a class="el" href="Pathfinder_8cpp.html#ac84a36ae433419b622c91ac3022cf1c9">layer</a>)</td></tr>
+<tr class="memdesc:a6c6b3ef79d0a3ae05d22bd3dbfeb4b93"><td class="mdescLeft">&#160;</td><td class="mdescRight">Remove one layer's bone mask so subsequent composition affects every bone.  <br /></td></tr>
+<tr class="separator:a6c6b3ef79d0a3ae05d22bd3dbfeb4b93"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3ed31c3fb55d7825e2d81a9634ee6284" id="r_a3ed31c3fb55d7825e2d81a9634ee6284"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::vector&lt; float &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1MontageCoordinator.html#a3ed31c3fb55d7825e2d81a9634ee6284">layerBoneMask</a> (std::size_t <a class="el" href="Pathfinder_8cpp.html#ac84a36ae433419b622c91ac3022cf1c9">layer</a>) const</td></tr>
+<tr class="memdesc:a3ed31c3fb55d7825e2d81a9634ee6284"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return an owning copy of one configured layer mask.  <br /></td></tr>
+<tr class="separator:a3ed31c3fb55d7825e2d81a9634ee6284"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaf68167b16d8d3f4193037499d3a33a9" id="r_aaf68167b16d8d3f4193037499d3a33a9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1MontageCoordinator.html#aaf68167b16d8d3f4193037499d3a33a9">setLayerWeight</a> (std::size_t <a class="el" href="Pathfinder_8cpp.html#ac84a36ae433419b622c91ac3022cf1c9">layer</a>, float <a class="el" href="UnityVegetationMaterial_8cpp.html#a99108733d00274978a4979dc072bd513">weight</a>)</td></tr>
+<tr class="memdesc:aaf68167b16d8d3f4193037499d3a33a9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set one layer's finite global influence.  <br /></td></tr>
+<tr class="separator:aaf68167b16d8d3f4193037499d3a33a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a839628d039818f2f76a22d953aed8714" id="r_a839628d039818f2f76a22d953aed8714"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; float &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1MontageCoordinator.html#a839628d039818f2f76a22d953aed8714">layerWeight</a> (std::size_t <a class="el" href="Pathfinder_8cpp.html#ac84a36ae433419b622c91ac3022cf1c9">layer</a>) const</td></tr>
+<tr class="memdesc:a839628d039818f2f76a22d953aed8714"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return one configured layer's global influence, or NotFound for an absent layer.  <br /></td></tr>
+<tr class="separator:a839628d039818f2f76a22d953aed8714"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a212fb13e25551a59347eb0fc191bbc3f" id="r_a212fb13e25551a59347eb0fc191bbc3f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1MontageCoordinator.html#a212fb13e25551a59347eb0fc191bbc3f">setLayerAdditive</a> (std::size_t <a class="el" href="Pathfinder_8cpp.html#ac84a36ae433419b622c91ac3022cf1c9">layer</a>, bool additive)</td></tr>
+<tr class="memdesc:a212fb13e25551a59347eb0fc191bbc3f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Select bind-pose-relative additive or ordered override composition for one layer.  <br /></td></tr>
+<tr class="separator:a212fb13e25551a59347eb0fc191bbc3f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ade9c770b55851ad419dbdc13641fc0da" id="r_ade9c770b55851ad419dbdc13641fc0da"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; bool &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1MontageCoordinator.html#ade9c770b55851ad419dbdc13641fc0da">layerAdditive</a> (std::size_t <a class="el" href="Pathfinder_8cpp.html#ac84a36ae433419b622c91ac3022cf1c9">layer</a>) const</td></tr>
+<tr class="memdesc:ade9c770b55851ad419dbdc13641fc0da"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return whether one configured layer uses additive composition, or NotFound for an absent layer.  <br /></td></tr>
+<tr class="separator:ade9c770b55851ad419dbdc13641fc0da"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a531e0daaec15ef30bec0826c5a90acd0" id="r_a531e0daaec15ef30bec0826c5a90acd0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1MontageCoordinator.html#a531e0daaec15ef30bec0826c5a90acd0">setLayerRootMotionReceiver</a> (std::size_t <a class="el" href="Pathfinder_8cpp.html#ac84a36ae433419b622c91ac3022cf1c9">layer</a>, <a class="el" href="classeve_1_1animation_1_1IMontageRootMotionReceiver.html">IMontageRootMotionReceiver</a> &amp;receiver)</td></tr>
+<tr class="memdesc:a531e0daaec15ef30bec0826c5a90acd0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Install one root-motion receiver shared by current and future slots of a layer.  <br /></td></tr>
+<tr class="separator:a531e0daaec15ef30bec0826c5a90acd0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a09352138916d9662909a3a7b2890884a" id="r_a09352138916d9662909a3a7b2890884a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1MontageCoordinator.html#a09352138916d9662909a3a7b2890884a">clearLayerRootMotionReceiver</a> (std::size_t <a class="el" href="Pathfinder_8cpp.html#ac84a36ae433419b622c91ac3022cf1c9">layer</a>)</td></tr>
+<tr class="memdesc:a09352138916d9662909a3a7b2890884a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clear the borrowed root-motion receiver from current and future slots of a layer.  <br /></td></tr>
+<tr class="separator:a09352138916d9662909a3a7b2890884a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac0089cae448bb53421e0e1ed67ffb86c" id="r_ac0089cae448bb53421e0e1ed67ffb86c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::reference_wrapper&lt; <a class="el" href="classeve_1_1animation_1_1AnimPose.html">AnimPose</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1MontageCoordinator.html#ac0089cae448bb53421e0e1ed67ffb86c">pose</a> (std::size_t <a class="el" href="Pathfinder_8cpp.html#ac84a36ae433419b622c91ac3022cf1c9">layer</a>)</td></tr>
+<tr class="memdesc:ac0089cae448bb53421e0e1ed67ffb86c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Borrow the normalized full layer pose; invalid layers return a structured failure.  <br /></td></tr>
+<tr class="separator:ac0089cae448bb53421e0e1ed67ffb86c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa77944ebe6f3dc61d43937654d387949" id="r_aa77944ebe6f3dc61d43937654d387949"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::reference_wrapper&lt; <a class="el" href="classeve_1_1animation_1_1AnimPose.html">AnimPose</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1MontageCoordinator.html#aa77944ebe6f3dc61d43937654d387949">compose</a> (const <a class="el" href="classeve_1_1animation_1_1AnimPose.html">AnimPose</a> &amp;basePose)</td></tr>
+<tr class="memdesc:aa77944ebe6f3dc61d43937654d387949"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compose every configured montage layer over an immediate borrowed base pose.  <br /></td></tr>
+<tr class="separator:aa77944ebe6f3dc61d43937654d387949"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3b6b4b2ee1007cec89b64dcd8f7df115" id="r_a3b6b4b2ee1007cec89b64dcd8f7df115"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1MontageCoordinator.html#a3b6b4b2ee1007cec89b64dcd8f7df115">collectFinished</a> () noexcept</td></tr>
+<tr class="memdesc:a3b6b4b2ee1007cec89b64dcd8f7df115"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reclaim finished slots and invalidate their handles.  <br /></td></tr>
+<tr class="separator:a3b6b4b2ee1007cec89b64dcd8f7df115"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Owns a fixed two-slot ping-pong topology for every animation layer. </p>
+<p>The coordinator is owner-thread-only and borrows its skeleton for its whole lifetime. Reusing a slot bumps its generation, so old handles resolve as stale instead of targeting a different montage. </p>
+
+<p class="definition">在文件 <a class="el" href="MontageCoordinator_8h_source.html">MontageCoordinator.h</a> 第 <a class="el" href="MontageCoordinator_8h_source.html#l00028">28</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="aa36883a13c5ee85b0071c7848fbd893f" name="aa36883a13c5ee85b0071c7848fbd893f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa36883a13c5ee85b0071c7848fbd893f">&#9670;&#160;</a></span>MontageCoordinator()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::animation::MontageCoordinator::MontageCoordinator </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1animation_1_1AnimSkeleton.html">AnimSkeleton</a> &amp;&#160;</td>
+          <td class="paramname"><em>skeleton</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Construct over a skeleton that must outlive this coordinator. </p>
+
+<p class="definition">在文件 <a class="el" href="MontageCoordinator_8cpp_source.html">MontageCoordinator.cpp</a> 第 <a class="el" href="MontageCoordinator_8cpp_source.html#l00022">22</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AnimSkeleton_8cpp_source.html#l00132">eve::animation::AnimSkeleton::applyBindPose()</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="ac3a418babf8bc6e67aa0224a09614c83" name="ac3a418babf8bc6e67aa0224a09614c83"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac3a418babf8bc6e67aa0224a09614c83">&#9670;&#160;</a></span>advanceBlendOuts()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::animation::MontageCoordinator::advanceBlendOuts </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1Duration.html">Duration</a>&#160;</td>
+          <td class="paramname"><em>delta</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">SimulationTick</a>&#160;</td>
+          <td class="paramname"><em>tick</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1animation.html#ab3bc1962bb351220a8966cc647e1f67e">MontageHandle</a>&#160;</td>
+          <td class="paramname"><em>except</em> = <code><a class="el" href="classeve_1_1RuntimeHandle.html#ad4f1ab6695f0eef5d1c5d84db3b2161a">MontageHandle::invalid</a>()</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Advance every fading slot except an optional slot already advanced by its owner. </p>
+
+<p class="definition">在文件 <a class="el" href="MontageCoordinator_8cpp_source.html">MontageCoordinator.cpp</a> 第 <a class="el" href="MontageCoordinator_8cpp_source.html#l00119">119</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="MontageCoordinator_8cpp_source.html#l00307">collectFinished()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="PrimitiveScriptBindings_8cpp_source.html#l00021">handle</a>, <a class="el" href="Pathfinder_8cpp_source.html#l00146">layer</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="TacticsPersistence_8cpp_source.html#l00128">tick</a>.</p>
+
+</div>
+</div>
+<a id="a6c6b3ef79d0a3ae05d22bd3dbfeb4b93" name="a6c6b3ef79d0a3ae05d22bd3dbfeb4b93"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6c6b3ef79d0a3ae05d22bd3dbfeb4b93">&#9670;&#160;</a></span>clearLayerBoneMask()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::animation::MontageCoordinator::clearLayerBoneMask </td>
+          <td>(</td>
+          <td class="paramtype">std::size_t&#160;</td>
+          <td class="paramname"><em>layer</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Remove one layer's bone mask so subsequent composition affects every bone. </p>
+
+<p class="definition">在文件 <a class="el" href="MontageCoordinator_8cpp_source.html">MontageCoordinator.cpp</a> 第 <a class="el" href="MontageCoordinator_8cpp_source.html#l00167">167</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="Pathfinder_8cpp_source.html#l00146">layer</a>, <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa60832e2e4bbebccf26555b9ba658bad5">eve::NoOp</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a09352138916d9662909a3a7b2890884a" name="a09352138916d9662909a3a7b2890884a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a09352138916d9662909a3a7b2890884a">&#9670;&#160;</a></span>clearLayerRootMotionReceiver()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::animation::MontageCoordinator::clearLayerRootMotionReceiver </td>
+          <td>(</td>
+          <td class="paramtype">std::size_t&#160;</td>
+          <td class="paramname"><em>layer</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Clear the borrowed root-motion receiver from current and future slots of a layer. </p>
+
+<p class="definition">在文件 <a class="el" href="MontageCoordinator_8cpp_source.html">MontageCoordinator.cpp</a> 第 <a class="el" href="MontageCoordinator_8cpp_source.html#l00227">227</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="Pathfinder_8cpp_source.html#l00146">layer</a>, <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa60832e2e4bbebccf26555b9ba658bad5">eve::NoOp</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a3b6b4b2ee1007cec89b64dcd8f7df115" name="a3b6b4b2ee1007cec89b64dcd8f7df115"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3b6b4b2ee1007cec89b64dcd8f7df115">&#9670;&#160;</a></span>collectFinished()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::MontageCoordinator::collectFinished </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Reclaim finished slots and invalidate their handles. </p>
+
+<p class="definition">在文件 <a class="el" href="MontageCoordinator_8cpp_source.html">MontageCoordinator.cpp</a> 第 <a class="el" href="MontageCoordinator_8cpp_source.html#l00307">307</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Pathfinder_8cpp_source.html#l00146">layer</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="MontageCoordinator_8cpp_source.html#l00119">advanceBlendOuts()</a>.</p>
+
+</div>
+</div>
+<a id="aa77944ebe6f3dc61d43937654d387949" name="aa77944ebe6f3dc61d43937654d387949"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa77944ebe6f3dc61d43937654d387949">&#9670;&#160;</a></span>compose()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::reference_wrapper&lt; <a class="el" href="classeve_1_1animation_1_1AnimPose.html">AnimPose</a> &gt; &gt; eve::animation::MontageCoordinator::compose </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1animation_1_1AnimPose.html">AnimPose</a> &amp;&#160;</td>
+          <td class="paramname"><em>basePose</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Compose every configured montage layer over an immediate borrowed base pose. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">basePose</td><td>Base pose for this synchronous evaluation; it is never retained and must match the skeleton. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Borrowed coordinator-owned pose, valid until the next composition or coordinator destruction.</dd></dl>
+<p>Layers are applied in ascending index order. Slot weights are normalized within each layer; their clamped sum, the layer weight, and the optional bone mask determine top-level influence. Additive layers use bind-pose-relative deltas. Owner-thread-only, deterministic for identical poses and weights, and non-reentrant. </p>
+
+<p class="definition">在文件 <a class="el" href="MontageCoordinator_8cpp_source.html">MontageCoordinator.cpp</a> 第 <a class="el" href="MontageCoordinator_8cpp_source.html#l00282">282</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AnimMath_8h_source.html#l00106">eve::animation::applyAdditiveTRS()</a>, <a class="el" href="AnimSkeleton_8cpp_source.html#l00127">eve::animation::AnimSkeleton::bindLocal()</a>, <a class="el" href="AnimMath_8h_source.html#l00072">eve::animation::blendTRS()</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00024">bone</a>, <a class="el" href="AnimMath_8h_source.html#l00031">eve::animation::clampf()</a>, <a class="el" href="AnimPose_8h_source.html#l00027">eve::animation::AnimPose::getBoneCount()</a>, <a class="el" href="AnimSkeleton_8h_source.html#l00028">eve::animation::AnimSkeleton::getBoneCount()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="Pathfinder_8cpp_source.html#l00146">layer</a>, <a class="el" href="MontageCoordinator_8cpp_source.html#l00194">layerWeight()</a> , 以及 <a class="el" href="UnityVegetationMaterial_8cpp_source.html#l00162">weight</a>.</p>
+
+</div>
+</div>
+<a id="ade9c770b55851ad419dbdc13641fc0da" name="ade9c770b55851ad419dbdc13641fc0da"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ade9c770b55851ad419dbdc13641fc0da">&#9670;&#160;</a></span>layerAdditive()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; bool &gt; eve::animation::MontageCoordinator::layerAdditive </td>
+          <td>(</td>
+          <td class="paramtype">std::size_t&#160;</td>
+          <td class="paramname"><em>layer</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return whether one configured layer uses additive composition, or NotFound for an absent layer. </p>
+
+<p class="definition">在文件 <a class="el" href="MontageCoordinator_8cpp_source.html">MontageCoordinator.cpp</a> 第 <a class="el" href="MontageCoordinator_8cpp_source.html#l00209">209</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Pathfinder_8cpp_source.html#l00146">layer</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a3ed31c3fb55d7825e2d81a9634ee6284" name="a3ed31c3fb55d7825e2d81a9634ee6284"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3ed31c3fb55d7825e2d81a9634ee6284">&#9670;&#160;</a></span>layerBoneMask()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::vector&lt; float &gt; &gt; eve::animation::MontageCoordinator::layerBoneMask </td>
+          <td>(</td>
+          <td class="paramtype">std::size_t&#160;</td>
+          <td class="paramname"><em>layer</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return an owning copy of one configured layer mask. </p>
+
+<p class="definition">在文件 <a class="el" href="MontageCoordinator_8cpp_source.html">MontageCoordinator.cpp</a> 第 <a class="el" href="MontageCoordinator_8cpp_source.html#l00175">175</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Pathfinder_8cpp_source.html#l00146">layer</a> , 以及 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>.</p>
+
+</div>
+</div>
+<a id="a839628d039818f2f76a22d953aed8714" name="a839628d039818f2f76a22d953aed8714"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a839628d039818f2f76a22d953aed8714">&#9670;&#160;</a></span>layerWeight()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; float &gt; eve::animation::MontageCoordinator::layerWeight </td>
+          <td>(</td>
+          <td class="paramtype">std::size_t&#160;</td>
+          <td class="paramname"><em>layer</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return one configured layer's global influence, or NotFound for an absent layer. </p>
+
+<p class="definition">在文件 <a class="el" href="MontageCoordinator_8cpp_source.html">MontageCoordinator.cpp</a> 第 <a class="el" href="MontageCoordinator_8cpp_source.html#l00194">194</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Pathfinder_8cpp_source.html#l00146">layer</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="UnityVegetationMaterial_8cpp_source.html#l00162">weight</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="MontageCoordinator_8cpp_source.html#l00282">compose()</a>.</p>
+
+</div>
+</div>
+<a id="a63108712529c6ddcc82c733e9bf92054" name="a63108712529c6ddcc82c733e9bf92054"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a63108712529c6ddcc82c733e9bf92054">&#9670;&#160;</a></span>play()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="namespaceeve_1_1animation.html#ab3bc1962bb351220a8966cc647e1f67e">MontageHandle</a> &gt; eve::animation::MontageCoordinator::play </td>
+          <td>(</td>
+          <td class="paramtype">std::size_t&#160;</td>
+          <td class="paramname"><em>layer</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1action_1_1ActionTimeline.html">action::ActionTimeline</a>&#160;</td>
+          <td class="paramname"><em>timeline</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; <a class="el" href="structeve_1_1animation_1_1MontageClipAsset.html">MontageClipAsset</a> &gt; &amp;&amp;&#160;</td>
+          <td class="paramname"><em>clips</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1action.html#a96ab42e2e0a0c22be2fd2a059a3dc272">action::ActionExecutionId</a>&#160;</td>
+          <td class="paramname"><em>executionId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">SimulationTick</a>&#160;</td>
+          <td class="paramname"><em>tick</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Prepare and play a montage in the opposite slot of a layer. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">tick</td><td>Monotonic simulation tick used when the previous slot begins fading out. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="MontageCoordinator_8cpp_source.html">MontageCoordinator.cpp</a> 第 <a class="el" href="MontageCoordinator_8cpp_source.html#l00049">49</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="ActionTimeline_8h_source.html#l00039">eve::action::ActionMontageSettings::defaultBlendIn</a>, <a class="el" href="AudioCapabilities_8cpp_source.html#l00381">executionId</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca">eve::Failed</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="Pathfinder_8cpp_source.html#l00146">layer</a>, <a class="el" href="ActionTimeline_8h_source.html#l00175">eve::action::ActionTimeline::montage</a>, <a class="el" href="OffscreenPreview_8cpp_source.html#l00017">previous</a>, <a class="el" href="vulkan_2Graphics_8cpp_source.html#l00178">started</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="TacticsPersistence_8cpp_source.html#l00128">tick</a>.</p>
+
+</div>
+</div>
+<a id="ac0089cae448bb53421e0e1ed67ffb86c" name="ac0089cae448bb53421e0e1ed67ffb86c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac0089cae448bb53421e0e1ed67ffb86c">&#9670;&#160;</a></span>pose()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::reference_wrapper&lt; <a class="el" href="classeve_1_1animation_1_1AnimPose.html">AnimPose</a> &gt; &gt; eve::animation::MontageCoordinator::pose </td>
+          <td>(</td>
+          <td class="paramtype">std::size_t&#160;</td>
+          <td class="paramname"><em>layer</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Borrow the normalized full layer pose; invalid layers return a structured failure. </p>
+
+<p class="definition">在文件 <a class="el" href="MontageCoordinator_8cpp_source.html">MontageCoordinator.cpp</a> 第 <a class="el" href="MontageCoordinator_8cpp_source.html#l00264">264</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AnimSkeleton_8cpp_source.html#l00132">eve::animation::AnimSkeleton::applyBindPose()</a>, <a class="el" href="AnimMath_8h_source.html#l00072">eve::animation::blendTRS()</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00024">bone</a>, <a class="el" href="Pathfinder_8cpp_source.html#l00146">layer</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a> , 以及 <a class="el" href="UnityVegetationMaterial_8cpp_source.html#l00162">weight</a>.</p>
+
+</div>
+</div>
+<a id="ae6981288093197480ca2c6e759374bf6" name="ae6981288093197480ca2c6e759374bf6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae6981288093197480ca2c6e759374bf6">&#9670;&#160;</a></span>present()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1animation_1_1MontageAdvance.html">MontageAdvance</a> &gt; eve::animation::MontageCoordinator::present </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1animation.html#ab3bc1962bb351220a8966cc647e1f67e">MontageHandle</a>&#160;</td>
+          <td class="paramname"><em>handle</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1action_1_1ActionAdvance.html">action::ActionAdvance</a> &amp;&#160;</td>
+          <td class="paramname"><em>advance</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">SimulationTick</a>&#160;</td>
+          <td class="paramname"><em>tick</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Present one authoritative action advance through a live slot. </p>
+
+<p class="definition">在文件 <a class="el" href="MontageCoordinator_8cpp_source.html">MontageCoordinator.cpp</a> 第 <a class="el" href="MontageCoordinator_8cpp_source.html#l00112">112</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="PrimitiveScriptBindings_8cpp_source.html#l00021">handle</a>, <a class="el" href="MontageCoordinator_8cpp_source.html#l00096">resolve()</a> , 以及 <a class="el" href="TacticsPersistence_8cpp_source.html#l00128">tick</a>.</p>
+
+</div>
+</div>
+<a id="a28e138183576603e1b29f3444cddb45c" name="a28e138183576603e1b29f3444cddb45c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a28e138183576603e1b29f3444cddb45c">&#9670;&#160;</a></span>resolve() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::reference_wrapper&lt; <a class="el" href="classeve_1_1animation_1_1MontagePlayer.html">MontagePlayer</a> &gt; &gt; eve::animation::MontageCoordinator::resolve </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1animation.html#ab3bc1962bb351220a8966cc647e1f67e">MontageHandle</a>&#160;</td>
+          <td class="paramname"><em>handle</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Resolve a live handle for immediate synchronous use. </p>
+
+<p class="definition">在文件 <a class="el" href="MontageCoordinator_8cpp_source.html">MontageCoordinator.cpp</a> 第 <a class="el" href="MontageCoordinator_8cpp_source.html#l00096">96</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PrimitiveScriptBindings_8cpp_source.html#l00021">handle</a> , 以及 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7aec4fb10f5e3708942fbeadb549f6a7be">eve::StaleHandle</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="MontageCoordinator_8cpp_source.html#l00112">present()</a> , 以及 <a class="el" href="MontageCoordinator_8cpp_source.html#l00135">stop()</a>.</p>
+
+</div>
+</div>
+<a id="a742b12ae9bd9c2cd35615f24e70a915d" name="a742b12ae9bd9c2cd35615f24e70a915d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a742b12ae9bd9c2cd35615f24e70a915d">&#9670;&#160;</a></span>resolve() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::reference_wrapper&lt; const <a class="el" href="classeve_1_1animation_1_1MontagePlayer.html">MontagePlayer</a> &gt; &gt; eve::animation::MontageCoordinator::resolve </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1animation.html#ab3bc1962bb351220a8966cc647e1f67e">MontageHandle</a>&#160;</td>
+          <td class="paramname"><em>handle</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Resolve a live handle for immediate synchronous read-only use. </p>
+
+<p class="definition">在文件 <a class="el" href="MontageCoordinator_8cpp_source.html">MontageCoordinator.cpp</a> 第 <a class="el" href="MontageCoordinator_8cpp_source.html#l00104">104</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PrimitiveScriptBindings_8cpp_source.html#l00021">handle</a> , 以及 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7aec4fb10f5e3708942fbeadb549f6a7be">eve::StaleHandle</a>.</p>
+
+</div>
+</div>
+<a id="a212fb13e25551a59347eb0fc191bbc3f" name="a212fb13e25551a59347eb0fc191bbc3f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a212fb13e25551a59347eb0fc191bbc3f">&#9670;&#160;</a></span>setLayerAdditive()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::animation::MontageCoordinator::setLayerAdditive </td>
+          <td>(</td>
+          <td class="paramtype">std::size_t&#160;</td>
+          <td class="paramname"><em>layer</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>additive</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Select bind-pose-relative additive or ordered override composition for one layer. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">layer</td><td>Layer index, created on demand. </td></tr>
+    <tr><td class="paramname">additive</td><td>True for additive; false for override. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Applied or NoOp, or InvalidArgument for an unrepresentable layer index. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="MontageCoordinator_8cpp_source.html">MontageCoordinator.cpp</a> 第 <a class="el" href="MontageCoordinator_8cpp_source.html#l00200">200</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="Pathfinder_8cpp_source.html#l00146">layer</a>, <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa60832e2e4bbebccf26555b9ba658bad5">eve::NoOp</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a495be3628baa01dbfd0bf5cfade0403a" name="a495be3628baa01dbfd0bf5cfade0403a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a495be3628baa01dbfd0bf5cfade0403a">&#9670;&#160;</a></span>setLayerBoneMask() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::animation::MontageCoordinator::setLayerBoneMask </td>
+          <td>(</td>
+          <td class="paramtype">std::size_t&#160;</td>
+          <td class="paramname"><em>layer</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1animation_1_1AnimBoneMask.html">AnimBoneMask</a> &amp;&#160;</td>
+          <td class="paramname"><em>mask</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Snapshot an existing animation bone mask into one montage layer. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">layer</td><td>Layer index. </td></tr>
+    <tr><td class="paramname">mask</td><td>Borrowed only for this synchronous call; it must target the coordinator skeleton. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="MontageCoordinator_8cpp_source.html">MontageCoordinator.cpp</a> 第 <a class="el" href="MontageCoordinator_8cpp_source.html#l00157">157</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00024">bone</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="Pathfinder_8cpp_source.html#l00146">layer</a>, <a class="el" href="BuildingFx_8cpp_source.html#l00064">mask</a>, <a class="el" href="MontageCoordinator_8cpp_source.html#l00141">setLayerBoneMask()</a> , 以及 <a class="el" href="TerrainImageAdapter_8cpp_source.html#l00082">weights</a>.</p>
+
+</div>
+</div>
+<a id="a489ed501001a8b0e8a8d1f51a5890167" name="a489ed501001a8b0e8a8d1f51a5890167"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a489ed501001a8b0e8a8d1f51a5890167">&#9670;&#160;</a></span>setLayerBoneMask() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::animation::MontageCoordinator::setLayerBoneMask </td>
+          <td>(</td>
+          <td class="paramtype">std::size_t&#160;</td>
+          <td class="paramname"><em>layer</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; float &gt;&#160;</td>
+          <td class="paramname"><em>weights</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Atomically replace one layer's owning per-bone blend weights. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">layer</td><td>Layer index configured independently from montage slot generations. </td></tr>
+    <tr><td class="paramname">weights</td><td>One finite weight in [0,1] for every skeleton bone. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="MontageCoordinator_8cpp_source.html">MontageCoordinator.cpp</a> 第 <a class="el" href="MontageCoordinator_8cpp_source.html#l00141">141</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="AnimSkeleton_8h_source.html#l00028">eve::animation::AnimSkeleton::getBoneCount()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="Pathfinder_8cpp_source.html#l00146">layer</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="UnityVegetationMaterial_8cpp_source.html#l00162">weight</a> , 以及 <a class="el" href="TerrainImageAdapter_8cpp_source.html#l00082">weights</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="MontageCoordinator_8cpp_source.html#l00157">setLayerBoneMask()</a>.</p>
+
+</div>
+</div>
+<a id="a531e0daaec15ef30bec0826c5a90acd0" name="a531e0daaec15ef30bec0826c5a90acd0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a531e0daaec15ef30bec0826c5a90acd0">&#9670;&#160;</a></span>setLayerRootMotionReceiver()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::animation::MontageCoordinator::setLayerRootMotionReceiver </td>
+          <td>(</td>
+          <td class="paramtype">std::size_t&#160;</td>
+          <td class="paramname"><em>layer</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1animation_1_1IMontageRootMotionReceiver.html">IMontageRootMotionReceiver</a> &amp;&#160;</td>
+          <td class="paramname"><em>receiver</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Install one root-motion receiver shared by current and future slots of a layer. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">layer</td><td>Layer index. </td></tr>
+    <tr><td class="paramname">receiver</td><td>Receiver that must outlive the coordinator or be explicitly cleared. @lifetime The coordinator and its players retain a non-owning observer until <a class="el" href="classeve_1_1animation_1_1MontageCoordinator.html#a09352138916d9662909a3a7b2890884a" title="Clear the borrowed root-motion receiver from current and future slots of a layer.">clearLayerRootMotionReceiver()</a>. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="MontageCoordinator_8cpp_source.html">MontageCoordinator.cpp</a> 第 <a class="el" href="MontageCoordinator_8cpp_source.html#l00215">215</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="Pathfinder_8cpp_source.html#l00146">layer</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="aaf68167b16d8d3f4193037499d3a33a9" name="aaf68167b16d8d3f4193037499d3a33a9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaf68167b16d8d3f4193037499d3a33a9">&#9670;&#160;</a></span>setLayerWeight()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::animation::MontageCoordinator::setLayerWeight </td>
+          <td>(</td>
+          <td class="paramtype">std::size_t&#160;</td>
+          <td class="paramname"><em>layer</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>weight</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set one layer's finite global influence. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">layer</td><td>Layer index, created on demand. </td></tr>
+    <tr><td class="paramname">weight</td><td>Influence in [0,1]. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Applied, NoOp, or InvalidArgument without partially changing configuration. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="MontageCoordinator_8cpp_source.html">MontageCoordinator.cpp</a> 第 <a class="el" href="MontageCoordinator_8cpp_source.html#l00182">182</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="Pathfinder_8cpp_source.html#l00146">layer</a>, <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa60832e2e4bbebccf26555b9ba658bad5">eve::NoOp</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="UnityVegetationMaterial_8cpp_source.html#l00162">weight</a>.</p>
+
+</div>
+</div>
+<a id="aa47567154ec0889f62a5ac58adc8cb34" name="aa47567154ec0889f62a5ac58adc8cb34"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa47567154ec0889f62a5ac58adc8cb34">&#9670;&#160;</a></span>stop()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1animation_1_1MontageAdvance.html">MontageAdvance</a> &gt; eve::animation::MontageCoordinator::stop </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1animation.html#ab3bc1962bb351220a8966cc647e1f67e">MontageHandle</a>&#160;</td>
+          <td class="paramname"><em>handle</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1Duration.html">Duration</a>&#160;</td>
+          <td class="paramname"><em>blendOut</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">SimulationTick</a>&#160;</td>
+          <td class="paramname"><em>tick</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Stop one live slot with a continuous blend-out. </p>
+
+<p class="definition">在文件 <a class="el" href="MontageCoordinator_8cpp_source.html">MontageCoordinator.cpp</a> 第 <a class="el" href="MontageCoordinator_8cpp_source.html#l00135">135</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="PrimitiveScriptBindings_8cpp_source.html#l00021">handle</a>, <a class="el" href="MontageCoordinator_8cpp_source.html#l00096">resolve()</a> , 以及 <a class="el" href="TacticsPersistence_8cpp_source.html#l00128">tick</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/animation/<a class="el" href="MontageCoordinator_8h_source.html">MontageCoordinator.h</a></li>
+<li>src/modules/animation/<a class="el" href="MontageCoordinator_8cpp_source.html">MontageCoordinator.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

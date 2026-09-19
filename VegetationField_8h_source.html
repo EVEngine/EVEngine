@@ -1,0 +1,340 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/graphics/VegetationField.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_0f2af43e49f4758c00cbead1adc79623.html">graphics</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">VegetationField.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="VegetationField_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &lt;array&gt;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;glm/vec3.hpp&gt;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;glm/vec4.hpp&gt;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;span&gt;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &quot;<a class="code" href="Result_8h.html">common/Result.h</a>&quot;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &quot;<a class="code" href="Value_8h.html">common/Value.h</a>&quot;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1graphics.html">eve::graphics</a> {</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span> </div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno"><a class="line" href="namespaceeve_1_1graphics.html#a5afd9225d97f0d1ec0e68859095034ee">   15</a></span><span class="keyword">enum class</span> <a class="code hl_enumeration" href="namespaceeve_1_1graphics.html#a5afd9225d97f0d1ec0e68859095034ee">VegetationChannel</a> : uint8_t { <a class="code hl_typedef" href="namespaceeve_1_1graphics.html#a48a7ad247237d3f4710ceabe4251d6c5">Color</a>, <a class="code hl_enumvalue" href="namespaceeve_1_1graphics.html#a5afd9225d97f0d1ec0e68859095034eea0a3f082873eb454bde444150b70253cc">Extras</a>, <a class="code hl_enumvalue" href="namespaceeve_1_1graphics.html#a5afd9225d97f0d1ec0e68859095034eea8226588f03da49b857e5ddf8c508dd2d">Motion</a>, <a class="code hl_enumvalue" href="namespaceeve_1_1graphics.html#a5afd9225d97f0d1ec0e68859095034eeab22b929ba52471a02d18bb3a4e4472e6">Vertex</a> };</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno"><a class="line" href="namespaceeve_1_1graphics.html#a34ea33f7bbc6bb44ac512b00ed05c65b">   17</a></span><span class="keyword">enum class</span> <a class="code hl_enumeration" href="namespaceeve_1_1graphics.html#a34ea33f7bbc6bb44ac512b00ed05c65b">VegetationBlend</a> : uint8_t { <a class="code hl_enumvalue" href="namespaceeve_1_1graphics.html#a34ea33f7bbc6bb44ac512b00ed05c65ba0ebe6df8a3ac338e0512acc741823fdb">Replace</a>, <a class="code hl_enumvalue" href="namespaceeve_1_1graphics.html#a34ea33f7bbc6bb44ac512b00ed05c65baec211f7c20af43e742bf2570c3cb84f9">Add</a>, <a class="code hl_enumvalue" href="namespaceeve_1_1graphics.html#a34ea33f7bbc6bb44ac512b00ed05c65bae257376d913f3b53cbb4a9b19d770648">Multiply</a>, <a class="code hl_enumvalue" href="namespaceeve_1_1graphics.html#a34ea33f7bbc6bb44ac512b00ed05c65baa1d0ec6d56f8833a078b5a7ac4caf2d4">Minimum</a>, <a class="code hl_enumvalue" href="namespaceeve_1_1graphics.html#a34ea33f7bbc6bb44ac512b00ed05c65ba8321e79c278ec510f63675c040594892">Maximum</a> };</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno"><a class="line" href="namespaceeve_1_1graphics.html#aa8ce7fcbb570489ca4104b5a69922b0e">   19</a></span><span class="keyword">enum class</span> <a class="code hl_enumeration" href="namespaceeve_1_1graphics.html#aa8ce7fcbb570489ca4104b5a69922b0e">VegetationShape</a> : uint8_t { <a class="code hl_enumvalue" href="namespaceeve_1_1graphics.html#aa8ce7fcbb570489ca4104b5a69922b0eaeee5397cecd880d16ef7244819aa383d">Ellipsoid</a>, <a class="code hl_enumvalue" href="namespaceeve_1_1graphics.html#aa8ce7fcbb570489ca4104b5a69922b0ea3cfce651e667ab85486dd42a8185f98a">Box</a> };</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span> </div>
+<div class="foldopen" id="foldopen00022" data-start="{" data-end="};">
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1VegetationMask.html">   22</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1graphics_1_1VegetationMask.html">VegetationMask</a> {</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1VegetationMask.html#a369b26d343222874c4e212f94632c759">   23</a></span>    uint32_t               <a class="code hl_variable" href="structeve_1_1graphics_1_1VegetationMask.html#a2fa2db818eb22f97541fb22129691e52">width</a> = 0, <a class="code hl_variable" href="structeve_1_1graphics_1_1VegetationMask.html#a369b26d343222874c4e212f94632c759">height</a> = 0;</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1VegetationMask.html#a2e05440aa5073191fce46ddef297a192">   24</a></span>    std::vector&lt;glm::vec4&gt; <a class="code hl_variable" href="structeve_1_1graphics_1_1VegetationMask.html#a2e05440aa5073191fce46ddef297a192">pixels</a>;</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>};</div>
+</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span> </div>
+<div class="foldopen" id="foldopen00032" data-start="{" data-end="};">
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1VegetationElement.html">   32</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1graphics_1_1VegetationElement.html">VegetationElement</a> {</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1VegetationElement.html#ae1e48745cb3c757c8a283702f99e30cb">   33</a></span>    <a class="code hl_enumeration" href="namespaceeve_1_1graphics.html#a5afd9225d97f0d1ec0e68859095034ee">VegetationChannel</a>        <a class="code hl_variable" href="structeve_1_1graphics_1_1VegetationElement.html#ae1e48745cb3c757c8a283702f99e30cb">channel</a> = <a class="code hl_enumvalue" href="namespaceeve_1_1graphics.html#a5afd9225d97f0d1ec0e68859095034eeacb5feb1b7314637725a2e73bdc9f7295">VegetationChannel::Color</a>;</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1VegetationElement.html#abf1494965ce3088353834855172f836b">   34</a></span>    <a class="code hl_enumeration" href="namespaceeve_1_1graphics.html#a34ea33f7bbc6bb44ac512b00ed05c65b">VegetationBlend</a>          <a class="code hl_variable" href="structeve_1_1graphics_1_1VegetationElement.html#abf1494965ce3088353834855172f836b">blend</a>   = <a class="code hl_enumvalue" href="namespaceeve_1_1graphics.html#a34ea33f7bbc6bb44ac512b00ed05c65ba0ebe6df8a3ac338e0512acc741823fdb">VegetationBlend::Replace</a>;</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1VegetationElement.html#abc80aec278f486cff8f40513ea10a58c">   35</a></span>    <a class="code hl_enumeration" href="namespaceeve_1_1graphics.html#aa8ce7fcbb570489ca4104b5a69922b0e">VegetationShape</a>          <a class="code hl_variable" href="structeve_1_1graphics_1_1VegetationElement.html#abc80aec278f486cff8f40513ea10a58c">shape</a>   = <a class="code hl_enumvalue" href="namespaceeve_1_1graphics.html#aa8ce7fcbb570489ca4104b5a69922b0eaeee5397cecd880d16ef7244819aa383d">VegetationShape::Ellipsoid</a>;</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1VegetationElement.html#a007884d0eb9fb20973bce0d0c665a387">   36</a></span>    glm::vec3                <a class="code hl_variable" href="structeve_1_1graphics_1_1VegetationElement.html#a007884d0eb9fb20973bce0d0c665a387">center</a>{0.f}, <a class="code hl_variable" href="structeve_1_1graphics_1_1VegetationElement.html#ab92c2ab33cf5755221394d2dec603275">extents</a>{1.f};</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1VegetationElement.html#a2a5d9c0ffb83310911954bf03b5d444e">   37</a></span>    <span class="keywordtype">float</span>                    <a class="code hl_variable" href="structeve_1_1graphics_1_1VegetationElement.html#a18e63e6e8520688af29355ffb24c5da2">yaw</a> = 0.f, <a class="code hl_variable" href="structeve_1_1graphics_1_1VegetationElement.html#ac6e49325ed7b08906a20dfba1cff4548">opacity</a> = 1.f, <a class="code hl_variable" href="structeve_1_1graphics_1_1VegetationElement.html#a2a5d9c0ffb83310911954bf03b5d444e">edgeFade</a> = 0.25f;</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1VegetationElement.html#a2877a50f41fae02d53c4b9f72ed4e6d0">   38</a></span>    uint16_t                 <a class="code hl_variable" href="structeve_1_1graphics_1_1VegetationElement.html#a2877a50f41fae02d53c4b9f72ed4e6d0">layers</a>   = 1;</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1VegetationElement.html#a703fa6f5c47bcf68efd77db4e0d6e112">   39</a></span>    <span class="keywordtype">int</span>                      <a class="code hl_variable" href="structeve_1_1graphics_1_1VegetationElement.html#a703fa6f5c47bcf68efd77db4e0d6e112">priority</a> = 0;</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1VegetationElement.html#af765854b547f5df482eee94493e70b71">   40</a></span>    glm::vec4                <a class="code hl_variable" href="structeve_1_1graphics_1_1VegetationElement.html#af765854b547f5df482eee94493e70b71">value</a>{1.f};</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1VegetationElement.html#a3decb83ae4b370fd4547832d9a8c3e08">   41</a></span>    <span class="keywordtype">bool</span>                     <a class="code hl_variable" href="structeve_1_1graphics_1_1VegetationElement.html#a3decb83ae4b370fd4547832d9a8c3e08">seasonal</a> = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1VegetationElement.html#ad29c16b855a9253a175a2c478bf71305">   42</a></span>    std::array&lt;glm::vec4, 4&gt; <a class="code hl_variable" href="structeve_1_1graphics_1_1VegetationElement.html#ad29c16b855a9253a175a2c478bf71305">seasons</a>{glm::vec4(1.f), glm::vec4(1.f), glm::vec4(1.f), glm::vec4(1.f)};</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1VegetationElement.html#a5dea64ed1d02713426d3581bb46e6630">   43</a></span>    <a class="code hl_struct" href="structeve_1_1graphics_1_1VegetationMask.html">VegetationMask</a>           <a class="code hl_variable" href="structeve_1_1graphics_1_1VegetationElement.html#a5dea64ed1d02713426d3581bb46e6630">mask</a>;</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>};</div>
+</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span> </div>
+<div class="foldopen" id="foldopen00051" data-start="{" data-end="};">
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1VegetationGlobals.html">   51</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1graphics_1_1VegetationGlobals.html">VegetationGlobals</a> {</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1VegetationGlobals.html#a1f2a72853f863fe174c50f28c98c6d61">   52</a></span>    glm::vec4 <a class="code hl_variable" href="structeve_1_1graphics_1_1VegetationGlobals.html#a1f2a72853f863fe174c50f28c98c6d61">color</a>{1.f, 1.f, 1.f, 0.f};</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1VegetationGlobals.html#a16905307aa099a2912673cbb503806ac">   53</a></span>    glm::vec4 <a class="code hl_variable" href="structeve_1_1graphics_1_1VegetationGlobals.html#a16905307aa099a2912673cbb503806ac">extras</a>{1.f, 0.f, 0.f, 1.f};</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1VegetationGlobals.html#a9377a33ba2dcb793b99000db10aad0a0">   54</a></span>    glm::vec4 <a class="code hl_variable" href="structeve_1_1graphics_1_1VegetationGlobals.html#a9377a33ba2dcb793b99000db10aad0a0">motion</a>{1.f, 0.f, 0.5f, 0.f};</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1VegetationGlobals.html#aa09975a73d3a751b2e6e4aada4a2d505">   55</a></span>    glm::vec4 <a class="code hl_variable" href="structeve_1_1graphics_1_1VegetationGlobals.html#aa09975a73d3a751b2e6e4aada4a2d505">vertex</a>{0.f, 0.f, 0.f, 1.f};</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1VegetationGlobals.html#a90fb65a1c3395ce2e30e5f6f8beaac18">   56</a></span>    <span class="keywordtype">float</span>     <a class="code hl_variable" href="structeve_1_1graphics_1_1VegetationGlobals.html#a90fb65a1c3395ce2e30e5f6f8beaac18">season</a> = 2.f;</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>};</div>
+</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span> </div>
+<div class="foldopen" id="foldopen00060" data-start="{" data-end="};">
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1VegetationSample.html">   60</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1graphics_1_1VegetationSample.html">VegetationSample</a> {</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1VegetationSample.html#acd792efff595afbf7f06d7d5bbc401b5">   61</a></span>    glm::vec4 <a class="code hl_variable" href="structeve_1_1graphics_1_1VegetationSample.html#acd792efff595afbf7f06d7d5bbc401b5">color</a>, <a class="code hl_variable" href="structeve_1_1graphics_1_1VegetationSample.html#ac4c9b0d43a6fb8cecac17ccbb3e69c66">extras</a>, <a class="code hl_variable" href="structeve_1_1graphics_1_1VegetationSample.html#af5156d341dcb2bc288ccdbe1d90103a6">motion</a>, <a class="code hl_variable" href="structeve_1_1graphics_1_1VegetationSample.html#af6dd1397852c6abf37e4fd51d3e51fd4">vertex</a>;</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>};</div>
+</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span> </div>
+<div class="foldopen" id="foldopen00065" data-start="{" data-end="};">
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1VegetationAtlas.html">   65</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1graphics_1_1VegetationAtlas.html">VegetationAtlas</a> {</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1VegetationAtlas.html#a0168659574bf1c7b1811e74339da672b">   66</a></span>    uint32_t                              <a class="code hl_variable" href="structeve_1_1graphics_1_1VegetationAtlas.html#a3c8c74e4348b909c77f456d2f96859e1">width</a> = 0, <a class="code hl_variable" href="structeve_1_1graphics_1_1VegetationAtlas.html#a0168659574bf1c7b1811e74339da672b">height</a> = 0;</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1VegetationAtlas.html#adb26d1d77d0817a4effdcfb247eab210">   67</a></span>    glm::vec3                             <a class="code hl_variable" href="structeve_1_1graphics_1_1VegetationAtlas.html#adb26d1d77d0817a4effdcfb247eab210">center</a>{0.f}, <a class="code hl_variable" href="structeve_1_1graphics_1_1VegetationAtlas.html#aa6725a6d0574e2df63a09041d073a419">extent</a>{1.f};</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1VegetationAtlas.html#a59fb9adabe071d681f19632ac2a2d1d4">   68</a></span>    std::array&lt;std::vector&lt;glm::vec4&gt;, 4&gt; <a class="code hl_variable" href="structeve_1_1graphics_1_1VegetationAtlas.html#a59fb9adabe071d681f19632ac2a2d1d4">channels</a>;</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>};</div>
+</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span> </div>
+<div class="foldopen" id="foldopen00074" data-start="{" data-end="};">
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1VegetationChannelAtlas.html">   74</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1graphics_1_1VegetationChannelAtlas.html">VegetationChannelAtlas</a> {</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1VegetationChannelAtlas.html#a0b36dae781f369bbad77229cfebdade4">   75</a></span>    uint32_t               <a class="code hl_variable" href="structeve_1_1graphics_1_1VegetationChannelAtlas.html#af0e74a5070d9a60d636cb6df03e88a0d">width</a> = 0, <a class="code hl_variable" href="structeve_1_1graphics_1_1VegetationChannelAtlas.html#a0b36dae781f369bbad77229cfebdade4">height</a> = 0;</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1VegetationChannelAtlas.html#ad4ffd66481f35883148b27b6241ad791">   76</a></span>    glm::vec3              <a class="code hl_variable" href="structeve_1_1graphics_1_1VegetationChannelAtlas.html#ad4ffd66481f35883148b27b6241ad791">center</a>{0.f}, <a class="code hl_variable" href="structeve_1_1graphics_1_1VegetationChannelAtlas.html#a7939a25dfa85905286160c07411ca48e">extent</a>{1.f};</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1VegetationChannelAtlas.html#a54c183f25a51e60e3528967fe59dbacc">   77</a></span>    std::vector&lt;glm::vec4&gt; <a class="code hl_variable" href="structeve_1_1graphics_1_1VegetationChannelAtlas.html#a54c183f25a51e60e3528967fe59dbacc">pixels</a>;</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>};</div>
+</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span> </div>
+<div class="foldopen" id="foldopen00085" data-start="{" data-end="};">
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1VegetationField.html">   85</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1graphics_1_1VegetationField.html">VegetationField</a> {</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1VegetationField.html#abe85abe602e0e3e75e3fe88be50bb194">   88</a></span>    <a class="code hl_struct" href="structeve_1_1graphics_1_1VegetationGlobals.html">VegetationGlobals</a> <a class="code hl_function" href="classeve_1_1graphics_1_1VegetationField.html#abe85abe602e0e3e75e3fe88be50bb194">globalValues</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> globals_; }</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1VegetationField.html#afd91a1fb09c1af59ec3181f487fa9b65">   90</a></span>    uint64_t <a class="code hl_function" href="classeve_1_1graphics_1_1VegetationField.html#afd91a1fb09c1af59ec3181f487fa9b65">revision</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> revision_; }</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;std::vector&lt;VegetationElement&gt;</a>&gt; <a class="code hl_function" href="classeve_1_1graphics_1_1VegetationField.html#a17cb98449e46d61d05c3cd335d828419">snapshotElements</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1graphics_1_1VegetationField.html#a5f9eed7be74965dd052ee7514dee2769">restore</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1Value.html">Value</a>&amp; document);</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;Value&gt;</a> <a class="code hl_function" href="classeve_1_1graphics_1_1VegetationField.html#af881119ef7b7871963d1db42b6a2ae3c">snapshot</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1graphics_1_1VegetationField.html#a2486da99b83f372f7fe4326854bc1daf">replace</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1graphics_1_1VegetationGlobals.html">VegetationGlobals</a>&amp; globals, std::span&lt;const VegetationElement&gt; <a class="code hl_variable" href="SquirrelBinding_8cpp.html#a9cb7ebae0f472ee88c186932fb62a8a1">elements</a>);</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;VegetationSample&gt;</a> <a class="code hl_function" href="classeve_1_1graphics_1_1VegetationField.html#af12e0cc7d33ff75dc4f3712126591cda">sample</a>(glm::vec3 <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a60ea6c13eb7a935dc579b69b80cee822">position</a>, std::array&lt;uint8_t, 4&gt; layers = {}) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;VegetationAtlas&gt;</a> <a class="code hl_function" href="classeve_1_1graphics_1_1VegetationField.html#a9a1561bc242c7a8ad257a4f7f3254f31">bake</a>(glm::vec3 <a class="code hl_variable" href="BushMesh_8cpp.html#a536a14dffc8e09851c78f534885a1de8">center</a>, glm::vec3 extent, uint32_t <a class="code hl_variable" href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a>, uint32_t <a class="code hl_variable" href="ImageImporter_8cpp.html#adfe1b51744835d88ff3bcd45411d2c53">height</a>,</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>                                               std::array&lt;uint8_t, 4&gt; layers = {}, <span class="keywordtype">bool</span> snapToTexel = <span class="keyword">true</span>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span> </div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>    VegetationSample               evaluate(glm::vec3 <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a60ea6c13eb7a935dc579b69b80cee822">position</a>, std::array&lt;uint8_t, 4&gt; layers) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>    VegetationGlobals              globals_;</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>    std::vector&lt;VegetationElement&gt; elements_;</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>    uint64_t                       revision_ = 0;</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>};</div>
+</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>}  <span class="comment">// namespace eve::graphics</span></div>
+<div class="ttc" id="aBushMesh_8cpp_html_a536a14dffc8e09851c78f534885a1de8"><div class="ttname"><a href="BushMesh_8cpp.html#a536a14dffc8e09851c78f534885a1de8">center</a></div><div class="ttdeci">V3 center</div><div class="ttdef"><b>Definition</b> <a href="BushMesh_8cpp_source.html#l00027">BushMesh.cpp:27</a></div></div>
+<div class="ttc" id="aImageImporter_8cpp_html_adfe1b51744835d88ff3bcd45411d2c53"><div class="ttname"><a href="ImageImporter_8cpp.html#adfe1b51744835d88ff3bcd45411d2c53">height</a></div><div class="ttdeci">std::uint32_t height</div><div class="ttdef"><b>Definition</b> <a href="ImageImporter_8cpp_source.html#l00014">ImageImporter.cpp:14</a></div></div>
+<div class="ttc" id="aImageImporter_8cpp_html_ae951d664b90216c2e6e17442f85ba01c"><div class="ttname"><a href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a></div><div class="ttdeci">std::uint32_t width</div><div class="ttdef"><b>Definition</b> <a href="ImageImporter_8cpp_source.html#l00013">ImageImporter.cpp:13</a></div></div>
+<div class="ttc" id="aLegacyAnimationImporter_8cpp_html_a60ea6c13eb7a935dc579b69b80cee822"><div class="ttname"><a href="LegacyAnimationImporter_8cpp.html#a60ea6c13eb7a935dc579b69b80cee822">position</a></div><div class="ttdeci">std::array&lt; float, 3 &gt; position</div><div class="ttdef"><b>Definition</b> <a href="LegacyAnimationImporter_8cpp_source.html#l00016">LegacyAnimationImporter.cpp:16</a></div></div>
+<div class="ttc" id="aResult_8h_html"><div class="ttname"><a href="Result_8h.html">Result.h</a></div><div class="ttdoc">Move-only, checked operation results for the common layer.</div></div>
+<div class="ttc" id="aSquirrelBinding_8cpp_html_a9cb7ebae0f472ee88c186932fb62a8a1"><div class="ttname"><a href="SquirrelBinding_8cpp.html#a9cb7ebae0f472ee88c186932fb62a8a1">elements</a></div><div class="ttdeci">std::size_t elements</div><div class="ttdef"><b>Definition</b> <a href="SquirrelBinding_8cpp_source.html#l00018">SquirrelBinding.cpp:18</a></div></div>
+<div class="ttc" id="aValue_8h_html"><div class="ttname"><a href="Value_8h.html">Value.h</a></div><div class="ttdoc">Owning, renderer-independent dynamic values.</div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1Value_html"><div class="ttname"><a href="classeve_1_1Value.html">eve::Value</a></div><div class="ttdoc">The canonical owning dynamic value used by data-facing protocols.</div><div class="ttdef"><b>Definition</b> <a href="Value_8h_source.html#l00031">Value.h:31</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1VegetationField_html"><div class="ttname"><a href="classeve_1_1graphics_1_1VegetationField.html">eve::graphics::VegetationField</a></div><div class="ttdoc">Backend-independent, owning vegetation influence field. Single writer; concurrent const evaluation is...</div><div class="ttdef"><b>Definition</b> <a href="VegetationField_8h_source.html#l00085">VegetationField.h:85</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1VegetationField_html_a17cb98449e46d61d05c3cd335d828419"><div class="ttname"><a href="classeve_1_1graphics_1_1VegetationField.html#a17cb98449e46d61d05c3cd335d828419">eve::graphics::VegetationField::snapshotElements</a></div><div class="ttdeci">Result&lt; std::vector&lt; VegetationElement &gt; &gt; snapshotElements() const</div><div class="ttdoc">Return an owning, priority-ordered element snapshot for revision-safe editor previews.</div><div class="ttdef"><b>Definition</b> <a href="VegetationField_8cpp_source.html#l00053">VegetationField.cpp:53</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1VegetationField_html_a2486da99b83f372f7fe4326854bc1daf"><div class="ttname"><a href="classeve_1_1graphics_1_1VegetationField.html#a2486da99b83f372f7fe4326854bc1daf">eve::graphics::VegetationField::replace</a></div><div class="ttdeci">Result&lt; void &gt; replace(const VegetationGlobals &amp;globals, std::span&lt; const VegetationElement &gt; elements)</div><div class="ttdoc">Validate and atomically replace the entire field; failure preserves prior state.</div><div class="ttdef"><b>Definition</b> <a href="VegetationField_8cpp_source.html#l00063">VegetationField.cpp:63</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1VegetationField_html_a5f9eed7be74965dd052ee7514dee2769"><div class="ttname"><a href="classeve_1_1graphics_1_1VegetationField.html#a5f9eed7be74965dd052ee7514dee2769">eve::graphics::VegetationField::restore</a></div><div class="ttdeci">Result&lt; void &gt; restore(const Value &amp;document)</div><div class="ttdoc">Decode eve.graphics.vegetation-field version 1; rejects unknown fields/versions. Single-writer,...</div><div class="ttdef"><b>Definition</b> <a href="VegetationFieldCodec_8cpp_source.html#l00039">VegetationFieldCodec.cpp:39</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1VegetationField_html_a9a1561bc242c7a8ad257a4f7f3254f31"><div class="ttname"><a href="classeve_1_1graphics_1_1VegetationField.html#a9a1561bc242c7a8ad257a4f7f3254f31">eve::graphics::VegetationField::bake</a></div><div class="ttdeci">Result&lt; VegetationAtlas &gt; bake(glm::vec3 center, glm::vec3 extent, uint32_t width, uint32_t height, std::array&lt; uint8_t, 4 &gt; layers={}, bool snapToTexel=true) const</div><div class="ttdoc">Bake an X/Z slice. Width/height in [1,2048]; positive extent; one layer per channel....</div><div class="ttdef"><b>Definition</b> <a href="VegetationField_8cpp_source.html#l00136">VegetationField.cpp:136</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1VegetationField_html_abe85abe602e0e3e75e3fe88be50bb194"><div class="ttname"><a href="classeve_1_1graphics_1_1VegetationField.html#abe85abe602e0e3e75e3fe88be50bb194">eve::graphics::VegetationField::globalValues</a></div><div class="ttdeci">VegetationGlobals globalValues() const</div><div class="ttdoc">Return detached global defaults; concurrent reads require no writer. No callbacks.</div><div class="ttdef"><b>Definition</b> <a href="VegetationField_8h_source.html#l00088">VegetationField.h:88</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1VegetationField_html_af12e0cc7d33ff75dc4f3712126591cda"><div class="ttname"><a href="classeve_1_1graphics_1_1VegetationField.html#af12e0cc7d33ff75dc4f3712126591cda">eve::graphics::VegetationField::sample</a></div><div class="ttdeci">Result&lt; VegetationSample &gt; sample(glm::vec3 position, std::array&lt; uint8_t, 4 &gt; layers={}) const</div><div class="ttdoc">Evaluate four independently selected layers (0..8) at a finite world position.</div><div class="ttdef"><b>Definition</b> <a href="VegetationField_8cpp_source.html#l00127">VegetationField.cpp:127</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1VegetationField_html_af881119ef7b7871963d1db42b6a2ae3c"><div class="ttname"><a href="classeve_1_1graphics_1_1VegetationField.html#af881119ef7b7871963d1db42b6a2ae3c">eve::graphics::VegetationField::snapshot</a></div><div class="ttdeci">Result&lt; Value &gt; snapshot() const</div><div class="ttdoc">Owning versioned snapshot; thread-safe while no mutation occurs. No callbacks.</div><div class="ttdef"><b>Definition</b> <a href="VegetationFieldCodec_8cpp_source.html#l00104">VegetationFieldCodec.cpp:104</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1VegetationField_html_afd91a1fb09c1af59ec3181f487fa9b65"><div class="ttname"><a href="classeve_1_1graphics_1_1VegetationField.html#afd91a1fb09c1af59ec3181f487fa9b65">eve::graphics::VegetationField::revision</a></div><div class="ttdeci">uint64_t revision() const</div><div class="ttdoc">Monotonic successful-publication revision for derived render snapshots.</div><div class="ttdef"><b>Definition</b> <a href="VegetationField_8h_source.html#l00090">VegetationField.h:90</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_html"><div class="ttname"><a href="namespaceeve_1_1graphics.html">eve::graphics</a></div><div class="ttdoc">卡牌游戏 UI 工具模块：工厂 + 脚本绑定入口。 功能参考 ycarowr/UiCard：扇形手牌布局、抽牌/洗牌、悬浮放大、拖拽到落牌区、 敌方手牌（背面/偷看）、费用不足置灰，以及可实时调节的布局...</div><div class="ttdef"><b>Definition</b> <a href="Animation_8h_source.html#l00020">Animation.h:20</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_html_a34ea33f7bbc6bb44ac512b00ed05c65b"><div class="ttname"><a href="namespaceeve_1_1graphics.html#a34ea33f7bbc6bb44ac512b00ed05c65b">eve::graphics::VegetationBlend</a></div><div class="ttdeci">VegetationBlend</div><div class="ttdoc">Ordered field composition operation.</div><div class="ttdef"><b>Definition</b> <a href="VegetationField_8h_source.html#l00017">VegetationField.h:17</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_html_a34ea33f7bbc6bb44ac512b00ed05c65ba0ebe6df8a3ac338e0512acc741823fdb"><div class="ttname"><a href="namespaceeve_1_1graphics.html#a34ea33f7bbc6bb44ac512b00ed05c65ba0ebe6df8a3ac338e0512acc741823fdb">eve::graphics::VegetationBlend::Replace</a></div><div class="ttdeci">@ Replace</div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_html_a34ea33f7bbc6bb44ac512b00ed05c65ba8321e79c278ec510f63675c040594892"><div class="ttname"><a href="namespaceeve_1_1graphics.html#a34ea33f7bbc6bb44ac512b00ed05c65ba8321e79c278ec510f63675c040594892">eve::graphics::VegetationBlend::Maximum</a></div><div class="ttdeci">@ Maximum</div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_html_a34ea33f7bbc6bb44ac512b00ed05c65baa1d0ec6d56f8833a078b5a7ac4caf2d4"><div class="ttname"><a href="namespaceeve_1_1graphics.html#a34ea33f7bbc6bb44ac512b00ed05c65baa1d0ec6d56f8833a078b5a7ac4caf2d4">eve::graphics::VegetationBlend::Minimum</a></div><div class="ttdeci">@ Minimum</div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_html_a34ea33f7bbc6bb44ac512b00ed05c65bae257376d913f3b53cbb4a9b19d770648"><div class="ttname"><a href="namespaceeve_1_1graphics.html#a34ea33f7bbc6bb44ac512b00ed05c65bae257376d913f3b53cbb4a9b19d770648">eve::graphics::VegetationBlend::Multiply</a></div><div class="ttdeci">@ Multiply</div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_html_a34ea33f7bbc6bb44ac512b00ed05c65baec211f7c20af43e742bf2570c3cb84f9"><div class="ttname"><a href="namespaceeve_1_1graphics.html#a34ea33f7bbc6bb44ac512b00ed05c65baec211f7c20af43e742bf2570c3cb84f9">eve::graphics::VegetationBlend::Add</a></div><div class="ttdeci">@ Add</div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_html_a48a7ad247237d3f4710ceabe4251d6c5"><div class="ttname"><a href="namespaceeve_1_1graphics.html#a48a7ad247237d3f4710ceabe4251d6c5">eve::graphics::Color</a></div><div class="ttdeci">eve::Color Color</div><div class="ttdoc">RGBA color used by every graphics draw call. Lives inside eve::graphics so including a graphics heade...</div><div class="ttdef"><b>Definition</b> <a href="Color_8h_source.html#l00013">Color.h:13</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_html_a5afd9225d97f0d1ec0e68859095034ee"><div class="ttname"><a href="namespaceeve_1_1graphics.html#a5afd9225d97f0d1ec0e68859095034ee">eve::graphics::VegetationChannel</a></div><div class="ttdeci">VegetationChannel</div><div class="ttdoc">Independent vegetation field channels; values use linear color and world units.</div><div class="ttdef"><b>Definition</b> <a href="VegetationField_8h_source.html#l00015">VegetationField.h:15</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_html_a5afd9225d97f0d1ec0e68859095034eea0a3f082873eb454bde444150b70253cc"><div class="ttname"><a href="namespaceeve_1_1graphics.html#a5afd9225d97f0d1ec0e68859095034eea0a3f082873eb454bde444150b70253cc">eve::graphics::VegetationChannel::Extras</a></div><div class="ttdeci">@ Extras</div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_html_a5afd9225d97f0d1ec0e68859095034eea8226588f03da49b857e5ddf8c508dd2d"><div class="ttname"><a href="namespaceeve_1_1graphics.html#a5afd9225d97f0d1ec0e68859095034eea8226588f03da49b857e5ddf8c508dd2d">eve::graphics::VegetationChannel::Motion</a></div><div class="ttdeci">@ Motion</div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_html_a5afd9225d97f0d1ec0e68859095034eeab22b929ba52471a02d18bb3a4e4472e6"><div class="ttname"><a href="namespaceeve_1_1graphics.html#a5afd9225d97f0d1ec0e68859095034eeab22b929ba52471a02d18bb3a4e4472e6">eve::graphics::VegetationChannel::Vertex</a></div><div class="ttdeci">@ Vertex</div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_html_a5afd9225d97f0d1ec0e68859095034eeacb5feb1b7314637725a2e73bdc9f7295"><div class="ttname"><a href="namespaceeve_1_1graphics.html#a5afd9225d97f0d1ec0e68859095034eeacb5feb1b7314637725a2e73bdc9f7295">eve::graphics::VegetationChannel::Color</a></div><div class="ttdeci">@ Color</div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_html_aa8ce7fcbb570489ca4104b5a69922b0e"><div class="ttname"><a href="namespaceeve_1_1graphics.html#aa8ce7fcbb570489ca4104b5a69922b0e">eve::graphics::VegetationShape</a></div><div class="ttdeci">VegetationShape</div><div class="ttdoc">Analytic influence shape in an element's local coordinates.</div><div class="ttdef"><b>Definition</b> <a href="VegetationField_8h_source.html#l00019">VegetationField.h:19</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_html_aa8ce7fcbb570489ca4104b5a69922b0ea3cfce651e667ab85486dd42a8185f98a"><div class="ttname"><a href="namespaceeve_1_1graphics.html#aa8ce7fcbb570489ca4104b5a69922b0ea3cfce651e667ab85486dd42a8185f98a">eve::graphics::VegetationShape::Box</a></div><div class="ttdeci">@ Box</div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_html_aa8ce7fcbb570489ca4104b5a69922b0eaeee5397cecd880d16ef7244819aa383d"><div class="ttname"><a href="namespaceeve_1_1graphics.html#aa8ce7fcbb570489ca4104b5a69922b0eaeee5397cecd880d16ef7244819aa383d">eve::graphics::VegetationShape::Ellipsoid</a></div><div class="ttdeci">@ Ellipsoid</div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1VegetationAtlas_html"><div class="ttname"><a href="structeve_1_1graphics_1_1VegetationAtlas.html">eve::graphics::VegetationAtlas</a></div><div class="ttdoc">Four owning arrays in row-major X/Z order at texel centers.</div><div class="ttdef"><b>Definition</b> <a href="VegetationField_8h_source.html#l00065">VegetationField.h:65</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1VegetationAtlas_html_a0168659574bf1c7b1811e74339da672b"><div class="ttname"><a href="structeve_1_1graphics_1_1VegetationAtlas.html#a0168659574bf1c7b1811e74339da672b">eve::graphics::VegetationAtlas::height</a></div><div class="ttdeci">uint32_t height</div><div class="ttdef"><b>Definition</b> <a href="VegetationField_8h_source.html#l00066">VegetationField.h:66</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1VegetationAtlas_html_a3c8c74e4348b909c77f456d2f96859e1"><div class="ttname"><a href="structeve_1_1graphics_1_1VegetationAtlas.html#a3c8c74e4348b909c77f456d2f96859e1">eve::graphics::VegetationAtlas::width</a></div><div class="ttdeci">uint32_t width</div><div class="ttdef"><b>Definition</b> <a href="VegetationField_8h_source.html#l00066">VegetationField.h:66</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1VegetationAtlas_html_a59fb9adabe071d681f19632ac2a2d1d4"><div class="ttname"><a href="structeve_1_1graphics_1_1VegetationAtlas.html#a59fb9adabe071d681f19632ac2a2d1d4">eve::graphics::VegetationAtlas::channels</a></div><div class="ttdeci">std::array&lt; std::vector&lt; glm::vec4 &gt;, 4 &gt; channels</div><div class="ttdef"><b>Definition</b> <a href="VegetationField_8h_source.html#l00068">VegetationField.h:68</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1VegetationAtlas_html_aa6725a6d0574e2df63a09041d073a419"><div class="ttname"><a href="structeve_1_1graphics_1_1VegetationAtlas.html#aa6725a6d0574e2df63a09041d073a419">eve::graphics::VegetationAtlas::extent</a></div><div class="ttdeci">glm::vec3 extent</div><div class="ttdef"><b>Definition</b> <a href="VegetationField_8h_source.html#l00067">VegetationField.h:67</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1VegetationAtlas_html_adb26d1d77d0817a4effdcfb247eab210"><div class="ttname"><a href="structeve_1_1graphics_1_1VegetationAtlas.html#adb26d1d77d0817a4effdcfb247eab210">eve::graphics::VegetationAtlas::center</a></div><div class="ttdeci">glm::vec3 center</div><div class="ttdef"><b>Definition</b> <a href="VegetationField_8h_source.html#l00067">VegetationField.h:67</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1VegetationChannelAtlas_html"><div class="ttname"><a href="structeve_1_1graphics_1_1VegetationChannelAtlas.html">eve::graphics::VegetationChannelAtlas</a></div><div class="ttdoc">One owning vegetation channel in row-major X/Z order at texel centers. Channel atlases may use indepe...</div><div class="ttdef"><b>Definition</b> <a href="VegetationField_8h_source.html#l00074">VegetationField.h:74</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1VegetationChannelAtlas_html_a0b36dae781f369bbad77229cfebdade4"><div class="ttname"><a href="structeve_1_1graphics_1_1VegetationChannelAtlas.html#a0b36dae781f369bbad77229cfebdade4">eve::graphics::VegetationChannelAtlas::height</a></div><div class="ttdeci">uint32_t height</div><div class="ttdef"><b>Definition</b> <a href="VegetationField_8h_source.html#l00075">VegetationField.h:75</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1VegetationChannelAtlas_html_a54c183f25a51e60e3528967fe59dbacc"><div class="ttname"><a href="structeve_1_1graphics_1_1VegetationChannelAtlas.html#a54c183f25a51e60e3528967fe59dbacc">eve::graphics::VegetationChannelAtlas::pixels</a></div><div class="ttdeci">std::vector&lt; glm::vec4 &gt; pixels</div><div class="ttdef"><b>Definition</b> <a href="VegetationField_8h_source.html#l00077">VegetationField.h:77</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1VegetationChannelAtlas_html_a7939a25dfa85905286160c07411ca48e"><div class="ttname"><a href="structeve_1_1graphics_1_1VegetationChannelAtlas.html#a7939a25dfa85905286160c07411ca48e">eve::graphics::VegetationChannelAtlas::extent</a></div><div class="ttdeci">glm::vec3 extent</div><div class="ttdef"><b>Definition</b> <a href="VegetationField_8h_source.html#l00076">VegetationField.h:76</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1VegetationChannelAtlas_html_ad4ffd66481f35883148b27b6241ad791"><div class="ttname"><a href="structeve_1_1graphics_1_1VegetationChannelAtlas.html#ad4ffd66481f35883148b27b6241ad791">eve::graphics::VegetationChannelAtlas::center</a></div><div class="ttdeci">glm::vec3 center</div><div class="ttdef"><b>Definition</b> <a href="VegetationField_8h_source.html#l00076">VegetationField.h:76</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1VegetationChannelAtlas_html_af0e74a5070d9a60d636cb6df03e88a0d"><div class="ttname"><a href="structeve_1_1graphics_1_1VegetationChannelAtlas.html#af0e74a5070d9a60d636cb6df03e88a0d">eve::graphics::VegetationChannelAtlas::width</a></div><div class="ttdeci">uint32_t width</div><div class="ttdef"><b>Definition</b> <a href="VegetationField_8h_source.html#l00075">VegetationField.h:75</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1VegetationElement_html"><div class="ttname"><a href="structeve_1_1graphics_1_1VegetationElement.html">eve::graphics::VegetationElement</a></div><div class="ttdoc">Owning element definition; no scene, texture or entity pointers survive admission....</div><div class="ttdef"><b>Definition</b> <a href="VegetationField_8h_source.html#l00032">VegetationField.h:32</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1VegetationElement_html_a007884d0eb9fb20973bce0d0c665a387"><div class="ttname"><a href="structeve_1_1graphics_1_1VegetationElement.html#a007884d0eb9fb20973bce0d0c665a387">eve::graphics::VegetationElement::center</a></div><div class="ttdeci">glm::vec3 center</div><div class="ttdef"><b>Definition</b> <a href="VegetationField_8h_source.html#l00036">VegetationField.h:36</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1VegetationElement_html_a18e63e6e8520688af29355ffb24c5da2"><div class="ttname"><a href="structeve_1_1graphics_1_1VegetationElement.html#a18e63e6e8520688af29355ffb24c5da2">eve::graphics::VegetationElement::yaw</a></div><div class="ttdeci">float yaw</div><div class="ttdef"><b>Definition</b> <a href="VegetationField_8h_source.html#l00037">VegetationField.h:37</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1VegetationElement_html_a2877a50f41fae02d53c4b9f72ed4e6d0"><div class="ttname"><a href="structeve_1_1graphics_1_1VegetationElement.html#a2877a50f41fae02d53c4b9f72ed4e6d0">eve::graphics::VegetationElement::layers</a></div><div class="ttdeci">uint16_t layers</div><div class="ttdef"><b>Definition</b> <a href="VegetationField_8h_source.html#l00038">VegetationField.h:38</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1VegetationElement_html_a2a5d9c0ffb83310911954bf03b5d444e"><div class="ttname"><a href="structeve_1_1graphics_1_1VegetationElement.html#a2a5d9c0ffb83310911954bf03b5d444e">eve::graphics::VegetationElement::edgeFade</a></div><div class="ttdeci">float edgeFade</div><div class="ttdef"><b>Definition</b> <a href="VegetationField_8h_source.html#l00037">VegetationField.h:37</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1VegetationElement_html_a3decb83ae4b370fd4547832d9a8c3e08"><div class="ttname"><a href="structeve_1_1graphics_1_1VegetationElement.html#a3decb83ae4b370fd4547832d9a8c3e08">eve::graphics::VegetationElement::seasonal</a></div><div class="ttdeci">bool seasonal</div><div class="ttdef"><b>Definition</b> <a href="VegetationField_8h_source.html#l00041">VegetationField.h:41</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1VegetationElement_html_a5dea64ed1d02713426d3581bb46e6630"><div class="ttname"><a href="structeve_1_1graphics_1_1VegetationElement.html#a5dea64ed1d02713426d3581bb46e6630">eve::graphics::VegetationElement::mask</a></div><div class="ttdeci">VegetationMask mask</div><div class="ttdef"><b>Definition</b> <a href="VegetationField_8h_source.html#l00043">VegetationField.h:43</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1VegetationElement_html_a703fa6f5c47bcf68efd77db4e0d6e112"><div class="ttname"><a href="structeve_1_1graphics_1_1VegetationElement.html#a703fa6f5c47bcf68efd77db4e0d6e112">eve::graphics::VegetationElement::priority</a></div><div class="ttdeci">int priority</div><div class="ttdef"><b>Definition</b> <a href="VegetationField_8h_source.html#l00039">VegetationField.h:39</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1VegetationElement_html_ab92c2ab33cf5755221394d2dec603275"><div class="ttname"><a href="structeve_1_1graphics_1_1VegetationElement.html#ab92c2ab33cf5755221394d2dec603275">eve::graphics::VegetationElement::extents</a></div><div class="ttdeci">glm::vec3 extents</div><div class="ttdef"><b>Definition</b> <a href="VegetationField_8h_source.html#l00036">VegetationField.h:36</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1VegetationElement_html_abc80aec278f486cff8f40513ea10a58c"><div class="ttname"><a href="structeve_1_1graphics_1_1VegetationElement.html#abc80aec278f486cff8f40513ea10a58c">eve::graphics::VegetationElement::shape</a></div><div class="ttdeci">VegetationShape shape</div><div class="ttdef"><b>Definition</b> <a href="VegetationField_8h_source.html#l00035">VegetationField.h:35</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1VegetationElement_html_abf1494965ce3088353834855172f836b"><div class="ttname"><a href="structeve_1_1graphics_1_1VegetationElement.html#abf1494965ce3088353834855172f836b">eve::graphics::VegetationElement::blend</a></div><div class="ttdeci">VegetationBlend blend</div><div class="ttdef"><b>Definition</b> <a href="VegetationField_8h_source.html#l00034">VegetationField.h:34</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1VegetationElement_html_ac6e49325ed7b08906a20dfba1cff4548"><div class="ttname"><a href="structeve_1_1graphics_1_1VegetationElement.html#ac6e49325ed7b08906a20dfba1cff4548">eve::graphics::VegetationElement::opacity</a></div><div class="ttdeci">float opacity</div><div class="ttdef"><b>Definition</b> <a href="VegetationField_8h_source.html#l00037">VegetationField.h:37</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1VegetationElement_html_ad29c16b855a9253a175a2c478bf71305"><div class="ttname"><a href="structeve_1_1graphics_1_1VegetationElement.html#ad29c16b855a9253a175a2c478bf71305">eve::graphics::VegetationElement::seasons</a></div><div class="ttdeci">std::array&lt; glm::vec4, 4 &gt; seasons</div><div class="ttdef"><b>Definition</b> <a href="VegetationField_8h_source.html#l00042">VegetationField.h:42</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1VegetationElement_html_ae1e48745cb3c757c8a283702f99e30cb"><div class="ttname"><a href="structeve_1_1graphics_1_1VegetationElement.html#ae1e48745cb3c757c8a283702f99e30cb">eve::graphics::VegetationElement::channel</a></div><div class="ttdeci">VegetationChannel channel</div><div class="ttdef"><b>Definition</b> <a href="VegetationField_8h_source.html#l00033">VegetationField.h:33</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1VegetationElement_html_af765854b547f5df482eee94493e70b71"><div class="ttname"><a href="structeve_1_1graphics_1_1VegetationElement.html#af765854b547f5df482eee94493e70b71">eve::graphics::VegetationElement::value</a></div><div class="ttdeci">glm::vec4 value</div><div class="ttdef"><b>Definition</b> <a href="VegetationField_8h_source.html#l00040">VegetationField.h:40</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1VegetationGlobals_html"><div class="ttname"><a href="structeve_1_1graphics_1_1VegetationGlobals.html">eve::graphics::VegetationGlobals</a></div><div class="ttdoc">Owning global defaults. Extras = emission, wetness, overlay, alpha. Motion = signed world X/Z directi...</div><div class="ttdef"><b>Definition</b> <a href="VegetationField_8h_source.html#l00051">VegetationField.h:51</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1VegetationGlobals_html_a16905307aa099a2912673cbb503806ac"><div class="ttname"><a href="structeve_1_1graphics_1_1VegetationGlobals.html#a16905307aa099a2912673cbb503806ac">eve::graphics::VegetationGlobals::extras</a></div><div class="ttdeci">glm::vec4 extras</div><div class="ttdef"><b>Definition</b> <a href="VegetationField_8h_source.html#l00053">VegetationField.h:53</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1VegetationGlobals_html_a1f2a72853f863fe174c50f28c98c6d61"><div class="ttname"><a href="structeve_1_1graphics_1_1VegetationGlobals.html#a1f2a72853f863fe174c50f28c98c6d61">eve::graphics::VegetationGlobals::color</a></div><div class="ttdeci">glm::vec4 color</div><div class="ttdef"><b>Definition</b> <a href="VegetationField_8h_source.html#l00052">VegetationField.h:52</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1VegetationGlobals_html_a90fb65a1c3395ce2e30e5f6f8beaac18"><div class="ttname"><a href="structeve_1_1graphics_1_1VegetationGlobals.html#a90fb65a1c3395ce2e30e5f6f8beaac18">eve::graphics::VegetationGlobals::season</a></div><div class="ttdeci">float season</div><div class="ttdef"><b>Definition</b> <a href="VegetationField_8h_source.html#l00056">VegetationField.h:56</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1VegetationGlobals_html_a9377a33ba2dcb793b99000db10aad0a0"><div class="ttname"><a href="structeve_1_1graphics_1_1VegetationGlobals.html#a9377a33ba2dcb793b99000db10aad0a0">eve::graphics::VegetationGlobals::motion</a></div><div class="ttdeci">glm::vec4 motion</div><div class="ttdef"><b>Definition</b> <a href="VegetationField_8h_source.html#l00054">VegetationField.h:54</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1VegetationGlobals_html_aa09975a73d3a751b2e6e4aada4a2d505"><div class="ttname"><a href="structeve_1_1graphics_1_1VegetationGlobals.html#aa09975a73d3a751b2e6e4aada4a2d505">eve::graphics::VegetationGlobals::vertex</a></div><div class="ttdeci">glm::vec4 vertex</div><div class="ttdef"><b>Definition</b> <a href="VegetationField_8h_source.html#l00055">VegetationField.h:55</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1VegetationMask_html"><div class="ttname"><a href="structeve_1_1graphics_1_1VegetationMask.html">eve::graphics::VegetationMask</a></div><div class="ttdoc">Owning linear RGBA mask, sampled bilinearly with clamped addressing.</div><div class="ttdef"><b>Definition</b> <a href="VegetationField_8h_source.html#l00022">VegetationField.h:22</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1VegetationMask_html_a2e05440aa5073191fce46ddef297a192"><div class="ttname"><a href="structeve_1_1graphics_1_1VegetationMask.html#a2e05440aa5073191fce46ddef297a192">eve::graphics::VegetationMask::pixels</a></div><div class="ttdeci">std::vector&lt; glm::vec4 &gt; pixels</div><div class="ttdef"><b>Definition</b> <a href="VegetationField_8h_source.html#l00024">VegetationField.h:24</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1VegetationMask_html_a2fa2db818eb22f97541fb22129691e52"><div class="ttname"><a href="structeve_1_1graphics_1_1VegetationMask.html#a2fa2db818eb22f97541fb22129691e52">eve::graphics::VegetationMask::width</a></div><div class="ttdeci">uint32_t width</div><div class="ttdef"><b>Definition</b> <a href="VegetationField_8h_source.html#l00023">VegetationField.h:23</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1VegetationMask_html_a369b26d343222874c4e212f94632c759"><div class="ttname"><a href="structeve_1_1graphics_1_1VegetationMask.html#a369b26d343222874c4e212f94632c759">eve::graphics::VegetationMask::height</a></div><div class="ttdeci">uint32_t height</div><div class="ttdef"><b>Definition</b> <a href="VegetationField_8h_source.html#l00023">VegetationField.h:23</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1VegetationSample_html"><div class="ttname"><a href="structeve_1_1graphics_1_1VegetationSample.html">eve::graphics::VegetationSample</a></div><div class="ttdoc">Owning sampled field channels; no lifetime dependency on the field.</div><div class="ttdef"><b>Definition</b> <a href="VegetationField_8h_source.html#l00060">VegetationField.h:60</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1VegetationSample_html_ac4c9b0d43a6fb8cecac17ccbb3e69c66"><div class="ttname"><a href="structeve_1_1graphics_1_1VegetationSample.html#ac4c9b0d43a6fb8cecac17ccbb3e69c66">eve::graphics::VegetationSample::extras</a></div><div class="ttdeci">glm::vec4 extras</div><div class="ttdef"><b>Definition</b> <a href="VegetationField_8h_source.html#l00061">VegetationField.h:61</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1VegetationSample_html_acd792efff595afbf7f06d7d5bbc401b5"><div class="ttname"><a href="structeve_1_1graphics_1_1VegetationSample.html#acd792efff595afbf7f06d7d5bbc401b5">eve::graphics::VegetationSample::color</a></div><div class="ttdeci">glm::vec4 color</div><div class="ttdef"><b>Definition</b> <a href="VegetationField_8h_source.html#l00061">VegetationField.h:61</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1VegetationSample_html_af5156d341dcb2bc288ccdbe1d90103a6"><div class="ttname"><a href="structeve_1_1graphics_1_1VegetationSample.html#af5156d341dcb2bc288ccdbe1d90103a6">eve::graphics::VegetationSample::motion</a></div><div class="ttdeci">glm::vec4 motion</div><div class="ttdef"><b>Definition</b> <a href="VegetationField_8h_source.html#l00061">VegetationField.h:61</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1VegetationSample_html_af6dd1397852c6abf37e4fd51d3e51fd4"><div class="ttname"><a href="structeve_1_1graphics_1_1VegetationSample.html#af6dd1397852c6abf37e4fd51d3e51fd4">eve::graphics::VegetationSample::vertex</a></div><div class="ttdeci">glm::vec4 vertex</div><div class="ttdef"><b>Definition</b> <a href="VegetationField_8h_source.html#l00061">VegetationField.h:61</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,985 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::hexmap::HexSphereTopology类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1hexmap.html">hexmap</a></li><li class="navelem"><a class="el" href="classeve_1_1hexmap_1_1HexSphereTopology.html">HexSphereTopology</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-static-methods">静态 Public 成员函数</a> &#124;
+<a href="classeve_1_1hexmap_1_1HexSphereTopology-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::hexmap::HexSphereTopology类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Icosahedral (Goldberg) hex topology for a spherical hex map.  
+ <a href="classeve_1_1hexmap_1_1HexSphereTopology.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="HexSphereTopology_8h_source.html">HexSphereTopology.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a9ffecdd807c62aace3e5cd94ae0e1171" id="r_a9ffecdd807c62aace3e5cd94ae0e1171"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexSphereTopology.html#a9ffecdd807c62aace3e5cd94ae0e1171">HexSphereTopology</a> ()=default</td></tr>
+<tr class="separator:a9ffecdd807c62aace3e5cd94ae0e1171"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae170cbeb7f01e3a4ae5dc58c96e5845a" id="r_ae170cbeb7f01e3a4ae5dc58c96e5845a"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexSphereTopology.html#ae170cbeb7f01e3a4ae5dc58c96e5845a">empty</a> () const noexcept</td></tr>
+<tr class="memdesc:ae170cbeb7f01e3a4ae5dc58c96e5845a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether the topology holds no cell.  <br /></td></tr>
+<tr class="separator:ae170cbeb7f01e3a4ae5dc58c96e5845a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a349b31c4716d859d0cd00f881386c5a0" id="r_a349b31c4716d859d0cd00f881386c5a0"><td class="memItemLeft" align="right" valign="top">std::int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexSphereTopology.html#a349b31c4716d859d0cd00f881386c5a0">subdivision</a> () const noexcept</td></tr>
+<tr class="memdesc:a349b31c4716d859d0cd00f881386c5a0"><td class="mdescLeft">&#160;</td><td class="mdescRight">The subdivision level this topology was built at.  <br /></td></tr>
+<tr class="separator:a349b31c4716d859d0cd00f881386c5a0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad759f733081845c44fa4f67828945a82" id="r_ad759f733081845c44fa4f67828945a82"><td class="memItemLeft" align="right" valign="top">std::int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexSphereTopology.html#ad759f733081845c44fa4f67828945a82">frequency</a> () const noexcept</td></tr>
+<tr class="memdesc:ad759f733081845c44fa4f67828945a82"><td class="mdescLeft">&#160;</td><td class="mdescRight">Subdivision frequency <code>f = 2^subdivision</code>.  <br /></td></tr>
+<tr class="separator:ad759f733081845c44fa4f67828945a82"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaf3a49463a6f6b75e408b6faf0da4b28" id="r_aaf3a49463a6f6b75e408b6faf0da4b28"><td class="memItemLeft" align="right" valign="top">std::int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexSphereTopology.html#aaf3a49463a6f6b75e408b6faf0da4b28">cellCount</a> () const noexcept</td></tr>
+<tr class="memdesc:aaf3a49463a6f6b75e408b6faf0da4b28"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of cells (<code>10 * f^2 + 2</code>).  <br /></td></tr>
+<tr class="separator:aaf3a49463a6f6b75e408b6faf0da4b28"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac92b11b8c20803586ef2b3c815d7af40" id="r_ac92b11b8c20803586ef2b3c815d7af40"><td class="memItemLeft" align="right" valign="top">std::int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexSphereTopology.html#ac92b11b8c20803586ef2b3c815d7af40">pentagonCount</a> () const noexcept</td></tr>
+<tr class="memdesc:ac92b11b8c20803586ef2b3c815d7af40"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of pentagonal cells (12 for every non-empty topology).  <br /></td></tr>
+<tr class="separator:ac92b11b8c20803586ef2b3c815d7af40"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af587b195fb1a7641ea5408fad0ad8fd2" id="r_af587b195fb1a7641ea5408fad0ad8fd2"><td class="memItemLeft" align="right" valign="top">std::int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexSphereTopology.html#af587b195fb1a7641ea5408fad0ad8fd2">edgeCount</a> () const noexcept</td></tr>
+<tr class="memdesc:af587b195fb1a7641ea5408fad0ad8fd2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of cell-to-cell edges (<code>30 * f^2</code>).  <br /></td></tr>
+<tr class="separator:af587b195fb1a7641ea5408fad0ad8fd2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaac972aa8a0b3d8a4a584d05fe99fdc8" id="r_aaac972aa8a0b3d8a4a584d05fe99fdc8"><td class="memItemLeft" align="right" valign="top">std::int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexSphereTopology.html#aaac972aa8a0b3d8a4a584d05fe99fdc8">cornerCount</a> () const noexcept</td></tr>
+<tr class="memdesc:aaac972aa8a0b3d8a4a584d05fe99fdc8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of distinct corners (<code>20 * f^2</code>), each shared by three cells.  <br /></td></tr>
+<tr class="separator:aaac972aa8a0b3d8a4a584d05fe99fdc8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8fae4acb644a39b45e1d3a6d01740fcf" id="r_a8fae4acb644a39b45e1d3a6d01740fcf"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexSphereTopology.html#a8fae4acb644a39b45e1d3a6d01740fcf">contains</a> (<a class="el" href="namespaceeve_1_1hexmap.html#aa0e7bedc4b43f36a8fec0a2e73508b65">HexSphereCell</a> <a class="el" href="TacticsPath_8cpp.html#ac09c70a19f04817cd37f78fe3e752066">cell</a>) const noexcept</td></tr>
+<tr class="memdesc:a8fae4acb644a39b45e1d3a6d01740fcf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether <code>cell</code> is a valid id of this topology.  <br /></td></tr>
+<tr class="separator:a8fae4acb644a39b45e1d3a6d01740fcf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adbb0afd7acb1f4bfb81c2dfe11a21cab" id="r_adbb0afd7acb1f4bfb81c2dfe11a21cab"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexSphereTopology.html#adbb0afd7acb1f4bfb81c2dfe11a21cab">isPentagon</a> (<a class="el" href="namespaceeve_1_1hexmap.html#aa0e7bedc4b43f36a8fec0a2e73508b65">HexSphereCell</a> <a class="el" href="TacticsPath_8cpp.html#ac09c70a19f04817cd37f78fe3e752066">cell</a>) const noexcept</td></tr>
+<tr class="memdesc:adbb0afd7acb1f4bfb81c2dfe11a21cab"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether <code>cell</code> has five edges instead of six; false when out of range.  <br /></td></tr>
+<tr class="separator:adbb0afd7acb1f4bfb81c2dfe11a21cab"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2b15dd359e0d0f04f1ecae3cdaf5b741" id="r_a2b15dd359e0d0f04f1ecae3cdaf5b741"><td class="memItemLeft" align="right" valign="top">std::int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexSphereTopology.html#a2b15dd359e0d0f04f1ecae3cdaf5b741">neighborCount</a> (<a class="el" href="namespaceeve_1_1hexmap.html#aa0e7bedc4b43f36a8fec0a2e73508b65">HexSphereCell</a> <a class="el" href="TacticsPath_8cpp.html#ac09c70a19f04817cd37f78fe3e752066">cell</a>) const noexcept</td></tr>
+<tr class="memdesc:a2b15dd359e0d0f04f1ecae3cdaf5b741"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of edges of <code>cell</code> (5 or 6), or 0 when out of range.  <br /></td></tr>
+<tr class="separator:a2b15dd359e0d0f04f1ecae3cdaf5b741"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad8b6bc741dcae955dfdab98e3cc35fad" id="r_ad8b6bc741dcae955dfdab98e3cc35fad"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1hexmap.html#aa0e7bedc4b43f36a8fec0a2e73508b65">HexSphereCell</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexSphereTopology.html#ad8b6bc741dcae955dfdab98e3cc35fad">neighbor</a> (<a class="el" href="namespaceeve_1_1hexmap.html#aa0e7bedc4b43f36a8fec0a2e73508b65">HexSphereCell</a> <a class="el" href="TacticsPath_8cpp.html#ac09c70a19f04817cd37f78fe3e752066">cell</a>, std::int32_t <a class="el" href="classeve_1_1hexmap_1_1HexSphereTopology.html#a2bbdeeb4c8e445d6c2aecb40b4832921">direction</a>) const noexcept</td></tr>
+<tr class="memdesc:ad8b6bc741dcae955dfdab98e3cc35fad"><td class="mdescLeft">&#160;</td><td class="mdescRight">Neighbour of <code>cell</code> across edge <code>direction</code>.  <br /></td></tr>
+<tr class="separator:ad8b6bc741dcae955dfdab98e3cc35fad"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a020fce1ba2e934c791f95e377533b45c" id="r_a020fce1ba2e934c791f95e377533b45c"><td class="memItemLeft" align="right" valign="top">std::int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexSphereTopology.html#a020fce1ba2e934c791f95e377533b45c">directionOf</a> (<a class="el" href="namespaceeve_1_1hexmap.html#aa0e7bedc4b43f36a8fec0a2e73508b65">HexSphereCell</a> <a class="el" href="TacticsPath_8cpp.html#ac09c70a19f04817cd37f78fe3e752066">cell</a>, <a class="el" href="namespaceeve_1_1hexmap.html#aa0e7bedc4b43f36a8fec0a2e73508b65">HexSphereCell</a> other) const noexcept</td></tr>
+<tr class="memdesc:a020fce1ba2e934c791f95e377533b45c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Edge index of the edge shared with <code>other</code>.  <br /></td></tr>
+<tr class="separator:a020fce1ba2e934c791f95e377533b45c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a58b5b22231b357494914bef5ecdbd359" id="r_a58b5b22231b357494914bef5ecdbd359"><td class="memItemLeft" align="right" valign="top">std::int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexSphereTopology.html#a58b5b22231b357494914bef5ecdbd359">oppositeDirection</a> (<a class="el" href="namespaceeve_1_1hexmap.html#aa0e7bedc4b43f36a8fec0a2e73508b65">HexSphereCell</a> <a class="el" href="TacticsPath_8cpp.html#ac09c70a19f04817cd37f78fe3e752066">cell</a>, std::int32_t <a class="el" href="classeve_1_1hexmap_1_1HexSphereTopology.html#a2bbdeeb4c8e445d6c2aecb40b4832921">direction</a>) const noexcept</td></tr>
+<tr class="memdesc:a58b5b22231b357494914bef5ecdbd359"><td class="mdescLeft">&#160;</td><td class="mdescRight">Edge index of <code>cell</code>'s edge towards its neighbour across <code>direction</code>.  <br /></td></tr>
+<tr class="separator:a58b5b22231b357494914bef5ecdbd359"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2bbdeeb4c8e445d6c2aecb40b4832921" id="r_a2bbdeeb4c8e445d6c2aecb40b4832921"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1hexmap_1_1HexVec3.html">HexVec3</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexSphereTopology.html#a2bbdeeb4c8e445d6c2aecb40b4832921">direction</a> (<a class="el" href="namespaceeve_1_1hexmap.html#aa0e7bedc4b43f36a8fec0a2e73508b65">HexSphereCell</a> <a class="el" href="TacticsPath_8cpp.html#ac09c70a19f04817cd37f78fe3e752066">cell</a>) const noexcept</td></tr>
+<tr class="memdesc:a2bbdeeb4c8e445d6c2aecb40b4832921"><td class="mdescLeft">&#160;</td><td class="mdescRight">Unit direction from the sphere centre to the centre of <code>cell</code>.  <br /></td></tr>
+<tr class="separator:a2bbdeeb4c8e445d6c2aecb40b4832921"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a029d920304bb708c47e3bc1d5e8cf1e9" id="r_a029d920304bb708c47e3bc1d5e8cf1e9"><td class="memItemLeft" align="right" valign="top">std::int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexSphereTopology.html#a029d920304bb708c47e3bc1d5e8cf1e9">cornerCountOf</a> (<a class="el" href="namespaceeve_1_1hexmap.html#aa0e7bedc4b43f36a8fec0a2e73508b65">HexSphereCell</a> <a class="el" href="TacticsPath_8cpp.html#ac09c70a19f04817cd37f78fe3e752066">cell</a>) const noexcept</td></tr>
+<tr class="memdesc:a029d920304bb708c47e3bc1d5e8cf1e9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of corners of <code>cell</code> (5 or 6), or 0 when out of range.  <br /></td></tr>
+<tr class="separator:a029d920304bb708c47e3bc1d5e8cf1e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac320cf378d6e9ea0e8598f69fd4a5ad8" id="r_ac320cf378d6e9ea0e8598f69fd4a5ad8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1hexmap_1_1HexVec3.html">HexVec3</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexSphereTopology.html#ac320cf378d6e9ea0e8598f69fd4a5ad8">corner</a> (<a class="el" href="namespaceeve_1_1hexmap.html#aa0e7bedc4b43f36a8fec0a2e73508b65">HexSphereCell</a> <a class="el" href="TacticsPath_8cpp.html#ac09c70a19f04817cd37f78fe3e752066">cell</a>, std::int32_t corner) const noexcept</td></tr>
+<tr class="memdesc:ac320cf378d6e9ea0e8598f69fd4a5ad8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Unit direction of corner <code>corner</code> of <code>cell</code>.  <br /></td></tr>
+<tr class="separator:ac320cf378d6e9ea0e8598f69fd4a5ad8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af9ffd350767daac85385178083b3bee4" id="r_af9ffd350767daac85385178083b3bee4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1hexmap.html#aa0e7bedc4b43f36a8fec0a2e73508b65">HexSphereCell</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexSphereTopology.html#af9ffd350767daac85385178083b3bee4">cellAt</a> (<a class="el" href="structeve_1_1hexmap_1_1HexVec3.html">HexVec3</a> unitDirection) const noexcept</td></tr>
+<tr class="memdesc:af9ffd350767daac85385178083b3bee4"><td class="mdescLeft">&#160;</td><td class="mdescRight">The cell whose centre direction is nearest to <code>unitDirection</code>.  <br /></td></tr>
+<tr class="separator:af9ffd350767daac85385178083b3bee4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+静态 Public 成员函数</h2></td></tr>
+<tr class="memitem:ae41033809d539f2fbc86277334c9d002" id="r_ae41033809d539f2fbc86277334c9d002"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="classeve_1_1hexmap_1_1HexSphereTopology.html">HexSphereTopology</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexSphereTopology.html#ae41033809d539f2fbc86277334c9d002">build</a> (std::int32_t <a class="el" href="classeve_1_1hexmap_1_1HexSphereTopology.html#a349b31c4716d859d0cd00f881386c5a0">subdivision</a>)</td></tr>
+<tr class="memdesc:ae41033809d539f2fbc86277334c9d002"><td class="mdescLeft">&#160;</td><td class="mdescRight">Builds the topology of one subdivision level.  <br /></td></tr>
+<tr class="separator:ae41033809d539f2fbc86277334c9d002"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3d552efb431b4d56d158941519ae2f2d" id="r_a3d552efb431b4d56d158941519ae2f2d"><td class="memItemLeft" align="right" valign="top">static float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexSphereTopology.html#a3d552efb431b4d56d158941519ae2f2d">angularDistance</a> (<a class="el" href="structeve_1_1hexmap_1_1HexVec3.html">HexVec3</a> <a class="el" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>, <a class="el" href="structeve_1_1hexmap_1_1HexVec3.html">HexVec3</a> <a class="el" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>) noexcept</td></tr>
+<tr class="memdesc:a3d552efb431b4d56d158941519ae2f2d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Great-circle angle between two directions, in radians.  <br /></td></tr>
+<tr class="separator:a3d552efb431b4d56d158941519ae2f2d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Icosahedral (Goldberg) hex topology for a spherical hex map. </p>
+<p>The polyhedron is the dual of a geodesic sphere: an icosahedron subdivided <code>subdivision</code> times at frequency <code>f = 2^subdivision</code>, whose <b>vertices</b> become the cells. A cell therefore has six neighbours, except the twelve cells that descend from the original icosahedron vertices, which have five. That makes <code><a class="el" href="classeve_1_1hexmap_1_1HexSphereTopology.html#aaf3a49463a6f6b75e408b6faf0da4b28" title="Number of cells (10 * f^2 + 2).">cellCount()</a> == 10 * f^2 + 2</code> and <code><a class="el" href="classeve_1_1hexmap_1_1HexSphereTopology.html#ac92b11b8c20803586ef2b3c815d7af40" title="Number of pentagonal cells (12 for every non-empty topology).">pentagonCount()</a> == 12</code> for every level, matching the <code>mesh.hexplanet</code> recipe of the procgen module.</p>
+<p>Cell ids are dense and stable: cells <code>[0, 12)</code> are exactly the twelve pentagons, because midpoint subdivision never renumbers the original vertices.</p>
+<p>Directions are not arithmetic. The six planar directions of <code><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html" title="Hexagon metrics shared by the map model and every mesh builder.">HexMetrics</a></code> are constant integer offsets in one global frame; on a sphere the edge order around a cell depends on the cell, and a pentagon has only five edges, so there is no <code>opposite(direction)</code> offset that works everywhere. Every cross-edge query goes through <code>directionOf</code> instead.</p>
+<p>Direction <code>d</code> of a cell is the edge between <code>corner(d)</code> and <code>corner((d + 1) % neighbourCount)</code>. Both corners are shared with the neighbour across that edge, in the opposite order, which is what lets a mesh builder walk a boundary from either side.</p>
+<p>Ownership and lifetime: a value type owning three flat arrays; no I/O, no GPU resources, no callbacks. Immutable once built, so it is safe to share.</p>
+<p>Determinism: the construction is a pure function of <code>subdivision</code>; two builds at the same level produce identical ids, directions, neighbours and corners. </p>
+
+<p class="definition">在文件 <a class="el" href="HexSphereTopology_8h_source.html">HexSphereTopology.h</a> 第 <a class="el" href="HexSphereTopology_8h_source.html#l00052">52</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a9ffecdd807c62aace3e5cd94ae0e1171" name="a9ffecdd807c62aace3e5cd94ae0e1171"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9ffecdd807c62aace3e5cd94ae0e1171">&#9670;&#160;</a></span>HexSphereTopology()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::hexmap::HexSphereTopology::HexSphereTopology </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a3d552efb431b4d56d158941519ae2f2d" name="a3d552efb431b4d56d158941519ae2f2d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3d552efb431b4d56d158941519ae2f2d">&#9670;&#160;</a></span>angularDistance()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::hexmap::HexSphereTopology::angularDistance </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1hexmap_1_1HexVec3.html">HexVec3</a>&#160;</td>
+          <td class="paramname"><em>a</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1hexmap_1_1HexVec3.html">HexVec3</a>&#160;</td>
+          <td class="paramname"><em>b</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Great-circle angle between two directions, in radians. </p>
+
+<p class="definition">在文件 <a class="el" href="HexSphereTopology_8cpp_source.html">HexSphereTopology.cpp</a> 第 <a class="el" href="HexSphereTopology_8cpp_source.html#l00367">367</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00014">a</a> , 以及 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00015">b</a>.</p>
+
+</div>
+</div>
+<a id="ae41033809d539f2fbc86277334c9d002" name="ae41033809d539f2fbc86277334c9d002"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae41033809d539f2fbc86277334c9d002">&#9670;&#160;</a></span>build()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="classeve_1_1hexmap_1_1HexSphereTopology.html">HexSphereTopology</a> &gt; eve::hexmap::HexSphereTopology::build </td>
+          <td>(</td>
+          <td class="paramtype">std::int32_t&#160;</td>
+          <td class="paramname"><em>subdivision</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Builds the topology of one subdivision level. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">subdivision</td><td>Subdivision level in <code>[0, kMaxHexSphereSubdivision]</code>; level 0 is the bare icosahedron dual (12 pentagons, 20 corners). </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>The topology, or InvalidArgument when the level is out of range, or a construction failure when the half-edge walk cannot close (an internal consistency error that a valid icosahedron never triggers). @cost Builds all five tables at once; proportional to the cell count and dominated by the <code>10 * 4^subdivision</code> cells, amortized over every query the caller makes afterwards. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="HexSphereTopology_8cpp_source.html">HexSphereTopology.cpp</a> 第 <a class="el" href="HexSphereTopology_8cpp_source.html#l00092">92</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="HexSphereTopology_8h_source.html#l00020">eve::hexmap::kMaxHexSphereSubdivision</a>, <a class="el" href="HexSphereTopology_8h_source.html#l00073">subdivision()</a>, <a class="el" href="Pathfinder_8cpp_source.html#l00148">topology</a>, <a class="el" href="Builder_8cpp_source.html#l00026">triangles</a> , 以及 <a class="el" href="PlacementSystem_8cpp_source.html#l00046">vertices</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HexSphereMap_8cpp_source.html#l00056">eve::hexmap::HexSphereMap::reset()</a>.</p>
+
+</div>
+</div>
+<a id="af9ffd350767daac85385178083b3bee4" name="af9ffd350767daac85385178083b3bee4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af9ffd350767daac85385178083b3bee4">&#9670;&#160;</a></span>cellAt()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1hexmap.html#aa0e7bedc4b43f36a8fec0a2e73508b65">HexSphereCell</a> eve::hexmap::HexSphereTopology::cellAt </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1hexmap_1_1HexVec3.html">HexVec3</a>&#160;</td>
+          <td class="paramname"><em>unitDirection</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>The cell whose centre direction is nearest to <code>unitDirection</code>. </p>
+<p>Descends the neighbour graph from the best of the twelve pentagons, which makes the query cost proportional to the angular distance walked rather than to the cell count.</p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">unitDirection</td><td>Any non-zero direction; normalized internally. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>The containing cell, or <code>kNoHexSphereCell</code> when the topology is empty. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="HexSphereTopology_8cpp_source.html">HexSphereTopology.cpp</a> 第 <a class="el" href="HexSphereTopology_8cpp_source.html#l00334">334</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TacticsPath_8cpp_source.html#l00019">cell</a>, <a class="el" href="HexSphereTopology_8h_source.html#l00017">eve::hexmap::kNoHexSphereCell</a>, <a class="el" href="Agent_8cpp_source.html#l00055">score</a> , 以及 <a class="el" href="ActionNotifyRegistry_8cpp_source.html#l00163">target</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HexSphereMap_8cpp_source.html#l00191">eve::hexmap::HexSphereMap::pickCell()</a>.</p>
+
+</div>
+</div>
+<a id="aaf3a49463a6f6b75e408b6faf0da4b28" name="aaf3a49463a6f6b75e408b6faf0da4b28"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaf3a49463a6f6b75e408b6faf0da4b28">&#9670;&#160;</a></span>cellCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::int32_t eve::hexmap::HexSphereTopology::cellCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Number of cells (<code>10 * f^2 + 2</code>). </p>
+
+<p class="definition">在文件 <a class="el" href="HexSphereTopology_8h_source.html">HexSphereTopology.h</a> 第 <a class="el" href="HexSphereTopology_8h_source.html#l00077">77</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HexSphereTopology_8h_source.html#l00088">contains()</a> , 以及 <a class="el" href="HexSphereMap_8cpp_source.html#l00056">eve::hexmap::HexSphereMap::reset()</a>.</p>
+
+</div>
+</div>
+<a id="a8fae4acb644a39b45e1d3a6d01740fcf" name="a8fae4acb644a39b45e1d3a6d01740fcf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8fae4acb644a39b45e1d3a6d01740fcf">&#9670;&#160;</a></span>contains()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::hexmap::HexSphereTopology::contains </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1hexmap.html#aa0e7bedc4b43f36a8fec0a2e73508b65">HexSphereCell</a>&#160;</td>
+          <td class="paramname"><em>cell</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Whether <code>cell</code> is a valid id of this topology. </p>
+
+<p class="definition">在文件 <a class="el" href="HexSphereTopology_8h_source.html">HexSphereTopology.h</a> 第 <a class="el" href="HexSphereTopology_8h_source.html#l00088">88</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TacticsPath_8cpp_source.html#l00019">cell</a> , 以及 <a class="el" href="HexSphereTopology_8h_source.html#l00077">cellCount()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HexSphereMap_8h_source.html#l00126">eve::hexmap::HexSphereMap::contains()</a> , 以及 <a class="el" href="HexSphereTopology_8h_source.html#l00090">isPentagon()</a>.</p>
+
+</div>
+</div>
+<a id="ac320cf378d6e9ea0e8598f69fd4a5ad8" name="ac320cf378d6e9ea0e8598f69fd4a5ad8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac320cf378d6e9ea0e8598f69fd4a5ad8">&#9670;&#160;</a></span>corner()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1hexmap_1_1HexVec3.html">HexVec3</a> eve::hexmap::HexSphereTopology::corner </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1hexmap.html#aa0e7bedc4b43f36a8fec0a2e73508b65">HexSphereCell</a>&#160;</td>
+          <td class="paramname"><em>cell</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::int32_t&#160;</td>
+          <td class="paramname"><em>corner</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Unit direction of corner <code>corner</code> of <code>cell</code>. </p>
+<p>Corner <code>d</code> lies between edge <code>d - 1</code> and edge <code>d</code> (both cyclic), and is shared by three cells. On a sphere a corner is not a fixed angular offset of its cell, so the mesh builder reads it here instead of deriving it.</p>
+<dl class="section return"><dt>返回</dt><dd>A unit vector, or the sphere's north pole when an argument is out of range (callers gate on <code>contains</code>). </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="HexSphereTopology_8cpp_source.html">HexSphereTopology.cpp</a> 第 <a class="el" href="HexSphereTopology_8cpp_source.html#l00327">327</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TacticsPath_8cpp_source.html#l00019">cell</a> , 以及 <a class="el" href="PlayHost_8cpp_source.html#l00142">id</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HexSphereMap_8h_source.html#l00167">eve::hexmap::HexSphereMap::cornerDirection()</a>.</p>
+
+</div>
+</div>
+<a id="aaac972aa8a0b3d8a4a584d05fe99fdc8" name="aaac972aa8a0b3d8a4a584d05fe99fdc8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaac972aa8a0b3d8a4a584d05fe99fdc8">&#9670;&#160;</a></span>cornerCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::int32_t eve::hexmap::HexSphereTopology::cornerCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Number of distinct corners (<code>20 * f^2</code>), each shared by three cells. </p>
+
+<p class="definition">在文件 <a class="el" href="HexSphereTopology_8h_source.html">HexSphereTopology.h</a> 第 <a class="el" href="HexSphereTopology_8h_source.html#l00083">83</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a029d920304bb708c47e3bc1d5e8cf1e9" name="a029d920304bb708c47e3bc1d5e8cf1e9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a029d920304bb708c47e3bc1d5e8cf1e9">&#9670;&#160;</a></span>cornerCountOf()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::int32_t eve::hexmap::HexSphereTopology::cornerCountOf </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1hexmap.html#aa0e7bedc4b43f36a8fec0a2e73508b65">HexSphereCell</a>&#160;</td>
+          <td class="paramname"><em>cell</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Number of corners of <code>cell</code> (5 or 6), or 0 when out of range. </p>
+
+<p class="definition">在文件 <a class="el" href="HexSphereTopology_8cpp_source.html">HexSphereTopology.cpp</a> 第 <a class="el" href="HexSphereTopology_8cpp_source.html#l00325">325</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TacticsPath_8cpp_source.html#l00019">cell</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HexSphereMap_8h_source.html#l00151">eve::hexmap::HexSphereMap::cornerCountOf()</a>.</p>
+
+</div>
+</div>
+<a id="a2bbdeeb4c8e445d6c2aecb40b4832921" name="a2bbdeeb4c8e445d6c2aecb40b4832921"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2bbdeeb4c8e445d6c2aecb40b4832921">&#9670;&#160;</a></span>direction()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1hexmap_1_1HexVec3.html">HexVec3</a> eve::hexmap::HexSphereTopology::direction </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1hexmap.html#aa0e7bedc4b43f36a8fec0a2e73508b65">HexSphereCell</a>&#160;</td>
+          <td class="paramname"><em>cell</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Unit direction from the sphere centre to the centre of <code>cell</code>. </p>
+
+<p class="definition">在文件 <a class="el" href="HexSphereTopology_8cpp_source.html">HexSphereTopology.cpp</a> 第 <a class="el" href="HexSphereTopology_8cpp_source.html#l00320">320</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TacticsPath_8cpp_source.html#l00019">cell</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HexSphereMap_8h_source.html#l00160">eve::hexmap::HexSphereMap::direction()</a>.</p>
+
+</div>
+</div>
+<a id="a020fce1ba2e934c791f95e377533b45c" name="a020fce1ba2e934c791f95e377533b45c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a020fce1ba2e934c791f95e377533b45c">&#9670;&#160;</a></span>directionOf()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::int32_t eve::hexmap::HexSphereTopology::directionOf </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1hexmap.html#aa0e7bedc4b43f36a8fec0a2e73508b65">HexSphereCell</a>&#160;</td>
+          <td class="paramname"><em>cell</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1hexmap.html#aa0e7bedc4b43f36a8fec0a2e73508b65">HexSphereCell</a>&#160;</td>
+          <td class="paramname"><em>other</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Edge index of the edge shared with <code>other</code>. </p>
+<p>The spherical replacement for <code>opposite</code>: a hexagon-hexagon edge happens to satisfy &lsquo;d&rsquo; == (d + 3) % 6`, but a hexagon-pentagon edge has no arithmetic form, so callers must always ask this instead of computing an offset.</p>
+<dl class="section return"><dt>返回</dt><dd>Edge index in <code>[0, neighborCount(cell))</code>, or <code>kNoHexSphereCell</code> when <code>other</code> is not adjacent to <code>cell</code>. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="HexSphereTopology_8cpp_source.html">HexSphereTopology.cpp</a> 第 <a class="el" href="HexSphereTopology_8cpp_source.html#l00304">304</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PrimitiveTessellator_8cpp_source.html#l00287">begin</a>, <a class="el" href="TacticsPath_8cpp_source.html#l00019">cell</a> , 以及 <a class="el" href="HexSphereTopology_8h_source.html#l00017">eve::hexmap::kNoHexSphereCell</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HexSphereMap_8h_source.html#l00143">eve::hexmap::HexSphereMap::directionOf()</a>.</p>
+
+</div>
+</div>
+<a id="af587b195fb1a7641ea5408fad0ad8fd2" name="af587b195fb1a7641ea5408fad0ad8fd2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af587b195fb1a7641ea5408fad0ad8fd2">&#9670;&#160;</a></span>edgeCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::int32_t eve::hexmap::HexSphereTopology::edgeCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Number of cell-to-cell edges (<code>30 * f^2</code>). </p>
+
+<p class="definition">在文件 <a class="el" href="HexSphereTopology_8h_source.html">HexSphereTopology.h</a> 第 <a class="el" href="HexSphereTopology_8h_source.html#l00081">81</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae170cbeb7f01e3a4ae5dc58c96e5845a" name="ae170cbeb7f01e3a4ae5dc58c96e5845a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae170cbeb7f01e3a4ae5dc58c96e5845a">&#9670;&#160;</a></span>empty()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::hexmap::HexSphereTopology::empty </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Whether the topology holds no cell. </p>
+
+<p class="definition">在文件 <a class="el" href="HexSphereTopology_8h_source.html">HexSphereTopology.h</a> 第 <a class="el" href="HexSphereTopology_8h_source.html#l00071">71</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HexSphereTopology_8h_source.html#l00079">pentagonCount()</a>.</p>
+
+</div>
+</div>
+<a id="ad759f733081845c44fa4f67828945a82" name="ad759f733081845c44fa4f67828945a82"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad759f733081845c44fa4f67828945a82">&#9670;&#160;</a></span>frequency()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::int32_t eve::hexmap::HexSphereTopology::frequency </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Subdivision frequency <code>f = 2^subdivision</code>. </p>
+
+<p class="definition">在文件 <a class="el" href="HexSphereTopology_8h_source.html">HexSphereTopology.h</a> 第 <a class="el" href="HexSphereTopology_8h_source.html#l00075">75</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HexSphereMap_8h_source.html#l00086">eve::hexmap::HexSphereMap::frequency()</a>.</p>
+
+</div>
+</div>
+<a id="adbb0afd7acb1f4bfb81c2dfe11a21cab" name="adbb0afd7acb1f4bfb81c2dfe11a21cab"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adbb0afd7acb1f4bfb81c2dfe11a21cab">&#9670;&#160;</a></span>isPentagon()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::hexmap::HexSphereTopology::isPentagon </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1hexmap.html#aa0e7bedc4b43f36a8fec0a2e73508b65">HexSphereCell</a>&#160;</td>
+          <td class="paramname"><em>cell</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Whether <code>cell</code> has five edges instead of six; false when out of range. </p>
+
+<p class="definition">在文件 <a class="el" href="HexSphereTopology_8h_source.html">HexSphereTopology.h</a> 第 <a class="el" href="HexSphereTopology_8h_source.html#l00090">90</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TacticsPath_8cpp_source.html#l00019">cell</a>, <a class="el" href="HexSphereTopology_8h_source.html#l00088">contains()</a> , 以及 <a class="el" href="HexSphereTopology_8cpp_source.html#l00294">neighborCount()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HexSphereMap_8h_source.html#l00128">eve::hexmap::HexSphereMap::isPentagon()</a>.</p>
+
+</div>
+</div>
+<a id="ad8b6bc741dcae955dfdab98e3cc35fad" name="ad8b6bc741dcae955dfdab98e3cc35fad"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad8b6bc741dcae955dfdab98e3cc35fad">&#9670;&#160;</a></span>neighbor()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1hexmap.html#aa0e7bedc4b43f36a8fec0a2e73508b65">HexSphereCell</a> eve::hexmap::HexSphereTopology::neighbor </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1hexmap.html#aa0e7bedc4b43f36a8fec0a2e73508b65">HexSphereCell</a>&#160;</td>
+          <td class="paramname"><em>cell</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::int32_t&#160;</td>
+          <td class="paramname"><em>direction</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Neighbour of <code>cell</code> across edge <code>direction</code>. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">cell</td><td>Source cell. </td></tr>
+    <tr><td class="paramname">direction</td><td>Edge index in <code>[0, neighborCount(cell))</code>. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>The neighbouring cell, or <code>kNoHexSphereCell</code> when either argument is out of range. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="HexSphereTopology_8cpp_source.html">HexSphereTopology.cpp</a> 第 <a class="el" href="HexSphereTopology_8cpp_source.html#l00299">299</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TacticsPath_8cpp_source.html#l00019">cell</a> , 以及 <a class="el" href="HexSphereTopology_8h_source.html#l00017">eve::hexmap::kNoHexSphereCell</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HexSphereMap_8cpp_source.html#l00575">eve::hexmap::HexSphereMap::addRoad()</a>, <a class="el" href="HexSphereMap_8cpp_source.html#l00286">eve::hexmap::HexSphereMap::collectBrush()</a>, <a class="el" href="HexSphereMap_8cpp_source.html#l00255">eve::hexmap::HexSphereMap::distance()</a>, <a class="el" href="HexSphereMap_8h_source.html#l00139">eve::hexmap::HexSphereMap::neighbor()</a>, <a class="el" href="HexSphereMap_8cpp_source.html#l00553">eve::hexmap::HexSphereMap::removeRiver()</a>, <a class="el" href="HexSphereMap_8cpp_source.html#l00606">eve::hexmap::HexSphereMap::removeRoads()</a>, <a class="el" href="HexSphereMap_8cpp_source.html#l00384">eve::hexmap::HexSphereMap::setElevation()</a> , 以及 <a class="el" href="HexSphereMap_8cpp_source.html#l00499">eve::hexmap::HexSphereMap::setOutgoingRiver()</a>.</p>
+
+</div>
+</div>
+<a id="a2b15dd359e0d0f04f1ecae3cdaf5b741" name="a2b15dd359e0d0f04f1ecae3cdaf5b741"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2b15dd359e0d0f04f1ecae3cdaf5b741">&#9670;&#160;</a></span>neighborCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::int32_t eve::hexmap::HexSphereTopology::neighborCount </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1hexmap.html#aa0e7bedc4b43f36a8fec0a2e73508b65">HexSphereCell</a>&#160;</td>
+          <td class="paramname"><em>cell</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Number of edges of <code>cell</code> (5 or 6), or 0 when out of range. </p>
+
+<p class="definition">在文件 <a class="el" href="HexSphereTopology_8cpp_source.html">HexSphereTopology.cpp</a> 第 <a class="el" href="HexSphereTopology_8cpp_source.html#l00294">294</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TacticsPath_8cpp_source.html#l00019">cell</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HexSphereMap_8cpp_source.html#l00286">eve::hexmap::HexSphereMap::collectBrush()</a>, <a class="el" href="HexSphereMap_8cpp_source.html#l00255">eve::hexmap::HexSphereMap::distance()</a>, <a class="el" href="HexSphereTopology_8h_source.html#l00090">isPentagon()</a> , 以及 <a class="el" href="HexSphereMap_8h_source.html#l00135">eve::hexmap::HexSphereMap::neighborCount()</a>.</p>
+
+</div>
+</div>
+<a id="a58b5b22231b357494914bef5ecdbd359" name="a58b5b22231b357494914bef5ecdbd359"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a58b5b22231b357494914bef5ecdbd359">&#9670;&#160;</a></span>oppositeDirection()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::int32_t eve::hexmap::HexSphereTopology::oppositeDirection </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1hexmap.html#aa0e7bedc4b43f36a8fec0a2e73508b65">HexSphereCell</a>&#160;</td>
+          <td class="paramname"><em>cell</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::int32_t&#160;</td>
+          <td class="paramname"><em>direction</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Edge index of <code>cell</code>'s edge towards its neighbour across <code>direction</code>. </p>
+
+<p class="definition">在文件 <a class="el" href="HexSphereTopology_8cpp_source.html">HexSphereTopology.cpp</a> 第 <a class="el" href="HexSphereTopology_8cpp_source.html#l00314">314</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TacticsPath_8cpp_source.html#l00019">cell</a> , 以及 <a class="el" href="HexSphereTopology_8h_source.html#l00017">eve::hexmap::kNoHexSphereCell</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HexSphereMap_8cpp_source.html#l00575">eve::hexmap::HexSphereMap::addRoad()</a>, <a class="el" href="HexSphereMap_8h_source.html#l00147">eve::hexmap::HexSphereMap::oppositeDirection()</a>, <a class="el" href="HexSphereMap_8cpp_source.html#l00553">eve::hexmap::HexSphereMap::removeRiver()</a>, <a class="el" href="HexSphereMap_8cpp_source.html#l00606">eve::hexmap::HexSphereMap::removeRoads()</a> , 以及 <a class="el" href="HexSphereMap_8cpp_source.html#l00499">eve::hexmap::HexSphereMap::setOutgoingRiver()</a>.</p>
+
+</div>
+</div>
+<a id="ac92b11b8c20803586ef2b3c815d7af40" name="ac92b11b8c20803586ef2b3c815d7af40"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac92b11b8c20803586ef2b3c815d7af40">&#9670;&#160;</a></span>pentagonCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::int32_t eve::hexmap::HexSphereTopology::pentagonCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Number of pentagonal cells (12 for every non-empty topology). </p>
+
+<p class="definition">在文件 <a class="el" href="HexSphereTopology_8h_source.html">HexSphereTopology.h</a> 第 <a class="el" href="HexSphereTopology_8h_source.html#l00079">79</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="HexSphereTopology_8h_source.html#l00071">empty()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HexSphereMap_8h_source.html#l00090">eve::hexmap::HexSphereMap::pentagonCount()</a>.</p>
+
+</div>
+</div>
+<a id="a349b31c4716d859d0cd00f881386c5a0" name="a349b31c4716d859d0cd00f881386c5a0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a349b31c4716d859d0cd00f881386c5a0">&#9670;&#160;</a></span>subdivision()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::int32_t eve::hexmap::HexSphereTopology::subdivision </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>The subdivision level this topology was built at. </p>
+
+<p class="definition">在文件 <a class="el" href="HexSphereTopology_8h_source.html">HexSphereTopology.h</a> 第 <a class="el" href="HexSphereTopology_8h_source.html#l00073">73</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HexSphereTopology_8cpp_source.html#l00092">build()</a> , 以及 <a class="el" href="HexSphereMap_8h_source.html#l00084">eve::hexmap::HexSphereMap::subdivision()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/hexmap/<a class="el" href="HexSphereTopology_8h_source.html">HexSphereTopology.h</a></li>
+<li>src/modules/hexmap/<a class="el" href="HexSphereTopology_8cpp_source.html">HexSphereTopology.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

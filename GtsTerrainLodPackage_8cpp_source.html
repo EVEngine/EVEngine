@@ -1,0 +1,315 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/asset/procgen/GtsTerrainLodPackage.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_357701925c56ad4e37728fef0b526672.html">asset</a></li><li class="navelem"><a class="el" href="dir_1bcc9266249b89d726e83319c33eef27.html">procgen</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">GtsTerrainLodPackage.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="GtsTerrainLodPackage_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &quot;<a class="code" href="GtsTerrainLodPackage_8h.html">asset/procgen/GtsTerrainLodPackage.h</a>&quot;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="CanonicalMesh_8h.html">asset/CanonicalMesh.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="ImportCommon_8h.html">asset/import/ImportCommon.h</a>&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span> </div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;algorithm&gt;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;limits&gt;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span> </div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1asset__procgen.html">eve::asset_procgen</a> {</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="keyword">namespace </span>{</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="keyword">template</span>&lt;<span class="keyword">class</span> T&gt; Result&lt;T&gt; fail(<a class="code hl_enumeration" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7">DiagnosticCode</a> <a class="code hl_variable" href="GltfAnimation_8cpp.html#ae9304e5e48b5f29bd2351ffc45b2b11a">code</a>, std::string <a class="code hl_variable" href="GltfAnimation_8cpp.html#a36bd74109f547f7f8198faf5a12d2879">message</a>) {</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">Result&lt;T&gt;::failure</a>(<a class="code hl_function" href="classeve_1_1Diagnostic.html#af797f7520cc62e8273da5afdb59d9ef4">Diagnostic::error</a>(<a class="code hl_variable" href="GltfAnimation_8cpp.html#ae9304e5e48b5f29bd2351ffc45b2b11a">code</a>, std::move(<a class="code hl_variable" href="GltfAnimation_8cpp.html#a36bd74109f547f7f8198faf5a12d2879">message</a>), {}, {}, <span class="stringliteral">&quot;asset.procgen.gts-lod&quot;</span>));</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>}</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><a class="code hl_typedef" href="classeve_1_1Value.html#ab1d85b7f682f864577d9030a3e7ea6c5">Value::Array</a> vec3(<span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>) { <span class="keywordflow">return</span> {<a class="code hl_typedef" href="namespaceeve_1_1database.html#a75dfba93933e5172c94376060426f2f4">Value</a>(<span class="keywordtype">double</span>(<a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>)), <a class="code hl_typedef" href="namespaceeve_1_1database.html#a75dfba93933e5172c94376060426f2f4">Value</a>(<span class="keywordtype">double</span>(<a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>)), <a class="code hl_typedef" href="namespaceeve_1_1database.html#a75dfba93933e5172c94376060426f2f4">Value</a>(<span class="keywordtype">double</span>(<a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>))}; }</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>}</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span> </div>
+<div class="foldopen" id="foldopen00017" data-start="{" data-end="}">
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno"><a class="line" href="namespaceeve_1_1asset__procgen.html#a712e0f4cbb056a2c4fbbdcd2335a6c1e">   17</a></span><a class="code hl_class" href="classeve_1_1Result.html">Result&lt;asset_import::PreparedAssetImport&gt;</a> <a class="code hl_function" href="namespaceeve_1_1asset__procgen.html#a712e0f4cbb056a2c4fbbdcd2335a6c1e">prepareGtsTerrainLodPackage</a>(</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>    <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1asset__import_1_1ImportPackageIdentity.html">asset_import::ImportPackageIdentity</a>&amp; package, <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1procgen_1_1GtsTerrainLodSet.html">procgen::GtsTerrainLodSet</a>&amp; lods,</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>    <span class="keyword">const</span> std::string&amp; terrainName, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1asset__import_1_1AssetImportLimits.html">asset_import::AssetImportLimits</a>&amp; <a class="code hl_variable" href="UnityVegetationPreset_8cpp.html#ac305f1e828b2cf82b0d6fed8194ce85c">limits</a>) {</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>    <span class="keyword">using namespace </span>asset_import;</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>    <span class="keyword">auto</span> manifest = <a class="code hl_function" href="namespaceeve_1_1asset__import_1_1detail.html#abd13cb28f9a5f3555a5db9f2497206a5">asset_import::detail::baseManifest</a>(package, <span class="stringliteral">&quot;eve.gts-terrain-lod&quot;</span>);</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>    <span class="keywordflow">if</span> (!manifest) <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">Result&lt;PreparedAssetImport&gt;::failure</a>(manifest.status());</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>    <span class="keyword">auto</span> plan = <a class="code hl_function" href="namespaceeve_1_1procgen.html#ab827375bd819e2db4edff6f9966b4682">procgen::planGtsTerrainLodAssets</a>(lods, terrainName, <span class="stringliteral">&quot;Meshes&quot;</span>);</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>    <span class="keywordflow">if</span> (!plan) <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">Result&lt;PreparedAssetImport&gt;::failure</a>(plan.status());</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>    <span class="keywordflow">if</span> (plan.value().empty()) <span class="keywordflow">return</span> fail&lt;PreparedAssetImport&gt;(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">DiagnosticCode::InvalidArgument</a>, <span class="stringliteral">&quot;GTS LOD set has no meshes&quot;</span>);</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    <span class="keywordflow">if</span> (plan.value().size() &gt; <a class="code hl_variable" href="UnityVegetationPreset_8cpp.html#ac305f1e828b2cf82b0d6fed8194ce85c">limits</a>.maximumAssets)</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>        <span class="keywordflow">return</span> fail&lt;PreparedAssetImport&gt;(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">DiagnosticCode::InvalidArgument</a>, <span class="stringliteral">&quot;GTS LOD asset count exceeds limit&quot;</span>);</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    PreparedAssetImport result;</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    result.manifest = std::move(manifest).takeValue();</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    std::uint64_t totalBytes = 0;</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; entry : plan.value()) {</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>        <span class="keyword">const</span> <span class="keyword">auto</span>* tile = lods.<a class="code hl_function" href="classeve_1_1procgen_1_1GtsTerrainLodSet.html#a9006ad7aa45de489096cac7968eb77f1">tileAt</a>(entry.tileIndex);</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>        <span class="keywordflow">if</span> (!tile || entry.levelIndex &lt; 0 || entry.levelIndex &gt;= <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(tile-&gt;levels.size()))</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>            <span class="keywordflow">return</span> fail&lt;PreparedAssetImport&gt;(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">DiagnosticCode::InvalidArgument</a>, <span class="stringliteral">&quot;GTS LOD plan references a missing mesh&quot;</span>);</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>        <span class="keyword">const</span> <span class="keyword">auto</span>&amp; <a class="code hl_variable" href="RenderSystem3D_8cpp.html#a6e08f89b32254fb4b129720418e7c6ea">mesh</a> = tile-&gt;<a class="code hl_variable" href="structeve_1_1procgen_1_1GtsTerrainLodTile.html#a5cc98d4b1532700318a8311ad33dc1b3">levels</a>[<span class="keyword">static_cast&lt;</span>std::size_t<span class="keyword">&gt;</span>(entry.levelIndex)];</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>        <a class="code hl_struct" href="structeve_1_1asset_1_1CanonicalMeshData.html">asset::CanonicalMeshData</a> canonical;</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>        canonical.<a class="code hl_variable" href="structeve_1_1asset_1_1CanonicalMeshData.html#aeeac2bafa01d32eb4f17dc39b0842d30">positions</a> = <a class="code hl_variable" href="RenderSystem3D_8cpp.html#a6e08f89b32254fb4b129720418e7c6ea">mesh</a>.positions(); canonical.<a class="code hl_variable" href="structeve_1_1asset_1_1CanonicalMeshData.html#a6aee4575670b14f67acf14a5fbabb974">normals</a> = <a class="code hl_variable" href="RenderSystem3D_8cpp.html#a6e08f89b32254fb4b129720418e7c6ea">mesh</a>.normals(); canonical.<a class="code hl_variable" href="structeve_1_1asset_1_1CanonicalMeshData.html#a4b93ed8f3b304ff108ff69c84ea07af5">indices</a> = <a class="code hl_variable" href="RenderSystem3D_8cpp.html#a6e08f89b32254fb4b129720418e7c6ea">mesh</a>.indices();</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>        <span class="keywordflow">if</span> (<a class="code hl_variable" href="RenderSystem3D_8cpp.html#a6e08f89b32254fb4b129720418e7c6ea">mesh</a>.hasVertexColors()) canonical.<a class="code hl_variable" href="structeve_1_1asset_1_1CanonicalMeshData.html#a3b2212e92ddc0626d82e57e9951a2847">colors</a> = <a class="code hl_variable" href="RenderSystem3D_8cpp.html#a6e08f89b32254fb4b129720418e7c6ea">mesh</a>.colors();</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>        <span class="keywordflow">if</span> (!<a class="code hl_variable" href="RenderSystem3D_8cpp.html#a6e08f89b32254fb4b129720418e7c6ea">mesh</a>.uvs().empty()) canonical.<a class="code hl_variable" href="structeve_1_1asset_1_1CanonicalMeshData.html#ab059810574a7eb6fbdb3d4e82729518b">texcoords</a>.emplace(0, <a class="code hl_variable" href="RenderSystem3D_8cpp.html#a6e08f89b32254fb4b129720418e7c6ea">mesh</a>.uvs());</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>        <a class="code hl_struct" href="structeve_1_1asset_1_1CanonicalMeshLimits.html">asset::CanonicalMeshLimits</a> meshLimits;</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>        meshLimits.<a class="code hl_variable" href="structeve_1_1asset_1_1CanonicalMeshLimits.html#a45099194bd5d41113b5dacfeb2cfc78a">maximumVertices</a> = <a class="code hl_variable" href="UnityVegetationPreset_8cpp.html#ac305f1e828b2cf82b0d6fed8194ce85c">limits</a>.maximumVerticesPerPrimitive;</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>        meshLimits.<a class="code hl_variable" href="structeve_1_1asset_1_1CanonicalMeshLimits.html#a757b4c5946613b8c596ad09ed74cd6d8">maximumIndices</a> = <a class="code hl_variable" href="UnityVegetationPreset_8cpp.html#ac305f1e828b2cf82b0d6fed8194ce85c">limits</a>.maximumIndicesPerPrimitive;</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>        meshLimits.<a class="code hl_variable" href="structeve_1_1asset_1_1CanonicalMeshLimits.html#a458dc9d9e2fa171b5f095c173630ebc7">maximumDecodedBytes</a> = <a class="code hl_variable" href="UnityVegetationPreset_8cpp.html#ac305f1e828b2cf82b0d6fed8194ce85c">limits</a>.maximumDecodedBytes;</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>        <span class="keyword">auto</span> <a class="code hl_variable" href="GltfImporter_8cpp.html#a19a85c40de5dd053c500586bd7713a02">blob</a> = <a class="code hl_function" href="namespaceeve_1_1asset.html#a8d7a6e6ddcf1398de827b473cfc7135d">asset::encodeCanonicalMesh</a>(canonical, meshLimits);</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>        <span class="keywordflow">if</span> (!<a class="code hl_variable" href="GltfImporter_8cpp.html#a19a85c40de5dd053c500586bd7713a02">blob</a>) <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">Result&lt;PreparedAssetImport&gt;::failure</a>(<a class="code hl_variable" href="GltfImporter_8cpp.html#a19a85c40de5dd053c500586bd7713a02">blob</a>.status());</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>        <span class="keywordflow">if</span> (<a class="code hl_variable" href="GltfImporter_8cpp.html#a19a85c40de5dd053c500586bd7713a02">blob</a>.value().size() &gt; <a class="code hl_variable" href="UnityVegetationPreset_8cpp.html#ac305f1e828b2cf82b0d6fed8194ce85c">limits</a>.maximumDecodedBytes || totalBytes &gt; <a class="code hl_variable" href="UnityVegetationPreset_8cpp.html#ac305f1e828b2cf82b0d6fed8194ce85c">limits</a>.maximumDecodedBytes - <a class="code hl_variable" href="GltfImporter_8cpp.html#a19a85c40de5dd053c500586bd7713a02">blob</a>.value().size())</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>            <span class="keywordflow">return</span> fail&lt;PreparedAssetImport&gt;(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">DiagnosticCode::InvalidArgument</a>, <span class="stringliteral">&quot;GTS LOD package exceeds decoded byte limit&quot;</span>);</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>        totalBytes += <a class="code hl_variable" href="GltfImporter_8cpp.html#a19a85c40de5dd053c500586bd7713a02">blob</a>.value().size();</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>        <span class="keyword">const</span> <span class="keyword">auto</span> <span class="keywordtype">id</span> = package.<a class="code hl_variable" href="structeve_1_1asset__import_1_1ImportPackageIdentity.html#a16a82afdbf02aa31312a75501e054225">packageId</a>.<a class="code hl_function" href="classeve_1_1detail_1_1Id128.html#ac96480ecca3f11aca66a1e92456c01ad">child</a>(<span class="stringliteral">&quot;gts-terrain:&quot;</span> + std::to_string(entry.tileIndex) + <span class="stringliteral">&quot;:lod:&quot;</span> +</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>                                                std::to_string(entry.levelIndex));</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>        <span class="keyword">auto</span> <a class="code hl_class" href="classeve_1_1ref.html">ref</a> = <a class="code hl_function" href="namespaceeve_1_1asset__import_1_1detail.html#ac664c655bbe3daa7f01d6ccc37ee073d">asset_import::detail::assetRef</a>(<span class="keywordtype">id</span>);</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>        <span class="keywordflow">if</span> (!<a class="code hl_class" href="classeve_1_1ref.html">ref</a>) <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">Result&lt;PreparedAssetImport&gt;::failure</a>(<a class="code hl_class" href="classeve_1_1ref.html">ref</a>.status());</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>        <span class="keyword">const</span> std::string base = <span class="stringliteral">&quot;assets/&quot;</span> + <span class="keywordtype">id</span>.format() + <span class="stringliteral">&quot;/&quot;</span>;</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>        <span class="keyword">const</span> std::string definitionPath = base + <span class="stringliteral">&quot;asset.json&quot;</span>, blobPath = base + <span class="stringliteral">&quot;mesh.bin&quot;</span>;</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>        <span class="keyword">const</span> <span class="keyword">auto</span>&amp; <a class="code hl_variable" href="HeightmapMesh_8cpp.html#af3fd42b7427cb742f96e7ec3244fb7cf">positions</a> = <a class="code hl_variable" href="RenderSystem3D_8cpp.html#a6e08f89b32254fb4b129720418e7c6ea">mesh</a>.positions();</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>        <span class="keywordtype">float</span> minX=<a class="code hl_variable" href="HeightmapMesh_8cpp.html#af3fd42b7427cb742f96e7ec3244fb7cf">positions</a>[0], minY=<a class="code hl_variable" href="HeightmapMesh_8cpp.html#af3fd42b7427cb742f96e7ec3244fb7cf">positions</a>[1], minZ=<a class="code hl_variable" href="HeightmapMesh_8cpp.html#af3fd42b7427cb742f96e7ec3244fb7cf">positions</a>[2], maxX=minX, maxY=minY, maxZ=minZ;</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>        <span class="keywordflow">for</span> (std::size_t i=0;i&lt;<a class="code hl_variable" href="HeightmapMesh_8cpp.html#af3fd42b7427cb742f96e7ec3244fb7cf">positions</a>.size();i+=3) {</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>            minX=std::min(minX,<a class="code hl_variable" href="HeightmapMesh_8cpp.html#af3fd42b7427cb742f96e7ec3244fb7cf">positions</a>[i]); minY=std::min(minY,<a class="code hl_variable" href="HeightmapMesh_8cpp.html#af3fd42b7427cb742f96e7ec3244fb7cf">positions</a>[i+1]); minZ=std::min(minZ,<a class="code hl_variable" href="HeightmapMesh_8cpp.html#af3fd42b7427cb742f96e7ec3244fb7cf">positions</a>[i+2]);</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>            maxX=std::max(maxX,<a class="code hl_variable" href="HeightmapMesh_8cpp.html#af3fd42b7427cb742f96e7ec3244fb7cf">positions</a>[i]); maxY=std::max(maxY,<a class="code hl_variable" href="HeightmapMesh_8cpp.html#af3fd42b7427cb742f96e7ec3244fb7cf">positions</a>[i+1]); maxZ=std::max(maxZ,<a class="code hl_variable" href="HeightmapMesh_8cpp.html#af3fd42b7427cb742f96e7ec3244fb7cf">positions</a>[i+2]);</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>        }</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>        <a class="code hl_typedef" href="classeve_1_1Value.html#ab1d85b7f682f864577d9030a3e7ea6c5">Value::Array</a> uvSets; <span class="keywordflow">if</span> (!<a class="code hl_variable" href="RenderSystem3D_8cpp.html#a6e08f89b32254fb4b129720418e7c6ea">mesh</a>.uvs().empty()) uvSets.emplace_back(int64_t(0));</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>        <a class="code hl_class" href="classeve_1_1Value.html">Value</a> definition(<a class="code hl_typedef" href="classeve_1_1Value.html#a2d59a6ba7d844c2561c606a8973be87d">Value::Object</a>{{<span class="stringliteral">&quot;blob&quot;</span>,blobPath},{<span class="stringliteral">&quot;boundsMax&quot;</span>,vec3(maxX,maxY,maxZ)},</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>            {<span class="stringliteral">&quot;boundsMin&quot;</span>,vec3(minX,minY,minZ)},{<span class="stringliteral">&quot;coordinateSystem&quot;</span>,<span class="stringliteral">&quot;right-handed-x-right-y-up-minus-z-forward&quot;</span>},</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>            {<span class="stringliteral">&quot;colors&quot;</span>,<a class="code hl_variable" href="RenderSystem3D_8cpp.html#a6e08f89b32254fb4b129720418e7c6ea">mesh</a>.hasVertexColors()},{<span class="stringliteral">&quot;frontFace&quot;</span>,<span class="stringliteral">&quot;counter-clockwise&quot;</span>},{<span class="stringliteral">&quot;indexCount&quot;</span>,int64_t(<a class="code hl_variable" href="RenderSystem3D_8cpp.html#a6e08f89b32254fb4b129720418e7c6ea">mesh</a>.getIndexCount())},{<span class="stringliteral">&quot;normals&quot;</span>,<span class="keyword">true</span>},</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>            {<span class="stringliteral">&quot;schema&quot;</span>,<span class="stringliteral">&quot;eve.mesh&quot;</span>},{<span class="stringliteral">&quot;schemaVersion&quot;</span>,int64_t(3)},{<span class="stringliteral">&quot;topology&quot;</span>,<span class="stringliteral">&quot;triangles&quot;</span>},</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>            {<span class="stringliteral">&quot;texcoordSets&quot;</span>,std::move(uvSets)},{<span class="stringliteral">&quot;unit&quot;</span>,<span class="stringliteral">&quot;meter&quot;</span>},{<span class="stringliteral">&quot;vertexCount&quot;</span>,int64_t(<a class="code hl_variable" href="RenderSystem3D_8cpp.html#a6e08f89b32254fb4b129720418e7c6ea">mesh</a>.getVertexCount())}});</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>        <span class="keyword">auto</span> json = definition.toJson();</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>        <span class="keywordflow">if</span> (!json) <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">Result&lt;PreparedAssetImport&gt;::failure</a>(json.status());</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>        std::vector&lt;std::uint8_t&gt; jsonBytes(json.value().begin(),json.value().end());</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>        result.manifest.assets.push_back({<a class="code hl_class" href="classeve_1_1ref.html">ref</a>.value(),<span class="stringliteral">&quot;eve.mesh&quot;</span>,<a class="code hl_typedef" href="namespaceeve.html#a622007bd83c1f1b09c596c474039ca56">SchemaVersion</a>(3),definitionPath,</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>            <a class="code hl_function" href="namespaceeve_1_1asset__import_1_1detail.html#a1bec4edd0427191572ee50a9b98ff2e9">asset_import::detail::sha256</a>(jsonBytes),{<span class="stringliteral">&quot;mesh&quot;</span>,<span class="stringliteral">&quot;terrain&quot;</span>,<span class="stringliteral">&quot;gts-lod&quot;</span>,entry.meshName}});</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>        result.entries.push_back({definitionPath,std::move(jsonBytes)});</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>        result.entries.push_back({blobPath,std::move(<a class="code hl_variable" href="GltfImporter_8cpp.html#a19a85c40de5dd053c500586bd7713a02">blob</a>).takeValue()});</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>        <span class="keyword">const</span> std::string <a class="code hl_variable" href="mesh_2MeshModifierGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a>=<span class="stringliteral">&quot;tile-&quot;</span>+std::to_string(entry.tileIndex)+<span class="stringliteral">&quot;-lod-&quot;</span>+std::to_string(entry.levelIndex);</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>        result.manifest.entrypoints.emplace(<a class="code hl_variable" href="mesh_2MeshModifierGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a>,<a class="code hl_class" href="classeve_1_1ref.html">ref</a>.value());</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>        <span class="keywordflow">if</span> (!result.manifest.entrypoints.contains(<span class="stringliteral">&quot;default&quot;</span>)) result.manifest.entrypoints.emplace(<span class="stringliteral">&quot;default&quot;</span>,<a class="code hl_class" href="classeve_1_1ref.html">ref</a>.value());</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>        <span class="keyword">auto</span> mapping=<a class="code hl_function" href="namespaceeve_1_1asset__import_1_1detail.html#ac664c655bbe3daa7f01d6ccc37ee073d">asset_import::detail::assetRef</a>(<span class="keywordtype">id</span>); <span class="keywordflow">if</span>(!mapping) <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">Result&lt;PreparedAssetImport&gt;::failure</a>(mapping.status());</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>        result.sourceMappings.push_back({entry.objectName,std::move(mapping).takeValue()});</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>        result.findings.push_back({terrainName,entry.objectName,ImportDisposition::Translated,</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>            <span class="stringliteral">&quot;GTS tile LOD converted to canonical eve.mesh/3 as &quot;</span>+entry.meshName});</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>    }</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>    <span class="keyword">auto</span> report=<a class="code hl_function" href="namespaceeve_1_1asset__import_1_1detail.html#a9fa3df8cd3518e8cb0306547f321d960">asset_import::detail::finalizeImportReport</a>(result,package,<span class="stringliteral">&quot;Unity Pcg Pro GTS&quot;</span>,<span class="stringliteral">&quot;4.2.2&quot;</span>,</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>        {{<span class="stringliteral">&quot;terrainName&quot;</span>,terrainName},{<span class="stringliteral">&quot;tileCount&quot;</span>,int64_t(lods.<a class="code hl_function" href="classeve_1_1procgen_1_1GtsTerrainLodSet.html#a8bfb67f7717d5c51169f230abc899f12">getTileCount</a>())},{<span class="stringliteral">&quot;lodCount&quot;</span>,int64_t(lods.<a class="code hl_function" href="classeve_1_1procgen_1_1GtsTerrainLodSet.html#afb5057ca78e5e86878446d66d2d6811c">getLevelCount</a>())}});</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>    <span class="keywordflow">if</span> (!report) <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">Result&lt;PreparedAssetImport&gt;::failure</a>(report.status());</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>    <span class="keyword">auto</span> verified=<a class="code hl_function" href="namespaceeve_1_1asset.html#ab304a85b5036fe0d4b082fd4f805a1d0">asset::buildEvaArchive</a>(result.manifest,result.entries);</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>    <span class="keywordflow">if</span> (!verified) <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">Result&lt;PreparedAssetImport&gt;::failure</a>(verified.status());</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">Result&lt;PreparedAssetImport&gt;::success</a>(std::move(result));</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>}</div>
+</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>}</div>
+<div class="ttc" id="aAnimClip_8cpp_html_aa4f0d3eebc3c443f9be81bf48561a217"><div class="ttname"><a href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a></div><div class="ttdeci">float y</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00738">AnimClip.cpp:738</a></div></div>
+<div class="ttc" id="aAnimClip_8cpp_html_ad0da36b2558901e21e7a30f6c227a45e"><div class="ttname"><a href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a></div><div class="ttdeci">float x</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00738">AnimClip.cpp:738</a></div></div>
+<div class="ttc" id="aAnimClip_8cpp_html_af73583b1e980b0aa03f9884812e9fd4d"><div class="ttname"><a href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a></div><div class="ttdeci">float z</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00738">AnimClip.cpp:738</a></div></div>
+<div class="ttc" id="aCanonicalMesh_8h_html"><div class="ttname"><a href="CanonicalMesh_8h.html">CanonicalMesh.h</a></div></div>
+<div class="ttc" id="aGltfAnimation_8cpp_html_a36bd74109f547f7f8198faf5a12d2879"><div class="ttname"><a href="GltfAnimation_8cpp.html#a36bd74109f547f7f8198faf5a12d2879">message</a></div><div class="ttdeci">std::string message</div><div class="ttdef"><b>Definition</b> <a href="GltfAnimation_8cpp_source.html#l00017">GltfAnimation.cpp:17</a></div></div>
+<div class="ttc" id="aGltfAnimation_8cpp_html_ae9304e5e48b5f29bd2351ffc45b2b11a"><div class="ttname"><a href="GltfAnimation_8cpp.html#ae9304e5e48b5f29bd2351ffc45b2b11a">code</a></div><div class="ttdeci">DiagnosticCode code</div><div class="ttdef"><b>Definition</b> <a href="GltfAnimation_8cpp_source.html#l00016">GltfAnimation.cpp:16</a></div></div>
+<div class="ttc" id="aGltfImporter_8cpp_html_a19a85c40de5dd053c500586bd7713a02"><div class="ttname"><a href="GltfImporter_8cpp.html#a19a85c40de5dd053c500586bd7713a02">blob</a></div><div class="ttdeci">std::vector&lt; std::uint8_t &gt; blob</div><div class="ttdef"><b>Definition</b> <a href="GltfImporter_8cpp_source.html#l00021">GltfImporter.cpp:21</a></div></div>
+<div class="ttc" id="aGtsTerrainLodPackage_8h_html"><div class="ttname"><a href="GtsTerrainLodPackage_8h.html">GtsTerrainLodPackage.h</a></div><div class="ttdoc">Canonical asset packaging for generated GTS terrain LODs.</div></div>
+<div class="ttc" id="aHeightmapMesh_8cpp_html_af3fd42b7427cb742f96e7ec3244fb7cf"><div class="ttname"><a href="HeightmapMesh_8cpp.html#af3fd42b7427cb742f96e7ec3244fb7cf">positions</a></div><div class="ttdeci">std::vector&lt; float &gt; positions</div><div class="ttdef"><b>Definition</b> <a href="HeightmapMesh_8cpp_source.html#l00016">HeightmapMesh.cpp:16</a></div></div>
+<div class="ttc" id="aImportCommon_8h_html"><div class="ttname"><a href="ImportCommon_8h.html">ImportCommon.h</a></div></div>
+<div class="ttc" id="aRenderSystem3D_8cpp_html_a6e08f89b32254fb4b129720418e7c6ea"><div class="ttname"><a href="RenderSystem3D_8cpp.html#a6e08f89b32254fb4b129720418e7c6ea">mesh</a></div><div class="ttdeci">Mesh * mesh</div><div class="ttdef"><b>Definition</b> <a href="RenderSystem3D_8cpp_source.html#l00641">RenderSystem3D.cpp:641</a></div></div>
+<div class="ttc" id="aUnityVegetationPreset_8cpp_html_ac305f1e828b2cf82b0d6fed8194ce85c"><div class="ttname"><a href="UnityVegetationPreset_8cpp.html#ac305f1e828b2cf82b0d6fed8194ce85c">limits</a></div><div class="ttdeci">const AssetImportLimits &amp; limits</div><div class="ttdef"><b>Definition</b> <a href="UnityVegetationPreset_8cpp_source.html#l00030">UnityVegetationPreset.cpp:30</a></div></div>
+<div class="ttc" id="aclasseve_1_1Diagnostic_html_af797f7520cc62e8273da5afdb59d9ef4"><div class="ttname"><a href="classeve_1_1Diagnostic.html#af797f7520cc62e8273da5afdb59d9ef4">eve::Diagnostic::error</a></div><div class="ttdeci">static Diagnostic error(DiagnosticCode code, std::string message, std::string path={}, DiagnosticDetails details={}, std::string source={})</div><div class="ttdoc">Construct an error diagnostic with the standard error severity.</div><div class="ttdef"><b>Definition</b> <a href="Diagnostic_8h_source.html#l00119">Diagnostic.h:119</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html_a10668d27f9f97c9808e0099e0248816b"><div class="ttname"><a href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">eve::Result::success</a></div><div class="ttdeci">static Result success(T value)</div><div class="ttdoc">Construct a successful result owning value.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00157">Result.h:157</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html_af1a297022e9a6a615433003fe6466358"><div class="ttname"><a href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">eve::Result::failure</a></div><div class="ttdeci">static Result failure(Status status)</div><div class="ttdoc">Construct a failed result from a structured status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00166">Result.h:166</a></div></div>
+<div class="ttc" id="aclasseve_1_1Value_html"><div class="ttname"><a href="classeve_1_1Value.html">eve::Value</a></div><div class="ttdoc">The canonical owning dynamic value used by data-facing protocols.</div><div class="ttdef"><b>Definition</b> <a href="Value_8h_source.html#l00031">Value.h:31</a></div></div>
+<div class="ttc" id="aclasseve_1_1Value_html_a2d59a6ba7d844c2561c606a8973be87d"><div class="ttname"><a href="classeve_1_1Value.html#a2d59a6ba7d844c2561c606a8973be87d">eve::Value::Object</a></div><div class="ttdeci">std::map&lt; std::string, Value &gt; Object</div><div class="ttdef"><b>Definition</b> <a href="Value_8h_source.html#l00034">Value.h:34</a></div></div>
+<div class="ttc" id="aclasseve_1_1Value_html_ab1d85b7f682f864577d9030a3e7ea6c5"><div class="ttname"><a href="classeve_1_1Value.html#ab1d85b7f682f864577d9030a3e7ea6c5">eve::Value::Array</a></div><div class="ttdeci">std::vector&lt; Value &gt; Array</div><div class="ttdef"><b>Definition</b> <a href="Value_8h_source.html#l00033">Value.h:33</a></div></div>
+<div class="ttc" id="aclasseve_1_1detail_1_1Id128_html_ac96480ecca3f11aca66a1e92456c01ad"><div class="ttname"><a href="classeve_1_1detail_1_1Id128.html#ac96480ecca3f11aca66a1e92456c01ad">eve::detail::Id128::child</a></div><div class="ttdeci">Id128 child(std::string_view role) const noexcept</div><div class="ttdoc">Derives a deterministic child UUID for a hierarchical identity.</div><div class="ttdef"><b>Definition</b> <a href="Identity_8h_source.html#l00151">Identity.h:151</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1GtsTerrainLodSet_html"><div class="ttname"><a href="classeve_1_1procgen_1_1GtsTerrainLodSet.html">eve::procgen::GtsTerrainLodSet</a></div><div class="ttdoc">Owned result of the GTS split-and-sequential-simplify pipeline.</div><div class="ttdef"><b>Definition</b> <a href="GtsTerrainLod_8h_source.html#l00107">GtsTerrainLod.h:107</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1GtsTerrainLodSet_html_a8bfb67f7717d5c51169f230abc899f12"><div class="ttname"><a href="classeve_1_1procgen_1_1GtsTerrainLodSet.html#a8bfb67f7717d5c51169f230abc899f12">eve::procgen::GtsTerrainLodSet::getTileCount</a></div><div class="ttdeci">int getTileCount() const</div><div class="ttdoc">Return the number of tiles, including empty source cells.</div><div class="ttdef"><b>Definition</b> <a href="GtsTerrainLod_8h_source.html#l00114">GtsTerrainLod.h:114</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1GtsTerrainLodSet_html_a9006ad7aa45de489096cac7968eb77f1"><div class="ttname"><a href="classeve_1_1procgen_1_1GtsTerrainLodSet.html#a9006ad7aa45de489096cac7968eb77f1">eve::procgen::GtsTerrainLodSet::tileAt</a></div><div class="ttdeci">const GtsTerrainLodTile * tileAt(int index) const</div><div class="ttdoc">Return one tile or nullptr for an invalid index. @ownership The LOD set retains ownership; the caller...</div><div class="ttdef"><b>Definition</b> <a href="GtsTerrainLod_8cpp_source.html#l00086">GtsTerrainLod.cpp:86</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1GtsTerrainLodSet_html_afb5057ca78e5e86878446d66d2d6811c"><div class="ttname"><a href="classeve_1_1procgen_1_1GtsTerrainLodSet.html#afb5057ca78e5e86878446d66d2d6811c">eve::procgen::GtsTerrainLodSet::getLevelCount</a></div><div class="ttdeci">int getLevelCount() const</div><div class="ttdoc">Return the common number of LOD levels per tile.</div><div class="ttdef"><b>Definition</b> <a href="GtsTerrainLod_8h_source.html#l00116">GtsTerrainLod.h:116</a></div></div>
+<div class="ttc" id="aclasseve_1_1ref_html"><div class="ttname"><a href="classeve_1_1ref.html">eve::ref</a></div><div class="ttdoc">ref is a smart pointer that automatically calls ref() and unref() on the object. Type T must be a sub...</div><div class="ttdef"><b>Definition</b> <a href="Object_8h_source.html#l00054">Object.h:54</a></div></div>
+<div class="ttc" id="amesh_2MeshModifierGraph_8cpp_html_acd3d88da3c0e0313c3645ff34f62f542"><div class="ttname"><a href="mesh_2MeshModifierGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a></div><div class="ttdeci">const char * key</div><div class="ttdef"><b>Definition</b> <a href="mesh_2MeshModifierGraph_8cpp_source.html#l00019">MeshModifierGraph.cpp:19</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1asset__import_1_1detail_html_a1bec4edd0427191572ee50a9b98ff2e9"><div class="ttname"><a href="namespaceeve_1_1asset__import_1_1detail.html#a1bec4edd0427191572ee50a9b98ff2e9">eve::asset_import::detail::sha256</a></div><div class="ttdeci">std::string sha256(std::span&lt; const std::uint8_t &gt; bytes)</div><div class="ttdef"><b>Definition</b> <a href="ImportCommon_8h_source.html#l00017">ImportCommon.h:17</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1asset__import_1_1detail_html_a9fa3df8cd3518e8cb0306547f321d960"><div class="ttname"><a href="namespaceeve_1_1asset__import_1_1detail.html#a9fa3df8cd3518e8cb0306547f321d960">eve::asset_import::detail::finalizeImportReport</a></div><div class="ttdeci">Result&lt; void &gt; finalizeImportReport(PreparedAssetImport &amp;prepared, const ImportPackageIdentity &amp;package, std::string_view sourceEngine, std::string_view sourceVersion, Value::Object options={})</div><div class="ttdoc">Append the deterministic mandatory import report and bind it from provenance.</div><div class="ttdef"><b>Definition</b> <a href="ImportReport_8cpp_source.html#l00021">ImportReport.cpp:21</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1asset__import_1_1detail_html_abd13cb28f9a5f3555a5db9f2497206a5"><div class="ttname"><a href="namespaceeve_1_1asset__import_1_1detail.html#abd13cb28f9a5f3555a5db9f2497206a5">eve::asset_import::detail::baseManifest</a></div><div class="ttdeci">Result&lt; asset::EvaManifest &gt; baseManifest(const ImportPackageIdentity &amp;package, std::string_view importer)</div><div class="ttdef"><b>Definition</b> <a href="ImportCommon_8h_source.html#l00032">ImportCommon.h:32</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1asset__import_1_1detail_html_ac664c655bbe3daa7f01d6ccc37ee073d"><div class="ttname"><a href="namespaceeve_1_1asset__import_1_1detail.html#ac664c655bbe3daa7f01d6ccc37ee073d">eve::asset_import::detail::assetRef</a></div><div class="ttdeci">Result&lt; AssetRef &gt; assetRef(PersistentId id)</div><div class="ttdef"><b>Definition</b> <a href="ImportCommon_8h_source.html#l00047">ImportCommon.h:47</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1asset__procgen_html"><div class="ttname"><a href="namespaceeve_1_1asset__procgen.html">eve::asset_procgen</a></div><div class="ttdef"><b>Definition</b> <a href="EvpackInstanceSetLoader_8cpp_source.html#l00011">EvpackInstanceSetLoader.cpp:11</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1asset__procgen_html_a712e0f4cbb056a2c4fbbdcd2335a6c1e"><div class="ttname"><a href="namespaceeve_1_1asset__procgen.html#a712e0f4cbb056a2c4fbbdcd2335a6c1e">eve::asset_procgen::prepareGtsTerrainLodPackage</a></div><div class="ttdeci">Result&lt; asset_import::PreparedAssetImport &gt; prepareGtsTerrainLodPackage(const asset_import::ImportPackageIdentity &amp;package, const procgen::GtsTerrainLodSet &amp;lods, const std::string &amp;terrainName, const asset_import::AssetImportLimits &amp;limits)</div><div class="ttdoc">Prepare a complete .eva source package containing every non-empty GTS tile LOD as eve....</div><div class="ttdef"><b>Definition</b> <a href="GtsTerrainLodPackage_8cpp_source.html#l00017">GtsTerrainLodPackage.cpp:17</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1asset_html_a8d7a6e6ddcf1398de827b473cfc7135d"><div class="ttname"><a href="namespaceeve_1_1asset.html#a8d7a6e6ddcf1398de827b473cfc7135d">eve::asset::encodeCanonicalMesh</a></div><div class="ttdeci">Result&lt; std::vector&lt; std::uint8_t &gt; &gt; encodeCanonicalMesh(const CanonicalMeshData &amp;mesh, const CanonicalMeshLimits &amp;limits={})</div><div class="ttdoc">Encode an owning snapshot to EVMESH v3, or v2 when no named attributes exist. Borrows input synchrono...</div><div class="ttdef"><b>Definition</b> <a href="CanonicalMeshEncode_8cpp_source.html#l00009">CanonicalMeshEncode.cpp:9</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1asset_html_ab304a85b5036fe0d4b082fd4f805a1d0"><div class="ttname"><a href="namespaceeve_1_1asset.html#ab304a85b5036fe0d4b082fd4f805a1d0">eve::asset::buildEvaArchive</a></div><div class="ttdeci">Result&lt; std::vector&lt; std::uint8_t &gt; &gt; buildEvaArchive(const EvaManifest &amp;manifest, std::vector&lt; EvaArchiveEntry &gt; entries, const EvaArchiveLimits &amp;limits)</div><div class="ttdoc">Build a deterministic ZIP64 .eva, selecting raw Deflate only when smaller than Store.</div><div class="ttdef"><b>Definition</b> <a href="EvaArchive_8cpp_source.html#l00414">EvaArchive.cpp:414</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1database_html_a75dfba93933e5172c94376060426f2f4"><div class="ttname"><a href="namespaceeve_1_1database.html#a75dfba93933e5172c94376060426f2f4">eve::database::Value</a></div><div class="ttdeci">std::variant&lt; std::monostate, std::int64_t, double, std::string, bool &gt; Value</div><div class="ttdef"><b>Definition</b> <a href="Database_8h_source.html#l00024">Database.h:24</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_html_ab827375bd819e2db4edff6f9966b4682"><div class="ttname"><a href="namespaceeve_1_1procgen.html#ab827375bd819e2db4edff6f9966b4682">eve::procgen::planGtsTerrainLodAssets</a></div><div class="ttdeci">Result&lt; std::vector&lt; GtsTerrainLodAssetEntry &gt; &gt; planGtsTerrainLodAssets(const GtsTerrainLodSet &amp;lods, const std::string &amp;terrainName, const std::string &amp;meshFolder)</div><div class="ttdoc">Build the deterministic object and mesh naming plan used by GTS terrain export.</div><div class="ttdef"><b>Definition</b> <a href="GtsTerrainLod_8cpp_source.html#l00175">GtsTerrainLod.cpp:175</a></div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7">eve::DiagnosticCode</a></div><div class="ttdeci">DiagnosticCode</div><div class="ttdoc">Stable machine-readable diagnostic codes.</div><div class="ttdef"><b>Definition</b> <a href="Diagnostic_8h_source.html#l00047">Diagnostic.h:47</a></div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::DiagnosticCode::InvalidArgument</a></div><div class="ttdeci">@ InvalidArgument</div></div>
+<div class="ttc" id="anamespaceeve_html_a622007bd83c1f1b09c596c474039ca56"><div class="ttname"><a href="namespaceeve.html#a622007bd83c1f1b09c596c474039ca56">eve::SchemaVersion</a></div><div class="ttdeci">detail::StrongUint64&lt; detail::SchemaVersionTag &gt; SchemaVersion</div><div class="ttdoc">Persistent data-format version; not a runtime replacement generation.</div><div class="ttdef"><b>Definition</b> <a href="SchemaVersion_8h_source.html#l00012">SchemaVersion.h:12</a></div></div>
+<div class="ttc" id="astructeve_1_1asset_1_1CanonicalMeshData_html"><div class="ttname"><a href="structeve_1_1asset_1_1CanonicalMeshData.html">eve::asset::CanonicalMeshData</a></div><div class="ttdoc">Owning CPU mesh snapshot; UV arrays are packed ST pairs indexed by source set number....</div><div class="ttdef"><b>Definition</b> <a href="CanonicalMesh_8h_source.html#l00017">CanonicalMesh.h:17</a></div></div>
+<div class="ttc" id="astructeve_1_1asset_1_1CanonicalMeshData_html_a3b2212e92ddc0626d82e57e9951a2847"><div class="ttname"><a href="structeve_1_1asset_1_1CanonicalMeshData.html#a3b2212e92ddc0626d82e57e9951a2847">eve::asset::CanonicalMeshData::colors</a></div><div class="ttdeci">std::vector&lt; float &gt; colors</div><div class="ttdef"><b>Definition</b> <a href="CanonicalMesh_8h_source.html#l00020">CanonicalMesh.h:20</a></div></div>
+<div class="ttc" id="astructeve_1_1asset_1_1CanonicalMeshData_html_a4b93ed8f3b304ff108ff69c84ea07af5"><div class="ttname"><a href="structeve_1_1asset_1_1CanonicalMeshData.html#a4b93ed8f3b304ff108ff69c84ea07af5">eve::asset::CanonicalMeshData::indices</a></div><div class="ttdeci">std::vector&lt; std::uint32_t &gt; indices</div><div class="ttdef"><b>Definition</b> <a href="CanonicalMesh_8h_source.html#l00022">CanonicalMesh.h:22</a></div></div>
+<div class="ttc" id="astructeve_1_1asset_1_1CanonicalMeshData_html_a6aee4575670b14f67acf14a5fbabb974"><div class="ttname"><a href="structeve_1_1asset_1_1CanonicalMeshData.html#a6aee4575670b14f67acf14a5fbabb974">eve::asset::CanonicalMeshData::normals</a></div><div class="ttdeci">std::vector&lt; float &gt; normals</div><div class="ttdef"><b>Definition</b> <a href="CanonicalMesh_8h_source.html#l00019">CanonicalMesh.h:19</a></div></div>
+<div class="ttc" id="astructeve_1_1asset_1_1CanonicalMeshData_html_ab059810574a7eb6fbdb3d4e82729518b"><div class="ttname"><a href="structeve_1_1asset_1_1CanonicalMeshData.html#ab059810574a7eb6fbdb3d4e82729518b">eve::asset::CanonicalMeshData::texcoords</a></div><div class="ttdeci">std::map&lt; std::uint32_t, std::vector&lt; float &gt; &gt; texcoords</div><div class="ttdef"><b>Definition</b> <a href="CanonicalMesh_8h_source.html#l00021">CanonicalMesh.h:21</a></div></div>
+<div class="ttc" id="astructeve_1_1asset_1_1CanonicalMeshData_html_aeeac2bafa01d32eb4f17dc39b0842d30"><div class="ttname"><a href="structeve_1_1asset_1_1CanonicalMeshData.html#aeeac2bafa01d32eb4f17dc39b0842d30">eve::asset::CanonicalMeshData::positions</a></div><div class="ttdeci">std::vector&lt; float &gt; positions</div><div class="ttdef"><b>Definition</b> <a href="CanonicalMesh_8h_source.html#l00018">CanonicalMesh.h:18</a></div></div>
+<div class="ttc" id="astructeve_1_1asset_1_1CanonicalMeshLimits_html"><div class="ttname"><a href="structeve_1_1asset_1_1CanonicalMeshLimits.html">eve::asset::CanonicalMeshLimits</a></div><div class="ttdoc">Allocation limits checked before decoding any vertex arrays. UV count is byte-budget bounded.</div><div class="ttdef"><b>Definition</b> <a href="CanonicalMesh_8h_source.html#l00026">CanonicalMesh.h:26</a></div></div>
+<div class="ttc" id="astructeve_1_1asset_1_1CanonicalMeshLimits_html_a45099194bd5d41113b5dacfeb2cfc78a"><div class="ttname"><a href="structeve_1_1asset_1_1CanonicalMeshLimits.html#a45099194bd5d41113b5dacfeb2cfc78a">eve::asset::CanonicalMeshLimits::maximumVertices</a></div><div class="ttdeci">std::uint32_t maximumVertices</div><div class="ttdef"><b>Definition</b> <a href="CanonicalMesh_8h_source.html#l00027">CanonicalMesh.h:27</a></div></div>
+<div class="ttc" id="astructeve_1_1asset_1_1CanonicalMeshLimits_html_a458dc9d9e2fa171b5f095c173630ebc7"><div class="ttname"><a href="structeve_1_1asset_1_1CanonicalMeshLimits.html#a458dc9d9e2fa171b5f095c173630ebc7">eve::asset::CanonicalMeshLimits::maximumDecodedBytes</a></div><div class="ttdeci">std::uint64_t maximumDecodedBytes</div><div class="ttdef"><b>Definition</b> <a href="CanonicalMesh_8h_source.html#l00029">CanonicalMesh.h:29</a></div></div>
+<div class="ttc" id="astructeve_1_1asset_1_1CanonicalMeshLimits_html_a757b4c5946613b8c596ad09ed74cd6d8"><div class="ttname"><a href="structeve_1_1asset_1_1CanonicalMeshLimits.html#a757b4c5946613b8c596ad09ed74cd6d8">eve::asset::CanonicalMeshLimits::maximumIndices</a></div><div class="ttdeci">std::uint32_t maximumIndices</div><div class="ttdef"><b>Definition</b> <a href="CanonicalMesh_8h_source.html#l00028">CanonicalMesh.h:28</a></div></div>
+<div class="ttc" id="astructeve_1_1asset__import_1_1AssetImportLimits_html"><div class="ttname"><a href="structeve_1_1asset__import_1_1AssetImportLimits.html">eve::asset_import::AssetImportLimits</a></div><div class="ttdoc">Parser and allocation budgets applied to untrusted importer inputs.</div><div class="ttdef"><b>Definition</b> <a href="AssetImporter_8h_source.html#l00015">AssetImporter.h:15</a></div></div>
+<div class="ttc" id="astructeve_1_1asset__import_1_1ImportPackageIdentity_html"><div class="ttname"><a href="structeve_1_1asset__import_1_1ImportPackageIdentity.html">eve::asset_import::ImportPackageIdentity</a></div><div class="ttdoc">Common stable package metadata supplied by an import transaction.</div><div class="ttdef"><b>Definition</b> <a href="AssetImporter_8h_source.html#l00031">AssetImporter.h:31</a></div></div>
+<div class="ttc" id="astructeve_1_1asset__import_1_1ImportPackageIdentity_html_a16a82afdbf02aa31312a75501e054225"><div class="ttname"><a href="structeve_1_1asset__import_1_1ImportPackageIdentity.html#a16a82afdbf02aa31312a75501e054225">eve::asset_import::ImportPackageIdentity::packageId</a></div><div class="ttdeci">PersistentId packageId</div><div class="ttdef"><b>Definition</b> <a href="AssetImporter_8h_source.html#l00032">AssetImporter.h:32</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1GtsTerrainLodTile_html_a5cc98d4b1532700318a8311ad33dc1b3"><div class="ttname"><a href="structeve_1_1procgen_1_1GtsTerrainLodTile.html#a5cc98d4b1532700318a8311ad33dc1b3">eve::procgen::GtsTerrainLodTile::levels</a></div><div class="ttdeci">std::vector&lt; MeshBuild &gt; levels</div><div class="ttdef"><b>Definition</b> <a href="GtsTerrainLod_8h_source.html#l00074">GtsTerrainLod.h:74</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

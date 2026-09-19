@@ -1,0 +1,239 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/engine/common/PcgPhotoModeApply.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_2052808828190f934b76e979ee65af8a.html">engine</a></li><li class="navelem"><a class="el" href="dir_3ccf6d3192f3ffcbe7eee38747026054.html">common</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">PcgPhotoModeApply.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="PcgPhotoModeApply_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#include &quot;<a class="code" href="Result_8h.html">common/Result.h</a>&quot;</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;variant&gt;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve.html">eve</a> {</div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno"><a class="line" href="structeve_1_1PhotoModeColor.html#a70469b9efa947b9c0a5400f48c729e4c">    9</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1PhotoModeColor.html">PhotoModeColor</a> { <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1PhotoModeColor.html#aac3343a8f0b81f2665a129e0a5966029">r</a>=0, <a class="code hl_variable" href="structeve_1_1PhotoModeColor.html#ad10f3b12ef5bbf1a9ed343fbab46f8c5">g</a>=0, <a class="code hl_variable" href="structeve_1_1PhotoModeColor.html#a83976ba39983ebff2405621aabd0fc74">b</a>=0, <a class="code hl_variable" href="structeve_1_1PhotoModeColor.html#a70469b9efa947b9c0a5400f48c729e4c">a</a>=1; };</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno"><a class="line" href="namespaceeve.html#ab1a6204497a74ae37ea0bad031d51deb">   11</a></span><span class="keyword">using </span><a class="code hl_typedef" href="namespaceeve.html#ab1a6204497a74ae37ea0bad031d51deb">PhotoModeValue</a> = std::variant&lt;bool, std::int64_t, float, std::string, PhotoModeColor&gt;;</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno"><a class="line" href="namespaceeve.html#ae5defde2d23d6c815e440eabbed4eb61">   13</a></span><span class="keyword">enum class</span> <a class="code hl_enumeration" href="namespaceeve.html#ae5defde2d23d6c815e440eabbed4eb61">PhotoModeDomain</a> { <a class="code hl_enumvalue" href="namespaceeve.html#ae5defde2d23d6c815e440eabbed4eb61ac03d53b70feba4ea842510abecd6c45e">Photo</a>=0, <a class="code hl_enumvalue" href="namespaceeve.html#ae5defde2d23d6c815e440eabbed4eb61aa45da96d0bf6575970f2d27af22be28a">System</a>=1, <a class="code hl_enumvalue" href="namespaceeve.html#ae5defde2d23d6c815e440eabbed4eb61ad334dfcea59127bedfcdbe0a3ee7f494">Graphics</a>=2, <a class="code hl_enumvalue" href="namespaceeve.html#ae5defde2d23d6c815e440eabbed4eb61a967d35e40f3f95b1f538bd248640bf3b">Camera</a>=3, <a class="code hl_enumvalue" href="namespaceeve.html#ae5defde2d23d6c815e440eabbed4eb61aac21d502848247aa2f578d0f718f5d1d">Streaming</a>=4, <a class="code hl_enumvalue" href="namespaceeve.html#ae5defde2d23d6c815e440eabbed4eb61a1441df6b1c10f910ccdc400e40b5fce9">Weather</a>=5, <a class="code hl_enumvalue" href="namespaceeve.html#ae5defde2d23d6c815e440eabbed4eb61a2e4b97fde8cf63085ec969fcc7e490c0">Lighting</a>=6, <a class="code hl_enumvalue" href="namespaceeve.html#ae5defde2d23d6c815e440eabbed4eb61a27634ff8002b12e75d98e07ccd005d18">Water</a>=7, <a class="code hl_enumvalue" href="namespaceeve.html#ae5defde2d23d6c815e440eabbed4eb61aaf8f8f73e47409a99127ba50b1e387ff">PostFx</a>=8, <a class="code hl_enumvalue" href="namespaceeve.html#ae5defde2d23d6c815e440eabbed4eb61a4ccfea7a25fae3c1d31555f0856d2b42">Terrain</a>=9, <a class="code hl_enumvalue" href="namespaceeve.html#ae5defde2d23d6c815e440eabbed4eb61aaac9a63596f76a62bb9f61a5dd7c0d25">Grass</a>=10, <a class="code hl_enumvalue" href="namespaceeve.html#ae5defde2d23d6c815e440eabbed4eb61ab22f0418e8ac915eb66f829d262d14a2">Audio</a>=11 };</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno"><a class="line" href="structeve_1_1PhotoModeAssignment.html#a9621d52367fa935767fbfd4314e799cc">   15</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1PhotoModeAssignment.html">PhotoModeAssignment</a> { std::string <a class="code hl_variable" href="structeve_1_1PhotoModeAssignment.html#aaf79f32fc2b6d69648ce9e6c90edfd11">field</a>; <a class="code hl_enumeration" href="namespaceeve.html#ae5defde2d23d6c815e440eabbed4eb61">PhotoModeDomain</a> <a class="code hl_variable" href="structeve_1_1PhotoModeAssignment.html#a9621d52367fa935767fbfd4314e799cc">domain</a>=<a class="code hl_enumvalue" href="namespaceeve.html#ae5defde2d23d6c815e440eabbed4eb61ac03d53b70feba4ea842510abecd6c45e">PhotoModeDomain::Photo</a>; <a class="code hl_typedef" href="namespaceeve.html#ab1a6204497a74ae37ea0bad031d51deb">PhotoModeValue</a> <a class="code hl_variable" href="structeve_1_1PhotoModeAssignment.html#a441bcca343de9970d1398cabc169909d">value</a>; };</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno"><a class="line" href="namespaceeve.html#accc199d5bb2f7f82fb0bec480152f7e3">   28</a></span><span class="keyword">enum class</span> <a class="code hl_enumeration" href="namespaceeve.html#accc199d5bb2f7f82fb0bec480152f7e3">PhotoModeFieldAcceptance</a> { <a class="code hl_enumvalue" href="namespaceeve.html#accc199d5bb2f7f82fb0bec480152f7e3ad37b1f6c0512e2118cee17fea015b699">Rejected</a>=0, <a class="code hl_enumvalue" href="namespaceeve.html#accc199d5bb2f7f82fb0bec480152f7e3a382ab522931673c11e398ead1b7b1678">Accepted</a>=1 };</div>
+<div class="foldopen" id="foldopen00029" data-start="{" data-end="};">
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno"><a class="line" href="classeve_1_1IPhotoModeFieldSink.html">   29</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1IPhotoModeFieldSink.html">IPhotoModeFieldSink</a> {</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno"><a class="line" href="classeve_1_1IPhotoModeFieldSink.html#a641b67687f7b5311e4e96360b6a5eaae">   31</a></span> <span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keyword">const</span> <span class="keywordtype">char</span>* <a class="code hl_variable" href="classeve_1_1IPhotoModeFieldSink.html#a641b67687f7b5311e4e96360b6a5eaae">capabilityName</a>=<span class="stringliteral">&quot;eve.photo-mode.field&quot;</span>;</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno"><a class="line" href="classeve_1_1IPhotoModeFieldSink.html#aeb72f803c31977d90c3a33201a1c9452">   32</a></span> <span class="keyword">virtual</span> <a class="code hl_function" href="classeve_1_1IPhotoModeFieldSink.html#aeb72f803c31977d90c3a33201a1c9452">~IPhotoModeFieldSink</a>()=<span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno"><a class="line" href="classeve_1_1IPhotoModeFieldSink.html#a821dfb15fbdfeae2ae8cd32837c16cc0">   34</a></span> <span class="keyword">virtual</span> <a class="code hl_enumeration" href="namespaceeve.html#accc199d5bb2f7f82fb0bec480152f7e3">PhotoModeFieldAcceptance</a> <a class="code hl_function" href="classeve_1_1IPhotoModeFieldSink.html#a821dfb15fbdfeae2ae8cd32837c16cc0">acceptsPhotoModeField</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1PhotoModeAssignment.html">PhotoModeAssignment</a>&amp; assignment) <span class="keyword">const</span> <span class="keyword">noexcept</span>=0;</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno"><a class="line" href="classeve_1_1IPhotoModeFieldSink.html#a0a185ab4b7ca250dd65d1e3c159fb246">   36</a></span> [[nodiscard]] <span class="keyword">virtual</span> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1IPhotoModeFieldSink.html#a0a185ab4b7ca250dd65d1e3c159fb246">applyPhotoModeField</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1PhotoModeAssignment.html">PhotoModeAssignment</a>&amp; assignment)=0;</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>};</div>
+</div>
+<div class="foldopen" id="foldopen00038" data-start="{" data-end="};">
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno"><a class="line" href="classeve_1_1IPhotoModeApplySink.html">   38</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1IPhotoModeApplySink.html">IPhotoModeApplySink</a> {</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno"><a class="line" href="classeve_1_1IPhotoModeApplySink.html#ae46fffa257a54497f2e6bdd30e75976c">   40</a></span> <span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keyword">const</span> <span class="keywordtype">char</span>* <a class="code hl_variable" href="classeve_1_1IPhotoModeApplySink.html#ae46fffa257a54497f2e6bdd30e75976c">capabilityName</a>=<span class="stringliteral">&quot;eve.photo-mode.apply&quot;</span>;</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno"><a class="line" href="classeve_1_1IPhotoModeApplySink.html#aa8830f862f5018c3caf67cc294397d0d">   41</a></span> <span class="keyword">virtual</span> <a class="code hl_function" href="classeve_1_1IPhotoModeApplySink.html#aa8830f862f5018c3caf67cc294397d0d">~IPhotoModeApplySink</a>()=<span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno"><a class="line" href="classeve_1_1IPhotoModeApplySink.html#acfafd86df7f463753ed23409e880beb4">   43</a></span> [[nodiscard]] <span class="keyword">virtual</span> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1IPhotoModeApplySink.html#acfafd86df7f463753ed23409e880beb4">applyPhotoModeAssignment</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1PhotoModeAssignment.html">PhotoModeAssignment</a>&amp; assignment)=0;</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>};</div>
+</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>}</div>
+<div class="ttc" id="aResult_8h_html"><div class="ttname"><a href="Result_8h.html">Result.h</a></div><div class="ttdoc">Move-only, checked operation results for the common layer.</div></div>
+<div class="ttc" id="aclasseve_1_1IPhotoModeApplySink_html"><div class="ttname"><a href="classeve_1_1IPhotoModeApplySink.html">eve::IPhotoModeApplySink</a></div><div class="ttdef"><b>Definition</b> <a href="PcgPhotoModeApply_8h_source.html#l00038">PcgPhotoModeApply.h:38</a></div></div>
+<div class="ttc" id="aclasseve_1_1IPhotoModeApplySink_html_aa8830f862f5018c3caf67cc294397d0d"><div class="ttname"><a href="classeve_1_1IPhotoModeApplySink.html#aa8830f862f5018c3caf67cc294397d0d">eve::IPhotoModeApplySink::~IPhotoModeApplySink</a></div><div class="ttdeci">virtual ~IPhotoModeApplySink()=default</div></div>
+<div class="ttc" id="aclasseve_1_1IPhotoModeApplySink_html_acfafd86df7f463753ed23409e880beb4"><div class="ttname"><a href="classeve_1_1IPhotoModeApplySink.html#acfafd86df7f463753ed23409e880beb4">eve::IPhotoModeApplySink::applyPhotoModeAssignment</a></div><div class="ttdeci">virtual Result&lt; void &gt; applyPhotoModeAssignment(const PhotoModeAssignment &amp;assignment)=0</div><div class="ttdoc">Apply one atomic assignment to its authoritative domain.</div></div>
+<div class="ttc" id="aclasseve_1_1IPhotoModeApplySink_html_ae46fffa257a54497f2e6bdd30e75976c"><div class="ttname"><a href="classeve_1_1IPhotoModeApplySink.html#ae46fffa257a54497f2e6bdd30e75976c">eve::IPhotoModeApplySink::capabilityName</a></div><div class="ttdeci">static constexpr const char * capabilityName</div><div class="ttdef"><b>Definition</b> <a href="PcgPhotoModeApply_8h_source.html#l00040">PcgPhotoModeApply.h:40</a></div></div>
+<div class="ttc" id="aclasseve_1_1IPhotoModeFieldSink_html"><div class="ttname"><a href="classeve_1_1IPhotoModeFieldSink.html">eve::IPhotoModeFieldSink</a></div><div class="ttdef"><b>Definition</b> <a href="PcgPhotoModeApply_8h_source.html#l00029">PcgPhotoModeApply.h:29</a></div></div>
+<div class="ttc" id="aclasseve_1_1IPhotoModeFieldSink_html_a0a185ab4b7ca250dd65d1e3c159fb246"><div class="ttname"><a href="classeve_1_1IPhotoModeFieldSink.html#a0a185ab4b7ca250dd65d1e3c159fb246">eve::IPhotoModeFieldSink::applyPhotoModeField</a></div><div class="ttdeci">virtual Result&lt; void &gt; applyPhotoModeField(const PhotoModeAssignment &amp;assignment)=0</div><div class="ttdoc">Apply one accepted assignment atomically on the game thread.</div></div>
+<div class="ttc" id="aclasseve_1_1IPhotoModeFieldSink_html_a641b67687f7b5311e4e96360b6a5eaae"><div class="ttname"><a href="classeve_1_1IPhotoModeFieldSink.html#a641b67687f7b5311e4e96360b6a5eaae">eve::IPhotoModeFieldSink::capabilityName</a></div><div class="ttdeci">static constexpr const char * capabilityName</div><div class="ttdef"><b>Definition</b> <a href="PcgPhotoModeApply_8h_source.html#l00031">PcgPhotoModeApply.h:31</a></div></div>
+<div class="ttc" id="aclasseve_1_1IPhotoModeFieldSink_html_a821dfb15fbdfeae2ae8cd32837c16cc0"><div class="ttname"><a href="classeve_1_1IPhotoModeFieldSink.html#a821dfb15fbdfeae2ae8cd32837c16cc0">eve::IPhotoModeFieldSink::acceptsPhotoModeField</a></div><div class="ttdeci">virtual PhotoModeFieldAcceptance acceptsPhotoModeField(const PhotoModeAssignment &amp;assignment) const noexcept=0</div><div class="ttdoc">Return true only for fields owned by this provider.</div></div>
+<div class="ttc" id="aclasseve_1_1IPhotoModeFieldSink_html_aeb72f803c31977d90c3a33201a1c9452"><div class="ttname"><a href="classeve_1_1IPhotoModeFieldSink.html#aeb72f803c31977d90c3a33201a1c9452">eve::IPhotoModeFieldSink::~IPhotoModeFieldSink</a></div><div class="ttdeci">virtual ~IPhotoModeFieldSink()=default</div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="anamespaceeve_html"><div class="ttname"><a href="namespaceeve.html">eve</a></div><div class="ttdoc">Build metadata (engine git commit, build time, third-party version).</div><div class="ttdef"><b>Definition</b> <a href="Build_8cpp_source.html#l00016">Build.cpp:16</a></div></div>
+<div class="ttc" id="anamespaceeve_html_ab1a6204497a74ae37ea0bad031d51deb"><div class="ttname"><a href="namespaceeve.html#ab1a6204497a74ae37ea0bad031d51deb">eve::PhotoModeValue</a></div><div class="ttdeci">std::variant&lt; bool, std::int64_t, float, std::string, PhotoModeColor &gt; PhotoModeValue</div><div class="ttdoc">Typed payload accepted by authoritative photo-mode domain owners.</div><div class="ttdef"><b>Definition</b> <a href="PcgPhotoModeApply_8h_source.html#l00011">PcgPhotoModeApply.h:11</a></div></div>
+<div class="ttc" id="anamespaceeve_html_accc199d5bb2f7f82fb0bec480152f7e3"><div class="ttname"><a href="namespaceeve.html#accc199d5bb2f7f82fb0bec480152f7e3">eve::PhotoModeFieldAcceptance</a></div><div class="ttdeci">PhotoModeFieldAcceptance</div><div class="ttdoc">Capability implemented by the composition root that routes assignments to domain owners.</div><div class="ttdef"><b>Definition</b> <a href="PcgPhotoModeApply_8h_source.html#l00028">PcgPhotoModeApply.h:28</a></div></div>
+<div class="ttc" id="anamespaceeve_html_accc199d5bb2f7f82fb0bec480152f7e3a382ab522931673c11e398ead1b7b1678"><div class="ttname"><a href="namespaceeve.html#accc199d5bb2f7f82fb0bec480152f7e3a382ab522931673c11e398ead1b7b1678">eve::PhotoModeFieldAcceptance::Accepted</a></div><div class="ttdeci">@ Accepted</div></div>
+<div class="ttc" id="anamespaceeve_html_accc199d5bb2f7f82fb0bec480152f7e3ad37b1f6c0512e2118cee17fea015b699"><div class="ttname"><a href="namespaceeve.html#accc199d5bb2f7f82fb0bec480152f7e3ad37b1f6c0512e2118cee17fea015b699">eve::PhotoModeFieldAcceptance::Rejected</a></div><div class="ttdeci">@ Rejected</div></div>
+<div class="ttc" id="anamespaceeve_html_ae5defde2d23d6c815e440eabbed4eb61"><div class="ttname"><a href="namespaceeve.html#ae5defde2d23d6c815e440eabbed4eb61">eve::PhotoModeDomain</a></div><div class="ttdeci">PhotoModeDomain</div><div class="ttdoc">Authoritative owner selected for a Pcg photo-mode field.</div><div class="ttdef"><b>Definition</b> <a href="PcgPhotoModeApply_8h_source.html#l00013">PcgPhotoModeApply.h:13</a></div></div>
+<div class="ttc" id="anamespaceeve_html_ae5defde2d23d6c815e440eabbed4eb61a1441df6b1c10f910ccdc400e40b5fce9"><div class="ttname"><a href="namespaceeve.html#ae5defde2d23d6c815e440eabbed4eb61a1441df6b1c10f910ccdc400e40b5fce9">eve::PhotoModeDomain::Weather</a></div><div class="ttdeci">@ Weather</div></div>
+<div class="ttc" id="anamespaceeve_html_ae5defde2d23d6c815e440eabbed4eb61a27634ff8002b12e75d98e07ccd005d18"><div class="ttname"><a href="namespaceeve.html#ae5defde2d23d6c815e440eabbed4eb61a27634ff8002b12e75d98e07ccd005d18">eve::PhotoModeDomain::Water</a></div><div class="ttdeci">@ Water</div></div>
+<div class="ttc" id="anamespaceeve_html_ae5defde2d23d6c815e440eabbed4eb61a2e4b97fde8cf63085ec969fcc7e490c0"><div class="ttname"><a href="namespaceeve.html#ae5defde2d23d6c815e440eabbed4eb61a2e4b97fde8cf63085ec969fcc7e490c0">eve::PhotoModeDomain::Lighting</a></div><div class="ttdeci">@ Lighting</div></div>
+<div class="ttc" id="anamespaceeve_html_ae5defde2d23d6c815e440eabbed4eb61a4ccfea7a25fae3c1d31555f0856d2b42"><div class="ttname"><a href="namespaceeve.html#ae5defde2d23d6c815e440eabbed4eb61a4ccfea7a25fae3c1d31555f0856d2b42">eve::PhotoModeDomain::Terrain</a></div><div class="ttdeci">@ Terrain</div></div>
+<div class="ttc" id="anamespaceeve_html_ae5defde2d23d6c815e440eabbed4eb61a967d35e40f3f95b1f538bd248640bf3b"><div class="ttname"><a href="namespaceeve.html#ae5defde2d23d6c815e440eabbed4eb61a967d35e40f3f95b1f538bd248640bf3b">eve::PhotoModeDomain::Camera</a></div><div class="ttdeci">@ Camera</div></div>
+<div class="ttc" id="anamespaceeve_html_ae5defde2d23d6c815e440eabbed4eb61aa45da96d0bf6575970f2d27af22be28a"><div class="ttname"><a href="namespaceeve.html#ae5defde2d23d6c815e440eabbed4eb61aa45da96d0bf6575970f2d27af22be28a">eve::PhotoModeDomain::System</a></div><div class="ttdeci">@ System</div></div>
+<div class="ttc" id="anamespaceeve_html_ae5defde2d23d6c815e440eabbed4eb61aaac9a63596f76a62bb9f61a5dd7c0d25"><div class="ttname"><a href="namespaceeve.html#ae5defde2d23d6c815e440eabbed4eb61aaac9a63596f76a62bb9f61a5dd7c0d25">eve::PhotoModeDomain::Grass</a></div><div class="ttdeci">@ Grass</div></div>
+<div class="ttc" id="anamespaceeve_html_ae5defde2d23d6c815e440eabbed4eb61aac21d502848247aa2f578d0f718f5d1d"><div class="ttname"><a href="namespaceeve.html#ae5defde2d23d6c815e440eabbed4eb61aac21d502848247aa2f578d0f718f5d1d">eve::PhotoModeDomain::Streaming</a></div><div class="ttdeci">@ Streaming</div></div>
+<div class="ttc" id="anamespaceeve_html_ae5defde2d23d6c815e440eabbed4eb61aaf8f8f73e47409a99127ba50b1e387ff"><div class="ttname"><a href="namespaceeve.html#ae5defde2d23d6c815e440eabbed4eb61aaf8f8f73e47409a99127ba50b1e387ff">eve::PhotoModeDomain::PostFx</a></div><div class="ttdeci">@ PostFx</div></div>
+<div class="ttc" id="anamespaceeve_html_ae5defde2d23d6c815e440eabbed4eb61ab22f0418e8ac915eb66f829d262d14a2"><div class="ttname"><a href="namespaceeve.html#ae5defde2d23d6c815e440eabbed4eb61ab22f0418e8ac915eb66f829d262d14a2">eve::PhotoModeDomain::Audio</a></div><div class="ttdeci">@ Audio</div></div>
+<div class="ttc" id="anamespaceeve_html_ae5defde2d23d6c815e440eabbed4eb61ac03d53b70feba4ea842510abecd6c45e"><div class="ttname"><a href="namespaceeve.html#ae5defde2d23d6c815e440eabbed4eb61ac03d53b70feba4ea842510abecd6c45e">eve::PhotoModeDomain::Photo</a></div><div class="ttdeci">@ Photo</div></div>
+<div class="ttc" id="anamespaceeve_html_ae5defde2d23d6c815e440eabbed4eb61ad334dfcea59127bedfcdbe0a3ee7f494"><div class="ttname"><a href="namespaceeve.html#ae5defde2d23d6c815e440eabbed4eb61ad334dfcea59127bedfcdbe0a3ee7f494">eve::PhotoModeDomain::Graphics</a></div><div class="ttdeci">@ Graphics</div></div>
+<div class="ttc" id="astructeve_1_1PhotoModeAssignment_html"><div class="ttname"><a href="structeve_1_1PhotoModeAssignment.html">eve::PhotoModeAssignment</a></div><div class="ttdoc">One reversible field assignment in a photo-mode transaction.</div><div class="ttdef"><b>Definition</b> <a href="PcgPhotoModeApply_8h_source.html#l00015">PcgPhotoModeApply.h:15</a></div></div>
+<div class="ttc" id="astructeve_1_1PhotoModeAssignment_html_a441bcca343de9970d1398cabc169909d"><div class="ttname"><a href="structeve_1_1PhotoModeAssignment.html#a441bcca343de9970d1398cabc169909d">eve::PhotoModeAssignment::value</a></div><div class="ttdeci">PhotoModeValue value</div><div class="ttdef"><b>Definition</b> <a href="PcgPhotoModeApply_8h_source.html#l00015">PcgPhotoModeApply.h:15</a></div></div>
+<div class="ttc" id="astructeve_1_1PhotoModeAssignment_html_a9621d52367fa935767fbfd4314e799cc"><div class="ttname"><a href="structeve_1_1PhotoModeAssignment.html#a9621d52367fa935767fbfd4314e799cc">eve::PhotoModeAssignment::domain</a></div><div class="ttdeci">PhotoModeDomain domain</div><div class="ttdef"><b>Definition</b> <a href="PcgPhotoModeApply_8h_source.html#l00015">PcgPhotoModeApply.h:15</a></div></div>
+<div class="ttc" id="astructeve_1_1PhotoModeAssignment_html_aaf79f32fc2b6d69648ce9e6c90edfd11"><div class="ttname"><a href="structeve_1_1PhotoModeAssignment.html#aaf79f32fc2b6d69648ce9e6c90edfd11">eve::PhotoModeAssignment::field</a></div><div class="ttdeci">std::string field</div><div class="ttdef"><b>Definition</b> <a href="PcgPhotoModeApply_8h_source.html#l00015">PcgPhotoModeApply.h:15</a></div></div>
+<div class="ttc" id="astructeve_1_1PhotoModeColor_html"><div class="ttname"><a href="structeve_1_1PhotoModeColor.html">eve::PhotoModeColor</a></div><div class="ttdoc">RGBA payload used by the cross-module photo-mode application contract.</div><div class="ttdef"><b>Definition</b> <a href="PcgPhotoModeApply_8h_source.html#l00009">PcgPhotoModeApply.h:9</a></div></div>
+<div class="ttc" id="astructeve_1_1PhotoModeColor_html_a70469b9efa947b9c0a5400f48c729e4c"><div class="ttname"><a href="structeve_1_1PhotoModeColor.html#a70469b9efa947b9c0a5400f48c729e4c">eve::PhotoModeColor::a</a></div><div class="ttdeci">float a</div><div class="ttdef"><b>Definition</b> <a href="PcgPhotoModeApply_8h_source.html#l00009">PcgPhotoModeApply.h:9</a></div></div>
+<div class="ttc" id="astructeve_1_1PhotoModeColor_html_a83976ba39983ebff2405621aabd0fc74"><div class="ttname"><a href="structeve_1_1PhotoModeColor.html#a83976ba39983ebff2405621aabd0fc74">eve::PhotoModeColor::b</a></div><div class="ttdeci">float b</div><div class="ttdef"><b>Definition</b> <a href="PcgPhotoModeApply_8h_source.html#l00009">PcgPhotoModeApply.h:9</a></div></div>
+<div class="ttc" id="astructeve_1_1PhotoModeColor_html_aac3343a8f0b81f2665a129e0a5966029"><div class="ttname"><a href="structeve_1_1PhotoModeColor.html#aac3343a8f0b81f2665a129e0a5966029">eve::PhotoModeColor::r</a></div><div class="ttdeci">float r</div><div class="ttdef"><b>Definition</b> <a href="PcgPhotoModeApply_8h_source.html#l00009">PcgPhotoModeApply.h:9</a></div></div>
+<div class="ttc" id="astructeve_1_1PhotoModeColor_html_ad10f3b12ef5bbf1a9ed343fbab46f8c5"><div class="ttname"><a href="structeve_1_1PhotoModeColor.html#ad10f3b12ef5bbf1a9ed343fbab46f8c5">eve::PhotoModeColor::g</a></div><div class="ttdeci">float g</div><div class="ttdef"><b>Definition</b> <a href="PcgPhotoModeApply_8h_source.html#l00009">PcgPhotoModeApply.h:9</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,435 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/tensor/KernelGenWgslReduction.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_782bbf0976eacdfd5fcf4a27f0d60777.html">tensor</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">KernelGenWgslReduction.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="KernelGenWgslReduction_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &lt;algorithm&gt;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#include &lt;cmath&gt;</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &lt;sstream&gt;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="Exception_8h.html">common/Exception.h</a>&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;<a class="code" href="KernelGenWgslInternal_8h.html">tensor/KernelGenWgslInternal.h</a>&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &quot;<a class="code" href="Quant_8h.html">tensor/Quant.h</a>&quot;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span> </div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1tensor_1_1wgsl__detail.html">eve::tensor::wgsl_detail</a> {</div>
+<div class="foldopen" id="foldopen00009" data-start="{" data-end="}">
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno"><a class="line" href="namespaceeve_1_1tensor_1_1wgsl__detail.html#ab665a60d52c85ed2dcc3f91b2154dce1">    9</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="namespaceeve_1_1tensor_1_1wgsl__detail.html#ab665a60d52c85ed2dcc3f91b2154dce1">genSoftmax</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1tensor_1_1Graph.html">Graph</a> &amp;<a class="code hl_variable" href="GpuGraph_8cpp.html#aaae841ffb46b13fecc7328d10de4a9f6">g</a>, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1tensor_1_1FusedGroup.html">FusedGroup</a> &amp;grp, <a class="code hl_struct" href="structeve_1_1tensor_1_1KernelSpec.html">KernelSpec</a> &amp;out) {</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span>    <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1tensor_1_1GraphNode.html">GraphNode</a> &amp;sn    = <a class="code hl_variable" href="GpuGraph_8cpp.html#aaae841ffb46b13fecc7328d10de4a9f6">g</a>.node(grp.<a class="code hl_variable" href="structeve_1_1tensor_1_1FusedGroup.html#abc2486cf54297be4fbe73e0657062529">outputNode</a>);</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span>    <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1tensor_1_1GraphNode.html">GraphNode</a> &amp;X     = <a class="code hl_variable" href="GpuGraph_8cpp.html#aaae841ffb46b13fecc7328d10de4a9f6">g</a>.node(sn.<a class="code hl_variable" href="structeve_1_1tensor_1_1GraphNode.html#a3715435e2ec533e176c6879126c15918">in0</a>);</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span>    <span class="keyword">const</span> <span class="keywordtype">int</span>        axis  = sn.<a class="code hl_variable" href="structeve_1_1tensor_1_1GraphNode.html#a5f32561a53d48f71fc991b436f84cc6b">i0</a>;</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>    <span class="keywordtype">int</span>              outer = 1, <a class="code hl_variable" href="tensor_2GpuBackend_8cpp.html#a0bd59f5f032fd2910a7639a86db636c0">reduce</a> = 1, inner = 1;</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> k = 0; k &lt; axis; ++k) outer *= X.dims[k];</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>    <a class="code hl_variable" href="tensor_2GpuBackend_8cpp.html#a0bd59f5f032fd2910a7639a86db636c0">reduce</a> = X.dims[axis];</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> k = axis + 1; k &lt; X.rank; ++k) inner *= X.dims[k];</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>    <span class="keyword">const</span> <span class="keywordtype">int</span>  <a class="code hl_variable" href="OnnxLstm_8cpp.html#ad161320eba27a8b966baac47bee35c46">rows</a>    = outer * inner;</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>    <span class="keyword">const</span> <span class="keywordtype">bool</span> logMode = grp.<a class="code hl_variable" href="structeve_1_1tensor_1_1FusedGroup.html#a850dcdcfcc98dcf031b00574e29bf8b3">logMode</a>;</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span> </div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>    std::ostringstream os1, os2;</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>    os1 &lt;&lt; <a class="code hl_function" href="namespaceeve_1_1tensor_1_1wgsl__detail.html#aec40bac94436c29347913932dabbbc01">header</a>(<a class="code hl_variable" href="namespaceeve_1_1tensor_1_1wgsl__detail.html#a60fb14e4d6d7e71704de19b8495d5f95">kLocalSize</a>);</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>    os1 &lt;&lt; <a class="code hl_function" href="namespaceeve_1_1tensor_1_1wgsl__detail.html#ab36d96220820f7cfd000f279c3e98a79">bufferDecl</a>(0, <span class="stringliteral">&quot;in_&quot;</span>);</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>    os1 &lt;&lt; <a class="code hl_function" href="namespaceeve_1_1tensor_1_1wgsl__detail.html#ab36d96220820f7cfd000f279c3e98a79">bufferDecl</a>(1, <span class="stringliteral">&quot;mx&quot;</span>);</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>    os1 &lt;&lt; <a class="code hl_function" href="namespaceeve_1_1tensor_1_1wgsl__detail.html#ab36d96220820f7cfd000f279c3e98a79">bufferDecl</a>(2, <span class="stringliteral">&quot;sm&quot;</span>);</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>    os1 &lt;&lt; <a class="code hl_function" href="namespaceeve_1_1tensor_1_1wgsl__detail.html#ab410e02fa3f0e0150364f1560423ff20">pushConstant</a>();</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    os1 &lt;&lt; <span class="stringliteral">&quot;@compute @workgroup_size(workgroupX, workgroupY)\nfn main(@builtin(global_invocation_id) globalId: &quot;</span></div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>           <span class="stringliteral">&quot;vec3&lt;u32&gt;, @builtin(local_invocation_id) localId: vec3&lt;u32&gt;, @builtin(workgroup_id) groupId: vec3&lt;u32&gt;) &quot;</span></div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>           <span class="stringliteral">&quot;{\n&quot;</span>;</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    os1 &lt;&lt; <span class="stringliteral">&quot;  var i_: u32 = globalId.x;\n&quot;</span>;</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    os1 &lt;&lt; <span class="stringliteral">&quot;  if (i_ &gt;= &quot;</span> &lt;&lt; <a class="code hl_variable" href="OnnxLstm_8cpp.html#ad161320eba27a8b966baac47bee35c46">rows</a> &lt;&lt; <span class="stringliteral">&quot;u) { return; }\n&quot;</span>;</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    os1 &lt;&lt; <span class="stringliteral">&quot;  var o_: u32 = i_ / &quot;</span> &lt;&lt; inner &lt;&lt; <span class="stringliteral">&quot;u;\n&quot;</span>;</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    os1 &lt;&lt; <span class="stringliteral">&quot;  var ii: u32 = i_ % &quot;</span> &lt;&lt; inner &lt;&lt; <span class="stringliteral">&quot;u;\n&quot;</span>;</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    os1 &lt;&lt; <span class="stringliteral">&quot;  var m: f32 = -3.402823e38;\n&quot;</span>;</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    os1 &lt;&lt; <span class="stringliteral">&quot;  for (var j: u32 = 0u; j &lt; &quot;</span> &lt;&lt; <a class="code hl_variable" href="tensor_2GpuBackend_8cpp.html#a0bd59f5f032fd2910a7639a86db636c0">reduce</a> &lt;&lt; <span class="stringliteral">&quot;u; j++) {\n&quot;</span>;</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    os1 &lt;&lt; <span class="stringliteral">&quot;    m = max(m, in_[(o_ * &quot;</span> &lt;&lt; <a class="code hl_variable" href="tensor_2GpuBackend_8cpp.html#a0bd59f5f032fd2910a7639a86db636c0">reduce</a> &lt;&lt; <span class="stringliteral">&quot;u + j) * &quot;</span> &lt;&lt; inner &lt;&lt; <span class="stringliteral">&quot;u + ii]);\n&quot;</span>;</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    os1 &lt;&lt; <span class="stringliteral">&quot;  }\n&quot;</span>;</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    os1 &lt;&lt; <span class="stringliteral">&quot;  var s: f32 = 0.0;\n&quot;</span>;</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    os1 &lt;&lt; <span class="stringliteral">&quot;  for (var j: u32 = 0u; j &lt; &quot;</span> &lt;&lt; <a class="code hl_variable" href="tensor_2GpuBackend_8cpp.html#a0bd59f5f032fd2910a7639a86db636c0">reduce</a> &lt;&lt; <span class="stringliteral">&quot;u; j++) {\n&quot;</span>;</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    os1 &lt;&lt; <span class="stringliteral">&quot;    s += exp(in_[(o_ * &quot;</span> &lt;&lt; <a class="code hl_variable" href="tensor_2GpuBackend_8cpp.html#a0bd59f5f032fd2910a7639a86db636c0">reduce</a> &lt;&lt; <span class="stringliteral">&quot;u + j) * &quot;</span> &lt;&lt; inner &lt;&lt; <span class="stringliteral">&quot;u + ii] - m);\n&quot;</span>;</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    os1 &lt;&lt; <span class="stringliteral">&quot;  }\n&quot;</span>;</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    os1 &lt;&lt; <span class="stringliteral">&quot;  mx[i_] = m;\n&quot;</span>;</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    os1 &lt;&lt; <span class="stringliteral">&quot;  sm[i_] = s;\n&quot;</span>;</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    os1 &lt;&lt; <span class="stringliteral">&quot;}\n&quot;</span>;</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span> </div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    os2 &lt;&lt; <a class="code hl_function" href="namespaceeve_1_1tensor_1_1wgsl__detail.html#aec40bac94436c29347913932dabbbc01">header</a>(<a class="code hl_variable" href="namespaceeve_1_1tensor_1_1wgsl__detail.html#a60fb14e4d6d7e71704de19b8495d5f95">kLocalSize</a>);</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    os2 &lt;&lt; <a class="code hl_function" href="namespaceeve_1_1tensor_1_1wgsl__detail.html#ab36d96220820f7cfd000f279c3e98a79">bufferDecl</a>(0, <span class="stringliteral">&quot;in_&quot;</span>);</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    os2 &lt;&lt; <a class="code hl_function" href="namespaceeve_1_1tensor_1_1wgsl__detail.html#ab36d96220820f7cfd000f279c3e98a79">bufferDecl</a>(1, <span class="stringliteral">&quot;mx&quot;</span>);</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    os2 &lt;&lt; <a class="code hl_function" href="namespaceeve_1_1tensor_1_1wgsl__detail.html#ab36d96220820f7cfd000f279c3e98a79">bufferDecl</a>(2, <span class="stringliteral">&quot;sm&quot;</span>);</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    os2 &lt;&lt; <a class="code hl_function" href="namespaceeve_1_1tensor_1_1wgsl__detail.html#ab36d96220820f7cfd000f279c3e98a79">bufferDecl</a>(3, <span class="stringliteral">&quot;o&quot;</span>);</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    os2 &lt;&lt; <a class="code hl_function" href="namespaceeve_1_1tensor_1_1wgsl__detail.html#ab410e02fa3f0e0150364f1560423ff20">pushConstant</a>();</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    os2 &lt;&lt; <span class="stringliteral">&quot;@compute @workgroup_size(workgroupX, workgroupY)\nfn main(@builtin(global_invocation_id) globalId: &quot;</span></div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>           <span class="stringliteral">&quot;vec3&lt;u32&gt;, @builtin(local_invocation_id) localId: vec3&lt;u32&gt;, @builtin(workgroup_id) groupId: vec3&lt;u32&gt;) &quot;</span></div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>           <span class="stringliteral">&quot;{\n&quot;</span>;</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    os2 &lt;&lt; <span class="stringliteral">&quot;  var i_: u32 = globalId.x;\n&quot;</span>;</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    os2 &lt;&lt; <span class="stringliteral">&quot;  if (i_ &gt;= &quot;</span> &lt;&lt; sn.<a class="code hl_variable" href="structeve_1_1tensor_1_1GraphNode.html#a938f3a3bf1b459e67c23b147adfb72ee">size</a> &lt;&lt; <span class="stringliteral">&quot;u) { return; }\n&quot;</span>;</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    os2 &lt;&lt; <span class="stringliteral">&quot;  var o_: u32 = (i_ / (&quot;</span> &lt;&lt; <a class="code hl_variable" href="tensor_2GpuBackend_8cpp.html#a0bd59f5f032fd2910a7639a86db636c0">reduce</a> * inner &lt;&lt; <span class="stringliteral">&quot;u)) * &quot;</span> &lt;&lt; inner &lt;&lt; <span class="stringliteral">&quot;u + (i_ % &quot;</span> &lt;&lt; inner &lt;&lt; <span class="stringliteral">&quot;u);\n&quot;</span>;</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    os2 &lt;&lt; <span class="stringliteral">&quot;  var m: f32 = mx[o_];\n&quot;</span>;</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    os2 &lt;&lt; <span class="stringliteral">&quot;  var s: f32 = sm[o_];\n&quot;</span>;</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    os2 &lt;&lt; <span class="stringliteral">&quot;  var x: f32 = in_[i_];\n&quot;</span>;</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    <span class="keywordflow">if</span> (logMode) {</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>        os2 &lt;&lt; <span class="stringliteral">&quot;  o[i_] = (x - m) - log(s);\n&quot;</span>;</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    } <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>        os2 &lt;&lt; <span class="stringliteral">&quot;  o[i_] = exp(x - m) / s;\n&quot;</span>;</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>    }</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    os2 &lt;&lt; <span class="stringliteral">&quot;}\n&quot;</span>;</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    out.<a class="code hl_variable" href="structeve_1_1tensor_1_1KernelSpec.html#a6e8e134aba3e3e6fbfcde50347a2830d">pass1</a>           = os1.str();</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    out.<a class="code hl_variable" href="structeve_1_1tensor_1_1KernelSpec.html#a835643e21de9c0bfb561e876cc4ef430">pass2</a>           = os2.str();</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    out.<a class="code hl_variable" href="structeve_1_1tensor_1_1KernelSpec.html#a77b5fca357229efbdfda0581e996104c">groupsX1</a>        = <a class="code hl_function" href="namespaceeve_1_1tensor_1_1wgsl__detail.html#ab8e4ce64609d6bd82048f77049ea1314">groupsFor</a>(<a class="code hl_variable" href="OnnxLstm_8cpp.html#ad161320eba27a8b966baac47bee35c46">rows</a>);</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>    out.<a class="code hl_variable" href="structeve_1_1tensor_1_1KernelSpec.html#abdb604c2ff210dc4f2e651e6a949370c">groupsX2</a>        = <a class="code hl_function" href="namespaceeve_1_1tensor_1_1wgsl__detail.html#ab8e4ce64609d6bd82048f77049ea1314">groupsFor</a>(sn.<a class="code hl_variable" href="structeve_1_1tensor_1_1GraphNode.html#a938f3a3bf1b459e67c23b147adfb72ee">size</a>);</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>    out.<a class="code hl_variable" href="structeve_1_1tensor_1_1KernelSpec.html#ae5a77f9bdf0dd3ac4b69994421bd0b10">inputCount</a>      = 1;</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    out.<a class="code hl_variable" href="structeve_1_1tensor_1_1KernelSpec.html#afb3ae2c2fbfa3a8c040ff99d6ff96702">inputsReadPass1</a> = 1;</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    out.<a class="code hl_variable" href="structeve_1_1tensor_1_1KernelSpec.html#ac770d3e3447a86ce59eeb4d8f31355e2">statsCount</a>      = 2;</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    out.<a class="code hl_variable" href="structeve_1_1tensor_1_1KernelSpec.html#af2d0ecf3d05e0bb6b1fc52f6e2fb119d">statsSize</a>       = <a class="code hl_variable" href="OnnxLstm_8cpp.html#ad161320eba27a8b966baac47bee35c46">rows</a>;</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    out.<a class="code hl_variable" href="structeve_1_1tensor_1_1KernelSpec.html#abcb5f677d77346fd1fbe700255478552">twoPass</a>         = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>}</div>
+</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span> </div>
+<div class="foldopen" id="foldopen00078" data-start="{" data-end="}">
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno"><a class="line" href="namespaceeve_1_1tensor_1_1wgsl__detail.html#ad358b713ecfc965951917c25adc6ffcd">   78</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="namespaceeve_1_1tensor_1_1wgsl__detail.html#ad358b713ecfc965951917c25adc6ffcd">genNorm</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1tensor_1_1Graph.html">Graph</a> &amp;<a class="code hl_variable" href="GpuGraph_8cpp.html#aaae841ffb46b13fecc7328d10de4a9f6">g</a>, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1tensor_1_1FusedGroup.html">FusedGroup</a> &amp;grp, <span class="keywordtype">bool</span> rms, <a class="code hl_struct" href="structeve_1_1tensor_1_1KernelSpec.html">KernelSpec</a> &amp;out) {</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>    <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1tensor_1_1GraphNode.html">GraphNode</a> &amp;nn         = <a class="code hl_variable" href="GpuGraph_8cpp.html#aaae841ffb46b13fecc7328d10de4a9f6">g</a>.node(grp.<a class="code hl_variable" href="structeve_1_1tensor_1_1FusedGroup.html#abc2486cf54297be4fbe73e0657062529">outputNode</a>);</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>    <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1tensor_1_1GraphNode.html">GraphNode</a> &amp;X          = <a class="code hl_variable" href="GpuGraph_8cpp.html#aaae841ffb46b13fecc7328d10de4a9f6">g</a>.node(nn.<a class="code hl_variable" href="structeve_1_1tensor_1_1GraphNode.html#a3715435e2ec533e176c6879126c15918">in0</a>);</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>    <span class="keyword">const</span> <span class="keywordtype">int</span>        cols       = X.dims[X.rank - 1];</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>    <span class="keyword">const</span> <span class="keywordtype">int</span>        <a class="code hl_variable" href="OnnxLstm_8cpp.html#ad161320eba27a8b966baac47bee35c46">rows</a>       = X.size / cols;</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>    <span class="keyword">const</span> <span class="keywordtype">float</span>      eps        = nn.<a class="code hl_variable" href="structeve_1_1tensor_1_1GraphNode.html#a3782f4c707c3dd332840dfca976d52aa">s0</a>;</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>    <span class="keyword">const</span> <span class="keywordtype">bool</span>       hasScale   = grp.<a class="code hl_variable" href="structeve_1_1tensor_1_1FusedGroup.html#ac891e5d4627060c70e73d1242c988fe6">hasScale</a>;</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>    <span class="keyword">const</span> <span class="keywordtype">bool</span>       hasBias    = !rms &amp;&amp; grp.<a class="code hl_variable" href="structeve_1_1tensor_1_1FusedGroup.html#aeda44f56d7f7a841c889c89d1550819d">hasBias</a>;</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>    <span class="keyword">const</span> <span class="keywordtype">int</span>        inputCount = 1 + (hasScale ? 1 : 0) + (hasBias ? 1 : 0);</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>    <span class="keyword">const</span> <span class="keywordtype">int</span>        statsCount = rms ? 1 : 2;</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>    <span class="keyword">const</span> <span class="keywordtype">int</span>        outBinding = inputCount + statsCount;</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span> </div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>    std::ostringstream os1, os2;</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    os1 &lt;&lt; <a class="code hl_function" href="namespaceeve_1_1tensor_1_1wgsl__detail.html#aec40bac94436c29347913932dabbbc01">header</a>(<a class="code hl_variable" href="namespaceeve_1_1tensor_1_1wgsl__detail.html#a60fb14e4d6d7e71704de19b8495d5f95">kLocalSize</a>);</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>    os1 &lt;&lt; <a class="code hl_function" href="namespaceeve_1_1tensor_1_1wgsl__detail.html#ab36d96220820f7cfd000f279c3e98a79">bufferDecl</a>(0, <span class="stringliteral">&quot;in_&quot;</span>);</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>    os1 &lt;&lt; <a class="code hl_function" href="namespaceeve_1_1tensor_1_1wgsl__detail.html#ab36d96220820f7cfd000f279c3e98a79">bufferDecl</a>(1, <span class="stringliteral">&quot;st0&quot;</span>);</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>    <span class="keywordflow">if</span> (statsCount &gt; 1) os1 &lt;&lt; <a class="code hl_function" href="namespaceeve_1_1tensor_1_1wgsl__detail.html#ab36d96220820f7cfd000f279c3e98a79">bufferDecl</a>(2, <span class="stringliteral">&quot;st1&quot;</span>);</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>    os1 &lt;&lt; <a class="code hl_function" href="namespaceeve_1_1tensor_1_1wgsl__detail.html#ab410e02fa3f0e0150364f1560423ff20">pushConstant</a>();</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>    os1 &lt;&lt; <span class="stringliteral">&quot;@compute @workgroup_size(workgroupX, workgroupY)\nfn main(@builtin(global_invocation_id) globalId: &quot;</span></div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>           <span class="stringliteral">&quot;vec3&lt;u32&gt;, @builtin(local_invocation_id) localId: vec3&lt;u32&gt;, @builtin(workgroup_id) groupId: vec3&lt;u32&gt;) &quot;</span></div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>           <span class="stringliteral">&quot;{\n&quot;</span>;</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>    os1 &lt;&lt; <span class="stringliteral">&quot;  var i_: u32 = globalId.x;\n&quot;</span>;</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>    os1 &lt;&lt; <span class="stringliteral">&quot;  if (i_ &gt;= &quot;</span> &lt;&lt; <a class="code hl_variable" href="OnnxLstm_8cpp.html#ad161320eba27a8b966baac47bee35c46">rows</a> &lt;&lt; <span class="stringliteral">&quot;u) { return; }\n&quot;</span>;</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>    os1 &lt;&lt; <span class="stringliteral">&quot;  var s0: f32 = 0.0;\n&quot;</span>;</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>    <span class="keywordflow">if</span> (statsCount &gt; 1) os1 &lt;&lt; <span class="stringliteral">&quot;  var s1: f32 = 0.0;\n&quot;</span>;</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>    os1 &lt;&lt; <span class="stringliteral">&quot;  for (var j: u32 = 0u; j &lt; &quot;</span> &lt;&lt; cols &lt;&lt; <span class="stringliteral">&quot;u; j++) {\n&quot;</span>;</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>    os1 &lt;&lt; <span class="stringliteral">&quot;    var v: f32 = in_[i_ * &quot;</span> &lt;&lt; cols &lt;&lt; <span class="stringliteral">&quot;u + j];\n&quot;</span>;</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>    <span class="keywordflow">if</span> (rms) {</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>        os1 &lt;&lt; <span class="stringliteral">&quot;    s0 += v * v;\n&quot;</span>;</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>    } <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>        os1 &lt;&lt; <span class="stringliteral">&quot;    s0 += v; s1 += v * v;\n&quot;</span>;</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>    }</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>    os1 &lt;&lt; <span class="stringliteral">&quot;  }\n&quot;</span>;</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>    os1 &lt;&lt; <span class="stringliteral">&quot;  st0[i_] = s0;\n&quot;</span>;</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>    <span class="keywordflow">if</span> (statsCount &gt; 1) os1 &lt;&lt; <span class="stringliteral">&quot;  st1[i_] = s1;\n&quot;</span>;</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>    os1 &lt;&lt; <span class="stringliteral">&quot;}\n&quot;</span>;</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span> </div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>    os2 &lt;&lt; <a class="code hl_function" href="namespaceeve_1_1tensor_1_1wgsl__detail.html#aec40bac94436c29347913932dabbbc01">header</a>(<a class="code hl_variable" href="namespaceeve_1_1tensor_1_1wgsl__detail.html#a60fb14e4d6d7e71704de19b8495d5f95">kLocalSize</a>);</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> k = 0; k &lt; inputCount; ++k) os2 &lt;&lt; <a class="code hl_function" href="namespaceeve_1_1tensor_1_1wgsl__detail.html#ab36d96220820f7cfd000f279c3e98a79">bufferDecl</a>(k, (<span class="stringliteral">&quot;a&quot;</span> + std::to_string(k)).c_str());</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>    os2 &lt;&lt; <a class="code hl_function" href="namespaceeve_1_1tensor_1_1wgsl__detail.html#ab36d96220820f7cfd000f279c3e98a79">bufferDecl</a>(inputCount, <span class="stringliteral">&quot;st0&quot;</span>);</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>    <span class="keywordflow">if</span> (statsCount &gt; 1) os2 &lt;&lt; <a class="code hl_function" href="namespaceeve_1_1tensor_1_1wgsl__detail.html#ab36d96220820f7cfd000f279c3e98a79">bufferDecl</a>(inputCount + 1, <span class="stringliteral">&quot;st1&quot;</span>);</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>    os2 &lt;&lt; <a class="code hl_function" href="namespaceeve_1_1tensor_1_1wgsl__detail.html#ab36d96220820f7cfd000f279c3e98a79">bufferDecl</a>(outBinding, <span class="stringliteral">&quot;o&quot;</span>);</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>    os2 &lt;&lt; <a class="code hl_function" href="namespaceeve_1_1tensor_1_1wgsl__detail.html#ab410e02fa3f0e0150364f1560423ff20">pushConstant</a>();</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>    os2 &lt;&lt; <span class="stringliteral">&quot;@compute @workgroup_size(workgroupX, workgroupY)\nfn main(@builtin(global_invocation_id) globalId: &quot;</span></div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>           <span class="stringliteral">&quot;vec3&lt;u32&gt;, @builtin(local_invocation_id) localId: vec3&lt;u32&gt;, @builtin(workgroup_id) groupId: vec3&lt;u32&gt;) &quot;</span></div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>           <span class="stringliteral">&quot;{\n&quot;</span>;</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>    os2 &lt;&lt; <span class="stringliteral">&quot;  var i_: u32 = globalId.x;\n&quot;</span>;</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>    os2 &lt;&lt; <span class="stringliteral">&quot;  if (i_ &gt;= &quot;</span> &lt;&lt; nn.<a class="code hl_variable" href="structeve_1_1tensor_1_1GraphNode.html#a938f3a3bf1b459e67c23b147adfb72ee">size</a> &lt;&lt; <span class="stringliteral">&quot;u) { return; }\n&quot;</span>;</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>    os2 &lt;&lt; <span class="stringliteral">&quot;  var r: u32 = i_ / &quot;</span> &lt;&lt; cols &lt;&lt; <span class="stringliteral">&quot;u;\n&quot;</span>;</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>    os2 &lt;&lt; <span class="stringliteral">&quot;  var c: u32 = i_ % &quot;</span> &lt;&lt; cols &lt;&lt; <span class="stringliteral">&quot;u;\n&quot;</span>;</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>    <span class="keywordflow">if</span> (rms) {</div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>        os2 &lt;&lt; <span class="stringliteral">&quot;  var inv: f32 = 1.0 / sqrt(st0[r] / &quot;</span> &lt;&lt; cols &lt;&lt; <span class="stringliteral">&quot;.0 + &quot;</span> &lt;&lt; <a class="code hl_function" href="namespaceeve_1_1tensor_1_1wgsl__detail.html#a6a915772f282e21971b37de3942436b9">scalarStr</a>(eps) &lt;&lt; <span class="stringliteral">&quot;);\n&quot;</span>;</div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>        os2 &lt;&lt; <span class="stringliteral">&quot;  var y: f32 = a0[i_] * inv;\n&quot;</span>;</div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>        <span class="keywordflow">if</span> (hasScale) os2 &lt;&lt; <span class="stringliteral">&quot;  y *= a1[c];\n&quot;</span>;</div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>    } <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>        os2 &lt;&lt; <span class="stringliteral">&quot;  var mean: f32 = st0[r] / &quot;</span> &lt;&lt; cols &lt;&lt; <span class="stringliteral">&quot;.0;\n&quot;</span>;</div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>        os2 &lt;&lt; <span class="stringliteral">&quot;  var variance: f32 = st1[r] / &quot;</span> &lt;&lt; cols &lt;&lt; <span class="stringliteral">&quot;.0 - mean * mean;\n&quot;</span>;</div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>        os2 &lt;&lt; <span class="stringliteral">&quot;  variance = max(variance, 0.0);\n&quot;</span>;</div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>        os2 &lt;&lt; <span class="stringliteral">&quot;  var inv: f32 = 1.0 / sqrt(variance + &quot;</span> &lt;&lt; <a class="code hl_function" href="namespaceeve_1_1tensor_1_1wgsl__detail.html#a6a915772f282e21971b37de3942436b9">scalarStr</a>(eps) &lt;&lt; <span class="stringliteral">&quot;);\n&quot;</span>;</div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>        os2 &lt;&lt; <span class="stringliteral">&quot;  var y: f32 = (a0[i_] - mean) * inv;\n&quot;</span>;</div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span>        <span class="keywordflow">if</span> (hasScale) os2 &lt;&lt; <span class="stringliteral">&quot;  y *= a1[c];\n&quot;</span>;</div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>        <span class="keywordflow">if</span> (hasBias) os2 &lt;&lt; <span class="stringliteral">&quot;  y += a&quot;</span> &lt;&lt; (hasScale ? 2 : 1) &lt;&lt; <span class="stringliteral">&quot;[c];\n&quot;</span>;</div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span>    }</div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>    os2 &lt;&lt; <span class="stringliteral">&quot;  o[i_] = y;\n&quot;</span>;</div>
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>    os2 &lt;&lt; <span class="stringliteral">&quot;}\n&quot;</span>;</div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span>    out.<a class="code hl_variable" href="structeve_1_1tensor_1_1KernelSpec.html#a6e8e134aba3e3e6fbfcde50347a2830d">pass1</a>           = os1.str();</div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span>    out.<a class="code hl_variable" href="structeve_1_1tensor_1_1KernelSpec.html#a835643e21de9c0bfb561e876cc4ef430">pass2</a>           = os2.str();</div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span>    out.<a class="code hl_variable" href="structeve_1_1tensor_1_1KernelSpec.html#a77b5fca357229efbdfda0581e996104c">groupsX1</a>        = <a class="code hl_function" href="namespaceeve_1_1tensor_1_1wgsl__detail.html#ab8e4ce64609d6bd82048f77049ea1314">groupsFor</a>(<a class="code hl_variable" href="OnnxLstm_8cpp.html#ad161320eba27a8b966baac47bee35c46">rows</a>);</div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span>    out.<a class="code hl_variable" href="structeve_1_1tensor_1_1KernelSpec.html#abdb604c2ff210dc4f2e651e6a949370c">groupsX2</a>        = <a class="code hl_function" href="namespaceeve_1_1tensor_1_1wgsl__detail.html#ab8e4ce64609d6bd82048f77049ea1314">groupsFor</a>(nn.<a class="code hl_variable" href="structeve_1_1tensor_1_1GraphNode.html#a938f3a3bf1b459e67c23b147adfb72ee">size</a>);</div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span>    out.<a class="code hl_variable" href="structeve_1_1tensor_1_1KernelSpec.html#ae5a77f9bdf0dd3ac4b69994421bd0b10">inputCount</a>      = inputCount;</div>
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span>    out.<a class="code hl_variable" href="structeve_1_1tensor_1_1KernelSpec.html#afb3ae2c2fbfa3a8c040ff99d6ff96702">inputsReadPass1</a> = 1;</div>
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span>    out.<a class="code hl_variable" href="structeve_1_1tensor_1_1KernelSpec.html#ac770d3e3447a86ce59eeb4d8f31355e2">statsCount</a>      = statsCount;</div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>    out.<a class="code hl_variable" href="structeve_1_1tensor_1_1KernelSpec.html#af2d0ecf3d05e0bb6b1fc52f6e2fb119d">statsSize</a>       = <a class="code hl_variable" href="OnnxLstm_8cpp.html#ad161320eba27a8b966baac47bee35c46">rows</a>;</div>
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>    out.<a class="code hl_variable" href="structeve_1_1tensor_1_1KernelSpec.html#abcb5f677d77346fd1fbe700255478552">twoPass</a>         = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span>    <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span>}</div>
+</div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span> </div>
+<div class="foldopen" id="foldopen00155" data-start="{" data-end="}">
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno"><a class="line" href="namespaceeve_1_1tensor_1_1wgsl__detail.html#ac2785fe9642e725fc0c1cbb800ca2b3d">  155</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="namespaceeve_1_1tensor_1_1wgsl__detail.html#ac2785fe9642e725fc0c1cbb800ca2b3d">genReduceOrArgmax</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1tensor_1_1Graph.html">Graph</a> &amp;<a class="code hl_variable" href="GpuGraph_8cpp.html#aaae841ffb46b13fecc7328d10de4a9f6">g</a>, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1tensor_1_1FusedGroup.html">FusedGroup</a> &amp;grp, <span class="keywordtype">bool</span> argmax, <a class="code hl_struct" href="structeve_1_1tensor_1_1KernelSpec.html">KernelSpec</a> &amp;out) {</div>
+<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span>    <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1tensor_1_1GraphNode.html">GraphNode</a> &amp;rn    = <a class="code hl_variable" href="GpuGraph_8cpp.html#aaae841ffb46b13fecc7328d10de4a9f6">g</a>.node(grp.<a class="code hl_variable" href="structeve_1_1tensor_1_1FusedGroup.html#abc2486cf54297be4fbe73e0657062529">outputNode</a>);</div>
+<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span>    <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1tensor_1_1GraphNode.html">GraphNode</a> &amp;X     = <a class="code hl_variable" href="GpuGraph_8cpp.html#aaae841ffb46b13fecc7328d10de4a9f6">g</a>.node(rn.<a class="code hl_variable" href="structeve_1_1tensor_1_1GraphNode.html#a3715435e2ec533e176c6879126c15918">in0</a>);</div>
+<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span>    <span class="keyword">const</span> <span class="keywordtype">int</span>        axis  = rn.<a class="code hl_variable" href="structeve_1_1tensor_1_1GraphNode.html#a5f32561a53d48f71fc991b436f84cc6b">i0</a>;</div>
+<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span>    <span class="keywordtype">int</span>              outer = 1, <a class="code hl_variable" href="tensor_2GpuBackend_8cpp.html#a0bd59f5f032fd2910a7639a86db636c0">reduce</a> = 1, inner = 1;</div>
+<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> k = 0; k &lt; axis; ++k) outer *= X.dims[k];</div>
+<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span>    <a class="code hl_variable" href="tensor_2GpuBackend_8cpp.html#a0bd59f5f032fd2910a7639a86db636c0">reduce</a> = X.dims[axis];</div>
+<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> k = axis + 1; k &lt; X.rank; ++k) inner *= X.dims[k];</div>
+<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span>    <span class="keyword">const</span> <span class="keywordtype">int</span>          outSize = outer * inner;</div>
+<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span>    std::ostringstream os;</div>
+<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span>    os &lt;&lt; <a class="code hl_function" href="namespaceeve_1_1tensor_1_1wgsl__detail.html#aec40bac94436c29347913932dabbbc01">header</a>(<a class="code hl_variable" href="namespaceeve_1_1tensor_1_1wgsl__detail.html#a60fb14e4d6d7e71704de19b8495d5f95">kLocalSize</a>);</div>
+<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span>    os &lt;&lt; <a class="code hl_function" href="namespaceeve_1_1tensor_1_1wgsl__detail.html#ab36d96220820f7cfd000f279c3e98a79">bufferDecl</a>(0, <span class="stringliteral">&quot;in_&quot;</span>);</div>
+<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span>    os &lt;&lt; <a class="code hl_function" href="namespaceeve_1_1tensor_1_1wgsl__detail.html#ab36d96220820f7cfd000f279c3e98a79">bufferDecl</a>(1, <span class="stringliteral">&quot;o&quot;</span>);</div>
+<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span>    os &lt;&lt; <a class="code hl_function" href="namespaceeve_1_1tensor_1_1wgsl__detail.html#ab410e02fa3f0e0150364f1560423ff20">pushConstant</a>();</div>
+<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span>    os &lt;&lt; <span class="stringliteral">&quot;@compute @workgroup_size(workgroupX, workgroupY)\nfn main(@builtin(global_invocation_id) globalId: &quot;</span></div>
+<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span>          <span class="stringliteral">&quot;vec3&lt;u32&gt;, @builtin(local_invocation_id) localId: vec3&lt;u32&gt;, @builtin(workgroup_id) groupId: vec3&lt;u32&gt;) {\n&quot;</span>;</div>
+<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span>    os &lt;&lt; <span class="stringliteral">&quot;  var i_: u32 = globalId.x;\n&quot;</span>;</div>
+<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span>    os &lt;&lt; <span class="stringliteral">&quot;  if (i_ &gt;= &quot;</span> &lt;&lt; outSize &lt;&lt; <span class="stringliteral">&quot;u) { return; }\n&quot;</span>;</div>
+<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span>    os &lt;&lt; <span class="stringliteral">&quot;  var o_: u32 = i_ / &quot;</span> &lt;&lt; inner &lt;&lt; <span class="stringliteral">&quot;u;\n&quot;</span>;</div>
+<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span>    os &lt;&lt; <span class="stringliteral">&quot;  var ii: u32 = i_ % &quot;</span> &lt;&lt; inner &lt;&lt; <span class="stringliteral">&quot;u;\n&quot;</span>;</div>
+<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span>    <span class="keywordflow">if</span> (argmax) {</div>
+<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span>        os &lt;&lt; <span class="stringliteral">&quot;  var best: f32 = -3.402823e38;\n&quot;</span>;</div>
+<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span>        os &lt;&lt; <span class="stringliteral">&quot;  var bestJ: f32 = 0.0;\n&quot;</span>;</div>
+<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span>        os &lt;&lt; <span class="stringliteral">&quot;  for (var j: u32 = 0u; j &lt; &quot;</span> &lt;&lt; <a class="code hl_variable" href="tensor_2GpuBackend_8cpp.html#a0bd59f5f032fd2910a7639a86db636c0">reduce</a> &lt;&lt; <span class="stringliteral">&quot;u; j++) {\n&quot;</span>;</div>
+<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span>        os &lt;&lt; <span class="stringliteral">&quot;    var v: f32 = in_[(o_ * &quot;</span> &lt;&lt; <a class="code hl_variable" href="tensor_2GpuBackend_8cpp.html#a0bd59f5f032fd2910a7639a86db636c0">reduce</a> &lt;&lt; <span class="stringliteral">&quot;u + j) * &quot;</span> &lt;&lt; inner &lt;&lt; <span class="stringliteral">&quot;u + ii];\n&quot;</span>;</div>
+<div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span>        os &lt;&lt; <span class="stringliteral">&quot;    if (v &gt; best) { best = v; bestJ = f32(j); }\n&quot;</span>;</div>
+<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span>        os &lt;&lt; <span class="stringliteral">&quot;  }\n&quot;</span>;</div>
+<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span>        os &lt;&lt; <span class="stringliteral">&quot;  o[i_] = bestJ;\n&quot;</span>;</div>
+<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span>    } <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span>        <span class="keywordflow">switch</span> (grp.<a class="code hl_variable" href="structeve_1_1tensor_1_1FusedGroup.html#a121f7726559ef7bd41fed40929fcd144">op</a>) {</div>
+<div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span>            <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeve_1_1tensor.html#a574a0393a2b1101ee0a32257300c0f67a5e47e6e2afb2e1368df09735cc13205a">OpType::ReduceSum</a>:</div>
+<div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span>            <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeve_1_1tensor.html#a574a0393a2b1101ee0a32257300c0f67a37d94f45ecc4c2e1cde5522b0cbe7206">OpType::ReduceMean</a>:</div>
+<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span>                os &lt;&lt; <span class="stringliteral">&quot;  var acc: f32 = 0.0;\n&quot;</span>;</div>
+<div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span>                os &lt;&lt; <span class="stringliteral">&quot;  for (var j: u32 = 0u; j &lt; &quot;</span> &lt;&lt; <a class="code hl_variable" href="tensor_2GpuBackend_8cpp.html#a0bd59f5f032fd2910a7639a86db636c0">reduce</a> &lt;&lt; <span class="stringliteral">&quot;u; j++) { acc += in_[(o_ * &quot;</span> &lt;&lt; <a class="code hl_variable" href="tensor_2GpuBackend_8cpp.html#a0bd59f5f032fd2910a7639a86db636c0">reduce</a> &lt;&lt; <span class="stringliteral">&quot;u + j) * &quot;</span></div>
+<div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span>                   &lt;&lt; inner &lt;&lt; <span class="stringliteral">&quot;u + ii]; }\n&quot;</span>;</div>
+<div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span>                <span class="keywordflow">if</span> (grp.<a class="code hl_variable" href="structeve_1_1tensor_1_1FusedGroup.html#a121f7726559ef7bd41fed40929fcd144">op</a> == <a class="code hl_enumvalue" href="namespaceeve_1_1tensor.html#a574a0393a2b1101ee0a32257300c0f67a37d94f45ecc4c2e1cde5522b0cbe7206">OpType::ReduceMean</a>) os &lt;&lt; <span class="stringliteral">&quot;  acc /= &quot;</span> &lt;&lt; <a class="code hl_function" href="namespaceeve_1_1tensor_1_1wgsl__detail.html#a6a915772f282e21971b37de3942436b9">scalarStr</a>(<span class="keywordtype">float</span>(<a class="code hl_variable" href="tensor_2GpuBackend_8cpp.html#a0bd59f5f032fd2910a7639a86db636c0">reduce</a>)) &lt;&lt; <span class="stringliteral">&quot;;\n&quot;</span>;</div>
+<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span>                <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span>            <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeve_1_1tensor.html#a574a0393a2b1101ee0a32257300c0f67a03caa9192d391006927f9de0dded537e">OpType::ReduceMin</a>:</div>
+<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span>                os &lt;&lt; <span class="stringliteral">&quot;  var acc: f32 = 3.402823e38;\n&quot;</span>;</div>
+<div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span>                os &lt;&lt; <span class="stringliteral">&quot;  for (var j: u32 = 0u; j &lt; &quot;</span> &lt;&lt; <a class="code hl_variable" href="tensor_2GpuBackend_8cpp.html#a0bd59f5f032fd2910a7639a86db636c0">reduce</a> &lt;&lt; <span class="stringliteral">&quot;u; j++) { acc = min(acc, in_[(o_ * &quot;</span> &lt;&lt; <a class="code hl_variable" href="tensor_2GpuBackend_8cpp.html#a0bd59f5f032fd2910a7639a86db636c0">reduce</a></div>
+<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span>                   &lt;&lt; <span class="stringliteral">&quot;u + j) * &quot;</span> &lt;&lt; inner &lt;&lt; <span class="stringliteral">&quot;u + ii]); }\n&quot;</span>;</div>
+<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span>                <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span>            <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeve_1_1tensor.html#a574a0393a2b1101ee0a32257300c0f67a2f4f9fb3a3e5a318cf6125b3fe8ddfdd">OpType::ReduceMax</a>:</div>
+<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span>                os &lt;&lt; <span class="stringliteral">&quot;  var acc: f32 = -3.402823e38;\n&quot;</span>;</div>
+<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span>                os &lt;&lt; <span class="stringliteral">&quot;  for (var j: u32 = 0u; j &lt; &quot;</span> &lt;&lt; <a class="code hl_variable" href="tensor_2GpuBackend_8cpp.html#a0bd59f5f032fd2910a7639a86db636c0">reduce</a> &lt;&lt; <span class="stringliteral">&quot;u; j++) { acc = max(acc, in_[(o_ * &quot;</span> &lt;&lt; <a class="code hl_variable" href="tensor_2GpuBackend_8cpp.html#a0bd59f5f032fd2910a7639a86db636c0">reduce</a></div>
+<div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span>                   &lt;&lt; <span class="stringliteral">&quot;u + j) * &quot;</span> &lt;&lt; inner &lt;&lt; <span class="stringliteral">&quot;u + ii]); }\n&quot;</span>;</div>
+<div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span>                <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span>            <span class="keywordflow">default</span>: <span class="keywordflow">throw</span> <a class="code hl_class" href="classeve_1_1Exception.html">eve::Exception</a>(<span class="stringliteral">&quot;Tensor WGSL: unsupported kernel variant or binding count&quot;</span>);</div>
+<div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span>        }</div>
+<div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span>        os &lt;&lt; <span class="stringliteral">&quot;  o[i_] = acc;\n&quot;</span>;</div>
+<div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span>    }</div>
+<div class="line"><a id="l00206" name="l00206"></a><span class="lineno">  206</span>    os &lt;&lt; <span class="stringliteral">&quot;}\n&quot;</span>;</div>
+<div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span>    out.<a class="code hl_variable" href="structeve_1_1tensor_1_1KernelSpec.html#a6e8e134aba3e3e6fbfcde50347a2830d">pass1</a>.clear();</div>
+<div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span>    out.<a class="code hl_variable" href="structeve_1_1tensor_1_1KernelSpec.html#a835643e21de9c0bfb561e876cc4ef430">pass2</a>      = os.str();</div>
+<div class="line"><a id="l00209" name="l00209"></a><span class="lineno">  209</span>    out.<a class="code hl_variable" href="structeve_1_1tensor_1_1KernelSpec.html#abdb604c2ff210dc4f2e651e6a949370c">groupsX2</a>   = <a class="code hl_function" href="namespaceeve_1_1tensor_1_1wgsl__detail.html#ab8e4ce64609d6bd82048f77049ea1314">groupsFor</a>(outSize);</div>
+<div class="line"><a id="l00210" name="l00210"></a><span class="lineno">  210</span>    out.<a class="code hl_variable" href="structeve_1_1tensor_1_1KernelSpec.html#ae5a77f9bdf0dd3ac4b69994421bd0b10">inputCount</a> = 1;</div>
+<div class="line"><a id="l00211" name="l00211"></a><span class="lineno">  211</span>    <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00212" name="l00212"></a><span class="lineno">  212</span>}</div>
+</div>
+<div class="line"><a id="l00213" name="l00213"></a><span class="lineno">  213</span> </div>
+<div class="line"><a id="l00214" name="l00214"></a><span class="lineno">  214</span> </div>
+<div class="line"><a id="l00215" name="l00215"></a><span class="lineno">  215</span>}  <span class="comment">// namespace eve::tensor::wgsl_detail</span></div>
+<div class="ttc" id="aException_8h_html"><div class="ttname"><a href="Exception_8h.html">Exception.h</a></div></div>
+<div class="ttc" id="aGpuGraph_8cpp_html_aaae841ffb46b13fecc7328d10de4a9f6"><div class="ttname"><a href="GpuGraph_8cpp.html#aaae841ffb46b13fecc7328d10de4a9f6">g</a></div><div class="ttdeci">tensor::Graph g</div><div class="ttdef"><b>Definition</b> <a href="GpuGraph_8cpp_source.html#l00007">GpuGraph.cpp:7</a></div></div>
+<div class="ttc" id="aKernelGenWgslInternal_8h_html"><div class="ttname"><a href="KernelGenWgslInternal_8h.html">KernelGenWgslInternal.h</a></div></div>
+<div class="ttc" id="aOnnxLstm_8cpp_html_ad161320eba27a8b966baac47bee35c46"><div class="ttname"><a href="OnnxLstm_8cpp.html#ad161320eba27a8b966baac47bee35c46">rows</a></div><div class="ttdeci">size_t rows</div><div class="ttdef"><b>Definition</b> <a href="OnnxLstm_8cpp_source.html#l00029">OnnxLstm.cpp:29</a></div></div>
+<div class="ttc" id="aQuant_8h_html"><div class="ttname"><a href="Quant_8h.html">Quant.h</a></div></div>
+<div class="ttc" id="aclasseve_1_1Exception_html"><div class="ttname"><a href="classeve_1_1Exception.html">eve::Exception</a></div><div class="ttdef"><b>Definition</b> <a href="Exception_8h_source.html#l00013">Exception.h:14</a></div></div>
+<div class="ttc" id="aclasseve_1_1tensor_1_1Graph_html"><div class="ttname"><a href="classeve_1_1tensor_1_1Graph.html">eve::tensor::Graph</a></div><div class="ttdef"><b>Definition</b> <a href="Graph_8h_source.html#l00106">Graph.h:106</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1tensor_1_1wgsl__detail_html"><div class="ttname"><a href="namespaceeve_1_1tensor_1_1wgsl__detail.html">eve::tensor::wgsl_detail</a></div><div class="ttdef"><b>Definition</b> <a href="KernelGenWgsl_8cpp_source.html#l00011">KernelGenWgsl.cpp:11</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1tensor_1_1wgsl__detail_html_a60fb14e4d6d7e71704de19b8495d5f95"><div class="ttname"><a href="namespaceeve_1_1tensor_1_1wgsl__detail.html#a60fb14e4d6d7e71704de19b8495d5f95">eve::tensor::wgsl_detail::kLocalSize</a></div><div class="ttdeci">constexpr int kLocalSize</div><div class="ttdef"><b>Definition</b> <a href="KernelGenWgslInternal_8h_source.html#l00006">KernelGenWgslInternal.h:6</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1tensor_1_1wgsl__detail_html_a6a915772f282e21971b37de3942436b9"><div class="ttname"><a href="namespaceeve_1_1tensor_1_1wgsl__detail.html#a6a915772f282e21971b37de3942436b9">eve::tensor::wgsl_detail::scalarStr</a></div><div class="ttdeci">std::string scalarStr(float v)</div><div class="ttdef"><b>Definition</b> <a href="KernelGenWgsl_8cpp_source.html#l00093">KernelGenWgsl.cpp:93</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1tensor_1_1wgsl__detail_html_ab36d96220820f7cfd000f279c3e98a79"><div class="ttname"><a href="namespaceeve_1_1tensor_1_1wgsl__detail.html#ab36d96220820f7cfd000f279c3e98a79">eve::tensor::wgsl_detail::bufferDecl</a></div><div class="ttdeci">std::string bufferDecl(int binding, const char *name)</div><div class="ttdef"><b>Definition</b> <a href="KernelGenWgsl_8cpp_source.html#l00017">KernelGenWgsl.cpp:17</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1tensor_1_1wgsl__detail_html_ab410e02fa3f0e0150364f1560423ff20"><div class="ttname"><a href="namespaceeve_1_1tensor_1_1wgsl__detail.html#ab410e02fa3f0e0150364f1560423ff20">eve::tensor::wgsl_detail::pushConstant</a></div><div class="ttdeci">std::string pushConstant()</div><div class="ttdef"><b>Definition</b> <a href="KernelGenWgsl_8cpp_source.html#l00089">KernelGenWgsl.cpp:89</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1tensor_1_1wgsl__detail_html_ab665a60d52c85ed2dcc3f91b2154dce1"><div class="ttname"><a href="namespaceeve_1_1tensor_1_1wgsl__detail.html#ab665a60d52c85ed2dcc3f91b2154dce1">eve::tensor::wgsl_detail::genSoftmax</a></div><div class="ttdeci">void genSoftmax(const Graph &amp;, const FusedGroup &amp;, KernelSpec &amp;)</div><div class="ttdef"><b>Definition</b> <a href="KernelGenWgslReduction_8cpp_source.html#l00009">KernelGenWgslReduction.cpp:9</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1tensor_1_1wgsl__detail_html_ab8e4ce64609d6bd82048f77049ea1314"><div class="ttname"><a href="namespaceeve_1_1tensor_1_1wgsl__detail.html#ab8e4ce64609d6bd82048f77049ea1314">eve::tensor::wgsl_detail::groupsFor</a></div><div class="ttdeci">int groupsFor(int count)</div><div class="ttdef"><b>Definition</b> <a href="KernelGenWgsl_8cpp_source.html#l00091">KernelGenWgsl.cpp:91</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1tensor_1_1wgsl__detail_html_ac2785fe9642e725fc0c1cbb800ca2b3d"><div class="ttname"><a href="namespaceeve_1_1tensor_1_1wgsl__detail.html#ac2785fe9642e725fc0c1cbb800ca2b3d">eve::tensor::wgsl_detail::genReduceOrArgmax</a></div><div class="ttdeci">void genReduceOrArgmax(const Graph &amp;, const FusedGroup &amp;, bool argmax, KernelSpec &amp;)</div><div class="ttdef"><b>Definition</b> <a href="KernelGenWgslReduction_8cpp_source.html#l00155">KernelGenWgslReduction.cpp:155</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1tensor_1_1wgsl__detail_html_ad358b713ecfc965951917c25adc6ffcd"><div class="ttname"><a href="namespaceeve_1_1tensor_1_1wgsl__detail.html#ad358b713ecfc965951917c25adc6ffcd">eve::tensor::wgsl_detail::genNorm</a></div><div class="ttdeci">void genNorm(const Graph &amp;, const FusedGroup &amp;, bool rms, KernelSpec &amp;)</div><div class="ttdef"><b>Definition</b> <a href="KernelGenWgslReduction_8cpp_source.html#l00078">KernelGenWgslReduction.cpp:78</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1tensor_1_1wgsl__detail_html_aec40bac94436c29347913932dabbbc01"><div class="ttname"><a href="namespaceeve_1_1tensor_1_1wgsl__detail.html#aec40bac94436c29347913932dabbbc01">eve::tensor::wgsl_detail::header</a></div><div class="ttdeci">std::string header(int localX, int localY)</div><div class="ttdef"><b>Definition</b> <a href="KernelGenWgsl_8cpp_source.html#l00014">KernelGenWgsl.cpp:14</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1tensor_html_a574a0393a2b1101ee0a32257300c0f67a03caa9192d391006927f9de0dded537e"><div class="ttname"><a href="namespaceeve_1_1tensor.html#a574a0393a2b1101ee0a32257300c0f67a03caa9192d391006927f9de0dded537e">eve::tensor::OpType::ReduceMin</a></div><div class="ttdeci">@ ReduceMin</div></div>
+<div class="ttc" id="anamespaceeve_1_1tensor_html_a574a0393a2b1101ee0a32257300c0f67a2f4f9fb3a3e5a318cf6125b3fe8ddfdd"><div class="ttname"><a href="namespaceeve_1_1tensor.html#a574a0393a2b1101ee0a32257300c0f67a2f4f9fb3a3e5a318cf6125b3fe8ddfdd">eve::tensor::OpType::ReduceMax</a></div><div class="ttdeci">@ ReduceMax</div></div>
+<div class="ttc" id="anamespaceeve_1_1tensor_html_a574a0393a2b1101ee0a32257300c0f67a37d94f45ecc4c2e1cde5522b0cbe7206"><div class="ttname"><a href="namespaceeve_1_1tensor.html#a574a0393a2b1101ee0a32257300c0f67a37d94f45ecc4c2e1cde5522b0cbe7206">eve::tensor::OpType::ReduceMean</a></div><div class="ttdeci">@ ReduceMean</div></div>
+<div class="ttc" id="anamespaceeve_1_1tensor_html_a574a0393a2b1101ee0a32257300c0f67a5e47e6e2afb2e1368df09735cc13205a"><div class="ttname"><a href="namespaceeve_1_1tensor.html#a574a0393a2b1101ee0a32257300c0f67a5e47e6e2afb2e1368df09735cc13205a">eve::tensor::OpType::ReduceSum</a></div><div class="ttdeci">@ ReduceSum</div></div>
+<div class="ttc" id="astructeve_1_1tensor_1_1FusedGroup_html"><div class="ttname"><a href="structeve_1_1tensor_1_1FusedGroup.html">eve::tensor::FusedGroup</a></div><div class="ttdef"><b>Definition</b> <a href="Optimizer_8h_source.html#l00042">Optimizer.h:42</a></div></div>
+<div class="ttc" id="astructeve_1_1tensor_1_1FusedGroup_html_a121f7726559ef7bd41fed40929fcd144"><div class="ttname"><a href="structeve_1_1tensor_1_1FusedGroup.html#a121f7726559ef7bd41fed40929fcd144">eve::tensor::FusedGroup::op</a></div><div class="ttdeci">OpType op</div><div class="ttdef"><b>Definition</b> <a href="Optimizer_8h_source.html#l00045">Optimizer.h:45</a></div></div>
+<div class="ttc" id="astructeve_1_1tensor_1_1FusedGroup_html_a850dcdcfcc98dcf031b00574e29bf8b3"><div class="ttname"><a href="structeve_1_1tensor_1_1FusedGroup.html#a850dcdcfcc98dcf031b00574e29bf8b3">eve::tensor::FusedGroup::logMode</a></div><div class="ttdeci">bool logMode</div><div class="ttdef"><b>Definition</b> <a href="Optimizer_8h_source.html#l00065">Optimizer.h:65</a></div></div>
+<div class="ttc" id="astructeve_1_1tensor_1_1FusedGroup_html_abc2486cf54297be4fbe73e0657062529"><div class="ttname"><a href="structeve_1_1tensor_1_1FusedGroup.html#abc2486cf54297be4fbe73e0657062529">eve::tensor::FusedGroup::outputNode</a></div><div class="ttdeci">int outputNode</div><div class="ttdef"><b>Definition</b> <a href="Optimizer_8h_source.html#l00050">Optimizer.h:50</a></div></div>
+<div class="ttc" id="astructeve_1_1tensor_1_1FusedGroup_html_ac891e5d4627060c70e73d1242c988fe6"><div class="ttname"><a href="structeve_1_1tensor_1_1FusedGroup.html#ac891e5d4627060c70e73d1242c988fe6">eve::tensor::FusedGroup::hasScale</a></div><div class="ttdeci">bool hasScale</div><div class="ttdef"><b>Definition</b> <a href="Optimizer_8h_source.html#l00062">Optimizer.h:62</a></div></div>
+<div class="ttc" id="astructeve_1_1tensor_1_1FusedGroup_html_aeda44f56d7f7a841c889c89d1550819d"><div class="ttname"><a href="structeve_1_1tensor_1_1FusedGroup.html#aeda44f56d7f7a841c889c89d1550819d">eve::tensor::FusedGroup::hasBias</a></div><div class="ttdeci">bool hasBias</div><div class="ttdef"><b>Definition</b> <a href="Optimizer_8h_source.html#l00063">Optimizer.h:63</a></div></div>
+<div class="ttc" id="astructeve_1_1tensor_1_1GraphNode_html"><div class="ttname"><a href="structeve_1_1tensor_1_1GraphNode.html">eve::tensor::GraphNode</a></div><div class="ttdef"><b>Definition</b> <a href="Graph_8h_source.html#l00076">Graph.h:76</a></div></div>
+<div class="ttc" id="astructeve_1_1tensor_1_1GraphNode_html_a3715435e2ec533e176c6879126c15918"><div class="ttname"><a href="structeve_1_1tensor_1_1GraphNode.html#a3715435e2ec533e176c6879126c15918">eve::tensor::GraphNode::in0</a></div><div class="ttdeci">int in0</div><div class="ttdef"><b>Definition</b> <a href="Graph_8h_source.html#l00081">Graph.h:81</a></div></div>
+<div class="ttc" id="astructeve_1_1tensor_1_1GraphNode_html_a3782f4c707c3dd332840dfca976d52aa"><div class="ttname"><a href="structeve_1_1tensor_1_1GraphNode.html#a3782f4c707c3dd332840dfca976d52aa">eve::tensor::GraphNode::s0</a></div><div class="ttdeci">float s0</div><div class="ttdef"><b>Definition</b> <a href="Graph_8h_source.html#l00086">Graph.h:86</a></div></div>
+<div class="ttc" id="astructeve_1_1tensor_1_1GraphNode_html_a5f32561a53d48f71fc991b436f84cc6b"><div class="ttname"><a href="structeve_1_1tensor_1_1GraphNode.html#a5f32561a53d48f71fc991b436f84cc6b">eve::tensor::GraphNode::i0</a></div><div class="ttdeci">int i0</div><div class="ttdef"><b>Definition</b> <a href="Graph_8h_source.html#l00091">Graph.h:91</a></div></div>
+<div class="ttc" id="astructeve_1_1tensor_1_1GraphNode_html_a938f3a3bf1b459e67c23b147adfb72ee"><div class="ttname"><a href="structeve_1_1tensor_1_1GraphNode.html#a938f3a3bf1b459e67c23b147adfb72ee">eve::tensor::GraphNode::size</a></div><div class="ttdeci">int size</div><div class="ttdef"><b>Definition</b> <a href="Graph_8h_source.html#l00080">Graph.h:80</a></div></div>
+<div class="ttc" id="astructeve_1_1tensor_1_1KernelSpec_html"><div class="ttname"><a href="structeve_1_1tensor_1_1KernelSpec.html">eve::tensor::KernelSpec</a></div><div class="ttdef"><b>Definition</b> <a href="KernelGen_8h_source.html#l00024">KernelGen.h:24</a></div></div>
+<div class="ttc" id="astructeve_1_1tensor_1_1KernelSpec_html_a6e8e134aba3e3e6fbfcde50347a2830d"><div class="ttname"><a href="structeve_1_1tensor_1_1KernelSpec.html#a6e8e134aba3e3e6fbfcde50347a2830d">eve::tensor::KernelSpec::pass1</a></div><div class="ttdeci">std::string pass1</div><div class="ttdef"><b>Definition</b> <a href="KernelGen_8h_source.html#l00025">KernelGen.h:25</a></div></div>
+<div class="ttc" id="astructeve_1_1tensor_1_1KernelSpec_html_a77b5fca357229efbdfda0581e996104c"><div class="ttname"><a href="structeve_1_1tensor_1_1KernelSpec.html#a77b5fca357229efbdfda0581e996104c">eve::tensor::KernelSpec::groupsX1</a></div><div class="ttdeci">int groupsX1</div><div class="ttdef"><b>Definition</b> <a href="KernelGen_8h_source.html#l00027">KernelGen.h:27</a></div></div>
+<div class="ttc" id="astructeve_1_1tensor_1_1KernelSpec_html_a835643e21de9c0bfb561e876cc4ef430"><div class="ttname"><a href="structeve_1_1tensor_1_1KernelSpec.html#a835643e21de9c0bfb561e876cc4ef430">eve::tensor::KernelSpec::pass2</a></div><div class="ttdeci">std::string pass2</div><div class="ttdef"><b>Definition</b> <a href="KernelGen_8h_source.html#l00026">KernelGen.h:26</a></div></div>
+<div class="ttc" id="astructeve_1_1tensor_1_1KernelSpec_html_abcb5f677d77346fd1fbe700255478552"><div class="ttname"><a href="structeve_1_1tensor_1_1KernelSpec.html#abcb5f677d77346fd1fbe700255478552">eve::tensor::KernelSpec::twoPass</a></div><div class="ttdeci">bool twoPass</div><div class="ttdef"><b>Definition</b> <a href="KernelGen_8h_source.html#l00036">KernelGen.h:36</a></div></div>
+<div class="ttc" id="astructeve_1_1tensor_1_1KernelSpec_html_abdb604c2ff210dc4f2e651e6a949370c"><div class="ttname"><a href="structeve_1_1tensor_1_1KernelSpec.html#abdb604c2ff210dc4f2e651e6a949370c">eve::tensor::KernelSpec::groupsX2</a></div><div class="ttdeci">int groupsX2</div><div class="ttdef"><b>Definition</b> <a href="KernelGen_8h_source.html#l00028">KernelGen.h:28</a></div></div>
+<div class="ttc" id="astructeve_1_1tensor_1_1KernelSpec_html_ac770d3e3447a86ce59eeb4d8f31355e2"><div class="ttname"><a href="structeve_1_1tensor_1_1KernelSpec.html#ac770d3e3447a86ce59eeb4d8f31355e2">eve::tensor::KernelSpec::statsCount</a></div><div class="ttdeci">int statsCount</div><div class="ttdef"><b>Definition</b> <a href="KernelGen_8h_source.html#l00034">KernelGen.h:34</a></div></div>
+<div class="ttc" id="astructeve_1_1tensor_1_1KernelSpec_html_ae5a77f9bdf0dd3ac4b69994421bd0b10"><div class="ttname"><a href="structeve_1_1tensor_1_1KernelSpec.html#ae5a77f9bdf0dd3ac4b69994421bd0b10">eve::tensor::KernelSpec::inputCount</a></div><div class="ttdeci">int inputCount</div><div class="ttdef"><b>Definition</b> <a href="KernelGen_8h_source.html#l00032">KernelGen.h:32</a></div></div>
+<div class="ttc" id="astructeve_1_1tensor_1_1KernelSpec_html_af2d0ecf3d05e0bb6b1fc52f6e2fb119d"><div class="ttname"><a href="structeve_1_1tensor_1_1KernelSpec.html#af2d0ecf3d05e0bb6b1fc52f6e2fb119d">eve::tensor::KernelSpec::statsSize</a></div><div class="ttdeci">int statsSize</div><div class="ttdef"><b>Definition</b> <a href="KernelGen_8h_source.html#l00035">KernelGen.h:35</a></div></div>
+<div class="ttc" id="astructeve_1_1tensor_1_1KernelSpec_html_afb3ae2c2fbfa3a8c040ff99d6ff96702"><div class="ttname"><a href="structeve_1_1tensor_1_1KernelSpec.html#afb3ae2c2fbfa3a8c040ff99d6ff96702">eve::tensor::KernelSpec::inputsReadPass1</a></div><div class="ttdeci">int inputsReadPass1</div><div class="ttdef"><b>Definition</b> <a href="KernelGen_8h_source.html#l00033">KernelGen.h:33</a></div></div>
+<div class="ttc" id="atensor_2GpuBackend_8cpp_html_a0bd59f5f032fd2910a7639a86db636c0"><div class="ttname"><a href="tensor_2GpuBackend_8cpp.html#a0bd59f5f032fd2910a7639a86db636c0">reduce</a></div><div class="ttdeci">gpgpu::ComputeShader * reduce</div><div class="ttdef"><b>Definition</b> <a href="tensor_2GpuBackend_8cpp_source.html#l00088">GpuBackend.cpp:88</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

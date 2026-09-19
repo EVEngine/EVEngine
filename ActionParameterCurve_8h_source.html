@@ -1,0 +1,296 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/action/ActionParameterCurve.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_4132021be2fc4b1a23b2cac06bb68e21.html">action</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">ActionParameterCurve.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="ActionParameterCurve_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;<a class="code" href="ActionNotifyRegistry_8h.html">action/ActionNotifyRegistry.h</a>&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;optional&gt;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &lt;string_view&gt;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span> </div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1action.html">eve::action</a> {</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span> </div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno"><a class="line" href="namespaceeve_1_1action.html#a2249c2d2d19c8318f8c0c77b596c283d">   16</a></span><span class="keyword">enum class</span> <a class="code hl_enumeration" href="namespaceeve_1_1action.html#a2249c2d2d19c8318f8c0c77b596c283d">ActionParameterInterpolation</a> : std::uint8_t { <a class="code hl_enumvalue" href="namespaceeve_1_1action.html#a2249c2d2d19c8318f8c0c77b596c283da48c7c41b72e1d678923ce3571aa65b2d">Step</a>, <a class="code hl_enumvalue" href="namespaceeve_1_1action.html#a2249c2d2d19c8318f8c0c77b596c283da32a843da6ea40ab3b17a3421ccdf671b">Linear</a>, <a class="code hl_enumvalue" href="namespaceeve_1_1action.html#a2249c2d2d19c8318f8c0c77b596c283daec6b5414eb175379ff9efc9b3eef5814">Cubic</a> };</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span> </div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno"><a class="line" href="namespaceeve_1_1action.html#ab2064c10bf463a5e180cde5d9588ace4">   19</a></span><span class="keyword">enum class</span> <a class="code hl_enumeration" href="namespaceeve_1_1action.html#ab2064c10bf463a5e180cde5d9588ace4">ActionParameterOperation</a> : std::uint8_t { <a class="code hl_enumvalue" href="namespaceeve_1_1action.html#ab2064c10bf463a5e180cde5d9588ace4a0ebe6df8a3ac338e0512acc741823fdb">Replace</a>, <a class="code hl_enumvalue" href="namespaceeve_1_1action.html#ab2064c10bf463a5e180cde5d9588ace4aec211f7c20af43e742bf2570c3cb84f9">Add</a>, <a class="code hl_enumvalue" href="namespaceeve_1_1action.html#ab2064c10bf463a5e180cde5d9588ace4ae257376d913f3b53cbb4a9b19d770648">Multiply</a> };</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span> </div>
+<div class="foldopen" id="foldopen00022" data-start="{" data-end="};">
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno"><a class="line" href="structeve_1_1action_1_1ActionParameterKey.html">   22</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1action_1_1ActionParameterKey.html">ActionParameterKey</a> {</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno"><a class="line" href="structeve_1_1action_1_1ActionParameterKey.html#a6d950d7ad33cb23bf6c00680544c0e4f">   24</a></span>    <span class="keywordtype">double</span>                       <a class="code hl_variable" href="structeve_1_1action_1_1ActionParameterKey.html#a6d950d7ad33cb23bf6c00680544c0e4f">time</a> = 0.0;</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="structeve_1_1action_1_1ActionParameterKey.html#a2233e9b8ea16d4724910ee349165c3a2">   26</a></span>    <span class="keywordtype">double</span>                       <a class="code hl_variable" href="structeve_1_1action_1_1ActionParameterKey.html#a2233e9b8ea16d4724910ee349165c3a2">value</a> = 0.0;</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno"><a class="line" href="structeve_1_1action_1_1ActionParameterKey.html#affdfdffa56e8785051c612d22bcb1397">   28</a></span>    <span class="keywordtype">double</span>                       <a class="code hl_variable" href="structeve_1_1action_1_1ActionParameterKey.html#affdfdffa56e8785051c612d22bcb1397">inTangent</a> = 0.0;</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno"><a class="line" href="structeve_1_1action_1_1ActionParameterKey.html#ad677b03b4a7584200387bb23980eefa3">   30</a></span>    <span class="keywordtype">double</span>                       <a class="code hl_variable" href="structeve_1_1action_1_1ActionParameterKey.html#ad677b03b4a7584200387bb23980eefa3">outTangent</a> = 0.0;</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno"><a class="line" href="structeve_1_1action_1_1ActionParameterKey.html#a78055bf5ac8537f8d609f8226adf0bbe">   32</a></span>    <a class="code hl_enumeration" href="namespaceeve_1_1action.html#a2249c2d2d19c8318f8c0c77b596c283d">ActionParameterInterpolation</a> <a class="code hl_variable" href="structeve_1_1action_1_1ActionParameterKey.html#a78055bf5ac8537f8d609f8226adf0bbe">interpolation</a> = <a class="code hl_enumvalue" href="namespaceeve_1_1action.html#a2249c2d2d19c8318f8c0c77b596c283da32a843da6ea40ab3b17a3421ccdf671b">ActionParameterInterpolation::Linear</a>;</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span> </div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno"><a class="line" href="structeve_1_1action_1_1ActionParameterKey.html#a7b20d4b9b7e73640d42929f931e992d7">   34</a></span>    <span class="keyword">auto</span> <a class="code hl_function" href="structeve_1_1action_1_1ActionParameterKey.html#a7b20d4b9b7e73640d42929f931e992d7">operator&lt;=&gt;</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1action_1_1ActionParameterKey.html">ActionParameterKey</a>&amp;) <span class="keyword">const</span> = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>};</div>
+</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span> </div>
+<div class="foldopen" id="foldopen00038" data-start="{" data-end="};">
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno"><a class="line" href="structeve_1_1action_1_1ActionParameterCurveBinding.html">   38</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1action_1_1ActionParameterCurveBinding.html">ActionParameterCurveBinding</a> {</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno"><a class="line" href="structeve_1_1action_1_1ActionParameterCurveBinding.html#a3d72852e089a7baacce01e361b99fee5">   40</a></span>    <a class="code hl_class" href="classeve_1_1LogicalId.html">LogicalId</a>                      <a class="code hl_variable" href="structeve_1_1action_1_1ActionParameterCurveBinding.html#a3d72852e089a7baacce01e361b99fee5">target</a>;</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno"><a class="line" href="structeve_1_1action_1_1ActionParameterCurveBinding.html#a31dfd178b43b08adac8b5b4424d127a1">   42</a></span>    <a class="code hl_enumeration" href="namespaceeve_1_1action.html#ab2064c10bf463a5e180cde5d9588ace4">ActionParameterOperation</a>       <a class="code hl_variable" href="structeve_1_1action_1_1ActionParameterCurveBinding.html#a31dfd178b43b08adac8b5b4424d127a1">operation</a> = <a class="code hl_enumvalue" href="namespaceeve_1_1action.html#ab2064c10bf463a5e180cde5d9588ace4a0ebe6df8a3ac338e0512acc741823fdb">ActionParameterOperation::Replace</a>;</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno"><a class="line" href="structeve_1_1action_1_1ActionParameterCurveBinding.html#aec6c7b9eb8c8801e43e121b8c262c1cf">   44</a></span>    std::vector&lt;ActionParameterKey&gt; <a class="code hl_variable" href="structeve_1_1action_1_1ActionParameterCurveBinding.html#aec6c7b9eb8c8801e43e121b8c262c1cf">keys</a>;</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span> </div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno"><a class="line" href="structeve_1_1action_1_1ActionParameterCurveBinding.html#a9e72223b08be0e38476c336d2230a253">   46</a></span>    <span class="keyword">auto</span> <a class="code hl_function" href="structeve_1_1action_1_1ActionParameterCurveBinding.html#a9e72223b08be0e38476c336d2230a253">operator&lt;=&gt;</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1action_1_1ActionParameterCurveBinding.html">ActionParameterCurveBinding</a>&amp;) <span class="keyword">const</span> = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span> </div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    [[nodiscard]] <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;ActionParameterCurveBinding&gt;</a> <a class="code hl_function" href="structeve_1_1action_1_1ActionParameterCurveBinding.html#aa49f58048590725a26368aaf2cbe6ce1">fromPayload</a>(<span class="keyword">const</span> <a class="code hl_typedef" href="classeve_1_1Value.html#a2d59a6ba7d844c2561c606a8973be87d">Value::Object</a>&amp; <a class="code hl_variable" href="ActionTimelinePayloadEditor_8cpp.html#aa50532026e25d28aec12f8f0f8b0ebf5">payload</a>);</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    [[nodiscard]] <a class="code hl_typedef" href="classeve_1_1Value.html#a2d59a6ba7d844c2561c606a8973be87d">Value::Object</a> <a class="code hl_function" href="structeve_1_1action_1_1ActionParameterCurveBinding.html#ab7d390de5da9b1d765577a7976055465">toPayload</a>(<a class="code hl_typedef" href="classeve_1_1Value.html#a2d59a6ba7d844c2561c606a8973be87d">Value::Object</a> extensions = {}) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    [[nodiscard]] <span class="keywordtype">double</span> <a class="code hl_function" href="structeve_1_1action_1_1ActionParameterCurveBinding.html#a243fdbb3bf4cc7d8f0002e326c0afb85">sample</a>(<span class="keywordtype">double</span> progress) <span class="keyword">const</span> <span class="keyword">noexcept</span>;</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>};</div>
+</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span> </div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>[[nodiscard]] std::string_view <a class="code hl_function" href="namespaceeve_1_1action.html#af0fe93002b05026f45bbcafb9322acf9">actionParameterInterpolationName</a>(<a class="code hl_enumeration" href="namespaceeve_1_1action.html#a2249c2d2d19c8318f8c0c77b596c283d">ActionParameterInterpolation</a> <a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#aee90379adb0307effb138f4871edbc5c">value</a>) <span class="keyword">noexcept</span>;</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>[[nodiscard]] std::optional&lt;ActionParameterInterpolation&gt; <a class="code hl_function" href="namespaceeve_1_1action.html#aa6170ef133b65033bc8cb22a5c1900da">actionParameterInterpolationFromName</a>(</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    std::string_view <a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#aee90379adb0307effb138f4871edbc5c">value</a>) <span class="keyword">noexcept</span>;</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>[[nodiscard]] std::string_view <a class="code hl_function" href="namespaceeve_1_1action.html#aeb9811e1af86aa1e75d84709bc4432f3">actionParameterOperationName</a>(<a class="code hl_enumeration" href="namespaceeve_1_1action.html#ab2064c10bf463a5e180cde5d9588ace4">ActionParameterOperation</a> <a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#aee90379adb0307effb138f4871edbc5c">value</a>) <span class="keyword">noexcept</span>;</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span> </div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno"><a class="line" href="namespaceeve_1_1action.html#abe8ac332d559c51e1050fa013e614e95">   65</a></span><span class="keyword">enum class</span> <a class="code hl_enumeration" href="namespaceeve_1_1action.html#abe8ac332d559c51e1050fa013e614e95">ActionParameterPhase</a> : std::uint8_t { <a class="code hl_enumvalue" href="namespaceeve_1_1action.html#abe8ac332d559c51e1050fa013e614e95a1a06729125544cab7cee73195fc044f0">Begin</a>, <a class="code hl_enumvalue" href="namespaceeve_1_1action.html#abe8ac332d559c51e1050fa013e614e95a06933067aafd48425d67bcb01bba5cb6">Update</a>, <a class="code hl_enumvalue" href="namespaceeve_1_1action.html#abe8ac332d559c51e1050fa013e614e95a87557f11575c0ad78e4e28abedc13b6e">End</a> };</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span> </div>
+<div class="foldopen" id="foldopen00068" data-start="{" data-end="};">
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno"><a class="line" href="structeve_1_1action_1_1ActionParameterSample.html">   68</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1action_1_1ActionParameterSample.html">ActionParameterSample</a> {</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno"><a class="line" href="structeve_1_1action_1_1ActionParameterSample.html#aab1a97248002903e45d69c44d9c7f197">   70</a></span>    <a class="code hl_enumeration" href="namespaceeve_1_1action.html#abe8ac332d559c51e1050fa013e614e95">ActionParameterPhase</a>     <a class="code hl_variable" href="structeve_1_1action_1_1ActionParameterSample.html#aab1a97248002903e45d69c44d9c7f197">phase</a> = <a class="code hl_enumvalue" href="namespaceeve_1_1action.html#abe8ac332d559c51e1050fa013e614e95a06933067aafd48425d67bcb01bba5cb6">ActionParameterPhase::Update</a>;</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno"><a class="line" href="structeve_1_1action_1_1ActionParameterSample.html#aed508bf8b48b359133a4ee3c88f95c9d">   72</a></span>    <a class="code hl_class" href="classeve_1_1detail_1_1StrongUint64.html">ActionExecutionId</a>        <a class="code hl_variable" href="structeve_1_1action_1_1ActionParameterSample.html#aed508bf8b48b359133a4ee3c88f95c9d">executionId</a>;</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno"><a class="line" href="structeve_1_1action_1_1ActionParameterSample.html#a024d8fb95bb8ddfef03a292070f18f4e">   74</a></span>    <a class="code hl_class" href="classeve_1_1LogicalId.html">LogicalId</a>                <a class="code hl_variable" href="structeve_1_1action_1_1ActionParameterSample.html#a024d8fb95bb8ddfef03a292070f18f4e">itemId</a>;</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno"><a class="line" href="structeve_1_1action_1_1ActionParameterSample.html#acbb2e19dcad683edd173ebd5a4a809d0">   76</a></span>    <a class="code hl_class" href="classeve_1_1LogicalId.html">LogicalId</a>                <a class="code hl_variable" href="structeve_1_1action_1_1ActionParameterSample.html#acbb2e19dcad683edd173ebd5a4a809d0">target</a>;</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno"><a class="line" href="structeve_1_1action_1_1ActionParameterSample.html#af54b63dace670b24244a6b1e13df5fd2">   78</a></span>    <a class="code hl_enumeration" href="namespaceeve_1_1action.html#ab2064c10bf463a5e180cde5d9588ace4">ActionParameterOperation</a> <a class="code hl_variable" href="structeve_1_1action_1_1ActionParameterSample.html#af54b63dace670b24244a6b1e13df5fd2">operation</a> = <a class="code hl_enumvalue" href="namespaceeve_1_1action.html#ab2064c10bf463a5e180cde5d9588ace4a0ebe6df8a3ac338e0512acc741823fdb">ActionParameterOperation::Replace</a>;</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno"><a class="line" href="structeve_1_1action_1_1ActionParameterSample.html#aa1aec51ed68070a047057cc2796c5927">   80</a></span>    <span class="keywordtype">double</span>                   <a class="code hl_variable" href="structeve_1_1action_1_1ActionParameterSample.html#aa1aec51ed68070a047057cc2796c5927">value</a> = 0.0;</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno"><a class="line" href="structeve_1_1action_1_1ActionParameterSample.html#a837169113040153c5a35af70a38f289b">   82</a></span>    <span class="keywordtype">bool</span>                     <a class="code hl_variable" href="structeve_1_1action_1_1ActionParameterSample.html#a837169113040153c5a35af70a38f289b">preview</a> = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>};</div>
+</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span> </div>
+<div class="foldopen" id="foldopen00092" data-start="{" data-end="};">
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno"><a class="line" href="classeve_1_1action_1_1IActionParameterSink.html">   92</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1action_1_1IActionParameterSink.html">IActionParameterSink</a> {</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno"><a class="line" href="classeve_1_1action_1_1IActionParameterSink.html#ac0a1e6b5baf3c245f5ada3372e579fcf">   94</a></span>    <span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keyword">const</span> <span class="keywordtype">char</span>* <a class="code hl_variable" href="classeve_1_1action_1_1IActionParameterSink.html#ac0a1e6b5baf3c245f5ada3372e579fcf">capabilityName</a> = <span class="stringliteral">&quot;IActionParameterSink&quot;</span>;</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno"><a class="line" href="classeve_1_1action_1_1IActionParameterSink.html#a3752fb9b03a200b5bd76bb83e18966b6">   95</a></span>    <span class="keyword">virtual</span> <a class="code hl_function" href="classeve_1_1action_1_1IActionParameterSink.html#a3752fb9b03a200b5bd76bb83e18966b6">~IActionParameterSink</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span> </div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno"><a class="line" href="classeve_1_1action_1_1IActionParameterSink.html#a462150665fca4683196eb837bf3888b1">   98</a></span>    [[nodiscard]] <span class="keyword">virtual</span> <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1action_1_1IActionParameterSink.html#a462150665fca4683196eb837bf3888b1">supports</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1LogicalId.html">LogicalId</a>&amp; <a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#a16c9300acaea4db7696fb24b3802bfa5">target</a>) <span class="keyword">const</span> <span class="keyword">noexcept</span> = 0;</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno"><a class="line" href="classeve_1_1action_1_1IActionParameterSink.html#a2302cb93154e5621e93ebc7083b43092">  100</a></span>    [[nodiscard]] <span class="keyword">virtual</span> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1action_1_1IActionParameterSink.html#a2302cb93154e5621e93ebc7083b43092">apply</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1action_1_1ActionParameterSample.html">ActionParameterSample</a>&amp; sample) = 0;</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>};</div>
+</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span> </div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>}  <span class="comment">// namespace eve::action</span></div>
+<div class="ttc" id="aActionNotifyRegistry_8cpp_html_a16c9300acaea4db7696fb24b3802bfa5"><div class="ttname"><a href="ActionNotifyRegistry_8cpp.html#a16c9300acaea4db7696fb24b3802bfa5">target</a></div><div class="ttdeci">LogicalId target</div><div class="ttdef"><b>Definition</b> <a href="ActionNotifyRegistry_8cpp_source.html#l00163">ActionNotifyRegistry.cpp:163</a></div></div>
+<div class="ttc" id="aActionNotifyRegistry_8cpp_html_aee90379adb0307effb138f4871edbc5c"><div class="ttname"><a href="ActionNotifyRegistry_8cpp.html#aee90379adb0307effb138f4871edbc5c">value</a></div><div class="ttdeci">double value</div><div class="ttdef"><b>Definition</b> <a href="ActionNotifyRegistry_8cpp_source.html#l00165">ActionNotifyRegistry.cpp:165</a></div></div>
+<div class="ttc" id="aActionNotifyRegistry_8h_html"><div class="ttname"><a href="ActionNotifyRegistry_8h.html">ActionNotifyRegistry.h</a></div><div class="ttdoc">Extensible notify descriptors, validation and runtime routing.</div></div>
+<div class="ttc" id="aActionTimelinePayloadEditor_8cpp_html_aa50532026e25d28aec12f8f0f8b0ebf5"><div class="ttname"><a href="ActionTimelinePayloadEditor_8cpp.html#aa50532026e25d28aec12f8f0f8b0ebf5">payload</a></div><div class="ttdeci">Value::Object payload</div><div class="ttdef"><b>Definition</b> <a href="ActionTimelinePayloadEditor_8cpp_source.html#l00024">ActionTimelinePayloadEditor.cpp:24</a></div></div>
+<div class="ttc" id="aclasseve_1_1LogicalId_html"><div class="ttname"><a href="classeve_1_1LogicalId.html">eve::LogicalId</a></div><div class="ttdoc">Human-readable, scoped identifier in the form namespace:name.</div><div class="ttdef"><b>Definition</b> <a href="Identity_8h_source.html#l00413">Identity.h:413</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1Value_html_a2d59a6ba7d844c2561c606a8973be87d"><div class="ttname"><a href="classeve_1_1Value.html#a2d59a6ba7d844c2561c606a8973be87d">eve::Value::Object</a></div><div class="ttdeci">std::map&lt; std::string, Value &gt; Object</div><div class="ttdef"><b>Definition</b> <a href="Value_8h_source.html#l00034">Value.h:34</a></div></div>
+<div class="ttc" id="aclasseve_1_1action_1_1IActionParameterSink_html"><div class="ttname"><a href="classeve_1_1action_1_1IActionParameterSink.html">eve::action::IActionParameterSink</a></div><div class="ttdoc">Optional open target for continuous action parameters.</div><div class="ttdef"><b>Definition</b> <a href="ActionParameterCurve_8h_source.html#l00092">ActionParameterCurve.h:92</a></div></div>
+<div class="ttc" id="aclasseve_1_1action_1_1IActionParameterSink_html_a2302cb93154e5621e93ebc7083b43092"><div class="ttname"><a href="classeve_1_1action_1_1IActionParameterSink.html#a2302cb93154e5621e93ebc7083b43092">eve::action::IActionParameterSink::apply</a></div><div class="ttdeci">virtual Result&lt; void &gt; apply(const ActionParameterSample &amp;sample)=0</div><div class="ttdoc">Apply one borrowed lifecycle sample and report any target failure.</div></div>
+<div class="ttc" id="aclasseve_1_1action_1_1IActionParameterSink_html_a3752fb9b03a200b5bd76bb83e18966b6"><div class="ttname"><a href="classeve_1_1action_1_1IActionParameterSink.html#a3752fb9b03a200b5bd76bb83e18966b6">eve::action::IActionParameterSink::~IActionParameterSink</a></div><div class="ttdeci">virtual ~IActionParameterSink()=default</div></div>
+<div class="ttc" id="aclasseve_1_1action_1_1IActionParameterSink_html_a462150665fca4683196eb837bf3888b1"><div class="ttname"><a href="classeve_1_1action_1_1IActionParameterSink.html#a462150665fca4683196eb837bf3888b1">eve::action::IActionParameterSink::supports</a></div><div class="ttdeci">virtual bool supports(const LogicalId &amp;target) const noexcept=0</div><div class="ttdoc">Whether this sink owns the supplied stable target.</div></div>
+<div class="ttc" id="aclasseve_1_1action_1_1IActionParameterSink_html_ac0a1e6b5baf3c245f5ada3372e579fcf"><div class="ttname"><a href="classeve_1_1action_1_1IActionParameterSink.html#ac0a1e6b5baf3c245f5ada3372e579fcf">eve::action::IActionParameterSink::capabilityName</a></div><div class="ttdeci">static constexpr const char * capabilityName</div><div class="ttdef"><b>Definition</b> <a href="ActionParameterCurve_8h_source.html#l00094">ActionParameterCurve.h:94</a></div></div>
+<div class="ttc" id="aclasseve_1_1detail_1_1StrongUint64_html"><div class="ttname"><a href="classeve_1_1detail_1_1StrongUint64.html">eve::detail::StrongUint64&lt; ActionExecutionIdTag &gt;</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1action_html"><div class="ttname"><a href="namespaceeve_1_1action.html">eve::action</a></div><div class="ttdef"><b>Definition</b> <a href="AbilityAsset_8cpp_source.html#l00009">AbilityAsset.cpp:9</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1action_html_a2249c2d2d19c8318f8c0c77b596c283d"><div class="ttname"><a href="namespaceeve_1_1action.html#a2249c2d2d19c8318f8c0c77b596c283d">eve::action::ActionParameterInterpolation</a></div><div class="ttdeci">ActionParameterInterpolation</div><div class="ttdoc">Interpolation used from one parameter key to the following key.</div><div class="ttdef"><b>Definition</b> <a href="ActionParameterCurve_8h_source.html#l00016">ActionParameterCurve.h:16</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1action_html_a2249c2d2d19c8318f8c0c77b596c283da32a843da6ea40ab3b17a3421ccdf671b"><div class="ttname"><a href="namespaceeve_1_1action.html#a2249c2d2d19c8318f8c0c77b596c283da32a843da6ea40ab3b17a3421ccdf671b">eve::action::ActionParameterInterpolation::Linear</a></div><div class="ttdeci">@ Linear</div></div>
+<div class="ttc" id="anamespaceeve_1_1action_html_a2249c2d2d19c8318f8c0c77b596c283da48c7c41b72e1d678923ce3571aa65b2d"><div class="ttname"><a href="namespaceeve_1_1action.html#a2249c2d2d19c8318f8c0c77b596c283da48c7c41b72e1d678923ce3571aa65b2d">eve::action::ActionParameterInterpolation::Step</a></div><div class="ttdeci">@ Step</div></div>
+<div class="ttc" id="anamespaceeve_1_1action_html_a2249c2d2d19c8318f8c0c77b596c283daec6b5414eb175379ff9efc9b3eef5814"><div class="ttname"><a href="namespaceeve_1_1action.html#a2249c2d2d19c8318f8c0c77b596c283daec6b5414eb175379ff9efc9b3eef5814">eve::action::ActionParameterInterpolation::Cubic</a></div><div class="ttdeci">@ Cubic</div></div>
+<div class="ttc" id="anamespaceeve_1_1action_html_aa6170ef133b65033bc8cb22a5c1900da"><div class="ttname"><a href="namespaceeve_1_1action.html#aa6170ef133b65033bc8cb22a5c1900da">eve::action::actionParameterInterpolationFromName</a></div><div class="ttdeci">std::optional&lt; ActionParameterInterpolation &gt; actionParameterInterpolationFromName(std::string_view value) noexcept</div><div class="ttdoc">Parse a stable persisted interpolation spelling.</div><div class="ttdef"><b>Definition</b> <a href="ActionParameterCurve_8cpp_source.html#l00053">ActionParameterCurve.cpp:53</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1action_html_ab2064c10bf463a5e180cde5d9588ace4"><div class="ttname"><a href="namespaceeve_1_1action.html#ab2064c10bf463a5e180cde5d9588ace4">eve::action::ActionParameterOperation</a></div><div class="ttdeci">ActionParameterOperation</div><div class="ttdoc">Composition operation applied by a target-specific parameter sink.</div><div class="ttdef"><b>Definition</b> <a href="ActionParameterCurve_8h_source.html#l00019">ActionParameterCurve.h:19</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1action_html_ab2064c10bf463a5e180cde5d9588ace4a0ebe6df8a3ac338e0512acc741823fdb"><div class="ttname"><a href="namespaceeve_1_1action.html#ab2064c10bf463a5e180cde5d9588ace4a0ebe6df8a3ac338e0512acc741823fdb">eve::action::ActionParameterOperation::Replace</a></div><div class="ttdeci">@ Replace</div></div>
+<div class="ttc" id="anamespaceeve_1_1action_html_ab2064c10bf463a5e180cde5d9588ace4ae257376d913f3b53cbb4a9b19d770648"><div class="ttname"><a href="namespaceeve_1_1action.html#ab2064c10bf463a5e180cde5d9588ace4ae257376d913f3b53cbb4a9b19d770648">eve::action::ActionParameterOperation::Multiply</a></div><div class="ttdeci">@ Multiply</div></div>
+<div class="ttc" id="anamespaceeve_1_1action_html_ab2064c10bf463a5e180cde5d9588ace4aec211f7c20af43e742bf2570c3cb84f9"><div class="ttname"><a href="namespaceeve_1_1action.html#ab2064c10bf463a5e180cde5d9588ace4aec211f7c20af43e742bf2570c3cb84f9">eve::action::ActionParameterOperation::Add</a></div><div class="ttdeci">@ Add</div></div>
+<div class="ttc" id="anamespaceeve_1_1action_html_abe8ac332d559c51e1050fa013e614e95"><div class="ttname"><a href="namespaceeve_1_1action.html#abe8ac332d559c51e1050fa013e614e95">eve::action::ActionParameterPhase</a></div><div class="ttdeci">ActionParameterPhase</div><div class="ttdoc">Parameter lifecycle projected to a target-specific optional sink.</div><div class="ttdef"><b>Definition</b> <a href="ActionParameterCurve_8h_source.html#l00065">ActionParameterCurve.h:65</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1action_html_abe8ac332d559c51e1050fa013e614e95a06933067aafd48425d67bcb01bba5cb6"><div class="ttname"><a href="namespaceeve_1_1action.html#abe8ac332d559c51e1050fa013e614e95a06933067aafd48425d67bcb01bba5cb6">eve::action::ActionParameterPhase::Update</a></div><div class="ttdeci">@ Update</div></div>
+<div class="ttc" id="anamespaceeve_1_1action_html_abe8ac332d559c51e1050fa013e614e95a1a06729125544cab7cee73195fc044f0"><div class="ttname"><a href="namespaceeve_1_1action.html#abe8ac332d559c51e1050fa013e614e95a1a06729125544cab7cee73195fc044f0">eve::action::ActionParameterPhase::Begin</a></div><div class="ttdeci">@ Begin</div></div>
+<div class="ttc" id="anamespaceeve_1_1action_html_abe8ac332d559c51e1050fa013e614e95a87557f11575c0ad78e4e28abedc13b6e"><div class="ttname"><a href="namespaceeve_1_1action.html#abe8ac332d559c51e1050fa013e614e95a87557f11575c0ad78e4e28abedc13b6e">eve::action::ActionParameterPhase::End</a></div><div class="ttdeci">@ End</div></div>
+<div class="ttc" id="anamespaceeve_1_1action_html_aeb9811e1af86aa1e75d84709bc4432f3"><div class="ttname"><a href="namespaceeve_1_1action.html#aeb9811e1af86aa1e75d84709bc4432f3">eve::action::actionParameterOperationName</a></div><div class="ttdeci">std::string_view actionParameterOperationName(ActionParameterOperation value) noexcept</div><div class="ttdoc">Stable persisted operation spelling.</div><div class="ttdef"><b>Definition</b> <a href="ActionParameterCurve_8cpp_source.html#l00058">ActionParameterCurve.cpp:58</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1action_html_af0fe93002b05026f45bbcafb9322acf9"><div class="ttname"><a href="namespaceeve_1_1action.html#af0fe93002b05026f45bbcafb9322acf9">eve::action::actionParameterInterpolationName</a></div><div class="ttdeci">std::string_view actionParameterInterpolationName(ActionParameterInterpolation value) noexcept</div><div class="ttdoc">Stable persisted interpolation spelling.</div><div class="ttdef"><b>Definition</b> <a href="ActionParameterCurve_8cpp_source.html#l00044">ActionParameterCurve.cpp:44</a></div></div>
+<div class="ttc" id="astructeve_1_1action_1_1ActionParameterCurveBinding_html"><div class="ttname"><a href="structeve_1_1action_1_1ActionParameterCurveBinding.html">eve::action::ActionParameterCurveBinding</a></div><div class="ttdoc">Validated owning continuous parameter binding.</div><div class="ttdef"><b>Definition</b> <a href="ActionParameterCurve_8h_source.html#l00038">ActionParameterCurve.h:38</a></div></div>
+<div class="ttc" id="astructeve_1_1action_1_1ActionParameterCurveBinding_html_a243fdbb3bf4cc7d8f0002e326c0afb85"><div class="ttname"><a href="structeve_1_1action_1_1ActionParameterCurveBinding.html#a243fdbb3bf4cc7d8f0002e326c0afb85">eve::action::ActionParameterCurveBinding::sample</a></div><div class="ttdeci">double sample(double progress) const noexcept</div><div class="ttdoc">Evaluate the curve at normalized block progress in [0, 1].</div><div class="ttdef"><b>Definition</b> <a href="ActionParameterCurve_8cpp_source.html#l00148">ActionParameterCurve.cpp:148</a></div></div>
+<div class="ttc" id="astructeve_1_1action_1_1ActionParameterCurveBinding_html_a31dfd178b43b08adac8b5b4424d127a1"><div class="ttname"><a href="structeve_1_1action_1_1ActionParameterCurveBinding.html#a31dfd178b43b08adac8b5b4424d127a1">eve::action::ActionParameterCurveBinding::operation</a></div><div class="ttdeci">ActionParameterOperation operation</div><div class="ttdoc">Composition operation applied at the target.</div><div class="ttdef"><b>Definition</b> <a href="ActionParameterCurve_8h_source.html#l00042">ActionParameterCurve.h:42</a></div></div>
+<div class="ttc" id="astructeve_1_1action_1_1ActionParameterCurveBinding_html_a3d72852e089a7baacce01e361b99fee5"><div class="ttname"><a href="structeve_1_1action_1_1ActionParameterCurveBinding.html#a3d72852e089a7baacce01e361b99fee5">eve::action::ActionParameterCurveBinding::target</a></div><div class="ttdeci">LogicalId target</div><div class="ttdoc">Stable sink-owned parameter target.</div><div class="ttdef"><b>Definition</b> <a href="ActionParameterCurve_8h_source.html#l00040">ActionParameterCurve.h:40</a></div></div>
+<div class="ttc" id="astructeve_1_1action_1_1ActionParameterCurveBinding_html_a9e72223b08be0e38476c336d2230a253"><div class="ttname"><a href="structeve_1_1action_1_1ActionParameterCurveBinding.html#a9e72223b08be0e38476c336d2230a253">eve::action::ActionParameterCurveBinding::operator&lt;=&gt;</a></div><div class="ttdeci">auto operator&lt;=&gt;(const ActionParameterCurveBinding &amp;) const =default</div></div>
+<div class="ttc" id="astructeve_1_1action_1_1ActionParameterCurveBinding_html_aa49f58048590725a26368aaf2cbe6ce1"><div class="ttname"><a href="structeve_1_1action_1_1ActionParameterCurveBinding.html#aa49f58048590725a26368aaf2cbe6ce1">eve::action::ActionParameterCurveBinding::fromPayload</a></div><div class="ttdeci">static Result&lt; ActionParameterCurveBinding &gt; fromPayload(const Value::Object &amp;payload)</div><div class="ttdoc">Decode and validate target, operation and normalized ordered keys.</div><div class="ttdef"><b>Definition</b> <a href="ActionParameterCurve_8cpp_source.html#l00067">ActionParameterCurve.cpp:67</a></div></div>
+<div class="ttc" id="astructeve_1_1action_1_1ActionParameterCurveBinding_html_ab7d390de5da9b1d765577a7976055465"><div class="ttname"><a href="structeve_1_1action_1_1ActionParameterCurveBinding.html#ab7d390de5da9b1d765577a7976055465">eve::action::ActionParameterCurveBinding::toPayload</a></div><div class="ttdeci">Value::Object toPayload(Value::Object extensions={}) const</div><div class="ttdoc">Encode the canonical fields while preserving unrelated extension fields.</div><div class="ttdef"><b>Definition</b> <a href="ActionParameterCurve_8cpp_source.html#l00132">ActionParameterCurve.cpp:132</a></div></div>
+<div class="ttc" id="astructeve_1_1action_1_1ActionParameterCurveBinding_html_aec6c7b9eb8c8801e43e121b8c262c1cf"><div class="ttname"><a href="structeve_1_1action_1_1ActionParameterCurveBinding.html#aec6c7b9eb8c8801e43e121b8c262c1cf">eve::action::ActionParameterCurveBinding::keys</a></div><div class="ttdeci">std::vector&lt; ActionParameterKey &gt; keys</div><div class="ttdoc">Strictly ordered normalized keys, including endpoints 0 and 1.</div><div class="ttdef"><b>Definition</b> <a href="ActionParameterCurve_8h_source.html#l00044">ActionParameterCurve.h:44</a></div></div>
+<div class="ttc" id="astructeve_1_1action_1_1ActionParameterKey_html"><div class="ttname"><a href="structeve_1_1action_1_1ActionParameterKey.html">eve::action::ActionParameterKey</a></div><div class="ttdoc">One normalized, owning parameter-curve key.</div><div class="ttdef"><b>Definition</b> <a href="ActionParameterCurve_8h_source.html#l00022">ActionParameterCurve.h:22</a></div></div>
+<div class="ttc" id="astructeve_1_1action_1_1ActionParameterKey_html_a2233e9b8ea16d4724910ee349165c3a2"><div class="ttname"><a href="structeve_1_1action_1_1ActionParameterKey.html#a2233e9b8ea16d4724910ee349165c3a2">eve::action::ActionParameterKey::value</a></div><div class="ttdeci">double value</div><div class="ttdoc">Authored scalar value.</div><div class="ttdef"><b>Definition</b> <a href="ActionParameterCurve_8h_source.html#l00026">ActionParameterCurve.h:26</a></div></div>
+<div class="ttc" id="astructeve_1_1action_1_1ActionParameterKey_html_a6d950d7ad33cb23bf6c00680544c0e4f"><div class="ttname"><a href="structeve_1_1action_1_1ActionParameterKey.html#a6d950d7ad33cb23bf6c00680544c0e4f">eve::action::ActionParameterKey::time</a></div><div class="ttdeci">double time</div><div class="ttdoc">Normalized key time in [0, 1].</div><div class="ttdef"><b>Definition</b> <a href="ActionParameterCurve_8h_source.html#l00024">ActionParameterCurve.h:24</a></div></div>
+<div class="ttc" id="astructeve_1_1action_1_1ActionParameterKey_html_a78055bf5ac8537f8d609f8226adf0bbe"><div class="ttname"><a href="structeve_1_1action_1_1ActionParameterKey.html#a78055bf5ac8537f8d609f8226adf0bbe">eve::action::ActionParameterKey::interpolation</a></div><div class="ttdeci">ActionParameterInterpolation interpolation</div><div class="ttdoc">Interpolation from this key to the following key.</div><div class="ttdef"><b>Definition</b> <a href="ActionParameterCurve_8h_source.html#l00032">ActionParameterCurve.h:32</a></div></div>
+<div class="ttc" id="astructeve_1_1action_1_1ActionParameterKey_html_a7b20d4b9b7e73640d42929f931e992d7"><div class="ttname"><a href="structeve_1_1action_1_1ActionParameterKey.html#a7b20d4b9b7e73640d42929f931e992d7">eve::action::ActionParameterKey::operator&lt;=&gt;</a></div><div class="ttdeci">auto operator&lt;=&gt;(const ActionParameterKey &amp;) const =default</div></div>
+<div class="ttc" id="astructeve_1_1action_1_1ActionParameterKey_html_ad677b03b4a7584200387bb23980eefa3"><div class="ttname"><a href="structeve_1_1action_1_1ActionParameterKey.html#ad677b03b4a7584200387bb23980eefa3">eve::action::ActionParameterKey::outTangent</a></div><div class="ttdeci">double outTangent</div><div class="ttdoc">Outgoing value-per-normalized-time tangent for cubic interpolation.</div><div class="ttdef"><b>Definition</b> <a href="ActionParameterCurve_8h_source.html#l00030">ActionParameterCurve.h:30</a></div></div>
+<div class="ttc" id="astructeve_1_1action_1_1ActionParameterKey_html_affdfdffa56e8785051c612d22bcb1397"><div class="ttname"><a href="structeve_1_1action_1_1ActionParameterKey.html#affdfdffa56e8785051c612d22bcb1397">eve::action::ActionParameterKey::inTangent</a></div><div class="ttdeci">double inTangent</div><div class="ttdoc">Incoming value-per-normalized-time tangent for cubic interpolation.</div><div class="ttdef"><b>Definition</b> <a href="ActionParameterCurve_8h_source.html#l00028">ActionParameterCurve.h:28</a></div></div>
+<div class="ttc" id="astructeve_1_1action_1_1ActionParameterSample_html"><div class="ttname"><a href="structeve_1_1action_1_1ActionParameterSample.html">eve::action::ActionParameterSample</a></div><div class="ttdoc">Owning continuous parameter sample emitted by ActionBlockRuntime.</div><div class="ttdef"><b>Definition</b> <a href="ActionParameterCurve_8h_source.html#l00068">ActionParameterCurve.h:68</a></div></div>
+<div class="ttc" id="astructeve_1_1action_1_1ActionParameterSample_html_a024d8fb95bb8ddfef03a292070f18f4e"><div class="ttname"><a href="structeve_1_1action_1_1ActionParameterSample.html#a024d8fb95bb8ddfef03a292070f18f4e">eve::action::ActionParameterSample::itemId</a></div><div class="ttdeci">LogicalId itemId</div><div class="ttdoc">Stable timeline item identity within the execution.</div><div class="ttdef"><b>Definition</b> <a href="ActionParameterCurve_8h_source.html#l00074">ActionParameterCurve.h:74</a></div></div>
+<div class="ttc" id="astructeve_1_1action_1_1ActionParameterSample_html_a837169113040153c5a35af70a38f289b"><div class="ttname"><a href="structeve_1_1action_1_1ActionParameterSample.html#a837169113040153c5a35af70a38f289b">eve::action::ActionParameterSample::preview</a></div><div class="ttdeci">bool preview</div><div class="ttdoc">Whether the sample belongs to non-authoritative preview evaluation.</div><div class="ttdef"><b>Definition</b> <a href="ActionParameterCurve_8h_source.html#l00082">ActionParameterCurve.h:82</a></div></div>
+<div class="ttc" id="astructeve_1_1action_1_1ActionParameterSample_html_aa1aec51ed68070a047057cc2796c5927"><div class="ttname"><a href="structeve_1_1action_1_1ActionParameterSample.html#aa1aec51ed68070a047057cc2796c5927">eve::action::ActionParameterSample::value</a></div><div class="ttdeci">double value</div><div class="ttdoc">Evaluated scalar value.</div><div class="ttdef"><b>Definition</b> <a href="ActionParameterCurve_8h_source.html#l00080">ActionParameterCurve.h:80</a></div></div>
+<div class="ttc" id="astructeve_1_1action_1_1ActionParameterSample_html_aab1a97248002903e45d69c44d9c7f197"><div class="ttname"><a href="structeve_1_1action_1_1ActionParameterSample.html#aab1a97248002903e45d69c44d9c7f197">eve::action::ActionParameterSample::phase</a></div><div class="ttdeci">ActionParameterPhase phase</div><div class="ttdoc">Paired lifecycle phase.</div><div class="ttdef"><b>Definition</b> <a href="ActionParameterCurve_8h_source.html#l00070">ActionParameterCurve.h:70</a></div></div>
+<div class="ttc" id="astructeve_1_1action_1_1ActionParameterSample_html_acbb2e19dcad683edd173ebd5a4a809d0"><div class="ttname"><a href="structeve_1_1action_1_1ActionParameterSample.html#acbb2e19dcad683edd173ebd5a4a809d0">eve::action::ActionParameterSample::target</a></div><div class="ttdeci">LogicalId target</div><div class="ttdoc">Stable sink-owned parameter target.</div><div class="ttdef"><b>Definition</b> <a href="ActionParameterCurve_8h_source.html#l00076">ActionParameterCurve.h:76</a></div></div>
+<div class="ttc" id="astructeve_1_1action_1_1ActionParameterSample_html_aed508bf8b48b359133a4ee3c88f95c9d"><div class="ttname"><a href="structeve_1_1action_1_1ActionParameterSample.html#aed508bf8b48b359133a4ee3c88f95c9d">eve::action::ActionParameterSample::executionId</a></div><div class="ttdeci">ActionExecutionId executionId</div><div class="ttdoc">Generation-qualified action execution identity.</div><div class="ttdef"><b>Definition</b> <a href="ActionParameterCurve_8h_source.html#l00072">ActionParameterCurve.h:72</a></div></div>
+<div class="ttc" id="astructeve_1_1action_1_1ActionParameterSample_html_af54b63dace670b24244a6b1e13df5fd2"><div class="ttname"><a href="structeve_1_1action_1_1ActionParameterSample.html#af54b63dace670b24244a6b1e13df5fd2">eve::action::ActionParameterSample::operation</a></div><div class="ttdeci">ActionParameterOperation operation</div><div class="ttdoc">Composition operation for this curve.</div><div class="ttdef"><b>Definition</b> <a href="ActionParameterCurve_8h_source.html#l00078">ActionParameterCurve.h:78</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

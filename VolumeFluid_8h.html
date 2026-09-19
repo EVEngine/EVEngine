@@ -1,0 +1,350 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/fluids/VolumeFluid.h 文件参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_64d77e4380a58ef2a81d909febed7275.html">fluids</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#namespaces">命名空间</a> &#124;
+<a href="#enum-members">枚举</a>  </div>
+  <div class="headertitle"><div class="title">VolumeFluid.h 文件参考</div></div>
+</div><!--header-->
+<div class="contents">
+<div class="textblock"><code>#include &quot;<a class="el" href="Result_8h_source.html">common/Result.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="FluidSdf_8h_source.html">fluids/FluidSdf.h</a>&quot;</code><br />
+<code>#include &lt;array&gt;</code><br />
+<code>#include &lt;cstdint&gt;</code><br />
+<code>#include &lt;glm/vec3.hpp&gt;</code><br />
+<code>#include &lt;glm/vec4.hpp&gt;</code><br />
+<code>#include &lt;memory&gt;</code><br />
+<code>#include &lt;span&gt;</code><br />
+<code>#include &lt;string&gt;</code><br />
+<code>#include &lt;vector&gt;</code><br />
+</div>
+<p><a href="VolumeFluid_8h_source.html">浏览源代码.</a></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1fluids_1_1VolumeFluidMaterial.html">eve::fluids::VolumeFluidMaterial</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Per-particle material, copied at emission; densities enable multiphase buoyancy.  <a href="structeve_1_1fluids_1_1VolumeFluidMaterial.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1fluids_1_1VolumeFluidViscosityColorKey.html">eve::fluids::VolumeFluidViscosityColorKey</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Transient linear RGBA gradient key at an absolute material viscosity.  <a href="structeve_1_1fluids_1_1VolumeFluidViscosityColorKey.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1fluids_1_1VolumeFluidColorKey.html">eve::fluids::VolumeFluidColorKey</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">One strictly ordered [0,1] coordinate and linear RGBA gradient color.  <a href="structeve_1_1fluids_1_1VolumeFluidColorKey.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1fluids_1_1VolumeFluidSettings.html">eve::fluids::VolumeFluidSettings</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Meter-space (+Y up) volume-fluid material and solver policy.  <a href="structeve_1_1fluids_1_1VolumeFluidSettings.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1fluids_1_1VolumeFluidParticle.html">eve::fluids::VolumeFluidParticle</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owning particle value with world position and velocity in SI units.  <a href="structeve_1_1fluids_1_1VolumeFluidParticle.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1fluids_1_1VolumeFluidWindZone.html">eve::fluids::VolumeFluidWindZone</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owning description of one transient ambient or spherical wind zone.  <a href="structeve_1_1fluids_1_1VolumeFluidWindZone.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1fluids_1_1VolumeFluidCollider.html">eve::fluids::VolumeFluidCollider</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owned obstacle sample; the caller updates moving obstacles before stepping.  <a href="structeve_1_1fluids_1_1VolumeFluidCollider.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1fluids_1_1VolumeFluidSdfCollider.html">eve::fluids::VolumeFluidSdfCollider</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owned sampled mesh/SDF collider with a uniform world transform.  <a href="structeve_1_1fluids_1_1VolumeFluidSdfCollider.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1fluids_1_1VolumeFluidHeightFieldCollider.html">eve::fluids::VolumeFluidHeightFieldCollider</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owned regular-grid terrain collider matching Fluid3D height-field sample layout.  <a href="structeve_1_1fluids_1_1VolumeFluidHeightFieldCollider.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1fluids_1_1VolumeFluidSdfPose.html">eve::fluids::VolumeFluidSdfPose</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Transient transform update for one owned SDF collider, identified by stable label.  <a href="structeve_1_1fluids_1_1VolumeFluidSdfPose.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1fluids_1_1VolumeFluidSdfSlice.html">eve::fluids::VolumeFluidSdfSlice</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owning normalized SDF slice plus its world-space sample lattice.  <a href="structeve_1_1fluids_1_1VolumeFluidSdfSlice.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1fluids_1_1VolumeFluidContact.html">eve::fluids::VolumeFluidContact</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owned contact event; opposite impulse can be applied to the caller's rigid body.  <a href="structeve_1_1fluids_1_1VolumeFluidContact.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1fluids_1_1VolumeFluidContactEvent.html">eve::fluids::VolumeFluidContactEvent</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owning deduplicated actor/collider contact lifecycle event.  <a href="structeve_1_1fluids_1_1VolumeFluidContactEvent.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1fluids_1_1VolumeFluidContactTracker.html">eve::fluids::VolumeFluidContactTracker</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Explicit bounded contact lifecycle tracker; owns no solver reference.  <a href="classeve_1_1fluids_1_1VolumeFluidContactTracker.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1fluids_1_1VolumeFluidAttachmentReaction.html">eve::fluids::VolumeFluidAttachmentReaction</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Opposite impulse produced by a prescribed solid-particle attachment constraint.  <a href="structeve_1_1fluids_1_1VolumeFluidAttachmentReaction.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1fluids_1_1VolumeFluidThermalRule.html">eve::fluids::VolumeFluidThermalRule</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">One-step contact transfer into user channels x/y; negative rate heats, positive cools.  <a href="structeve_1_1fluids_1_1VolumeFluidThermalRule.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1fluids_1_1VolumeFluidFieldSample.html">eve::fluids::VolumeFluidFieldSample</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owned liquid/gas field sample for diffuse-particle emission and advection.  <a href="structeve_1_1fluids_1_1VolumeFluidFieldSample.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1fluids_1_1VolumeFluidGridCell.html">eve::fluids::VolumeFluidGridCell</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owning occupied-cell sample for Fluid3DParticleGridDebugger-style visualization.  <a href="structeve_1_1fluids_1_1VolumeFluidGridCell.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1fluids_1_1VolumeFluidParticleFrame.html">eve::fluids::VolumeFluidParticleFrame</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owning local-axis sample for DebugParticleFrames-style visualization.  <a href="structeve_1_1fluids_1_1VolumeFluidParticleFrame.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1fluids_1_1VolumeFluidParticleInstance.html">eve::fluids::VolumeFluidParticleInstance</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">One owning mesh-instance transform/color row for Fluid3DInstancedParticleRenderer-style presentation.  <a href="structeve_1_1fluids_1_1VolumeFluidParticleInstance.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1fluids_1_1VolumeFluidParticleEvent.html">eve::fluids::VolumeFluidParticleEvent</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owning particle lifecycle event captured before the dense pool changes again.  <a href="structeve_1_1fluids_1_1VolumeFluidParticleEvent.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1fluids_1_1VolumeFluidParticleEventBatch.html">eve::fluids::VolumeFluidParticleEventBatch</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owning result of one explicit particle lifecycle-event drain.  <a href="structeve_1_1fluids_1_1VolumeFluidParticleEventBatch.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1fluids_1_1VolumeFluidMassProperties.html">eve::fluids::VolumeFluidMassProperties</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owning mass summary for one Fluid3D-compatible actor group.  <a href="structeve_1_1fluids_1_1VolumeFluidMassProperties.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1fluids_1_1VolumeFluidRayHit.html">eve::fluids::VolumeFluidRayHit</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owning ray hit against one native oriented-ellipsoid volume-fluid particle.  <a href="structeve_1_1fluids_1_1VolumeFluidRayHit.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1fluids_1_1VolumeFluidDistanceHit.html">eve::fluids::VolumeFluidDistanceHit</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owning signed surface-distance result for a native query shape.  <a href="structeve_1_1fluids_1_1VolumeFluidDistanceHit.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1fluids_1_1VolumeFluidQueryShape.html">eve::fluids::VolumeFluidQueryShape</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owning transient query description compatible with Fluid3D QueryShape semantics.  <a href="structeve_1_1fluids_1_1VolumeFluidQueryShape.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1fluids_1_1VolumeFluidQueryHit.html">eve::fluids::VolumeFluidQueryHit</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owning result from one entry in a mixed query batch.  <a href="structeve_1_1fluids_1_1VolumeFluidQueryHit.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1fluids_1_1VolumeFluidSimplex.html">eve::fluids::VolumeFluidSimplex</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A point, edge or triangle over snapshot-local particle indices.  <a href="structeve_1_1fluids_1_1VolumeFluidSimplex.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1fluids_1_1VolumeFluidSimplexHit.html">eve::fluids::VolumeFluidSimplexHit</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owning Fluid3D-compatible nearest result for one simplex and query pair.  <a href="structeve_1_1fluids_1_1VolumeFluidSimplexHit.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1fluids_1_1VolumeFluidAttachment.html">eve::fluids::VolumeFluidAttachment</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owned local anchor for a contact-frozen particle; indices refer to its snapshot particle array.  <a href="structeve_1_1fluids_1_1VolumeFluidAttachment.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1fluids_1_1VolumeFluidStitch.html">eve::fluids::VolumeFluidStitch</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">One Fluid3DStitcher-compatible zero-distance particle-pair constraint.  <a href="structeve_1_1fluids_1_1VolumeFluidStitch.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1fluids_1_1VolumeFluidSnapshot.html">eve::fluids::VolumeFluidSnapshot</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Canonical version-20 owning state; older codecs migrate collider, attachment, stitch, filter, group, material, shape, topology, height-field, trigger and collision-material fields.  <a href="structeve_1_1fluids_1_1VolumeFluidSnapshot.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html">eve::fluids::VolumeFluid</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">CPU position-based free-volume fluid with a bounded spatial grid. @ownership Owns all particle state; no external objects or callbacks are retained. @thread All methods are simulation-thread affine; concurrent access is forbidden. @reentrancy No callbacks are invoked. Renderers consume copied particle positions.  <a href="classeve_1_1fluids_1_1VolumeFluid.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
+命名空间</h2></td></tr>
+<tr class="memitem:namespaceeve" id="r_namespaceeve"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve.html">eve</a></td></tr>
+<tr class="memdesc:namespaceeve"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build metadata (engine git commit, build time, third-party version). <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceeve_1_1fluids" id="r_namespaceeve_1_1fluids"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1fluids.html">eve::fluids</a></td></tr>
+<tr class="memdesc:namespaceeve_1_1fluids"><td class="mdescLeft">&#160;</td><td class="mdescRight">GLSL compute kernels for the GPU surface-flow solver. <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="enum-members" name="enum-members"></a>
+枚举</h2></td></tr>
+<tr class="memitem:a0e5f15066ab2862824c11d6aecc9f80d" id="r_a0e5f15066ab2862824c11d6aecc9f80d"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1fluids.html#a0e5f15066ab2862824c11d6aecc9f80d">eve::fluids::VolumeFluidPhase</a> : uint8_t { <a class="el" href="namespaceeve_1_1fluids.html#a0e5f15066ab2862824c11d6aecc9f80da5635bf596d97c1c2e7afe481ed060774">eve::fluids::Liquid</a>
+, <a class="el" href="namespaceeve_1_1fluids.html#a0e5f15066ab2862824c11d6aecc9f80da635459702f9817de29e608fa3395637c">eve::fluids::Gas</a>
+, <a class="el" href="namespaceeve_1_1fluids.html#a0e5f15066ab2862824c11d6aecc9f80daf4b5974fd11406f8410fa7e8502a26a3">eve::fluids::Granular</a>
+, <a class="el" href="namespaceeve_1_1fluids.html#a0e5f15066ab2862824c11d6aecc9f80dae41480b6bbfbf7407974a88d3d34f4fa">eve::fluids::Solid</a>
+ }</td></tr>
+<tr class="memdesc:a0e5f15066ab2862824c11d6aecc9f80d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constitutive phase; solids are world-fixed or follow their owned collider attachment.  <a href="namespaceeve_1_1fluids.html#a0e5f15066ab2862824c11d6aecc9f80d">更多...</a><br /></td></tr>
+<tr class="separator:a0e5f15066ab2862824c11d6aecc9f80d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa6bfecf9e2139b4c4e78e472686a0e92" id="r_aa6bfecf9e2139b4c4e78e472686a0e92"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1fluids.html#aa6bfecf9e2139b4c4e78e472686a0e92">eve::fluids::VolumeFluidMaterialCombineMode</a> : uint8_t { <a class="el" href="namespaceeve_1_1fluids.html#aa6bfecf9e2139b4c4e78e472686a0e92ab1897515d548a960afe49ecf66a29021">eve::fluids::Average</a> = 0
+, <a class="el" href="namespaceeve_1_1fluids.html#aa6bfecf9e2139b4c4e78e472686a0e92aa1d0ec6d56f8833a078b5a7ac4caf2d4">eve::fluids::Minimum</a> = 1
+, <a class="el" href="namespaceeve_1_1fluids.html#aa6bfecf9e2139b4c4e78e472686a0e92ae257376d913f3b53cbb4a9b19d770648">eve::fluids::Multiply</a> = 2
+, <a class="el" href="namespaceeve_1_1fluids.html#aa6bfecf9e2139b4c4e78e472686a0e92a8321e79c278ec510f63675c040594892">eve::fluids::Maximum</a> = 3
+ }</td></tr>
+<tr class="memdesc:aa6bfecf9e2139b4c4e78e472686a0e92"><td class="mdescLeft">&#160;</td><td class="mdescRight">Fluid3D collision-material coefficient combination, with package integer values.  <a href="namespaceeve_1_1fluids.html#aa6bfecf9e2139b4c4e78e472686a0e92">更多...</a><br /></td></tr>
+<tr class="separator:aa6bfecf9e2139b4c4e78e472686a0e92"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9b92183d2103b78b033af136f5c13ebd" id="r_a9b92183d2103b78b033af136f5c13ebd"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1fluids.html#a9b92183d2103b78b033af136f5c13ebd">eve::fluids::VolumeFluidWindZoneType</a> { <a class="el" href="namespaceeve_1_1fluids.html#a9b92183d2103b78b033af136f5c13ebdaed8e37bad13d76c6dbeb58152440b41e">eve::fluids::Ambient</a>
+, <a class="el" href="namespaceeve_1_1fluids.html#a9b92183d2103b78b033af136f5c13ebda24e5c24fabd1c081d4c729094df0b947">eve::fluids::Spherical</a>
+ }</td></tr>
+<tr class="memdesc:a9b92183d2103b78b033af136f5c13ebd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Shape used by a transient Fluid3D-style wind force zone.  <a href="namespaceeve_1_1fluids.html#a9b92183d2103b78b033af136f5c13ebd">更多...</a><br /></td></tr>
+<tr class="separator:a9b92183d2103b78b033af136f5c13ebd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afea248420a1c793105b01ef2b6d9a99a" id="r_afea248420a1c793105b01ef2b6d9a99a"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1fluids.html#afea248420a1c793105b01ef2b6d9a99a">eve::fluids::VolumeFluidColliderShape</a> { <a class="el" href="namespaceeve_1_1fluids.html#afea248420a1c793105b01ef2b6d9a99aab7095f057db3fefa7325ad93a04e14fd">eve::fluids::Sphere</a>
+, <a class="el" href="namespaceeve_1_1fluids.html#afea248420a1c793105b01ef2b6d9a99aa3cfce651e667ab85486dd42a8185f98a">eve::fluids::Box</a>
+, <a class="el" href="namespaceeve_1_1fluids.html#afea248420a1c793105b01ef2b6d9a99aa4880c0f12c06dd6d142e7a40b041bf1a">eve::fluids::Capsule</a>
+ }</td></tr>
+<tr class="memdesc:afea248420a1c793105b01ef2b6d9a99a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Analytic obstacle geometry.  <a href="namespaceeve_1_1fluids.html#afea248420a1c793105b01ef2b6d9a99a">更多...</a><br /></td></tr>
+<tr class="separator:afea248420a1c793105b01ef2b6d9a99a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a21553f9405b057c345df1c08235a6ca1" id="r_a21553f9405b057c345df1c08235a6ca1"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1fluids.html#a21553f9405b057c345df1c08235a6ca1">eve::fluids::VolumeFluidSdfSliceAxis</a> { <a class="el" href="namespaceeve_1_1fluids.html#a21553f9405b057c345df1c08235a6ca1a02129bb861061d1a052c592e2dc6b383">eve::fluids::X</a> = 0
+, <a class="el" href="namespaceeve_1_1fluids.html#a21553f9405b057c345df1c08235a6ca1a57cec4137b614c87cb4e24a3d003a3e0">eve::fluids::Y</a> = 1
+, <a class="el" href="namespaceeve_1_1fluids.html#a21553f9405b057c345df1c08235a6ca1a21c2e59531c8710156d34a3c30ac81d5">eve::fluids::Z</a> = 2
+ }</td></tr>
+<tr class="memdesc:a21553f9405b057c345df1c08235a6ca1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Local axis normal used by an explicit SDF diagnostic slice.  <a href="namespaceeve_1_1fluids.html#a21553f9405b057c345df1c08235a6ca1">更多...</a><br /></td></tr>
+<tr class="separator:a21553f9405b057c345df1c08235a6ca1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af3e4fb92148ff1b2da8e0dafd9839c9d" id="r_af3e4fb92148ff1b2da8e0dafd9839c9d"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1fluids.html#af3e4fb92148ff1b2da8e0dafd9839c9d">eve::fluids::VolumeFluidContactEventType</a> : uint8_t { <a class="el" href="namespaceeve_1_1fluids.html#af3e4fb92148ff1b2da8e0dafd9839c9daf1851d5600eae616ee802a31ac74701b">eve::fluids::Enter</a>
+, <a class="el" href="namespaceeve_1_1fluids.html#af3e4fb92148ff1b2da8e0dafd9839c9da89302eb620f755ea605acbdcd41d2547">eve::fluids::Stay</a>
+, <a class="el" href="namespaceeve_1_1fluids.html#af3e4fb92148ff1b2da8e0dafd9839c9dafef46e5063ce3dc78b8ae64fa474241d">eve::fluids::Exit</a>
+ }</td></tr>
+<tr class="memdesc:af3e4fb92148ff1b2da8e0dafd9839c9d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Contact lifecycle classification matching Fluid3DContactEventDispatcher.  <a href="namespaceeve_1_1fluids.html#af3e4fb92148ff1b2da8e0dafd9839c9d">更多...</a><br /></td></tr>
+<tr class="separator:af3e4fb92148ff1b2da8e0dafd9839c9d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8589226899902a7ae73fe2ed74067864" id="r_a8589226899902a7ae73fe2ed74067864"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1fluids.html#a8589226899902a7ae73fe2ed74067864">eve::fluids::VolumeFluidParticleEventType</a> : uint8_t { <a class="el" href="namespaceeve_1_1fluids.html#a8589226899902a7ae73fe2ed74067864af06bb94e751cb3a01b120ac56bd61233">eve::fluids::Emitted</a>
+, <a class="el" href="namespaceeve_1_1fluids.html#a8589226899902a7ae73fe2ed74067864afa0f11c1d4a8554282671bca496fa8d4">eve::fluids::Killed</a>
+ }</td></tr>
+<tr class="memdesc:a8589226899902a7ae73fe2ed74067864"><td class="mdescLeft">&#160;</td><td class="mdescRight">Lifecycle kind matching Fluid3DEmitter OnEmitParticle/OnKillParticle.  <a href="namespaceeve_1_1fluids.html#a8589226899902a7ae73fe2ed74067864">更多...</a><br /></td></tr>
+<tr class="separator:a8589226899902a7ae73fe2ed74067864"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a742da010f98c4cd30b0ba8022cec6fc9" id="r_a742da010f98c4cd30b0ba8022cec6fc9"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1fluids.html#a742da010f98c4cd30b0ba8022cec6fc9">eve::fluids::VolumeFluidQueryType</a> : unsigned { <a class="el" href="namespaceeve_1_1fluids.html#a742da010f98c4cd30b0ba8022cec6fc9ab7095f057db3fefa7325ad93a04e14fd">eve::fluids::Sphere</a> = 0
+, <a class="el" href="namespaceeve_1_1fluids.html#a742da010f98c4cd30b0ba8022cec6fc9a3cfce651e667ab85486dd42a8185f98a">eve::fluids::Box</a> = 1
+, <a class="el" href="namespaceeve_1_1fluids.html#a742da010f98c4cd30b0ba8022cec6fc9a9406e3c325bfc9873426e5eda4ba6e18">eve::fluids::Ray</a> = 2
+ }</td></tr>
+<tr class="memdesc:a742da010f98c4cd30b0ba8022cec6fc9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Shape kind for one bounded batched particle query.  <a href="namespaceeve_1_1fluids.html#a742da010f98c4cd30b0ba8022cec6fc9">更多...</a><br /></td></tr>
+<tr class="separator:a742da010f98c4cd30b0ba8022cec6fc9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

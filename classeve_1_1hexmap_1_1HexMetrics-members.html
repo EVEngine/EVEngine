@@ -1,0 +1,225 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: 成员列表</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1hexmap.html">hexmap</a></li><li class="navelem"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html">HexMetrics</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">eve::hexmap::HexMetrics 成员列表</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>成员的完整列表，这些成员属于 <a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html">eve::hexmap::HexMetrics</a>,包括所有继承而来的类成员</p>
+<table class="directory">
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html#a6880dc730b0b942b5b757d9c88e08ded">bridge</a>(HexDirection d) noexcept</td><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html">eve::hexmap::HexMetrics</a></td><td class="entry"><span class="mlabel">inline</span><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html#ac7f826d2f9a4f5e638562e2e7e80f5d9">corner</a>(HexDirection direction, float scale=1.f) noexcept</td><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html">eve::hexmap::HexMetrics</a></td><td class="entry"><span class="mlabel">inline</span><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html#ac011220afbfc31c0e174e6e6762a5189">elevationY</a>(int elevation) noexcept</td><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html">eve::hexmap::HexMetrics</a></td><td class="entry"><span class="mlabel">inline</span><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html#ae3aa99742310600f3a451f3830a37f9b">firstCorner</a>(HexDirection d) noexcept</td><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html">eve::hexmap::HexMetrics</a></td><td class="entry"><span class="mlabel">inline</span><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html#a14b23a602a3497b0a2805783878ffd65">firstSolidCorner</a>(HexDirection d) noexcept</td><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html">eve::hexmap::HexMetrics</a></td><td class="entry"><span class="mlabel">inline</span><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html#a6d4304498cf469f195ad8ee7fd14db38">firstWaterCorner</a>(HexDirection d) noexcept</td><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html">eve::hexmap::HexMetrics</a></td><td class="entry"><span class="mlabel">inline</span><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html#a2f4fcacedacbb23a38884251bfb107e2">innerDiameter</a>() noexcept</td><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html">eve::hexmap::HexMetrics</a></td><td class="entry"><span class="mlabel">inline</span><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html#adea1006d8501e5d3a26551fc02be0df9">innerRadius</a>() noexcept</td><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html">eve::hexmap::HexMetrics</a></td><td class="entry"><span class="mlabel">inline</span><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html#aca5804eb1f0ac13ab69c741b8d7c9c70">kBlendFactor</a></td><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html">eve::hexmap::HexMetrics</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html#ab3319c9d323d7fbf08ec7bc2d1a94cbb">kCellPerturbStrength</a></td><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html">eve::hexmap::HexMetrics</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html#ae9a2ae5c9bfba566626bf845ff8c3b6a">kChunkSizeX</a></td><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html">eve::hexmap::HexMetrics</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html#ad5b0275cdf0ca1909f3b27c15ff20e90">kChunkSizeZ</a></td><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html">eve::hexmap::HexMetrics</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html#a49a503624902b9e5f0c914321deb88c8">kDefaultOuterRadius</a></td><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html">eve::hexmap::HexMetrics</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html#a206d3d1bf1c62516af20251291fb22a7">kElevationPerturbStrength</a></td><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html">eve::hexmap::HexMetrics</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html#a7ca4848ef3140c85a7bbc4d1b7c68bb4">kElevationStep</a></td><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html">eve::hexmap::HexMetrics</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html#a82b8342cf24cfa70a278d4229a638efc">kHorizontalTerraceStepSize</a></td><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html">eve::hexmap::HexMetrics</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html#a0df8743637cff756ae715b85cc279fdc">kInnerDiameter</a></td><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html">eve::hexmap::HexMetrics</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html#a8f628015ed2cb950052f0188197f2de6">kInnerRadius</a></td><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html">eve::hexmap::HexMetrics</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html#a78fba269940e61ba5f2e64ff3c6a1830">kInnerToOuter</a></td><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html">eve::hexmap::HexMetrics</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html#af07e8c771b400253a02aa604064ed7e6">kMaxElevation</a></td><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html">eve::hexmap::HexMetrics</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html#add259d9011c88fadee75b8b5c67e36a4">kMinElevation</a></td><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html">eve::hexmap::HexMetrics</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html#ab5ec46c9205eeb14d7a7cc7c733f5768">kOuterRadius</a></td><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html">eve::hexmap::HexMetrics</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html#a91386948ac7851923a5532ac49e5b48f">kOuterToInner</a></td><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html">eve::hexmap::HexMetrics</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html#a6ba4b27ee3a9f54f0f474597781a31e7">kRiverSurfaceScale</a></td><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html">eve::hexmap::HexMetrics</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html#aa5ac7460b55008abfe9f69bb04b915b0">kRowSpacing</a></td><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html">eve::hexmap::HexMetrics</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html#ae27f3c377e82454ccdb75c31925fa48e">kSolidFactor</a></td><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html">eve::hexmap::HexMetrics</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html#abd05536f02ae89a9f1903031dce55e60">kStreamBedElevationOffset</a></td><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html">eve::hexmap::HexMetrics</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html#a33372de33b3069ebfa4f0160b470e22a">kTerracesPerSlope</a></td><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html">eve::hexmap::HexMetrics</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html#a373089a24cfe5fe1c4b51d1bb683dd58">kTerraceSteps</a></td><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html">eve::hexmap::HexMetrics</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html#a7b42086ad8afe2e6de7c69f352224685">kVerticalTerraceStepSize</a></td><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html">eve::hexmap::HexMetrics</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html#a628861b4b3f9fad44dcbe9eb20921eec">kWallElevationOffset</a></td><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html">eve::hexmap::HexMetrics</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html#a9f249ebc611044f8170b00c79bd5461b">kWallHeight</a></td><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html">eve::hexmap::HexMetrics</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html#a19e176e7a9306e27db6f9c0cd0650468">kWallThickness</a></td><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html">eve::hexmap::HexMetrics</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html#abbc1b93574785b75764ea30943348c8c">kWallYOffset</a></td><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html">eve::hexmap::HexMetrics</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html#a90c9d7719dbafe70ffbad363a26a546c">kWaterBlendFactor</a></td><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html">eve::hexmap::HexMetrics</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html#aafbad58087fc6327e8791f06f4932b98">kWaterElevationOffset</a></td><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html">eve::hexmap::HexMetrics</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html#a9580a7583a2b47d92e4bd0fbcbe6c846">kWaterFactor</a></td><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html">eve::hexmap::HexMetrics</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html#a13159879f6087226639253ca0d012b04">outerRadius</a>() noexcept</td><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html">eve::hexmap::HexMetrics</a></td><td class="entry"><span class="mlabel">inline</span><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html#aca5b9850ee5acf8fe118c81d6e316d92">rowSpacing</a>() noexcept</td><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html">eve::hexmap::HexMetrics</a></td><td class="entry"><span class="mlabel">inline</span><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html#a4bdbfa11c7aba72cfd3a093efab1e25c">secondCorner</a>(HexDirection d) noexcept</td><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html">eve::hexmap::HexMetrics</a></td><td class="entry"><span class="mlabel">inline</span><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html#a1edc7b0781a66586f3623164c170d9e1">secondSolidCorner</a>(HexDirection d) noexcept</td><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html">eve::hexmap::HexMetrics</a></td><td class="entry"><span class="mlabel">inline</span><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html#a259daa62ddb195103cbc8b4605c38333">secondWaterCorner</a>(HexDirection d) noexcept</td><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html">eve::hexmap::HexMetrics</a></td><td class="entry"><span class="mlabel">inline</span><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html#a771b589a429a8ddf6843987da557b18e">solidEdgeMiddle</a>(HexDirection d) noexcept</td><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html">eve::hexmap::HexMetrics</a></td><td class="entry"><span class="mlabel">inline</span><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html#a1d769c7a53aa4ef7b1aaa2ba0e39f3d7">solidRadius</a>() noexcept</td><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html">eve::hexmap::HexMetrics</a></td><td class="entry"><span class="mlabel">inline</span><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html#ac6b7e0119a2315c5c9f5bcd9d06c8db2">streamBedY</a>(int elevation) noexcept</td><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html">eve::hexmap::HexMetrics</a></td><td class="entry"><span class="mlabel">inline</span><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html#ad9d5c9e060e4f2e37a7c76b0afe7c54d">terraceLerp</a>(HexVec3 a, HexVec3 b, int step) noexcept</td><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html">eve::hexmap::HexMetrics</a></td><td class="entry"><span class="mlabel">inline</span><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html#a3717102f4f706c2874ff3ce3200c0c38">terraceLerpWeights</a>(HexVec3 a, HexVec3 b, int step) noexcept</td><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html">eve::hexmap::HexMetrics</a></td><td class="entry"><span class="mlabel">inline</span><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html#a6684d714f17f4e54860c9d53e1d79d38">wallLerp</a>(HexVec3 near, HexVec3 far) noexcept</td><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html">eve::hexmap::HexMetrics</a></td><td class="entry"><span class="mlabel">inline</span><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html#a1c093ea9669edf65a89411eeaf74a90e">wallThicknessOffset</a>(HexVec3 near, HexVec3 far) noexcept</td><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html">eve::hexmap::HexMetrics</a></td><td class="entry"><span class="mlabel">inline</span><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html#a895ee8af6e79203ead781b31fc440190">waterBridge</a>(HexDirection d) noexcept</td><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html">eve::hexmap::HexMetrics</a></td><td class="entry"><span class="mlabel">inline</span><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html#a5e55e437c96cb36eaeb7a23c986f7479">waterSurfaceY</a>(int waterLevel) noexcept</td><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html">eve::hexmap::HexMetrics</a></td><td class="entry"><span class="mlabel">inline</span><span class="mlabel">static</span></td></tr>
+</table></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

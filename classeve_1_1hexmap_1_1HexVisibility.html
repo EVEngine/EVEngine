@@ -1,0 +1,553 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::hexmap::HexVisibility类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1hexmap.html">hexmap</a></li><li class="navelem"><a class="el" href="classeve_1_1hexmap_1_1HexVisibility.html">HexVisibility</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1hexmap_1_1HexVisibility-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::hexmap::HexVisibility类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Fog-of-war bookkeeping: how many viewers currently see each cell.  
+ <a href="classeve_1_1hexmap_1_1HexVisibility.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="HexVisibility_8h_source.html">HexVisibility.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a108091560271ef47dfb40f0ebf47bd0a" id="r_a108091560271ef47dfb40f0ebf47bd0a"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexVisibility.html#a108091560271ef47dfb40f0ebf47bd0a">HexVisibility</a> ()=default</td></tr>
+<tr class="separator:a108091560271ef47dfb40f0ebf47bd0a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a37eb0e906c6ff1609bc5e4a57c3ef526" id="r_a37eb0e906c6ff1609bc5e4a57c3ef526"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexVisibility.html#a37eb0e906c6ff1609bc5e4a57c3ef526">reset</a> (std::int32_t <a class="el" href="classeve_1_1hexmap_1_1HexVisibility.html#ab87c88e82913a317f726ab97fec06530">cellCount</a>)</td></tr>
+<tr class="memdesc:a37eb0e906c6ff1609bc5e4a57c3ef526"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sizes the counter array for <code>cellCount</code> cells and zeroes it.  <br /></td></tr>
+<tr class="separator:a37eb0e906c6ff1609bc5e4a57c3ef526"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab87c88e82913a317f726ab97fec06530" id="r_ab87c88e82913a317f726ab97fec06530"><td class="memItemLeft" align="right" valign="top">std::int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexVisibility.html#ab87c88e82913a317f726ab97fec06530">cellCount</a> () const noexcept</td></tr>
+<tr class="memdesc:ab87c88e82913a317f726ab97fec06530"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of tracked cells.  <br /></td></tr>
+<tr class="separator:ab87c88e82913a317f726ab97fec06530"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afa375831bfff96e82d082f1682037733" id="r_afa375831bfff96e82d082f1682037733"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexVisibility.html#afa375831bfff96e82d082f1682037733">isVisible</a> (std::int32_t cellIndex) const noexcept</td></tr>
+<tr class="memdesc:afa375831bfff96e82d082f1682037733"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether any viewer currently sees the cell.  <br /></td></tr>
+<tr class="separator:afa375831bfff96e82d082f1682037733"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a08fe875b2d3f8af69ebd6e91b8dfbb86" id="r_a08fe875b2d3f8af69ebd6e91b8dfbb86"><td class="memItemLeft" align="right" valign="top">std::int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexVisibility.html#a08fe875b2d3f8af69ebd6e91b8dfbb86">visibility</a> (std::int32_t cellIndex) const noexcept</td></tr>
+<tr class="memdesc:a08fe875b2d3f8af69ebd6e91b8dfbb86"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of viewers currently covering the cell.  <br /></td></tr>
+<tr class="separator:a08fe875b2d3f8af69ebd6e91b8dfbb86"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a852f1280a18f2a1d8e508a7e9441af6b" id="r_a852f1280a18f2a1d8e508a7e9441af6b"><td class="memItemLeft" align="right" valign="top">std::int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexVisibility.html#a852f1280a18f2a1d8e508a7e9441af6b">visibleCellCount</a> () const noexcept</td></tr>
+<tr class="memdesc:a852f1280a18f2a1d8e508a7e9441af6b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of cells with at least one viewer.  <br /></td></tr>
+<tr class="separator:a852f1280a18f2a1d8e508a7e9441af6b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3a9e1e7f119e659470910b4b4e292009" id="r_a3a9e1e7f119e659470910b4b4e292009"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexVisibility.html#a3a9e1e7f119e659470910b4b4e292009">increase</a> (<a class="el" href="classeve_1_1hexmap_1_1HexMap.html">HexMap</a> &amp;map, <a class="el" href="classeve_1_1hexmap_1_1HexSearchContext.html">HexSearchContext</a> &amp;scratch, <a class="el" href="structeve_1_1hexmap_1_1HexCoordinates.html">HexCoordinates</a> <a class="el" href="AssetCommand_8cpp.html#ad1b6861c9cfa34da8ef12c5bb1cf2114">from</a>, std::int32_t <a class="el" href="LanguageIndex_8cpp.html#ad73a08b362d03aef0cbf46e78c9c0631">range</a>)</td></tr>
+<tr class="memdesc:a3a9e1e7f119e659470910b4b4e292009"><td class="mdescLeft">&#160;</td><td class="mdescRight">Adds one viewer at <code>from</code>.  <br /></td></tr>
+<tr class="separator:a3a9e1e7f119e659470910b4b4e292009"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:addb9aa58aa75a4d7ea75d5d450cd0610" id="r_addb9aa58aa75a4d7ea75d5d450cd0610"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexVisibility.html#addb9aa58aa75a4d7ea75d5d450cd0610">decrease</a> (<a class="el" href="classeve_1_1hexmap_1_1HexMap.html">HexMap</a> &amp;map, <a class="el" href="classeve_1_1hexmap_1_1HexSearchContext.html">HexSearchContext</a> &amp;scratch, <a class="el" href="structeve_1_1hexmap_1_1HexCoordinates.html">HexCoordinates</a> <a class="el" href="AssetCommand_8cpp.html#ad1b6861c9cfa34da8ef12c5bb1cf2114">from</a>, std::int32_t <a class="el" href="LanguageIndex_8cpp.html#ad73a08b362d03aef0cbf46e78c9c0631">range</a>)</td></tr>
+<tr class="memdesc:addb9aa58aa75a4d7ea75d5d450cd0610"><td class="mdescLeft">&#160;</td><td class="mdescRight">Removes one viewer at <code>from</code>.  <br /></td></tr>
+<tr class="separator:addb9aa58aa75a4d7ea75d5d450cd0610"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeced143802206c0fd7b0f12489b82f24" id="r_aeced143802206c0fd7b0f12489b82f24"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexVisibility.html#aeced143802206c0fd7b0f12489b82f24">clear</a> () noexcept</td></tr>
+<tr class="memdesc:aeced143802206c0fd7b0f12489b82f24"><td class="mdescLeft">&#160;</td><td class="mdescRight">Drops every viewer, leaving the map's explored flags untouched. @cost Proportional to the number of cell counters, not to the visible region.  <br /></td></tr>
+<tr class="separator:aeced143802206c0fd7b0f12489b82f24"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Fog-of-war bookkeeping: how many viewers currently see each cell. </p>
+<p>Visibility is a <em>counter</em>, not a flag, because several actors overlap: a cell stops being visible only when the last viewer that covered it stops looking. The first time a cell becomes visible it is also marked <em>explored</em>, which is a one-way latch: explored cells stay explored after the viewer leaves and only the visibility counter drops.</p>
+<p>Invariant: <code>counts_[i] == 0</code> for every cell that no viewer covers, and <code>counts_[i] &gt; 0</code> exactly for the cells <code>isVisible(i)</code> reports.</p>
+<p>Ownership and lifetime: owns one counter per cell; <code>reset</code> re-sizes it and <code>clear</code> zeroes it. It does not own the map it annotates.</p>
+<p>Thread affinity: main thread only; no locking. </p>
+
+<p class="definition">在文件 <a class="el" href="HexVisibility_8h_source.html">HexVisibility.h</a> 第 <a class="el" href="HexVisibility_8h_source.html#l00030">30</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a108091560271ef47dfb40f0ebf47bd0a" name="a108091560271ef47dfb40f0ebf47bd0a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a108091560271ef47dfb40f0ebf47bd0a">&#9670;&#160;</a></span>HexVisibility()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::hexmap::HexVisibility::HexVisibility </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="ab87c88e82913a317f726ab97fec06530" name="ab87c88e82913a317f726ab97fec06530"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab87c88e82913a317f726ab97fec06530">&#9670;&#160;</a></span>cellCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::int32_t eve::hexmap::HexVisibility::cellCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Number of tracked cells. </p>
+
+<p class="definition">在文件 <a class="el" href="HexVisibility_8h_source.html">HexVisibility.h</a> 第 <a class="el" href="HexVisibility_8h_source.html#l00043">43</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HexFogMesh_8cpp_source.html#l00116">eve::hexmap::buildFogMesh()</a> , 以及 <a class="el" href="HexVisibility_8cpp_source.html#l00037">reset()</a>.</p>
+
+</div>
+</div>
+<a id="aeced143802206c0fd7b0f12489b82f24" name="aeced143802206c0fd7b0f12489b82f24"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeced143802206c0fd7b0f12489b82f24">&#9670;&#160;</a></span>clear()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::hexmap::HexVisibility::clear </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Drops every viewer, leaving the map's explored flags untouched. @cost Proportional to the number of cell counters, not to the visible region. </p>
+
+<p class="definition">在文件 <a class="el" href="HexVisibility_8cpp_source.html">HexVisibility.cpp</a> 第 <a class="el" href="HexVisibility_8cpp_source.html#l00105">105</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="UnityVegetationMaterial_8cpp_source.html#l00161">index</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HexUnits_8cpp_source.html#l00317">eve::hexmap::HexUnitRegistry::refreshVisibility()</a> , 以及 <a class="el" href="HexUnits_8cpp_source.html#l00357">eve::hexmap::HexUnitRegistry::restore()</a>.</p>
+
+</div>
+</div>
+<a id="addb9aa58aa75a4d7ea75d5d450cd0610" name="addb9aa58aa75a4d7ea75d5d450cd0610"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#addb9aa58aa75a4d7ea75d5d450cd0610">&#9670;&#160;</a></span>decrease()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::hexmap::HexVisibility::decrease </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html">HexMap</a> &amp;&#160;</td>
+          <td class="paramname"><em>map</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1hexmap_1_1HexSearchContext.html">HexSearchContext</a> &amp;&#160;</td>
+          <td class="paramname"><em>scratch</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1hexmap_1_1HexCoordinates.html">HexCoordinates</a>&#160;</td>
+          <td class="paramname"><em>from</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::int32_t&#160;</td>
+          <td class="paramname"><em>range</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Removes one viewer at <code>from</code>. </p>
+<p>Counters are clamped at zero, so a mismatched decrease cannot make a cell permanently invisible by going negative.</p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">map</td><td>Map being annotated. </td></tr>
+    <tr><td class="paramname">scratch</td><td>Search scratch, resized to <code>map.cellCount()</code>. </td></tr>
+    <tr><td class="paramname">from</td><td>Viewing cell. </td></tr>
+    <tr><td class="paramname">range</td><td>Vision radius in cells. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Success, or InvalidArgument when <code>from</code> is outside the grid. @cost Proportional to the visible region. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="HexVisibility_8cpp_source.html">HexVisibility.cpp</a> 第 <a class="el" href="HexVisibility_8cpp_source.html#l00079">79</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PixelWorld_8cpp_source.html#l00052">cells</a>, <a class="el" href="HexMap_8cpp_source.html#l00091">eve::hexmap::HexMap::chunkIndexOf()</a>, <a class="el" href="HexSearch_8cpp_source.html#l00242">eve::hexmap::collectVisibleCells()</a>, <a class="el" href="HexMap_8cpp_source.html#l00058">eve::hexmap::HexMap::coordinatesAt()</a>, <a class="el" href="AssetCommand_8cpp_source.html#l00161">from</a>, <a class="el" href="UnityVegetationMaterial_8cpp_source.html#l00161">index</a>, <a class="el" href="HexMap_8cpp_source.html#l00125">eve::hexmap::HexMap::markChunkDirtyAndNeighbors()</a>, <a class="el" href="Result_8h_source.html#l00228">eve::Result&lt; T &gt;::ok()</a>, <a class="el" href="LanguageIndex_8cpp_source.html#l00020">range</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="McpServer_8cpp_source.html#l00550">valid</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HexUnits_8cpp_source.html#l00260">eve::hexmap::HexUnitRegistry::advance()</a>, <a class="el" href="HexUnits_8cpp_source.html#l00210">eve::hexmap::HexUnitRegistry::beginTravel()</a> , 以及 <a class="el" href="HexUnits_8cpp_source.html#l00161">eve::hexmap::HexUnitRegistry::removeUnit()</a>.</p>
+
+</div>
+</div>
+<a id="a3a9e1e7f119e659470910b4b4e292009" name="a3a9e1e7f119e659470910b4b4e292009"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3a9e1e7f119e659470910b4b4e292009">&#9670;&#160;</a></span>increase()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::hexmap::HexVisibility::increase </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html">HexMap</a> &amp;&#160;</td>
+          <td class="paramname"><em>map</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1hexmap_1_1HexSearchContext.html">HexSearchContext</a> &amp;&#160;</td>
+          <td class="paramname"><em>scratch</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1hexmap_1_1HexCoordinates.html">HexCoordinates</a>&#160;</td>
+          <td class="paramname"><em>from</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::int32_t&#160;</td>
+          <td class="paramname"><em>range</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Adds one viewer at <code>from</code>. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">map</td><td>Map whose explored flags are latched; must contain <code>from</code>. </td></tr>
+    <tr><td class="paramname">scratch</td><td>Search scratch, resized to <code>map.cellCount()</code>. </td></tr>
+    <tr><td class="paramname">from</td><td>Viewing cell. </td></tr>
+    <tr><td class="paramname">range</td><td>Vision radius in cells. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Success, or InvalidArgument when <code>from</code> is outside the grid. @cost Proportional to the visible region. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="HexVisibility_8cpp_source.html">HexVisibility.cpp</a> 第 <a class="el" href="HexVisibility_8cpp_source.html#l00056">56</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PixelWorld_8cpp_source.html#l00052">cells</a>, <a class="el" href="HexMap_8cpp_source.html#l00091">eve::hexmap::HexMap::chunkIndexOf()</a>, <a class="el" href="HexSearch_8cpp_source.html#l00242">eve::hexmap::collectVisibleCells()</a>, <a class="el" href="HexMap_8cpp_source.html#l00058">eve::hexmap::HexMap::coordinatesAt()</a>, <a class="el" href="AssetCommand_8cpp_source.html#l00161">from</a>, <a class="el" href="UnityVegetationMaterial_8cpp_source.html#l00161">index</a>, <a class="el" href="HexMap_8cpp_source.html#l00125">eve::hexmap::HexMap::markChunkDirtyAndNeighbors()</a>, <a class="el" href="Result_8h_source.html#l00228">eve::Result&lt; T &gt;::ok()</a>, <a class="el" href="LanguageIndex_8cpp_source.html#l00020">range</a>, <a class="el" href="HexMap_8cpp_source.html#l00443">eve::hexmap::HexMap::setExplored()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="McpServer_8cpp_source.html#l00550">valid</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HexUnits_8cpp_source.html#l00135">eve::hexmap::HexUnitRegistry::addUnit()</a>, <a class="el" href="HexUnits_8cpp_source.html#l00260">eve::hexmap::HexUnitRegistry::advance()</a>, <a class="el" href="HexUnits_8cpp_source.html#l00210">eve::hexmap::HexUnitRegistry::beginTravel()</a> , 以及 <a class="el" href="HexUnits_8cpp_source.html#l00317">eve::hexmap::HexUnitRegistry::refreshVisibility()</a>.</p>
+
+</div>
+</div>
+<a id="afa375831bfff96e82d082f1682037733" name="afa375831bfff96e82d082f1682037733"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afa375831bfff96e82d082f1682037733">&#9670;&#160;</a></span>isVisible()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::hexmap::HexVisibility::isVisible </td>
+          <td>(</td>
+          <td class="paramtype">std::int32_t&#160;</td>
+          <td class="paramname"><em>cellIndex</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Whether any viewer currently sees the cell. </p>
+
+<p class="definition">在文件 <a class="el" href="HexVisibility_8cpp_source.html">HexVisibility.cpp</a> 第 <a class="el" href="HexVisibility_8cpp_source.html#l00042">42</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HexFogMesh_8cpp_source.html#l00116">eve::hexmap::buildFogMesh()</a>.</p>
+
+</div>
+</div>
+<a id="a37eb0e906c6ff1609bc5e4a57c3ef526" name="a37eb0e906c6ff1609bc5e4a57c3ef526"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a37eb0e906c6ff1609bc5e4a57c3ef526">&#9670;&#160;</a></span>reset()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::hexmap::HexVisibility::reset </td>
+          <td>(</td>
+          <td class="paramtype">std::int32_t&#160;</td>
+          <td class="paramname"><em>cellCount</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Sizes the counter array for <code>cellCount</code> cells and zeroes it. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">cellCount</td><td>Number of cells of the annotated map. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section note"><dt>注解</dt><dd>This does not clear the map's explored flags; callers that rebuild a map get a fresh map whose flags are already clear. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="HexVisibility_8cpp_source.html">HexVisibility.cpp</a> 第 <a class="el" href="HexVisibility_8cpp_source.html#l00037">37</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="HexVisibility_8h_source.html#l00043">cellCount()</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00233">u</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HexMapModule_8cpp_source.html#l00082">eve::hexmap::HexMapModule::adoptGrid()</a>, <a class="el" href="HexMapModule_8cpp_source.html#l00059">eve::hexmap::HexMapModule::generateMap()</a> , 以及 <a class="el" href="HexMapModule_8cpp_source.html#l00104">eve::hexmap::HexMapModule::newGrid()</a>.</p>
+
+</div>
+</div>
+<a id="a08fe875b2d3f8af69ebd6e91b8dfbb86" name="a08fe875b2d3f8af69ebd6e91b8dfbb86"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a08fe875b2d3f8af69ebd6e91b8dfbb86">&#9670;&#160;</a></span>visibility()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::int32_t eve::hexmap::HexVisibility::visibility </td>
+          <td>(</td>
+          <td class="paramtype">std::int32_t&#160;</td>
+          <td class="paramname"><em>cellIndex</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Number of viewers currently covering the cell. </p>
+
+<p class="definition">在文件 <a class="el" href="HexVisibility_8cpp_source.html">HexVisibility.cpp</a> 第 <a class="el" href="HexVisibility_8cpp_source.html#l00047">47</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a852f1280a18f2a1d8e508a7e9441af6b" name="a852f1280a18f2a1d8e508a7e9441af6b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a852f1280a18f2a1d8e508a7e9441af6b">&#9670;&#160;</a></span>visibleCellCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::int32_t eve::hexmap::HexVisibility::visibleCellCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Number of cells with at least one viewer. </p>
+
+<p class="definition">在文件 <a class="el" href="HexVisibility_8cpp_source.html">HexVisibility.cpp</a> 第 <a class="el" href="HexVisibility_8cpp_source.html#l00052">52</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/hexmap/<a class="el" href="HexVisibility_8h_source.html">HexVisibility.h</a></li>
+<li>src/modules/hexmap/<a class="el" href="HexVisibility_8cpp_source.html">HexVisibility.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

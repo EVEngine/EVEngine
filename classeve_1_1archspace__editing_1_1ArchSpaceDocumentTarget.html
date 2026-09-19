@@ -1,0 +1,1375 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::archspace_editing::ArchSpaceDocumentTarget类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1archspace__editing.html">archspace_editing</a></li><li class="navelem"><a class="el" href="classeve_1_1archspace__editing_1_1ArchSpaceDocumentTarget.html">ArchSpaceDocumentTarget</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-static-methods">静态 Public 成员函数</a> &#124;
+<a href="classeve_1_1archspace__editing_1_1ArchSpaceDocumentTarget-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::archspace_editing::ArchSpaceDocumentTarget类 参考<span class="mlabels"><span class="mlabel">final</span></span></div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Revisioned ArchSpace document target for Inspector, tools and automation.  
+ <a href="classeve_1_1archspace__editing_1_1ArchSpaceDocumentTarget.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="ArchSpaceTarget_8h_source.html">ArchSpaceTarget.h</a>&gt;</code></p>
+<div class="dynheader">
+类 eve::archspace_editing::ArchSpaceDocumentTarget 继承关系图:</div>
+<div class="dyncontent">
+ <div class="center">
+  <img src="classeve_1_1archspace__editing_1_1ArchSpaceDocumentTarget.png" usemap="#eve::archspace_5Fediting::ArchSpaceDocumentTarget_map" alt=""/>
+  <map id="eve::archspace_5Fediting::ArchSpaceDocumentTarget_map" name="eve::archspace_5Fediting::ArchSpaceDocumentTarget_map">
+<area href="classeve_1_1editing_1_1IEditableTarget.html" alt="eve::editing::IEditableTarget" shape="rect" coords="0,56,305,80"/>
+<area href="classeve_1_1editing_1_1IDomainOperationTarget.html" title="Editable-target capability that applies owning domain operations." alt="eve::editing::IDomainOperationTarget" shape="rect" coords="315,56,620,80"/>
+<area href="classeve_1_1editing_1_1IDomainOperationTargetStaging.html" title="Optional candidate/publish capability for atomic domain operations." alt="eve::editing::IDomainOperationTargetStaging" shape="rect" coords="630,56,935,80"/>
+<area href="classeve_1_1editing_1_1IPropertyProvider.html" title="UI-independent property access for an immutable selection snapshot." alt="eve::editing::IPropertyProvider" shape="rect" coords="945,56,1250,80"/>
+<area href="classeve_1_1editing_1_1IEditingSnapshotProvider.html" title="Optional capability exposing a deterministic, persistence-safe editing snapshot." alt="eve::editing::IEditingSnapshotProvider" shape="rect" coords="1260,56,1565,80"/>
+<area href="classeve_1_1editing_1_1IEditableTarget.html" alt="eve::editing::IEditableTarget" shape="rect" coords="315,0,620,24"/>
+  </map>
+</div></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a256c130b3da55b58bc40c45590096093" id="r_a256c130b3da55b58bc40c45590096093"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1archspace__editing_1_1ArchSpaceDocumentTarget.html#a256c130b3da55b58bc40c45590096093">ArchSpaceDocumentTarget</a> (std::string <a class="el" href="PlayHost_8cpp.html#afd0d68c6d31ff249f3ae8662162663c3">id</a>)</td></tr>
+<tr class="separator:a256c130b3da55b58bc40c45590096093"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5ef60a5b2b0fde8d49112a10b3a4f7e1" id="r_a5ef60a5b2b0fde8d49112a10b3a4f7e1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1archspace__editing.html#acb5db21bff75b27a9d56c2466afd4efb">TargetId</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1archspace__editing_1_1ArchSpaceDocumentTarget.html#a5ef60a5b2b0fde8d49112a10b3a4f7e1">targetId</a> () const override</td></tr>
+<tr class="separator:a5ef60a5b2b0fde8d49112a10b3a4f7e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1b598b07e7c4c76d5c77018e1203e7aa" id="r_a1b598b07e7c4c76d5c77018e1203e7aa"><td class="memItemLeft" align="right" valign="top">std::uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1archspace__editing_1_1ArchSpaceDocumentTarget.html#a1b598b07e7c4c76d5c77018e1203e7aa">revision</a> () const override</td></tr>
+<tr class="separator:a1b598b07e7c4c76d5c77018e1203e7aa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8e7623037d1bfd37f9ecdb706e3cdf68" id="r_a8e7623037d1bfd37f9ecdb706e3cdf68"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1archspace__editing.html#ae249db1beb6b3a5f5a3b4be046cf7472">EditRegion</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1archspace__editing_1_1ArchSpaceDocumentTarget.html#a8e7623037d1bfd37f9ecdb706e3cdf68">dirtyRegion</a> () const override</td></tr>
+<tr class="separator:a8e7623037d1bfd37f9ecdb706e3cdf68"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ade671aba140b1e6ba803f69631be7cdf" id="r_ade671aba140b1e6ba803f69631be7cdf"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1archspace__editing_1_1ArchSpaceDocumentTarget.html#ade671aba140b1e6ba803f69631be7cdf">clearDirtyRegion</a> () override</td></tr>
+<tr class="separator:ade671aba140b1e6ba803f69631be7cdf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a44a88232e6d09f9bb3916312d863eeba" id="r_a44a88232e6d09f9bb3916312d863eeba"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1archspace__editing.html#ad6b03fb0de984cdaa049a1f63eec64ab">TargetDescriptor</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1archspace__editing_1_1ArchSpaceDocumentTarget.html#a44a88232e6d09f9bb3916312d863eeba">describe</a> () const override</td></tr>
+<tr class="memdesc:a44a88232e6d09f9bb3916312d863eeba"><td class="mdescLeft">&#160;</td><td class="mdescRight">Describe the target for tools and automation.  <br /></td></tr>
+<tr class="separator:a44a88232e6d09f9bb3916312d863eeba"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6b752254de27f89eaa6ae70600acf7ca" id="r_a6b752254de27f89eaa6ae70600acf7ca"><td class="memItemLeft" align="right" valign="top">void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1archspace__editing_1_1ArchSpaceDocumentTarget.html#a6b752254de27f89eaa6ae70600acf7ca">queryCapability</a> (const <a class="el" href="namespaceeve_1_1archspace__editing.html#a25f3e6ed17d773090cc7fbd266d608bb">CapabilityId</a> &amp;<a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#a1e541660312c789b59e0a247f6e614ac">capability</a>) override</td></tr>
+<tr class="memdesc:a6b752254de27f89eaa6ae70600acf7ca"><td class="mdescLeft">&#160;</td><td class="mdescRight">Query Inspector property capability. @ownership Borrowed from this target; callers must not delete it. @lifetime Valid until this target is destroyed.  <br /></td></tr>
+<tr class="separator:a6b752254de27f89eaa6ae70600acf7ca"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae0b2ec278f088944b489e811364a30b0" id="r_ae0b2ec278f088944b489e811364a30b0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1archspace__editing.html#a2b1cce494c22c0270cc296686315e749">EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1archspace__editing_1_1ArchSpaceDocumentTarget.html#ae0b2ec278f088944b489e811364a30b0">applyDomainOperation</a> (const <a class="el" href="namespaceeve_1_1archspace__editing.html#a41181adfeb548452eecd667d09d01a29">DomainOperation</a> &amp;<a class="el" href="ActionNotifyRegistry_8cpp.html#a1d8330996490721964918f24590a398b">operation</a>) override</td></tr>
+<tr class="memdesc:ae0b2ec278f088944b489e811364a30b0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Apply one validated domain operation.  <br /></td></tr>
+<tr class="separator:ae0b2ec278f088944b489e811364a30b0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa3a3e5f1865c5f8823e36a5c75384563" id="r_aa3a3e5f1865c5f8823e36a5c75384563"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="namespaceeve_1_1archspace__editing.html#ab78cce497f0971f20477bfc666d3c89a">IDomainOperationTarget</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1archspace__editing_1_1ArchSpaceDocumentTarget.html#aa3a3e5f1865c5f8823e36a5c75384563">cloneDomainState</a> () const override</td></tr>
+<tr class="memdesc:aa3a3e5f1865c5f8823e36a5c75384563"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clone the complete target state into an owning detached candidate.  <br /></td></tr>
+<tr class="separator:aa3a3e5f1865c5f8823e36a5c75384563"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a67294344f0fb3e9ba0855f04700c5418" id="r_a67294344f0fb3e9ba0855f04700c5418"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1archspace__editing.html#a2b1cce494c22c0270cc296686315e749">EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1archspace__editing_1_1ArchSpaceDocumentTarget.html#a67294344f0fb3e9ba0855f04700c5418">commitDomainState</a> (std::unique_ptr&lt; <a class="el" href="namespaceeve_1_1archspace__editing.html#ab78cce497f0971f20477bfc666d3c89a">IDomainOperationTarget</a> &gt; candidate) override</td></tr>
+<tr class="memdesc:a67294344f0fb3e9ba0855f04700c5418"><td class="mdescLeft">&#160;</td><td class="mdescRight">Atomically publish a validated candidate state.  <br /></td></tr>
+<tr class="separator:a67294344f0fb3e9ba0855f04700c5418"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a67cbbacf81e6d4f21b23de9905377121" id="r_a67cbbacf81e6d4f21b23de9905377121"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="namespaceeve.html#acbdd173177eb4f86203c023106f67a84">eve::Revision</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1archspace__editing_1_1ArchSpaceDocumentTarget.html#a67cbbacf81e6d4f21b23de9905377121">currentRevision</a> (const <a class="el" href="namespaceeve_1_1archspace__editing.html#add24e047b0366c1032b72d6ec2d52091">SelectionSnapshot</a> &amp;selection) const override</td></tr>
+<tr class="separator:a67cbbacf81e6d4f21b23de9905377121"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af5d411b4b5736f6654b2da329577ae40" id="r_af5d411b4b5736f6654b2da329577ae40"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1archspace__editing.html#a141c43b7565aae9fca24f8463640ce8c">PropertySchema</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1archspace__editing_1_1ArchSpaceDocumentTarget.html#af5d411b4b5736f6654b2da329577ae40">schema</a> (const <a class="el" href="namespaceeve_1_1archspace__editing.html#add24e047b0366c1032b72d6ec2d52091">SelectionSnapshot</a> &amp;selection) const override</td></tr>
+<tr class="separator:af5d411b4b5736f6654b2da329577ae40"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7503184d9f0b9fa333637bbe99538d96" id="r_a7503184d9f0b9fa333637bbe99538d96"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1archspace__editing.html#af07b1498249d6909691e551651387298">PropertyReadResult</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1archspace__editing_1_1ArchSpaceDocumentTarget.html#a7503184d9f0b9fa333637bbe99538d96">read</a> (const <a class="el" href="namespaceeve_1_1archspace__editing.html#add24e047b0366c1032b72d6ec2d52091">SelectionSnapshot</a> &amp;selection, const <a class="el" href="namespaceeve_1_1archspace__editing.html#aa9dd038b057d1c45b1364e5ae816ceea">PropertyPath</a> &amp;<a class="el" href="PlayHost_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>) const override</td></tr>
+<tr class="separator:a7503184d9f0b9fa333637bbe99538d96"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad9628484736c98768be6b74d7a3e0999" id="r_ad9628484736c98768be6b74d7a3e0999"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1archspace__editing.html#a2b1cce494c22c0270cc296686315e749">EditorResult</a>&lt; <a class="el" href="namespaceeve_1_1archspace__editing.html#a41181adfeb548452eecd667d09d01a29">DomainOperation</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1archspace__editing_1_1ArchSpaceDocumentTarget.html#ad9628484736c98768be6b74d7a3e0999">makeSet</a> (const <a class="el" href="namespaceeve_1_1archspace__editing.html#add24e047b0366c1032b72d6ec2d52091">SelectionSnapshot</a> &amp;selection, const <a class="el" href="namespaceeve_1_1archspace__editing.html#aa9dd038b057d1c45b1364e5ae816ceea">PropertyPath</a> &amp;<a class="el" href="PlayHost_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>, const <a class="el" href="namespaceeve_1_1archspace__editing.html#a8e707af4b7ea9fe7a7421eb64411cc08">EditorValue</a> &amp;<a class="el" href="ActionNotifyRegistry_8cpp.html#aee90379adb0307effb138f4871edbc5c">value</a>, <a class="el" href="namespaceeve_1_1editing.html#a642f65bf61b271dc4b599f4069b93060">PropertySetMode</a> mode) const override</td></tr>
+<tr class="separator:ad9628484736c98768be6b74d7a3e0999"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa986f693e7ec2c7ffe3448cdfc91fd75" id="r_aa986f693e7ec2c7ffe3448cdfc91fd75"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1archspace__editing.html#a2b1cce494c22c0270cc296686315e749">EditorResult</a>&lt; <a class="el" href="namespaceeve_1_1archspace__editing.html#a41181adfeb548452eecd667d09d01a29">DomainOperation</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1archspace__editing_1_1ArchSpaceDocumentTarget.html#aa986f693e7ec2c7ffe3448cdfc91fd75">makeReset</a> (const <a class="el" href="namespaceeve_1_1archspace__editing.html#add24e047b0366c1032b72d6ec2d52091">SelectionSnapshot</a> &amp;selection, const <a class="el" href="namespaceeve_1_1archspace__editing.html#aa9dd038b057d1c45b1364e5ae816ceea">PropertyPath</a> &amp;<a class="el" href="PlayHost_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>) const override</td></tr>
+<tr class="separator:aa986f693e7ec2c7ffe3448cdfc91fd75"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abf4553fc8ddb3369beaa0897b36c04ba" id="r_abf4553fc8ddb3369beaa0897b36c04ba"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1archspace__editing.html#a2b1cce494c22c0270cc296686315e749">EditorResult</a>&lt; <a class="el" href="namespaceeve_1_1archspace__editing.html#a41181adfeb548452eecd667d09d01a29">DomainOperation</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1archspace__editing_1_1ArchSpaceDocumentTarget.html#abf4553fc8ddb3369beaa0897b36c04ba">makeBootstrap</a> (const std::string &amp;siteId, const std::string &amp;buildingId, const std::string &amp;levelId, double levelHeight=3.0) const</td></tr>
+<tr class="memdesc:abf4553fc8ddb3369beaa0897b36c04ba"><td class="mdescLeft">&#160;</td><td class="mdescRight">Plan site→building→level creation on an empty document.  <br /></td></tr>
+<tr class="separator:abf4553fc8ddb3369beaa0897b36c04ba"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a871031364fb12b685a803dabb2b627e9" id="r_a871031364fb12b685a803dabb2b627e9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1archspace__editing.html#a2b1cce494c22c0270cc296686315e749">EditorResult</a>&lt; <a class="el" href="namespaceeve_1_1archspace__editing.html#a41181adfeb548452eecd667d09d01a29">DomainOperation</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1archspace__editing_1_1ArchSpaceDocumentTarget.html#a871031364fb12b685a803dabb2b627e9">makeCreateRectRoom</a> (const std::string &amp;levelId, const std::string &amp;roomId, std::string roomName, double originX, double originZ, double sizeX, double sizeZ, double wallHeight=3.0, double wallThickness=0.2, double slabThickness=0.2) const</td></tr>
+<tr class="memdesc:a871031364fb12b685a803dabb2b627e9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Plan a rectangular room (four walls + slab + zone) under a level.  <br /></td></tr>
+<tr class="separator:a871031364fb12b685a803dabb2b627e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2a7d8b38229de03db25a3600292c59ca" id="r_a2a7d8b38229de03db25a3600292c59ca"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1archspace__editing.html#a2b1cce494c22c0270cc296686315e749">EditorResult</a>&lt; <a class="el" href="namespaceeve_1_1archspace__editing.html#a41181adfeb548452eecd667d09d01a29">DomainOperation</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1archspace__editing_1_1ArchSpaceDocumentTarget.html#a2a7d8b38229de03db25a3600292c59ca">makeCreateWall</a> (const std::string &amp;levelId, const std::string &amp;wallId, std::string wallName, <a class="el" href="structeve_1_1archspace_1_1Vec2.html">archspace::Vec2</a> <a class="el" href="ActionTimelineWidget_8cpp.html#a49e8e0531d987839917d88f5cfa8385f">start</a>, <a class="el" href="structeve_1_1archspace_1_1Vec2.html">archspace::Vec2</a> <a class="el" href="ActionTimelinePayloadEditor_8cpp.html#a831c184a4a6468e68e592a9fafdfec69">end</a>, double <a class="el" href="ImageImporter_8cpp.html#adfe1b51744835d88ff3bcd45411d2c53">height</a>=3.0, double <a class="el" href="CaveMesh_8cpp.html#a9bddad7a0f5d61aefe107acf47f09549">thickness</a>=0.2) const</td></tr>
+<tr class="memdesc:a2a7d8b38229de03db25a3600292c59ca"><td class="mdescLeft">&#160;</td><td class="mdescRight">Plan a single wall under a level.  <br /></td></tr>
+<tr class="separator:a2a7d8b38229de03db25a3600292c59ca"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae481391b7315809f6d90060451f6940f" id="r_ae481391b7315809f6d90060451f6940f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1archspace__editing.html#a2b1cce494c22c0270cc296686315e749">EditorResult</a>&lt; <a class="el" href="namespaceeve_1_1archspace__editing.html#a41181adfeb548452eecd667d09d01a29">DomainOperation</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1archspace__editing_1_1ArchSpaceDocumentTarget.html#ae481391b7315809f6d90060451f6940f">makeCreateOpening</a> (const std::string &amp;wallId, const std::string &amp;openingId, <a class="el" href="namespaceeve_1_1archspace.html#a756ed6e7cbb2d0a3940dd1eee4c1ac8b">archspace::OpeningKind</a> <a class="el" href="LanguageIndex_8cpp.html#a38de9b52cbbca9313f7d7c8505a64e10">kind</a>, double <a class="el" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a>, double <a class="el" href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a>, double <a class="el" href="ImageImporter_8cpp.html#adfe1b51744835d88ff3bcd45411d2c53">height</a>, double sill=0.0) const</td></tr>
+<tr class="memdesc:ae481391b7315809f6d90060451f6940f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Plan a door/window opening on an existing wall.  <br /></td></tr>
+<tr class="separator:ae481391b7315809f6d90060451f6940f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae4f4876a116fc93811ca2c3f5b56c7bd" id="r_ae4f4876a116fc93811ca2c3f5b56c7bd"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1archspace__editing.html#a2b1cce494c22c0270cc296686315e749">EditorResult</a>&lt; <a class="el" href="namespaceeve_1_1archspace__editing.html#a41181adfeb548452eecd667d09d01a29">DomainOperation</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1archspace__editing_1_1ArchSpaceDocumentTarget.html#ae4f4876a116fc93811ca2c3f5b56c7bd">makePlaceItem</a> (const std::string &amp;levelId, const std::string &amp;<a class="el" href="ActionTimelineWidget_8cpp.html#ac5758f9b5a368e496aaa5da3aa74dfd6">itemId</a>, std::string catalogId, <a class="el" href="structeve_1_1archspace_1_1Vec3.html">archspace::Vec3</a> <a class="el" href="LegacyAnimationImporter_8cpp.html#a60ea6c13eb7a935dc579b69b80cee822">position</a>, double yawDegrees=0.0) const</td></tr>
+<tr class="memdesc:ae4f4876a116fc93811ca2c3f5b56c7bd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Plan a catalog item placement on a level.  <br /></td></tr>
+<tr class="separator:ae4f4876a116fc93811ca2c3f5b56c7bd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8bb622763de1f3404046634101e75d17" id="r_a8bb622763de1f3404046634101e75d17"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1archspace__editing.html#a2b1cce494c22c0270cc296686315e749">EditorResult</a>&lt; <a class="el" href="namespaceeve_1_1archspace__editing.html#a41181adfeb548452eecd667d09d01a29">DomainOperation</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1archspace__editing_1_1ArchSpaceDocumentTarget.html#a8bb622763de1f3404046634101e75d17">makeDeleteNode</a> (const <a class="el" href="namespaceeve_1_1archspace__editing.html#ab9a77848eebe130c8685ed5b5f8967da">ObjectId</a> &amp;<a class="el" href="PlayHost_8cpp.html#afd0d68c6d31ff249f3ae8662162663c3">id</a>) const</td></tr>
+<tr class="memdesc:a8bb622763de1f3404046634101e75d17"><td class="mdescLeft">&#160;</td><td class="mdescRight">Plan cascading deletion of one node.  <br /></td></tr>
+<tr class="separator:a8bb622763de1f3404046634101e75d17"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab5b2c4ed934e8aca7b5423ecdede2700" id="r_ab5b2c4ed934e8aca7b5423ecdede2700"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classeve_1_1archspace_1_1Document.html">archspace::Document</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1archspace__editing_1_1ArchSpaceDocumentTarget.html#ab5b2c4ed934e8aca7b5423ecdede2700">document</a> () const</td></tr>
+<tr class="separator:ab5b2c4ed934e8aca7b5423ecdede2700"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab4cb6b6e9782c9f99503120b160a0304" id="r_ab4cb6b6e9782c9f99503120b160a0304"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="namespaceeve_1_1archspace__editing.html#ab5ab30edbd20bdf08a62dc4c4fbade8d">EditorDiagnostic</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1archspace__editing_1_1ArchSpaceDocumentTarget.html#ab4cb6b6e9782c9f99503120b160a0304">validate</a> () const</td></tr>
+<tr class="separator:ab4cb6b6e9782c9f99503120b160a0304"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a001f3fb87ce7134757544947b3a61f90" id="r_a001f3fb87ce7134757544947b3a61f90"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1archspace__editing.html#a8e707af4b7ea9fe7a7421eb64411cc08">EditorValue</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1archspace__editing_1_1ArchSpaceDocumentTarget.html#a001f3fb87ce7134757544947b3a61f90">snapshotValue</a> () const override</td></tr>
+<tr class="memdesc:a001f3fb87ce7134757544947b3a61f90"><td class="mdescLeft">&#160;</td><td class="mdescRight">Capture the target without exposing mutable runtime storage.  <br /></td></tr>
+<tr class="separator:a001f3fb87ce7134757544947b3a61f90"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af3ed4ad0536c14275ea3c14c1e002223" id="r_af3ed4ad0536c14275ea3c14c1e002223"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1archspace__editing.html#a2b1cce494c22c0270cc296686315e749">EditorResult</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1archspace__editing_1_1ArchSpaceDocumentTarget.html#af3ed4ad0536c14275ea3c14c1e002223">loadSnapshot</a> (const <a class="el" href="namespaceeve_1_1archspace__editing.html#a8e707af4b7ea9fe7a7421eb64411cc08">EditorValue</a> &amp;snapshot)</td></tr>
+<tr class="separator:af3ed4ad0536c14275ea3c14c1e002223"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a30dbbcba721719271a9b563f9ddeddf5" id="r_a30dbbcba721719271a9b563f9ddeddf5"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1archspace__editing.html#a2b1cce494c22c0270cc296686315e749">EditorResult</a>&lt; <a class="el" href="namespaceeve_1_1archspace__editing.html#ae6ba12ae040a41496eadb2cd65a094e2">EditorGizmoSnapshot</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1archspace__editing_1_1ArchSpaceDocumentTarget.html#a30dbbcba721719271a9b563f9ddeddf5">gizmo</a> () const</td></tr>
+<tr class="memdesc:a30dbbcba721719271a9b563f9ddeddf5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build a revision-bound overlay for walls, zones, items and openings.  <br /></td></tr>
+<tr class="separator:a30dbbcba721719271a9b563f9ddeddf5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac1b64ac42d69e4bc669170af8f18675d" id="r_ac1b64ac42d69e4bc669170af8f18675d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1archspace_1_1MeshBake.html">archspace::MeshBake</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1archspace__editing_1_1ArchSpaceDocumentTarget.html#ac1b64ac42d69e4bc669170af8f18675d">bakeMesh</a> () const</td></tr>
+<tr class="memdesc:ac1b64ac42d69e4bc669170af8f18675d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bake renderer-neutral triangle mesh for the current revision.  <br /></td></tr>
+<tr class="separator:ac1b64ac42d69e4bc669170af8f18675d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classeve_1_1editing_1_1IEditableTarget"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classeve_1_1editing_1_1IEditableTarget')"><img src="closed.png" alt="-"/>&#160;Public 成员函数 继承自 <a class="el" href="classeve_1_1editing_1_1IEditableTarget.html">eve::editing::IEditableTarget</a></td></tr>
+<tr class="memitem:aef4699204241c733a4ea7ae39bfdb9fc inherit pub_methods_classeve_1_1editing_1_1IEditableTarget" id="r_aef4699204241c733a4ea7ae39bfdb9fc"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#aef4699204241c733a4ea7ae39bfdb9fc">~IEditableTarget</a> ()=default</td></tr>
+<tr class="separator:aef4699204241c733a4ea7ae39bfdb9fc inherit pub_methods_classeve_1_1editing_1_1IEditableTarget"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1e541660312c789b59e0a247f6e614ac inherit pub_methods_classeve_1_1editing_1_1IEditableTarget" id="r_a1e541660312c789b59e0a247f6e614ac"><td class="memTemplParams" colspan="2">template&lt;class C &gt; </td></tr>
+<tr class="memitem:a1e541660312c789b59e0a247f6e614ac inherit pub_methods_classeve_1_1editing_1_1IEditableTarget"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="namespaceeve.html#a503b0fa2c99caf9c2f8d2144f64c683f">eve::OptionalRef</a>&lt; C &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#a1e541660312c789b59e0a247f6e614ac">capability</a> ()</td></tr>
+<tr class="memdesc:a1e541660312c789b59e0a247f6e614ac inherit pub_methods_classeve_1_1editing_1_1IEditableTarget"><td class="mdescLeft">&#160;</td><td class="mdescRight">Query a capability through its interface-owned stable identity.  <br /></td></tr>
+<tr class="separator:a1e541660312c789b59e0a247f6e614ac inherit pub_methods_classeve_1_1editing_1_1IEditableTarget"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac9b1ff8c3e6303775341b3ef9a4cf804 inherit pub_methods_classeve_1_1editing_1_1IEditableTarget" id="r_ac9b1ff8c3e6303775341b3ef9a4cf804"><td class="memTemplParams" colspan="2">template&lt;class C &gt; </td></tr>
+<tr class="memitem:ac9b1ff8c3e6303775341b3ef9a4cf804 inherit pub_methods_classeve_1_1editing_1_1IEditableTarget"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="namespaceeve.html#a503b0fa2c99caf9c2f8d2144f64c683f">eve::OptionalRef</a>&lt; const C &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#ac9b1ff8c3e6303775341b3ef9a4cf804">capability</a> () const</td></tr>
+<tr class="separator:ac9b1ff8c3e6303775341b3ef9a4cf804 inherit pub_methods_classeve_1_1editing_1_1IEditableTarget"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab0f1bd1f6a96f49d37c185f6a3579d6c inherit pub_methods_classeve_1_1editing_1_1IEditableTarget" id="r_ab0f1bd1f6a96f49d37c185f6a3579d6c"><td class="memTemplParams" colspan="2">template&lt;class C &gt; </td></tr>
+<tr class="memitem:ab0f1bd1f6a96f49d37c185f6a3579d6c inherit pub_methods_classeve_1_1editing_1_1IEditableTarget"><td class="memTemplItemLeft" align="right" valign="top">C *&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#ab0f1bd1f6a96f49d37c185f6a3579d6c">query</a> ()</td></tr>
+<tr class="separator:ab0f1bd1f6a96f49d37c185f6a3579d6c inherit pub_methods_classeve_1_1editing_1_1IEditableTarget"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac235d153455fc2615a8857551d588812 inherit pub_methods_classeve_1_1editing_1_1IEditableTarget" id="r_ac235d153455fc2615a8857551d588812"><td class="memTemplParams" colspan="2">template&lt;class C &gt; </td></tr>
+<tr class="memitem:ac235d153455fc2615a8857551d588812 inherit pub_methods_classeve_1_1editing_1_1IEditableTarget"><td class="memTemplItemLeft" align="right" valign="top">const C *&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#ac235d153455fc2615a8857551d588812">query</a> () const</td></tr>
+<tr class="separator:ac235d153455fc2615a8857551d588812 inherit pub_methods_classeve_1_1editing_1_1IEditableTarget"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classeve_1_1editing_1_1IDomainOperationTarget"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classeve_1_1editing_1_1IDomainOperationTarget')"><img src="closed.png" alt="-"/>&#160;Public 成员函数 继承自 <a class="el" href="classeve_1_1editing_1_1IDomainOperationTarget.html">eve::editing::IDomainOperationTarget</a></td></tr>
+<tr class="memitem:a2c13b149a0b37ca54f14636232983fb7 inherit pub_methods_classeve_1_1editing_1_1IDomainOperationTarget" id="r_a2c13b149a0b37ca54f14636232983fb7"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1IDomainOperationTarget.html#a2c13b149a0b37ca54f14636232983fb7">~IDomainOperationTarget</a> () override=default</td></tr>
+<tr class="separator:a2c13b149a0b37ca54f14636232983fb7 inherit pub_methods_classeve_1_1editing_1_1IDomainOperationTarget"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classeve_1_1editing_1_1IDomainOperationTargetStaging"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classeve_1_1editing_1_1IDomainOperationTargetStaging')"><img src="closed.png" alt="-"/>&#160;Public 成员函数 继承自 <a class="el" href="classeve_1_1editing_1_1IDomainOperationTargetStaging.html">eve::editing::IDomainOperationTargetStaging</a></td></tr>
+<tr class="memitem:aac59f1484d9f3abf0013d03b3b95779e inherit pub_methods_classeve_1_1editing_1_1IDomainOperationTargetStaging" id="r_aac59f1484d9f3abf0013d03b3b95779e"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1IDomainOperationTargetStaging.html#aac59f1484d9f3abf0013d03b3b95779e">~IDomainOperationTargetStaging</a> ()=default</td></tr>
+<tr class="separator:aac59f1484d9f3abf0013d03b3b95779e inherit pub_methods_classeve_1_1editing_1_1IDomainOperationTargetStaging"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classeve_1_1editing_1_1IPropertyProvider"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classeve_1_1editing_1_1IPropertyProvider')"><img src="closed.png" alt="-"/>&#160;Public 成员函数 继承自 <a class="el" href="classeve_1_1editing_1_1IPropertyProvider.html">eve::editing::IPropertyProvider</a></td></tr>
+<tr class="memitem:a1a2687f093acd0ca7f4f93af7ff93090 inherit pub_methods_classeve_1_1editing_1_1IPropertyProvider" id="r_a1a2687f093acd0ca7f4f93af7ff93090"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1IPropertyProvider.html#a1a2687f093acd0ca7f4f93af7ff93090">~IPropertyProvider</a> ()=default</td></tr>
+<tr class="separator:a1a2687f093acd0ca7f4f93af7ff93090 inherit pub_methods_classeve_1_1editing_1_1IPropertyProvider"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classeve_1_1editing_1_1IEditingSnapshotProvider"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classeve_1_1editing_1_1IEditingSnapshotProvider')"><img src="closed.png" alt="-"/>&#160;Public 成员函数 继承自 <a class="el" href="classeve_1_1editing_1_1IEditingSnapshotProvider.html">eve::editing::IEditingSnapshotProvider</a></td></tr>
+<tr class="memitem:aa00a32f2caa4773935cb1e420cb556f4 inherit pub_methods_classeve_1_1editing_1_1IEditingSnapshotProvider" id="r_aa00a32f2caa4773935cb1e420cb556f4"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1IEditingSnapshotProvider.html#aa00a32f2caa4773935cb1e420cb556f4">~IEditingSnapshotProvider</a> ()=default</td></tr>
+<tr class="separator:aa00a32f2caa4773935cb1e420cb556f4 inherit pub_methods_classeve_1_1editing_1_1IEditingSnapshotProvider"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+静态 Public 成员函数</h2></td></tr>
+<tr class="memitem:a4e8ec14277bf6dfb7c41fb9414cead2b" id="r_a4e8ec14277bf6dfb7c41fb9414cead2b"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="namespaceeve_1_1archspace__editing.html#a25f3e6ed17d773090cc7fbd266d608bb">CapabilityId</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1archspace__editing_1_1ArchSpaceDocumentTarget.html#a4e8ec14277bf6dfb7c41fb9414cead2b">propertyCapabilityId</a> ()</td></tr>
+<tr class="memdesc:a4e8ec14277bf6dfb7c41fb9414cead2b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Capability identity published by <a class="el" href="classeve_1_1archspace__editing_1_1ArchSpaceDocumentTarget.html#a44a88232e6d09f9bb3916312d863eeba" title="Describe the target for tools and automation.">describe()</a> for Inspector property editing.  <br /></td></tr>
+<tr class="separator:a4e8ec14277bf6dfb7c41fb9414cead2b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_static_methods_classeve_1_1editing_1_1IPropertyProvider"><td colspan="2" onclick="javascript:toggleInherit('pub_static_methods_classeve_1_1editing_1_1IPropertyProvider')"><img src="closed.png" alt="-"/>&#160;静态 Public 成员函数 继承自 <a class="el" href="classeve_1_1editing_1_1IPropertyProvider.html">eve::editing::IPropertyProvider</a></td></tr>
+<tr class="memitem:aa07e163a9dafdd187f5e74a2208192e5 inherit pub_static_methods_classeve_1_1editing_1_1IPropertyProvider" id="r_aa07e163a9dafdd187f5e74a2208192e5"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="namespaceeve_1_1editing.html#a80e450b5eb4cf0da7c013972cc572568">CapabilityId</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1IPropertyProvider.html#aa07e163a9dafdd187f5e74a2208192e5">editingCapabilityId</a> ()</td></tr>
+<tr class="memdesc:aa07e163a9dafdd187f5e74a2208192e5 inherit pub_static_methods_classeve_1_1editing_1_1IPropertyProvider"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stable capability identity for generic property editing.  <br /></td></tr>
+<tr class="separator:aa07e163a9dafdd187f5e74a2208192e5 inherit pub_static_methods_classeve_1_1editing_1_1IPropertyProvider"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_static_methods_classeve_1_1editing_1_1IEditingSnapshotProvider"><td colspan="2" onclick="javascript:toggleInherit('pub_static_methods_classeve_1_1editing_1_1IEditingSnapshotProvider')"><img src="closed.png" alt="-"/>&#160;静态 Public 成员函数 继承自 <a class="el" href="classeve_1_1editing_1_1IEditingSnapshotProvider.html">eve::editing::IEditingSnapshotProvider</a></td></tr>
+<tr class="memitem:a4662234a5db91e86c8be8df9d88ebd53 inherit pub_static_methods_classeve_1_1editing_1_1IEditingSnapshotProvider" id="r_a4662234a5db91e86c8be8df9d88ebd53"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="namespaceeve_1_1editing.html#a80e450b5eb4cf0da7c013972cc572568">CapabilityId</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1IEditingSnapshotProvider.html#a4662234a5db91e86c8be8df9d88ebd53">editingCapabilityId</a> ()</td></tr>
+<tr class="memdesc:a4662234a5db91e86c8be8df9d88ebd53 inherit pub_static_methods_classeve_1_1editing_1_1IEditingSnapshotProvider"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stable capability identity shared by every editable domain target.  <br /></td></tr>
+<tr class="separator:a4662234a5db91e86c8be8df9d88ebd53 inherit pub_static_methods_classeve_1_1editing_1_1IEditingSnapshotProvider"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Revisioned ArchSpace document target for Inspector, tools and automation. </p>
+<p>Mutations are expressed as reversible <code>archspace.document.replace.v1</code> domain operations. High-level helpers (bootstrap/room/opening/item) plan those replacements without bypassing validation. </p>
+
+<p class="definition">在文件 <a class="el" href="ArchSpaceTarget_8h_source.html">ArchSpaceTarget.h</a> 第 <a class="el" href="ArchSpaceTarget_8h_source.html#l00054">54</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a256c130b3da55b58bc40c45590096093" name="a256c130b3da55b58bc40c45590096093"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a256c130b3da55b58bc40c45590096093">&#9670;&#160;</a></span>ArchSpaceDocumentTarget()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::archspace_editing::ArchSpaceDocumentTarget::ArchSpaceDocumentTarget </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ArchSpaceTarget_8cpp_source.html">ArchSpaceTarget.cpp</a> 第 <a class="el" href="ArchSpaceTarget_8cpp_source.html#l00185">185</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="ae0b2ec278f088944b489e811364a30b0" name="ae0b2ec278f088944b489e811364a30b0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae0b2ec278f088944b489e811364a30b0">&#9670;&#160;</a></span>applyDomainOperation()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1archspace__editing.html#a2b1cce494c22c0270cc296686315e749">EditorResult</a>&lt; void &gt; eve::archspace_editing::ArchSpaceDocumentTarget::applyDomainOperation </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1archspace__editing.html#a41181adfeb548452eecd667d09d01a29">DomainOperation</a> &amp;&#160;</td>
+          <td class="paramname"><em>operation</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Apply one validated domain operation. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">operation</td><td>Operation whose target must match this target. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Applied on mutation, otherwise a structured rejection or failure. </dd></dl>
+<dl class="section remark"><dt>备注</dt><dd>Implementations are main-thread-affine unless their domain contract states otherwise. </dd></dl>
+
+<p>实现了 <a class="el" href="classeve_1_1editing_1_1IDomainOperationTarget.html#a99935ff065354cd9e92b13ce3d5dd47a">eve::editing::IDomainOperationTarget</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="ArchSpaceTarget_8cpp_source.html">ArchSpaceTarget.cpp</a> 第 <a class="el" href="ArchSpaceTarget_8cpp_source.html#l00522">522</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditableTarget_8h_source.html#l00012">eve::editing::EditRegion::include()</a>, <a class="el" href="ActionNotifyRegistry_8cpp_source.html#l00164">operation</a> , 以及 <a class="el" href="ArchSpaceTarget_8cpp_source.html#l00342">validate()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ArchSpaceTarget_8cpp_source.html#l00548">loadSnapshot()</a>.</p>
+
+</div>
+</div>
+<a id="ac1b64ac42d69e4bc669170af8f18675d" name="ac1b64ac42d69e4bc669170af8f18675d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac1b64ac42d69e4bc669170af8f18675d">&#9670;&#160;</a></span>bakeMesh()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1archspace_1_1MeshBake.html">archspace::MeshBake</a> eve::archspace_editing::ArchSpaceDocumentTarget::bakeMesh </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Bake renderer-neutral triangle mesh for the current revision. </p>
+
+<p class="definition">在文件 <a class="el" href="ArchSpaceTarget_8h_source.html">ArchSpaceTarget.h</a> 第 <a class="el" href="ArchSpaceTarget_8h_source.html#l00117">117</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ArchSpaceDocument_8cpp_source.html#l00378">eve::archspace::Document::bakeMesh()</a>.</p>
+
+</div>
+</div>
+<a id="ade671aba140b1e6ba803f69631be7cdf" name="ade671aba140b1e6ba803f69631be7cdf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ade671aba140b1e6ba803f69631be7cdf">&#9670;&#160;</a></span>clearDirtyRegion()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::archspace_editing::ArchSpaceDocumentTarget::clearDirtyRegion </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>实现了 <a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#ae43ff3afd87b4ddbaced52ce78884f50">eve::editing::IEditableTarget</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="ArchSpaceTarget_8h_source.html">ArchSpaceTarget.h</a> 第 <a class="el" href="ArchSpaceTarget_8h_source.html#l00068">68</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditableTarget_8h_source.html#l00011">eve::editing::EditRegion::clear()</a>.</p>
+
+</div>
+</div>
+<a id="aa3a3e5f1865c5f8823e36a5c75384563" name="aa3a3e5f1865c5f8823e36a5c75384563"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa3a3e5f1865c5f8823e36a5c75384563">&#9670;&#160;</a></span>cloneDomainState()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unique_ptr&lt; <a class="el" href="namespaceeve_1_1archspace__editing.html#ab78cce497f0971f20477bfc666d3c89a">IDomainOperationTarget</a> &gt; eve::archspace_editing::ArchSpaceDocumentTarget::cloneDomainState </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Clone the complete target state into an owning detached candidate. </p>
+<dl class="section return"><dt>返回</dt><dd>Owning candidate that shares no mutable state with the authoritative target. </dd></dl>
+
+<p>实现了 <a class="el" href="classeve_1_1editing_1_1IDomainOperationTargetStaging.html#a38fa0bcf976ff809974f54c41c284c00">eve::editing::IDomainOperationTargetStaging</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="ArchSpaceTarget_8cpp_source.html">ArchSpaceTarget.cpp</a> 第 <a class="el" href="ArchSpaceTarget_8cpp_source.html#l00536">536</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a67294344f0fb3e9ba0855f04700c5418" name="a67294344f0fb3e9ba0855f04700c5418"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a67294344f0fb3e9ba0855f04700c5418">&#9670;&#160;</a></span>commitDomainState()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1archspace__editing.html#a2b1cce494c22c0270cc296686315e749">EditorResult</a>&lt; void &gt; eve::archspace_editing::ArchSpaceDocumentTarget::commitDomainState </td>
+          <td>(</td>
+          <td class="paramtype">std::unique_ptr&lt; <a class="el" href="namespaceeve_1_1archspace__editing.html#ab78cce497f0971f20477bfc666d3c89a">IDomainOperationTarget</a> &gt;&#160;</td>
+          <td class="paramname"><em>candidate</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Atomically publish a validated candidate state. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">candidate</td><td>Owning candidate consumed by the publication attempt. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Applied when installed; on failure the authoritative target remains unchanged. </dd></dl>
+
+<p>实现了 <a class="el" href="classeve_1_1editing_1_1IDomainOperationTargetStaging.html#aa89a3f39369f32d299d4aa6f2f4aa670">eve::editing::IDomainOperationTargetStaging</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="ArchSpaceTarget_8cpp_source.html">ArchSpaceTarget.cpp</a> 第 <a class="el" href="ArchSpaceTarget_8cpp_source.html#l00540">540</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a67cbbacf81e6d4f21b23de9905377121" name="a67cbbacf81e6d4f21b23de9905377121"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a67cbbacf81e6d4f21b23de9905377121">&#9670;&#160;</a></span>currentRevision()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="namespaceeve.html#acbdd173177eb4f86203c023106f67a84">eve::Revision</a> &gt; eve::archspace_editing::ArchSpaceDocumentTarget::currentRevision </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1archspace__editing.html#add24e047b0366c1032b72d6ec2d52091">SelectionSnapshot</a> &amp;&#160;</td>
+          <td class="paramname"><em>selection</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>重载 <a class="el" href="classeve_1_1editing_1_1IPropertyProvider.html#a5aa963e389bf3586ffa808670142c379">eve::editing::IPropertyProvider</a> .</p>
+
+<p class="definition">在文件 <a class="el" href="ArchSpaceTarget_8cpp_source.html">ArchSpaceTarget.cpp</a> 第 <a class="el" href="ArchSpaceTarget_8cpp_source.html#l00221">221</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a44a88232e6d09f9bb3916312d863eeba" name="a44a88232e6d09f9bb3916312d863eeba"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a44a88232e6d09f9bb3916312d863eeba">&#9670;&#160;</a></span>describe()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1archspace__editing.html#ad6b03fb0de984cdaa049a1f63eec64ab">TargetDescriptor</a> eve::archspace_editing::ArchSpaceDocumentTarget::describe </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Describe the target for tools and automation. </p>
+
+<p>重载 <a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#af13b7927d4f01f4fe487f199b42bf5ae">eve::editing::IEditableTarget</a> .</p>
+
+<p class="definition">在文件 <a class="el" href="ArchSpaceTarget_8cpp_source.html">ArchSpaceTarget.cpp</a> 第 <a class="el" href="ArchSpaceTarget_8cpp_source.html#l00187">187</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditableTarget_8h_source.html#l00122">eve::editing::IEditingSnapshotProvider::editingCapabilityId()</a> , 以及 <a class="el" href="ArchSpaceTarget_8h_source.html#l00063">propertyCapabilityId()</a>.</p>
+
+</div>
+</div>
+<a id="a8e7623037d1bfd37f9ecdb706e3cdf68" name="a8e7623037d1bfd37f9ecdb706e3cdf68"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8e7623037d1bfd37f9ecdb706e3cdf68">&#9670;&#160;</a></span>dirtyRegion()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1archspace__editing.html#ae249db1beb6b3a5f5a3b4be046cf7472">EditRegion</a> eve::archspace_editing::ArchSpaceDocumentTarget::dirtyRegion </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>实现了 <a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#aeac913a69164ac273c8461e47baaa237">eve::editing::IEditableTarget</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="ArchSpaceTarget_8h_source.html">ArchSpaceTarget.h</a> 第 <a class="el" href="ArchSpaceTarget_8h_source.html#l00067">67</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab5b2c4ed934e8aca7b5423ecdede2700" name="ab5b2c4ed934e8aca7b5423ecdede2700"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab5b2c4ed934e8aca7b5423ecdede2700">&#9670;&#160;</a></span>document()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="classeve_1_1archspace_1_1Document.html">archspace::Document</a> &amp; eve::archspace_editing::ArchSpaceDocumentTarget::document </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ArchSpaceTarget_8h_source.html">ArchSpaceTarget.h</a> 第 <a class="el" href="ArchSpaceTarget_8h_source.html#l00110">110</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a30dbbcba721719271a9b563f9ddeddf5" name="a30dbbcba721719271a9b563f9ddeddf5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a30dbbcba721719271a9b563f9ddeddf5">&#9670;&#160;</a></span>gizmo()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1archspace__editing.html#a2b1cce494c22c0270cc296686315e749">EditorResult</a>&lt; <a class="el" href="namespaceeve_1_1archspace__editing.html#ae6ba12ae040a41496eadb2cd65a094e2">EditorGizmoSnapshot</a> &gt; eve::archspace_editing::ArchSpaceDocumentTarget::gizmo </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Build a revision-bound overlay for walls, zones, items and openings. </p>
+
+<p class="definition">在文件 <a class="el" href="ArchSpaceTarget_8cpp_source.html">ArchSpaceTarget.cpp</a> 第 <a class="el" href="ArchSpaceTarget_8cpp_source.html#l00565">565</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditingGizmo_8h_source.html#l00018">eve::editing::GizmoPrimitive::color</a>, <a class="el" href="EditingGizmo_8h_source.html#l00021">eve::editing::GizmoPrimitive::dashed</a>, <a class="el" href="EditingGizmo_8h_source.html#l00017">eve::editing::GizmoPrimitive::direction</a>, <a class="el" href="ArchSpaceTypes_8h_source.html#l00040">eve::archspace::Node::elevation</a>, <a class="el" href="ArchSpaceTypes_8h_source.html#l00045">eve::archspace::Node::end</a>, <a class="el" href="ArchSpaceDocument_8cpp_source.html#l00097">eve::archspace::Document::find()</a>, <a class="el" href="EditingGizmo_8h_source.html#l00013">eve::editing::GizmoPrimitive::id</a>, <a class="el" href="NodeDesc_8h_source.html#l00018">eve::scene::NodeDesc::id</a>, <a class="el" href="namespaceeve_1_1archspace.html#acdc28c3bf777ecb60d9be6a3c834161aa7d74f3b92b19da5e606d737d339a9679">eve::archspace::Item</a>, <a class="el" href="EditingGizmo_8h_source.html#l00014">eve::editing::GizmoPrimitive::kind</a>, <a class="el" href="EditingGizmo_8h_source.html#l00020">eve::editing::GizmoPrimitive::length</a>, <a class="el" href="ArchSpaceDocument_8h_source.html#l00025">eve::archspace::Document::nodes()</a>, <a class="el" href="namespaceeve_1_1archspace.html#acdc28c3bf777ecb60d9be6a3c834161aa9bd99a0beea48f10663fc4a7d7a33140">eve::archspace::Opening</a>, <a class="el" href="ArchSpaceTypes_8h_source.html#l00174">eve::archspace::openingKindName()</a>, <a class="el" href="DecalManager_8cpp_source.html#l00020">p</a>, <a class="el" href="EditingGizmo_8h_source.html#l00015">eve::editing::GizmoPrimitive::position</a>, <a class="el" href="EditingGizmo_8h_source.html#l00031">eve::editing::GizmoSnapshot::primitives</a>, <a class="el" href="EditingGizmo_8h_source.html#l00019">eve::editing::GizmoPrimitive::radius</a>, <a class="el" href="EditingGizmo_8h_source.html#l00016">eve::editing::GizmoPrimitive::size</a>, <a class="el" href="ArchSpaceTypes_8h_source.html#l00044">eve::archspace::Node::start</a>, <a class="el" href="EditingGizmo_8h_source.html#l00028">eve::editing::GizmoSnapshot::status</a>, <a class="el" href="EditingGizmo_8h_source.html#l00029">eve::editing::GizmoSnapshot::target</a>, <a class="el" href="EditingGizmo_8h_source.html#l00030">eve::editing::GizmoSnapshot::targetRevision</a>, <a class="el" href="EditingGizmo_8h_source.html#l00022">eve::editing::GizmoPrimitive::text</a>, <a class="el" href="namespaceeve_1_1archspace.html#acdc28c3bf777ecb60d9be6a3c834161aa94e8a499539d1a472f3b5dbbb85508c0">eve::archspace::Wall</a>, <a class="el" href="ArchSpaceTypes_8h_source.html#l00020">eve::archspace::Vec2::x</a>, <a class="el" href="NodeDesc_8h_source.html#l00039">eve::scene::NodeDesc::x</a>, <a class="el" href="NodeDesc_8h_source.html#l00039">eve::scene::NodeDesc::y</a>, <a class="el" href="ArchSpaceTypes_8h_source.html#l00021">eve::archspace::Vec2::z</a>, <a class="el" href="NodeDesc_8h_source.html#l00039">eve::scene::NodeDesc::z</a> , 以及 <a class="el" href="namespaceeve_1_1archspace.html#acdc28c3bf777ecb60d9be6a3c834161aab3ff996fe5c77610359114835baf9b38">eve::archspace::Zone</a>.</p>
+
+</div>
+</div>
+<a id="af3ed4ad0536c14275ea3c14c1e002223" name="af3ed4ad0536c14275ea3c14c1e002223"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af3ed4ad0536c14275ea3c14c1e002223">&#9670;&#160;</a></span>loadSnapshot()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1archspace__editing.html#a2b1cce494c22c0270cc296686315e749">EditorResult</a>&lt; void &gt; eve::archspace_editing::ArchSpaceDocumentTarget::loadSnapshot </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1archspace__editing.html#a8e707af4b7ea9fe7a7421eb64411cc08">EditorValue</a> &amp;&#160;</td>
+          <td class="paramname"><em>snapshot</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ArchSpaceTarget_8cpp_source.html">ArchSpaceTarget.cpp</a> 第 <a class="el" href="ArchSpaceTarget_8cpp_source.html#l00548">548</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ArchSpaceTarget_8cpp_source.html#l00522">applyDomainOperation()</a>, <a class="el" href="EditableTarget_8h_source.html#l00011">eve::editing::EditRegion::clear()</a>, <a class="el" href="EditingProtocol_8h_source.html#l00038">eve::editing::DomainOperation::payload</a>, <a class="el" href="EditingProtocol_8h_source.html#l00037">eve::editing::DomainOperation::target</a> , 以及 <a class="el" href="EditingProtocol_8h_source.html#l00035">eve::editing::DomainOperation::type</a>.</p>
+
+</div>
+</div>
+<a id="abf4553fc8ddb3369beaa0897b36c04ba" name="abf4553fc8ddb3369beaa0897b36c04ba"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abf4553fc8ddb3369beaa0897b36c04ba">&#9670;&#160;</a></span>makeBootstrap()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1archspace__editing.html#a2b1cce494c22c0270cc296686315e749">EditorResult</a>&lt; <a class="el" href="namespaceeve_1_1archspace__editing.html#a41181adfeb548452eecd667d09d01a29">DomainOperation</a> &gt; eve::archspace_editing::ArchSpaceDocumentTarget::makeBootstrap </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>siteId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>buildingId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>levelId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>levelHeight</em> = <code>3.0</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Plan site→building→level creation on an empty document. </p>
+
+<p class="definition">在文件 <a class="el" href="ArchSpaceTarget_8cpp_source.html">ArchSpaceTarget.cpp</a> 第 <a class="el" href="ArchSpaceTarget_8cpp_source.html#l00430">430</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ArchSpaceDocument_8cpp_source.html#l00217">eve::archspace::Document::bootstrap()</a>.</p>
+
+</div>
+</div>
+<a id="ae481391b7315809f6d90060451f6940f" name="ae481391b7315809f6d90060451f6940f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae481391b7315809f6d90060451f6940f">&#9670;&#160;</a></span>makeCreateOpening()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1archspace__editing.html#a2b1cce494c22c0270cc296686315e749">EditorResult</a>&lt; <a class="el" href="namespaceeve_1_1archspace__editing.html#a41181adfeb548452eecd667d09d01a29">DomainOperation</a> &gt; eve::archspace_editing::ArchSpaceDocumentTarget::makeCreateOpening </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>wallId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>openingId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1archspace.html#a756ed6e7cbb2d0a3940dd1eee4c1ac8b">archspace::OpeningKind</a>&#160;</td>
+          <td class="paramname"><em>kind</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>t</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>width</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>height</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>sill</em> = <code>0.0</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Plan a door/window opening on an existing wall. </p>
+
+<p class="definition">在文件 <a class="el" href="ArchSpaceTarget_8cpp_source.html">ArchSpaceTarget.cpp</a> 第 <a class="el" href="ArchSpaceTarget_8cpp_source.html#l00482">482</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SceneCapabilities_8cpp_source.html#l00631">created</a>, <a class="el" href="ArchSpaceDocument_8cpp_source.html#l00313">eve::archspace::Document::createOpening()</a>, <a class="el" href="ImageImporter_8cpp_source.html#l00014">height</a>, <a class="el" href="LanguageIndex_8cpp_source.html#l00017">kind</a>, <a class="el" href="PrototypeKit_8cpp_source.html#l00110">t</a> , 以及 <a class="el" href="ImageImporter_8cpp_source.html#l00013">width</a>.</p>
+
+</div>
+</div>
+<a id="a871031364fb12b685a803dabb2b627e9" name="a871031364fb12b685a803dabb2b627e9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a871031364fb12b685a803dabb2b627e9">&#9670;&#160;</a></span>makeCreateRectRoom()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1archspace__editing.html#a2b1cce494c22c0270cc296686315e749">EditorResult</a>&lt; <a class="el" href="namespaceeve_1_1archspace__editing.html#a41181adfeb548452eecd667d09d01a29">DomainOperation</a> &gt; eve::archspace_editing::ArchSpaceDocumentTarget::makeCreateRectRoom </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>levelId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>roomId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>roomName</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>originX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>originZ</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>sizeX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>sizeZ</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>wallHeight</em> = <code>3.0</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>wallThickness</em> = <code>0.2</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>slabThickness</em> = <code>0.2</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Plan a rectangular room (four walls + slab + zone) under a level. </p>
+
+<p class="definition">在文件 <a class="el" href="ArchSpaceTarget_8cpp_source.html">ArchSpaceTarget.cpp</a> 第 <a class="el" href="ArchSpaceTarget_8cpp_source.html#l00444">444</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SceneCapabilities_8cpp_source.html#l00631">created</a> , 以及 <a class="el" href="ArchSpaceDocument_8cpp_source.html#l00250">eve::archspace::Document::createRoom()</a>.</p>
+
+</div>
+</div>
+<a id="a2a7d8b38229de03db25a3600292c59ca" name="a2a7d8b38229de03db25a3600292c59ca"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2a7d8b38229de03db25a3600292c59ca">&#9670;&#160;</a></span>makeCreateWall()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1archspace__editing.html#a2b1cce494c22c0270cc296686315e749">EditorResult</a>&lt; <a class="el" href="namespaceeve_1_1archspace__editing.html#a41181adfeb548452eecd667d09d01a29">DomainOperation</a> &gt; eve::archspace_editing::ArchSpaceDocumentTarget::makeCreateWall </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>levelId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>wallId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>wallName</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1archspace_1_1Vec2.html">archspace::Vec2</a>&#160;</td>
+          <td class="paramname"><em>start</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1archspace_1_1Vec2.html">archspace::Vec2</a>&#160;</td>
+          <td class="paramname"><em>end</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>height</em> = <code>3.0</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>thickness</em> = <code>0.2</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Plan a single wall under a level. </p>
+
+<p class="definition">在文件 <a class="el" href="ArchSpaceTarget_8cpp_source.html">ArchSpaceTarget.cpp</a> 第 <a class="el" href="ArchSpaceTarget_8cpp_source.html#l00468">468</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SceneCapabilities_8cpp_source.html#l00631">created</a>, <a class="el" href="ArchSpaceDocument_8cpp_source.html#l00296">eve::archspace::Document::createWall()</a>, <a class="el" href="ActionTimelinePayloadEditor_8cpp_source.html#l00023">end</a>, <a class="el" href="ImageImporter_8cpp_source.html#l00014">height</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00030">start</a> , 以及 <a class="el" href="CaveMesh_8cpp_source.html#l00083">thickness</a>.</p>
+
+</div>
+</div>
+<a id="a8bb622763de1f3404046634101e75d17" name="a8bb622763de1f3404046634101e75d17"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8bb622763de1f3404046634101e75d17">&#9670;&#160;</a></span>makeDeleteNode()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1archspace__editing.html#a2b1cce494c22c0270cc296686315e749">EditorResult</a>&lt; <a class="el" href="namespaceeve_1_1archspace__editing.html#a41181adfeb548452eecd667d09d01a29">DomainOperation</a> &gt; eve::archspace_editing::ArchSpaceDocumentTarget::makeDeleteNode </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1archspace__editing.html#ab9a77848eebe130c8685ed5b5f8967da">ObjectId</a> &amp;&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Plan cascading deletion of one node. </p>
+
+<p class="definition">在文件 <a class="el" href="ArchSpaceTarget_8cpp_source.html">ArchSpaceTarget.cpp</a> 第 <a class="el" href="ArchSpaceTarget_8cpp_source.html#l00512">512</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ArchSpaceDocument_8cpp_source.html#l00198">eve::archspace::Document::eraseCascade()</a> , 以及 <a class="el" href="ActionNotifyRegistry_8cpp_source.html#l00165">value</a>.</p>
+
+</div>
+</div>
+<a id="ae4f4876a116fc93811ca2c3f5b56c7bd" name="ae4f4876a116fc93811ca2c3f5b56c7bd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae4f4876a116fc93811ca2c3f5b56c7bd">&#9670;&#160;</a></span>makePlaceItem()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1archspace__editing.html#a2b1cce494c22c0270cc296686315e749">EditorResult</a>&lt; <a class="el" href="namespaceeve_1_1archspace__editing.html#a41181adfeb548452eecd667d09d01a29">DomainOperation</a> &gt; eve::archspace_editing::ArchSpaceDocumentTarget::makePlaceItem </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>levelId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>itemId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>catalogId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1archspace_1_1Vec3.html">archspace::Vec3</a>&#160;</td>
+          <td class="paramname"><em>position</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>yawDegrees</em> = <code>0.0</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Plan a catalog item placement on a level. </p>
+
+<p class="definition">在文件 <a class="el" href="ArchSpaceTarget_8cpp_source.html">ArchSpaceTarget.cpp</a> 第 <a class="el" href="ArchSpaceTarget_8cpp_source.html#l00497">497</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00028">itemId</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l00118">placed</a>, <a class="el" href="ArchSpaceDocument_8cpp_source.html#l00332">eve::archspace::Document::placeItem()</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00016">position</a>.</p>
+
+</div>
+</div>
+<a id="aa986f693e7ec2c7ffe3448cdfc91fd75" name="aa986f693e7ec2c7ffe3448cdfc91fd75"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa986f693e7ec2c7ffe3448cdfc91fd75">&#9670;&#160;</a></span>makeReset()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1archspace__editing.html#a2b1cce494c22c0270cc296686315e749">EditorResult</a>&lt; <a class="el" href="namespaceeve_1_1archspace__editing.html#a41181adfeb548452eecd667d09d01a29">DomainOperation</a> &gt; eve::archspace_editing::ArchSpaceDocumentTarget::makeReset </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1archspace__editing.html#add24e047b0366c1032b72d6ec2d52091">SelectionSnapshot</a> &amp;&#160;</td>
+          <td class="paramname"><em>selection</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1archspace__editing.html#aa9dd038b057d1c45b1364e5ae816ceea">PropertyPath</a> &amp;&#160;</td>
+          <td class="paramname"><em>path</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>实现了 <a class="el" href="classeve_1_1editing_1_1IPropertyProvider.html#a6175bdd491af083643d6cac008e99851">eve::editing::IPropertyProvider</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="ArchSpaceTarget_8cpp_source.html">ArchSpaceTarget.cpp</a> 第 <a class="el" href="ArchSpaceTarget_8cpp_source.html#l00421">421</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AssetCommand_8cpp_source.html#l00163">descriptor</a>, <a class="el" href="EditingProperty_8cpp_source.html#l00009">eve::editing::PropertySchema::find()</a>, <a class="el" href="ArchSpaceTarget_8cpp_source.html#l00357">makeSet()</a>, <a class="el" href="PlayHost_8cpp_source.html#l00144">path</a> , 以及 <a class="el" href="ArchSpaceTarget_8cpp_source.html#l00228">schema()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ArchSpaceTarget_8cpp_source.html#l00357">makeSet()</a>.</p>
+
+</div>
+</div>
+<a id="ad9628484736c98768be6b74d7a3e0999" name="ad9628484736c98768be6b74d7a3e0999"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad9628484736c98768be6b74d7a3e0999">&#9670;&#160;</a></span>makeSet()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1archspace__editing.html#a2b1cce494c22c0270cc296686315e749">EditorResult</a>&lt; <a class="el" href="namespaceeve_1_1archspace__editing.html#a41181adfeb548452eecd667d09d01a29">DomainOperation</a> &gt; eve::archspace_editing::ArchSpaceDocumentTarget::makeSet </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1archspace__editing.html#add24e047b0366c1032b72d6ec2d52091">SelectionSnapshot</a> &amp;&#160;</td>
+          <td class="paramname"><em>selection</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1archspace__editing.html#aa9dd038b057d1c45b1364e5ae816ceea">PropertyPath</a> &amp;&#160;</td>
+          <td class="paramname"><em>path</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1archspace__editing.html#a8e707af4b7ea9fe7a7421eb64411cc08">EditorValue</a> &amp;&#160;</td>
+          <td class="paramname"><em>value</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1editing.html#a642f65bf61b271dc4b599f4069b93060">PropertySetMode</a>&#160;</td>
+          <td class="paramname"><em>mode</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>实现了 <a class="el" href="classeve_1_1editing_1_1IPropertyProvider.html#a37fd27faadd63ce4dd990ff525b10cc5">eve::editing::IPropertyProvider</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="ArchSpaceTarget_8cpp_source.html">ArchSpaceTarget.cpp</a> 第 <a class="el" href="ArchSpaceTarget_8cpp_source.html#l00357">357</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ArchSpaceTypes_8h_source.html#l00055">eve::archspace::Node::catalogId</a>, <a class="el" href="AssetCommand_8cpp_source.html#l00163">descriptor</a>, <a class="el" href="ArchSpaceTypes_8h_source.html#l00040">eve::archspace::Node::elevation</a>, <a class="el" href="EditingProperty_8cpp_source.html#l00009">eve::editing::PropertySchema::find()</a>, <a class="el" href="ArchSpaceDocument_8cpp_source.html#l00102">eve::archspace::Document::findMutable()</a>, <a class="el" href="ArchSpaceTypes_8h_source.html#l00041">eve::archspace::Node::height</a>, <a class="el" href="NodeDesc_8h_source.html#l00018">eve::scene::NodeDesc::id</a>, <a class="el" href="ArchSpaceTarget_8cpp_source.html#l00421">makeReset()</a>, <a class="el" href="ArchSpaceTypes_8h_source.html#l00036">eve::archspace::Node::name</a>, <a class="el" href="RpgDialect_8cpp_source.html#l00335">number</a>, <a class="el" href="ArchSpaceTypes_8h_source.html#l00061">eve::archspace::Node::openingHeight</a>, <a class="el" href="PlayHost_8cpp_source.html#l00144">path</a>, <a class="el" href="ArchSpaceDocument_8cpp_source.html#l00186">eve::archspace::Document::replace()</a>, <a class="el" href="ArchSpaceTarget_8cpp_source.html#l00228">schema()</a>, <a class="el" href="ArchSpaceTypes_8h_source.html#l00062">eve::archspace::Node::sill</a>, <a class="el" href="ArchSpaceTypes_8h_source.html#l00059">eve::archspace::Node::t</a>, <a class="el" href="LanguageIndex_8cpp_source.html#l00018">text</a>, <a class="el" href="ArchSpaceTypes_8h_source.html#l00046">eve::archspace::Node::thickness</a>, <a class="el" href="ArchSpaceTarget_8cpp_source.html#l00342">validate()</a>, <a class="el" href="ActionNotifyRegistry_8cpp_source.html#l00165">value</a>, <a class="el" href="ArchSpaceTypes_8h_source.html#l00060">eve::archspace::Node::width</a> , 以及 <a class="el" href="ArchSpaceTypes_8h_source.html#l00054">eve::archspace::Node::yawDegrees</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ArchSpaceTarget_8cpp_source.html#l00421">makeReset()</a>.</p>
+
+</div>
+</div>
+<a id="a4e8ec14277bf6dfb7c41fb9414cead2b" name="a4e8ec14277bf6dfb7c41fb9414cead2b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4e8ec14277bf6dfb7c41fb9414cead2b">&#9670;&#160;</a></span>propertyCapabilityId()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static <a class="el" href="namespaceeve_1_1archspace__editing.html#a25f3e6ed17d773090cc7fbd266d608bb">CapabilityId</a> eve::archspace_editing::ArchSpaceDocumentTarget::propertyCapabilityId </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Capability identity published by <a class="el" href="classeve_1_1archspace__editing_1_1ArchSpaceDocumentTarget.html#a44a88232e6d09f9bb3916312d863eeba" title="Describe the target for tools and automation.">describe()</a> for Inspector property editing. </p>
+
+<p class="definition">在文件 <a class="el" href="ArchSpaceTarget_8h_source.html">ArchSpaceTarget.h</a> 第 <a class="el" href="ArchSpaceTarget_8h_source.html#l00063">63</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ArchSpaceTarget_8cpp_source.html#l00187">describe()</a> , 以及 <a class="el" href="ArchSpaceTarget_8cpp_source.html#l00195">queryCapability()</a>.</p>
+
+</div>
+</div>
+<a id="a6b752254de27f89eaa6ae70600acf7ca" name="a6b752254de27f89eaa6ae70600acf7ca"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6b752254de27f89eaa6ae70600acf7ca">&#9670;&#160;</a></span>queryCapability()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void * eve::archspace_editing::ArchSpaceDocumentTarget::queryCapability </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1archspace__editing.html#a25f3e6ed17d773090cc7fbd266d608bb">CapabilityId</a> &amp;&#160;</td>
+          <td class="paramname"><em>capability</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Query Inspector property capability. @ownership Borrowed from this target; callers must not delete it. @lifetime Valid until this target is destroyed. </p>
+
+<p>重载 <a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#a3e202dd6b1ca3b75e726a90a82081653">eve::editing::IEditableTarget</a> .</p>
+
+<p class="definition">在文件 <a class="el" href="ArchSpaceTarget_8cpp_source.html">ArchSpaceTarget.cpp</a> 第 <a class="el" href="ArchSpaceTarget_8cpp_source.html#l00195">195</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditableTarget_8h_source.html#l00068">eve::editing::IEditableTarget::capability()</a>, <a class="el" href="EditableTarget_8h_source.html#l00122">eve::editing::IEditingSnapshotProvider::editingCapabilityId()</a> , 以及 <a class="el" href="ArchSpaceTarget_8h_source.html#l00063">propertyCapabilityId()</a>.</p>
+
+</div>
+</div>
+<a id="a7503184d9f0b9fa333637bbe99538d96" name="a7503184d9f0b9fa333637bbe99538d96"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7503184d9f0b9fa333637bbe99538d96">&#9670;&#160;</a></span>read()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1archspace__editing.html#af07b1498249d6909691e551651387298">PropertyReadResult</a> eve::archspace_editing::ArchSpaceDocumentTarget::read </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1archspace__editing.html#add24e047b0366c1032b72d6ec2d52091">SelectionSnapshot</a> &amp;&#160;</td>
+          <td class="paramname"><em>selection</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1archspace__editing.html#aa9dd038b057d1c45b1364e5ae816ceea">PropertyPath</a> &amp;&#160;</td>
+          <td class="paramname"><em>path</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>实现了 <a class="el" href="classeve_1_1editing_1_1IPropertyProvider.html#a416f8e8d2ee0880822430acea12f55d8">eve::editing::IPropertyProvider</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="ArchSpaceTarget_8cpp_source.html">ArchSpaceTarget.cpp</a> 第 <a class="el" href="ArchSpaceTarget_8cpp_source.html#l00259">259</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="NodeDesc_8h_source.html#l00029">eve::scene::NodeDesc::name</a>, <a class="el" href="PlayHost_8cpp_source.html#l00144">path</a> , 以及 <a class="el" href="ArchSpaceTarget_8cpp_source.html#l00228">schema()</a>.</p>
+
+</div>
+</div>
+<a id="a1b598b07e7c4c76d5c77018e1203e7aa" name="a1b598b07e7c4c76d5c77018e1203e7aa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1b598b07e7c4c76d5c77018e1203e7aa">&#9670;&#160;</a></span>revision()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::uint64_t eve::archspace_editing::ArchSpaceDocumentTarget::revision </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>实现了 <a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#af0b05b2d46d2bef1c3fdc3d8bc6e56ad">eve::editing::IEditableTarget</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="ArchSpaceTarget_8h_source.html">ArchSpaceTarget.h</a> 第 <a class="el" href="ArchSpaceTarget_8h_source.html#l00066">66</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af5d411b4b5736f6654b2da329577ae40" name="af5d411b4b5736f6654b2da329577ae40"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af5d411b4b5736f6654b2da329577ae40">&#9670;&#160;</a></span>schema()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1archspace__editing.html#a141c43b7565aae9fca24f8463640ce8c">PropertySchema</a> eve::archspace_editing::ArchSpaceDocumentTarget::schema </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1archspace__editing.html#add24e047b0366c1032b72d6ec2d52091">SelectionSnapshot</a> &amp;&#160;</td>
+          <td class="paramname"><em>selection</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>实现了 <a class="el" href="classeve_1_1editing_1_1IPropertyProvider.html#aad2055c613e332305f14ecfd7c3ece44">eve::editing::IPropertyProvider</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="ArchSpaceTarget_8cpp_source.html">ArchSpaceTarget.cpp</a> 第 <a class="el" href="ArchSpaceTarget_8cpp_source.html#l00228">228</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1archspace.html#acdc28c3bf777ecb60d9be6a3c834161aa7d74f3b92b19da5e606d737d339a9679">eve::archspace::Item</a>, <a class="el" href="namespaceeve_1_1archspace.html#acdc28c3bf777ecb60d9be6a3c834161aaa0db49ba470c1c9ae2128c3470339153">eve::archspace::Level</a>, <a class="el" href="NodeDesc_8h_source.html#l00029">eve::scene::NodeDesc::name</a>, <a class="el" href="ArchSpaceTypes_8h_source.html#l00138">eve::archspace::nodeKindName()</a>, <a class="el" href="namespaceeve_1_1archspace.html#acdc28c3bf777ecb60d9be6a3c834161aa9bd99a0beea48f10663fc4a7d7a33140">eve::archspace::Opening</a>, <a class="el" href="EditingProperty_8h_source.html#l00102">eve::editing::PropertySchema::properties</a>, <a class="el" href="ArchSpaceTarget_8cpp_source.html#l00228">schema()</a>, <a class="el" href="EditingProperty_8h_source.html#l00100">eve::editing::PropertySchema::typeId</a> , 以及 <a class="el" href="namespaceeve_1_1archspace.html#acdc28c3bf777ecb60d9be6a3c834161aa94e8a499539d1a472f3b5dbbb85508c0">eve::archspace::Wall</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ArchSpaceTarget_8cpp_source.html#l00421">makeReset()</a>, <a class="el" href="ArchSpaceTarget_8cpp_source.html#l00357">makeSet()</a>, <a class="el" href="ArchSpaceTarget_8cpp_source.html#l00259">read()</a> , 以及 <a class="el" href="ArchSpaceTarget_8cpp_source.html#l00228">schema()</a>.</p>
+
+</div>
+</div>
+<a id="a001f3fb87ce7134757544947b3a61f90" name="a001f3fb87ce7134757544947b3a61f90"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a001f3fb87ce7134757544947b3a61f90">&#9670;&#160;</a></span>snapshotValue()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1archspace__editing.html#a8e707af4b7ea9fe7a7421eb64411cc08">EditorValue</a> eve::archspace_editing::ArchSpaceDocumentTarget::snapshotValue </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Capture the target without exposing mutable runtime storage. </p>
+
+<p>实现了 <a class="el" href="classeve_1_1editing_1_1IEditingSnapshotProvider.html#a91414d122d58ade824a03fe4e8578a55">eve::editing::IEditingSnapshotProvider</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="ArchSpaceTarget_8cpp_source.html">ArchSpaceTarget.cpp</a> 第 <a class="el" href="ArchSpaceTarget_8cpp_source.html#l00202">202</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a5ef60a5b2b0fde8d49112a10b3a4f7e1" name="a5ef60a5b2b0fde8d49112a10b3a4f7e1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5ef60a5b2b0fde8d49112a10b3a4f7e1">&#9670;&#160;</a></span>targetId()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1archspace__editing.html#acb5db21bff75b27a9d56c2466afd4efb">TargetId</a> eve::archspace_editing::ArchSpaceDocumentTarget::targetId </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>实现了 <a class="el" href="classeve_1_1editing_1_1IEditableTarget.html#a06480dbea1cae62902c62fcd7a5ac194">eve::editing::IEditableTarget</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="ArchSpaceTarget_8h_source.html">ArchSpaceTarget.h</a> 第 <a class="el" href="ArchSpaceTarget_8h_source.html#l00065">65</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab4cb6b6e9782c9f99503120b160a0304" name="ab4cb6b6e9782c9f99503120b160a0304"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab4cb6b6e9782c9f99503120b160a0304">&#9670;&#160;</a></span>validate()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; <a class="el" href="namespaceeve_1_1archspace__editing.html#ab5ab30edbd20bdf08a62dc4c4fbade8d">EditorDiagnostic</a> &gt; eve::archspace_editing::ArchSpaceDocumentTarget::validate </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ArchSpaceTarget_8cpp_source.html">ArchSpaceTarget.cpp</a> 第 <a class="el" href="ArchSpaceTarget_8cpp_source.html#l00342">342</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ArchSpaceDocument_8cpp_source.html#l00348">eve::archspace::Document::diagnostics()</a>, <a class="el" href="ConversationImporter_8cpp_source.html#l00014">line</a>, <a class="el" href="ArchSpaceDocument_8h_source.html#l00026">eve::archspace::Document::nodeCount()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::PreconditionViolation</a> , 以及 <a class="el" href="EditingResult_8h_source.html#l00025">eve::editing::ruleDiagnostic()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ArchSpaceTarget_8cpp_source.html#l00522">applyDomainOperation()</a> , 以及 <a class="el" href="ArchSpaceTarget_8cpp_source.html#l00357">makeSet()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/archspace/editing/<a class="el" href="ArchSpaceTarget_8h_source.html">ArchSpaceTarget.h</a></li>
+<li>src/modules/archspace/editing/<a class="el" href="ArchSpaceTarget_8cpp_source.html">ArchSpaceTarget.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,217 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/ui/PcgTooltip.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_25338c1645a7f1506f8143527df34a10.html">ui</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">PcgTooltip.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="PcgTooltip_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#include &quot;<a class="code" href="Result_8h.html">common/Result.h</a>&quot;</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespacessq.html">ssq</a> { <span class="keyword">class </span><a class="code hl_enumvalue" href="namespaceeve.html#ac05a2d9228e0b283897b75b4c5cdaf2ba51c45b795d5d18a3e4e0c37e8b20a141">Table</a>; }</div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1ui.html">eve::ui</a> {</div>
+ <span class="keyword">struct </span>PcgTooltipEntry{std::string <a class="code hl_variable" href="structeve_1_1ui_1_1PcgTooltipEntry.html#a3f1b0a0978ee8c208a6436b79ad3629f">id</a>,<a class="code hl_variable" href="structeve_1_1ui_1_1PcgTooltipEntry.html#a71a9b9cd4eb44abd6513ae09d539dc23">header</a>,<a class="code hl_variable" href="structeve_1_1ui_1_1PcgTooltipEntry.html#aff49cc8259d262bd0dbe317d4865ba73">text</a>;};<div class="foldopen" id="foldopen00010" data-start="{" data-end="};">
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno"><a class="line" href="classeve_1_1ui_1_1PcgTooltipManager.html">   10</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1ui_1_1PcgTooltipManager.html">PcgTooltipManager</a> {</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="keyword">public</span>:</div>
+ [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1ui_1_1PcgTooltipManager.html#af9d0d550380991567a9aa6ca30984213">configure</a>(<span class="keywordtype">int</span> interactionMode,<span class="keywordtype">int</span> <a class="code hl_variable" href="EditorHost_8cpp.html#a5f710e8aae55f49281331e55cd4f1c45">theme</a>,<span class="keywordtype">float</span> delay,<span class="keywordtype">float</span> bottomOffset,<span class="keywordtype">float</span> topOffset,<span class="keywordtype">int</span> wrapLimit); [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1ui_1_1PcgTooltipManager.html#a70016244d5bc0c00f4c449a578c9eef9">addTooltip</a>(<span class="keyword">const</span> std::string&amp;<span class="keywordtype">id</span>,<span class="keyword">const</span> std::string&amp;header,<span class="keyword">const</span> std::string&amp;<a class="code hl_variable" href="LanguageIndex_8cpp.html#a23c058547fbc73b5659191844a9f258c">text</a>); [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;bool&gt;</a> <a class="code hl_function" href="classeve_1_1ui_1_1PcgTooltipManager.html#a008bdff9ca8d66d3ca19f488fd73a3a1">removeTooltip</a>(<span class="keyword">const</span> std::string&amp;query); [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;bool&gt;</a> <a class="code hl_function" href="classeve_1_1ui_1_1PcgTooltipManager.html#a249fe564a4b5afb1745e11cd24a7038d">enter</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="UnityVegetationPreset_8cpp.html#a176f5b9d50679b93425278a1a59e3eaa">source</a>,<span class="keyword">const</span> std::string&amp;query,<span class="keywordtype">float</span> now); [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1ui_1_1PcgTooltipManager.html#adbeb2dbf78c19c910f6001ea38517d47">enterText</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="UnityVegetationPreset_8cpp.html#a176f5b9d50679b93425278a1a59e3eaa">source</a>,<span class="keyword">const</span> std::string&amp;content,<span class="keyword">const</span> std::string&amp;header,<span class="keywordtype">float</span> now); [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1ui_1_1PcgTooltipManager.html#a19ccc2d7f6bf234968b0e97c2a6b66ca">exit</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="UnityVegetationPreset_8cpp.html#a176f5b9d50679b93425278a1a59e3eaa">source</a>); [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> <a class="code hl_variable" href="TacticsPersistence_8cpp.html#a9be293222289c40e0ca1ad953cb5a07e">tick</a>(<span class="keywordtype">float</span> now,<span class="keywordtype">float</span> mouseX,<span class="keywordtype">float</span> mouseY,<span class="keywordtype">float</span> screenWidth,<span class="keywordtype">float</span> screenHeight,<span class="keywordtype">bool</span> anyInput); <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1ui_1_1PcgTooltipManager.html#aa951a6c2be94b1119e172b1580758c64">hide</a>()<span class="keyword">noexcept</span>{visible_=<span class="keyword">false</span>;pending_=<span class="keyword">false</span>;} <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1ui_1_1PcgTooltipManager.html#a065f475853140203fc73fb6b966e210e">getVisible</a>()<span class="keyword">const</span> <span class="keyword">noexcept</span>{<span class="keywordflow">return</span> visible_;} <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1ui_1_1PcgTooltipManager.html#a997de7b94e7e40dec4943bddd3d1dd53">getPending</a>()<span class="keyword">const</span> <span class="keyword">noexcept</span>{<span class="keywordflow">return</span> pending_;} <span class="keyword">const</span> std::string&amp; <a class="code hl_function" href="classeve_1_1ui_1_1PcgTooltipManager.html#abf7825ac56843bf3219c257979ca81f0">getHeader</a>()<span class="keyword">const</span> <span class="keyword">noexcept</span>{<span class="keywordflow">return</span> header_;} <span class="keyword">const</span> std::string&amp; <a class="code hl_function" href="classeve_1_1ui_1_1PcgTooltipManager.html#ab3b7ba4e60a9690c1a18da34acb8f163">getText</a>()<span class="keyword">const</span> <span class="keyword">noexcept</span>{<span class="keywordflow">return</span> text_;} <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1ui_1_1PcgTooltipManager.html#ac1baa066088b3444e72ac1e4d25c473c">getHeaderVisible</a>()<span class="keyword">const</span> <span class="keyword">noexcept</span>{<span class="keywordflow">return</span> !header_.empty();} <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1ui_1_1PcgTooltipManager.html#a60938e836ecd8f656374726a26c117d1">getWrapEnabled</a>()<span class="keyword">const</span> <span class="keyword">noexcept</span>{<span class="keywordflow">return</span> int(header_.size())&gt;wrapLimit_||int(text_.size())&gt;wrapLimit_;} <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1ui_1_1PcgTooltipManager.html#a4d5f89844fbc7ce3731ea5a8a1d5fa7e">getPivotX</a>()<span class="keyword">const</span> <span class="keyword">noexcept</span>{<span class="keywordflow">return</span> pivotX_;} <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1ui_1_1PcgTooltipManager.html#a90d86c4d824112319a64ad5caf30349f">getPivotY</a>()<span class="keyword">const</span> <span class="keyword">noexcept</span>{<span class="keywordflow">return</span> pivotY_;} <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1ui_1_1PcgTooltipManager.html#a3b9c973d0ac66bea073431e56c617c26">getBackgroundR</a>()<span class="keyword">const</span> <span class="keyword">noexcept</span>{<span class="keywordflow">return</span> theme_==0?1.f:0.1981132f;} <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1ui_1_1PcgTooltipManager.html#a95f3d313d0c8db491f15877c1562ab61">getForeground</a>()<span class="keyword">const</span> <span class="keyword">noexcept</span>{<span class="keywordflow">return</span> theme_==0?0.f:1.f;} <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1ui_1_1PcgTooltipManager.html#ae7ae085501fd052188080d1775698c44">getCount</a>()<span class="keyword">const</span> <span class="keyword">noexcept</span>{<span class="keywordflow">return</span> int(entries_.size());}<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span><span class="keyword">private</span>:<span class="keywordtype">bool</span> accepts(<span class="keywordtype">int</span> <a class="code hl_variable" href="UnityVegetationPreset_8cpp.html#a176f5b9d50679b93425278a1a59e3eaa">source</a>)<span class="keyword">const</span> <span class="keyword">noexcept</span>;std::vector&lt;PcgTooltipEntry&gt;entries_;<span class="keywordtype">int</span> mode_=2,theme_=1,wrapLimit_=40,source_=-1;<span class="keywordtype">float</span> delay_=2,bottomOffset_=2,topOffset_=2,showAt_=0,pivotX_=0,pivotY_=0;<span class="keywordtype">bool</span> visible_=<span class="keyword">false</span>,pending_=<span class="keyword">false</span>;std::string header_,text_;</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>};</div>
+</div>
+ <span class="keywordtype">void</span> <a class="code hl_function" href="namespaceeve_1_1ui.html#a26495b54c48770e180f0797175570be9">exposePcgTooltipBindings</a>(ssq::Table&amp; table);<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>}</div>
+<div class="ttc" id="aEditorHost_8cpp_html_a5f710e8aae55f49281331e55cd4f1c45"><div class="ttname"><a href="EditorHost_8cpp.html#a5f710e8aae55f49281331e55cd4f1c45">theme</a></div><div class="ttdeci">Object::Ptr theme</div><div class="ttdef"><b>Definition</b> <a href="EditorHost_8cpp_source.html#l00458">EditorHost.cpp:458</a></div></div>
+<div class="ttc" id="aLanguageIndex_8cpp_html_a23c058547fbc73b5659191844a9f258c"><div class="ttname"><a href="LanguageIndex_8cpp.html#a23c058547fbc73b5659191844a9f258c">text</a></div><div class="ttdeci">std::string text</div><div class="ttdef"><b>Definition</b> <a href="LanguageIndex_8cpp_source.html#l00018">LanguageIndex.cpp:18</a></div></div>
+<div class="ttc" id="aResult_8h_html"><div class="ttname"><a href="Result_8h.html">Result.h</a></div><div class="ttdoc">Move-only, checked operation results for the common layer.</div></div>
+<div class="ttc" id="aTacticsPersistence_8cpp_html_a9be293222289c40e0ca1ad953cb5a07e"><div class="ttname"><a href="TacticsPersistence_8cpp.html#a9be293222289c40e0ca1ad953cb5a07e">tick</a></div><div class="ttdeci">SimulationTick tick</div><div class="ttdef"><b>Definition</b> <a href="TacticsPersistence_8cpp_source.html#l00128">TacticsPersistence.cpp:128</a></div></div>
+<div class="ttc" id="aUnityVegetationPreset_8cpp_html_a176f5b9d50679b93425278a1a59e3eaa"><div class="ttname"><a href="UnityVegetationPreset_8cpp.html#a176f5b9d50679b93425278a1a59e3eaa">source</a></div><div class="ttdeci">const UnitySourceAsset &amp; source</div><div class="ttdef"><b>Definition</b> <a href="UnityVegetationPreset_8cpp_source.html#l00029">UnityVegetationPreset.cpp:29</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1ui_1_1PcgTooltipManager_html"><div class="ttname"><a href="classeve_1_1ui_1_1PcgTooltipManager.html">eve::ui::PcgTooltipManager</a></div><div class="ttdoc">Caller-owned runtime model of Pcg Tooltip, TooltipManager, Profile and Trigger.</div><div class="ttdef"><b>Definition</b> <a href="PcgTooltip_8h_source.html#l00010">PcgTooltip.h:10</a></div></div>
+<div class="ttc" id="aclasseve_1_1ui_1_1PcgTooltipManager_html_a008bdff9ca8d66d3ca19f488fd73a3a1"><div class="ttname"><a href="classeve_1_1ui_1_1PcgTooltipManager.html#a008bdff9ca8d66d3ca19f488fd73a3a1">eve::ui::PcgTooltipManager::removeTooltip</a></div><div class="ttdeci">Result&lt; bool &gt; removeTooltip(const std::string &amp;query)</div><div class="ttdoc">Remove first entry whose id contains the query.</div><div class="ttdef"><b>Definition</b> <a href="PcgTooltip_8cpp_source.html#l00008">PcgTooltip.cpp:8</a></div></div>
+<div class="ttc" id="aclasseve_1_1ui_1_1PcgTooltipManager_html_a065f475853140203fc73fb6b966e210e"><div class="ttname"><a href="classeve_1_1ui_1_1PcgTooltipManager.html#a065f475853140203fc73fb6b966e210e">eve::ui::PcgTooltipManager::getVisible</a></div><div class="ttdeci">bool getVisible() const noexcept</div><div class="ttdoc">Return visible state.</div><div class="ttdef"><b>Definition</b> <a href="PcgTooltip_8h_source.html#l00020">PcgTooltip.h:20</a></div></div>
+<div class="ttc" id="aclasseve_1_1ui_1_1PcgTooltipManager_html_a19ccc2d7f6bf234968b0e97c2a6b66ca"><div class="ttname"><a href="classeve_1_1ui_1_1PcgTooltipManager.html#a19ccc2d7f6bf234968b0e97c2a6b66ca">eve::ui::PcgTooltipManager::exit</a></div><div class="ttdeci">Result&lt; void &gt; exit(int source)</div><div class="ttdoc">Cancel matching hover and hide tooltip.</div><div class="ttdef"><b>Definition</b> <a href="PcgTooltip_8cpp_source.html#l00012">PcgTooltip.cpp:12</a></div></div>
+<div class="ttc" id="aclasseve_1_1ui_1_1PcgTooltipManager_html_a249fe564a4b5afb1745e11cd24a7038d"><div class="ttname"><a href="classeve_1_1ui_1_1PcgTooltipManager.html#a249fe564a4b5afb1745e11cd24a7038d">eve::ui::PcgTooltipManager::enter</a></div><div class="ttdeci">Result&lt; bool &gt; enter(int source, const std::string &amp;query, float now)</div><div class="ttdoc">Schedule the first profile entry whose id contains query. source is 0 UI or 1 scene.</div><div class="ttdef"><b>Definition</b> <a href="PcgTooltip_8cpp_source.html#l00010">PcgTooltip.cpp:10</a></div></div>
+<div class="ttc" id="aclasseve_1_1ui_1_1PcgTooltipManager_html_a3b9c973d0ac66bea073431e56c617c26"><div class="ttname"><a href="classeve_1_1ui_1_1PcgTooltipManager.html#a3b9c973d0ac66bea073431e56c617c26">eve::ui::PcgTooltipManager::getBackgroundR</a></div><div class="ttdeci">float getBackgroundR() const noexcept</div><div class="ttdoc">Return background red for active theme.</div><div class="ttdef"><b>Definition</b> <a href="PcgTooltip_8h_source.html#l00028">PcgTooltip.h:28</a></div></div>
+<div class="ttc" id="aclasseve_1_1ui_1_1PcgTooltipManager_html_a4d5f89844fbc7ce3731ea5a8a1d5fa7e"><div class="ttname"><a href="classeve_1_1ui_1_1PcgTooltipManager.html#a4d5f89844fbc7ce3731ea5a8a1d5fa7e">eve::ui::PcgTooltipManager::getPivotX</a></div><div class="ttdeci">float getPivotX() const noexcept</div><div class="ttdoc">Return pointer pivot X.</div><div class="ttdef"><b>Definition</b> <a href="PcgTooltip_8h_source.html#l00026">PcgTooltip.h:26</a></div></div>
+<div class="ttc" id="aclasseve_1_1ui_1_1PcgTooltipManager_html_a60938e836ecd8f656374726a26c117d1"><div class="ttname"><a href="classeve_1_1ui_1_1PcgTooltipManager.html#a60938e836ecd8f656374726a26c117d1">eve::ui::PcgTooltipManager::getWrapEnabled</a></div><div class="ttdeci">bool getWrapEnabled() const noexcept</div><div class="ttdoc">Return whether layout wrapping is enabled.</div><div class="ttdef"><b>Definition</b> <a href="PcgTooltip_8h_source.html#l00025">PcgTooltip.h:25</a></div></div>
+<div class="ttc" id="aclasseve_1_1ui_1_1PcgTooltipManager_html_a70016244d5bc0c00f4c449a578c9eef9"><div class="ttname"><a href="classeve_1_1ui_1_1PcgTooltipManager.html#a70016244d5bc0c00f4c449a578c9eef9">eve::ui::PcgTooltipManager::addTooltip</a></div><div class="ttdeci">Result&lt; void &gt; addTooltip(const std::string &amp;id, const std::string &amp;header, const std::string &amp;text)</div><div class="ttdoc">Append a tooltip profile entry.</div><div class="ttdef"><b>Definition</b> <a href="PcgTooltip_8cpp_source.html#l00007">PcgTooltip.cpp:7</a></div></div>
+<div class="ttc" id="aclasseve_1_1ui_1_1PcgTooltipManager_html_a90d86c4d824112319a64ad5caf30349f"><div class="ttname"><a href="classeve_1_1ui_1_1PcgTooltipManager.html#a90d86c4d824112319a64ad5caf30349f">eve::ui::PcgTooltipManager::getPivotY</a></div><div class="ttdeci">float getPivotY() const noexcept</div><div class="ttdoc">Return pointer pivot Y.</div><div class="ttdef"><b>Definition</b> <a href="PcgTooltip_8h_source.html#l00027">PcgTooltip.h:27</a></div></div>
+<div class="ttc" id="aclasseve_1_1ui_1_1PcgTooltipManager_html_a95f3d313d0c8db491f15877c1562ab61"><div class="ttname"><a href="classeve_1_1ui_1_1PcgTooltipManager.html#a95f3d313d0c8db491f15877c1562ab61">eve::ui::PcgTooltipManager::getForeground</a></div><div class="ttdeci">float getForeground() const noexcept</div><div class="ttdoc">Return foreground intensity for active theme.</div><div class="ttdef"><b>Definition</b> <a href="PcgTooltip_8h_source.html#l00029">PcgTooltip.h:29</a></div></div>
+<div class="ttc" id="aclasseve_1_1ui_1_1PcgTooltipManager_html_a997de7b94e7e40dec4943bddd3d1dd53"><div class="ttname"><a href="classeve_1_1ui_1_1PcgTooltipManager.html#a997de7b94e7e40dec4943bddd3d1dd53">eve::ui::PcgTooltipManager::getPending</a></div><div class="ttdeci">bool getPending() const noexcept</div><div class="ttdoc">Return pending-delay state.</div><div class="ttdef"><b>Definition</b> <a href="PcgTooltip_8h_source.html#l00021">PcgTooltip.h:21</a></div></div>
+<div class="ttc" id="aclasseve_1_1ui_1_1PcgTooltipManager_html_aa951a6c2be94b1119e172b1580758c64"><div class="ttname"><a href="classeve_1_1ui_1_1PcgTooltipManager.html#aa951a6c2be94b1119e172b1580758c64">eve::ui::PcgTooltipManager::hide</a></div><div class="ttdeci">void hide() noexcept</div><div class="ttdoc">Hide and cancel all pending tooltip work.</div><div class="ttdef"><b>Definition</b> <a href="PcgTooltip_8h_source.html#l00019">PcgTooltip.h:19</a></div></div>
+<div class="ttc" id="aclasseve_1_1ui_1_1PcgTooltipManager_html_ab3b7ba4e60a9690c1a18da34acb8f163"><div class="ttname"><a href="classeve_1_1ui_1_1PcgTooltipManager.html#ab3b7ba4e60a9690c1a18da34acb8f163">eve::ui::PcgTooltipManager::getText</a></div><div class="ttdeci">const std::string &amp; getText() const noexcept</div><div class="ttdoc">Return active content.</div><div class="ttdef"><b>Definition</b> <a href="PcgTooltip_8h_source.html#l00023">PcgTooltip.h:23</a></div></div>
+<div class="ttc" id="aclasseve_1_1ui_1_1PcgTooltipManager_html_abf7825ac56843bf3219c257979ca81f0"><div class="ttname"><a href="classeve_1_1ui_1_1PcgTooltipManager.html#abf7825ac56843bf3219c257979ca81f0">eve::ui::PcgTooltipManager::getHeader</a></div><div class="ttdeci">const std::string &amp; getHeader() const noexcept</div><div class="ttdoc">Return active header.</div><div class="ttdef"><b>Definition</b> <a href="PcgTooltip_8h_source.html#l00022">PcgTooltip.h:22</a></div></div>
+<div class="ttc" id="aclasseve_1_1ui_1_1PcgTooltipManager_html_ac1baa066088b3444e72ac1e4d25c473c"><div class="ttname"><a href="classeve_1_1ui_1_1PcgTooltipManager.html#ac1baa066088b3444e72ac1e4d25c473c">eve::ui::PcgTooltipManager::getHeaderVisible</a></div><div class="ttdeci">bool getHeaderVisible() const noexcept</div><div class="ttdoc">Return whether header should be shown.</div><div class="ttdef"><b>Definition</b> <a href="PcgTooltip_8h_source.html#l00024">PcgTooltip.h:24</a></div></div>
+<div class="ttc" id="aclasseve_1_1ui_1_1PcgTooltipManager_html_adbeb2dbf78c19c910f6001ea38517d47"><div class="ttname"><a href="classeve_1_1ui_1_1PcgTooltipManager.html#adbeb2dbf78c19c910f6001ea38517d47">eve::ui::PcgTooltipManager::enterText</a></div><div class="ttdeci">Result&lt; void &gt; enterText(int source, const std::string &amp;content, const std::string &amp;header, float now)</div><div class="ttdoc">Schedule direct trigger content, matching TooltipTrigger.</div><div class="ttdef"><b>Definition</b> <a href="PcgTooltip_8cpp_source.html#l00011">PcgTooltip.cpp:11</a></div></div>
+<div class="ttc" id="aclasseve_1_1ui_1_1PcgTooltipManager_html_ae7ae085501fd052188080d1775698c44"><div class="ttname"><a href="classeve_1_1ui_1_1PcgTooltipManager.html#ae7ae085501fd052188080d1775698c44">eve::ui::PcgTooltipManager::getCount</a></div><div class="ttdeci">int getCount() const noexcept</div><div class="ttdoc">Return profile row count.</div><div class="ttdef"><b>Definition</b> <a href="PcgTooltip_8h_source.html#l00030">PcgTooltip.h:30</a></div></div>
+<div class="ttc" id="aclasseve_1_1ui_1_1PcgTooltipManager_html_af9d0d550380991567a9aa6ca30984213"><div class="ttname"><a href="classeve_1_1ui_1_1PcgTooltipManager.html#af9d0d550380991567a9aa6ca30984213">eve::ui::PcgTooltipManager::configure</a></div><div class="ttdeci">Result&lt; void &gt; configure(int interactionMode, int theme, float delay, float bottomOffset, float topOffset, int wrapLimit)</div><div class="ttdoc">Configure interaction mode (0 UI, 1 scene, 2 both), theme (0 light, 1 dark), delay and layout.</div><div class="ttdef"><b>Definition</b> <a href="PcgTooltip_8cpp_source.html#l00006">PcgTooltip.cpp:6</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1ui_html"><div class="ttname"><a href="namespaceeve_1_1ui.html">eve::ui</a></div><div class="ttdef"><b>Definition</b> <a href="Component_8cpp_source.html#l00005">Component.cpp:5</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1ui_html_a26495b54c48770e180f0797175570be9"><div class="ttname"><a href="namespaceeve_1_1ui.html#a26495b54c48770e180f0797175570be9">eve::ui::exposePcgTooltipBindings</a></div><div class="ttdeci">void exposePcgTooltipBindings(ssq::Table &amp;t)</div><div class="ttdoc">Register Pcg tooltip bindings.</div><div class="ttdef"><b>Definition</b> <a href="PcgTooltip_8cpp_source.html#l00014">PcgTooltip.cpp:14</a></div></div>
+<div class="ttc" id="anamespaceeve_html_ac05a2d9228e0b283897b75b4c5cdaf2ba51c45b795d5d18a3e4e0c37e8b20a141"><div class="ttname"><a href="namespaceeve.html#ac05a2d9228e0b283897b75b4c5cdaf2ba51c45b795d5d18a3e4e0c37e8b20a141">eve::ReflectedValueKind::Table</a></div><div class="ttdeci">@ Table</div><div class="ttdoc">OT_TABLE (not yet editable).</div></div>
+<div class="ttc" id="anamespacessq_html"><div class="ttname"><a href="namespacessq.html">ssq</a></div><div class="ttdoc">EVEngine ECS 集成层：底层实现使用 sunxfancy/ECS.hpp https://github.com/sunxfancy/ECS.hpp</div><div class="ttdef"><b>Definition</b> <a href="ECS_8h_source.html#l00012">ECS.h:12</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1PcgTooltipEntry_html_a3f1b0a0978ee8c208a6436b79ad3629f"><div class="ttname"><a href="structeve_1_1ui_1_1PcgTooltipEntry.html#a3f1b0a0978ee8c208a6436b79ad3629f">eve::ui::PcgTooltipEntry::id</a></div><div class="ttdeci">std::string id</div><div class="ttdef"><b>Definition</b> <a href="PcgTooltip_8h_source.html#l00008">PcgTooltip.h:8</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1PcgTooltipEntry_html_a71a9b9cd4eb44abd6513ae09d539dc23"><div class="ttname"><a href="structeve_1_1ui_1_1PcgTooltipEntry.html#a71a9b9cd4eb44abd6513ae09d539dc23">eve::ui::PcgTooltipEntry::header</a></div><div class="ttdeci">std::string header</div><div class="ttdef"><b>Definition</b> <a href="PcgTooltip_8h_source.html#l00008">PcgTooltip.h:8</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1PcgTooltipEntry_html_aff49cc8259d262bd0dbe317d4865ba73"><div class="ttname"><a href="structeve_1_1ui_1_1PcgTooltipEntry.html#aff49cc8259d262bd0dbe317d4865ba73">eve::ui::PcgTooltipEntry::text</a></div><div class="ttdeci">std::string text</div><div class="ttdef"><b>Definition</b> <a href="PcgTooltip_8h_source.html#l00008">PcgTooltip.h:8</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,357 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/action/editor/ActionTimelinePayloadEditor.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_4132021be2fc4b1a23b2cac06bb68e21.html">action</a></li><li class="navelem"><a class="el" href="dir_e2877bc6242eb11d142b1e9b9d86d4c4.html">editor</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">ActionTimelinePayloadEditor.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="ActionTimelinePayloadEditor_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &quot;<a class="code" href="ActionTimelinePayloadEditor_8h.html">action/editor/ActionTimelinePayloadEditor.h</a>&quot;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="ActionVfxBlock_8h.html">action/ActionVfxBlock.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;algorithm&gt;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;optional&gt;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;utility&gt;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1editor.html">eve::editor</a> {</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="keyword">namespace </span>{</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span> </div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="keyword">template</span> &lt;<span class="keyword">class</span> T = <span class="keywordtype">void</span>&gt;</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>EditorResult&lt;T&gt; payloadError(std::string rule, std::string <a class="code hl_variable" href="GltfAnimation_8cpp.html#a36bd74109f547f7f8198faf5a12d2879">message</a>) {</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>    <span class="keywordflow">return</span> eve::editing::failed&lt;T&gt;(EditorStatus::Rejected, <a class="code hl_typedef" href="namespaceeve_1_1editor.html#a6683873993ae84ab3ab178edae377c88">RuleId</a>(std::move(rule)), std::move(<a class="code hl_variable" href="GltfAnimation_8cpp.html#a36bd74109f547f7f8198faf5a12d2879">message</a>));</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>}</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span> </div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="keyword">struct </span>PayloadItem {</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno"><a class="line" href="ActionTimelinePayloadEditor_8cpp.html#a796271009cb4b679640c5ea4ecf8f6c8">   19</a></span>    LogicalId                 <a class="code hl_variable" href="ActionTimelinePayloadEditor_8cpp.html#a796271009cb4b679640c5ea4ecf8f6c8">trackId</a>;</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno"><a class="line" href="ActionTimelinePayloadEditor_8cpp.html#acc84214b4748705f4d18dd8d143e70be">   20</a></span>    LogicalId                 <a class="code hl_variable" href="ActionTimelinePayloadEditor_8cpp.html#acc84214b4748705f4d18dd8d143e70be">type</a>;</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno"><a class="line" href="ActionTimelinePayloadEditor_8cpp.html#ae418715abe84ba914e81471fde56577d">   21</a></span>    <a class="code hl_enumeration" href="namespaceeve_1_1action.html#a832973910da9dd22bd54e2316406536a">action::ActionTimelineEventKind</a> <a class="code hl_variable" href="LanguageIndex_8cpp.html#a38de9b52cbbca9313f7d7c8505a64e10">kind</a> = <a class="code hl_enumvalue" href="namespaceeve_1_1action.html#a832973910da9dd22bd54e2316406536aaaaf9ed605d0193362321ba0def15c9b7">action::ActionTimelineEventKind::Notify</a>;</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno"><a class="line" href="ActionTimelinePayloadEditor_8cpp.html#a3d46ec202b30bb5881fea13fd722e5eb">   22</a></span>    Duration                  <a class="code hl_variable" href="ActionTimelinePayloadEditor_8cpp.html#a3d46ec202b30bb5881fea13fd722e5eb">time</a>;</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno"><a class="line" href="ActionTimelinePayloadEditor_8cpp.html#a831c184a4a6468e68e592a9fafdfec69">   23</a></span>    Duration                  <a class="code hl_variable" href="ActionTimelinePayloadEditor_8cpp.html#a831c184a4a6468e68e592a9fafdfec69">end</a>;</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno"><a class="line" href="ActionTimelinePayloadEditor_8cpp.html#aa50532026e25d28aec12f8f0f8b0ebf5">   24</a></span>    <a class="code hl_typedef" href="classeve_1_1Value.html#a2d59a6ba7d844c2561c606a8973be87d">Value::Object</a>             <a class="code hl_variable" href="ActionTimelinePayloadEditor_8cpp.html#aa50532026e25d28aec12f8f0f8b0ebf5">payload</a>;</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>};</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span> </div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>std::optional&lt;PayloadItem&gt; findPayloadItem(<span class="keyword">const</span> action::ActionTimeline&amp; timeline, <span class="keyword">const</span> LogicalId&amp; <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ac5758f9b5a368e496aaa5da3aa74dfd6">itemId</a>) {</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; track : timeline.tracks) {</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>        <span class="keyword">const</span> <span class="keyword">auto</span> notify = std::find_if(track.notifies.begin(), track.notifies.end(),</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>                                         [&amp;](<span class="keyword">const</span> <span class="keyword">auto</span>&amp; <a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#aee90379adb0307effb138f4871edbc5c">value</a>) { return value.id == itemId; });</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>        <span class="keywordflow">if</span> (notify != track.notifies.end())</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>            <span class="keywordflow">return</span> PayloadItem{track.id, notify-&gt;type, <a class="code hl_enumvalue" href="namespaceeve_1_1action.html#a832973910da9dd22bd54e2316406536aaaaf9ed605d0193362321ba0def15c9b7">action::ActionTimelineEventKind::Notify</a>, notify-&gt;time,</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>                               notify-&gt;time, notify-&gt;payload};</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>        <span class="keyword">const</span> <span class="keyword">auto</span> <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a> = std::find_if(track.states.begin(), track.states.end(),</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>                                        [&amp;](<span class="keyword">const</span> <span class="keyword">auto</span>&amp; <a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#aee90379adb0307effb138f4871edbc5c">value</a>) { return value.id == itemId; });</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>        <span class="keywordflow">if</span> (<a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a> != track.states.end())</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>            <span class="keywordflow">return</span> PayloadItem{track.id, <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a>-&gt;type, <a class="code hl_enumvalue" href="namespaceeve_1_1action.html#a832973910da9dd22bd54e2316406536aaeb06aec00d27811e119e65554df2f9ce">action::ActionTimelineEventKind::StateEnter</a>, <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a>-&gt;start,</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>                               <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a>-&gt;end, <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a>-&gt;payload};</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    }</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    <span class="keywordflow">return</span> std::nullopt;</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>}</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span> </div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>}  <span class="comment">// namespace</span></div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span> </div>
+<div class="foldopen" id="foldopen00045" data-start="{" data-end="}">
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1ActionTimelinePayloadEditor.html#a224e73fee358f31378e92dea35d24ead">   45</a></span><a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;Value::Object&gt;</a> <a class="code hl_function" href="classeve_1_1editor_1_1ActionTimelinePayloadEditor.html#a224e73fee358f31378e92dea35d24ead">ActionTimelinePayloadEditor::payload</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1LogicalId.html">LogicalId</a>&amp; <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ac5758f9b5a368e496aaa5da3aa74dfd6">itemId</a>)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    <span class="keyword">const</span> <span class="keyword">auto</span> item = findPayloadItem(editor_.<a class="code hl_function" href="classeve_1_1editor_1_1ActionTimelineEditor.html#aa6ea87c3a514550b818219f3ba462a0e">target</a>().<a class="code hl_function" href="classeve_1_1editor_1_1ActionTimelineTarget.html#ab50c4eeb8adaa81e32542a5a4f142ade">timeline</a>(), <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ac5758f9b5a368e496aaa5da3aa74dfd6">itemId</a>);</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    <span class="keywordflow">if</span> (!item)</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>        <span class="keywordflow">return</span> payloadError&lt;Value::Object&gt;(<span class="stringliteral">&quot;editor.action.timeline.payload-item-missing&quot;</span>,</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>                                           <span class="stringliteral">&quot;Editable action-block payload was not found&quot;</span>);</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    <span class="keywordflow">return</span> eve::editing::applied&lt;Value::Object&gt;(item-&gt;payload);</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>}</div>
+</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span> </div>
+<div class="foldopen" id="foldopen00053" data-start="{" data-end="}">
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1ActionTimelinePayloadEditor.html#a3a9c5f032e0c920d1f57b5a05608b76b">   53</a></span><a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1editor_1_1ActionTimelinePayloadEditor.html#a3a9c5f032e0c920d1f57b5a05608b76b">ActionTimelinePayloadEditor::patch</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1LogicalId.html">LogicalId</a>&amp; <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ac5758f9b5a368e496aaa5da3aa74dfd6">itemId</a>, <a class="code hl_typedef" href="classeve_1_1Value.html#a2d59a6ba7d844c2561c606a8973be87d">Value::Object</a> <a class="code hl_variable" href="PlayHost_8cpp.html#acf26f1505f276ea0dbf631c4bf19727a">fields</a>) {</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    <span class="keyword">const</span> <span class="keyword">auto</span> item = findPayloadItem(editor_.<a class="code hl_function" href="classeve_1_1editor_1_1ActionTimelineEditor.html#aa6ea87c3a514550b818219f3ba462a0e">target</a>().<a class="code hl_function" href="classeve_1_1editor_1_1ActionTimelineTarget.html#ab50c4eeb8adaa81e32542a5a4f142ade">timeline</a>(), <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ac5758f9b5a368e496aaa5da3aa74dfd6">itemId</a>);</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    <span class="keywordflow">if</span> (!item)</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>        <span class="keywordflow">return</span> payloadError(<span class="stringliteral">&quot;editor.action.timeline.payload-item-missing&quot;</span>,</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>                            <span class="stringliteral">&quot;Editable action-block payload was not found&quot;</span>);</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    <span class="keyword">auto</span> merged = item-&gt;payload;</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    <span class="keywordflow">for</span> (<span class="keyword">auto</span>&amp; [field, <a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#aee90379adb0307effb138f4871edbc5c">value</a>] : <a class="code hl_variable" href="PlayHost_8cpp.html#acf26f1505f276ea0dbf631c4bf19727a">fields</a>) merged.insert_or_assign(std::move(field), std::move(<a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#aee90379adb0307effb138f4871edbc5c">value</a>));</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    <a class="code hl_struct" href="structeve_1_1action_1_1ActionTimelineEvent.html">action::ActionTimelineEvent</a> <span class="keyword">event</span>{item-&gt;<a class="code hl_variable" href="structeve_1_1action_1_1ActionTimelineEvent.html#a411b3f14250336a6477c006268302b8d">kind</a>, item-&gt;trackId, <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ac5758f9b5a368e496aaa5da3aa74dfd6">itemId</a>, item-&gt;type, item-&gt;time, merged};</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    <span class="keyword">auto</span> <a class="code hl_variable" href="McpServer_8cpp.html#a28e3c179a86f337095088b3ca02a2b2a">valid</a> = registry_.<a class="code hl_function" href="classeve_1_1action_1_1ActionNotifyRegistry.html#a240ff69f0a81ce1dd652698d9b5ff474">validate</a>(event);</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="McpServer_8cpp.html#a28e3c179a86f337095088b3ca02a2b2a">valid</a>) <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">EditorResult&lt;void&gt;::failure</a>(<a class="code hl_variable" href="McpServer_8cpp.html#a28e3c179a86f337095088b3ca02a2b2a">valid</a>.status());</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>    <span class="keywordflow">return</span> editor_.<a class="code hl_function" href="classeve_1_1editor_1_1ActionTimelineEditor.html#acab2dd42270e81666ea372dbe3681769">updateItem</a>(<a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ac5758f9b5a368e496aaa5da3aa74dfd6">itemId</a>, item-&gt;type, std::move(merged));</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>}</div>
+</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span> </div>
+<div class="foldopen" id="foldopen00066" data-start="{" data-end="}">
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1ActionTimelinePayloadEditor.html#aa74a4f01467c490577f17678326f8ef9">   66</a></span><a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1editor_1_1ActionTimelinePayloadEditor.html#aa74a4f01467c490577f17678326f8ef9">ActionTimelinePayloadEditor::fitBlockToClip</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1LogicalId.html">LogicalId</a>&amp; <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ac5758f9b5a368e496aaa5da3aa74dfd6">itemId</a>) {</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    <span class="keyword">const</span> <span class="keyword">auto</span> item = findPayloadItem(editor_.<a class="code hl_function" href="classeve_1_1editor_1_1ActionTimelineEditor.html#aa6ea87c3a514550b818219f3ba462a0e">target</a>().<a class="code hl_function" href="classeve_1_1editor_1_1ActionTimelineTarget.html#ab50c4eeb8adaa81e32542a5a4f142ade">timeline</a>(), <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ac5758f9b5a368e496aaa5da3aa74dfd6">itemId</a>);</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    <span class="keywordflow">if</span> (!item)</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>        <span class="keywordflow">return</span> payloadError(<span class="stringliteral">&quot;editor.action.timeline.payload-item-missing&quot;</span>,</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>                            <span class="stringliteral">&quot;Editable action-block payload was not found&quot;</span>);</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    <span class="keywordflow">if</span> (item-&gt;kind != <a class="code hl_enumvalue" href="namespaceeve_1_1action.html#a832973910da9dd22bd54e2316406536aaeb06aec00d27811e119e65554df2f9ce">action::ActionTimelineEventKind::StateEnter</a> ||</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>        item-&gt;type.format() != <span class="stringliteral">&quot;presentation:vfx-state&quot;</span>)</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>        <span class="keywordflow">return</span> payloadError(<span class="stringliteral">&quot;editor.action.timeline.clip-fit-type&quot;</span>, <span class="stringliteral">&quot;Only VFX states can fit a block to a clip&quot;</span>);</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    <span class="keyword">auto</span> <a class="code hl_variable" href="ParticlesCapabilities_8cpp.html#a29e48cdcd5413e721ea32eaef3927e79">binding</a> = <a class="code hl_function" href="structeve_1_1action_1_1ActionVfxBinding.html#ad6b8563941791abb2c0c0bd205583395">action::ActionVfxBinding::fromPayload</a>(item-&gt;payload, <a class="code hl_enumvalue" href="namespaceeve_1_1action.html#a22d5d88b08966cbad599c620e21c5f77a46a2a41cc6e552044816a2d04634545d">action::ActionVfxShape::State</a>);</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="ParticlesCapabilities_8cpp.html#a29e48cdcd5413e721ea32eaef3927e79">binding</a>) <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">EditorResult&lt;void&gt;::failure</a>(<a class="code hl_variable" href="ParticlesCapabilities_8cpp.html#a29e48cdcd5413e721ea32eaef3927e79">binding</a>.status());</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    <span class="keyword">auto</span> <a class="code hl_variable" href="AnimCurveLibrary_8cpp.html#a66625d8d6c0894b4828b43f826a09b8f">duration</a> = <a class="code hl_function" href="classeve_1_1Duration.html#a2c92226d339c430b6a3310a7f72a9c2b">Duration::fromSeconds</a>(<a class="code hl_variable" href="ParticlesCapabilities_8cpp.html#a29e48cdcd5413e721ea32eaef3927e79">binding</a>.value().<a class="code hl_variable" href="structeve_1_1action_1_1ActionVfxBinding.html#ab535d51ce383436b735498e0ca17dbf1">clipEndTime</a> - <a class="code hl_variable" href="ParticlesCapabilities_8cpp.html#a29e48cdcd5413e721ea32eaef3927e79">binding</a>.value().<a class="code hl_variable" href="structeve_1_1action_1_1ActionVfxBinding.html#a29f8a6da2eb160eca2af7196eee4cd77">clipStartTime</a>);</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="AnimCurveLibrary_8cpp.html#a66625d8d6c0894b4828b43f826a09b8f">duration</a>) <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">EditorResult&lt;void&gt;::failure</a>(<a class="code hl_variable" href="AnimCurveLibrary_8cpp.html#a66625d8d6c0894b4828b43f826a09b8f">duration</a>.status());</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>    <span class="keyword">auto</span> <a class="code hl_variable" href="ActionTimelinePayloadEditor_8cpp.html#a831c184a4a6468e68e592a9fafdfec69">end</a> = item-&gt;time.tryAdd(<a class="code hl_variable" href="AnimCurveLibrary_8cpp.html#a66625d8d6c0894b4828b43f826a09b8f">duration</a>.value());</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="ActionTimelinePayloadEditor_8cpp.html#a831c184a4a6468e68e592a9fafdfec69">end</a>)</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>        <span class="keywordflow">return</span> payloadError(<span class="stringliteral">&quot;editor.action.timeline.clip-fit-overflow&quot;</span>, <span class="stringliteral">&quot;Fitted VFX block time overflowed&quot;</span>);</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>    <span class="keywordflow">return</span> editor_.<a class="code hl_function" href="classeve_1_1editor_1_1ActionTimelineEditor.html#a8b63942cb8915433570fa03db13e0554">editItem</a>(<a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ac5758f9b5a368e496aaa5da3aa74dfd6">itemId</a>, item-&gt;time, <a class="code hl_variable" href="ActionTimelinePayloadEditor_8cpp.html#a831c184a4a6468e68e592a9fafdfec69">end</a>.value(), item-&gt;type, item-&gt;payload);</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>}</div>
+</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span> </div>
+<div class="foldopen" id="foldopen00084" data-start="{" data-end="}">
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1ActionTimelinePayloadEditor.html#ae8c5ccaaea7057217758b65343ccff90">   84</a></span><a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1editor_1_1ActionTimelinePayloadEditor.html#ae8c5ccaaea7057217758b65343ccff90">ActionTimelinePayloadEditor::fitClipToBlock</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1LogicalId.html">LogicalId</a>&amp; <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ac5758f9b5a368e496aaa5da3aa74dfd6">itemId</a>) {</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>    <span class="keyword">const</span> <span class="keyword">auto</span> item = findPayloadItem(editor_.<a class="code hl_function" href="classeve_1_1editor_1_1ActionTimelineEditor.html#aa6ea87c3a514550b818219f3ba462a0e">target</a>().<a class="code hl_function" href="classeve_1_1editor_1_1ActionTimelineTarget.html#ab50c4eeb8adaa81e32542a5a4f142ade">timeline</a>(), <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ac5758f9b5a368e496aaa5da3aa74dfd6">itemId</a>);</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>    <span class="keywordflow">if</span> (!item)</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>        <span class="keywordflow">return</span> payloadError(<span class="stringliteral">&quot;editor.action.timeline.payload-item-missing&quot;</span>,</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>                            <span class="stringliteral">&quot;Editable action-block payload was not found&quot;</span>);</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>    <span class="keywordflow">if</span> (item-&gt;kind != <a class="code hl_enumvalue" href="namespaceeve_1_1action.html#a832973910da9dd22bd54e2316406536aaeb06aec00d27811e119e65554df2f9ce">action::ActionTimelineEventKind::StateEnter</a> ||</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>        item-&gt;type.format() != <span class="stringliteral">&quot;presentation:vfx-state&quot;</span>)</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>        <span class="keywordflow">return</span> payloadError(<span class="stringliteral">&quot;editor.action.timeline.clip-fit-type&quot;</span>, <span class="stringliteral">&quot;Only VFX states can fit a clip to a block&quot;</span>);</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>    <span class="keyword">auto</span> <a class="code hl_variable" href="ParticlesCapabilities_8cpp.html#a29e48cdcd5413e721ea32eaef3927e79">binding</a> = <a class="code hl_function" href="structeve_1_1action_1_1ActionVfxBinding.html#ad6b8563941791abb2c0c0bd205583395">action::ActionVfxBinding::fromPayload</a>(item-&gt;payload, <a class="code hl_enumvalue" href="namespaceeve_1_1action.html#a22d5d88b08966cbad599c620e21c5f77a46a2a41cc6e552044816a2d04634545d">action::ActionVfxShape::State</a>);</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="ParticlesCapabilities_8cpp.html#a29e48cdcd5413e721ea32eaef3927e79">binding</a>) <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">EditorResult&lt;void&gt;::failure</a>(<a class="code hl_variable" href="ParticlesCapabilities_8cpp.html#a29e48cdcd5413e721ea32eaef3927e79">binding</a>.status());</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> blockDuration =</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>        <a class="code hl_function" href="classeve_1_1Duration.html#a3623bb018fddaebe73fe6646d1ea3ebe">Duration::fromNanoseconds</a>(item-&gt;end.nanoseconds() - item-&gt;time.nanoseconds()).<a class="code hl_function" href="classeve_1_1Duration.html#ab023911ce0a6b5948eeaf3f588557ee7">seconds</a>();</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>    <span class="keyword">auto</span> merged = item-&gt;payload;</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>    merged.insert_or_assign(<span class="stringliteral">&quot;clipEndTime&quot;</span>, <a class="code hl_variable" href="ParticlesCapabilities_8cpp.html#a29e48cdcd5413e721ea32eaef3927e79">binding</a>.value().<a class="code hl_variable" href="structeve_1_1action_1_1ActionVfxBinding.html#a29f8a6da2eb160eca2af7196eee4cd77">clipStartTime</a> + blockDuration);</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>    <a class="code hl_struct" href="structeve_1_1action_1_1ActionTimelineEvent.html">action::ActionTimelineEvent</a> <span class="keyword">event</span>{item-&gt;<a class="code hl_variable" href="structeve_1_1action_1_1ActionTimelineEvent.html#a411b3f14250336a6477c006268302b8d">kind</a>, item-&gt;trackId, <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ac5758f9b5a368e496aaa5da3aa74dfd6">itemId</a>, item-&gt;type, item-&gt;time, merged};</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>    <span class="keyword">auto</span> <a class="code hl_variable" href="McpServer_8cpp.html#a28e3c179a86f337095088b3ca02a2b2a">valid</a> = registry_.<a class="code hl_function" href="classeve_1_1action_1_1ActionNotifyRegistry.html#a240ff69f0a81ce1dd652698d9b5ff474">validate</a>(event);</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="McpServer_8cpp.html#a28e3c179a86f337095088b3ca02a2b2a">valid</a>) <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">EditorResult&lt;void&gt;::failure</a>(<a class="code hl_variable" href="McpServer_8cpp.html#a28e3c179a86f337095088b3ca02a2b2a">valid</a>.status());</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>    <span class="keywordflow">return</span> editor_.<a class="code hl_function" href="classeve_1_1editor_1_1ActionTimelineEditor.html#a8b63942cb8915433570fa03db13e0554">editItem</a>(<a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ac5758f9b5a368e496aaa5da3aa74dfd6">itemId</a>, item-&gt;time, item-&gt;end, item-&gt;type, std::move(merged));</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>}</div>
+</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span> </div>
+<div class="foldopen" id="foldopen00104" data-start="{" data-end="}">
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1ActionTimelinePayloadEditor.html#af117a3af7436a418d9cfcc37b17cf02e">  104</a></span><a class="code hl_class" href="classeve_1_1Result.html">EditorResult&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1editor_1_1ActionTimelinePayloadEditor.html#af117a3af7436a418d9cfcc37b17cf02e">ActionTimelinePayloadEditor::fitClipToNaturalDuration</a>(</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>    <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1LogicalId.html">LogicalId</a>&amp; <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ac5758f9b5a368e496aaa5da3aa74dfd6">itemId</a>, <a class="code hl_typedef" href="namespaceeve.html#a503b0fa2c99caf9c2f8d2144f64c683f">OptionalRef&lt;const action::IActionVfxDurationProvider&gt;</a> provider) {</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>    <span class="keyword">const</span> <span class="keyword">auto</span> item = findPayloadItem(editor_.<a class="code hl_function" href="classeve_1_1editor_1_1ActionTimelineEditor.html#aa6ea87c3a514550b818219f3ba462a0e">target</a>().<a class="code hl_function" href="classeve_1_1editor_1_1ActionTimelineTarget.html#ab50c4eeb8adaa81e32542a5a4f142ade">timeline</a>(), <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ac5758f9b5a368e496aaa5da3aa74dfd6">itemId</a>);</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>    <span class="keywordflow">if</span> (!item)</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>        <span class="keywordflow">return</span> payloadError(<span class="stringliteral">&quot;editor.action.timeline.payload-item-missing&quot;</span>,</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>                            <span class="stringliteral">&quot;Editable action-block payload was not found&quot;</span>);</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>    <span class="keywordflow">if</span> (item-&gt;kind != <a class="code hl_enumvalue" href="namespaceeve_1_1action.html#a832973910da9dd22bd54e2316406536aaeb06aec00d27811e119e65554df2f9ce">action::ActionTimelineEventKind::StateEnter</a> ||</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>        item-&gt;type.format() != <span class="stringliteral">&quot;presentation:vfx-state&quot;</span>)</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>        <span class="keywordflow">return</span> payloadError(<span class="stringliteral">&quot;editor.action.timeline.clip-fit-type&quot;</span>,</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>                            <span class="stringliteral">&quot;Only VFX states can use a resource&#39;s natural duration&quot;</span>);</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>    <span class="keywordflow">if</span> (!provider)</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>        <span class="keywordflow">return</span> eve::editing::failed&lt;void&gt;(</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>            EditorStatus::Unsupported, <a class="code hl_typedef" href="namespaceeve_1_1editor.html#a6683873993ae84ab3ab178edae377c88">RuleId</a>(<span class="stringliteral">&quot;editor.action.timeline.vfx-duration-provider-missing&quot;</span>),</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>            <span class="stringliteral">&quot;VFX natural duration requires a loaded particle provider&quot;</span>);</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>    <span class="keyword">auto</span> <a class="code hl_variable" href="ParticlesCapabilities_8cpp.html#a29e48cdcd5413e721ea32eaef3927e79">binding</a> = <a class="code hl_function" href="structeve_1_1action_1_1ActionVfxBinding.html#ad6b8563941791abb2c0c0bd205583395">action::ActionVfxBinding::fromPayload</a>(item-&gt;payload, <a class="code hl_enumvalue" href="namespaceeve_1_1action.html#a22d5d88b08966cbad599c620e21c5f77a46a2a41cc6e552044816a2d04634545d">action::ActionVfxShape::State</a>);</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="ParticlesCapabilities_8cpp.html#a29e48cdcd5413e721ea32eaef3927e79">binding</a>) <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">EditorResult&lt;void&gt;::failure</a>(<a class="code hl_variable" href="ParticlesCapabilities_8cpp.html#a29e48cdcd5413e721ea32eaef3927e79">binding</a>.status());</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>    <span class="keyword">auto</span> <a class="code hl_variable" href="AnimCurveLibrary_8cpp.html#a66625d8d6c0894b4828b43f826a09b8f">duration</a> = provider-&gt;get().naturalDuration(<a class="code hl_variable" href="ParticlesCapabilities_8cpp.html#a29e48cdcd5413e721ea32eaef3927e79">binding</a>.value().<a class="code hl_variable" href="structeve_1_1action_1_1ActionVfxBinding.html#a4b77f5c532f667c7ca5805cd9af39f90">uri</a>);</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="AnimCurveLibrary_8cpp.html#a66625d8d6c0894b4828b43f826a09b8f">duration</a>) <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">EditorResult&lt;void&gt;::failure</a>(<a class="code hl_variable" href="AnimCurveLibrary_8cpp.html#a66625d8d6c0894b4828b43f826a09b8f">duration</a>.status());</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>    <span class="keyword">auto</span> merged = item-&gt;payload;</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>    merged.insert_or_assign(<span class="stringliteral">&quot;clipEndTime&quot;</span>, <a class="code hl_variable" href="AnimCurveLibrary_8cpp.html#a66625d8d6c0894b4828b43f826a09b8f">duration</a>.value().seconds());</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>    <a class="code hl_struct" href="structeve_1_1action_1_1ActionTimelineEvent.html">action::ActionTimelineEvent</a> <span class="keyword">event</span>{item-&gt;<a class="code hl_variable" href="structeve_1_1action_1_1ActionTimelineEvent.html#a411b3f14250336a6477c006268302b8d">kind</a>, item-&gt;trackId, <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ac5758f9b5a368e496aaa5da3aa74dfd6">itemId</a>, item-&gt;type, item-&gt;time, merged};</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>    <span class="keyword">auto</span> <a class="code hl_variable" href="McpServer_8cpp.html#a28e3c179a86f337095088b3ca02a2b2a">valid</a> = registry_.<a class="code hl_function" href="classeve_1_1action_1_1ActionNotifyRegistry.html#a240ff69f0a81ce1dd652698d9b5ff474">validate</a>(event);</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="McpServer_8cpp.html#a28e3c179a86f337095088b3ca02a2b2a">valid</a>) <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">EditorResult&lt;void&gt;::failure</a>(<a class="code hl_variable" href="McpServer_8cpp.html#a28e3c179a86f337095088b3ca02a2b2a">valid</a>.status());</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>    <span class="keywordflow">return</span> editor_.<a class="code hl_function" href="classeve_1_1editor_1_1ActionTimelineEditor.html#a8b63942cb8915433570fa03db13e0554">editItem</a>(<a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ac5758f9b5a368e496aaa5da3aa74dfd6">itemId</a>, item-&gt;time, item-&gt;end, item-&gt;type, std::move(merged));</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>}</div>
+</div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span> </div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>}  <span class="comment">// namespace eve::editor</span></div>
+<div class="ttc" id="aActionNotifyRegistry_8cpp_html_aee90379adb0307effb138f4871edbc5c"><div class="ttname"><a href="ActionNotifyRegistry_8cpp.html#aee90379adb0307effb138f4871edbc5c">value</a></div><div class="ttdeci">double value</div><div class="ttdef"><b>Definition</b> <a href="ActionNotifyRegistry_8cpp_source.html#l00165">ActionNotifyRegistry.cpp:165</a></div></div>
+<div class="ttc" id="aActionTimelinePayloadEditor_8cpp_html_a3d46ec202b30bb5881fea13fd722e5eb"><div class="ttname"><a href="ActionTimelinePayloadEditor_8cpp.html#a3d46ec202b30bb5881fea13fd722e5eb">time</a></div><div class="ttdeci">Duration time</div><div class="ttdef"><b>Definition</b> <a href="ActionTimelinePayloadEditor_8cpp_source.html#l00022">ActionTimelinePayloadEditor.cpp:22</a></div></div>
+<div class="ttc" id="aActionTimelinePayloadEditor_8cpp_html_a796271009cb4b679640c5ea4ecf8f6c8"><div class="ttname"><a href="ActionTimelinePayloadEditor_8cpp.html#a796271009cb4b679640c5ea4ecf8f6c8">trackId</a></div><div class="ttdeci">LogicalId trackId</div><div class="ttdef"><b>Definition</b> <a href="ActionTimelinePayloadEditor_8cpp_source.html#l00019">ActionTimelinePayloadEditor.cpp:19</a></div></div>
+<div class="ttc" id="aActionTimelinePayloadEditor_8cpp_html_a831c184a4a6468e68e592a9fafdfec69"><div class="ttname"><a href="ActionTimelinePayloadEditor_8cpp.html#a831c184a4a6468e68e592a9fafdfec69">end</a></div><div class="ttdeci">Duration end</div><div class="ttdef"><b>Definition</b> <a href="ActionTimelinePayloadEditor_8cpp_source.html#l00023">ActionTimelinePayloadEditor.cpp:23</a></div></div>
+<div class="ttc" id="aActionTimelinePayloadEditor_8cpp_html_aa50532026e25d28aec12f8f0f8b0ebf5"><div class="ttname"><a href="ActionTimelinePayloadEditor_8cpp.html#aa50532026e25d28aec12f8f0f8b0ebf5">payload</a></div><div class="ttdeci">Value::Object payload</div><div class="ttdef"><b>Definition</b> <a href="ActionTimelinePayloadEditor_8cpp_source.html#l00024">ActionTimelinePayloadEditor.cpp:24</a></div></div>
+<div class="ttc" id="aActionTimelinePayloadEditor_8cpp_html_acc84214b4748705f4d18dd8d143e70be"><div class="ttname"><a href="ActionTimelinePayloadEditor_8cpp.html#acc84214b4748705f4d18dd8d143e70be">type</a></div><div class="ttdeci">LogicalId type</div><div class="ttdef"><b>Definition</b> <a href="ActionTimelinePayloadEditor_8cpp_source.html#l00020">ActionTimelinePayloadEditor.cpp:20</a></div></div>
+<div class="ttc" id="aActionTimelinePayloadEditor_8h_html"><div class="ttname"><a href="ActionTimelinePayloadEditor_8h.html">ActionTimelinePayloadEditor.h</a></div><div class="ttdoc">Validated partial editing for action-block payloads.</div></div>
+<div class="ttc" id="aActionTimelineWidget_8cpp_html_ab30ba07e2a0bd07a15e45a92c32db9c5"><div class="ttname"><a href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a></div><div class="ttdeci">bool state</div><div class="ttdef"><b>Definition</b> <a href="ActionTimelineWidget_8cpp_source.html#l00033">ActionTimelineWidget.cpp:33</a></div></div>
+<div class="ttc" id="aActionTimelineWidget_8cpp_html_ac5758f9b5a368e496aaa5da3aa74dfd6"><div class="ttname"><a href="ActionTimelineWidget_8cpp.html#ac5758f9b5a368e496aaa5da3aa74dfd6">itemId</a></div><div class="ttdeci">LogicalId itemId</div><div class="ttdef"><b>Definition</b> <a href="ActionTimelineWidget_8cpp_source.html#l00028">ActionTimelineWidget.cpp:28</a></div></div>
+<div class="ttc" id="aActionVfxBlock_8h_html"><div class="ttname"><a href="ActionVfxBlock_8h.html">ActionVfxBlock.h</a></div><div class="ttdoc">Typed VFX action-block payload contract.</div></div>
+<div class="ttc" id="aAnimCurveLibrary_8cpp_html_a66625d8d6c0894b4828b43f826a09b8f"><div class="ttname"><a href="AnimCurveLibrary_8cpp.html#a66625d8d6c0894b4828b43f826a09b8f">duration</a></div><div class="ttdeci">float duration</div><div class="ttdef"><b>Definition</b> <a href="AnimCurveLibrary_8cpp_source.html#l00018">AnimCurveLibrary.cpp:18</a></div></div>
+<div class="ttc" id="aGltfAnimation_8cpp_html_a36bd74109f547f7f8198faf5a12d2879"><div class="ttname"><a href="GltfAnimation_8cpp.html#a36bd74109f547f7f8198faf5a12d2879">message</a></div><div class="ttdeci">std::string message</div><div class="ttdef"><b>Definition</b> <a href="GltfAnimation_8cpp_source.html#l00017">GltfAnimation.cpp:17</a></div></div>
+<div class="ttc" id="aLanguageIndex_8cpp_html_a38de9b52cbbca9313f7d7c8505a64e10"><div class="ttname"><a href="LanguageIndex_8cpp.html#a38de9b52cbbca9313f7d7c8505a64e10">kind</a></div><div class="ttdeci">TokenKind kind</div><div class="ttdef"><b>Definition</b> <a href="LanguageIndex_8cpp_source.html#l00017">LanguageIndex.cpp:17</a></div></div>
+<div class="ttc" id="aMcpServer_8cpp_html_a28e3c179a86f337095088b3ca02a2b2a"><div class="ttname"><a href="McpServer_8cpp.html#a28e3c179a86f337095088b3ca02a2b2a">valid</a></div><div class="ttdeci">bool valid</div><div class="ttdef"><b>Definition</b> <a href="McpServer_8cpp_source.html#l00550">McpServer.cpp:550</a></div></div>
+<div class="ttc" id="aParticlesCapabilities_8cpp_html_a29e48cdcd5413e721ea32eaef3927e79"><div class="ttname"><a href="ParticlesCapabilities_8cpp.html#a29e48cdcd5413e721ea32eaef3927e79">binding</a></div><div class="ttdeci">eve::action::ActionVfxBinding binding</div><div class="ttdef"><b>Definition</b> <a href="ParticlesCapabilities_8cpp_source.html#l00169">ParticlesCapabilities.cpp:169</a></div></div>
+<div class="ttc" id="aPlayHost_8cpp_html_acf26f1505f276ea0dbf631c4bf19727a"><div class="ttname"><a href="PlayHost_8cpp.html#acf26f1505f276ea0dbf631c4bf19727a">fields</a></div><div class="ttdeci">std::vector&lt; std::string &gt; fields</div><div class="ttdef"><b>Definition</b> <a href="PlayHost_8cpp_source.html#l00145">PlayHost.cpp:145</a></div></div>
+<div class="ttc" id="aclasseve_1_1Duration_html_a2c92226d339c430b6a3310a7f72a9c2b"><div class="ttname"><a href="classeve_1_1Duration.html#a2c92226d339c430b6a3310a7f72a9c2b">eve::Duration::fromSeconds</a></div><div class="ttdeci">static Result&lt; Duration &gt; fromSeconds(double seconds)</div><div class="ttdoc">Convert finite seconds to the nearest nanosecond.</div><div class="ttdef"><b>Definition</b> <a href="Time_8cpp_source.html#l00016">Time.cpp:16</a></div></div>
+<div class="ttc" id="aclasseve_1_1Duration_html_a3623bb018fddaebe73fe6646d1ea3ebe"><div class="ttname"><a href="classeve_1_1Duration.html#a3623bb018fddaebe73fe6646d1ea3ebe">eve::Duration::fromNanoseconds</a></div><div class="ttdeci">static constexpr Duration fromNanoseconds(std::int64_t nanoseconds) noexcept</div><div class="ttdoc">Construct an exact duration from nanoseconds.</div><div class="ttdef"><b>Definition</b> <a href="Time_8h_source.html#l00053">Time.h:53</a></div></div>
+<div class="ttc" id="aclasseve_1_1Duration_html_ab023911ce0a6b5948eeaf3f588557ee7"><div class="ttname"><a href="classeve_1_1Duration.html#ab023911ce0a6b5948eeaf3f588557ee7">eve::Duration::seconds</a></div><div class="ttdeci">double seconds() const noexcept</div><div class="ttdoc">Return this duration as seconds for legacy/presentation APIs.</div><div class="ttdef"><b>Definition</b> <a href="Time_8cpp_source.html#l00028">Time.cpp:28</a></div></div>
+<div class="ttc" id="aclasseve_1_1LogicalId_html"><div class="ttname"><a href="classeve_1_1LogicalId.html">eve::LogicalId</a></div><div class="ttdoc">Human-readable, scoped identifier in the form namespace:name.</div><div class="ttdef"><b>Definition</b> <a href="Identity_8h_source.html#l00413">Identity.h:413</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html_af1a297022e9a6a615433003fe6466358"><div class="ttname"><a href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">eve::Result::failure</a></div><div class="ttdeci">static Result failure(Status status)</div><div class="ttdoc">Construct a failed result from a structured status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00166">Result.h:166</a></div></div>
+<div class="ttc" id="aclasseve_1_1Value_html_a2d59a6ba7d844c2561c606a8973be87d"><div class="ttname"><a href="classeve_1_1Value.html#a2d59a6ba7d844c2561c606a8973be87d">eve::Value::Object</a></div><div class="ttdeci">std::map&lt; std::string, Value &gt; Object</div><div class="ttdef"><b>Definition</b> <a href="Value_8h_source.html#l00034">Value.h:34</a></div></div>
+<div class="ttc" id="aclasseve_1_1action_1_1ActionNotifyRegistry_html_a240ff69f0a81ce1dd652698d9b5ff474"><div class="ttname"><a href="classeve_1_1action_1_1ActionNotifyRegistry.html#a240ff69f0a81ce1dd652698d9b5ff474">eve::action::ActionNotifyRegistry::validate</a></div><div class="ttdeci">Result&lt; void &gt; validate(const ActionTimelineEvent &amp;event) const</div><div class="ttdoc">Validate type, shape and required payload fields.</div><div class="ttdef"><b>Definition</b> <a href="ActionNotifyRegistry_8cpp_source.html#l00285">ActionNotifyRegistry.cpp:285</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1ActionTimelineEditor_html_a8b63942cb8915433570fa03db13e0554"><div class="ttname"><a href="classeve_1_1editor_1_1ActionTimelineEditor.html#a8b63942cb8915433570fa03db13e0554">eve::editor::ActionTimelineEditor::editItem</a></div><div class="ttdeci">EditorResult&lt; void &gt; editItem(const LogicalId &amp;itemId, Duration start, Duration end, LogicalId type, Value::Object payload)</div><div class="ttdoc">Atomically replace one item's timing, type and owning payload.</div><div class="ttdef"><b>Definition</b> <a href="ActionTimelineEditor_8cpp_source.html#l00746">ActionTimelineEditor.cpp:746</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1ActionTimelineEditor_html_aa6ea87c3a514550b818219f3ba462a0e"><div class="ttname"><a href="classeve_1_1editor_1_1ActionTimelineEditor.html#aa6ea87c3a514550b818219f3ba462a0e">eve::editor::ActionTimelineEditor::target</a></div><div class="ttdeci">const ActionTimelineTarget &amp; target() const noexcept</div><div class="ttdoc">Borrow the authoritative target.</div><div class="ttdef"><b>Definition</b> <a href="ActionTimelineEditor_8h_source.html#l00167">ActionTimelineEditor.h:167</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1ActionTimelineEditor_html_acab2dd42270e81666ea372dbe3681769"><div class="ttname"><a href="classeve_1_1editor_1_1ActionTimelineEditor.html#acab2dd42270e81666ea372dbe3681769">eve::editor::ActionTimelineEditor::updateItem</a></div><div class="ttdeci">EditorResult&lt; void &gt; updateItem(const LogicalId &amp;itemId, LogicalId type, Value::Object payload)</div><div class="ttdoc">Replace one item's type and owning payload through one undoable transaction.</div><div class="ttdef"><b>Definition</b> <a href="ActionTimelineEditor_8cpp_source.html#l00650">ActionTimelineEditor.cpp:650</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1ActionTimelinePayloadEditor_html_a224e73fee358f31378e92dea35d24ead"><div class="ttname"><a href="classeve_1_1editor_1_1ActionTimelinePayloadEditor.html#a224e73fee358f31378e92dea35d24ead">eve::editor::ActionTimelinePayloadEditor::payload</a></div><div class="ttdeci">EditorResult&lt; Value::Object &gt; payload(const LogicalId &amp;itemId) const</div><div class="ttdoc">Return an owning copy of one editable notify or state payload.</div><div class="ttdef"><b>Definition</b> <a href="ActionTimelinePayloadEditor_8cpp_source.html#l00045">ActionTimelinePayloadEditor.cpp:45</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1ActionTimelinePayloadEditor_html_a3a9c5f032e0c920d1f57b5a05608b76b"><div class="ttname"><a href="classeve_1_1editor_1_1ActionTimelinePayloadEditor.html#a3a9c5f032e0c920d1f57b5a05608b76b">eve::editor::ActionTimelinePayloadEditor::patch</a></div><div class="ttdeci">EditorResult&lt; void &gt; patch(const LogicalId &amp;itemId, Value::Object fields)</div><div class="ttdoc">Merge fields into one payload and commit exactly one validated undo step.</div><div class="ttdef"><b>Definition</b> <a href="ActionTimelinePayloadEditor_8cpp_source.html#l00053">ActionTimelinePayloadEditor.cpp:53</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1ActionTimelinePayloadEditor_html_aa74a4f01467c490577f17678326f8ef9"><div class="ttname"><a href="classeve_1_1editor_1_1ActionTimelinePayloadEditor.html#aa74a4f01467c490577f17678326f8ef9">eve::editor::ActionTimelinePayloadEditor::fitBlockToClip</a></div><div class="ttdeci">EditorResult&lt; void &gt; fitBlockToClip(const LogicalId &amp;itemId)</div><div class="ttdoc">Resize one VFX state to its authored clip interval at 1.0x playback.</div><div class="ttdef"><b>Definition</b> <a href="ActionTimelinePayloadEditor_8cpp_source.html#l00066">ActionTimelinePayloadEditor.cpp:66</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1ActionTimelinePayloadEditor_html_ae8c5ccaaea7057217758b65343ccff90"><div class="ttname"><a href="classeve_1_1editor_1_1ActionTimelinePayloadEditor.html#ae8c5ccaaea7057217758b65343ccff90">eve::editor::ActionTimelinePayloadEditor::fitClipToBlock</a></div><div class="ttdeci">EditorResult&lt; void &gt; fitClipToBlock(const LogicalId &amp;itemId)</div><div class="ttdoc">Extend one VFX state's clip end so its authored interval matches the block duration.</div><div class="ttdef"><b>Definition</b> <a href="ActionTimelinePayloadEditor_8cpp_source.html#l00084">ActionTimelinePayloadEditor.cpp:84</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1ActionTimelinePayloadEditor_html_af117a3af7436a418d9cfcc37b17cf02e"><div class="ttname"><a href="classeve_1_1editor_1_1ActionTimelinePayloadEditor.html#af117a3af7436a418d9cfcc37b17cf02e">eve::editor::ActionTimelinePayloadEditor::fitClipToNaturalDuration</a></div><div class="ttdeci">EditorResult&lt; void &gt; fitClipToNaturalDuration(const LogicalId &amp;itemId, OptionalRef&lt; const action::IActionVfxDurationProvider &gt; provider)</div><div class="ttdoc">Set one VFX state's clip end to the finite duration reported by its resource provider.</div><div class="ttdef"><b>Definition</b> <a href="ActionTimelinePayloadEditor_8cpp_source.html#l00104">ActionTimelinePayloadEditor.cpp:104</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1ActionTimelineTarget_html_ab50c4eeb8adaa81e32542a5a4f142ade"><div class="ttname"><a href="classeve_1_1editor_1_1ActionTimelineTarget.html#ab50c4eeb8adaa81e32542a5a4f142ade">eve::editor::ActionTimelineTarget::timeline</a></div><div class="ttdeci">const action::ActionTimeline &amp; timeline() const noexcept</div><div class="ttdoc">Borrow the authoritative timeline until the next mutation.</div><div class="ttdef"><b>Definition</b> <a href="ActionTimelineEditor_8h_source.html#l00113">ActionTimelineEditor.h:113</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1action_html_a22d5d88b08966cbad599c620e21c5f77a46a2a41cc6e552044816a2d04634545d"><div class="ttname"><a href="namespaceeve_1_1action.html#a22d5d88b08966cbad599c620e21c5f77a46a2a41cc6e552044816a2d04634545d">eve::action::ActionVfxShape::State</a></div><div class="ttdeci">@ State</div></div>
+<div class="ttc" id="anamespaceeve_1_1action_html_a832973910da9dd22bd54e2316406536a"><div class="ttname"><a href="namespaceeve_1_1action.html#a832973910da9dd22bd54e2316406536a">eve::action::ActionTimelineEventKind</a></div><div class="ttdeci">ActionTimelineEventKind</div><div class="ttdoc">Boundary emitted by deterministic timeline sampling.</div><div class="ttdef"><b>Definition</b> <a href="ActionTimeline_8h_source.html#l00130">ActionTimeline.h:130</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1action_html_a832973910da9dd22bd54e2316406536aaaaf9ed605d0193362321ba0def15c9b7"><div class="ttname"><a href="namespaceeve_1_1action.html#a832973910da9dd22bd54e2316406536aaaaf9ed605d0193362321ba0def15c9b7">eve::action::ActionTimelineEventKind::Notify</a></div><div class="ttdeci">@ Notify</div></div>
+<div class="ttc" id="anamespaceeve_1_1action_html_a832973910da9dd22bd54e2316406536aaeb06aec00d27811e119e65554df2f9ce"><div class="ttname"><a href="namespaceeve_1_1action.html#a832973910da9dd22bd54e2316406536aaeb06aec00d27811e119e65554df2f9ce">eve::action::ActionTimelineEventKind::StateEnter</a></div><div class="ttdeci">@ StateEnter</div></div>
+<div class="ttc" id="anamespaceeve_1_1editor_html"><div class="ttname"><a href="namespaceeve_1_1editor.html">eve::editor</a></div><div class="ttdef"><b>Definition</b> <a href="ActionPreviewController_8cpp_source.html#l00006">ActionPreviewController.cpp:6</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editor_html_a6683873993ae84ab3ab178edae377c88"><div class="ttname"><a href="namespaceeve_1_1editor.html#a6683873993ae84ab3ab178edae377c88">eve::editor::RuleId</a></div><div class="ttdeci">eve::editing::RuleId RuleId</div><div class="ttdef"><b>Definition</b> <a href="EditorIds_8h_source.html#l00032">EditorIds.h:32</a></div></div>
+<div class="ttc" id="anamespaceeve_html_a503b0fa2c99caf9c2f8d2144f64c683f"><div class="ttname"><a href="namespaceeve.html#a503b0fa2c99caf9c2f8d2144f64c683f">eve::OptionalRef</a></div><div class="ttdeci">std::optional&lt; std::reference_wrapper&lt; T &gt; &gt; OptionalRef</div><div class="ttdoc">Optional borrowed reference; it does not extend T's lifetime.</div><div class="ttdef"><b>Definition</b> <a href="BorrowedRef_8h_source.html#l00024">BorrowedRef.h:24</a></div></div>
+<div class="ttc" id="astructeve_1_1action_1_1ActionTimelineEvent_html"><div class="ttname"><a href="structeve_1_1action_1_1ActionTimelineEvent.html">eve::action::ActionTimelineEvent</a></div><div class="ttdoc">Owning event projection returned by the runtime sampler.</div><div class="ttdef"><b>Definition</b> <a href="ActionTimeline_8h_source.html#l00138">ActionTimeline.h:138</a></div></div>
+<div class="ttc" id="astructeve_1_1action_1_1ActionTimelineEvent_html_a411b3f14250336a6477c006268302b8d"><div class="ttname"><a href="structeve_1_1action_1_1ActionTimelineEvent.html#a411b3f14250336a6477c006268302b8d">eve::action::ActionTimelineEvent::kind</a></div><div class="ttdeci">ActionTimelineEventKind kind</div><div class="ttdef"><b>Definition</b> <a href="ActionTimeline_8h_source.html#l00139">ActionTimeline.h:139</a></div></div>
+<div class="ttc" id="astructeve_1_1action_1_1ActionVfxBinding_html_a29f8a6da2eb160eca2af7196eee4cd77"><div class="ttname"><a href="structeve_1_1action_1_1ActionVfxBinding.html#a29f8a6da2eb160eca2af7196eee4cd77">eve::action::ActionVfxBinding::clipStartTime</a></div><div class="ttdeci">double clipStartTime</div><div class="ttdef"><b>Definition</b> <a href="ActionVfxBlock_8h_source.html#l00024">ActionVfxBlock.h:24</a></div></div>
+<div class="ttc" id="astructeve_1_1action_1_1ActionVfxBinding_html_a4b77f5c532f667c7ca5805cd9af39f90"><div class="ttname"><a href="structeve_1_1action_1_1ActionVfxBinding.html#a4b77f5c532f667c7ca5805cd9af39f90">eve::action::ActionVfxBinding::uri</a></div><div class="ttdeci">std::string uri</div><div class="ttdef"><b>Definition</b> <a href="ActionVfxBlock_8h_source.html#l00020">ActionVfxBlock.h:20</a></div></div>
+<div class="ttc" id="astructeve_1_1action_1_1ActionVfxBinding_html_ab535d51ce383436b735498e0ca17dbf1"><div class="ttname"><a href="structeve_1_1action_1_1ActionVfxBinding.html#ab535d51ce383436b735498e0ca17dbf1">eve::action::ActionVfxBinding::clipEndTime</a></div><div class="ttdeci">double clipEndTime</div><div class="ttdef"><b>Definition</b> <a href="ActionVfxBlock_8h_source.html#l00025">ActionVfxBlock.h:25</a></div></div>
+<div class="ttc" id="astructeve_1_1action_1_1ActionVfxBinding_html_ad6b8563941791abb2c0c0bd205583395"><div class="ttname"><a href="structeve_1_1action_1_1ActionVfxBinding.html#ad6b8563941791abb2c0c0bd205583395">eve::action::ActionVfxBinding::fromPayload</a></div><div class="ttdeci">static Result&lt; ActionVfxBinding &gt; fromPayload(const Value::Object &amp;payload, ActionVfxShape shape)</div><div class="ttdoc">Decode one dynamic VFX payload transactionally.</div><div class="ttdef"><b>Definition</b> <a href="ActionVfxBlock_8cpp_source.html#l00031">ActionVfxBlock.cpp:31</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

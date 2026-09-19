@@ -1,0 +1,434 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::procgen::TerrainStampSettings结构体 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1procgen.html">procgen</a></li><li class="navelem"><a class="el" href="structeve_1_1procgen_1_1TerrainStampSettings.html">TerrainStampSettings</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-attribs">Public 属性</a> &#124;
+<a href="structeve_1_1procgen_1_1TerrainStampSettings-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::procgen::TerrainStampSettings结构体 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p><a class="el" href="classeve_1_1Value.html" title="The canonical owning dynamic value used by data-facing protocols.">Value</a> configuration for a rectangular stamp in world X/Z coordinates.  
+ <a href="structeve_1_1procgen_1_1TerrainStampSettings.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="TerrainStamp_8h_source.html">TerrainStamp.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public 属性</h2></td></tr>
+<tr class="memitem:ab59f6b4bf277f8bb1816bcabff699a05" id="r_ab59f6b4bf277f8bb1816bcabff699a05"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1TerrainStampSettings.html#ab59f6b4bf277f8bb1816bcabff699a05">originX</a> = 0</td></tr>
+<tr class="separator:ab59f6b4bf277f8bb1816bcabff699a05"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab04d06be8c803bce553ecf1335a732ad" id="r_ab04d06be8c803bce553ecf1335a732ad"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1TerrainStampSettings.html#ab04d06be8c803bce553ecf1335a732ad">originZ</a> = 0</td></tr>
+<tr class="separator:ab04d06be8c803bce553ecf1335a732ad"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4cf779ff2cf068d40a337538cc4fe1b3" id="r_a4cf779ff2cf068d40a337538cc4fe1b3"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1TerrainStampSettings.html#a4cf779ff2cf068d40a337538cc4fe1b3">spacingX</a> = 1</td></tr>
+<tr class="separator:a4cf779ff2cf068d40a337538cc4fe1b3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8dc058da3d30f03639a50b94bfe01808" id="r_a8dc058da3d30f03639a50b94bfe01808"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1TerrainStampSettings.html#a8dc058da3d30f03639a50b94bfe01808">spacingZ</a> = 1</td></tr>
+<tr class="separator:a8dc058da3d30f03639a50b94bfe01808"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2643a08ea9ff2c6ff5728c62cc5c47b7" id="r_a2643a08ea9ff2c6ff5728c62cc5c47b7"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1TerrainStampSettings.html#a2643a08ea9ff2c6ff5728c62cc5c47b7">centerX</a> = 0</td></tr>
+<tr class="separator:a2643a08ea9ff2c6ff5728c62cc5c47b7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a06cf4c291a28655ec9295337104b15c8" id="r_a06cf4c291a28655ec9295337104b15c8"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1TerrainStampSettings.html#a06cf4c291a28655ec9295337104b15c8">centerZ</a> = 0</td></tr>
+<tr class="separator:a06cf4c291a28655ec9295337104b15c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adf1b87f8ba2fc6474821c2111d3e702e" id="r_adf1b87f8ba2fc6474821c2111d3e702e"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1TerrainStampSettings.html#adf1b87f8ba2fc6474821c2111d3e702e">width</a> = 1</td></tr>
+<tr class="separator:adf1b87f8ba2fc6474821c2111d3e702e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4c98d9f76bf092ebff181871724c112f" id="r_a4c98d9f76bf092ebff181871724c112f"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1TerrainStampSettings.html#a4c98d9f76bf092ebff181871724c112f">depth</a> = 1</td></tr>
+<tr class="separator:a4c98d9f76bf092ebff181871724c112f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af4c45b3352f8ca9d938ff9305c88e587" id="r_af4c45b3352f8ca9d938ff9305c88e587"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1TerrainStampSettings.html#af4c45b3352f8ca9d938ff9305c88e587">rotation</a> = 0</td></tr>
+<tr class="separator:af4c45b3352f8ca9d938ff9305c88e587"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a64255a9804e26ca0abc74e954d2c167e" id="r_a64255a9804e26ca0abc74e954d2c167e"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1TerrainStampSettings.html#a64255a9804e26ca0abc74e954d2c167e">amplitude</a> = 1</td></tr>
+<tr class="separator:a64255a9804e26ca0abc74e954d2c167e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a756c32d93376acb378ef3b5d24e8c379" id="r_a756c32d93376acb378ef3b5d24e8c379"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1TerrainStampSettings.html#a756c32d93376acb378ef3b5d24e8c379">baseHeight</a> = 0</td></tr>
+<tr class="separator:a756c32d93376acb378ef3b5d24e8c379"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afd9efcdb5d3fd234764986c822a69de4" id="r_afd9efcdb5d3fd234764986c822a69de4"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1TerrainStampSettings.html#afd9efcdb5d3fd234764986c822a69de4">blendStrength</a> = 0.5F</td></tr>
+<tr class="separator:afd9efcdb5d3fd234764986c822a69de4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aabaf5e9f4cc169b41c29238985b019ba" id="r_aabaf5e9f4cc169b41c29238985b019ba"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1procgen.html#accb1a6caf9344b443b234e40cdc2123c">TerrainStampOperation</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1TerrainStampSettings.html#aabaf5e9f4cc169b41c29238985b019ba">operation</a> = <a class="el" href="namespaceeve_1_1procgen.html#accb1a6caf9344b443b234e40cdc2123ca36ec8dc76bf55896199b1276242944af">TerrainStampOperation::Raise</a></td></tr>
+<tr class="separator:aabaf5e9f4cc169b41c29238985b019ba"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p><a class="el" href="classeve_1_1Value.html" title="The canonical owning dynamic value used by data-facing protocols.">Value</a> configuration for a rectangular stamp in world X/Z coordinates. </p>
+<p>Terrain sample (x,y) is at (originX+x*spacingX, originZ+y*spacingZ). Stamp width/depth span its first and last texel. Positive rotation is counterclockwise in the X/Z plane; radians. No time or randomness is used. Heights are finite, unbounded world heights, not normalized/packed values. </p>
+
+<p class="definition">在文件 <a class="el" href="TerrainStamp_8h_source.html">TerrainStamp.h</a> 第 <a class="el" href="TerrainStamp_8h_source.html#l00022">22</a> 行定义.</p>
+</div><h2 class="groupheader">类成员变量说明</h2>
+<a id="a64255a9804e26ca0abc74e954d2c167e" name="a64255a9804e26ca0abc74e954d2c167e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a64255a9804e26ca0abc74e954d2c167e">&#9670;&#160;</a></span>amplitude</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::TerrainStampSettings::amplitude = 1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainStamp_8h_source.html">TerrainStamp.h</a> 第 <a class="el" href="TerrainStamp_8h_source.html#l00027">27</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a756c32d93376acb378ef3b5d24e8c379" name="a756c32d93376acb378ef3b5d24e8c379"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a756c32d93376acb378ef3b5d24e8c379">&#9670;&#160;</a></span>baseHeight</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::TerrainStampSettings::baseHeight = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainStamp_8h_source.html">TerrainStamp.h</a> 第 <a class="el" href="TerrainStamp_8h_source.html#l00027">27</a> 行定义.</p>
+
+</div>
+</div>
+<a id="afd9efcdb5d3fd234764986c822a69de4" name="afd9efcdb5d3fd234764986c822a69de4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afd9efcdb5d3fd234764986c822a69de4">&#9670;&#160;</a></span>blendStrength</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::TerrainStampSettings::blendStrength = 0.5F</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainStamp_8h_source.html">TerrainStamp.h</a> 第 <a class="el" href="TerrainStamp_8h_source.html#l00028">28</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a2643a08ea9ff2c6ff5728c62cc5c47b7" name="a2643a08ea9ff2c6ff5728c62cc5c47b7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2643a08ea9ff2c6ff5728c62cc5c47b7">&#9670;&#160;</a></span>centerX</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::procgen::TerrainStampSettings::centerX = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainStamp_8h_source.html">TerrainStamp.h</a> 第 <a class="el" href="TerrainStamp_8h_source.html#l00025">25</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a06cf4c291a28655ec9295337104b15c8" name="a06cf4c291a28655ec9295337104b15c8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a06cf4c291a28655ec9295337104b15c8">&#9670;&#160;</a></span>centerZ</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::procgen::TerrainStampSettings::centerZ = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainStamp_8h_source.html">TerrainStamp.h</a> 第 <a class="el" href="TerrainStamp_8h_source.html#l00025">25</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a4c98d9f76bf092ebff181871724c112f" name="a4c98d9f76bf092ebff181871724c112f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4c98d9f76bf092ebff181871724c112f">&#9670;&#160;</a></span>depth</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::procgen::TerrainStampSettings::depth = 1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainStamp_8h_source.html">TerrainStamp.h</a> 第 <a class="el" href="TerrainStamp_8h_source.html#l00026">26</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aabaf5e9f4cc169b41c29238985b019ba" name="aabaf5e9f4cc169b41c29238985b019ba"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aabaf5e9f4cc169b41c29238985b019ba">&#9670;&#160;</a></span>operation</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1procgen.html#accb1a6caf9344b443b234e40cdc2123c">TerrainStampOperation</a> eve::procgen::TerrainStampSettings::operation = <a class="el" href="namespaceeve_1_1procgen.html#accb1a6caf9344b443b234e40cdc2123ca36ec8dc76bf55896199b1276242944af">TerrainStampOperation::Raise</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainStamp_8h_source.html">TerrainStamp.h</a> 第 <a class="el" href="TerrainStamp_8h_source.html#l00029">29</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab59f6b4bf277f8bb1816bcabff699a05" name="ab59f6b4bf277f8bb1816bcabff699a05"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab59f6b4bf277f8bb1816bcabff699a05">&#9670;&#160;</a></span>originX</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::procgen::TerrainStampSettings::originX = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainStamp_8h_source.html">TerrainStamp.h</a> 第 <a class="el" href="TerrainStamp_8h_source.html#l00023">23</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="TerrainMultiTile_8cpp_source.html#l00170">eve::procgen::applyTerrainStampMultiTile()</a> , 以及 <a class="el" href="PcgRuntimeStamper_8cpp_source.html#l00055">eve::procgen::PcgRuntimeStamper::execute()</a>.</p>
+
+</div>
+</div>
+<a id="ab04d06be8c803bce553ecf1335a732ad" name="ab04d06be8c803bce553ecf1335a732ad"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab04d06be8c803bce553ecf1335a732ad">&#9670;&#160;</a></span>originZ</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::procgen::TerrainStampSettings::originZ = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainStamp_8h_source.html">TerrainStamp.h</a> 第 <a class="el" href="TerrainStamp_8h_source.html#l00023">23</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="TerrainMultiTile_8cpp_source.html#l00170">eve::procgen::applyTerrainStampMultiTile()</a>.</p>
+
+</div>
+</div>
+<a id="af4c45b3352f8ca9d938ff9305c88e587" name="af4c45b3352f8ca9d938ff9305c88e587"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af4c45b3352f8ca9d938ff9305c88e587">&#9670;&#160;</a></span>rotation</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::procgen::TerrainStampSettings::rotation = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainStamp_8h_source.html">TerrainStamp.h</a> 第 <a class="el" href="TerrainStamp_8h_source.html#l00026">26</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a4cf779ff2cf068d40a337538cc4fe1b3" name="a4cf779ff2cf068d40a337538cc4fe1b3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4cf779ff2cf068d40a337538cc4fe1b3">&#9670;&#160;</a></span>spacingX</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::procgen::TerrainStampSettings::spacingX = 1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainStamp_8h_source.html">TerrainStamp.h</a> 第 <a class="el" href="TerrainStamp_8h_source.html#l00024">24</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="TerrainMultiTile_8cpp_source.html#l00170">eve::procgen::applyTerrainStampMultiTile()</a>.</p>
+
+</div>
+</div>
+<a id="a8dc058da3d30f03639a50b94bfe01808" name="a8dc058da3d30f03639a50b94bfe01808"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8dc058da3d30f03639a50b94bfe01808">&#9670;&#160;</a></span>spacingZ</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::procgen::TerrainStampSettings::spacingZ = 1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainStamp_8h_source.html">TerrainStamp.h</a> 第 <a class="el" href="TerrainStamp_8h_source.html#l00024">24</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="TerrainMultiTile_8cpp_source.html#l00170">eve::procgen::applyTerrainStampMultiTile()</a>.</p>
+
+</div>
+</div>
+<a id="adf1b87f8ba2fc6474821c2111d3e702e" name="adf1b87f8ba2fc6474821c2111d3e702e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adf1b87f8ba2fc6474821c2111d3e702e">&#9670;&#160;</a></span>width</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::procgen::TerrainStampSettings::width = 1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainStamp_8h_source.html">TerrainStamp.h</a> 第 <a class="el" href="TerrainStamp_8h_source.html#l00026">26</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该结构体的文档由以下文件生成:<ul>
+<li>src/modules/procgen/heightmap/<a class="el" href="TerrainStamp_8h_source.html">TerrainStamp.h</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

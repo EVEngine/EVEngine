@@ -1,0 +1,577 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::ui::PcgPhotoModeSession类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1ui.html">ui</a></li><li class="navelem"><a class="el" href="classeve_1_1ui_1_1PcgPhotoModeSession.html">PcgPhotoModeSession</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1ui_1_1PcgPhotoModeSession-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::ui::PcgPhotoModeSession类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Transactional lifecycle state for Pcg PhotoMode setup, disable and destroy.  
+ <a href="classeve_1_1ui_1_1PcgPhotoModeSession.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="PcgPhotoModeSession_8h_source.html">PcgPhotoModeSession.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:ae722ee6a551c29cb4f3faf74b5ecd9fc" id="r_ae722ee6a551c29cb4f3faf74b5ecd9fc"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1PcgPhotoModeSession.html#ae722ee6a551c29cb4f3faf74b5ecd9fc">begin</a> (const std::string &amp;capturedJson, const std::string &amp;savedJson, bool loadSaved, bool savedEver, int currentPipeline, int savedPipeline, const std::string &amp;sceneName, int lightingProfile)</td></tr>
+<tr class="memdesc:ae722ee6a551c29cb4f3faf74b5ecd9fc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Begin from captured engine values and optionally select a compatible saved profile.  <br /></td></tr>
+<tr class="separator:ae722ee6a551c29cb4f3faf74b5ecd9fc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3b348c43fb140367a45d741cadadec5f" id="r_a3b348c43fb140367a45d741cadadec5f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1PcgPhotoModeSession.html#a3b348c43fb140367a45d741cadadec5f">replaceWorkingJson</a> (const std::string &amp;json)</td></tr>
+<tr class="memdesc:a3b348c43fb140367a45d741cadadec5f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Replace the working values after a <a class="el" href="classeve_1_1ui_1_1UI.html" title="Declarative UI module (eve.UI).">UI</a> or engine edit.  <br /></td></tr>
+<tr class="separator:a3b348c43fb140367a45d741cadadec5f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a92b8affcf516d7d9e71310ce58940e93" id="r_a92b8affcf516d7d9e71310ce58940e93"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1PcgPhotoModeSession.html#a92b8affcf516d7d9e71310ce58940e93">end</a> (bool resetOnDisable, bool applicationPlaying)</td></tr>
+<tr class="memdesc:a92b8affcf516d7d9e71310ce58940e93"><td class="mdescLeft">&#160;</td><td class="mdescRight">End the session; restore captured settings only when both flags are true.  <br /></td></tr>
+<tr class="separator:a92b8affcf516d7d9e71310ce58940e93"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aded586b6c382f083efd9b653282754b1" id="r_aded586b6c382f083efd9b653282754b1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1PcgPhotoModeSession.html#aded586b6c382f083efd9b653282754b1">workingJson</a> () const</td></tr>
+<tr class="memdesc:aded586b6c382f083efd9b653282754b1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Encode the currently selected working profile.  <br /></td></tr>
+<tr class="separator:aded586b6c382f083efd9b653282754b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a33df00177655e475dee03f4460dfaa0f" id="r_a33df00177655e475dee03f4460dfaa0f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1PcgPhotoModeSession.html#a33df00177655e475dee03f4460dfaa0f">outputJson</a> () const</td></tr>
+<tr class="memdesc:a33df00177655e475dee03f4460dfaa0f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Encode values that the caller must apply after end.  <br /></td></tr>
+<tr class="separator:a33df00177655e475dee03f4460dfaa0f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a62ef8aabd288e218164095935a8f0169" id="r_a62ef8aabd288e218164095935a8f0169"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1PcgPhotoModeSession.html#a62ef8aabd288e218164095935a8f0169">getActive</a> () const noexcept</td></tr>
+<tr class="separator:a62ef8aabd288e218164095935a8f0169"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9dc7e42b8a19ac5d9e7ee73dc1af3a6f" id="r_a9dc7e42b8a19ac5d9e7ee73dc1af3a6f"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1PcgPhotoModeSession.html#a9dc7e42b8a19ac5d9e7ee73dc1af3a6f">getRestoreRequested</a> () const noexcept</td></tr>
+<tr class="separator:a9dc7e42b8a19ac5d9e7ee73dc1af3a6f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a698d8d87610d5fb70374a5ab5af7190a" id="r_a698d8d87610d5fb70374a5ab5af7190a"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1PcgPhotoModeSession.html#a698d8d87610d5fb70374a5ab5af7190a">getRemovePhotoCameraRequested</a> () const noexcept</td></tr>
+<tr class="separator:a698d8d87610d5fb70374a5ab5af7190a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac93d58b5fba858403a9a92238fd32246" id="r_ac93d58b5fba858403a9a92238fd32246"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1PcgPhotoModeSession.html#ac93d58b5fba858403a9a92238fd32246">getUnfreezePlayerRequested</a> () const noexcept</td></tr>
+<tr class="separator:ac93d58b5fba858403a9a92238fd32246"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9d1b7aa6b50e6d4ad4b626f7f1516937" id="r_a9d1b7aa6b50e6d4ad4b626f7f1516937"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1PcgPhotoModeSession.html#a9d1b7aa6b50e6d4ad4b626f7f1516937">getLoadDecision</a> () const noexcept</td></tr>
+<tr class="separator:a9d1b7aa6b50e6d4ad4b626f7f1516937"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:accc668b51ec2b36685402d56342d7142" id="r_accc668b51ec2b36685402d56342d7142"><td class="memItemLeft" align="right" valign="top">uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1PcgPhotoModeSession.html#accc668b51ec2b36685402d56342d7142">getRevision</a> () const noexcept</td></tr>
+<tr class="separator:accc668b51ec2b36685402d56342d7142"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Transactional lifecycle state for Pcg PhotoMode setup, disable and destroy. </p>
+
+<p class="definition">在文件 <a class="el" href="PcgPhotoModeSession_8h_source.html">PcgPhotoModeSession.h</a> 第 <a class="el" href="PcgPhotoModeSession_8h_source.html#l00010">10</a> 行定义.</p>
+</div><h2 class="groupheader">成员函数说明</h2>
+<a id="ae722ee6a551c29cb4f3faf74b5ecd9fc" name="ae722ee6a551c29cb4f3faf74b5ecd9fc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae722ee6a551c29cb4f3faf74b5ecd9fc">&#9670;&#160;</a></span>begin()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::ui::PcgPhotoModeSession::begin </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>capturedJson</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>savedJson</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>loadSaved</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>savedEver</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>currentPipeline</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>savedPipeline</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>sceneName</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>lightingProfile</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Begin from captured engine values and optionally select a compatible saved profile. </p>
+
+<p class="definition">在文件 <a class="el" href="PcgPhotoModeSession_8cpp_source.html">PcgPhotoModeSession.cpp</a> 第 <a class="el" href="PcgPhotoModeSession_8cpp_source.html#l00015">15</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1ui.html#a33546462d4f11545c5b757e560bb78a6a222a267cc5778206b253be35ee3ddab5">eve::ui::Current</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="PcgPhotoModeValues_8cpp_source.html#l00127">eve::ui::PcgPhotoModeValues::getBool()</a>, <a class="el" href="PcgPhotoModeValues_8cpp_source.html#l00128">eve::ui::PcgPhotoModeValues::getInt()</a>, <a class="el" href="PcgPhotoModeValues_8cpp_source.html#l00130">eve::ui::PcgPhotoModeValues::getString()</a>, <a class="el" href="PcgPhotoModeValues_8cpp_source.html#l00143">eve::ui::PcgPhotoModeValues::restoreJson()</a>, <a class="el" href="namespaceeve_1_1ui.html#a33546462d4f11545c5b757e560bb78a6a25e37590d41649bcbfadea32f6dfcd77">eve::ui::SaveCurrent</a>, <a class="el" href="namespaceeve_1_1ui.html#a33546462d4f11545c5b757e560bb78a6a248336101b461380a4b2391a7625493d">eve::ui::Saved</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PcgPhotoModeSession_8cpp_source.html#l00082">eve::ui::exposePcgPhotoModeSessionBindings()</a>.</p>
+
+</div>
+</div>
+<a id="a92b8affcf516d7d9e71310ce58940e93" name="a92b8affcf516d7d9e71310ce58940e93"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a92b8affcf516d7d9e71310ce58940e93">&#9670;&#160;</a></span>end()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::ui::PcgPhotoModeSession::end </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>resetOnDisable</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>applicationPlaying</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>End the session; restore captured settings only when both flags are true. </p>
+
+<p class="definition">在文件 <a class="el" href="PcgPhotoModeSession_8cpp_source.html">PcgPhotoModeSession.cpp</a> 第 <a class="el" href="PcgPhotoModeSession_8cpp_source.html#l00068">68</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PcgPhotoModeSession_8cpp_source.html#l00082">eve::ui::exposePcgPhotoModeSessionBindings()</a>.</p>
+
+</div>
+</div>
+<a id="a62ef8aabd288e218164095935a8f0169" name="a62ef8aabd288e218164095935a8f0169"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a62ef8aabd288e218164095935a8f0169">&#9670;&#160;</a></span>getActive()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::ui::PcgPhotoModeSession::getActive </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PcgPhotoModeSession_8h_source.html">PcgPhotoModeSession.h</a> 第 <a class="el" href="PcgPhotoModeSession_8h_source.html#l00018">18</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PcgPhotoModeSession_8cpp_source.html#l00082">eve::ui::exposePcgPhotoModeSessionBindings()</a>.</p>
+
+</div>
+</div>
+<a id="a9d1b7aa6b50e6d4ad4b626f7f1516937" name="a9d1b7aa6b50e6d4ad4b626f7f1516937"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9d1b7aa6b50e6d4ad4b626f7f1516937">&#9670;&#160;</a></span>getLoadDecision()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::ui::PcgPhotoModeSession::getLoadDecision </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PcgPhotoModeSession_8h_source.html">PcgPhotoModeSession.h</a> 第 <a class="el" href="PcgPhotoModeSession_8h_source.html#l00021">21</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PcgPhotoModeSession_8cpp_source.html#l00082">eve::ui::exposePcgPhotoModeSessionBindings()</a>.</p>
+
+</div>
+</div>
+<a id="a698d8d87610d5fb70374a5ab5af7190a" name="a698d8d87610d5fb70374a5ab5af7190a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a698d8d87610d5fb70374a5ab5af7190a">&#9670;&#160;</a></span>getRemovePhotoCameraRequested()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::ui::PcgPhotoModeSession::getRemovePhotoCameraRequested </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PcgPhotoModeSession_8h_source.html">PcgPhotoModeSession.h</a> 第 <a class="el" href="PcgPhotoModeSession_8h_source.html#l00019">19</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PcgPhotoModeSession_8cpp_source.html#l00082">eve::ui::exposePcgPhotoModeSessionBindings()</a>.</p>
+
+</div>
+</div>
+<a id="a9dc7e42b8a19ac5d9e7ee73dc1af3a6f" name="a9dc7e42b8a19ac5d9e7ee73dc1af3a6f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9dc7e42b8a19ac5d9e7ee73dc1af3a6f">&#9670;&#160;</a></span>getRestoreRequested()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::ui::PcgPhotoModeSession::getRestoreRequested </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PcgPhotoModeSession_8h_source.html">PcgPhotoModeSession.h</a> 第 <a class="el" href="PcgPhotoModeSession_8h_source.html#l00018">18</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PcgPhotoModeSession_8cpp_source.html#l00082">eve::ui::exposePcgPhotoModeSessionBindings()</a>.</p>
+
+</div>
+</div>
+<a id="accc668b51ec2b36685402d56342d7142" name="accc668b51ec2b36685402d56342d7142"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#accc668b51ec2b36685402d56342d7142">&#9670;&#160;</a></span>getRevision()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint64_t eve::ui::PcgPhotoModeSession::getRevision </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PcgPhotoModeSession_8h_source.html">PcgPhotoModeSession.h</a> 第 <a class="el" href="PcgPhotoModeSession_8h_source.html#l00021">21</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PcgPhotoModeSession_8cpp_source.html#l00082">eve::ui::exposePcgPhotoModeSessionBindings()</a>.</p>
+
+</div>
+</div>
+<a id="ac93d58b5fba858403a9a92238fd32246" name="ac93d58b5fba858403a9a92238fd32246"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac93d58b5fba858403a9a92238fd32246">&#9670;&#160;</a></span>getUnfreezePlayerRequested()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::ui::PcgPhotoModeSession::getUnfreezePlayerRequested </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PcgPhotoModeSession_8h_source.html">PcgPhotoModeSession.h</a> 第 <a class="el" href="PcgPhotoModeSession_8h_source.html#l00020">20</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PcgPhotoModeSession_8cpp_source.html#l00082">eve::ui::exposePcgPhotoModeSessionBindings()</a>.</p>
+
+</div>
+</div>
+<a id="a33df00177655e475dee03f4460dfaa0f" name="a33df00177655e475dee03f4460dfaa0f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a33df00177655e475dee03f4460dfaa0f">&#9670;&#160;</a></span>outputJson()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::string &gt; eve::ui::PcgPhotoModeSession::outputJson </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Encode values that the caller must apply after end. </p>
+
+<p class="definition">在文件 <a class="el" href="PcgPhotoModeSession_8cpp_source.html">PcgPhotoModeSession.cpp</a> 第 <a class="el" href="PcgPhotoModeSession_8cpp_source.html#l00080">80</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PcgPhotoModeValues_8cpp_source.html#l00133">eve::ui::PcgPhotoModeValues::snapshotJson()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PcgPhotoModeSession_8cpp_source.html#l00082">eve::ui::exposePcgPhotoModeSessionBindings()</a>.</p>
+
+</div>
+</div>
+<a id="a3b348c43fb140367a45d741cadadec5f" name="a3b348c43fb140367a45d741cadadec5f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3b348c43fb140367a45d741cadadec5f">&#9670;&#160;</a></span>replaceWorkingJson()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::ui::PcgPhotoModeSession::replaceWorkingJson </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>json</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Replace the working values after a <a class="el" href="classeve_1_1ui_1_1UI.html" title="Declarative UI module (eve.UI).">UI</a> or engine edit. </p>
+
+<p class="definition">在文件 <a class="el" href="PcgPhotoModeSession_8cpp_source.html">PcgPhotoModeSession.cpp</a> 第 <a class="el" href="PcgPhotoModeSession_8cpp_source.html#l00057">57</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="PcgPhotoModeValues_8cpp_source.html#l00143">eve::ui::PcgPhotoModeValues::restoreJson()</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PcgPhotoModeSession_8cpp_source.html#l00082">eve::ui::exposePcgPhotoModeSessionBindings()</a>.</p>
+
+</div>
+</div>
+<a id="aded586b6c382f083efd9b653282754b1" name="aded586b6c382f083efd9b653282754b1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aded586b6c382f083efd9b653282754b1">&#9670;&#160;</a></span>workingJson()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::string &gt; eve::ui::PcgPhotoModeSession::workingJson </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Encode the currently selected working profile. </p>
+
+<p class="definition">在文件 <a class="el" href="PcgPhotoModeSession_8cpp_source.html">PcgPhotoModeSession.cpp</a> 第 <a class="el" href="PcgPhotoModeSession_8cpp_source.html#l00079">79</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PcgPhotoModeValues_8cpp_source.html#l00133">eve::ui::PcgPhotoModeValues::snapshotJson()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PcgPhotoModeSession_8cpp_source.html#l00082">eve::ui::exposePcgPhotoModeSessionBindings()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/ui/<a class="el" href="PcgPhotoModeSession_8h_source.html">PcgPhotoModeSession.h</a></li>
+<li>src/modules/ui/<a class="el" href="PcgPhotoModeSession_8cpp_source.html">PcgPhotoModeSession.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

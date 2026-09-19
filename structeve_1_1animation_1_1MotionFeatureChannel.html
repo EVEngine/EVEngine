@@ -1,0 +1,432 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::animation::MotionFeatureChannel结构体 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1animation.html">animation</a></li><li class="navelem"><a class="el" href="structeve_1_1animation_1_1MotionFeatureChannel.html">MotionFeatureChannel</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-attribs">Public 属性</a> &#124;
+<a href="structeve_1_1animation_1_1MotionFeatureChannel-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::animation::MotionFeatureChannel结构体 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Owning configuration for one ordered motion feature channel.  
+ <a href="structeve_1_1animation_1_1MotionFeatureChannel.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="MotionFeatureLayout_8h_source.html">MotionFeatureLayout.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public 属性</h2></td></tr>
+<tr class="memitem:aa42e452fb02c6452e0af8c91ad0fa2d8" id="r_aa42e452fb02c6452e0af8c91ad0fa2d8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1animation.html#a2bb8f1b2a8247164df8df1b64307c624">MotionFeatureKind</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1animation_1_1MotionFeatureChannel.html#aa42e452fb02c6452e0af8c91ad0fa2d8">kind</a> = <a class="el" href="namespaceeve_1_1animation.html#a2bb8f1b2a8247164df8df1b64307c624a52f5e0bc3859bc5f5e25130b6c7e8881">MotionFeatureKind::Position</a></td></tr>
+<tr class="separator:aa42e452fb02c6452e0af8c91ad0fa2d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a284ce34bd108cde8ee98c3d7e802dbce" id="r_a284ce34bd108cde8ee98c3d7e802dbce"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1animation.html#a55e3f647e7082b3008003958776ac33a">MotionFeatureSource</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1animation_1_1MotionFeatureChannel.html#a284ce34bd108cde8ee98c3d7e802dbce">source</a> = <a class="el" href="namespaceeve_1_1animation.html#a55e3f647e7082b3008003958776ac33aa8109c9c9d6a2ca3bec3e006fe51a5f3e">MotionFeatureSource::Pose</a></td></tr>
+<tr class="separator:a284ce34bd108cde8ee98c3d7e802dbce"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a889deddaa13fefa0e30dfb6268f5608d" id="r_a889deddaa13fefa0e30dfb6268f5608d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1animation.html#a32b8a2d521fd3b2246975be77a5eb0ce">MotionFeatureQuery</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1animation_1_1MotionFeatureChannel.html#a889deddaa13fefa0e30dfb6268f5608d">query</a> = <a class="el" href="namespaceeve_1_1animation.html#a32b8a2d521fd3b2246975be77a5eb0cea481c481246e60dab7fec4c802d56fee9">MotionFeatureQuery::Continuing</a></td></tr>
+<tr class="separator:a889deddaa13fefa0e30dfb6268f5608d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3fefba973ca5210495e9d0df6bc7b974" id="r_a3fefba973ca5210495e9d0df6bc7b974"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1animation_1_1MotionFeatureChannel.html#a3fefba973ca5210495e9d0df6bc7b974">bone</a> = 0</td></tr>
+<tr class="separator:a3fefba973ca5210495e9d0df6bc7b974"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abbdc4562ba7c74c5da01e63039d66ddb" id="r_abbdc4562ba7c74c5da01e63039d66ddb"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1animation_1_1MotionFeatureChannel.html#abbdc4562ba7c74c5da01e63039d66ddb">origin</a> = 0</td></tr>
+<tr class="separator:abbdc4562ba7c74c5da01e63039d66ddb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abf1fa9787edce4e27f7e3d9e071b4d06" id="r_abf1fa9787edce4e27f7e3d9e071b4d06"><td class="memItemLeft" align="right" valign="top">std::uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1animation_1_1MotionFeatureChannel.html#abf1fa9787edce4e27f7e3d9e071b4d06">axes</a> = 7</td></tr>
+<tr class="separator:abf1fa9787edce4e27f7e3d9e071b4d06"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a98b9200d83812b2b82ce77ed3a15cd00" id="r_a98b9200d83812b2b82ce77ed3a15cd00"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1animation_1_1MotionFeatureChannel.html#a98b9200d83812b2b82ce77ed3a15cd00">headingAxis</a> = 0</td></tr>
+<tr class="separator:a98b9200d83812b2b82ce77ed3a15cd00"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acf146f091faa6faa52c03033e3fb9de6" id="r_acf146f091faa6faa52c03033e3fb9de6"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1animation_1_1MotionFeatureChannel.html#acf146f091faa6faa52c03033e3fb9de6">sampleTime</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:acf146f091faa6faa52c03033e3fb9de6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac95b33388c97150fc255704a66142cc2" id="r_ac95b33388c97150fc255704a66142cc2"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1animation_1_1MotionFeatureChannel.html#ac95b33388c97150fc255704a66142cc2">weight</a> = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:ac95b33388c97150fc255704a66142cc2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7c6231cb538f283085662f80aceebe46" id="r_a7c6231cb538f283085662f80aceebe46"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1animation_1_1MotionFeatureChannel.html#a7c6231cb538f283085662f80aceebe46">characterSpaceVelocity</a> = true</td></tr>
+<tr class="separator:a7c6231cb538f283085662f80aceebe46"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abec2d0ed7542aac32d3d963407693d81" id="r_abec2d0ed7542aac32d3d963407693d81"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1animation_1_1MotionFeatureChannel.html#abec2d0ed7542aac32d3d963407693d81">normalizeVelocity</a> = false</td></tr>
+<tr class="separator:abec2d0ed7542aac32d3d963407693d81"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa8426dd8f5069e8bb47ef73230bbed1d" id="r_aa8426dd8f5069e8bb47ef73230bbed1d"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1animation_1_1MotionFeatureChannel.html#aa8426dd8f5069e8bb47ef73230bbed1d">normalizationGroup</a></td></tr>
+<tr class="separator:aa8426dd8f5069e8bb47ef73230bbed1d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3def6c6b8c30d452066ce4e1e9ed1372" id="r_a3def6c6b8c30d452066ce4e1e9ed1372"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1animation_1_1MotionFeatureChannel.html#a3def6c6b8c30d452066ce4e1e9ed1372">curve</a></td></tr>
+<tr class="separator:a3def6c6b8c30d452066ce4e1e9ed1372"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Owning configuration for one ordered motion feature channel. </p>
+<p>Bone IDs belong to the database skeleton. Trajectory channels sample the configured root; pose channels sample bone relative to origin. Bit 0/1/2 in axes includes X/Y/Z, in that order. Values use metres and seconds. Velocity normalization clamps the full vector at 0.01 m/s before component stripping. Empty normalizationGroup keeps this channel independent; equal nonempty groups pool channels with the same operation and cardinality. Query policy applies to pose channels; trajectories always use character prediction. Curve channels use source Pose, axes=1 and a nonempty curve name, with scalar values and an arbitrary sample offset in the supported range. Vector channels leave curve empty. </p>
+
+<p class="definition">在文件 <a class="el" href="MotionFeatureLayout_8h_source.html">MotionFeatureLayout.h</a> 第 <a class="el" href="MotionFeatureLayout_8h_source.html#l00025">25</a> 行定义.</p>
+</div><h2 class="groupheader">类成员变量说明</h2>
+<a id="abf1fa9787edce4e27f7e3d9e071b4d06" name="abf1fa9787edce4e27f7e3d9e071b4d06"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abf1fa9787edce4e27f7e3d9e071b4d06">&#9670;&#160;</a></span>axes</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::uint8_t eve::animation::MotionFeatureChannel::axes = 7</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="MotionFeatureLayout_8h_source.html">MotionFeatureLayout.h</a> 第 <a class="el" href="MotionFeatureLayout_8h_source.html#l00030">30</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="MotionSchemaInternal_8h_source.html#l00036">eve::animation::detail::schemaEncode()</a>.</p>
+
+</div>
+</div>
+<a id="a3fefba973ca5210495e9d0df6bc7b974" name="a3fefba973ca5210495e9d0df6bc7b974"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3fefba973ca5210495e9d0df6bc7b974">&#9670;&#160;</a></span>bone</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::animation::MotionFeatureChannel::bone = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="MotionFeatureLayout_8h_source.html">MotionFeatureLayout.h</a> 第 <a class="el" href="MotionFeatureLayout_8h_source.html#l00029">29</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a7c6231cb538f283085662f80aceebe46" name="a7c6231cb538f283085662f80aceebe46"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7c6231cb538f283085662f80aceebe46">&#9670;&#160;</a></span>characterSpaceVelocity</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::animation::MotionFeatureChannel::characterSpaceVelocity = true</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="MotionFeatureLayout_8h_source.html">MotionFeatureLayout.h</a> 第 <a class="el" href="MotionFeatureLayout_8h_source.html#l00034">34</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a3def6c6b8c30d452066ce4e1e9ed1372" name="a3def6c6b8c30d452066ce4e1e9ed1372"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3def6c6b8c30d452066ce4e1e9ed1372">&#9670;&#160;</a></span>curve</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::animation::MotionFeatureChannel::curve</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="MotionFeatureLayout_8h_source.html">MotionFeatureLayout.h</a> 第 <a class="el" href="MotionFeatureLayout_8h_source.html#l00037">37</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a98b9200d83812b2b82ce77ed3a15cd00" name="a98b9200d83812b2b82ce77ed3a15cd00"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a98b9200d83812b2b82ce77ed3a15cd00">&#9670;&#160;</a></span>headingAxis</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::animation::MotionFeatureChannel::headingAxis = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="MotionFeatureLayout_8h_source.html">MotionFeatureLayout.h</a> 第 <a class="el" href="MotionFeatureLayout_8h_source.html#l00031">31</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aa42e452fb02c6452e0af8c91ad0fa2d8" name="aa42e452fb02c6452e0af8c91ad0fa2d8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa42e452fb02c6452e0af8c91ad0fa2d8">&#9670;&#160;</a></span>kind</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1animation.html#a2bb8f1b2a8247164df8df1b64307c624">MotionFeatureKind</a> eve::animation::MotionFeatureChannel::kind = <a class="el" href="namespaceeve_1_1animation.html#a2bb8f1b2a8247164df8df1b64307c624a52f5e0bc3859bc5f5e25130b6c7e8881">MotionFeatureKind::Position</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="MotionFeatureLayout_8h_source.html">MotionFeatureLayout.h</a> 第 <a class="el" href="MotionFeatureLayout_8h_source.html#l00026">26</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="MotionSchemaInternal_8h_source.html#l00036">eve::animation::detail::schemaEncode()</a>.</p>
+
+</div>
+</div>
+<a id="aa8426dd8f5069e8bb47ef73230bbed1d" name="aa8426dd8f5069e8bb47ef73230bbed1d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa8426dd8f5069e8bb47ef73230bbed1d">&#9670;&#160;</a></span>normalizationGroup</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::animation::MotionFeatureChannel::normalizationGroup</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="MotionFeatureLayout_8h_source.html">MotionFeatureLayout.h</a> 第 <a class="el" href="MotionFeatureLayout_8h_source.html#l00036">36</a> 行定义.</p>
+
+</div>
+</div>
+<a id="abec2d0ed7542aac32d3d963407693d81" name="abec2d0ed7542aac32d3d963407693d81"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abec2d0ed7542aac32d3d963407693d81">&#9670;&#160;</a></span>normalizeVelocity</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::animation::MotionFeatureChannel::normalizeVelocity = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="MotionFeatureLayout_8h_source.html">MotionFeatureLayout.h</a> 第 <a class="el" href="MotionFeatureLayout_8h_source.html#l00035">35</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="MotionSchemaInternal_8h_source.html#l00036">eve::animation::detail::schemaEncode()</a>.</p>
+
+</div>
+</div>
+<a id="abbdc4562ba7c74c5da01e63039d66ddb" name="abbdc4562ba7c74c5da01e63039d66ddb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abbdc4562ba7c74c5da01e63039d66ddb">&#9670;&#160;</a></span>origin</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::animation::MotionFeatureChannel::origin = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="MotionFeatureLayout_8h_source.html">MotionFeatureLayout.h</a> 第 <a class="el" href="MotionFeatureLayout_8h_source.html#l00029">29</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a889deddaa13fefa0e30dfb6268f5608d" name="a889deddaa13fefa0e30dfb6268f5608d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a889deddaa13fefa0e30dfb6268f5608d">&#9670;&#160;</a></span>query</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1animation.html#a32b8a2d521fd3b2246975be77a5eb0ce">MotionFeatureQuery</a> eve::animation::MotionFeatureChannel::query = <a class="el" href="namespaceeve_1_1animation.html#a32b8a2d521fd3b2246975be77a5eb0cea481c481246e60dab7fec4c802d56fee9">MotionFeatureQuery::Continuing</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="MotionFeatureLayout_8h_source.html">MotionFeatureLayout.h</a> 第 <a class="el" href="MotionFeatureLayout_8h_source.html#l00028">28</a> 行定义.</p>
+
+</div>
+</div>
+<a id="acf146f091faa6faa52c03033e3fb9de6" name="acf146f091faa6faa52c03033e3fb9de6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acf146f091faa6faa52c03033e3fb9de6">&#9670;&#160;</a></span>sampleTime</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation::MotionFeatureChannel::sampleTime = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="MotionFeatureLayout_8h_source.html">MotionFeatureLayout.h</a> 第 <a class="el" href="MotionFeatureLayout_8h_source.html#l00032">32</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a284ce34bd108cde8ee98c3d7e802dbce" name="a284ce34bd108cde8ee98c3d7e802dbce"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a284ce34bd108cde8ee98c3d7e802dbce">&#9670;&#160;</a></span>source</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1animation.html#a55e3f647e7082b3008003958776ac33a">MotionFeatureSource</a> eve::animation::MotionFeatureChannel::source = <a class="el" href="namespaceeve_1_1animation.html#a55e3f647e7082b3008003958776ac33aa8109c9c9d6a2ca3bec3e006fe51a5f3e">MotionFeatureSource::Pose</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="MotionFeatureLayout_8h_source.html">MotionFeatureLayout.h</a> 第 <a class="el" href="MotionFeatureLayout_8h_source.html#l00027">27</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac95b33388c97150fc255704a66142cc2" name="ac95b33388c97150fc255704a66142cc2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac95b33388c97150fc255704a66142cc2">&#9670;&#160;</a></span>weight</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation::MotionFeatureChannel::weight = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="MotionFeatureLayout_8h_source.html">MotionFeatureLayout.h</a> 第 <a class="el" href="MotionFeatureLayout_8h_source.html#l00033">33</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该结构体的文档由以下文件生成:<ul>
+<li>src/modules/animation/<a class="el" href="MotionFeatureLayout_8h_source.html">MotionFeatureLayout.h</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

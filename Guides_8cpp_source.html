@@ -1,0 +1,447 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/graphics/hair/Guides.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_0f2af43e49f4758c00cbead1adc79623.html">graphics</a></li><li class="navelem"><a class="el" href="dir_ebb4050b901ae59750697de8e823afc9.html">hair</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">Guides.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="Guides_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &quot;<a class="code" href="Guides_8h.html">graphics/hair/Guides.h</a>&quot;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="Diagnostic_8h.html">common/Diagnostic.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;algorithm&gt;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;cstddef&gt;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;cmath&gt;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;limits&gt;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &lt;utility&gt;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span> </div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &lt;glm/geometric.hpp&gt;</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span> </div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1graphics_1_1hair.html">eve::graphics::hair</a> {</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="keyword">namespace </span>{</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span> </div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>glm::vec3 rootOf(<span class="keyword">const</span> StrandsDatas &amp;datas, <span class="keywordtype">size_t</span> curveIndex) {</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>    <span class="keyword">const</span> <span class="keyword">auto</span> pts = datas.curvePoints(curveIndex);</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>    <span class="keywordflow">return</span> pts.empty() ? glm::vec3(0.f) : pts[0].<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a60ea6c13eb7a935dc579b69b80cee822">position</a>;</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>}</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span> </div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>glm::vec3 sampleCurveAtU(<span class="keyword">const</span> StrandsDatas &amp;datas, <span class="keywordtype">size_t</span> curveIndex, <span class="keywordtype">float</span> <a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>) {</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>    <span class="keyword">const</span> <span class="keyword">auto</span> pts = datas.curvePoints(curveIndex);</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>    <span class="keywordflow">if</span> (pts.empty()) <span class="keywordflow">return</span> {};</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>    <span class="keywordflow">if</span> (pts.size() == 1) <span class="keywordflow">return</span> pts[0].position;</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> <a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a> = std::clamp(<a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>, 0.f, 1.f);</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    <span class="comment">// Prefer explicit per-point u; fall back to index parameterization.</span></div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    <span class="keywordtype">size_t</span> <a class="code hl_variable" href="Grass_8cpp.html#a3e5dec064fb5b002d1279f3a82ce8646">i1</a> = 1;</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    <span class="keywordflow">while</span> (<a class="code hl_variable" href="Grass_8cpp.html#a3e5dec064fb5b002d1279f3a82ce8646">i1</a> + 1 &lt; pts.size() &amp;&amp; pts[<a class="code hl_variable" href="Grass_8cpp.html#a3e5dec064fb5b002d1279f3a82ce8646">i1</a>].u &lt; <a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a>) ++<a class="code hl_variable" href="Grass_8cpp.html#a3e5dec064fb5b002d1279f3a82ce8646">i1</a>;</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    <span class="keyword">const</span> <span class="keywordtype">size_t</span> <a class="code hl_variable" href="Grass_8cpp.html#a47ff32291cc26d3b91bb5cb7b45495f7">i0</a> = <a class="code hl_variable" href="Grass_8cpp.html#a3e5dec064fb5b002d1279f3a82ce8646">i1</a> - 1;</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> u0 = pts[<a class="code hl_variable" href="Grass_8cpp.html#a47ff32291cc26d3b91bb5cb7b45495f7">i0</a>].u;</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> u1 = pts[<a class="code hl_variable" href="Grass_8cpp.html#a3e5dec064fb5b002d1279f3a82ce8646">i1</a>].u;</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    <span class="keywordtype">float</span> alpha = 0.f;</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    <span class="keywordflow">if</span> (std::fabs(u1 - u0) &gt; 1e-8f) {</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>        alpha = (<a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a> - u0) / (u1 - u0);</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    } <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>        alpha = float(<a class="code hl_variable" href="Grass_8cpp.html#a3e5dec064fb5b002d1279f3a82ce8646">i1</a> - <a class="code hl_variable" href="Grass_8cpp.html#a47ff32291cc26d3b91bb5cb7b45495f7">i0</a>) &gt; 0.f ? 1.f : 0.f;</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    }</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    alpha = std::clamp(alpha, 0.f, 1.f);</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    <span class="keywordflow">return</span> pts[<a class="code hl_variable" href="Grass_8cpp.html#a47ff32291cc26d3b91bb5cb7b45495f7">i0</a>].position * (1.f - alpha) + pts[<a class="code hl_variable" href="Grass_8cpp.html#a3e5dec064fb5b002d1279f3a82ce8646">i1</a>].<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a60ea6c13eb7a935dc579b69b80cee822">position</a> * alpha;</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>}</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span> </div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span><span class="keywordtype">float</span> weightExponent(<a class="code hl_enumeration" href="namespaceeve_1_1graphics_1_1hair.html#a5a1a3352685b189968f70fd32b8591b8">InterpolationMode</a> mode) {</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    <span class="keywordflow">switch</span> (mode) {</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>        <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeve_1_1graphics_1_1hair.html#a5a1a3352685b189968f70fd32b8591b8ac7207657aba5dfd2e5b0ca3f35cd8c26">InterpolationMode::Rigid</a>:</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>            <span class="keywordflow">return</span> 4.f;  <span class="comment">// strongly prefer nearest guide</span></div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>        <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeve_1_1graphics_1_1hair.html#a5a1a3352685b189968f70fd32b8591b8ae510cdf33cd497134b47b9316314d4b4">InterpolationMode::Smooth</a>:</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>            <span class="keywordflow">return</span> 1.f;</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>        <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeve_1_1graphics_1_1hair.html#a5a1a3352685b189968f70fd32b8591b8adfd0a82c4bf37b1e90b690a22a20692e">InterpolationMode::Offset</a>:</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>        <span class="keywordflow">default</span>:</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>            <span class="keywordflow">return</span> 2.f;</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    }</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>}</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span> </div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>}  <span class="comment">// namespace</span></div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span> </div>
+<div class="foldopen" id="foldopen00056" data-start="{" data-end="}">
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno"><a class="line" href="namespaceeve_1_1graphics_1_1hair.html#a16fc7f5701b4a69fac679abc36f7dcd8">   56</a></span><a class="code hl_class" href="classeve_1_1Result.html">Result&lt;StrandsDatas&gt;</a> <a class="code hl_function" href="namespaceeve_1_1graphics_1_1hair.html#a16fc7f5701b4a69fac679abc36f7dcd8">extractGuides</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1graphics_1_1hair_1_1StrandsDatas.html">StrandsDatas</a> &amp;strands, <span class="keywordtype">float</span> guideFraction) {</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    <span class="keyword">auto</span> <a class="code hl_variable" href="UdpLink_8cpp.html#a1d67bd6634a9002df97231d8c8dbc66c">ok</a> = strands.<a class="code hl_function" href="classeve_1_1graphics_1_1hair_1_1StrandsDatas.html#a23ef024fd8192ec1ed112e3ebab68186">validate</a>();</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="UdpLink_8cpp.html#a1d67bd6634a9002df97231d8c8dbc66c">ok</a>.ok()) <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">Result&lt;StrandsDatas&gt;::failure</a>(<a class="code hl_variable" href="UdpLink_8cpp.html#a1d67bd6634a9002df97231d8c8dbc66c">ok</a>.status());</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    <span class="keywordflow">if</span> (strands.<a class="code hl_function" href="classeve_1_1graphics_1_1hair_1_1StrandsDatas.html#a75b18fbb7e189882a6d8c04fadbd02d1">curveCount</a>() == 0) {</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">Result&lt;StrandsDatas&gt;::failure</a>(<a class="code hl_function" href="classeve_1_1Diagnostic.html#af797f7520cc62e8273da5afdb59d9ef4">Diagnostic::error</a>(</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>            <a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">DiagnosticCode::InvalidArgument</a>, <span class="stringliteral">&quot;extractGuides: empty strands&quot;</span>, <span class="stringliteral">&quot;hair.guides&quot;</span>));</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    }</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span> </div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> frac = std::clamp(guideFraction, 0.01f, 1.f);</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    <span class="keyword">const</span> <span class="keywordtype">size_t</span> keep =</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>        std::max&lt;size_t&gt;(1, <span class="keywordtype">size_t</span>(std::ceil(<span class="keywordtype">double</span>(strands.<a class="code hl_function" href="classeve_1_1graphics_1_1hair_1_1StrandsDatas.html#a75b18fbb7e189882a6d8c04fadbd02d1">curveCount</a>()) * <span class="keywordtype">double</span>(frac))));</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    <span class="keyword">const</span> <span class="keywordtype">size_t</span> <a class="code hl_variable" href="TreeMesh_8cpp.html#a863c86bdfd96bf9c461846689c2614aa">step</a> = std::max&lt;size_t&gt;(1, strands.<a class="code hl_function" href="classeve_1_1graphics_1_1hair_1_1StrandsDatas.html#a75b18fbb7e189882a6d8c04fadbd02d1">curveCount</a>() / keep);</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span> </div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>    std::vector&lt;StrandPoint&gt; <a class="code hl_variable" href="PrimitiveDrawList_8cpp.html#a294aae2204c93b7ba3628b25f45967cd">points</a>;</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>    std::vector&lt;StrandCurve&gt; curves;</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    <a class="code hl_variable" href="PrimitiveDrawList_8cpp.html#a294aae2204c93b7ba3628b25f45967cd">points</a>.reserve(strands.<a class="code hl_function" href="classeve_1_1graphics_1_1hair_1_1StrandsDatas.html#ac3e880804e81d0ecd4dba57b3db2b4f4">pointCount</a>());</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    curves.reserve(keep);</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span> </div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> ci = 0; ci &lt; strands.<a class="code hl_function" href="classeve_1_1graphics_1_1hair_1_1StrandsDatas.html#a75b18fbb7e189882a6d8c04fadbd02d1">curveCount</a>() &amp;&amp; curves.size() &lt; keep; ci += <a class="code hl_variable" href="TreeMesh_8cpp.html#a863c86bdfd96bf9c461846689c2614aa">step</a>) {</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>        <span class="keyword">const</span> <span class="keyword">auto</span> pts = strands.<a class="code hl_function" href="classeve_1_1graphics_1_1hair_1_1StrandsDatas.html#a993f22a9e18f67c5283c9691f6406561">curvePoints</a>(ci);</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>        <span class="keywordflow">if</span> (pts.size() &lt; 2) <span class="keywordflow">continue</span>;</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>        <a class="code hl_struct" href="structeve_1_1graphics_1_1hair_1_1StrandCurve.html">StrandCurve</a> <a class="code hl_variable" href="TerrainGenerationSession_8cpp.html#a278e616fc7e696932a959a2290b83515">curve</a>;</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>        <a class="code hl_variable" href="TerrainGenerationSession_8cpp.html#a278e616fc7e696932a959a2290b83515">curve</a>.<a class="code hl_variable" href="structeve_1_1graphics_1_1hair_1_1StrandCurve.html#a32a7fd7300fda3ec013c0d175b56eb70">pointOffset</a> = uint32_t(<a class="code hl_variable" href="PrimitiveDrawList_8cpp.html#a294aae2204c93b7ba3628b25f45967cd">points</a>.size());</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>        <a class="code hl_variable" href="TerrainGenerationSession_8cpp.html#a278e616fc7e696932a959a2290b83515">curve</a>.pointCount = uint32_t(pts.size());</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>        <span class="keywordtype">float</span> len = 0.f;</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>        <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> pi = 0; pi &lt; pts.size(); ++pi) {</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>            <a class="code hl_variable" href="PrimitiveDrawList_8cpp.html#a294aae2204c93b7ba3628b25f45967cd">points</a>.push_back(pts[pi]);</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>            <span class="keywordflow">if</span> (pi &gt; 0) len += glm::length(pts[pi].<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a60ea6c13eb7a935dc579b69b80cee822">position</a> - pts[pi - 1].<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a60ea6c13eb7a935dc579b69b80cee822">position</a>);</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>        }</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>        <a class="code hl_variable" href="TerrainGenerationSession_8cpp.html#a278e616fc7e696932a959a2290b83515">curve</a>.length = len;</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>        curves.push_back(<a class="code hl_variable" href="TerrainGenerationSession_8cpp.html#a278e616fc7e696932a959a2290b83515">curve</a>);</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>    }</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span> </div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>    <span class="keywordflow">if</span> (curves.empty()) {</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">Result&lt;StrandsDatas&gt;::failure</a>(<a class="code hl_function" href="classeve_1_1Diagnostic.html#af797f7520cc62e8273da5afdb59d9ef4">Diagnostic::error</a>(</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>            <a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca">DiagnosticCode::Failed</a>, <span class="stringliteral">&quot;extractGuides: no usable curves&quot;</span>, <span class="stringliteral">&quot;hair.guides&quot;</span>));</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>    }</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span> </div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>    <a class="code hl_class" href="classeve_1_1graphics_1_1hair_1_1StrandsDatas.html">StrandsDatas</a> out;</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>    out.<a class="code hl_function" href="classeve_1_1graphics_1_1hair_1_1StrandsDatas.html#a3ab81716a70d087db44b0cdf90d157b5">setPoints</a>(std::move(<a class="code hl_variable" href="PrimitiveDrawList_8cpp.html#a294aae2204c93b7ba3628b25f45967cd">points</a>));</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>    out.<a class="code hl_function" href="classeve_1_1graphics_1_1hair_1_1StrandsDatas.html#a2422507db7fa6991ae1f71ea301ffbd4">setCurves</a>(std::move(curves));</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>    <span class="keyword">auto</span> <a class="code hl_variable" href="McpServer_8cpp.html#a28e3c179a86f337095088b3ca02a2b2a">valid</a> = out.<a class="code hl_function" href="classeve_1_1graphics_1_1hair_1_1StrandsDatas.html#a23ef024fd8192ec1ed112e3ebab68186">validate</a>();</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="McpServer_8cpp.html#a28e3c179a86f337095088b3ca02a2b2a">valid</a>.ok()) <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">Result&lt;StrandsDatas&gt;::failure</a>(<a class="code hl_variable" href="McpServer_8cpp.html#a28e3c179a86f337095088b3ca02a2b2a">valid</a>.status());</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">Result&lt;StrandsDatas&gt;::success</a>(std::move(out));</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>}</div>
+</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span> </div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span><a class="code hl_class" href="classeve_1_1Result.html">Result&lt;std::vector&lt;StrandGuideWeights&gt;</a>&gt;</div>
+<div class="foldopen" id="foldopen00103" data-start="{" data-end="}">
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno"><a class="line" href="namespaceeve_1_1graphics_1_1hair.html#a41ddfeaefcc8b0ff8e76c98464896278">  103</a></span><a class="code hl_function" href="namespaceeve_1_1graphics_1_1hair.html#a41ddfeaefcc8b0ff8e76c98464896278">buildGuideWeights</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1graphics_1_1hair_1_1StrandsDatas.html">StrandsDatas</a> &amp;strands, <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1graphics_1_1hair_1_1StrandsDatas.html">StrandsDatas</a> &amp;guides, <span class="keywordtype">int</span> maxInfluences,</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>                  <a class="code hl_enumeration" href="namespaceeve_1_1graphics_1_1hair.html#a5a1a3352685b189968f70fd32b8591b8">InterpolationMode</a> mode) {</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>    <span class="keyword">auto</span> sOk = strands.<a class="code hl_function" href="classeve_1_1graphics_1_1hair_1_1StrandsDatas.html#a23ef024fd8192ec1ed112e3ebab68186">validate</a>();</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>    <span class="keywordflow">if</span> (!sOk.ok()) <span class="keywordflow">return</span> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;std::vector&lt;StrandGuideWeights&gt;</a>&gt;::failure(sOk.status());</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>    <span class="keyword">auto</span> gOk = guides.<a class="code hl_function" href="classeve_1_1graphics_1_1hair_1_1StrandsDatas.html#a23ef024fd8192ec1ed112e3ebab68186">validate</a>();</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>    <span class="keywordflow">if</span> (!gOk.ok()) <span class="keywordflow">return</span> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;std::vector&lt;StrandGuideWeights&gt;</a>&gt;::failure(gOk.status());</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>    <span class="keywordflow">if</span> (guides.<a class="code hl_function" href="classeve_1_1graphics_1_1hair_1_1StrandsDatas.html#a75b18fbb7e189882a6d8c04fadbd02d1">curveCount</a>() == 0) {</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>        <span class="keywordflow">return</span> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;std::vector&lt;StrandGuideWeights&gt;</a>&gt;::failure(<a class="code hl_function" href="classeve_1_1Diagnostic.html#af797f7520cc62e8273da5afdb59d9ef4">Diagnostic::error</a>(</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>            <a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">DiagnosticCode::InvalidArgument</a>, <span class="stringliteral">&quot;buildGuideWeights: no guides&quot;</span>, <span class="stringliteral">&quot;hair.guides&quot;</span>));</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>    }</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span> </div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> k = std::clamp(maxInfluences, 1, <a class="code hl_variable" href="structeve_1_1graphics_1_1hair_1_1StrandGuideWeights.html#a7f247bf93731745b5a551428a172f29e">StrandGuideWeights::kMaxInfluences</a>);</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> exp = weightExponent(mode);</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>    std::vector&lt;StrandGuideWeights&gt; out(strands.<a class="code hl_function" href="classeve_1_1graphics_1_1hair_1_1StrandsDatas.html#a75b18fbb7e189882a6d8c04fadbd02d1">curveCount</a>());</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span> </div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> si = 0; si &lt; strands.<a class="code hl_function" href="classeve_1_1graphics_1_1hair_1_1StrandsDatas.html#a75b18fbb7e189882a6d8c04fadbd02d1">curveCount</a>(); ++si) {</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>        <span class="keyword">const</span> glm::vec3 <a class="code hl_variable" href="AnimSmr_8cpp.html#a3b62f50202abd219e165f5a333d5c156">root</a> = rootOf(strands, si);</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>        <span class="keyword">struct </span>Cand {</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>            uint32_t <a class="code hl_variable" href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>;</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>            <span class="keywordtype">float</span> dist2;</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>        };</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>        std::vector&lt;Cand&gt; cands;</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>        cands.reserve(guides.<a class="code hl_function" href="classeve_1_1graphics_1_1hair_1_1StrandsDatas.html#a75b18fbb7e189882a6d8c04fadbd02d1">curveCount</a>());</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>        <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> gi = 0; gi &lt; guides.<a class="code hl_function" href="classeve_1_1graphics_1_1hair_1_1StrandsDatas.html#a75b18fbb7e189882a6d8c04fadbd02d1">curveCount</a>(); ++gi) {</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>            <span class="keyword">const</span> glm::vec3 <a class="code hl_variable" href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a> = rootOf(guides, gi) - <a class="code hl_variable" href="AnimSmr_8cpp.html#a3b62f50202abd219e165f5a333d5c156">root</a>;</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>            cands.push_back({uint32_t(gi), glm::dot(<a class="code hl_variable" href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a>, <a class="code hl_variable" href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a>)});</div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>        }</div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>        <span class="keyword">const</span> <span class="keywordtype">size_t</span> take = std::min(<span class="keywordtype">size_t</span>(k), cands.size());</div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>        std::partial_sort(cands.begin(), cands.begin() + std::ptrdiff_t(take), cands.end(),</div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>                          [](<span class="keyword">const</span> Cand &amp;<a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>, <span class="keyword">const</span> Cand &amp;<a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>) { return a.dist2 &lt; b.dist2; });</div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span> </div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>        <a class="code hl_struct" href="structeve_1_1graphics_1_1hair_1_1StrandGuideWeights.html">StrandGuideWeights</a> row;</div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>        <span class="keywordtype">float</span> wSum = 0.f;</div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>        <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; take; ++i) {</div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>            <span class="keyword">const</span> <span class="keywordtype">float</span> dist = std::sqrt(std::max(cands[i].dist2, 0.f));</div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span>            <span class="keyword">const</span> <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a> = 1.f / std::pow(std::max(dist, 1e-4f), exp);</div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>            row.influencers[row.count] = {cands[i].index, <a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>};</div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span>            wSum += <a class="code hl_variable" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>;</div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>            ++row.count;</div>
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>        }</div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span>        <span class="keywordflow">if</span> (wSum &gt; 0.f) {</div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span>            <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; row.count; ++i) row.influencers[i].weight /= wSum;</div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span>        } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (row.count &gt; 0) {</div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span>            row.influencers[0].weight = 1.f;</div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span>            <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 1; i &lt; row.count; ++i) row.influencers[i].weight = 0.f;</div>
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span>        }</div>
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span>        out[si] = row;</div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>    }</div>
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>    <span class="keywordflow">return</span> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;std::vector&lt;StrandGuideWeights&gt;</a>&gt;::success(std::move(out));</div>
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span>}</div>
+</div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span> </div>
+<div class="foldopen" id="foldopen00154" data-start="{" data-end="}">
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno"><a class="line" href="namespaceeve_1_1graphics_1_1hair.html#a1db7a22a9e8f9f333f0c1c4b8b0042b3">  154</a></span><a class="code hl_class" href="classeve_1_1Result.html">Result&lt;StrandsDatas&gt;</a> <a class="code hl_function" href="namespaceeve_1_1graphics_1_1hair.html#a1db7a22a9e8f9f333f0c1c4b8b0042b3">interpolateStrands</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1graphics_1_1hair_1_1StrandsDatas.html">StrandsDatas</a> &amp;strandsRest,</div>
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span>                                        <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1graphics_1_1hair_1_1StrandsDatas.html">StrandsDatas</a> &amp;guidesRest,</div>
+<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span>                                        <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1graphics_1_1hair_1_1StrandsDatas.html">StrandsDatas</a> &amp;guidesDeformed,</div>
+<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span>                                        <span class="keyword">const</span> std::vector&lt;StrandGuideWeights&gt; &amp;<a class="code hl_variable" href="TerrainImageAdapter_8cpp.html#a633d91a1601098fad1287d3764b947f4">weights</a>,</div>
+<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span>                                        <a class="code hl_enumeration" href="namespaceeve_1_1graphics_1_1hair.html#a5a1a3352685b189968f70fd32b8591b8">InterpolationMode</a> mode) {</div>
+<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span>    <span class="keyword">auto</span> sOk = strandsRest.<a class="code hl_function" href="classeve_1_1graphics_1_1hair_1_1StrandsDatas.html#a23ef024fd8192ec1ed112e3ebab68186">validate</a>();</div>
+<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span>    <span class="keywordflow">if</span> (!sOk.ok()) <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">Result&lt;StrandsDatas&gt;::failure</a>(sOk.status());</div>
+<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span>    <span class="keyword">auto</span> g0 = guidesRest.<a class="code hl_function" href="classeve_1_1graphics_1_1hair_1_1StrandsDatas.html#a23ef024fd8192ec1ed112e3ebab68186">validate</a>();</div>
+<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span>    <span class="keywordflow">if</span> (!g0.ok()) <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">Result&lt;StrandsDatas&gt;::failure</a>(g0.status());</div>
+<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span>    <span class="keyword">auto</span> g1 = guidesDeformed.<a class="code hl_function" href="classeve_1_1graphics_1_1hair_1_1StrandsDatas.html#a23ef024fd8192ec1ed112e3ebab68186">validate</a>();</div>
+<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span>    <span class="keywordflow">if</span> (!g1.ok()) <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">Result&lt;StrandsDatas&gt;::failure</a>(g1.status());</div>
+<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span>    <span class="keywordflow">if</span> (guidesRest.<a class="code hl_function" href="classeve_1_1graphics_1_1hair_1_1StrandsDatas.html#a75b18fbb7e189882a6d8c04fadbd02d1">curveCount</a>() != guidesDeformed.<a class="code hl_function" href="classeve_1_1graphics_1_1hair_1_1StrandsDatas.html#a75b18fbb7e189882a6d8c04fadbd02d1">curveCount</a>()) {</div>
+<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">Result&lt;StrandsDatas&gt;::failure</a>(<a class="code hl_function" href="classeve_1_1Diagnostic.html#af797f7520cc62e8273da5afdb59d9ef4">Diagnostic::error</a>(</div>
+<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span>            <a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad5577819bdd3dadf2ce8cd0c265ff6b5">DiagnosticCode::InvariantViolation</a>,</div>
+<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span>            <span class="stringliteral">&quot;interpolateStrands: guide rest/deformed curve count mismatch&quot;</span>, <span class="stringliteral">&quot;hair.guides&quot;</span>));</div>
+<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span>    }</div>
+<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="TerrainImageAdapter_8cpp.html#a633d91a1601098fad1287d3764b947f4">weights</a>.size() != strandsRest.<a class="code hl_function" href="classeve_1_1graphics_1_1hair_1_1StrandsDatas.html#a75b18fbb7e189882a6d8c04fadbd02d1">curveCount</a>()) {</div>
+<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">Result&lt;StrandsDatas&gt;::failure</a>(<a class="code hl_function" href="classeve_1_1Diagnostic.html#af797f7520cc62e8273da5afdb59d9ef4">Diagnostic::error</a>(</div>
+<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span>            <a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad5577819bdd3dadf2ce8cd0c265ff6b5">DiagnosticCode::InvariantViolation</a>,</div>
+<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span>            <span class="stringliteral">&quot;interpolateStrands: weights size mismatch&quot;</span>, <span class="stringliteral">&quot;hair.guides.weights&quot;</span>));</div>
+<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span>    }</div>
+<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span> </div>
+<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span>    std::vector&lt;StrandPoint&gt; <a class="code hl_variable" href="PrimitiveDrawList_8cpp.html#a294aae2204c93b7ba3628b25f45967cd">points</a>(strandsRest.<a class="code hl_function" href="classeve_1_1graphics_1_1hair_1_1StrandsDatas.html#a8b5c0399dbcfcf0ca1e89b7d81399794">points</a>().begin(), strandsRest.<a class="code hl_function" href="classeve_1_1graphics_1_1hair_1_1StrandsDatas.html#a8b5c0399dbcfcf0ca1e89b7d81399794">points</a>().end());</div>
+<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span>    std::vector&lt;StrandCurve&gt; curves(strandsRest.<a class="code hl_function" href="classeve_1_1graphics_1_1hair_1_1StrandsDatas.html#a08e1fd7676e2b515a330a7febf58b113">curves</a>().begin(), strandsRest.<a class="code hl_function" href="classeve_1_1graphics_1_1hair_1_1StrandsDatas.html#a08e1fd7676e2b515a330a7febf58b113">curves</a>().end());</div>
+<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span> </div>
+<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span>    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> si = 0; si &lt; strandsRest.<a class="code hl_function" href="classeve_1_1graphics_1_1hair_1_1StrandsDatas.html#a75b18fbb7e189882a6d8c04fadbd02d1">curveCount</a>(); ++si) {</div>
+<div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span>        <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1graphics_1_1hair_1_1StrandCurve.html">StrandCurve</a> &amp;<a class="code hl_variable" href="TerrainGenerationSession_8cpp.html#a278e616fc7e696932a959a2290b83515">curve</a> = curves[si];</div>
+<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span>        <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1graphics_1_1hair_1_1StrandGuideWeights.html">StrandGuideWeights</a> &amp;row = <a class="code hl_variable" href="TerrainImageAdapter_8cpp.html#a633d91a1601098fad1287d3764b947f4">weights</a>[si];</div>
+<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span>        <span class="keywordflow">if</span> (<a class="code hl_variable" href="TerrainGenerationSession_8cpp.html#a278e616fc7e696932a959a2290b83515">curve</a>.pointCount == 0 || row.count &lt;= 0) <span class="keywordflow">continue</span>;</div>
+<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span> </div>
+<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span>        <span class="keywordflow">if</span> (mode == <a class="code hl_enumvalue" href="namespaceeve_1_1graphics_1_1hair.html#a5a1a3352685b189968f70fd32b8591b8ac7207657aba5dfd2e5b0ca3f35cd8c26">InterpolationMode::Rigid</a>) {</div>
+<div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span>            glm::vec3 delta(0.f);</div>
+<div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span>            <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; row.count; ++i) {</div>
+<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span>                <span class="keyword">const</span> <span class="keyword">auto</span> &amp;inf = row.influencers[i];</div>
+<div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span>                <span class="keyword">const</span> glm::vec3 rest = rootOf(guidesRest, inf.guideIndex);</div>
+<div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span>                <span class="keyword">const</span> glm::vec3 def = rootOf(guidesDeformed, inf.guideIndex);</div>
+<div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span>                delta += (def - rest) * inf.weight;</div>
+<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span>            }</div>
+<div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span>            <span class="keywordflow">for</span> (uint32_t pi = 0; pi &lt; <a class="code hl_variable" href="TerrainGenerationSession_8cpp.html#a278e616fc7e696932a959a2290b83515">curve</a>.pointCount; ++pi) {</div>
+<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span>                <a class="code hl_variable" href="PrimitiveDrawList_8cpp.html#a294aae2204c93b7ba3628b25f45967cd">points</a>[<a class="code hl_variable" href="TerrainGenerationSession_8cpp.html#a278e616fc7e696932a959a2290b83515">curve</a>.pointOffset + pi].position += delta;</div>
+<div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span>            }</div>
+<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span>            <span class="keywordflow">continue</span>;</div>
+<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span>        }</div>
+<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span> </div>
+<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span>        <span class="comment">// Offset / Smooth: per-point guide deltas at matching u.</span></div>
+<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span>        <span class="keywordflow">for</span> (uint32_t pi = 0; pi &lt; <a class="code hl_variable" href="TerrainGenerationSession_8cpp.html#a278e616fc7e696932a959a2290b83515">curve</a>.pointCount; ++pi) {</div>
+<div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span>            <a class="code hl_struct" href="structeve_1_1graphics_1_1hair_1_1StrandPoint.html">StrandPoint</a> &amp;pt = <a class="code hl_variable" href="PrimitiveDrawList_8cpp.html#a294aae2204c93b7ba3628b25f45967cd">points</a>[<a class="code hl_variable" href="TerrainGenerationSession_8cpp.html#a278e616fc7e696932a959a2290b83515">curve</a>.pointOffset + pi];</div>
+<div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span>            glm::vec3 delta(0.f);</div>
+<div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span>            <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; row.count; ++i) {</div>
+<div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span>                <span class="keyword">const</span> <span class="keyword">auto</span> &amp;inf = row.influencers[i];</div>
+<div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span>                <span class="keyword">const</span> glm::vec3 restP = sampleCurveAtU(guidesRest, inf.guideIndex, pt.<a class="code hl_variable" href="structeve_1_1graphics_1_1hair_1_1StrandPoint.html#abeb265b206288f0238e812577aa6dfc9">u</a>);</div>
+<div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span>                <span class="keyword">const</span> glm::vec3 defP = sampleCurveAtU(guidesDeformed, inf.guideIndex, pt.<a class="code hl_variable" href="structeve_1_1graphics_1_1hair_1_1StrandPoint.html#abeb265b206288f0238e812577aa6dfc9">u</a>);</div>
+<div class="line"><a id="l00206" name="l00206"></a><span class="lineno">  206</span>                delta += (defP - restP) * inf.weight;</div>
+<div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span>            }</div>
+<div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span>            pt.<a class="code hl_variable" href="structeve_1_1graphics_1_1hair_1_1StrandPoint.html#a9811b9a279bde6f4e15a6d2301ff4b01">position</a> += delta;</div>
+<div class="line"><a id="l00209" name="l00209"></a><span class="lineno">  209</span>        }</div>
+<div class="line"><a id="l00210" name="l00210"></a><span class="lineno">  210</span>    }</div>
+<div class="line"><a id="l00211" name="l00211"></a><span class="lineno">  211</span> </div>
+<div class="line"><a id="l00212" name="l00212"></a><span class="lineno">  212</span>    <a class="code hl_class" href="classeve_1_1graphics_1_1hair_1_1StrandsDatas.html">StrandsDatas</a> out;</div>
+<div class="line"><a id="l00213" name="l00213"></a><span class="lineno">  213</span>    out.<a class="code hl_function" href="classeve_1_1graphics_1_1hair_1_1StrandsDatas.html#a3ab81716a70d087db44b0cdf90d157b5">setPoints</a>(std::move(<a class="code hl_variable" href="PrimitiveDrawList_8cpp.html#a294aae2204c93b7ba3628b25f45967cd">points</a>));</div>
+<div class="line"><a id="l00214" name="l00214"></a><span class="lineno">  214</span>    out.<a class="code hl_function" href="classeve_1_1graphics_1_1hair_1_1StrandsDatas.html#a2422507db7fa6991ae1f71ea301ffbd4">setCurves</a>(std::move(curves));</div>
+<div class="line"><a id="l00215" name="l00215"></a><span class="lineno">  215</span>    <span class="keyword">auto</span> <a class="code hl_variable" href="McpServer_8cpp.html#a28e3c179a86f337095088b3ca02a2b2a">valid</a> = out.<a class="code hl_function" href="classeve_1_1graphics_1_1hair_1_1StrandsDatas.html#a23ef024fd8192ec1ed112e3ebab68186">validate</a>();</div>
+<div class="line"><a id="l00216" name="l00216"></a><span class="lineno">  216</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="McpServer_8cpp.html#a28e3c179a86f337095088b3ca02a2b2a">valid</a>.ok()) <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">Result&lt;StrandsDatas&gt;::failure</a>(<a class="code hl_variable" href="McpServer_8cpp.html#a28e3c179a86f337095088b3ca02a2b2a">valid</a>.status());</div>
+<div class="line"><a id="l00217" name="l00217"></a><span class="lineno">  217</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">Result&lt;StrandsDatas&gt;::success</a>(std::move(out));</div>
+<div class="line"><a id="l00218" name="l00218"></a><span class="lineno">  218</span>}</div>
+</div>
+<div class="line"><a id="l00219" name="l00219"></a><span class="lineno">  219</span> </div>
+<div class="line"><a id="l00220" name="l00220"></a><span class="lineno">  220</span>}  <span class="comment">// namespace eve::graphics::hair</span></div>
+<div class="ttc" id="aAnimClip_8cpp_html_a56eca241e2896b9f57a79589e76fd24b"><div class="ttname"><a href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a></div><div class="ttdeci">float w</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00738">AnimClip.cpp:738</a></div></div>
+<div class="ttc" id="aAnimSmr_8cpp_html_a3b62f50202abd219e165f5a333d5c156"><div class="ttname"><a href="AnimSmr_8cpp.html#a3b62f50202abd219e165f5a333d5c156">root</a></div><div class="ttdeci">int root</div><div class="ttdef"><b>Definition</b> <a href="AnimSmr_8cpp_source.html#l00119">AnimSmr.cpp:119</a></div></div>
+<div class="ttc" id="aDiagnostic_8h_html"><div class="ttname"><a href="Diagnostic_8h.html">Diagnostic.h</a></div><div class="ttdoc">Stable, structured diagnostics shared by engine modules.</div></div>
+<div class="ttc" id="aFluidSurfaceBinding_8cpp_html_a0a0390ed59a97feb6783f87db4086a7c"><div class="ttname"><a href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a></div><div class="ttdeci">uint32_t a</div><div class="ttdef"><b>Definition</b> <a href="FluidSurfaceBinding_8cpp_source.html#l00014">FluidSurfaceBinding.cpp:14</a></div></div>
+<div class="ttc" id="aFluidSurfaceBinding_8cpp_html_a2826644ea978cb49c4ee809b55e128d7"><div class="ttname"><a href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a></div><div class="ttdeci">uint32_t b</div><div class="ttdef"><b>Definition</b> <a href="FluidSurfaceBinding_8cpp_source.html#l00015">FluidSurfaceBinding.cpp:15</a></div></div>
+<div class="ttc" id="aGrass_8cpp_html_a3e5dec064fb5b002d1279f3a82ce8646"><div class="ttname"><a href="Grass_8cpp.html#a3e5dec064fb5b002d1279f3a82ce8646">i1</a></div><div class="ttdeci">uint32_t i1</div><div class="ttdef"><b>Definition</b> <a href="Grass_8cpp_source.html#l00061">Grass.cpp:61</a></div></div>
+<div class="ttc" id="aGrass_8cpp_html_a47ff32291cc26d3b91bb5cb7b45495f7"><div class="ttname"><a href="Grass_8cpp.html#a47ff32291cc26d3b91bb5cb7b45495f7">i0</a></div><div class="ttdeci">uint32_t i0</div><div class="ttdef"><b>Definition</b> <a href="Grass_8cpp_source.html#l00061">Grass.cpp:61</a></div></div>
+<div class="ttc" id="aGrass_8cpp_html_a55831f7eab5ed2917a0191e858852f42"><div class="ttname"><a href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a></div><div class="ttdeci">float u</div><div class="ttdef"><b>Definition</b> <a href="Grass_8cpp_source.html#l00233">Grass.cpp:233</a></div></div>
+<div class="ttc" id="aGuides_8h_html"><div class="ttname"><a href="Guides_8h.html">Guides.h</a></div></div>
+<div class="ttc" id="aLegacyAnimationImporter_8cpp_html_a60ea6c13eb7a935dc579b69b80cee822"><div class="ttname"><a href="LegacyAnimationImporter_8cpp.html#a60ea6c13eb7a935dc579b69b80cee822">position</a></div><div class="ttdeci">std::array&lt; float, 3 &gt; position</div><div class="ttdef"><b>Definition</b> <a href="LegacyAnimationImporter_8cpp_source.html#l00016">LegacyAnimationImporter.cpp:16</a></div></div>
+<div class="ttc" id="aMcpServer_8cpp_html_a28e3c179a86f337095088b3ca02a2b2a"><div class="ttname"><a href="McpServer_8cpp.html#a28e3c179a86f337095088b3ca02a2b2a">valid</a></div><div class="ttdeci">bool valid</div><div class="ttdef"><b>Definition</b> <a href="McpServer_8cpp_source.html#l00550">McpServer.cpp:550</a></div></div>
+<div class="ttc" id="aPrimitiveDrawList_8cpp_html_a294aae2204c93b7ba3628b25f45967cd"><div class="ttname"><a href="PrimitiveDrawList_8cpp.html#a294aae2204c93b7ba3628b25f45967cd">points</a></div><div class="ttdeci">std::shared_ptr&lt; const std::vector&lt; glm::vec2 &gt; &gt; points</div><div class="ttdef"><b>Definition</b> <a href="PrimitiveDrawList_8cpp_source.html#l00076">PrimitiveDrawList.cpp:76</a></div></div>
+<div class="ttc" id="aPrototypeKit_8cpp_html_a3fbbd8a3959e76a2bc3455d3bade52dc"><div class="ttname"><a href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a></div><div class="ttdeci">float d</div><div class="ttdef"><b>Definition</b> <a href="PrototypeKit_8cpp_source.html#l00109">PrototypeKit.cpp:109</a></div></div>
+<div class="ttc" id="aPrototypeKit_8cpp_html_afea36502e9d227ff62c5fb2719a246f2"><div class="ttname"><a href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a></div><div class="ttdeci">float t</div><div class="ttdef"><b>Definition</b> <a href="PrototypeKit_8cpp_source.html#l00110">PrototypeKit.cpp:110</a></div></div>
+<div class="ttc" id="aTerrainGenerationSession_8cpp_html_a278e616fc7e696932a959a2290b83515"><div class="ttname"><a href="TerrainGenerationSession_8cpp.html#a278e616fc7e696932a959a2290b83515">curve</a></div><div class="ttdeci">Heightmap curve</div><div class="ttdef"><b>Definition</b> <a href="TerrainGenerationSession_8cpp_source.html#l00140">TerrainGenerationSession.cpp:140</a></div></div>
+<div class="ttc" id="aTerrainImageAdapter_8cpp_html_a633d91a1601098fad1287d3764b947f4"><div class="ttname"><a href="TerrainImageAdapter_8cpp.html#a633d91a1601098fad1287d3764b947f4">weights</a></div><div class="ttdeci">float weights[3]</div><div class="ttdef"><b>Definition</b> <a href="TerrainImageAdapter_8cpp_source.html#l00082">TerrainImageAdapter.cpp:82</a></div></div>
+<div class="ttc" id="aTreeMesh_8cpp_html_a863c86bdfd96bf9c461846689c2614aa"><div class="ttname"><a href="TreeMesh_8cpp.html#a863c86bdfd96bf9c461846689c2614aa">step</a></div><div class="ttdeci">float step</div><div class="ttdef"><b>Definition</b> <a href="TreeMesh_8cpp_source.html#l00287">TreeMesh.cpp:287</a></div></div>
+<div class="ttc" id="aUdpLink_8cpp_html_a1d67bd6634a9002df97231d8c8dbc66c"><div class="ttname"><a href="UdpLink_8cpp.html#a1d67bd6634a9002df97231d8c8dbc66c">ok</a></div><div class="ttdeci">bool ok</div><div class="ttdef"><b>Definition</b> <a href="UdpLink_8cpp_source.html#l00059">UdpLink.cpp:59</a></div></div>
+<div class="ttc" id="aUnityVegetationMaterial_8cpp_html_aafd95f8c7a99b9189ede7cdf0871ebe8"><div class="ttname"><a href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a></div><div class="ttdeci">uint32_t index</div><div class="ttdef"><b>Definition</b> <a href="UnityVegetationMaterial_8cpp_source.html#l00161">UnityVegetationMaterial.cpp:161</a></div></div>
+<div class="ttc" id="aclasseve_1_1Diagnostic_html_af797f7520cc62e8273da5afdb59d9ef4"><div class="ttname"><a href="classeve_1_1Diagnostic.html#af797f7520cc62e8273da5afdb59d9ef4">eve::Diagnostic::error</a></div><div class="ttdeci">static Diagnostic error(DiagnosticCode code, std::string message, std::string path={}, DiagnosticDetails details={}, std::string source={})</div><div class="ttdoc">Construct an error diagnostic with the standard error severity.</div><div class="ttdef"><b>Definition</b> <a href="Diagnostic_8h_source.html#l00119">Diagnostic.h:119</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html_a10668d27f9f97c9808e0099e0248816b"><div class="ttname"><a href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">eve::Result::success</a></div><div class="ttdeci">static Result success(T value)</div><div class="ttdoc">Construct a successful result owning value.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00157">Result.h:157</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html_af1a297022e9a6a615433003fe6466358"><div class="ttname"><a href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">eve::Result::failure</a></div><div class="ttdeci">static Result failure(Status status)</div><div class="ttdoc">Construct a failed result from a structured status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00166">Result.h:166</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1hair_1_1StrandsDatas_html"><div class="ttname"><a href="classeve_1_1graphics_1_1hair_1_1StrandsDatas.html">eve::graphics::hair::StrandsDatas</a></div><div class="ttdoc">CPU-authoritative strand buffer (UE FHairStrandsDatas analogue).</div><div class="ttdef"><b>Definition</b> <a href="StrandsDatas_8h_source.html#l00044">StrandsDatas.h:44</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1hair_1_1StrandsDatas_html_a08e1fd7676e2b515a330a7febf58b113"><div class="ttname"><a href="classeve_1_1graphics_1_1hair_1_1StrandsDatas.html#a08e1fd7676e2b515a330a7febf58b113">eve::graphics::hair::StrandsDatas::curves</a></div><div class="ttdeci">std::span&lt; const StrandCurve &gt; curves() const</div><div class="ttdoc">Borrowed curves; invalidated by mutation.</div><div class="ttdef"><b>Definition</b> <a href="StrandsDatas_8h_source.html#l00066">StrandsDatas.h:66</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1hair_1_1StrandsDatas_html_a23ef024fd8192ec1ed112e3ebab68186"><div class="ttname"><a href="classeve_1_1graphics_1_1hair_1_1StrandsDatas.html#a23ef024fd8192ec1ed112e3ebab68186">eve::graphics::hair::StrandsDatas::validate</a></div><div class="ttdeci">Result&lt; void &gt; validate() const</div><div class="ttdoc">Verify offsets, counts, and finite values.</div><div class="ttdef"><b>Definition</b> <a href="StrandsDatas_8cpp_source.html#l00041">StrandsDatas.cpp:41</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1hair_1_1StrandsDatas_html_a2422507db7fa6991ae1f71ea301ffbd4"><div class="ttname"><a href="classeve_1_1graphics_1_1hair_1_1StrandsDatas.html#a2422507db7fa6991ae1f71ea301ffbd4">eve::graphics::hair::StrandsDatas::setCurves</a></div><div class="ttdeci">void setCurves(std::vector&lt; StrandCurve &gt; curves)</div><div class="ttdef"><b>Definition</b> <a href="StrandsDatas_8cpp_source.html#l00022">StrandsDatas.cpp:22</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1hair_1_1StrandsDatas_html_a3ab81716a70d087db44b0cdf90d157b5"><div class="ttname"><a href="classeve_1_1graphics_1_1hair_1_1StrandsDatas.html#a3ab81716a70d087db44b0cdf90d157b5">eve::graphics::hair::StrandsDatas::setPoints</a></div><div class="ttdeci">void setPoints(std::vector&lt; StrandPoint &gt; points)</div><div class="ttdef"><b>Definition</b> <a href="StrandsDatas_8cpp_source.html#l00020">StrandsDatas.cpp:20</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1hair_1_1StrandsDatas_html_a75b18fbb7e189882a6d8c04fadbd02d1"><div class="ttname"><a href="classeve_1_1graphics_1_1hair_1_1StrandsDatas.html#a75b18fbb7e189882a6d8c04fadbd02d1">eve::graphics::hair::StrandsDatas::curveCount</a></div><div class="ttdeci">size_t curveCount() const</div><div class="ttdef"><b>Definition</b> <a href="StrandsDatas_8h_source.html#l00061">StrandsDatas.h:61</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1hair_1_1StrandsDatas_html_a8b5c0399dbcfcf0ca1e89b7d81399794"><div class="ttname"><a href="classeve_1_1graphics_1_1hair_1_1StrandsDatas.html#a8b5c0399dbcfcf0ca1e89b7d81399794">eve::graphics::hair::StrandsDatas::points</a></div><div class="ttdeci">std::span&lt; const StrandPoint &gt; points() const</div><div class="ttdoc">Borrowed points; invalidated by mutation.</div><div class="ttdef"><b>Definition</b> <a href="StrandsDatas_8h_source.html#l00064">StrandsDatas.h:64</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1hair_1_1StrandsDatas_html_a993f22a9e18f67c5283c9691f6406561"><div class="ttname"><a href="classeve_1_1graphics_1_1hair_1_1StrandsDatas.html#a993f22a9e18f67c5283c9691f6406561">eve::graphics::hair::StrandsDatas::curvePoints</a></div><div class="ttdeci">std::span&lt; const StrandPoint &gt; curvePoints(size_t curveIndex) const</div><div class="ttdoc">Borrowed points of one curve.</div><div class="ttdef"><b>Definition</b> <a href="StrandsDatas_8cpp_source.html#l00081">StrandsDatas.cpp:81</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1hair_1_1StrandsDatas_html_ac3e880804e81d0ecd4dba57b3db2b4f4"><div class="ttname"><a href="classeve_1_1graphics_1_1hair_1_1StrandsDatas.html#ac3e880804e81d0ecd4dba57b3db2b4f4">eve::graphics::hair::StrandsDatas::pointCount</a></div><div class="ttdeci">size_t pointCount() const</div><div class="ttdef"><b>Definition</b> <a href="StrandsDatas_8h_source.html#l00060">StrandsDatas.h:60</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_1_1hair_html"><div class="ttname"><a href="namespaceeve_1_1graphics_1_1hair.html">eve::graphics::hair</a></div><div class="ttdoc">Procedural hair/fur card meshes + material/LOD helpers (no strand simulation).</div><div class="ttdef"><b>Definition</b> <a href="Graphics_8h_source.html#l00055">Graphics.h:55</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_1_1hair_html_a16fc7f5701b4a69fac679abc36f7dcd8"><div class="ttname"><a href="namespaceeve_1_1graphics_1_1hair.html#a16fc7f5701b4a69fac679abc36f7dcd8">eve::graphics::hair::extractGuides</a></div><div class="ttdeci">Result&lt; StrandsDatas &gt; extractGuides(const StrandsDatas &amp;strands, float guideFraction)</div><div class="ttdoc">Pick a deterministic subset of curves as guides (density thinning).</div><div class="ttdef"><b>Definition</b> <a href="Guides_8cpp_source.html#l00056">Guides.cpp:56</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_1_1hair_html_a1db7a22a9e8f9f333f0c1c4b8b0042b3"><div class="ttname"><a href="namespaceeve_1_1graphics_1_1hair.html#a1db7a22a9e8f9f333f0c1c4b8b0042b3">eve::graphics::hair::interpolateStrands</a></div><div class="ttdeci">Result&lt; StrandsDatas &gt; interpolateStrands(const StrandsDatas &amp;strandsRest, const StrandsDatas &amp;guidesRest, const StrandsDatas &amp;guidesDeformed, const std::vector&lt; StrandGuideWeights &gt; &amp;weights, InterpolationMode mode)</div><div class="ttdoc">Drive rest render strands with deformed guides using precomputed weights. @ownership Returned datas u...</div><div class="ttdef"><b>Definition</b> <a href="Guides_8cpp_source.html#l00154">Guides.cpp:154</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_1_1hair_html_a41ddfeaefcc8b0ff8e76c98464896278"><div class="ttname"><a href="namespaceeve_1_1graphics_1_1hair.html#a41ddfeaefcc8b0ff8e76c98464896278">eve::graphics::hair::buildGuideWeights</a></div><div class="ttdeci">Result&lt; std::vector&lt; StrandGuideWeights &gt; &gt; buildGuideWeights(const StrandsDatas &amp;strands, const StrandsDatas &amp;guides, int maxInfluences, InterpolationMode mode)</div><div class="ttdoc">Build k-nearest guide weights for every render strand (by root distance).</div><div class="ttdef"><b>Definition</b> <a href="Guides_8cpp_source.html#l00103">Guides.cpp:103</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_1_1hair_html_a5a1a3352685b189968f70fd32b8591b8"><div class="ttname"><a href="namespaceeve_1_1graphics_1_1hair.html#a5a1a3352685b189968f70fd32b8591b8">eve::graphics::hair::InterpolationMode</a></div><div class="ttdeci">InterpolationMode</div><div class="ttdoc">How render strands follow deformed guides (UE interpolation analogue).</div><div class="ttdef"><b>Definition</b> <a href="Guides_8h_source.html#l00019">Guides.h:19</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_1_1hair_html_a5a1a3352685b189968f70fd32b8591b8ac7207657aba5dfd2e5b0ca3f35cd8c26"><div class="ttname"><a href="namespaceeve_1_1graphics_1_1hair.html#a5a1a3352685b189968f70fd32b8591b8ac7207657aba5dfd2e5b0ca3f35cd8c26">eve::graphics::hair::InterpolationMode::Rigid</a></div><div class="ttdeci">@ Rigid</div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_1_1hair_html_a5a1a3352685b189968f70fd32b8591b8adfd0a82c4bf37b1e90b690a22a20692e"><div class="ttname"><a href="namespaceeve_1_1graphics_1_1hair.html#a5a1a3352685b189968f70fd32b8591b8adfd0a82c4bf37b1e90b690a22a20692e">eve::graphics::hair::InterpolationMode::Offset</a></div><div class="ttdeci">@ Offset</div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_1_1hair_html_a5a1a3352685b189968f70fd32b8591b8ae510cdf33cd497134b47b9316314d4b4"><div class="ttname"><a href="namespaceeve_1_1graphics_1_1hair.html#a5a1a3352685b189968f70fd32b8591b8ae510cdf33cd497134b47b9316314d4b4">eve::graphics::hair::InterpolationMode::Smooth</a></div><div class="ttdeci">@ Smooth</div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::DiagnosticCode::InvalidArgument</a></div><div class="ttdeci">@ InvalidArgument</div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7ad5577819bdd3dadf2ce8cd0c265ff6b5"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad5577819bdd3dadf2ce8cd0c265ff6b5">eve::DiagnosticCode::InvariantViolation</a></div><div class="ttdeci">@ InvariantViolation</div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca">eve::DiagnosticCode::Failed</a></div><div class="ttdeci">@ Failed</div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1hair_1_1StrandCurve_html"><div class="ttname"><a href="structeve_1_1graphics_1_1hair_1_1StrandCurve.html">eve::graphics::hair::StrandCurve</a></div><div class="ttdoc">One strand as a contiguous point range. @ownership Value type owned by StrandsDatas.</div><div class="ttdef"><b>Definition</b> <a href="StrandsDatas_8h_source.html#l00029">StrandsDatas.h:29</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1hair_1_1StrandCurve_html_a32a7fd7300fda3ec013c0d175b56eb70"><div class="ttname"><a href="structeve_1_1graphics_1_1hair_1_1StrandCurve.html#a32a7fd7300fda3ec013c0d175b56eb70">eve::graphics::hair::StrandCurve::pointOffset</a></div><div class="ttdeci">uint32_t pointOffset</div><div class="ttdef"><b>Definition</b> <a href="StrandsDatas_8h_source.html#l00030">StrandsDatas.h:30</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1hair_1_1StrandGuideWeights_html"><div class="ttname"><a href="structeve_1_1graphics_1_1hair_1_1StrandGuideWeights.html">eve::graphics::hair::StrandGuideWeights</a></div><div class="ttdoc">Up to kMaxInfluences guides influencing one render strand. @ownership Owned by the weights table retu...</div><div class="ttdef"><b>Definition</b> <a href="Guides_8h_source.html#l00031">Guides.h:31</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1hair_1_1StrandGuideWeights_html_a7f247bf93731745b5a551428a172f29e"><div class="ttname"><a href="structeve_1_1graphics_1_1hair_1_1StrandGuideWeights.html#a7f247bf93731745b5a551428a172f29e">eve::graphics::hair::StrandGuideWeights::kMaxInfluences</a></div><div class="ttdeci">static constexpr int kMaxInfluences</div><div class="ttdef"><b>Definition</b> <a href="Guides_8h_source.html#l00032">Guides.h:32</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1hair_1_1StrandPoint_html"><div class="ttname"><a href="structeve_1_1graphics_1_1hair_1_1StrandPoint.html">eve::graphics::hair::StrandPoint</a></div><div class="ttdoc">One control point on a hair curve (UE FHairStrandsDatas point analogue). @ownership Value type owned ...</div><div class="ttdef"><b>Definition</b> <a href="StrandsDatas_8h_source.html#l00018">StrandsDatas.h:18</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1hair_1_1StrandPoint_html_a9811b9a279bde6f4e15a6d2301ff4b01"><div class="ttname"><a href="structeve_1_1graphics_1_1hair_1_1StrandPoint.html#a9811b9a279bde6f4e15a6d2301ff4b01">eve::graphics::hair::StrandPoint::position</a></div><div class="ttdeci">glm::vec3 position</div><div class="ttdef"><b>Definition</b> <a href="StrandsDatas_8h_source.html#l00019">StrandsDatas.h:19</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1hair_1_1StrandPoint_html_abeb265b206288f0238e812577aa6dfc9"><div class="ttname"><a href="structeve_1_1graphics_1_1hair_1_1StrandPoint.html#abeb265b206288f0238e812577aa6dfc9">eve::graphics::hair::StrandPoint::u</a></div><div class="ttdeci">float u</div><div class="ttdoc">Root-to-tip parameter in [0, 1].</div><div class="ttdef"><b>Definition</b> <a href="StrandsDatas_8h_source.html#l00022">StrandsDatas.h:22</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

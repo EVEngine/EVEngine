@@ -1,0 +1,241 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: 成员列表</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1hexmap.html">hexmap</a></li><li class="navelem"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html">HexMap</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">eve::hexmap::HexMap 成员列表</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>成员的完整列表，这些成员属于 <a class="el" href="classeve_1_1hexmap_1_1HexMap.html">eve::hexmap::HexMap</a>,包括所有继承而来的类成员</p>
+<table class="directory">
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html#add00c58a5ab282857da5e8ac0cd5be9a">addRoad</a>(HexCoordinates c, HexDirection direction)</td><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html">eve::hexmap::HexMap</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html#ac1b210d7864bd138ae91913904c18fb2">cell</a>(HexCoordinates coordinates) const noexcept</td><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html">eve::hexmap::HexMap</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html#ae582e28bcf8009df21266108bda1dbcc">cellAt</a>(std::int32_t index) const noexcept</td><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html">eve::hexmap::HexMap</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html#a8a79e08d38fbfd82df813f01dfc89948">cellCount</a>() const noexcept</td><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html">eve::hexmap::HexMap</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html#a5cf67d483c1173f08d88ae3d6c95f207">cellCountX</a>() const noexcept</td><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html">eve::hexmap::HexMap</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html#abdf8f1303fd8bf331b7f7460cc6b97b2">cellCountZ</a>() const noexcept</td><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html">eve::hexmap::HexMap</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html#aeb85384bce45c8348ec8d0f1d11c9eed">cellGroundPosition</a>(HexCoordinates coordinates) const noexcept</td><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html">eve::hexmap::HexMap</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html#a67fb89ce641f766297ee5d650e4742b7">cellPosition</a>(HexCoordinates coordinates) const noexcept</td><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html">eve::hexmap::HexMap</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html#afc9c2031d235ac4e6ad2f43ae712a1a3">chunkCell</a>(std::int32_t chunkIndex, std::int32_t column, std::int32_t row) const noexcept</td><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html">eve::hexmap::HexMap</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html#a10c8c5da8602f45399c7817b114c1486">chunkCenter</a>(std::int32_t chunkIndex) const noexcept</td><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html">eve::hexmap::HexMap</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html#a3433f61f5373142f5ef1d9c798652a8d">chunkColumnOf</a>(std::int32_t chunkIndex) const noexcept</td><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html">eve::hexmap::HexMap</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html#a05d170464696233e6050d315d886a892">chunkCount</a>() const noexcept</td><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html">eve::hexmap::HexMap</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html#a64a5e23d13f3feef13c3e20b245e92b1">chunkCountX</a>() const noexcept</td><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html">eve::hexmap::HexMap</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html#ae8b37dd8572529d3e41dc83eff775616">chunkCountZ</a>() const noexcept</td><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html">eve::hexmap::HexMap</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html#aaf3b2308dde7cce59a4079fb08381074">chunkIndexOf</a>(HexCoordinates coordinates) const noexcept</td><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html">eve::hexmap::HexMap</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html#a2d8e6474edb23e8061f08275f2a2913f">chunkRowOf</a>(std::int32_t chunkIndex) const noexcept</td><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html">eve::hexmap::HexMap</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html#ac919b8b925d729cc924e0eabed32ba66">collectBrush</a>(HexCoordinates center, std::int32_t radius, std::vector&lt; std::int32_t &gt; &amp;out) const</td><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html">eve::hexmap::HexMap</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html#a789d876d4c0e996489a4e83e571fcc75">contains</a>(HexCoordinates coordinates) const noexcept</td><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html">eve::hexmap::HexMap</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html#a21eaab6065857b225fd9feedc2091d31">coordinatesAt</a>(std::int32_t index) const noexcept</td><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html">eve::hexmap::HexMap</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html#a488b0b4983f32973efed3cda17cec99a">dirtyChunkCount</a>() const noexcept</td><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html">eve::hexmap::HexMap</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html#acad64bd082df67ede9ce31c91eaa536b">edgeTypeTo</a>(HexCoordinates a, HexCoordinates b) const noexcept</td><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html">eve::hexmap::HexMap</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html#afb973e76c38740af4187cd4757abe665">editElevation</a>(HexCoordinates center, std::int32_t radius, std::int32_t delta)</td><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html">eve::hexmap::HexMap</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html#a15fbc344acca88c23194b24262dcd31a">editFeatureLevel</a>(HexCoordinates center, std::int32_t radius, std::int32_t feature, std::int32_t delta)</td><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html">eve::hexmap::HexMap</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html#a2f70801411cba0d3eb7a615b12955eab">editTerrainType</a>(HexCoordinates center, std::int32_t radius, std::int32_t terrainType)</td><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html">eve::hexmap::HexMap</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html#a7d5a2a3b94fb3ae021a19778256d8eda">editWaterLevel</a>(HexCoordinates center, std::int32_t radius, std::int32_t delta)</td><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html">eve::hexmap::HexMap</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html#ac116601332dd7207966a1ce41f008152">elevation</a>(HexCoordinates c) const noexcept</td><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html">eve::hexmap::HexMap</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html#a10a5b5a876d079f69fb6f902830d204c">empty</a>() const noexcept</td><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html">eve::hexmap::HexMap</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html#af39850d6ccae60f8bb60c6e504584735">farmLevel</a>(HexCoordinates c) const noexcept</td><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html">eve::hexmap::HexMap</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html#ab24094306b09d67bda14f948ac573935">flags</a>(HexCoordinates c) const noexcept</td><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html">eve::hexmap::HexMap</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html#a8b598859450a2d185249f9f6828c0ebe">getNeighbor</a>(HexCoordinates coordinates, HexDirection direction, HexCoordinates &amp;out) const noexcept</td><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html">eve::hexmap::HexMap</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html#abaf298608e37640f3e0b944ea539b8ad">hasRiver</a>(HexCoordinates c) const noexcept</td><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html">eve::hexmap::HexMap</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html#ad57d7a3ec26acac13e230a93a66ab62e">hasRiverThrough</a>(HexCoordinates c, HexDirection d) const noexcept</td><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html">eve::hexmap::HexMap</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html#af9cd9fa3467119199fd53caa467bd788">hasRoad</a>(HexCoordinates c) const noexcept</td><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html">eve::hexmap::HexMap</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html#a00e322dc4be20f01e0ca6f14674af7fe">HexMap</a>()=default</td><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html">eve::hexmap::HexMap</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html#a2f544547f3c45153d376e9bdb5a458db">indexOf</a>(HexCoordinates coordinates) const noexcept</td><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html">eve::hexmap::HexMap</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html#a8ccff74f0be6e084bd588bf1f49f2913">isExplorable</a>(HexCoordinates c) const noexcept</td><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html">eve::hexmap::HexMap</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html#aa764e680884e3d88b8d42d8bf013805a">isExplored</a>(HexCoordinates c) const noexcept</td><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html">eve::hexmap::HexMap</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html#aa6a5d47f9bdced717003da303fa04466">isUnderwater</a>(HexCoordinates c) const noexcept</td><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html">eve::hexmap::HexMap</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html#a960fc6f4c2264418a3455a3b1a08501e">isWalled</a>(HexCoordinates c) const noexcept</td><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html">eve::hexmap::HexMap</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html#a5f12e8952c845d41ccaa7a25af1f2921">markAllChunksDirty</a>() noexcept</td><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html">eve::hexmap::HexMap</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html#ad7641f1c17f1a39586dc9f3a7fec04b5">markChunkDirtyAndNeighbors</a>(std::int32_t chunkIndex) noexcept</td><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html">eve::hexmap::HexMap</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html#a7d5ca3a1b6d937597f61e4952e2644d4">noise</a>() const noexcept</td><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html">eve::hexmap::HexMap</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html#a8af3b1b03729c7632e12377dd3619a26">pickCell</a>(HexVec3 rayOrigin, HexVec3 rayDirection) const noexcept</td><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html">eve::hexmap::HexMap</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html#af2a4f48e8d4326029f4b1b9e4f28e4fc">plantLevel</a>(HexCoordinates c) const noexcept</td><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html">eve::hexmap::HexMap</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html#a0a4ba04720e287f52f2984de89e241fa">removeRiver</a>(HexCoordinates c)</td><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html">eve::hexmap::HexMap</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html#a5c26cb50a80bb558ba69374cdff7f39f">removeRoads</a>(HexCoordinates c)</td><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html">eve::hexmap::HexMap</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html#ab1d91d5433114cf9a1bc7d8f91b658c9">reset</a>(std::int32_t cellCountX, std::int32_t cellCountZ, std::uint32_t seed)</td><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html">eve::hexmap::HexMap</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html#a346b478ef687bbf2c49e507ebbed7684">revision</a>() const noexcept</td><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html">eve::hexmap::HexMap</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html#a45139c24aa13b84342d31fbf2fb1c539">seed</a>() const noexcept</td><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html">eve::hexmap::HexMap</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html#a6f8b1aa75c6595310b196a2b8830ad0b">setCellState</a>(HexCoordinates c, HexValues values, HexFlags flags)</td><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html">eve::hexmap::HexMap</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html#ab9be2ee3fb894efb91eef7fc6e2fce57">setElevation</a>(HexCoordinates c, std::int32_t elevation)</td><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html">eve::hexmap::HexMap</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html#af62f63d21187d830b98cc77f0b1d2311">setExplorable</a>(HexCoordinates c, bool explorable)</td><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html">eve::hexmap::HexMap</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html#abd86289db1c4cb903ebaaba12e9a84cc">setExplored</a>(HexCoordinates c, bool explored)</td><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html">eve::hexmap::HexMap</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html#ac3392aebcc5c373d23b161121f1fd7dd">setFarmLevel</a>(HexCoordinates c, std::int32_t level)</td><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html">eve::hexmap::HexMap</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html#a9ce0dd309ad696a8d571684aba9e16e7">setOutgoingRiver</a>(HexCoordinates c, HexDirection direction)</td><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html">eve::hexmap::HexMap</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html#a7ce523b1a082654ae94602a1b96a6656">setPlantLevel</a>(HexCoordinates c, std::int32_t level)</td><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html">eve::hexmap::HexMap</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html#a0ec527c6054c7a12bda8ac62f4d6e3b2">setSpecialIndex</a>(HexCoordinates c, std::int32_t index)</td><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html">eve::hexmap::HexMap</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html#a527df338522d99504311d8783253460b">setTerrainType</a>(HexCoordinates c, std::int32_t terrainType)</td><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html">eve::hexmap::HexMap</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html#a3470f3898062813d010e15be8ea4b43d">setUrbanLevel</a>(HexCoordinates c, std::int32_t level)</td><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html">eve::hexmap::HexMap</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html#a1ef0792938118d20bafa740a51fb0e9b">setWalled</a>(HexCoordinates c, bool walled)</td><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html">eve::hexmap::HexMap</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html#a9b916f0280f702fc25190c4ca588a25c">setWaterLevel</a>(HexCoordinates c, std::int32_t waterLevel)</td><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html">eve::hexmap::HexMap</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html#a8b610bc957f057a95d9bef6d87380cce">specialIndex</a>(HexCoordinates c) const noexcept</td><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html">eve::hexmap::HexMap</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html#aed84a8335fa61663c589ec300cf54ad1">takeDirtyChunk</a>() noexcept</td><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html">eve::hexmap::HexMap</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html#a6e4e3c8b8393aab591d89d5bff9408da">terrainType</a>(HexCoordinates c) const noexcept</td><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html">eve::hexmap::HexMap</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html#ae44f808003b23d467fb714a913300e2b">urbanLevel</a>(HexCoordinates c) const noexcept</td><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html">eve::hexmap::HexMap</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html#a762cb88b452bb2cb4728a107d10e226b">values</a>(HexCoordinates c) const noexcept</td><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html">eve::hexmap::HexMap</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html#a20fc848753f63fa0b76e17643ccb5a6e">waterLevel</a>(HexCoordinates c) const noexcept</td><td class="entry"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html">eve::hexmap::HexMap</a></td><td class="entry"></td></tr>
+</table></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

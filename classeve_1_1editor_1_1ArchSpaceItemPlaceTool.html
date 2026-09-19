@@ -1,0 +1,703 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::editor::ArchSpaceItemPlaceTool类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1editor.html">editor</a></li><li class="navelem"><a class="el" href="classeve_1_1editor_1_1ArchSpaceItemPlaceTool.html">ArchSpaceItemPlaceTool</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1editor_1_1ArchSpaceItemPlaceTool-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::editor::ArchSpaceItemPlaceTool类 参考<span class="mlabels"><span class="mlabel">final</span></span></div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Click-to-place furniture tool committing <code>makePlaceItem</code> with catalog id + yaw.  
+ <a href="classeve_1_1editor_1_1ArchSpaceItemPlaceTool.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="EditorArchSpaceTools_8h_source.html">EditorArchSpaceTools.h</a>&gt;</code></p>
+<div class="dynheader">
+类 eve::editor::ArchSpaceItemPlaceTool 继承关系图:</div>
+<div class="dyncontent">
+ <div class="center">
+  <img src="classeve_1_1editor_1_1ArchSpaceItemPlaceTool.png" usemap="#eve::editor::ArchSpaceItemPlaceTool_map" alt=""/>
+  <map id="eve::editor::ArchSpaceItemPlaceTool_map" name="eve::editor::ArchSpaceItemPlaceTool_map">
+<area href="classeve_1_1editor_1_1IEditorTool.html" title="Protocol implemented by every editor tool." alt="eve::editor::IEditorTool" shape="rect" coords="0,0,219,24"/>
+  </map>
+</div></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:ae9ae27b49bfd7a7894cacf9ddec8b932" id="r_ae9ae27b49bfd7a7894cacf9ddec8b932"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1ArchSpaceItemPlaceTool.html#ae9ae27b49bfd7a7894cacf9ddec8b932">ArchSpaceItemPlaceTool</a> (<a class="el" href="classeve_1_1editor_1_1IArchSpaceViewportAdapter.html">IArchSpaceViewportAdapter</a> *viewport, <a class="el" href="classeve_1_1editing_1_1IEditAuthority.html">editing::IEditAuthority</a> *authority)</td></tr>
+<tr class="separator:ae9ae27b49bfd7a7894cacf9ddec8b932"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3fcf43d8382b8198215d64d1b2fe76de" id="r_a3fcf43d8382b8198215d64d1b2fe76de"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="structeve_1_1editor_1_1ToolDescriptor.html">ToolDescriptor</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1ArchSpaceItemPlaceTool.html#a3fcf43d8382b8198215d64d1b2fe76de">descriptor</a> () const override</td></tr>
+<tr class="memdesc:a3fcf43d8382b8198215d64d1b2fe76de"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stable tool identity and presentation metadata.  <br /></td></tr>
+<tr class="separator:a3fcf43d8382b8198215d64d1b2fe76de"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5da62699fdca035d90f697d555abecc8" id="r_a5da62699fdca035d90f697d555abecc8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1ArchSpaceItemPlaceTool.html#a5da62699fdca035d90f697d555abecc8">setViewportAdapter</a> (<a class="el" href="classeve_1_1editor_1_1IArchSpaceViewportAdapter.html">IArchSpaceViewportAdapter</a> *viewport)</td></tr>
+<tr class="separator:a5da62699fdca035d90f697d555abecc8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a90b188e45bd34943f37e9206fa49d223" id="r_a90b188e45bd34943f37e9206fa49d223"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1ArchSpaceItemPlaceTool.html#a90b188e45bd34943f37e9206fa49d223">setAuthority</a> (<a class="el" href="classeve_1_1editing_1_1IEditAuthority.html">editing::IEditAuthority</a> *authority)</td></tr>
+<tr class="separator:a90b188e45bd34943f37e9206fa49d223"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a339fe669f650d1f65d3f54e46b44f0bc" id="r_a339fe669f650d1f65d3f54e46b44f0bc"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1ArchSpaceItemPlaceTool.html#a339fe669f650d1f65d3f54e46b44f0bc">setLevelId</a> (std::string levelId)</td></tr>
+<tr class="separator:a339fe669f650d1f65d3f54e46b44f0bc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8f5b6acf334a9c8109ef7366dc16aff2" id="r_a8f5b6acf334a9c8109ef7366dc16aff2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1ArchSpaceItemPlaceTool.html#a8f5b6acf334a9c8109ef7366dc16aff2">setCatalogId</a> (std::string catalogId)</td></tr>
+<tr class="separator:a8f5b6acf334a9c8109ef7366dc16aff2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af61b1578abb818d8c7a5be0878aef75e" id="r_af61b1578abb818d8c7a5be0878aef75e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1ArchSpaceItemPlaceTool.html#af61b1578abb818d8c7a5be0878aef75e">setYawDegrees</a> (double <a class="el" href="PrefabActionCapabilities_8cpp.html#a7efc219781df4a1e281cb5d348b7fbf9">yaw</a>)</td></tr>
+<tr class="separator:af61b1578abb818d8c7a5be0878aef75e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5bb6ef3d4abe35c18731216cd4d76297" id="r_a5bb6ef3d4abe35c18731216cd4d76297"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1ArchSpaceItemPlaceTool.html#a5bb6ef3d4abe35c18731216cd4d76297">setIdPrefix</a> (std::string prefix)</td></tr>
+<tr class="separator:a5bb6ef3d4abe35c18731216cd4d76297"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae4a594b7e3cb3c81cf73411a22123726" id="r_ae4a594b7e3cb3c81cf73411a22123726"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1editor_1_1ToolResponse.html">ToolResponse</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1ArchSpaceItemPlaceTool.html#ae4a594b7e3cb3c81cf73411a22123726">pointerEvent</a> (<a class="el" href="classeve_1_1editor_1_1EditorContext.html">EditorContext</a> &amp;<a class="el" href="VegetationPreset_8cpp.html#aa677a20ed09a5d6c839a3d7a4d53cb9c">context</a>, const <a class="el" href="structeve_1_1editor_1_1EditorPointerEvent.html">EditorPointerEvent</a> &amp;event) override</td></tr>
+<tr class="memdesc:ae4a594b7e3cb3c81cf73411a22123726"><td class="mdescLeft">&#160;</td><td class="mdescRight">Handle normalized pointer input.  <br /></td></tr>
+<tr class="separator:ae4a594b7e3cb3c81cf73411a22123726"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abef1bae024d8302ac739453c8732fe04" id="r_abef1bae024d8302ac739453c8732fe04"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1ArchSpaceItemPlaceTool.html#abef1bae024d8302ac739453c8732fe04">deactivate</a> (<a class="el" href="classeve_1_1editor_1_1EditorContext.html">EditorContext</a> &amp;<a class="el" href="VegetationPreset_8cpp.html#aa677a20ed09a5d6c839a3d7a4d53cb9c">context</a>) override</td></tr>
+<tr class="memdesc:abef1bae024d8302ac739453c8732fe04"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called exactly once before this tool stops being active.  <br /></td></tr>
+<tr class="separator:abef1bae024d8302ac739453c8732fe04"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0f86f399cab0ffd346ad350bb410278c" id="r_a0f86f399cab0ffd346ad350bb410278c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1ArchSpaceItemPlaceTool.html#a0f86f399cab0ffd346ad350bb410278c">cancel</a> (<a class="el" href="classeve_1_1editor_1_1EditorContext.html">EditorContext</a> &amp;<a class="el" href="VegetationPreset_8cpp.html#aa677a20ed09a5d6c839a3d7a4d53cb9c">context</a>) override</td></tr>
+<tr class="memdesc:a0f86f399cab0ffd346ad350bb410278c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cancel the active gesture while keeping the tool selected.  <br /></td></tr>
+<tr class="separator:a0f86f399cab0ffd346ad350bb410278c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7d742a1a075664ba6c9136d7a1ed6a14" id="r_a7d742a1a075664ba6c9136d7a1ed6a14"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1ArchSpaceItemPlaceTool.html#a7d742a1a075664ba6c9136d7a1ed6a14">drawOverlay</a> (<a class="el" href="classeve_1_1editor_1_1EditorContext.html">EditorContext</a> &amp;<a class="el" href="VegetationPreset_8cpp.html#aa677a20ed09a5d6c839a3d7a4d53cb9c">context</a>, <a class="el" href="classeve_1_1editor_1_1IEditorOverlay.html">IEditorOverlay</a> &amp;overlay) override</td></tr>
+<tr class="memdesc:a7d742a1a075664ba6c9136d7a1ed6a14"><td class="mdescLeft">&#160;</td><td class="mdescRight">Emit renderer-independent feedback for the active viewport.  <br /></td></tr>
+<tr class="separator:a7d742a1a075664ba6c9136d7a1ed6a14"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad1db9b4067b93457d4579fd6052991ac" id="r_ad1db9b4067b93457d4579fd6052991ac"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1ArchSpaceItemPlaceTool.html#ad1db9b4067b93457d4579fd6052991ac">inspect</a> (<a class="el" href="classeve_1_1editor_1_1EditorContext.html">EditorContext</a> &amp;<a class="el" href="VegetationPreset_8cpp.html#aa677a20ed09a5d6c839a3d7a4d53cb9c">context</a>, <a class="el" href="classeve_1_1editor_1_1IEditorInspector.html">IEditorInspector</a> &amp;inspector) override</td></tr>
+<tr class="memdesc:ad1db9b4067b93457d4579fd6052991ac"><td class="mdescLeft">&#160;</td><td class="mdescRight">Expose configurable settings through a host-provided inspector.  <br /></td></tr>
+<tr class="separator:ad1db9b4067b93457d4579fd6052991ac"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a55bbdcb0e9ebd7d729281a5bac9f378d" id="r_a55bbdcb0e9ebd7d729281a5bac9f378d"><td class="memItemLeft" align="right" valign="top">const std::optional&lt; <a class="el" href="structeve_1_1editing_1_1TransactionReceipt.html">editing::TransactionReceipt</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1ArchSpaceItemPlaceTool.html#a55bbdcb0e9ebd7d729281a5bac9f378d">lastReceipt</a> () const</td></tr>
+<tr class="separator:a55bbdcb0e9ebd7d729281a5bac9f378d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac18163aa7ecea1d910e65b16f29cedf2" id="r_ac18163aa7ecea1d910e65b16f29cedf2"><td class="memItemLeft" align="right" valign="top">const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1ArchSpaceItemPlaceTool.html#ac18163aa7ecea1d910e65b16f29cedf2">lastItemId</a> () const</td></tr>
+<tr class="separator:ac18163aa7ecea1d910e65b16f29cedf2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classeve_1_1editor_1_1IEditorTool"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classeve_1_1editor_1_1IEditorTool')"><img src="closed.png" alt="-"/>&#160;Public 成员函数 继承自 <a class="el" href="classeve_1_1editor_1_1IEditorTool.html">eve::editor::IEditorTool</a></td></tr>
+<tr class="memitem:a6834536a0fa3d28bac7f8d64e2c617c1 inherit pub_methods_classeve_1_1editor_1_1IEditorTool" id="r_a6834536a0fa3d28bac7f8d64e2c617c1"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1IEditorTool.html#a6834536a0fa3d28bac7f8d64e2c617c1">~IEditorTool</a> ()=default</td></tr>
+<tr class="separator:a6834536a0fa3d28bac7f8d64e2c617c1 inherit pub_methods_classeve_1_1editor_1_1IEditorTool"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab9a86b4f7397988430423ca00cdd85da inherit pub_methods_classeve_1_1editor_1_1IEditorTool" id="r_ab9a86b4f7397988430423ca00cdd85da"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1IEditorTool.html#ab9a86b4f7397988430423ca00cdd85da">activate</a> (<a class="el" href="classeve_1_1editor_1_1EditorContext.html">EditorContext</a> &amp;<a class="el" href="VegetationPreset_8cpp.html#aa677a20ed09a5d6c839a3d7a4d53cb9c">context</a>)</td></tr>
+<tr class="memdesc:ab9a86b4f7397988430423ca00cdd85da inherit pub_methods_classeve_1_1editor_1_1IEditorTool"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called exactly once when this tool becomes active.  <br /></td></tr>
+<tr class="separator:ab9a86b4f7397988430423ca00cdd85da inherit pub_methods_classeve_1_1editor_1_1IEditorTool"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8f1bf60757a18bd969528316eaf7c1fe inherit pub_methods_classeve_1_1editor_1_1IEditorTool" id="r_a8f1bf60757a18bd969528316eaf7c1fe"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="structeve_1_1editor_1_1ToolResponse.html">ToolResponse</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1IEditorTool.html#a8f1bf60757a18bd969528316eaf7c1fe">keyEvent</a> (<a class="el" href="classeve_1_1editor_1_1EditorContext.html">EditorContext</a> &amp;<a class="el" href="VegetationPreset_8cpp.html#aa677a20ed09a5d6c839a3d7a4d53cb9c">context</a>, const <a class="el" href="structeve_1_1editor_1_1EditorKeyEvent.html">EditorKeyEvent</a> &amp;event)</td></tr>
+<tr class="memdesc:a8f1bf60757a18bd969528316eaf7c1fe inherit pub_methods_classeve_1_1editor_1_1IEditorTool"><td class="mdescLeft">&#160;</td><td class="mdescRight">Handle normalized keyboard input.  <br /></td></tr>
+<tr class="separator:a8f1bf60757a18bd969528316eaf7c1fe inherit pub_methods_classeve_1_1editor_1_1IEditorTool"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a13a326cc50597c8bcb3e113d0728ac90 inherit pub_methods_classeve_1_1editor_1_1IEditorTool" id="r_a13a326cc50597c8bcb3e113d0728ac90"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1IEditorTool.html#a13a326cc50597c8bcb3e113d0728ac90">update</a> (<a class="el" href="classeve_1_1editor_1_1EditorContext.html">EditorContext</a> &amp;<a class="el" href="VegetationPreset_8cpp.html#aa677a20ed09a5d6c839a3d7a4d53cb9c">context</a>, float dt)</td></tr>
+<tr class="memdesc:a13a326cc50597c8bcb3e113d0728ac90 inherit pub_methods_classeve_1_1editor_1_1IEditorTool"><td class="mdescLeft">&#160;</td><td class="mdescRight">Per-frame hook for an active tool.  <br /></td></tr>
+<tr class="separator:a13a326cc50597c8bcb3e113d0728ac90 inherit pub_methods_classeve_1_1editor_1_1IEditorTool"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Click-to-place furniture tool committing <code>makePlaceItem</code> with catalog id + yaw. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorArchSpaceTools_8h_source.html">EditorArchSpaceTools.h</a> 第 <a class="el" href="EditorArchSpaceTools_8h_source.html#l00139">139</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="ae9ae27b49bfd7a7894cacf9ddec8b932" name="ae9ae27b49bfd7a7894cacf9ddec8b932"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae9ae27b49bfd7a7894cacf9ddec8b932">&#9670;&#160;</a></span>ArchSpaceItemPlaceTool()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::editor::ArchSpaceItemPlaceTool::ArchSpaceItemPlaceTool </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1editor_1_1IArchSpaceViewportAdapter.html">IArchSpaceViewportAdapter</a> *&#160;</td>
+          <td class="paramname"><em>viewport</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1editing_1_1IEditAuthority.html">editing::IEditAuthority</a> *&#160;</td>
+          <td class="paramname"><em>authority</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ArchSpaceTools_8cpp_source.html">ArchSpaceTools.cpp</a> 第 <a class="el" href="ArchSpaceTools_8cpp_source.html#l00266">266</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a0f86f399cab0ffd346ad350bb410278c" name="a0f86f399cab0ffd346ad350bb410278c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0f86f399cab0ffd346ad350bb410278c">&#9670;&#160;</a></span>cancel()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::editor::ArchSpaceItemPlaceTool::cancel </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1editor_1_1EditorContext.html">EditorContext</a> &amp;&#160;</td>
+          <td class="paramname"><em>context</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Cancel the active gesture while keeping the tool selected. </p>
+
+<p>重载 <a class="el" href="classeve_1_1editor_1_1IEditorTool.html#ac89bef159ff7b8557244a8f4a0a855fa">eve::editor::IEditorTool</a> .</p>
+
+<p class="definition">在文件 <a class="el" href="ArchSpaceTools_8cpp_source.html">ArchSpaceTools.cpp</a> 第 <a class="el" href="ArchSpaceTools_8cpp_source.html#l00316">316</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ArchSpaceTools_8cpp_source.html#l00315">deactivate()</a>.</p>
+
+</div>
+</div>
+<a id="abef1bae024d8302ac739453c8732fe04" name="abef1bae024d8302ac739453c8732fe04"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abef1bae024d8302ac739453c8732fe04">&#9670;&#160;</a></span>deactivate()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::editor::ArchSpaceItemPlaceTool::deactivate </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1editor_1_1EditorContext.html">EditorContext</a> &amp;&#160;</td>
+          <td class="paramname"><em>context</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Called exactly once before this tool stops being active. </p>
+
+<p>重载 <a class="el" href="classeve_1_1editor_1_1IEditorTool.html#a590b50831226db999f98a6ac932dc5ab">eve::editor::IEditorTool</a> .</p>
+
+<p class="definition">在文件 <a class="el" href="ArchSpaceTools_8cpp_source.html">ArchSpaceTools.cpp</a> 第 <a class="el" href="ArchSpaceTools_8cpp_source.html#l00315">315</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ArchSpaceTools_8cpp_source.html#l00316">cancel()</a> , 以及 <a class="el" href="VegetationPreset_8cpp_source.html#l00087">context</a>.</p>
+
+</div>
+</div>
+<a id="a3fcf43d8382b8198215d64d1b2fe76de" name="a3fcf43d8382b8198215d64d1b2fe76de"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3fcf43d8382b8198215d64d1b2fe76de">&#9670;&#160;</a></span>descriptor()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="structeve_1_1editor_1_1ToolDescriptor.html">ToolDescriptor</a> &amp; eve::editor::ArchSpaceItemPlaceTool::descriptor </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Stable tool identity and presentation metadata. </p>
+
+<p>实现了 <a class="el" href="classeve_1_1editor_1_1IEditorTool.html#acee31c51ecc88fe4c9b743fdd1a0ffb4">eve::editor::IEditorTool</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="EditorArchSpaceTools_8h_source.html">EditorArchSpaceTools.h</a> 第 <a class="el" href="EditorArchSpaceTools_8h_source.html#l00143">143</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a7d742a1a075664ba6c9136d7a1ed6a14" name="a7d742a1a075664ba6c9136d7a1ed6a14"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7d742a1a075664ba6c9136d7a1ed6a14">&#9670;&#160;</a></span>drawOverlay()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::editor::ArchSpaceItemPlaceTool::drawOverlay </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1editor_1_1EditorContext.html">EditorContext</a> &amp;&#160;</td>
+          <td class="paramname"><em>context</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1editor_1_1IEditorOverlay.html">IEditorOverlay</a> &amp;&#160;</td>
+          <td class="paramname"><em>overlay</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Emit renderer-independent feedback for the active viewport. </p>
+
+<p>重载 <a class="el" href="classeve_1_1editor_1_1IEditorTool.html#a2f16d20f0e7a7c0737eb0e68eeb7be53">eve::editor::IEditorTool</a> .</p>
+
+<p class="definition">在文件 <a class="el" href="ArchSpaceTools_8cpp_source.html">ArchSpaceTools.cpp</a> 第 <a class="el" href="ArchSpaceTools_8cpp_source.html#l00318">318</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="BushMesh_8cpp_source.html#l00027">center</a>, <a class="el" href="classeve_1_1editor_1_1IEditorOverlay.html#a7decf33b5af6d0c1b1e7ac55b566d85c">eve::editor::IEditorOverlay::circle()</a>, <a class="el" href="EditorPresentation_8h_source.html#l00016">eve::editor::OverlayStyle::color</a>, <a class="el" href="classeve_1_1editor_1_1IArchSpaceViewportAdapter.html#a38f67c7e9e145fa3a5942f1471571887">eve::editor::IArchSpaceViewportAdapter::projectWorld()</a>, <a class="el" href="classeve_1_1editor_1_1IEditorOverlay.html#a1198741f91915a44277040b712830866">eve::editor::IEditorOverlay::text()</a> , 以及 <a class="el" href="EditorPresentation_8h_source.html#l00017">eve::editor::OverlayStyle::thickness</a>.</p>
+
+</div>
+</div>
+<a id="ad1db9b4067b93457d4579fd6052991ac" name="ad1db9b4067b93457d4579fd6052991ac"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad1db9b4067b93457d4579fd6052991ac">&#9670;&#160;</a></span>inspect()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::editor::ArchSpaceItemPlaceTool::inspect </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1editor_1_1EditorContext.html">EditorContext</a> &amp;&#160;</td>
+          <td class="paramname"><em>context</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1editor_1_1IEditorInspector.html">IEditorInspector</a> &amp;&#160;</td>
+          <td class="paramname"><em>inspector</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Expose configurable settings through a host-provided inspector. </p>
+
+<p>重载 <a class="el" href="classeve_1_1editor_1_1IEditorTool.html#a13c5c08b569a306825c34896c201959c">eve::editor::IEditorTool</a> .</p>
+
+<p class="definition">在文件 <a class="el" href="ArchSpaceTools_8cpp_source.html">ArchSpaceTools.cpp</a> 第 <a class="el" href="ArchSpaceTools_8cpp_source.html#l00329">329</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="classeve_1_1editor_1_1IEditorInspector.html#aa870b363249bfba5bb37342335040fde">eve::editor::IEditorInspector::beginGroup()</a>, <a class="el" href="classeve_1_1editor_1_1IEditorInspector.html#a875b2189fc7eb6360595a7710577faf2">eve::editor::IEditorInspector::endGroup()</a>, <a class="el" href="classeve_1_1editor_1_1IEditorInspector.html#ae366e5a3a2914eb20da8e33790896f4b">eve::editor::IEditorInspector::scalar()</a>, <a class="el" href="classeve_1_1editor_1_1IEditorInspector.html#aeb546fe1610195af4572c9746d008855">eve::editor::IEditorInspector::string()</a> , 以及 <a class="el" href="PrefabActionCapabilities_8cpp_source.html#l00041">yaw</a>.</p>
+
+</div>
+</div>
+<a id="ac18163aa7ecea1d910e65b16f29cedf2" name="ac18163aa7ecea1d910e65b16f29cedf2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac18163aa7ecea1d910e65b16f29cedf2">&#9670;&#160;</a></span>lastItemId()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::string &amp; eve::editor::ArchSpaceItemPlaceTool::lastItemId </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EditorArchSpaceTools_8h_source.html">EditorArchSpaceTools.h</a> 第 <a class="el" href="EditorArchSpaceTools_8h_source.html#l00158">158</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a55bbdcb0e9ebd7d729281a5bac9f378d" name="a55bbdcb0e9ebd7d729281a5bac9f378d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a55bbdcb0e9ebd7d729281a5bac9f378d">&#9670;&#160;</a></span>lastReceipt()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::optional&lt; <a class="el" href="structeve_1_1editing_1_1TransactionReceipt.html">editing::TransactionReceipt</a> &gt; &amp; eve::editor::ArchSpaceItemPlaceTool::lastReceipt </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EditorArchSpaceTools_8h_source.html">EditorArchSpaceTools.h</a> 第 <a class="el" href="EditorArchSpaceTools_8h_source.html#l00157">157</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae4a594b7e3cb3c81cf73411a22123726" name="ae4a594b7e3cb3c81cf73411a22123726"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae4a594b7e3cb3c81cf73411a22123726">&#9670;&#160;</a></span>pointerEvent()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1editor_1_1ToolResponse.html">ToolResponse</a> eve::editor::ArchSpaceItemPlaceTool::pointerEvent </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1editor_1_1EditorContext.html">EditorContext</a> &amp;&#160;</td>
+          <td class="paramname"><em>context</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1editor_1_1EditorPointerEvent.html">EditorPointerEvent</a> &amp;&#160;</td>
+          <td class="paramname"><em>event</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Handle normalized pointer input. </p>
+
+<p>重载 <a class="el" href="classeve_1_1editor_1_1IEditorTool.html#a657ad01dd9d847c56b2277445da47f68">eve::editor::IEditorTool</a> .</p>
+
+<p class="definition">在文件 <a class="el" href="ArchSpaceTools_8cpp_source.html">ArchSpaceTools.cpp</a> 第 <a class="el" href="ArchSpaceTools_8cpp_source.html#l00287">287</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditorTool_8h_source.html#l00023">eve::editor::EditorPointerEvent::button</a>, <a class="el" href="structeve_1_1editor_1_1EditorPointerEvent.html#a1d35d5f23b4edb59a1a2d2a1c85fa516aea4788705e6873b424c65e91c2846b19">eve::editor::EditorPointerEvent::Cancel</a>, <a class="el" href="EditorTool_8h_source.html#l00054">eve::editor::ToolResponse::capture()</a>, <a class="el" href="EditorTool_8h_source.html#l00053">eve::editor::ToolResponse::consumed()</a>, <a class="el" href="VegetationPreset_8cpp_source.html#l00087">context</a>, <a class="el" href="structeve_1_1editor_1_1EditorPointerEvent.html#a1d35d5f23b4edb59a1a2d2a1c85fa516a08a38277b0309070706f6652eeae9a53">eve::editor::EditorPointerEvent::Down</a>, <a class="el" href="EditorTool_8h_source.html#l00052">eve::editor::ToolResponse::ignored()</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00028">itemId</a>, <a class="el" href="structeve_1_1editor_1_1EditorPointerEvent.html#a1d35d5f23b4edb59a1a2d2a1c85fa516a6bc362dbf494c61ea117fe3c71ca48a5">eve::editor::EditorPointerEvent::Move</a>, <a class="el" href="ActionNotifyRegistry_8cpp_source.html#l00164">operation</a>, <a class="el" href="EditorTool_8h_source.html#l00021">eve::editor::EditorPointerEvent::phase</a>, <a class="el" href="VolumeFluidSimplexQuery_8cpp_source.html#l00017">point</a>, <a class="el" href="EditorTool_8h_source.html#l00055">eve::editor::ToolResponse::release()</a>, <a class="el" href="ActionNotifyRegistry_8cpp_source.html#l00163">target</a>, <a class="el" href="structeve_1_1editor_1_1EditorPointerEvent.html#a1d35d5f23b4edb59a1a2d2a1c85fa516a258f49887ef8d14ac268c92b02503aaa">eve::editor::EditorPointerEvent::Up</a> , 以及 <a class="el" href="ArchSpaceTypes_8h_source.html#l00026">eve::archspace::Vec3::x</a>.</p>
+
+</div>
+</div>
+<a id="a90b188e45bd34943f37e9206fa49d223" name="a90b188e45bd34943f37e9206fa49d223"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a90b188e45bd34943f37e9206fa49d223">&#9670;&#160;</a></span>setAuthority()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::editor::ArchSpaceItemPlaceTool::setAuthority </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1editing_1_1IEditAuthority.html">editing::IEditAuthority</a> *&#160;</td>
+          <td class="paramname"><em>authority</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ArchSpaceTools_8cpp_source.html">ArchSpaceTools.cpp</a> 第 <a class="el" href="ArchSpaceTools_8cpp_source.html#l00273">273</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a8f5b6acf334a9c8109ef7366dc16aff2" name="a8f5b6acf334a9c8109ef7366dc16aff2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8f5b6acf334a9c8109ef7366dc16aff2">&#9670;&#160;</a></span>setCatalogId()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::editor::ArchSpaceItemPlaceTool::setCatalogId </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>catalogId</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ArchSpaceTools_8cpp_source.html">ArchSpaceTools.cpp</a> 第 <a class="el" href="ArchSpaceTools_8cpp_source.html#l00278">278</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a5bb6ef3d4abe35c18731216cd4d76297" name="a5bb6ef3d4abe35c18731216cd4d76297"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5bb6ef3d4abe35c18731216cd4d76297">&#9670;&#160;</a></span>setIdPrefix()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::editor::ArchSpaceItemPlaceTool::setIdPrefix </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>prefix</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EditorArchSpaceTools_8h_source.html">EditorArchSpaceTools.h</a> 第 <a class="el" href="EditorArchSpaceTools_8h_source.html#l00149">149</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a339fe669f650d1f65d3f54e46b44f0bc" name="a339fe669f650d1f65d3f54e46b44f0bc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a339fe669f650d1f65d3f54e46b44f0bc">&#9670;&#160;</a></span>setLevelId()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::editor::ArchSpaceItemPlaceTool::setLevelId </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>levelId</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ArchSpaceTools_8cpp_source.html">ArchSpaceTools.cpp</a> 第 <a class="el" href="ArchSpaceTools_8cpp_source.html#l00277">277</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a5da62699fdca035d90f697d555abecc8" name="a5da62699fdca035d90f697d555abecc8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5da62699fdca035d90f697d555abecc8">&#9670;&#160;</a></span>setViewportAdapter()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::editor::ArchSpaceItemPlaceTool::setViewportAdapter </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1editor_1_1IArchSpaceViewportAdapter.html">IArchSpaceViewportAdapter</a> *&#160;</td>
+          <td class="paramname"><em>viewport</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ArchSpaceTools_8cpp_source.html">ArchSpaceTools.cpp</a> 第 <a class="el" href="ArchSpaceTools_8cpp_source.html#l00269">269</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af61b1578abb818d8c7a5be0878aef75e" name="af61b1578abb818d8c7a5be0878aef75e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af61b1578abb818d8c7a5be0878aef75e">&#9670;&#160;</a></span>setYawDegrees()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::editor::ArchSpaceItemPlaceTool::setYawDegrees </td>
+          <td>(</td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>yaw</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EditorArchSpaceTools_8h_source.html">EditorArchSpaceTools.h</a> 第 <a class="el" href="EditorArchSpaceTools_8h_source.html#l00148">148</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PrefabActionCapabilities_8cpp_source.html#l00041">yaw</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/archspace/editor/<a class="el" href="EditorArchSpaceTools_8h_source.html">EditorArchSpaceTools.h</a></li>
+<li>src/modules/archspace/editor/<a class="el" href="ArchSpaceTools_8cpp_source.html">ArchSpaceTools.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

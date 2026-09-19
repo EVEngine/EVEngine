@@ -1,0 +1,565 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::audio 命名空间参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1audio.html">audio</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#enum-members">枚举</a> &#124;
+<a href="#func-members">函数</a> &#124;
+<a href="#var-members">变量</a>  </div>
+  <div class="headertitle"><div class="title">eve::audio 命名空间参考</div></div>
+</div><!--header-->
+<div class="contents">
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1audio_1_1Audio.html">Audio</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">OpenAL audio module: device management, master listener state, and <a class="el" href="classeve_1_1audio_1_1Source.html" title="A playable audio source (static buffer or streaming decoder). Not thread-safe for playback control ex...">Source</a> factory. Script: <code>audio &lt;- <a class="el" href="namespaceeve.html#ae5defde2d23d6c815e440eabbed4eb61ab22f0418e8ac915eb66f829d262d14a2">eve.Audio()</a>;</code>  <a href="classeve_1_1audio_1_1Audio.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1audio_1_1AudioZoneItem.html">AudioZoneItem</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">One Pcg audio-zone track timing and gain profile.  <a href="structeve_1_1audio_1_1AudioZoneItem.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1audio_1_1AudioZoneOutput.html">AudioZoneOutput</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Commands to apply to a caller-owned audio <a class="el" href="classeve_1_1audio_1_1Source.html" title="A playable audio source (static buffer or streaming decoder). Not thread-safe for playback control ex...">Source</a>.  <a href="structeve_1_1audio_1_1AudioZoneOutput.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1audio_1_1AudioZoneProfile.html">AudioZoneProfile</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Caller-owned Pcg audio-zone configuration and track list.  <a href="classeve_1_1audio_1_1AudioZoneProfile.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1audio_1_1AudioZoneState.html">AudioZoneState</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Persistent playback state owned by the caller.  <a href="structeve_1_1audio_1_1AudioZoneState.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1audio_1_1PcmChunk.html">PcmChunk</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">解码后待排队的一帧 PCM 数据。  <a href="structeve_1_1audio_1_1PcmChunk.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1audio_1_1Source.html">Source</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A playable audio source (static buffer or streaming decoder). Not thread-safe for playback control except <a class="el" href="classeve_1_1audio_1_1Source.html#a07b8ad5c3c5a989741ef5fde7d3a50f1" title="Called by the Audio worker thread. Internally synchronized against concurrent decoder teardown (see d...">fillPendingFromDecoder()</a>, which is synchronized for the <a class="el" href="classeve_1_1audio_1_1Audio.html" title="OpenAL audio module: device management, master listener state, and Source factory....">Audio</a> worker thread.  <a href="classeve_1_1audio_1_1Source.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="enum-members" name="enum-members"></a>
+枚举</h2></td></tr>
+<tr class="memitem:abd7983eb76ac9e703754cdd349285c58" id="r_abd7983eb76ac9e703754cdd349285c58"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1audio.html#abd7983eb76ac9e703754cdd349285c58">AudioZonePhase</a> : std::uint8_t { <a class="el" href="namespaceeve_1_1audio.html#abd7983eb76ac9e703754cdd349285c58a4d3d769b812b6faa6b76e1a8abaece2d">Active</a>
+, <a class="el" href="namespaceeve_1_1audio.html#abd7983eb76ac9e703754cdd349285c58a0d1d7a164ca2b7afb420c7cfbfd9e84c">BecomingInactive</a>
+, <a class="el" href="namespaceeve_1_1audio.html#abd7983eb76ac9e703754cdd349285c58a3cab03c00dbd11bc3569afa0748013f0">Inactive</a>
+ }</td></tr>
+<tr class="separator:abd7983eb76ac9e703754cdd349285c58"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+函数</h2></td></tr>
+<tr class="memitem:adfed8f1ebfe539163dccb161949cf063" id="r_adfed8f1ebfe539163dccb161949cf063"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1audio.html#adfed8f1ebfe539163dccb161949cf063">Module_IMPL</a> (<a class="el" href="classeve_1_1audio_1_1Audio.html">Audio</a>, new <a class="el" href="classeve_1_1audio_1_1Audio.html">Audio</a>())</td></tr>
+<tr class="separator:adfed8f1ebfe539163dccb161949cf063"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a90a331c6a738201ca7e5d8c9387a561e" id="r_a90a331c6a738201ca7e5d8c9387a561e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1audio.html#a90a331c6a738201ca7e5d8c9387a561e">registerAudioCapabilities</a> ()</td></tr>
+<tr class="separator:a90a331c6a738201ca7e5d8c9387a561e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2dd6dbe44e4fa6f39905768ca960e230" id="r_a2dd6dbe44e4fa6f39905768ca960e230"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1audio_1_1AudioZoneOutput.html">AudioZoneOutput</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1audio.html#a2dd6dbe44e4fa6f39905768ca960e230">evaluateAudioZone</a> (const <a class="el" href="classeve_1_1audio_1_1AudioZoneProfile.html">AudioZoneProfile</a> &amp;profile, <a class="el" href="structeve_1_1audio_1_1AudioZoneState.html">AudioZoneState</a> &amp;state, float now, float playerX, float playerY, float playerZ, float masterVolume, std::uint32_t <a class="el" href="PointSet_8cpp.html#a6d401fa547bfb21866c6da56399ee303">seed</a>)</td></tr>
+<tr class="memdesc:a2dd6dbe44e4fa6f39905768ca960e230"><td class="mdescLeft">&#160;</td><td class="mdescRight">Evaluate PcgAudioManager/PcgAudioZone for one explicit time and player observation.  <br /></td></tr>
+<tr class="separator:a2dd6dbe44e4fa6f39905768ca960e230"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaeb5d10e9513c60d3441bd5cd3444a8e" id="r_aaeb5d10e9513c60d3441bd5cd3444a8e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1audio.html#aaeb5d10e9513c60d3441bd5cd3444a8e">applyAudioZoneOutput</a> (<a class="el" href="classeve_1_1audio_1_1Source.html">Source</a> *<a class="el" href="UnityVegetationPreset_8cpp.html#a176f5b9d50679b93425278a1a59e3eaa">source</a>, const <a class="el" href="structeve_1_1audio_1_1AudioZoneOutput.html">AudioZoneOutput</a> &amp;<a class="el" href="AssetCommand_8cpp.html#a69da28b7f372dd6b6fffa28d0214e4de">output</a>)</td></tr>
+<tr class="memdesc:aaeb5d10e9513c60d3441bd5cd3444a8e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Apply one evaluated command to the caller-selected track <a class="el" href="classeve_1_1audio_1_1Source.html" title="A playable audio source (static buffer or streaming decoder). Not thread-safe for playback control ex...">Source</a> without retaining it.  <br /></td></tr>
+<tr class="separator:aaeb5d10e9513c60d3441bd5cd3444a8e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1d23c1c9605247f071897a6cca2f205a" id="r_a1d23c1c9605247f071897a6cca2f205a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1audio.html#a1d23c1c9605247f071897a6cca2f205a">applyUnderwaterAudio</a> (<a class="el" href="classeve_1_1audio_1_1Source.html">Source</a> *submergeDown, <a class="el" href="classeve_1_1audio_1_1Source.html">Source</a> *submergeUp, <a class="el" href="classeve_1_1audio_1_1Source.html">Source</a> *ambience, bool playDown, bool playUp, bool loopAmbience, float <a class="el" href="AudioCapabilities_8cpp.html#a8eb3ef4958b442309868039dbab6f0bf">volume</a>)</td></tr>
+<tr class="memdesc:a1d23c1c9605247f071897a6cca2f205a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Apply one Pcg underwater audio transition to caller-owned sources.  <br /></td></tr>
+<tr class="separator:a1d23c1c9605247f071897a6cca2f205a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="var-members" name="var-members"></a>
+变量</h2></td></tr>
+<tr class="memitem:a9e2276e2e2f7824893283bc3561ae917" id="r_a9e2276e2e2f7824893283bc3561ae917"><td class="memItemLeft" align="right" valign="top">constexpr int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1audio.html#a9e2276e2e2f7824893283bc3561ae917">kStreamBufferCount</a> = 4</td></tr>
+<tr class="memdesc:a9e2276e2e2f7824893283bc3561ae917"><td class="mdescLeft">&#160;</td><td class="mdescRight">流式 <a class="el" href="classeve_1_1audio_1_1Source.html" title="A playable audio source (static buffer or streaming decoder). Not thread-safe for playback control ex...">Source</a> 的 OpenAL 缓冲数量。  <br /></td></tr>
+<tr class="separator:a9e2276e2e2f7824893283bc3561ae917"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3b05836474e4ff34ab5b92fb5c963ce2" id="r_a3b05836474e4ff34ab5b92fb5c963ce2"><td class="memItemLeft" align="right" valign="top">constexpr int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1audio.html#a3b05836474e4ff34ab5b92fb5c963ce2">kStreamBufferFrames</a> = 4096</td></tr>
+<tr class="memdesc:a3b05836474e4ff34ab5b92fb5c963ce2"><td class="mdescLeft">&#160;</td><td class="mdescRight">每个流式缓冲的采样帧数。  <br /></td></tr>
+<tr class="separator:a3b05836474e4ff34ab5b92fb5c963ce2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<h2 class="groupheader">枚举类型说明</h2>
+<a id="abd7983eb76ac9e703754cdd349285c58" name="abd7983eb76ac9e703754cdd349285c58"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abd7983eb76ac9e703754cdd349285c58">&#9670;&#160;</a></span>AudioZonePhase</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1audio.html#abd7983eb76ac9e703754cdd349285c58">eve::audio::AudioZonePhase</a> : std::uint8_t</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="abd7983eb76ac9e703754cdd349285c58a4d3d769b812b6faa6b76e1a8abaece2d" name="abd7983eb76ac9e703754cdd349285c58a4d3d769b812b6faa6b76e1a8abaece2d"></a>Active&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="abd7983eb76ac9e703754cdd349285c58a0d1d7a164ca2b7afb420c7cfbfd9e84c" name="abd7983eb76ac9e703754cdd349285c58a0d1d7a164ca2b7afb420c7cfbfd9e84c"></a>BecomingInactive&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="abd7983eb76ac9e703754cdd349285c58a3cab03c00dbd11bc3569afa0748013f0" name="abd7983eb76ac9e703754cdd349285c58a3cab03c00dbd11bc3569afa0748013f0"></a>Inactive&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="AudioZone_8h_source.html">AudioZone.h</a> 第 <a class="el" href="AudioZone_8h_source.html#l00013">13</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">函数说明</h2>
+<a id="aaeb5d10e9513c60d3441bd5cd3444a8e" name="aaeb5d10e9513c60d3441bd5cd3444a8e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaeb5d10e9513c60d3441bd5cd3444a8e">&#9670;&#160;</a></span>applyAudioZoneOutput()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::audio::applyAudioZoneOutput </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1audio_1_1Source.html">Source</a> *&#160;</td>
+          <td class="paramname"><em>source</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1audio_1_1AudioZoneOutput.html">AudioZoneOutput</a> &amp;&#160;</td>
+          <td class="paramname"><em>output</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Apply one evaluated command to the caller-selected track <a class="el" href="classeve_1_1audio_1_1Source.html" title="A playable audio source (static buffer or streaming decoder). Not thread-safe for playback control ex...">Source</a> without retaining it. </p>
+
+<p class="definition">在文件 <a class="el" href="AudioZone_8cpp_source.html">AudioZone.cpp</a> 第 <a class="el" href="AudioZone_8cpp_source.html#l00059">59</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AssetCommand_8cpp_source.html#l00161">output</a>, <a class="el" href="UnityVegetationPreset_8cpp_source.html#l00029">source</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a1d23c1c9605247f071897a6cca2f205a" name="a1d23c1c9605247f071897a6cca2f205a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1d23c1c9605247f071897a6cca2f205a">&#9670;&#160;</a></span>applyUnderwaterAudio()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::audio::applyUnderwaterAudio </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1audio_1_1Source.html">Source</a> *&#160;</td>
+          <td class="paramname"><em>submergeDown</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1audio_1_1Source.html">Source</a> *&#160;</td>
+          <td class="paramname"><em>submergeUp</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1audio_1_1Source.html">Source</a> *&#160;</td>
+          <td class="paramname"><em>ambience</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>playDown</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>playUp</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>loopAmbience</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>volume</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Apply one Pcg underwater audio transition to caller-owned sources. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">submergeDown</td><td>Optional one-shot source played when playDown is true. </td></tr>
+    <tr><td class="paramname">submergeUp</td><td>Optional one-shot source played when playUp is true. </td></tr>
+    <tr><td class="paramname">ambience</td><td>Required looping underwater ambience source. </td></tr>
+    <tr><td class="paramname">playDown</td><td>Whether to play the downward transition once. </td></tr>
+    <tr><td class="paramname">playUp</td><td>Whether to play the upward transition once. </td></tr>
+    <tr><td class="paramname">loopAmbience</td><td>Whether ambience should be playing after this call. </td></tr>
+    <tr><td class="paramname">volume</td><td>Normalized transition and ambience gain in [0,1]. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Success or InvalidArgument; validation completes before source mutation. @ownership Sources remain caller-owned and are never retained. @thread <a class="el" href="classeve_1_1audio_1_1Audio.html" title="OpenAL audio module: device management, master listener state, and Source factory....">Audio</a> owner thread only; callbacks are not invoked. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="UnderwaterAudio_8cpp_source.html">UnderwaterAudio.cpp</a> 第 <a class="el" href="UnderwaterAudio_8cpp_source.html#l00009">9</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="Source_8cpp_source.html#l00175">eve::audio::Source::isPlaying()</a>, <a class="el" href="Source_8cpp_source.html#l00120">eve::audio::Source::play()</a>, <a class="el" href="Source_8cpp_source.html#l00193">eve::audio::Source::setLooping()</a>, <a class="el" href="Source_8cpp_source.html#l00181">eve::audio::Source::setVolume()</a>, <a class="el" href="Source_8cpp_source.html#l00140">eve::audio::Source::stop()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="AudioCapabilities_8cpp_source.html#l00376">volume</a>.</p>
+
+</div>
+</div>
+<a id="a2dd6dbe44e4fa6f39905768ca960e230" name="a2dd6dbe44e4fa6f39905768ca960e230"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2dd6dbe44e4fa6f39905768ca960e230">&#9670;&#160;</a></span>evaluateAudioZone()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1audio_1_1AudioZoneOutput.html">AudioZoneOutput</a> &gt; eve::audio::evaluateAudioZone </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1audio_1_1AudioZoneProfile.html">AudioZoneProfile</a> &amp;&#160;</td>
+          <td class="paramname"><em>profile</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1audio_1_1AudioZoneState.html">AudioZoneState</a> &amp;&#160;</td>
+          <td class="paramname"><em>state</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>now</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>playerX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>playerY</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>playerZ</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>masterVolume</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::uint32_t&#160;</td>
+          <td class="paramname"><em>seed</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Evaluate PcgAudioManager/PcgAudioZone for one explicit time and player observation. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">profile</td><td>Immutable zone configuration. </td></tr>
+    <tr><td class="paramname">state</td><td>Caller-owned playback state, atomically updated on success. </td></tr>
+    <tr><td class="paramname">now</td><td>Absolute simulation time in seconds. </td></tr>
+    <tr><td class="paramname">playerX</td><td>Player world position. </td></tr>
+    <tr><td class="paramname">playerY</td><td>Player world position. </td></tr>
+    <tr><td class="paramname">playerZ</td><td>Player world position. </td></tr>
+    <tr><td class="paramname">masterVolume</td><td>Pcg master-volume ceiling. </td></tr>
+    <tr><td class="paramname">seed</td><td>Named audio-zone RNG stream seed used when a new track starts. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="AudioZone_8cpp_source.html">AudioZone.cpp</a> 第 <a class="el" href="AudioZone_8cpp_source.html#l00022">22</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1audio.html#abd7983eb76ac9e703754cdd349285c58a4d3d769b812b6faa6b76e1a8abaece2d">Active</a>, <a class="el" href="namespaceeve_1_1audio.html#abd7983eb76ac9e703754cdd349285c58a0d1d7a164ca2b7afb420c7cfbfd9e84c">BecomingInactive</a>, <a class="el" href="namespaceeve_1_1audio.html#abd7983eb76ac9e703754cdd349285c58a3cab03c00dbd11bc3569afa0748013f0">Inactive</a>, <a class="el" href="DecalManager_8cpp_source.html#l00020">p</a>, <a class="el" href="AudioZone_8h_source.html#l00040">eve::audio::AudioZoneOutput::play</a>, <a class="el" href="ImageData_8cpp_source.html#l00691">px</a>, <a class="el" href="CaveWetness_8cpp_source.html#l00015">py</a>, <a class="el" href="CaveWetness_8cpp_source.html#l00015">pz</a>, <a class="el" href="PointSet_8cpp_source.html#l00762">seed</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00033">state</a>, <a class="el" href="AudioZone_8h_source.html#l00040">eve::audio::AudioZoneOutput::stop</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="AudioZone_8h_source.html#l00040">eve::audio::AudioZoneOutput::trackIndex</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l00113">unit</a>, <a class="el" href="AudioCapabilities_8cpp_source.html#l00376">volume</a> , 以及 <a class="el" href="AudioZone_8h_source.html#l00040">eve::audio::AudioZoneOutput::volume</a>.</p>
+
+</div>
+</div>
+<a id="adfed8f1ebfe539163dccb161949cf063" name="adfed8f1ebfe539163dccb161949cf063"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adfed8f1ebfe539163dccb161949cf063">&#9670;&#160;</a></span>Module_IMPL()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::audio::Module_IMPL </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1audio_1_1Audio.html">Audio</a>&#160;</td>
+          <td class="paramname">, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">new &#160;</td>
+          <td class="paramname"><em>Audio</em>()&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a90a331c6a738201ca7e5d8c9387a561e" name="a90a331c6a738201ca7e5d8c9387a561e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a90a331c6a738201ca7e5d8c9387a561e">&#9670;&#160;</a></span>registerAudioCapabilities()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::audio::registerAudioCapabilities </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AudioCapabilities_8cpp_source.html">AudioCapabilities.cpp</a> 第 <a class="el" href="AudioCapabilities_8cpp_source.html#l00619">619</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Capability_8cpp_source.html#l00014">impl</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Audio_8cpp_source.html#l00026">eve::audio::Audio::Audio()</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">变量说明</h2>
+<a id="a9e2276e2e2f7824893283bc3561ae917" name="a9e2276e2e2f7824893283bc3561ae917"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9e2276e2e2f7824893283bc3561ae917">&#9670;&#160;</a></span>kStreamBufferCount</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr int eve::audio::kStreamBufferCount = 4</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>流式 <a class="el" href="classeve_1_1audio_1_1Source.html" title="A playable audio source (static buffer or streaming decoder). Not thread-safe for playback control ex...">Source</a> 的 OpenAL 缓冲数量。 </p>
+
+<p class="definition">在文件 <a class="el" href="AudioTypes_8h_source.html">AudioTypes.h</a> 第 <a class="el" href="AudioTypes_8h_source.html#l00011">11</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Source_8cpp_source.html#l00028">eve::audio::Source::Source()</a>.</p>
+
+</div>
+</div>
+<a id="a3b05836474e4ff34ab5b92fb5c963ce2" name="a3b05836474e4ff34ab5b92fb5c963ce2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3b05836474e4ff34ab5b92fb5c963ce2">&#9670;&#160;</a></span>kStreamBufferFrames</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr int eve::audio::kStreamBufferFrames = 4096</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>每个流式缓冲的采样帧数。 </p>
+
+<p class="definition">在文件 <a class="el" href="AudioTypes_8h_source.html">AudioTypes.h</a> 第 <a class="el" href="AudioTypes_8h_source.html#l00013">13</a> 行定义.</p>
+
+</div>
+</div>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

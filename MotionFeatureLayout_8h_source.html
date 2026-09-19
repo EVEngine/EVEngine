@@ -1,0 +1,266 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/animation/MotionFeatureLayout.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_d4f94f5abbcd2420c156bb9358054568.html">animation</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">MotionFeatureLayout.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="MotionFeatureLayout_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span> </div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1animation.html">eve::animation</a> {</div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno"><a class="line" href="namespaceeve_1_1animation.html#a2bb8f1b2a8247164df8df1b64307c624">    8</a></span><span class="keyword">enum class</span> <a class="code hl_enumeration" href="namespaceeve_1_1animation.html#a2bb8f1b2a8247164df8df1b64307c624">MotionFeatureKind</a> : std::uint8_t { <a class="code hl_enumvalue" href="namespaceeve_1_1animation.html#a2bb8f1b2a8247164df8df1b64307c624a52f5e0bc3859bc5f5e25130b6c7e8881">Position</a>, <a class="code hl_enumvalue" href="namespaceeve_1_1animation.html#a2bb8f1b2a8247164df8df1b64307c624a88156d46910a2d733443c339a9231d12">Velocity</a>, <a class="code hl_enumvalue" href="namespaceeve_1_1animation.html#a2bb8f1b2a8247164df8df1b64307c624a0101316665d4f82adaa26d86fbbb2d6e">Heading</a>, <a class="code hl_enumvalue" href="namespaceeve_1_1animation.html#a2bb8f1b2a8247164df8df1b64307c624a2cb4d4a3f8dacd623fa045a44febd476">Curve</a> };</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno"><a class="line" href="namespaceeve_1_1animation.html#a55e3f647e7082b3008003958776ac33a">   10</a></span><span class="keyword">enum class</span> <a class="code hl_enumeration" href="namespaceeve_1_1animation.html#a55e3f647e7082b3008003958776ac33a">MotionFeatureSource</a> : std::uint8_t { <a class="code hl_enumvalue" href="namespaceeve_1_1animation.html#a55e3f647e7082b3008003958776ac33aa8109c9c9d6a2ca3bec3e006fe51a5f3e">Pose</a>, <a class="code hl_enumvalue" href="namespaceeve_1_1animation.html#a55e3f647e7082b3008003958776ac33aa2c1f43c429c5e00feaef7ba3327375dc">Trajectory</a> };</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno"><a class="line" href="namespaceeve_1_1animation.html#a32b8a2d521fd3b2246975be77a5eb0ce">   12</a></span><span class="keyword">enum class</span> <a class="code hl_enumeration" href="namespaceeve_1_1animation.html#a32b8a2d521fd3b2246975be77a5eb0ce">MotionFeatureQuery</a> : std::uint8_t { <a class="code hl_enumvalue" href="namespaceeve_1_1animation.html#a32b8a2d521fd3b2246975be77a5eb0cea76a40e4f974fd895a0a2598c1cee28b4">Character</a>, <a class="code hl_enumvalue" href="namespaceeve_1_1animation.html#a32b8a2d521fd3b2246975be77a5eb0cea481c481246e60dab7fec4c802d56fee9">Continuing</a> };</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span> </div>
+<div class="foldopen" id="foldopen00025" data-start="{" data-end="};">
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno"><a class="line" href="structeve_1_1animation_1_1MotionFeatureChannel.html">   25</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1animation_1_1MotionFeatureChannel.html">MotionFeatureChannel</a> {</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="structeve_1_1animation_1_1MotionFeatureChannel.html#aa42e452fb02c6452e0af8c91ad0fa2d8">   26</a></span>    <a class="code hl_enumeration" href="namespaceeve_1_1animation.html#a2bb8f1b2a8247164df8df1b64307c624">MotionFeatureKind</a> <a class="code hl_variable" href="structeve_1_1animation_1_1MotionFeatureChannel.html#aa42e452fb02c6452e0af8c91ad0fa2d8">kind</a> = <a class="code hl_enumvalue" href="namespaceeve_1_1animation.html#a2bb8f1b2a8247164df8df1b64307c624a52f5e0bc3859bc5f5e25130b6c7e8881">MotionFeatureKind::Position</a>;</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno"><a class="line" href="structeve_1_1animation_1_1MotionFeatureChannel.html#a284ce34bd108cde8ee98c3d7e802dbce">   27</a></span>    <a class="code hl_enumeration" href="namespaceeve_1_1animation.html#a55e3f647e7082b3008003958776ac33a">MotionFeatureSource</a> <a class="code hl_variable" href="structeve_1_1animation_1_1MotionFeatureChannel.html#a284ce34bd108cde8ee98c3d7e802dbce">source</a> = <a class="code hl_enumvalue" href="namespaceeve_1_1animation.html#a55e3f647e7082b3008003958776ac33aa8109c9c9d6a2ca3bec3e006fe51a5f3e">MotionFeatureSource::Pose</a>;</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno"><a class="line" href="structeve_1_1animation_1_1MotionFeatureChannel.html#a889deddaa13fefa0e30dfb6268f5608d">   28</a></span>    <a class="code hl_enumeration" href="namespaceeve_1_1animation.html#a32b8a2d521fd3b2246975be77a5eb0ce">MotionFeatureQuery</a> <a class="code hl_variable" href="structeve_1_1animation_1_1MotionFeatureChannel.html#a889deddaa13fefa0e30dfb6268f5608d">query</a> = <a class="code hl_enumvalue" href="namespaceeve_1_1animation.html#a32b8a2d521fd3b2246975be77a5eb0cea481c481246e60dab7fec4c802d56fee9">MotionFeatureQuery::Continuing</a>;</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno"><a class="line" href="structeve_1_1animation_1_1MotionFeatureChannel.html#a3fefba973ca5210495e9d0df6bc7b974">   29</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="structeve_1_1animation_1_1MotionFeatureChannel.html#a3fefba973ca5210495e9d0df6bc7b974">bone</a> = 0, <a class="code hl_variable" href="structeve_1_1animation_1_1MotionFeatureChannel.html#abbdc4562ba7c74c5da01e63039d66ddb">origin</a> = 0;</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno"><a class="line" href="structeve_1_1animation_1_1MotionFeatureChannel.html#abf1fa9787edce4e27f7e3d9e071b4d06">   30</a></span>    std::uint8_t <a class="code hl_variable" href="structeve_1_1animation_1_1MotionFeatureChannel.html#abf1fa9787edce4e27f7e3d9e071b4d06">axes</a> = 7;</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno"><a class="line" href="structeve_1_1animation_1_1MotionFeatureChannel.html#a98b9200d83812b2b82ce77ed3a15cd00">   31</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="structeve_1_1animation_1_1MotionFeatureChannel.html#a98b9200d83812b2b82ce77ed3a15cd00">headingAxis</a> = 0;</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno"><a class="line" href="structeve_1_1animation_1_1MotionFeatureChannel.html#acf146f091faa6faa52c03033e3fb9de6">   32</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1animation_1_1MotionFeatureChannel.html#acf146f091faa6faa52c03033e3fb9de6">sampleTime</a> = 0.f;</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno"><a class="line" href="structeve_1_1animation_1_1MotionFeatureChannel.html#ac95b33388c97150fc255704a66142cc2">   33</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1animation_1_1MotionFeatureChannel.html#ac95b33388c97150fc255704a66142cc2">weight</a> = 1.f;</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno"><a class="line" href="structeve_1_1animation_1_1MotionFeatureChannel.html#a7c6231cb538f283085662f80aceebe46">   34</a></span>    <span class="keywordtype">bool</span> <a class="code hl_variable" href="structeve_1_1animation_1_1MotionFeatureChannel.html#a7c6231cb538f283085662f80aceebe46">characterSpaceVelocity</a> = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno"><a class="line" href="structeve_1_1animation_1_1MotionFeatureChannel.html#abec2d0ed7542aac32d3d963407693d81">   35</a></span>    <span class="keywordtype">bool</span> <a class="code hl_variable" href="structeve_1_1animation_1_1MotionFeatureChannel.html#abec2d0ed7542aac32d3d963407693d81">normalizeVelocity</a> = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno"><a class="line" href="structeve_1_1animation_1_1MotionFeatureChannel.html#aa8426dd8f5069e8bb47ef73230bbed1d">   36</a></span>    std::string <a class="code hl_variable" href="structeve_1_1animation_1_1MotionFeatureChannel.html#aa8426dd8f5069e8bb47ef73230bbed1d">normalizationGroup</a>;</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno"><a class="line" href="structeve_1_1animation_1_1MotionFeatureChannel.html#a3def6c6b8c30d452066ce4e1e9ed1372">   37</a></span>    std::string <a class="code hl_variable" href="structeve_1_1animation_1_1MotionFeatureChannel.html#a3def6c6b8c30d452066ce4e1e9ed1372">curve</a>;</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>};</div>
+</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span> </div>
+<div class="foldopen" id="foldopen00046" data-start="{" data-end="};">
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno"><a class="line" href="structeve_1_1animation_1_1MotionFeatureLayout.html">   46</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1animation_1_1MotionFeatureLayout.html">MotionFeatureLayout</a> {</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno"><a class="line" href="structeve_1_1animation_1_1MotionFeatureLayout.html#ab4b555fa1d7ac032873e5eab866dfdf9">   47</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="structeve_1_1animation_1_1MotionFeatureLayout.html#ab4b555fa1d7ac032873e5eab866dfdf9">sampleRate</a> = 30;</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno"><a class="line" href="structeve_1_1animation_1_1MotionFeatureLayout.html#a2a702d890df491af82d338227c4c106f">   48</a></span>    std::vector&lt;MotionFeatureChannel&gt; <a class="code hl_variable" href="structeve_1_1animation_1_1MotionFeatureLayout.html#a2a702d890df491af82d338227c4c106f">channels</a>;</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno"><a class="line" href="structeve_1_1animation_1_1MotionFeatureLayout.html#af3e4bbd4be613dd83102dd4688fa3168">   53</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1animation_1_1MotionFeatureLayout.html#af3e4bbd4be613dd83102dd4688fa3168">normalizationLengthScale</a> = 1.f;</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>};</div>
+</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span> </div>
+<div class="foldopen" id="foldopen00061" data-start="{" data-end="};">
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno"><a class="line" href="structeve_1_1animation_1_1MotionFeatureTrajectorySample.html">   61</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1animation_1_1MotionFeatureTrajectorySample.html">MotionFeatureTrajectorySample</a> {</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno"><a class="line" href="structeve_1_1animation_1_1MotionFeatureTrajectorySample.html#a20738eb26125547d0f895084fcef6da0">   62</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1animation_1_1MotionFeatureTrajectorySample.html#a20738eb26125547d0f895084fcef6da0">seconds</a> = 0.f;</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno"><a class="line" href="structeve_1_1animation_1_1MotionFeatureTrajectorySample.html#ae03d4f35b982390af3dfa7e9c72d0b59">   63</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1animation_1_1MotionFeatureTrajectorySample.html#ae03d4f35b982390af3dfa7e9c72d0b59">x</a> = 0.f, <a class="code hl_variable" href="structeve_1_1animation_1_1MotionFeatureTrajectorySample.html#ae5ccba8f895a15067ff5a7e4c305923c">y</a> = 0.f, <a class="code hl_variable" href="structeve_1_1animation_1_1MotionFeatureTrajectorySample.html#aad950af099bc807861b5dc894d187cb4">z</a> = 0.f;</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno"><a class="line" href="structeve_1_1animation_1_1MotionFeatureTrajectorySample.html#a48141c85b0966d27ba4f9f582d1fa657">   64</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1animation_1_1MotionFeatureTrajectorySample.html#a48141c85b0966d27ba4f9f582d1fa657">vx</a> = 0.f, <a class="code hl_variable" href="structeve_1_1animation_1_1MotionFeatureTrajectorySample.html#a2618001fb572e1991b44896532a9f419">vy</a> = 0.f, <a class="code hl_variable" href="structeve_1_1animation_1_1MotionFeatureTrajectorySample.html#af15c9654373c057469bb469f0b072c52">vz</a> = 0.f;</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno"><a class="line" href="structeve_1_1animation_1_1MotionFeatureTrajectorySample.html#a20f3a4d07803febcea3d09d5384428de">   65</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1animation_1_1MotionFeatureTrajectorySample.html#a20f3a4d07803febcea3d09d5384428de">yaw</a> = 0.f;</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>};</div>
+</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span> </div>
+<div class="foldopen" id="foldopen00072" data-start="{" data-end="};">
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno"><a class="line" href="structeve_1_1animation_1_1MotionFeatureCurveSample.html">   72</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1animation_1_1MotionFeatureCurveSample.html">MotionFeatureCurveSample</a> {</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno"><a class="line" href="structeve_1_1animation_1_1MotionFeatureCurveSample.html#a6523e3cea18078a75955f663d8df7744">   73</a></span>    std::string <a class="code hl_variable" href="structeve_1_1animation_1_1MotionFeatureCurveSample.html#a6523e3cea18078a75955f663d8df7744">curve</a>;</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno"><a class="line" href="structeve_1_1animation_1_1MotionFeatureCurveSample.html#a42a6e7b6919ece3893b00f216a57f9c8">   74</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1animation_1_1MotionFeatureCurveSample.html#a42a6e7b6919ece3893b00f216a57f9c8">seconds</a> = 0.f;</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno"><a class="line" href="structeve_1_1animation_1_1MotionFeatureCurveSample.html#a6bb049e2c654260f33c45f7889f9eb73">   75</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1animation_1_1MotionFeatureCurveSample.html#a6bb049e2c654260f33c45f7889f9eb73">value</a> = 0.f;</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>};</div>
+</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>}  <span class="comment">// namespace eve::animation</span></div>
+<div class="ttc" id="anamespaceeve_1_1animation_html"><div class="ttname"><a href="namespaceeve_1_1animation.html">eve::animation</a></div><div class="ttdef"><b>Definition</b> <a href="Animation_8cpp_source.html#l00057">Animation.cpp:57</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1animation_html_a2bb8f1b2a8247164df8df1b64307c624"><div class="ttname"><a href="namespaceeve_1_1animation.html#a2bb8f1b2a8247164df8df1b64307c624">eve::animation::MotionFeatureKind</a></div><div class="ttdeci">MotionFeatureKind</div><div class="ttdoc">Vector or scalar operation encoded by a motion-search channel.</div><div class="ttdef"><b>Definition</b> <a href="MotionFeatureLayout_8h_source.html#l00008">MotionFeatureLayout.h:8</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1animation_html_a2bb8f1b2a8247164df8df1b64307c624a0101316665d4f82adaa26d86fbbb2d6e"><div class="ttname"><a href="namespaceeve_1_1animation.html#a2bb8f1b2a8247164df8df1b64307c624a0101316665d4f82adaa26d86fbbb2d6e">eve::animation::MotionFeatureKind::Heading</a></div><div class="ttdeci">@ Heading</div></div>
+<div class="ttc" id="anamespaceeve_1_1animation_html_a2bb8f1b2a8247164df8df1b64307c624a2cb4d4a3f8dacd623fa045a44febd476"><div class="ttname"><a href="namespaceeve_1_1animation.html#a2bb8f1b2a8247164df8df1b64307c624a2cb4d4a3f8dacd623fa045a44febd476">eve::animation::MotionFeatureKind::Curve</a></div><div class="ttdeci">@ Curve</div></div>
+<div class="ttc" id="anamespaceeve_1_1animation_html_a2bb8f1b2a8247164df8df1b64307c624a52f5e0bc3859bc5f5e25130b6c7e8881"><div class="ttname"><a href="namespaceeve_1_1animation.html#a2bb8f1b2a8247164df8df1b64307c624a52f5e0bc3859bc5f5e25130b6c7e8881">eve::animation::MotionFeatureKind::Position</a></div><div class="ttdeci">@ Position</div></div>
+<div class="ttc" id="anamespaceeve_1_1animation_html_a2bb8f1b2a8247164df8df1b64307c624a88156d46910a2d733443c339a9231d12"><div class="ttname"><a href="namespaceeve_1_1animation.html#a2bb8f1b2a8247164df8df1b64307c624a88156d46910a2d733443c339a9231d12">eve::animation::MotionFeatureKind::Velocity</a></div><div class="ttdeci">@ Velocity</div></div>
+<div class="ttc" id="anamespaceeve_1_1animation_html_a32b8a2d521fd3b2246975be77a5eb0ce"><div class="ttname"><a href="namespaceeve_1_1animation.html#a32b8a2d521fd3b2246975be77a5eb0ce">eve::animation::MotionFeatureQuery</a></div><div class="ttdeci">MotionFeatureQuery</div><div class="ttdoc">Query data policy while a valid continuing pose exists.</div><div class="ttdef"><b>Definition</b> <a href="MotionFeatureLayout_8h_source.html#l00012">MotionFeatureLayout.h:12</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1animation_html_a32b8a2d521fd3b2246975be77a5eb0cea481c481246e60dab7fec4c802d56fee9"><div class="ttname"><a href="namespaceeve_1_1animation.html#a32b8a2d521fd3b2246975be77a5eb0cea481c481246e60dab7fec4c802d56fee9">eve::animation::MotionFeatureQuery::Continuing</a></div><div class="ttdeci">@ Continuing</div></div>
+<div class="ttc" id="anamespaceeve_1_1animation_html_a32b8a2d521fd3b2246975be77a5eb0cea76a40e4f974fd895a0a2598c1cee28b4"><div class="ttname"><a href="namespaceeve_1_1animation.html#a32b8a2d521fd3b2246975be77a5eb0cea76a40e4f974fd895a0a2598c1cee28b4">eve::animation::MotionFeatureQuery::Character</a></div><div class="ttdeci">@ Character</div></div>
+<div class="ttc" id="anamespaceeve_1_1animation_html_a55e3f647e7082b3008003958776ac33a"><div class="ttname"><a href="namespaceeve_1_1animation.html#a55e3f647e7082b3008003958776ac33a">eve::animation::MotionFeatureSource</a></div><div class="ttdeci">MotionFeatureSource</div><div class="ttdoc">Source of a channel's samples.</div><div class="ttdef"><b>Definition</b> <a href="MotionFeatureLayout_8h_source.html#l00010">MotionFeatureLayout.h:10</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1animation_html_a55e3f647e7082b3008003958776ac33aa2c1f43c429c5e00feaef7ba3327375dc"><div class="ttname"><a href="namespaceeve_1_1animation.html#a55e3f647e7082b3008003958776ac33aa2c1f43c429c5e00feaef7ba3327375dc">eve::animation::MotionFeatureSource::Trajectory</a></div><div class="ttdeci">@ Trajectory</div></div>
+<div class="ttc" id="anamespaceeve_1_1animation_html_a55e3f647e7082b3008003958776ac33aa8109c9c9d6a2ca3bec3e006fe51a5f3e"><div class="ttname"><a href="namespaceeve_1_1animation.html#a55e3f647e7082b3008003958776ac33aa8109c9c9d6a2ca3bec3e006fe51a5f3e">eve::animation::MotionFeatureSource::Pose</a></div><div class="ttdeci">@ Pose</div></div>
+<div class="ttc" id="astructeve_1_1animation_1_1MotionFeatureChannel_html"><div class="ttname"><a href="structeve_1_1animation_1_1MotionFeatureChannel.html">eve::animation::MotionFeatureChannel</a></div><div class="ttdoc">Owning configuration for one ordered motion feature channel.</div><div class="ttdef"><b>Definition</b> <a href="MotionFeatureLayout_8h_source.html#l00025">MotionFeatureLayout.h:25</a></div></div>
+<div class="ttc" id="astructeve_1_1animation_1_1MotionFeatureChannel_html_a284ce34bd108cde8ee98c3d7e802dbce"><div class="ttname"><a href="structeve_1_1animation_1_1MotionFeatureChannel.html#a284ce34bd108cde8ee98c3d7e802dbce">eve::animation::MotionFeatureChannel::source</a></div><div class="ttdeci">MotionFeatureSource source</div><div class="ttdef"><b>Definition</b> <a href="MotionFeatureLayout_8h_source.html#l00027">MotionFeatureLayout.h:27</a></div></div>
+<div class="ttc" id="astructeve_1_1animation_1_1MotionFeatureChannel_html_a3def6c6b8c30d452066ce4e1e9ed1372"><div class="ttname"><a href="structeve_1_1animation_1_1MotionFeatureChannel.html#a3def6c6b8c30d452066ce4e1e9ed1372">eve::animation::MotionFeatureChannel::curve</a></div><div class="ttdeci">std::string curve</div><div class="ttdef"><b>Definition</b> <a href="MotionFeatureLayout_8h_source.html#l00037">MotionFeatureLayout.h:37</a></div></div>
+<div class="ttc" id="astructeve_1_1animation_1_1MotionFeatureChannel_html_a3fefba973ca5210495e9d0df6bc7b974"><div class="ttname"><a href="structeve_1_1animation_1_1MotionFeatureChannel.html#a3fefba973ca5210495e9d0df6bc7b974">eve::animation::MotionFeatureChannel::bone</a></div><div class="ttdeci">int bone</div><div class="ttdef"><b>Definition</b> <a href="MotionFeatureLayout_8h_source.html#l00029">MotionFeatureLayout.h:29</a></div></div>
+<div class="ttc" id="astructeve_1_1animation_1_1MotionFeatureChannel_html_a7c6231cb538f283085662f80aceebe46"><div class="ttname"><a href="structeve_1_1animation_1_1MotionFeatureChannel.html#a7c6231cb538f283085662f80aceebe46">eve::animation::MotionFeatureChannel::characterSpaceVelocity</a></div><div class="ttdeci">bool characterSpaceVelocity</div><div class="ttdef"><b>Definition</b> <a href="MotionFeatureLayout_8h_source.html#l00034">MotionFeatureLayout.h:34</a></div></div>
+<div class="ttc" id="astructeve_1_1animation_1_1MotionFeatureChannel_html_a889deddaa13fefa0e30dfb6268f5608d"><div class="ttname"><a href="structeve_1_1animation_1_1MotionFeatureChannel.html#a889deddaa13fefa0e30dfb6268f5608d">eve::animation::MotionFeatureChannel::query</a></div><div class="ttdeci">MotionFeatureQuery query</div><div class="ttdef"><b>Definition</b> <a href="MotionFeatureLayout_8h_source.html#l00028">MotionFeatureLayout.h:28</a></div></div>
+<div class="ttc" id="astructeve_1_1animation_1_1MotionFeatureChannel_html_a98b9200d83812b2b82ce77ed3a15cd00"><div class="ttname"><a href="structeve_1_1animation_1_1MotionFeatureChannel.html#a98b9200d83812b2b82ce77ed3a15cd00">eve::animation::MotionFeatureChannel::headingAxis</a></div><div class="ttdeci">int headingAxis</div><div class="ttdef"><b>Definition</b> <a href="MotionFeatureLayout_8h_source.html#l00031">MotionFeatureLayout.h:31</a></div></div>
+<div class="ttc" id="astructeve_1_1animation_1_1MotionFeatureChannel_html_aa42e452fb02c6452e0af8c91ad0fa2d8"><div class="ttname"><a href="structeve_1_1animation_1_1MotionFeatureChannel.html#aa42e452fb02c6452e0af8c91ad0fa2d8">eve::animation::MotionFeatureChannel::kind</a></div><div class="ttdeci">MotionFeatureKind kind</div><div class="ttdef"><b>Definition</b> <a href="MotionFeatureLayout_8h_source.html#l00026">MotionFeatureLayout.h:26</a></div></div>
+<div class="ttc" id="astructeve_1_1animation_1_1MotionFeatureChannel_html_aa8426dd8f5069e8bb47ef73230bbed1d"><div class="ttname"><a href="structeve_1_1animation_1_1MotionFeatureChannel.html#aa8426dd8f5069e8bb47ef73230bbed1d">eve::animation::MotionFeatureChannel::normalizationGroup</a></div><div class="ttdeci">std::string normalizationGroup</div><div class="ttdef"><b>Definition</b> <a href="MotionFeatureLayout_8h_source.html#l00036">MotionFeatureLayout.h:36</a></div></div>
+<div class="ttc" id="astructeve_1_1animation_1_1MotionFeatureChannel_html_abbdc4562ba7c74c5da01e63039d66ddb"><div class="ttname"><a href="structeve_1_1animation_1_1MotionFeatureChannel.html#abbdc4562ba7c74c5da01e63039d66ddb">eve::animation::MotionFeatureChannel::origin</a></div><div class="ttdeci">int origin</div><div class="ttdef"><b>Definition</b> <a href="MotionFeatureLayout_8h_source.html#l00029">MotionFeatureLayout.h:29</a></div></div>
+<div class="ttc" id="astructeve_1_1animation_1_1MotionFeatureChannel_html_abec2d0ed7542aac32d3d963407693d81"><div class="ttname"><a href="structeve_1_1animation_1_1MotionFeatureChannel.html#abec2d0ed7542aac32d3d963407693d81">eve::animation::MotionFeatureChannel::normalizeVelocity</a></div><div class="ttdeci">bool normalizeVelocity</div><div class="ttdef"><b>Definition</b> <a href="MotionFeatureLayout_8h_source.html#l00035">MotionFeatureLayout.h:35</a></div></div>
+<div class="ttc" id="astructeve_1_1animation_1_1MotionFeatureChannel_html_abf1fa9787edce4e27f7e3d9e071b4d06"><div class="ttname"><a href="structeve_1_1animation_1_1MotionFeatureChannel.html#abf1fa9787edce4e27f7e3d9e071b4d06">eve::animation::MotionFeatureChannel::axes</a></div><div class="ttdeci">std::uint8_t axes</div><div class="ttdef"><b>Definition</b> <a href="MotionFeatureLayout_8h_source.html#l00030">MotionFeatureLayout.h:30</a></div></div>
+<div class="ttc" id="astructeve_1_1animation_1_1MotionFeatureChannel_html_ac95b33388c97150fc255704a66142cc2"><div class="ttname"><a href="structeve_1_1animation_1_1MotionFeatureChannel.html#ac95b33388c97150fc255704a66142cc2">eve::animation::MotionFeatureChannel::weight</a></div><div class="ttdeci">float weight</div><div class="ttdef"><b>Definition</b> <a href="MotionFeatureLayout_8h_source.html#l00033">MotionFeatureLayout.h:33</a></div></div>
+<div class="ttc" id="astructeve_1_1animation_1_1MotionFeatureChannel_html_acf146f091faa6faa52c03033e3fb9de6"><div class="ttname"><a href="structeve_1_1animation_1_1MotionFeatureChannel.html#acf146f091faa6faa52c03033e3fb9de6">eve::animation::MotionFeatureChannel::sampleTime</a></div><div class="ttdeci">float sampleTime</div><div class="ttdef"><b>Definition</b> <a href="MotionFeatureLayout_8h_source.html#l00032">MotionFeatureLayout.h:32</a></div></div>
+<div class="ttc" id="astructeve_1_1animation_1_1MotionFeatureCurveSample_html"><div class="ttname"><a href="structeve_1_1animation_1_1MotionFeatureCurveSample.html">eve::animation::MotionFeatureCurveSample</a></div><div class="ttdoc">Copied evaluated scalar curve query at a schema-relative time.</div><div class="ttdef"><b>Definition</b> <a href="MotionFeatureLayout_8h_source.html#l00072">MotionFeatureLayout.h:72</a></div></div>
+<div class="ttc" id="astructeve_1_1animation_1_1MotionFeatureCurveSample_html_a42a6e7b6919ece3893b00f216a57f9c8"><div class="ttname"><a href="structeve_1_1animation_1_1MotionFeatureCurveSample.html#a42a6e7b6919ece3893b00f216a57f9c8">eve::animation::MotionFeatureCurveSample::seconds</a></div><div class="ttdeci">float seconds</div><div class="ttdef"><b>Definition</b> <a href="MotionFeatureLayout_8h_source.html#l00074">MotionFeatureLayout.h:74</a></div></div>
+<div class="ttc" id="astructeve_1_1animation_1_1MotionFeatureCurveSample_html_a6523e3cea18078a75955f663d8df7744"><div class="ttname"><a href="structeve_1_1animation_1_1MotionFeatureCurveSample.html#a6523e3cea18078a75955f663d8df7744">eve::animation::MotionFeatureCurveSample::curve</a></div><div class="ttdeci">std::string curve</div><div class="ttdef"><b>Definition</b> <a href="MotionFeatureLayout_8h_source.html#l00073">MotionFeatureLayout.h:73</a></div></div>
+<div class="ttc" id="astructeve_1_1animation_1_1MotionFeatureCurveSample_html_a6bb049e2c654260f33c45f7889f9eb73"><div class="ttname"><a href="structeve_1_1animation_1_1MotionFeatureCurveSample.html#a6bb049e2c654260f33c45f7889f9eb73">eve::animation::MotionFeatureCurveSample::value</a></div><div class="ttdeci">float value</div><div class="ttdef"><b>Definition</b> <a href="MotionFeatureLayout_8h_source.html#l00075">MotionFeatureLayout.h:75</a></div></div>
+<div class="ttc" id="astructeve_1_1animation_1_1MotionFeatureLayout_html"><div class="ttname"><a href="structeve_1_1animation_1_1MotionFeatureLayout.html">eve::animation::MotionFeatureLayout</a></div><div class="ttdoc">Owning ordered feature layout; copied atomically by a database.</div><div class="ttdef"><b>Definition</b> <a href="MotionFeatureLayout_8h_source.html#l00046">MotionFeatureLayout.h:46</a></div></div>
+<div class="ttc" id="astructeve_1_1animation_1_1MotionFeatureLayout_html_a2a702d890df491af82d338227c4c106f"><div class="ttname"><a href="structeve_1_1animation_1_1MotionFeatureLayout.html#a2a702d890df491af82d338227c4c106f">eve::animation::MotionFeatureLayout::channels</a></div><div class="ttdeci">std::vector&lt; MotionFeatureChannel &gt; channels</div><div class="ttdef"><b>Definition</b> <a href="MotionFeatureLayout_8h_source.html#l00048">MotionFeatureLayout.h:48</a></div></div>
+<div class="ttc" id="astructeve_1_1animation_1_1MotionFeatureLayout_html_ab4b555fa1d7ac032873e5eab866dfdf9"><div class="ttname"><a href="structeve_1_1animation_1_1MotionFeatureLayout.html#ab4b555fa1d7ac032873e5eab866dfdf9">eve::animation::MotionFeatureLayout::sampleRate</a></div><div class="ttdeci">int sampleRate</div><div class="ttdef"><b>Definition</b> <a href="MotionFeatureLayout_8h_source.html#l00047">MotionFeatureLayout.h:47</a></div></div>
+<div class="ttc" id="astructeve_1_1animation_1_1MotionFeatureLayout_html_af3e4bbd4be613dd83102dd4688fa3168"><div class="ttname"><a href="structeve_1_1animation_1_1MotionFeatureLayout.html#af3e4bbd4be613dd83102dd4688fa3168">eve::animation::MotionFeatureLayout::normalizationLengthScale</a></div><div class="ttdeci">float normalizationLengthScale</div><div class="ttdoc">Scale applied to metre-based position/velocity features before pooling; dimensionless headings,...</div><div class="ttdef"><b>Definition</b> <a href="MotionFeatureLayout_8h_source.html#l00053">MotionFeatureLayout.h:53</a></div></div>
+<div class="ttc" id="astructeve_1_1animation_1_1MotionFeatureTrajectorySample_html"><div class="ttname"><a href="structeve_1_1animation_1_1MotionFeatureTrajectorySample.html">eve::animation::MotionFeatureTrajectorySample</a></div><div class="ttdoc">Copied trajectory sample at an explicit offset from the current frame.</div><div class="ttdef"><b>Definition</b> <a href="MotionFeatureLayout_8h_source.html#l00061">MotionFeatureLayout.h:61</a></div></div>
+<div class="ttc" id="astructeve_1_1animation_1_1MotionFeatureTrajectorySample_html_a20738eb26125547d0f895084fcef6da0"><div class="ttname"><a href="structeve_1_1animation_1_1MotionFeatureTrajectorySample.html#a20738eb26125547d0f895084fcef6da0">eve::animation::MotionFeatureTrajectorySample::seconds</a></div><div class="ttdeci">float seconds</div><div class="ttdef"><b>Definition</b> <a href="MotionFeatureLayout_8h_source.html#l00062">MotionFeatureLayout.h:62</a></div></div>
+<div class="ttc" id="astructeve_1_1animation_1_1MotionFeatureTrajectorySample_html_a20f3a4d07803febcea3d09d5384428de"><div class="ttname"><a href="structeve_1_1animation_1_1MotionFeatureTrajectorySample.html#a20f3a4d07803febcea3d09d5384428de">eve::animation::MotionFeatureTrajectorySample::yaw</a></div><div class="ttdeci">float yaw</div><div class="ttdef"><b>Definition</b> <a href="MotionFeatureLayout_8h_source.html#l00065">MotionFeatureLayout.h:65</a></div></div>
+<div class="ttc" id="astructeve_1_1animation_1_1MotionFeatureTrajectorySample_html_a2618001fb572e1991b44896532a9f419"><div class="ttname"><a href="structeve_1_1animation_1_1MotionFeatureTrajectorySample.html#a2618001fb572e1991b44896532a9f419">eve::animation::MotionFeatureTrajectorySample::vy</a></div><div class="ttdeci">float vy</div><div class="ttdef"><b>Definition</b> <a href="MotionFeatureLayout_8h_source.html#l00064">MotionFeatureLayout.h:64</a></div></div>
+<div class="ttc" id="astructeve_1_1animation_1_1MotionFeatureTrajectorySample_html_a48141c85b0966d27ba4f9f582d1fa657"><div class="ttname"><a href="structeve_1_1animation_1_1MotionFeatureTrajectorySample.html#a48141c85b0966d27ba4f9f582d1fa657">eve::animation::MotionFeatureTrajectorySample::vx</a></div><div class="ttdeci">float vx</div><div class="ttdef"><b>Definition</b> <a href="MotionFeatureLayout_8h_source.html#l00064">MotionFeatureLayout.h:64</a></div></div>
+<div class="ttc" id="astructeve_1_1animation_1_1MotionFeatureTrajectorySample_html_aad950af099bc807861b5dc894d187cb4"><div class="ttname"><a href="structeve_1_1animation_1_1MotionFeatureTrajectorySample.html#aad950af099bc807861b5dc894d187cb4">eve::animation::MotionFeatureTrajectorySample::z</a></div><div class="ttdeci">float z</div><div class="ttdef"><b>Definition</b> <a href="MotionFeatureLayout_8h_source.html#l00063">MotionFeatureLayout.h:63</a></div></div>
+<div class="ttc" id="astructeve_1_1animation_1_1MotionFeatureTrajectorySample_html_ae03d4f35b982390af3dfa7e9c72d0b59"><div class="ttname"><a href="structeve_1_1animation_1_1MotionFeatureTrajectorySample.html#ae03d4f35b982390af3dfa7e9c72d0b59">eve::animation::MotionFeatureTrajectorySample::x</a></div><div class="ttdeci">float x</div><div class="ttdef"><b>Definition</b> <a href="MotionFeatureLayout_8h_source.html#l00063">MotionFeatureLayout.h:63</a></div></div>
+<div class="ttc" id="astructeve_1_1animation_1_1MotionFeatureTrajectorySample_html_ae5ccba8f895a15067ff5a7e4c305923c"><div class="ttname"><a href="structeve_1_1animation_1_1MotionFeatureTrajectorySample.html#ae5ccba8f895a15067ff5a7e4c305923c">eve::animation::MotionFeatureTrajectorySample::y</a></div><div class="ttdeci">float y</div><div class="ttdef"><b>Definition</b> <a href="MotionFeatureLayout_8h_source.html#l00063">MotionFeatureLayout.h:63</a></div></div>
+<div class="ttc" id="astructeve_1_1animation_1_1MotionFeatureTrajectorySample_html_af15c9654373c057469bb469f0b072c52"><div class="ttname"><a href="structeve_1_1animation_1_1MotionFeatureTrajectorySample.html#af15c9654373c057469bb469f0b072c52">eve::animation::MotionFeatureTrajectorySample::vz</a></div><div class="ttdeci">float vz</div><div class="ttdef"><b>Definition</b> <a href="MotionFeatureLayout_8h_source.html#l00064">MotionFeatureLayout.h:64</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

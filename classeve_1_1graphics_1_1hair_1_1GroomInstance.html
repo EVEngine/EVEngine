@@ -1,0 +1,1374 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::graphics::hair::GroomInstance类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1graphics.html">graphics</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1graphics_1_1hair.html">hair</a></li><li class="navelem"><a class="el" href="classeve_1_1graphics_1_1hair_1_1GroomInstance.html">GroomInstance</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1graphics_1_1hair_1_1GroomInstance-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::graphics::hair::GroomInstance类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p><a class="el" href="classeve_1_1Runtime.html">Runtime</a> groom drawable (UE <code>UGroomComponent</code> analogue).  
+ <a href="classeve_1_1graphics_1_1hair_1_1GroomInstance.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="GroomInstance_8h_source.html">GroomInstance.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a1025b9080d7769b9836fec21cf2edb14" id="r_a1025b9080d7769b9836fec21cf2edb14"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1hair_1_1GroomInstance.html#a1025b9080d7769b9836fec21cf2edb14">GroomInstance</a> (<a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *gfx)</td></tr>
+<tr class="separator:a1025b9080d7769b9836fec21cf2edb14"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9e4781e8353d50ac4bc6ac34de228ac7" id="r_a9e4781e8353d50ac4bc6ac34de228ac7"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1hair_1_1GroomInstance.html#a9e4781e8353d50ac4bc6ac34de228ac7">~GroomInstance</a> ()</td></tr>
+<tr class="separator:a9e4781e8353d50ac4bc6ac34de228ac7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab275b5e0120bbce28416ff2a626a3c58" id="r_ab275b5e0120bbce28416ff2a626a3c58"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1hair_1_1GroomInstance.html#ab275b5e0120bbce28416ff2a626a3c58">GroomInstance</a> (const <a class="el" href="classeve_1_1graphics_1_1hair_1_1GroomInstance.html">GroomInstance</a> &amp;)=delete</td></tr>
+<tr class="separator:ab275b5e0120bbce28416ff2a626a3c58"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a97683a15f855ec2f90d809a8a38ba823" id="r_a97683a15f855ec2f90d809a8a38ba823"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1hair_1_1GroomInstance.html">GroomInstance</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1hair_1_1GroomInstance.html#a97683a15f855ec2f90d809a8a38ba823">operator=</a> (const <a class="el" href="classeve_1_1graphics_1_1hair_1_1GroomInstance.html">GroomInstance</a> &amp;)=delete</td></tr>
+<tr class="separator:a97683a15f855ec2f90d809a8a38ba823"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6c1d68e7a146fe7f2e2dae27d45c090d" id="r_a6c1d68e7a146fe7f2e2dae27d45c090d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1hair_1_1GroomInstance.html#a6c1d68e7a146fe7f2e2dae27d45c090d">setAsset</a> (const <a class="el" href="classeve_1_1graphics_1_1hair_1_1GroomAsset.html">GroomAsset</a> &amp;asset)</td></tr>
+<tr class="memdesc:a6c1d68e7a146fe7f2e2dae27d45c090d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Replace runtime strands from a shared asset (deep copy of groups). @ownership Asset remains owned by the caller; instance stores a copy.  <br /></td></tr>
+<tr class="separator:a6c1d68e7a146fe7f2e2dae27d45c090d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1cf173eb1cb6d6ea630806285d66e589" id="r_a1cf173eb1cb6d6ea630806285d66e589"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1hair_1_1GroomInstance.html#a1cf173eb1cb6d6ea630806285d66e589">bakeProceduralPlane</a> (float sizeX, float sizeZ, const <a class="el" href="structeve_1_1graphics_1_1hair_1_1ProceduralParams.html">ProceduralParams</a> &amp;<a class="el" href="mesh_2MeshModifierGraph_8cpp.html#ac59750003266730d7d05c14393c78fbd">params</a>={})</td></tr>
+<tr class="memdesc:a1cf173eb1cb6d6ea630806285d66e589"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bake a procedural plane groom into a single default group.  <br /></td></tr>
+<tr class="separator:a1cf173eb1cb6d6ea630806285d66e589"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a205e34c90cab6cc7dc3f74a67dd08934" id="r_a205e34c90cab6cc7dc3f74a67dd08934"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1hair_1_1GroomInstance.html#a205e34c90cab6cc7dc3f74a67dd08934">bakeProceduralMesh</a> (const float *posXYZ, const float *nrmXYZ, int <a class="el" href="GltfImporter_8cpp.html#a7b19ff7daa03f593e552608463f5c9ca">vertexCount</a>, const uint32_t *<a class="el" href="HeightmapMesh_8cpp.html#a1c05ae841a0f4a10fbccd8a5438951a8">indices</a>, int <a class="el" href="GltfImporter_8cpp.html#ad2ae269d4b0d530bbbcc259246388784">indexCount</a>, const <a class="el" href="structeve_1_1graphics_1_1hair_1_1ProceduralParams.html">ProceduralParams</a> &amp;<a class="el" href="mesh_2MeshModifierGraph_8cpp.html#ac59750003266730d7d05c14393c78fbd">params</a>={})</td></tr>
+<tr class="memdesc:a205e34c90cab6cc7dc3f74a67dd08934"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bake procedural strands on an indexed triangle mesh.  <br /></td></tr>
+<tr class="separator:a205e34c90cab6cc7dc3f74a67dd08934"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae8a8b5e03c64f65a64edb62d51bd13e0" id="r_ae8a8b5e03c64f65a64edb62d51bd13e0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1hair_1_1GroomInstance.html#ae8a8b5e03c64f65a64edb62d51bd13e0">setForcedLod</a> (int lod)</td></tr>
+<tr class="memdesc:ae8a8b5e03c64f65a64edb62d51bd13e0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Force LOD index; -1 restores automatic selection.  <br /></td></tr>
+<tr class="separator:ae8a8b5e03c64f65a64edb62d51bd13e0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7821ea9a02204d405cf0065371cad89f" id="r_a7821ea9a02204d405cf0065371cad89f"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1hair_1_1GroomInstance.html#a7821ea9a02204d405cf0065371cad89f">getForcedLod</a> () const</td></tr>
+<tr class="separator:a7821ea9a02204d405cf0065371cad89f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad8c40473edf9d2d3430308c8cae418ef" id="r_ad8c40473edf9d2d3430308c8cae418ef"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1hair_1_1GroomInstance.html#ad8c40473edf9d2d3430308c8cae418ef">setScreenSize</a> (float screenSize)</td></tr>
+<tr class="memdesc:ad8c40473edf9d2d3430308c8cae418ef"><td class="mdescLeft">&#160;</td><td class="mdescRight">Screen-size hint in [0,1] used when forced LOD is disabled.  <br /></td></tr>
+<tr class="separator:ad8c40473edf9d2d3430308c8cae418ef"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab126a7c25818f48dd46491b8b2e8fe8c" id="r_ab126a7c25818f48dd46491b8b2e8fe8c"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1hair_1_1GroomInstance.html#ab126a7c25818f48dd46491b8b2e8fe8c">getScreenSize</a> () const</td></tr>
+<tr class="separator:ab126a7c25818f48dd46491b8b2e8fe8c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a39dbb800e07e819df1ed9147abf1c2e5" id="r_a39dbb800e07e819df1ed9147abf1c2e5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1hair_1_1GroomInstance.html#a39dbb800e07e819df1ed9147abf1c2e5">setWidthScale</a> (float <a class="el" href="LegacyAnimationImporter_8cpp.html#a97ae8bb7c8cb75233b0a0c268f0ae619">scale</a>)</td></tr>
+<tr class="separator:a39dbb800e07e819df1ed9147abf1c2e5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6269c9c30482d3a34e892a18b3e0c572" id="r_a6269c9c30482d3a34e892a18b3e0c572"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1hair_1_1GroomInstance.html#a6269c9c30482d3a34e892a18b3e0c572">getWidthScale</a> () const</td></tr>
+<tr class="separator:a6269c9c30482d3a34e892a18b3e0c572"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1e49ac7dd8b421f1b516f4967987d2d1" id="r_a1e49ac7dd8b421f1b516f4967987d2d1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1hair_1_1GroomInstance.html#a1e49ac7dd8b421f1b516f4967987d2d1">setSideHint</a> (float <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, float <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, float <a class="el" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>)</td></tr>
+<tr class="separator:a1e49ac7dd8b421f1b516f4967987d2d1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0c1e0bdb87a8117e078be8192128e410" id="r_a0c1e0bdb87a8117e078be8192128e410"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1hair_1_1GroomInstance.html#a0c1e0bdb87a8117e078be8192128e410">setClusterCullingEnabled</a> (bool <a class="el" href="rpg_2Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a>)</td></tr>
+<tr class="memdesc:a0c1e0bdb87a8117e078be8192128e410"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enable/disable CPU cluster frustum filtering before mesh bake. When enabled, call <code>updateVisibility</code> with the current view-projection.  <br /></td></tr>
+<tr class="separator:a0c1e0bdb87a8117e078be8192128e410"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7498ac594a78e530298990b750a566df" id="r_a7498ac594a78e530298990b750a566df"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1hair_1_1GroomInstance.html#a7498ac594a78e530298990b750a566df">isClusterCullingEnabled</a> () const</td></tr>
+<tr class="separator:a7498ac594a78e530298990b750a566df"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a412d6f151f9bff2cfefc303624b19acf" id="r_a412d6f151f9bff2cfefc303624b19acf"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1hair_1_1GroomInstance.html#a412d6f151f9bff2cfefc303624b19acf">updateVisibility</a> (const float *viewProj16)</td></tr>
+<tr class="memdesc:a412d6f151f9bff2cfefc303624b19acf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Frustum-cull every group's cluster grid and rebuild GPU mesh.  <br /></td></tr>
+<tr class="separator:a412d6f151f9bff2cfefc303624b19acf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac438bb6bc9df1d942b061b09047201ba" id="r_ac438bb6bc9df1d942b061b09047201ba"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1hair_1_1GroomInstance.html#ac438bb6bc9df1d942b061b09047201ba">setMarschnerLobes</a> (float <a class="el" href="GtsMeshSimplifier_8cpp.html#a880a49112fedae68e714341a9a082fb6">r</a>, float tt, float trt)</td></tr>
+<tr class="memdesc:ac438bb6bc9df1d942b061b09047201ba"><td class="mdescLeft">&#160;</td><td class="mdescRight">Marschner-approximate lobe weights (R / TT / TRT) applied to the hair shader. Defaults: 1 / 0.45 / 0.25. Values are clamped to &gt;= 0.  <br /></td></tr>
+<tr class="separator:ac438bb6bc9df1d942b061b09047201ba"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2ce0546b5447eb8f34463e3995d15c8a" id="r_a2ce0546b5447eb8f34463e3995d15c8a"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1hair_1_1GroomInstance.html#a2ce0546b5447eb8f34463e3995d15c8a">getMarschnerR</a> () const</td></tr>
+<tr class="separator:a2ce0546b5447eb8f34463e3995d15c8a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a921ce24dab8e2f2bd90968a7608bc10f" id="r_a921ce24dab8e2f2bd90968a7608bc10f"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1hair_1_1GroomInstance.html#a921ce24dab8e2f2bd90968a7608bc10f">getMarschnerTT</a> () const</td></tr>
+<tr class="separator:a921ce24dab8e2f2bd90968a7608bc10f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6f23d8c12dc7334d959e0cf7dcd1f9de" id="r_a6f23d8c12dc7334d959e0cf7dcd1f9de"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1hair_1_1GroomInstance.html#a6f23d8c12dc7334d959e0cf7dcd1f9de">getMarschnerTRT</a> () const</td></tr>
+<tr class="separator:a6f23d8c12dc7334d959e0cf7dcd1f9de"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a316d751b32f88e27d2d5acde6c294400" id="r_a316d751b32f88e27d2d5acde6c294400"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1hair_1_1GroomInstance.html#a316d751b32f88e27d2d5acde6c294400">setSelfShadow</a> (float <a class="el" href="TerrainGenerationSession_8cpp.html#a2c1c8f9331368f38bfc3eaee260b59a6">strength</a>, float bias, float rootAo)</td></tr>
+<tr class="memdesc:a316d751b32f88e27d2d5acde6c294400"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cheap analytical self-shadow (fiber wrap + along-strand root AO).  <br /></td></tr>
+<tr class="separator:a316d751b32f88e27d2d5acde6c294400"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acd5e1ddf55ea795eaec0001c7a4d6b4c" id="r_acd5e1ddf55ea795eaec0001c7a4d6b4c"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1hair_1_1GroomInstance.html#acd5e1ddf55ea795eaec0001c7a4d6b4c">getSelfShadowStrength</a> () const</td></tr>
+<tr class="separator:acd5e1ddf55ea795eaec0001c7a4d6b4c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1425abbbcb96bf8de25df41ffd074115" id="r_a1425abbbcb96bf8de25df41ffd074115"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1hair_1_1GroomInstance.html#a1425abbbcb96bf8de25df41ffd074115">getSelfShadowBias</a> () const</td></tr>
+<tr class="separator:a1425abbbcb96bf8de25df41ffd074115"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acc8fc868dc08f63483f417b72b51d9c0" id="r_acc8fc868dc08f63483f417b72b51d9c0"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1hair_1_1GroomInstance.html#acc8fc868dc08f63483f417b72b51d9c0">getRootAoStrength</a> () const</td></tr>
+<tr class="separator:acc8fc868dc08f63483f417b72b51d9c0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a82f085a259164de71a7cc74b99b50367" id="r_a82f085a259164de71a7cc74b99b50367"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1hair_1_1GroomInstance.html#a82f085a259164de71a7cc74b99b50367">rebuild</a> ()</td></tr>
+<tr class="memdesc:a82f085a259164de71a7cc74b99b50367"><td class="mdescLeft">&#160;</td><td class="mdescRight">Rebuild GPU mesh from all groups (LOD + optional visibility).  <br /></td></tr>
+<tr class="separator:a82f085a259164de71a7cc74b99b50367"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aefa372cdfb1fa2be1ec8fcd4411c1809" id="r_aefa372cdfb1fa2be1ec8fcd4411c1809"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1hair_1_1GroomInstance.html#aefa372cdfb1fa2be1ec8fcd4411c1809">enableGuideSimulation</a> (const <a class="el" href="structeve_1_1graphics_1_1hair_1_1GuideSimParams.html">GuideSimParams</a> &amp;<a class="el" href="mesh_2MeshModifierGraph_8cpp.html#ac59750003266730d7d05c14393c78fbd">params</a>={}, float guideFraction=0.15<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, <a class="el" href="namespaceeve_1_1graphics_1_1hair.html#a5a1a3352685b189968f70fd32b8591b8">InterpolationMode</a> mode=<a class="el" href="namespaceeve_1_1graphics_1_1hair.html#a5a1a3352685b189968f70fd32b8591b8adfd0a82c4bf37b1e90b690a22a20692e">InterpolationMode::Offset</a>)</td></tr>
+<tr class="memdesc:aefa372cdfb1fa2be1ec8fcd4411c1809"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enable lightweight guide XPBD/Verlet for every group.  <br /></td></tr>
+<tr class="separator:aefa372cdfb1fa2be1ec8fcd4411c1809"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a48574cfee2cfd312f694986ca65c6a1c" id="r_a48574cfee2cfd312f694986ca65c6a1c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1hair_1_1GroomInstance.html#a48574cfee2cfd312f694986ca65c6a1c">disableGuideSimulation</a> ()</td></tr>
+<tr class="memdesc:a48574cfee2cfd312f694986ca65c6a1c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Disable guide simulation and restore rest strands on next rebuild.  <br /></td></tr>
+<tr class="separator:a48574cfee2cfd312f694986ca65c6a1c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6a3938eb19b632550130fab6fd0bddb0" id="r_a6a3938eb19b632550130fab6fd0bddb0"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1hair_1_1GroomInstance.html#a6a3938eb19b632550130fab6fd0bddb0">isGuideSimulationEnabled</a> () const</td></tr>
+<tr class="separator:a6a3938eb19b632550130fab6fd0bddb0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac38a423170c303acd9f5e5e5feed7bdc" id="r_ac38a423170c303acd9f5e5e5feed7bdc"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1hair_1_1GroomInstance.html#ac38a423170c303acd9f5e5e5feed7bdc">setGuideSimParams</a> (const <a class="el" href="structeve_1_1graphics_1_1hair_1_1GuideSimParams.html">GuideSimParams</a> &amp;<a class="el" href="mesh_2MeshModifierGraph_8cpp.html#ac59750003266730d7d05c14393c78fbd">params</a>)</td></tr>
+<tr class="separator:ac38a423170c303acd9f5e5e5feed7bdc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9a0e745e96a3dfc32e70b9d7f1ea5ea2" id="r_a9a0e745e96a3dfc32e70b9d7f1ea5ea2"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="structeve_1_1graphics_1_1hair_1_1GuideSimParams.html">GuideSimParams</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1hair_1_1GroomInstance.html#a9a0e745e96a3dfc32e70b9d7f1ea5ea2">getGuideSimParams</a> () const</td></tr>
+<tr class="separator:a9a0e745e96a3dfc32e70b9d7f1ea5ea2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a19ba232fd6bc3cb4af9602b801e00dfe" id="r_a19ba232fd6bc3cb4af9602b801e00dfe"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1hair_1_1GroomInstance.html#a19ba232fd6bc3cb4af9602b801e00dfe">update</a> (float dt)</td></tr>
+<tr class="memdesc:a19ba232fd6bc3cb4af9602b801e00dfe"><td class="mdescLeft">&#160;</td><td class="mdescRight">Advance guide simulation by <code>dt</code> and rebuild the GPU mesh. No-op success when simulation is disabled.  <br /></td></tr>
+<tr class="separator:a19ba232fd6bc3cb4af9602b801e00dfe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a49905d6fe35bd9aa07e417149951f676" id="r_a49905d6fe35bd9aa07e417149951f676"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1hair_1_1GroomInstance.html#a49905d6fe35bd9aa07e417149951f676">draw</a> (const glm::mat4 &amp;<a class="el" href="RenderSystem3D_8cpp.html#ade56622421c713a8290c025626759118">model</a>)</td></tr>
+<tr class="separator:a49905d6fe35bd9aa07e417149951f676"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ada84a1bdfcc6bf0c578e7578d6e9e271" id="r_ada84a1bdfcc6bf0c578e7578d6e9e271"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1hair_1_1GroomInstance.html#ada84a1bdfcc6bf0c578e7578d6e9e271">draw</a> ()</td></tr>
+<tr class="separator:ada84a1bdfcc6bf0c578e7578d6e9e271"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab9156ba558396c82f51011ec8b731095" id="r_ab9156ba558396c82f51011ec8b731095"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1Mesh.html">Mesh</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1hair_1_1GroomInstance.html#ab9156ba558396c82f51011ec8b731095">getMesh</a> () const</td></tr>
+<tr class="separator:ab9156ba558396c82f51011ec8b731095"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a04b74e26ece7b3c3d7677de9919d85f7" id="r_a04b74e26ece7b3c3d7677de9919d85f7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1Shader.html">Shader</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1hair_1_1GroomInstance.html#a04b74e26ece7b3c3d7677de9919d85f7">getShader</a> () const</td></tr>
+<tr class="separator:a04b74e26ece7b3c3d7677de9919d85f7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afeacd5d5ba3577286458d03c15902aae" id="r_afeacd5d5ba3577286458d03c15902aae"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1hair_1_1GroomInstance.html#afeacd5d5ba3577286458d03c15902aae">getTexture</a> () const</td></tr>
+<tr class="separator:afeacd5d5ba3577286458d03c15902aae"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a496c5eeb9a31d8ebaac83fa2cdffa890" id="r_a496c5eeb9a31d8ebaac83fa2cdffa890"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1hair_1_1GroomInstance.html#a496c5eeb9a31d8ebaac83fa2cdffa890">getCurveCount</a> () const</td></tr>
+<tr class="separator:a496c5eeb9a31d8ebaac83fa2cdffa890"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1523d7827e50ba528ece18f9ef265ab9" id="r_a1523d7827e50ba528ece18f9ef265ab9"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1hair_1_1GroomInstance.html#a1523d7827e50ba528ece18f9ef265ab9">getPointCount</a> () const</td></tr>
+<tr class="separator:a1523d7827e50ba528ece18f9ef265ab9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab602e347687b16b327b76caf7fd16533" id="r_ab602e347687b16b327b76caf7fd16533"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1hair_1_1GroomInstance.html#ab602e347687b16b327b76caf7fd16533">getGroupCount</a> () const</td></tr>
+<tr class="separator:ab602e347687b16b327b76caf7fd16533"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad3b52bd6ef155b930e372c31de16c076" id="r_ad3b52bd6ef155b930e372c31de16c076"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1hair_1_1GroomInstance.html#ad3b52bd6ef155b930e372c31de16c076">getActiveLodIndex</a> () const</td></tr>
+<tr class="separator:ad3b52bd6ef155b930e372c31de16c076"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acc88b9da800c8c88d4176fbfa5c7e3c4" id="r_acc88b9da800c8c88d4176fbfa5c7e3c4"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1hair_1_1GroomInstance.html#acc88b9da800c8c88d4176fbfa5c7e3c4">getActiveRepresentation</a> () const</td></tr>
+<tr class="separator:acc88b9da800c8c88d4176fbfa5c7e3c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7a55999850a619cf8d8d466e3baff422" id="r_a7a55999850a619cf8d8d466e3baff422"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1hair_1_1GroomInstance.html#a7a55999850a619cf8d8d466e3baff422">getClusterCount</a> () const</td></tr>
+<tr class="separator:a7a55999850a619cf8d8d466e3baff422"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9c2293fb2dc3f550445c04baffc2096e" id="r_a9c2293fb2dc3f550445c04baffc2096e"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1hair_1_1GroomInstance.html#a9c2293fb2dc3f550445c04baffc2096e">getVisibleCurveCount</a> () const</td></tr>
+<tr class="separator:a9c2293fb2dc3f550445c04baffc2096e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p><a class="el" href="classeve_1_1Runtime.html">Runtime</a> groom drawable (UE <code>UGroomComponent</code> analogue). </p>
+<p>Rebuilds all groups into one combined GPU mesh (per-group LOD + optional cluster cull). <code><a class="el" href="namespaceeve_1_1graphics_1_1hair.html#a59c83e7ac2c2c09c42982d13969f0375acd81f9f55969c822377f076017bb3484">Representation::Cards</a></code> expands strands through <code>graphics/HairCards</code> polylines; <code>Strands</code> uses ribbon quads. Phase 3 exposes Marschner R/TT/TRT lobe weights and a cheap analytical self-shadow / root AO on the hair shader push constants. Phase 5 adds optional guide XPBD/Verlet via <code>update(dt)</code> (no physics-module include).</p>
+<p>Caller owns the instance; <a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> owns <a class="el" href="classeve_1_1graphics_1_1Mesh.html" title="GPU mesh handle (+ optional CPU morph targets).">Mesh</a> / <a class="el" href="classeve_1_1graphics_1_1Shader.html" title="Custom GPU program.">Shader</a> / <a class="el" href="classeve_1_1graphics_1_1Texture.html" title="GPU texture created via Graphics::newTexture. Owns GPU resources through an opaque backend handle.">Texture</a>.</p>
+<p>@thread Render-thread affine; not safe to share across threads. @reentrancy <code>draw</code> must not re-enter <a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> resource creation. </p>
+
+<p class="definition">在文件 <a class="el" href="GroomInstance_8h_source.html">GroomInstance.h</a> 第 <a class="el" href="GroomInstance_8h_source.html#l00040">40</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a1025b9080d7769b9836fec21cf2edb14" name="a1025b9080d7769b9836fec21cf2edb14"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1025b9080d7769b9836fec21cf2edb14">&#9670;&#160;</a></span>GroomInstance() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::graphics::hair::GroomInstance::GroomInstance </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *&#160;</td>
+          <td class="paramname"><em>gfx</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GroomInstance_8cpp_source.html">GroomInstance.cpp</a> 第 <a class="el" href="GroomInstance_8cpp_source.html#l00047">47</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a9e4781e8353d50ac4bc6ac34de228ac7" name="a9e4781e8353d50ac4bc6ac34de228ac7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9e4781e8353d50ac4bc6ac34de228ac7">&#9670;&#160;</a></span>~GroomInstance()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::graphics::hair::GroomInstance::~GroomInstance </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ab275b5e0120bbce28416ff2a626a3c58" name="ab275b5e0120bbce28416ff2a626a3c58"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab275b5e0120bbce28416ff2a626a3c58">&#9670;&#160;</a></span>GroomInstance() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::graphics::hair::GroomInstance::GroomInstance </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1graphics_1_1hair_1_1GroomInstance.html">GroomInstance</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a205e34c90cab6cc7dc3f74a67dd08934" name="a205e34c90cab6cc7dc3f74a67dd08934"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a205e34c90cab6cc7dc3f74a67dd08934">&#9670;&#160;</a></span>bakeProceduralMesh()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::graphics::hair::GroomInstance::bakeProceduralMesh </td>
+          <td>(</td>
+          <td class="paramtype">const float *&#160;</td>
+          <td class="paramname"><em>posXYZ</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const float *&#160;</td>
+          <td class="paramname"><em>nrmXYZ</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>vertexCount</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const uint32_t *&#160;</td>
+          <td class="paramname"><em>indices</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>indexCount</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1graphics_1_1hair_1_1ProceduralParams.html">ProceduralParams</a> &amp;&#160;</td>
+          <td class="paramname"><em>params</em> = <code>{}</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Bake procedural strands on an indexed triangle mesh. </p>
+
+<p class="definition">在文件 <a class="el" href="GroomInstance_8cpp_source.html">GroomInstance.cpp</a> 第 <a class="el" href="GroomInstance_8cpp_source.html#l00163">163</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="Procedural_8cpp_source.html#l00104">eve::graphics::hair::generateOnMesh()</a>, <a class="el" href="GltfImporter_8cpp_source.html#l00023">indexCount</a>, <a class="el" href="HeightmapMesh_8cpp_source.html#l00019">indices</a>, <a class="el" href="mesh_2MeshModifierGraph_8cpp_source.html#l00028">params</a>, <a class="el" href="ActionNotifyRegistry_8cpp_source.html#l00165">value</a> , 以及 <a class="el" href="GltfImporter_8cpp_source.html#l00022">vertexCount</a>.</p>
+
+</div>
+</div>
+<a id="a1cf173eb1cb6d6ea630806285d66e589" name="a1cf173eb1cb6d6ea630806285d66e589"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1cf173eb1cb6d6ea630806285d66e589">&#9670;&#160;</a></span>bakeProceduralPlane()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::graphics::hair::GroomInstance::bakeProceduralPlane </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>sizeX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>sizeZ</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1graphics_1_1hair_1_1ProceduralParams.html">ProceduralParams</a> &amp;&#160;</td>
+          <td class="paramname"><em>params</em> = <code>{}</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Bake a procedural plane groom into a single default group. </p>
+
+<p class="definition">在文件 <a class="el" href="GroomInstance_8cpp_source.html">GroomInstance.cpp</a> 第 <a class="el" href="GroomInstance_8cpp_source.html#l00156">156</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="Procedural_8cpp_source.html#l00204">eve::graphics::hair::generateOnPlane()</a>, <a class="el" href="mesh_2MeshModifierGraph_8cpp_source.html#l00028">params</a> , 以及 <a class="el" href="ActionNotifyRegistry_8cpp_source.html#l00165">value</a>.</p>
+
+</div>
+</div>
+<a id="a48574cfee2cfd312f694986ca65c6a1c" name="a48574cfee2cfd312f694986ca65c6a1c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a48574cfee2cfd312f694986ca65c6a1c">&#9670;&#160;</a></span>disableGuideSimulation()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::graphics::hair::GroomInstance::disableGuideSimulation </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Disable guide simulation and restore rest strands on next rebuild. </p>
+
+<p class="definition">在文件 <a class="el" href="GroomInstance_8cpp_source.html">GroomInstance.cpp</a> 第 <a class="el" href="GroomInstance_8cpp_source.html#l00270">270</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="GroomAsset_8h_source.html#l00060">eve::graphics::hair::GroomAsset::groupCount()</a>, <a class="el" href="GroomInstance_8cpp_source.html#l00397">rebuild()</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="ada84a1bdfcc6bf0c578e7578d6e9e271" name="ada84a1bdfcc6bf0c578e7578d6e9e271"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ada84a1bdfcc6bf0c578e7578d6e9e271">&#9670;&#160;</a></span>draw() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::hair::GroomInstance::draw </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GroomInstance_8cpp_source.html">GroomInstance.cpp</a> 第 <a class="el" href="GroomInstance_8cpp_source.html#l00502">502</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="GroomInstance_8cpp_source.html#l00502">draw()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GroomInstance_8cpp_source.html#l00502">draw()</a>.</p>
+
+</div>
+</div>
+<a id="a49905d6fe35bd9aa07e417149951f676" name="a49905d6fe35bd9aa07e417149951f676"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a49905d6fe35bd9aa07e417149951f676">&#9670;&#160;</a></span>draw() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::hair::GroomInstance::draw </td>
+          <td>(</td>
+          <td class="paramtype">const glm::mat4 &amp;&#160;</td>
+          <td class="paramname"><em>model</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GroomInstance_8cpp_source.html">GroomInstance.cpp</a> 第 <a class="el" href="GroomInstance_8cpp_source.html#l00504">504</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="classeve_1_1graphics_1_1Graphics.html#acbd057ac365c66502742391d4aa42807">eve::graphics::Graphics::drawMeshShader()</a>, <a class="el" href="RenderSystem3D_8cpp_source.html#l00644">model</a> , 以及 <a class="el" href="GraphicsVirtualGeometry_8cpp_source.html#l00046">tint</a>.</p>
+
+</div>
+</div>
+<a id="aefa372cdfb1fa2be1ec8fcd4411c1809" name="aefa372cdfb1fa2be1ec8fcd4411c1809"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aefa372cdfb1fa2be1ec8fcd4411c1809">&#9670;&#160;</a></span>enableGuideSimulation()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::graphics::hair::GroomInstance::enableGuideSimulation </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1graphics_1_1hair_1_1GuideSimParams.html">GuideSimParams</a> &amp;&#160;</td>
+          <td class="paramname"><em>params</em> = <code>{}</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>guideFraction</em> = <code>0.15<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1graphics_1_1hair.html#a5a1a3352685b189968f70fd32b8591b8">InterpolationMode</a>&#160;</td>
+          <td class="paramname"><em>mode</em> = <code><a class="el" href="namespaceeve_1_1graphics_1_1hair.html#a5a1a3352685b189968f70fd32b8591b8adfd0a82c4bf37b1e90b690a22a20692e">InterpolationMode::Offset</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Enable lightweight guide XPBD/Verlet for every group. </p>
+<p>Uses each group's <code>guides</code> when non-empty; otherwise extracts a guide subset from strands (<code>guideFraction</code>, default 0.15). Rest strands/guides and kNN weights are captured at enable time. Does not include the physics module — SoftBody3D can bridge later via capability. </p>
+
+<p class="definition">在文件 <a class="el" href="GroomInstance_8cpp_source.html">GroomInstance.cpp</a> 第 <a class="el" href="GroomInstance_8cpp_source.html#l00254">254</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="GroomAsset_8h_source.html#l00060">eve::graphics::hair::GroomAsset::groupCount()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="mesh_2MeshModifierGraph_8cpp_source.html#l00028">params</a> , 以及 <a class="el" href="GroomInstance_8cpp_source.html#l00397">rebuild()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GroomInstance_8cpp_source.html#l00140">setAsset()</a>.</p>
+
+</div>
+</div>
+<a id="ad3b52bd6ef155b930e372c31de16c076" name="ad3b52bd6ef155b930e372c31de16c076"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad3b52bd6ef155b930e372c31de16c076">&#9670;&#160;</a></span>getActiveLodIndex()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::graphics::hair::GroomInstance::getActiveLodIndex </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GroomInstance_8cpp_source.html">GroomInstance.cpp</a> 第 <a class="el" href="GroomInstance_8cpp_source.html#l00317">317</a> 行定义.</p>
+
+</div>
+</div>
+<a id="acc88b9da800c8c88d4176fbfa5c7e3c4" name="acc88b9da800c8c88d4176fbfa5c7e3c4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acc88b9da800c8c88d4176fbfa5c7e3c4">&#9670;&#160;</a></span>getActiveRepresentation()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::graphics::hair::GroomInstance::getActiveRepresentation </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GroomInstance_8cpp_source.html">GroomInstance.cpp</a> 第 <a class="el" href="GroomInstance_8cpp_source.html#l00319">319</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a7a55999850a619cf8d8d466e3baff422" name="a7a55999850a619cf8d8d466e3baff422"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7a55999850a619cf8d8d466e3baff422">&#9670;&#160;</a></span>getClusterCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t eve::graphics::hair::GroomInstance::getClusterCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GroomInstance_8cpp_source.html">GroomInstance.cpp</a> 第 <a class="el" href="GroomInstance_8cpp_source.html#l00321">321</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00033">state</a>.</p>
+
+</div>
+</div>
+<a id="a496c5eeb9a31d8ebaac83fa2cdffa890" name="a496c5eeb9a31d8ebaac83fa2cdffa890"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a496c5eeb9a31d8ebaac83fa2cdffa890">&#9670;&#160;</a></span>getCurveCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::graphics::hair::GroomInstance::getCurveCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GroomInstance_8cpp_source.html">GroomInstance.cpp</a> 第 <a class="el" href="GroomInstance_8cpp_source.html#l00512">512</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="GpuGraph_8cpp_source.html#l00007">g</a>, <a class="el" href="GroomAsset_8cpp_source.html#l00040">eve::graphics::hair::GroomAsset::groupAt()</a> , 以及 <a class="el" href="GroomAsset_8h_source.html#l00060">eve::graphics::hair::GroomAsset::groupCount()</a>.</p>
+
+</div>
+</div>
+<a id="a7821ea9a02204d405cf0065371cad89f" name="a7821ea9a02204d405cf0065371cad89f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7821ea9a02204d405cf0065371cad89f">&#9670;&#160;</a></span>getForcedLod()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::graphics::hair::GroomInstance::getForcedLod </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GroomInstance_8cpp_source.html">GroomInstance.cpp</a> 第 <a class="el" href="GroomInstance_8cpp_source.html#l00173">173</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab602e347687b16b327b76caf7fd16533" name="ab602e347687b16b327b76caf7fd16533"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab602e347687b16b327b76caf7fd16533">&#9670;&#160;</a></span>getGroupCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t eve::graphics::hair::GroomInstance::getGroupCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GroomInstance_8cpp_source.html">GroomInstance.cpp</a> 第 <a class="el" href="GroomInstance_8cpp_source.html#l00315">315</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="GroomAsset_8h_source.html#l00060">eve::graphics::hair::GroomAsset::groupCount()</a>.</p>
+
+</div>
+</div>
+<a id="a9a0e745e96a3dfc32e70b9d7f1ea5ea2" name="a9a0e745e96a3dfc32e70b9d7f1ea5ea2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9a0e745e96a3dfc32e70b9d7f1ea5ea2">&#9670;&#160;</a></span>getGuideSimParams()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="structeve_1_1graphics_1_1hair_1_1GuideSimParams.html">GuideSimParams</a> &amp; eve::graphics::hair::GroomInstance::getGuideSimParams </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GroomInstance_8cpp_source.html">GroomInstance.cpp</a> 第 <a class="el" href="GroomInstance_8cpp_source.html#l00285">285</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a2ce0546b5447eb8f34463e3995d15c8a" name="a2ce0546b5447eb8f34463e3995d15c8a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2ce0546b5447eb8f34463e3995d15c8a">&#9670;&#160;</a></span>getMarschnerR()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::hair::GroomInstance::getMarschnerR </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GroomInstance_8cpp_source.html">GroomInstance.cpp</a> 第 <a class="el" href="GroomInstance_8cpp_source.html#l00198">198</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a6f23d8c12dc7334d959e0cf7dcd1f9de" name="a6f23d8c12dc7334d959e0cf7dcd1f9de"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6f23d8c12dc7334d959e0cf7dcd1f9de">&#9670;&#160;</a></span>getMarschnerTRT()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::hair::GroomInstance::getMarschnerTRT </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GroomInstance_8cpp_source.html">GroomInstance.cpp</a> 第 <a class="el" href="GroomInstance_8cpp_source.html#l00202">202</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a921ce24dab8e2f2bd90968a7608bc10f" name="a921ce24dab8e2f2bd90968a7608bc10f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a921ce24dab8e2f2bd90968a7608bc10f">&#9670;&#160;</a></span>getMarschnerTT()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::hair::GroomInstance::getMarschnerTT </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GroomInstance_8cpp_source.html">GroomInstance.cpp</a> 第 <a class="el" href="GroomInstance_8cpp_source.html#l00200">200</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab9156ba558396c82f51011ec8b731095" name="ab9156ba558396c82f51011ec8b731095"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab9156ba558396c82f51011ec8b731095">&#9670;&#160;</a></span>getMesh()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1Mesh.html">Mesh</a> * eve::graphics::hair::GroomInstance::getMesh </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GroomInstance_8cpp_source.html">GroomInstance.cpp</a> 第 <a class="el" href="GroomInstance_8cpp_source.html#l00309">309</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a1523d7827e50ba528ece18f9ef265ab9" name="a1523d7827e50ba528ece18f9ef265ab9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1523d7827e50ba528ece18f9ef265ab9">&#9670;&#160;</a></span>getPointCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::graphics::hair::GroomInstance::getPointCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GroomInstance_8cpp_source.html">GroomInstance.cpp</a> 第 <a class="el" href="GroomInstance_8cpp_source.html#l00521">521</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="GpuGraph_8cpp_source.html#l00007">g</a>, <a class="el" href="GroomAsset_8cpp_source.html#l00040">eve::graphics::hair::GroomAsset::groupAt()</a> , 以及 <a class="el" href="GroomAsset_8h_source.html#l00060">eve::graphics::hair::GroomAsset::groupCount()</a>.</p>
+
+</div>
+</div>
+<a id="acc8fc868dc08f63483f417b72b51d9c0" name="acc8fc868dc08f63483f417b72b51d9c0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acc8fc868dc08f63483f417b72b51d9c0">&#9670;&#160;</a></span>getRootAoStrength()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::hair::GroomInstance::getRootAoStrength </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GroomInstance_8cpp_source.html">GroomInstance.cpp</a> 第 <a class="el" href="GroomInstance_8cpp_source.html#l00215">215</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab126a7c25818f48dd46491b8b2e8fe8c" name="ab126a7c25818f48dd46491b8b2e8fe8c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab126a7c25818f48dd46491b8b2e8fe8c">&#9670;&#160;</a></span>getScreenSize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::hair::GroomInstance::getScreenSize </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GroomInstance_8cpp_source.html">GroomInstance.cpp</a> 第 <a class="el" href="GroomInstance_8cpp_source.html#l00179">179</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a1425abbbcb96bf8de25df41ffd074115" name="a1425abbbcb96bf8de25df41ffd074115"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1425abbbcb96bf8de25df41ffd074115">&#9670;&#160;</a></span>getSelfShadowBias()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::hair::GroomInstance::getSelfShadowBias </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GroomInstance_8cpp_source.html">GroomInstance.cpp</a> 第 <a class="el" href="GroomInstance_8cpp_source.html#l00213">213</a> 行定义.</p>
+
+</div>
+</div>
+<a id="acd5e1ddf55ea795eaec0001c7a4d6b4c" name="acd5e1ddf55ea795eaec0001c7a4d6b4c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acd5e1ddf55ea795eaec0001c7a4d6b4c">&#9670;&#160;</a></span>getSelfShadowStrength()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::hair::GroomInstance::getSelfShadowStrength </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GroomInstance_8cpp_source.html">GroomInstance.cpp</a> 第 <a class="el" href="GroomInstance_8cpp_source.html#l00211">211</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a04b74e26ece7b3c3d7677de9919d85f7" name="a04b74e26ece7b3c3d7677de9919d85f7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a04b74e26ece7b3c3d7677de9919d85f7">&#9670;&#160;</a></span>getShader()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1Shader.html">Shader</a> * eve::graphics::hair::GroomInstance::getShader </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GroomInstance_8cpp_source.html">GroomInstance.cpp</a> 第 <a class="el" href="GroomInstance_8cpp_source.html#l00311">311</a> 行定义.</p>
+
+</div>
+</div>
+<a id="afeacd5d5ba3577286458d03c15902aae" name="afeacd5d5ba3577286458d03c15902aae"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afeacd5d5ba3577286458d03c15902aae">&#9670;&#160;</a></span>getTexture()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> * eve::graphics::hair::GroomInstance::getTexture </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GroomInstance_8cpp_source.html">GroomInstance.cpp</a> 第 <a class="el" href="GroomInstance_8cpp_source.html#l00313">313</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a9c2293fb2dc3f550445c04baffc2096e" name="a9c2293fb2dc3f550445c04baffc2096e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9c2293fb2dc3f550445c04baffc2096e">&#9670;&#160;</a></span>getVisibleCurveCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::graphics::hair::GroomInstance::getVisibleCurveCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GroomInstance_8cpp_source.html">GroomInstance.cpp</a> 第 <a class="el" href="GroomInstance_8cpp_source.html#l00327">327</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="GpuGraph_8cpp_source.html#l00007">g</a>, <a class="el" href="GroomAsset_8cpp_source.html#l00040">eve::graphics::hair::GroomAsset::groupAt()</a>, <a class="el" href="GroomAsset_8h_source.html#l00060">eve::graphics::hair::GroomAsset::groupCount()</a> , 以及 <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00033">state</a>.</p>
+
+</div>
+</div>
+<a id="a6269c9c30482d3a34e892a18b3e0c572" name="a6269c9c30482d3a34e892a18b3e0c572"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6269c9c30482d3a34e892a18b3e0c572">&#9670;&#160;</a></span>getWidthScale()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::hair::GroomInstance::getWidthScale </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GroomInstance_8cpp_source.html">GroomInstance.cpp</a> 第 <a class="el" href="GroomInstance_8cpp_source.html#l00183">183</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a7498ac594a78e530298990b750a566df" name="a7498ac594a78e530298990b750a566df"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7498ac594a78e530298990b750a566df">&#9670;&#160;</a></span>isClusterCullingEnabled()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::graphics::hair::GroomInstance::isClusterCullingEnabled </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GroomInstance_8cpp_source.html">GroomInstance.cpp</a> 第 <a class="el" href="GroomInstance_8cpp_source.html#l00189">189</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a6a3938eb19b632550130fab6fd0bddb0" name="a6a3938eb19b632550130fab6fd0bddb0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6a3938eb19b632550130fab6fd0bddb0">&#9670;&#160;</a></span>isGuideSimulationEnabled()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::graphics::hair::GroomInstance::isGuideSimulationEnabled </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GroomInstance_8cpp_source.html">GroomInstance.cpp</a> 第 <a class="el" href="GroomInstance_8cpp_source.html#l00276">276</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a97683a15f855ec2f90d809a8a38ba823" name="a97683a15f855ec2f90d809a8a38ba823"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a97683a15f855ec2f90d809a8a38ba823">&#9670;&#160;</a></span>operator=()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1hair_1_1GroomInstance.html">GroomInstance</a> &amp; eve::graphics::hair::GroomInstance::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1graphics_1_1hair_1_1GroomInstance.html">GroomInstance</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a82f085a259164de71a7cc74b99b50367" name="a82f085a259164de71a7cc74b99b50367"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a82f085a259164de71a7cc74b99b50367">&#9670;&#160;</a></span>rebuild()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::graphics::hair::GroomInstance::rebuild </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Rebuild GPU mesh from all groups (LOD + optional visibility). </p>
+
+<p class="definition">在文件 <a class="el" href="GroomInstance_8cpp_source.html">GroomInstance.cpp</a> 第 <a class="el" href="GroomInstance_8cpp_source.html#l00397">397</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="HairCards_8cpp_source.html#l00115">eve::graphics::hair::appendCardMesh()</a>, <a class="el" href="RibbonBuilder_8cpp_source.html#l00101">eve::graphics::hair::appendRibbonMesh()</a>, <a class="el" href="RibbonBuilder_8cpp_source.html#l00021">eve::graphics::hair::buildRibbons()</a>, <a class="el" href="namespaceeve_1_1graphics_1_1hair.html#a59c83e7ac2c2c09c42982d13969f0375acd81f9f55969c822377f076017bb3484">eve::graphics::hair::Cards</a>, <a class="el" href="GroomAsset_8h_source.html#l00022">eve::graphics::hair::GroomLod::curveFraction</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca">eve::Failed</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="ClusterGrid_8cpp_source.html#l00188">eve::graphics::hair::filterStrandsByCurves()</a>, <a class="el" href="BuildingTarget_8cpp_source.html#l00254">group</a>, <a class="el" href="GroomAsset_8cpp_source.html#l00040">eve::graphics::hair::GroomAsset::groupAt()</a>, <a class="el" href="GroomAsset_8h_source.html#l00060">eve::graphics::hair::GroomAsset::groupCount()</a>, <a class="el" href="RibbonBuilder_8h_source.html#l00026">eve::graphics::hair::RibbonMesh::indexCount()</a>, <a class="el" href="RibbonBuilder_8h_source.html#l00023">eve::graphics::hair::RibbonMesh::indices</a>, <a class="el" href="HairCards_8h_source.html#l00029">eve::graphics::hair::CardMeshData::indices</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="GroomAsset_8h_source.html#l00040">eve::graphics::hair::GroomGroup::lods</a>, <a class="el" href="namespaceeve_1_1graphics_1_1hair.html#a59c83e7ac2c2c09c42982d13969f0375a6f977d7c0201677985cc21e9e24d8b35">eve::graphics::hair::Meshes</a>, <a class="el" href="classeve_1_1graphics_1_1Graphics.html#ad2394ae661385736c667a98446a5b9b4">eve::graphics::Graphics::newMeshFromArrays()</a>, <a class="el" href="namespaceeve_1_1graphics_1_1hair.html#a59c83e7ac2c2c09c42982d13969f0375a6adf97f83acf6453d4a6a4b1070f3754">eve::graphics::hair::None</a>, <a class="el" href="RibbonBuilder_8h_source.html#l00021">eve::graphics::hair::RibbonMesh::nrmXYZ</a>, <a class="el" href="UdpLink_8cpp_source.html#l00059">ok</a>, <a class="el" href="RibbonBuilder_8h_source.html#l00020">eve::graphics::hair::RibbonMesh::posXYZ</a>, <a class="el" href="GroomAsset_8h_source.html#l00020">eve::graphics::hair::GroomLod::representation</a>, <a class="el" href="RibbonBuilder_8h_source.html#l00031">eve::graphics::hair::RibbonParams::sideHint</a>, <a class="el" href="UnityVegetationPreset_8cpp_source.html#l00029">source</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="GroomAsset_8h_source.html#l00024">eve::graphics::hair::GroomLod::thicknessScale</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ab4080bdf74febf04d578ff105cce9d3f">eve::Unsupported</a>, <a class="el" href="HairCards_8cpp_source.html#l00123">eve::graphics::hair::uploadCardMesh()</a>, <a class="el" href="RibbonBuilder_8h_source.html#l00022">eve::graphics::hair::RibbonMesh::uvST</a>, <a class="el" href="StrandsDatas_8cpp_source.html#l00041">eve::graphics::hair::StrandsDatas::validate()</a>, <a class="el" href="RibbonBuilder_8h_source.html#l00025">eve::graphics::hair::RibbonMesh::vertexCount()</a> , 以及 <a class="el" href="RibbonBuilder_8h_source.html#l00033">eve::graphics::hair::RibbonParams::widthScale</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GroomInstance_8cpp_source.html#l00270">disableGuideSimulation()</a>, <a class="el" href="GroomInstance_8cpp_source.html#l00254">enableGuideSimulation()</a>, <a class="el" href="GroomInstance_8cpp_source.html#l00140">setAsset()</a>, <a class="el" href="GroomInstance_8cpp_source.html#l00287">update()</a> , 以及 <a class="el" href="GroomInstance_8cpp_source.html#l00376">updateVisibility()</a>.</p>
+
+</div>
+</div>
+<a id="a6c1d68e7a146fe7f2e2dae27d45c090d" name="a6c1d68e7a146fe7f2e2dae27d45c090d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6c1d68e7a146fe7f2e2dae27d45c090d">&#9670;&#160;</a></span>setAsset()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::graphics::hair::GroomInstance::setAsset </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1graphics_1_1hair_1_1GroomAsset.html">GroomAsset</a> &amp;&#160;</td>
+          <td class="paramname"><em>asset</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Replace runtime strands from a shared asset (deep copy of groups). @ownership Asset remains owned by the caller; instance stores a copy. </p>
+
+<p class="definition">在文件 <a class="el" href="GroomInstance_8cpp_source.html">GroomInstance.cpp</a> 第 <a class="el" href="GroomInstance_8cpp_source.html#l00140">140</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="GroomInstance_8cpp_source.html#l00254">enableGuideSimulation()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="UdpLink_8cpp_source.html#l00059">ok</a>, <a class="el" href="GroomInstance_8cpp_source.html#l00397">rebuild()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="GroomAsset_8cpp_source.html#l00054">eve::graphics::hair::GroomAsset::validate()</a>.</p>
+
+</div>
+</div>
+<a id="a0c1e0bdb87a8117e078be8192128e410" name="a0c1e0bdb87a8117e078be8192128e410"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0c1e0bdb87a8117e078be8192128e410">&#9670;&#160;</a></span>setClusterCullingEnabled()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::hair::GroomInstance::setClusterCullingEnabled </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>enabled</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Enable/disable CPU cluster frustum filtering before mesh bake. When enabled, call <code>updateVisibility</code> with the current view-projection. </p>
+
+<p class="definition">在文件 <a class="el" href="GroomInstance_8cpp_source.html">GroomInstance.cpp</a> 第 <a class="el" href="GroomInstance_8cpp_source.html#l00187">187</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="rpg_2Settlement_8cpp_source.html#l00029">enabled</a>.</p>
+
+</div>
+</div>
+<a id="ae8a8b5e03c64f65a64edb62d51bd13e0" name="ae8a8b5e03c64f65a64edb62d51bd13e0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae8a8b5e03c64f65a64edb62d51bd13e0">&#9670;&#160;</a></span>setForcedLod()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::hair::GroomInstance::setForcedLod </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>lod</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Force LOD index; -1 restores automatic selection. </p>
+
+<p class="definition">在文件 <a class="el" href="GroomInstance_8cpp_source.html">GroomInstance.cpp</a> 第 <a class="el" href="GroomInstance_8cpp_source.html#l00171">171</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac38a423170c303acd9f5e5e5feed7bdc" name="ac38a423170c303acd9f5e5e5feed7bdc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac38a423170c303acd9f5e5e5feed7bdc">&#9670;&#160;</a></span>setGuideSimParams()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::hair::GroomInstance::setGuideSimParams </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1graphics_1_1hair_1_1GuideSimParams.html">GuideSimParams</a> &amp;&#160;</td>
+          <td class="paramname"><em>params</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GroomInstance_8cpp_source.html">GroomInstance.cpp</a> 第 <a class="el" href="GroomInstance_8cpp_source.html#l00278">278</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="mesh_2MeshModifierGraph_8cpp_source.html#l00028">params</a> , 以及 <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00033">state</a>.</p>
+
+</div>
+</div>
+<a id="ac438bb6bc9df1d942b061b09047201ba" name="ac438bb6bc9df1d942b061b09047201ba"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac438bb6bc9df1d942b061b09047201ba">&#9670;&#160;</a></span>setMarschnerLobes()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::hair::GroomInstance::setMarschnerLobes </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>r</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>tt</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>trt</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Marschner-approximate lobe weights (R / TT / TRT) applied to the hair shader. Defaults: 1 / 0.45 / 0.25. Values are clamped to &gt;= 0. </p>
+
+<p class="definition">在文件 <a class="el" href="GroomInstance_8cpp_source.html">GroomInstance.cpp</a> 第 <a class="el" href="GroomInstance_8cpp_source.html#l00191">191</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="GtsMeshSimplifier_8cpp_source.html#l00012">r</a>.</p>
+
+</div>
+</div>
+<a id="ad8c40473edf9d2d3430308c8cae418ef" name="ad8c40473edf9d2d3430308c8cae418ef"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad8c40473edf9d2d3430308c8cae418ef">&#9670;&#160;</a></span>setScreenSize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::hair::GroomInstance::setScreenSize </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>screenSize</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Screen-size hint in [0,1] used when forced LOD is disabled. </p>
+
+<p class="definition">在文件 <a class="el" href="GroomInstance_8cpp_source.html">GroomInstance.cpp</a> 第 <a class="el" href="GroomInstance_8cpp_source.html#l00175">175</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a316d751b32f88e27d2d5acde6c294400" name="a316d751b32f88e27d2d5acde6c294400"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a316d751b32f88e27d2d5acde6c294400">&#9670;&#160;</a></span>setSelfShadow()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::hair::GroomInstance::setSelfShadow </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>strength</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>bias</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>rootAo</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Cheap analytical self-shadow (fiber wrap + along-strand root AO). </p>
+<p>Not a deep shadow map / transmittance volume — see design doc vs UE groom deep shadows. Strength / bias / rootAo are clamped to [0,1]. Defaults: 0.35 / 0.25 / 0.3. Set strength to 0 to disable. </p>
+
+<p class="definition">在文件 <a class="el" href="GroomInstance_8cpp_source.html">GroomInstance.cpp</a> 第 <a class="el" href="GroomInstance_8cpp_source.html#l00204">204</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TerrainGenerationSession_8cpp_source.html#l00121">strength</a>.</p>
+
+</div>
+</div>
+<a id="a1e49ac7dd8b421f1b516f4967987d2d1" name="a1e49ac7dd8b421f1b516f4967987d2d1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1e49ac7dd8b421f1b516f4967987d2d1">&#9670;&#160;</a></span>setSideHint()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::hair::GroomInstance::setSideHint </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>z</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GroomInstance_8cpp_source.html">GroomInstance.cpp</a> 第 <a class="el" href="GroomInstance_8cpp_source.html#l00185">185</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AnimClip_8cpp_source.html#l00738">x</a>, <a class="el" href="AnimClip_8cpp_source.html#l00738">y</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00738">z</a>.</p>
+
+</div>
+</div>
+<a id="a39dbb800e07e819df1ed9147abf1c2e5" name="a39dbb800e07e819df1ed9147abf1c2e5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a39dbb800e07e819df1ed9147abf1c2e5">&#9670;&#160;</a></span>setWidthScale()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::hair::GroomInstance::setWidthScale </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>scale</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GroomInstance_8cpp_source.html">GroomInstance.cpp</a> 第 <a class="el" href="GroomInstance_8cpp_source.html#l00181">181</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00018">scale</a>.</p>
+
+</div>
+</div>
+<a id="a19ba232fd6bc3cb4af9602b801e00dfe" name="a19ba232fd6bc3cb4af9602b801e00dfe"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a19ba232fd6bc3cb4af9602b801e00dfe">&#9670;&#160;</a></span>update()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::graphics::hair::GroomInstance::update </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>dt</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Advance guide simulation by <code>dt</code> and rebuild the GPU mesh. No-op success when simulation is disabled. </p>
+
+<p class="definition">在文件 <a class="el" href="GroomInstance_8cpp_source.html">GroomInstance.cpp</a> 第 <a class="el" href="GroomInstance_8cpp_source.html#l00287">287</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="GroomAsset_8h_source.html#l00060">eve::graphics::hair::GroomAsset::groupCount()</a>, <a class="el" href="Guides_8cpp_source.html#l00154">eve::graphics::hair::interpolateStrands()</a>, <a class="el" href="GroomInstance_8cpp_source.html#l00397">rebuild()</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00033">state</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a412d6f151f9bff2cfefc303624b19acf" name="a412d6f151f9bff2cfefc303624b19acf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a412d6f151f9bff2cfefc303624b19acf">&#9670;&#160;</a></span>updateVisibility()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::graphics::hair::GroomInstance::updateVisibility </td>
+          <td>(</td>
+          <td class="paramtype">const float *&#160;</td>
+          <td class="paramname"><em>viewProj16</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Frustum-cull every group's cluster grid and rebuild GPU mesh. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">viewProj16</td><td>Column-major 4x4 view-projection (glm::mat4 layout). </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="GroomInstance_8cpp_source.html">GroomInstance.cpp</a> 第 <a class="el" href="GroomInstance_8cpp_source.html#l00376">376</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="GroomAsset_8h_source.html#l00060">eve::graphics::hair::GroomAsset::groupCount()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="GroomInstance_8cpp_source.html#l00397">rebuild()</a> , 以及 <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00033">state</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/graphics/hair/<a class="el" href="GroomInstance_8h_source.html">GroomInstance.h</a></li>
+<li>src/modules/graphics/hair/<a class="el" href="GroomInstance_8cpp_source.html">GroomInstance.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,276 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/ui/PcgPhotoModeRanges.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_25338c1645a7f1506f8143527df34a10.html">ui</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">PcgPhotoModeRanges.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="PcgPhotoModeRanges_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &quot;<a class="code" href="PcgPhotoModeRanges_8h.html">ui/PcgPhotoModeRanges.h</a>&quot;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#include &quot;<a class="code" href="SquirrelBinding_8h.html">common/SquirrelBinding.h</a>&quot;</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &lt;simplesquirrel/simplesquirrel.hpp&gt;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &lt;algorithm&gt;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;cmath&gt;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;limits&gt;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1ui.html">eve::ui</a> { <span class="keyword">namespace </span>{</div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="keyword">const</span> std::vector&lt;std::pair&lt;std::string,PcgPhotoModeRange&gt;&gt;&amp;defaults(){<span class="keyword">static</span> <span class="keyword">const</span> std::vector&lt;std::pair&lt;std::string,PcgPhotoModeRange&gt;&gt;<a class="code hl_variable" href="HexRiverMesh_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>={</div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span>{<span class="stringliteral">&quot;m_0To1&quot;</span>,{0.0,1.0,<span class="keyword">false</span>}},</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span>{<span class="stringliteral">&quot;m_lodBias&quot;</span>,{0.001,10.0,<span class="keyword">false</span>}},</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span>{<span class="stringliteral">&quot;m_targetFPS&quot;</span>,{-1.0,240.0,<span class="keyword">true</span>}},</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span>{<span class="stringliteral">&quot;m_shadowDistance&quot;</span>,{0.0,5000.0,<span class="keyword">false</span>}},</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>{<span class="stringliteral">&quot;m_fieldOfView&quot;</span>,{1.0,115.0,<span class="keyword">false</span>}},</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>{<span class="stringliteral">&quot;m_pcgCullinDistance&quot;</span>,{-10000.0,10000.0,<span class="keyword">false</span>}},</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>{<span class="stringliteral">&quot;m_cameraAperture&quot;</span>,{0.1,32.0,<span class="keyword">false</span>}},</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>{<span class="stringliteral">&quot;m_cameraFocalLength&quot;</span>,{0.05,250.0,<span class="keyword">false</span>}},</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>{<span class="stringliteral">&quot;m_globalVolume&quot;</span>,{0.0,1.0,<span class="keyword">false</span>}},</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>{<span class="stringliteral">&quot;m_cameraRoll&quot;</span>,{-90.0,90.0,<span class="keyword">false</span>}},</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>{<span class="stringliteral">&quot;m_pcgLoadRange&quot;</span>,{0.0,5000.0,<span class="keyword">false</span>}},</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>{<span class="stringliteral">&quot;m_pcgImpostorRange&quot;</span>,{0.0,5000.0,<span class="keyword">false</span>}},</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>{<span class="stringliteral">&quot;m_pcgWindDirection&quot;</span>,{0.0,1.0,<span class="keyword">false</span>}},</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>{<span class="stringliteral">&quot;m_pcgWindSpeed&quot;</span>,{0.0,1.0,<span class="keyword">false</span>}},</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>{<span class="stringliteral">&quot;m_pcgTime&quot;</span>,{0.0,24.0,<span class="keyword">false</span>}},</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>{<span class="stringliteral">&quot;m_pcgTimeScale&quot;</span>,{0.0,200.0,<span class="keyword">false</span>}},</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>{<span class="stringliteral">&quot;m_pcgAdditionalLinearFog&quot;</span>,{-5000.0,5000.0,<span class="keyword">false</span>}},</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>{<span class="stringliteral">&quot;m_pcgAdditionalExponentialFog&quot;</span>,{0.0,0.05,<span class="keyword">false</span>}},</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>{<span class="stringliteral">&quot;m_sunRotation&quot;</span>,{0.0,360.0,<span class="keyword">false</span>}},</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>{<span class="stringliteral">&quot;m_sunPitch&quot;</span>,{0.0,360.0,<span class="keyword">false</span>}},</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>{<span class="stringliteral">&quot;m_fogDensity&quot;</span>,{0.0,0.05,<span class="keyword">false</span>}},</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>{<span class="stringliteral">&quot;m_fogStart&quot;</span>,{0.0,5000.0,<span class="keyword">false</span>}},</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>{<span class="stringliteral">&quot;m_fogEnd&quot;</span>,{0.0,5000.0,<span class="keyword">false</span>}},</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>{<span class="stringliteral">&quot;m_fogEndHDRP&quot;</span>,{1.0,5000.0,<span class="keyword">false</span>}},</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>{<span class="stringliteral">&quot;m_skyboxRotation&quot;</span>,{0.0,360.0,<span class="keyword">false</span>}},</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>{<span class="stringliteral">&quot;m_skyboxExposure&quot;</span>,{0.0,4.0,<span class="keyword">false</span>}},</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>{<span class="stringliteral">&quot;m_skyboxExposureHDRP&quot;</span>,{0.0,30.0,<span class="keyword">false</span>}},</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>{<span class="stringliteral">&quot;m_ambientIntensity&quot;</span>,{0.0,10.0,<span class="keyword">false</span>}},</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>{<span class="stringliteral">&quot;m_sunIntensity&quot;</span>,{0.0,8.0,<span class="keyword">false</span>}},</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>{<span class="stringliteral">&quot;m_sunIntensityHDRP&quot;</span>,{0.0,250000.0,<span class="keyword">false</span>}},</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>{<span class="stringliteral">&quot;m_sunKelvinValue&quot;</span>,{1500.0,20000.0,<span class="keyword">false</span>}},</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>{<span class="stringliteral">&quot;m_densityVolumeFogDistance&quot;</span>,{0.01,std::numeric_limits&lt;double&gt;::infinity(),<span class="keyword">false</span>}},</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>{<span class="stringliteral">&quot;m_pcgWaterReflectionDistance&quot;</span>,{-5000.0,5000.0,<span class="keyword">false</span>}},</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>{<span class="stringliteral">&quot;m_pcgReflectionsLODBias&quot;</span>,{0.0,10.0,<span class="keyword">false</span>}},</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>{<span class="stringliteral">&quot;m_pcgUnderwaterFogDistance&quot;</span>,{0.1,200.0,<span class="keyword">false</span>}},</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>{<span class="stringliteral">&quot;m_pcgUnderwaterFogDensity&quot;</span>,{0.0,1.0,<span class="keyword">false</span>}},</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>{<span class="stringliteral">&quot;m_postFXExposure&quot;</span>,{0.0,5.0,<span class="keyword">false</span>}},</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>{<span class="stringliteral">&quot;m_postFXExposureURP&quot;</span>,{-5.0,5.0,<span class="keyword">false</span>}},</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>{<span class="stringliteral">&quot;m_postFXExposureHDRP&quot;</span>,{-5.0,15.0,<span class="keyword">false</span>}},</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>{<span class="stringliteral">&quot;m_postFXDOFFocusDistanceHDRP&quot;</span>,{0.01,300.0,<span class="keyword">false</span>}},</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>{<span class="stringliteral">&quot;m_postFXDOFFocusDistanceURP&quot;</span>,{0.01,300.0,<span class="keyword">false</span>}},</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>{<span class="stringliteral">&quot;m_postFXDOFFocusDistance&quot;</span>,{0.01,200.0,<span class="keyword">false</span>}},</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>{<span class="stringliteral">&quot;m_postFXDOFNearBlurStart&quot;</span>,{0.01,400.0,<span class="keyword">false</span>}},</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>{<span class="stringliteral">&quot;m_postFXDOFNearBlurEnd&quot;</span>,{0.1,5000.0,<span class="keyword">false</span>}},</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>{<span class="stringliteral">&quot;m_postFXDOFFarBlurStart&quot;</span>,{0.01,400.0,<span class="keyword">false</span>}},</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>{<span class="stringliteral">&quot;m_postFXDOFFarBlurEnd&quot;</span>,{0.1,5000.0,<span class="keyword">false</span>}},</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>{<span class="stringliteral">&quot;m_postFXDOFGaussianBlurStartURP&quot;</span>,{0.01,250.0,<span class="keyword">false</span>}},</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>{<span class="stringliteral">&quot;m_postFXDOFGaussianBlurEndURP&quot;</span>,{0.1,5000.0,<span class="keyword">false</span>}},</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>{<span class="stringliteral">&quot;m_postFXDOFGaussianBlurMaxRadiusURP&quot;</span>,{0.5,1.5,<span class="keyword">false</span>}},</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>{<span class="stringliteral">&quot;m_terrainDetailDensity&quot;</span>,{0.0,1.0,<span class="keyword">false</span>}},</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>{<span class="stringliteral">&quot;m_terrainDetailDistance&quot;</span>,{0.0,1000.0,<span class="keyword">false</span>}},</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>{<span class="stringliteral">&quot;m_terrainPixelError&quot;</span>,{1.0,200.0,<span class="keyword">false</span>}},</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>{<span class="stringliteral">&quot;m_terrainBasemapDistance&quot;</span>,{0.0,20000.0,<span class="keyword">false</span>}},</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>{<span class="stringliteral">&quot;m_globalGrassDensity&quot;</span>,{0.01,4.0,<span class="keyword">false</span>}},</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>{<span class="stringliteral">&quot;m_globalGrassDistance&quot;</span>,{0.01,4.0,<span class="keyword">false</span>}},</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>{<span class="stringliteral">&quot;m_cameraCellDistance&quot;</span>,{0.01,4.0,<span class="keyword">false</span>}},</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>{<span class="stringliteral">&quot;m_cameraCellSubdivision&quot;</span>,{-8.0,8.0,<span class="keyword">true</span>}},</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>};<span class="keywordflow">return</span> <a class="code hl_variable" href="HexRiverMesh_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>;}</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span><span class="keyword">template</span>&lt;<span class="keyword">class</span> T&gt;Result&lt;T&gt;bad(<span class="keyword">const</span> std::string&amp;<a class="code hl_variable" href="VirtualGeometryRenderer_8cpp.html#a68147cce833d98b698183d68629e38d5">m</a>){<span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">Result&lt;T&gt;::failure</a>(<a class="code hl_function" href="classeve_1_1Diagnostic.html#af797f7520cc62e8273da5afdb59d9ef4">Diagnostic::error</a>(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">DiagnosticCode::InvalidArgument</a>,<a class="code hl_variable" href="VirtualGeometryRenderer_8cpp.html#a68147cce833d98b698183d68629e38d5">m</a>,{}, {},<span class="stringliteral">&quot;ui.pcgPhotoModeRanges&quot;</span>));}</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>}</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno"><a class="line" href="classeve_1_1ui_1_1PcgPhotoModeRanges.html#a382265c17f7d0be2f1f64143931d107e">   69</a></span><a class="code hl_function" href="classeve_1_1ui_1_1PcgPhotoModeRanges.html#a5bb112b60becfd51e711fd05c8f75794">PcgPhotoModeRanges::PcgPhotoModeRanges</a>(){<a class="code hl_function" href="classeve_1_1ui_1_1PcgPhotoModeRanges.html#ad27adc32e55531d688a418f8f92f2169">resetDefaults</a>();}<span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1ui_1_1PcgPhotoModeRanges.html#ad27adc32e55531d688a418f8f92f2169">PcgPhotoModeRanges::resetDefaults</a>(){std::unordered_map&lt;std::string,PcgPhotoModeRange&gt;<a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a>;<span class="keywordflow">for</span>(<span class="keyword">const</span> <span class="keyword">auto</span>&amp;<a class="code hl_variable" href="HexRiverMesh_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>:defaults())<a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a>.emplace(<a class="code hl_variable" href="HexRiverMesh_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>);ranges_=std::move(<a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a>);selected_={};}uint64_t <a class="code hl_function" href="classeve_1_1ui_1_1PcgPhotoModeRanges.html#a382265c17f7d0be2f1f64143931d107e">PcgPhotoModeRanges::getCount</a>()const noexcept{<span class="keywordflow">return</span> defaults().size();}</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno"><a class="line" href="classeve_1_1ui_1_1PcgPhotoModeRanges.html#a8003191d4bc9e8cf51480d1daff6768f">   70</a></span><a class="code hl_class" href="classeve_1_1Result.html">Result&lt;std::string&gt;</a> <a class="code hl_function" href="classeve_1_1ui_1_1PcgPhotoModeRanges.html#a8003191d4bc9e8cf51480d1daff6768f">PcgPhotoModeRanges::getName</a>(uint64_t i)<span class="keyword">const</span>{<span class="keywordflow">if</span>(i&gt;=defaults().<a class="code hl_variable" href="TreeMesh_8cpp.html#aa6ea9b07932df851a61fa72bd01761fe">size</a>())<span class="keywordflow">return</span> bad&lt;std::string&gt;(<span class="stringliteral">&quot;photo-mode range index is out of bounds&quot;</span>);<span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">Result&lt;std::string&gt;::success</a>(defaults()[i].<a class="code hl_variable" href="HexSphereTopology_8cpp.html#a9ebd1b92d5226e25efef9e2af5ca8a34">first</a>);}</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno"><a class="line" href="classeve_1_1ui_1_1PcgPhotoModeRanges.html#a451b17235dae84058128771859f4373b">   71</a></span><a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1ui_1_1PcgPhotoModeRanges.html#a451b17235dae84058128771859f4373b">PcgPhotoModeRanges::select</a>(<span class="keyword">const</span> std::string&amp;<a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a>){<span class="keyword">auto</span> i=ranges_.find(<a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a>);<span class="keywordflow">if</span>(i==ranges_.end())<span class="keywordflow">return</span> bad&lt;void&gt;(<span class="stringliteral">&quot;unknown photo-mode range: &quot;</span>+<a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a>);selected_=i-&gt;second;<span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">Result&lt;void&gt;::success</a>();}</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno"><a class="line" href="classeve_1_1ui_1_1PcgPhotoModeRanges.html#aef3ab17de5b4ee6e9b1597fb2430b2f3">   72</a></span><a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1ui_1_1PcgPhotoModeRanges.html#aef3ab17de5b4ee6e9b1597fb2430b2f3">PcgPhotoModeRanges::setRange</a>(<span class="keyword">const</span> std::string&amp;<a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a>,<span class="keywordtype">double</span> lo,<span class="keywordtype">double</span> hi){<span class="keyword">auto</span> i=ranges_.find(<a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a>);<span class="keywordflow">if</span>(i==ranges_.end())<span class="keywordflow">return</span> bad&lt;void&gt;(<span class="stringliteral">&quot;unknown photo-mode range: &quot;</span>+<a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a>);<span class="keywordflow">if</span>(!std::isfinite(lo)||std::isnan(hi)||hi&lt;lo)<span class="keywordflow">return</span> bad&lt;void&gt;(<span class="stringliteral">&quot;photo-mode range endpoints are invalid&quot;</span>);<span class="keywordflow">if</span>(i-&gt;second.integral&amp;&amp;(std::trunc(lo)!=lo||std::trunc(hi)!=hi))<span class="keywordflow">return</span> bad&lt;void&gt;(<span class="stringliteral">&quot;integer photo-mode range requires integral endpoints&quot;</span>);i-&gt;second.minimum=lo;i-&gt;second.maximum=hi;<span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">Result&lt;void&gt;::success</a>();}</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno"><a class="line" href="classeve_1_1ui_1_1PcgPhotoModeRanges.html#a370210effe226003e365d6f6bde939f5">   73</a></span><a class="code hl_class" href="classeve_1_1Result.html">Result&lt;double&gt;</a> <a class="code hl_function" href="classeve_1_1ui_1_1PcgPhotoModeRanges.html#a370210effe226003e365d6f6bde939f5">PcgPhotoModeRanges::clamp</a>(<span class="keyword">const</span> std::string&amp;<a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a>,<span class="keywordtype">double</span> <a class="code hl_variable" href="HexRiverMesh_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>)<span class="keyword">const</span>{<span class="keyword">auto</span> i=ranges_.find(<a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a>);<span class="keywordflow">if</span>(i==ranges_.end())<span class="keywordflow">return</span> bad&lt;double&gt;(<span class="stringliteral">&quot;unknown photo-mode range: &quot;</span>+<a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a>);<span class="keywordflow">if</span>(!std::isfinite(<a class="code hl_variable" href="HexRiverMesh_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>))<span class="keywordflow">return</span> bad&lt;double&gt;(<span class="stringliteral">&quot;photo-mode clamp value must be finite&quot;</span>);<span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">Result&lt;double&gt;::success</a>(std::clamp(<a class="code hl_variable" href="HexRiverMesh_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>,i-&gt;second.minimum,i-&gt;second.maximum));}</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno"><a class="line" href="namespaceeve_1_1ui.html#a8e85b71de2deda568d8ecff4881764be">   74</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="namespaceeve_1_1ui.html#a8e85b71de2deda568d8ecff4881764be">exposePcgPhotoModeRangesBindings</a>(ssq::Table&amp;<a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a>){<span class="keyword">auto</span> <a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>=<a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a>.getHandle();<span class="keyword">auto</span> <a class="code hl_variable" href="HexSphereTopology_8cpp.html#a6508ac0a45fccabd203a6f520c69dca8">c</a>=<a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a>.addClass(<span class="stringliteral">&quot;PcgPhotoModeRanges&quot;</span>,ssq::Class::Ctor&lt;<a class="code hl_class" href="classeve_1_1ui_1_1PcgPhotoModeRanges.html">PcgPhotoModeRanges</a>()&gt;());<a class="code hl_variable" href="HexSphereTopology_8cpp.html#a6508ac0a45fccabd203a6f520c69dca8">c</a>.addFunc(<span class="stringliteral">&quot;resetDefaults&quot;</span>,[](<a class="code hl_class" href="classeve_1_1ui_1_1PcgPhotoModeRanges.html">PcgPhotoModeRanges</a>*<a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>){<a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>-&gt;resetDefaults();});<a class="code hl_variable" href="HexSphereTopology_8cpp.html#a6508ac0a45fccabd203a6f520c69dca8">c</a>.addFunc(<span class="stringliteral">&quot;getCount&quot;</span>,[](<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1ui_1_1PcgPhotoModeRanges.html">PcgPhotoModeRanges</a>*<a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>){<span class="keywordflow">return</span> <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>-&gt;getCount();});<a class="code hl_variable" href="HexSphereTopology_8cpp.html#a6508ac0a45fccabd203a6f520c69dca8">c</a>.addFunc(<span class="stringliteral">&quot;getName&quot;</span>,[<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>](<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1ui_1_1PcgPhotoModeRanges.html">PcgPhotoModeRanges</a>*<a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>,uint64_t i){<span class="keywordflow">return</span> <a class="code hl_function" href="namespaceeve_1_1script.html#aaf4df5edc4f47ca3cc0e7e160d4a3b7c">eve::script::projectResult</a>(<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>,<a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>-&gt;getName(i),[](<span class="keyword">const</span> std::string&amp;<a class="code hl_variable" href="HexRiverMesh_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>){return v;});});<a class="code hl_variable" href="HexSphereTopology_8cpp.html#a6508ac0a45fccabd203a6f520c69dca8">c</a>.addFunc(<span class="stringliteral">&quot;select&quot;</span>,[<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>](<a class="code hl_class" href="classeve_1_1ui_1_1PcgPhotoModeRanges.html">PcgPhotoModeRanges</a>*<a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>,<span class="keyword">const</span> std::string&amp;<a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a>){<span class="keywordflow">return</span> <a class="code hl_function" href="namespaceeve_1_1script.html#aaf4df5edc4f47ca3cc0e7e160d4a3b7c">eve::script::projectResult</a>(<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>,<a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>-&gt;select(<a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a>));});<a class="code hl_variable" href="HexSphereTopology_8cpp.html#a6508ac0a45fccabd203a6f520c69dca8">c</a>.addFunc(<span class="stringliteral">&quot;setRange&quot;</span>,[<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>](<a class="code hl_class" href="classeve_1_1ui_1_1PcgPhotoModeRanges.html">PcgPhotoModeRanges</a>*<a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>,<span class="keyword">const</span> std::string&amp;<a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a>,<span class="keywordtype">double</span> <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>,<span class="keywordtype">double</span> <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>){<span class="keywordflow">return</span> <a class="code hl_function" href="namespaceeve_1_1script.html#aaf4df5edc4f47ca3cc0e7e160d4a3b7c">eve::script::projectResult</a>(<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>,<a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>-&gt;setRange(<a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a>,<a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>,<a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>));});<a class="code hl_variable" href="HexSphereTopology_8cpp.html#a6508ac0a45fccabd203a6f520c69dca8">c</a>.addFunc(<span class="stringliteral">&quot;clamp&quot;</span>,[<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>](<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1ui_1_1PcgPhotoModeRanges.html">PcgPhotoModeRanges</a>*<a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>,<span class="keyword">const</span> std::string&amp;<a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a>,<span class="keywordtype">double</span> <a class="code hl_variable" href="HexRiverMesh_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>){<span class="keywordflow">return</span> <a class="code hl_function" href="namespaceeve_1_1script.html#aaf4df5edc4f47ca3cc0e7e160d4a3b7c">eve::script::projectResult</a>(<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>,<a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>-&gt;clamp(<a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a>,<a class="code hl_variable" href="HexRiverMesh_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>),[](<span class="keywordtype">double</span> <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>){return x;});});<a class="code hl_variable" href="HexSphereTopology_8cpp.html#a6508ac0a45fccabd203a6f520c69dca8">c</a>.addFunc(<span class="stringliteral">&quot;getMinimum&quot;</span>,[](<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1ui_1_1PcgPhotoModeRanges.html">PcgPhotoModeRanges</a>*<a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>){<span class="keywordflow">return</span> <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>-&gt;getMinimum();});<a class="code hl_variable" href="HexSphereTopology_8cpp.html#a6508ac0a45fccabd203a6f520c69dca8">c</a>.addFunc(<span class="stringliteral">&quot;getMaximum&quot;</span>,[](<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1ui_1_1PcgPhotoModeRanges.html">PcgPhotoModeRanges</a>*<a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>){<span class="keywordflow">return</span> <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>-&gt;getMaximum();});<a class="code hl_variable" href="HexSphereTopology_8cpp.html#a6508ac0a45fccabd203a6f520c69dca8">c</a>.addFunc(<span class="stringliteral">&quot;getIntegral&quot;</span>,[](<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1ui_1_1PcgPhotoModeRanges.html">PcgPhotoModeRanges</a>*<a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>){<span class="keywordflow">return</span> <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>-&gt;getIntegral();});}</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>}</div>
+<div class="ttc" id="aAnimClip_8cpp_html_ad0da36b2558901e21e7a30f6c227a45e"><div class="ttname"><a href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a></div><div class="ttdeci">float x</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00738">AnimClip.cpp:738</a></div></div>
+<div class="ttc" id="aBattleSystem_8cpp_html_ac913d18953c212b83881e974836de358"><div class="ttname"><a href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a></div><div class="ttdeci">const std::string &amp; s</div><div class="ttdef"><b>Definition</b> <a href="BattleSystem_8cpp_source.html#l00057">BattleSystem.cpp:57</a></div></div>
+<div class="ttc" id="aECS_8cpp_html_a02347a3d911f31a15d03c50c85070bfe"><div class="ttname"><a href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a></div><div class="ttdeci">HSQUIRRELVM vm</div><div class="ttdef"><b>Definition</b> <a href="ECS_8cpp_source.html#l00020">ECS.cpp:20</a></div></div>
+<div class="ttc" id="aFluidSurfaceBinding_8cpp_html_a0a0390ed59a97feb6783f87db4086a7c"><div class="ttname"><a href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a></div><div class="ttdeci">uint32_t a</div><div class="ttdef"><b>Definition</b> <a href="FluidSurfaceBinding_8cpp_source.html#l00014">FluidSurfaceBinding.cpp:14</a></div></div>
+<div class="ttc" id="aFluidSurfaceBinding_8cpp_html_a2826644ea978cb49c4ee809b55e128d7"><div class="ttname"><a href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a></div><div class="ttdeci">uint32_t b</div><div class="ttdef"><b>Definition</b> <a href="FluidSurfaceBinding_8cpp_source.html#l00015">FluidSurfaceBinding.cpp:15</a></div></div>
+<div class="ttc" id="aGrass_8cpp_html_ae7aa396fa4f69446f8f2c53e187578d0"><div class="ttname"><a href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a></div><div class="ttdeci">glm::vec3 n</div><div class="ttdef"><b>Definition</b> <a href="Grass_8cpp_source.html#l00063">Grass.cpp:63</a></div></div>
+<div class="ttc" id="aHexRiverMesh_8cpp_html_a48d9522e58fa05906c6dba23e5745a72"><div class="ttname"><a href="HexRiverMesh_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a></div><div class="ttdeci">float v</div><div class="ttdef"><b>Definition</b> <a href="HexRiverMesh_8cpp_source.html#l00019">HexRiverMesh.cpp:19</a></div></div>
+<div class="ttc" id="aHexSphereTopology_8cpp_html_a6508ac0a45fccabd203a6f520c69dca8"><div class="ttname"><a href="HexSphereTopology_8cpp.html#a6508ac0a45fccabd203a6f520c69dca8">c</a></div><div class="ttdeci">std::int32_t c</div><div class="ttdef"><b>Definition</b> <a href="HexSphereTopology_8cpp_source.html#l00068">HexSphereTopology.cpp:68</a></div></div>
+<div class="ttc" id="aHexSphereTopology_8cpp_html_a9ebd1b92d5226e25efef9e2af5ca8a34"><div class="ttname"><a href="HexSphereTopology_8cpp.html#a9ebd1b92d5226e25efef9e2af5ca8a34">first</a></div><div class="ttdeci">std::int32_t first</div><div class="ttdef"><b>Definition</b> <a href="HexSphereTopology_8cpp_source.html#l00080">HexSphereTopology.cpp:80</a></div></div>
+<div class="ttc" id="aPcgPhotoModeRanges_8h_html"><div class="ttname"><a href="PcgPhotoModeRanges_8h.html">PcgPhotoModeRanges.h</a></div></div>
+<div class="ttc" id="aPrototypeKit_8cpp_html_afea36502e9d227ff62c5fb2719a246f2"><div class="ttname"><a href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a></div><div class="ttdeci">float t</div><div class="ttdef"><b>Definition</b> <a href="PrototypeKit_8cpp_source.html#l00110">PrototypeKit.cpp:110</a></div></div>
+<div class="ttc" id="aSquirrelBinding_8h_html"><div class="ttname"><a href="SquirrelBinding_8h.html">SquirrelBinding.h</a></div><div class="ttdoc">The single Squirrel projection for common Result, Status and Value.</div></div>
+<div class="ttc" id="aTreeMesh_8cpp_html_aa6ea9b07932df851a61fa72bd01761fe"><div class="ttname"><a href="TreeMesh_8cpp.html#aa6ea9b07932df851a61fa72bd01761fe">size</a></div><div class="ttdeci">float size</div><div class="ttdef"><b>Definition</b> <a href="TreeMesh_8cpp_source.html#l00129">TreeMesh.cpp:129</a></div></div>
+<div class="ttc" id="aVirtualGeometryRenderer_8cpp_html_a68147cce833d98b698183d68629e38d5"><div class="ttname"><a href="VirtualGeometryRenderer_8cpp.html#a68147cce833d98b698183d68629e38d5">m</a></div><div class="ttdeci">float m[16]</div><div class="ttdef"><b>Definition</b> <a href="VirtualGeometryRenderer_8cpp_source.html#l00018">VirtualGeometryRenderer.cpp:18</a></div></div>
+<div class="ttc" id="aclasseve_1_1Diagnostic_html_af797f7520cc62e8273da5afdb59d9ef4"><div class="ttname"><a href="classeve_1_1Diagnostic.html#af797f7520cc62e8273da5afdb59d9ef4">eve::Diagnostic::error</a></div><div class="ttdeci">static Diagnostic error(DiagnosticCode code, std::string message, std::string path={}, DiagnosticDetails details={}, std::string source={})</div><div class="ttdoc">Construct an error diagnostic with the standard error severity.</div><div class="ttdef"><b>Definition</b> <a href="Diagnostic_8h_source.html#l00119">Diagnostic.h:119</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html_a10668d27f9f97c9808e0099e0248816b"><div class="ttname"><a href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">eve::Result::success</a></div><div class="ttdeci">static Result success(T value)</div><div class="ttdoc">Construct a successful result owning value.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00157">Result.h:157</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html_af1a297022e9a6a615433003fe6466358"><div class="ttname"><a href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">eve::Result::failure</a></div><div class="ttdeci">static Result failure(Status status)</div><div class="ttdoc">Construct a failed result from a structured status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00166">Result.h:166</a></div></div>
+<div class="ttc" id="aclasseve_1_1ui_1_1PcgPhotoModeRanges_html"><div class="ttname"><a href="classeve_1_1ui_1_1PcgPhotoModeRanges.html">eve::ui::PcgPhotoModeRanges</a></div><div class="ttdoc">Complete 57-range contract from Pcg PhotoModeMinAndMaxValues.</div><div class="ttdef"><b>Definition</b> <a href="PcgPhotoModeRanges_8h_source.html#l00011">PcgPhotoModeRanges.h:11</a></div></div>
+<div class="ttc" id="aclasseve_1_1ui_1_1PcgPhotoModeRanges_html_a370210effe226003e365d6f6bde939f5"><div class="ttname"><a href="classeve_1_1ui_1_1PcgPhotoModeRanges.html#a370210effe226003e365d6f6bde939f5">eve::ui::PcgPhotoModeRanges::clamp</a></div><div class="ttdeci">Result&lt; double &gt; clamp(const std::string &amp;name, double value) const</div><div class="ttdoc">Clamp a finite value to the named range.</div><div class="ttdef"><b>Definition</b> <a href="PcgPhotoModeRanges_8cpp_source.html#l00073">PcgPhotoModeRanges.cpp:73</a></div></div>
+<div class="ttc" id="aclasseve_1_1ui_1_1PcgPhotoModeRanges_html_a382265c17f7d0be2f1f64143931d107e"><div class="ttname"><a href="classeve_1_1ui_1_1PcgPhotoModeRanges.html#a382265c17f7d0be2f1f64143931d107e">eve::ui::PcgPhotoModeRanges::getCount</a></div><div class="ttdeci">uint64_t getCount() const noexcept</div><div class="ttdoc">Return range count.</div><div class="ttdef"><b>Definition</b> <a href="PcgPhotoModeRanges_8cpp_source.html#l00069">PcgPhotoModeRanges.cpp:69</a></div></div>
+<div class="ttc" id="aclasseve_1_1ui_1_1PcgPhotoModeRanges_html_a451b17235dae84058128771859f4373b"><div class="ttname"><a href="classeve_1_1ui_1_1PcgPhotoModeRanges.html#a451b17235dae84058128771859f4373b">eve::ui::PcgPhotoModeRanges::select</a></div><div class="ttdeci">Result&lt; void &gt; select(const std::string &amp;name)</div><div class="ttdoc">Select a range for component reads.</div><div class="ttdef"><b>Definition</b> <a href="PcgPhotoModeRanges_8cpp_source.html#l00071">PcgPhotoModeRanges.cpp:71</a></div></div>
+<div class="ttc" id="aclasseve_1_1ui_1_1PcgPhotoModeRanges_html_a5bb112b60becfd51e711fd05c8f75794"><div class="ttname"><a href="classeve_1_1ui_1_1PcgPhotoModeRanges.html#a5bb112b60becfd51e711fd05c8f75794">eve::ui::PcgPhotoModeRanges::PcgPhotoModeRanges</a></div><div class="ttdeci">PcgPhotoModeRanges()</div><div class="ttdef"><b>Definition</b> <a href="PcgPhotoModeRanges_8cpp_source.html#l00069">PcgPhotoModeRanges.cpp:69</a></div></div>
+<div class="ttc" id="aclasseve_1_1ui_1_1PcgPhotoModeRanges_html_a8003191d4bc9e8cf51480d1daff6768f"><div class="ttname"><a href="classeve_1_1ui_1_1PcgPhotoModeRanges.html#a8003191d4bc9e8cf51480d1daff6768f">eve::ui::PcgPhotoModeRanges::getName</a></div><div class="ttdeci">Result&lt; std::string &gt; getName(uint64_t index) const</div><div class="ttdoc">Return range name in declaration order.</div><div class="ttdef"><b>Definition</b> <a href="PcgPhotoModeRanges_8cpp_source.html#l00070">PcgPhotoModeRanges.cpp:70</a></div></div>
+<div class="ttc" id="aclasseve_1_1ui_1_1PcgPhotoModeRanges_html_ad27adc32e55531d688a418f8f92f2169"><div class="ttname"><a href="classeve_1_1ui_1_1PcgPhotoModeRanges.html#ad27adc32e55531d688a418f8f92f2169">eve::ui::PcgPhotoModeRanges::resetDefaults</a></div><div class="ttdeci">void resetDefaults()</div><div class="ttdoc">Restore all Pcg range defaults.</div><div class="ttdef"><b>Definition</b> <a href="PcgPhotoModeRanges_8cpp_source.html#l00069">PcgPhotoModeRanges.cpp:69</a></div></div>
+<div class="ttc" id="aclasseve_1_1ui_1_1PcgPhotoModeRanges_html_aef3ab17de5b4ee6e9b1597fb2430b2f3"><div class="ttname"><a href="classeve_1_1ui_1_1PcgPhotoModeRanges.html#aef3ab17de5b4ee6e9b1597fb2430b2f3">eve::ui::PcgPhotoModeRanges::setRange</a></div><div class="ttdeci">Result&lt; void &gt; setRange(const std::string &amp;name, double minimum, double maximum)</div><div class="ttdoc">Replace one range; integer ranges require integral endpoints.</div><div class="ttdef"><b>Definition</b> <a href="PcgPhotoModeRanges_8cpp_source.html#l00072">PcgPhotoModeRanges.cpp:72</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1script_html_aaf4df5edc4f47ca3cc0e7e160d4a3b7c"><div class="ttname"><a href="namespaceeve_1_1script.html#aaf4df5edc4f47ca3cc0e7e160d4a3b7c">eve::script::projectResult</a></div><div class="ttdeci">ssq::Table projectResult(HSQUIRRELVM vm, Result&lt; void &gt; &amp;&amp;result)</div><div class="ttdoc">Consume and project a void native Result using the common schema.</div><div class="ttdef"><b>Definition</b> <a href="SquirrelBinding_8cpp_source.html#l00438">SquirrelBinding.cpp:438</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1ui_html"><div class="ttname"><a href="namespaceeve_1_1ui.html">eve::ui</a></div><div class="ttdef"><b>Definition</b> <a href="Component_8cpp_source.html#l00005">Component.cpp:5</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1ui_html_a8e85b71de2deda568d8ecff4881764be"><div class="ttname"><a href="namespaceeve_1_1ui.html#a8e85b71de2deda568d8ecff4881764be">eve::ui::exposePcgPhotoModeRangesBindings</a></div><div class="ttdeci">void exposePcgPhotoModeRangesBindings(ssq::Table &amp;t)</div><div class="ttdoc">Register Pcg photo-mode range bindings.</div><div class="ttdef"><b>Definition</b> <a href="PcgPhotoModeRanges_8cpp_source.html#l00074">PcgPhotoModeRanges.cpp:74</a></div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::DiagnosticCode::InvalidArgument</a></div><div class="ttdeci">@ InvalidArgument</div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

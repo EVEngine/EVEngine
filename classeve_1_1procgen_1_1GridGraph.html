@@ -1,0 +1,797 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::procgen::GridGraph类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1procgen.html">procgen</a></li><li class="navelem"><a class="el" href="classeve_1_1procgen_1_1GridGraph.html">GridGraph</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-static-methods">静态 Public 成员函数</a> &#124;
+<a href="classeve_1_1procgen_1_1GridGraph-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::procgen::GridGraph类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Deterministic data-flow graph for grid generation and explicit grid-to-point composition.  
+ <a href="classeve_1_1procgen_1_1GridGraph.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="GridGraph_8h_source.html">GridGraph.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a9c4cc63e777aa2cd7cd88c583bfc2042" id="r_a9c4cc63e777aa2cd7cd88c583bfc2042"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1GridGraph.html#a9c4cc63e777aa2cd7cd88c583bfc2042">addNode</a> (std::string <a class="el" href="PlayHost_8cpp.html#afd0d68c6d31ff249f3ae8662162663c3">id</a>, std::string <a class="el" href="ActionNotifyRegistry_8cpp.html#a1d8330996490721964918f24590a398b">operation</a>)</td></tr>
+<tr class="memdesc:a9c4cc63e777aa2cd7cd88c583bfc2042"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add a reflected operation under a stable, non-empty node id.  <br /></td></tr>
+<tr class="separator:a9c4cc63e777aa2cd7cd88c583bfc2042"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a807db9916eaf94b0d07b6fcae61006b9" id="r_a807db9916eaf94b0d07b6fcae61006b9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1GridGraph.html#a807db9916eaf94b0d07b6fcae61006b9">connect</a> (std::string_view fromId, std::string_view toId, int inputIndex=0)</td></tr>
+<tr class="memdesc:a807db9916eaf94b0d07b6fcae61006b9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Connect one node output to a typed input slot.  <br /></td></tr>
+<tr class="separator:a807db9916eaf94b0d07b6fcae61006b9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9c4ae33fcd2505404d305cb64f19962a" id="r_a9c4ae33fcd2505404d305cb64f19962a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1GridGraph.html#a9c4ae33fcd2505404d305cb64f19962a">setNodeGrid</a> (std::string_view <a class="el" href="PlayHost_8cpp.html#afd0d68c6d31ff249f3ae8662162663c3">id</a>, const <a class="el" href="classeve_1_1procgen_1_1Grid2D.html">Grid2D</a> &amp;grid)</td></tr>
+<tr class="memdesc:a9c4ae33fcd2505404d305cb64f19962a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Assign an owning copy to a <code>grid.input</code> node.  <br /></td></tr>
+<tr class="separator:a9c4ae33fcd2505404d305cb64f19962a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af3cbe9cc35d2f43d6cd1f247a46f72d6" id="r_af3cbe9cc35d2f43d6cd1f247a46f72d6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1GridGraph.html#af3cbe9cc35d2f43d6cd1f247a46f72d6">setNodeInt</a> (std::string_view <a class="el" href="PlayHost_8cpp.html#afd0d68c6d31ff249f3ae8662162663c3">id</a>, std::string <a class="el" href="mesh_2MeshModifierGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a>, int <a class="el" href="ActionNotifyRegistry_8cpp.html#aee90379adb0307effb138f4871edbc5c">value</a>)</td></tr>
+<tr class="memdesc:af3cbe9cc35d2f43d6cd1f247a46f72d6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set one integer parameter declared by the node operation.  <br /></td></tr>
+<tr class="separator:af3cbe9cc35d2f43d6cd1f247a46f72d6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0397b4e1a4dbff4285d790187f8fc506" id="r_a0397b4e1a4dbff4285d790187f8fc506"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1GridGraph.html#a0397b4e1a4dbff4285d790187f8fc506">setNodeFloat</a> (std::string_view <a class="el" href="PlayHost_8cpp.html#afd0d68c6d31ff249f3ae8662162663c3">id</a>, std::string <a class="el" href="mesh_2MeshModifierGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a>, float <a class="el" href="ActionNotifyRegistry_8cpp.html#aee90379adb0307effb138f4871edbc5c">value</a>)</td></tr>
+<tr class="memdesc:a0397b4e1a4dbff4285d790187f8fc506"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set one floating-point parameter declared by the node operation.  <br /></td></tr>
+<tr class="separator:a0397b4e1a4dbff4285d790187f8fc506"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adfcbb3a977a63aefad92fc0e61f07eef" id="r_adfcbb3a977a63aefad92fc0e61f07eef"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1GridGraph.html#adfcbb3a977a63aefad92fc0e61f07eef">setNodeString</a> (std::string_view <a class="el" href="PlayHost_8cpp.html#afd0d68c6d31ff249f3ae8662162663c3">id</a>, std::string <a class="el" href="mesh_2MeshModifierGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a>, std::string <a class="el" href="ActionNotifyRegistry_8cpp.html#aee90379adb0307effb138f4871edbc5c">value</a>)</td></tr>
+<tr class="memdesc:adfcbb3a977a63aefad92fc0e61f07eef"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set one string parameter declared by the node operation.  <br /></td></tr>
+<tr class="separator:adfcbb3a977a63aefad92fc0e61f07eef"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9db6418f7ab94cc78ceb19620fd8590a" id="r_a9db6418f7ab94cc78ceb19620fd8590a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1GridGraph.html#a9db6418f7ab94cc78ceb19620fd8590a">setNodePointSubgraph</a> (std::string_view <a class="el" href="PlayHost_8cpp.html#afd0d68c6d31ff249f3ae8662162663c3">id</a>, const <a class="el" href="classeve_1_1procgen_1_1PointGraph.html">PointGraph</a> &amp;<a class="el" href="Package_8cpp.html#a8d10a8def83a0e25fb0e6300bc085eab">graph</a>, std::string inputNode, std::string outputNode)</td></tr>
+<tr class="memdesc:a9db6418f7ab94cc78ceb19620fd8590a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bind an owning <a class="el" href="classeve_1_1procgen_1_1PointGraph.html">PointGraph</a> copy to a <code>point.subgraph</code> bridge.  <br /></td></tr>
+<tr class="separator:a9db6418f7ab94cc78ceb19620fd8590a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a457cb732eded1d72897eef51d8d39fbe" id="r_a457cb732eded1d72897eef51d8d39fbe"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="namespaceeve_1_1procgen.html#ab540436d6cf637236679ebf552af69a3">GridGraphValue</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1GridGraph.html#a457cb732eded1d72897eef51d8d39fbe">execute</a> (std::string_view outputId)</td></tr>
+<tr class="memdesc:a457cb732eded1d72897eef51d8d39fbe"><td class="mdescLeft">&#160;</td><td class="mdescRight">Validate and evaluate one output into an independent owning value.  <br /></td></tr>
+<tr class="separator:a457cb732eded1d72897eef51d8d39fbe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af0f3c0a058400d7bbee01728091ea3a2" id="r_af0f3c0a058400d7bbee01728091ea3a2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1GridGraph.html#af0f3c0a058400d7bbee01728091ea3a2">validate</a> (std::string_view outputId) const</td></tr>
+<tr class="memdesc:af0f3c0a058400d7bbee01728091ea3a2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Validate topology, required inputs and cross-graph bindings without evaluating values.  <br /></td></tr>
+<tr class="separator:af0f3c0a058400d7bbee01728091ea3a2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8b163ecd9b2759e8c441fabe37932bde" id="r_a8b163ecd9b2759e8c441fabe37932bde"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1GridGraph.html#a8b163ecd9b2759e8c441fabe37932bde">clearCache</a> ()</td></tr>
+<tr class="memdesc:a8b163ecd9b2759e8c441fabe37932bde"><td class="mdescLeft">&#160;</td><td class="mdescRight">Remove all cached node values while retaining topology and parameters.  <br /></td></tr>
+<tr class="separator:a8b163ecd9b2759e8c441fabe37932bde"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1dc4cbcef0da81437d77b9eb31804b1a" id="r_a1dc4cbcef0da81437d77b9eb31804b1a"><td class="memItemLeft" align="right" valign="top">std::uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1GridGraph.html#a1dc4cbcef0da81437d77b9eb31804b1a">revision</a> () const noexcept</td></tr>
+<tr class="memdesc:a1dc4cbcef0da81437d77b9eb31804b1a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Monotonic authoring revision; successful mutations increment it.  <br /></td></tr>
+<tr class="separator:a1dc4cbcef0da81437d77b9eb31804b1a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a47c74518e1c40122ff81a1c7e0ff7e8d" id="r_a47c74518e1c40122ff81a1c7e0ff7e8d"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1GridGraph.html#a47c74518e1c40122ff81a1c7e0ff7e8d">serializeDefinition</a> () const</td></tr>
+<tr class="memdesc:a47c74518e1c40122ff81a1c7e0ff7e8d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Serialize topology and scalar parameters using the versioned EVPCG grid schema.  <br /></td></tr>
+<tr class="separator:a47c74518e1c40122ff81a1c7e0ff7e8d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7b83d57c61c216f65082bf6bc5d7aef4" id="r_a7b83d57c61c216f65082bf6bc5d7aef4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1GridGraph.html#a7b83d57c61c216f65082bf6bc5d7aef4">deserializeDefinition</a> (std::string_view definition)</td></tr>
+<tr class="memdesc:a7b83d57c61c216f65082bf6bc5d7aef4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Atomically replace this graph from a versioned definition.  <br /></td></tr>
+<tr class="separator:a7b83d57c61c216f65082bf6bc5d7aef4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+静态 Public 成员函数</h2></td></tr>
+<tr class="memitem:a2d39910cc7a23154f9a105acbad027c8" id="r_a2d39910cc7a23154f9a105acbad027c8"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1GridGraph.html#a2d39910cc7a23154f9a105acbad027c8">operationCount</a> ()</td></tr>
+<tr class="memdesc:a2d39910cc7a23154f9a105acbad027c8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the number of reflected operations.  <br /></td></tr>
+<tr class="separator:a2d39910cc7a23154f9a105acbad027c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a697707afa7db28061be711c473c55374" id="r_a697707afa7db28061be711c473c55374"><td class="memItemLeft" align="right" valign="top">static std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1GridGraph.html#a697707afa7db28061be711c473c55374">operationId</a> (int <a class="el" href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>)</td></tr>
+<tr class="memdesc:a697707afa7db28061be711c473c55374"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return a reflected operation id, or empty for an invalid index.  <br /></td></tr>
+<tr class="separator:a697707afa7db28061be711c473c55374"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6cb3beab03d1803e8a2f7a55bbf8357e" id="r_a6cb3beab03d1803e8a2f7a55bbf8357e"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="namespaceeve_1_1procgen.html#a345f6ddf33a4f008d49e76ba979690ce">GridGraphValueType</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1GridGraph.html#a6cb3beab03d1803e8a2f7a55bbf8357e">operationOutputType</a> (std::string_view <a class="el" href="ActionNotifyRegistry_8cpp.html#a1d8330996490721964918f24590a398b">operation</a>)</td></tr>
+<tr class="memdesc:a6cb3beab03d1803e8a2f7a55bbf8357e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return a reflected operation's output kind.  <br /></td></tr>
+<tr class="separator:a6cb3beab03d1803e8a2f7a55bbf8357e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Deterministic data-flow graph for grid generation and explicit grid-to-point composition. </p>
+<p>Grid nodes own dense intermediate values rather than ECS entities. Mutations invalidate the affected node and its downstream caches. <code>point.subgraph</code> is the first typed cross-graph bridge: it consumes a <a class="el" href="classeve_1_1procgen_1_1PointSet.html" title="Script-friendly collection of attributed 3D samples.">PointSet</a> and executes an independently owned <a class="el" href="classeve_1_1procgen_1_1PointGraph.html">PointGraph</a> instance.</p>
+<p>@thread Graph-owning thread only. @reentrant Not reentrant for one graph instance. </p>
+
+<p class="definition">在文件 <a class="el" href="GridGraph_8h_source.html">GridGraph.h</a> 第 <a class="el" href="GridGraph_8h_source.html#l00035">35</a> 行定义.</p>
+</div><h2 class="groupheader">成员函数说明</h2>
+<a id="a9c4cc63e777aa2cd7cd88c583bfc2042" name="a9c4cc63e777aa2cd7cd88c583bfc2042"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9c4cc63e777aa2cd7cd88c583bfc2042">&#9670;&#160;</a></span>addNode()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::procgen::GridGraph::addNode </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>operation</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Add a reflected operation under a stable, non-empty node id. </p>
+
+<p class="definition">在文件 <a class="el" href="GridGraph_8cpp_source.html">GridGraph.cpp</a> 第 <a class="el" href="GridGraph_8cpp_source.html#l00171">171</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::Conflict</a>, <a class="el" href="PlayHost_8cpp_source.html#l00142">id</a>, <a class="el" href="NodeDesc_8h_source.html#l00018">eve::scene::NodeDesc::id</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="ActionNotifyRegistry_8cpp_source.html#l00164">operation</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GridGraph_8cpp_source.html#l00583">deserializeDefinition()</a> , 以及 <a class="el" href="GridMeshGraphScript_8cpp_source.html#l00018">eve::procgen::exposeGridMeshGraphs()</a>.</p>
+
+</div>
+</div>
+<a id="a8b163ecd9b2759e8c441fabe37932bde" name="a8b163ecd9b2759e8c441fabe37932bde"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8b163ecd9b2759e8c441fabe37932bde">&#9670;&#160;</a></span>clearCache()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::procgen::GridGraph::clearCache </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Remove all cached node values while retaining topology and parameters. </p>
+
+<p class="definition">在文件 <a class="el" href="GridGraph_8cpp_source.html">GridGraph.cpp</a> 第 <a class="el" href="GridGraph_8cpp_source.html#l00517">517</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GridMeshGraphScript_8cpp_source.html#l00018">eve::procgen::exposeGridMeshGraphs()</a>.</p>
+
+</div>
+</div>
+<a id="a807db9916eaf94b0d07b6fcae61006b9" name="a807db9916eaf94b0d07b6fcae61006b9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a807db9916eaf94b0d07b6fcae61006b9">&#9670;&#160;</a></span>connect()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::procgen::GridGraph::connect </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>fromId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>toId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>inputIndex</em> = <code>0</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Connect one node output to a typed input slot. </p>
+
+<p class="definition">在文件 <a class="el" href="GridGraph_8cpp_source.html">GridGraph.cpp</a> 第 <a class="el" href="GridGraph_8cpp_source.html#l00184">184</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="AssetCommand_8cpp_source.html#l00161">from</a>, <a class="el" href="namespaceeve_1_1procgen.html#a345f6ddf33a4f008d49e76ba979690cea5174d1309f275ba6f275db3af9eb3e18">eve::procgen::Grid</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="GridGraph_8cpp_source.html#l00543">operationOutputType()</a>, <a class="el" href="namespaceeve_1_1procgen.html#a345f6ddf33a4f008d49e76ba979690ceaaedf8f48dfa5b704b6c12b415707a1da">eve::procgen::PointSet</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="ActionNotifyRegistry_8cpp_source.html#l00163">target</a>, <a class="el" href="HexUnits_8cpp_source.html#l00064">to</a> , 以及 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a2782c4707c245684aa95545098e1b70b">eve::TypeMismatch</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GridGraph_8cpp_source.html#l00583">deserializeDefinition()</a> , 以及 <a class="el" href="GridMeshGraphScript_8cpp_source.html#l00018">eve::procgen::exposeGridMeshGraphs()</a>.</p>
+
+</div>
+</div>
+<a id="a7b83d57c61c216f65082bf6bc5d7aef4" name="a7b83d57c61c216f65082bf6bc5d7aef4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7b83d57c61c216f65082bf6bc5d7aef4">&#9670;&#160;</a></span>deserializeDefinition()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::procgen::GridGraph::deserializeDefinition </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>definition</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Atomically replace this graph from a versioned definition. </p>
+
+<p class="definition">在文件 <a class="el" href="GridGraph_8cpp_source.html">GridGraph.cpp</a> 第 <a class="el" href="GridGraph_8cpp_source.html#l00583">583</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="GridGraph_8cpp_source.html#l00171">addNode()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::Conflict</a>, <a class="el" href="GridGraph_8cpp_source.html#l00184">connect()</a>, <a class="el" href="RpgDialect_8cpp_source.html#l00334">found</a>, <a class="el" href="PlayHost_8cpp_source.html#l00142">id</a>, <a class="el" href="Evpack_8cpp_source.html#l00175">input</a>, <a class="el" href="mesh_2MeshModifierGraph_8cpp_source.html#l00019">key</a>, <a class="el" href="LanguageIndex_8cpp_source.html#l00017">kind</a>, <a class="el" href="ConversationImporter_8cpp_source.html#l00014">line</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="ActionNotifyRegistry_8cpp_source.html#l00164">operation</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ae41199faa7290c167f70f314c5e6c165">eve::ParseError</a>, <a class="el" href="GridGraph_8cpp_source.html#l00235">setNodeFloat()</a>, <a class="el" href="GridGraph_8cpp_source.html#l00217">setNodeInt()</a>, <a class="el" href="GridGraph_8cpp_source.html#l00248">setNodeString()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="ActionNotifyRegistry_8cpp_source.html#l00163">target</a> , 以及 <a class="el" href="ActionNotifyRegistry_8cpp_source.html#l00165">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GridMeshGraphScript_8cpp_source.html#l00018">eve::procgen::exposeGridMeshGraphs()</a>.</p>
+
+</div>
+</div>
+<a id="a457cb732eded1d72897eef51d8d39fbe" name="a457cb732eded1d72897eef51d8d39fbe"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a457cb732eded1d72897eef51d8d39fbe">&#9670;&#160;</a></span>execute()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="namespaceeve_1_1procgen.html#ab540436d6cf637236679ebf552af69a3">GridGraphValue</a> &gt; eve::procgen::GridGraph::execute </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>outputId</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Validate and evaluate one output into an independent owning value. </p>
+<dl class="section return"><dt>返回</dt><dd><a class="el" href="classeve_1_1procgen_1_1Grid2D.html" title="Intermediate 2D generation result. cells store semantic ids (see Semantic.h), not tile GIDs — convert...">Grid2D</a> or <a class="el" href="classeve_1_1procgen_1_1PointSet.html" title="Script-friendly collection of attributed 3D samples.">PointSet</a> according to the selected node's reflected output type. @cost Linear in visited cells for local grid operations; nested <a class="el" href="classeve_1_1procgen_1_1PointGraph.html">PointGraph</a> cost is additive. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="GridGraph_8cpp_source.html">GridGraph.cpp</a> 第 <a class="el" href="GridGraph_8cpp_source.html#l00482">482</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GridMeshGraphScript_8cpp_source.html#l00018">eve::procgen::exposeGridMeshGraphs()</a>.</p>
+
+</div>
+</div>
+<a id="a2d39910cc7a23154f9a105acbad027c8" name="a2d39910cc7a23154f9a105acbad027c8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2d39910cc7a23154f9a105acbad027c8">&#9670;&#160;</a></span>operationCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::procgen::GridGraph::operationCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the number of reflected operations. </p>
+
+<p class="definition">在文件 <a class="el" href="GridGraph_8cpp_source.html">GridGraph.cpp</a> 第 <a class="el" href="GridGraph_8cpp_source.html#l00537">537</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TreeMesh_8cpp_source.html#l00129">size</a>.</p>
+
+</div>
+</div>
+<a id="a697707afa7db28061be711c473c55374" name="a697707afa7db28061be711c473c55374"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a697707afa7db28061be711c473c55374">&#9670;&#160;</a></span>operationId()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::procgen::GridGraph::operationId </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return a reflected operation id, or empty for an invalid index. </p>
+
+<p class="definition">在文件 <a class="el" href="GridGraph_8cpp_source.html">GridGraph.cpp</a> 第 <a class="el" href="GridGraph_8cpp_source.html#l00539">539</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="UnityVegetationMaterial_8cpp_source.html#l00161">index</a> , 以及 <a class="el" href="TreeMesh_8cpp_source.html#l00129">size</a>.</p>
+
+</div>
+</div>
+<a id="a6cb3beab03d1803e8a2f7a55bbf8357e" name="a6cb3beab03d1803e8a2f7a55bbf8357e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6cb3beab03d1803e8a2f7a55bbf8357e">&#9670;&#160;</a></span>operationOutputType()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="namespaceeve_1_1procgen.html#a345f6ddf33a4f008d49e76ba979690ce">GridGraphValueType</a> &gt; eve::procgen::GridGraph::operationOutputType </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>operation</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return a reflected operation's output kind. </p>
+
+<p class="definition">在文件 <a class="el" href="GridGraph_8cpp_source.html">GridGraph.cpp</a> 第 <a class="el" href="GridGraph_8cpp_source.html#l00543">543</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="ActionNotifyRegistry_8cpp_source.html#l00164">operation</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GridGraph_8cpp_source.html#l00184">connect()</a>.</p>
+
+</div>
+</div>
+<a id="a1dc4cbcef0da81437d77b9eb31804b1a" name="a1dc4cbcef0da81437d77b9eb31804b1a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1dc4cbcef0da81437d77b9eb31804b1a">&#9670;&#160;</a></span>revision()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::uint64_t eve::procgen::GridGraph::revision </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Monotonic authoring revision; successful mutations increment it. </p>
+
+<p class="definition">在文件 <a class="el" href="GridGraph_8h_source.html">GridGraph.h</a> 第 <a class="el" href="GridGraph_8h_source.html#l00068">68</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GridMeshGraphScript_8cpp_source.html#l00018">eve::procgen::exposeGridMeshGraphs()</a>.</p>
+
+</div>
+</div>
+<a id="a47c74518e1c40122ff81a1c7e0ff7e8d" name="a47c74518e1c40122ff81a1c7e0ff7e8d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a47c74518e1c40122ff81a1c7e0ff7e8d">&#9670;&#160;</a></span>serializeDefinition()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::procgen::GridGraph::serializeDefinition </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Serialize topology and scalar parameters using the versioned EVPCG grid schema. </p>
+
+<p class="definition">在文件 <a class="el" href="GridGraph_8cpp_source.html">GridGraph.cpp</a> 第 <a class="el" href="GridGraph_8cpp_source.html#l00550">550</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Evpack_8cpp_source.html#l00175">input</a>, <a class="el" href="mesh_2MeshModifierGraph_8cpp_source.html#l00019">key</a> , 以及 <a class="el" href="ActionNotifyRegistry_8cpp_source.html#l00165">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GridMeshGraphScript_8cpp_source.html#l00018">eve::procgen::exposeGridMeshGraphs()</a>.</p>
+
+</div>
+</div>
+<a id="a0397b4e1a4dbff4285d790187f8fc506" name="a0397b4e1a4dbff4285d790187f8fc506"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0397b4e1a4dbff4285d790187f8fc506">&#9670;&#160;</a></span>setNodeFloat()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::procgen::GridGraph::setNodeFloat </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>key</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>value</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set one floating-point parameter declared by the node operation. </p>
+
+<p class="definition">在文件 <a class="el" href="GridGraph_8cpp_source.html">GridGraph.cpp</a> 第 <a class="el" href="GridGraph_8cpp_source.html#l00235">235</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RpgDialect_8cpp_source.html#l00334">found</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="mesh_2MeshModifierGraph_8cpp_source.html#l00019">key</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="ActionNotifyRegistry_8cpp_source.html#l00165">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GridGraph_8cpp_source.html#l00583">deserializeDefinition()</a> , 以及 <a class="el" href="GridMeshGraphScript_8cpp_source.html#l00018">eve::procgen::exposeGridMeshGraphs()</a>.</p>
+
+</div>
+</div>
+<a id="a9c4ae33fcd2505404d305cb64f19962a" name="a9c4ae33fcd2505404d305cb64f19962a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9c4ae33fcd2505404d305cb64f19962a">&#9670;&#160;</a></span>setNodeGrid()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::procgen::GridGraph::setNodeGrid </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1procgen_1_1Grid2D.html">Grid2D</a> &amp;&#160;</td>
+          <td class="paramname"><em>grid</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Assign an owning copy to a <code>grid.input</code> node. </p>
+
+<p class="definition">在文件 <a class="el" href="GridGraph_8cpp_source.html">GridGraph.cpp</a> 第 <a class="el" href="GridGraph_8cpp_source.html#l00205">205</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RpgDialect_8cpp_source.html#l00334">found</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a2782c4707c245684aa95545098e1b70b">eve::TypeMismatch</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GridMeshGraphScript_8cpp_source.html#l00018">eve::procgen::exposeGridMeshGraphs()</a>.</p>
+
+</div>
+</div>
+<a id="af3cbe9cc35d2f43d6cd1f247a46f72d6" name="af3cbe9cc35d2f43d6cd1f247a46f72d6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af3cbe9cc35d2f43d6cd1f247a46f72d6">&#9670;&#160;</a></span>setNodeInt()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::procgen::GridGraph::setNodeInt </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>key</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>value</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set one integer parameter declared by the node operation. </p>
+
+<p class="definition">在文件 <a class="el" href="GridGraph_8cpp_source.html">GridGraph.cpp</a> 第 <a class="el" href="GridGraph_8cpp_source.html#l00217">217</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RpgDialect_8cpp_source.html#l00334">found</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="mesh_2MeshModifierGraph_8cpp_source.html#l00019">key</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="ActionNotifyRegistry_8cpp_source.html#l00165">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GridGraph_8cpp_source.html#l00583">deserializeDefinition()</a> , 以及 <a class="el" href="GridMeshGraphScript_8cpp_source.html#l00018">eve::procgen::exposeGridMeshGraphs()</a>.</p>
+
+</div>
+</div>
+<a id="a9db6418f7ab94cc78ceb19620fd8590a" name="a9db6418f7ab94cc78ceb19620fd8590a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9db6418f7ab94cc78ceb19620fd8590a">&#9670;&#160;</a></span>setNodePointSubgraph()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::procgen::GridGraph::setNodePointSubgraph </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1procgen_1_1PointGraph.html">PointGraph</a> &amp;&#160;</td>
+          <td class="paramname"><em>graph</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>inputNode</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>outputNode</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Bind an owning <a class="el" href="classeve_1_1procgen_1_1PointGraph.html">PointGraph</a> copy to a <code>point.subgraph</code> bridge. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">inputNode</td><td>Nested <code>input</code> node receiving the upstream <a class="el" href="classeve_1_1procgen_1_1PointSet.html" title="Script-friendly collection of attributed 3D samples.">PointSet</a>. </td></tr>
+    <tr><td class="paramname">outputNode</td><td>Nested output node to evaluate. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="GridGraph_8cpp_source.html">GridGraph.cpp</a> 第 <a class="el" href="GridGraph_8cpp_source.html#l00261">261</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RpgDialect_8cpp_source.html#l00334">found</a>, <a class="el" href="Package_8cpp_source.html#l00059">graph</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a2782c4707c245684aa95545098e1b70b">eve::TypeMismatch</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GridMeshGraphScript_8cpp_source.html#l00018">eve::procgen::exposeGridMeshGraphs()</a>.</p>
+
+</div>
+</div>
+<a id="adfcbb3a977a63aefad92fc0e61f07eef" name="adfcbb3a977a63aefad92fc0e61f07eef"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adfcbb3a977a63aefad92fc0e61f07eef">&#9670;&#160;</a></span>setNodeString()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::procgen::GridGraph::setNodeString </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>key</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>value</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set one string parameter declared by the node operation. </p>
+
+<p class="definition">在文件 <a class="el" href="GridGraph_8cpp_source.html">GridGraph.cpp</a> 第 <a class="el" href="GridGraph_8cpp_source.html#l00248">248</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RpgDialect_8cpp_source.html#l00334">found</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="mesh_2MeshModifierGraph_8cpp_source.html#l00019">key</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="ActionNotifyRegistry_8cpp_source.html#l00165">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GridGraph_8cpp_source.html#l00583">deserializeDefinition()</a> , 以及 <a class="el" href="GridMeshGraphScript_8cpp_source.html#l00018">eve::procgen::exposeGridMeshGraphs()</a>.</p>
+
+</div>
+</div>
+<a id="af0f3c0a058400d7bbee01728091ea3a2" name="af0f3c0a058400d7bbee01728091ea3a2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af0f3c0a058400d7bbee01728091ea3a2">&#9670;&#160;</a></span>validate()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::procgen::GridGraph::validate </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>outputId</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Validate topology, required inputs and cross-graph bindings without evaluating values. </p>
+
+<p class="definition">在文件 <a class="el" href="GridGraph_8cpp_source.html">GridGraph.cpp</a> 第 <a class="el" href="GridGraph_8cpp_source.html#l00489">489</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::Conflict</a>, <a class="el" href="RpgDialect_8cpp_source.html#l00334">found</a>, <a class="el" href="PlayHost_8cpp_source.html#l00142">id</a>, <a class="el" href="UnityVegetationMaterial_8cpp_source.html#l00161">index</a>, <a class="el" href="Evpack_8cpp_source.html#l00175">input</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GridMeshGraphScript_8cpp_source.html#l00018">eve::procgen::exposeGridMeshGraphs()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/procgen/<a class="el" href="GridGraph_8h_source.html">GridGraph.h</a></li>
+<li>src/modules/procgen/<a class="el" href="GridGraph_8cpp_source.html">GridGraph.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,1143 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::dnut::SequenceRuntime类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1dnut.html">dnut</a></li><li class="navelem"><a class="el" href="classeve_1_1dnut_1_1SequenceRuntime.html">SequenceRuntime</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-types">Public 类型</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-static-attribs">静态 Public 属性</a> &#124;
+<a href="classeve_1_1dnut_1_1SequenceRuntime-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::dnut::SequenceRuntime类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Caller-owned interpreter over a compiled sequence asset.  
+ <a href="classeve_1_1dnut_1_1SequenceRuntime.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="SequenceRuntime_8h_source.html">SequenceRuntime.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1dnut_1_1SequenceRuntime_1_1Event.html">Event</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">One observable transition; every field is owned by the event.  <a href="structeve_1_1dnut_1_1SequenceRuntime_1_1Event.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-types" name="pub-types"></a>
+Public 类型</h2></td></tr>
+<tr class="memitem:a590c70551f1c7c7d5d0cf195fa4bddd6" id="r_a590c70551f1c7c7d5d0cf195fa4bddd6"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dnut_1_1SequenceRuntime.html#a590c70551f1c7c7d5d0cf195fa4bddd6">EventKind</a> : std::uint8_t { <br />
+&#160;&#160;<a class="el" href="classeve_1_1dnut_1_1SequenceRuntime.html#a590c70551f1c7c7d5d0cf195fa4bddd6a8428552d86c0d262a542a528af490afa">Started</a>
+, <a class="el" href="classeve_1_1dnut_1_1SequenceRuntime.html#a590c70551f1c7c7d5d0cf195fa4bddd6aaabd2985d41728f61b39bcf0f056c3d7">NodeEntered</a>
+, <a class="el" href="classeve_1_1dnut_1_1SequenceRuntime.html#a590c70551f1c7c7d5d0cf195fa4bddd6a4ecc0d90eec1cea3e9db96583a1bb9c2">Blocked</a>
+, <a class="el" href="classeve_1_1dnut_1_1SequenceRuntime.html#a590c70551f1c7c7d5d0cf195fa4bddd6a5ea38ba255e963326e6dbe47d8be6568">Stepped</a>
+, <br />
+&#160;&#160;<a class="el" href="classeve_1_1dnut_1_1SequenceRuntime.html#a590c70551f1c7c7d5d0cf195fa4bddd6ab2a21932ddc3b1e41c012d711c7bd238">Resumed</a>
+, <a class="el" href="classeve_1_1dnut_1_1SequenceRuntime.html#a590c70551f1c7c7d5d0cf195fa4bddd6a0157fbb99be9622bdaa6e544270c0622">Ended</a>
+, <a class="el" href="classeve_1_1dnut_1_1SequenceRuntime.html#a590c70551f1c7c7d5d0cf195fa4bddd6ad7c8c85bf79bbe1b7188497c32c3b0ca">Failed</a>
+<br />
+ }</td></tr>
+<tr class="memdesc:a590c70551f1c7c7d5d0cf195fa4bddd6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Observable runtime transition.  <a href="classeve_1_1dnut_1_1SequenceRuntime.html#a590c70551f1c7c7d5d0cf195fa4bddd6">更多...</a><br /></td></tr>
+<tr class="separator:a590c70551f1c7c7d5d0cf195fa4bddd6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a27380c0840563674d784c72b9e0881af" id="r_a27380c0840563674d784c72b9e0881af"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dnut_1_1SequenceRuntime.html#a27380c0840563674d784c72b9e0881af">AssetResolver</a> = std::function&lt; const <a class="el" href="structeve_1_1dnut_1_1SequenceAsset.html">SequenceAsset</a> *(const std::string &amp;)&gt;</td></tr>
+<tr class="memdesc:a27380c0840563674d784c72b9e0881af"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resolves a called asset id to a borrowed, externally owned asset.  <br /></td></tr>
+<tr class="separator:a27380c0840563674d784c72b9e0881af"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a61a0496e94e7f78e02de783b86a9148d" id="r_a61a0496e94e7f78e02de783b86a9148d"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dnut_1_1SequenceRuntime.html#a61a0496e94e7f78e02de783b86a9148d">ConditionEvaluator</a> = std::function&lt; <a class="el" href="structeve_1_1dnut_1_1SequenceConditionOutcome.html">SequenceConditionOutcome</a>(const <a class="el" href="classeve_1_1Value.html">eve::Value</a> &amp;)&gt;</td></tr>
+<tr class="memdesc:a61a0496e94e7f78e02de783b86a9148d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Evaluates one authored condition value.  <br /></td></tr>
+<tr class="separator:a61a0496e94e7f78e02de783b86a9148d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a16794b409b65c4c462c9b9ec5187b48a" id="r_a16794b409b65c4c462c9b9ec5187b48a"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dnut_1_1SequenceRuntime.html#a16794b409b65c4c462c9b9ec5187b48a">EventSink</a> = std::function&lt; void(const <a class="el" href="structeve_1_1dnut_1_1SequenceRuntime_1_1Event.html">Event</a> &amp;)&gt;</td></tr>
+<tr class="memdesc:a16794b409b65c4c462c9b9ec5187b48a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Single event outlet; invoked synchronously without locks.  <br /></td></tr>
+<tr class="separator:a16794b409b65c4c462c9b9ec5187b48a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a7935432c8746732f9aa8a6419d2f446e" id="r_a7935432c8746732f9aa8a6419d2f446e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dnut_1_1SequenceRuntime.html#a7935432c8746732f9aa8a6419d2f446e">start</a> (const <a class="el" href="structeve_1_1dnut_1_1SequenceAsset.html">SequenceAsset</a> *<a class="el" href="classeve_1_1dnut_1_1SequenceRuntime.html#aa87ea9e398ba336fa01c32e2e7eafcaf">asset</a>, <a class="el" href="classeve_1_1Value.html">eve::Value</a> <a class="el" href="classeve_1_1dnut_1_1SequenceRuntime.html#aba45c9cf6721dbe9a2a68e584fa702a7">bindings</a>=<a class="el" href="classeve_1_1Value.html#a2d59a6ba7d844c2561c606a8973be87d">eve::Value::Object</a>{})</td></tr>
+<tr class="memdesc:a7935432c8746732f9aa8a6419d2f446e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Begin a sequence at the asset entry node.  <br /></td></tr>
+<tr class="separator:a7935432c8746732f9aa8a6419d2f446e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a11ae92080209bc3c13af48b824a910bd" id="r_a11ae92080209bc3c13af48b824a910bd"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dnut_1_1SequenceRuntime.html#a11ae92080209bc3c13af48b824a910bd">runUntilBlocked</a> ()</td></tr>
+<tr class="memdesc:a11ae92080209bc3c13af48b824a910bd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Execute nodes until the sequence blocks, ends or fails.  <br /></td></tr>
+<tr class="separator:a11ae92080209bc3c13af48b824a910bd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4d39e39aef0a31b015b5996ec5634a37" id="r_a4d39e39aef0a31b015b5996ec5634a37"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dnut_1_1SequenceRuntime.html#a4d39e39aef0a31b015b5996ec5634a37">advance</a> ()</td></tr>
+<tr class="memdesc:a4d39e39aef0a31b015b5996ec5634a37"><td class="mdescLeft">&#160;</td><td class="mdescRight">Acknowledge a host-presented <code>wait</code> or handler-less <code>Await</code> step.  <br /></td></tr>
+<tr class="separator:a4d39e39aef0a31b015b5996ec5634a37"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac7b8a206ad8a00c91b7470f0024df4cf" id="r_ac7b8a206ad8a00c91b7470f0024df4cf"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dnut_1_1SequenceRuntime.html#ac7b8a206ad8a00c91b7470f0024df4cf">select</a> (std::string_view routeLabel)</td></tr>
+<tr class="memdesc:ac7b8a206ad8a00c91b7470f0024df4cf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Answer a blocked <code>choice</code> node by route label.  <br /></td></tr>
+<tr class="separator:ac7b8a206ad8a00c91b7470f0024df4cf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa791f5581180bf20529a93afe689cdba" id="r_aa791f5581180bf20529a93afe689cdba"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dnut_1_1SequenceRuntime.html#aa791f5581180bf20529a93afe689cdba">resumeStep</a> (<a class="el" href="classeve_1_1Value.html">eve::Value</a> result)</td></tr>
+<tr class="memdesc:aa791f5581180bf20529a93afe689cdba"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resume a step whose handler returned <code>Blocked</code>.  <br /></td></tr>
+<tr class="separator:aa791f5581180bf20529a93afe689cdba"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3cd24d2f9300e67df6d180955cf251ad" id="r_a3cd24d2f9300e67df6d180955cf251ad"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dnut_1_1SequenceRuntime.html#a3cd24d2f9300e67df6d180955cf251ad">stop</a> ()</td></tr>
+<tr class="memdesc:a3cd24d2f9300e67df6d180955cf251ad"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stop and clear the active sequence without emitting <code>Ended</code>.  <br /></td></tr>
+<tr class="separator:a3cd24d2f9300e67df6d180955cf251ad"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a449036fc611b04ed8465d1b5e2366e60" id="r_a449036fc611b04ed8465d1b5e2366e60"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dnut_1_1SequenceRuntime.html#a449036fc611b04ed8465d1b5e2366e60">captureState</a> (<a class="el" href="classeve_1_1Value.html">eve::Value</a> &amp;out) const</td></tr>
+<tr class="memdesc:a449036fc611b04ed8465d1b5e2366e60"><td class="mdescLeft">&#160;</td><td class="mdescRight">Capture the complete cursor, bindings, locals and call stack.  <br /></td></tr>
+<tr class="separator:a449036fc611b04ed8465d1b5e2366e60"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adc6a8a5d8be0f94400f99db7e643107c" id="r_adc6a8a5d8be0f94400f99db7e643107c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dnut_1_1SequenceRuntime.html#adc6a8a5d8be0f94400f99db7e643107c">restoreState</a> (const <a class="el" href="classeve_1_1Value.html">eve::Value</a> &amp;in)</td></tr>
+<tr class="memdesc:adc6a8a5d8be0f94400f99db7e643107c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Restore a captured cursor through the configured asset resolver.  <br /></td></tr>
+<tr class="separator:adc6a8a5d8be0f94400f99db7e643107c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af407ed2c4dc857e30719511a78a3978d" id="r_af407ed2c4dc857e30719511a78a3978d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dnut_1_1SequenceRuntime.html#af407ed2c4dc857e30719511a78a3978d">setAssetResolver</a> (<a class="el" href="classeve_1_1dnut_1_1SequenceRuntime.html#a27380c0840563674d784c72b9e0881af">AssetResolver</a> resolver)</td></tr>
+<tr class="separator:af407ed2c4dc857e30719511a78a3978d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3af6e1755c2e0a4d34c53d35b3f4c5d3" id="r_a3af6e1755c2e0a4d34c53d35b3f4c5d3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dnut_1_1SequenceRuntime.html#a3af6e1755c2e0a4d34c53d35b3f4c5d3">setConditionEvaluator</a> (<a class="el" href="classeve_1_1dnut_1_1SequenceRuntime.html#a61a0496e94e7f78e02de783b86a9148d">ConditionEvaluator</a> evaluator)</td></tr>
+<tr class="separator:a3af6e1755c2e0a4d34c53d35b3f4c5d3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a725598d51f713517dfdcf79f76384345" id="r_a725598d51f713517dfdcf79f76384345"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dnut_1_1SequenceRuntime.html#a725598d51f713517dfdcf79f76384345">setStepRegistry</a> (const <a class="el" href="classeve_1_1dnut_1_1StepKindRegistry.html">StepKindRegistry</a> *registry)</td></tr>
+<tr class="memdesc:a725598d51f713517dfdcf79f76384345"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bind the step vocabulary; passing nullptr disables non-core steps.  <br /></td></tr>
+<tr class="separator:a725598d51f713517dfdcf79f76384345"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2d846a3f40cbb2debd5597be0131bb83" id="r_a2d846a3f40cbb2debd5597be0131bb83"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dnut_1_1SequenceRuntime.html#a2d846a3f40cbb2debd5597be0131bb83">setHostContext</a> (void *<a class="el" href="UIAutomationCapabilities_8cpp.html#a746317fdab8614a8048746f94bdacdab">host</a>)</td></tr>
+<tr class="memdesc:a2d846a3f40cbb2debd5597be0131bb83"><td class="mdescLeft">&#160;</td><td class="mdescRight">Install the opaque consumer context forwarded to every step handler.  <br /></td></tr>
+<tr class="separator:a2d846a3f40cbb2debd5597be0131bb83"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a24b80531d7cbd9e9a20295abe2e681dd" id="r_a24b80531d7cbd9e9a20295abe2e681dd"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dnut_1_1SequenceRuntime.html#a24b80531d7cbd9e9a20295abe2e681dd">setEventSink</a> (<a class="el" href="classeve_1_1dnut_1_1SequenceRuntime.html#a16794b409b65c4c462c9b9ec5187b48a">EventSink</a> sink)</td></tr>
+<tr class="separator:a24b80531d7cbd9e9a20295abe2e681dd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2a2a13ae337347b4cb17b4cf5632ef6c" id="r_a2a2a13ae337347b4cb17b4cf5632ef6c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dnut_1_1SequenceRuntime.html#a2a2a13ae337347b4cb17b4cf5632ef6c">isActive</a> () const</td></tr>
+<tr class="memdesc:a2a2a13ae337347b4cb17b4cf5632ef6c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether a sequence is currently loaded.  <br /></td></tr>
+<tr class="separator:a2a2a13ae337347b4cb17b4cf5632ef6c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3c325630eb95f314a3363e1093a63182" id="r_a3c325630eb95f314a3363e1093a63182"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dnut_1_1SequenceRuntime.html#a3c325630eb95f314a3363e1093a63182">isBlocked</a> () const</td></tr>
+<tr class="memdesc:a3c325630eb95f314a3363e1093a63182"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether execution is suspended and awaiting host acknowledgement.  <br /></td></tr>
+<tr class="separator:a3c325630eb95f314a3363e1093a63182"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1c808ab705df8f98289ff21efe93c46b" id="r_a1c808ab705df8f98289ff21efe93c46b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dnut_1_1SequenceRuntime.html#a1c808ab705df8f98289ff21efe93c46b">isWaitingStep</a> () const</td></tr>
+<tr class="memdesc:a1c808ab705df8f98289ff21efe93c46b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether the suspension is a step awaiting <code>resumeStep</code>.  <br /></td></tr>
+<tr class="separator:a1c808ab705df8f98289ff21efe93c46b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa87ea9e398ba336fa01c32e2e7eafcaf" id="r_aa87ea9e398ba336fa01c32e2e7eafcaf"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="structeve_1_1dnut_1_1SequenceAsset.html">SequenceAsset</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dnut_1_1SequenceRuntime.html#aa87ea9e398ba336fa01c32e2e7eafcaf">asset</a> () const</td></tr>
+<tr class="memdesc:aa87ea9e398ba336fa01c32e2e7eafcaf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Borrowed active asset, or nullptr. @lifetime Owned by the caller of <code>start</code>.  <br /></td></tr>
+<tr class="separator:aa87ea9e398ba336fa01c32e2e7eafcaf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1618e068964ee52cdeefc73017fc3a09" id="r_a1618e068964ee52cdeefc73017fc3a09"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="structeve_1_1dnut_1_1SequenceNode.html">SequenceNode</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dnut_1_1SequenceRuntime.html#a1618e068964ee52cdeefc73017fc3a09">currentNode</a> () const</td></tr>
+<tr class="memdesc:a1618e068964ee52cdeefc73017fc3a09"><td class="mdescLeft">&#160;</td><td class="mdescRight">Borrowed current node, or nullptr. @lifetime Invalidated by the next transition.  <br /></td></tr>
+<tr class="separator:a1618e068964ee52cdeefc73017fc3a09"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a54fd5e2241132486d3893d8e28da0a13" id="r_a54fd5e2241132486d3893d8e28da0a13"><td class="memItemLeft" align="right" valign="top">const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dnut_1_1SequenceRuntime.html#a54fd5e2241132486d3893d8e28da0a13">currentNodeId</a> () const</td></tr>
+<tr class="separator:a54fd5e2241132486d3893d8e28da0a13"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aba45c9cf6721dbe9a2a68e584fa702a7" id="r_aba45c9cf6721dbe9a2a68e584fa702a7"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classeve_1_1Value.html">eve::Value</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dnut_1_1SequenceRuntime.html#aba45c9cf6721dbe9a2a68e584fa702a7">bindings</a> () const</td></tr>
+<tr class="separator:aba45c9cf6721dbe9a2a68e584fa702a7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa8268457027b00642a7af4a77de1eed5" id="r_aa8268457027b00642a7af4a77de1eed5"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classeve_1_1Value.html">eve::Value</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dnut_1_1SequenceRuntime.html#aa8268457027b00642a7af4a77de1eed5">locals</a> () const</td></tr>
+<tr class="separator:aa8268457027b00642a7af4a77de1eed5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a639499ac95192d31a8b09048e94ff7cc" id="r_a639499ac95192d31a8b09048e94ff7cc"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Value.html">eve::Value</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dnut_1_1SequenceRuntime.html#a639499ac95192d31a8b09048e94ff7cc">locals</a> ()</td></tr>
+<tr class="separator:a639499ac95192d31a8b09048e94ff7cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab1c0d792f1715e0d08f47f9d1e29cf9b" id="r_ab1c0d792f1715e0d08f47f9d1e29cf9b"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classeve_1_1Value.html">eve::Value</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dnut_1_1SequenceRuntime.html#ab1c0d792f1715e0d08f47f9d1e29cf9b">lastStepResult</a> () const</td></tr>
+<tr class="memdesc:ab1c0d792f1715e0d08f47f9d1e29cf9b"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classeve_1_1Value.html" title="The canonical owning dynamic value used by data-facing protocols.">Value</a> supplied by the most recent <code>resumeStep</code>.  <br /></td></tr>
+<tr class="separator:ab1c0d792f1715e0d08f47f9d1e29cf9b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a781e2f89958798d536d3ae953479fc52" id="r_a781e2f89958798d536d3ae953479fc52"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="structeve_1_1dnut_1_1SequenceConditionOutcome.html">SequenceConditionOutcome</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dnut_1_1SequenceRuntime.html#a781e2f89958798d536d3ae953479fc52">lastConditionResult</a> () const</td></tr>
+<tr class="memdesc:a781e2f89958798d536d3ae953479fc52"><td class="mdescLeft">&#160;</td><td class="mdescRight">Last evaluated condition outcome.  <br /></td></tr>
+<tr class="separator:a781e2f89958798d536d3ae953479fc52"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-attribs" name="pub-static-attribs"></a>
+静态 Public 属性</h2></td></tr>
+<tr class="memitem:a46f6453de49fac4feeecb9544ffb7242" id="r_a46f6453de49fac4feeecb9544ffb7242"><td class="memItemLeft" align="right" valign="top">static constexpr int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dnut_1_1SequenceRuntime.html#a46f6453de49fac4feeecb9544ffb7242">kExecutionBudget</a> = 10000</td></tr>
+<tr class="memdesc:a46f6453de49fac4feeecb9544ffb7242"><td class="mdescLeft">&#160;</td><td class="mdescRight">Upper bound on nodes executed by one <code>runUntilBlocked</code> call.  <br /></td></tr>
+<tr class="separator:a46f6453de49fac4feeecb9544ffb7242"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Caller-owned interpreter over a compiled sequence asset. </p>
+<p>The runtime owns only the execution cursor: the current asset, node, call stack, parameter bindings and step locals. Persistent progress, completion facts and gameplay state stay with the domain owner that persists them.</p>
+<p>The runtime never interprets a step payload. Control-flow types (<code>branch</code> / <code>choice</code> / <code>call</code> / <code>wait</code> / <code>end</code>) are handled here; every other type is routed through the configured <code><a class="el" href="classeve_1_1dnut_1_1StepKindRegistry.html" title="Canonical step vocabulary owner and runtime handler router.">StepKindRegistry</a></code>. </p>
+
+<p class="definition">在文件 <a class="el" href="SequenceRuntime_8h_source.html">SequenceRuntime.h</a> 第 <a class="el" href="SequenceRuntime_8h_source.html#l00037">37</a> 行定义.</p>
+</div><h2 class="groupheader">成员类型定义说明</h2>
+<a id="a27380c0840563674d784c72b9e0881af" name="a27380c0840563674d784c72b9e0881af"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a27380c0840563674d784c72b9e0881af">&#9670;&#160;</a></span>AssetResolver</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="classeve_1_1dnut_1_1SequenceRuntime.html#a27380c0840563674d784c72b9e0881af">eve::dnut::SequenceRuntime::AssetResolver</a> =  std::function&lt;const <a class="el" href="structeve_1_1dnut_1_1SequenceAsset.html">SequenceAsset</a>*(const std::string&amp;)&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Resolves a called asset id to a borrowed, externally owned asset. </p>
+
+<p class="definition">在文件 <a class="el" href="SequenceRuntime_8h_source.html">SequenceRuntime.h</a> 第 <a class="el" href="SequenceRuntime_8h_source.html#l00040">40</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a61a0496e94e7f78e02de783b86a9148d" name="a61a0496e94e7f78e02de783b86a9148d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a61a0496e94e7f78e02de783b86a9148d">&#9670;&#160;</a></span>ConditionEvaluator</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="classeve_1_1dnut_1_1SequenceRuntime.html#a61a0496e94e7f78e02de783b86a9148d">eve::dnut::SequenceRuntime::ConditionEvaluator</a> =  std::function&lt;<a class="el" href="structeve_1_1dnut_1_1SequenceConditionOutcome.html">SequenceConditionOutcome</a>(const <a class="el" href="classeve_1_1Value.html">eve::Value</a>&amp;)&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Evaluates one authored condition value. </p>
+<p>Consumers adapt their own condition system (for example <code><a class="el" href="classeve_1_1decision_1_1Condition.html" title="Immutable condition AST node.">eve::decision::Condition</a></code>) to this contract, so the language core does not depend on any domain or decision module. </p>
+
+<p class="definition">在文件 <a class="el" href="SequenceRuntime_8h_source.html">SequenceRuntime.h</a> 第 <a class="el" href="SequenceRuntime_8h_source.html#l00048">48</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a16794b409b65c4c462c9b9ec5187b48a" name="a16794b409b65c4c462c9b9ec5187b48a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a16794b409b65c4c462c9b9ec5187b48a">&#9670;&#160;</a></span>EventSink</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="classeve_1_1dnut_1_1SequenceRuntime.html#a16794b409b65c4c462c9b9ec5187b48a">eve::dnut::SequenceRuntime::EventSink</a> =  std::function&lt;void(const <a class="el" href="structeve_1_1dnut_1_1SequenceRuntime_1_1Event.html">Event</a>&amp;)&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Single event outlet; invoked synchronously without locks. </p>
+
+<p class="definition">在文件 <a class="el" href="SequenceRuntime_8h_source.html">SequenceRuntime.h</a> 第 <a class="el" href="SequenceRuntime_8h_source.html#l00062">62</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">成员枚举类型说明</h2>
+<a id="a590c70551f1c7c7d5d0cf195fa4bddd6" name="a590c70551f1c7c7d5d0cf195fa4bddd6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a590c70551f1c7c7d5d0cf195fa4bddd6">&#9670;&#160;</a></span>EventKind</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="classeve_1_1dnut_1_1SequenceRuntime.html#a590c70551f1c7c7d5d0cf195fa4bddd6">eve::dnut::SequenceRuntime::EventKind</a> : std::uint8_t</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Observable runtime transition. </p>
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="a590c70551f1c7c7d5d0cf195fa4bddd6a8428552d86c0d262a542a528af490afa" name="a590c70551f1c7c7d5d0cf195fa4bddd6a8428552d86c0d262a542a528af490afa"></a>Started&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a590c70551f1c7c7d5d0cf195fa4bddd6aaabd2985d41728f61b39bcf0f056c3d7" name="a590c70551f1c7c7d5d0cf195fa4bddd6aaabd2985d41728f61b39bcf0f056c3d7"></a>NodeEntered&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a590c70551f1c7c7d5d0cf195fa4bddd6a4ecc0d90eec1cea3e9db96583a1bb9c2" name="a590c70551f1c7c7d5d0cf195fa4bddd6a4ecc0d90eec1cea3e9db96583a1bb9c2"></a>Blocked&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a590c70551f1c7c7d5d0cf195fa4bddd6a5ea38ba255e963326e6dbe47d8be6568" name="a590c70551f1c7c7d5d0cf195fa4bddd6a5ea38ba255e963326e6dbe47d8be6568"></a>Stepped&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a590c70551f1c7c7d5d0cf195fa4bddd6ab2a21932ddc3b1e41c012d711c7bd238" name="a590c70551f1c7c7d5d0cf195fa4bddd6ab2a21932ddc3b1e41c012d711c7bd238"></a>Resumed&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a590c70551f1c7c7d5d0cf195fa4bddd6a0157fbb99be9622bdaa6e544270c0622" name="a590c70551f1c7c7d5d0cf195fa4bddd6a0157fbb99be9622bdaa6e544270c0622"></a>Ended&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a590c70551f1c7c7d5d0cf195fa4bddd6ad7c8c85bf79bbe1b7188497c32c3b0ca" name="a590c70551f1c7c7d5d0cf195fa4bddd6ad7c8c85bf79bbe1b7188497c32c3b0ca"></a>Failed&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="SequenceRuntime_8h_source.html">SequenceRuntime.h</a> 第 <a class="el" href="SequenceRuntime_8h_source.html#l00051">51</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a4d39e39aef0a31b015b5996ec5634a37" name="a4d39e39aef0a31b015b5996ec5634a37"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4d39e39aef0a31b015b5996ec5634a37">&#9670;&#160;</a></span>advance()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::dnut::SequenceRuntime::advance </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Acknowledge a host-presented <code>wait</code> or handler-less <code>Await</code> step. </p>
+<dl class="section return"><dt>返回</dt><dd>Success, or a failure while preserving the current cursor. </dd></dl>
+<dl class="section remark"><dt>备注</dt><dd>Rejects a <code>choice</code> node: a choice must be answered with <code>select</code>. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="SequenceRuntime_8cpp_source.html">SequenceRuntime.cpp</a> 第 <a class="el" href="SequenceRuntime_8cpp_source.html#l00225">225</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SequenceRuntime_8cpp_source.html#l00040">currentNode()</a>, <a class="el" href="Result_8h_source.html#l00416">eve::Result&lt; void &gt;::ok()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::PreconditionViolation</a> , 以及 <a class="el" href="SequenceRuntime_8cpp_source.html#l00123">runUntilBlocked()</a>.</p>
+
+</div>
+</div>
+<a id="aa87ea9e398ba336fa01c32e2e7eafcaf" name="aa87ea9e398ba336fa01c32e2e7eafcaf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa87ea9e398ba336fa01c32e2e7eafcaf">&#9670;&#160;</a></span>asset()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="structeve_1_1dnut_1_1SequenceAsset.html">SequenceAsset</a> * eve::dnut::SequenceRuntime::asset </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Borrowed active asset, or nullptr. @lifetime Owned by the caller of <code>start</code>. </p>
+
+<p class="definition">在文件 <a class="el" href="SequenceRuntime_8h_source.html">SequenceRuntime.h</a> 第 <a class="el" href="SequenceRuntime_8h_source.html#l00156">156</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SequenceRuntime_8cpp_source.html#l00067">start()</a>.</p>
+
+</div>
+</div>
+<a id="aba45c9cf6721dbe9a2a68e584fa702a7" name="aba45c9cf6721dbe9a2a68e584fa702a7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aba45c9cf6721dbe9a2a68e584fa702a7">&#9670;&#160;</a></span>bindings()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="classeve_1_1Value.html">eve::Value</a> &amp; eve::dnut::SequenceRuntime::bindings </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SequenceRuntime_8h_source.html">SequenceRuntime.h</a> 第 <a class="el" href="SequenceRuntime_8h_source.html#l00160">160</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SequenceRuntime_8cpp_source.html#l00067">start()</a>.</p>
+
+</div>
+</div>
+<a id="a449036fc611b04ed8465d1b5e2366e60" name="a449036fc611b04ed8465d1b5e2366e60"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a449036fc611b04ed8465d1b5e2366e60">&#9670;&#160;</a></span>captureState()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::dnut::SequenceRuntime::captureState </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1Value.html">eve::Value</a> &amp;&#160;</td>
+          <td class="paramname"><em>out</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Capture the complete cursor, bindings, locals and call stack. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">out</td><td>Receives an owning object value usable by <code>restoreState</code>. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Success; capturing a stopped runtime yields <code>{"active":false}</code>. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="SequenceRuntime_8cpp_source.html">SequenceRuntime.cpp</a> 第 <a class="el" href="SequenceRuntime_8cpp_source.html#l00311">311</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Value_8h_source.html#l00108">eve::Value::boolean()</a>, <a class="el" href="Value_8cpp_source.html#l00118">eve::Value::set()</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SequenceRuntime_8cpp_source.html#l00281">resumeStep()</a> , 以及 <a class="el" href="SequenceRuntime_8cpp_source.html#l00238">select()</a>.</p>
+
+</div>
+</div>
+<a id="a1618e068964ee52cdeefc73017fc3a09" name="a1618e068964ee52cdeefc73017fc3a09"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1618e068964ee52cdeefc73017fc3a09">&#9670;&#160;</a></span>currentNode()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="structeve_1_1dnut_1_1SequenceNode.html">SequenceNode</a> * eve::dnut::SequenceRuntime::currentNode </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Borrowed current node, or nullptr. @lifetime Invalidated by the next transition. </p>
+
+<p class="definition">在文件 <a class="el" href="SequenceRuntime_8cpp_source.html">SequenceRuntime.cpp</a> 第 <a class="el" href="SequenceRuntime_8cpp_source.html#l00040">40</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SequenceAsset_8cpp_source.html#l00022">eve::dnut::SequenceAsset::findNode()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SequenceRuntime_8cpp_source.html#l00225">advance()</a>, <a class="el" href="SequenceRuntime_8cpp_source.html#l00281">resumeStep()</a>, <a class="el" href="SequenceRuntime_8cpp_source.html#l00123">runUntilBlocked()</a> , 以及 <a class="el" href="SequenceRuntime_8cpp_source.html#l00238">select()</a>.</p>
+
+</div>
+</div>
+<a id="a54fd5e2241132486d3893d8e28da0a13" name="a54fd5e2241132486d3893d8e28da0a13"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a54fd5e2241132486d3893d8e28da0a13">&#9670;&#160;</a></span>currentNodeId()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::string &amp; eve::dnut::SequenceRuntime::currentNodeId </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SequenceRuntime_8h_source.html">SequenceRuntime.h</a> 第 <a class="el" href="SequenceRuntime_8h_source.html#l00159">159</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a2a2a13ae337347b4cb17b4cf5632ef6c" name="a2a2a13ae337347b4cb17b4cf5632ef6c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2a2a13ae337347b4cb17b4cf5632ef6c">&#9670;&#160;</a></span>isActive()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::dnut::SequenceRuntime::isActive </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Whether a sequence is currently loaded. </p>
+
+<p class="definition">在文件 <a class="el" href="SequenceRuntime_8h_source.html">SequenceRuntime.h</a> 第 <a class="el" href="SequenceRuntime_8h_source.html#l00150">150</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RpgDialect_8cpp_source.html#l00629">eve::rpg::RpgStorySession::Impl::publishCompletion()</a>.</p>
+
+</div>
+</div>
+<a id="a3c325630eb95f314a3363e1093a63182" name="a3c325630eb95f314a3363e1093a63182"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3c325630eb95f314a3363e1093a63182">&#9670;&#160;</a></span>isBlocked()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::dnut::SequenceRuntime::isBlocked </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Whether execution is suspended and awaiting host acknowledgement. </p>
+
+<p class="definition">在文件 <a class="el" href="SequenceRuntime_8h_source.html">SequenceRuntime.h</a> 第 <a class="el" href="SequenceRuntime_8h_source.html#l00152">152</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a1c808ab705df8f98289ff21efe93c46b" name="a1c808ab705df8f98289ff21efe93c46b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1c808ab705df8f98289ff21efe93c46b">&#9670;&#160;</a></span>isWaitingStep()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::dnut::SequenceRuntime::isWaitingStep </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Whether the suspension is a step awaiting <code>resumeStep</code>. </p>
+
+<p class="definition">在文件 <a class="el" href="SequenceRuntime_8h_source.html">SequenceRuntime.h</a> 第 <a class="el" href="SequenceRuntime_8h_source.html#l00154">154</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a781e2f89958798d536d3ae953479fc52" name="a781e2f89958798d536d3ae953479fc52"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a781e2f89958798d536d3ae953479fc52">&#9670;&#160;</a></span>lastConditionResult()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="structeve_1_1dnut_1_1SequenceConditionOutcome.html">SequenceConditionOutcome</a> * eve::dnut::SequenceRuntime::lastConditionResult </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Last evaluated condition outcome. </p>
+<dl class="section return"><dt>返回</dt><dd>Borrowed nullable pointer owned by this runtime. @lifetime Valid until the next condition evaluation, <code>stop</code>, or destruction. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="SequenceRuntime_8h_source.html">SequenceRuntime.h</a> 第 <a class="el" href="SequenceRuntime_8h_source.html#l00170">170</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab1c0d792f1715e0d08f47f9d1e29cf9b" name="ab1c0d792f1715e0d08f47f9d1e29cf9b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab1c0d792f1715e0d08f47f9d1e29cf9b">&#9670;&#160;</a></span>lastStepResult()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="classeve_1_1Value.html">eve::Value</a> &amp; eve::dnut::SequenceRuntime::lastStepResult </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p><a class="el" href="classeve_1_1Value.html" title="The canonical owning dynamic value used by data-facing protocols.">Value</a> supplied by the most recent <code>resumeStep</code>. </p>
+
+<p class="definition">在文件 <a class="el" href="SequenceRuntime_8h_source.html">SequenceRuntime.h</a> 第 <a class="el" href="SequenceRuntime_8h_source.html#l00164">164</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a639499ac95192d31a8b09048e94ff7cc" name="a639499ac95192d31a8b09048e94ff7cc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a639499ac95192d31a8b09048e94ff7cc">&#9670;&#160;</a></span>locals() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Value.html">eve::Value</a> &amp; eve::dnut::SequenceRuntime::locals </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SequenceRuntime_8h_source.html">SequenceRuntime.h</a> 第 <a class="el" href="SequenceRuntime_8h_source.html#l00162">162</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aa8268457027b00642a7af4a77de1eed5" name="aa8268457027b00642a7af4a77de1eed5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa8268457027b00642a7af4a77de1eed5">&#9670;&#160;</a></span>locals() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="classeve_1_1Value.html">eve::Value</a> &amp; eve::dnut::SequenceRuntime::locals </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SequenceRuntime_8h_source.html">SequenceRuntime.h</a> 第 <a class="el" href="SequenceRuntime_8h_source.html#l00161">161</a> 行定义.</p>
+
+</div>
+</div>
+<a id="adc6a8a5d8be0f94400f99db7e643107c" name="adc6a8a5d8be0f94400f99db7e643107c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adc6a8a5d8be0f94400f99db7e643107c">&#9670;&#160;</a></span>restoreState()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::dnut::SequenceRuntime::restoreState </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1Value.html">eve::Value</a> &amp;&#160;</td>
+          <td class="paramname"><em>in</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Restore a captured cursor through the configured asset resolver. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">in</td><td><a class="el" href="classeve_1_1Value.html" title="The canonical owning dynamic value used by data-facing protocols.">Value</a> previously produced by <code>captureState</code>. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Success, or a structured failure that leaves the runtime unchanged. </dd></dl>
+<dl class="section remark"><dt>备注</dt><dd>A saved asset whose <code>version</code> no longer matches is rejected rather than silently replayed against changed content. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="SequenceRuntime_8cpp_source.html">SequenceRuntime.cpp</a> 第 <a class="el" href="SequenceRuntime_8cpp_source.html#l00326">326</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AgentBindings_8cpp_source.html#l00021">active</a>, <a class="el" href="Value_8cpp_source.html#l00100">eve::Value::arraySize()</a>, <a class="el" href="Value_8cpp_source.html#l00081">eve::Value::asBool()</a>, <a class="el" href="Value_8cpp_source.html#l00069">eve::Value::asInt()</a>, <a class="el" href="Value_8cpp_source.html#l00106">eve::Value::at()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::Conflict</a>, <a class="el" href="Value_8cpp_source.html#l00124">eve::Value::find()</a>, <a class="el" href="SequenceAsset_8cpp_source.html#l00022">eve::dnut::SequenceAsset::findNode()</a>, <a class="el" href="UnityVegetationMaterial_8cpp_source.html#l00161">index</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="Value_8h_source.html#l00097">eve::Value::isArray()</a>, <a class="el" href="Value_8h_source.html#l00089">eve::Value::isBool()</a>, <a class="el" href="Value_8h_source.html#l00091">eve::Value::isInt64()</a>, <a class="el" href="Value_8h_source.html#l00099">eve::Value::isObject()</a>, <a class="el" href="DnutCompiler_8cpp_source.html#l00026">nodeId</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::PreconditionViolation</a>, <a class="el" href="SequenceRuntime_8cpp_source.html#l00055">stop()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="SequenceAsset_8h_source.html#l00046">eve::dnut::SequenceAsset::version</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SequenceRuntime_8cpp_source.html#l00281">resumeStep()</a> , 以及 <a class="el" href="SequenceRuntime_8cpp_source.html#l00238">select()</a>.</p>
+
+</div>
+</div>
+<a id="aa791f5581180bf20529a93afe689cdba" name="aa791f5581180bf20529a93afe689cdba"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa791f5581180bf20529a93afe689cdba">&#9670;&#160;</a></span>resumeStep()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::dnut::SequenceRuntime::resumeStep </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1Value.html">eve::Value</a>&#160;</td>
+          <td class="paramname"><em>result</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Resume a step whose handler returned <code>Blocked</code>. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">result</td><td>Owning result value exposed to the sequence. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Success, or a failure while preserving the suspended cursor. </dd></dl>
+<dl class="section remark"><dt>备注</dt><dd>When the suspended node payload names a <code>result</code> local, the value is stored there; it is always available through <code>lastStepResult</code>. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="SequenceRuntime_8cpp_source.html">SequenceRuntime.cpp</a> 第 <a class="el" href="SequenceRuntime_8cpp_source.html#l00281">281</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SequenceRuntime_8cpp_source.html#l00311">captureState()</a>, <a class="el" href="SequenceRuntime_8cpp_source.html#l00040">currentNode()</a>, <a class="el" href="Package_8cpp_source.html#l00060">error</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca">eve::Failed</a>, <a class="el" href="mesh_2MeshModifierGraph_8cpp_source.html#l00019">key</a>, <a class="el" href="Result_8h_source.html#l00416">eve::Result&lt; void &gt;::ok()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::PreconditionViolation</a>, <a class="el" href="SequenceRuntime_8cpp_source.html#l00326">restoreState()</a>, <a class="el" href="classeve_1_1dnut_1_1SequenceRuntime.html#a590c70551f1c7c7d5d0cf195fa4bddd6ab2a21932ddc3b1e41c012d711c7bd238">Resumed</a>, <a class="el" href="SequenceRuntime_8cpp_source.html#l00123">runUntilBlocked()</a>, <a class="el" href="Value_8cpp_source.html#l00118">eve::Value::set()</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a11ae92080209bc3c13af48b824a910bd" name="a11ae92080209bc3c13af48b824a910bd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a11ae92080209bc3c13af48b824a910bd">&#9670;&#160;</a></span>runUntilBlocked()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::dnut::SequenceRuntime::runUntilBlocked </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Execute nodes until the sequence blocks, ends or fails. </p>
+<dl class="section return"><dt>返回</dt><dd>Success on a suspension point or clean end, or a structured failure. @thread Owner thread only. @reentrancy As <code>start</code>. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="SequenceRuntime_8cpp_source.html">SequenceRuntime.cpp</a> 第 <a class="el" href="SequenceRuntime_8cpp_source.html#l00123">123</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Value_8cpp_source.html#l00087">eve::Value::asString()</a>, <a class="el" href="classeve_1_1dnut_1_1SequenceRuntime.html#a590c70551f1c7c7d5d0cf195fa4bddd6a4ecc0d90eec1cea3e9db96583a1bb9c2">Blocked</a>, <a class="el" href="namespaceeve_1_1dnut.html#aa0d7c6939120e0f9671b061d14f0af59a4ecc0d90eec1cea3e9db96583a1bb9c2">eve::dnut::Blocked</a>, <a class="el" href="VegetationPreset_8cpp_source.html#l00087">context</a>, <a class="el" href="SequenceRuntime_8cpp_source.html#l00040">currentNode()</a>, <a class="el" href="StepKindRegistry_8cpp_source.html#l00161">eve::dnut::StepKindRegistry::dispatch()</a>, <a class="el" href="classeve_1_1dnut_1_1SequenceRuntime.html#a590c70551f1c7c7d5d0cf195fa4bddd6a0157fbb99be9622bdaa6e544270c0622">Ended</a>, <a class="el" href="StepKindRegistry_8h_source.html#l00066">eve::dnut::StepOutcome::error</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca">eve::Failed</a>, <a class="el" href="namespaceeve_1_1dnut.html#aa0d7c6939120e0f9671b061d14f0af59ad7c8c85bf79bbe1b7188497c32c3b0ca">eve::dnut::Failed</a>, <a class="el" href="SequenceAsset_8h_source.html#l00045">eve::dnut::SequenceAsset::id</a>, <a class="el" href="NodeDesc_8h_source.html#l00018">eve::scene::NodeDesc::id</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad5577819bdd3dadf2ce8cd0c265ff6b5">eve::InvariantViolation</a>, <a class="el" href="Value_8h_source.html#l00095">eve::Value::isString()</a>, <a class="el" href="SequenceRuntime_8h_source.html#l00070">kExecutionBudget</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="Result_8h_source.html#l00416">eve::Result&lt; void &gt;::ok()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::PreconditionViolation</a>, <a class="el" href="StepKindRegistry_8h_source.html#l00065">eve::dnut::StepOutcome::status</a>, <a class="el" href="classeve_1_1dnut_1_1SequenceRuntime.html#a590c70551f1c7c7d5d0cf195fa4bddd6a5ea38ba255e963326e6dbe47d8be6568">Stepped</a>, <a class="el" href="SequenceRuntime_8cpp_source.html#l00055">stop()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="ActionNotifyRegistry_8cpp_source.html#l00163">target</a> , 以及 <a class="el" href="StepKindRegistry_8h_source.html#l00067">eve::dnut::StepOutcome::value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SequenceRuntime_8cpp_source.html#l00225">advance()</a>, <a class="el" href="SequenceRuntime_8cpp_source.html#l00281">resumeStep()</a>, <a class="el" href="SequenceRuntime_8cpp_source.html#l00238">select()</a> , 以及 <a class="el" href="SequenceRuntime_8cpp_source.html#l00067">start()</a>.</p>
+
+</div>
+</div>
+<a id="ac7b8a206ad8a00c91b7470f0024df4cf" name="ac7b8a206ad8a00c91b7470f0024df4cf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac7b8a206ad8a00c91b7470f0024df4cf">&#9670;&#160;</a></span>select()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::dnut::SequenceRuntime::select </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>routeLabel</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Answer a blocked <code>choice</code> node by route label. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">routeLabel</td><td>Exact authored route label on the current choice node. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Success, or a structured failure leaving the cursor unchanged. </dd></dl>
+<dl class="section remark"><dt>备注</dt><dd>A route whose condition is rejected fails without advancing, so the caller can present the choice again. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="SequenceRuntime_8cpp_source.html">SequenceRuntime.cpp</a> 第 <a class="el" href="SequenceRuntime_8cpp_source.html#l00238">238</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SequenceRuntime_8cpp_source.html#l00311">captureState()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::Conflict</a>, <a class="el" href="SequenceRuntime_8cpp_source.html#l00040">currentNode()</a>, <a class="el" href="Package_8cpp_source.html#l00060">error</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca">eve::Failed</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="Result_8h_source.html#l00416">eve::Result&lt; void &gt;::ok()</a>, <a class="el" href="SequenceRuntime_8h_source.html#l00021">eve::dnut::SequenceConditionOutcome::passed</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::PreconditionViolation</a>, <a class="el" href="SequenceRuntime_8h_source.html#l00023">eve::dnut::SequenceConditionOutcome::reason</a>, <a class="el" href="SequenceRuntime_8cpp_source.html#l00326">restoreState()</a>, <a class="el" href="SequenceRuntime_8cpp_source.html#l00123">runUntilBlocked()</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="af407ed2c4dc857e30719511a78a3978d" name="af407ed2c4dc857e30719511a78a3978d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af407ed2c4dc857e30719511a78a3978d">&#9670;&#160;</a></span>setAssetResolver()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::dnut::SequenceRuntime::setAssetResolver </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1dnut_1_1SequenceRuntime.html#a27380c0840563674d784c72b9e0881af">AssetResolver</a>&#160;</td>
+          <td class="paramname"><em>resolver</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SequenceRuntime_8h_source.html">SequenceRuntime.h</a> 第 <a class="el" href="SequenceRuntime_8h_source.html#l00135">135</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RpgDialect_8cpp_source.html#l00609">eve::rpg::RpgStorySession::Impl::configureRuntime()</a>.</p>
+
+</div>
+</div>
+<a id="a3af6e1755c2e0a4d34c53d35b3f4c5d3" name="a3af6e1755c2e0a4d34c53d35b3f4c5d3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3af6e1755c2e0a4d34c53d35b3f4c5d3">&#9670;&#160;</a></span>setConditionEvaluator()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::dnut::SequenceRuntime::setConditionEvaluator </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1dnut_1_1SequenceRuntime.html#a61a0496e94e7f78e02de783b86a9148d">ConditionEvaluator</a>&#160;</td>
+          <td class="paramname"><em>evaluator</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SequenceRuntime_8h_source.html">SequenceRuntime.h</a> 第 <a class="el" href="SequenceRuntime_8h_source.html#l00136">136</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RpgDialect_8cpp_source.html#l00609">eve::rpg::RpgStorySession::Impl::configureRuntime()</a>.</p>
+
+</div>
+</div>
+<a id="a24b80531d7cbd9e9a20295abe2e681dd" name="a24b80531d7cbd9e9a20295abe2e681dd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a24b80531d7cbd9e9a20295abe2e681dd">&#9670;&#160;</a></span>setEventSink()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::dnut::SequenceRuntime::setEventSink </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1dnut_1_1SequenceRuntime.html#a16794b409b65c4c462c9b9ec5187b48a">EventSink</a>&#160;</td>
+          <td class="paramname"><em>sink</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SequenceRuntime_8h_source.html">SequenceRuntime.h</a> 第 <a class="el" href="SequenceRuntime_8h_source.html#l00147">147</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a2d846a3f40cbb2debd5597be0131bb83" name="a2d846a3f40cbb2debd5597be0131bb83"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2d846a3f40cbb2debd5597be0131bb83">&#9670;&#160;</a></span>setHostContext()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::dnut::SequenceRuntime::setHostContext </td>
+          <td>(</td>
+          <td class="paramtype">void *&#160;</td>
+          <td class="paramname"><em>host</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Install the opaque consumer context forwarded to every step handler. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">host</td><td>Borrowed pointer the core stores but never dereferences. @ownership Borrowed; the caller keeps it alive for as long as the runtime may dispatch. @thread Set on the owner thread before the next <code>runUntilBlocked</code>. @reentrancy Does not invoke callbacks. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="SequenceRuntime_8h_source.html">SequenceRuntime.h</a> 第 <a class="el" href="SequenceRuntime_8h_source.html#l00146">146</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="UIAutomationCapabilities_8cpp_source.html#l00221">host</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RpgDialect_8cpp_source.html#l00609">eve::rpg::RpgStorySession::Impl::configureRuntime()</a>.</p>
+
+</div>
+</div>
+<a id="a725598d51f713517dfdcf79f76384345" name="a725598d51f713517dfdcf79f76384345"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a725598d51f713517dfdcf79f76384345">&#9670;&#160;</a></span>setStepRegistry()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::dnut::SequenceRuntime::setStepRegistry </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1dnut_1_1StepKindRegistry.html">StepKindRegistry</a> *&#160;</td>
+          <td class="paramname"><em>registry</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Bind the step vocabulary; passing nullptr disables non-core steps. </p>
+
+<p class="definition">在文件 <a class="el" href="SequenceRuntime_8h_source.html">SequenceRuntime.h</a> 第 <a class="el" href="SequenceRuntime_8h_source.html#l00138">138</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RpgDialect_8cpp_source.html#l00609">eve::rpg::RpgStorySession::Impl::configureRuntime()</a>.</p>
+
+</div>
+</div>
+<a id="a7935432c8746732f9aa8a6419d2f446e" name="a7935432c8746732f9aa8a6419d2f446e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7935432c8746732f9aa8a6419d2f446e">&#9670;&#160;</a></span>start()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::dnut::SequenceRuntime::start </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1dnut_1_1SequenceAsset.html">SequenceAsset</a> *&#160;</td>
+          <td class="paramname"><em>asset</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1Value.html">eve::Value</a>&#160;</td>
+          <td class="paramname"><em>bindings</em> = <code><a class="el" href="classeve_1_1Value.html#a2d59a6ba7d844c2561c606a8973be87d">eve::Value::Object</a>{}</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Begin a sequence at the asset entry node. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">asset</td><td>Borrowed asset; it must outlive the runtime. </td></tr>
+    <tr><td class="paramname">bindings</td><td>Owning parameter bindings; must be an object. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Success after the sequence reaches its first suspension point. </dd></dl>
+<dl class="section remark"><dt>备注</dt><dd>Every mutation is applied only after the asset validates, so a rejected start leaves the runtime stopped. @thread Owner thread only. @reentrancy Emits events synchronously; the sink must not re-enter this runtime. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="SequenceRuntime_8cpp_source.html">SequenceRuntime.cpp</a> 第 <a class="el" href="SequenceRuntime_8cpp_source.html#l00067">67</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SequenceRuntime_8h_source.html#l00156">asset()</a>, <a class="el" href="SequenceRuntime_8h_source.html#l00160">bindings()</a>, <a class="el" href="SequenceAsset_8h_source.html#l00048">eve::dnut::SequenceAsset::entry</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="Value_8h_source.html#l00099">eve::Value::isObject()</a>, <a class="el" href="SequenceRuntime_8cpp_source.html#l00123">runUntilBlocked()</a>, <a class="el" href="classeve_1_1dnut_1_1SequenceRuntime.html#a590c70551f1c7c7d5d0cf195fa4bddd6a8428552d86c0d262a542a528af490afa">Started</a> , 以及 <a class="el" href="SequenceAsset_8cpp_source.html#l00029">eve::dnut::SequenceAsset::validate()</a>.</p>
+
+</div>
+</div>
+<a id="a3cd24d2f9300e67df6d180955cf251ad" name="a3cd24d2f9300e67df6d180955cf251ad"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3cd24d2f9300e67df6d180955cf251ad">&#9670;&#160;</a></span>stop()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::dnut::SequenceRuntime::stop </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Stop and clear the active sequence without emitting <code>Ended</code>. </p>
+
+<p class="definition">在文件 <a class="el" href="SequenceRuntime_8cpp_source.html">SequenceRuntime.cpp</a> 第 <a class="el" href="SequenceRuntime_8cpp_source.html#l00055">55</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SequenceRuntime_8cpp_source.html#l00326">restoreState()</a> , 以及 <a class="el" href="SequenceRuntime_8cpp_source.html#l00123">runUntilBlocked()</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">类成员变量说明</h2>
+<a id="a46f6453de49fac4feeecb9544ffb7242" name="a46f6453de49fac4feeecb9544ffb7242"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a46f6453de49fac4feeecb9544ffb7242">&#9670;&#160;</a></span>kExecutionBudget</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr int eve::dnut::SequenceRuntime::kExecutionBudget = 10000</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Upper bound on nodes executed by one <code>runUntilBlocked</code> call. </p>
+<p>Authored content can contain a cycle by mistake; the budget turns that into an observable failure instead of a hang. </p>
+
+<p class="definition">在文件 <a class="el" href="SequenceRuntime_8h_source.html">SequenceRuntime.h</a> 第 <a class="el" href="SequenceRuntime_8h_source.html#l00070">70</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SequenceRuntime_8cpp_source.html#l00123">runUntilBlocked()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/dnut_interpreter/<a class="el" href="SequenceRuntime_8h_source.html">SequenceRuntime.h</a></li>
+<li>src/modules/dnut_interpreter/<a class="el" href="SequenceRuntime_8cpp_source.html">SequenceRuntime.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

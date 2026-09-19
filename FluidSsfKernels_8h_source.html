@@ -1,0 +1,579 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/fluids/FluidSsfKernels.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_64d77e4380a58ef2a81d909febed7275.html">fluids</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">FluidSsfKernels.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="FluidSsfKernels_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1fluids.html">eve::fluids</a> {</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span> </div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno"><a class="line" href="namespaceeve_1_1fluids.html#a47eddeaee042c61da0a36a4fea943784">   37</a></span><span class="keyword">inline</span> <span class="keyword">const</span> <span class="keywordtype">char</span>* <a class="code hl_variable" href="namespaceeve_1_1fluids.html#a47eddeaee042c61da0a36a4fea943784">kSsfClear</a> = R<span class="stringliteral">&quot;GLSL(</span></div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span><span class="stringliteral">#version 450</span></div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span><span class="stringliteral">layout(local_size_x = 64) in;</span></div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span><span class="stringliteral">layout(set = 0, binding = 1) buffer DepthA { uint d[]; } depthA;</span></div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span><span class="stringliteral">layout(set = 0, binding = 2) buffer DepthB { uint d[]; } depthB;</span></div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span><span class="stringliteral">layout(set = 0, binding = 3) buffer Thick { uint t[]; } thick;</span></div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span><span class="stringliteral">layout(set = 0, binding = 4) buffer Normal { vec4 n[]; } normal;</span></div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span><span class="stringliteral">layout(set = 0, binding = 5) buffer Color { uint c[]; } color;</span></div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span><span class="stringliteral">layout(push_constant) uniform PC { float d[32]; } pc;</span></div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span><span class="stringliteral">void main() {</span></div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span><span class="stringliteral">    uint i = gl_GlobalInvocationID.x;</span></div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span><span class="stringliteral">    uint total = uint(pc.d[23]) * uint(pc.d[24]);</span></div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span><span class="stringliteral">    if (i &gt;= total) return;</span></div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span><span class="stringliteral">    depthA.d[i] = 0xFFFFFFFFu;</span></div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span><span class="stringliteral">    depthB.d[i] = 0xFFFFFFFFu;</span></div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span><span class="stringliteral">    thick.t[i] = 0u;</span></div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span><span class="stringliteral">    normal.n[i] = vec4(0.0);</span></div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span><span class="stringliteral">    color.c[i] = 0u;</span></div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span><span class="stringliteral">}</span></div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span><span class="stringliteral">)GLSL&quot;;</span></div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span><span class="stringliteral"></span> </div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno"><a class="line" href="namespaceeve_1_1fluids.html#a57179a4b5b2aeed126ab4ec3dc53f51c">   59</a></span><span class="keyword">inline</span> <span class="keyword">const</span> <span class="keywordtype">char</span>* <a class="code hl_variable" href="namespaceeve_1_1fluids.html#a57179a4b5b2aeed126ab4ec3dc53f51c">kSsfSplat</a> = R<span class="stringliteral">&quot;GLSL(</span></div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span><span class="stringliteral">#version 450</span></div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span><span class="stringliteral">layout(local_size_x = 64) in;</span></div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span><span class="stringliteral">layout(set = 0, binding = 0) buffer Particles { vec4 p[]; } parts;</span></div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span><span class="stringliteral">layout(set = 0, binding = 1) buffer DepthA { uint d[]; } depthA;</span></div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span><span class="stringliteral">layout(set = 0, binding = 3) buffer Thick { uint t[]; } thick;</span></div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span><span class="stringliteral">layout(push_constant) uniform PC { float d[32]; } pc;</span></div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span><span class="stringliteral"></span> </div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span><span class="stringliteral">mat4 loadVP() {</span></div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span><span class="stringliteral">    return mat4(pc.d[0], pc.d[1], pc.d[2], pc.d[3],</span></div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span><span class="stringliteral">                pc.d[4], pc.d[5], pc.d[6], pc.d[7],</span></div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span><span class="stringliteral">                pc.d[8], pc.d[9], pc.d[10], pc.d[11],</span></div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span><span class="stringliteral">                pc.d[12], pc.d[13], pc.d[14], pc.d[15]);</span></div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span><span class="stringliteral">}</span></div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span><span class="stringliteral"></span> </div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span><span class="stringliteral">void main() {</span></div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span><span class="stringliteral">    uint i = gl_GlobalInvocationID.x;</span></div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span><span class="stringliteral">    uint n = uint(pc.d[16]);</span></div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span><span class="stringliteral">    if (i &gt;= n) return;</span></div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span><span class="stringliteral">    vec4 clip = loadVP() * vec4(parts.p[i].xyz, 1.0);</span></div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span><span class="stringliteral">    bool orthographic = pc.d[17] &gt; 0.5;</span></div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span><span class="stringliteral">    if (!orthographic &amp;&amp; clip.w &lt;= 1e-4) return;</span></div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span><span class="stringliteral">    vec3 ndc = clip.xyz / clip.w;</span></div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span><span class="stringliteral">    if (any(lessThan(ndc, vec3(-1.0))) || any(greaterThan(ndc, vec3(1.0)))) return;</span></div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span><span class="stringliteral">    float W = pc.d[23];</span></div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span><span class="stringliteral">    float H = pc.d[24];</span></div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span><span class="stringliteral">    float sx = (ndc.x * 0.5 + 0.5) * W;</span></div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span><span class="stringliteral">    float sy = (0.5 - ndc.y * 0.5) * H;</span></div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span><span class="stringliteral">    float nearZ = max(pc.d[19], 1e-4);</span></div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span><span class="stringliteral">    float farZ = max(pc.d[20], nearZ + 1e-3);</span></div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span><span class="stringliteral">    float tanHalf = max(pc.d[21], 1e-4);</span></div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span><span class="stringliteral">    float depth = orthographic ? nearZ + (ndc.z * 0.5 + 0.5) * (farZ - nearZ) : clip.w;</span></div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span><span class="stringliteral">    float radiusPx = (pc.d[25] * (H * 0.5) / tanHalf) /</span></div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span><span class="stringliteral">                     (orthographic ? 1.0 : max(depth, 1e-4));</span></div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span><span class="stringliteral">    if (radiusPx &lt; 0.5) return;</span></div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span><span class="stringliteral">    int x0 = int(max(floor(sx - radiusPx), 0.0));</span></div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span><span class="stringliteral">    int x1 = int(min(ceil(sx + radiusPx), W - 1.0));</span></div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span><span class="stringliteral">    int y0 = int(max(floor(sy - radiusPx), 0.0));</span></div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span><span class="stringliteral">    int y1 = int(min(ceil(sy + radiusPx), H - 1.0));</span></div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span><span class="stringliteral">    float r2 = radiusPx * radiusPx;</span></div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span><span class="stringliteral">    float scale = pc.d[27];</span></div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span><span class="stringliteral">    for (int yy = y0; yy &lt;= y1; ++yy) {</span></div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span><span class="stringliteral">        for (int xx = x0; xx &lt;= x1; ++xx) {</span></div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span><span class="stringliteral">            float ddx = float(xx) + 0.5 - sx;</span></div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span><span class="stringliteral">            float ddy = float(yy) + 0.5 - sy;</span></div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span><span class="stringliteral">            float q = (ddx * ddx + ddy * ddy) / r2;</span></div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span><span class="stringliteral">            if (q &gt;= 1.0) continue;</span></div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span><span class="stringliteral">            uint idx = uint(yy) * uint(W) + uint(xx);</span></div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span><span class="stringliteral">            // Spherical cap in the projected particle disc, not a flat billboard.</span></div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span><span class="stringliteral">            float cap = pc.d[25] * sqrt(1.0 - q);</span></div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span><span class="stringliteral">            float t = clamp((depth - cap - nearZ) / (farZ - nearZ), 0.0, 1.0);</span></div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span><span class="stringliteral">            uint key = uint(t * 16777215.0);</span></div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span><span class="stringliteral">            atomicMin(depthA.d[idx], key);</span></div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span><span class="stringliteral">            uint contribution = uint(clamp(2.0 * cap * scale * 256.0, 0.0, 16777215.0));</span></div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span><span class="stringliteral">            atomicAdd(thick.t[idx], contribution);</span></div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span><span class="stringliteral">        }</span></div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span><span class="stringliteral">    }</span></div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span><span class="stringliteral">}</span></div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span><span class="stringliteral">)GLSL&quot;;</span></div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span><span class="stringliteral"></span> </div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno"><a class="line" href="namespaceeve_1_1fluids.html#aaf5176114fb095f8c981606525c9140d">  124</a></span><span class="keyword">inline</span> <span class="keyword">const</span> <span class="keywordtype">char</span>* <a class="code hl_variable" href="namespaceeve_1_1fluids.html#aaf5176114fb095f8c981606525c9140d">kSsfColorClear</a> = R<span class="stringliteral">&quot;GLSL(</span></div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span><span class="stringliteral">#version 450</span></div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span><span class="stringliteral">layout(local_size_x = 64) in;</span></div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span><span class="stringliteral">layout(set = 0, binding = 7) buffer Accum { uint v[]; } accum;</span></div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span><span class="stringliteral">layout(push_constant) uniform PC { float d[32]; } pc;</span></div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span><span class="stringliteral">void main() {</span></div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span><span class="stringliteral">    uint i = gl_GlobalInvocationID.x;</span></div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span><span class="stringliteral">    if (i &gt;= uint(pc.d[23]) * uint(pc.d[24])) return;</span></div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span><span class="stringliteral">    uint at = i * 5u;</span></div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span><span class="stringliteral">    for (uint channel = 0u; channel &lt; 5u; ++channel) accum.v[at + channel] = 0u;</span></div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span><span class="stringliteral">}</span></div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span><span class="stringliteral">)GLSL&quot;;</span></div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span><span class="stringliteral"></span> </div>
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno"><a class="line" href="namespaceeve_1_1fluids.html#a2e6739224ceeca81464ca4fbae7beb22">  142</a></span><span class="keyword">inline</span> <span class="keyword">const</span> <span class="keywordtype">char</span>* <a class="code hl_variable" href="namespaceeve_1_1fluids.html#a2e6739224ceeca81464ca4fbae7beb22">kSsfColorSplat</a> = R<span class="stringliteral">&quot;GLSL(</span></div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span><span class="stringliteral">#version 450</span></div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span><span class="stringliteral">layout(local_size_x = 64) in;</span></div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span><span class="stringliteral">layout(set = 0, binding = 0) buffer Particles { vec4 p[]; } parts;</span></div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span><span class="stringliteral">layout(set = 0, binding = 6) buffer ParticleColors { vec4 c[]; } particleColors;</span></div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span><span class="stringliteral">layout(set = 0, binding = 7) buffer Accum { uint v[]; } accum;</span></div>
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span><span class="stringliteral">layout(push_constant) uniform PC { float d[32]; } pc;</span></div>
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span><span class="stringliteral">mat4 loadVP() {</span></div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span><span class="stringliteral">    return mat4(pc.d[0], pc.d[1], pc.d[2], pc.d[3], pc.d[4], pc.d[5], pc.d[6], pc.d[7],</span></div>
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span><span class="stringliteral">                pc.d[8], pc.d[9], pc.d[10], pc.d[11], pc.d[12], pc.d[13], pc.d[14], pc.d[15]);</span></div>
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span><span class="stringliteral">}</span></div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span><span class="stringliteral">void main() {</span></div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span><span class="stringliteral">    uint i = gl_GlobalInvocationID.x;</span></div>
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span><span class="stringliteral">    if (i &gt;= uint(pc.d[16])) return;</span></div>
+<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span><span class="stringliteral">    vec4 clip = loadVP() * vec4(parts.p[i].xyz, 1.0);</span></div>
+<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span><span class="stringliteral">    bool orthographic = pc.d[17] &gt; 0.5;</span></div>
+<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span><span class="stringliteral">    if (!orthographic &amp;&amp; clip.w &lt;= 1e-4) return;</span></div>
+<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span><span class="stringliteral">    vec3 ndc = clip.xyz / clip.w;</span></div>
+<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span><span class="stringliteral">    if (any(lessThan(ndc, vec3(-1.0))) || any(greaterThan(ndc, vec3(1.0)))) return;</span></div>
+<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span><span class="stringliteral">    float W = pc.d[23], H = pc.d[24];</span></div>
+<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span><span class="stringliteral">    float sx = (ndc.x * 0.5 + 0.5) * W;</span></div>
+<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span><span class="stringliteral">    float sy = (0.5 - ndc.y * 0.5) * H;</span></div>
+<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span><span class="stringliteral">    float depth = orthographic ? pc.d[19] + (ndc.z * 0.5 + 0.5) * (pc.d[20] - pc.d[19]) : clip.w;</span></div>
+<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span><span class="stringliteral">    float radiusPx = (pc.d[25] * (H * 0.5) / max(pc.d[21], 1e-4)) /</span></div>
+<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span><span class="stringliteral">                     (orthographic ? 1.0 : max(depth, 1e-4));</span></div>
+<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span><span class="stringliteral">    if (radiusPx &lt; 0.5) return;</span></div>
+<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span><span class="stringliteral">    int x0 = int(max(floor(sx - radiusPx), 0.0)), x1 = int(min(ceil(sx + radiusPx), W - 1.0));</span></div>
+<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span><span class="stringliteral">    int y0 = int(max(floor(sy - radiusPx), 0.0)), y1 = int(min(ceil(sy + radiusPx), H - 1.0));</span></div>
+<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span><span class="stringliteral">    vec4 tint = clamp(particleColors.c[i], 0.0, 1.0);</span></div>
+<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span><span class="stringliteral">    float radiusSquared = radiusPx * radiusPx;</span></div>
+<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span><span class="stringliteral">    for (int y = y0; y &lt;= y1; ++y) for (int x = x0; x &lt;= x1; ++x) {</span></div>
+<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span><span class="stringliteral">        vec2 delta = vec2(float(x) + 0.5 - sx, float(y) + 0.5 - sy);</span></div>
+<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span><span class="stringliteral">        float q = 1.0 - dot(delta, delta) / radiusSquared;</span></div>
+<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span><span class="stringliteral">        if (q &lt;= 0.0) continue;</span></div>
+<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span><span class="stringliteral">        uint scaled = max(1u, uint(q * 4095.0));</span></div>
+<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span><span class="stringliteral">        uint at = (uint(y) * uint(W) + uint(x)) * 5u;</span></div>
+<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span><span class="stringliteral">        atomicAdd(accum.v[at + 0u], scaled);</span></div>
+<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span><span class="stringliteral">        atomicAdd(accum.v[at + 1u], uint(float(scaled) * tint.r));</span></div>
+<div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span><span class="stringliteral">        atomicAdd(accum.v[at + 2u], uint(float(scaled) * tint.g));</span></div>
+<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span><span class="stringliteral">        atomicAdd(accum.v[at + 3u], uint(float(scaled) * tint.b));</span></div>
+<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span><span class="stringliteral">        atomicAdd(accum.v[at + 4u], uint(float(scaled) * tint.a));</span></div>
+<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span><span class="stringliteral">    }</span></div>
+<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span><span class="stringliteral">}</span></div>
+<div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span><span class="stringliteral">)GLSL&quot;;</span></div>
+<div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span><span class="stringliteral"></span> </div>
+<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span><span class="stringliteral"></span><span class="comment">// Splat preprojected oriented ellipsoids without expanding push constants.</span></div>
+<div class="line"><a id="l00188" name="l00188"></a><span class="lineno"><a class="line" href="namespaceeve_1_1fluids.html#abfc2d60138adf10d284aeb5ab5ca0f26">  188</a></span><span class="keyword">inline</span> <span class="keyword">constexpr</span> <span class="keyword">auto</span> <a class="code hl_variable" href="namespaceeve_1_1fluids.html#abfc2d60138adf10d284aeb5ab5ca0f26">kSsfAnisotropicSplat</a> = R<span class="stringliteral">&quot;GLSL(</span></div>
+<div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span><span class="stringliteral">#version 450</span></div>
+<div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span><span class="stringliteral">layout(local_size_x = 64) in;</span></div>
+<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span><span class="stringliteral">layout(set = 0, binding = 0) buffer Ellipsoids { vec4 e[]; } ellipsoids;</span></div>
+<div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span><span class="stringliteral">layout(set = 0, binding = 1) buffer DepthA { uint d[]; } depthA;</span></div>
+<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span><span class="stringliteral">layout(set = 0, binding = 3) buffer Thick { uint t[]; } thick;</span></div>
+<div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span><span class="stringliteral">layout(push_constant) uniform PC { float d[32]; } pc;</span></div>
+<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span><span class="stringliteral"></span> </div>
+<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span><span class="stringliteral">void main() {</span></div>
+<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span><span class="stringliteral">    uint i = gl_GlobalInvocationID.x;</span></div>
+<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span><span class="stringliteral">    if (i &gt;= uint(pc.d[16])) return;</span></div>
+<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span><span class="stringliteral">    vec4 projected = ellipsoids.e[i * 3u + 0u];</span></div>
+<div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span><span class="stringliteral">    vec4 inverseAndRadius = ellipsoids.e[i * 3u + 1u];</span></div>
+<div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span><span class="stringliteral">    vec4 depthSlope = ellipsoids.e[i * 3u + 2u];</span></div>
+<div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span><span class="stringliteral">    if (projected.w &lt;= 0.0) return;</span></div>
+<div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span><span class="stringliteral">    float W = pc.d[23], H = pc.d[24];</span></div>
+<div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span><span class="stringliteral">    int x0 = int(max(floor(projected.x - projected.w), 0.0));</span></div>
+<div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span><span class="stringliteral">    int x1 = int(min(ceil(projected.x + projected.w), W - 1.0));</span></div>
+<div class="line"><a id="l00206" name="l00206"></a><span class="lineno">  206</span><span class="stringliteral">    int y0 = int(max(floor(projected.y - projected.w), 0.0));</span></div>
+<div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span><span class="stringliteral">    int y1 = int(min(ceil(projected.y + projected.w), H - 1.0));</span></div>
+<div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span><span class="stringliteral">    float nearZ = max(pc.d[19], 1e-4);</span></div>
+<div class="line"><a id="l00209" name="l00209"></a><span class="lineno">  209</span><span class="stringliteral">    float farZ = max(pc.d[20], nearZ + 1e-3);</span></div>
+<div class="line"><a id="l00210" name="l00210"></a><span class="lineno">  210</span><span class="stringliteral">    for (int yy = y0; yy &lt;= y1; ++yy) for (int xx = x0; xx &lt;= x1; ++xx) {</span></div>
+<div class="line"><a id="l00211" name="l00211"></a><span class="lineno">  211</span><span class="stringliteral">        vec2 delta = vec2(float(xx) + 0.5 - projected.x, float(yy) + 0.5 - projected.y);</span></div>
+<div class="line"><a id="l00212" name="l00212"></a><span class="lineno">  212</span><span class="stringliteral">        float q = inverseAndRadius.x * delta.x * delta.x +</span></div>
+<div class="line"><a id="l00213" name="l00213"></a><span class="lineno">  213</span><span class="stringliteral">                  2.0 * inverseAndRadius.y * delta.x * delta.y +</span></div>
+<div class="line"><a id="l00214" name="l00214"></a><span class="lineno">  214</span><span class="stringliteral">                  inverseAndRadius.z * delta.y * delta.y;</span></div>
+<div class="line"><a id="l00215" name="l00215"></a><span class="lineno">  215</span><span class="stringliteral">        if (q &gt;= 1.0) continue;</span></div>
+<div class="line"><a id="l00216" name="l00216"></a><span class="lineno">  216</span><span class="stringliteral">        float cap = inverseAndRadius.w * sqrt(max(0.0, 1.0 - q));</span></div>
+<div class="line"><a id="l00217" name="l00217"></a><span class="lineno">  217</span><span class="stringliteral">        float centerDepth = projected.z + dot(depthSlope.xy, delta);</span></div>
+<div class="line"><a id="l00218" name="l00218"></a><span class="lineno">  218</span><span class="stringliteral">        float t = clamp((centerDepth - cap - nearZ) / (farZ - nearZ), 0.0, 1.0);</span></div>
+<div class="line"><a id="l00219" name="l00219"></a><span class="lineno">  219</span><span class="stringliteral">        uint idx = uint(yy) * uint(W) + uint(xx);</span></div>
+<div class="line"><a id="l00220" name="l00220"></a><span class="lineno">  220</span><span class="stringliteral">        atomicMin(depthA.d[idx], uint(t * 16777215.0));</span></div>
+<div class="line"><a id="l00221" name="l00221"></a><span class="lineno">  221</span><span class="stringliteral">        uint contribution = uint(clamp(2.0 * cap * pc.d[27] * 256.0, 0.0, 16777215.0));</span></div>
+<div class="line"><a id="l00222" name="l00222"></a><span class="lineno">  222</span><span class="stringliteral">        atomicAdd(thick.t[idx], contribution);</span></div>
+<div class="line"><a id="l00223" name="l00223"></a><span class="lineno">  223</span><span class="stringliteral">    }</span></div>
+<div class="line"><a id="l00224" name="l00224"></a><span class="lineno">  224</span><span class="stringliteral">}</span></div>
+<div class="line"><a id="l00225" name="l00225"></a><span class="lineno">  225</span><span class="stringliteral">)GLSL&quot;;</span></div>
+<div class="line"><a id="l00226" name="l00226"></a><span class="lineno">  226</span><span class="stringliteral"></span> </div>
+<div class="line"><a id="l00228" name="l00228"></a><span class="lineno"><a class="line" href="namespaceeve_1_1fluids.html#a33930af2384466b3e2353ca33b0dc02a">  228</a></span><span class="keyword">inline</span> <span class="keyword">const</span> <span class="keywordtype">char</span>* <a class="code hl_variable" href="namespaceeve_1_1fluids.html#a33930af2384466b3e2353ca33b0dc02a">kSsfSmooth</a> = R<span class="stringliteral">&quot;GLSL(</span></div>
+<div class="line"><a id="l00229" name="l00229"></a><span class="lineno">  229</span><span class="stringliteral">#version 450</span></div>
+<div class="line"><a id="l00230" name="l00230"></a><span class="lineno">  230</span><span class="stringliteral">layout(local_size_x = 64) in;</span></div>
+<div class="line"><a id="l00231" name="l00231"></a><span class="lineno">  231</span><span class="stringliteral">layout(set = 0, binding = 1) buffer DepthA { uint d[]; } depthA;</span></div>
+<div class="line"><a id="l00232" name="l00232"></a><span class="lineno">  232</span><span class="stringliteral">layout(set = 0, binding = 2) buffer DepthB { uint d[]; } depthB;</span></div>
+<div class="line"><a id="l00233" name="l00233"></a><span class="lineno">  233</span><span class="stringliteral">layout(push_constant) uniform PC { float d[32]; } pc;</span></div>
+<div class="line"><a id="l00234" name="l00234"></a><span class="lineno">  234</span><span class="stringliteral"></span> </div>
+<div class="line"><a id="l00235" name="l00235"></a><span class="lineno">  235</span><span class="stringliteral">float decode(uint key) {</span></div>
+<div class="line"><a id="l00236" name="l00236"></a><span class="lineno">  236</span><span class="stringliteral">    float nearZ = max(pc.d[19], 1e-4);</span></div>
+<div class="line"><a id="l00237" name="l00237"></a><span class="lineno">  237</span><span class="stringliteral">    float farZ = max(pc.d[20], nearZ + 1e-3);</span></div>
+<div class="line"><a id="l00238" name="l00238"></a><span class="lineno">  238</span><span class="stringliteral">    return nearZ + (float(key) / 16777215.0) * (farZ - nearZ);</span></div>
+<div class="line"><a id="l00239" name="l00239"></a><span class="lineno">  239</span><span class="stringliteral">}</span></div>
+<div class="line"><a id="l00240" name="l00240"></a><span class="lineno">  240</span><span class="stringliteral"></span> </div>
+<div class="line"><a id="l00241" name="l00241"></a><span class="lineno">  241</span><span class="stringliteral">void main() {</span></div>
+<div class="line"><a id="l00242" name="l00242"></a><span class="lineno">  242</span><span class="stringliteral">    uint i = gl_GlobalInvocationID.x;</span></div>
+<div class="line"><a id="l00243" name="l00243"></a><span class="lineno">  243</span><span class="stringliteral">    uint W = uint(pc.d[23]);</span></div>
+<div class="line"><a id="l00244" name="l00244"></a><span class="lineno">  244</span><span class="stringliteral">    uint H = uint(pc.d[24]);</span></div>
+<div class="line"><a id="l00245" name="l00245"></a><span class="lineno">  245</span><span class="stringliteral">    if (i &gt;= W * H) return;</span></div>
+<div class="line"><a id="l00246" name="l00246"></a><span class="lineno">  246</span><span class="stringliteral">    uint cx = i % W;</span></div>
+<div class="line"><a id="l00247" name="l00247"></a><span class="lineno">  247</span><span class="stringliteral">    uint cy = i / W;</span></div>
+<div class="line"><a id="l00248" name="l00248"></a><span class="lineno">  248</span><span class="stringliteral">    uint centerKey = depthA.d[i];</span></div>
+<div class="line"><a id="l00249" name="l00249"></a><span class="lineno">  249</span><span class="stringliteral">    if (centerKey == 0xFFFFFFFFu) {</span></div>
+<div class="line"><a id="l00250" name="l00250"></a><span class="lineno">  250</span><span class="stringliteral">        depthB.d[i] = centerKey;</span></div>
+<div class="line"><a id="l00251" name="l00251"></a><span class="lineno">  251</span><span class="stringliteral">        return;</span></div>
+<div class="line"><a id="l00252" name="l00252"></a><span class="lineno">  252</span><span class="stringliteral">    }</span></div>
+<div class="line"><a id="l00253" name="l00253"></a><span class="lineno">  253</span><span class="stringliteral">    float center = decode(centerKey);</span></div>
+<div class="line"><a id="l00254" name="l00254"></a><span class="lineno">  254</span><span class="stringliteral">    float falloff = max(pc.d[28], 1e-4);  // depth edge falloff</span></div>
+<div class="line"><a id="l00255" name="l00255"></a><span class="lineno">  255</span><span class="stringliteral">    float projectedBlur = pc.d[29] &lt; 0.0 ? 2.0 :</span></div>
+<div class="line"><a id="l00256" name="l00256"></a><span class="lineno">  256</span><span class="stringliteral">        pc.d[29] * float(H) / (2.0 * max(pc.d[21], 1e-4) * (pc.d[17] &gt; 0.5 ? 1.0 : center));</span></div>
+<div class="line"><a id="l00257" name="l00257"></a><span class="lineno">  257</span><span class="stringliteral">    int kernelRadius = clamp(int(ceil(projectedBlur)), 0, 4);</span></div>
+<div class="line"><a id="l00258" name="l00258"></a><span class="lineno">  258</span><span class="stringliteral">    float sigma = max(0.5, projectedBlur * 0.5);</span></div>
+<div class="line"><a id="l00259" name="l00259"></a><span class="lineno">  259</span><span class="stringliteral">    float sum = center;</span></div>
+<div class="line"><a id="l00260" name="l00260"></a><span class="lineno">  260</span><span class="stringliteral">    float wsum = 1.0;</span></div>
+<div class="line"><a id="l00261" name="l00261"></a><span class="lineno">  261</span><span class="stringliteral">    for (int oy = -kernelRadius; oy &lt;= kernelRadius; ++oy) {</span></div>
+<div class="line"><a id="l00262" name="l00262"></a><span class="lineno">  262</span><span class="stringliteral">        for (int ox = -kernelRadius; ox &lt;= kernelRadius; ++ox) {</span></div>
+<div class="line"><a id="l00263" name="l00263"></a><span class="lineno">  263</span><span class="stringliteral">            if (ox == 0 &amp;&amp; oy == 0) continue;</span></div>
+<div class="line"><a id="l00264" name="l00264"></a><span class="lineno">  264</span><span class="stringliteral">            int xx = int(cx) + ox;</span></div>
+<div class="line"><a id="l00265" name="l00265"></a><span class="lineno">  265</span><span class="stringliteral">            int yy = int(cy) + oy;</span></div>
+<div class="line"><a id="l00266" name="l00266"></a><span class="lineno">  266</span><span class="stringliteral">            if (xx &lt; 0 || yy &lt; 0 || xx &gt;= int(W) || yy &gt;= int(H)) continue;</span></div>
+<div class="line"><a id="l00267" name="l00267"></a><span class="lineno">  267</span><span class="stringliteral">            uint idx = uint(yy) * W + uint(xx);</span></div>
+<div class="line"><a id="l00268" name="l00268"></a><span class="lineno">  268</span><span class="stringliteral">            uint nk = depthA.d[idx];</span></div>
+<div class="line"><a id="l00269" name="l00269"></a><span class="lineno">  269</span><span class="stringliteral">            if (nk == 0xFFFFFFFFu) continue;</span></div>
+<div class="line"><a id="l00270" name="l00270"></a><span class="lineno">  270</span><span class="stringliteral">            float nd = decode(nk);</span></div>
+<div class="line"><a id="l00271" name="l00271"></a><span class="lineno">  271</span><span class="stringliteral">            float spatial = exp(-float(ox * ox + oy * oy) / (2.0 * sigma * sigma));</span></div>
+<div class="line"><a id="l00272" name="l00272"></a><span class="lineno">  272</span><span class="stringliteral">            float wDepth = exp(-abs(nd - center) / falloff);</span></div>
+<div class="line"><a id="l00273" name="l00273"></a><span class="lineno">  273</span><span class="stringliteral">            float w = spatial * wDepth;</span></div>
+<div class="line"><a id="l00274" name="l00274"></a><span class="lineno">  274</span><span class="stringliteral">            sum += nd * w;</span></div>
+<div class="line"><a id="l00275" name="l00275"></a><span class="lineno">  275</span><span class="stringliteral">            wsum += w;</span></div>
+<div class="line"><a id="l00276" name="l00276"></a><span class="lineno">  276</span><span class="stringliteral">        }</span></div>
+<div class="line"><a id="l00277" name="l00277"></a><span class="lineno">  277</span><span class="stringliteral">    }</span></div>
+<div class="line"><a id="l00278" name="l00278"></a><span class="lineno">  278</span><span class="stringliteral">    float outD = sum / max(wsum, 1e-5);</span></div>
+<div class="line"><a id="l00279" name="l00279"></a><span class="lineno">  279</span><span class="stringliteral">    float nearZ = max(pc.d[19], 1e-4);</span></div>
+<div class="line"><a id="l00280" name="l00280"></a><span class="lineno">  280</span><span class="stringliteral">    float farZ = max(pc.d[20], nearZ + 1e-3);</span></div>
+<div class="line"><a id="l00281" name="l00281"></a><span class="lineno">  281</span><span class="stringliteral">    float t = clamp((outD - nearZ) / (farZ - nearZ), 0.0, 1.0);</span></div>
+<div class="line"><a id="l00282" name="l00282"></a><span class="lineno">  282</span><span class="stringliteral">    depthB.d[i] = uint(t * 16777215.0);</span></div>
+<div class="line"><a id="l00283" name="l00283"></a><span class="lineno">  283</span><span class="stringliteral">}</span></div>
+<div class="line"><a id="l00284" name="l00284"></a><span class="lineno">  284</span><span class="stringliteral">)GLSL&quot;;</span></div>
+<div class="line"><a id="l00285" name="l00285"></a><span class="lineno">  285</span><span class="stringliteral"></span> </div>
+<div class="line"><a id="l00287" name="l00287"></a><span class="lineno"><a class="line" href="namespaceeve_1_1fluids.html#a89d013841095fd8670c36fa19d75c3c1">  287</a></span><span class="keyword">inline</span> <span class="keyword">const</span> <span class="keywordtype">char</span>* <a class="code hl_variable" href="namespaceeve_1_1fluids.html#a89d013841095fd8670c36fa19d75c3c1">kSsfNormal</a> = R<span class="stringliteral">&quot;GLSL(</span></div>
+<div class="line"><a id="l00288" name="l00288"></a><span class="lineno">  288</span><span class="stringliteral">#version 450</span></div>
+<div class="line"><a id="l00289" name="l00289"></a><span class="lineno">  289</span><span class="stringliteral">layout(local_size_x = 64) in;</span></div>
+<div class="line"><a id="l00290" name="l00290"></a><span class="lineno">  290</span><span class="stringliteral">layout(set = 0, binding = 1) buffer DepthA { uint d[]; } depthA;</span></div>
+<div class="line"><a id="l00291" name="l00291"></a><span class="lineno">  291</span><span class="stringliteral">layout(set = 0, binding = 4) buffer Normal { vec4 n[]; } normal;</span></div>
+<div class="line"><a id="l00292" name="l00292"></a><span class="lineno">  292</span><span class="stringliteral">layout(push_constant) uniform PC { float d[32]; } pc;</span></div>
+<div class="line"><a id="l00293" name="l00293"></a><span class="lineno">  293</span><span class="stringliteral"></span> </div>
+<div class="line"><a id="l00294" name="l00294"></a><span class="lineno">  294</span><span class="stringliteral">float decode(uint key) {</span></div>
+<div class="line"><a id="l00295" name="l00295"></a><span class="lineno">  295</span><span class="stringliteral">    float nearZ = max(pc.d[19], 1e-4);</span></div>
+<div class="line"><a id="l00296" name="l00296"></a><span class="lineno">  296</span><span class="stringliteral">    float farZ = max(pc.d[20], nearZ + 1e-3);</span></div>
+<div class="line"><a id="l00297" name="l00297"></a><span class="lineno">  297</span><span class="stringliteral">    return nearZ + (float(key) / 16777215.0) * (farZ - nearZ);</span></div>
+<div class="line"><a id="l00298" name="l00298"></a><span class="lineno">  298</span><span class="stringliteral">}</span></div>
+<div class="line"><a id="l00299" name="l00299"></a><span class="lineno">  299</span><span class="stringliteral"></span> </div>
+<div class="line"><a id="l00300" name="l00300"></a><span class="lineno">  300</span><span class="stringliteral">float sampleDepth(ivec2 off, uint W, uint H, uint cx, uint cy) {</span></div>
+<div class="line"><a id="l00301" name="l00301"></a><span class="lineno">  301</span><span class="stringliteral">    int xx = int(cx) + off.x;</span></div>
+<div class="line"><a id="l00302" name="l00302"></a><span class="lineno">  302</span><span class="stringliteral">    int yy = int(cy) + off.y;</span></div>
+<div class="line"><a id="l00303" name="l00303"></a><span class="lineno">  303</span><span class="stringliteral">    if (xx &lt; 0 || yy &lt; 0 || xx &gt;= int(W) || yy &gt;= int(H)) return 1e30;</span></div>
+<div class="line"><a id="l00304" name="l00304"></a><span class="lineno">  304</span><span class="stringliteral">    uint k = depthA.d[uint(yy) * W + uint(xx)];</span></div>
+<div class="line"><a id="l00305" name="l00305"></a><span class="lineno">  305</span><span class="stringliteral">    return k == 0xFFFFFFFFu ? 1e30 : decode(k);</span></div>
+<div class="line"><a id="l00306" name="l00306"></a><span class="lineno">  306</span><span class="stringliteral">}</span></div>
+<div class="line"><a id="l00307" name="l00307"></a><span class="lineno">  307</span><span class="stringliteral"></span> </div>
+<div class="line"><a id="l00308" name="l00308"></a><span class="lineno">  308</span><span class="stringliteral">vec3 surfaceDerivative(vec3 forward, vec3 backward, bool forwardValid, bool backwardValid) {</span></div>
+<div class="line"><a id="l00309" name="l00309"></a><span class="lineno">  309</span><span class="stringliteral">    if (!forwardValid &amp;&amp; backwardValid) return backward;</span></div>
+<div class="line"><a id="l00310" name="l00310"></a><span class="lineno">  310</span><span class="stringliteral">    if (!backwardValid &amp;&amp; forwardValid) return forward;</span></div>
+<div class="line"><a id="l00311" name="l00311"></a><span class="lineno">  311</span><span class="stringliteral">    // Preserve symmetry when differences are indistinguishable at depth-key precision.</span></div>
+<div class="line"><a id="l00312" name="l00312"></a><span class="lineno">  312</span><span class="stringliteral">    float tolerance = 2.0 * (pc.d[20] - pc.d[19]) / 16777215.0;</span></div>
+<div class="line"><a id="l00313" name="l00313"></a><span class="lineno">  313</span><span class="stringliteral">    if ((!forwardValid &amp;&amp; !backwardValid) || abs(abs(forward.z) - abs(backward.z)) &lt;= tolerance)</span></div>
+<div class="line"><a id="l00314" name="l00314"></a><span class="lineno">  314</span><span class="stringliteral">        return (forward + backward) * 0.5;</span></div>
+<div class="line"><a id="l00315" name="l00315"></a><span class="lineno">  315</span><span class="stringliteral">    return abs(forward.z) &lt; abs(backward.z) ? forward : backward;</span></div>
+<div class="line"><a id="l00316" name="l00316"></a><span class="lineno">  316</span><span class="stringliteral">}</span></div>
+<div class="line"><a id="l00317" name="l00317"></a><span class="lineno">  317</span><span class="stringliteral"></span> </div>
+<div class="line"><a id="l00318" name="l00318"></a><span class="lineno">  318</span><span class="stringliteral">vec3 viewPos(vec2 uv, float depth) {</span></div>
+<div class="line"><a id="l00319" name="l00319"></a><span class="lineno">  319</span><span class="stringliteral">    float tanHalf = max(pc.d[21], 1e-4);</span></div>
+<div class="line"><a id="l00320" name="l00320"></a><span class="lineno">  320</span><span class="stringliteral">    float aspect = max(pc.d[22], 1e-4);</span></div>
+<div class="line"><a id="l00321" name="l00321"></a><span class="lineno">  321</span><span class="stringliteral">    float scale = pc.d[17] &gt; 0.5 ? 1.0 : depth;</span></div>
+<div class="line"><a id="l00322" name="l00322"></a><span class="lineno">  322</span><span class="stringliteral">    float x = (uv.x * 2.0 - 1.0) * aspect * tanHalf * scale;</span></div>
+<div class="line"><a id="l00323" name="l00323"></a><span class="lineno">  323</span><span class="stringliteral">    float y = (1.0 - uv.y * 2.0) * tanHalf * scale;</span></div>
+<div class="line"><a id="l00324" name="l00324"></a><span class="lineno">  324</span><span class="stringliteral">    return vec3(x, y, -depth);</span></div>
+<div class="line"><a id="l00325" name="l00325"></a><span class="lineno">  325</span><span class="stringliteral">}</span></div>
+<div class="line"><a id="l00326" name="l00326"></a><span class="lineno">  326</span><span class="stringliteral"></span> </div>
+<div class="line"><a id="l00327" name="l00327"></a><span class="lineno">  327</span><span class="stringliteral">void main() {</span></div>
+<div class="line"><a id="l00328" name="l00328"></a><span class="lineno">  328</span><span class="stringliteral">    uint i = gl_GlobalInvocationID.x;</span></div>
+<div class="line"><a id="l00329" name="l00329"></a><span class="lineno">  329</span><span class="stringliteral">    uint W = uint(pc.d[23]);</span></div>
+<div class="line"><a id="l00330" name="l00330"></a><span class="lineno">  330</span><span class="stringliteral">    uint H = uint(pc.d[24]);</span></div>
+<div class="line"><a id="l00331" name="l00331"></a><span class="lineno">  331</span><span class="stringliteral">    if (i &gt;= W * H) return;</span></div>
+<div class="line"><a id="l00332" name="l00332"></a><span class="lineno">  332</span><span class="stringliteral">    uint cx = i % W;</span></div>
+<div class="line"><a id="l00333" name="l00333"></a><span class="lineno">  333</span><span class="stringliteral">    uint cy = i / W;</span></div>
+<div class="line"><a id="l00334" name="l00334"></a><span class="lineno">  334</span><span class="stringliteral">    uint ck = depthA.d[i];</span></div>
+<div class="line"><a id="l00335" name="l00335"></a><span class="lineno">  335</span><span class="stringliteral">    if (ck == 0xFFFFFFFFu) {</span></div>
+<div class="line"><a id="l00336" name="l00336"></a><span class="lineno">  336</span><span class="stringliteral">        normal.n[i] = vec4(0.0);</span></div>
+<div class="line"><a id="l00337" name="l00337"></a><span class="lineno">  337</span><span class="stringliteral">        return;</span></div>
+<div class="line"><a id="l00338" name="l00338"></a><span class="lineno">  338</span><span class="stringliteral">    }</span></div>
+<div class="line"><a id="l00339" name="l00339"></a><span class="lineno">  339</span><span class="stringliteral">    float cd = decode(ck);</span></div>
+<div class="line"><a id="l00340" name="l00340"></a><span class="lineno">  340</span><span class="stringliteral">    vec2 uv = vec2((float(cx) + 0.5) / float(W), (float(cy) + 0.5) / float(H));</span></div>
+<div class="line"><a id="l00341" name="l00341"></a><span class="lineno">  341</span><span class="stringliteral">    float texelW = 1.0 / float(W);</span></div>
+<div class="line"><a id="l00342" name="l00342"></a><span class="lineno">  342</span><span class="stringliteral">    float texelH = 1.0 / float(H);</span></div>
+<div class="line"><a id="l00343" name="l00343"></a><span class="lineno">  343</span><span class="stringliteral">    float dl = sampleDepth(ivec2(-1, 0), W, H, cx, cy);</span></div>
+<div class="line"><a id="l00344" name="l00344"></a><span class="lineno">  344</span><span class="stringliteral">    float dr = sampleDepth(ivec2(1, 0), W, H, cx, cy);</span></div>
+<div class="line"><a id="l00345" name="l00345"></a><span class="lineno">  345</span><span class="stringliteral">    float dt = sampleDepth(ivec2(0, -1), W, H, cx, cy);</span></div>
+<div class="line"><a id="l00346" name="l00346"></a><span class="lineno">  346</span><span class="stringliteral">    float db = sampleDepth(ivec2(0, 1), W, H, cx, cy);</span></div>
+<div class="line"><a id="l00347" name="l00347"></a><span class="lineno">  347</span><span class="stringliteral">    vec3 center = viewPos(uv, cd);</span></div>
+<div class="line"><a id="l00348" name="l00348"></a><span class="lineno">  348</span><span class="stringliteral">    vec3 pL = viewPos(uv - vec2(texelW, 0.0), dl &lt; 1e29 ? dl : cd);</span></div>
+<div class="line"><a id="l00349" name="l00349"></a><span class="lineno">  349</span><span class="stringliteral">    vec3 pR = viewPos(uv + vec2(texelW, 0.0), dr &lt; 1e29 ? dr : cd);</span></div>
+<div class="line"><a id="l00350" name="l00350"></a><span class="lineno">  350</span><span class="stringliteral">    vec3 pT = viewPos(uv - vec2(0.0, texelH), dt &lt; 1e29 ? dt : cd);</span></div>
+<div class="line"><a id="l00351" name="l00351"></a><span class="lineno">  351</span><span class="stringliteral">    vec3 pB = viewPos(uv + vec2(0.0, texelH), db &lt; 1e29 ? db : cd);</span></div>
+<div class="line"><a id="l00352" name="l00352"></a><span class="lineno">  352</span><span class="stringliteral">    vec3 dpx = surfaceDerivative(pR - center, center - pL, dr &lt; 1e29, dl &lt; 1e29);</span></div>
+<div class="line"><a id="l00353" name="l00353"></a><span class="lineno">  353</span><span class="stringliteral">    vec3 dpy = surfaceDerivative(pB - center, center - pT, db &lt; 1e29, dt &lt; 1e29);</span></div>
+<div class="line"><a id="l00354" name="l00354"></a><span class="lineno">  354</span><span class="stringliteral">    vec3 n = normalize(cross(dpx, dpy));</span></div>
+<div class="line"><a id="l00355" name="l00355"></a><span class="lineno">  355</span><span class="stringliteral">    if (n.z &lt; 0.0) n = -n;</span></div>
+<div class="line"><a id="l00356" name="l00356"></a><span class="lineno">  356</span><span class="stringliteral">    normal.n[i] = vec4(n, 0.0);</span></div>
+<div class="line"><a id="l00357" name="l00357"></a><span class="lineno">  357</span><span class="stringliteral">}</span></div>
+<div class="line"><a id="l00358" name="l00358"></a><span class="lineno">  358</span><span class="stringliteral">)GLSL&quot;;</span></div>
+<div class="line"><a id="l00359" name="l00359"></a><span class="lineno">  359</span><span class="stringliteral"></span> </div>
+<div class="line"><a id="l00361" name="l00361"></a><span class="lineno"><a class="line" href="namespaceeve_1_1fluids.html#a3688ee695c672ee76581b51f024bf9ac">  361</a></span><span class="keyword">inline</span> <span class="keyword">const</span> <span class="keywordtype">char</span>* <a class="code hl_variable" href="namespaceeve_1_1fluids.html#a3688ee695c672ee76581b51f024bf9ac">kSsfShade</a> = R<span class="stringliteral">&quot;GLSL(</span></div>
+<div class="line"><a id="l00362" name="l00362"></a><span class="lineno">  362</span><span class="stringliteral">#version 450</span></div>
+<div class="line"><a id="l00363" name="l00363"></a><span class="lineno">  363</span><span class="stringliteral">layout(local_size_x = 64) in;</span></div>
+<div class="line"><a id="l00364" name="l00364"></a><span class="lineno">  364</span><span class="stringliteral">layout(set = 0, binding = 1) buffer DepthA { uint d[]; } depthA;</span></div>
+<div class="line"><a id="l00365" name="l00365"></a><span class="lineno">  365</span><span class="stringliteral">layout(set = 0, binding = 3) buffer Thick { uint t[]; } thick;</span></div>
+<div class="line"><a id="l00366" name="l00366"></a><span class="lineno">  366</span><span class="stringliteral">layout(set = 0, binding = 4) buffer Normal { vec4 n[]; } normal;</span></div>
+<div class="line"><a id="l00367" name="l00367"></a><span class="lineno">  367</span><span class="stringliteral">layout(set = 0, binding = 5) buffer Color { uint c[]; } color;</span></div>
+<div class="line"><a id="l00368" name="l00368"></a><span class="lineno">  368</span><span class="stringliteral">layout(set = 0, binding = 7) buffer Accum { uint v[]; } accum;</span></div>
+<div class="line"><a id="l00369" name="l00369"></a><span class="lineno">  369</span><span class="stringliteral">layout(push_constant) uniform PC { float d[32]; } pc;</span></div>
+<div class="line"><a id="l00370" name="l00370"></a><span class="lineno">  370</span><span class="stringliteral"></span> </div>
+<div class="line"><a id="l00371" name="l00371"></a><span class="lineno">  371</span><span class="stringliteral">void main() {</span></div>
+<div class="line"><a id="l00372" name="l00372"></a><span class="lineno">  372</span><span class="stringliteral">    uint i = gl_GlobalInvocationID.x;</span></div>
+<div class="line"><a id="l00373" name="l00373"></a><span class="lineno">  373</span><span class="stringliteral">    uint W = uint(pc.d[23]);</span></div>
+<div class="line"><a id="l00374" name="l00374"></a><span class="lineno">  374</span><span class="stringliteral">    uint H = uint(pc.d[24]);</span></div>
+<div class="line"><a id="l00375" name="l00375"></a><span class="lineno">  375</span><span class="stringliteral">    if (i &gt;= W * H) return;</span></div>
+<div class="line"><a id="l00376" name="l00376"></a><span class="lineno">  376</span><span class="stringliteral">    if (depthA.d[i] == 0xFFFFFFFFu) {</span></div>
+<div class="line"><a id="l00377" name="l00377"></a><span class="lineno">  377</span><span class="stringliteral">        color.c[i] = 0u;</span></div>
+<div class="line"><a id="l00378" name="l00378"></a><span class="lineno">  378</span><span class="stringliteral">        return;</span></div>
+<div class="line"><a id="l00379" name="l00379"></a><span class="lineno">  379</span><span class="stringliteral">    }</span></div>
+<div class="line"><a id="l00380" name="l00380"></a><span class="lineno">  380</span><span class="stringliteral">    vec3 n = normal.n[i].xyz;</span></div>
+<div class="line"><a id="l00381" name="l00381"></a><span class="lineno">  381</span><span class="stringliteral">    float thickness = float(thick.t[i]) / 256.0;</span></div>
+<div class="line"><a id="l00382" name="l00382"></a><span class="lineno">  382</span><span class="stringliteral">    vec3 L = normalize(vec3(0.35, 0.65, 0.55));</span></div>
+<div class="line"><a id="l00383" name="l00383"></a><span class="lineno">  383</span><span class="stringliteral">    vec3 V = vec3(0.0, 0.0, 1.0);</span></div>
+<div class="line"><a id="l00384" name="l00384"></a><span class="lineno">  384</span><span class="stringliteral">    float diff = max(dot(n, L), 0.0);</span></div>
+<div class="line"><a id="l00385" name="l00385"></a><span class="lineno">  385</span><span class="stringliteral">    int mode = int(pc.d[26]);</span></div>
+<div class="line"><a id="l00386" name="l00386"></a><span class="lineno">  386</span><span class="stringliteral">    bool particleTint = mode &gt;= 20;</span></div>
+<div class="line"><a id="l00387" name="l00387"></a><span class="lineno">  387</span><span class="stringliteral">    if (particleTint) mode -= 20;</span></div>
+<div class="line"><a id="l00388" name="l00388"></a><span class="lineno">  388</span><span class="stringliteral">    bool uniformTint = !particleTint &amp;&amp; mode &gt;= 10;</span></div>
+<div class="line"><a id="l00389" name="l00389"></a><span class="lineno">  389</span><span class="stringliteral">    if (uniformTint) mode -= 10;</span></div>
+<div class="line"><a id="l00390" name="l00390"></a><span class="lineno">  390</span><span class="stringliteral">    vec3 outC;</span></div>
+<div class="line"><a id="l00391" name="l00391"></a><span class="lineno">  391</span><span class="stringliteral">    float alpha;</span></div>
+<div class="line"><a id="l00392" name="l00392"></a><span class="lineno">  392</span><span class="stringliteral">    if (uniformTint || particleTint) {</span></div>
+<div class="line"><a id="l00393" name="l00393"></a><span class="lineno">  393</span><span class="stringliteral">        uint accumulatedAt = i * 5u;</span></div>
+<div class="line"><a id="l00394" name="l00394"></a><span class="lineno">  394</span><span class="stringliteral">        uint accumulatedWeight = particleTint ? accum.v[accumulatedAt] : 1u;</span></div>
+<div class="line"><a id="l00395" name="l00395"></a><span class="lineno">  395</span><span class="stringliteral">        if (accumulatedWeight == 0u) {</span></div>
+<div class="line"><a id="l00396" name="l00396"></a><span class="lineno">  396</span><span class="stringliteral">            color.c[i] = 0u;</span></div>
+<div class="line"><a id="l00397" name="l00397"></a><span class="lineno">  397</span><span class="stringliteral">            return;</span></div>
+<div class="line"><a id="l00398" name="l00398"></a><span class="lineno">  398</span><span class="stringliteral">        }</span></div>
+<div class="line"><a id="l00399" name="l00399"></a><span class="lineno">  399</span><span class="stringliteral">        vec4 tint = particleTint</span></div>
+<div class="line"><a id="l00400" name="l00400"></a><span class="lineno">  400</span><span class="stringliteral">            ? vec4(accum.v[accumulatedAt + 1u], accum.v[accumulatedAt + 2u],</span></div>
+<div class="line"><a id="l00401" name="l00401"></a><span class="lineno">  401</span><span class="stringliteral">                   accum.v[accumulatedAt + 3u], accum.v[accumulatedAt + 4u]) / float(accumulatedWeight)</span></div>
+<div class="line"><a id="l00402" name="l00402"></a><span class="lineno">  402</span><span class="stringliteral">            : vec4(pc.d[0], pc.d[1], pc.d[2], pc.d[3]);</span></div>
+<div class="line"><a id="l00403" name="l00403"></a><span class="lineno">  403</span><span class="stringliteral">        vec3 reflectionColor = vec3(pc.d[4], pc.d[5], pc.d[6]);</span></div>
+<div class="line"><a id="l00404" name="l00404"></a><span class="lineno">  404</span><span class="stringliteral">        bool lighting = pc.d[7] &gt; 0.5;</span></div>
+<div class="line"><a id="l00405" name="l00405"></a><span class="lineno">  405</span><span class="stringliteral">        float smoothness = pc.d[8];</span></div>
+<div class="line"><a id="l00406" name="l00406"></a><span class="lineno">  406</span><span class="stringliteral">        float metalness = pc.d[9];</span></div>
+<div class="line"><a id="l00407" name="l00407"></a><span class="lineno">  407</span><span class="stringliteral">        float ambient = pc.d[10];</span></div>
+<div class="line"><a id="l00408" name="l00408"></a><span class="lineno">  408</span><span class="stringliteral">        float reflection = pc.d[11];</span></div>
+<div class="line"><a id="l00409" name="l00409"></a><span class="lineno">  409</span><span class="stringliteral">        float opacity = pc.d[12];</span></div>
+<div class="line"><a id="l00410" name="l00410"></a><span class="lineno">  410</span><span class="stringliteral">        float cutoff = pc.d[13];</span></div>
+<div class="line"><a id="l00411" name="l00411"></a><span class="lineno">  411</span><span class="stringliteral">        if (thickness * 10.0 &lt; cutoff) {</span></div>
+<div class="line"><a id="l00412" name="l00412"></a><span class="lineno">  412</span><span class="stringliteral">            color.c[i] = 0u;</span></div>
+<div class="line"><a id="l00413" name="l00413"></a><span class="lineno">  413</span><span class="stringliteral">            return;</span></div>
+<div class="line"><a id="l00414" name="l00414"></a><span class="lineno">  414</span><span class="stringliteral">        }</span></div>
+<div class="line"><a id="l00415" name="l00415"></a><span class="lineno">  415</span><span class="stringliteral">        float light = lighting ?</span></div>
+<div class="line"><a id="l00416" name="l00416"></a><span class="lineno">  416</span><span class="stringliteral">            clamp(ambient + (1.0 - min(ambient, 1.0)) * diff, 0.0, 6.0) : 1.0;</span></div>
+<div class="line"><a id="l00417" name="l00417"></a><span class="lineno">  417</span><span class="stringliteral">        float exponent = 4.0 + 124.0 * smoothness;</span></div>
+<div class="line"><a id="l00418" name="l00418"></a><span class="lineno">  418</span><span class="stringliteral">        float spec = lighting ? pow(max(n.z, 0.0), exponent) * smoothness * 0.56 : 0.0;</span></div>
+<div class="line"><a id="l00419" name="l00419"></a><span class="lineno">  419</span><span class="stringliteral">        float fresnel = 0.04 + 0.96 * pow(1.0 - max(n.z, 0.0), 5.0);</span></div>
+<div class="line"><a id="l00420" name="l00420"></a><span class="lineno">  420</span><span class="stringliteral">        vec3 reflected = mix(reflectionColor, tint.rgb, metalness);</span></div>
+<div class="line"><a id="l00421" name="l00421"></a><span class="lineno">  421</span><span class="stringliteral">        outC = tint.rgb * light + reflected * fresnel * reflection + vec3(spec);</span></div>
+<div class="line"><a id="l00422" name="l00422"></a><span class="lineno">  422</span><span class="stringliteral">        alpha = clamp(thickness * opacity, 0.0, 1.0) * tint.a;</span></div>
+<div class="line"><a id="l00423" name="l00423"></a><span class="lineno">  423</span><span class="stringliteral">    } else if (mode == 1) {</span></div>
+<div class="line"><a id="l00424" name="l00424"></a><span class="lineno">  424</span><span class="stringliteral">        // Mud: diffuse brown, darker with thickness, rough specular.</span></div>
+<div class="line"><a id="l00425" name="l00425"></a><span class="lineno">  425</span><span class="stringliteral">        vec3 base = vec3(0.36, 0.23, 0.12) * (0.45 + 0.55 * diff);</span></div>
+<div class="line"><a id="l00426" name="l00426"></a><span class="lineno">  426</span><span class="stringliteral">        float attenuation = exp(-thickness * 1.8);</span></div>
+<div class="line"><a id="l00427" name="l00427"></a><span class="lineno">  427</span><span class="stringliteral">        vec3 Hv = normalize(L + V);</span></div>
+<div class="line"><a id="l00428" name="l00428"></a><span class="lineno">  428</span><span class="stringliteral">        float spec = pow(max(dot(n, Hv), 0.0), 8.0) * 0.12;</span></div>
+<div class="line"><a id="l00429" name="l00429"></a><span class="lineno">  429</span><span class="stringliteral">        outC = base * attenuation + vec3(spec);</span></div>
+<div class="line"><a id="l00430" name="l00430"></a><span class="lineno">  430</span><span class="stringliteral">        alpha = clamp(thickness * 0.6, 0.0, 1.0);</span></div>
+<div class="line"><a id="l00431" name="l00431"></a><span class="lineno">  431</span><span class="stringliteral">    } else {</span></div>
+<div class="line"><a id="l00432" name="l00432"></a><span class="lineno">  432</span><span class="stringliteral">        vec3 base = vec3(0.05, 0.32, 0.72) * (0.55 + 0.45 * diff);</span></div>
+<div class="line"><a id="l00433" name="l00433"></a><span class="lineno">  433</span><span class="stringliteral">        float fresnel = 0.04 + 0.96 * pow(1.0 - max(dot(n, V), 0.0), 5.0);</span></div>
+<div class="line"><a id="l00434" name="l00434"></a><span class="lineno">  434</span><span class="stringliteral">        vec3 Hv = normalize(L + V);</span></div>
+<div class="line"><a id="l00435" name="l00435"></a><span class="lineno">  435</span><span class="stringliteral">        float spec = pow(max(dot(n, Hv), 0.0), 64.0) * 0.45;</span></div>
+<div class="line"><a id="l00436" name="l00436"></a><span class="lineno">  436</span><span class="stringliteral">        outC = base + vec3(0.55, 0.72, 1.0) * fresnel * 0.75 + vec3(spec);</span></div>
+<div class="line"><a id="l00437" name="l00437"></a><span class="lineno">  437</span><span class="stringliteral">        alpha = clamp(thickness * 0.35, 0.0, 1.0);</span></div>
+<div class="line"><a id="l00438" name="l00438"></a><span class="lineno">  438</span><span class="stringliteral">    }</span></div>
+<div class="line"><a id="l00439" name="l00439"></a><span class="lineno">  439</span><span class="stringliteral">    // Match the CPU output&#39;s clamp and truncation (packUnorm4x8 rounds instead).</span></div>
+<div class="line"><a id="l00440" name="l00440"></a><span class="lineno">  440</span><span class="stringliteral">    uvec4 rgba = uvec4(clamp(vec4(outC, alpha), 0.0, 1.0) * 255.0);</span></div>
+<div class="line"><a id="l00441" name="l00441"></a><span class="lineno">  441</span><span class="stringliteral">    color.c[i] = rgba.x | (rgba.y &lt;&lt; 8u) | (rgba.z &lt;&lt; 16u) | (rgba.w &lt;&lt; 24u);</span></div>
+<div class="line"><a id="l00442" name="l00442"></a><span class="lineno">  442</span><span class="stringliteral">}</span></div>
+<div class="line"><a id="l00443" name="l00443"></a><span class="lineno">  443</span><span class="stringliteral">)GLSL&quot;;</span></div>
+<div class="line"><a id="l00444" name="l00444"></a><span class="lineno">  444</span><span class="stringliteral"></span> </div>
+<div class="line"><a id="l00445" name="l00445"></a><span class="lineno">  445</span><span class="stringliteral">}  </span><span class="comment">// namespace eve::fluids</span></div>
+<div class="ttc" id="anamespaceeve_1_1fluids_html"><div class="ttname"><a href="namespaceeve_1_1fluids.html">eve::fluids</a></div><div class="ttdoc">GLSL compute kernels for the GPU surface-flow solver.</div><div class="ttdef"><b>Definition</b> <a href="FluidTarget_8h_source.html#l00010">FluidTarget.h:10</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1fluids_html_a2e6739224ceeca81464ca4fbae7beb22"><div class="ttname"><a href="namespaceeve_1_1fluids.html#a2e6739224ceeca81464ca4fbae7beb22">eve::fluids::kSsfColorSplat</a></div><div class="ttdeci">const char * kSsfColorSplat</div><div class="ttdoc">Accumulate isotropic particle colors using the CPU tint pass' disc weights. @lifetime The returned po...</div><div class="ttdef"><b>Definition</b> <a href="FluidSsfKernels_8h_source.html#l00142">FluidSsfKernels.h:142</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1fluids_html_a33930af2384466b3e2353ca33b0dc02a"><div class="ttname"><a href="namespaceeve_1_1fluids.html#a33930af2384466b3e2353ca33b0dc02a">eve::fluids::kSsfSmooth</a></div><div class="ttdeci">const char * kSsfSmooth</div><div class="ttdoc">One bilateral smoothing pass (read depthA, write depthB).</div><div class="ttdef"><b>Definition</b> <a href="FluidSsfKernels_8h_source.html#l00228">FluidSsfKernels.h:228</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1fluids_html_a3688ee695c672ee76581b51f024bf9ac"><div class="ttname"><a href="namespaceeve_1_1fluids.html#a3688ee695c672ee76581b51f024bf9ac">eve::fluids::kSsfShade</a></div><div class="ttdeci">const char * kSsfShade</div><div class="ttdoc">Water/mud shading from depth + normal + thickness.</div><div class="ttdef"><b>Definition</b> <a href="FluidSsfKernels_8h_source.html#l00361">FluidSsfKernels.h:361</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1fluids_html_a47eddeaee042c61da0a36a4fea943784"><div class="ttname"><a href="namespaceeve_1_1fluids.html#a47eddeaee042c61da0a36a4fea943784">eve::fluids::kSsfClear</a></div><div class="ttdeci">const char * kSsfClear</div><div class="ttdoc">Reset depth (0xFFFFFFFF), thickness, normal and color buffers.</div><div class="ttdef"><b>Definition</b> <a href="FluidSsfKernels_8h_source.html#l00037">FluidSsfKernels.h:37</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1fluids_html_a57179a4b5b2aeed126ab4ec3dc53f51c"><div class="ttname"><a href="namespaceeve_1_1fluids.html#a57179a4b5b2aeed126ab4ec3dc53f51c">eve::fluids::kSsfSplat</a></div><div class="ttdeci">const char * kSsfSplat</div><div class="ttdoc">Splat particles into depth + thickness (atomic min / add).</div><div class="ttdef"><b>Definition</b> <a href="FluidSsfKernels_8h_source.html#l00059">FluidSsfKernels.h:59</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1fluids_html_a89d013841095fd8670c36fa19d75c3c1"><div class="ttname"><a href="namespaceeve_1_1fluids.html#a89d013841095fd8670c36fa19d75c3c1">eve::fluids::kSsfNormal</a></div><div class="ttdeci">const char * kSsfNormal</div><div class="ttdoc">Reconstruct view-space normals from the smoothed depth.</div><div class="ttdef"><b>Definition</b> <a href="FluidSsfKernels_8h_source.html#l00287">FluidSsfKernels.h:287</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1fluids_html_aaf5176114fb095f8c981606525c9140d"><div class="ttname"><a href="namespaceeve_1_1fluids.html#aaf5176114fb095f8c981606525c9140d">eve::fluids::kSsfColorClear</a></div><div class="ttdeci">const char * kSsfColorClear</div><div class="ttdoc">Clear lazily-created fixed-point multicolor accumulation buffers. @lifetime The returned pointer rema...</div><div class="ttdef"><b>Definition</b> <a href="FluidSsfKernels_8h_source.html#l00124">FluidSsfKernels.h:124</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1fluids_html_abfc2d60138adf10d284aeb5ab5ca0f26"><div class="ttname"><a href="namespaceeve_1_1fluids.html#abfc2d60138adf10d284aeb5ab5ca0f26">eve::fluids::kSsfAnisotropicSplat</a></div><div class="ttdeci">constexpr auto kSsfAnisotropicSplat</div><div class="ttdef"><b>Definition</b> <a href="FluidSsfKernels_8h_source.html#l00188">FluidSsfKernels.h:188</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

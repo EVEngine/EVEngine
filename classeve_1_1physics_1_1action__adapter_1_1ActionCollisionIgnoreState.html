@@ -1,0 +1,577 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::physics::action_adapter::ActionCollisionIgnoreState类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1physics.html">physics</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1physics_1_1action__adapter.html">action_adapter</a></li><li class="navelem"><a class="el" href="classeve_1_1physics_1_1action__adapter_1_1ActionCollisionIgnoreState.html">ActionCollisionIgnoreState</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1physics_1_1action__adapter_1_1ActionCollisionIgnoreState-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::physics::action_adapter::ActionCollisionIgnoreState类 参考<span class="mlabels"><span class="mlabel">final</span></span></div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Owns temporary body-pair collision overrides projected from Action windows.  
+ <a href="classeve_1_1physics_1_1action__adapter_1_1ActionCollisionIgnoreState.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="ActionCollisionIgnoreState_8h_source.html">ActionCollisionIgnoreState.h</a>&gt;</code></p>
+<div class="dynheader">
+类 eve::physics::action_adapter::ActionCollisionIgnoreState 继承关系图:</div>
+<div class="dyncontent">
+ <div class="center">
+  <img src="classeve_1_1physics_1_1action__adapter_1_1ActionCollisionIgnoreState.png" usemap="#eve::physics::action_5Fadapter::ActionCollisionIgnoreState_map" alt=""/>
+  <map id="eve::physics::action_5Fadapter::ActionCollisionIgnoreState_map" name="eve::physics::action_5Fadapter::ActionCollisionIgnoreState_map">
+<area href="classeve_1_1action_1_1IActionStateWindowSink.html" title="Optional target-domain adapter for paired action state windows." alt="eve::action::IActionStateWindowSink" shape="rect" coords="0,0,326,24"/>
+  </map>
+</div></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a2ecf2ca2beb6cc50c76bcf6681edd435" id="r_a2ecf2ca2beb6cc50c76bcf6681edd435"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1action__adapter_1_1ActionCollisionIgnoreState.html#a2ecf2ca2beb6cc50c76bcf6681edd435">ActionCollisionIgnoreState</a> (<a class="el" href="classeve_1_1physics_1_1World3D.html">World3D</a> &amp;<a class="el" href="PhysicsCapabilities_8cpp.html#a6d644bf175c7231a1dee70e3c5796619">world</a>, <a class="el" href="namespaceeve_1_1physics_1_1action__adapter.html#a11f2e1daeec5eac9420b56df3fa8809c">ActionCollisionPairResolver</a> resolver)</td></tr>
+<tr class="memdesc:a2ecf2ca2beb6cc50c76bcf6681edd435"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct an adapter for one borrowed 3D world.  <br /></td></tr>
+<tr class="separator:a2ecf2ca2beb6cc50c76bcf6681edd435"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a93407fc07a71a565cd006ac26c31020e" id="r_a93407fc07a71a565cd006ac26c31020e"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1action__adapter_1_1ActionCollisionIgnoreState.html#a93407fc07a71a565cd006ac26c31020e">~ActionCollisionIgnoreState</a> () override</td></tr>
+<tr class="separator:a93407fc07a71a565cd006ac26c31020e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae31058e3c7d0a239c9ac6eb09eb0b449" id="r_ae31058e3c7d0a239c9ac6eb09eb0b449"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1action__adapter_1_1ActionCollisionIgnoreState.html#ae31058e3c7d0a239c9ac6eb09eb0b449">setEnabled</a> (bool <a class="el" href="classeve_1_1physics_1_1action__adapter_1_1ActionCollisionIgnoreState.html#aa5ccd7916b545561e8e048ca6528496c">enabled</a>)</td></tr>
+<tr class="memdesc:ae31058e3c7d0a239c9ac6eb09eb0b449"><td class="mdescLeft">&#160;</td><td class="mdescRight">Opt this adapter into or out of Action state-window dispatch.  <br /></td></tr>
+<tr class="separator:ae31058e3c7d0a239c9ac6eb09eb0b449"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa5ccd7916b545561e8e048ca6528496c" id="r_aa5ccd7916b545561e8e048ca6528496c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1action__adapter_1_1ActionCollisionIgnoreState.html#aa5ccd7916b545561e8e048ca6528496c">enabled</a> () const</td></tr>
+<tr class="memdesc:aa5ccd7916b545561e8e048ca6528496c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return whether this exact adapter is registered.  <br /></td></tr>
+<tr class="separator:aa5ccd7916b545561e8e048ca6528496c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af57eec3f5fb0bac5ace597557db3574c" id="r_af57eec3f5fb0bac5ace597557db3574c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1action__adapter_1_1ActionCollisionIgnoreState.html#af57eec3f5fb0bac5ace597557db3574c">supports</a> (<a class="el" href="namespaceeve_1_1action.html#a8e7f0cd7be5f0e49e9c8317c401c8e7d">eve::action::ActionStateWindowKind</a> <a class="el" href="LanguageIndex_8cpp.html#a38de9b52cbbca9313f7d7c8505a64e10">kind</a>) const noexcept override</td></tr>
+<tr class="memdesc:af57eec3f5fb0bac5ace597557db3574c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether this sink owns the supplied semantic window kind.    <br /></td></tr>
+<tr class="separator:af57eec3f5fb0bac5ace597557db3574c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa2c49a0c5f6b0b68359cf3c3d074d3de" id="r_aa2c49a0c5f6b0b68359cf3c3d074d3de"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1action__adapter_1_1ActionCollisionIgnoreState.html#aa2c49a0c5f6b0b68359cf3c3d074d3de">enter</a> (const <a class="el" href="structeve_1_1action_1_1ActionStateWindowBinding.html">eve::action::ActionStateWindowBinding</a> &amp;<a class="el" href="ParticlesCapabilities_8cpp.html#a29e48cdcd5413e721ea32eaef3927e79">binding</a>, const <a class="el" href="structeve_1_1action_1_1ActionTimelineEvent.html">eve::action::ActionTimelineEvent</a> &amp;event, const <a class="el" href="structeve_1_1action_1_1ActionNotifyContext.html">eve::action::ActionNotifyContext</a> &amp;<a class="el" href="VegetationPreset_8cpp.html#aa677a20ed09a5d6c839a3d7a4d53cb9c">context</a>) override</td></tr>
+<tr class="memdesc:aa2c49a0c5f6b0b68359cf3c3d074d3de"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enter one validated window or idempotently observe the same active key.    <br /></td></tr>
+<tr class="separator:aa2c49a0c5f6b0b68359cf3c3d074d3de"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae6d8957812819ac841fd5a581b075e76" id="r_ae6d8957812819ac841fd5a581b075e76"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1action__adapter_1_1ActionCollisionIgnoreState.html#ae6d8957812819ac841fd5a581b075e76">exit</a> (const <a class="el" href="structeve_1_1action_1_1ActionStateWindowBinding.html">eve::action::ActionStateWindowBinding</a> &amp;<a class="el" href="ParticlesCapabilities_8cpp.html#a29e48cdcd5413e721ea32eaef3927e79">binding</a>, const <a class="el" href="structeve_1_1action_1_1ActionTimelineEvent.html">eve::action::ActionTimelineEvent</a> &amp;event, const <a class="el" href="structeve_1_1action_1_1ActionNotifyContext.html">eve::action::ActionNotifyContext</a> &amp;<a class="el" href="VegetationPreset_8cpp.html#aa677a20ed09a5d6c839a3d7a4d53cb9c">context</a>) override</td></tr>
+<tr class="memdesc:ae6d8957812819ac841fd5a581b075e76"><td class="mdescLeft">&#160;</td><td class="mdescRight">Exit one previously entered window by execution and item identity.    <br /></td></tr>
+<tr class="separator:ae6d8957812819ac841fd5a581b075e76"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6bf3cb588b8c52ccd7c0dd4ba5ed9837" id="r_a6bf3cb588b8c52ccd7c0dd4ba5ed9837"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1action__adapter_1_1ActionCollisionIgnoreState.html#a6bf3cb588b8c52ccd7c0dd4ba5ed9837">shutdown</a> ()</td></tr>
+<tr class="memdesc:a6bf3cb588b8c52ccd7c0dd4ba5ed9837"><td class="mdescLeft">&#160;</td><td class="mdescRight">Unregister and restore every still-live pair to its pre-window state.  <br /></td></tr>
+<tr class="separator:a6bf3cb588b8c52ccd7c0dd4ba5ed9837"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aece2719d1495494b2002079d94dc7fab" id="r_aece2719d1495494b2002079d94dc7fab"><td class="memItemLeft" align="right" valign="top">std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1action__adapter_1_1ActionCollisionIgnoreState.html#aece2719d1495494b2002079d94dc7fab">activeCount</a> () const noexcept</td></tr>
+<tr class="memdesc:aece2719d1495494b2002079d94dc7fab"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of active execution/item window keys.  <br /></td></tr>
+<tr class="separator:aece2719d1495494b2002079d94dc7fab"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a99e8a4b7c622f367839c3eaa4a759a8d" id="r_a99e8a4b7c622f367839c3eaa4a759a8d"><td class="memItemLeft" align="right" valign="top">std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1action__adapter_1_1ActionCollisionIgnoreState.html#a99e8a4b7c622f367839c3eaa4a759a8d">pairCount</a> () const noexcept</td></tr>
+<tr class="memdesc:a99e8a4b7c622f367839c3eaa4a759a8d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of distinct body pairs currently owned by the adapter.  <br /></td></tr>
+<tr class="separator:a99e8a4b7c622f367839c3eaa4a759a8d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classeve_1_1action_1_1IActionStateWindowSink"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classeve_1_1action_1_1IActionStateWindowSink')"><img src="closed.png" alt="-"/>&#160;Public 成员函数 继承自 <a class="el" href="classeve_1_1action_1_1IActionStateWindowSink.html">eve::action::IActionStateWindowSink</a></td></tr>
+<tr class="memitem:ae07402d573a20f176fcedeb6fefadd09 inherit pub_methods_classeve_1_1action_1_1IActionStateWindowSink" id="r_ae07402d573a20f176fcedeb6fefadd09"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1action_1_1IActionStateWindowSink.html#ae07402d573a20f176fcedeb6fefadd09">~IActionStateWindowSink</a> ()=default</td></tr>
+<tr class="separator:ae07402d573a20f176fcedeb6fefadd09 inherit pub_methods_classeve_1_1action_1_1IActionStateWindowSink"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="inherited" name="inherited"></a>
+额外继承的成员函数</h2></td></tr>
+<tr class="inherit_header pub_static_attribs_classeve_1_1action_1_1IActionStateWindowSink"><td colspan="2" onclick="javascript:toggleInherit('pub_static_attribs_classeve_1_1action_1_1IActionStateWindowSink')"><img src="closed.png" alt="-"/>&#160;静态 Public 属性 继承自 <a class="el" href="classeve_1_1action_1_1IActionStateWindowSink.html">eve::action::IActionStateWindowSink</a></td></tr>
+<tr class="memitem:a3610c1c0900704637b2cd3fbf98646f2 inherit pub_static_attribs_classeve_1_1action_1_1IActionStateWindowSink" id="r_a3610c1c0900704637b2cd3fbf98646f2"><td class="memItemLeft" align="right" valign="top">static constexpr const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1action_1_1IActionStateWindowSink.html#a3610c1c0900704637b2cd3fbf98646f2">capabilityName</a> = &quot;eve.action.state-window-sink&quot;</td></tr>
+<tr class="separator:a3610c1c0900704637b2cd3fbf98646f2 inherit pub_static_attribs_classeve_1_1action_1_1IActionStateWindowSink"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Owns temporary body-pair collision overrides projected from Action windows. </p>
+<p><a class="el" href="classeve_1_1physics_1_1World3D.html" title="Box3D rigid-body world. Script coordinates are meters (Box3D native), unlike 2D World which uses pixe...">World3D</a> remains the collision authority. This adapter stores only world/body generation handles across dispatches, reference-counts overlapping windows, and restores the pre-window pair state after the final exit. It observes the world's weak lifetime token, so destroying the world first safely invalidates all pending projections. Methods are owner-thread-only and callbacks are never invoked while mutating <a class="el" href="classeve_1_1physics_1_1World3D.html" title="Box3D rigid-body world. Script coordinates are meters (Box3D native), unlike 2D World which uses pixe...">World3D</a>. </p>
+
+<p class="definition">在文件 <a class="el" href="ActionCollisionIgnoreState_8h_source.html">ActionCollisionIgnoreState.h</a> 第 <a class="el" href="ActionCollisionIgnoreState_8h_source.html#l00045">45</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a2ecf2ca2beb6cc50c76bcf6681edd435" name="a2ecf2ca2beb6cc50c76bcf6681edd435"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2ecf2ca2beb6cc50c76bcf6681edd435">&#9670;&#160;</a></span>ActionCollisionIgnoreState()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::physics::action_adapter::ActionCollisionIgnoreState::ActionCollisionIgnoreState </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1physics_1_1World3D.html">World3D</a> &amp;&#160;</td>
+          <td class="paramname"><em>world</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1physics_1_1action__adapter.html#a11f2e1daeec5eac9420b56df3fa8809c">ActionCollisionPairResolver</a>&#160;</td>
+          <td class="paramname"><em>resolver</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Construct an adapter for one borrowed 3D world. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">world</td><td><a class="el" href="classeve_1_1physics_1_1World.html" title="Box2D world wrapper (2D physics) with pixel-space coordinates. Handles stepping, gravity,...">World</a> observed through its weak lifetime token; it may be destroyed first. </td></tr>
+    <tr><td class="paramname">resolver</td><td>Owning callback used only on window enter to resolve body links. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="ActionCollisionIgnoreState_8cpp_source.html">ActionCollisionIgnoreState.cpp</a> 第 <a class="el" href="ActionCollisionIgnoreState_8cpp_source.html#l00019">19</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a93407fc07a71a565cd006ac26c31020e" name="a93407fc07a71a565cd006ac26c31020e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a93407fc07a71a565cd006ac26c31020e">&#9670;&#160;</a></span>~ActionCollisionIgnoreState()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::physics::action_adapter::ActionCollisionIgnoreState::~ActionCollisionIgnoreState </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ActionCollisionIgnoreState_8cpp_source.html">ActionCollisionIgnoreState.cpp</a> 第 <a class="el" href="ActionCollisionIgnoreState_8cpp_source.html#l00023">23</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="aece2719d1495494b2002079d94dc7fab" name="aece2719d1495494b2002079d94dc7fab"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aece2719d1495494b2002079d94dc7fab">&#9670;&#160;</a></span>activeCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::size_t eve::physics::action_adapter::ActionCollisionIgnoreState::activeCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Number of active execution/item window keys. </p>
+
+<p class="definition">在文件 <a class="el" href="ActionCollisionIgnoreState_8h_source.html">ActionCollisionIgnoreState.h</a> 第 <a class="el" href="ActionCollisionIgnoreState_8h_source.html#l00077">77</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aa5ccd7916b545561e8e048ca6528496c" name="aa5ccd7916b545561e8e048ca6528496c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa5ccd7916b545561e8e048ca6528496c">&#9670;&#160;</a></span>enabled()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::physics::action_adapter::ActionCollisionIgnoreState::enabled </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return whether this exact adapter is registered. </p>
+
+<p class="definition">在文件 <a class="el" href="ActionCollisionIgnoreState_8cpp_source.html">ActionCollisionIgnoreState.cpp</a> 第 <a class="el" href="ActionCollisionIgnoreState_8cpp_source.html#l00028">28</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="UnityVegetationMaterial_8cpp_source.html#l00161">index</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ActionCollisionIgnoreState_8cpp_source.html#l00034">setEnabled()</a>.</p>
+
+</div>
+</div>
+<a id="aa2c49a0c5f6b0b68359cf3c3d074d3de" name="aa2c49a0c5f6b0b68359cf3c3d074d3de"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa2c49a0c5f6b0b68359cf3c3d074d3de">&#9670;&#160;</a></span>enter()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::physics::action_adapter::ActionCollisionIgnoreState::enter </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1action_1_1ActionStateWindowBinding.html">eve::action::ActionStateWindowBinding</a> &amp;&#160;</td>
+          <td class="paramname"><em>binding</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1action_1_1ActionTimelineEvent.html">eve::action::ActionTimelineEvent</a> &amp;&#160;</td>
+          <td class="paramname"><em>event</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1action_1_1ActionNotifyContext.html">eve::action::ActionNotifyContext</a> &amp;&#160;</td>
+          <td class="paramname"><em>context</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Enter one validated window or idempotently observe the same active key.   </p>
+
+<p>实现了 <a class="el" href="classeve_1_1action_1_1IActionStateWindowSink.html#a6e6b92cab0758195ce798b8b7162fec2">eve::action::IActionStateWindowSink</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="ActionCollisionIgnoreState_8cpp_source.html">ActionCollisionIgnoreState.cpp</a> 第 <a class="el" href="ActionCollisionIgnoreState_8cpp_source.html#l00073">73</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="ParticlesCapabilities_8cpp_source.html#l00169">binding</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::Conflict</a>, <a class="el" href="VegetationPreset_8cpp_source.html#l00087">context</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="HexSphereTopology_8cpp_source.html#l00080">first</a>, <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa60832e2e4bbebccf26555b9ba658bad5">eve::NoOp</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="HexSphereTopology_8cpp_source.html#l00081">second</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7aec4fb10f5e3708942fbeadb549f6a7be">eve::StaleHandle</a>, <a class="el" href="AnimSmr_8cpp_source.html#l00163">subject</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="ActionCollisionIgnoreState_8cpp_source.html#l00042">supports()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ab4080bdf74febf04d578ff105cce9d3f">eve::Unsupported</a> , 以及 <a class="el" href="PhysicsCapabilities_8cpp_source.html#l00115">world</a>.</p>
+
+</div>
+</div>
+<a id="ae6d8957812819ac841fd5a581b075e76" name="ae6d8957812819ac841fd5a581b075e76"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae6d8957812819ac841fd5a581b075e76">&#9670;&#160;</a></span>exit()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::physics::action_adapter::ActionCollisionIgnoreState::exit </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1action_1_1ActionStateWindowBinding.html">eve::action::ActionStateWindowBinding</a> &amp;&#160;</td>
+          <td class="paramname"><em>binding</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1action_1_1ActionTimelineEvent.html">eve::action::ActionTimelineEvent</a> &amp;&#160;</td>
+          <td class="paramname"><em>event</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1action_1_1ActionNotifyContext.html">eve::action::ActionNotifyContext</a> &amp;&#160;</td>
+          <td class="paramname"><em>context</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Exit one previously entered window by execution and item identity.   </p>
+
+<p>实现了 <a class="el" href="classeve_1_1action_1_1IActionStateWindowSink.html#ac37f68c806646587f2224892e7d56cf2">eve::action::IActionStateWindowSink</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="ActionCollisionIgnoreState_8cpp_source.html">ActionCollisionIgnoreState.cpp</a> 第 <a class="el" href="ActionCollisionIgnoreState_8cpp_source.html#l00115">115</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="ParticlesCapabilities_8cpp_source.html#l00169">binding</a>, <a class="el" href="VegetationPreset_8cpp_source.html#l00087">context</a>, <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa60832e2e4bbebccf26555b9ba658bad5">eve::NoOp</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="ActionCollisionIgnoreState_8cpp_source.html#l00042">supports()</a> , 以及 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ab4080bdf74febf04d578ff105cce9d3f">eve::Unsupported</a>.</p>
+
+</div>
+</div>
+<a id="a99e8a4b7c622f367839c3eaa4a759a8d" name="a99e8a4b7c622f367839c3eaa4a759a8d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a99e8a4b7c622f367839c3eaa4a759a8d">&#9670;&#160;</a></span>pairCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::size_t eve::physics::action_adapter::ActionCollisionIgnoreState::pairCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Number of distinct body pairs currently owned by the adapter. </p>
+
+<p class="definition">在文件 <a class="el" href="ActionCollisionIgnoreState_8h_source.html">ActionCollisionIgnoreState.h</a> 第 <a class="el" href="ActionCollisionIgnoreState_8h_source.html#l00079">79</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae31058e3c7d0a239c9ac6eb09eb0b449" name="ae31058e3c7d0a239c9ac6eb09eb0b449"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae31058e3c7d0a239c9ac6eb09eb0b449">&#9670;&#160;</a></span>setEnabled()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::action_adapter::ActionCollisionIgnoreState::setEnabled </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>enabled</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Opt this adapter into or out of Action state-window dispatch. </p>
+
+<p class="definition">在文件 <a class="el" href="ActionCollisionIgnoreState_8cpp_source.html">ActionCollisionIgnoreState.cpp</a> 第 <a class="el" href="ActionCollisionIgnoreState_8cpp_source.html#l00034">34</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ActionCollisionIgnoreState_8cpp_source.html#l00028">enabled()</a> , 以及 <a class="el" href="ActionNotifyRegistry_8cpp_source.html#l00165">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ActionCollisionIgnoreState_8cpp_source.html#l00149">shutdown()</a>.</p>
+
+</div>
+</div>
+<a id="a6bf3cb588b8c52ccd7c0dd4ba5ed9837" name="a6bf3cb588b8c52ccd7c0dd4ba5ed9837"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6bf3cb588b8c52ccd7c0dd4ba5ed9837">&#9670;&#160;</a></span>shutdown()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::physics::action_adapter::ActionCollisionIgnoreState::shutdown </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Unregister and restore every still-live pair to its pre-window state. </p>
+<dl class="section return"><dt>返回</dt><dd>Applied when state was released, otherwise NoOp; stale bodies/worlds are already cleared by the physics authority and are treated as released. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="ActionCollisionIgnoreState_8cpp_source.html">ActionCollisionIgnoreState.cpp</a> 第 <a class="el" href="ActionCollisionIgnoreState_8cpp_source.html#l00149">149</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa60832e2e4bbebccf26555b9ba658bad5">eve::NoOp</a>, <a class="el" href="ActionCollisionIgnoreState_8cpp_source.html#l00034">setEnabled()</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="af57eec3f5fb0bac5ace597557db3574c" name="af57eec3f5fb0bac5ace597557db3574c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af57eec3f5fb0bac5ace597557db3574c">&#9670;&#160;</a></span>supports()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::physics::action_adapter::ActionCollisionIgnoreState::supports </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1action.html#a8e7f0cd7be5f0e49e9c8317c401c8e7d">eve::action::ActionStateWindowKind</a>&#160;</td>
+          <td class="paramname"><em>kind</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Whether this sink owns the supplied semantic window kind.   </p>
+
+<p>实现了 <a class="el" href="classeve_1_1action_1_1IActionStateWindowSink.html#aa22cd7f53430246b8a4569dd3366455b">eve::action::IActionStateWindowSink</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="ActionCollisionIgnoreState_8cpp_source.html">ActionCollisionIgnoreState.cpp</a> 第 <a class="el" href="ActionCollisionIgnoreState_8cpp_source.html#l00042">42</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1action.html#a8e7f0cd7be5f0e49e9c8317c401c8e7da4913319c9a5005ea461298471d34e099">eve::action::CollisionIgnore</a> , 以及 <a class="el" href="LanguageIndex_8cpp_source.html#l00017">kind</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ActionCollisionIgnoreState_8cpp_source.html#l00073">enter()</a> , 以及 <a class="el" href="ActionCollisionIgnoreState_8cpp_source.html#l00115">exit()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/physics/action/<a class="el" href="ActionCollisionIgnoreState_8h_source.html">ActionCollisionIgnoreState.h</a></li>
+<li>src/modules/physics/action/<a class="el" href="ActionCollisionIgnoreState_8cpp_source.html">ActionCollisionIgnoreState.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

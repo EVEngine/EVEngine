@@ -1,0 +1,293 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/sensing/TargetingPipeline.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_e83e372481ad83f7bc4ebb27f8e1729d.html">sensing</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">TargetingPipeline.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="TargetingPipeline_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#include &quot;<a class="code" href="Sensing_8h.html">sensing/Sensing.h</a>&quot;</span></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">#include &quot;<a class="code" href="Targeting_8h.html">sensing/Targeting.h</a>&quot;</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span> </div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="preprocessor">#include &lt;limits&gt;</span></div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="preprocessor">#include &lt;map&gt;</span></div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="preprocessor">#include &lt;memory&gt;</span></div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="preprocessor">#include &lt;string_view&gt;</span></div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span> </div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1sensing.html">eve::sensing</a> {</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span> </div>
+<div class="foldopen" id="foldopen00026" data-start="{" data-end="};">
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="namespaceeve_1_1sensing.html#a47045ee3773cf5565b3787ad35feff82">   26</a></span><span class="keyword">enum class</span> <a class="code hl_enumeration" href="namespaceeve_1_1sensing.html#a47045ee3773cf5565b3787ad35feff82">TargetingTaskKind</a> : std::uint8_t {</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1sensing.html#a47045ee3773cf5565b3787ad35feff82ae0626222614bdee31951d84c64e5e9ff">Select</a>,</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1sensing.html#a47045ee3773cf5565b3787ad35feff82ad7778d0c64b6ba21494c97f77a66885a">Filter</a>,</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1sensing.html#a47045ee3773cf5565b3787ad35feff82a6b46ae48421828d9973deec5fa9aa0c3">Sort</a>,</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>};</div>
+</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span> </div>
+<div class="foldopen" id="foldopen00038" data-start="{" data-end="};">
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno"><a class="line" href="structeve_1_1sensing_1_1TargetingTaskStep.html">   38</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1sensing_1_1TargetingTaskStep.html">TargetingTaskStep</a> {</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno"><a class="line" href="structeve_1_1sensing_1_1TargetingTaskStep.html#a9015d82b9fe3411ce88c65817b1dae27">   39</a></span>    std::string <a class="code hl_variable" href="structeve_1_1sensing_1_1TargetingTaskStep.html#a9015d82b9fe3411ce88c65817b1dae27">taskId</a>;</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno"><a class="line" href="structeve_1_1sensing_1_1TargetingTaskStep.html#aec1ce934e5f0424fe03600aa9cd532ad">   40</a></span>    <a class="code hl_struct" href="structeve_1_1sensing_1_1QuerySpec.html">QuerySpec</a>   <a class="code hl_variable" href="structeve_1_1sensing_1_1TargetingTaskStep.html#aec1ce934e5f0424fe03600aa9cd532ad">querySpec</a>{};</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno"><a class="line" href="structeve_1_1sensing_1_1TargetingTaskStep.html#af794e81bb565262d9496dcab7af46366">   41</a></span>    <span class="keywordtype">float</span>       <a class="code hl_variable" href="structeve_1_1sensing_1_1TargetingTaskStep.html#af794e81bb565262d9496dcab7af46366">coneHalfAngle</a> = 0.f;</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno"><a class="line" href="structeve_1_1sensing_1_1TargetingTaskStep.html#a92f688112ec971094907deb57fdbb936">   42</a></span>    <span class="keywordtype">float</span>       <a class="code hl_variable" href="structeve_1_1sensing_1_1TargetingTaskStep.html#a92f688112ec971094907deb57fdbb936">coneRange</a>     = 0.f;</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno"><a class="line" href="structeve_1_1sensing_1_1TargetingTaskStep.html#a43a4fc974a0897c30253b640bf978338">   43</a></span>    std::uint32_t <a class="code hl_variable" href="structeve_1_1sensing_1_1TargetingTaskStep.html#a43a4fc974a0897c30253b640bf978338">truncateCount</a> = std::numeric_limits&lt;std::uint32_t&gt;::max();</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>};</div>
+</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span> </div>
+<div class="foldopen" id="foldopen00047" data-start="{" data-end="};">
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno"><a class="line" href="structeve_1_1sensing_1_1TargetingPreset.html">   47</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1sensing_1_1TargetingPreset.html">TargetingPreset</a> {</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno"><a class="line" href="structeve_1_1sensing_1_1TargetingPreset.html#ad7b046cea799ac11a581bc6f65c33517">   48</a></span>    std::string                     <a class="code hl_variable" href="structeve_1_1sensing_1_1TargetingPreset.html#ad7b046cea799ac11a581bc6f65c33517">id</a>;</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno"><a class="line" href="structeve_1_1sensing_1_1TargetingPreset.html#a27e05369cb3b1f3a2e6a79ddc8215c15">   49</a></span>    std::vector&lt;TargetingTaskStep&gt;  <a class="code hl_variable" href="structeve_1_1sensing_1_1TargetingPreset.html#a27e05369cb3b1f3a2e6a79ddc8215c15">steps</a>;</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>};</div>
+</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span> </div>
+<div class="foldopen" id="foldopen00058" data-start="{" data-end="};">
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno"><a class="line" href="structeve_1_1sensing_1_1TargetingSourceContext.html">   58</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1sensing_1_1TargetingSourceContext.html">TargetingSourceContext</a> {</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno"><a class="line" href="structeve_1_1sensing_1_1TargetingSourceContext.html#abf9a0ebc27027420b9b824263e174718">   59</a></span>    <a class="code hl_class" href="classeve_1_1sensing_1_1SensingWorld.html">SensingWorld</a>* <a class="code hl_variable" href="structeve_1_1sensing_1_1TargetingSourceContext.html#abf9a0ebc27027420b9b824263e174718">world</a> = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno"><a class="line" href="structeve_1_1sensing_1_1TargetingSourceContext.html#ae146510ab8336e24868906d7362516fa">   60</a></span>    <a class="code hl_struct" href="structeve_1_1sensing_1_1QueryOrigin.html">QueryOrigin</a>   <a class="code hl_variable" href="structeve_1_1sensing_1_1TargetingSourceContext.html#ae146510ab8336e24868906d7362516fa">origin</a>{};</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno"><a class="line" href="structeve_1_1sensing_1_1TargetingSourceContext.html#a1699b359139f6216bd988746d63c0e6d">   61</a></span>    <span class="keywordtype">float</span>         <a class="code hl_variable" href="structeve_1_1sensing_1_1TargetingSourceContext.html#a1699b359139f6216bd988746d63c0e6d">dirX</a> = 1.f;</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno"><a class="line" href="structeve_1_1sensing_1_1TargetingSourceContext.html#a0987508c7f8a5e1ef51f2bf4012084b9">   62</a></span>    <span class="keywordtype">float</span>         <a class="code hl_variable" href="structeve_1_1sensing_1_1TargetingSourceContext.html#a0987508c7f8a5e1ef51f2bf4012084b9">dirY</a> = 0.f;</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>};</div>
+</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span> </div>
+<div class="foldopen" id="foldopen00071" data-start="{" data-end="};">
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno"><a class="line" href="classeve_1_1sensing_1_1ITargetingTask.html">   71</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1sensing_1_1ITargetingTask.html">ITargetingTask</a> {</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno"><a class="line" href="classeve_1_1sensing_1_1ITargetingTask.html#a1c8d610763a72b3339e117e962cc4069">   73</a></span>    <span class="keyword">virtual</span> <a class="code hl_function" href="classeve_1_1sensing_1_1ITargetingTask.html#a1c8d610763a72b3339e117e962cc4069">~ITargetingTask</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span> </div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno"><a class="line" href="classeve_1_1sensing_1_1ITargetingTask.html#acfafac3643d8aa85b1731adf34ad51a9">   76</a></span>    [[nodiscard]] <span class="keyword">virtual</span> std::string_view <a class="code hl_function" href="classeve_1_1sensing_1_1ITargetingTask.html#acfafac3643d8aa85b1731adf34ad51a9">id</a>() const noexcept = 0;</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno"><a class="line" href="classeve_1_1sensing_1_1ITargetingTask.html#aac959f3867a7a2fa7a0567ac2f6a41b0">   78</a></span>    [[nodiscard]] virtual <a class="code hl_enumeration" href="namespaceeve_1_1sensing.html#a47045ee3773cf5565b3787ad35feff82">TargetingTaskKind</a> <a class="code hl_function" href="classeve_1_1sensing_1_1ITargetingTask.html#aac959f3867a7a2fa7a0567ac2f6a41b0">kind</a>() const noexcept = 0;</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno"><a class="line" href="classeve_1_1sensing_1_1ITargetingTask.html#a998e650fec8dc3c7bf9d68d56da32010">   83</a></span>    [[nodiscard]] virtual <a class="code hl_class" href="classeve_1_1Result.html">Result</a>&lt;<span class="keywordtype">void</span>&gt; <a class="code hl_function" href="classeve_1_1sensing_1_1ITargetingTask.html#a998e650fec8dc3c7bf9d68d56da32010">execute</a>(<a class="code hl_struct" href="structeve_1_1sensing_1_1TargetingSourceContext.html">TargetingSourceContext</a>&amp; <a class="code hl_variable" href="VegetationPreset_8cpp.html#aa677a20ed09a5d6c839a3d7a4d53cb9c">context</a>, <a class="code hl_namespace" href="namespacestd.html">std</a>::vector&lt;<a class="code hl_struct" href="structeve_1_1sensing_1_1RankedCandidate.html">RankedCandidate</a>&gt;&amp; inout,</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>                                               const <a class="code hl_struct" href="structeve_1_1sensing_1_1TargetingTaskStep.html">TargetingTaskStep</a>&amp; <a class="code hl_variable" href="TreeMesh_8cpp.html#a863c86bdfd96bf9c461846689c2614aa">step</a>) const = 0;</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>};</div>
+</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span> </div>
+<div class="foldopen" id="foldopen00093" data-start="{" data-end="};">
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno"><a class="line" href="classeve_1_1sensing_1_1TargetingPipeline.html">   93</a></span>class <a class="code hl_class" href="classeve_1_1sensing_1_1TargetingPipeline.html">TargetingPipeline</a> {</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno"><a class="line" href="classeve_1_1sensing_1_1TargetingPipeline.html#a1f9b6cdc7746673315b6c21c5478dc54">   96</a></span>    <a class="code hl_function" href="classeve_1_1sensing_1_1TargetingPipeline.html#a1f9b6cdc7746673315b6c21c5478dc54">TargetingPipeline</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span> </div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>    [[nodiscard]] <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1sensing_1_1TargetingPipeline.html">TargetingPipeline</a> withBuiltins();</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span> </div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>    [[nodiscard]] <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1sensing_1_1TargetingPipeline.html">TargetingPipeline</a>&amp; sharedBuiltins();</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span> </div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> registerTask(std::unique_ptr&lt;ITargetingTask&gt; task);</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> registerPreset(<a class="code hl_struct" href="structeve_1_1sensing_1_1TargetingPreset.html">TargetingPreset</a> preset);</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>    [[nodiscard]] <span class="keywordtype">bool</span> hasPreset(std::string_view presetId) <span class="keyword">const</span> <span class="keyword">noexcept</span>;</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span> </div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;CandidateQueryResult&gt;</a> <a class="code hl_function" href="classeve_1_1sensing_1_1ITargetingTask.html#a998e650fec8dc3c7bf9d68d56da32010">execute</a>(<a class="code hl_struct" href="structeve_1_1sensing_1_1TargetingSourceContext.html">TargetingSourceContext</a>&amp; <a class="code hl_variable" href="VegetationPreset_8cpp.html#aa677a20ed09a5d6c839a3d7a4d53cb9c">context</a>,</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>                                                       <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1sensing_1_1TargetingPreset.html">TargetingPreset</a>&amp;  preset) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;CandidateQueryResult&gt;</a> executePreset(<a class="code hl_struct" href="structeve_1_1sensing_1_1TargetingSourceContext.html">TargetingSourceContext</a>&amp; <a class="code hl_variable" href="VegetationPreset_8cpp.html#aa677a20ed09a5d6c839a3d7a4d53cb9c">context</a>,</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>                                                             std::string_view         presetId) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span> </div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>    std::map&lt;std::string, std::unique_ptr&lt;ITargetingTask&gt;, std::less&lt;&gt;&gt; tasks_;</div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>    std::map&lt;std::string, TargetingPreset, std::less&lt;&gt;&gt;                 presets_;</div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>};</div>
+</div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span> </div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>}  <span class="comment">// namespace eve::sensing</span></div>
+<div class="ttc" id="aSensing_8h_html"><div class="ttname"><a href="Sensing_8h.html">Sensing.h</a></div></div>
+<div class="ttc" id="aTargeting_8h_html"><div class="ttname"><a href="Targeting_8h.html">Targeting.h</a></div><div class="ttdoc">Coordinate-safe targeting protocol shared by sensing and gameplay adapters.</div></div>
+<div class="ttc" id="aTreeMesh_8cpp_html_a863c86bdfd96bf9c461846689c2614aa"><div class="ttname"><a href="TreeMesh_8cpp.html#a863c86bdfd96bf9c461846689c2614aa">step</a></div><div class="ttdeci">float step</div><div class="ttdef"><b>Definition</b> <a href="TreeMesh_8cpp_source.html#l00287">TreeMesh.cpp:287</a></div></div>
+<div class="ttc" id="aVegetationPreset_8cpp_html_aa677a20ed09a5d6c839a3d7a4d53cb9c"><div class="ttname"><a href="VegetationPreset_8cpp.html#aa677a20ed09a5d6c839a3d7a4d53cb9c">context</a></div><div class="ttdeci">const VegetationPresetContext &amp; context</div><div class="ttdef"><b>Definition</b> <a href="VegetationPreset_8cpp_source.html#l00087">VegetationPreset.cpp:87</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1sensing_1_1ITargetingTask_html"><div class="ttname"><a href="classeve_1_1sensing_1_1ITargetingTask.html">eve::sensing::ITargetingTask</a></div><div class="ttdoc">Pluggable Select/Filter/Sort task.</div><div class="ttdef"><b>Definition</b> <a href="TargetingPipeline_8h_source.html#l00071">TargetingPipeline.h:71</a></div></div>
+<div class="ttc" id="aclasseve_1_1sensing_1_1ITargetingTask_html_a1c8d610763a72b3339e117e962cc4069"><div class="ttname"><a href="classeve_1_1sensing_1_1ITargetingTask.html#a1c8d610763a72b3339e117e962cc4069">eve::sensing::ITargetingTask::~ITargetingTask</a></div><div class="ttdeci">virtual ~ITargetingTask()=default</div></div>
+<div class="ttc" id="aclasseve_1_1sensing_1_1ITargetingTask_html_a998e650fec8dc3c7bf9d68d56da32010"><div class="ttname"><a href="classeve_1_1sensing_1_1ITargetingTask.html#a998e650fec8dc3c7bf9d68d56da32010">eve::sensing::ITargetingTask::execute</a></div><div class="ttdeci">virtual Result&lt; void &gt; execute(TargetingSourceContext &amp;context, std::vector&lt; RankedCandidate &gt; &amp;inout, const TargetingTaskStep &amp;step) const =0</div><div class="ttdoc">Runs the task against the working candidate list.</div></div>
+<div class="ttc" id="aclasseve_1_1sensing_1_1ITargetingTask_html_aac959f3867a7a2fa7a0567ac2f6a41b0"><div class="ttname"><a href="classeve_1_1sensing_1_1ITargetingTask.html#aac959f3867a7a2fa7a0567ac2f6a41b0">eve::sensing::ITargetingTask::kind</a></div><div class="ttdeci">virtual TargetingTaskKind kind() const noexcept=0</div><div class="ttdoc">Task kind used for diagnostics.</div></div>
+<div class="ttc" id="aclasseve_1_1sensing_1_1ITargetingTask_html_acfafac3643d8aa85b1731adf34ad51a9"><div class="ttname"><a href="classeve_1_1sensing_1_1ITargetingTask.html#acfafac3643d8aa85b1731adf34ad51a9">eve::sensing::ITargetingTask::id</a></div><div class="ttdeci">virtual std::string_view id() const noexcept=0</div><div class="ttdoc">Stable task id used by presets (e.g. &quot;sensing.filter.cone&quot;).</div></div>
+<div class="ttc" id="aclasseve_1_1sensing_1_1SensingWorld_html"><div class="ttname"><a href="classeve_1_1sensing_1_1SensingWorld.html">eve::sensing::SensingWorld</a></div><div class="ttdoc">Gameplay-facing 2D candidate query service; it never values or selects targets.</div><div class="ttdef"><b>Definition</b> <a href="Sensing_8h_source.html#l00144">Sensing.h:144</a></div></div>
+<div class="ttc" id="aclasseve_1_1sensing_1_1TargetingPipeline_html"><div class="ttname"><a href="classeve_1_1sensing_1_1TargetingPipeline.html">eve::sensing::TargetingPipeline</a></div><div class="ttdoc">In-memory task + preset registry and synchronous executor.</div><div class="ttdef"><b>Definition</b> <a href="TargetingPipeline_8h_source.html#l00093">TargetingPipeline.h:93</a></div></div>
+<div class="ttc" id="aclasseve_1_1sensing_1_1TargetingPipeline_html_a1f9b6cdc7746673315b6c21c5478dc54"><div class="ttname"><a href="classeve_1_1sensing_1_1TargetingPipeline.html#a1f9b6cdc7746673315b6c21c5478dc54">eve::sensing::TargetingPipeline::TargetingPipeline</a></div><div class="ttdeci">TargetingPipeline()=default</div><div class="ttdoc">Creates an empty pipeline.</div></div>
+<div class="ttc" id="anamespaceeve_1_1sensing_html"><div class="ttname"><a href="namespaceeve_1_1sensing.html">eve::sensing</a></div><div class="ttdef"><b>Definition</b> <a href="RTSSystems_8h_source.html#l00241">RTSSystems.h:241</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1sensing_html_a47045ee3773cf5565b3787ad35feff82"><div class="ttname"><a href="namespaceeve_1_1sensing.html#a47045ee3773cf5565b3787ad35feff82">eve::sensing::TargetingTaskKind</a></div><div class="ttdeci">TargetingTaskKind</div><div class="ttdoc">Task role inside a TargetingPreset.</div><div class="ttdef"><b>Definition</b> <a href="TargetingPipeline_8h_source.html#l00026">TargetingPipeline.h:26</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1sensing_html_a47045ee3773cf5565b3787ad35feff82a6b46ae48421828d9973deec5fa9aa0c3"><div class="ttname"><a href="namespaceeve_1_1sensing.html#a47045ee3773cf5565b3787ad35feff82a6b46ae48421828d9973deec5fa9aa0c3">eve::sensing::TargetingTaskKind::Sort</a></div><div class="ttdeci">@ Sort</div></div>
+<div class="ttc" id="anamespaceeve_1_1sensing_html_a47045ee3773cf5565b3787ad35feff82ad7778d0c64b6ba21494c97f77a66885a"><div class="ttname"><a href="namespaceeve_1_1sensing.html#a47045ee3773cf5565b3787ad35feff82ad7778d0c64b6ba21494c97f77a66885a">eve::sensing::TargetingTaskKind::Filter</a></div><div class="ttdeci">@ Filter</div></div>
+<div class="ttc" id="anamespaceeve_1_1sensing_html_a47045ee3773cf5565b3787ad35feff82ae0626222614bdee31951d84c64e5e9ff"><div class="ttname"><a href="namespaceeve_1_1sensing.html#a47045ee3773cf5565b3787ad35feff82ae0626222614bdee31951d84c64e5e9ff">eve::sensing::TargetingTaskKind::Select</a></div><div class="ttdeci">@ Select</div></div>
+<div class="ttc" id="anamespacestd_html"><div class="ttname"><a href="namespacestd.html">std</a></div><div class="ttdef"><b>Definition</b> <a href="Container_8h_source.html#l00562">Container.h:562</a></div></div>
+<div class="ttc" id="astructeve_1_1sensing_1_1QueryOrigin_html"><div class="ttname"><a href="structeve_1_1sensing_1_1QueryOrigin.html">eve::sensing::QueryOrigin</a></div><div class="ttdoc">World2D origin used for range tests and distance sorting.</div><div class="ttdef"><b>Definition</b> <a href="Sensing_8h_source.html#l00114">Sensing.h:114</a></div></div>
+<div class="ttc" id="astructeve_1_1sensing_1_1QuerySpec_html"><div class="ttname"><a href="structeve_1_1sensing_1_1QuerySpec.html">eve::sensing::QuerySpec</a></div><div class="ttdoc">Configurable candidate query against SensingWorld.</div><div class="ttdef"><b>Definition</b> <a href="Sensing_8h_source.html#l00095">Sensing.h:95</a></div></div>
+<div class="ttc" id="astructeve_1_1sensing_1_1RankedCandidate_html"><div class="ttname"><a href="structeve_1_1sensing_1_1RankedCandidate.html">eve::sensing::RankedCandidate</a></div><div class="ttdoc">One ranked candidate produced by SensingWorld::query.</div><div class="ttdef"><b>Definition</b> <a href="Sensing_8h_source.html#l00121">Sensing.h:121</a></div></div>
+<div class="ttc" id="astructeve_1_1sensing_1_1TargetingPreset_html"><div class="ttname"><a href="structeve_1_1sensing_1_1TargetingPreset.html">eve::sensing::TargetingPreset</a></div><div class="ttdoc">Named ordered list of targeting tasks.</div><div class="ttdef"><b>Definition</b> <a href="TargetingPipeline_8h_source.html#l00047">TargetingPipeline.h:47</a></div></div>
+<div class="ttc" id="astructeve_1_1sensing_1_1TargetingPreset_html_a27e05369cb3b1f3a2e6a79ddc8215c15"><div class="ttname"><a href="structeve_1_1sensing_1_1TargetingPreset.html#a27e05369cb3b1f3a2e6a79ddc8215c15">eve::sensing::TargetingPreset::steps</a></div><div class="ttdeci">std::vector&lt; TargetingTaskStep &gt; steps</div><div class="ttdef"><b>Definition</b> <a href="TargetingPipeline_8h_source.html#l00049">TargetingPipeline.h:49</a></div></div>
+<div class="ttc" id="astructeve_1_1sensing_1_1TargetingPreset_html_ad7b046cea799ac11a581bc6f65c33517"><div class="ttname"><a href="structeve_1_1sensing_1_1TargetingPreset.html#ad7b046cea799ac11a581bc6f65c33517">eve::sensing::TargetingPreset::id</a></div><div class="ttdeci">std::string id</div><div class="ttdef"><b>Definition</b> <a href="TargetingPipeline_8h_source.html#l00048">TargetingPipeline.h:48</a></div></div>
+<div class="ttc" id="astructeve_1_1sensing_1_1TargetingSourceContext_html"><div class="ttname"><a href="structeve_1_1sensing_1_1TargetingSourceContext.html">eve::sensing::TargetingSourceContext</a></div><div class="ttdoc">Runtime source for one pipeline execution.</div><div class="ttdef"><b>Definition</b> <a href="TargetingPipeline_8h_source.html#l00058">TargetingPipeline.h:58</a></div></div>
+<div class="ttc" id="astructeve_1_1sensing_1_1TargetingSourceContext_html_a0987508c7f8a5e1ef51f2bf4012084b9"><div class="ttname"><a href="structeve_1_1sensing_1_1TargetingSourceContext.html#a0987508c7f8a5e1ef51f2bf4012084b9">eve::sensing::TargetingSourceContext::dirY</a></div><div class="ttdeci">float dirY</div><div class="ttdef"><b>Definition</b> <a href="TargetingPipeline_8h_source.html#l00062">TargetingPipeline.h:62</a></div></div>
+<div class="ttc" id="astructeve_1_1sensing_1_1TargetingSourceContext_html_a1699b359139f6216bd988746d63c0e6d"><div class="ttname"><a href="structeve_1_1sensing_1_1TargetingSourceContext.html#a1699b359139f6216bd988746d63c0e6d">eve::sensing::TargetingSourceContext::dirX</a></div><div class="ttdeci">float dirX</div><div class="ttdef"><b>Definition</b> <a href="TargetingPipeline_8h_source.html#l00061">TargetingPipeline.h:61</a></div></div>
+<div class="ttc" id="astructeve_1_1sensing_1_1TargetingSourceContext_html_abf9a0ebc27027420b9b824263e174718"><div class="ttname"><a href="structeve_1_1sensing_1_1TargetingSourceContext.html#abf9a0ebc27027420b9b824263e174718">eve::sensing::TargetingSourceContext::world</a></div><div class="ttdeci">SensingWorld * world</div><div class="ttdef"><b>Definition</b> <a href="TargetingPipeline_8h_source.html#l00059">TargetingPipeline.h:59</a></div></div>
+<div class="ttc" id="astructeve_1_1sensing_1_1TargetingSourceContext_html_ae146510ab8336e24868906d7362516fa"><div class="ttname"><a href="structeve_1_1sensing_1_1TargetingSourceContext.html#ae146510ab8336e24868906d7362516fa">eve::sensing::TargetingSourceContext::origin</a></div><div class="ttdeci">QueryOrigin origin</div><div class="ttdef"><b>Definition</b> <a href="TargetingPipeline_8h_source.html#l00060">TargetingPipeline.h:60</a></div></div>
+<div class="ttc" id="astructeve_1_1sensing_1_1TargetingTaskStep_html"><div class="ttname"><a href="structeve_1_1sensing_1_1TargetingTaskStep.html">eve::sensing::TargetingTaskStep</a></div><div class="ttdoc">Per-step parameters for a preset entry.</div><div class="ttdef"><b>Definition</b> <a href="TargetingPipeline_8h_source.html#l00038">TargetingPipeline.h:38</a></div></div>
+<div class="ttc" id="astructeve_1_1sensing_1_1TargetingTaskStep_html_a43a4fc974a0897c30253b640bf978338"><div class="ttname"><a href="structeve_1_1sensing_1_1TargetingTaskStep.html#a43a4fc974a0897c30253b640bf978338">eve::sensing::TargetingTaskStep::truncateCount</a></div><div class="ttdeci">std::uint32_t truncateCount</div><div class="ttdef"><b>Definition</b> <a href="TargetingPipeline_8h_source.html#l00043">TargetingPipeline.h:43</a></div></div>
+<div class="ttc" id="astructeve_1_1sensing_1_1TargetingTaskStep_html_a9015d82b9fe3411ce88c65817b1dae27"><div class="ttname"><a href="structeve_1_1sensing_1_1TargetingTaskStep.html#a9015d82b9fe3411ce88c65817b1dae27">eve::sensing::TargetingTaskStep::taskId</a></div><div class="ttdeci">std::string taskId</div><div class="ttdef"><b>Definition</b> <a href="TargetingPipeline_8h_source.html#l00039">TargetingPipeline.h:39</a></div></div>
+<div class="ttc" id="astructeve_1_1sensing_1_1TargetingTaskStep_html_a92f688112ec971094907deb57fdbb936"><div class="ttname"><a href="structeve_1_1sensing_1_1TargetingTaskStep.html#a92f688112ec971094907deb57fdbb936">eve::sensing::TargetingTaskStep::coneRange</a></div><div class="ttdeci">float coneRange</div><div class="ttdef"><b>Definition</b> <a href="TargetingPipeline_8h_source.html#l00042">TargetingPipeline.h:42</a></div></div>
+<div class="ttc" id="astructeve_1_1sensing_1_1TargetingTaskStep_html_aec1ce934e5f0424fe03600aa9cd532ad"><div class="ttname"><a href="structeve_1_1sensing_1_1TargetingTaskStep.html#aec1ce934e5f0424fe03600aa9cd532ad">eve::sensing::TargetingTaskStep::querySpec</a></div><div class="ttdeci">QuerySpec querySpec</div><div class="ttdef"><b>Definition</b> <a href="TargetingPipeline_8h_source.html#l00040">TargetingPipeline.h:40</a></div></div>
+<div class="ttc" id="astructeve_1_1sensing_1_1TargetingTaskStep_html_af794e81bb565262d9496dcab7af46366"><div class="ttname"><a href="structeve_1_1sensing_1_1TargetingTaskStep.html#af794e81bb565262d9496dcab7af46366">eve::sensing::TargetingTaskStep::coneHalfAngle</a></div><div class="ttdeci">float coneHalfAngle</div><div class="ttdef"><b>Definition</b> <a href="TargetingPipeline_8h_source.html#l00041">TargetingPipeline.h:41</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

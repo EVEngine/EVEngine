@@ -1,0 +1,1327 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::graphics::hair 命名空间参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1graphics.html">graphics</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1graphics_1_1hair.html">hair</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#enum-members">枚举</a> &#124;
+<a href="#func-members">函数</a>  </div>
+  <div class="headertitle"><div class="title">eve::graphics::hair 命名空间参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Procedural hair/fur card meshes + material/LOD helpers (no strand simulation).  
+<a href="namespaceeve_1_1graphics_1_1hair.html#details">更多...</a></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1hair_1_1CardMeshData.html">CardMeshData</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">CPU-side interleaved mesh arrays for upload via <a class="el" href="classeve_1_1graphics_1_1Graphics.html#ad2394ae661385736c667a98446a5b9b4" title="Upload a triangle mesh from packed CPU arrays. Owned by Graphics. posXYZ required (vertexCount*3)....">Graphics::newMeshFromArrays</a>.  <a href="structeve_1_1graphics_1_1hair_1_1CardMeshData.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1hair_1_1CardRoot.html">CardRoot</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">One root sample expanded into a card.  <a href="structeve_1_1graphics_1_1hair_1_1CardRoot.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1hair_1_1ClusterGrid.html">ClusterGrid</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Uniform grid over strand roots for CPU frustum culling.  <a href="classeve_1_1graphics_1_1hair_1_1ClusterGrid.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1hair_1_1GroomAsset.html">GroomAsset</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Shared CPU groom container (UE <code>UGroomAsset</code> analogue).  <a href="classeve_1_1graphics_1_1hair_1_1GroomAsset.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1hair_1_1GroomBinding.html">GroomBinding</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Root-to-skin binding table (UE <code>UGroomBindingAsset</code> analogue, CPU-only).  <a href="classeve_1_1graphics_1_1hair_1_1GroomBinding.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1hair_1_1GroomGroup.html">GroomGroup</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">One groom group (UE hair group analogue: bangs / scalp / beard …). @ownership Owned by <code><a class="el" href="classeve_1_1graphics_1_1hair_1_1GroomAsset.html" title="Shared CPU groom container (UE UGroomAsset analogue).">GroomAsset</a></code>.  <a href="structeve_1_1graphics_1_1hair_1_1GroomGroup.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1hair_1_1GroomInstance.html">GroomInstance</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classeve_1_1Runtime.html">Runtime</a> groom drawable (UE <code>UGroomComponent</code> analogue).  <a href="classeve_1_1graphics_1_1hair_1_1GroomInstance.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1hair_1_1GroomLod.html">GroomLod</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">One LOD entry for a groom group.  <a href="structeve_1_1graphics_1_1hair_1_1GroomLod.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1hair_1_1GuideInfluence.html">GuideInfluence</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">One guide contributing to a render strand.  <a href="structeve_1_1graphics_1_1hair_1_1GuideInfluence.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1hair_1_1GuideSimParams.html">GuideSimParams</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parameters for CPU guide-strand dynamics (UE groom sim lite analogue).  <a href="structeve_1_1graphics_1_1hair_1_1GuideSimParams.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1hair_1_1GuideSimulator.html">GuideSimulator</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Lightweight Verlet + XPBD simulator for guide curves only.  <a href="classeve_1_1graphics_1_1hair_1_1GuideSimulator.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1hair_1_1HairCluster.html">HairCluster</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">One spatial cluster of strand curves (UE cluster-culling analogue). @ownership Owned by <code><a class="el" href="classeve_1_1graphics_1_1hair_1_1ClusterGrid.html" title="Uniform grid over strand roots for CPU frustum culling.">ClusterGrid</a></code>.  <a href="structeve_1_1graphics_1_1hair_1_1HairCluster.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1hair_1_1ProceduralParams.html">ProceduralParams</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parameters for growing strands on a triangle mesh (scalp / body).  <a href="structeve_1_1graphics_1_1hair_1_1ProceduralParams.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1hair_1_1RibbonMesh.html">RibbonMesh</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Triangle-list ribbon mesh expanded from strand curves.  <a href="structeve_1_1graphics_1_1hair_1_1RibbonMesh.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1hair_1_1RibbonParams.html">RibbonParams</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1hair_1_1RootAttach.html">RootAttach</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">One strand root projected onto a skin triangle (UE binding entry analogue). @ownership Owned by <code><a class="el" href="classeve_1_1graphics_1_1hair_1_1GroomBinding.html" title="Root-to-skin binding table (UE UGroomBindingAsset analogue, CPU-only).">GroomBinding</a></code>.  <a href="structeve_1_1graphics_1_1hair_1_1RootAttach.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1hair_1_1SkinTriMesh.html">SkinTriMesh</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Borrowed triangle mesh used as a scalp / skin bind target.  <a href="structeve_1_1graphics_1_1hair_1_1SkinTriMesh.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1hair_1_1StrandCurve.html">StrandCurve</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">One strand as a contiguous point range. @ownership <a class="el" href="classeve_1_1Value.html" title="The canonical owning dynamic value used by data-facing protocols.">Value</a> type owned by <code><a class="el" href="classeve_1_1graphics_1_1hair_1_1StrandsDatas.html" title="CPU-authoritative strand buffer (UE FHairStrandsDatas analogue).">StrandsDatas</a></code>.  <a href="structeve_1_1graphics_1_1hair_1_1StrandCurve.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1hair_1_1StrandGuideWeights.html">StrandGuideWeights</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Up to kMaxInfluences guides influencing one render strand. @ownership Owned by the weights table returned from <code>buildGuideWeights</code>.  <a href="structeve_1_1graphics_1_1hair_1_1StrandGuideWeights.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1hair_1_1StrandPoint.html">StrandPoint</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">One control point on a hair curve (UE <code>FHairStrandsDatas</code> point analogue). @ownership <a class="el" href="classeve_1_1Value.html" title="The canonical owning dynamic value used by data-facing protocols.">Value</a> type owned by <code><a class="el" href="classeve_1_1graphics_1_1hair_1_1StrandsDatas.html" title="CPU-authoritative strand buffer (UE FHairStrandsDatas analogue).">StrandsDatas</a></code>.  <a href="structeve_1_1graphics_1_1hair_1_1StrandPoint.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1hair_1_1StrandsDatas.html">StrandsDatas</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">CPU-authoritative strand buffer (UE <code>FHairStrandsDatas</code> analogue).  <a href="classeve_1_1graphics_1_1hair_1_1StrandsDatas.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="enum-members" name="enum-members"></a>
+枚举</h2></td></tr>
+<tr class="memitem:a8878d9ea5630a2b40cb1364dbb10c01a" id="r_a8878d9ea5630a2b40cb1364dbb10c01a"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics_1_1hair.html#a8878d9ea5630a2b40cb1364dbb10c01a">BindingDeformMode</a> : uint8_t { <a class="el" href="namespaceeve_1_1graphics_1_1hair.html#a8878d9ea5630a2b40cb1364dbb10c01aac7207657aba5dfd2e5b0ca3f35cd8c26">Rigid</a> = 0
+, <a class="el" href="namespaceeve_1_1graphics_1_1hair.html#a8878d9ea5630a2b40cb1364dbb10c01aadfd0a82c4bf37b1e90b690a22a20692e">Offset</a> = 1
+ }</td></tr>
+<tr class="memdesc:a8878d9ea5630a2b40cb1364dbb10c01a"><td class="mdescLeft">&#160;</td><td class="mdescRight">How bound strands follow a deformed skin triangle.  <a href="namespaceeve_1_1graphics_1_1hair.html#a8878d9ea5630a2b40cb1364dbb10c01a">更多...</a><br /></td></tr>
+<tr class="separator:a8878d9ea5630a2b40cb1364dbb10c01a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a59c83e7ac2c2c09c42982d13969f0375" id="r_a59c83e7ac2c2c09c42982d13969f0375"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics_1_1hair.html#a59c83e7ac2c2c09c42982d13969f0375">Representation</a> : uint8_t { <a class="el" href="namespaceeve_1_1graphics_1_1hair.html#a59c83e7ac2c2c09c42982d13969f0375a7567c010354f53c49ae43c65aaf12ef5">Strands</a> = 0
+, <a class="el" href="namespaceeve_1_1graphics_1_1hair.html#a59c83e7ac2c2c09c42982d13969f0375acd81f9f55969c822377f076017bb3484">Cards</a> = 1
+, <a class="el" href="namespaceeve_1_1graphics_1_1hair.html#a59c83e7ac2c2c09c42982d13969f0375a6f977d7c0201677985cc21e9e24d8b35">Meshes</a> = 2
+, <a class="el" href="namespaceeve_1_1graphics_1_1hair.html#a59c83e7ac2c2c09c42982d13969f0375a6adf97f83acf6453d4a6a4b1070f3754">None</a> = 3
+ }</td></tr>
+<tr class="memdesc:a59c83e7ac2c2c09c42982d13969f0375"><td class="mdescLeft">&#160;</td><td class="mdescRight">Geometry representation selected by a groom LOD (UE GeometryType analogue).  <a href="namespaceeve_1_1graphics_1_1hair.html#a59c83e7ac2c2c09c42982d13969f0375">更多...</a><br /></td></tr>
+<tr class="separator:a59c83e7ac2c2c09c42982d13969f0375"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5a1a3352685b189968f70fd32b8591b8" id="r_a5a1a3352685b189968f70fd32b8591b8"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics_1_1hair.html#a5a1a3352685b189968f70fd32b8591b8">InterpolationMode</a> : uint8_t { <a class="el" href="namespaceeve_1_1graphics_1_1hair.html#a5a1a3352685b189968f70fd32b8591b8ac7207657aba5dfd2e5b0ca3f35cd8c26">Rigid</a> = 0
+, <a class="el" href="namespaceeve_1_1graphics_1_1hair.html#a5a1a3352685b189968f70fd32b8591b8adfd0a82c4bf37b1e90b690a22a20692e">Offset</a> = 1
+, <a class="el" href="namespaceeve_1_1graphics_1_1hair.html#a5a1a3352685b189968f70fd32b8591b8ae510cdf33cd497134b47b9316314d4b4">Smooth</a> = 2
+ }</td></tr>
+<tr class="memdesc:a5a1a3352685b189968f70fd32b8591b8"><td class="mdescLeft">&#160;</td><td class="mdescRight">How render strands follow deformed guides (UE interpolation analogue).  <a href="namespaceeve_1_1graphics_1_1hair.html#a5a1a3352685b189968f70fd32b8591b8">更多...</a><br /></td></tr>
+<tr class="separator:a5a1a3352685b189968f70fd32b8591b8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+函数</h2></td></tr>
+<tr class="memitem:a5ee0034c5c6b2783e0af904957f5a656" id="r_a5ee0034c5c6b2783e0af904957f5a656"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="classeve_1_1graphics_1_1hair_1_1StrandsDatas.html">StrandsDatas</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics_1_1hair.html#a5ee0034c5c6b2783e0af904957f5a656">filterStrandsByCurves</a> (const <a class="el" href="classeve_1_1graphics_1_1hair_1_1StrandsDatas.html">StrandsDatas</a> &amp;src, const std::vector&lt; uint32_t &gt; &amp;curveIndices)</td></tr>
+<tr class="memdesc:a5ee0034c5c6b2783e0af904957f5a656"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copy a subset of curves into a new <code><a class="el" href="classeve_1_1graphics_1_1hair_1_1StrandsDatas.html" title="CPU-authoritative strand buffer (UE FHairStrandsDatas analogue).">StrandsDatas</a></code> (preserves point order).  <br /></td></tr>
+<tr class="separator:a5ee0034c5c6b2783e0af904957f5a656"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a12c7f4737dca062ba25acf2633d95b96" id="r_a12c7f4737dca062ba25acf2633d95b96"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics_1_1hair.html#a12c7f4737dca062ba25acf2633d95b96">selectLodIndex</a> (const std::vector&lt; <a class="el" href="structeve_1_1graphics_1_1hair_1_1GroomLod.html">GroomLod</a> &gt; &amp;lods, float screenSize)</td></tr>
+<tr class="memdesc:a12c7f4737dca062ba25acf2633d95b96"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pick the LOD index for a given screen size (largest screenSize ≤ query).  <br /></td></tr>
+<tr class="separator:a12c7f4737dca062ba25acf2633d95b96"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a16fc7f5701b4a69fac679abc36f7dcd8" id="r_a16fc7f5701b4a69fac679abc36f7dcd8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="classeve_1_1graphics_1_1hair_1_1StrandsDatas.html">StrandsDatas</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics_1_1hair.html#a16fc7f5701b4a69fac679abc36f7dcd8">extractGuides</a> (const <a class="el" href="classeve_1_1graphics_1_1hair_1_1StrandsDatas.html">StrandsDatas</a> &amp;strands, float guideFraction)</td></tr>
+<tr class="memdesc:a16fc7f5701b4a69fac679abc36f7dcd8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pick a deterministic subset of curves as guides (density thinning).  <br /></td></tr>
+<tr class="separator:a16fc7f5701b4a69fac679abc36f7dcd8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a41ddfeaefcc8b0ff8e76c98464896278" id="r_a41ddfeaefcc8b0ff8e76c98464896278"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::vector&lt; <a class="el" href="structeve_1_1graphics_1_1hair_1_1StrandGuideWeights.html">StrandGuideWeights</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics_1_1hair.html#a41ddfeaefcc8b0ff8e76c98464896278">buildGuideWeights</a> (const <a class="el" href="classeve_1_1graphics_1_1hair_1_1StrandsDatas.html">StrandsDatas</a> &amp;strands, const <a class="el" href="classeve_1_1graphics_1_1hair_1_1StrandsDatas.html">StrandsDatas</a> &amp;guides, int maxInfluences=3, <a class="el" href="namespaceeve_1_1graphics_1_1hair.html#a5a1a3352685b189968f70fd32b8591b8">InterpolationMode</a> mode=<a class="el" href="namespaceeve_1_1graphics_1_1hair.html#a5a1a3352685b189968f70fd32b8591b8adfd0a82c4bf37b1e90b690a22a20692e">InterpolationMode::Offset</a>)</td></tr>
+<tr class="memdesc:a41ddfeaefcc8b0ff8e76c98464896278"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build k-nearest guide weights for every render strand (by root distance).  <br /></td></tr>
+<tr class="separator:a41ddfeaefcc8b0ff8e76c98464896278"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1db7a22a9e8f9f333f0c1c4b8b0042b3" id="r_a1db7a22a9e8f9f333f0c1c4b8b0042b3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="classeve_1_1graphics_1_1hair_1_1StrandsDatas.html">StrandsDatas</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics_1_1hair.html#a1db7a22a9e8f9f333f0c1c4b8b0042b3">interpolateStrands</a> (const <a class="el" href="classeve_1_1graphics_1_1hair_1_1StrandsDatas.html">StrandsDatas</a> &amp;strandsRest, const <a class="el" href="classeve_1_1graphics_1_1hair_1_1StrandsDatas.html">StrandsDatas</a> &amp;guidesRest, const <a class="el" href="classeve_1_1graphics_1_1hair_1_1StrandsDatas.html">StrandsDatas</a> &amp;guidesDeformed, const std::vector&lt; <a class="el" href="structeve_1_1graphics_1_1hair_1_1StrandGuideWeights.html">StrandGuideWeights</a> &gt; &amp;<a class="el" href="TerrainImageAdapter_8cpp.html#a633d91a1601098fad1287d3764b947f4">weights</a>, <a class="el" href="namespaceeve_1_1graphics_1_1hair.html#a5a1a3352685b189968f70fd32b8591b8">InterpolationMode</a> mode)</td></tr>
+<tr class="memdesc:a1db7a22a9e8f9f333f0c1c4b8b0042b3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Drive rest render strands with deformed guides using precomputed weights. @ownership Returned datas uniquely owned by the caller; inputs unchanged.  <br /></td></tr>
+<tr class="separator:a1db7a22a9e8f9f333f0c1c4b8b0042b3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a866914b7fdc265df799536421d2950e1" id="r_a866914b7fdc265df799536421d2950e1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="classeve_1_1graphics_1_1hair_1_1StrandsDatas.html">StrandsDatas</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics_1_1hair.html#a866914b7fdc265df799536421d2950e1">generateOnMesh</a> (const float *posXYZ, const float *nrmXYZ, int <a class="el" href="GltfImporter_8cpp.html#a7b19ff7daa03f593e552608463f5c9ca">vertexCount</a>, const uint32_t *<a class="el" href="HeightmapMesh_8cpp.html#a1c05ae841a0f4a10fbccd8a5438951a8">indices</a>, int <a class="el" href="GltfImporter_8cpp.html#ad2ae269d4b0d530bbbcc259246388784">indexCount</a>, const <a class="el" href="structeve_1_1graphics_1_1hair_1_1ProceduralParams.html">ProceduralParams</a> &amp;<a class="el" href="mesh_2MeshModifierGraph_8cpp.html#ac59750003266730d7d05c14393c78fbd">params</a>)</td></tr>
+<tr class="memdesc:a866914b7fdc265df799536421d2950e1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Grow strands from area-weighted samples on an indexed triangle mesh.  <br /></td></tr>
+<tr class="separator:a866914b7fdc265df799536421d2950e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7d115874ee7c0d26996fb4c05e96d7c9" id="r_a7d115874ee7c0d26996fb4c05e96d7c9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="classeve_1_1graphics_1_1hair_1_1StrandsDatas.html">StrandsDatas</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics_1_1hair.html#a7d115874ee7c0d26996fb4c05e96d7c9">generateOnPlane</a> (float sizeX, float sizeZ, const <a class="el" href="structeve_1_1graphics_1_1hair_1_1ProceduralParams.html">ProceduralParams</a> &amp;<a class="el" href="mesh_2MeshModifierGraph_8cpp.html#ac59750003266730d7d05c14393c78fbd">params</a>)</td></tr>
+<tr class="memdesc:a7d115874ee7c0d26996fb4c05e96d7c9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Grow strands on a Y-up XZ plane centered at the origin.  <br /></td></tr>
+<tr class="separator:a7d115874ee7c0d26996fb4c05e96d7c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad259fd622446b5501fc41d1db63ffa65" id="r_ad259fd622446b5501fc41d1db63ffa65"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1graphics_1_1hair_1_1RibbonMesh.html">RibbonMesh</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics_1_1hair.html#ad259fd622446b5501fc41d1db63ffa65">buildRibbons</a> (const <a class="el" href="classeve_1_1graphics_1_1hair_1_1StrandsDatas.html">StrandsDatas</a> &amp;strands, const <a class="el" href="structeve_1_1graphics_1_1hair_1_1RibbonParams.html">RibbonParams</a> &amp;<a class="el" href="mesh_2MeshModifierGraph_8cpp.html#ac59750003266730d7d05c14393c78fbd">params</a>={})</td></tr>
+<tr class="memdesc:ad259fd622446b5501fc41d1db63ffa65"><td class="mdescLeft">&#160;</td><td class="mdescRight">Expand validated strands into stable (non-view-facing) ribbons.  <br /></td></tr>
+<tr class="separator:ad259fd622446b5501fc41d1db63ffa65"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a63922755caf2fa61725bbcfe69413072" id="r_a63922755caf2fa61725bbcfe69413072"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics_1_1hair.html#a63922755caf2fa61725bbcfe69413072">appendRibbonMesh</a> (<a class="el" href="structeve_1_1graphics_1_1hair_1_1RibbonMesh.html">RibbonMesh</a> &amp;dst, const <a class="el" href="structeve_1_1graphics_1_1hair_1_1RibbonMesh.html">RibbonMesh</a> &amp;src)</td></tr>
+<tr class="memdesc:a63922755caf2fa61725bbcfe69413072"><td class="mdescLeft">&#160;</td><td class="mdescRight">Append <code>src</code> into <code>dst</code>, rebasing triangle indices by <code>dst</code> vertex count. @ownership Both meshes remain caller-owned; <code>src</code> is copied into <code>dst</code>.  <br /></td></tr>
+<tr class="separator:a63922755caf2fa61725bbcfe69413072"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a89b929ed7efe56ca473b7fd46fb86ec6" id="r_a89b929ed7efe56ca473b7fd46fb86ec6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1graphics_1_1hair_1_1CardMeshData.html">CardMeshData</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics_1_1hair.html#a89b929ed7efe56ca473b7fd46fb86ec6">buildCard</a> (float <a class="el" href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a>=0.12<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, float <a class="el" href="ImageImporter_8cpp.html#adfe1b51744835d88ff3bcd45411d2c53">height</a>=0.45<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>)</td></tr>
+<tr class="memdesc:a89b929ed7efe56ca473b7fd46fb86ec6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build a single upright card in local space (origin at root, height along +Y, face +Z).  <br /></td></tr>
+<tr class="separator:a89b929ed7efe56ca473b7fd46fb86ec6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae98103cc32a9e2a9bf25bc168fdab0b4" id="r_ae98103cc32a9e2a9bf25bc168fdab0b4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1graphics_1_1hair_1_1CardMeshData.html">CardMeshData</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics_1_1hair.html#ae98103cc32a9e2a9bf25bc168fdab0b4">buildCardsAlongPolyline</a> (const float *pointsXYZ, int pointCount, float <a class="el" href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a>=0.08<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>)</td></tr>
+<tr class="memdesc:ae98103cc32a9e2a9bf25bc168fdab0b4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build one card per polyline segment, facing a camera-facing side approximated by world up.  <br /></td></tr>
+<tr class="separator:ae98103cc32a9e2a9bf25bc168fdab0b4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac38ec9c643ea38289b327f3d9470735d" id="r_ac38ec9c643ea38289b327f3d9470735d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1graphics_1_1hair_1_1CardMeshData.html">CardMeshData</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics_1_1hair.html#ac38ec9c643ea38289b327f3d9470735d">buildCardsFromRoots</a> (const <a class="el" href="structeve_1_1graphics_1_1hair_1_1CardRoot.html">CardRoot</a> *roots, int rootCount)</td></tr>
+<tr class="memdesc:ac38ec9c643ea38289b327f3d9470735d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Expand root samples into independent cards.  <br /></td></tr>
+<tr class="separator:ac38ec9c643ea38289b327f3d9470735d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adb8f93634eda925310563a48f367e1a3" id="r_adb8f93634eda925310563a48f367e1a3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics_1_1hair.html#adb8f93634eda925310563a48f367e1a3">appendCardMesh</a> (<a class="el" href="structeve_1_1graphics_1_1hair_1_1CardMeshData.html">CardMeshData</a> &amp;dst, const <a class="el" href="structeve_1_1graphics_1_1hair_1_1CardMeshData.html">CardMeshData</a> &amp;src)</td></tr>
+<tr class="memdesc:adb8f93634eda925310563a48f367e1a3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Append <code>src</code> into <code>dst</code> (vertex/index rebase).  <br /></td></tr>
+<tr class="separator:adb8f93634eda925310563a48f367e1a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aadfc37e05183e51faa866afdbbd50b98" id="r_aadfc37e05183e51faa866afdbbd50b98"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1Mesh.html">Mesh</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics_1_1hair.html#aadfc37e05183e51faa866afdbbd50b98">uploadCardMesh</a> (<a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *gfx, const <a class="el" href="structeve_1_1graphics_1_1hair_1_1CardMeshData.html">CardMeshData</a> &amp;data)</td></tr>
+<tr class="memdesc:aadfc37e05183e51faa866afdbbd50b98"><td class="mdescLeft">&#160;</td><td class="mdescRight">Upload card arrays as a Graphics-owned <a class="el" href="classeve_1_1graphics_1_1Mesh.html" title="GPU mesh handle (+ optional CPU morph targets).">Mesh</a>.  <br /></td></tr>
+<tr class="separator:aadfc37e05183e51faa866afdbbd50b98"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6206cc08a57d131ede0baa162f511a0e" id="r_a6206cc08a57d131ede0baa162f511a0e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1Mesh.html">Mesh</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics_1_1hair.html#a6206cc08a57d131ede0baa162f511a0e">newCardMesh</a> (<a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *gfx, float <a class="el" href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a>=0.12<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, float <a class="el" href="ImageImporter_8cpp.html#adfe1b51744835d88ff3bcd45411d2c53">height</a>=0.45<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>)</td></tr>
+<tr class="memdesc:a6206cc08a57d131ede0baa162f511a0e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convenience: single card mesh.  <br /></td></tr>
+<tr class="separator:a6206cc08a57d131ede0baa162f511a0e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a62449e0ddc75d7e60022b2b7c6725eb3" id="r_a62449e0ddc75d7e60022b2b7c6725eb3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics_1_1hair.html#a62449e0ddc75d7e60022b2b7c6725eb3">applyCardDefaults</a> (<a class="el" href="classeve_1_1graphics_1_1Material.html">Material</a> &amp;mat)</td></tr>
+<tr class="memdesc:a62449e0ddc75d7e60022b2b7c6725eb3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Apply transparent hair-card surface defaults (double-sided, no depth write/shadows). Does not create or assign a shader.  <br /></td></tr>
+<tr class="separator:a62449e0ddc75d7e60022b2b7c6725eb3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa2a873e582a2e2508d10049047e783b1" id="r_aa2a873e582a2e2508d10049047e783b1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1Material.html">Material</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics_1_1hair.html#aa2a873e582a2e2508d10049047e783b1">makeCardMaterial</a> (<a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *gfx, <a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *<a class="el" href="ModelRenderer_8cpp.html#ab7584fa1f0ea319cb0ecfaf835116c72">albedo</a>=nullptr, <a class="el" href="classeve_1_1graphics_1_1Shader.html">Shader</a> *hairShader=nullptr)</td></tr>
+<tr class="memdesc:aa2a873e582a2e2508d10049047e783b1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a <a class="el" href="classeve_1_1graphics_1_1Material.html" title="Packages shading method + surface parameters into one attachable asset.">Material</a> configured for hair cards and optionally bind the hair shader + albedo.  <br /></td></tr>
+<tr class="separator:aa2a873e582a2e2508d10049047e783b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac40535e6e4d8c67ef5cf853c20bf7b4f" id="r_ac40535e6e4d8c67ef5cf853c20bf7b4f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics_1_1hair.html#ac40535e6e4d8c67ef5cf853c20bf7b4f">configureCardLod</a> (<a class="el" href="classeve_1_1graphics_1_1Renderable3D.html">Renderable3D</a> *renderable, <a class="el" href="classeve_1_1graphics_1_1Mesh.html">Mesh</a> *nearCards, <a class="el" href="classeve_1_1graphics_1_1Mesh.html">Mesh</a> *farProxy, float switchDistance)</td></tr>
+<tr class="memdesc:ac40535e6e4d8c67ef5cf853c20bf7b4f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Wire near/far geometric LOD on a renderable (index 0 = cards, index 1 = proxy).  <br /></td></tr>
+<tr class="separator:ac40535e6e4d8c67ef5cf853c20bf7b4f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a25b7588ee3306f4ecbdb7c08c52bf031" id="r_a25b7588ee3306f4ecbdb7c08c52bf031"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics_1_1hair.html#a25b7588ee3306f4ecbdb7c08c52bf031">paramCount</a> ()</td></tr>
+<tr class="memdesc:a25b7588ee3306f4ecbdb7c08c52bf031"><td class="mdescLeft">&#160;</td><td class="mdescRight">Push-constant parameter names (same order as mesh3d_hair.frag).  <br /></td></tr>
+<tr class="separator:a25b7588ee3306f4ecbdb7c08c52bf031"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7843054c586cd9ec3d3c3975327dde36" id="r_a7843054c586cd9ec3d3c3975327dde36"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics_1_1hair.html#a7843054c586cd9ec3d3c3975327dde36">paramName</a> (int <a class="el" href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>)</td></tr>
+<tr class="separator:a7843054c586cd9ec3d3c3975327dde36"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7e9dbae7e71920bcf42232054927a35d" id="r_a7e9dbae7e71920bcf42232054927a35d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics_1_1hair.html#a7e9dbae7e71920bcf42232054927a35d">bindDefaults</a> (<a class="el" href="classeve_1_1graphics_1_1Shader.html">Shader</a> *<a class="el" href="RenderSystem3D_8cpp.html#ac7373354f9cc35f76804c73d4c98781c">shader</a>)</td></tr>
+<tr class="memdesc:a7e9dbae7e71920bcf42232054927a35d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bind default push-constant knobs on an existing hair shader.  <br /></td></tr>
+<tr class="separator:a7e9dbae7e71920bcf42232054927a35d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af5a0fa518b53ddf193c0a31f6ec3553f" id="r_af5a0fa518b53ddf193c0a31f6ec3553f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1Shader.html">Shader</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1graphics_1_1hair.html#af5a0fa518b53ddf193c0a31f6ec3553f">createShader</a> (<a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *gfx)</td></tr>
+<tr class="memdesc:af5a0fa518b53ddf193c0a31f6ec3553f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create the default hair shader (alpha-blended, anisotropic specular). Owned by <a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a>.  <br /></td></tr>
+<tr class="separator:af5a0fa518b53ddf193c0a31f6ec3553f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Procedural hair/fur card meshes + material/LOD helpers (no strand simulation). </p>
+<p>Built-in Kajiya-Kay hair/fur card shader helpers.</p>
+<p>Cards are oriented quads suitable for the built-in hair transparent pass. Strand flow is along +V (card height); the hair shader derives tangents from that convention unless <code>strandDir</code> is overridden. </p>
+</div><h2 class="groupheader">枚举类型说明</h2>
+<a id="a8878d9ea5630a2b40cb1364dbb10c01a" name="a8878d9ea5630a2b40cb1364dbb10c01a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8878d9ea5630a2b40cb1364dbb10c01a">&#9670;&#160;</a></span>BindingDeformMode</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1graphics_1_1hair.html#a8878d9ea5630a2b40cb1364dbb10c01a">eve::graphics::hair::BindingDeformMode</a> : uint8_t</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>How bound strands follow a deformed skin triangle. </p>
+<ul>
+<li>Rigid: translate the whole curve by (skinnedRoot − restRoot).</li>
+<li>Offset: also rotate the rest offset by the rest→deformed triangle normal.</li>
+</ul>
+<p>Neither mode is a full skinned RBF (UE optional path); see design doc Phase 4. </p>
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="a8878d9ea5630a2b40cb1364dbb10c01aac7207657aba5dfd2e5b0ca3f35cd8c26" name="a8878d9ea5630a2b40cb1364dbb10c01aac7207657aba5dfd2e5b0ca3f35cd8c26"></a>Rigid&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a8878d9ea5630a2b40cb1364dbb10c01aadfd0a82c4bf37b1e90b690a22a20692e" name="a8878d9ea5630a2b40cb1364dbb10c01aadfd0a82c4bf37b1e90b690a22a20692e"></a>Offset&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="Binding_8h_source.html">Binding.h</a> 第 <a class="el" href="Binding_8h_source.html#l00037">37</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a5a1a3352685b189968f70fd32b8591b8" name="a5a1a3352685b189968f70fd32b8591b8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5a1a3352685b189968f70fd32b8591b8">&#9670;&#160;</a></span>InterpolationMode</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1graphics_1_1hair.html#a5a1a3352685b189968f70fd32b8591b8">eve::graphics::hair::InterpolationMode</a> : uint8_t</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>How render strands follow deformed guides (UE interpolation analogue). </p>
+<ul>
+<li>Rigid: weighted guide root translation applied to the whole strand.</li>
+<li>Offset: per-point delta sampled along each guide at the same <code>u</code>.</li>
+<li>Smooth: Offset with softer distance weights (more guides influence). </li>
+</ul>
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="a5a1a3352685b189968f70fd32b8591b8ac7207657aba5dfd2e5b0ca3f35cd8c26" name="a5a1a3352685b189968f70fd32b8591b8ac7207657aba5dfd2e5b0ca3f35cd8c26"></a>Rigid&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a5a1a3352685b189968f70fd32b8591b8adfd0a82c4bf37b1e90b690a22a20692e" name="a5a1a3352685b189968f70fd32b8591b8adfd0a82c4bf37b1e90b690a22a20692e"></a>Offset&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a5a1a3352685b189968f70fd32b8591b8ae510cdf33cd497134b47b9316314d4b4" name="a5a1a3352685b189968f70fd32b8591b8ae510cdf33cd497134b47b9316314d4b4"></a>Smooth&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="Guides_8h_source.html">Guides.h</a> 第 <a class="el" href="Guides_8h_source.html#l00019">19</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a59c83e7ac2c2c09c42982d13969f0375" name="a59c83e7ac2c2c09c42982d13969f0375"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a59c83e7ac2c2c09c42982d13969f0375">&#9670;&#160;</a></span>Representation</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1graphics_1_1hair.html#a59c83e7ac2c2c09c42982d13969f0375">eve::graphics::hair::Representation</a> : uint8_t</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Geometry representation selected by a groom LOD (UE GeometryType analogue). </p>
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="a59c83e7ac2c2c09c42982d13969f0375a7567c010354f53c49ae43c65aaf12ef5" name="a59c83e7ac2c2c09c42982d13969f0375a7567c010354f53c49ae43c65aaf12ef5"></a>Strands&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a59c83e7ac2c2c09c42982d13969f0375acd81f9f55969c822377f076017bb3484" name="a59c83e7ac2c2c09c42982d13969f0375acd81f9f55969c822377f076017bb3484"></a>Cards&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a59c83e7ac2c2c09c42982d13969f0375a6f977d7c0201677985cc21e9e24d8b35" name="a59c83e7ac2c2c09c42982d13969f0375a6f977d7c0201677985cc21e9e24d8b35"></a>Meshes&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a59c83e7ac2c2c09c42982d13969f0375a6adf97f83acf6453d4a6a4b1070f3754" name="a59c83e7ac2c2c09c42982d13969f0375a6adf97f83acf6453d4a6a4b1070f3754"></a>None&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="GroomAsset_8h_source.html">GroomAsset.h</a> 第 <a class="el" href="GroomAsset_8h_source.html#l00014">14</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">函数说明</h2>
+<a id="adb8f93634eda925310563a48f367e1a3" name="adb8f93634eda925310563a48f367e1a3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adb8f93634eda925310563a48f367e1a3">&#9670;&#160;</a></span>appendCardMesh()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::hair::appendCardMesh </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1graphics_1_1hair_1_1CardMeshData.html">CardMeshData</a> &amp;&#160;</td>
+          <td class="paramname"><em>dst</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1graphics_1_1hair_1_1CardMeshData.html">CardMeshData</a> &amp;&#160;</td>
+          <td class="paramname"><em>src</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Append <code>src</code> into <code>dst</code> (vertex/index rebase). </p>
+
+<p class="definition">在文件 <a class="el" href="HairCards_8cpp_source.html">HairCards.cpp</a> 第 <a class="el" href="HairCards_8cpp_source.html#l00115">115</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Pathfinder_8cpp_source.html#l00336">idx</a>, <a class="el" href="HairCards_8h_source.html#l00029">eve::graphics::hair::CardMeshData::indices</a>, <a class="el" href="HairCards_8h_source.html#l00027">eve::graphics::hair::CardMeshData::normals</a>, <a class="el" href="HairCards_8h_source.html#l00026">eve::graphics::hair::CardMeshData::positions</a> , 以及 <a class="el" href="HairCards_8h_source.html#l00028">eve::graphics::hair::CardMeshData::uvs</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HairCards_8cpp_source.html#l00100">buildCardsFromRoots()</a> , 以及 <a class="el" href="GroomInstance_8cpp_source.html#l00397">eve::graphics::hair::GroomInstance::rebuild()</a>.</p>
+
+</div>
+</div>
+<a id="a63922755caf2fa61725bbcfe69413072" name="a63922755caf2fa61725bbcfe69413072"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a63922755caf2fa61725bbcfe69413072">&#9670;&#160;</a></span>appendRibbonMesh()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::hair::appendRibbonMesh </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1graphics_1_1hair_1_1RibbonMesh.html">RibbonMesh</a> &amp;&#160;</td>
+          <td class="paramname"><em>dst</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1graphics_1_1hair_1_1RibbonMesh.html">RibbonMesh</a> &amp;&#160;</td>
+          <td class="paramname"><em>src</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Append <code>src</code> into <code>dst</code>, rebasing triangle indices by <code>dst</code> vertex count. @ownership Both meshes remain caller-owned; <code>src</code> is copied into <code>dst</code>. </p>
+
+<p class="definition">在文件 <a class="el" href="RibbonBuilder_8cpp_source.html">RibbonBuilder.cpp</a> 第 <a class="el" href="RibbonBuilder_8cpp_source.html#l00101">101</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Pathfinder_8cpp_source.html#l00336">idx</a>, <a class="el" href="RibbonBuilder_8h_source.html#l00023">eve::graphics::hair::RibbonMesh::indices</a>, <a class="el" href="RibbonBuilder_8h_source.html#l00021">eve::graphics::hair::RibbonMesh::nrmXYZ</a>, <a class="el" href="RibbonBuilder_8h_source.html#l00020">eve::graphics::hair::RibbonMesh::posXYZ</a>, <a class="el" href="RibbonBuilder_8h_source.html#l00022">eve::graphics::hair::RibbonMesh::uvST</a> , 以及 <a class="el" href="RibbonBuilder_8h_source.html#l00025">eve::graphics::hair::RibbonMesh::vertexCount()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GroomInstance_8cpp_source.html#l00397">eve::graphics::hair::GroomInstance::rebuild()</a>.</p>
+
+</div>
+</div>
+<a id="a62449e0ddc75d7e60022b2b7c6725eb3" name="a62449e0ddc75d7e60022b2b7c6725eb3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a62449e0ddc75d7e60022b2b7c6725eb3">&#9670;&#160;</a></span>applyCardDefaults()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::hair::applyCardDefaults </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Material.html">Material</a> &amp;&#160;</td>
+          <td class="paramname"><em>mat</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Apply transparent hair-card surface defaults (double-sided, no depth write/shadows). Does not create or assign a shader. </p>
+
+<p class="definition">在文件 <a class="el" href="HairCards_8cpp_source.html">HairCards.cpp</a> 第 <a class="el" href="HairCards_8cpp_source.html#l00136">136</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Material_8h_source.html#l00192">eve::graphics::Material::getSortPriority()</a>, <a class="el" href="Material_8cpp_source.html#l00128">eve::graphics::Material::setAlphaCutoff()</a>, <a class="el" href="Material_8cpp_source.html#l00132">eve::graphics::Material::setBlendMode()</a>, <a class="el" href="Material_8h_source.html#l00143">eve::graphics::Material::setCastShadow()</a>, <a class="el" href="Material_8h_source.html#l00183">eve::graphics::Material::setDepthWrite()</a>, <a class="el" href="Material_8h_source.html#l00185">eve::graphics::Material::setDoubleSided()</a>, <a class="el" href="Material_8cpp_source.html#l00099">eve::graphics::Material::setHair()</a>, <a class="el" href="Material_8cpp_source.html#l00051">eve::graphics::Material::setShadingModel()</a>, <a class="el" href="Material_8h_source.html#l00191">eve::graphics::Material::setSortPriority()</a> , 以及 <a class="el" href="Material_8cpp_source.html#l00113">eve::graphics::Material::setSurfaceMode()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HairCards_8cpp_source.html#l00148">makeCardMaterial()</a>.</p>
+
+</div>
+</div>
+<a id="a7e9dbae7e71920bcf42232054927a35d" name="a7e9dbae7e71920bcf42232054927a35d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7e9dbae7e71920bcf42232054927a35d">&#9670;&#160;</a></span>bindDefaults()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::hair::bindDefaults </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Shader.html">Shader</a> *&#160;</td>
+          <td class="paramname"><em>shader</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Bind default push-constant knobs on an existing hair shader. </p>
+
+<p class="definition">在文件 <a class="el" href="HairShader_8cpp_source.html">HairShader.cpp</a> 第 <a class="el" href="HairShader_8cpp_source.html#l00036">36</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RenderSystem3D_8cpp_source.html#l00643">shader</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HairShader_8cpp_source.html#l00067">createShader()</a>.</p>
+
+</div>
+</div>
+<a id="a89b929ed7efe56ca473b7fd46fb86ec6" name="a89b929ed7efe56ca473b7fd46fb86ec6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a89b929ed7efe56ca473b7fd46fb86ec6">&#9670;&#160;</a></span>buildCard()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1graphics_1_1hair_1_1CardMeshData.html">CardMeshData</a> eve::graphics::hair::buildCard </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>width</em> = <code>0.12<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>height</em> = <code>0.45<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Build a single upright card in local space (origin at root, height along +Y, face +Z). </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">width</td><td>Card width. </td></tr>
+    <tr><td class="paramname">height</td><td>Card length along the strand axis. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="HairCards_8cpp_source.html">HairCards.cpp</a> 第 <a class="el" href="HairCards_8cpp_source.html#l00066">66</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ImageData_8cpp_source.html#l00690">h</a>, <a class="el" href="ImageImporter_8cpp_source.html#l00014">height</a>, <a class="el" href="RenderSystem3D_8cpp_source.html#l00641">mesh</a>, <a class="el" href="AnimClip_8cpp_source.html#l00738">w</a> , 以及 <a class="el" href="ImageImporter_8cpp_source.html#l00013">width</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HairCards_8cpp_source.html#l00132">newCardMesh()</a>.</p>
+
+</div>
+</div>
+<a id="ae98103cc32a9e2a9bf25bc168fdab0b4" name="ae98103cc32a9e2a9bf25bc168fdab0b4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae98103cc32a9e2a9bf25bc168fdab0b4">&#9670;&#160;</a></span>buildCardsAlongPolyline()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1graphics_1_1hair_1_1CardMeshData.html">CardMeshData</a> eve::graphics::hair::buildCardsAlongPolyline </td>
+          <td>(</td>
+          <td class="paramtype">const float *&#160;</td>
+          <td class="paramname"><em>pointsXYZ</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>pointCount</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>width</em> = <code>0.08<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Build one card per polyline segment, facing a camera-facing side approximated by world up. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">pointsXYZ</td><td>Interleaved xyz, length &gt;= 2. </td></tr>
+    <tr><td class="paramname">pointCount</td><td>Number of points. </td></tr>
+    <tr><td class="paramname">width</td><td>Card width. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="HairCards_8cpp_source.html">HairCards.cpp</a> 第 <a class="el" href="HairCards_8cpp_source.html#l00075">75</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00014">a</a>, <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00015">b</a>, <a class="el" href="RenderSystem3D_8cpp_source.html#l00641">mesh</a>, <a class="el" href="CaveWetness_8cpp_source.html#l00016">nx</a>, <a class="el" href="CaveWetness_8cpp_source.html#l00016">ny</a>, <a class="el" href="CaveWetness_8cpp_source.html#l00016">nz</a>, <a class="el" href="PrefabActionCapabilities_8cpp_source.html#l00044">sx</a>, <a class="el" href="PrefabActionCapabilities_8cpp_source.html#l00045">sy</a>, <a class="el" href="PrefabActionCapabilities_8cpp_source.html#l00046">sz</a>, <a class="el" href="AnimClip_8cpp_source.html#l00738">w</a> , 以及 <a class="el" href="ImageImporter_8cpp_source.html#l00013">width</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HairCards_8cpp_source.html#l00100">buildCardsFromRoots()</a>.</p>
+
+</div>
+</div>
+<a id="ac38ec9c643ea38289b327f3d9470735d" name="ac38ec9c643ea38289b327f3d9470735d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac38ec9c643ea38289b327f3d9470735d">&#9670;&#160;</a></span>buildCardsFromRoots()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1graphics_1_1hair_1_1CardMeshData.html">CardMeshData</a> eve::graphics::hair::buildCardsFromRoots </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1graphics_1_1hair_1_1CardRoot.html">CardRoot</a> *&#160;</td>
+          <td class="paramname"><em>roots</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>rootCount</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Expand root samples into independent cards. </p>
+
+<p class="definition">在文件 <a class="el" href="HairCards_8cpp_source.html">HairCards.cpp</a> 第 <a class="el" href="HairCards_8cpp_source.html#l00100">100</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="HairCards_8cpp_source.html#l00115">appendCardMesh()</a>, <a class="el" href="HairCards_8cpp_source.html#l00075">buildCardsAlongPolyline()</a>, <a class="el" href="HairCards_8h_source.html#l00035">eve::graphics::hair::CardRoot::dirX</a>, <a class="el" href="RenderSystem3D_8cpp_source.html#l00641">mesh</a>, <a class="el" href="GtsMeshSimplifier_8cpp_source.html#l00012">r</a> , 以及 <a class="el" href="AnimSmr_8cpp_source.html#l00121">tip</a>.</p>
+
+</div>
+</div>
+<a id="a41ddfeaefcc8b0ff8e76c98464896278" name="a41ddfeaefcc8b0ff8e76c98464896278"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a41ddfeaefcc8b0ff8e76c98464896278">&#9670;&#160;</a></span>buildGuideWeights()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::vector&lt; <a class="el" href="structeve_1_1graphics_1_1hair_1_1StrandGuideWeights.html">StrandGuideWeights</a> &gt; &gt; eve::graphics::hair::buildGuideWeights </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1graphics_1_1hair_1_1StrandsDatas.html">StrandsDatas</a> &amp;&#160;</td>
+          <td class="paramname"><em>strands</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1graphics_1_1hair_1_1StrandsDatas.html">StrandsDatas</a> &amp;&#160;</td>
+          <td class="paramname"><em>guides</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>maxInfluences</em> = <code>3</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1graphics_1_1hair.html#a5a1a3352685b189968f70fd32b8591b8">InterpolationMode</a>&#160;</td>
+          <td class="paramname"><em>mode</em> = <code><a class="el" href="namespaceeve_1_1graphics_1_1hair.html#a5a1a3352685b189968f70fd32b8591b8adfd0a82c4bf37b1e90b690a22a20692e">InterpolationMode::Offset</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Build k-nearest guide weights for every render strand (by root distance). </p>
+<p>Weights are inverse-distance (Smooth uses a softer exponent). Each row sums to 1 when at least one guide exists.</p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">maxInfluences</td><td>Clamped to [1, <a class="el" href="structeve_1_1graphics_1_1hair_1_1StrandGuideWeights.html#a7f247bf93731745b5a551428a172f29e">StrandGuideWeights::kMaxInfluences</a>]. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="Guides_8cpp_source.html">Guides.cpp</a> 第 <a class="el" href="Guides_8cpp_source.html#l00103">103</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00014">a</a>, <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00015">b</a>, <a class="el" href="StrandsDatas_8h_source.html#l00061">eve::graphics::hair::StrandsDatas::curveCount()</a>, <a class="el" href="PrototypeKit_8cpp_source.html#l00109">d</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="UnityVegetationMaterial_8cpp_source.html#l00161">index</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="Guides_8h_source.html#l00032">eve::graphics::hair::StrandGuideWeights::kMaxInfluences</a>, <a class="el" href="AnimSmr_8cpp_source.html#l00119">root</a>, <a class="el" href="StrandsDatas_8cpp_source.html#l00041">eve::graphics::hair::StrandsDatas::validate()</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00738">w</a>.</p>
+
+</div>
+</div>
+<a id="ad259fd622446b5501fc41d1db63ffa65" name="ad259fd622446b5501fc41d1db63ffa65"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad259fd622446b5501fc41d1db63ffa65">&#9670;&#160;</a></span>buildRibbons()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1graphics_1_1hair_1_1RibbonMesh.html">RibbonMesh</a> &gt; eve::graphics::hair::buildRibbons </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1graphics_1_1hair_1_1StrandsDatas.html">StrandsDatas</a> &amp;&#160;</td>
+          <td class="paramname"><em>strands</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1graphics_1_1hair_1_1RibbonParams.html">RibbonParams</a> &amp;&#160;</td>
+          <td class="paramname"><em>params</em> = <code>{}</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Expand validated strands into stable (non-view-facing) ribbons. </p>
+<p>Deterministic for unit tests. A later phase can rebuild per frame for true camera-facing billboards.</p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">strands</td><td>Must already be structurally valid (or validate() is called). </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="RibbonBuilder_8cpp_source.html">RibbonBuilder.cpp</a> 第 <a class="el" href="RibbonBuilder_8cpp_source.html#l00021">21</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="StrandsDatas_8h_source.html#l00061">eve::graphics::hair::StrandsDatas::curveCount()</a>, <a class="el" href="StrandsDatas_8cpp_source.html#l00081">eve::graphics::hair::StrandsDatas::curvePoints()</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca">eve::Failed</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="Grass_8cpp_source.html#l00061">i0</a>, <a class="el" href="Grass_8cpp_source.html#l00061">i1</a>, <a class="el" href="Grass_8cpp_source.html#l00061">i2</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="HexSphereMesh_8cpp_source.html#l00163">left</a>, <a class="el" href="RenderSystem3D_8cpp_source.html#l00641">mesh</a>, <a class="el" href="DecalManager_8cpp_source.html#l00020">p</a>, <a class="el" href="mesh_2MeshModifierGraph_8cpp_source.html#l00028">params</a>, <a class="el" href="UdpLink_8cpp_source.html#l00058">pos</a>, <a class="el" href="HexSphereMesh_8cpp_source.html#l00164">right</a>, <a class="el" href="BattleSystem_8cpp_source.html#l00057">s</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l00114">side</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="CaveMesh_8cpp_source.html#l00080">tangent</a> , 以及 <a class="el" href="StrandsDatas_8cpp_source.html#l00041">eve::graphics::hair::StrandsDatas::validate()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GroomInstance_8cpp_source.html#l00397">eve::graphics::hair::GroomInstance::rebuild()</a>.</p>
+
+</div>
+</div>
+<a id="ac40535e6e4d8c67ef5cf853c20bf7b4f" name="ac40535e6e4d8c67ef5cf853c20bf7b4f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac40535e6e4d8c67ef5cf853c20bf7b4f">&#9670;&#160;</a></span>configureCardLod()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::hair::configureCardLod </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Renderable3D.html">Renderable3D</a> *&#160;</td>
+          <td class="paramname"><em>renderable</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Mesh.html">Mesh</a> *&#160;</td>
+          <td class="paramname"><em>nearCards</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Mesh.html">Mesh</a> *&#160;</td>
+          <td class="paramname"><em>farProxy</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>switchDistance</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Wire near/far geometric LOD on a renderable (index 0 = cards, index 1 = proxy). </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">switchDistance</td><td><a class="el" href="classeve_1_1graphics_1_1Camera.html" title="2D/3D 摄像机基类：持有变换栈并暴露投影矩阵。">Camera</a> distance that selects the far mesh. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="HairCards_8cpp_source.html">HairCards.cpp</a> 第 <a class="el" href="HairCards_8cpp_source.html#l00158">158</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Renderable3D_8cpp_source.html#l00123">eve::graphics::Renderable3D::setHair()</a> , 以及 <a class="el" href="Renderable3D_8cpp_source.html#l00188">eve::graphics::Renderable3D::setMeshLod()</a>.</p>
+
+</div>
+</div>
+<a id="af5a0fa518b53ddf193c0a31f6ec3553f" name="af5a0fa518b53ddf193c0a31f6ec3553f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af5a0fa518b53ddf193c0a31f6ec3553f">&#9670;&#160;</a></span>createShader()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1Shader.html">Shader</a> * eve::graphics::hair::createShader </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *&#160;</td>
+          <td class="paramname"><em>gfx</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Create the default hair shader (alpha-blended, anisotropic specular). Owned by <a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a>. </p>
+
+<p class="definition">在文件 <a class="el" href="HairShader_8cpp_source.html">HairShader.cpp</a> 第 <a class="el" href="HairShader_8cpp_source.html#l00067">67</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="HairShader_8cpp_source.html#l00036">bindDefaults()</a>, <a class="el" href="GraphicsInternal_8h_source.html#l00290">frag</a>, <a class="el" href="classeve_1_1graphics_1_1Graphics.html#a11112fd49bc952f7c50a710e5abad6c7">eve::graphics::Graphics::getBackendName()</a>, <a class="el" href="Shader_8h_source.html#l00134">eve::graphics::Shader::gpuHandle</a>, <a class="el" href="HairWgsl_8h_source.html#l00008">eve::graphics::shaders::kHairFragWgsl</a>, <a class="el" href="classeve_1_1graphics_1_1Graphics.html#a8caa4a0c8e68cb47188155a32ae68cdc">eve::graphics::Graphics::newHairShaderFromSpv()</a>, <a class="el" href="classeve_1_1graphics_1_1Graphics.html#a293db8db40630f749db122a3867e67ad">eve::graphics::Graphics::newHairShaderFromWgsl()</a> , 以及 <a class="el" href="GraphicsInternal_8h_source.html#l00289">vert</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HairCards_8cpp_source.html#l00148">makeCardMaterial()</a>.</p>
+
+</div>
+</div>
+<a id="a16fc7f5701b4a69fac679abc36f7dcd8" name="a16fc7f5701b4a69fac679abc36f7dcd8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a16fc7f5701b4a69fac679abc36f7dcd8">&#9670;&#160;</a></span>extractGuides()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="classeve_1_1graphics_1_1hair_1_1StrandsDatas.html">StrandsDatas</a> &gt; eve::graphics::hair::extractGuides </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1graphics_1_1hair_1_1StrandsDatas.html">StrandsDatas</a> &amp;&#160;</td>
+          <td class="paramname"><em>strands</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>guideFraction</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Pick a deterministic subset of curves as guides (density thinning). </p>
+<p>Keeps about <code>guideFraction</code> of curves (clamped to [1/curveCount, 1]), strided from index 0. Useful when an asset has no imported guides.</p>
+<p>@ownership Returned datas uniquely owned by the caller. </p>
+
+<p class="definition">在文件 <a class="el" href="Guides_8cpp_source.html">Guides.cpp</a> 第 <a class="el" href="Guides_8cpp_source.html#l00056">56</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TerrainGenerationSession_8cpp_source.html#l00140">curve</a>, <a class="el" href="StrandsDatas_8h_source.html#l00061">eve::graphics::hair::StrandsDatas::curveCount()</a>, <a class="el" href="StrandsDatas_8cpp_source.html#l00081">eve::graphics::hair::StrandsDatas::curvePoints()</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca">eve::Failed</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="UdpLink_8cpp_source.html#l00059">ok</a>, <a class="el" href="StrandsDatas_8h_source.html#l00060">eve::graphics::hair::StrandsDatas::pointCount()</a>, <a class="el" href="StrandsDatas_8h_source.html#l00030">eve::graphics::hair::StrandCurve::pointOffset</a>, <a class="el" href="PrimitiveDrawList_8cpp_source.html#l00076">points</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00016">position</a>, <a class="el" href="StrandsDatas_8cpp_source.html#l00022">eve::graphics::hair::StrandsDatas::setCurves()</a>, <a class="el" href="StrandsDatas_8cpp_source.html#l00020">eve::graphics::hair::StrandsDatas::setPoints()</a>, <a class="el" href="TreeMesh_8cpp_source.html#l00287">step</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="McpServer_8cpp_source.html#l00550">valid</a> , 以及 <a class="el" href="StrandsDatas_8cpp_source.html#l00041">eve::graphics::hair::StrandsDatas::validate()</a>.</p>
+
+</div>
+</div>
+<a id="a5ee0034c5c6b2783e0af904957f5a656" name="a5ee0034c5c6b2783e0af904957f5a656"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5ee0034c5c6b2783e0af904957f5a656">&#9670;&#160;</a></span>filterStrandsByCurves()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="classeve_1_1graphics_1_1hair_1_1StrandsDatas.html">StrandsDatas</a> &gt; eve::graphics::hair::filterStrandsByCurves </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1graphics_1_1hair_1_1StrandsDatas.html">StrandsDatas</a> &amp;&#160;</td>
+          <td class="paramname"><em>src</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; uint32_t &gt; &amp;&#160;</td>
+          <td class="paramname"><em>curveIndices</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Copy a subset of curves into a new <code><a class="el" href="classeve_1_1graphics_1_1hair_1_1StrandsDatas.html" title="CPU-authoritative strand buffer (UE FHairStrandsDatas analogue).">StrandsDatas</a></code> (preserves point order). </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">curveIndices</td><td>Must be in-range; duplicates are ignored after first keep. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="ClusterGrid_8cpp_source.html">ClusterGrid.cpp</a> 第 <a class="el" href="ClusterGrid_8cpp_source.html#l00188">188</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TerrainGenerationSession_8cpp_source.html#l00140">curve</a>, <a class="el" href="StrandsDatas_8h_source.html#l00061">eve::graphics::hair::StrandsDatas::curveCount()</a>, <a class="el" href="StrandsDatas_8cpp_source.html#l00081">eve::graphics::hair::StrandsDatas::curvePoints()</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="UdpLink_8cpp_source.html#l00059">ok</a>, <a class="el" href="StrandsDatas_8h_source.html#l00060">eve::graphics::hair::StrandsDatas::pointCount()</a>, <a class="el" href="StrandsDatas_8h_source.html#l00030">eve::graphics::hair::StrandCurve::pointOffset</a>, <a class="el" href="PrimitiveDrawList_8cpp_source.html#l00076">points</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00016">position</a>, <a class="el" href="StrandsDatas_8cpp_source.html#l00022">eve::graphics::hair::StrandsDatas::setCurves()</a>, <a class="el" href="StrandsDatas_8cpp_source.html#l00020">eve::graphics::hair::StrandsDatas::setPoints()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="McpServer_8cpp_source.html#l00550">valid</a> , 以及 <a class="el" href="StrandsDatas_8cpp_source.html#l00041">eve::graphics::hair::StrandsDatas::validate()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GroomInstance_8cpp_source.html#l00397">eve::graphics::hair::GroomInstance::rebuild()</a>.</p>
+
+</div>
+</div>
+<a id="a866914b7fdc265df799536421d2950e1" name="a866914b7fdc265df799536421d2950e1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a866914b7fdc265df799536421d2950e1">&#9670;&#160;</a></span>generateOnMesh()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="classeve_1_1graphics_1_1hair_1_1StrandsDatas.html">StrandsDatas</a> &gt; eve::graphics::hair::generateOnMesh </td>
+          <td>(</td>
+          <td class="paramtype">const float *&#160;</td>
+          <td class="paramname"><em>posXYZ</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const float *&#160;</td>
+          <td class="paramname"><em>nrmXYZ</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>vertexCount</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const uint32_t *&#160;</td>
+          <td class="paramname"><em>indices</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>indexCount</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1graphics_1_1hair_1_1ProceduralParams.html">ProceduralParams</a> &amp;&#160;</td>
+          <td class="paramname"><em>params</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Grow strands from area-weighted samples on an indexed triangle mesh. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">posXYZ</td><td>Vertex positions (xyz packed). Borrowed only for this call. </td></tr>
+    <tr><td class="paramname">nrmXYZ</td><td>Vertex normals (xyz packed); may be null → geometric normals. @ownership Returned <code><a class="el" href="classeve_1_1graphics_1_1hair_1_1StrandsDatas.html" title="CPU-authoritative strand buffer (UE FHairStrandsDatas analogue).">StrandsDatas</a></code> is uniquely owned by the caller. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="Procedural_8cpp_source.html">Procedural.cpp</a> 第 <a class="el" href="Procedural_8cpp_source.html#l00104">104</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TerrainGenerationSession_8cpp_source.html#l00140">curve</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="GltfImporter_8cpp_source.html#l00023">indexCount</a>, <a class="el" href="HeightmapMesh_8cpp_source.html#l00019">indices</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="Grass_8cpp_source.html#l00063">n</a>, <a class="el" href="DecalManager_8cpp_source.html#l00020">p</a>, <a class="el" href="mesh_2MeshModifierGraph_8cpp_source.html#l00028">params</a>, <a class="el" href="StrandsDatas_8h_source.html#l00030">eve::graphics::hair::StrandCurve::pointOffset</a>, <a class="el" href="PrimitiveDrawList_8cpp_source.html#l00076">points</a>, <a class="el" href="UdpLink_8cpp_source.html#l00058">pos</a>, <a class="el" href="StrandsDatas_8h_source.html#l00019">eve::graphics::hair::StrandPoint::position</a>, <a class="el" href="StrandsDatas_8h_source.html#l00020">eve::graphics::hair::StrandPoint::radius</a>, <a class="el" href="AnimSmr_8cpp_source.html#l00119">root</a>, <a class="el" href="BattleSystem_8cpp_source.html#l00057">s</a>, <a class="el" href="PointSet_8cpp_source.html#l00762">seed</a>, <a class="el" href="StrandsDatas_8cpp_source.html#l00022">eve::graphics::hair::StrandsDatas::setCurves()</a>, <a class="el" href="StrandsDatas_8cpp_source.html#l00020">eve::graphics::hair::StrandsDatas::setPoints()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="PrototypeKit_8cpp_source.html#l00110">t</a>, <a class="el" href="CaveMesh_8cpp_source.html#l00080">tangent</a>, <a class="el" href="StrandsDatas_8h_source.html#l00022">eve::graphics::hair::StrandPoint::u</a>, <a class="el" href="StrandsDatas_8cpp_source.html#l00041">eve::graphics::hair::StrandsDatas::validate()</a> , 以及 <a class="el" href="GltfImporter_8cpp_source.html#l00022">vertexCount</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GroomInstance_8cpp_source.html#l00163">eve::graphics::hair::GroomInstance::bakeProceduralMesh()</a> , 以及 <a class="el" href="Procedural_8cpp_source.html#l00204">generateOnPlane()</a>.</p>
+
+</div>
+</div>
+<a id="a7d115874ee7c0d26996fb4c05e96d7c9" name="a7d115874ee7c0d26996fb4c05e96d7c9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7d115874ee7c0d26996fb4c05e96d7c9">&#9670;&#160;</a></span>generateOnPlane()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="classeve_1_1graphics_1_1hair_1_1StrandsDatas.html">StrandsDatas</a> &gt; eve::graphics::hair::generateOnPlane </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>sizeX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>sizeZ</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1graphics_1_1hair_1_1ProceduralParams.html">ProceduralParams</a> &amp;&#160;</td>
+          <td class="paramname"><em>params</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Grow strands on a Y-up XZ plane centered at the origin. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">sizeX</td><td>/ sizeZ Full plane extents. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="Procedural_8cpp_source.html">Procedural.cpp</a> 第 <a class="el" href="Procedural_8cpp_source.html#l00204">204</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="Procedural_8cpp_source.html#l00104">generateOnMesh()</a>, <a class="el" href="Pathfinder_8cpp_source.html#l00336">idx</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="mesh_2MeshModifierGraph_8cpp_source.html#l00028">params</a> , 以及 <a class="el" href="UdpLink_8cpp_source.html#l00058">pos</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GroomInstance_8cpp_source.html#l00156">eve::graphics::hair::GroomInstance::bakeProceduralPlane()</a>.</p>
+
+</div>
+</div>
+<a id="a1db7a22a9e8f9f333f0c1c4b8b0042b3" name="a1db7a22a9e8f9f333f0c1c4b8b0042b3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1db7a22a9e8f9f333f0c1c4b8b0042b3">&#9670;&#160;</a></span>interpolateStrands()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="classeve_1_1graphics_1_1hair_1_1StrandsDatas.html">StrandsDatas</a> &gt; eve::graphics::hair::interpolateStrands </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1graphics_1_1hair_1_1StrandsDatas.html">StrandsDatas</a> &amp;&#160;</td>
+          <td class="paramname"><em>strandsRest</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1graphics_1_1hair_1_1StrandsDatas.html">StrandsDatas</a> &amp;&#160;</td>
+          <td class="paramname"><em>guidesRest</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1graphics_1_1hair_1_1StrandsDatas.html">StrandsDatas</a> &amp;&#160;</td>
+          <td class="paramname"><em>guidesDeformed</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="structeve_1_1graphics_1_1hair_1_1StrandGuideWeights.html">StrandGuideWeights</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>weights</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1graphics_1_1hair.html#a5a1a3352685b189968f70fd32b8591b8">InterpolationMode</a>&#160;</td>
+          <td class="paramname"><em>mode</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Drive rest render strands with deformed guides using precomputed weights. @ownership Returned datas uniquely owned by the caller; inputs unchanged. </p>
+
+<p class="definition">在文件 <a class="el" href="Guides_8cpp_source.html">Guides.cpp</a> 第 <a class="el" href="Guides_8cpp_source.html#l00154">154</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TerrainGenerationSession_8cpp_source.html#l00140">curve</a>, <a class="el" href="StrandsDatas_8h_source.html#l00061">eve::graphics::hair::StrandsDatas::curveCount()</a>, <a class="el" href="StrandsDatas_8h_source.html#l00066">eve::graphics::hair::StrandsDatas::curves()</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad5577819bdd3dadf2ce8cd0c265ff6b5">eve::InvariantViolation</a>, <a class="el" href="StrandsDatas_8h_source.html#l00064">eve::graphics::hair::StrandsDatas::points()</a>, <a class="el" href="PrimitiveDrawList_8cpp_source.html#l00076">points</a>, <a class="el" href="StrandsDatas_8h_source.html#l00019">eve::graphics::hair::StrandPoint::position</a>, <a class="el" href="namespaceeve_1_1graphics_1_1hair.html#a5a1a3352685b189968f70fd32b8591b8ac7207657aba5dfd2e5b0ca3f35cd8c26">Rigid</a>, <a class="el" href="StrandsDatas_8cpp_source.html#l00022">eve::graphics::hair::StrandsDatas::setCurves()</a>, <a class="el" href="StrandsDatas_8cpp_source.html#l00020">eve::graphics::hair::StrandsDatas::setPoints()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="StrandsDatas_8h_source.html#l00022">eve::graphics::hair::StrandPoint::u</a>, <a class="el" href="McpServer_8cpp_source.html#l00550">valid</a>, <a class="el" href="StrandsDatas_8cpp_source.html#l00041">eve::graphics::hair::StrandsDatas::validate()</a> , 以及 <a class="el" href="TerrainImageAdapter_8cpp_source.html#l00082">weights</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GroomInstance_8cpp_source.html#l00287">eve::graphics::hair::GroomInstance::update()</a>.</p>
+
+</div>
+</div>
+<a id="aa2a873e582a2e2508d10049047e783b1" name="aa2a873e582a2e2508d10049047e783b1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa2a873e582a2e2508d10049047e783b1">&#9670;&#160;</a></span>makeCardMaterial()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1Material.html">Material</a> * eve::graphics::hair::makeCardMaterial </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *&#160;</td>
+          <td class="paramname"><em>gfx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Texture.html">Texture</a> *&#160;</td>
+          <td class="paramname"><em>albedo</em> = <code>nullptr</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Shader.html">Shader</a> *&#160;</td>
+          <td class="paramname"><em>hairShader</em> = <code>nullptr</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Create a <a class="el" href="classeve_1_1graphics_1_1Material.html" title="Packages shading method + surface parameters into one attachable asset.">Material</a> configured for hair cards and optionally bind the hair shader + albedo. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">gfx</td><td><a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> factory used to create the default hair shader when <code>hairShader</code> is null. </td></tr>
+    <tr><td class="paramname">albedo</td><td>Optional borrowed albedo texture; <a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> retains ownership. </td></tr>
+    <tr><td class="paramname">hairShader</td><td>Optional borrowed hair shader; <a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> retains ownership when non-null. @ownership Caller owns the returned Material*; <code>gfx</code>/<code>albedo</code>/<code>hairShader</code> are borrowed. @lifetime <a class="el" href="classeve_1_1graphics_1_1Material.html" title="Packages shading method + surface parameters into one attachable asset.">Material</a> outlives this call; borrowed shader/texture must outlive <a class="el" href="classeve_1_1graphics_1_1Material.html" title="Packages shading method + surface parameters into one attachable asset.">Material</a> draws. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="HairCards_8cpp_source.html">HairCards.cpp</a> 第 <a class="el" href="HairCards_8cpp_source.html#l00148">148</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ModelRenderer_8cpp_source.html#l00117">albedo</a>, <a class="el" href="HairCards_8cpp_source.html#l00136">applyCardDefaults()</a>, <a class="el" href="HairShader_8cpp_source.html#l00067">createShader()</a> , 以及 <a class="el" href="RenderSystem3D_8cpp_source.html#l00643">shader</a>.</p>
+
+</div>
+</div>
+<a id="a6206cc08a57d131ede0baa162f511a0e" name="a6206cc08a57d131ede0baa162f511a0e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6206cc08a57d131ede0baa162f511a0e">&#9670;&#160;</a></span>newCardMesh()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1Mesh.html">Mesh</a> * eve::graphics::hair::newCardMesh </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *&#160;</td>
+          <td class="paramname"><em>gfx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>width</em> = <code>0.12<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>height</em> = <code>0.45<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Convenience: single card mesh. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">gfx</td><td><a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> factory that owns the resulting GPU mesh. @ownership <a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> owns the returned <a class="el" href="classeve_1_1graphics_1_1Mesh.html" title="GPU mesh handle (+ optional CPU morph targets).">Mesh</a>; <code>gfx</code> is borrowed for the call only. @lifetime Returned mesh remains valid until <a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> releases it; <code>gfx</code> must outlive the call. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="HairCards_8cpp_source.html">HairCards.cpp</a> 第 <a class="el" href="HairCards_8cpp_source.html#l00132">132</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="HairCards_8cpp_source.html#l00066">buildCard()</a>, <a class="el" href="ImageImporter_8cpp_source.html#l00014">height</a>, <a class="el" href="HairCards_8cpp_source.html#l00123">uploadCardMesh()</a> , 以及 <a class="el" href="ImageImporter_8cpp_source.html#l00013">width</a>.</p>
+
+</div>
+</div>
+<a id="a25b7588ee3306f4ecbdb7c08c52bf031" name="a25b7588ee3306f4ecbdb7c08c52bf031"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a25b7588ee3306f4ecbdb7c08c52bf031">&#9670;&#160;</a></span>paramCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::graphics::hair::paramCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Push-constant parameter names (same order as mesh3d_hair.frag). </p>
+
+<p class="definition">在文件 <a class="el" href="HairShader_8cpp_source.html">HairShader.cpp</a> 第 <a class="el" href="HairShader_8cpp_source.html#l00029">29</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a7843054c586cd9ec3d3c3975327dde36" name="a7843054c586cd9ec3d3c3975327dde36"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7843054c586cd9ec3d3c3975327dde36">&#9670;&#160;</a></span>paramName()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::graphics::hair::paramName </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="HairShader_8cpp_source.html">HairShader.cpp</a> 第 <a class="el" href="HairShader_8cpp_source.html#l00031">31</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="UnityVegetationMaterial_8cpp_source.html#l00161">index</a>.</p>
+
+</div>
+</div>
+<a id="a12c7f4737dca062ba25acf2633d95b96" name="a12c7f4737dca062ba25acf2633d95b96"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a12c7f4737dca062ba25acf2633d95b96">&#9670;&#160;</a></span>selectLodIndex()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t eve::graphics::hair::selectLodIndex </td>
+          <td>(</td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="structeve_1_1graphics_1_1hair_1_1GroomLod.html">GroomLod</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>lods</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>screenSize</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Pick the LOD index for a given screen size (largest screenSize ≤ query). </p>
+<dl class="section return"><dt>返回</dt><dd>0 when <code>lods</code> is empty. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="GroomAsset_8cpp_source.html">GroomAsset.cpp</a> 第 <a class="el" href="GroomAsset_8cpp_source.html#l00075">75</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aadfc37e05183e51faa866afdbbd50b98" name="aadfc37e05183e51faa866afdbbd50b98"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aadfc37e05183e51faa866afdbbd50b98">&#9670;&#160;</a></span>uploadCardMesh()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1Mesh.html">Mesh</a> * eve::graphics::hair::uploadCardMesh </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> *&#160;</td>
+          <td class="paramname"><em>gfx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1graphics_1_1hair_1_1CardMeshData.html">CardMeshData</a> &amp;&#160;</td>
+          <td class="paramname"><em>data</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Upload card arrays as a Graphics-owned <a class="el" href="classeve_1_1graphics_1_1Mesh.html" title="GPU mesh handle (+ optional CPU morph targets).">Mesh</a>. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">gfx</td><td><a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> factory that owns the resulting GPU mesh. @ownership <a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> owns the returned <a class="el" href="classeve_1_1graphics_1_1Mesh.html" title="GPU mesh handle (+ optional CPU morph targets).">Mesh</a>; <code>gfx</code> is borrowed for the call only. @lifetime Returned mesh remains valid until <a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> releases it; <code>gfx</code> must outlive the call. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd><a class="el" href="classeve_1_1graphics_1_1Mesh.html" title="GPU mesh handle (+ optional CPU morph targets).">Mesh</a> pointer owned by <a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a>, or null on failure. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="HairCards_8cpp_source.html">HairCards.cpp</a> 第 <a class="el" href="HairCards_8cpp_source.html#l00123">123</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="classeve_1_1graphics_1_1Graphics.html#ad2394ae661385736c667a98446a5b9b4">eve::graphics::Graphics::newMeshFromArrays()</a> , 以及 <a class="el" href="GltfImporter_8cpp_source.html#l00022">vertexCount</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HairCards_8cpp_source.html#l00132">newCardMesh()</a> , 以及 <a class="el" href="GroomInstance_8cpp_source.html#l00397">eve::graphics::hair::GroomInstance::rebuild()</a>.</p>
+
+</div>
+</div>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,496 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::graphics::VegetationField类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1graphics.html">graphics</a></li><li class="navelem"><a class="el" href="classeve_1_1graphics_1_1VegetationField.html">VegetationField</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1graphics_1_1VegetationField-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::graphics::VegetationField类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Backend-independent, owning vegetation influence field. Single writer; concurrent const evaluation is safe while no replace occurs. No callbacks, external resources, global singleton, ECS mutation or wall clock. Returned samples/atlases are owning projections, never additional mutable authority.  
+ <a href="classeve_1_1graphics_1_1VegetationField.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="VegetationField_8h_source.html">VegetationField.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:abe85abe602e0e3e75e3fe88be50bb194" id="r_abe85abe602e0e3e75e3fe88be50bb194"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1graphics_1_1VegetationGlobals.html">VegetationGlobals</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1VegetationField.html#abe85abe602e0e3e75e3fe88be50bb194">globalValues</a> () const</td></tr>
+<tr class="memdesc:abe85abe602e0e3e75e3fe88be50bb194"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return detached global defaults; concurrent reads require no writer. No callbacks.  <br /></td></tr>
+<tr class="separator:abe85abe602e0e3e75e3fe88be50bb194"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afd91a1fb09c1af59ec3181f487fa9b65" id="r_afd91a1fb09c1af59ec3181f487fa9b65"><td class="memItemLeft" align="right" valign="top">uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1VegetationField.html#afd91a1fb09c1af59ec3181f487fa9b65">revision</a> () const</td></tr>
+<tr class="memdesc:afd91a1fb09c1af59ec3181f487fa9b65"><td class="mdescLeft">&#160;</td><td class="mdescRight">Monotonic successful-publication revision for derived render snapshots.  <br /></td></tr>
+<tr class="separator:afd91a1fb09c1af59ec3181f487fa9b65"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a17cb98449e46d61d05c3cd335d828419" id="r_a17cb98449e46d61d05c3cd335d828419"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::vector&lt; <a class="el" href="structeve_1_1graphics_1_1VegetationElement.html">VegetationElement</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1VegetationField.html#a17cb98449e46d61d05c3cd335d828419">snapshotElements</a> () const</td></tr>
+<tr class="memdesc:a17cb98449e46d61d05c3cd335d828419"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return an owning, priority-ordered element snapshot for revision-safe editor previews.  <br /></td></tr>
+<tr class="separator:a17cb98449e46d61d05c3cd335d828419"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5f9eed7be74965dd052ee7514dee2769" id="r_a5f9eed7be74965dd052ee7514dee2769"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1VegetationField.html#a5f9eed7be74965dd052ee7514dee2769">restore</a> (const <a class="el" href="classeve_1_1Value.html">Value</a> &amp;document)</td></tr>
+<tr class="memdesc:a5f9eed7be74965dd052ee7514dee2769"><td class="mdescLeft">&#160;</td><td class="mdescRight">Decode eve.graphics.vegetation-field version 1; rejects unknown fields/versions. Single-writer, no callbacks. Fully validates before publication; failure preserves state.  <br /></td></tr>
+<tr class="separator:a5f9eed7be74965dd052ee7514dee2769"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af881119ef7b7871963d1db42b6a2ae3c" id="r_af881119ef7b7871963d1db42b6a2ae3c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="classeve_1_1Value.html">Value</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1VegetationField.html#af881119ef7b7871963d1db42b6a2ae3c">snapshot</a> () const</td></tr>
+<tr class="memdesc:af881119ef7b7871963d1db42b6a2ae3c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owning versioned snapshot; thread-safe while no mutation occurs. No callbacks.  <br /></td></tr>
+<tr class="separator:af881119ef7b7871963d1db42b6a2ae3c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2486da99b83f372f7fe4326854bc1daf" id="r_a2486da99b83f372f7fe4326854bc1daf"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1VegetationField.html#a2486da99b83f372f7fe4326854bc1daf">replace</a> (const <a class="el" href="structeve_1_1graphics_1_1VegetationGlobals.html">VegetationGlobals</a> &amp;globals, std::span&lt; const <a class="el" href="structeve_1_1graphics_1_1VegetationElement.html">VegetationElement</a> &gt; <a class="el" href="SquirrelBinding_8cpp.html#a9cb7ebae0f472ee88c186932fb62a8a1">elements</a>)</td></tr>
+<tr class="memdesc:a2486da99b83f372f7fe4326854bc1daf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Validate and atomically replace the entire field; failure preserves prior state.  <br /></td></tr>
+<tr class="separator:a2486da99b83f372f7fe4326854bc1daf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af12e0cc7d33ff75dc4f3712126591cda" id="r_af12e0cc7d33ff75dc4f3712126591cda"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1graphics_1_1VegetationSample.html">VegetationSample</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1VegetationField.html#af12e0cc7d33ff75dc4f3712126591cda">sample</a> (glm::vec3 <a class="el" href="LegacyAnimationImporter_8cpp.html#a60ea6c13eb7a935dc579b69b80cee822">position</a>, std::array&lt; uint8_t, 4 &gt; layers={}) const</td></tr>
+<tr class="memdesc:af12e0cc7d33ff75dc4f3712126591cda"><td class="mdescLeft">&#160;</td><td class="mdescRight">Evaluate four independently selected layers (0..8) at a finite world position.  <br /></td></tr>
+<tr class="separator:af12e0cc7d33ff75dc4f3712126591cda"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9a1561bc242c7a8ad257a4f7f3254f31" id="r_a9a1561bc242c7a8ad257a4f7f3254f31"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1graphics_1_1VegetationAtlas.html">VegetationAtlas</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1VegetationField.html#a9a1561bc242c7a8ad257a4f7f3254f31">bake</a> (glm::vec3 <a class="el" href="BushMesh_8cpp.html#a536a14dffc8e09851c78f534885a1de8">center</a>, glm::vec3 extent, uint32_t <a class="el" href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a>, uint32_t <a class="el" href="ImageImporter_8cpp.html#adfe1b51744835d88ff3bcd45411d2c53">height</a>, std::array&lt; uint8_t, 4 &gt; layers={}, bool snapToTexel=true) const</td></tr>
+<tr class="memdesc:a9a1561bc242c7a8ad257a4f7f3254f31"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bake an X/Z slice. Width/height in [1,2048]; positive extent; one layer per channel. Texel snapping uses full width/height = 2*extent. Output center records the snapped origin.  <br /></td></tr>
+<tr class="separator:a9a1561bc242c7a8ad257a4f7f3254f31"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Backend-independent, owning vegetation influence field. Single writer; concurrent const evaluation is safe while no replace occurs. No callbacks, external resources, global singleton, ECS mutation or wall clock. Returned samples/atlases are owning projections, never additional mutable authority. </p>
+
+<p class="definition">在文件 <a class="el" href="VegetationField_8h_source.html">VegetationField.h</a> 第 <a class="el" href="VegetationField_8h_source.html#l00085">85</a> 行定义.</p>
+</div><h2 class="groupheader">成员函数说明</h2>
+<a id="a9a1561bc242c7a8ad257a4f7f3254f31" name="a9a1561bc242c7a8ad257a4f7f3254f31"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9a1561bc242c7a8ad257a4f7f3254f31">&#9670;&#160;</a></span>bake()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1graphics_1_1VegetationAtlas.html">VegetationAtlas</a> &gt; eve::graphics::VegetationField::bake </td>
+          <td>(</td>
+          <td class="paramtype">glm::vec3&#160;</td>
+          <td class="paramname"><em>center</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">glm::vec3&#160;</td>
+          <td class="paramname"><em>extent</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>width</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>height</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::array&lt; uint8_t, 4 &gt;&#160;</td>
+          <td class="paramname"><em>layers</em> = <code>{}</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>snapToTexel</em> = <code>true</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Bake an X/Z slice. Width/height in [1,2048]; positive extent; one layer per channel. Texel snapping uses full width/height = 2*extent. Output center records the snapped origin. </p>
+<dl class="section return"><dt>返回</dt><dd>Owning atlas or InvalidArgument/Failed; no partial output. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="VegetationField_8cpp_source.html">VegetationField.cpp</a> 第 <a class="el" href="VegetationField_8cpp_source.html#l00136">136</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="VegetationField_8h_source.html#l00067">eve::graphics::VegetationAtlas::center</a>, <a class="el" href="BushMesh_8cpp_source.html#l00027">center</a>, <a class="el" href="VegetationField_8h_source.html#l00068">eve::graphics::VegetationAtlas::channels</a>, <a class="el" href="VegetationField_8h_source.html#l00067">eve::graphics::VegetationAtlas::extent</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="OnnxRuntime_8cpp_source.html#l00026">finite</a>, <a class="el" href="ImageImporter_8cpp_source.html#l00014">height</a>, <a class="el" href="VegetationField_8h_source.html#l00066">eve::graphics::VegetationAtlas::height</a>, <a class="el" href="UnityVegetationMaterial_8cpp_source.html#l00161">index</a>, <a class="el" href="DecalManager_8cpp_source.html#l00020">p</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="HexRiverMesh_8cpp_source.html#l00019">v</a>, <a class="el" href="ImageImporter_8cpp_source.html#l00013">width</a>, <a class="el" href="VegetationField_8h_source.html#l00066">eve::graphics::VegetationAtlas::width</a>, <a class="el" href="AnimClip_8cpp_source.html#l00738">x</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00738">y</a>.</p>
+
+</div>
+</div>
+<a id="abe85abe602e0e3e75e3fe88be50bb194" name="abe85abe602e0e3e75e3fe88be50bb194"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abe85abe602e0e3e75e3fe88be50bb194">&#9670;&#160;</a></span>globalValues()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1graphics_1_1VegetationGlobals.html">VegetationGlobals</a> eve::graphics::VegetationField::globalValues </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return detached global defaults; concurrent reads require no writer. No callbacks. </p>
+
+<p class="definition">在文件 <a class="el" href="VegetationField_8h_source.html">VegetationField.h</a> 第 <a class="el" href="VegetationField_8h_source.html#l00088">88</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VegetationFieldTarget_8cpp_source.html#l00064">eve::graphics_editing::VegetationFieldTarget::create()</a> , 以及 <a class="el" href="VegetationMotion_8cpp_source.html#l00185">eve::graphics::deformVegetation()</a>.</p>
+
+</div>
+</div>
+<a id="a2486da99b83f372f7fe4326854bc1daf" name="a2486da99b83f372f7fe4326854bc1daf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2486da99b83f372f7fe4326854bc1daf">&#9670;&#160;</a></span>replace()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::graphics::VegetationField::replace </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1graphics_1_1VegetationGlobals.html">VegetationGlobals</a> &amp;&#160;</td>
+          <td class="paramname"><em>globals</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::span&lt; const <a class="el" href="structeve_1_1graphics_1_1VegetationElement.html">VegetationElement</a> &gt;&#160;</td>
+          <td class="paramname"><em>elements</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Validate and atomically replace the entire field; failure preserves prior state. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">globals</td><td>Finite channel defaults; season in [0,4]. </td></tr>
+    <tr><td class="paramname">elements</td><td>Borrowed only during call; copied, validated and stably ordered. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>InvalidArgument for invalid definitions or Failed for allocation failure. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="VegetationField_8cpp_source.html">VegetationField.cpp</a> 第 <a class="el" href="VegetationField_8cpp_source.html#l00063">63</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00014">a</a>, <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00015">b</a>, <a class="el" href="namespaceeve_1_1graphics.html#aa8ce7fcbb570489ca4104b5a69922b0ea3cfce651e667ab85486dd42a8185f98a">eve::graphics::Box</a>, <a class="el" href="VegetationField_8h_source.html#l00052">eve::graphics::VegetationGlobals::color</a>, <a class="el" href="SquirrelBinding_8cpp_source.html#l00018">elements</a>, <a class="el" href="VegetationField_8h_source.html#l00053">eve::graphics::VegetationGlobals::extras</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="OnnxRuntime_8cpp_source.html#l00026">finite</a>, <a class="el" href="VirtualGeometryRenderer_8cpp_source.html#l00018">m</a>, <a class="el" href="namespaceeve_1_1graphics.html#a34ea33f7bbc6bb44ac512b00ed05c65ba8321e79c278ec510f63675c040594892">eve::graphics::Maximum</a>, <a class="el" href="VegetationField_8h_source.html#l00054">eve::graphics::VegetationGlobals::motion</a>, <a class="el" href="VegetationField_8h_source.html#l00056">eve::graphics::VegetationGlobals::season</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l00113">unit</a>, <a class="el" href="ActionNotifyRegistry_8cpp_source.html#l00165">value</a>, <a class="el" href="namespaceeve_1_1graphics.html#a5afd9225d97f0d1ec0e68859095034eeab22b929ba52471a02d18bb3a4e4472e6">eve::graphics::Vertex</a> , 以及 <a class="el" href="VegetationField_8h_source.html#l00055">eve::graphics::VegetationGlobals::vertex</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VegetationFieldTarget_8cpp_source.html#l00178">eve::graphics_editing::VegetationFieldTarget::makeSet()</a>, <a class="el" href="VegetationFieldTarget_8cpp_source.html#l00159">eve::graphics_editing::VegetationFieldTarget::makeTransform()</a> , 以及 <a class="el" href="VegetationFieldCodec_8cpp_source.html#l00039">restore()</a>.</p>
+
+</div>
+</div>
+<a id="a5f9eed7be74965dd052ee7514dee2769" name="a5f9eed7be74965dd052ee7514dee2769"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5f9eed7be74965dd052ee7514dee2769">&#9670;&#160;</a></span>restore()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::graphics::VegetationField::restore </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1Value.html">Value</a> &amp;&#160;</td>
+          <td class="paramname"><em>document</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Decode eve.graphics.vegetation-field version 1; rejects unknown fields/versions. Single-writer, no callbacks. Fully validates before publication; failure preserves state. </p>
+
+<p class="definition">在文件 <a class="el" href="VegetationFieldCodec_8cpp_source.html">VegetationFieldCodec.cpp</a> 第 <a class="el" href="VegetationFieldCodec_8cpp_source.html#l00039">39</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="UnityVegetationPreset_8cpp_source.html#l00032">at</a>, <a class="el" href="VegetationField_8h_source.html#l00033">eve::graphics::VegetationElement::channel</a>, <a class="el" href="VegetationField_8h_source.html#l00052">eve::graphics::VegetationGlobals::color</a>, <a class="el" href="SquirrelBinding_8cpp_source.html#l00018">elements</a>, <a class="el" href="Package_8cpp_source.html#l00060">error</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca">eve::Failed</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="PlayHost_8cpp_source.html#l00145">fields</a>, <a class="el" href="GpuGraph_8cpp_source.html#l00007">g</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="BuildingFx_8cpp_source.html#l00064">mask</a>, <a class="el" href="RpgDialect_8cpp_source.html#l00335">number</a>, <a class="el" href="PrototypeTextures_8cpp_source.html#l00043">pixels</a>, <a class="el" href="VegetationField_8cpp_source.html#l00063">replace()</a>, <a class="el" href="TreeMesh_8cpp_source.html#l00129">size</a>, <a class="el" href="UnityVegetationPreset_8cpp_source.html#l00029">source</a> , 以及 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a44766ce89c0a6bd59c7e1860e782fc78">eve::UnknownVersion</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VegetationScriptBindings_8cpp_source.html#l00023">eve::graphics::exposeVegetationScriptBindings()</a>.</p>
+
+</div>
+</div>
+<a id="afd91a1fb09c1af59ec3181f487fa9b65" name="afd91a1fb09c1af59ec3181f487fa9b65"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afd91a1fb09c1af59ec3181f487fa9b65">&#9670;&#160;</a></span>revision()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint64_t eve::graphics::VegetationField::revision </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Monotonic successful-publication revision for derived render snapshots. </p>
+
+<p class="definition">在文件 <a class="el" href="VegetationField_8h_source.html">VegetationField.h</a> 第 <a class="el" href="VegetationField_8h_source.html#l00090">90</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VegetationFieldGpu_8cpp_source.html#l00385">eve::graphics::bindVegetationGpuFields()</a>, <a class="el" href="VegetationFieldGizmo_8cpp_source.html#l00031">eve::graphics_editing::VegetationFieldGizmoBuilder::build()</a>, <a class="el" href="VegetationFieldTarget_8cpp_source.html#l00064">eve::graphics_editing::VegetationFieldTarget::create()</a>, <a class="el" href="VegetationFieldGpu_8cpp_source.html#l00052">eve::graphics::uploadAtlas()</a> , 以及 <a class="el" href="VegetationFieldGpu_8cpp_source.html#l00150">eve::graphics::uploadVegetationGpuFieldSet()</a>.</p>
+
+</div>
+</div>
+<a id="af12e0cc7d33ff75dc4f3712126591cda" name="af12e0cc7d33ff75dc4f3712126591cda"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af12e0cc7d33ff75dc4f3712126591cda">&#9670;&#160;</a></span>sample()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1graphics_1_1VegetationSample.html">VegetationSample</a> &gt; eve::graphics::VegetationField::sample </td>
+          <td>(</td>
+          <td class="paramtype">glm::vec3&#160;</td>
+          <td class="paramname"><em>position</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::array&lt; uint8_t, 4 &gt;&#160;</td>
+          <td class="paramname"><em>layers</em> = <code>{}</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Evaluate four independently selected layers (0..8) at a finite world position. </p>
+<dl class="section return"><dt>返回</dt><dd>Owning sample or InvalidArgument. Worker-safe with immutable field. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="VegetationField_8cpp_source.html">VegetationField.cpp</a> 第 <a class="el" href="VegetationField_8cpp_source.html#l00127">127</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="OnnxRuntime_8cpp_source.html#l00026">finite</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00016">position</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VegetationMotion_8cpp_source.html#l00185">eve::graphics::deformVegetation()</a>, <a class="el" href="VegetationScriptBindings_8cpp_source.html#l00023">eve::graphics::exposeVegetationScriptBindings()</a> , 以及 <a class="el" href="VegetationFieldGpu_8cpp_source.html#l00052">eve::graphics::uploadAtlas()</a>.</p>
+
+</div>
+</div>
+<a id="af881119ef7b7871963d1db42b6a2ae3c" name="af881119ef7b7871963d1db42b6a2ae3c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af881119ef7b7871963d1db42b6a2ae3c">&#9670;&#160;</a></span>snapshot()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="classeve_1_1Value.html">Value</a> &gt; eve::graphics::VegetationField::snapshot </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Owning versioned snapshot; thread-safe while no mutation occurs. No callbacks. </p>
+
+<p class="definition">在文件 <a class="el" href="VegetationFieldCodec_8cpp_source.html">VegetationFieldCodec.cpp</a> 第 <a class="el" href="VegetationFieldCodec_8cpp_source.html#l00104">104</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="VegetationField_8h_source.html#l00052">eve::graphics::VegetationGlobals::color</a>, <a class="el" href="SquirrelBinding_8cpp_source.html#l00018">elements</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="VegetationField_8h_source.html#l00053">eve::graphics::VegetationGlobals::extras</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca">eve::Failed</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="VegetationField_8h_source.html#l00054">eve::graphics::VegetationGlobals::motion</a>, <a class="el" href="Value_8h_source.html#l00114">eve::Value::object()</a>, <a class="el" href="PrototypeTextures_8cpp_source.html#l00043">pixels</a>, <a class="el" href="VegetationField_8h_source.html#l00056">eve::graphics::VegetationGlobals::season</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="VegetationField_8h_source.html#l00055">eve::graphics::VegetationGlobals::vertex</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VegetationScriptBindings_8cpp_source.html#l00023">eve::graphics::exposeVegetationScriptBindings()</a>.</p>
+
+</div>
+</div>
+<a id="a17cb98449e46d61d05c3cd335d828419" name="a17cb98449e46d61d05c3cd335d828419"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a17cb98449e46d61d05c3cd335d828419">&#9670;&#160;</a></span>snapshotElements()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::vector&lt; <a class="el" href="structeve_1_1graphics_1_1VegetationElement.html">VegetationElement</a> &gt; &gt; eve::graphics::VegetationField::snapshotElements </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return an owning, priority-ordered element snapshot for revision-safe editor previews. </p>
+<dl class="section return"><dt>返回</dt><dd>Detached elements, or Failed if allocation fails. Worker-safe with immutable field. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="VegetationField_8cpp_source.html">VegetationField.cpp</a> 第 <a class="el" href="VegetationField_8cpp_source.html#l00053">53</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a> , 以及 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca">eve::Failed</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VegetationFieldGizmo_8cpp_source.html#l00031">eve::graphics_editing::VegetationFieldGizmoBuilder::build()</a> , 以及 <a class="el" href="VegetationFieldTarget_8cpp_source.html#l00064">eve::graphics_editing::VegetationFieldTarget::create()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/graphics/<a class="el" href="VegetationField_8h_source.html">VegetationField.h</a></li>
+<li>src/modules/graphics/<a class="el" href="VegetationField_8cpp_source.html">VegetationField.cpp</a></li>
+<li>src/modules/graphics/<a class="el" href="VegetationFieldCodec_8cpp_source.html">VegetationFieldCodec.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

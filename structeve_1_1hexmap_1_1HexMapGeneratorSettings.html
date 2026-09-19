@@ -1,0 +1,761 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::hexmap::HexMapGeneratorSettings结构体 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1hexmap.html">hexmap</a></li><li class="navelem"><a class="el" href="structeve_1_1hexmap_1_1HexMapGeneratorSettings.html">HexMapGeneratorSettings</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-attribs">Public 属性</a> &#124;
+<a href="structeve_1_1hexmap_1_1HexMapGeneratorSettings-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::hexmap::HexMapGeneratorSettings结构体 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Tunables of the reference project's map generator.  
+ <a href="structeve_1_1hexmap_1_1HexMapGeneratorSettings.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="HexMapGenerator_8h_source.html">HexMapGenerator.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public 属性</h2></td></tr>
+<tr class="memitem:a8c6ed38bfee4819900d7002a57da1d82" id="r_a8c6ed38bfee4819900d7002a57da1d82"><td class="memItemLeft" align="right" valign="top">std::uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1hexmap_1_1HexMapGeneratorSettings.html#a8c6ed38bfee4819900d7002a57da1d82">seed</a> = 0u</td></tr>
+<tr class="memdesc:a8c6ed38bfee4819900d7002a57da1d82"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deterministic seed; the same seed and grid always produce the same map.  <br /></td></tr>
+<tr class="separator:a8c6ed38bfee4819900d7002a57da1d82"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1c3ee5da72462bb36d26616705edc989" id="r_a1c3ee5da72462bb36d26616705edc989"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1hexmap_1_1HexMapGeneratorSettings.html#a1c3ee5da72462bb36d26616705edc989">highRiseProbability</a> = 0.25<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="memdesc:a1c3ee5da72462bb36d26616705edc989"><td class="mdescLeft">&#160;</td><td class="mdescRight">Probability that a land seed starts one elevation step higher.  <br /></td></tr>
+<tr class="separator:a1c3ee5da72462bb36d26616705edc989"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8e0b5f568c04da0d364c6efd9184fb50" id="r_a8e0b5f568c04da0d364c6efd9184fb50"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1hexmap_1_1HexMapGeneratorSettings.html#a8e0b5f568c04da0d364c6efd9184fb50">sinkProbability</a> = 0.2<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="memdesc:a8e0b5f568c04da0d364c6efd9184fb50"><td class="mdescLeft">&#160;</td><td class="mdescRight">Probability that a land seed starts one elevation step lower.  <br /></td></tr>
+<tr class="separator:a8e0b5f568c04da0d364c6efd9184fb50"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abc8c7c6f740a2c6bd9e21130ab6c2e42" id="r_abc8c7c6f740a2c6bd9e21130ab6c2e42"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1hexmap_1_1HexMapGeneratorSettings.html#abc8c7c6f740a2c6bd9e21130ab6c2e42">jitterProbability</a> = 0.25<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="memdesc:abc8c7c6f740a2c6bd9e21130ab6c2e42"><td class="mdescLeft">&#160;</td><td class="mdescRight">Probability that a region grows by a random block instead of a square.  <br /></td></tr>
+<tr class="separator:abc8c7c6f740a2c6bd9e21130ab6c2e42"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a92028ec698b04befe33685510ad0be2f" id="r_a92028ec698b04befe33685510ad0be2f"><td class="memItemLeft" align="right" valign="top">std::int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1hexmap_1_1HexMapGeneratorSettings.html#a92028ec698b04befe33685510ad0be2f">chunkSizeMin</a> = 30</td></tr>
+<tr class="memdesc:a92028ec698b04befe33685510ad0be2f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Smallest land-region growth step, in cells.  <br /></td></tr>
+<tr class="separator:a92028ec698b04befe33685510ad0be2f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3b7922e4b47315f7db1acf26cf791048" id="r_a3b7922e4b47315f7db1acf26cf791048"><td class="memItemLeft" align="right" valign="top">std::int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1hexmap_1_1HexMapGeneratorSettings.html#a3b7922e4b47315f7db1acf26cf791048">chunkSizeMax</a> = 100</td></tr>
+<tr class="memdesc:a3b7922e4b47315f7db1acf26cf791048"><td class="mdescLeft">&#160;</td><td class="mdescRight">Largest land-region growth step, in cells.  <br /></td></tr>
+<tr class="separator:a3b7922e4b47315f7db1acf26cf791048"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a350a64b0c9e0d0da5f74ae5edf41f866" id="r_a350a64b0c9e0d0da5f74ae5edf41f866"><td class="memItemLeft" align="right" valign="top">std::int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1hexmap_1_1HexMapGeneratorSettings.html#a350a64b0c9e0d0da5f74ae5edf41f866">landPercentage</a> = 50</td></tr>
+<tr class="memdesc:a350a64b0c9e0d0da5f74ae5edf41f866"><td class="mdescLeft">&#160;</td><td class="mdescRight">Target share of the map that ends up above the water level, in percent.  <br /></td></tr>
+<tr class="separator:a350a64b0c9e0d0da5f74ae5edf41f866"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7ce9d7fbe7a43a2018d9962facde392f" id="r_a7ce9d7fbe7a43a2018d9962facde392f"><td class="memItemLeft" align="right" valign="top">std::int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1hexmap_1_1HexMapGeneratorSettings.html#a7ce9d7fbe7a43a2018d9962facde392f">waterLevel</a> = 3</td></tr>
+<tr class="memdesc:a7ce9d7fbe7a43a2018d9962facde392f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cells at or below this elevation are flooded.  <br /></td></tr>
+<tr class="separator:a7ce9d7fbe7a43a2018d9962facde392f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6c5d4d79c9d58c66596f397da122f0e6" id="r_a6c5d4d79c9d58c66596f397da122f0e6"><td class="memItemLeft" align="right" valign="top">std::int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1hexmap_1_1HexMapGeneratorSettings.html#a6c5d4d79c9d58c66596f397da122f0e6">elevationMinimum</a> = -2</td></tr>
+<tr class="memdesc:a6c5d4d79c9d58c66596f397da122f0e6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Lowest elevation the generator writes.  <br /></td></tr>
+<tr class="separator:a6c5d4d79c9d58c66596f397da122f0e6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acc857d08d45ef9245a6611242027bcee" id="r_acc857d08d45ef9245a6611242027bcee"><td class="memItemLeft" align="right" valign="top">std::int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1hexmap_1_1HexMapGeneratorSettings.html#acc857d08d45ef9245a6611242027bcee">elevationMaximum</a> = 8</td></tr>
+<tr class="memdesc:acc857d08d45ef9245a6611242027bcee"><td class="mdescLeft">&#160;</td><td class="mdescRight">Highest elevation the generator writes.  <br /></td></tr>
+<tr class="separator:acc857d08d45ef9245a6611242027bcee"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7b0e25f8fe43a4816c5dad4d40a96a3a" id="r_a7b0e25f8fe43a4816c5dad4d40a96a3a"><td class="memItemLeft" align="right" valign="top">std::int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1hexmap_1_1HexMapGeneratorSettings.html#a7b0e25f8fe43a4816c5dad4d40a96a3a">mapBorderX</a> = 5</td></tr>
+<tr class="memdesc:a7b0e25f8fe43a4816c5dad4d40a96a3a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Unused border of the map in the X direction, in cells.  <br /></td></tr>
+<tr class="separator:a7b0e25f8fe43a4816c5dad4d40a96a3a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a94dd02b8fa13eede571ee75f775e82c2" id="r_a94dd02b8fa13eede571ee75f775e82c2"><td class="memItemLeft" align="right" valign="top">std::int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1hexmap_1_1HexMapGeneratorSettings.html#a94dd02b8fa13eede571ee75f775e82c2">mapBorderZ</a> = 5</td></tr>
+<tr class="memdesc:a94dd02b8fa13eede571ee75f775e82c2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Unused border of the map in the Z direction, in cells.  <br /></td></tr>
+<tr class="separator:a94dd02b8fa13eede571ee75f775e82c2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab5a7fc48aa7cdadf25649b2813d31cf7" id="r_ab5a7fc48aa7cdadf25649b2813d31cf7"><td class="memItemLeft" align="right" valign="top">std::int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1hexmap_1_1HexMapGeneratorSettings.html#ab5a7fc48aa7cdadf25649b2813d31cf7">regionBorder</a> = 5</td></tr>
+<tr class="memdesc:ab5a7fc48aa7cdadf25649b2813d31cf7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gap kept between two generated regions, in cells.  <br /></td></tr>
+<tr class="separator:ab5a7fc48aa7cdadf25649b2813d31cf7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2cdbaa378a8e586e5a81a3b4cbf02e10" id="r_a2cdbaa378a8e586e5a81a3b4cbf02e10"><td class="memItemLeft" align="right" valign="top">std::int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1hexmap_1_1HexMapGeneratorSettings.html#a2cdbaa378a8e586e5a81a3b4cbf02e10">regionCount</a> = 1</td></tr>
+<tr class="memdesc:a2cdbaa378a8e586e5a81a3b4cbf02e10"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of independent land regions.  <br /></td></tr>
+<tr class="separator:a2cdbaa378a8e586e5a81a3b4cbf02e10"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a469b5144e8adb64576e6f5dcd25bfafa" id="r_a469b5144e8adb64576e6f5dcd25bfafa"><td class="memItemLeft" align="right" valign="top">std::int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1hexmap_1_1HexMapGeneratorSettings.html#a469b5144e8adb64576e6f5dcd25bfafa">erosionPercentage</a> = 50</td></tr>
+<tr class="memdesc:a469b5144e8adb64576e6f5dcd25bfafa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Share of the land that is eroded back towards the water level, in percent.  <br /></td></tr>
+<tr class="separator:a469b5144e8adb64576e6f5dcd25bfafa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8551a1920697c631e285f7a4ce0b78e3" id="r_a8551a1920697c631e285f7a4ce0b78e3"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1hexmap_1_1HexMapGeneratorSettings.html#a8551a1920697c631e285f7a4ce0b78e3">startingMoisture</a> = 0.1<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="memdesc:a8551a1920697c631e285f7a4ce0b78e3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Moisture every cell starts with, in <code>[0, 1]</code>.  <br /></td></tr>
+<tr class="separator:a8551a1920697c631e285f7a4ce0b78e3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0a732fe8caaa105f54bb5523c5571a44" id="r_a0a732fe8caaa105f54bb5523c5571a44"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1hexmap_1_1HexMapGeneratorSettings.html#a0a732fe8caaa105f54bb5523c5571a44">evaporationFactor</a> = 0.5<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="memdesc:a0a732fe8caaa105f54bb5523c5571a44"><td class="mdescLeft">&#160;</td><td class="mdescRight">Share of a cell's moisture that evaporates before it spreads.  <br /></td></tr>
+<tr class="separator:a0a732fe8caaa105f54bb5523c5571a44"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8f63b81249f166462fb446e48f4de1cc" id="r_a8f63b81249f166462fb446e48f4de1cc"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1hexmap_1_1HexMapGeneratorSettings.html#a8f63b81249f166462fb446e48f4de1cc">precipitationFactor</a> = 0.25<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="memdesc:a8f63b81249f166462fb446e48f4de1cc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Share of a cell's moisture that rains out as it spreads downwind.  <br /></td></tr>
+<tr class="separator:a8f63b81249f166462fb446e48f4de1cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad4ea130c8e5f3e0ff006d945bbe3b70e" id="r_ad4ea130c8e5f3e0ff006d945bbe3b70e"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1hexmap_1_1HexMapGeneratorSettings.html#ad4ea130c8e5f3e0ff006d945bbe3b70e">runoffFactor</a> = 0.25<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="memdesc:ad4ea130c8e5f3e0ff006d945bbe3b70e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Share of a cell's moisture that runs downhill instead of spreading.  <br /></td></tr>
+<tr class="separator:ad4ea130c8e5f3e0ff006d945bbe3b70e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8430032a5e131cee2b54cbac52410e18" id="r_a8430032a5e131cee2b54cbac52410e18"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1hexmap_1_1HexMapGeneratorSettings.html#a8430032a5e131cee2b54cbac52410e18">seepageFactor</a> = 0.25<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="memdesc:a8430032a5e131cee2b54cbac52410e18"><td class="mdescLeft">&#160;</td><td class="mdescRight">Share of a cell's moisture that seeps into the ground.  <br /></td></tr>
+<tr class="separator:a8430032a5e131cee2b54cbac52410e18"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a905524eb6fa975b46c8a67f4467ef581" id="r_a905524eb6fa975b46c8a67f4467ef581"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1hexmap.html#ae3f8c41f9d47d3916e557c7304d1ed50">HexDirection</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1hexmap_1_1HexMapGeneratorSettings.html#a905524eb6fa975b46c8a67f4467ef581">windDirection</a> = <a class="el" href="namespaceeve_1_1hexmap.html#ae3f8c41f9d47d3916e557c7304d1ed50a7f39ac71e81132daad44925b3bdfde5a">HexDirection::NW</a></td></tr>
+<tr class="memdesc:a905524eb6fa975b46c8a67f4467ef581"><td class="mdescLeft">&#160;</td><td class="mdescRight">Direction the wind blows towards, used by the moisture model.  <br /></td></tr>
+<tr class="separator:a905524eb6fa975b46c8a67f4467ef581"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae47db416237d6c62758a805043a3bcd6" id="r_ae47db416237d6c62758a805043a3bcd6"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1hexmap_1_1HexMapGeneratorSettings.html#ae47db416237d6c62758a805043a3bcd6">windStrength</a> = 4.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="memdesc:ae47db416237d6c62758a805043a3bcd6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Wind strength, in cells the moisture is pushed per step.  <br /></td></tr>
+<tr class="separator:ae47db416237d6c62758a805043a3bcd6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5c34d192473732f130abac76d364e127" id="r_a5c34d192473732f130abac76d364e127"><td class="memItemLeft" align="right" valign="top">std::int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1hexmap_1_1HexMapGeneratorSettings.html#a5c34d192473732f130abac76d364e127">riverPercentage</a> = 10</td></tr>
+<tr class="memdesc:a5c34d192473732f130abac76d364e127"><td class="mdescLeft">&#160;</td><td class="mdescRight">Target share of the map covered by rivers, in percent.  <br /></td></tr>
+<tr class="separator:a5c34d192473732f130abac76d364e127"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a03681431246eb423b892596eaff58c10" id="r_a03681431246eb423b892596eaff58c10"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1hexmap_1_1HexMapGeneratorSettings.html#a03681431246eb423b892596eaff58c10">extraLakeProbability</a> = 0.25<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="memdesc:a03681431246eb423b892596eaff58c10"><td class="mdescLeft">&#160;</td><td class="mdescRight">Probability that a low point becomes an extra lake instead of land.  <br /></td></tr>
+<tr class="separator:a03681431246eb423b892596eaff58c10"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5d1a0b043b65f197bff5eccce23a08ee" id="r_a5d1a0b043b65f197bff5eccce23a08ee"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1hexmap_1_1HexMapGeneratorSettings.html#a5d1a0b043b65f197bff5eccce23a08ee">lowTemperature</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="memdesc:a5d1a0b043b65f197bff5eccce23a08ee"><td class="mdescLeft">&#160;</td><td class="mdescRight">Temperature at the lowest elevation.  <br /></td></tr>
+<tr class="separator:a5d1a0b043b65f197bff5eccce23a08ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6a05e2d2e9df569ee9f12429dbdd039e" id="r_a6a05e2d2e9df569ee9f12429dbdd039e"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1hexmap_1_1HexMapGeneratorSettings.html#a6a05e2d2e9df569ee9f12429dbdd039e">highTemperature</a> = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="memdesc:a6a05e2d2e9df569ee9f12429dbdd039e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Temperature at the highest elevation.  <br /></td></tr>
+<tr class="separator:a6a05e2d2e9df569ee9f12429dbdd039e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaca650be8fb2b1c556ce9490496dd04e" id="r_aaca650be8fb2b1c556ce9490496dd04e"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1hexmap_1_1HexMapGeneratorSettings.html#aaca650be8fb2b1c556ce9490496dd04e">temperatureJitter</a> = 0.1<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="memdesc:aaca650be8fb2b1c556ce9490496dd04e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Per-cell random spread added to the temperature.  <br /></td></tr>
+<tr class="separator:aaca650be8fb2b1c556ce9490496dd04e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Tunables of the reference project's map generator. </p>
+<p>The defaults are the reference <code>MapGeneratorSettings</code> defaults, so a call with a bare settings value reproduces the Unity generator's behaviour. </p>
+
+<p class="definition">在文件 <a class="el" href="HexMapGenerator_8h_source.html">HexMapGenerator.h</a> 第 <a class="el" href="HexMapGenerator_8h_source.html#l00019">19</a> 行定义.</p>
+</div><h2 class="groupheader">类成员变量说明</h2>
+<a id="a3b7922e4b47315f7db1acf26cf791048" name="a3b7922e4b47315f7db1acf26cf791048"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3b7922e4b47315f7db1acf26cf791048">&#9670;&#160;</a></span>chunkSizeMax</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::int32_t eve::hexmap::HexMapGeneratorSettings::chunkSizeMax = 100</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Largest land-region growth step, in cells. </p>
+
+<p class="definition">在文件 <a class="el" href="HexMapGenerator_8h_source.html">HexMapGenerator.h</a> 第 <a class="el" href="HexMapGenerator_8h_source.html#l00033">33</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a92028ec698b04befe33685510ad0be2f" name="a92028ec698b04befe33685510ad0be2f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a92028ec698b04befe33685510ad0be2f">&#9670;&#160;</a></span>chunkSizeMin</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::int32_t eve::hexmap::HexMapGeneratorSettings::chunkSizeMin = 30</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Smallest land-region growth step, in cells. </p>
+
+<p class="definition">在文件 <a class="el" href="HexMapGenerator_8h_source.html">HexMapGenerator.h</a> 第 <a class="el" href="HexMapGenerator_8h_source.html#l00031">31</a> 行定义.</p>
+
+</div>
+</div>
+<a id="acc857d08d45ef9245a6611242027bcee" name="acc857d08d45ef9245a6611242027bcee"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acc857d08d45ef9245a6611242027bcee">&#9670;&#160;</a></span>elevationMaximum</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::int32_t eve::hexmap::HexMapGeneratorSettings::elevationMaximum = 8</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Highest elevation the generator writes. </p>
+
+<p class="definition">在文件 <a class="el" href="HexMapGenerator_8h_source.html">HexMapGenerator.h</a> 第 <a class="el" href="HexMapGenerator_8h_source.html#l00041">41</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a6c5d4d79c9d58c66596f397da122f0e6" name="a6c5d4d79c9d58c66596f397da122f0e6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6c5d4d79c9d58c66596f397da122f0e6">&#9670;&#160;</a></span>elevationMinimum</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::int32_t eve::hexmap::HexMapGeneratorSettings::elevationMinimum = -2</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Lowest elevation the generator writes. </p>
+
+<p class="definition">在文件 <a class="el" href="HexMapGenerator_8h_source.html">HexMapGenerator.h</a> 第 <a class="el" href="HexMapGenerator_8h_source.html#l00039">39</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a469b5144e8adb64576e6f5dcd25bfafa" name="a469b5144e8adb64576e6f5dcd25bfafa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a469b5144e8adb64576e6f5dcd25bfafa">&#9670;&#160;</a></span>erosionPercentage</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::int32_t eve::hexmap::HexMapGeneratorSettings::erosionPercentage = 50</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Share of the land that is eroded back towards the water level, in percent. </p>
+
+<p class="definition">在文件 <a class="el" href="HexMapGenerator_8h_source.html">HexMapGenerator.h</a> 第 <a class="el" href="HexMapGenerator_8h_source.html#l00052">52</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a0a732fe8caaa105f54bb5523c5571a44" name="a0a732fe8caaa105f54bb5523c5571a44"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0a732fe8caaa105f54bb5523c5571a44">&#9670;&#160;</a></span>evaporationFactor</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::hexmap::HexMapGeneratorSettings::evaporationFactor = 0.5<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Share of a cell's moisture that evaporates before it spreads. </p>
+
+<p class="definition">在文件 <a class="el" href="HexMapGenerator_8h_source.html">HexMapGenerator.h</a> 第 <a class="el" href="HexMapGenerator_8h_source.html#l00057">57</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a03681431246eb423b892596eaff58c10" name="a03681431246eb423b892596eaff58c10"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a03681431246eb423b892596eaff58c10">&#9670;&#160;</a></span>extraLakeProbability</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::hexmap::HexMapGeneratorSettings::extraLakeProbability = 0.25<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Probability that a low point becomes an extra lake instead of land. </p>
+
+<p class="definition">在文件 <a class="el" href="HexMapGenerator_8h_source.html">HexMapGenerator.h</a> 第 <a class="el" href="HexMapGenerator_8h_source.html#l00072">72</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a1c3ee5da72462bb36d26616705edc989" name="a1c3ee5da72462bb36d26616705edc989"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1c3ee5da72462bb36d26616705edc989">&#9670;&#160;</a></span>highRiseProbability</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::hexmap::HexMapGeneratorSettings::highRiseProbability = 0.25<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Probability that a land seed starts one elevation step higher. </p>
+
+<p class="definition">在文件 <a class="el" href="HexMapGenerator_8h_source.html">HexMapGenerator.h</a> 第 <a class="el" href="HexMapGenerator_8h_source.html#l00024">24</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a6a05e2d2e9df569ee9f12429dbdd039e" name="a6a05e2d2e9df569ee9f12429dbdd039e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6a05e2d2e9df569ee9f12429dbdd039e">&#9670;&#160;</a></span>highTemperature</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::hexmap::HexMapGeneratorSettings::highTemperature = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Temperature at the highest elevation. </p>
+
+<p class="definition">在文件 <a class="el" href="HexMapGenerator_8h_source.html">HexMapGenerator.h</a> 第 <a class="el" href="HexMapGenerator_8h_source.html#l00077">77</a> 行定义.</p>
+
+</div>
+</div>
+<a id="abc8c7c6f740a2c6bd9e21130ab6c2e42" name="abc8c7c6f740a2c6bd9e21130ab6c2e42"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abc8c7c6f740a2c6bd9e21130ab6c2e42">&#9670;&#160;</a></span>jitterProbability</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::hexmap::HexMapGeneratorSettings::jitterProbability = 0.25<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Probability that a region grows by a random block instead of a square. </p>
+
+<p class="definition">在文件 <a class="el" href="HexMapGenerator_8h_source.html">HexMapGenerator.h</a> 第 <a class="el" href="HexMapGenerator_8h_source.html#l00028">28</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a350a64b0c9e0d0da5f74ae5edf41f866" name="a350a64b0c9e0d0da5f74ae5edf41f866"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a350a64b0c9e0d0da5f74ae5edf41f866">&#9670;&#160;</a></span>landPercentage</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::int32_t eve::hexmap::HexMapGeneratorSettings::landPercentage = 50</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Target share of the map that ends up above the water level, in percent. </p>
+
+<p class="definition">在文件 <a class="el" href="HexMapGenerator_8h_source.html">HexMapGenerator.h</a> 第 <a class="el" href="HexMapGenerator_8h_source.html#l00035">35</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a5d1a0b043b65f197bff5eccce23a08ee" name="a5d1a0b043b65f197bff5eccce23a08ee"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5d1a0b043b65f197bff5eccce23a08ee">&#9670;&#160;</a></span>lowTemperature</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::hexmap::HexMapGeneratorSettings::lowTemperature = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Temperature at the lowest elevation. </p>
+
+<p class="definition">在文件 <a class="el" href="HexMapGenerator_8h_source.html">HexMapGenerator.h</a> 第 <a class="el" href="HexMapGenerator_8h_source.html#l00075">75</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a7b0e25f8fe43a4816c5dad4d40a96a3a" name="a7b0e25f8fe43a4816c5dad4d40a96a3a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7b0e25f8fe43a4816c5dad4d40a96a3a">&#9670;&#160;</a></span>mapBorderX</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::int32_t eve::hexmap::HexMapGeneratorSettings::mapBorderX = 5</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Unused border of the map in the X direction, in cells. </p>
+
+<p class="definition">在文件 <a class="el" href="HexMapGenerator_8h_source.html">HexMapGenerator.h</a> 第 <a class="el" href="HexMapGenerator_8h_source.html#l00044">44</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a94dd02b8fa13eede571ee75f775e82c2" name="a94dd02b8fa13eede571ee75f775e82c2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a94dd02b8fa13eede571ee75f775e82c2">&#9670;&#160;</a></span>mapBorderZ</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::int32_t eve::hexmap::HexMapGeneratorSettings::mapBorderZ = 5</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Unused border of the map in the Z direction, in cells. </p>
+
+<p class="definition">在文件 <a class="el" href="HexMapGenerator_8h_source.html">HexMapGenerator.h</a> 第 <a class="el" href="HexMapGenerator_8h_source.html#l00046">46</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a8f63b81249f166462fb446e48f4de1cc" name="a8f63b81249f166462fb446e48f4de1cc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8f63b81249f166462fb446e48f4de1cc">&#9670;&#160;</a></span>precipitationFactor</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::hexmap::HexMapGeneratorSettings::precipitationFactor = 0.25<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Share of a cell's moisture that rains out as it spreads downwind. </p>
+
+<p class="definition">在文件 <a class="el" href="HexMapGenerator_8h_source.html">HexMapGenerator.h</a> 第 <a class="el" href="HexMapGenerator_8h_source.html#l00059">59</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab5a7fc48aa7cdadf25649b2813d31cf7" name="ab5a7fc48aa7cdadf25649b2813d31cf7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab5a7fc48aa7cdadf25649b2813d31cf7">&#9670;&#160;</a></span>regionBorder</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::int32_t eve::hexmap::HexMapGeneratorSettings::regionBorder = 5</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Gap kept between two generated regions, in cells. </p>
+
+<p class="definition">在文件 <a class="el" href="HexMapGenerator_8h_source.html">HexMapGenerator.h</a> 第 <a class="el" href="HexMapGenerator_8h_source.html#l00048">48</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a2cdbaa378a8e586e5a81a3b4cbf02e10" name="a2cdbaa378a8e586e5a81a3b4cbf02e10"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2cdbaa378a8e586e5a81a3b4cbf02e10">&#9670;&#160;</a></span>regionCount</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::int32_t eve::hexmap::HexMapGeneratorSettings::regionCount = 1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Number of independent land regions. </p>
+
+<p class="definition">在文件 <a class="el" href="HexMapGenerator_8h_source.html">HexMapGenerator.h</a> 第 <a class="el" href="HexMapGenerator_8h_source.html#l00050">50</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a5c34d192473732f130abac76d364e127" name="a5c34d192473732f130abac76d364e127"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5c34d192473732f130abac76d364e127">&#9670;&#160;</a></span>riverPercentage</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::int32_t eve::hexmap::HexMapGeneratorSettings::riverPercentage = 10</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Target share of the map covered by rivers, in percent. </p>
+
+<p class="definition">在文件 <a class="el" href="HexMapGenerator_8h_source.html">HexMapGenerator.h</a> 第 <a class="el" href="HexMapGenerator_8h_source.html#l00070">70</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad4ea130c8e5f3e0ff006d945bbe3b70e" name="ad4ea130c8e5f3e0ff006d945bbe3b70e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad4ea130c8e5f3e0ff006d945bbe3b70e">&#9670;&#160;</a></span>runoffFactor</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::hexmap::HexMapGeneratorSettings::runoffFactor = 0.25<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Share of a cell's moisture that runs downhill instead of spreading. </p>
+
+<p class="definition">在文件 <a class="el" href="HexMapGenerator_8h_source.html">HexMapGenerator.h</a> 第 <a class="el" href="HexMapGenerator_8h_source.html#l00061">61</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a8c6ed38bfee4819900d7002a57da1d82" name="a8c6ed38bfee4819900d7002a57da1d82"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8c6ed38bfee4819900d7002a57da1d82">&#9670;&#160;</a></span>seed</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::uint32_t eve::hexmap::HexMapGeneratorSettings::seed = 0u</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Deterministic seed; the same seed and grid always produce the same map. </p>
+
+<p class="definition">在文件 <a class="el" href="HexMapGenerator_8h_source.html">HexMapGenerator.h</a> 第 <a class="el" href="HexMapGenerator_8h_source.html#l00021">21</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HexMapModule_8cpp_source.html#l00059">eve::hexmap::HexMapModule::generateMap()</a>.</p>
+
+</div>
+</div>
+<a id="a8430032a5e131cee2b54cbac52410e18" name="a8430032a5e131cee2b54cbac52410e18"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8430032a5e131cee2b54cbac52410e18">&#9670;&#160;</a></span>seepageFactor</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::hexmap::HexMapGeneratorSettings::seepageFactor = 0.25<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Share of a cell's moisture that seeps into the ground. </p>
+
+<p class="definition">在文件 <a class="el" href="HexMapGenerator_8h_source.html">HexMapGenerator.h</a> 第 <a class="el" href="HexMapGenerator_8h_source.html#l00063">63</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a8e0b5f568c04da0d364c6efd9184fb50" name="a8e0b5f568c04da0d364c6efd9184fb50"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8e0b5f568c04da0d364c6efd9184fb50">&#9670;&#160;</a></span>sinkProbability</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::hexmap::HexMapGeneratorSettings::sinkProbability = 0.2<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Probability that a land seed starts one elevation step lower. </p>
+
+<p class="definition">在文件 <a class="el" href="HexMapGenerator_8h_source.html">HexMapGenerator.h</a> 第 <a class="el" href="HexMapGenerator_8h_source.html#l00026">26</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a8551a1920697c631e285f7a4ce0b78e3" name="a8551a1920697c631e285f7a4ce0b78e3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8551a1920697c631e285f7a4ce0b78e3">&#9670;&#160;</a></span>startingMoisture</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::hexmap::HexMapGeneratorSettings::startingMoisture = 0.1<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Moisture every cell starts with, in <code>[0, 1]</code>. </p>
+
+<p class="definition">在文件 <a class="el" href="HexMapGenerator_8h_source.html">HexMapGenerator.h</a> 第 <a class="el" href="HexMapGenerator_8h_source.html#l00055">55</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aaca650be8fb2b1c556ce9490496dd04e" name="aaca650be8fb2b1c556ce9490496dd04e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaca650be8fb2b1c556ce9490496dd04e">&#9670;&#160;</a></span>temperatureJitter</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::hexmap::HexMapGeneratorSettings::temperatureJitter = 0.1<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Per-cell random spread added to the temperature. </p>
+
+<p class="definition">在文件 <a class="el" href="HexMapGenerator_8h_source.html">HexMapGenerator.h</a> 第 <a class="el" href="HexMapGenerator_8h_source.html#l00079">79</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a7ce9d7fbe7a43a2018d9962facde392f" name="a7ce9d7fbe7a43a2018d9962facde392f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7ce9d7fbe7a43a2018d9962facde392f">&#9670;&#160;</a></span>waterLevel</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::int32_t eve::hexmap::HexMapGeneratorSettings::waterLevel = 3</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Cells at or below this elevation are flooded. </p>
+
+<p class="definition">在文件 <a class="el" href="HexMapGenerator_8h_source.html">HexMapGenerator.h</a> 第 <a class="el" href="HexMapGenerator_8h_source.html#l00037">37</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a905524eb6fa975b46c8a67f4467ef581" name="a905524eb6fa975b46c8a67f4467ef581"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a905524eb6fa975b46c8a67f4467ef581">&#9670;&#160;</a></span>windDirection</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1hexmap.html#ae3f8c41f9d47d3916e557c7304d1ed50">HexDirection</a> eve::hexmap::HexMapGeneratorSettings::windDirection = <a class="el" href="namespaceeve_1_1hexmap.html#ae3f8c41f9d47d3916e557c7304d1ed50a7f39ac71e81132daad44925b3bdfde5a">HexDirection::NW</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Direction the wind blows towards, used by the moisture model. </p>
+
+<p class="definition">在文件 <a class="el" href="HexMapGenerator_8h_source.html">HexMapGenerator.h</a> 第 <a class="el" href="HexMapGenerator_8h_source.html#l00065">65</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae47db416237d6c62758a805043a3bcd6" name="ae47db416237d6c62758a805043a3bcd6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae47db416237d6c62758a805043a3bcd6">&#9670;&#160;</a></span>windStrength</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::hexmap::HexMapGeneratorSettings::windStrength = 4.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Wind strength, in cells the moisture is pushed per step. </p>
+
+<p class="definition">在文件 <a class="el" href="HexMapGenerator_8h_source.html">HexMapGenerator.h</a> 第 <a class="el" href="HexMapGenerator_8h_source.html#l00067">67</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该结构体的文档由以下文件生成:<ul>
+<li>src/modules/hexmap/<a class="el" href="HexMapGenerator_8h_source.html">HexMapGenerator.h</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

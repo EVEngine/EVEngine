@@ -1,0 +1,334 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/action/ActionNotifyRegistry.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_4132021be2fc4b1a23b2cac06bb68e21.html">action</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">ActionNotifyRegistry.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="ActionNotifyRegistry_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;<a class="code" href="Action_8h.html">action/Action.h</a>&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &quot;<a class="code" href="AttachmentPoint_8h.html">common/AttachmentPoint.h</a>&quot;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &quot;<a class="code" href="BorrowedRef_8h.html">common/BorrowedRef.h</a>&quot;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span> </div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &lt;map&gt;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &lt;memory&gt;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#include &lt;string_view&gt;</span></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span> </div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1action.html">eve::action</a> {</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span> </div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="keyword">class </span>ActionNotifyRegistry;</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span> </div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno"><a class="line" href="namespaceeve_1_1action.html#abffc8699e8900de8ed3118cd41916ec2">   20</a></span><span class="keyword">enum class</span> <a class="code hl_enumeration" href="namespaceeve_1_1action.html#abffc8699e8900de8ed3118cd41916ec2">ActionNotifyShape</a> : std::uint8_t { <a class="code hl_enumvalue" href="namespaceeve_1_1action.html#abd932983e543fbdbc0b46bc103ec3c5ea54828f327f31abd59f2f459c0247756d">Instant</a>, <a class="code hl_enumvalue" href="namespaceeve_1_1action.html#abd932983e543fbdbc0b46bc103ec3c5ea46a2a41cc6e552044816a2d04634545d">State</a> };</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span> </div>
+<div class="foldopen" id="foldopen00023" data-start="{" data-end="};">
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno"><a class="line" href="structeve_1_1action_1_1ActionNotifyDescriptor.html">   23</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1action_1_1ActionNotifyDescriptor.html">ActionNotifyDescriptor</a> {</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno"><a class="line" href="structeve_1_1action_1_1ActionNotifyDescriptor.html#ad949cf7e3d7a6f7b9bf13a93125c0f9f">   24</a></span>    std::string              <a class="code hl_variable" href="structeve_1_1action_1_1ActionNotifyDescriptor.html#ad949cf7e3d7a6f7b9bf13a93125c0f9f">type</a>;</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno"><a class="line" href="structeve_1_1action_1_1ActionNotifyDescriptor.html#ad19b50ee1e830ede50625525f2c20ac9">   25</a></span>    std::string              <a class="code hl_variable" href="structeve_1_1action_1_1ActionNotifyDescriptor.html#ad19b50ee1e830ede50625525f2c20ac9">displayName</a>;</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="structeve_1_1action_1_1ActionNotifyDescriptor.html#a30797dc587cf87d9d7d450c9776dff8d">   26</a></span>    std::string              <a class="code hl_variable" href="structeve_1_1action_1_1ActionNotifyDescriptor.html#a30797dc587cf87d9d7d450c9776dff8d">category</a>;</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno"><a class="line" href="structeve_1_1action_1_1ActionNotifyDescriptor.html#ae177cb35f5c26c25c306967a9933af57">   27</a></span>    <a class="code hl_enumeration" href="namespaceeve_1_1action.html#abffc8699e8900de8ed3118cd41916ec2">ActionNotifyShape</a>        <a class="code hl_variable" href="structeve_1_1action_1_1ActionNotifyDescriptor.html#ae177cb35f5c26c25c306967a9933af57">shape</a> = <a class="code hl_enumvalue" href="namespaceeve_1_1action.html#abffc8699e8900de8ed3118cd41916ec2a54828f327f31abd59f2f459c0247756d">ActionNotifyShape::Instant</a>;</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno"><a class="line" href="structeve_1_1action_1_1ActionNotifyDescriptor.html#ad473266f970b4b1ee97516b8ec5b4491">   28</a></span>    std::vector&lt;std::string&gt; <a class="code hl_variable" href="structeve_1_1action_1_1ActionNotifyDescriptor.html#ad473266f970b4b1ee97516b8ec5b4491">requiredPayloadFields</a>;</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>};</div>
+</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span> </div>
+<div class="foldopen" id="foldopen00032" data-start="{" data-end="};">
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno"><a class="line" href="structeve_1_1action_1_1ActionNotifyContext.html">   32</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1action_1_1ActionNotifyContext.html">ActionNotifyContext</a> {</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno"><a class="line" href="structeve_1_1action_1_1ActionNotifyContext.html#ad3401e778fb3ada0839f7e8b54fddc18">   34</a></span>    <a class="code hl_class" href="classeve_1_1detail_1_1StrongUint64.html">ActionExecutionId</a>                <a class="code hl_variable" href="structeve_1_1action_1_1ActionNotifyContext.html#ad3401e778fb3ada0839f7e8b54fddc18">executionId</a>;</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno"><a class="line" href="structeve_1_1action_1_1ActionNotifyContext.html#a3c19182388305046b2cb5c4e9eeef2f5">   36</a></span>    std::optional&lt;ecs::EntityHandle&gt; <a class="code hl_variable" href="structeve_1_1action_1_1ActionNotifyContext.html#a3c19182388305046b2cb5c4e9eeef2f5">source</a>;</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno"><a class="line" href="structeve_1_1action_1_1ActionNotifyContext.html#aab0b1b88bba3979b2eff4aa07d493f81">   38</a></span>    std::vector&lt;ecs::EntityHandle&gt;   <a class="code hl_variable" href="structeve_1_1action_1_1ActionNotifyContext.html#aab0b1b88bba3979b2eff4aa07d493f81">targets</a>;</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno"><a class="line" href="structeve_1_1action_1_1ActionNotifyContext.html#a8e9eb544d03518c8a6db426448478354">   40</a></span>    <a class="code hl_typedef" href="namespaceeve.html#a503b0fa2c99caf9c2f8d2144f64c683f">OptionalRef&lt;const IAttachmentPointSource&gt;</a> <a class="code hl_variable" href="structeve_1_1action_1_1ActionNotifyContext.html#a8e9eb544d03518c8a6db426448478354">sourceAttachment</a>;</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno"><a class="line" href="structeve_1_1action_1_1ActionNotifyContext.html#a9f8c8caeeff536bf720a116609aba74b">   45</a></span>    std::vector&lt;OptionalRef&lt;const IAttachmentPointSource&gt;&gt; <a class="code hl_variable" href="structeve_1_1action_1_1ActionNotifyContext.html#a9f8c8caeeff536bf720a116609aba74b">targetAttachments</a>;</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno"><a class="line" href="structeve_1_1action_1_1ActionNotifyContext.html#a99bd58a241d00f08e592eb56680d87c0">   47</a></span>    <a class="code hl_class" href="classeve_1_1Duration.html">Duration</a>                         <a class="code hl_variable" href="structeve_1_1action_1_1ActionNotifyContext.html#a99bd58a241d00f08e592eb56680d87c0">time</a> = <a class="code hl_function" href="classeve_1_1Duration.html#a9de3e023afa73e0361442ee7a7097bde">Duration::zero</a>();</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno"><a class="line" href="structeve_1_1action_1_1ActionNotifyContext.html#ace2fb40c2dd35322990fc217527f8170">   49</a></span>    <a class="code hl_class" href="classeve_1_1detail_1_1StrongUint64.html">SimulationTick</a>                   <a class="code hl_variable" href="structeve_1_1action_1_1ActionNotifyContext.html#ace2fb40c2dd35322990fc217527f8170">tick</a> = <a class="code hl_function" href="classeve_1_1detail_1_1StrongUint64.html#aa0953a6ce6374a85a399e06ef11db5ce">SimulationTick::zero</a>();</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno"><a class="line" href="structeve_1_1action_1_1ActionNotifyContext.html#a29b23902ac5c35cf45ccff3cb3ff5fba">   51</a></span>    <span class="keywordtype">double</span>                           <a class="code hl_variable" href="structeve_1_1action_1_1ActionNotifyContext.html#a29b23902ac5c35cf45ccff3cb3ff5fba">playbackRate</a> = 1.0;</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno"><a class="line" href="structeve_1_1action_1_1ActionNotifyContext.html#a9f860d75488dc69ded33190970312c74">   53</a></span>    <span class="keywordtype">bool</span>                             <a class="code hl_variable" href="structeve_1_1action_1_1ActionNotifyContext.html#a9f860d75488dc69ded33190970312c74">preview</a> = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno"><a class="line" href="structeve_1_1action_1_1ActionNotifyContext.html#a35741d49751131705bf510b730c2c1d7">   55</a></span>    <span class="keywordtype">bool</span>                             <a class="code hl_variable" href="structeve_1_1action_1_1ActionNotifyContext.html#a35741d49751131705bf510b730c2c1d7">scrubbing</a> = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno"><a class="line" href="structeve_1_1action_1_1ActionNotifyContext.html#a7a65eee29ecfdff8640d19465f404abb">   57</a></span>    <span class="keywordtype">bool</span>                             <a class="code hl_variable" href="structeve_1_1action_1_1ActionNotifyContext.html#a7a65eee29ecfdff8640d19465f404abb">interrupted</a> = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>};</div>
+</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span> </div>
+<div class="foldopen" id="foldopen00066" data-start="{" data-end="};">
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno"><a class="line" href="classeve_1_1action_1_1IActionNotifyHandler.html">   66</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1action_1_1IActionNotifyHandler.html">IActionNotifyHandler</a> {</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno"><a class="line" href="classeve_1_1action_1_1IActionNotifyHandler.html#a44837b128730252e9330ea16e50822f6">   68</a></span>    <span class="keyword">virtual</span> <a class="code hl_function" href="classeve_1_1action_1_1IActionNotifyHandler.html#a44837b128730252e9330ea16e50822f6">~IActionNotifyHandler</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno"><a class="line" href="classeve_1_1action_1_1IActionNotifyHandler.html#a289c64e240fc45559d9d9dac21b12f62">   75</a></span>    [[nodiscard]] <span class="keyword">virtual</span> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1action_1_1IActionNotifyHandler.html#a289c64e240fc45559d9d9dac21b12f62">handle</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1action_1_1ActionTimelineEvent.html">ActionTimelineEvent</a>&amp; event, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1action_1_1ActionNotifyContext.html">ActionNotifyContext</a>&amp; <a class="code hl_variable" href="VegetationPreset_8cpp.html#aa677a20ed09a5d6c839a3d7a4d53cb9c">context</a>) = 0;</div>
+<div class="foldopen" id="foldopen00083" data-start="{" data-end="}">
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno"><a class="line" href="classeve_1_1action_1_1IActionNotifyHandler.html#a7a39127a558451f6b2111d17173a0a35">   83</a></span>    [[nodiscard]] <span class="keyword">virtual</span> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1action_1_1IActionNotifyHandler.html#a7a39127a558451f6b2111d17173a0a35">update</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1action_1_1ActionActiveBlock.html">ActionActiveBlock</a>&amp;, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1action_1_1ActionNotifyContext.html">ActionNotifyContext</a>&amp;) {</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">Result&lt;void&gt;::success</a>(<a class="code hl_function" href="classeve_1_1Status.html#abb423f9bc554d2bbedb08577f29baf88">Status::success</a>(<a class="code hl_enumvalue" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa60832e2e4bbebccf26555b9ba658bad5">StatusCode::NoOp</a>));</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>    }</div>
+</div>
+<div class="foldopen" id="foldopen00093" data-start="{" data-end="}">
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno"><a class="line" href="classeve_1_1action_1_1IActionNotifyHandler.html#ab6ced6e0ab3b7435cd9e0d189cc430c5">   93</a></span>    [[nodiscard]] <span class="keyword">virtual</span> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1action_1_1IActionNotifyHandler.html#ab6ced6e0ab3b7435cd9e0d189cc430c5">sample</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1action_1_1ActionActiveBlock.html">ActionActiveBlock</a>&amp;, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1action_1_1ActionNotifyContext.html">ActionNotifyContext</a>&amp;)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">Result&lt;void&gt;::success</a>(<a class="code hl_function" href="classeve_1_1Status.html#abb423f9bc554d2bbedb08577f29baf88">Status::success</a>(<a class="code hl_enumvalue" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa60832e2e4bbebccf26555b9ba658bad5">StatusCode::NoOp</a>));</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>    }</div>
+</div>
+<div class="foldopen" id="foldopen00102" data-start="{" data-end="}">
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno"><a class="line" href="classeve_1_1action_1_1IActionNotifyHandler.html#ac6837a897fac3941e6cc0eef0ed04334">  102</a></span>    [[nodiscard]] <span class="keyword">virtual</span> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1action_1_1IActionNotifyHandler.html#ac6837a897fac3941e6cc0eef0ed04334">advance</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1action_1_1ActionNotifyContext.html">ActionNotifyContext</a>&amp;) {</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">Result&lt;void&gt;::success</a>(<a class="code hl_function" href="classeve_1_1Status.html#abb423f9bc554d2bbedb08577f29baf88">Status::success</a>(<a class="code hl_enumvalue" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa60832e2e4bbebccf26555b9ba658bad5">StatusCode::NoOp</a>));</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>    }</div>
+</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>};</div>
+</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span> </div>
+<div class="foldopen" id="foldopen00114" data-start="{" data-end="};">
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno"><a class="line" href="classeve_1_1action_1_1IActionNotifyProvider.html">  114</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1action_1_1IActionNotifyProvider.html">IActionNotifyProvider</a> {</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno"><a class="line" href="classeve_1_1action_1_1IActionNotifyProvider.html#aa9ab32d71c562d13c987a3d1ccdbd51d">  116</a></span>    <span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keyword">const</span> <span class="keywordtype">char</span>* <a class="code hl_variable" href="classeve_1_1action_1_1IActionNotifyProvider.html#aa9ab32d71c562d13c987a3d1ccdbd51d">capabilityName</a> = <span class="stringliteral">&quot;eve.action.notify-provider&quot;</span>;</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno"><a class="line" href="classeve_1_1action_1_1IActionNotifyProvider.html#a7950111e5bdd5a833c048b70dd4b0456">  117</a></span>    <span class="keyword">virtual</span> <a class="code hl_function" href="classeve_1_1action_1_1IActionNotifyProvider.html#a7950111e5bdd5a833c048b70dd4b0456">~IActionNotifyProvider</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span> </div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno"><a class="line" href="classeve_1_1action_1_1IActionNotifyProvider.html#a9c4b4fd98211da19bcee996bf3d8999b">  124</a></span>    [[nodiscard]] <span class="keyword">virtual</span> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1action_1_1IActionNotifyProvider.html#a9c4b4fd98211da19bcee996bf3d8999b">install</a>(<a class="code hl_class" href="classeve_1_1action_1_1ActionNotifyRegistry.html">ActionNotifyRegistry</a>&amp; registry) = 0;</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>};</div>
+</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span> </div>
+<div class="foldopen" id="foldopen00134" data-start="{" data-end="};">
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno"><a class="line" href="classeve_1_1action_1_1ActionNotifyRegistry.html">  134</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1action_1_1ActionNotifyRegistry.html">ActionNotifyRegistry</a> {</div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>    [[nodiscard]] <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;ActionNotifyRegistry&gt;</a> <a class="code hl_function" href="classeve_1_1action_1_1ActionNotifyRegistry.html#ad77fb452d78b76a486e27d10327ec392">withBuiltins</a>();</div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1action_1_1ActionNotifyRegistry.html#a90ae0aa6f686b82e8e4068e8ea2b5f3a">registerDescriptor</a>(<a class="code hl_struct" href="structeve_1_1action_1_1ActionNotifyDescriptor.html">ActionNotifyDescriptor</a> <a class="code hl_variable" href="AssetCommand_8cpp.html#a834ec2851d25006c87763cec4bedd900">descriptor</a>);</div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1action_1_1ActionNotifyRegistry.html#a00fb2f3e0ba2a517f90932c959dbd8fc">registerHandler</a>(std::string_view <a class="code hl_variable" href="ActionTimelinePayloadEditor_8cpp.html#acc84214b4748705f4d18dd8d143e70be">type</a>, std::shared_ptr&lt;IActionNotifyHandler&gt; handler);</div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1action_1_1ActionNotifyRegistry.html#a0fe226e19831db6f764e7a81ed139756">unregisterHandler</a>(std::string_view <a class="code hl_variable" href="ActionTimelinePayloadEditor_8cpp.html#acc84214b4748705f4d18dd8d143e70be">type</a>);</div>
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;ActionNotifyDescriptor&gt;</a> <a class="code hl_variable" href="AssetCommand_8cpp.html#a834ec2851d25006c87763cec4bedd900">descriptor</a>(std::string_view <a class="code hl_variable" href="ActionTimelinePayloadEditor_8cpp.html#acc84214b4748705f4d18dd8d143e70be">type</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>    [[nodiscard]] std::vector&lt;ActionNotifyDescriptor&gt; <a class="code hl_function" href="classeve_1_1action_1_1ActionNotifyRegistry.html#a31096ff2b20641f52e923f7bca0e9705">descriptors</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span>    [[nodiscard]] <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1action_1_1ActionNotifyRegistry.html#a23a79099fa50492c16a67c9b2c5c8949">hasHandler</a>(std::string_view <a class="code hl_variable" href="ActionTimelinePayloadEditor_8cpp.html#acc84214b4748705f4d18dd8d143e70be">type</a>) <span class="keyword">const</span> <span class="keyword">noexcept</span>;</div>
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1action_1_1ActionNotifyRegistry.html#a240ff69f0a81ce1dd652698d9b5ff474">validate</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1action_1_1ActionTimelineEvent.html">ActionTimelineEvent</a>&amp; event) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1action_1_1ActionNotifyRegistry.html#ab4c2df9db927f8db225aae35980baf8a">dispatch</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1action_1_1ActionTimelineEvent.html">ActionTimelineEvent</a>&amp; event, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1action_1_1ActionNotifyContext.html">ActionNotifyContext</a>&amp; <a class="code hl_variable" href="VegetationPreset_8cpp.html#aa677a20ed09a5d6c839a3d7a4d53cb9c">context</a>);</div>
+<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1action_1_1ActionNotifyRegistry.html#a897dd1dde5eb656e729a8698bfcde01f">dispatchUpdate</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1action_1_1ActionActiveBlock.html">ActionActiveBlock</a>&amp; block, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1action_1_1ActionNotifyContext.html">ActionNotifyContext</a>&amp; <a class="code hl_variable" href="VegetationPreset_8cpp.html#aa677a20ed09a5d6c839a3d7a4d53cb9c">context</a>);</div>
+<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1action_1_1ActionNotifyRegistry.html#a11ae3762c13e5c3d7f249d596905e523">dispatchSample</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1action_1_1ActionActiveBlock.html">ActionActiveBlock</a>&amp; block,</div>
+<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span>                                              <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1action_1_1ActionNotifyContext.html">ActionNotifyContext</a>&amp; <a class="code hl_variable" href="VegetationPreset_8cpp.html#aa677a20ed09a5d6c839a3d7a4d53cb9c">context</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1action_1_1ActionNotifyRegistry.html#aacdf668601ea4566edca27ff01d6bb3e">advanceHandlers</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1action_1_1ActionNotifyContext.html">ActionNotifyContext</a>&amp; <a class="code hl_variable" href="VegetationPreset_8cpp.html#aa677a20ed09a5d6c839a3d7a4d53cb9c">context</a>);</div>
+<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span> </div>
+<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span>    std::map&lt;std::string, ActionNotifyDescriptor, std::less&lt;&gt;&gt;                descriptors_;</div>
+<div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span>    std::map&lt;std::string, std::shared_ptr&lt;IActionNotifyHandler&gt;, std::less&lt;&gt;&gt; handlers_;</div>
+<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span>};</div>
+</div>
+<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span> </div>
+<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span>}  <span class="comment">// namespace eve::action</span></div>
+<div class="ttc" id="aActionTimelinePayloadEditor_8cpp_html_acc84214b4748705f4d18dd8d143e70be"><div class="ttname"><a href="ActionTimelinePayloadEditor_8cpp.html#acc84214b4748705f4d18dd8d143e70be">type</a></div><div class="ttdeci">LogicalId type</div><div class="ttdef"><b>Definition</b> <a href="ActionTimelinePayloadEditor_8cpp_source.html#l00020">ActionTimelinePayloadEditor.cpp:20</a></div></div>
+<div class="ttc" id="aAction_8h_html"><div class="ttname"><a href="Action_8h.html">Action.h</a></div><div class="ttdoc">Renderer- and ruleset-neutral gameplay action pipeline.</div></div>
+<div class="ttc" id="aAssetCommand_8cpp_html_a834ec2851d25006c87763cec4bedd900"><div class="ttname"><a href="AssetCommand_8cpp.html#a834ec2851d25006c87763cec4bedd900">descriptor</a></div><div class="ttdeci">std::string descriptor</div><div class="ttdef"><b>Definition</b> <a href="AssetCommand_8cpp_source.html#l00163">AssetCommand.cpp:163</a></div></div>
+<div class="ttc" id="aAttachmentPoint_8h_html"><div class="ttname"><a href="AttachmentPoint_8h.html">AttachmentPoint.h</a></div></div>
+<div class="ttc" id="aBorrowedRef_8h_html"><div class="ttname"><a href="BorrowedRef_8h.html">BorrowedRef.h</a></div><div class="ttdoc">Vocabulary aliases for nullable and checked borrowed references.</div></div>
+<div class="ttc" id="aVegetationPreset_8cpp_html_aa677a20ed09a5d6c839a3d7a4d53cb9c"><div class="ttname"><a href="VegetationPreset_8cpp.html#aa677a20ed09a5d6c839a3d7a4d53cb9c">context</a></div><div class="ttdeci">const VegetationPresetContext &amp; context</div><div class="ttdef"><b>Definition</b> <a href="VegetationPreset_8cpp_source.html#l00087">VegetationPreset.cpp:87</a></div></div>
+<div class="ttc" id="aclasseve_1_1Duration_html"><div class="ttname"><a href="classeve_1_1Duration.html">eve::Duration</a></div><div class="ttdoc">Signed, fixed-resolution simulation duration in nanoseconds.</div><div class="ttdef"><b>Definition</b> <a href="Time_8h_source.html#l00041">Time.h:41</a></div></div>
+<div class="ttc" id="aclasseve_1_1Duration_html_a9de3e023afa73e0361442ee7a7097bde"><div class="ttname"><a href="classeve_1_1Duration.html#a9de3e023afa73e0361442ee7a7097bde">eve::Duration::zero</a></div><div class="ttdeci">static constexpr Duration zero() noexcept</div><div class="ttdoc">Return zero duration.</div><div class="ttdef"><b>Definition</b> <a href="Time_8h_source.html#l00058">Time.h:58</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html_a10668d27f9f97c9808e0099e0248816b"><div class="ttname"><a href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">eve::Result::success</a></div><div class="ttdeci">static Result success(T value)</div><div class="ttdoc">Construct a successful result owning value.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00157">Result.h:157</a></div></div>
+<div class="ttc" id="aclasseve_1_1Status_html_abb423f9bc554d2bbedb08577f29baf88"><div class="ttname"><a href="classeve_1_1Status.html#abb423f9bc554d2bbedb08577f29baf88">eve::Status::success</a></div><div class="ttdeci">static Status success(StatusCode code=StatusCode::Ok)</div><div class="ttdoc">Construct a successful status with an explicit non-error outcome.</div><div class="ttdef"><b>Definition</b> <a href="Status_8h_source.html#l00081">Status.h:81</a></div></div>
+<div class="ttc" id="aclasseve_1_1action_1_1ActionNotifyRegistry_html"><div class="ttname"><a href="classeve_1_1action_1_1ActionNotifyRegistry.html">eve::action::ActionNotifyRegistry</a></div><div class="ttdoc">Canonical notify descriptor owner and runtime handler router.</div><div class="ttdef"><b>Definition</b> <a href="ActionNotifyRegistry_8h_source.html#l00134">ActionNotifyRegistry.h:134</a></div></div>
+<div class="ttc" id="aclasseve_1_1action_1_1ActionNotifyRegistry_html_a00fb2f3e0ba2a517f90932c959dbd8fc"><div class="ttname"><a href="classeve_1_1action_1_1ActionNotifyRegistry.html#a00fb2f3e0ba2a517f90932c959dbd8fc">eve::action::ActionNotifyRegistry::registerHandler</a></div><div class="ttdeci">Result&lt; void &gt; registerHandler(std::string_view type, std::shared_ptr&lt; IActionNotifyHandler &gt; handler)</div><div class="ttdoc">Register an owning handler for an existing descriptor.</div><div class="ttdef"><b>Definition</b> <a href="ActionNotifyRegistry_8cpp_source.html#l00249">ActionNotifyRegistry.cpp:249</a></div></div>
+<div class="ttc" id="aclasseve_1_1action_1_1ActionNotifyRegistry_html_a0fe226e19831db6f764e7a81ed139756"><div class="ttname"><a href="classeve_1_1action_1_1ActionNotifyRegistry.html#a0fe226e19831db6f764e7a81ed139756">eve::action::ActionNotifyRegistry::unregisterHandler</a></div><div class="ttdeci">Result&lt; void &gt; unregisterHandler(std::string_view type)</div><div class="ttdoc">Remove a handler while retaining its descriptor for authoring.</div><div class="ttdef"><b>Definition</b> <a href="ActionNotifyRegistry_8cpp_source.html#l00260">ActionNotifyRegistry.cpp:260</a></div></div>
+<div class="ttc" id="aclasseve_1_1action_1_1ActionNotifyRegistry_html_a11ae3762c13e5c3d7f249d596905e523"><div class="ttname"><a href="classeve_1_1action_1_1ActionNotifyRegistry.html#a11ae3762c13e5c3d7f249d596905e523">eve::action::ActionNotifyRegistry::dispatchSample</a></div><div class="ttdeci">Result&lt; void &gt; dispatchSample(const ActionActiveBlock &amp;block, const ActionNotifyContext &amp;context) const</div><div class="ttdoc">Route one side-effect-free preview sample to its registered handler.</div><div class="ttdef"><b>Definition</b> <a href="ActionNotifyRegistry_8cpp_source.html#l00358">ActionNotifyRegistry.cpp:358</a></div></div>
+<div class="ttc" id="aclasseve_1_1action_1_1ActionNotifyRegistry_html_a23a79099fa50492c16a67c9b2c5c8949"><div class="ttname"><a href="classeve_1_1action_1_1ActionNotifyRegistry.html#a23a79099fa50492c16a67c9b2c5c8949">eve::action::ActionNotifyRegistry::hasHandler</a></div><div class="ttdeci">bool hasHandler(std::string_view type) const noexcept</div><div class="ttdoc">Return whether this registry has a runtime handler for the exact canonical type.</div><div class="ttdef"><b>Definition</b> <a href="ActionNotifyRegistry_8cpp_source.html#l00283">ActionNotifyRegistry.cpp:283</a></div></div>
+<div class="ttc" id="aclasseve_1_1action_1_1ActionNotifyRegistry_html_a240ff69f0a81ce1dd652698d9b5ff474"><div class="ttname"><a href="classeve_1_1action_1_1ActionNotifyRegistry.html#a240ff69f0a81ce1dd652698d9b5ff474">eve::action::ActionNotifyRegistry::validate</a></div><div class="ttdeci">Result&lt; void &gt; validate(const ActionTimelineEvent &amp;event) const</div><div class="ttdoc">Validate type, shape and required payload fields.</div><div class="ttdef"><b>Definition</b> <a href="ActionNotifyRegistry_8cpp_source.html#l00285">ActionNotifyRegistry.cpp:285</a></div></div>
+<div class="ttc" id="aclasseve_1_1action_1_1ActionNotifyRegistry_html_a31096ff2b20641f52e923f7bca0e9705"><div class="ttname"><a href="classeve_1_1action_1_1ActionNotifyRegistry.html#a31096ff2b20641f52e923f7bca0e9705">eve::action::ActionNotifyRegistry::descriptors</a></div><div class="ttdeci">std::vector&lt; ActionNotifyDescriptor &gt; descriptors() const</div><div class="ttdoc">Return descriptors in lexical type order.</div><div class="ttdef"><b>Definition</b> <a href="ActionNotifyRegistry_8cpp_source.html#l00276">ActionNotifyRegistry.cpp:276</a></div></div>
+<div class="ttc" id="aclasseve_1_1action_1_1ActionNotifyRegistry_html_a897dd1dde5eb656e729a8698bfcde01f"><div class="ttname"><a href="classeve_1_1action_1_1ActionNotifyRegistry.html#a897dd1dde5eb656e729a8698bfcde01f">eve::action::ActionNotifyRegistry::dispatchUpdate</a></div><div class="ttdeci">Result&lt; void &gt; dispatchUpdate(const ActionActiveBlock &amp;block, const ActionNotifyContext &amp;context)</div><div class="ttdoc">Route one authoritative active-state update to its registered handler.</div><div class="ttdef"><b>Definition</b> <a href="ActionNotifyRegistry_8cpp_source.html#l00346">ActionNotifyRegistry.cpp:346</a></div></div>
+<div class="ttc" id="aclasseve_1_1action_1_1ActionNotifyRegistry_html_a90ae0aa6f686b82e8e4068e8ea2b5f3a"><div class="ttname"><a href="classeve_1_1action_1_1ActionNotifyRegistry.html#a90ae0aa6f686b82e8e4068e8ea2b5f3a">eve::action::ActionNotifyRegistry::registerDescriptor</a></div><div class="ttdeci">Result&lt; void &gt; registerDescriptor(ActionNotifyDescriptor descriptor)</div><div class="ttdoc">Register a unique descriptor after validating its canonical type.</div><div class="ttdef"><b>Definition</b> <a href="ActionNotifyRegistry_8cpp_source.html#l00233">ActionNotifyRegistry.cpp:233</a></div></div>
+<div class="ttc" id="aclasseve_1_1action_1_1ActionNotifyRegistry_html_aacdf668601ea4566edca27ff01d6bb3e"><div class="ttname"><a href="classeve_1_1action_1_1ActionNotifyRegistry.html#aacdf668601ea4566edca27ff01d6bb3e">eve::action::ActionNotifyRegistry::advanceHandlers</a></div><div class="ttdeci">Result&lt; void &gt; advanceHandlers(const ActionNotifyContext &amp;context)</div><div class="ttdoc">Advance each unique registered handler once in lexical type order.</div><div class="ttdef"><b>Definition</b> <a href="ActionNotifyRegistry_8cpp_source.html#l00371">ActionNotifyRegistry.cpp:371</a></div></div>
+<div class="ttc" id="aclasseve_1_1action_1_1ActionNotifyRegistry_html_ab4c2df9db927f8db225aae35980baf8a"><div class="ttname"><a href="classeve_1_1action_1_1ActionNotifyRegistry.html#ab4c2df9db927f8db225aae35980baf8a">eve::action::ActionNotifyRegistry::dispatch</a></div><div class="ttdeci">Result&lt; void &gt; dispatch(const ActionTimelineEvent &amp;event, const ActionNotifyContext &amp;context)</div><div class="ttdoc">Validate and route an event, failing observably when no handler is present.</div><div class="ttdef"><b>Definition</b> <a href="ActionNotifyRegistry_8cpp_source.html#l00336">ActionNotifyRegistry.cpp:336</a></div></div>
+<div class="ttc" id="aclasseve_1_1action_1_1ActionNotifyRegistry_html_ad77fb452d78b76a486e27d10327ec392"><div class="ttname"><a href="classeve_1_1action_1_1ActionNotifyRegistry.html#ad77fb452d78b76a486e27d10327ec392">eve::action::ActionNotifyRegistry::withBuiltins</a></div><div class="ttdeci">static Result&lt; ActionNotifyRegistry &gt; withBuiltins()</div><div class="ttdoc">Build a registry containing the engine's standard semantic notify types.</div><div class="ttdef"><b>Definition</b> <a href="ActionNotifyRegistry_8cpp_source.html#l00185">ActionNotifyRegistry.cpp:185</a></div></div>
+<div class="ttc" id="aclasseve_1_1action_1_1IActionNotifyHandler_html"><div class="ttname"><a href="classeve_1_1action_1_1IActionNotifyHandler.html">eve::action::IActionNotifyHandler</a></div><div class="ttdoc">Consumer-owned handler for one registered notify type.</div><div class="ttdef"><b>Definition</b> <a href="ActionNotifyRegistry_8h_source.html#l00066">ActionNotifyRegistry.h:66</a></div></div>
+<div class="ttc" id="aclasseve_1_1action_1_1IActionNotifyHandler_html_a289c64e240fc45559d9d9dac21b12f62"><div class="ttname"><a href="classeve_1_1action_1_1IActionNotifyHandler.html#a289c64e240fc45559d9d9dac21b12f62">eve::action::IActionNotifyHandler::handle</a></div><div class="ttdeci">virtual Result&lt; void &gt; handle(const ActionTimelineEvent &amp;event, const ActionNotifyContext &amp;context)=0</div><div class="ttdoc">Consume one already validated event.</div></div>
+<div class="ttc" id="aclasseve_1_1action_1_1IActionNotifyHandler_html_a44837b128730252e9330ea16e50822f6"><div class="ttname"><a href="classeve_1_1action_1_1IActionNotifyHandler.html#a44837b128730252e9330ea16e50822f6">eve::action::IActionNotifyHandler::~IActionNotifyHandler</a></div><div class="ttdeci">virtual ~IActionNotifyHandler()=default</div></div>
+<div class="ttc" id="aclasseve_1_1action_1_1IActionNotifyHandler_html_a7a39127a558451f6b2111d17173a0a35"><div class="ttname"><a href="classeve_1_1action_1_1IActionNotifyHandler.html#a7a39127a558451f6b2111d17173a0a35">eve::action::IActionNotifyHandler::update</a></div><div class="ttdeci">virtual Result&lt; void &gt; update(const ActionActiveBlock &amp;, const ActionNotifyContext &amp;)</div><div class="ttdoc">Update one active state block after its boundary events were delivered.</div><div class="ttdef"><b>Definition</b> <a href="ActionNotifyRegistry_8h_source.html#l00083">ActionNotifyRegistry.h:83</a></div></div>
+<div class="ttc" id="aclasseve_1_1action_1_1IActionNotifyHandler_html_ab6ced6e0ab3b7435cd9e0d189cc430c5"><div class="ttname"><a href="classeve_1_1action_1_1IActionNotifyHandler.html#ab6ced6e0ab3b7435cd9e0d189cc430c5">eve::action::IActionNotifyHandler::sample</a></div><div class="ttdeci">virtual Result&lt; void &gt; sample(const ActionActiveBlock &amp;, const ActionNotifyContext &amp;) const</div><div class="ttdoc">Evaluate one preview sample without creating persistent side effects.</div><div class="ttdef"><b>Definition</b> <a href="ActionNotifyRegistry_8h_source.html#l00093">ActionNotifyRegistry.h:93</a></div></div>
+<div class="ttc" id="aclasseve_1_1action_1_1IActionNotifyHandler_html_ac6837a897fac3941e6cc0eef0ed04334"><div class="ttname"><a href="classeve_1_1action_1_1IActionNotifyHandler.html#ac6837a897fac3941e6cc0eef0ed04334">eve::action::IActionNotifyHandler::advance</a></div><div class="ttdeci">virtual Result&lt; void &gt; advance(const ActionNotifyContext &amp;)</div><div class="ttdoc">Advance handler-owned transient instances after events and state updates.</div><div class="ttdef"><b>Definition</b> <a href="ActionNotifyRegistry_8h_source.html#l00102">ActionNotifyRegistry.h:102</a></div></div>
+<div class="ttc" id="aclasseve_1_1action_1_1IActionNotifyProvider_html"><div class="ttname"><a href="classeve_1_1action_1_1IActionNotifyProvider.html">eve::action::IActionNotifyProvider</a></div><div class="ttdoc">Optional module provider that installs handlers into a new registry.</div><div class="ttdef"><b>Definition</b> <a href="ActionNotifyRegistry_8h_source.html#l00114">ActionNotifyRegistry.h:114</a></div></div>
+<div class="ttc" id="aclasseve_1_1action_1_1IActionNotifyProvider_html_a7950111e5bdd5a833c048b70dd4b0456"><div class="ttname"><a href="classeve_1_1action_1_1IActionNotifyProvider.html#a7950111e5bdd5a833c048b70dd4b0456">eve::action::IActionNotifyProvider::~IActionNotifyProvider</a></div><div class="ttdeci">virtual ~IActionNotifyProvider()=default</div></div>
+<div class="ttc" id="aclasseve_1_1action_1_1IActionNotifyProvider_html_a9c4b4fd98211da19bcee996bf3d8999b"><div class="ttname"><a href="classeve_1_1action_1_1IActionNotifyProvider.html#a9c4b4fd98211da19bcee996bf3d8999b">eve::action::IActionNotifyProvider::install</a></div><div class="ttdeci">virtual Result&lt; void &gt; install(ActionNotifyRegistry &amp;registry)=0</div><div class="ttdoc">Install provider-owned handler instances for known descriptors.</div></div>
+<div class="ttc" id="aclasseve_1_1action_1_1IActionNotifyProvider_html_aa9ab32d71c562d13c987a3d1ccdbd51d"><div class="ttname"><a href="classeve_1_1action_1_1IActionNotifyProvider.html#aa9ab32d71c562d13c987a3d1ccdbd51d">eve::action::IActionNotifyProvider::capabilityName</a></div><div class="ttdeci">static constexpr const char * capabilityName</div><div class="ttdef"><b>Definition</b> <a href="ActionNotifyRegistry_8h_source.html#l00116">ActionNotifyRegistry.h:116</a></div></div>
+<div class="ttc" id="aclasseve_1_1detail_1_1StrongUint64_html"><div class="ttname"><a href="classeve_1_1detail_1_1StrongUint64.html">eve::detail::StrongUint64&lt; ActionExecutionIdTag &gt;</a></div></div>
+<div class="ttc" id="aclasseve_1_1detail_1_1StrongUint64_html_aa0953a6ce6374a85a399e06ef11db5ce"><div class="ttname"><a href="classeve_1_1detail_1_1StrongUint64.html#aa0953a6ce6374a85a399e06ef11db5ce">eve::detail::StrongUint64&lt; detail::SimulationTickTag &gt;::zero</a></div><div class="ttdeci">static constexpr StrongUint64 zero() noexcept</div><div class="ttdoc">Returns the zero value for this strong type.</div><div class="ttdef"><b>Definition</b> <a href="StrongUint64_8h_source.html#l00023">StrongUint64.h:23</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1action_html"><div class="ttname"><a href="namespaceeve_1_1action.html">eve::action</a></div><div class="ttdef"><b>Definition</b> <a href="AbilityAsset_8cpp_source.html#l00009">AbilityAsset.cpp:9</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1action_html_abd932983e543fbdbc0b46bc103ec3c5ea46a2a41cc6e552044816a2d04634545d"><div class="ttname"><a href="namespaceeve_1_1action.html#abd932983e543fbdbc0b46bc103ec3c5ea46a2a41cc6e552044816a2d04634545d">eve::action::ActionAudioShape::State</a></div><div class="ttdeci">@ State</div></div>
+<div class="ttc" id="anamespaceeve_1_1action_html_abd932983e543fbdbc0b46bc103ec3c5ea54828f327f31abd59f2f459c0247756d"><div class="ttname"><a href="namespaceeve_1_1action.html#abd932983e543fbdbc0b46bc103ec3c5ea54828f327f31abd59f2f459c0247756d">eve::action::ActionAudioShape::Instant</a></div><div class="ttdeci">@ Instant</div></div>
+<div class="ttc" id="anamespaceeve_1_1action_html_abffc8699e8900de8ed3118cd41916ec2"><div class="ttname"><a href="namespaceeve_1_1action.html#abffc8699e8900de8ed3118cd41916ec2">eve::action::ActionNotifyShape</a></div><div class="ttdeci">ActionNotifyShape</div><div class="ttdoc">Declares whether a notify is instantaneous or an enter/exit state.</div><div class="ttdef"><b>Definition</b> <a href="ActionNotifyRegistry_8h_source.html#l00020">ActionNotifyRegistry.h:20</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1action_html_abffc8699e8900de8ed3118cd41916ec2a54828f327f31abd59f2f459c0247756d"><div class="ttname"><a href="namespaceeve_1_1action.html#abffc8699e8900de8ed3118cd41916ec2a54828f327f31abd59f2f459c0247756d">eve::action::ActionNotifyShape::Instant</a></div><div class="ttdeci">@ Instant</div></div>
+<div class="ttc" id="anamespaceeve_html_a3cea6f3c679301cc760563aaacef597fa60832e2e4bbebccf26555b9ba658bad5"><div class="ttname"><a href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa60832e2e4bbebccf26555b9ba658bad5">eve::StatusCode::NoOp</a></div><div class="ttdeci">@ NoOp</div></div>
+<div class="ttc" id="anamespaceeve_html_a503b0fa2c99caf9c2f8d2144f64c683f"><div class="ttname"><a href="namespaceeve.html#a503b0fa2c99caf9c2f8d2144f64c683f">eve::OptionalRef</a></div><div class="ttdeci">std::optional&lt; std::reference_wrapper&lt; T &gt; &gt; OptionalRef</div><div class="ttdoc">Optional borrowed reference; it does not extend T's lifetime.</div><div class="ttdef"><b>Definition</b> <a href="BorrowedRef_8h_source.html#l00024">BorrowedRef.h:24</a></div></div>
+<div class="ttc" id="astructeve_1_1action_1_1ActionActiveBlock_html"><div class="ttname"><a href="structeve_1_1action_1_1ActionActiveBlock.html">eve::action::ActionActiveBlock</a></div><div class="ttdoc">Owning per-step sample of one currently active timeline state.</div><div class="ttdef"><b>Definition</b> <a href="ActionTimeline_8h_source.html#l00150">ActionTimeline.h:150</a></div></div>
+<div class="ttc" id="astructeve_1_1action_1_1ActionNotifyContext_html"><div class="ttname"><a href="structeve_1_1action_1_1ActionNotifyContext.html">eve::action::ActionNotifyContext</a></div><div class="ttdoc">Context linking a routed event to its action execution.</div><div class="ttdef"><b>Definition</b> <a href="ActionNotifyRegistry_8h_source.html#l00032">ActionNotifyRegistry.h:32</a></div></div>
+<div class="ttc" id="astructeve_1_1action_1_1ActionNotifyContext_html_a29b23902ac5c35cf45ccff3cb3ff5fba"><div class="ttname"><a href="structeve_1_1action_1_1ActionNotifyContext.html#a29b23902ac5c35cf45ccff3cb3ff5fba">eve::action::ActionNotifyContext::playbackRate</a></div><div class="ttdeci">double playbackRate</div><div class="ttdoc">Finite positive host playback multiplier used by synchronized presentation blocks.</div><div class="ttdef"><b>Definition</b> <a href="ActionNotifyRegistry_8h_source.html#l00051">ActionNotifyRegistry.h:51</a></div></div>
+<div class="ttc" id="astructeve_1_1action_1_1ActionNotifyContext_html_a35741d49751131705bf510b730c2c1d7"><div class="ttname"><a href="structeve_1_1action_1_1ActionNotifyContext.html#a35741d49751131705bf510b730c2c1d7">eve::action::ActionNotifyContext::scrubbing</a></div><div class="ttdeci">bool scrubbing</div><div class="ttdoc">Whether preview time was positioned discontinuously.</div><div class="ttdef"><b>Definition</b> <a href="ActionNotifyRegistry_8h_source.html#l00055">ActionNotifyRegistry.h:55</a></div></div>
+<div class="ttc" id="astructeve_1_1action_1_1ActionNotifyContext_html_a3c19182388305046b2cb5c4e9eeef2f5"><div class="ttname"><a href="structeve_1_1action_1_1ActionNotifyContext.html#a3c19182388305046b2cb5c4e9eeef2f5">eve::action::ActionNotifyContext::source</a></div><div class="ttdeci">std::optional&lt; ecs::EntityHandle &gt; source</div><div class="ttdoc">Optional source entity; resolved by consumers at call time.</div><div class="ttdef"><b>Definition</b> <a href="ActionNotifyRegistry_8h_source.html#l00036">ActionNotifyRegistry.h:36</a></div></div>
+<div class="ttc" id="astructeve_1_1action_1_1ActionNotifyContext_html_a7a65eee29ecfdff8640d19465f404abb"><div class="ttname"><a href="structeve_1_1action_1_1ActionNotifyContext.html#a7a65eee29ecfdff8640d19465f404abb">eve::action::ActionNotifyContext::interrupted</a></div><div class="ttdeci">bool interrupted</div><div class="ttdoc">Whether state exits are being synthesized because the execution was interrupted.</div><div class="ttdef"><b>Definition</b> <a href="ActionNotifyRegistry_8h_source.html#l00057">ActionNotifyRegistry.h:57</a></div></div>
+<div class="ttc" id="astructeve_1_1action_1_1ActionNotifyContext_html_a8e9eb544d03518c8a6db426448478354"><div class="ttname"><a href="structeve_1_1action_1_1ActionNotifyContext.html#a8e9eb544d03518c8a6db426448478354">eve::action::ActionNotifyContext::sourceAttachment</a></div><div class="ttdeci">OptionalRef&lt; const IAttachmentPointSource &gt; sourceAttachment</div><div class="ttdoc">Optional borrowed animated attachment source corresponding to source.</div><div class="ttdef"><b>Definition</b> <a href="ActionNotifyRegistry_8h_source.html#l00040">ActionNotifyRegistry.h:40</a></div></div>
+<div class="ttc" id="astructeve_1_1action_1_1ActionNotifyContext_html_a99bd58a241d00f08e592eb56680d87c0"><div class="ttname"><a href="structeve_1_1action_1_1ActionNotifyContext.html#a99bd58a241d00f08e592eb56680d87c0">eve::action::ActionNotifyContext::time</a></div><div class="ttdeci">Duration time</div><div class="ttdoc">Authoritative timeline time associated with this dispatch.</div><div class="ttdef"><b>Definition</b> <a href="ActionNotifyRegistry_8h_source.html#l00047">ActionNotifyRegistry.h:47</a></div></div>
+<div class="ttc" id="astructeve_1_1action_1_1ActionNotifyContext_html_a9f860d75488dc69ded33190970312c74"><div class="ttname"><a href="structeve_1_1action_1_1ActionNotifyContext.html#a9f860d75488dc69ded33190970312c74">eve::action::ActionNotifyContext::preview</a></div><div class="ttdeci">bool preview</div><div class="ttdoc">Whether the callback is an editor/runtime preview projection.</div><div class="ttdef"><b>Definition</b> <a href="ActionNotifyRegistry_8h_source.html#l00053">ActionNotifyRegistry.h:53</a></div></div>
+<div class="ttc" id="astructeve_1_1action_1_1ActionNotifyContext_html_a9f8c8caeeff536bf720a116609aba74b"><div class="ttname"><a href="structeve_1_1action_1_1ActionNotifyContext.html#a9f8c8caeeff536bf720a116609aba74b">eve::action::ActionNotifyContext::targetAttachments</a></div><div class="ttdeci">std::vector&lt; OptionalRef&lt; const IAttachmentPointSource &gt; &gt; targetAttachments</div><div class="ttdoc">Borrowed animated attachment sources indexed like targets; empty entries are valid.</div><div class="ttdef"><b>Definition</b> <a href="ActionNotifyRegistry_8h_source.html#l00045">ActionNotifyRegistry.h:45</a></div></div>
+<div class="ttc" id="astructeve_1_1action_1_1ActionNotifyContext_html_aab0b1b88bba3979b2eff4aa07d493f81"><div class="ttname"><a href="structeve_1_1action_1_1ActionNotifyContext.html#aab0b1b88bba3979b2eff4aa07d493f81">eve::action::ActionNotifyContext::targets</a></div><div class="ttdeci">std::vector&lt; ecs::EntityHandle &gt; targets</div><div class="ttdoc">Owning target handle list for this synchronous dispatch.</div><div class="ttdef"><b>Definition</b> <a href="ActionNotifyRegistry_8h_source.html#l00038">ActionNotifyRegistry.h:38</a></div></div>
+<div class="ttc" id="astructeve_1_1action_1_1ActionNotifyContext_html_ace2fb40c2dd35322990fc217527f8170"><div class="ttname"><a href="structeve_1_1action_1_1ActionNotifyContext.html#ace2fb40c2dd35322990fc217527f8170">eve::action::ActionNotifyContext::tick</a></div><div class="ttdeci">SimulationTick tick</div><div class="ttdoc">Deterministic simulation tick associated with this dispatch, when available.</div><div class="ttdef"><b>Definition</b> <a href="ActionNotifyRegistry_8h_source.html#l00049">ActionNotifyRegistry.h:49</a></div></div>
+<div class="ttc" id="astructeve_1_1action_1_1ActionNotifyContext_html_ad3401e778fb3ada0839f7e8b54fddc18"><div class="ttname"><a href="structeve_1_1action_1_1ActionNotifyContext.html#ad3401e778fb3ada0839f7e8b54fddc18">eve::action::ActionNotifyContext::executionId</a></div><div class="ttdeci">ActionExecutionId executionId</div><div class="ttdoc">Execution whose lifecycle is being routed.</div><div class="ttdef"><b>Definition</b> <a href="ActionNotifyRegistry_8h_source.html#l00034">ActionNotifyRegistry.h:34</a></div></div>
+<div class="ttc" id="astructeve_1_1action_1_1ActionNotifyDescriptor_html"><div class="ttname"><a href="structeve_1_1action_1_1ActionNotifyDescriptor.html">eve::action::ActionNotifyDescriptor</a></div><div class="ttdoc">Owning editor/runtime contract for one notify type.</div><div class="ttdef"><b>Definition</b> <a href="ActionNotifyRegistry_8h_source.html#l00023">ActionNotifyRegistry.h:23</a></div></div>
+<div class="ttc" id="astructeve_1_1action_1_1ActionNotifyDescriptor_html_a30797dc587cf87d9d7d450c9776dff8d"><div class="ttname"><a href="structeve_1_1action_1_1ActionNotifyDescriptor.html#a30797dc587cf87d9d7d450c9776dff8d">eve::action::ActionNotifyDescriptor::category</a></div><div class="ttdeci">std::string category</div><div class="ttdef"><b>Definition</b> <a href="ActionNotifyRegistry_8h_source.html#l00026">ActionNotifyRegistry.h:26</a></div></div>
+<div class="ttc" id="astructeve_1_1action_1_1ActionNotifyDescriptor_html_ad19b50ee1e830ede50625525f2c20ac9"><div class="ttname"><a href="structeve_1_1action_1_1ActionNotifyDescriptor.html#ad19b50ee1e830ede50625525f2c20ac9">eve::action::ActionNotifyDescriptor::displayName</a></div><div class="ttdeci">std::string displayName</div><div class="ttdef"><b>Definition</b> <a href="ActionNotifyRegistry_8h_source.html#l00025">ActionNotifyRegistry.h:25</a></div></div>
+<div class="ttc" id="astructeve_1_1action_1_1ActionNotifyDescriptor_html_ad473266f970b4b1ee97516b8ec5b4491"><div class="ttname"><a href="structeve_1_1action_1_1ActionNotifyDescriptor.html#ad473266f970b4b1ee97516b8ec5b4491">eve::action::ActionNotifyDescriptor::requiredPayloadFields</a></div><div class="ttdeci">std::vector&lt; std::string &gt; requiredPayloadFields</div><div class="ttdef"><b>Definition</b> <a href="ActionNotifyRegistry_8h_source.html#l00028">ActionNotifyRegistry.h:28</a></div></div>
+<div class="ttc" id="astructeve_1_1action_1_1ActionNotifyDescriptor_html_ad949cf7e3d7a6f7b9bf13a93125c0f9f"><div class="ttname"><a href="structeve_1_1action_1_1ActionNotifyDescriptor.html#ad949cf7e3d7a6f7b9bf13a93125c0f9f">eve::action::ActionNotifyDescriptor::type</a></div><div class="ttdeci">std::string type</div><div class="ttdef"><b>Definition</b> <a href="ActionNotifyRegistry_8h_source.html#l00024">ActionNotifyRegistry.h:24</a></div></div>
+<div class="ttc" id="astructeve_1_1action_1_1ActionNotifyDescriptor_html_ae177cb35f5c26c25c306967a9933af57"><div class="ttname"><a href="structeve_1_1action_1_1ActionNotifyDescriptor.html#ae177cb35f5c26c25c306967a9933af57">eve::action::ActionNotifyDescriptor::shape</a></div><div class="ttdeci">ActionNotifyShape shape</div><div class="ttdef"><b>Definition</b> <a href="ActionNotifyRegistry_8h_source.html#l00027">ActionNotifyRegistry.h:27</a></div></div>
+<div class="ttc" id="astructeve_1_1action_1_1ActionTimelineEvent_html"><div class="ttname"><a href="structeve_1_1action_1_1ActionTimelineEvent.html">eve::action::ActionTimelineEvent</a></div><div class="ttdoc">Owning event projection returned by the runtime sampler.</div><div class="ttdef"><b>Definition</b> <a href="ActionTimeline_8h_source.html#l00138">ActionTimeline.h:138</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

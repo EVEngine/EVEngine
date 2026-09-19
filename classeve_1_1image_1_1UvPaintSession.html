@@ -1,0 +1,647 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::image::UvPaintSession类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1image.html">image</a></li><li class="navelem"><a class="el" href="classeve_1_1image_1_1UvPaintSession.html">UvPaintSession</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1image_1_1UvPaintSession-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::image::UvPaintSession类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Transactional, renderer-independent UV texture painting session.  
+ <a href="classeve_1_1image_1_1UvPaintSession.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="UvPaintSession_8h_source.html">UvPaintSession.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a748b2c1cfd67ea2a8ae25773ec758d37" id="r_a748b2c1cfd67ea2a8ae25773ec758d37"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1image_1_1UvPaintSession.html#a748b2c1cfd67ea2a8ae25773ec758d37">UvPaintSession</a> ()</td></tr>
+<tr class="separator:a748b2c1cfd67ea2a8ae25773ec758d37"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac10174cb93ca7771b64ec18db43953f0" id="r_ac10174cb93ca7771b64ec18db43953f0"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1image_1_1UvPaintSession.html#ac10174cb93ca7771b64ec18db43953f0">~UvPaintSession</a> ()</td></tr>
+<tr class="separator:ac10174cb93ca7771b64ec18db43953f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2a174b69528f572933609f684f16aff0" id="r_a2a174b69528f572933609f684f16aff0"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1image_1_1UvPaintSession.html#a2a174b69528f572933609f684f16aff0">UvPaintSession</a> (const <a class="el" href="classeve_1_1image_1_1UvPaintSession.html">UvPaintSession</a> &amp;)=delete</td></tr>
+<tr class="separator:a2a174b69528f572933609f684f16aff0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad7504f61bdab7466db166952f98c49c7" id="r_ad7504f61bdab7466db166952f98c49c7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1image_1_1UvPaintSession.html">UvPaintSession</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1image_1_1UvPaintSession.html#ad7504f61bdab7466db166952f98c49c7">operator=</a> (const <a class="el" href="classeve_1_1image_1_1UvPaintSession.html">UvPaintSession</a> &amp;)=delete</td></tr>
+<tr class="separator:ad7504f61bdab7466db166952f98c49c7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6a861af10d31df6271c4aa9cc351af68" id="r_a6a861af10d31df6271c4aa9cc351af68"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1image_1_1UvPaintSession.html#a6a861af10d31df6271c4aa9cc351af68">initializeResult</a> (const <a class="el" href="classeve_1_1image_1_1ImageData.html">ImageData</a> &amp;image)</td></tr>
+<tr class="memdesc:a6a861af10d31df6271c4aa9cc351af68"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialize with an owning RGBA8 copy and clear history.  <br /></td></tr>
+<tr class="separator:a6a861af10d31df6271c4aa9cc351af68"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a907fadb1f69cd85425bb70d18a0a44d1" id="r_a907fadb1f69cd85425bb70d18a0a44d1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1image_1_1UvPaintReceipt.html">UvPaintReceipt</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1image_1_1UvPaintSession.html#a907fadb1f69cd85425bb70d18a0a44d1">paintCircleResult</a> (float <a class="el" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>, float <a class="el" href="HexRiverMesh_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>, float radiusPixels, float <a class="el" href="GtsMeshSimplifier_8cpp.html#a880a49112fedae68e714341a9a082fb6">r</a>, float <a class="el" href="GpuGraph_8cpp.html#aaae841ffb46b13fecc7328d10de4a9f6">g</a>, float <a class="el" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>, float <a class="el" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>, bool wrapU=false, bool wrapV=false)</td></tr>
+<tr class="memdesc:a907fadb1f69cd85425bb70d18a0a44d1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Paint one circular UV brush as a single undoable transaction.  <br /></td></tr>
+<tr class="separator:a907fadb1f69cd85425bb70d18a0a44d1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a136d034e269224858b23318dd8a13384" id="r_a136d034e269224858b23318dd8a13384"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1image_1_1UvPaintSession.html#a136d034e269224858b23318dd8a13384">undoResult</a> ()</td></tr>
+<tr class="memdesc:a136d034e269224858b23318dd8a13384"><td class="mdescLeft">&#160;</td><td class="mdescRight">Restore the previous committed paint transaction.  <br /></td></tr>
+<tr class="separator:a136d034e269224858b23318dd8a13384"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae8b5cfd2cec95bd0d938aa65bf215604" id="r_ae8b5cfd2cec95bd0d938aa65bf215604"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1image_1_1UvPaintSession.html#ae8b5cfd2cec95bd0d938aa65bf215604">restoreResult</a> ()</td></tr>
+<tr class="memdesc:ae8b5cfd2cec95bd0d938aa65bf215604"><td class="mdescLeft">&#160;</td><td class="mdescRight">Restore the initial/baked pixels and clear history.  <br /></td></tr>
+<tr class="separator:ae8b5cfd2cec95bd0d938aa65bf215604"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeeede1e922a1241745f6e9dd0d44f282" id="r_aeeede1e922a1241745f6e9dd0d44f282"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1image_1_1UvPaintSession.html#aeeede1e922a1241745f6e9dd0d44f282">bakeResult</a> ()</td></tr>
+<tr class="memdesc:aeeede1e922a1241745f6e9dd0d44f282"><td class="mdescLeft">&#160;</td><td class="mdescRight">Make current pixels the new restore point and clear history.  <br /></td></tr>
+<tr class="separator:aeeede1e922a1241745f6e9dd0d44f282"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a611f8e02363268f86a6a35127e5da3cd" id="r_a611f8e02363268f86a6a35127e5da3cd"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::unique_ptr&lt; <a class="el" href="classeve_1_1image_1_1ImageData.html">ImageData</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1image_1_1UvPaintSession.html#a611f8e02363268f86a6a35127e5da3cd">currentImageResult</a> () const</td></tr>
+<tr class="memdesc:a611f8e02363268f86a6a35127e5da3cd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return a caller-owned current pixel snapshot.  <br /></td></tr>
+<tr class="separator:a611f8e02363268f86a6a35127e5da3cd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8a92641b45d58cb258a9c5229434ef85" id="r_a8a92641b45d58cb258a9c5229434ef85"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1image_1_1UvPaintSession.html#a8a92641b45d58cb258a9c5229434ef85">copyCurrentToResult</a> (<a class="el" href="classeve_1_1image_1_1ImageData.html">ImageData</a> &amp;destination) const</td></tr>
+<tr class="memdesc:a8a92641b45d58cb258a9c5229434ef85"><td class="mdescLeft">&#160;</td><td class="mdescRight">Atomically copy current pixels into caller-owned RGBA8 storage.  <br /></td></tr>
+<tr class="separator:a8a92641b45d58cb258a9c5229434ef85"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a195f590f68ddcfed6451209521d95809" id="r_a195f590f68ddcfed6451209521d95809"><td class="memItemLeft" align="right" valign="top">std::uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1image_1_1UvPaintSession.html#a195f590f68ddcfed6451209521d95809">revision</a> () const noexcept</td></tr>
+<tr class="memdesc:a195f590f68ddcfed6451209521d95809"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return monotonic session revision.  <br /></td></tr>
+<tr class="separator:a195f590f68ddcfed6451209521d95809"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af2488ab4fa3490c8c42c6a9efaf8f137" id="r_af2488ab4fa3490c8c42c6a9efaf8f137"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1image_1_1UvPaintSession.html#af2488ab4fa3490c8c42c6a9efaf8f137">undoCount</a> () const noexcept</td></tr>
+<tr class="memdesc:af2488ab4fa3490c8c42c6a9efaf8f137"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return available undo transaction count.  <br /></td></tr>
+<tr class="separator:af2488ab4fa3490c8c42c6a9efaf8f137"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acf2976f1780db145abb606ac0003445b" id="r_acf2976f1780db145abb606ac0003445b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1image_1_1UvPaintSession.html#acf2976f1780db145abb606ac0003445b">isInitialized</a> () const noexcept</td></tr>
+<tr class="memdesc:acf2976f1780db145abb606ac0003445b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Report whether pixels have been initialized.  <br /></td></tr>
+<tr class="separator:acf2976f1780db145abb606ac0003445b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Transactional, renderer-independent UV texture painting session. </p>
+<p>The session owns original/current pixels and bounded undo snapshots. It is synchronous and thread-affine, retains no model, renderer, physics hit, or caller-owned image pointer. </p>
+
+<p class="definition">在文件 <a class="el" href="UvPaintSession_8h_source.html">UvPaintSession.h</a> 第 <a class="el" href="UvPaintSession_8h_source.html#l00020">20</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a748b2c1cfd67ea2a8ae25773ec758d37" name="a748b2c1cfd67ea2a8ae25773ec758d37"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a748b2c1cfd67ea2a8ae25773ec758d37">&#9670;&#160;</a></span>UvPaintSession() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::image::UvPaintSession::UvPaintSession </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ac10174cb93ca7771b64ec18db43953f0" name="ac10174cb93ca7771b64ec18db43953f0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac10174cb93ca7771b64ec18db43953f0">&#9670;&#160;</a></span>~UvPaintSession()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::image::UvPaintSession::~UvPaintSession </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a2a174b69528f572933609f684f16aff0" name="a2a174b69528f572933609f684f16aff0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2a174b69528f572933609f684f16aff0">&#9670;&#160;</a></span>UvPaintSession() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::image::UvPaintSession::UvPaintSession </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1image_1_1UvPaintSession.html">UvPaintSession</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="aeeede1e922a1241745f6e9dd0d44f282" name="aeeede1e922a1241745f6e9dd0d44f282"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeeede1e922a1241745f6e9dd0d44f282">&#9670;&#160;</a></span>bakeResult()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::image::UvPaintSession::bakeResult </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Make current pixels the new restore point and clear history. </p>
+
+<p class="definition">在文件 <a class="el" href="UvPaintSession_8cpp_source.html">UvPaintSession.cpp</a> 第 <a class="el" href="UvPaintSession_8cpp_source.html#l00062">62</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::PreconditionViolation</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a8a92641b45d58cb258a9c5229434ef85" name="a8a92641b45d58cb258a9c5229434ef85"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8a92641b45d58cb258a9c5229434ef85">&#9670;&#160;</a></span>copyCurrentToResult()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::image::UvPaintSession::copyCurrentToResult </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1image_1_1ImageData.html">ImageData</a> &amp;&#160;</td>
+          <td class="paramname"><em>destination</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Atomically copy current pixels into caller-owned RGBA8 storage. </p>
+
+<p class="definition">在文件 <a class="el" href="UvPaintSession_8cpp_source.html">UvPaintSession.cpp</a> 第 <a class="el" href="UvPaintSession_8cpp_source.html#l00079">79</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ImageData_8cpp_source.html#l00062">eve::image::ImageData::adopt()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::PreconditionViolation</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a611f8e02363268f86a6a35127e5da3cd" name="a611f8e02363268f86a6a35127e5da3cd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a611f8e02363268f86a6a35127e5da3cd">&#9670;&#160;</a></span>currentImageResult()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::unique_ptr&lt; <a class="el" href="classeve_1_1image_1_1ImageData.html">ImageData</a> &gt; &gt; eve::image::UvPaintSession::currentImageResult </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return a caller-owned current pixel snapshot. </p>
+
+<p class="definition">在文件 <a class="el" href="UvPaintSession_8cpp_source.html">UvPaintSession.cpp</a> 第 <a class="el" href="UvPaintSession_8cpp_source.html#l00071">71</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a> , 以及 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::PreconditionViolation</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DynamicMeshUvPaintSession_8cpp_source.html#l00040">eve::procgen::DynamicMeshUvPaintSession::currentImageResult()</a>.</p>
+
+</div>
+</div>
+<a id="a6a861af10d31df6271c4aa9cc351af68" name="a6a861af10d31df6271c4aa9cc351af68"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6a861af10d31df6271c4aa9cc351af68">&#9670;&#160;</a></span>initializeResult()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::image::UvPaintSession::initializeResult </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1image_1_1ImageData.html">ImageData</a> &amp;&#160;</td>
+          <td class="paramname"><em>image</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Initialize with an owning RGBA8 copy and clear history. </p>
+
+<p class="definition">在文件 <a class="el" href="UvPaintSession_8cpp_source.html">UvPaintSession.cpp</a> 第 <a class="el" href="UvPaintSession_8cpp_source.html#l00017">17</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="GraphicsShaderResources_8cpp_source.html#l00014">image</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ab4080bdf74febf04d578ff105cce9d3f">eve::Unsupported</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DynamicMeshUvPaintSession_8cpp_source.html#l00016">eve::procgen::DynamicMeshUvPaintSession::initializeResult()</a>.</p>
+
+</div>
+</div>
+<a id="acf2976f1780db145abb606ac0003445b" name="acf2976f1780db145abb606ac0003445b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acf2976f1780db145abb606ac0003445b">&#9670;&#160;</a></span>isInitialized()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::image::UvPaintSession::isInitialized </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Report whether pixels have been initialized. </p>
+
+<p class="definition">在文件 <a class="el" href="UvPaintSession_8h_source.html">UvPaintSession.h</a> 第 <a class="el" href="UvPaintSession_8h_source.html#l00047">47</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad7504f61bdab7466db166952f98c49c7" name="ad7504f61bdab7466db166952f98c49c7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad7504f61bdab7466db166952f98c49c7">&#9670;&#160;</a></span>operator=()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1image_1_1UvPaintSession.html">UvPaintSession</a> &amp; eve::image::UvPaintSession::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1image_1_1UvPaintSession.html">UvPaintSession</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a907fadb1f69cd85425bb70d18a0a44d1" name="a907fadb1f69cd85425bb70d18a0a44d1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a907fadb1f69cd85425bb70d18a0a44d1">&#9670;&#160;</a></span>paintCircleResult()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1image_1_1UvPaintReceipt.html">UvPaintReceipt</a> &gt; eve::image::UvPaintSession::paintCircleResult </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>u</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>v</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>radiusPixels</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>r</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>g</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>b</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>a</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>wrapU</em> = <code>false</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>wrapV</em> = <code>false</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Paint one circular UV brush as a single undoable transaction. </p>
+
+<p class="definition">在文件 <a class="el" href="UvPaintSession_8cpp_source.html">UvPaintSession.cpp</a> 第 <a class="el" href="UvPaintSession_8cpp_source.html#l00027">27</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00014">a</a>, <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00015">b</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="GpuGraph_8cpp_source.html#l00007">g</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::PreconditionViolation</a>, <a class="el" href="GtsMeshSimplifier_8cpp_source.html#l00012">r</a>, <a class="el" href="Grass_8cpp_source.html#l00233">u</a> , 以及 <a class="el" href="HexRiverMesh_8cpp_source.html#l00019">v</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DynamicMeshUvPaintSession_8cpp_source.html#l00030">eve::procgen::DynamicMeshUvPaintSession::paintSurfacePointResult()</a>.</p>
+
+</div>
+</div>
+<a id="ae8b5cfd2cec95bd0d938aa65bf215604" name="ae8b5cfd2cec95bd0d938aa65bf215604"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae8b5cfd2cec95bd0d938aa65bf215604">&#9670;&#160;</a></span>restoreResult()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::image::UvPaintSession::restoreResult </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Restore the initial/baked pixels and clear history. </p>
+
+<p class="definition">在文件 <a class="el" href="UvPaintSession_8cpp_source.html">UvPaintSession.cpp</a> 第 <a class="el" href="UvPaintSession_8cpp_source.html#l00053">53</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::PreconditionViolation</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a195f590f68ddcfed6451209521d95809" name="a195f590f68ddcfed6451209521d95809"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a195f590f68ddcfed6451209521d95809">&#9670;&#160;</a></span>revision()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::uint64_t eve::image::UvPaintSession::revision </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return monotonic session revision. </p>
+
+<p class="definition">在文件 <a class="el" href="UvPaintSession_8h_source.html">UvPaintSession.h</a> 第 <a class="el" href="UvPaintSession_8h_source.html#l00043">43</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DynamicMeshUvPaintSession_8h_source.html#l00034">eve::procgen::DynamicMeshUvPaintSession::paintRevision()</a>.</p>
+
+</div>
+</div>
+<a id="af2488ab4fa3490c8c42c6a9efaf8f137" name="af2488ab4fa3490c8c42c6a9efaf8f137"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af2488ab4fa3490c8c42c6a9efaf8f137">&#9670;&#160;</a></span>undoCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::image::UvPaintSession::undoCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return available undo transaction count. </p>
+
+<p class="definition">在文件 <a class="el" href="UvPaintSession_8h_source.html">UvPaintSession.h</a> 第 <a class="el" href="UvPaintSession_8h_source.html#l00045">45</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a136d034e269224858b23318dd8a13384" name="a136d034e269224858b23318dd8a13384"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a136d034e269224858b23318dd8a13384">&#9670;&#160;</a></span>undoResult()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::image::UvPaintSession::undoResult </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Restore the previous committed paint transaction. </p>
+
+<p class="definition">在文件 <a class="el" href="UvPaintSession_8cpp_source.html">UvPaintSession.cpp</a> 第 <a class="el" href="UvPaintSession_8cpp_source.html#l00043">43</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::PreconditionViolation</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DynamicMeshUvPaintSession_8cpp_source.html#l00043">eve::procgen::DynamicMeshUvPaintSession::undoResult()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/image/<a class="el" href="UvPaintSession_8h_source.html">UvPaintSession.h</a></li>
+<li>src/modules/image/<a class="el" href="UvPaintSession_8cpp_source.html">UvPaintSession.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

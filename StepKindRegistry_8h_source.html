@@ -1,0 +1,322 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/dnut_interpreter/StepKindRegistry.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_bbfad302d625b3511988fd0c8438efa1.html">dnut_interpreter</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">StepKindRegistry.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="StepKindRegistry_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;<a class="code" href="Result_8h.html">common/Result.h</a>&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &quot;<a class="code" href="Value_8h.html">common/Value.h</a>&quot;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &quot;<a class="code" href="SequenceAsset_8h.html">dnut_interpreter/SequenceAsset.h</a>&quot;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span> </div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &lt;functional&gt;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &lt;map&gt;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#include &lt;string_view&gt;</span></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span> </div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1dnut.html">eve::dnut</a> {</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span> </div>
+<div class="foldopen" id="foldopen00018" data-start="{" data-end="};">
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno"><a class="line" href="namespaceeve_1_1dnut.html#a7837ffce8304071dd87de28f7abf7126">   18</a></span><span class="keyword">enum class</span> <a class="code hl_enumeration" href="namespaceeve_1_1dnut.html#a7837ffce8304071dd87de28f7abf7126">StepShape</a> : std::uint8_t {</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1dnut.html#a7837ffce8304071dd87de28f7abf7126a54828f327f31abd59f2f459c0247756d">Instant</a>,</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1dnut.html#a7837ffce8304071dd87de28f7abf7126a100953bafda776b456bd241376128e32">Await</a>,</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>};</div>
+</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span> </div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno"><a class="line" href="namespaceeve_1_1dnut.html#a0c5c3baad424d9aaf6da20c3df995e42">   33</a></span><span class="keyword">enum class</span> <a class="code hl_enumeration" href="namespaceeve_1_1dnut.html#a0c5c3baad424d9aaf6da20c3df995e42">StepFieldType</a> : std::uint8_t { <a class="code hl_enumvalue" href="namespaceeve_1_1dnut.html#aedc8fa9495ebd4c7e8be9b2cb42b6c0ea27118326006d3829667a400ad23d5d98">String</a>, <a class="code hl_enumvalue" href="namespaceeve_1_1dnut.html#aedc8fa9495ebd4c7e8be9b2cb42b6c0eab2ee912b91d69b435159c7c3f6df7f5f">Number</a>, <a class="code hl_enumvalue" href="namespaceeve_1_1dnut.html#a0c5c3baad424d9aaf6da20c3df995e42aa0faef0851b4294c06f2b94bb1cb2044">Integer</a>, <a class="code hl_enumvalue" href="namespaceeve_1_1dnut.html#a0c5c3baad424d9aaf6da20c3df995e42a27226c864bac7454a8504f8edb15d95b">Boolean</a>, <a class="code hl_enumvalue" href="namespaceeve_1_1dnut.html#a0c5c3baad424d9aaf6da20c3df995e42aed36a1ef76a59ee3f15180e0441188ad">Any</a> };</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span> </div>
+<div class="foldopen" id="foldopen00036" data-start="{" data-end="};">
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno"><a class="line" href="structeve_1_1dnut_1_1StepField.html">   36</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1dnut_1_1StepField.html">StepField</a> {</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno"><a class="line" href="structeve_1_1dnut_1_1StepField.html#a3aee42b812091b48b165481ef16e090b">   37</a></span>    std::string   <a class="code hl_variable" href="structeve_1_1dnut_1_1StepField.html#a3aee42b812091b48b165481ef16e090b">name</a>;</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno"><a class="line" href="structeve_1_1dnut_1_1StepField.html#ac4c31cc0ff8e00acd343ad1f26695aad">   38</a></span>    <a class="code hl_enumeration" href="namespaceeve_1_1dnut.html#a0c5c3baad424d9aaf6da20c3df995e42">StepFieldType</a> <a class="code hl_variable" href="structeve_1_1dnut_1_1StepField.html#ac4c31cc0ff8e00acd343ad1f26695aad">type</a>     = <a class="code hl_enumvalue" href="namespaceeve_1_1dnut.html#a0c5c3baad424d9aaf6da20c3df995e42a27118326006d3829667a400ad23d5d98">StepFieldType::String</a>;</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno"><a class="line" href="structeve_1_1dnut_1_1StepField.html#a5a60ececdd360c2fee48266c3917a718">   39</a></span>    <span class="keywordtype">bool</span>          <a class="code hl_variable" href="structeve_1_1dnut_1_1StepField.html#a5a60ececdd360c2fee48266c3917a718">required</a>  = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>};</div>
+</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span> </div>
+<div class="foldopen" id="foldopen00043" data-start="{" data-end="};">
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno"><a class="line" href="structeve_1_1dnut_1_1StepKindDescriptor.html">   43</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1dnut_1_1StepKindDescriptor.html">StepKindDescriptor</a> {</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno"><a class="line" href="structeve_1_1dnut_1_1StepKindDescriptor.html#a95fc6aa9367e5ae0843ffb71d566edb5">   44</a></span>    std::string            <a class="code hl_variable" href="structeve_1_1dnut_1_1StepKindDescriptor.html#a95fc6aa9367e5ae0843ffb71d566edb5">type</a>;</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno"><a class="line" href="structeve_1_1dnut_1_1StepKindDescriptor.html#ad968a457b543def712c9e3c48812ea39">   45</a></span>    std::string            <a class="code hl_variable" href="structeve_1_1dnut_1_1StepKindDescriptor.html#ad968a457b543def712c9e3c48812ea39">displayName</a>;</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno"><a class="line" href="structeve_1_1dnut_1_1StepKindDescriptor.html#abc8023af4e20dedf1109be8810e66c12">   46</a></span>    std::string            <a class="code hl_variable" href="structeve_1_1dnut_1_1StepKindDescriptor.html#abc8023af4e20dedf1109be8810e66c12">category</a>;</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno"><a class="line" href="structeve_1_1dnut_1_1StepKindDescriptor.html#a764786366b7bb64d5f52d02c49f063b7">   47</a></span>    <a class="code hl_enumeration" href="namespaceeve_1_1dnut.html#a7837ffce8304071dd87de28f7abf7126">StepShape</a>              <a class="code hl_variable" href="structeve_1_1dnut_1_1StepKindDescriptor.html#a764786366b7bb64d5f52d02c49f063b7">shape</a> = <a class="code hl_enumvalue" href="namespaceeve_1_1dnut.html#a7837ffce8304071dd87de28f7abf7126a54828f327f31abd59f2f459c0247756d">StepShape::Instant</a>;</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno"><a class="line" href="structeve_1_1dnut_1_1StepKindDescriptor.html#a08a4e422a53f5881eb50459ea99dbd51">   48</a></span>    std::vector&lt;StepField&gt; <a class="code hl_variable" href="structeve_1_1dnut_1_1StepKindDescriptor.html#a08a4e422a53f5881eb50459ea99dbd51">fields</a>;</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno"><a class="line" href="structeve_1_1dnut_1_1StepKindDescriptor.html#a5da7ba2818eafd49fbfe5e3d7052601b">   57</a></span>    std::function&lt;eve::Result&lt;void&gt;(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1dnut_1_1SequenceNode.html">SequenceNode</a>&amp; node)&gt; <a class="code hl_variable" href="structeve_1_1dnut_1_1StepKindDescriptor.html#a5da7ba2818eafd49fbfe5e3d7052601b">validate</a>;</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>};</div>
+</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span> </div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno"><a class="line" href="namespaceeve_1_1dnut.html#aa0d7c6939120e0f9671b061d14f0af59">   61</a></span><span class="keyword">enum class</span> <a class="code hl_enumeration" href="namespaceeve_1_1dnut.html#aa0d7c6939120e0f9671b061d14f0af59">StepStatus</a> : std::uint8_t { <a class="code hl_enumvalue" href="namespaceeve_1_1dnut.html#aa0d7c6939120e0f9671b061d14f0af59a07ca5050e697392c9ed47e6453f1453f">Completed</a>, <a class="code hl_enumvalue" href="namespaceeve_1_1dnut.html#aa0d7c6939120e0f9671b061d14f0af59a4ecc0d90eec1cea3e9db96583a1bb9c2">Blocked</a>, <a class="code hl_enumvalue" href="namespaceeve_1_1dnut.html#aa0d7c6939120e0f9671b061d14f0af59ad7c8c85bf79bbe1b7188497c32c3b0ca">Failed</a> };</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span> </div>
+<div class="foldopen" id="foldopen00064" data-start="{" data-end="};">
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno"><a class="line" href="structeve_1_1dnut_1_1StepOutcome.html">   64</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1dnut_1_1StepOutcome.html">StepOutcome</a> {</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno"><a class="line" href="structeve_1_1dnut_1_1StepOutcome.html#a4cacb221216a50970ab77603e38c43db">   65</a></span>    <a class="code hl_enumeration" href="namespaceeve_1_1dnut.html#aa0d7c6939120e0f9671b061d14f0af59">StepStatus</a>  <a class="code hl_variable" href="structeve_1_1dnut_1_1StepOutcome.html#a4cacb221216a50970ab77603e38c43db">status</a> = <a class="code hl_enumvalue" href="namespaceeve_1_1dnut.html#aa0d7c6939120e0f9671b061d14f0af59a07ca5050e697392c9ed47e6453f1453f">StepStatus::Completed</a>;</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno"><a class="line" href="structeve_1_1dnut_1_1StepOutcome.html#a7e2da39f1537796e46723ebc2ff3538e">   66</a></span>    std::string <a class="code hl_variable" href="structeve_1_1dnut_1_1StepOutcome.html#a7e2da39f1537796e46723ebc2ff3538e">error</a>;</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno"><a class="line" href="structeve_1_1dnut_1_1StepOutcome.html#ac7e4129cc99d3aabfc92970cbaa6c3ee">   67</a></span>    <a class="code hl_class" href="classeve_1_1Value.html">eve::Value</a>  <a class="code hl_variable" href="structeve_1_1dnut_1_1StepOutcome.html#ac7e4129cc99d3aabfc92970cbaa6c3ee">value</a>;</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>};</div>
+</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span> </div>
+<div class="foldopen" id="foldopen00077" data-start="{" data-end="};">
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno"><a class="line" href="structeve_1_1dnut_1_1StepContext.html">   77</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1dnut_1_1StepContext.html">StepContext</a> {</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno"><a class="line" href="structeve_1_1dnut_1_1StepContext.html#a35ea8292a07cf51f5d89de9c1c9f4ee6">   78</a></span>    std::string       <a class="code hl_variable" href="structeve_1_1dnut_1_1StepContext.html#a35ea8292a07cf51f5d89de9c1c9f4ee6">assetId</a>;</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno"><a class="line" href="structeve_1_1dnut_1_1StepContext.html#a26bcbac668210daaa6b571880fbb27d6">   79</a></span>    std::string       <a class="code hl_variable" href="structeve_1_1dnut_1_1StepContext.html#a26bcbac668210daaa6b571880fbb27d6">nodeId</a>;</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno"><a class="line" href="structeve_1_1dnut_1_1StepContext.html#a2de3da7078ad3022cbf5c69e7bf311fb">   80</a></span>    <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1Value.html">eve::Value</a>* <a class="code hl_variable" href="structeve_1_1dnut_1_1StepContext.html#a2de3da7078ad3022cbf5c69e7bf311fb">bindings</a> = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno"><a class="line" href="structeve_1_1dnut_1_1StepContext.html#ad95467fd1c388f07a3e7197356621688">   81</a></span>    <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1Value.html">eve::Value</a>* <a class="code hl_variable" href="structeve_1_1dnut_1_1StepContext.html#ad95467fd1c388f07a3e7197356621688">locals</a>   = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno"><a class="line" href="structeve_1_1dnut_1_1StepContext.html#a8dfe735426b8a856e54b33ec3adb7379">   90</a></span>    <span class="keywordtype">void</span>* <a class="code hl_variable" href="structeve_1_1dnut_1_1StepContext.html#a8dfe735426b8a856e54b33ec3adb7379">host</a> = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>};</div>
+</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span> </div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno"><a class="line" href="namespaceeve_1_1dnut.html#a59231a6b751d9dd14330eccee0da1839">   94</a></span><span class="keyword">using </span><a class="code hl_typedef" href="namespaceeve_1_1dnut.html#a59231a6b751d9dd14330eccee0da1839">StepHandler</a> = std::function&lt;<a class="code hl_struct" href="structeve_1_1dnut_1_1StepOutcome.html">StepOutcome</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1dnut_1_1SequenceNode.html">SequenceNode</a>&amp;, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1dnut_1_1StepContext.html">StepContext</a>&amp;)&gt;;</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span> </div>
+<div class="foldopen" id="foldopen00106" data-start="{" data-end="};">
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno"><a class="line" href="classeve_1_1dnut_1_1StepKindRegistry.html">  106</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1dnut_1_1StepKindRegistry.html">StepKindRegistry</a> {</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1dnut_1_1StepKindRegistry.html#a2c6323048ac78bfaae9de6deda5331cb">registerStep</a>(<a class="code hl_struct" href="structeve_1_1dnut_1_1StepKindDescriptor.html">StepKindDescriptor</a> <a class="code hl_variable" href="AssetCommand_8cpp.html#a834ec2851d25006c87763cec4bedd900">descriptor</a>);</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span> </div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1dnut_1_1StepKindRegistry.html#a2881a05f735d31fa19cc480031a7b5db">registerHandler</a>(std::string_view <a class="code hl_variable" href="ActionTimelinePayloadEditor_8cpp.html#acc84214b4748705f4d18dd8d143e70be">type</a>, <a class="code hl_typedef" href="namespaceeve_1_1dnut.html#a59231a6b751d9dd14330eccee0da1839">StepHandler</a> handler);</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span> </div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1dnut_1_1StepKindRegistry.html#af08bfe61268dc4cbe68856a2c0699e16">unregisterStep</a>(std::string_view <a class="code hl_variable" href="ActionTimelinePayloadEditor_8cpp.html#acc84214b4748705f4d18dd8d143e70be">type</a>);</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span> </div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>    [[nodiscard]] <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1dnut_1_1StepKindRegistry.html#a86a7587bddfd37199870b3a38c6dbd56">contains</a>(std::string_view <a class="code hl_variable" href="ActionTimelinePayloadEditor_8cpp.html#acc84214b4748705f4d18dd8d143e70be">type</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span> </div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>    [[nodiscard]] <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1dnut_1_1StepKindDescriptor.html">StepKindDescriptor</a>* <a class="code hl_variable" href="AssetCommand_8cpp.html#a834ec2851d25006c87763cec4bedd900">descriptor</a>(std::string_view <a class="code hl_variable" href="ActionTimelinePayloadEditor_8cpp.html#acc84214b4748705f4d18dd8d143e70be">type</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span> </div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span>    [[nodiscard]] std::vector&lt;StepKindDescriptor&gt; <a class="code hl_function" href="classeve_1_1dnut_1_1StepKindRegistry.html#af3c267356e767699b01d035e0ad77ce4">descriptors</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span> </div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span>    [[nodiscard]] <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1dnut_1_1StepKindRegistry.html#a8742b0ae90321945c2166ddf52c6dc88">hasHandler</a>(std::string_view <a class="code hl_variable" href="ActionTimelinePayloadEditor_8cpp.html#acc84214b4748705f4d18dd8d143e70be">type</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span> </div>
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1dnut_1_1StepKindRegistry.html#a383e406d34531da7dd5e8c9e5e14527e">validate</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1dnut_1_1SequenceNode.html">SequenceNode</a>&amp; node) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span> </div>
+<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span>    [[nodiscard]] <a class="code hl_struct" href="structeve_1_1dnut_1_1StepOutcome.html">StepOutcome</a> <a class="code hl_function" href="classeve_1_1dnut_1_1StepKindRegistry.html#a0cc79c09bafeccfc90ece9093c2e9c06">dispatch</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1dnut_1_1SequenceNode.html">SequenceNode</a>&amp; node, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1dnut_1_1StepContext.html">StepContext</a>&amp; <a class="code hl_variable" href="VegetationPreset_8cpp.html#aa677a20ed09a5d6c839a3d7a4d53cb9c">context</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span> </div>
+<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span>    std::map&lt;std::string, StepKindDescriptor, std::less&lt;&gt;&gt; descriptors_;</div>
+<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span>    std::map&lt;std::string, StepHandler, std::less&lt;&gt;&gt;        handlers_;</div>
+<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span>};</div>
+</div>
+<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span> </div>
+<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span>[[nodiscard]] <span class="keyword">const</span> <span class="keywordtype">char</span>* <a class="code hl_function" href="namespaceeve_1_1dnut.html#ad34e8b0206a54482d72f96ae2441134a">stepShapeName</a>(<a class="code hl_enumeration" href="namespaceeve_1_1dnut.html#a7837ffce8304071dd87de28f7abf7126">StepShape</a> <a class="code hl_variable" href="GraphicsShaderResources_8cpp.html#ac49da6a9b4532c873ea3cd746ab99862">shape</a>) <span class="keyword">noexcept</span>;</div>
+<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span> </div>
+<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span>}  <span class="comment">// namespace eve::dnut</span></div>
+<div class="ttc" id="aActionTimelinePayloadEditor_8cpp_html_acc84214b4748705f4d18dd8d143e70be"><div class="ttname"><a href="ActionTimelinePayloadEditor_8cpp.html#acc84214b4748705f4d18dd8d143e70be">type</a></div><div class="ttdeci">LogicalId type</div><div class="ttdef"><b>Definition</b> <a href="ActionTimelinePayloadEditor_8cpp_source.html#l00020">ActionTimelinePayloadEditor.cpp:20</a></div></div>
+<div class="ttc" id="aAssetCommand_8cpp_html_a834ec2851d25006c87763cec4bedd900"><div class="ttname"><a href="AssetCommand_8cpp.html#a834ec2851d25006c87763cec4bedd900">descriptor</a></div><div class="ttdeci">std::string descriptor</div><div class="ttdef"><b>Definition</b> <a href="AssetCommand_8cpp_source.html#l00163">AssetCommand.cpp:163</a></div></div>
+<div class="ttc" id="aGraphicsShaderResources_8cpp_html_ac49da6a9b4532c873ea3cd746ab99862"><div class="ttname"><a href="GraphicsShaderResources_8cpp.html#ac49da6a9b4532c873ea3cd746ab99862">shape</a></div><div class="ttdeci">ShaderImageInput shape</div><div class="ttdef"><b>Definition</b> <a href="GraphicsShaderResources_8cpp_source.html#l00017">GraphicsShaderResources.cpp:17</a></div></div>
+<div class="ttc" id="aResult_8h_html"><div class="ttname"><a href="Result_8h.html">Result.h</a></div><div class="ttdoc">Move-only, checked operation results for the common layer.</div></div>
+<div class="ttc" id="aSequenceAsset_8h_html"><div class="ttname"><a href="SequenceAsset_8h.html">SequenceAsset.h</a></div><div class="ttdoc">Domain-neutral compiled sequence graph for `.dnut` sources.</div></div>
+<div class="ttc" id="aValue_8h_html"><div class="ttname"><a href="Value_8h.html">Value.h</a></div><div class="ttdoc">Owning, renderer-independent dynamic values.</div></div>
+<div class="ttc" id="aVegetationPreset_8cpp_html_aa677a20ed09a5d6c839a3d7a4d53cb9c"><div class="ttname"><a href="VegetationPreset_8cpp.html#aa677a20ed09a5d6c839a3d7a4d53cb9c">context</a></div><div class="ttdeci">const VegetationPresetContext &amp; context</div><div class="ttdef"><b>Definition</b> <a href="VegetationPreset_8cpp_source.html#l00087">VegetationPreset.cpp:87</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1Value_html"><div class="ttname"><a href="classeve_1_1Value.html">eve::Value</a></div><div class="ttdoc">The canonical owning dynamic value used by data-facing protocols.</div><div class="ttdef"><b>Definition</b> <a href="Value_8h_source.html#l00031">Value.h:31</a></div></div>
+<div class="ttc" id="aclasseve_1_1dnut_1_1StepKindRegistry_html"><div class="ttname"><a href="classeve_1_1dnut_1_1StepKindRegistry.html">eve::dnut::StepKindRegistry</a></div><div class="ttdoc">Canonical step vocabulary owner and runtime handler router.</div><div class="ttdef"><b>Definition</b> <a href="StepKindRegistry_8h_source.html#l00106">StepKindRegistry.h:106</a></div></div>
+<div class="ttc" id="aclasseve_1_1dnut_1_1StepKindRegistry_html_a0cc79c09bafeccfc90ece9093c2e9c06"><div class="ttname"><a href="classeve_1_1dnut_1_1StepKindRegistry.html#a0cc79c09bafeccfc90ece9093c2e9c06">eve::dnut::StepKindRegistry::dispatch</a></div><div class="ttdeci">StepOutcome dispatch(const SequenceNode &amp;node, const StepContext &amp;context) const</div><div class="ttdoc">Route one already validated node to its handler.</div><div class="ttdef"><b>Definition</b> <a href="StepKindRegistry_8cpp_source.html#l00161">StepKindRegistry.cpp:161</a></div></div>
+<div class="ttc" id="aclasseve_1_1dnut_1_1StepKindRegistry_html_a2881a05f735d31fa19cc480031a7b5db"><div class="ttname"><a href="classeve_1_1dnut_1_1StepKindRegistry.html#a2881a05f735d31fa19cc480031a7b5db">eve::dnut::StepKindRegistry::registerHandler</a></div><div class="ttdeci">eve::Result&lt; void &gt; registerHandler(std::string_view type, StepHandler handler)</div><div class="ttdoc">Bind an owning handler to an already declared step type.</div><div class="ttdef"><b>Definition</b> <a href="StepKindRegistry_8cpp_source.html#l00074">StepKindRegistry.cpp:74</a></div></div>
+<div class="ttc" id="aclasseve_1_1dnut_1_1StepKindRegistry_html_a2c6323048ac78bfaae9de6deda5331cb"><div class="ttname"><a href="classeve_1_1dnut_1_1StepKindRegistry.html#a2c6323048ac78bfaae9de6deda5331cb">eve::dnut::StepKindRegistry::registerStep</a></div><div class="ttdeci">eve::Result&lt; void &gt; registerStep(StepKindDescriptor descriptor)</div><div class="ttdoc">Declare one step type.</div><div class="ttdef"><b>Definition</b> <a href="StepKindRegistry_8cpp_source.html#l00057">StepKindRegistry.cpp:57</a></div></div>
+<div class="ttc" id="aclasseve_1_1dnut_1_1StepKindRegistry_html_a383e406d34531da7dd5e8c9e5e14527e"><div class="ttname"><a href="classeve_1_1dnut_1_1StepKindRegistry.html#a383e406d34531da7dd5e8c9e5e14527e">eve::dnut::StepKindRegistry::validate</a></div><div class="ttdeci">eve::Result&lt; void &gt; validate(const SequenceNode &amp;node) const</div><div class="ttdoc">Validate one node against its declared payload schema.</div><div class="ttdef"><b>Definition</b> <a href="StepKindRegistry_8cpp_source.html#l00108">StepKindRegistry.cpp:108</a></div></div>
+<div class="ttc" id="aclasseve_1_1dnut_1_1StepKindRegistry_html_a86a7587bddfd37199870b3a38c6dbd56"><div class="ttname"><a href="classeve_1_1dnut_1_1StepKindRegistry.html#a86a7587bddfd37199870b3a38c6dbd56">eve::dnut::StepKindRegistry::contains</a></div><div class="ttdeci">bool contains(std::string_view type) const</div><div class="ttdoc">Return whether type is declared.</div><div class="ttdef"><b>Definition</b> <a href="StepKindRegistry_8cpp_source.html#l00092">StepKindRegistry.cpp:92</a></div></div>
+<div class="ttc" id="aclasseve_1_1dnut_1_1StepKindRegistry_html_a8742b0ae90321945c2166ddf52c6dc88"><div class="ttname"><a href="classeve_1_1dnut_1_1StepKindRegistry.html#a8742b0ae90321945c2166ddf52c6dc88">eve::dnut::StepKindRegistry::hasHandler</a></div><div class="ttdeci">bool hasHandler(std::string_view type) const</div><div class="ttdoc">Return whether a handler is bound for type.</div><div class="ttdef"><b>Definition</b> <a href="StepKindRegistry_8cpp_source.html#l00106">StepKindRegistry.cpp:106</a></div></div>
+<div class="ttc" id="aclasseve_1_1dnut_1_1StepKindRegistry_html_af08bfe61268dc4cbe68856a2c0699e16"><div class="ttname"><a href="classeve_1_1dnut_1_1StepKindRegistry.html#af08bfe61268dc4cbe68856a2c0699e16">eve::dnut::StepKindRegistry::unregisterStep</a></div><div class="ttdeci">void unregisterStep(std::string_view type)</div><div class="ttdoc">Remove a step type and its handler; absent types are a no-op.</div><div class="ttdef"><b>Definition</b> <a href="StepKindRegistry_8cpp_source.html#l00086">StepKindRegistry.cpp:86</a></div></div>
+<div class="ttc" id="aclasseve_1_1dnut_1_1StepKindRegistry_html_af3c267356e767699b01d035e0ad77ce4"><div class="ttname"><a href="classeve_1_1dnut_1_1StepKindRegistry.html#af3c267356e767699b01d035e0ad77ce4">eve::dnut::StepKindRegistry::descriptors</a></div><div class="ttdeci">std::vector&lt; StepKindDescriptor &gt; descriptors() const</div><div class="ttdoc">Return every declared contract in lexical type order.</div><div class="ttdef"><b>Definition</b> <a href="StepKindRegistry_8cpp_source.html#l00099">StepKindRegistry.cpp:99</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1dnut_html"><div class="ttname"><a href="namespaceeve_1_1dnut.html">eve::dnut</a></div><div class="ttdef"><b>Definition</b> <a href="DnutCompiler_8cpp_source.html#l00011">DnutCompiler.cpp:11</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1dnut_html_a0c5c3baad424d9aaf6da20c3df995e42"><div class="ttname"><a href="namespaceeve_1_1dnut.html#a0c5c3baad424d9aaf6da20c3df995e42">eve::dnut::StepFieldType</a></div><div class="ttdeci">StepFieldType</div><div class="ttdoc">Accepted value kind of one declared payload field.</div><div class="ttdef"><b>Definition</b> <a href="StepKindRegistry_8h_source.html#l00033">StepKindRegistry.h:33</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1dnut_html_a0c5c3baad424d9aaf6da20c3df995e42a27118326006d3829667a400ad23d5d98"><div class="ttname"><a href="namespaceeve_1_1dnut.html#a0c5c3baad424d9aaf6da20c3df995e42a27118326006d3829667a400ad23d5d98">eve::dnut::StepFieldType::String</a></div><div class="ttdeci">@ String</div></div>
+<div class="ttc" id="anamespaceeve_1_1dnut_html_a0c5c3baad424d9aaf6da20c3df995e42a27226c864bac7454a8504f8edb15d95b"><div class="ttname"><a href="namespaceeve_1_1dnut.html#a0c5c3baad424d9aaf6da20c3df995e42a27226c864bac7454a8504f8edb15d95b">eve::dnut::StepFieldType::Boolean</a></div><div class="ttdeci">@ Boolean</div></div>
+<div class="ttc" id="anamespaceeve_1_1dnut_html_a0c5c3baad424d9aaf6da20c3df995e42aa0faef0851b4294c06f2b94bb1cb2044"><div class="ttname"><a href="namespaceeve_1_1dnut.html#a0c5c3baad424d9aaf6da20c3df995e42aa0faef0851b4294c06f2b94bb1cb2044">eve::dnut::StepFieldType::Integer</a></div><div class="ttdeci">@ Integer</div></div>
+<div class="ttc" id="anamespaceeve_1_1dnut_html_a0c5c3baad424d9aaf6da20c3df995e42aed36a1ef76a59ee3f15180e0441188ad"><div class="ttname"><a href="namespaceeve_1_1dnut.html#a0c5c3baad424d9aaf6da20c3df995e42aed36a1ef76a59ee3f15180e0441188ad">eve::dnut::StepFieldType::Any</a></div><div class="ttdeci">@ Any</div></div>
+<div class="ttc" id="anamespaceeve_1_1dnut_html_a59231a6b751d9dd14330eccee0da1839"><div class="ttname"><a href="namespaceeve_1_1dnut.html#a59231a6b751d9dd14330eccee0da1839">eve::dnut::StepHandler</a></div><div class="ttdeci">std::function&lt; StepOutcome(const SequenceNode &amp;, const StepContext &amp;)&gt; StepHandler</div><div class="ttdoc">Consumer-owned handler for one registered step type.</div><div class="ttdef"><b>Definition</b> <a href="StepKindRegistry_8h_source.html#l00094">StepKindRegistry.h:94</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1dnut_html_a7837ffce8304071dd87de28f7abf7126"><div class="ttname"><a href="namespaceeve_1_1dnut.html#a7837ffce8304071dd87de28f7abf7126">eve::dnut::StepShape</a></div><div class="ttdeci">StepShape</div><div class="ttdoc">Declares whether a step completes inside its call or suspends the runtime.</div><div class="ttdef"><b>Definition</b> <a href="StepKindRegistry_8h_source.html#l00018">StepKindRegistry.h:18</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1dnut_html_a7837ffce8304071dd87de28f7abf7126a100953bafda776b456bd241376128e32"><div class="ttname"><a href="namespaceeve_1_1dnut.html#a7837ffce8304071dd87de28f7abf7126a100953bafda776b456bd241376128e32">eve::dnut::StepShape::Await</a></div><div class="ttdeci">@ Await</div><div class="ttdoc">The step may suspend the runtime.</div></div>
+<div class="ttc" id="anamespaceeve_1_1dnut_html_a7837ffce8304071dd87de28f7abf7126a54828f327f31abd59f2f459c0247756d"><div class="ttname"><a href="namespaceeve_1_1dnut.html#a7837ffce8304071dd87de28f7abf7126a54828f327f31abd59f2f459c0247756d">eve::dnut::StepShape::Instant</a></div><div class="ttdeci">@ Instant</div><div class="ttdoc">The step completes synchronously; Completed continues at next.</div></div>
+<div class="ttc" id="anamespaceeve_1_1dnut_html_aa0d7c6939120e0f9671b061d14f0af59"><div class="ttname"><a href="namespaceeve_1_1dnut.html#aa0d7c6939120e0f9671b061d14f0af59">eve::dnut::StepStatus</a></div><div class="ttdeci">StepStatus</div><div class="ttdoc">Terminal state of one dispatched step.</div><div class="ttdef"><b>Definition</b> <a href="StepKindRegistry_8h_source.html#l00061">StepKindRegistry.h:61</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1dnut_html_aa0d7c6939120e0f9671b061d14f0af59a07ca5050e697392c9ed47e6453f1453f"><div class="ttname"><a href="namespaceeve_1_1dnut.html#aa0d7c6939120e0f9671b061d14f0af59a07ca5050e697392c9ed47e6453f1453f">eve::dnut::StepStatus::Completed</a></div><div class="ttdeci">@ Completed</div></div>
+<div class="ttc" id="anamespaceeve_1_1dnut_html_aa0d7c6939120e0f9671b061d14f0af59a4ecc0d90eec1cea3e9db96583a1bb9c2"><div class="ttname"><a href="namespaceeve_1_1dnut.html#aa0d7c6939120e0f9671b061d14f0af59a4ecc0d90eec1cea3e9db96583a1bb9c2">eve::dnut::StepStatus::Blocked</a></div><div class="ttdeci">@ Blocked</div></div>
+<div class="ttc" id="anamespaceeve_1_1dnut_html_aa0d7c6939120e0f9671b061d14f0af59ad7c8c85bf79bbe1b7188497c32c3b0ca"><div class="ttname"><a href="namespaceeve_1_1dnut.html#aa0d7c6939120e0f9671b061d14f0af59ad7c8c85bf79bbe1b7188497c32c3b0ca">eve::dnut::StepStatus::Failed</a></div><div class="ttdeci">@ Failed</div></div>
+<div class="ttc" id="anamespaceeve_1_1dnut_html_ad34e8b0206a54482d72f96ae2441134a"><div class="ttname"><a href="namespaceeve_1_1dnut.html#ad34e8b0206a54482d72f96ae2441134a">eve::dnut::stepShapeName</a></div><div class="ttdeci">const char * stepShapeName(StepShape shape) noexcept</div><div class="ttdoc">Return the stable lowercase spelling of a step shape.</div><div class="ttdef"><b>Definition</b> <a href="StepKindRegistry_8cpp_source.html#l00049">StepKindRegistry.cpp:49</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1dnut_html_aedc8fa9495ebd4c7e8be9b2cb42b6c0ea27118326006d3829667a400ad23d5d98"><div class="ttname"><a href="namespaceeve_1_1dnut.html#aedc8fa9495ebd4c7e8be9b2cb42b6c0ea27118326006d3829667a400ad23d5d98">eve::dnut::DnutTokenKind::String</a></div><div class="ttdeci">@ String</div><div class="ttdoc">Quoted string with escapes already resolved.</div></div>
+<div class="ttc" id="anamespaceeve_1_1dnut_html_aedc8fa9495ebd4c7e8be9b2cb42b6c0eab2ee912b91d69b435159c7c3f6df7f5f"><div class="ttname"><a href="namespaceeve_1_1dnut.html#aedc8fa9495ebd4c7e8be9b2cb42b6c0eab2ee912b91d69b435159c7c3f6df7f5f">eve::dnut::DnutTokenKind::Number</a></div><div class="ttdeci">@ Number</div><div class="ttdoc">Unsigned numeric literal; sign handling belongs to the parser.</div></div>
+<div class="ttc" id="astructeve_1_1dnut_1_1SequenceNode_html"><div class="ttname"><a href="structeve_1_1dnut_1_1SequenceNode.html">eve::dnut::SequenceNode</a></div><div class="ttdoc">One immutable step of a compiled sequence.</div><div class="ttdef"><b>Definition</b> <a href="SequenceAsset_8h_source.html#l00035">SequenceAsset.h:35</a></div></div>
+<div class="ttc" id="astructeve_1_1dnut_1_1StepContext_html"><div class="ttname"><a href="structeve_1_1dnut_1_1StepContext.html">eve::dnut::StepContext</a></div><div class="ttdoc">Borrowed execution context handed to one step handler.</div><div class="ttdef"><b>Definition</b> <a href="StepKindRegistry_8h_source.html#l00077">StepKindRegistry.h:77</a></div></div>
+<div class="ttc" id="astructeve_1_1dnut_1_1StepContext_html_a26bcbac668210daaa6b571880fbb27d6"><div class="ttname"><a href="structeve_1_1dnut_1_1StepContext.html#a26bcbac668210daaa6b571880fbb27d6">eve::dnut::StepContext::nodeId</a></div><div class="ttdeci">std::string nodeId</div><div class="ttdef"><b>Definition</b> <a href="StepKindRegistry_8h_source.html#l00079">StepKindRegistry.h:79</a></div></div>
+<div class="ttc" id="astructeve_1_1dnut_1_1StepContext_html_a2de3da7078ad3022cbf5c69e7bf311fb"><div class="ttname"><a href="structeve_1_1dnut_1_1StepContext.html#a2de3da7078ad3022cbf5c69e7bf311fb">eve::dnut::StepContext::bindings</a></div><div class="ttdeci">const eve::Value * bindings</div><div class="ttdef"><b>Definition</b> <a href="StepKindRegistry_8h_source.html#l00080">StepKindRegistry.h:80</a></div></div>
+<div class="ttc" id="astructeve_1_1dnut_1_1StepContext_html_a35ea8292a07cf51f5d89de9c1c9f4ee6"><div class="ttname"><a href="structeve_1_1dnut_1_1StepContext.html#a35ea8292a07cf51f5d89de9c1c9f4ee6">eve::dnut::StepContext::assetId</a></div><div class="ttdeci">std::string assetId</div><div class="ttdef"><b>Definition</b> <a href="StepKindRegistry_8h_source.html#l00078">StepKindRegistry.h:78</a></div></div>
+<div class="ttc" id="astructeve_1_1dnut_1_1StepContext_html_a8dfe735426b8a856e54b33ec3adb7379"><div class="ttname"><a href="structeve_1_1dnut_1_1StepContext.html#a8dfe735426b8a856e54b33ec3adb7379">eve::dnut::StepContext::host</a></div><div class="ttdeci">void * host</div><div class="ttdoc">Opaque consumer context installed by the runtime owner.</div><div class="ttdef"><b>Definition</b> <a href="StepKindRegistry_8h_source.html#l00090">StepKindRegistry.h:90</a></div></div>
+<div class="ttc" id="astructeve_1_1dnut_1_1StepContext_html_ad95467fd1c388f07a3e7197356621688"><div class="ttname"><a href="structeve_1_1dnut_1_1StepContext.html#ad95467fd1c388f07a3e7197356621688">eve::dnut::StepContext::locals</a></div><div class="ttdeci">const eve::Value * locals</div><div class="ttdef"><b>Definition</b> <a href="StepKindRegistry_8h_source.html#l00081">StepKindRegistry.h:81</a></div></div>
+<div class="ttc" id="astructeve_1_1dnut_1_1StepField_html"><div class="ttname"><a href="structeve_1_1dnut_1_1StepField.html">eve::dnut::StepField</a></div><div class="ttdoc">One declared payload field of a step type.</div><div class="ttdef"><b>Definition</b> <a href="StepKindRegistry_8h_source.html#l00036">StepKindRegistry.h:36</a></div></div>
+<div class="ttc" id="astructeve_1_1dnut_1_1StepField_html_a3aee42b812091b48b165481ef16e090b"><div class="ttname"><a href="structeve_1_1dnut_1_1StepField.html#a3aee42b812091b48b165481ef16e090b">eve::dnut::StepField::name</a></div><div class="ttdeci">std::string name</div><div class="ttdef"><b>Definition</b> <a href="StepKindRegistry_8h_source.html#l00037">StepKindRegistry.h:37</a></div></div>
+<div class="ttc" id="astructeve_1_1dnut_1_1StepField_html_a5a60ececdd360c2fee48266c3917a718"><div class="ttname"><a href="structeve_1_1dnut_1_1StepField.html#a5a60ececdd360c2fee48266c3917a718">eve::dnut::StepField::required</a></div><div class="ttdeci">bool required</div><div class="ttdef"><b>Definition</b> <a href="StepKindRegistry_8h_source.html#l00039">StepKindRegistry.h:39</a></div></div>
+<div class="ttc" id="astructeve_1_1dnut_1_1StepField_html_ac4c31cc0ff8e00acd343ad1f26695aad"><div class="ttname"><a href="structeve_1_1dnut_1_1StepField.html#ac4c31cc0ff8e00acd343ad1f26695aad">eve::dnut::StepField::type</a></div><div class="ttdeci">StepFieldType type</div><div class="ttdef"><b>Definition</b> <a href="StepKindRegistry_8h_source.html#l00038">StepKindRegistry.h:38</a></div></div>
+<div class="ttc" id="astructeve_1_1dnut_1_1StepKindDescriptor_html"><div class="ttname"><a href="structeve_1_1dnut_1_1StepKindDescriptor.html">eve::dnut::StepKindDescriptor</a></div><div class="ttdoc">Owning authoring/runtime contract for one step type.</div><div class="ttdef"><b>Definition</b> <a href="StepKindRegistry_8h_source.html#l00043">StepKindRegistry.h:43</a></div></div>
+<div class="ttc" id="astructeve_1_1dnut_1_1StepKindDescriptor_html_a08a4e422a53f5881eb50459ea99dbd51"><div class="ttname"><a href="structeve_1_1dnut_1_1StepKindDescriptor.html#a08a4e422a53f5881eb50459ea99dbd51">eve::dnut::StepKindDescriptor::fields</a></div><div class="ttdeci">std::vector&lt; StepField &gt; fields</div><div class="ttdef"><b>Definition</b> <a href="StepKindRegistry_8h_source.html#l00048">StepKindRegistry.h:48</a></div></div>
+<div class="ttc" id="astructeve_1_1dnut_1_1StepKindDescriptor_html_a5da7ba2818eafd49fbfe5e3d7052601b"><div class="ttname"><a href="structeve_1_1dnut_1_1StepKindDescriptor.html#a5da7ba2818eafd49fbfe5e3d7052601b">eve::dnut::StepKindDescriptor::validate</a></div><div class="ttdeci">std::function&lt; eve::Result&lt; void &gt;(const SequenceNode &amp;node)&gt; validate</div><div class="ttdoc">Optional domain invariant applied after the field schema passes.</div><div class="ttdef"><b>Definition</b> <a href="StepKindRegistry_8h_source.html#l00057">StepKindRegistry.h:57</a></div></div>
+<div class="ttc" id="astructeve_1_1dnut_1_1StepKindDescriptor_html_a764786366b7bb64d5f52d02c49f063b7"><div class="ttname"><a href="structeve_1_1dnut_1_1StepKindDescriptor.html#a764786366b7bb64d5f52d02c49f063b7">eve::dnut::StepKindDescriptor::shape</a></div><div class="ttdeci">StepShape shape</div><div class="ttdef"><b>Definition</b> <a href="StepKindRegistry_8h_source.html#l00047">StepKindRegistry.h:47</a></div></div>
+<div class="ttc" id="astructeve_1_1dnut_1_1StepKindDescriptor_html_a95fc6aa9367e5ae0843ffb71d566edb5"><div class="ttname"><a href="structeve_1_1dnut_1_1StepKindDescriptor.html#a95fc6aa9367e5ae0843ffb71d566edb5">eve::dnut::StepKindDescriptor::type</a></div><div class="ttdeci">std::string type</div><div class="ttdef"><b>Definition</b> <a href="StepKindRegistry_8h_source.html#l00044">StepKindRegistry.h:44</a></div></div>
+<div class="ttc" id="astructeve_1_1dnut_1_1StepKindDescriptor_html_abc8023af4e20dedf1109be8810e66c12"><div class="ttname"><a href="structeve_1_1dnut_1_1StepKindDescriptor.html#abc8023af4e20dedf1109be8810e66c12">eve::dnut::StepKindDescriptor::category</a></div><div class="ttdeci">std::string category</div><div class="ttdef"><b>Definition</b> <a href="StepKindRegistry_8h_source.html#l00046">StepKindRegistry.h:46</a></div></div>
+<div class="ttc" id="astructeve_1_1dnut_1_1StepKindDescriptor_html_ad968a457b543def712c9e3c48812ea39"><div class="ttname"><a href="structeve_1_1dnut_1_1StepKindDescriptor.html#ad968a457b543def712c9e3c48812ea39">eve::dnut::StepKindDescriptor::displayName</a></div><div class="ttdeci">std::string displayName</div><div class="ttdef"><b>Definition</b> <a href="StepKindRegistry_8h_source.html#l00045">StepKindRegistry.h:45</a></div></div>
+<div class="ttc" id="astructeve_1_1dnut_1_1StepOutcome_html"><div class="ttname"><a href="structeve_1_1dnut_1_1StepOutcome.html">eve::dnut::StepOutcome</a></div><div class="ttdoc">Structured outcome of one dispatched step.</div><div class="ttdef"><b>Definition</b> <a href="StepKindRegistry_8h_source.html#l00064">StepKindRegistry.h:64</a></div></div>
+<div class="ttc" id="astructeve_1_1dnut_1_1StepOutcome_html_a4cacb221216a50970ab77603e38c43db"><div class="ttname"><a href="structeve_1_1dnut_1_1StepOutcome.html#a4cacb221216a50970ab77603e38c43db">eve::dnut::StepOutcome::status</a></div><div class="ttdeci">StepStatus status</div><div class="ttdef"><b>Definition</b> <a href="StepKindRegistry_8h_source.html#l00065">StepKindRegistry.h:65</a></div></div>
+<div class="ttc" id="astructeve_1_1dnut_1_1StepOutcome_html_a7e2da39f1537796e46723ebc2ff3538e"><div class="ttname"><a href="structeve_1_1dnut_1_1StepOutcome.html#a7e2da39f1537796e46723ebc2ff3538e">eve::dnut::StepOutcome::error</a></div><div class="ttdeci">std::string error</div><div class="ttdef"><b>Definition</b> <a href="StepKindRegistry_8h_source.html#l00066">StepKindRegistry.h:66</a></div></div>
+<div class="ttc" id="astructeve_1_1dnut_1_1StepOutcome_html_ac7e4129cc99d3aabfc92970cbaa6c3ee"><div class="ttname"><a href="structeve_1_1dnut_1_1StepOutcome.html#ac7e4129cc99d3aabfc92970cbaa6c3ee">eve::dnut::StepOutcome::value</a></div><div class="ttdeci">eve::Value value</div><div class="ttdef"><b>Definition</b> <a href="StepKindRegistry_8h_source.html#l00067">StepKindRegistry.h:67</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,706 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::dnut 命名空间参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1dnut.html">dnut</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#typedef-members">类型定义</a> &#124;
+<a href="#enum-members">枚举</a> &#124;
+<a href="#func-members">函数</a>  </div>
+  <div class="headertitle"><div class="title">eve::dnut 命名空间参考</div></div>
+</div><!--header-->
+<div class="contents">
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1dnut_1_1DnutCompileOutput.html">DnutCompileOutput</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owning outcome of compiling one <code>.dnut</code> document.  <a href="structeve_1_1dnut_1_1DnutCompileOutput.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1dnut_1_1DnutDiagnostic.html">DnutDiagnostic</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">One structured diagnostic anchored to a <code>.dnut</code> source location.  <a href="structeve_1_1dnut_1_1DnutDiagnostic.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1dnut_1_1DnutToken.html">DnutToken</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">One lexed token with its exact source anchor.  <a href="structeve_1_1dnut_1_1DnutToken.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1dnut_1_1SequenceAsset.html">SequenceAsset</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Immutable, parameterized and versioned compiled sequence.  <a href="structeve_1_1dnut_1_1SequenceAsset.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1dnut_1_1SequenceConditionOutcome.html">SequenceConditionOutcome</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Outcome of one authored condition, as seen by the language core.  <a href="structeve_1_1dnut_1_1SequenceConditionOutcome.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1dnut_1_1SequenceNode.html">SequenceNode</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">One immutable step of a compiled sequence.  <a href="structeve_1_1dnut_1_1SequenceNode.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1dnut_1_1SequenceRoute.html">SequenceRoute</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">One outgoing edge of a sequence node.  <a href="structeve_1_1dnut_1_1SequenceRoute.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dnut_1_1SequenceRuntime.html">SequenceRuntime</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Caller-owned interpreter over a compiled sequence asset.  <a href="classeve_1_1dnut_1_1SequenceRuntime.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1dnut_1_1StepContext.html">StepContext</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Borrowed execution context handed to one step handler.  <a href="structeve_1_1dnut_1_1StepContext.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1dnut_1_1StepField.html">StepField</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">One declared payload field of a step type.  <a href="structeve_1_1dnut_1_1StepField.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1dnut_1_1StepKindDescriptor.html">StepKindDescriptor</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owning authoring/runtime contract for one step type.  <a href="structeve_1_1dnut_1_1StepKindDescriptor.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1dnut_1_1StepKindRegistry.html">StepKindRegistry</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Canonical step vocabulary owner and runtime handler router.  <a href="classeve_1_1dnut_1_1StepKindRegistry.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1dnut_1_1StepOutcome.html">StepOutcome</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Structured outcome of one dispatched step.  <a href="structeve_1_1dnut_1_1StepOutcome.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="typedef-members" name="typedef-members"></a>
+类型定义</h2></td></tr>
+<tr class="memitem:a59231a6b751d9dd14330eccee0da1839" id="r_a59231a6b751d9dd14330eccee0da1839"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1dnut.html#a59231a6b751d9dd14330eccee0da1839">StepHandler</a> = std::function&lt; <a class="el" href="structeve_1_1dnut_1_1StepOutcome.html">StepOutcome</a>(const <a class="el" href="structeve_1_1dnut_1_1SequenceNode.html">SequenceNode</a> &amp;, const <a class="el" href="structeve_1_1dnut_1_1StepContext.html">StepContext</a> &amp;)&gt;</td></tr>
+<tr class="memdesc:a59231a6b751d9dd14330eccee0da1839"><td class="mdescLeft">&#160;</td><td class="mdescRight">Consumer-owned handler for one registered step type.  <br /></td></tr>
+<tr class="separator:a59231a6b751d9dd14330eccee0da1839"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="enum-members" name="enum-members"></a>
+枚举</h2></td></tr>
+<tr class="memitem:a3340f839876b5b4d1e628591b318e9fa" id="r_a3340f839876b5b4d1e628591b318e9fa"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1dnut.html#a3340f839876b5b4d1e628591b318e9fa">DnutSeverity</a> : std::uint8_t { <a class="el" href="namespaceeve_1_1dnut.html#a3340f839876b5b4d1e628591b318e9faa0eaadb4fcb48a0a0ed7bc9868be9fbaa">Warning</a>
+, <a class="el" href="namespaceeve_1_1dnut.html#a3340f839876b5b4d1e628591b318e9faa902b0d55fddef6f8d651fe1035b7d4bd">Error</a>
+ }</td></tr>
+<tr class="memdesc:a3340f839876b5b4d1e628591b318e9fa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Severity of one <code>.dnut</code> source diagnostic.  <a href="namespaceeve_1_1dnut.html#a3340f839876b5b4d1e628591b318e9fa">更多...</a><br /></td></tr>
+<tr class="separator:a3340f839876b5b4d1e628591b318e9fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aedc8fa9495ebd4c7e8be9b2cb42b6c0e" id="r_aedc8fa9495ebd4c7e8be9b2cb42b6c0e"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1dnut.html#aedc8fa9495ebd4c7e8be9b2cb42b6c0e">DnutTokenKind</a> : std::uint8_t { <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1dnut.html#aedc8fa9495ebd4c7e8be9b2cb42b6c0ea29ee5d1ebcc033234938a5234f1f2075">Identifier</a>
+, <a class="el" href="namespaceeve_1_1dnut.html#aedc8fa9495ebd4c7e8be9b2cb42b6c0ea27118326006d3829667a400ad23d5d98">String</a>
+, <a class="el" href="namespaceeve_1_1dnut.html#aedc8fa9495ebd4c7e8be9b2cb42b6c0eab2ee912b91d69b435159c7c3f6df7f5f">Number</a>
+, <a class="el" href="namespaceeve_1_1dnut.html#aedc8fa9495ebd4c7e8be9b2cb42b6c0ea72f6d3b275746f5986ab1918b726784b">Punctuator</a>
+, <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1dnut.html#aedc8fa9495ebd4c7e8be9b2cb42b6c0ea9556e151da49cd4bcf0352857cb33509">EndOfFile</a>
+<br />
+ }</td></tr>
+<tr class="memdesc:aedc8fa9495ebd4c7e8be9b2cb42b6c0e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Token classes produced by the shared <code>.dnut</code> lexer.  <a href="namespaceeve_1_1dnut.html#aedc8fa9495ebd4c7e8be9b2cb42b6c0e">更多...</a><br /></td></tr>
+<tr class="separator:aedc8fa9495ebd4c7e8be9b2cb42b6c0e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7837ffce8304071dd87de28f7abf7126" id="r_a7837ffce8304071dd87de28f7abf7126"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1dnut.html#a7837ffce8304071dd87de28f7abf7126">StepShape</a> : std::uint8_t { <a class="el" href="namespaceeve_1_1dnut.html#a7837ffce8304071dd87de28f7abf7126a54828f327f31abd59f2f459c0247756d">Instant</a>
+, <a class="el" href="namespaceeve_1_1dnut.html#a7837ffce8304071dd87de28f7abf7126a100953bafda776b456bd241376128e32">Await</a>
+ }</td></tr>
+<tr class="memdesc:a7837ffce8304071dd87de28f7abf7126"><td class="mdescLeft">&#160;</td><td class="mdescRight">Declares whether a step completes inside its call or suspends the runtime.  <a href="namespaceeve_1_1dnut.html#a7837ffce8304071dd87de28f7abf7126">更多...</a><br /></td></tr>
+<tr class="separator:a7837ffce8304071dd87de28f7abf7126"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0c5c3baad424d9aaf6da20c3df995e42" id="r_a0c5c3baad424d9aaf6da20c3df995e42"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1dnut.html#a0c5c3baad424d9aaf6da20c3df995e42">StepFieldType</a> : std::uint8_t { <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1dnut.html#a0c5c3baad424d9aaf6da20c3df995e42a27118326006d3829667a400ad23d5d98">String</a>
+, <a class="el" href="namespaceeve_1_1dnut.html#a0c5c3baad424d9aaf6da20c3df995e42ab2ee912b91d69b435159c7c3f6df7f5f">Number</a>
+, <a class="el" href="namespaceeve_1_1dnut.html#a0c5c3baad424d9aaf6da20c3df995e42aa0faef0851b4294c06f2b94bb1cb2044">Integer</a>
+, <a class="el" href="namespaceeve_1_1dnut.html#a0c5c3baad424d9aaf6da20c3df995e42a27226c864bac7454a8504f8edb15d95b">Boolean</a>
+, <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1dnut.html#a0c5c3baad424d9aaf6da20c3df995e42aed36a1ef76a59ee3f15180e0441188ad">Any</a>
+<br />
+ }</td></tr>
+<tr class="memdesc:a0c5c3baad424d9aaf6da20c3df995e42"><td class="mdescLeft">&#160;</td><td class="mdescRight">Accepted value kind of one declared payload field.  <a href="namespaceeve_1_1dnut.html#a0c5c3baad424d9aaf6da20c3df995e42">更多...</a><br /></td></tr>
+<tr class="separator:a0c5c3baad424d9aaf6da20c3df995e42"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa0d7c6939120e0f9671b061d14f0af59" id="r_aa0d7c6939120e0f9671b061d14f0af59"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1dnut.html#aa0d7c6939120e0f9671b061d14f0af59">StepStatus</a> : std::uint8_t { <a class="el" href="namespaceeve_1_1dnut.html#aa0d7c6939120e0f9671b061d14f0af59a07ca5050e697392c9ed47e6453f1453f">Completed</a>
+, <a class="el" href="namespaceeve_1_1dnut.html#aa0d7c6939120e0f9671b061d14f0af59a4ecc0d90eec1cea3e9db96583a1bb9c2">Blocked</a>
+, <a class="el" href="namespaceeve_1_1dnut.html#aa0d7c6939120e0f9671b061d14f0af59ad7c8c85bf79bbe1b7188497c32c3b0ca">Failed</a>
+ }</td></tr>
+<tr class="memdesc:aa0d7c6939120e0f9671b061d14f0af59"><td class="mdescLeft">&#160;</td><td class="mdescRight">Terminal state of one dispatched step.  <a href="namespaceeve_1_1dnut.html#aa0d7c6939120e0f9671b061d14f0af59">更多...</a><br /></td></tr>
+<tr class="separator:aa0d7c6939120e0f9671b061d14f0af59"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+函数</h2></td></tr>
+<tr class="memitem:a313f47f665af26bd5f7da47775e6bb63" id="r_a313f47f665af26bd5f7da47775e6bb63"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1dnut_1_1DnutCompileOutput.html">DnutCompileOutput</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1dnut.html#a313f47f665af26bd5f7da47775e6bb63">compileDnut</a> (std::string_view <a class="el" href="UnityVegetationPreset_8cpp.html#a176f5b9d50679b93425278a1a59e3eaa">source</a>, const std::string &amp;<a class="el" href="PlayHost_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>, const <a class="el" href="classeve_1_1dnut_1_1StepKindRegistry.html">StepKindRegistry</a> &amp;registry)</td></tr>
+<tr class="memdesc:a313f47f665af26bd5f7da47775e6bb63"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compile every <code>story</code> block of one <code>.dnut</code> document.  <br /></td></tr>
+<tr class="separator:a313f47f665af26bd5f7da47775e6bb63"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2316a604383c4bc369fecd1cf2799c41" id="r_a2316a604383c4bc369fecd1cf2799c41"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1dnut.html#a2316a604383c4bc369fecd1cf2799c41">hasErrors</a> (const std::vector&lt; <a class="el" href="structeve_1_1dnut_1_1DnutDiagnostic.html">DnutDiagnostic</a> &gt; &amp;diagnostics)</td></tr>
+<tr class="memdesc:a2316a604383c4bc369fecd1cf2799c41"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return whether any diagnostic is an error.  <br /></td></tr>
+<tr class="separator:a2316a604383c4bc369fecd1cf2799c41"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a827f814a178692423c78dd88ae32336a" id="r_a827f814a178692423c78dd88ae32336a"><td class="memItemLeft" align="right" valign="top">const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1dnut.html#a827f814a178692423c78dd88ae32336a">dnutTokenKindName</a> (<a class="el" href="namespaceeve_1_1dnut.html#aedc8fa9495ebd4c7e8be9b2cb42b6c0e">DnutTokenKind</a> <a class="el" href="LanguageIndex_8cpp.html#a38de9b52cbbca9313f7d7c8505a64e10">kind</a>) noexcept</td></tr>
+<tr class="memdesc:a827f814a178692423c78dd88ae32336a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the stable lowercase spelling of a token kind.  <br /></td></tr>
+<tr class="separator:a827f814a178692423c78dd88ae32336a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a98952f386a27f3a39c0f7f522daf41a5" id="r_a98952f386a27f3a39c0f7f522daf41a5"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::vector&lt; <a class="el" href="structeve_1_1dnut_1_1DnutToken.html">DnutToken</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1dnut.html#a98952f386a27f3a39c0f7f522daf41a5">lexDnut</a> (std::string_view <a class="el" href="UnityVegetationPreset_8cpp.html#a176f5b9d50679b93425278a1a59e3eaa">source</a>, const std::string &amp;<a class="el" href="PlayHost_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>)</td></tr>
+<tr class="memdesc:a98952f386a27f3a39c0f7f522daf41a5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Lex one <code>.dnut</code> source buffer into owned tokens.  <br /></td></tr>
+<tr class="separator:a98952f386a27f3a39c0f7f522daf41a5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa26a221297005b93e6f5c9010934c912" id="r_aa26a221297005b93e6f5c9010934c912"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1dnut.html#aa26a221297005b93e6f5c9010934c912">isCoreSequenceNodeType</a> (const std::string &amp;<a class="el" href="ActionTimelinePayloadEditor_8cpp.html#acc84214b4748705f4d18dd8d143e70be">type</a>) noexcept</td></tr>
+<tr class="memdesc:aa26a221297005b93e6f5c9010934c912"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return whether <code>type</code> is a control-flow type interpreted by the runtime.  <br /></td></tr>
+<tr class="separator:aa26a221297005b93e6f5c9010934c912"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad34e8b0206a54482d72f96ae2441134a" id="r_ad34e8b0206a54482d72f96ae2441134a"><td class="memItemLeft" align="right" valign="top">const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1dnut.html#ad34e8b0206a54482d72f96ae2441134a">stepShapeName</a> (<a class="el" href="namespaceeve_1_1dnut.html#a7837ffce8304071dd87de28f7abf7126">StepShape</a> <a class="el" href="GraphicsShaderResources_8cpp.html#ac49da6a9b4532c873ea3cd746ab99862">shape</a>) noexcept</td></tr>
+<tr class="memdesc:ad34e8b0206a54482d72f96ae2441134a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the stable lowercase spelling of a step shape.  <br /></td></tr>
+<tr class="separator:ad34e8b0206a54482d72f96ae2441134a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<h2 class="groupheader">类型定义说明</h2>
+<a id="a59231a6b751d9dd14330eccee0da1839" name="a59231a6b751d9dd14330eccee0da1839"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a59231a6b751d9dd14330eccee0da1839">&#9670;&#160;</a></span>StepHandler</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespaceeve_1_1dnut.html#a59231a6b751d9dd14330eccee0da1839">eve::dnut::StepHandler</a> = typedef std::function&lt;<a class="el" href="structeve_1_1dnut_1_1StepOutcome.html">StepOutcome</a>(const <a class="el" href="structeve_1_1dnut_1_1SequenceNode.html">SequenceNode</a>&amp;, const <a class="el" href="structeve_1_1dnut_1_1StepContext.html">StepContext</a>&amp;)&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Consumer-owned handler for one registered step type. </p>
+
+<p class="definition">在文件 <a class="el" href="StepKindRegistry_8h_source.html">StepKindRegistry.h</a> 第 <a class="el" href="StepKindRegistry_8h_source.html#l00094">94</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">枚举类型说明</h2>
+<a id="a3340f839876b5b4d1e628591b318e9fa" name="a3340f839876b5b4d1e628591b318e9fa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3340f839876b5b4d1e628591b318e9fa">&#9670;&#160;</a></span>DnutSeverity</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1dnut.html#a3340f839876b5b4d1e628591b318e9fa">eve::dnut::DnutSeverity</a> : std::uint8_t</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Severity of one <code>.dnut</code> source diagnostic. </p>
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="a3340f839876b5b4d1e628591b318e9faa0eaadb4fcb48a0a0ed7bc9868be9fbaa" name="a3340f839876b5b4d1e628591b318e9faa0eaadb4fcb48a0a0ed7bc9868be9fbaa"></a>Warning&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a3340f839876b5b4d1e628591b318e9faa902b0d55fddef6f8d651fe1035b7d4bd" name="a3340f839876b5b4d1e628591b318e9faa902b0d55fddef6f8d651fe1035b7d4bd"></a>Error&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="DnutDiagnostic_8h_source.html">DnutDiagnostic.h</a> 第 <a class="el" href="DnutDiagnostic_8h_source.html#l00012">12</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aedc8fa9495ebd4c7e8be9b2cb42b6c0e" name="aedc8fa9495ebd4c7e8be9b2cb42b6c0e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aedc8fa9495ebd4c7e8be9b2cb42b6c0e">&#9670;&#160;</a></span>DnutTokenKind</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1dnut.html#aedc8fa9495ebd4c7e8be9b2cb42b6c0e">eve::dnut::DnutTokenKind</a> : std::uint8_t</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Token classes produced by the shared <code>.dnut</code> lexer. </p>
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="aedc8fa9495ebd4c7e8be9b2cb42b6c0ea29ee5d1ebcc033234938a5234f1f2075" name="aedc8fa9495ebd4c7e8be9b2cb42b6c0ea29ee5d1ebcc033234938a5234f1f2075"></a>Identifier&#160;</td><td class="fielddoc"><p>Bare word: keyword, field name, identifier, or bare enum value. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="aedc8fa9495ebd4c7e8be9b2cb42b6c0ea27118326006d3829667a400ad23d5d98" name="aedc8fa9495ebd4c7e8be9b2cb42b6c0ea27118326006d3829667a400ad23d5d98"></a>String&#160;</td><td class="fielddoc"><p>Quoted string with escapes already resolved. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="aedc8fa9495ebd4c7e8be9b2cb42b6c0eab2ee912b91d69b435159c7c3f6df7f5f" name="aedc8fa9495ebd4c7e8be9b2cb42b6c0eab2ee912b91d69b435159c7c3f6df7f5f"></a>Number&#160;</td><td class="fielddoc"><p>Unsigned numeric literal; sign handling belongs to the parser. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="aedc8fa9495ebd4c7e8be9b2cb42b6c0ea72f6d3b275746f5986ab1918b726784b" name="aedc8fa9495ebd4c7e8be9b2cb42b6c0ea72f6d3b275746f5986ab1918b726784b"></a>Punctuator&#160;</td><td class="fielddoc"><p>One- or two-character punctuator such as <code>{</code>, <code>=</code>, <code>==</code>, <code>-&gt;</code>. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="aedc8fa9495ebd4c7e8be9b2cb42b6c0ea9556e151da49cd4bcf0352857cb33509" name="aedc8fa9495ebd4c7e8be9b2cb42b6c0ea9556e151da49cd4bcf0352857cb33509"></a>EndOfFile&#160;</td><td class="fielddoc"><p>Synthetic terminal token; always the last element. </p>
+</td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="DnutLexer_8h_source.html">DnutLexer.h</a> 第 <a class="el" href="DnutLexer_8h_source.html#l00016">16</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a0c5c3baad424d9aaf6da20c3df995e42" name="a0c5c3baad424d9aaf6da20c3df995e42"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0c5c3baad424d9aaf6da20c3df995e42">&#9670;&#160;</a></span>StepFieldType</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1dnut.html#a0c5c3baad424d9aaf6da20c3df995e42">eve::dnut::StepFieldType</a> : std::uint8_t</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Accepted value kind of one declared payload field. </p>
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="a0c5c3baad424d9aaf6da20c3df995e42a27118326006d3829667a400ad23d5d98" name="a0c5c3baad424d9aaf6da20c3df995e42a27118326006d3829667a400ad23d5d98"></a>String&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a0c5c3baad424d9aaf6da20c3df995e42ab2ee912b91d69b435159c7c3f6df7f5f" name="a0c5c3baad424d9aaf6da20c3df995e42ab2ee912b91d69b435159c7c3f6df7f5f"></a>Number&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a0c5c3baad424d9aaf6da20c3df995e42aa0faef0851b4294c06f2b94bb1cb2044" name="a0c5c3baad424d9aaf6da20c3df995e42aa0faef0851b4294c06f2b94bb1cb2044"></a>Integer&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a0c5c3baad424d9aaf6da20c3df995e42a27226c864bac7454a8504f8edb15d95b" name="a0c5c3baad424d9aaf6da20c3df995e42a27226c864bac7454a8504f8edb15d95b"></a>Boolean&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a0c5c3baad424d9aaf6da20c3df995e42aed36a1ef76a59ee3f15180e0441188ad" name="a0c5c3baad424d9aaf6da20c3df995e42aed36a1ef76a59ee3f15180e0441188ad"></a>Any&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="StepKindRegistry_8h_source.html">StepKindRegistry.h</a> 第 <a class="el" href="StepKindRegistry_8h_source.html#l00033">33</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a7837ffce8304071dd87de28f7abf7126" name="a7837ffce8304071dd87de28f7abf7126"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7837ffce8304071dd87de28f7abf7126">&#9670;&#160;</a></span>StepShape</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1dnut.html#a7837ffce8304071dd87de28f7abf7126">eve::dnut::StepShape</a> : std::uint8_t</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Declares whether a step completes inside its call or suspends the runtime. </p>
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="a7837ffce8304071dd87de28f7abf7126a54828f327f31abd59f2f459c0247756d" name="a7837ffce8304071dd87de28f7abf7126a54828f327f31abd59f2f459c0247756d"></a>Instant&#160;</td><td class="fielddoc"><p>The step completes synchronously; <code>Completed</code> continues at <code>next</code>. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a7837ffce8304071dd87de28f7abf7126a100953bafda776b456bd241376128e32" name="a7837ffce8304071dd87de28f7abf7126a100953bafda776b456bd241376128e32"></a>Await&#160;</td><td class="fielddoc"><p>The step may suspend the runtime. </p>
+<p>A registered handler returning <code>Blocked</code> suspends until the host calls <code><a class="el" href="classeve_1_1dnut_1_1SequenceRuntime.html#aa791f5581180bf20529a93afe689cdba" title="Resume a step whose handler returned Blocked.">SequenceRuntime::resumeStep</a></code>. A descriptor with no handler is a host-presented step: the runtime suspends and the host acknowledges with <code><a class="el" href="classeve_1_1dnut_1_1SequenceRuntime.html#a4d39e39aef0a31b015b5996ec5634a37" title="Acknowledge a host-presented wait or handler-less Await step.">SequenceRuntime::advance</a></code>. </p>
+</td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="StepKindRegistry_8h_source.html">StepKindRegistry.h</a> 第 <a class="el" href="StepKindRegistry_8h_source.html#l00018">18</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aa0d7c6939120e0f9671b061d14f0af59" name="aa0d7c6939120e0f9671b061d14f0af59"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa0d7c6939120e0f9671b061d14f0af59">&#9670;&#160;</a></span>StepStatus</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1dnut.html#aa0d7c6939120e0f9671b061d14f0af59">eve::dnut::StepStatus</a> : std::uint8_t</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Terminal state of one dispatched step. </p>
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="aa0d7c6939120e0f9671b061d14f0af59a07ca5050e697392c9ed47e6453f1453f" name="aa0d7c6939120e0f9671b061d14f0af59a07ca5050e697392c9ed47e6453f1453f"></a>Completed&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="aa0d7c6939120e0f9671b061d14f0af59a4ecc0d90eec1cea3e9db96583a1bb9c2" name="aa0d7c6939120e0f9671b061d14f0af59a4ecc0d90eec1cea3e9db96583a1bb9c2"></a>Blocked&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="aa0d7c6939120e0f9671b061d14f0af59ad7c8c85bf79bbe1b7188497c32c3b0ca" name="aa0d7c6939120e0f9671b061d14f0af59ad7c8c85bf79bbe1b7188497c32c3b0ca"></a>Failed&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="StepKindRegistry_8h_source.html">StepKindRegistry.h</a> 第 <a class="el" href="StepKindRegistry_8h_source.html#l00061">61</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">函数说明</h2>
+<a id="a313f47f665af26bd5f7da47775e6bb63" name="a313f47f665af26bd5f7da47775e6bb63"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a313f47f665af26bd5f7da47775e6bb63">&#9670;&#160;</a></span>compileDnut()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1dnut_1_1DnutCompileOutput.html">DnutCompileOutput</a> eve::dnut::compileDnut </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>source</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>path</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1dnut_1_1StepKindRegistry.html">StepKindRegistry</a> &amp;&#160;</td>
+          <td class="paramname"><em>registry</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Compile every <code>story</code> block of one <code>.dnut</code> document. </p>
+<p>Top-level blocks belonging to another dialect (for example <code>pool</code> or <code>conversation</code>) are skipped, so one file may hold several dialects without this compiler rejecting the file. Step payloads are validated against <code>registry</code>, which is the single source of truth for the step vocabulary: the compiler knows only the control-flow keywords <code>if</code> / <code>choice</code> / <code>call</code> / <code>wait</code> / <code>end</code>.</p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">source</td><td>Full UTF-8 document text; it is not retained. </td></tr>
+    <tr><td class="paramname">path</td><td>Source identity reported in every diagnostic. </td></tr>
+    <tr><td class="paramname">registry</td><td>Step vocabulary used to validate non-control-flow steps. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Owned assets and diagnostics. An input containing errors still yields the assets that compiled cleanly, so an editor can keep working. @thread Reentrant and side-effect free; the caller owns the result. @reentrancy Invokes no callbacks. @cost Linear in the document size; allocates one token buffer and one asset per <code>story</code> block. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="DnutCompiler_8cpp_source.html">DnutCompiler.cpp</a> 第 <a class="el" href="DnutCompiler_8cpp_source.html#l00482">482</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1dnut.html#a3340f839876b5b4d1e628591b318e9faa902b0d55fddef6f8d651fe1035b7d4bd">Error</a>, <a class="el" href="DnutLexer_8cpp_source.html#l00092">lexDnut()</a>, <a class="el" href="AssetCommand_8cpp_source.html#l00161">output</a>, <a class="el" href="PlayHost_8cpp_source.html#l00144">path</a>, <a class="el" href="UnityVegetationPreset_8cpp_source.html#l00029">source</a> , 以及 <a class="el" href="GraphicsLifetime_8cpp_source.html#l00013">tokens</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RpgDialect_8cpp_source.html#l00560">eve::rpg::RpgStoryCatalogue::replaceFromDnutStrict()</a>.</p>
+
+</div>
+</div>
+<a id="a827f814a178692423c78dd88ae32336a" name="a827f814a178692423c78dd88ae32336a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a827f814a178692423c78dd88ae32336a">&#9670;&#160;</a></span>dnutTokenKindName()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const char * eve::dnut::dnutTokenKindName </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1dnut.html#aedc8fa9495ebd4c7e8be9b2cb42b6c0e">DnutTokenKind</a>&#160;</td>
+          <td class="paramname"><em>kind</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the stable lowercase spelling of a token kind. </p>
+
+<p class="definition">在文件 <a class="el" href="DnutLexer_8cpp_source.html">DnutLexer.cpp</a> 第 <a class="el" href="DnutLexer_8cpp_source.html#l00081">81</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1dnut.html#aedc8fa9495ebd4c7e8be9b2cb42b6c0ea9556e151da49cd4bcf0352857cb33509">EndOfFile</a>, <a class="el" href="namespaceeve_1_1dnut.html#aedc8fa9495ebd4c7e8be9b2cb42b6c0ea29ee5d1ebcc033234938a5234f1f2075">Identifier</a>, <a class="el" href="LanguageIndex_8cpp_source.html#l00017">kind</a>, <a class="el" href="namespaceeve_1_1dnut.html#aedc8fa9495ebd4c7e8be9b2cb42b6c0eab2ee912b91d69b435159c7c3f6df7f5f">Number</a>, <a class="el" href="namespaceeve_1_1dnut.html#aedc8fa9495ebd4c7e8be9b2cb42b6c0ea72f6d3b275746f5986ab1918b726784b">Punctuator</a> , 以及 <a class="el" href="namespaceeve_1_1dnut.html#aedc8fa9495ebd4c7e8be9b2cb42b6c0ea27118326006d3829667a400ad23d5d98">String</a>.</p>
+
+</div>
+</div>
+<a id="a2316a604383c4bc369fecd1cf2799c41" name="a2316a604383c4bc369fecd1cf2799c41"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2316a604383c4bc369fecd1cf2799c41">&#9670;&#160;</a></span>hasErrors()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::dnut::hasErrors </td>
+          <td>(</td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="structeve_1_1dnut_1_1DnutDiagnostic.html">DnutDiagnostic</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>diagnostics</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return whether any diagnostic is an error. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">diagnostics</td><td>Diagnostics collected by one frontend invocation. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>True when at least one entry has error severity. @thread Reentrant and side-effect free. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="DnutLexer_8cpp_source.html">DnutLexer.cpp</a> 第 <a class="el" href="DnutLexer_8cpp_source.html#l00228">228</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1dnut.html#a3340f839876b5b4d1e628591b318e9faa902b0d55fddef6f8d651fe1035b7d4bd">Error</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DnutCompiler_8cpp_source.html#l00013">eve::dnut::DnutCompileOutput::hasErrors()</a>.</p>
+
+</div>
+</div>
+<a id="aa26a221297005b93e6f5c9010934c912" name="aa26a221297005b93e6f5c9010934c912"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa26a221297005b93e6f5c9010934c912">&#9670;&#160;</a></span>isCoreSequenceNodeType()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::dnut::isCoreSequenceNodeType </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>type</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return whether <code>type</code> is a control-flow type interpreted by the runtime. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">type</td><td>Step type name as written in the compiled asset. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>True for <code>branch</code>, <code>choice</code>, <code>call</code>, <code>wait</code> and <code>end</code>. @thread Reentrant and side-effect free. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="SequenceAsset_8cpp_source.html">SequenceAsset.cpp</a> 第 <a class="el" href="SequenceAsset_8cpp_source.html#l00018">18</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ActionTimelinePayloadEditor_8cpp_source.html#l00020">type</a>.</p>
+
+</div>
+</div>
+<a id="a98952f386a27f3a39c0f7f522daf41a5" name="a98952f386a27f3a39c0f7f522daf41a5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a98952f386a27f3a39c0f7f522daf41a5">&#9670;&#160;</a></span>lexDnut()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::vector&lt; <a class="el" href="structeve_1_1dnut_1_1DnutToken.html">DnutToken</a> &gt; &gt; eve::dnut::lexDnut </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>source</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>path</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Lex one <code>.dnut</code> source buffer into owned tokens. </p>
+<p>Every dialect shares this lexer so a single file may hold several dialects without a second, silently divergent tokenizer.</p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">source</td><td>Full UTF-8 source text; it is not retained. </td></tr>
+    <tr><td class="paramname">path</td><td>Source identity reported in diagnostics and in the error path. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Owned tokens ending in one <code>EndOfFile</code> token, or a <code>ParseError</code> diagnostic naming the line and column of the offending text. @thread Reentrant and side-effect free; the caller owns the returned buffer. @reentrancy Invokes no callbacks. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="DnutLexer_8cpp_source.html">DnutLexer.cpp</a> 第 <a class="el" href="DnutLexer_8cpp_source.html#l00092">92</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="HexSphereTopology_8cpp_source.html#l00068">c</a>, <a class="el" href="PrototypeKit_8cpp_source.html#l00109">d</a>, <a class="el" href="namespaceeve_1_1dnut.html#aedc8fa9495ebd4c7e8be9b2cb42b6c0ea9556e151da49cd4bcf0352857cb33509">EndOfFile</a>, <a class="el" href="namespaceeve_1_1dnut.html#aedc8fa9495ebd4c7e8be9b2cb42b6c0ea29ee5d1ebcc033234938a5234f1f2075">Identifier</a>, <a class="el" href="ConversationImporter_8cpp_source.html#l00014">line</a>, <a class="el" href="namespaceeve_1_1dnut.html#aedc8fa9495ebd4c7e8be9b2cb42b6c0eab2ee912b91d69b435159c7c3f6df7f5f">Number</a>, <a class="el" href="PlayHost_8cpp_source.html#l00144">path</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00016">position</a>, <a class="el" href="namespaceeve_1_1dnut.html#aedc8fa9495ebd4c7e8be9b2cb42b6c0ea72f6d3b275746f5986ab1918b726784b">Punctuator</a>, <a class="el" href="LanguageText_8cpp_source.html#l00015">quote</a>, <a class="el" href="TreeMesh_8cpp_source.html#l00129">size</a>, <a class="el" href="UnityVegetationPreset_8cpp_source.html#l00029">source</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00030">start</a>, <a class="el" href="namespaceeve_1_1dnut.html#aedc8fa9495ebd4c7e8be9b2cb42b6c0ea27118326006d3829667a400ad23d5d98">String</a>, <a class="el" href="LanguageIndex_8cpp_source.html#l00018">text</a> , 以及 <a class="el" href="GraphicsLifetime_8cpp_source.html#l00013">tokens</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DnutCompiler_8cpp_source.html#l00482">compileDnut()</a>.</p>
+
+</div>
+</div>
+<a id="ad34e8b0206a54482d72f96ae2441134a" name="ad34e8b0206a54482d72f96ae2441134a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad34e8b0206a54482d72f96ae2441134a">&#9670;&#160;</a></span>stepShapeName()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const char * eve::dnut::stepShapeName </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1dnut.html#a7837ffce8304071dd87de28f7abf7126">StepShape</a>&#160;</td>
+          <td class="paramname"><em>shape</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the stable lowercase spelling of a step shape. </p>
+
+<p class="definition">在文件 <a class="el" href="StepKindRegistry_8cpp_source.html">StepKindRegistry.cpp</a> 第 <a class="el" href="StepKindRegistry_8cpp_source.html#l00049">49</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1dnut.html#a7837ffce8304071dd87de28f7abf7126a100953bafda776b456bd241376128e32">Await</a>, <a class="el" href="namespaceeve_1_1dnut.html#a7837ffce8304071dd87de28f7abf7126a54828f327f31abd59f2f459c0247756d">Instant</a> , 以及 <a class="el" href="GraphicsShaderResources_8cpp_source.html#l00017">shape</a>.</p>
+
+</div>
+</div>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

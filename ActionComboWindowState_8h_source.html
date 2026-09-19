@@ -1,0 +1,262 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/action/input/ActionComboWindowState.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_4132021be2fc4b1a23b2cac06bb68e21.html">action</a></li><li class="navelem"><a class="el" href="dir_ea786c5b1ca2f33f7304f6edfd297c28.html">input</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">ActionComboWindowState.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="ActionComboWindowState_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;<a class="code" href="ActionStateWindowBlock_8h.html">action/ActionStateWindowBlock.h</a>&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &quot;<a class="code" href="SubjectRef_8h.html">common/SubjectRef.h</a>&quot;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span> </div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;functional&gt;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &lt;map&gt;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span> </div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1action_1_1input.html">eve::action::input</a> {</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span> </div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno"><a class="line" href="namespaceeve_1_1action_1_1input.html#ac013a3c26d68f75171a5f51dc86ce4e1">   20</a></span><span class="keyword">using </span><a class="code hl_typedef" href="namespaceeve_1_1action_1_1input.html#ac013a3c26d68f75171a5f51dc86ce4e1">ComboSubjectResolver</a> = std::function&lt;Result&lt;SubjectRef&gt;(ecs::EntityHandle)&gt;;</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span> </div>
+<div class="foldopen" id="foldopen00023" data-start="{" data-end="};">
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno"><a class="line" href="structeve_1_1action_1_1input_1_1ActionComboMatch.html">   23</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1action_1_1input_1_1ActionComboMatch.html">ActionComboMatch</a> {</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno"><a class="line" href="structeve_1_1action_1_1input_1_1ActionComboMatch.html#a9f3d5ce34b4a425249aaa68799b9f8d7">   24</a></span>    <a class="code hl_class" href="classeve_1_1detail_1_1StrongUint64.html">ActionExecutionId</a> <a class="code hl_variable" href="structeve_1_1action_1_1input_1_1ActionComboMatch.html#a9f3d5ce34b4a425249aaa68799b9f8d7">executionId</a>;</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno"><a class="line" href="structeve_1_1action_1_1input_1_1ActionComboMatch.html#aa46ed660a93415d573dd66e6e8d8b9e5">   25</a></span>    <a class="code hl_class" href="classeve_1_1LogicalId.html">LogicalId</a>         <a class="code hl_variable" href="structeve_1_1action_1_1input_1_1ActionComboMatch.html#aa46ed660a93415d573dd66e6e8d8b9e5">itemId</a>;</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="structeve_1_1action_1_1input_1_1ActionComboMatch.html#a9d69c575957b67709452265faf82a1e1">   26</a></span>    <a class="code hl_class" href="classeve_1_1SubjectRef.html">SubjectRef</a>        <a class="code hl_variable" href="structeve_1_1action_1_1input_1_1ActionComboMatch.html#a9d69c575957b67709452265faf82a1e1">subject</a>;</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno"><a class="line" href="structeve_1_1action_1_1input_1_1ActionComboMatch.html#a659177fbb11675819c199d759c036eff">   27</a></span>    std::string       <a class="code hl_variable" href="structeve_1_1action_1_1input_1_1ActionComboMatch.html#a659177fbb11675819c199d759c036eff">input</a>;</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>};</div>
+</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span> </div>
+<div class="foldopen" id="foldopen00037" data-start="{" data-end="};">
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno"><a class="line" href="classeve_1_1action_1_1input_1_1ActionComboWindowState.html">   37</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1action_1_1input_1_1ActionComboWindowState.html">ActionComboWindowState</a> final : <span class="keyword">public</span> <a class="code hl_class" href="classeve_1_1action_1_1IActionStateWindowSink.html">IActionStateWindowSink</a> {</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    <span class="keyword">explicit</span> <a class="code hl_class" href="classeve_1_1action_1_1input_1_1ActionComboWindowState.html">ActionComboWindowState</a>(<a class="code hl_typedef" href="namespaceeve_1_1action_1_1input.html#ac013a3c26d68f75171a5f51dc86ce4e1">ComboSubjectResolver</a> resolver);</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    <a class="code hl_function" href="classeve_1_1action_1_1input_1_1ActionComboWindowState.html#a944e68d4bc9a6bd8f4432cbead2a7bb7">~ActionComboWindowState</a>() <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span> </div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1action_1_1input_1_1ActionComboWindowState.html#a87ff7c69b9365a8881ab37b028ada715">setEnabled</a>(<span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1action_1_1input_1_1ActionComboWindowState.html#ad74d620ae5a592d13d3c61e230dda91f">enabled</a>);</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    [[nodiscard]] <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1action_1_1input_1_1ActionComboWindowState.html#ad74d620ae5a592d13d3c61e230dda91f">enabled</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    [[nodiscard]] <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1action_1_1input_1_1ActionComboWindowState.html#ac3bb08f428d8b5a8233c20f758f68262">supports</a>(<a class="code hl_enumeration" href="namespaceeve_1_1action.html#a8e7f0cd7be5f0e49e9c8317c401c8e7d">ActionStateWindowKind</a> <a class="code hl_variable" href="LanguageIndex_8cpp.html#a38de9b52cbbca9313f7d7c8505a64e10">kind</a>) <span class="keyword">const</span> <span class="keyword">noexcept</span> <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1action_1_1input_1_1ActionComboWindowState.html#ab94b38861d99287924970ce3c09d4caf">enter</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1action_1_1ActionStateWindowBinding.html">ActionStateWindowBinding</a>&amp; <a class="code hl_variable" href="ParticlesCapabilities_8cpp.html#a29e48cdcd5413e721ea32eaef3927e79">binding</a>,</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>                                     <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1action_1_1ActionTimelineEvent.html">ActionTimelineEvent</a>&amp; event,</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>                                     <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1action_1_1ActionNotifyContext.html">ActionNotifyContext</a>&amp; <a class="code hl_variable" href="VegetationPreset_8cpp.html#aa677a20ed09a5d6c839a3d7a4d53cb9c">context</a>) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1action_1_1input_1_1ActionComboWindowState.html#a6795048e451a7bbdd5cb545f4952a3cf">exit</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1action_1_1ActionStateWindowBinding.html">ActionStateWindowBinding</a>&amp; <a class="code hl_variable" href="ParticlesCapabilities_8cpp.html#a29e48cdcd5413e721ea32eaef3927e79">binding</a>,</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>                                    <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1action_1_1ActionTimelineEvent.html">ActionTimelineEvent</a>&amp; event,</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>                                    <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1action_1_1ActionNotifyContext.html">ActionNotifyContext</a>&amp; <a class="code hl_variable" href="VegetationPreset_8cpp.html#aa677a20ed09a5d6c839a3d7a4d53cb9c">context</a>) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span> </div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    [[nodiscard]] std::vector&lt;std::string&gt; <a class="code hl_function" href="classeve_1_1action_1_1input_1_1ActionComboWindowState.html#a88973e78ed085cfa7286d9fd6c7b1883">availableInputs</a>(<a class="code hl_class" href="classeve_1_1SubjectRef.html">SubjectRef</a> <a class="code hl_variable" href="AnimSmr_8cpp.html#aaca3fbd883cca67884738545312b4752">subject</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;ActionComboMatch&gt;</a> <a class="code hl_function" href="classeve_1_1action_1_1input_1_1ActionComboWindowState.html#a14c8fc37f90f939786fc36749c1fc17e">match</a>(<a class="code hl_class" href="classeve_1_1SubjectRef.html">SubjectRef</a> <a class="code hl_variable" href="AnimSmr_8cpp.html#aaca3fbd883cca67884738545312b4752">subject</a>, std::string_view <a class="code hl_variable" href="Evpack_8cpp.html#ad36f085e46e88a0658882f9013d9ed04">input</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno"><a class="line" href="classeve_1_1action_1_1input_1_1ActionComboWindowState.html#a181857cbb721a8ea7c7f1b78408f65d8">   63</a></span>    [[nodiscard]] std::size_t <a class="code hl_function" href="classeve_1_1action_1_1input_1_1ActionComboWindowState.html#a181857cbb721a8ea7c7f1b78408f65d8">activeCount</a>() const noexcept { <span class="keywordflow">return</span> active_.size(); }</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span> </div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    <span class="keyword">using </span>ActiveKey = std::pair&lt;ActionExecutionId, std::string&gt;;</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    <span class="keyword">struct </span>ActiveCombo {</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>        <a class="code hl_class" href="classeve_1_1LogicalId.html">LogicalId</a>  <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ac5758f9b5a368e496aaa5da3aa74dfd6">itemId</a>;</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>        <a class="code hl_class" href="classeve_1_1SubjectRef.html">SubjectRef</a> <a class="code hl_variable" href="AnimSmr_8cpp.html#aaca3fbd883cca67884738545312b4752">subject</a>;</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>        std::string <a class="code hl_variable" href="Evpack_8cpp.html#ad36f085e46e88a0658882f9013d9ed04">input</a>;</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    };</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span> </div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    <a class="code hl_typedef" href="namespaceeve_1_1action_1_1input.html#ac013a3c26d68f75171a5f51dc86ce4e1">ComboSubjectResolver</a>             resolver_;</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    std::map&lt;ActiveKey, ActiveCombo&gt; active_;</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>};</div>
+</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span> </div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>}  <span class="comment">// namespace eve::action::input</span></div>
+<div class="ttc" id="aActionStateWindowBlock_8h_html"><div class="ttname"><a href="ActionStateWindowBlock_8h.html">ActionStateWindowBlock.h</a></div><div class="ttdoc">Typed combat/input/collision action-state window contracts.</div></div>
+<div class="ttc" id="aActionTimelineWidget_8cpp_html_ac5758f9b5a368e496aaa5da3aa74dfd6"><div class="ttname"><a href="ActionTimelineWidget_8cpp.html#ac5758f9b5a368e496aaa5da3aa74dfd6">itemId</a></div><div class="ttdeci">LogicalId itemId</div><div class="ttdef"><b>Definition</b> <a href="ActionTimelineWidget_8cpp_source.html#l00028">ActionTimelineWidget.cpp:28</a></div></div>
+<div class="ttc" id="aAnimSmr_8cpp_html_aaca3fbd883cca67884738545312b4752"><div class="ttname"><a href="AnimSmr_8cpp.html#aaca3fbd883cca67884738545312b4752">subject</a></div><div class="ttdeci">int subject</div><div class="ttdef"><b>Definition</b> <a href="AnimSmr_8cpp_source.html#l00163">AnimSmr.cpp:163</a></div></div>
+<div class="ttc" id="aEvpack_8cpp_html_ad36f085e46e88a0658882f9013d9ed04"><div class="ttname"><a href="Evpack_8cpp.html#ad36f085e46e88a0658882f9013d9ed04">input</a></div><div class="ttdeci">EvpackChunkInput input</div><div class="ttdef"><b>Definition</b> <a href="Evpack_8cpp_source.html#l00175">Evpack.cpp:175</a></div></div>
+<div class="ttc" id="aLanguageIndex_8cpp_html_a38de9b52cbbca9313f7d7c8505a64e10"><div class="ttname"><a href="LanguageIndex_8cpp.html#a38de9b52cbbca9313f7d7c8505a64e10">kind</a></div><div class="ttdeci">TokenKind kind</div><div class="ttdef"><b>Definition</b> <a href="LanguageIndex_8cpp_source.html#l00017">LanguageIndex.cpp:17</a></div></div>
+<div class="ttc" id="aParticlesCapabilities_8cpp_html_a29e48cdcd5413e721ea32eaef3927e79"><div class="ttname"><a href="ParticlesCapabilities_8cpp.html#a29e48cdcd5413e721ea32eaef3927e79">binding</a></div><div class="ttdeci">eve::action::ActionVfxBinding binding</div><div class="ttdef"><b>Definition</b> <a href="ParticlesCapabilities_8cpp_source.html#l00169">ParticlesCapabilities.cpp:169</a></div></div>
+<div class="ttc" id="aSubjectRef_8h_html"><div class="ttname"><a href="SubjectRef_8h.html">SubjectRef.h</a></div><div class="ttdoc">Stable reference to a runtime gameplay subject.</div></div>
+<div class="ttc" id="aVegetationPreset_8cpp_html_aa677a20ed09a5d6c839a3d7a4d53cb9c"><div class="ttname"><a href="VegetationPreset_8cpp.html#aa677a20ed09a5d6c839a3d7a4d53cb9c">context</a></div><div class="ttdeci">const VegetationPresetContext &amp; context</div><div class="ttdef"><b>Definition</b> <a href="VegetationPreset_8cpp_source.html#l00087">VegetationPreset.cpp:87</a></div></div>
+<div class="ttc" id="aclasseve_1_1LogicalId_html"><div class="ttname"><a href="classeve_1_1LogicalId.html">eve::LogicalId</a></div><div class="ttdoc">Human-readable, scoped identifier in the form namespace:name.</div><div class="ttdef"><b>Definition</b> <a href="Identity_8h_source.html#l00413">Identity.h:413</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1SubjectRef_html"><div class="ttname"><a href="classeve_1_1SubjectRef.html">eve::SubjectRef</a></div><div class="ttdoc">Strong, domain-neutral reference to a runtime subject.</div><div class="ttdef"><b>Definition</b> <a href="SubjectRef_8h_source.html#l00026">SubjectRef.h:26</a></div></div>
+<div class="ttc" id="aclasseve_1_1action_1_1IActionStateWindowSink_html"><div class="ttname"><a href="classeve_1_1action_1_1IActionStateWindowSink.html">eve::action::IActionStateWindowSink</a></div><div class="ttdoc">Optional target-domain adapter for paired action state windows.</div><div class="ttdef"><b>Definition</b> <a href="ActionStateWindowBlock_8h_source.html#l00034">ActionStateWindowBlock.h:34</a></div></div>
+<div class="ttc" id="aclasseve_1_1action_1_1input_1_1ActionComboWindowState_html"><div class="ttname"><a href="classeve_1_1action_1_1input_1_1ActionComboWindowState.html">eve::action::input::ActionComboWindowState</a></div><div class="ttdoc">Authoritative projection of active semantic combo-input windows.</div><div class="ttdef"><b>Definition</b> <a href="ActionComboWindowState_8h_source.html#l00037">ActionComboWindowState.h:37</a></div></div>
+<div class="ttc" id="aclasseve_1_1action_1_1input_1_1ActionComboWindowState_html_a14c8fc37f90f939786fc36749c1fc17e"><div class="ttname"><a href="classeve_1_1action_1_1input_1_1ActionComboWindowState.html#a14c8fc37f90f939786fc36749c1fc17e">eve::action::input::ActionComboWindowState::match</a></div><div class="ttdeci">Result&lt; ActionComboMatch &gt; match(SubjectRef subject, std::string_view input) const</div><div class="ttdoc">Resolve the first deterministic active window accepting an input.</div><div class="ttdef"><b>Definition</b> <a href="ActionComboWindowState_8cpp_source.html#l00094">ActionComboWindowState.cpp:94</a></div></div>
+<div class="ttc" id="aclasseve_1_1action_1_1input_1_1ActionComboWindowState_html_a181857cbb721a8ea7c7f1b78408f65d8"><div class="ttname"><a href="classeve_1_1action_1_1input_1_1ActionComboWindowState.html#a181857cbb721a8ea7c7f1b78408f65d8">eve::action::input::ActionComboWindowState::activeCount</a></div><div class="ttdeci">std::size_t activeCount() const noexcept</div><div class="ttdoc">Return the number of active execution/item keys.</div><div class="ttdef"><b>Definition</b> <a href="ActionComboWindowState_8h_source.html#l00063">ActionComboWindowState.h:63</a></div></div>
+<div class="ttc" id="aclasseve_1_1action_1_1input_1_1ActionComboWindowState_html_a6795048e451a7bbdd5cb545f4952a3cf"><div class="ttname"><a href="classeve_1_1action_1_1input_1_1ActionComboWindowState.html#a6795048e451a7bbdd5cb545f4952a3cf">eve::action::input::ActionComboWindowState::exit</a></div><div class="ttdeci">Result&lt; void &gt; exit(const ActionStateWindowBinding &amp;binding, const ActionTimelineEvent &amp;event, const ActionNotifyContext &amp;context) override</div><div class="ttdoc">Exit one previously entered window by execution and item identity.</div><div class="ttdef"><b>Definition</b> <a href="ActionComboWindowState_8cpp_source.html#l00071">ActionComboWindowState.cpp:71</a></div></div>
+<div class="ttc" id="aclasseve_1_1action_1_1input_1_1ActionComboWindowState_html_a87ff7c69b9365a8881ab37b028ada715"><div class="ttname"><a href="classeve_1_1action_1_1input_1_1ActionComboWindowState.html#a87ff7c69b9365a8881ab37b028ada715">eve::action::input::ActionComboWindowState::setEnabled</a></div><div class="ttdeci">void setEnabled(bool enabled)</div><div class="ttdoc">Opt this state owner into or out of Action window dispatch.</div><div class="ttdef"><b>Definition</b> <a href="ActionComboWindowState_8cpp_source.html#l00028">ActionComboWindowState.cpp:28</a></div></div>
+<div class="ttc" id="aclasseve_1_1action_1_1input_1_1ActionComboWindowState_html_a88973e78ed085cfa7286d9fd6c7b1883"><div class="ttname"><a href="classeve_1_1action_1_1input_1_1ActionComboWindowState.html#a88973e78ed085cfa7286d9fd6c7b1883">eve::action::input::ActionComboWindowState::availableInputs</a></div><div class="ttdeci">std::vector&lt; std::string &gt; availableInputs(SubjectRef subject) const</div><div class="ttdoc">Return sorted unique semantic inputs currently accepted for a subject.</div><div class="ttdef"><b>Definition</b> <a href="ActionComboWindowState_8cpp_source.html#l00083">ActionComboWindowState.cpp:83</a></div></div>
+<div class="ttc" id="aclasseve_1_1action_1_1input_1_1ActionComboWindowState_html_a944e68d4bc9a6bd8f4432cbead2a7bb7"><div class="ttname"><a href="classeve_1_1action_1_1input_1_1ActionComboWindowState.html#a944e68d4bc9a6bd8f4432cbead2a7bb7">eve::action::input::ActionComboWindowState::~ActionComboWindowState</a></div><div class="ttdeci">~ActionComboWindowState() override</div><div class="ttdef"><b>Definition</b> <a href="ActionComboWindowState_8cpp_source.html#l00020">ActionComboWindowState.cpp:20</a></div></div>
+<div class="ttc" id="aclasseve_1_1action_1_1input_1_1ActionComboWindowState_html_ab94b38861d99287924970ce3c09d4caf"><div class="ttname"><a href="classeve_1_1action_1_1input_1_1ActionComboWindowState.html#ab94b38861d99287924970ce3c09d4caf">eve::action::input::ActionComboWindowState::enter</a></div><div class="ttdeci">Result&lt; void &gt; enter(const ActionStateWindowBinding &amp;binding, const ActionTimelineEvent &amp;event, const ActionNotifyContext &amp;context) override</div><div class="ttdoc">Enter one validated window or idempotently observe the same active key.</div><div class="ttdef"><b>Definition</b> <a href="ActionComboWindowState_8cpp_source.html#l00040">ActionComboWindowState.cpp:40</a></div></div>
+<div class="ttc" id="aclasseve_1_1action_1_1input_1_1ActionComboWindowState_html_ac3bb08f428d8b5a8233c20f758f68262"><div class="ttname"><a href="classeve_1_1action_1_1input_1_1ActionComboWindowState.html#ac3bb08f428d8b5a8233c20f758f68262">eve::action::input::ActionComboWindowState::supports</a></div><div class="ttdeci">bool supports(ActionStateWindowKind kind) const noexcept override</div><div class="ttdoc">Whether this sink owns the supplied semantic window kind.</div><div class="ttdef"><b>Definition</b> <a href="ActionComboWindowState_8cpp_source.html#l00036">ActionComboWindowState.cpp:36</a></div></div>
+<div class="ttc" id="aclasseve_1_1action_1_1input_1_1ActionComboWindowState_html_ad74d620ae5a592d13d3c61e230dda91f"><div class="ttname"><a href="classeve_1_1action_1_1input_1_1ActionComboWindowState.html#ad74d620ae5a592d13d3c61e230dda91f">eve::action::input::ActionComboWindowState::enabled</a></div><div class="ttdeci">bool enabled() const</div><div class="ttdoc">Return whether this exact owner is registered.</div><div class="ttdef"><b>Definition</b> <a href="ActionComboWindowState_8cpp_source.html#l00022">ActionComboWindowState.cpp:22</a></div></div>
+<div class="ttc" id="aclasseve_1_1detail_1_1StrongUint64_html"><div class="ttname"><a href="classeve_1_1detail_1_1StrongUint64.html">eve::detail::StrongUint64&lt; ActionExecutionIdTag &gt;</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1action_1_1input_html"><div class="ttname"><a href="namespaceeve_1_1action_1_1input.html">eve::action::input</a></div><div class="ttdef"><b>Definition</b> <a href="ActionComboWindowState_8cpp_source.html#l00008">ActionComboWindowState.cpp:8</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1action_1_1input_html_ac013a3c26d68f75171a5f51dc86ce4e1"><div class="ttname"><a href="namespaceeve_1_1action_1_1input.html#ac013a3c26d68f75171a5f51dc86ce4e1">eve::action::input::ComboSubjectResolver</a></div><div class="ttdeci">std::function&lt; Result&lt; SubjectRef &gt;(ecs::EntityHandle)&gt; ComboSubjectResolver</div><div class="ttdoc">Resolves an owning stable subject from a generation-qualified ECS handle.</div><div class="ttdef"><b>Definition</b> <a href="ActionComboWindowState_8h_source.html#l00020">ActionComboWindowState.h:20</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1action_html_a8e7f0cd7be5f0e49e9c8317c401c8e7d"><div class="ttname"><a href="namespaceeve_1_1action.html#a8e7f0cd7be5f0e49e9c8317c401c8e7d">eve::action::ActionStateWindowKind</a></div><div class="ttdeci">ActionStateWindowKind</div><div class="ttdoc">Stable semantic kind for one built-in state window.</div><div class="ttdef"><b>Definition</b> <a href="ActionStateWindowBlock_8h_source.html#l00013">ActionStateWindowBlock.h:13</a></div></div>
+<div class="ttc" id="astructeve_1_1action_1_1ActionNotifyContext_html"><div class="ttname"><a href="structeve_1_1action_1_1ActionNotifyContext.html">eve::action::ActionNotifyContext</a></div><div class="ttdoc">Context linking a routed event to its action execution.</div><div class="ttdef"><b>Definition</b> <a href="ActionNotifyRegistry_8h_source.html#l00032">ActionNotifyRegistry.h:32</a></div></div>
+<div class="ttc" id="astructeve_1_1action_1_1ActionStateWindowBinding_html"><div class="ttname"><a href="structeve_1_1action_1_1ActionStateWindowBinding.html">eve::action::ActionStateWindowBinding</a></div><div class="ttdoc">Owning validated state-window request authored on an action timeline.</div><div class="ttdef"><b>Definition</b> <a href="ActionStateWindowBlock_8h_source.html#l00016">ActionStateWindowBlock.h:16</a></div></div>
+<div class="ttc" id="astructeve_1_1action_1_1ActionTimelineEvent_html"><div class="ttname"><a href="structeve_1_1action_1_1ActionTimelineEvent.html">eve::action::ActionTimelineEvent</a></div><div class="ttdoc">Owning event projection returned by the runtime sampler.</div><div class="ttdef"><b>Definition</b> <a href="ActionTimeline_8h_source.html#l00138">ActionTimeline.h:138</a></div></div>
+<div class="ttc" id="astructeve_1_1action_1_1input_1_1ActionComboMatch_html"><div class="ttname"><a href="structeve_1_1action_1_1input_1_1ActionComboMatch.html">eve::action::input::ActionComboMatch</a></div><div class="ttdoc">Owning deterministic match between one semantic input and an active combo window.</div><div class="ttdef"><b>Definition</b> <a href="ActionComboWindowState_8h_source.html#l00023">ActionComboWindowState.h:23</a></div></div>
+<div class="ttc" id="astructeve_1_1action_1_1input_1_1ActionComboMatch_html_a659177fbb11675819c199d759c036eff"><div class="ttname"><a href="structeve_1_1action_1_1input_1_1ActionComboMatch.html#a659177fbb11675819c199d759c036eff">eve::action::input::ActionComboMatch::input</a></div><div class="ttdeci">std::string input</div><div class="ttdef"><b>Definition</b> <a href="ActionComboWindowState_8h_source.html#l00027">ActionComboWindowState.h:27</a></div></div>
+<div class="ttc" id="astructeve_1_1action_1_1input_1_1ActionComboMatch_html_a9d69c575957b67709452265faf82a1e1"><div class="ttname"><a href="structeve_1_1action_1_1input_1_1ActionComboMatch.html#a9d69c575957b67709452265faf82a1e1">eve::action::input::ActionComboMatch::subject</a></div><div class="ttdeci">SubjectRef subject</div><div class="ttdef"><b>Definition</b> <a href="ActionComboWindowState_8h_source.html#l00026">ActionComboWindowState.h:26</a></div></div>
+<div class="ttc" id="astructeve_1_1action_1_1input_1_1ActionComboMatch_html_a9f3d5ce34b4a425249aaa68799b9f8d7"><div class="ttname"><a href="structeve_1_1action_1_1input_1_1ActionComboMatch.html#a9f3d5ce34b4a425249aaa68799b9f8d7">eve::action::input::ActionComboMatch::executionId</a></div><div class="ttdeci">ActionExecutionId executionId</div><div class="ttdef"><b>Definition</b> <a href="ActionComboWindowState_8h_source.html#l00024">ActionComboWindowState.h:24</a></div></div>
+<div class="ttc" id="astructeve_1_1action_1_1input_1_1ActionComboMatch_html_aa46ed660a93415d573dd66e6e8d8b9e5"><div class="ttname"><a href="structeve_1_1action_1_1input_1_1ActionComboMatch.html#aa46ed660a93415d573dd66e6e8d8b9e5">eve::action::input::ActionComboMatch::itemId</a></div><div class="ttdeci">LogicalId itemId</div><div class="ttdef"><b>Definition</b> <a href="ActionComboWindowState_8h_source.html#l00025">ActionComboWindowState.h:25</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

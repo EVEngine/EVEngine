@@ -1,0 +1,893 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::graphics::WaterUnderwaterSettings结构体 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1graphics.html">graphics</a></li><li class="navelem"><a class="el" href="structeve_1_1graphics_1_1WaterUnderwaterSettings.html">WaterUnderwaterSettings</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-attribs">Public 属性</a> &#124;
+<a href="structeve_1_1graphics_1_1WaterUnderwaterSettings-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::graphics::WaterUnderwaterSettings结构体 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Authored Pcg underwater-effects policy; owns no renderer, audio source or scene object.  
+ <a href="structeve_1_1graphics_1_1WaterUnderwaterSettings.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="WaterUnderwaterEffects_8h_source.html">WaterUnderwaterEffects.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public 属性</h2></td></tr>
+<tr class="memitem:a81f67fa724f9cf5e74cbbef4c4f0e4a4" id="r_a81f67fa724f9cf5e74cbbef4c4f0e4a4"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1WaterUnderwaterSettings.html#a81f67fa724f9cf5e74cbbef4c4f0e4a4">enabled</a> = true</td></tr>
+<tr class="separator:a81f67fa724f9cf5e74cbbef4c4f0e4a4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0dec5e0d810c639633f3d6fd4b7e187d" id="r_a0dec5e0d810c639633f3d6fd4b7e187d"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1WaterUnderwaterSettings.html#a0dec5e0d810c639633f3d6fd4b7e187d">supportFog</a> = true</td></tr>
+<tr class="separator:a0dec5e0d810c639633f3d6fd4b7e187d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1d88e1f2d05c738e136e27059680ef47" id="r_a1d88e1f2d05c738e136e27059680ef47"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1WaterUnderwaterSettings.html#a1d88e1f2d05c738e136e27059680ef47">supportPostFx</a> = true</td></tr>
+<tr class="separator:a1d88e1f2d05c738e136e27059680ef47"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4cb894b1fab14bcd3a0d2856e4a30cf6" id="r_a4cb894b1fab14bcd3a0d2856e4a30cf6"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1WaterUnderwaterSettings.html#a4cb894b1fab14bcd3a0d2856e4a30cf6">enableTransitionFx</a> = true</td></tr>
+<tr class="separator:a4cb894b1fab14bcd3a0d2856e4a30cf6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3cb68c6122656c012f8cd3bf48d26cd3" id="r_a3cb68c6122656c012f8cd3bf48d26cd3"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1WaterUnderwaterSettings.html#a3cb68c6122656c012f8cd3bf48d26cd3">useCaustics</a> = true</td></tr>
+<tr class="separator:a3cb68c6122656c012f8cd3bf48d26cd3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adb1d5364e0bb36d45f37282443f9638f" id="r_adb1d5364e0bb36d45f37282443f9638f"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1WaterUnderwaterSettings.html#adb1d5364e0bb36d45f37282443f9638f">hdrp</a> = false</td></tr>
+<tr class="separator:adb1d5364e0bb36d45f37282443f9638f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acc32111c09804c92dba23c93fc2d989b" id="r_acc32111c09804c92dba23c93fc2d989b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1WaterUnderwaterSettings.html#acc32111c09804c92dba23c93fc2d989b">overrideFogColor</a> = false</td></tr>
+<tr class="separator:acc32111c09804c92dba23c93fc2d989b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3e5ac26b483ddaed1ea40fd24e6dc1d3" id="r_a3e5ac26b483ddaed1ea40fd24e6dc1d3"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1WaterUnderwaterSettings.html#a3e5ac26b483ddaed1ea40fd24e6dc1d3">fogDepth</a> = 100.0F</td></tr>
+<tr class="separator:a3e5ac26b483ddaed1ea40fd24e6dc1d3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af9f3dd2c07b5ad36745f4891a560b6e8" id="r_af9f3dd2c07b5ad36745f4891a560b6e8"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1WaterUnderwaterSettings.html#af9f3dd2c07b5ad36745f4891a560b6e8">fogDistance</a> = 45.0F</td></tr>
+<tr class="separator:af9f3dd2c07b5ad36745f4891a560b6e8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a20481dabecf14d17c8b10d190a142df7" id="r_a20481dabecf14d17c8b10d190a142df7"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1WaterUnderwaterSettings.html#a20481dabecf14d17c8b10d190a142df7">hdrpFogDistance</a> = 30.0F</td></tr>
+<tr class="separator:a20481dabecf14d17c8b10d190a142df7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3f4f91d72b7f292b0d86c2f03c49a38e" id="r_a3f4f91d72b7f292b0d86c2f03c49a38e"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1WaterUnderwaterSettings.html#a3f4f91d72b7f292b0d86c2f03c49a38e">nearFogDistance</a> = -4.0F</td></tr>
+<tr class="separator:a3f4f91d72b7f292b0d86c2f03c49a38e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a01764654ca7c78a29dd4681c959b5ac2" id="r_a01764654ca7c78a29dd4681c959b5ac2"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1WaterUnderwaterSettings.html#a01764654ca7c78a29dd4681c959b5ac2">fogDensity</a> = 0.045F</td></tr>
+<tr class="separator:a01764654ca7c78a29dd4681c959b5ac2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a47412ee91c8193ff1752cf3696890b92" id="r_a47412ee91c8193ff1752cf3696890b92"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1WaterUnderwaterSettings.html#a47412ee91c8193ff1752cf3696890b92">playbackVolume</a> = 0.5F</td></tr>
+<tr class="separator:a47412ee91c8193ff1752cf3696890b92"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abf287d775f2eaa1fa6fdccb4e1c548e0" id="r_abf287d775f2eaa1fa6fdccb4e1c548e0"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1WaterUnderwaterSettings.html#abf287d775f2eaa1fa6fdccb4e1c548e0">causticSize</a> = 15.0F</td></tr>
+<tr class="separator:abf287d775f2eaa1fa6fdccb4e1c548e0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a93f9264992e40ca0d39ea59962536920" id="r_a93f9264992e40ca0d39ea59962536920"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1WaterUnderwaterSettings.html#a93f9264992e40ca0d39ea59962536920">framesPerSecond</a> = 24</td></tr>
+<tr class="separator:a93f9264992e40ca0d39ea59962536920"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aec890895a278a67dbbcfdbc590dca627" id="r_aec890895a278a67dbbcfdbc590dca627"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1WaterUnderwaterSettings.html#aec890895a278a67dbbcfdbc590dca627">causticTextureCount</a> = 0</td></tr>
+<tr class="separator:aec890895a278a67dbbcfdbc590dca627"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2c9f39382b7bacd19378ef59239db74e" id="r_a2c9f39382b7bacd19378ef59239db74e"><td class="memItemLeft" align="right" valign="top">glm::vec3&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1WaterUnderwaterSettings.html#a2c9f39382b7bacd19378ef59239db74e">fogColorMultiplier</a> {0.0F}</td></tr>
+<tr class="separator:a2c9f39382b7bacd19378ef59239db74e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abce3eba2b9d6460c400cd34b1b36d337" id="r_abce3eba2b9d6460c400cd34b1b36d337"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1WaterUnderwaterSettings.html#abce3eba2b9d6460c400cd34b1b36d337">photoModeFogColorEnabled</a> = false</td></tr>
+<tr class="separator:abce3eba2b9d6460c400cd34b1b36d337"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa565db90438863b4fd49b06d7d1a67e8" id="r_aa565db90438863b4fd49b06d7d1a67e8"><td class="memItemLeft" align="right" valign="top">glm::vec3&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1WaterUnderwaterSettings.html#aa565db90438863b4fd49b06d7d1a67e8">photoModeFogColor</a> {0.0F}</td></tr>
+<tr class="separator:aa565db90438863b4fd49b06d7d1a67e8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a38bd65fed0340df00773d038bc591548" id="r_a38bd65fed0340df00773d038bc591548"><td class="memItemLeft" align="right" valign="top">glm::vec3&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1WaterUnderwaterSettings.html#a38bd65fed0340df00773d038bc591548">overrideFogMultiplier</a> {1.0F}</td></tr>
+<tr class="separator:a38bd65fed0340df00773d038bc591548"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af1093dddd43b05626e330f6180f58f8d" id="r_af1093dddd43b05626e330f6180f58f8d"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1WaterUnderwaterSettings.html#af1093dddd43b05626e330f6180f58f8d">overrideFogCurve</a> = 1.0F</td></tr>
+<tr class="separator:af1093dddd43b05626e330f6180f58f8d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa5dd56b73242aee224fb627303113586" id="r_aa5dd56b73242aee224fb627303113586"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1WaterUnderwaterSettings.html#aa5dd56b73242aee224fb627303113586">anisotropyShallow</a> = 0.225F</td></tr>
+<tr class="separator:aa5dd56b73242aee224fb627303113586"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a69dd3e7b62d4eb19d70160b8b9295acf" id="r_a69dd3e7b62d4eb19d70160b8b9295acf"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1WaterUnderwaterSettings.html#a69dd3e7b62d4eb19d70160b8b9295acf">anisotropyDeep</a> = 0.0F</td></tr>
+<tr class="separator:a69dd3e7b62d4eb19d70160b8b9295acf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae0955fd598ceecc51e0b89a4ad01b892" id="r_ae0955fd598ceecc51e0b89a4ad01b892"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1WaterUnderwaterSettings.html#ae0955fd598ceecc51e0b89a4ad01b892">timeDrivenPostFx</a> = false</td></tr>
+<tr class="separator:ae0955fd598ceecc51e0b89a4ad01b892"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac5149cdb081bd57791aecc15a541d750" id="r_ac5149cdb081bd57791aecc15a541d750"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1WaterUnderwaterSettings.html#ac5149cdb081bd57791aecc15a541d750">constantPostExposure</a> = 0.0F</td></tr>
+<tr class="separator:ac5149cdb081bd57791aecc15a541d750"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7050ea4af547fb26a14b116da65f0693" id="r_a7050ea4af547fb26a14b116da65f0693"><td class="memItemLeft" align="right" valign="top">glm::vec3&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1WaterUnderwaterSettings.html#a7050ea4af547fb26a14b116da65f0693">constantPostColor</a> {1.0F}</td></tr>
+<tr class="separator:a7050ea4af547fb26a14b116da65f0693"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae8196547d4f19d5de4672c289244e89f" id="r_ae8196547d4f19d5de4672c289244e89f"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1WaterUnderwaterSettings.html#ae8196547d4f19d5de4672c289244e89f">transitionHalfHeight</a> = 0.025F</td></tr>
+<tr class="separator:ae8196547d4f19d5de4672c289244e89f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3416edde41d17bb6f9826aea561723ea" id="r_a3416edde41d17bb6f9826aea561723ea"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1WaterUnderwaterSettings.html#a3416edde41d17bb6f9826aea561723ea">transitionBlendDistance</a> = 0.025F</td></tr>
+<tr class="separator:a3416edde41d17bb6f9826aea561723ea"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad4ceea8318a9ce2533773f6a86c5e066" id="r_ad4ceea8318a9ce2533773f6a86c5e066"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1WaterUnderwaterSettings.html#ad4ceea8318a9ce2533773f6a86c5e066">transitionVignette</a> = 0.25F</td></tr>
+<tr class="separator:ad4ceea8318a9ce2533773f6a86c5e066"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8263edc825716c39482ca31bdffbc596" id="r_a8263edc825716c39482ca31bdffbc596"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1WaterUnderwaterSettings.html#a8263edc825716c39482ca31bdffbc596">transitionVignetteSmoothness</a> = 0.8F</td></tr>
+<tr class="separator:a8263edc825716c39482ca31bdffbc596"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aae19092aa3e80e5c4e6b092fcf7497b6" id="r_aae19092aa3e80e5c4e6b092fcf7497b6"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1WaterUnderwaterSettings.html#aae19092aa3e80e5c4e6b092fcf7497b6">transitionLensDistortion</a> = 0.252F</td></tr>
+<tr class="separator:aae19092aa3e80e5c4e6b092fcf7497b6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ade5497203d1ae075fe42ed3f03984ba3" id="r_ade5497203d1ae075fe42ed3f03984ba3"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1WaterUnderwaterSettings.html#ade5497203d1ae075fe42ed3f03984ba3">transitionLensScale</a> = 1.02F</td></tr>
+<tr class="separator:ade5497203d1ae075fe42ed3f03984ba3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa68af7a162c122407a28aa543fe820e4" id="r_aa68af7a162c122407a28aa543fe820e4"><td class="memItemLeft" align="right" valign="top">glm::vec3&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1WaterUnderwaterSettings.html#aa68af7a162c122407a28aa543fe820e4">transitionLift</a> {-0.020152892F, -0.009343888F, 0.005069838F}</td></tr>
+<tr class="separator:aa68af7a162c122407a28aa543fe820e4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad8bdd6e908e0f104cf17477772c97eff" id="r_ad8bdd6e908e0f104cf17477772c97eff"><td class="memItemLeft" align="right" valign="top">glm::vec3&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1WaterUnderwaterSettings.html#ad8bdd6e908e0f104cf17477772c97eff">transitionInverseGamma</a> {1.35160142F, 1.35531419F, 1.26800077F}</td></tr>
+<tr class="separator:ad8bdd6e908e0f104cf17477772c97eff"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab72c486444131a41c152de83bb09bd8d" id="r_ab72c486444131a41c152de83bb09bd8d"><td class="memItemLeft" align="right" valign="top">glm::vec3&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1WaterUnderwaterSettings.html#ab72c486444131a41c152de83bb09bd8d">transitionGain</a> {0.67146943F, 0.68969287F, 0.72298255F}</td></tr>
+<tr class="separator:ab72c486444131a41c152de83bb09bd8d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af70c856f164776ce04ba6fb153ee64d3" id="r_af70c856f164776ce04ba6fb153ee64d3"><td class="memItemLeft" align="right" valign="top">glm::vec3&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1WaterUnderwaterSettings.html#af70c856f164776ce04ba6fb153ee64d3">transitionColorFilter</a> {0.0F}</td></tr>
+<tr class="separator:af70c856f164776ce04ba6fb153ee64d3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Authored Pcg underwater-effects policy; owns no renderer, audio source or scene object. </p>
+
+<p class="definition">在文件 <a class="el" href="WaterUnderwaterEffects_8h_source.html">WaterUnderwaterEffects.h</a> 第 <a class="el" href="WaterUnderwaterEffects_8h_source.html#l00048">48</a> 行定义.</p>
+</div><h2 class="groupheader">类成员变量说明</h2>
+<a id="a69dd3e7b62d4eb19d70160b8b9295acf" name="a69dd3e7b62d4eb19d70160b8b9295acf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a69dd3e7b62d4eb19d70160b8b9295acf">&#9670;&#160;</a></span>anisotropyDeep</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::WaterUnderwaterSettings::anisotropyDeep = 0.0F</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="WaterUnderwaterEffects_8h_source.html">WaterUnderwaterEffects.h</a> 第 <a class="el" href="WaterUnderwaterEffects_8h_source.html#l00071">71</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="WaterUnderwaterEffectsBindings_8cpp_source.html#l00012">eve::graphics::exposeWaterUnderwaterEffectsBindings()</a>.</p>
+
+</div>
+</div>
+<a id="aa5dd56b73242aee224fb627303113586" name="aa5dd56b73242aee224fb627303113586"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa5dd56b73242aee224fb627303113586">&#9670;&#160;</a></span>anisotropyShallow</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::WaterUnderwaterSettings::anisotropyShallow = 0.225F</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="WaterUnderwaterEffects_8h_source.html">WaterUnderwaterEffects.h</a> 第 <a class="el" href="WaterUnderwaterEffects_8h_source.html#l00070">70</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="WaterUnderwaterEffectsBindings_8cpp_source.html#l00012">eve::graphics::exposeWaterUnderwaterEffectsBindings()</a>.</p>
+
+</div>
+</div>
+<a id="abf287d775f2eaa1fa6fdccb4e1c548e0" name="abf287d775f2eaa1fa6fdccb4e1c548e0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abf287d775f2eaa1fa6fdccb4e1c548e0">&#9670;&#160;</a></span>causticSize</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::WaterUnderwaterSettings::causticSize = 15.0F</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="WaterUnderwaterEffects_8h_source.html">WaterUnderwaterEffects.h</a> 第 <a class="el" href="WaterUnderwaterEffects_8h_source.html#l00062">62</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="WaterUnderwaterEffectsBindings_8cpp_source.html#l00012">eve::graphics::exposeWaterUnderwaterEffectsBindings()</a>.</p>
+
+</div>
+</div>
+<a id="aec890895a278a67dbbcfdbc590dca627" name="aec890895a278a67dbbcfdbc590dca627"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aec890895a278a67dbbcfdbc590dca627">&#9670;&#160;</a></span>causticTextureCount</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::graphics::WaterUnderwaterSettings::causticTextureCount = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="WaterUnderwaterEffects_8h_source.html">WaterUnderwaterEffects.h</a> 第 <a class="el" href="WaterUnderwaterEffects_8h_source.html#l00064">64</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="WaterUnderwaterEffectsBindings_8cpp_source.html#l00012">eve::graphics::exposeWaterUnderwaterEffectsBindings()</a>.</p>
+
+</div>
+</div>
+<a id="a7050ea4af547fb26a14b116da65f0693" name="a7050ea4af547fb26a14b116da65f0693"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7050ea4af547fb26a14b116da65f0693">&#9670;&#160;</a></span>constantPostColor</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::vec3 eve::graphics::WaterUnderwaterSettings::constantPostColor {1.0F}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="WaterUnderwaterEffects_8h_source.html">WaterUnderwaterEffects.h</a> 第 <a class="el" href="WaterUnderwaterEffects_8h_source.html#l00074">74</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac5149cdb081bd57791aecc15a541d750" name="ac5149cdb081bd57791aecc15a541d750"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac5149cdb081bd57791aecc15a541d750">&#9670;&#160;</a></span>constantPostExposure</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::WaterUnderwaterSettings::constantPostExposure = 0.0F</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="WaterUnderwaterEffects_8h_source.html">WaterUnderwaterEffects.h</a> 第 <a class="el" href="WaterUnderwaterEffects_8h_source.html#l00073">73</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="WaterUnderwaterEffectsBindings_8cpp_source.html#l00012">eve::graphics::exposeWaterUnderwaterEffectsBindings()</a>.</p>
+
+</div>
+</div>
+<a id="a81f67fa724f9cf5e74cbbef4c4f0e4a4" name="a81f67fa724f9cf5e74cbbef4c4f0e4a4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a81f67fa724f9cf5e74cbbef4c4f0e4a4">&#9670;&#160;</a></span>enabled</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::graphics::WaterUnderwaterSettings::enabled = true</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="WaterUnderwaterEffects_8h_source.html">WaterUnderwaterEffects.h</a> 第 <a class="el" href="WaterUnderwaterEffects_8h_source.html#l00049">49</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="WaterUnderwaterEffectsBindings_8cpp_source.html#l00012">eve::graphics::exposeWaterUnderwaterEffectsBindings()</a>.</p>
+
+</div>
+</div>
+<a id="a4cb894b1fab14bcd3a0d2856e4a30cf6" name="a4cb894b1fab14bcd3a0d2856e4a30cf6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4cb894b1fab14bcd3a0d2856e4a30cf6">&#9670;&#160;</a></span>enableTransitionFx</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::graphics::WaterUnderwaterSettings::enableTransitionFx = true</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="WaterUnderwaterEffects_8h_source.html">WaterUnderwaterEffects.h</a> 第 <a class="el" href="WaterUnderwaterEffects_8h_source.html#l00052">52</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="WaterUnderwaterEffectsBindings_8cpp_source.html#l00012">eve::graphics::exposeWaterUnderwaterEffectsBindings()</a>.</p>
+
+</div>
+</div>
+<a id="a2c9f39382b7bacd19378ef59239db74e" name="a2c9f39382b7bacd19378ef59239db74e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2c9f39382b7bacd19378ef59239db74e">&#9670;&#160;</a></span>fogColorMultiplier</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::vec3 eve::graphics::WaterUnderwaterSettings::fogColorMultiplier {0.0F}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="WaterUnderwaterEffects_8h_source.html">WaterUnderwaterEffects.h</a> 第 <a class="el" href="WaterUnderwaterEffects_8h_source.html#l00065">65</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a01764654ca7c78a29dd4681c959b5ac2" name="a01764654ca7c78a29dd4681c959b5ac2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a01764654ca7c78a29dd4681c959b5ac2">&#9670;&#160;</a></span>fogDensity</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::WaterUnderwaterSettings::fogDensity = 0.045F</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="WaterUnderwaterEffects_8h_source.html">WaterUnderwaterEffects.h</a> 第 <a class="el" href="WaterUnderwaterEffects_8h_source.html#l00060">60</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="WaterUnderwaterEffectsBindings_8cpp_source.html#l00012">eve::graphics::exposeWaterUnderwaterEffectsBindings()</a>.</p>
+
+</div>
+</div>
+<a id="a3e5ac26b483ddaed1ea40fd24e6dc1d3" name="a3e5ac26b483ddaed1ea40fd24e6dc1d3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3e5ac26b483ddaed1ea40fd24e6dc1d3">&#9670;&#160;</a></span>fogDepth</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::WaterUnderwaterSettings::fogDepth = 100.0F</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="WaterUnderwaterEffects_8h_source.html">WaterUnderwaterEffects.h</a> 第 <a class="el" href="WaterUnderwaterEffects_8h_source.html#l00056">56</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="WaterUnderwaterEffectsBindings_8cpp_source.html#l00012">eve::graphics::exposeWaterUnderwaterEffectsBindings()</a>.</p>
+
+</div>
+</div>
+<a id="af9f3dd2c07b5ad36745f4891a560b6e8" name="af9f3dd2c07b5ad36745f4891a560b6e8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af9f3dd2c07b5ad36745f4891a560b6e8">&#9670;&#160;</a></span>fogDistance</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::WaterUnderwaterSettings::fogDistance = 45.0F</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="WaterUnderwaterEffects_8h_source.html">WaterUnderwaterEffects.h</a> 第 <a class="el" href="WaterUnderwaterEffects_8h_source.html#l00057">57</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="WaterUnderwaterEffectsBindings_8cpp_source.html#l00012">eve::graphics::exposeWaterUnderwaterEffectsBindings()</a>.</p>
+
+</div>
+</div>
+<a id="a93f9264992e40ca0d39ea59962536920" name="a93f9264992e40ca0d39ea59962536920"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a93f9264992e40ca0d39ea59962536920">&#9670;&#160;</a></span>framesPerSecond</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::graphics::WaterUnderwaterSettings::framesPerSecond = 24</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="WaterUnderwaterEffects_8h_source.html">WaterUnderwaterEffects.h</a> 第 <a class="el" href="WaterUnderwaterEffects_8h_source.html#l00063">63</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="WaterUnderwaterEffectsBindings_8cpp_source.html#l00012">eve::graphics::exposeWaterUnderwaterEffectsBindings()</a>.</p>
+
+</div>
+</div>
+<a id="adb1d5364e0bb36d45f37282443f9638f" name="adb1d5364e0bb36d45f37282443f9638f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adb1d5364e0bb36d45f37282443f9638f">&#9670;&#160;</a></span>hdrp</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::graphics::WaterUnderwaterSettings::hdrp = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="WaterUnderwaterEffects_8h_source.html">WaterUnderwaterEffects.h</a> 第 <a class="el" href="WaterUnderwaterEffects_8h_source.html#l00054">54</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="WaterUnderwaterEffectsBindings_8cpp_source.html#l00012">eve::graphics::exposeWaterUnderwaterEffectsBindings()</a>.</p>
+
+</div>
+</div>
+<a id="a20481dabecf14d17c8b10d190a142df7" name="a20481dabecf14d17c8b10d190a142df7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a20481dabecf14d17c8b10d190a142df7">&#9670;&#160;</a></span>hdrpFogDistance</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::WaterUnderwaterSettings::hdrpFogDistance = 30.0F</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="WaterUnderwaterEffects_8h_source.html">WaterUnderwaterEffects.h</a> 第 <a class="el" href="WaterUnderwaterEffects_8h_source.html#l00058">58</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="WaterUnderwaterEffectsBindings_8cpp_source.html#l00012">eve::graphics::exposeWaterUnderwaterEffectsBindings()</a>.</p>
+
+</div>
+</div>
+<a id="a3f4f91d72b7f292b0d86c2f03c49a38e" name="a3f4f91d72b7f292b0d86c2f03c49a38e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3f4f91d72b7f292b0d86c2f03c49a38e">&#9670;&#160;</a></span>nearFogDistance</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::WaterUnderwaterSettings::nearFogDistance = -4.0F</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="WaterUnderwaterEffects_8h_source.html">WaterUnderwaterEffects.h</a> 第 <a class="el" href="WaterUnderwaterEffects_8h_source.html#l00059">59</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="WaterUnderwaterEffectsBindings_8cpp_source.html#l00012">eve::graphics::exposeWaterUnderwaterEffectsBindings()</a>.</p>
+
+</div>
+</div>
+<a id="acc32111c09804c92dba23c93fc2d989b" name="acc32111c09804c92dba23c93fc2d989b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acc32111c09804c92dba23c93fc2d989b">&#9670;&#160;</a></span>overrideFogColor</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::graphics::WaterUnderwaterSettings::overrideFogColor = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="WaterUnderwaterEffects_8h_source.html">WaterUnderwaterEffects.h</a> 第 <a class="el" href="WaterUnderwaterEffects_8h_source.html#l00055">55</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="WaterUnderwaterEffectsBindings_8cpp_source.html#l00012">eve::graphics::exposeWaterUnderwaterEffectsBindings()</a>.</p>
+
+</div>
+</div>
+<a id="af1093dddd43b05626e330f6180f58f8d" name="af1093dddd43b05626e330f6180f58f8d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af1093dddd43b05626e330f6180f58f8d">&#9670;&#160;</a></span>overrideFogCurve</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::WaterUnderwaterSettings::overrideFogCurve = 1.0F</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="WaterUnderwaterEffects_8h_source.html">WaterUnderwaterEffects.h</a> 第 <a class="el" href="WaterUnderwaterEffects_8h_source.html#l00069">69</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="WaterUnderwaterEffectsBindings_8cpp_source.html#l00012">eve::graphics::exposeWaterUnderwaterEffectsBindings()</a>.</p>
+
+</div>
+</div>
+<a id="a38bd65fed0340df00773d038bc591548" name="a38bd65fed0340df00773d038bc591548"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a38bd65fed0340df00773d038bc591548">&#9670;&#160;</a></span>overrideFogMultiplier</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::vec3 eve::graphics::WaterUnderwaterSettings::overrideFogMultiplier {1.0F}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="WaterUnderwaterEffects_8h_source.html">WaterUnderwaterEffects.h</a> 第 <a class="el" href="WaterUnderwaterEffects_8h_source.html#l00068">68</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aa565db90438863b4fd49b06d7d1a67e8" name="aa565db90438863b4fd49b06d7d1a67e8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa565db90438863b4fd49b06d7d1a67e8">&#9670;&#160;</a></span>photoModeFogColor</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::vec3 eve::graphics::WaterUnderwaterSettings::photoModeFogColor {0.0F}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="WaterUnderwaterEffects_8h_source.html">WaterUnderwaterEffects.h</a> 第 <a class="el" href="WaterUnderwaterEffects_8h_source.html#l00067">67</a> 行定义.</p>
+
+</div>
+</div>
+<a id="abce3eba2b9d6460c400cd34b1b36d337" name="abce3eba2b9d6460c400cd34b1b36d337"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abce3eba2b9d6460c400cd34b1b36d337">&#9670;&#160;</a></span>photoModeFogColorEnabled</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::graphics::WaterUnderwaterSettings::photoModeFogColorEnabled = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="WaterUnderwaterEffects_8h_source.html">WaterUnderwaterEffects.h</a> 第 <a class="el" href="WaterUnderwaterEffects_8h_source.html#l00066">66</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a47412ee91c8193ff1752cf3696890b92" name="a47412ee91c8193ff1752cf3696890b92"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a47412ee91c8193ff1752cf3696890b92">&#9670;&#160;</a></span>playbackVolume</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::WaterUnderwaterSettings::playbackVolume = 0.5F</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="WaterUnderwaterEffects_8h_source.html">WaterUnderwaterEffects.h</a> 第 <a class="el" href="WaterUnderwaterEffects_8h_source.html#l00061">61</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="WaterUnderwaterEffectsBindings_8cpp_source.html#l00012">eve::graphics::exposeWaterUnderwaterEffectsBindings()</a>.</p>
+
+</div>
+</div>
+<a id="a0dec5e0d810c639633f3d6fd4b7e187d" name="a0dec5e0d810c639633f3d6fd4b7e187d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0dec5e0d810c639633f3d6fd4b7e187d">&#9670;&#160;</a></span>supportFog</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::graphics::WaterUnderwaterSettings::supportFog = true</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="WaterUnderwaterEffects_8h_source.html">WaterUnderwaterEffects.h</a> 第 <a class="el" href="WaterUnderwaterEffects_8h_source.html#l00050">50</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="WaterUnderwaterEffectsBindings_8cpp_source.html#l00012">eve::graphics::exposeWaterUnderwaterEffectsBindings()</a>.</p>
+
+</div>
+</div>
+<a id="a1d88e1f2d05c738e136e27059680ef47" name="a1d88e1f2d05c738e136e27059680ef47"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1d88e1f2d05c738e136e27059680ef47">&#9670;&#160;</a></span>supportPostFx</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::graphics::WaterUnderwaterSettings::supportPostFx = true</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="WaterUnderwaterEffects_8h_source.html">WaterUnderwaterEffects.h</a> 第 <a class="el" href="WaterUnderwaterEffects_8h_source.html#l00051">51</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="WaterUnderwaterEffectsBindings_8cpp_source.html#l00012">eve::graphics::exposeWaterUnderwaterEffectsBindings()</a>.</p>
+
+</div>
+</div>
+<a id="ae0955fd598ceecc51e0b89a4ad01b892" name="ae0955fd598ceecc51e0b89a4ad01b892"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae0955fd598ceecc51e0b89a4ad01b892">&#9670;&#160;</a></span>timeDrivenPostFx</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::graphics::WaterUnderwaterSettings::timeDrivenPostFx = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="WaterUnderwaterEffects_8h_source.html">WaterUnderwaterEffects.h</a> 第 <a class="el" href="WaterUnderwaterEffects_8h_source.html#l00072">72</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="WaterUnderwaterEffectsBindings_8cpp_source.html#l00012">eve::graphics::exposeWaterUnderwaterEffectsBindings()</a>.</p>
+
+</div>
+</div>
+<a id="a3416edde41d17bb6f9826aea561723ea" name="a3416edde41d17bb6f9826aea561723ea"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3416edde41d17bb6f9826aea561723ea">&#9670;&#160;</a></span>transitionBlendDistance</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::WaterUnderwaterSettings::transitionBlendDistance = 0.025F</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="WaterUnderwaterEffects_8h_source.html">WaterUnderwaterEffects.h</a> 第 <a class="el" href="WaterUnderwaterEffects_8h_source.html#l00076">76</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="WaterUnderwaterEffectsBindings_8cpp_source.html#l00012">eve::graphics::exposeWaterUnderwaterEffectsBindings()</a>.</p>
+
+</div>
+</div>
+<a id="af70c856f164776ce04ba6fb153ee64d3" name="af70c856f164776ce04ba6fb153ee64d3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af70c856f164776ce04ba6fb153ee64d3">&#9670;&#160;</a></span>transitionColorFilter</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::vec3 eve::graphics::WaterUnderwaterSettings::transitionColorFilter {0.0F}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="WaterUnderwaterEffects_8h_source.html">WaterUnderwaterEffects.h</a> 第 <a class="el" href="WaterUnderwaterEffects_8h_source.html#l00084">84</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab72c486444131a41c152de83bb09bd8d" name="ab72c486444131a41c152de83bb09bd8d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab72c486444131a41c152de83bb09bd8d">&#9670;&#160;</a></span>transitionGain</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::vec3 eve::graphics::WaterUnderwaterSettings::transitionGain {0.67146943F, 0.68969287F, 0.72298255F}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="WaterUnderwaterEffects_8h_source.html">WaterUnderwaterEffects.h</a> 第 <a class="el" href="WaterUnderwaterEffects_8h_source.html#l00083">83</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae8196547d4f19d5de4672c289244e89f" name="ae8196547d4f19d5de4672c289244e89f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae8196547d4f19d5de4672c289244e89f">&#9670;&#160;</a></span>transitionHalfHeight</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::WaterUnderwaterSettings::transitionHalfHeight = 0.025F</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="WaterUnderwaterEffects_8h_source.html">WaterUnderwaterEffects.h</a> 第 <a class="el" href="WaterUnderwaterEffects_8h_source.html#l00075">75</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="WaterUnderwaterEffectsBindings_8cpp_source.html#l00012">eve::graphics::exposeWaterUnderwaterEffectsBindings()</a>.</p>
+
+</div>
+</div>
+<a id="ad8bdd6e908e0f104cf17477772c97eff" name="ad8bdd6e908e0f104cf17477772c97eff"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad8bdd6e908e0f104cf17477772c97eff">&#9670;&#160;</a></span>transitionInverseGamma</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::vec3 eve::graphics::WaterUnderwaterSettings::transitionInverseGamma {1.35160142F, 1.35531419F, 1.26800077F}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="WaterUnderwaterEffects_8h_source.html">WaterUnderwaterEffects.h</a> 第 <a class="el" href="WaterUnderwaterEffects_8h_source.html#l00082">82</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aae19092aa3e80e5c4e6b092fcf7497b6" name="aae19092aa3e80e5c4e6b092fcf7497b6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aae19092aa3e80e5c4e6b092fcf7497b6">&#9670;&#160;</a></span>transitionLensDistortion</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::WaterUnderwaterSettings::transitionLensDistortion = 0.252F</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="WaterUnderwaterEffects_8h_source.html">WaterUnderwaterEffects.h</a> 第 <a class="el" href="WaterUnderwaterEffects_8h_source.html#l00079">79</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="WaterUnderwaterEffectsBindings_8cpp_source.html#l00012">eve::graphics::exposeWaterUnderwaterEffectsBindings()</a>.</p>
+
+</div>
+</div>
+<a id="ade5497203d1ae075fe42ed3f03984ba3" name="ade5497203d1ae075fe42ed3f03984ba3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ade5497203d1ae075fe42ed3f03984ba3">&#9670;&#160;</a></span>transitionLensScale</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::WaterUnderwaterSettings::transitionLensScale = 1.02F</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="WaterUnderwaterEffects_8h_source.html">WaterUnderwaterEffects.h</a> 第 <a class="el" href="WaterUnderwaterEffects_8h_source.html#l00080">80</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="WaterUnderwaterEffectsBindings_8cpp_source.html#l00012">eve::graphics::exposeWaterUnderwaterEffectsBindings()</a>.</p>
+
+</div>
+</div>
+<a id="aa68af7a162c122407a28aa543fe820e4" name="aa68af7a162c122407a28aa543fe820e4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa68af7a162c122407a28aa543fe820e4">&#9670;&#160;</a></span>transitionLift</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::vec3 eve::graphics::WaterUnderwaterSettings::transitionLift {-0.020152892F, -0.009343888F, 0.005069838F}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="WaterUnderwaterEffects_8h_source.html">WaterUnderwaterEffects.h</a> 第 <a class="el" href="WaterUnderwaterEffects_8h_source.html#l00081">81</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad4ceea8318a9ce2533773f6a86c5e066" name="ad4ceea8318a9ce2533773f6a86c5e066"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad4ceea8318a9ce2533773f6a86c5e066">&#9670;&#160;</a></span>transitionVignette</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::WaterUnderwaterSettings::transitionVignette = 0.25F</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="WaterUnderwaterEffects_8h_source.html">WaterUnderwaterEffects.h</a> 第 <a class="el" href="WaterUnderwaterEffects_8h_source.html#l00077">77</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="WaterUnderwaterEffectsBindings_8cpp_source.html#l00012">eve::graphics::exposeWaterUnderwaterEffectsBindings()</a>.</p>
+
+</div>
+</div>
+<a id="a8263edc825716c39482ca31bdffbc596" name="a8263edc825716c39482ca31bdffbc596"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8263edc825716c39482ca31bdffbc596">&#9670;&#160;</a></span>transitionVignetteSmoothness</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::WaterUnderwaterSettings::transitionVignetteSmoothness = 0.8F</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="WaterUnderwaterEffects_8h_source.html">WaterUnderwaterEffects.h</a> 第 <a class="el" href="WaterUnderwaterEffects_8h_source.html#l00078">78</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="WaterUnderwaterEffectsBindings_8cpp_source.html#l00012">eve::graphics::exposeWaterUnderwaterEffectsBindings()</a>.</p>
+
+</div>
+</div>
+<a id="a3cb68c6122656c012f8cd3bf48d26cd3" name="a3cb68c6122656c012f8cd3bf48d26cd3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3cb68c6122656c012f8cd3bf48d26cd3">&#9670;&#160;</a></span>useCaustics</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::graphics::WaterUnderwaterSettings::useCaustics = true</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="WaterUnderwaterEffects_8h_source.html">WaterUnderwaterEffects.h</a> 第 <a class="el" href="WaterUnderwaterEffects_8h_source.html#l00053">53</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="WaterUnderwaterEffectsBindings_8cpp_source.html#l00012">eve::graphics::exposeWaterUnderwaterEffectsBindings()</a>.</p>
+
+</div>
+</div>
+<hr/>该结构体的文档由以下文件生成:<ul>
+<li>src/modules/graphics/<a class="el" href="WaterUnderwaterEffects_8h_source.html">WaterUnderwaterEffects.h</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

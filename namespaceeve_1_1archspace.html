@@ -1,0 +1,687 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::archspace 命名空间参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1archspace.html">archspace</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#enum-members">枚举</a> &#124;
+<a href="#func-members">函数</a>  </div>
+  <div class="headertitle"><div class="title">eve::archspace 命名空间参考</div></div>
+</div><!--header-->
+<div class="contents">
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1archspace_1_1ArchSpace.html">ArchSpace</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classeve_1_1Runtime.html">Runtime</a> <a class="el" href="classeve_1_1archspace_1_1ArchSpace.html" title="Runtime ArchSpace module entry used for profile wiring and script discovery.">ArchSpace</a> module entry used for profile wiring and script discovery.  <a href="classeve_1_1archspace_1_1ArchSpace.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1archspace_1_1CatalogEntry.html">CatalogEntry</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Built-in catalog entry resolved from an item <code>catalogId</code>.  <a href="structeve_1_1archspace_1_1CatalogEntry.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1archspace_1_1CatalogPart.html">CatalogPart</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">One parametric furniture part in catalog-local metres (Y-up).  <a href="structeve_1_1archspace_1_1CatalogPart.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1archspace_1_1Document.html">Document</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Authoritative architectural space document (Pascal-like node graph).  <a href="classeve_1_1archspace_1_1Document.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1archspace_1_1MeshArrays.html">MeshArrays</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Interleaved GPU-upload arrays derived from <a class="el" href="structeve_1_1archspace_1_1MeshBake.html" title="Renderer-neutral triangle mesh rebuilt from the document.">MeshBake</a>.  <a href="structeve_1_1archspace_1_1MeshArrays.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1archspace_1_1MeshBake.html">MeshBake</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Renderer-neutral triangle mesh rebuilt from the document.  <a href="structeve_1_1archspace_1_1MeshBake.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1archspace_1_1Node.html">Node</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">One authored architectural node. Only fields for the active kind are meaningful.  <a href="structeve_1_1archspace_1_1Node.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1archspace_1_1Vec2.html">Vec2</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Metres on the level XZ plane.  <a href="structeve_1_1archspace_1_1Vec2.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1archspace_1_1Vec3.html">Vec3</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Metres in world/level space.  <a href="structeve_1_1archspace_1_1Vec3.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="enum-members" name="enum-members"></a>
+枚举</h2></td></tr>
+<tr class="memitem:acdc28c3bf777ecb60d9be6a3c834161a" id="r_acdc28c3bf777ecb60d9be6a3c834161a"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1archspace.html#acdc28c3bf777ecb60d9be6a3c834161a">NodeKind</a> : std::uint8_t { <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1archspace.html#acdc28c3bf777ecb60d9be6a3c834161aaa7d6475ec8993b7224d6facc8cb0ead6">Site</a> = 0
+, <a class="el" href="namespaceeve_1_1archspace.html#acdc28c3bf777ecb60d9be6a3c834161aac39b56d4489fb2507289e7ae19567b80">Building</a>
+, <a class="el" href="namespaceeve_1_1archspace.html#acdc28c3bf777ecb60d9be6a3c834161aaa0db49ba470c1c9ae2128c3470339153">Level</a>
+, <a class="el" href="namespaceeve_1_1archspace.html#acdc28c3bf777ecb60d9be6a3c834161aa94e8a499539d1a472f3b5dbbb85508c0">Wall</a>
+, <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1archspace.html#acdc28c3bf777ecb60d9be6a3c834161aa07605c26b7bd2e8b30a21a990c4cab00">Slab</a>
+, <a class="el" href="namespaceeve_1_1archspace.html#acdc28c3bf777ecb60d9be6a3c834161aab3ff996fe5c77610359114835baf9b38">Zone</a>
+, <a class="el" href="namespaceeve_1_1archspace.html#acdc28c3bf777ecb60d9be6a3c834161aa7d74f3b92b19da5e606d737d339a9679">Item</a>
+, <a class="el" href="namespaceeve_1_1archspace.html#acdc28c3bf777ecb60d9be6a3c834161aa9bd99a0beea48f10663fc4a7d7a33140">Opening</a>
+<br />
+ }</td></tr>
+<tr class="memdesc:acdc28c3bf777ecb60d9be6a3c834161a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stable node kind discriminator for the architectural document.  <a href="namespaceeve_1_1archspace.html#acdc28c3bf777ecb60d9be6a3c834161a">更多...</a><br /></td></tr>
+<tr class="separator:acdc28c3bf777ecb60d9be6a3c834161a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a756ed6e7cbb2d0a3940dd1eee4c1ac8b" id="r_a756ed6e7cbb2d0a3940dd1eee4c1ac8b"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1archspace.html#a756ed6e7cbb2d0a3940dd1eee4c1ac8b">OpeningKind</a> : std::uint8_t { <a class="el" href="namespaceeve_1_1archspace.html#a756ed6e7cbb2d0a3940dd1eee4c1ac8baf44e14d49cd011d1e873d9fe0c4624f1">Door</a> = 0
+, <a class="el" href="namespaceeve_1_1archspace.html#a756ed6e7cbb2d0a3940dd1eee4c1ac8bac89686a387d2b12b3c729ce35a0bcb5b">Window</a>
+ }</td></tr>
+<tr class="memdesc:a756ed6e7cbb2d0a3940dd1eee4c1ac8b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Opening semantic used by doors and windows hosted on walls.  <a href="namespaceeve_1_1archspace.html#a756ed6e7cbb2d0a3940dd1eee4c1ac8b">更多...</a><br /></td></tr>
+<tr class="separator:a756ed6e7cbb2d0a3940dd1eee4c1ac8b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+函数</h2></td></tr>
+<tr class="memitem:ad0a0021e191e5bf2c35865002c16b9c9" id="r_ad0a0021e191e5bf2c35865002c16b9c9"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1archspace.html#ad0a0021e191e5bf2c35865002c16b9c9">Module_IMPL</a> (<a class="el" href="classeve_1_1archspace_1_1ArchSpace.html">ArchSpace</a>, new <a class="el" href="classeve_1_1archspace_1_1ArchSpace.html">ArchSpace</a>())</td></tr>
+<tr class="separator:ad0a0021e191e5bf2c35865002c16b9c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a92867fc223b469a48a29396f2fc3275b" id="r_a92867fc223b469a48a29396f2fc3275b"><td class="memItemLeft" align="right" valign="top">std::optional&lt; <a class="el" href="structeve_1_1archspace_1_1CatalogEntry.html">CatalogEntry</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1archspace.html#a92867fc223b469a48a29396f2fc3275b">lookupCatalog</a> (std::string_view catalogId)</td></tr>
+<tr class="memdesc:a92867fc223b469a48a29396f2fc3275b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resolve a built-in furniture catalog entry.  <br /></td></tr>
+<tr class="separator:a92867fc223b469a48a29396f2fc3275b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae26ea1a38cc3e28392840a12f7ca16c8" id="r_ae26ea1a38cc3e28392840a12f7ca16c8"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1archspace.html#ae26ea1a38cc3e28392840a12f7ca16c8">listCatalogIds</a> ()</td></tr>
+<tr class="memdesc:ae26ea1a38cc3e28392840a12f7ca16c8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stable list of built-in catalog ids for tools and inspector UIs.  <br /></td></tr>
+<tr class="separator:ae26ea1a38cc3e28392840a12f7ca16c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa4c05cba2cc5e0fdd2d5665c90a1b484" id="r_aa4c05cba2cc5e0fdd2d5665c90a1b484"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1archspace.html#aa4c05cba2cc5e0fdd2d5665c90a1b484">appendCatalogItem</a> (<a class="el" href="structeve_1_1archspace_1_1MeshBake.html">MeshBake</a> &amp;bake, const std::string &amp;<a class="el" href="ActionTimelineWidget_8cpp.html#ac5758f9b5a368e496aaa5da3aa74dfd6">itemId</a>, const std::string &amp;catalogId, const <a class="el" href="structeve_1_1archspace_1_1Vec3.html">Vec3</a> &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a60ea6c13eb7a935dc579b69b80cee822">position</a>, double yawDegrees)</td></tr>
+<tr class="memdesc:aa4c05cba2cc5e0fdd2d5665c90a1b484"><td class="mdescLeft">&#160;</td><td class="mdescRight">Append yaw-oriented catalog geometry into a mesh bake.  <br /></td></tr>
+<tr class="separator:aa4c05cba2cc5e0fdd2d5665c90a1b484"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a855152c6fcf0fc69023760f6e739f240" id="r_a855152c6fcf0fc69023760f6e739f240"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1archspace.html#a855152c6fcf0fc69023760f6e739f240">appendWallWithOpenings</a> (<a class="el" href="structeve_1_1archspace_1_1MeshBake.html">MeshBake</a> &amp;bake, const <a class="el" href="structeve_1_1archspace_1_1Node.html">Node</a> &amp;wall, double <a class="el" href="HexTerrain_8cpp.html#a1c921d7f2f6a29b15d709c49d2df1797">elevation</a>, const std::vector&lt; const <a class="el" href="structeve_1_1archspace_1_1Node.html">Node</a> * &gt; &amp;openings)</td></tr>
+<tr class="memdesc:a855152c6fcf0fc69023760f6e739f240"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bake one wall with merged opening cavities and explicit reveal liners.  <br /></td></tr>
+<tr class="separator:a855152c6fcf0fc69023760f6e739f240"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1fed320c021115952a0811d60c9664ef" id="r_a1fed320c021115952a0811d60c9664ef"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1archspace_1_1MeshArrays.html">MeshArrays</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1archspace.html#a1fed320c021115952a0811d60c9664ef">toMeshArrays</a> (const <a class="el" href="structeve_1_1archspace_1_1MeshBake.html">MeshBake</a> &amp;bake)</td></tr>
+<tr class="memdesc:a1fed320c021115952a0811d60c9664ef"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert a <a class="el" href="structeve_1_1archspace_1_1MeshBake.html" title="Renderer-neutral triangle mesh rebuilt from the document.">MeshBake</a> into flat arrays with per-triangle normals.  <br /></td></tr>
+<tr class="separator:a1fed320c021115952a0811d60c9664ef"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af74cb51374a7c37f2a59524adc4a4460" id="r_af74cb51374a7c37f2a59524adc4a4460"><td class="memItemLeft" align="right" valign="top">const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1archspace.html#af74cb51374a7c37f2a59524adc4a4460">nodeKindName</a> (<a class="el" href="namespaceeve_1_1archspace.html#acdc28c3bf777ecb60d9be6a3c834161a">NodeKind</a> <a class="el" href="LanguageIndex_8cpp.html#a38de9b52cbbca9313f7d7c8505a64e10">kind</a>) noexcept</td></tr>
+<tr class="memdesc:af74cb51374a7c37f2a59524adc4a4460"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stable wire name for a node kind. @ownership Non-owning pointer to a static string literal; do not free. @lifetime Valid for the process lifetime.  <br /></td></tr>
+<tr class="separator:af74cb51374a7c37f2a59524adc4a4460"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a76b21ff7bddab372fc8b1e6e7b92ebce" id="r_a76b21ff7bddab372fc8b1e6e7b92ebce"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="namespaceeve_1_1archspace.html#acdc28c3bf777ecb60d9be6a3c834161a">NodeKind</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1archspace.html#a76b21ff7bddab372fc8b1e6e7b92ebce">parseNodeKind</a> (const std::string &amp;<a class="el" href="LanguageIndex_8cpp.html#a23c058547fbc73b5659191844a9f258c">text</a>) noexcept</td></tr>
+<tr class="memdesc:a76b21ff7bddab372fc8b1e6e7b92ebce"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parse a node kind wire name.  <br /></td></tr>
+<tr class="separator:a76b21ff7bddab372fc8b1e6e7b92ebce"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad5363d0eaf6f3805177d01d810ea6adf" id="r_ad5363d0eaf6f3805177d01d810ea6adf"><td class="memItemLeft" align="right" valign="top">const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1archspace.html#ad5363d0eaf6f3805177d01d810ea6adf">openingKindName</a> (<a class="el" href="namespaceeve_1_1archspace.html#a756ed6e7cbb2d0a3940dd1eee4c1ac8b">OpeningKind</a> <a class="el" href="LanguageIndex_8cpp.html#a38de9b52cbbca9313f7d7c8505a64e10">kind</a>) noexcept</td></tr>
+<tr class="memdesc:ad5363d0eaf6f3805177d01d810ea6adf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stable wire name for an opening kind. @ownership Non-owning pointer to a static string literal; do not free. @lifetime Valid for the process lifetime.  <br /></td></tr>
+<tr class="separator:ad5363d0eaf6f3805177d01d810ea6adf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af8636d492d2c272c1a4f0311112bce77" id="r_af8636d492d2c272c1a4f0311112bce77"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="namespaceeve_1_1archspace.html#a756ed6e7cbb2d0a3940dd1eee4c1ac8b">OpeningKind</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1archspace.html#af8636d492d2c272c1a4f0311112bce77">parseOpeningKind</a> (const std::string &amp;<a class="el" href="LanguageIndex_8cpp.html#a23c058547fbc73b5659191844a9f258c">text</a>) noexcept</td></tr>
+<tr class="memdesc:af8636d492d2c272c1a4f0311112bce77"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parse an opening kind wire name.  <br /></td></tr>
+<tr class="separator:af8636d492d2c272c1a4f0311112bce77"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<h2 class="groupheader">枚举类型说明</h2>
+<a id="acdc28c3bf777ecb60d9be6a3c834161a" name="acdc28c3bf777ecb60d9be6a3c834161a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acdc28c3bf777ecb60d9be6a3c834161a">&#9670;&#160;</a></span>NodeKind</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1archspace.html#acdc28c3bf777ecb60d9be6a3c834161a">eve::archspace::NodeKind</a> : std::uint8_t</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Stable node kind discriminator for the architectural document. </p>
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="acdc28c3bf777ecb60d9be6a3c834161aaa7d6475ec8993b7224d6facc8cb0ead6" name="acdc28c3bf777ecb60d9be6a3c834161aaa7d6475ec8993b7224d6facc8cb0ead6"></a>Site&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="acdc28c3bf777ecb60d9be6a3c834161aac39b56d4489fb2507289e7ae19567b80" name="acdc28c3bf777ecb60d9be6a3c834161aac39b56d4489fb2507289e7ae19567b80"></a>Building&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="acdc28c3bf777ecb60d9be6a3c834161aaa0db49ba470c1c9ae2128c3470339153" name="acdc28c3bf777ecb60d9be6a3c834161aaa0db49ba470c1c9ae2128c3470339153"></a>Level&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="acdc28c3bf777ecb60d9be6a3c834161aa94e8a499539d1a472f3b5dbbb85508c0" name="acdc28c3bf777ecb60d9be6a3c834161aa94e8a499539d1a472f3b5dbbb85508c0"></a>Wall&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="acdc28c3bf777ecb60d9be6a3c834161aa07605c26b7bd2e8b30a21a990c4cab00" name="acdc28c3bf777ecb60d9be6a3c834161aa07605c26b7bd2e8b30a21a990c4cab00"></a>Slab&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="acdc28c3bf777ecb60d9be6a3c834161aab3ff996fe5c77610359114835baf9b38" name="acdc28c3bf777ecb60d9be6a3c834161aab3ff996fe5c77610359114835baf9b38"></a>Zone&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="acdc28c3bf777ecb60d9be6a3c834161aa7d74f3b92b19da5e606d737d339a9679" name="acdc28c3bf777ecb60d9be6a3c834161aa7d74f3b92b19da5e606d737d339a9679"></a>Item&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="acdc28c3bf777ecb60d9be6a3c834161aa9bd99a0beea48f10663fc4a7d7a33140" name="acdc28c3bf777ecb60d9be6a3c834161aa9bd99a0beea48f10663fc4a7d7a33140"></a>Opening&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="ArchSpaceTypes_8h_source.html">ArchSpaceTypes.h</a> 第 <a class="el" href="ArchSpaceTypes_8h_source.html#l00013">13</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a756ed6e7cbb2d0a3940dd1eee4c1ac8b" name="a756ed6e7cbb2d0a3940dd1eee4c1ac8b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a756ed6e7cbb2d0a3940dd1eee4c1ac8b">&#9670;&#160;</a></span>OpeningKind</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1archspace.html#a756ed6e7cbb2d0a3940dd1eee4c1ac8b">eve::archspace::OpeningKind</a> : std::uint8_t</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Opening semantic used by doors and windows hosted on walls. </p>
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="a756ed6e7cbb2d0a3940dd1eee4c1ac8baf44e14d49cd011d1e873d9fe0c4624f1" name="a756ed6e7cbb2d0a3940dd1eee4c1ac8baf44e14d49cd011d1e873d9fe0c4624f1"></a>Door&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a756ed6e7cbb2d0a3940dd1eee4c1ac8bac89686a387d2b12b3c729ce35a0bcb5b" name="a756ed6e7cbb2d0a3940dd1eee4c1ac8bac89686a387d2b12b3c729ce35a0bcb5b"></a>Window&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="ArchSpaceTypes_8h_source.html">ArchSpaceTypes.h</a> 第 <a class="el" href="ArchSpaceTypes_8h_source.html#l00016">16</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">函数说明</h2>
+<a id="aa4c05cba2cc5e0fdd2d5665c90a1b484" name="aa4c05cba2cc5e0fdd2d5665c90a1b484"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa4c05cba2cc5e0fdd2d5665c90a1b484">&#9670;&#160;</a></span>appendCatalogItem()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::archspace::appendCatalogItem </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1archspace_1_1MeshBake.html">MeshBake</a> &amp;&#160;</td>
+          <td class="paramname"><em>bake</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>itemId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>catalogId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1archspace_1_1Vec3.html">Vec3</a> &amp;&#160;</td>
+          <td class="paramname"><em>position</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>yawDegrees</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Append yaw-oriented catalog geometry into a mesh bake. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">bake</td><td>Destination mesh. </td></tr>
+    <tr><td class="paramname">itemId</td><td>Stable item node id used as the primitive id prefix. </td></tr>
+    <tr><td class="paramname">catalogId</td><td>Catalog key; unknown ids emit a default marker box. </td></tr>
+    <tr><td class="paramname">position</td><td>World/level position of the item origin. </td></tr>
+    <tr><td class="paramname">yawDegrees</td><td>Rotation about +Y in degrees. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="ArchSpaceCatalog_8cpp_source.html">ArchSpaceCatalog.cpp</a> 第 <a class="el" href="ArchSpaceCatalog_8cpp_source.html#l00120">120</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="HexSphereTopology_8cpp_source.html#l00068">c</a>, <a class="el" href="BushMesh_8cpp_source.html#l00027">center</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00028">itemId</a>, <a class="el" href="ArchSpaceCatalog_8cpp_source.html#l00106">lookupCatalog()</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00016">position</a>, <a class="el" href="BattleSystem_8cpp_source.html#l00057">s</a> , 以及 <a class="el" href="ArchSpaceTypes_8h_source.html#l00026">eve::archspace::Vec3::x</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ArchSpaceDocument_8cpp_source.html#l00378">eve::archspace::Document::bakeMesh()</a>.</p>
+
+</div>
+</div>
+<a id="a855152c6fcf0fc69023760f6e739f240" name="a855152c6fcf0fc69023760f6e739f240"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a855152c6fcf0fc69023760f6e739f240">&#9670;&#160;</a></span>appendWallWithOpenings()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::archspace::appendWallWithOpenings </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1archspace_1_1MeshBake.html">MeshBake</a> &amp;&#160;</td>
+          <td class="paramname"><em>bake</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1archspace_1_1Node.html">Node</a> &amp;&#160;</td>
+          <td class="paramname"><em>wall</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>elevation</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; const <a class="el" href="structeve_1_1archspace_1_1Node.html">Node</a> * &gt; &amp;&#160;</td>
+          <td class="paramname"><em>openings</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Bake one wall with merged opening cavities and explicit reveal liners. </p>
+<p>Overlapping openings are merged along the wall parameter before carving. Reveal primitives use <code>*.reveal.*</code> ids so hosts can distinguish cavity liners from structure. This is a parametric boolean (segment solids + reveal faces), not IFC/CSG BREP. </p>
+
+<p class="definition">在文件 <a class="el" href="ArchSpaceCatalog_8cpp_source.html">ArchSpaceCatalog.cpp</a> 第 <a class="el" href="ArchSpaceCatalog_8cpp_source.html#l00135">135</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00014">a</a>, <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00015">b</a>, <a class="el" href="WorldAnchorProjection_8cpp_source.html#l00017">bottom</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l00130">cursor</a>, <a class="el" href="TreeMesh_8cpp_source.html#l00123">dir</a>, <a class="el" href="namespaceeve_1_1archspace.html#a756ed6e7cbb2d0a3940dd1eee4c1ac8baf44e14d49cd011d1e873d9fe0c4624f1">Door</a>, <a class="el" href="HexTerrain_8cpp_source.html#l00030">elevation</a>, <a class="el" href="ArchSpaceTypes_8h_source.html#l00045">eve::archspace::Node::end</a>, <a class="el" href="ArchSpaceTypes_8h_source.html#l00041">eve::archspace::Node::height</a>, <a class="el" href="PlayHost_8cpp_source.html#l00142">id</a>, <a class="el" href="ArchSpaceTypes_8h_source.html#l00033">eve::archspace::Node::id</a>, <a class="el" href="Widget_8h_source.html#l00016">eve::ui::WidgetDesc::id</a>, <a class="el" href="LanguageIndex_8cpp_source.html#l00017">kind</a>, <a class="el" href="namespaceeve_1_1archspace.html#acdc28c3bf777ecb60d9be6a3c834161aa9bd99a0beea48f10663fc4a7d7a33140">Opening</a>, <a class="el" href="ArchSpaceTypes_8h_source.html#l00044">eve::archspace::Node::start</a>, <a class="el" href="ArchSpaceTypes_8h_source.html#l00046">eve::archspace::Node::thickness</a>, <a class="el" href="AgentBindings_8cpp_source.html#l00016">top</a>, <a class="el" href="namespaceeve_1_1archspace.html#a756ed6e7cbb2d0a3940dd1eee4c1ac8bac89686a387d2b12b3c729ce35a0bcb5b">Window</a>, <a class="el" href="ArchSpaceTypes_8h_source.html#l00020">eve::archspace::Vec2::x</a> , 以及 <a class="el" href="ArchSpaceTypes_8h_source.html#l00021">eve::archspace::Vec2::z</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ArchSpaceDocument_8cpp_source.html#l00378">eve::archspace::Document::bakeMesh()</a>.</p>
+
+</div>
+</div>
+<a id="ae26ea1a38cc3e28392840a12f7ca16c8" name="ae26ea1a38cc3e28392840a12f7ca16c8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae26ea1a38cc3e28392840a12f7ca16c8">&#9670;&#160;</a></span>listCatalogIds()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; std::string &gt; eve::archspace::listCatalogIds </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Stable list of built-in catalog ids for tools and inspector UIs. </p>
+
+<p class="definition">在文件 <a class="el" href="ArchSpaceCatalog_8cpp_source.html">ArchSpaceCatalog.cpp</a> 第 <a class="el" href="ArchSpaceCatalog_8cpp_source.html#l00112">112</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="GraphicsVirtualGeometry_8cpp_source.html#l00050">ids</a> , 以及 <a class="el" href="TreeMesh_8cpp_source.html#l00129">size</a>.</p>
+
+</div>
+</div>
+<a id="a92867fc223b469a48a29396f2fc3275b" name="a92867fc223b469a48a29396f2fc3275b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a92867fc223b469a48a29396f2fc3275b">&#9670;&#160;</a></span>lookupCatalog()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::optional&lt; <a class="el" href="structeve_1_1archspace_1_1CatalogEntry.html">CatalogEntry</a> &gt; eve::archspace::lookupCatalog </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>catalogId</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Resolve a built-in furniture catalog entry. </p>
+<dl class="section return"><dt>返回</dt><dd>Entry when known; empty optional for unknown ids (bake falls back to a marker). </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="ArchSpaceCatalog_8cpp_source.html">ArchSpaceCatalog.cpp</a> 第 <a class="el" href="ArchSpaceCatalog_8cpp_source.html#l00106">106</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ActionTimelinePayloadEditor_8cpp_source.html#l00023">end</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ArchSpaceCatalog_8cpp_source.html#l00120">appendCatalogItem()</a>.</p>
+
+</div>
+</div>
+<a id="ad0a0021e191e5bf2c35865002c16b9c9" name="ad0a0021e191e5bf2c35865002c16b9c9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad0a0021e191e5bf2c35865002c16b9c9">&#9670;&#160;</a></span>Module_IMPL()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::archspace::Module_IMPL </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1archspace_1_1ArchSpace.html">ArchSpace</a>&#160;</td>
+          <td class="paramname">, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">new &#160;</td>
+          <td class="paramname"><em>ArchSpace</em>()&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="af74cb51374a7c37f2a59524adc4a4460" name="af74cb51374a7c37f2a59524adc4a4460"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af74cb51374a7c37f2a59524adc4a4460">&#9670;&#160;</a></span>nodeKindName()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const char * eve::archspace::nodeKindName </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1archspace.html#acdc28c3bf777ecb60d9be6a3c834161a">NodeKind</a>&#160;</td>
+          <td class="paramname"><em>kind</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Stable wire name for a node kind. @ownership Non-owning pointer to a static string literal; do not free. @lifetime Valid for the process lifetime. </p>
+
+<p class="definition">在文件 <a class="el" href="ArchSpaceTypes_8h_source.html">ArchSpaceTypes.h</a> 第 <a class="el" href="ArchSpaceTypes_8h_source.html#l00138">138</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1archspace.html#acdc28c3bf777ecb60d9be6a3c834161aac39b56d4489fb2507289e7ae19567b80">Building</a>, <a class="el" href="namespaceeve_1_1archspace.html#acdc28c3bf777ecb60d9be6a3c834161aa7d74f3b92b19da5e606d737d339a9679">Item</a>, <a class="el" href="LanguageIndex_8cpp_source.html#l00017">kind</a>, <a class="el" href="namespaceeve_1_1archspace.html#acdc28c3bf777ecb60d9be6a3c834161aaa0db49ba470c1c9ae2128c3470339153">Level</a>, <a class="el" href="namespaceeve_1_1archspace.html#acdc28c3bf777ecb60d9be6a3c834161aa9bd99a0beea48f10663fc4a7d7a33140">Opening</a>, <a class="el" href="namespaceeve_1_1archspace.html#acdc28c3bf777ecb60d9be6a3c834161aaa7d6475ec8993b7224d6facc8cb0ead6">Site</a>, <a class="el" href="namespaceeve_1_1archspace.html#acdc28c3bf777ecb60d9be6a3c834161aa07605c26b7bd2e8b30a21a990c4cab00">Slab</a>, <a class="el" href="namespaceeve_1_1archspace.html#acdc28c3bf777ecb60d9be6a3c834161aa94e8a499539d1a472f3b5dbbb85508c0">Wall</a> , 以及 <a class="el" href="namespaceeve_1_1archspace.html#acdc28c3bf777ecb60d9be6a3c834161aab3ff996fe5c77610359114835baf9b38">Zone</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ArchSpaceTarget_8cpp_source.html#l00228">eve::archspace_editing::ArchSpaceDocumentTarget::schema()</a>.</p>
+
+</div>
+</div>
+<a id="ad5363d0eaf6f3805177d01d810ea6adf" name="ad5363d0eaf6f3805177d01d810ea6adf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad5363d0eaf6f3805177d01d810ea6adf">&#9670;&#160;</a></span>openingKindName()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const char * eve::archspace::openingKindName </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1archspace.html#a756ed6e7cbb2d0a3940dd1eee4c1ac8b">OpeningKind</a>&#160;</td>
+          <td class="paramname"><em>kind</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Stable wire name for an opening kind. @ownership Non-owning pointer to a static string literal; do not free. @lifetime Valid for the process lifetime. </p>
+
+<p class="definition">在文件 <a class="el" href="ArchSpaceTypes_8h_source.html">ArchSpaceTypes.h</a> 第 <a class="el" href="ArchSpaceTypes_8h_source.html#l00174">174</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LanguageIndex_8cpp_source.html#l00017">kind</a> , 以及 <a class="el" href="namespaceeve_1_1archspace.html#a756ed6e7cbb2d0a3940dd1eee4c1ac8bac89686a387d2b12b3c729ce35a0bcb5b">Window</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ArchSpaceTarget_8cpp_source.html#l00565">eve::archspace_editing::ArchSpaceDocumentTarget::gizmo()</a>.</p>
+
+</div>
+</div>
+<a id="a76b21ff7bddab372fc8b1e6e7b92ebce" name="a76b21ff7bddab372fc8b1e6e7b92ebce"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a76b21ff7bddab372fc8b1e6e7b92ebce">&#9670;&#160;</a></span>parseNodeKind()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="namespaceeve_1_1archspace.html#acdc28c3bf777ecb60d9be6a3c834161a">NodeKind</a> &gt; eve::archspace::parseNodeKind </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>text</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Parse a node kind wire name. </p>
+<dl class="section return"><dt>返回</dt><dd>Parsed kind, or InvalidArgument when the text is unknown. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="ArchSpaceTypes_8h_source.html">ArchSpaceTypes.h</a> 第 <a class="el" href="ArchSpaceTypes_8h_source.html#l00156">156</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1archspace.html#acdc28c3bf777ecb60d9be6a3c834161aac39b56d4489fb2507289e7ae19567b80">Building</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="namespaceeve_1_1archspace.html#acdc28c3bf777ecb60d9be6a3c834161aa7d74f3b92b19da5e606d737d339a9679">Item</a>, <a class="el" href="namespaceeve_1_1archspace.html#acdc28c3bf777ecb60d9be6a3c834161aaa0db49ba470c1c9ae2128c3470339153">Level</a>, <a class="el" href="namespaceeve_1_1archspace.html#acdc28c3bf777ecb60d9be6a3c834161aa9bd99a0beea48f10663fc4a7d7a33140">Opening</a>, <a class="el" href="namespaceeve_1_1archspace.html#acdc28c3bf777ecb60d9be6a3c834161aaa7d6475ec8993b7224d6facc8cb0ead6">Site</a>, <a class="el" href="namespaceeve_1_1archspace.html#acdc28c3bf777ecb60d9be6a3c834161aa07605c26b7bd2e8b30a21a990c4cab00">Slab</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="LanguageIndex_8cpp_source.html#l00018">text</a>, <a class="el" href="namespaceeve_1_1archspace.html#acdc28c3bf777ecb60d9be6a3c834161aa94e8a499539d1a472f3b5dbbb85508c0">Wall</a> , 以及 <a class="el" href="namespaceeve_1_1archspace.html#acdc28c3bf777ecb60d9be6a3c834161aab3ff996fe5c77610359114835baf9b38">Zone</a>.</p>
+
+</div>
+</div>
+<a id="af8636d492d2c272c1a4f0311112bce77" name="af8636d492d2c272c1a4f0311112bce77"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af8636d492d2c272c1a4f0311112bce77">&#9670;&#160;</a></span>parseOpeningKind()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="namespaceeve_1_1archspace.html#a756ed6e7cbb2d0a3940dd1eee4c1ac8b">OpeningKind</a> &gt; eve::archspace::parseOpeningKind </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>text</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Parse an opening kind wire name. </p>
+<dl class="section return"><dt>返回</dt><dd>Parsed kind, or InvalidArgument when the text is unknown. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="ArchSpaceTypes_8h_source.html">ArchSpaceTypes.h</a> 第 <a class="el" href="ArchSpaceTypes_8h_source.html#l00182">182</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1archspace.html#a756ed6e7cbb2d0a3940dd1eee4c1ac8baf44e14d49cd011d1e873d9fe0c4624f1">Door</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="LanguageIndex_8cpp_source.html#l00018">text</a> , 以及 <a class="el" href="namespaceeve_1_1archspace.html#a756ed6e7cbb2d0a3940dd1eee4c1ac8bac89686a387d2b12b3c729ce35a0bcb5b">Window</a>.</p>
+
+</div>
+</div>
+<a id="a1fed320c021115952a0811d60c9664ef" name="a1fed320c021115952a0811d60c9664ef"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1fed320c021115952a0811d60c9664ef">&#9670;&#160;</a></span>toMeshArrays()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1archspace_1_1MeshArrays.html">MeshArrays</a> eve::archspace::toMeshArrays </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1archspace_1_1MeshBake.html">MeshBake</a> &amp;&#160;</td>
+          <td class="paramname"><em>bake</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Convert a <a class="el" href="structeve_1_1archspace_1_1MeshBake.html" title="Renderer-neutral triangle mesh rebuilt from the document.">MeshBake</a> into flat arrays with per-triangle normals. </p>
+
+<p class="definition">在文件 <a class="el" href="ArchSpaceTypes_8h_source.html">ArchSpaceTypes.h</a> 第 <a class="el" href="ArchSpaceTypes_8h_source.html#l00091">91</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00014">a</a>, <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00015">b</a>, <a class="el" href="HexSphereTopology_8cpp_source.html#l00068">c</a>, <a class="el" href="Grass_8cpp_source.html#l00061">i0</a>, <a class="el" href="Grass_8cpp_source.html#l00061">i1</a>, <a class="el" href="Grass_8cpp_source.html#l00061">i2</a>, <a class="el" href="Pathfinder_8cpp_source.html#l00336">idx</a>, <a class="el" href="ArchSpaceTypes_8h_source.html#l00068">eve::archspace::MeshBake::indices</a>, <a class="el" href="ArchSpaceTypes_8h_source.html#l00081">eve::archspace::MeshArrays::indices</a>, <a class="el" href="Grass_8cpp_source.html#l00063">n</a>, <a class="el" href="ArchSpaceTypes_8h_source.html#l00079">eve::archspace::MeshArrays::normals</a>, <a class="el" href="DecalManager_8cpp_source.html#l00020">p</a>, <a class="el" href="ArchSpaceTypes_8h_source.html#l00067">eve::archspace::MeshBake::positions</a>, <a class="el" href="ArchSpaceTypes_8h_source.html#l00078">eve::archspace::MeshArrays::positions</a> , 以及 <a class="el" href="ArchSpaceTypes_8h_source.html#l00080">eve::archspace::MeshArrays::uvs</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ArchSpaceDocument_8h_source.html#l00108">eve::archspace::Document::bakeMeshArrays()</a>.</p>
+
+</div>
+</div>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

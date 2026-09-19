@@ -1,0 +1,955 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::animation::detail 命名空间参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1animation.html">animation</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1animation_1_1detail.html">detail</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#func-members">函数</a> &#124;
+<a href="#var-members">变量</a>  </div>
+  <div class="headertitle"><div class="title">eve::animation::detail 命名空间参考</div></div>
+</div><!--header-->
+<div class="contents">
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1animation_1_1detail_1_1MotionSchemaState.html">MotionSchemaState</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1animation_1_1detail_1_1PoseInertia.html">PoseInertia</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+函数</h2></td></tr>
+<tr class="memitem:a4854b585aa226af46df63e068294d681" id="r_a4854b585aa226af46df63e068294d681"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; float &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1animation_1_1detail.html#a4854b585aa226af46df63e068294d681">secondsForStep</a> (const <a class="el" href="structeve_1_1SimulationStep.html">eve::SimulationStep</a> &amp;<a class="el" href="TreeMesh_8cpp.html#a863c86bdfd96bf9c461846689c2614aa">step</a>, bool hasLastTick, <a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">eve::SimulationTick</a> lastTick, const char *owner)</td></tr>
+<tr class="memdesc:a4854b585aa226af46df63e068294d681"><td class="mdescLeft">&#160;</td><td class="mdescRight">Validate a scheduler step before an animation object mutates state.  <br /></td></tr>
+<tr class="separator:a4854b585aa226af46df63e068294d681"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3330f88eed4274b65cef6225d9d62da2" id="r_a3330f88eed4274b65cef6225d9d62da2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1SimulationStep.html">eve::SimulationStep</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1animation_1_1detail.html#a3330f88eed4274b65cef6225d9d62da2">legacyStep</a> (float seconds, bool hasLastTick, <a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">eve::SimulationTick</a> lastTick, const char *owner)</td></tr>
+<tr class="memdesc:a3330f88eed4274b65cef6225d9d62da2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert a legacy seconds call to the next local scheduler step.  <br /></td></tr>
+<tr class="separator:a3330f88eed4274b65cef6225d9d62da2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeb23cd640e13b7228f8e79b9bfaef637" id="r_aeb23cd640e13b7228f8e79b9bfaef637"><td class="memTemplParams" colspan="2">template&lt;class Body &gt; </td></tr>
+<tr class="memitem:aeb23cd640e13b7228f8e79b9bfaef637"><td class="memTemplItemLeft" align="right" valign="top">int&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1animation_1_1detail.html#aeb23cd640e13b7228f8e79b9bfaef637">parallelAnimationItems</a> (std::size_t <a class="el" href="SourceTiff_8cpp.html#ae2481d00ca648870d2ec0ea81cf49e75">count</a>, int requested, Body &amp;&amp;<a class="el" href="UnityImporter_8cpp.html#a22ffc871c8cdced782372446356096a5">body</a>)</td></tr>
+<tr class="separator:aeb23cd640e13b7228f8e79b9bfaef637"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a71bfd0ef46682a24df3f304d0b5530cb" id="r_a71bfd0ef46682a24df3f304d0b5530cb"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1animation_1_1TransformTRS.html">TransformTRS</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1animation_1_1detail.html#a71bfd0ef46682a24df3f304d0b5530cb">mulTRS</a> (const <a class="el" href="structeve_1_1animation_1_1TransformTRS.html">TransformTRS</a> &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#ae5a367e308f2a54eea84358fbc9bee47">parent</a>, const <a class="el" href="structeve_1_1animation_1_1TransformTRS.html">TransformTRS</a> &amp;<a class="el" href="LanguageIndex_8cpp.html#a8a71cf98f1ad6795a6d5c2397672e40d">local</a>)</td></tr>
+<tr class="separator:a71bfd0ef46682a24df3f304d0b5530cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad56226a6342cef3a7a06ed6deb5bba1e" id="r_ad56226a6342cef3a7a06ed6deb5bba1e"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1animation_1_1detail.html#ad56226a6342cef3a7a06ed6deb5bba1e">featureYaw</a> (const <a class="el" href="structeve_1_1animation_1_1TransformTRS.html">TransformTRS</a> &amp;<a class="el" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a>)</td></tr>
+<tr class="separator:ad56226a6342cef3a7a06ed6deb5bba1e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af57f84951b182ae4556b87f196b79a28" id="r_af57f84951b182ae4556b87f196b79a28"><td class="memItemLeft" align="right" valign="top">std::array&lt; float, 3 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1animation_1_1detail.html#af57f84951b182ae4556b87f196b79a28">featureLocal</a> (float <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, float <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, float <a class="el" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>, float <a class="el" href="PrefabActionCapabilities_8cpp.html#a7efc219781df4a1e281cb5d348b7fbf9">yaw</a>)</td></tr>
+<tr class="separator:af57f84951b182ae4556b87f196b79a28"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a48e3d5c052cc545cba2cca98e334d6e3" id="r_a48e3d5c052cc545cba2cca98e334d6e3"><td class="memItemLeft" align="right" valign="top">std::array&lt; float, 3 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1animation_1_1detail.html#a48e3d5c052cc545cba2cca98e334d6e3">featurePosition</a> (const <a class="el" href="structeve_1_1animation_1_1TransformTRS.html">TransformTRS</a> &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#aa998c8d51ac188304eb2c6ae8549c6d2">bone</a>, const <a class="el" href="structeve_1_1animation_1_1TransformTRS.html">TransformTRS</a> &amp;<a class="el" href="AnimSmr_8cpp.html#a3b62f50202abd219e165f5a333d5c156">root</a>)</td></tr>
+<tr class="separator:a48e3d5c052cc545cba2cca98e334d6e3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abbb7e9e9f42a5b3520fbcadadcfb0187" id="r_abbb7e9e9f42a5b3520fbcadadcfb0187"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1animation_1_1detail.html#abbb7e9e9f42a5b3520fbcadadcfb0187">encodeLocomotionPose</a> (std::span&lt; float &gt; out, const std::array&lt; <a class="el" href="structeve_1_1animation_1_1TransformTRS.html">TransformTRS</a>, 4 &gt; &amp;now, const std::array&lt; <a class="el" href="structeve_1_1animation_1_1TransformTRS.html">TransformTRS</a>, 4 &gt; &amp;past, float interval)</td></tr>
+<tr class="separator:abbb7e9e9f42a5b3520fbcadadcfb0187"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afebbdbcb83a4482fb545a2b596d66604" id="r_afebbdbcb83a4482fb545a2b596d66604"><td class="memTemplParams" colspan="2">template&lt;class Sample &gt; </td></tr>
+<tr class="memitem:afebbdbcb83a4482fb545a2b596d66604"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1animation_1_1detail.html#afebbdbcb83a4482fb545a2b596d66604">encodeLocomotionTrajectory</a> (std::span&lt; float &gt; out, const std::array&lt; Sample, 5 &gt; &amp;samples, float <a class="el" href="PrefabActionCapabilities_8cpp.html#a7efc219781df4a1e281cb5d348b7fbf9">yaw</a>)</td></tr>
+<tr class="separator:afebbdbcb83a4482fb545a2b596d66604"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0da3ae4c6b18d1bbd551e5225a8f29a0" id="r_a0da3ae4c6b18d1bbd551e5225a8f29a0"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1animation_1_1detail.html#a0da3ae4c6b18d1bbd551e5225a8f29a0">locomotionWeight</a> (int <a class="el" href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>)</td></tr>
+<tr class="separator:a0da3ae4c6b18d1bbd551e5225a8f29a0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adf4639638c9585de698f80de466764a0" id="r_adf4639638c9585de698f80de466764a0"><td class="memItemLeft" align="right" valign="top">std::array&lt; float, 3 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1animation_1_1detail.html#adf4639638c9585de698f80de466764a0">schemaRotate</a> (const std::array&lt; float, 3 &gt; &amp;<a class="el" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>, const <a class="el" href="structeve_1_1animation_1_1TransformTRS.html">TransformTRS</a> &amp;<a class="el" href="GtsMeshSimplifier_8cpp.html#a0f8c585c1198bd8e07eba4b29cb3f745">q</a>, bool inverse=false)</td></tr>
+<tr class="separator:adf4639638c9585de698f80de466764a0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a47712b5d68f9efd7712fb28317edeeda" id="r_a47712b5d68f9efd7712fb28317edeeda"><td class="memItemLeft" align="right" valign="top">std::array&lt; float, 3 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1animation_1_1detail.html#a47712b5d68f9efd7712fb28317edeeda">schemaDifference</a> (const <a class="el" href="structeve_1_1animation_1_1TransformTRS.html">TransformTRS</a> &amp;<a class="el" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>, const <a class="el" href="structeve_1_1animation_1_1TransformTRS.html">TransformTRS</a> &amp;<a class="el" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>, const <a class="el" href="structeve_1_1animation_1_1TransformTRS.html">TransformTRS</a> &amp;<a class="el" href="AnimSmr_8cpp.html#a3b62f50202abd219e165f5a333d5c156">root</a>)</td></tr>
+<tr class="separator:a47712b5d68f9efd7712fb28317edeeda"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af4b9be80e8561be073298d276e1890b6" id="r_af4b9be80e8561be073298d276e1890b6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1animation_1_1detail.html#af4b9be80e8561be073298d276e1890b6">schemaEncode</a> (std::span&lt; float &gt; <a class="el" href="AssetCommand_8cpp.html#a69da28b7f372dd6b6fffa28d0214e4de">output</a>, const <a class="el" href="structeve_1_1animation_1_1MotionFeatureChannel.html">MotionFeatureChannel</a> &amp;channel, std::array&lt; float, 3 &gt; <a class="el" href="ActionNotifyRegistry_8cpp.html#aee90379adb0307effb138f4871edbc5c">value</a>, float lengthScale)</td></tr>
+<tr class="separator:af4b9be80e8561be073298d276e1890b6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab0a0c98f589407e578f787deb1630761" id="r_ab0a0c98f589407e578f787deb1630761"><td class="memItemLeft" align="right" valign="top">std::array&lt; float, 3 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1animation_1_1detail.html#ab0a0c98f589407e578f787deb1630761">schemaHeading</a> (const <a class="el" href="structeve_1_1animation_1_1TransformTRS.html">TransformTRS</a> &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#aa998c8d51ac188304eb2c6ae8549c6d2">bone</a>, const <a class="el" href="structeve_1_1animation_1_1TransformTRS.html">TransformTRS</a> &amp;<a class="el" href="AnimSmr_8cpp.html#a3b62f50202abd219e165f5a333d5c156">root</a>, int axis)</td></tr>
+<tr class="separator:ab0a0c98f589407e578f787deb1630761"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="var-members" name="var-members"></a>
+变量</h2></td></tr>
+<tr class="memitem:af81b228b130144404e4e197c7d4f649a" id="r_af81b228b130144404e4e197c7d4f649a"><td class="memItemLeft" align="right" valign="top">constexpr int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1animation_1_1detail.html#af81b228b130144404e4e197c7d4f649a">locomotionPoseOffset</a> = 19</td></tr>
+<tr class="separator:af81b228b130144404e4e197c7d4f649a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a786aecadc89d5185716d7bdafda31739" id="r_a786aecadc89d5185716d7bdafda31739"><td class="memItemLeft" align="right" valign="top">constexpr int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1animation_1_1detail.html#a786aecadc89d5185716d7bdafda31739">locomotionFeatureCount</a> = 30</td></tr>
+<tr class="separator:a786aecadc89d5185716d7bdafda31739"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3b29455837ca26b167a056f27ecf44bc" id="r_a3b29455837ca26b167a056f27ecf44bc"><td class="memItemLeft" align="right" valign="top">constexpr std::array&lt; float, 5 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1animation_1_1detail.html#a3b29455837ca26b167a056f27ecf44bc">locomotionHorizons</a> {-0.05<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.35<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.7<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>}</td></tr>
+<tr class="separator:a3b29455837ca26b167a056f27ecf44bc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<h2 class="groupheader">函数说明</h2>
+<a id="abbb7e9e9f42a5b3520fbcadadcfb0187" name="abbb7e9e9f42a5b3520fbcadadcfb0187"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abbb7e9e9f42a5b3520fbcadadcfb0187">&#9670;&#160;</a></span>encodeLocomotionPose()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::detail::encodeLocomotionPose </td>
+          <td>(</td>
+          <td class="paramtype">std::span&lt; float &gt;&#160;</td>
+          <td class="paramname"><em>out</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::array&lt; <a class="el" href="structeve_1_1animation_1_1TransformTRS.html">TransformTRS</a>, 4 &gt; &amp;&#160;</td>
+          <td class="paramname"><em>now</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::array&lt; <a class="el" href="structeve_1_1animation_1_1TransformTRS.html">TransformTRS</a>, 4 &gt; &amp;&#160;</td>
+          <td class="paramname"><em>past</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>interval</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="MotionFeatureInternal_8h_source.html">MotionFeatureInternal.h</a> 第 <a class="el" href="MotionFeatureInternal_8h_source.html#l00024">24</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MotionFeatureInternal_8h_source.html#l00015">featureLocal()</a>, <a class="el" href="MotionFeatureInternal_8h_source.html#l00019">featurePosition()</a>, <a class="el" href="MotionFeatureInternal_8h_source.html#l00012">featureYaw()</a>, <a class="el" href="TreeMesh_8cpp_source.html#l00265">heading</a>, <a class="el" href="HexSphereMesh_8cpp_source.html#l00163">left</a>, <a class="el" href="OffscreenPreview_8cpp_source.html#l00017">previous</a>, <a class="el" href="GtsMeshSimplifier_8cpp_source.html#l00014">q</a> , 以及 <a class="el" href="HexSphereMesh_8cpp_source.html#l00164">right</a>.</p>
+
+</div>
+</div>
+<a id="afebbdbcb83a4482fb545a2b596d66604" name="afebbdbcb83a4482fb545a2b596d66604"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afebbdbcb83a4482fb545a2b596d66604">&#9670;&#160;</a></span>encodeLocomotionTrajectory()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class Sample &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::detail::encodeLocomotionTrajectory </td>
+          <td>(</td>
+          <td class="paramtype">std::span&lt; float &gt;&#160;</td>
+          <td class="paramname"><em>out</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::array&lt; Sample, 5 &gt; &amp;&#160;</td>
+          <td class="paramname"><em>samples</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>yaw</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="MotionFeatureInternal_8h_source.html">MotionFeatureInternal.h</a> 第 <a class="el" href="MotionFeatureInternal_8h_source.html#l00042">42</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MotionFeatureInternal_8h_source.html#l00015">featureLocal()</a>, <a class="el" href="TreeMesh_8cpp_source.html#l00265">heading</a>, <a class="el" href="LanguageIndex_8cpp_source.html#l00019">offset</a>, <a class="el" href="DecalManager_8cpp_source.html#l00020">p</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00016">position</a>, <a class="el" href="HexRiverMesh_8cpp_source.html#l00019">v</a>, <a class="el" href="WorldSnapshot_8cpp_source.html#l00243">vx</a>, <a class="el" href="WorldSnapshot_8cpp_source.html#l00243">vy</a>, <a class="el" href="WorldSnapshot_8cpp_source.html#l00253">vz</a>, <a class="el" href="AnimClip_8cpp_source.html#l00738">x</a>, <a class="el" href="AnimClip_8cpp_source.html#l00738">y</a>, <a class="el" href="PrefabActionCapabilities_8cpp_source.html#l00041">yaw</a>, <a class="el" href="AnimMath_8h_source.html#l00133">eve::animation::yawToForward()</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00738">z</a>.</p>
+
+</div>
+</div>
+<a id="af57f84951b182ae4556b87f196b79a28" name="af57f84951b182ae4556b87f196b79a28"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af57f84951b182ae4556b87f196b79a28">&#9670;&#160;</a></span>featureLocal()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::array&lt; float, 3 &gt; eve::animation::detail::featureLocal </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>z</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>yaw</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="MotionFeatureInternal_8h_source.html">MotionFeatureInternal.h</a> 第 <a class="el" href="MotionFeatureInternal_8h_source.html#l00015">15</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AnimClip_8cpp_source.html#l00738">x</a>, <a class="el" href="AnimClip_8cpp_source.html#l00738">y</a>, <a class="el" href="PrefabActionCapabilities_8cpp_source.html#l00041">yaw</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00738">z</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="MotionFeatureInternal_8h_source.html#l00024">encodeLocomotionPose()</a>, <a class="el" href="MotionFeatureInternal_8h_source.html#l00042">encodeLocomotionTrajectory()</a> , 以及 <a class="el" href="MotionFeatureInternal_8h_source.html#l00019">featurePosition()</a>.</p>
+
+</div>
+</div>
+<a id="a48e3d5c052cc545cba2cca98e334d6e3" name="a48e3d5c052cc545cba2cca98e334d6e3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a48e3d5c052cc545cba2cca98e334d6e3">&#9670;&#160;</a></span>featurePosition()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::array&lt; float, 3 &gt; eve::animation::detail::featurePosition </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1animation_1_1TransformTRS.html">TransformTRS</a> &amp;&#160;</td>
+          <td class="paramname"><em>bone</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1animation_1_1TransformTRS.html">TransformTRS</a> &amp;&#160;</td>
+          <td class="paramname"><em>root</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="MotionFeatureInternal_8h_source.html">MotionFeatureInternal.h</a> 第 <a class="el" href="MotionFeatureInternal_8h_source.html#l00019">19</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00024">bone</a>, <a class="el" href="MotionFeatureInternal_8h_source.html#l00015">featureLocal()</a>, <a class="el" href="MotionFeatureInternal_8h_source.html#l00012">featureYaw()</a> , 以及 <a class="el" href="AnimSmr_8cpp_source.html#l00119">root</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="MotionFeatureInternal_8h_source.html#l00024">encodeLocomotionPose()</a>.</p>
+
+</div>
+</div>
+<a id="ad56226a6342cef3a7a06ed6deb5bba1e" name="ad56226a6342cef3a7a06ed6deb5bba1e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad56226a6342cef3a7a06ed6deb5bba1e">&#9670;&#160;</a></span>featureYaw()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation::detail::featureYaw </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1animation_1_1TransformTRS.html">TransformTRS</a> &amp;&#160;</td>
+          <td class="paramname"><em>t</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="MotionFeatureInternal_8h_source.html">MotionFeatureInternal.h</a> 第 <a class="el" href="MotionFeatureInternal_8h_source.html#l00012">12</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PrototypeKit_8cpp_source.html#l00110">t</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="MotionFeatureInternal_8h_source.html#l00024">encodeLocomotionPose()</a> , 以及 <a class="el" href="MotionFeatureInternal_8h_source.html#l00019">featurePosition()</a>.</p>
+
+</div>
+</div>
+<a id="a3330f88eed4274b65cef6225d9d62da2" name="a3330f88eed4274b65cef6225d9d62da2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3330f88eed4274b65cef6225d9d62da2">&#9670;&#160;</a></span>legacyStep()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1SimulationStep.html">eve::SimulationStep</a> &gt; eve::animation::detail::legacyStep </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>seconds</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>hasLastTick</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">eve::SimulationTick</a>&#160;</td>
+          <td class="paramname"><em>lastTick</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>owner</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Convert a legacy seconds call to the next local scheduler step. </p>
+
+<p class="definition">在文件 <a class="el" href="AnimationTime_8h_source.html">AnimationTime.h</a> 第 <a class="el" href="AnimationTime_8h_source.html#l00030">30</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AnimCurveLibrary_8cpp_source.html#l00018">duration</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="Time_8cpp_source.html#l00016">eve::Duration::fromSeconds()</a>, <a class="el" href="StrongUint64_8h_source.html#l00029">eve::detail::StrongUint64&lt; Tag &gt;::incremented()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad5577819bdd3dadf2ce8cd0c265ff6b5">eve::InvariantViolation</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AnimGraph_8cpp_source.html#l00305">eve::animation::AnimGraph::update()</a>, <a class="el" href="AnimLayerMixer_8cpp_source.html#l00363">eve::animation::AnimLayerMixer::update()</a>, <a class="el" href="AnimSyncGroup_8cpp_source.html#l00069">eve::animation::AnimSyncGroup::update()</a>, <a class="el" href="AnimTrail_8cpp_source.html#l00167">eve::animation::AnimTrail::update()</a>, <a class="el" href="ControlAnim_8cpp_source.html#l00171">eve::animation::ControlAnim::update()</a>, <a class="el" href="ControlPose_8cpp_source.html#l00312">eve::animation::ControlPose::update()</a>, <a class="el" href="MotionMatcher_8cpp_source.html#l00396">eve::animation::MotionMatcher::update()</a>, <a class="el" href="SpineAnim_8cpp_source.html#l00303">eve::animation::SpineAnim::update()</a>, <a class="el" href="SpriteAnim_8cpp_source.html#l00300">eve::animation::SpriteAnim::update()</a> , 以及 <a class="el" href="Tween_8cpp_source.html#l00304">eve::animation::Tween::update()</a>.</p>
+
+</div>
+</div>
+<a id="a0da3ae4c6b18d1bbd551e5225a8f29a0" name="a0da3ae4c6b18d1bbd551e5225a8f29a0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0da3ae4c6b18d1bbd551e5225a8f29a0">&#9670;&#160;</a></span>locomotionWeight()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation::detail::locomotionWeight </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="MotionFeatureInternal_8h_source.html">MotionFeatureInternal.h</a> 第 <a class="el" href="MotionFeatureInternal_8h_source.html#l00069">69</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="UnityVegetationMaterial_8cpp_source.html#l00161">index</a>.</p>
+
+</div>
+</div>
+<a id="a71bfd0ef46682a24df3f304d0b5530cb" name="a71bfd0ef46682a24df3f304d0b5530cb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a71bfd0ef46682a24df3f304d0b5530cb">&#9670;&#160;</a></span>mulTRS()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1animation_1_1TransformTRS.html">TransformTRS</a> eve::animation::detail::mulTRS </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1animation_1_1TransformTRS.html">TransformTRS</a> &amp;&#160;</td>
+          <td class="paramname"><em>parent</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1animation_1_1TransformTRS.html">TransformTRS</a> &amp;&#160;</td>
+          <td class="paramname"><em>local</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimTransformInternal_8h_source.html">AnimTransformInternal.h</a> 第 <a class="el" href="AnimTransformInternal_8h_source.html#l00007">7</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LanguageIndex_8cpp_source.html#l00025">local</a>, <a class="el" href="AnimMath_8h_source.html#l00016">eve::animation::TransformTRS::normalizeRotation()</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00014">parent</a>, <a class="el" href="AnimMath_8h_source.html#l00010">eve::animation::TransformTRS::px</a>, <a class="el" href="AnimMath_8h_source.html#l00010">eve::animation::TransformTRS::py</a>, <a class="el" href="AnimMath_8h_source.html#l00010">eve::animation::TransformTRS::pz</a>, <a class="el" href="AnimMath_8h_source.html#l00011">eve::animation::TransformTRS::qw</a>, <a class="el" href="WorldSnapshot_8cpp_source.html#l00252">qw</a>, <a class="el" href="AnimMath_8h_source.html#l00011">eve::animation::TransformTRS::qx</a>, <a class="el" href="WorldSnapshot_8cpp_source.html#l00252">qx</a>, <a class="el" href="AnimMath_8h_source.html#l00011">eve::animation::TransformTRS::qy</a>, <a class="el" href="WorldSnapshot_8cpp_source.html#l00252">qy</a>, <a class="el" href="AnimMath_8h_source.html#l00011">eve::animation::TransformTRS::qz</a>, <a class="el" href="WorldSnapshot_8cpp_source.html#l00252">qz</a>, <a class="el" href="AnimMath_8h_source.html#l00012">eve::animation::TransformTRS::sx</a>, <a class="el" href="AnimMath_8h_source.html#l00012">eve::animation::TransformTRS::sy</a> , 以及 <a class="el" href="AnimMath_8h_source.html#l00012">eve::animation::TransformTRS::sz</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="MotionDatabaseSchema_8cpp_source.html#l00186">eve::animation::MotionDatabase::SchemaSampler::bone()</a>, <a class="el" href="AnimPose_8cpp_source.html#l00203">eve::animation::AnimPose::computeWorld()</a>, <a class="el" href="MotionDatabaseSchema_8cpp_source.html#l00164">eve::animation::MotionDatabase::SchemaSampler::raw()</a>, <a class="el" href="MotionDatabaseSchema_8cpp_source.html#l00169">eve::animation::MotionDatabase::SchemaSampler::root()</a> , 以及 <a class="el" href="MotionSchemaInternal_8h_source.html#l00024">schemaRotate()</a>.</p>
+
+</div>
+</div>
+<a id="aeb23cd640e13b7228f8e79b9bfaef637" name="aeb23cd640e13b7228f8e79b9bfaef637"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeb23cd640e13b7228f8e79b9bfaef637">&#9670;&#160;</a></span>parallelAnimationItems()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class Body &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::animation::detail::parallelAnimationItems </td>
+          <td>(</td>
+          <td class="paramtype">std::size_t&#160;</td>
+          <td class="paramname"><em>count</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>requested</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Body &amp;&amp;&#160;</td>
+          <td class="paramname"><em>body</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="AnimParallelInternal_8h_source.html">AnimParallelInternal.h</a> 第 <a class="el" href="AnimParallelInternal_8h_source.html#l00013">13</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="UnityImporter_8cpp_source.html#l00563">body</a>, <a class="el" href="SourceTiff_8cpp_source.html#l00024">count</a>, <a class="el" href="Package_8cpp_source.html#l00060">error</a>, <a class="el" href="UnityVegetationMaterial_8cpp_source.html#l00161">index</a>, <a class="el" href="TreeMesh_8cpp_source.html#l00137">limit</a> , 以及 <a class="el" href="OnnxGpgpu_8cpp_source.html#l00025">run</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="MotionDatabase_8cpp_source.html#l00179">eve::animation::MotionDatabase::bake()</a> , 以及 <a class="el" href="AnimClipBinary_8cpp_source.html#l00085">eve::animation::loadAnimationTrackBatch()</a>.</p>
+
+</div>
+</div>
+<a id="a47712b5d68f9efd7712fb28317edeeda" name="a47712b5d68f9efd7712fb28317edeeda"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a47712b5d68f9efd7712fb28317edeeda">&#9670;&#160;</a></span>schemaDifference()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::array&lt; float, 3 &gt; eve::animation::detail::schemaDifference </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1animation_1_1TransformTRS.html">TransformTRS</a> &amp;&#160;</td>
+          <td class="paramname"><em>a</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1animation_1_1TransformTRS.html">TransformTRS</a> &amp;&#160;</td>
+          <td class="paramname"><em>b</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1animation_1_1TransformTRS.html">TransformTRS</a> &amp;&#160;</td>
+          <td class="paramname"><em>root</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="MotionSchemaInternal_8h_source.html">MotionSchemaInternal.h</a> 第 <a class="el" href="MotionSchemaInternal_8h_source.html#l00033">33</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00014">a</a>, <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00015">b</a>, <a class="el" href="AnimSmr_8cpp_source.html#l00119">root</a> , 以及 <a class="el" href="MotionSchemaInternal_8h_source.html#l00024">schemaRotate()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="MotionMatcherSchema_8cpp_source.html#l00009">eve::animation::MotionMatcher::setFeatureQuery()</a>.</p>
+
+</div>
+</div>
+<a id="af4b9be80e8561be073298d276e1890b6" name="af4b9be80e8561be073298d276e1890b6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af4b9be80e8561be073298d276e1890b6">&#9670;&#160;</a></span>schemaEncode()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::detail::schemaEncode </td>
+          <td>(</td>
+          <td class="paramtype">std::span&lt; float &gt;&#160;</td>
+          <td class="paramname"><em>output</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1animation_1_1MotionFeatureChannel.html">MotionFeatureChannel</a> &amp;&#160;</td>
+          <td class="paramname"><em>channel</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::array&lt; float, 3 &gt;&#160;</td>
+          <td class="paramname"><em>value</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>lengthScale</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="MotionSchemaInternal_8h_source.html">MotionSchemaInternal.h</a> 第 <a class="el" href="MotionSchemaInternal_8h_source.html#l00036">36</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MotionFeatureLayout_8h_source.html#l00030">eve::animation::MotionFeatureChannel::axes</a>, <a class="el" href="UnityVegetationMaterial_8cpp_source.html#l00161">index</a>, <a class="el" href="MotionFeatureLayout_8h_source.html#l00026">eve::animation::MotionFeatureChannel::kind</a>, <a class="el" href="MotionFeatureLayout_8h_source.html#l00035">eve::animation::MotionFeatureChannel::normalizeVelocity</a>, <a class="el" href="AssetCommand_8cpp_source.html#l00161">output</a>, <a class="el" href="namespaceeve_1_1animation.html#a2bb8f1b2a8247164df8df1b64307c624a52f5e0bc3859bc5f5e25130b6c7e8881">eve::animation::Position</a>, <a class="el" href="ActionNotifyRegistry_8cpp_source.html#l00165">value</a> , 以及 <a class="el" href="namespaceeve_1_1animation.html#a2bb8f1b2a8247164df8df1b64307c624a88156d46910a2d733443c339a9231d12">eve::animation::Velocity</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="MotionMatcherSchema_8cpp_source.html#l00009">eve::animation::MotionMatcher::setFeatureQuery()</a>.</p>
+
+</div>
+</div>
+<a id="ab0a0c98f589407e578f787deb1630761" name="ab0a0c98f589407e578f787deb1630761"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab0a0c98f589407e578f787deb1630761">&#9670;&#160;</a></span>schemaHeading()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::array&lt; float, 3 &gt; eve::animation::detail::schemaHeading </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1animation_1_1TransformTRS.html">TransformTRS</a> &amp;&#160;</td>
+          <td class="paramname"><em>bone</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1animation_1_1TransformTRS.html">TransformTRS</a> &amp;&#160;</td>
+          <td class="paramname"><em>root</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>axis</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="MotionSchemaInternal_8h_source.html">MotionSchemaInternal.h</a> 第 <a class="el" href="MotionSchemaInternal_8h_source.html#l00045">45</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00024">bone</a>, <a class="el" href="AnimSmr_8cpp_source.html#l00119">root</a> , 以及 <a class="el" href="MotionSchemaInternal_8h_source.html#l00024">schemaRotate()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="MotionMatcherSchema_8cpp_source.html#l00009">eve::animation::MotionMatcher::setFeatureQuery()</a>.</p>
+
+</div>
+</div>
+<a id="adf4639638c9585de698f80de466764a0" name="adf4639638c9585de698f80de466764a0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adf4639638c9585de698f80de466764a0">&#9670;&#160;</a></span>schemaRotate()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::array&lt; float, 3 &gt; eve::animation::detail::schemaRotate </td>
+          <td>(</td>
+          <td class="paramtype">const std::array&lt; float, 3 &gt; &amp;&#160;</td>
+          <td class="paramname"><em>p</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1animation_1_1TransformTRS.html">TransformTRS</a> &amp;&#160;</td>
+          <td class="paramname"><em>q</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>inverse</em> = <code>false</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="MotionSchemaInternal_8h_source.html">MotionSchemaInternal.h</a> 第 <a class="el" href="MotionSchemaInternal_8h_source.html#l00024">24</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AnimTransformInternal_8h_source.html#l00007">mulTRS()</a>, <a class="el" href="DecalManager_8cpp_source.html#l00020">p</a>, <a class="el" href="AnimMath_8h_source.html#l00010">eve::animation::TransformTRS::px</a>, <a class="el" href="GtsMeshSimplifier_8cpp_source.html#l00014">q</a>, <a class="el" href="GtsMeshSimplifier_8cpp_source.html#l00012">r</a> , 以及 <a class="el" href="HexRiverMesh_8cpp_source.html#l00019">v</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="MotionSchemaInternal_8h_source.html#l00033">schemaDifference()</a>, <a class="el" href="MotionSchemaInternal_8h_source.html#l00045">schemaHeading()</a> , 以及 <a class="el" href="MotionMatcherSchema_8cpp_source.html#l00009">eve::animation::MotionMatcher::setFeatureQuery()</a>.</p>
+
+</div>
+</div>
+<a id="a4854b585aa226af46df63e068294d681" name="a4854b585aa226af46df63e068294d681"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4854b585aa226af46df63e068294d681">&#9670;&#160;</a></span>secondsForStep()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; float &gt; eve::animation::detail::secondsForStep </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1SimulationStep.html">eve::SimulationStep</a> &amp;&#160;</td>
+          <td class="paramname"><em>step</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>hasLastTick</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">eve::SimulationTick</a>&#160;</td>
+          <td class="paramname"><em>lastTick</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>owner</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Validate a scheduler step before an animation object mutates state. </p>
+
+<p class="definition">在文件 <a class="el" href="AnimationTime_8h_source.html">AnimationTime.h</a> 第 <a class="el" href="AnimationTime_8h_source.html#l00013">13</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::Conflict</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="TreeMesh_8cpp_source.html#l00287">step</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AnimSyncGroup_8cpp_source.html#l00022">eve::animation::AnimSyncGroup::advance()</a>, <a class="el" href="AnimTrail_8cpp_source.html#l00158">eve::animation::AnimTrail::advance()</a>, <a class="el" href="ControlAnim_8cpp_source.html#l00162">eve::animation::ControlAnim::advance()</a>, <a class="el" href="ControlPose_8cpp_source.html#l00303">eve::animation::ControlPose::advance()</a>, <a class="el" href="MotionMatcher_8cpp_source.html#l00387">eve::animation::MotionMatcher::advance()</a>, <a class="el" href="MotionRuntime_8cpp_source.html#l00707">eve::animation::MotionRuntime::advance()</a>, <a class="el" href="SpineAnim_8cpp_source.html#l00294">eve::animation::SpineAnim::advance()</a>, <a class="el" href="SpriteAnim_8cpp_source.html#l00291">eve::animation::SpriteAnim::advance()</a>, <a class="el" href="Tween_8cpp_source.html#l00295">eve::animation::Tween::advance()</a>, <a class="el" href="AnimGraph_8cpp_source.html#l00296">eve::animation::AnimGraph::advance()</a> , 以及 <a class="el" href="AnimLayerMixer_8cpp_source.html#l00333">eve::animation::AnimLayerMixer::advance()</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">变量说明</h2>
+<a id="a786aecadc89d5185716d7bdafda31739" name="a786aecadc89d5185716d7bdafda31739"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a786aecadc89d5185716d7bdafda31739">&#9670;&#160;</a></span>locomotionFeatureCount</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr int eve::animation::detail::locomotionFeatureCount = 30</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="MotionFeatureInternal_8h_source.html">MotionFeatureInternal.h</a> 第 <a class="el" href="MotionFeatureInternal_8h_source.html#l00009">9</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a3b29455837ca26b167a056f27ecf44bc" name="a3b29455837ca26b167a056f27ecf44bc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3b29455837ca26b167a056f27ecf44bc">&#9670;&#160;</a></span>locomotionHorizons</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr std::array&lt;float, 5&gt; eve::animation::detail::locomotionHorizons {-0.05<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.35<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0.7<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>}</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="MotionFeatureInternal_8h_source.html">MotionFeatureInternal.h</a> 第 <a class="el" href="MotionFeatureInternal_8h_source.html#l00010">10</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af81b228b130144404e4e197c7d4f649a" name="af81b228b130144404e4e197c7d4f649a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af81b228b130144404e4e197c7d4f649a">&#9670;&#160;</a></span>locomotionPoseOffset</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr int eve::animation::detail::locomotionPoseOffset = 19</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="MotionFeatureInternal_8h_source.html">MotionFeatureInternal.h</a> 第 <a class="el" href="MotionFeatureInternal_8h_source.html#l00008">8</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="MotionMatcher_8cpp_source.html#l00207">eve::animation::MotionMatcher::search()</a>.</p>
+
+</div>
+</div>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

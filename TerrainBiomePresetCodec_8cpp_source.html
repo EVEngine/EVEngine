@@ -1,0 +1,284 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/procgen/heightmap/TerrainBiomePresetCodec.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_b9cecc0e175b6763f5f5f897464db2c3.html">procgen</a></li><li class="navelem"><a class="el" href="dir_b9c657a246498501ab092b57bd39800c.html">heightmap</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">TerrainBiomePresetCodec.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="TerrainBiomePresetCodec_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &quot;<a class="code" href="TerrainBiomePreset_8h.html">procgen/heightmap/TerrainBiomePreset.h</a>&quot;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &lt;limits&gt;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;<a class="code" href="Value_8h.html">common/Value.h</a>&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1procgen.html">eve::procgen</a> {</div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="keyword">namespace </span>{</div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="keyword">constexpr</span> std::size_t kMaximumPresetJsonBytes = 256U * 1024U * 1024U;</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="keyword">constexpr</span> std::size_t kMaximumSpawnerEntries = 4096;</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="keyword">template</span> &lt;<span class="keyword">class</span> T&gt;</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>Result&lt;T&gt; malformedPreset(<span class="keyword">const</span> <span class="keywordtype">char</span>* <a class="code hl_variable" href="GltfAnimation_8cpp.html#a36bd74109f547f7f8198faf5a12d2879">message</a>) {</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">Result&lt;T&gt;::failure</a>(<a class="code hl_function" href="classeve_1_1Diagnostic.html#af797f7520cc62e8273da5afdb59d9ef4">Diagnostic::error</a>(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">DiagnosticCode::InvalidArgument</a>, <a class="code hl_variable" href="GltfAnimation_8cpp.html#a36bd74109f547f7f8198faf5a12d2879">message</a>));</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>}</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>}  <span class="comment">// namespace</span></div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span> </div>
+<div class="foldopen" id="foldopen00018" data-start="{" data-end="}">
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno"><a class="line" href="classeve_1_1procgen_1_1TerrainBiomePreset.html#a85bda6c6e3e36dd2834edf57bdfb01e4">   18</a></span><a class="code hl_class" href="classeve_1_1Result.html">Result&lt;std::string&gt;</a> <a class="code hl_function" href="classeve_1_1procgen_1_1TerrainBiomePreset.html#a85bda6c6e3e36dd2834edf57bdfb01e4">TerrainBiomePreset::snapshotJson</a>()<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>    <span class="keywordflow">if</span> (entries_.size() &gt; kMaximumSpawnerEntries)</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>        <span class="keywordflow">return</span> malformedPreset&lt;std::string&gt;(<span class="stringliteral">&quot;terrain.biomePreset.snapshot: too many spawner entries&quot;</span>);</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>    <a class="code hl_typedef" href="classeve_1_1Value.html#ab1d85b7f682f864577d9030a3e7ea6c5">Value::Array</a> <a class="code hl_variable" href="BattleVictory_8cpp.html#aeab8fb65bf7593cd8b7f00fb67d2dc09">entries</a>;</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>    <a class="code hl_variable" href="BattleVictory_8cpp.html#aeab8fb65bf7593cd8b7f00fb67d2dc09">entries</a>.reserve(entries_.size());</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; entry : entries_) {</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>        <span class="keywordflow">if</span> (entry.entryId.empty() || entry.entryId.size() &gt; std::numeric_limits&lt;std::uint32_t&gt;::max())</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>            <span class="keywordflow">return</span> malformedPreset&lt;std::string&gt;(<span class="stringliteral">&quot;terrain.biomePreset.snapshot: invalid entry ID&quot;</span>);</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>        <span class="keyword">auto</span> plan = entry.plan.snapshotJson();</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>        <span class="keywordflow">if</span> (!plan.ok()) <span class="keywordflow">return</span> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;std::string&gt;::failure</a>(plan.status());</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>        <a class="code hl_variable" href="BattleVictory_8cpp.html#aeab8fb65bf7593cd8b7f00fb67d2dc09">entries</a>.emplace_back(<a class="code hl_typedef" href="classeve_1_1Value.html#a2d59a6ba7d844c2561c606a8973be87d">Value::Object</a>{{<span class="stringliteral">&quot;activeInBiome&quot;</span>, entry.activeInBiome},</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>                                           {<span class="stringliteral">&quot;activeInStamper&quot;</span>, entry.activeInStamper},</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>                                           {<span class="stringliteral">&quot;autoAssignResources&quot;</span>, entry.autoAssignResources},</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>                                           {<span class="stringliteral">&quot;entryId&quot;</span>, entry.entryId},</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>                                           {<span class="stringliteral">&quot;plan&quot;</span>, std::move(plan.value())}});</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    }</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    <span class="keyword">auto</span> encoded = <a class="code hl_enumvalue" href="namespaceeve_1_1procgen.html#a80c8903e74574705223482b015b06981a689202409e48743b914713f96d93947c">Value</a>(<a class="code hl_typedef" href="classeve_1_1Value.html#a2d59a6ba7d844c2561c606a8973be87d">Value::Object</a>{{<span class="stringliteral">&quot;entries&quot;</span>, std::move(<a class="code hl_variable" href="BattleVictory_8cpp.html#aeab8fb65bf7593cd8b7f00fb67d2dc09">entries</a>)},</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>                                       {<span class="stringliteral">&quot;schema&quot;</span>, <span class="stringliteral">&quot;eve.procgen.terrain-biome-preset&quot;</span>},</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>                                       {<span class="stringliteral">&quot;version&quot;</span>, 1}})</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>                       .toJson();</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    <span class="keywordflow">if</span> (!encoded.ok()) <span class="keywordflow">return</span> encoded;</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    <span class="keywordflow">if</span> (encoded.value().size() &gt; kMaximumPresetJsonBytes)</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>        <span class="keywordflow">return</span> malformedPreset&lt;std::string&gt;(<span class="stringliteral">&quot;terrain.biomePreset.snapshot: JSON exceeds size limit&quot;</span>);</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    <span class="keywordflow">return</span> encoded;</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>}</div>
+</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span> </div>
+<div class="foldopen" id="foldopen00044" data-start="{" data-end="}">
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno"><a class="line" href="classeve_1_1procgen_1_1TerrainBiomePreset.html#a81dc45d271bce2e03409ad2bd3773895">   44</a></span><a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1procgen_1_1TerrainBiomePreset.html#a81dc45d271bce2e03409ad2bd3773895">TerrainBiomePreset::restoreJson</a>(<span class="keyword">const</span> std::string&amp; json) {</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    <span class="keywordflow">if</span> (json.size() &gt; kMaximumPresetJsonBytes)</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>        <span class="keywordflow">return</span> malformedPreset&lt;void&gt;(<span class="stringliteral">&quot;terrain.biomePreset.restore: JSON exceeds size limit&quot;</span>);</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    <span class="keyword">auto</span> decoded = <a class="code hl_function" href="classeve_1_1Value.html#a28cbd61fec3de5a669f0cd8b96db34ed">Value::fromJson</a>(json);</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    <span class="keywordflow">if</span> (!decoded.ok()) <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">Result&lt;void&gt;::failure</a>(decoded.status());</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    <span class="keyword">const</span> <span class="keyword">auto</span>* <a class="code hl_variable" href="AnimSmr_8cpp.html#a3b62f50202abd219e165f5a333d5c156">root</a> = decoded.value().getIf&lt;<a class="code hl_typedef" href="classeve_1_1Value.html#a2d59a6ba7d844c2561c606a8973be87d">Value::Object</a>&gt;();</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="AnimSmr_8cpp.html#a3b62f50202abd219e165f5a333d5c156">root</a> || <a class="code hl_variable" href="AnimSmr_8cpp.html#a3b62f50202abd219e165f5a333d5c156">root</a>-&gt;size() != 3 || !<a class="code hl_variable" href="AnimSmr_8cpp.html#a3b62f50202abd219e165f5a333d5c156">root</a>-&gt;contains(<span class="stringliteral">&quot;schema&quot;</span>) || !<a class="code hl_variable" href="AnimSmr_8cpp.html#a3b62f50202abd219e165f5a333d5c156">root</a>-&gt;contains(<span class="stringliteral">&quot;version&quot;</span>) ||</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>        !<a class="code hl_variable" href="AnimSmr_8cpp.html#a3b62f50202abd219e165f5a333d5c156">root</a>-&gt;contains(<span class="stringliteral">&quot;entries&quot;</span>))</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>        <span class="keywordflow">return</span> malformedPreset&lt;void&gt;(<span class="stringliteral">&quot;terrain.biomePreset.restore: missing or unknown root fields&quot;</span>);</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    <span class="keyword">const</span> <span class="keyword">auto</span>* schema = <a class="code hl_variable" href="AnimSmr_8cpp.html#a3b62f50202abd219e165f5a333d5c156">root</a>-&gt;at(<span class="stringliteral">&quot;schema&quot;</span>).getIf&lt;std::string&gt;();</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    <span class="keyword">const</span> <span class="keyword">auto</span>* version = <a class="code hl_variable" href="AnimSmr_8cpp.html#a3b62f50202abd219e165f5a333d5c156">root</a>-&gt;at(<span class="stringliteral">&quot;version&quot;</span>).getIf&lt;std::int64_t&gt;();</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    <span class="keyword">const</span> <span class="keyword">auto</span>* <a class="code hl_variable" href="BattleVictory_8cpp.html#aeab8fb65bf7593cd8b7f00fb67d2dc09">entries</a> = <a class="code hl_variable" href="AnimSmr_8cpp.html#a3b62f50202abd219e165f5a333d5c156">root</a>-&gt;at(<span class="stringliteral">&quot;entries&quot;</span>).getIf&lt;<a class="code hl_typedef" href="classeve_1_1Value.html#ab1d85b7f682f864577d9030a3e7ea6c5">Value::Array</a>&gt;();</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    <span class="keywordflow">if</span> (!schema || *schema != <span class="stringliteral">&quot;eve.procgen.terrain-biome-preset&quot;</span> || !version ||</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>        (*version != 0 &amp;&amp; *version != 1) || !<a class="code hl_variable" href="BattleVictory_8cpp.html#aeab8fb65bf7593cd8b7f00fb67d2dc09">entries</a> || <a class="code hl_variable" href="BattleVictory_8cpp.html#aeab8fb65bf7593cd8b7f00fb67d2dc09">entries</a>-&gt;size() &gt; kMaximumSpawnerEntries)</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>        <span class="keywordflow">return</span> malformedPreset&lt;void&gt;(<span class="stringliteral">&quot;terrain.biomePreset.restore: unsupported schema, version or entry count&quot;</span>);</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span> </div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    <a class="code hl_class" href="classeve_1_1procgen_1_1TerrainBiomePreset.html">TerrainBiomePreset</a> candidate;</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; encodedEntry : *<a class="code hl_variable" href="BattleVictory_8cpp.html#aeab8fb65bf7593cd8b7f00fb67d2dc09">entries</a>) {</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>        <span class="keyword">const</span> <span class="keyword">auto</span>* entry = encodedEntry.getIf&lt;<a class="code hl_typedef" href="classeve_1_1Value.html#a2d59a6ba7d844c2561c606a8973be87d">Value::Object</a>&gt;();</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>        <span class="keyword">const</span> std::size_t expectedFields = *version == 0 ? 4 : 5;</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>        <span class="keywordflow">if</span> (!entry || entry-&gt;size() != expectedFields || !entry-&gt;contains(<span class="stringliteral">&quot;entryId&quot;</span>) ||</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>            !entry-&gt;contains(<span class="stringliteral">&quot;activeInBiome&quot;</span>) || !entry-&gt;contains(<span class="stringliteral">&quot;activeInStamper&quot;</span>) ||</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>            !entry-&gt;contains(<span class="stringliteral">&quot;plan&quot;</span>) || (*version &gt;= 1 &amp;&amp; !entry-&gt;contains(<span class="stringliteral">&quot;autoAssignResources&quot;</span>)))</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>            <span class="keywordflow">return</span> malformedPreset&lt;void&gt;(<span class="stringliteral">&quot;terrain.biomePreset.restore: missing or unknown entry fields&quot;</span>);</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>        <span class="keyword">const</span> <span class="keyword">auto</span>* entryId = entry-&gt;at(<span class="stringliteral">&quot;entryId&quot;</span>).getIf&lt;std::string&gt;();</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>        <span class="keyword">const</span> <span class="keyword">auto</span>* activeInBiome = entry-&gt;at(<span class="stringliteral">&quot;activeInBiome&quot;</span>).getIf&lt;<span class="keywordtype">bool</span>&gt;();</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>        <span class="keyword">const</span> <span class="keyword">auto</span>* activeInStamper = entry-&gt;at(<span class="stringliteral">&quot;activeInStamper&quot;</span>).getIf&lt;<span class="keywordtype">bool</span>&gt;();</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>        <span class="keyword">const</span> <span class="keyword">auto</span>* planJson = entry-&gt;at(<span class="stringliteral">&quot;plan&quot;</span>).getIf&lt;std::string&gt;();</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>        <span class="keyword">const</span> <span class="keywordtype">bool</span>* autoAssign = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>        <span class="keywordflow">if</span> (*version &gt;= 1) autoAssign = entry-&gt;at(<span class="stringliteral">&quot;autoAssignResources&quot;</span>).getIf&lt;<span class="keywordtype">bool</span>&gt;();</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>        <span class="keywordflow">if</span> (!entryId || entryId-&gt;empty() || !activeInBiome || !activeInStamper || !planJson ||</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>            (*version &gt;= 1 &amp;&amp; !autoAssign))</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>            <span class="keywordflow">return</span> malformedPreset&lt;void&gt;(<span class="stringliteral">&quot;terrain.biomePreset.restore: invalid entry values&quot;</span>);</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>        <a class="code hl_class" href="classeve_1_1procgen_1_1TerrainSpawnPlan.html">TerrainSpawnPlan</a> plan;</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>        <span class="keyword">auto</span> restored = plan.<a class="code hl_function" href="classeve_1_1procgen_1_1TerrainSpawnPlan.html#ac24757dbb3ecf7e9bfcdd873fbbecfb3">restoreJson</a>(*planJson);</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>        <span class="keywordflow">if</span> (!restored.ok()) <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">Result&lt;void&gt;::failure</a>(restored.status());</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>        <span class="keyword">auto</span> added = candidate.<a class="code hl_function" href="classeve_1_1procgen_1_1TerrainBiomePreset.html#a6c44c18759792bb424ab064d1062599c">addSpawner</a>(*entryId, plan, *activeInBiome, *activeInStamper,</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>                                           *version == 0 ? <span class="keyword">true</span> : *autoAssign);</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>        <span class="keywordflow">if</span> (!added.ok()) <span class="keywordflow">return</span> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;::failure</a>(added.status());</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>    }</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>    entries_.swap(candidate.entries_);</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">Result&lt;void&gt;::success</a>();</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>}</div>
+</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span> </div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>}  <span class="comment">// namespace eve::procgen</span></div>
+<div class="ttc" id="aAnimSmr_8cpp_html_a3b62f50202abd219e165f5a333d5c156"><div class="ttname"><a href="AnimSmr_8cpp.html#a3b62f50202abd219e165f5a333d5c156">root</a></div><div class="ttdeci">int root</div><div class="ttdef"><b>Definition</b> <a href="AnimSmr_8cpp_source.html#l00119">AnimSmr.cpp:119</a></div></div>
+<div class="ttc" id="aBattleVictory_8cpp_html_aeab8fb65bf7593cd8b7f00fb67d2dc09"><div class="ttname"><a href="BattleVictory_8cpp.html#aeab8fb65bf7593cd8b7f00fb67d2dc09">entries</a></div><div class="ttdeci">std::unordered_map&lt; std::string, QuestRuntime &gt; entries</div><div class="ttdef"><b>Definition</b> <a href="BattleVictory_8cpp_source.html#l00024">BattleVictory.cpp:24</a></div></div>
+<div class="ttc" id="aGltfAnimation_8cpp_html_a36bd74109f547f7f8198faf5a12d2879"><div class="ttname"><a href="GltfAnimation_8cpp.html#a36bd74109f547f7f8198faf5a12d2879">message</a></div><div class="ttdeci">std::string message</div><div class="ttdef"><b>Definition</b> <a href="GltfAnimation_8cpp_source.html#l00017">GltfAnimation.cpp:17</a></div></div>
+<div class="ttc" id="aTerrainBiomePreset_8h_html"><div class="ttname"><a href="TerrainBiomePreset_8h.html">TerrainBiomePreset.h</a></div></div>
+<div class="ttc" id="aValue_8h_html"><div class="ttname"><a href="Value_8h.html">Value.h</a></div><div class="ttdoc">Owning, renderer-independent dynamic values.</div></div>
+<div class="ttc" id="aclasseve_1_1Diagnostic_html_af797f7520cc62e8273da5afdb59d9ef4"><div class="ttname"><a href="classeve_1_1Diagnostic.html#af797f7520cc62e8273da5afdb59d9ef4">eve::Diagnostic::error</a></div><div class="ttdeci">static Diagnostic error(DiagnosticCode code, std::string message, std::string path={}, DiagnosticDetails details={}, std::string source={})</div><div class="ttdoc">Construct an error diagnostic with the standard error severity.</div><div class="ttdef"><b>Definition</b> <a href="Diagnostic_8h_source.html#l00119">Diagnostic.h:119</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html_a10668d27f9f97c9808e0099e0248816b"><div class="ttname"><a href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">eve::Result::success</a></div><div class="ttdeci">static Result success(T value)</div><div class="ttdoc">Construct a successful result owning value.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00157">Result.h:157</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html_af1a297022e9a6a615433003fe6466358"><div class="ttname"><a href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">eve::Result::failure</a></div><div class="ttdeci">static Result failure(Status status)</div><div class="ttdoc">Construct a failed result from a structured status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00166">Result.h:166</a></div></div>
+<div class="ttc" id="aclasseve_1_1Value_html_a28cbd61fec3de5a669f0cd8b96db34ed"><div class="ttname"><a href="classeve_1_1Value.html#a28cbd61fec3de5a669f0cd8b96db34ed">eve::Value::fromJson</a></div><div class="ttdeci">static Result&lt; Value &gt; fromJson(std::string_view json)</div><div class="ttdoc">Parse one strict JSON value into an owning Value.</div><div class="ttdef"><b>Definition</b> <a href="Value_8cpp_source.html#l00057">Value.cpp:57</a></div></div>
+<div class="ttc" id="aclasseve_1_1Value_html_a2d59a6ba7d844c2561c606a8973be87d"><div class="ttname"><a href="classeve_1_1Value.html#a2d59a6ba7d844c2561c606a8973be87d">eve::Value::Object</a></div><div class="ttdeci">std::map&lt; std::string, Value &gt; Object</div><div class="ttdef"><b>Definition</b> <a href="Value_8h_source.html#l00034">Value.h:34</a></div></div>
+<div class="ttc" id="aclasseve_1_1Value_html_ab1d85b7f682f864577d9030a3e7ea6c5"><div class="ttname"><a href="classeve_1_1Value.html#ab1d85b7f682f864577d9030a3e7ea6c5">eve::Value::Array</a></div><div class="ttdeci">std::vector&lt; Value &gt; Array</div><div class="ttdef"><b>Definition</b> <a href="Value_8h_source.html#l00033">Value.h:33</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1TerrainBiomePreset_html"><div class="ttname"><a href="classeve_1_1procgen_1_1TerrainBiomePreset.html">eve::procgen::TerrainBiomePreset</a></div><div class="ttdoc">Own an ordered Pcg-style biome preset made from independent spawner plans. Entries and plans are copi...</div><div class="ttdef"><b>Definition</b> <a href="TerrainBiomePreset_8h_source.html#l00025">TerrainBiomePreset.h:25</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1TerrainBiomePreset_html_a6c44c18759792bb424ab064d1062599c"><div class="ttname"><a href="classeve_1_1procgen_1_1TerrainBiomePreset.html#a6c44c18759792bb424ab064d1062599c">eve::procgen::TerrainBiomePreset::addSpawner</a></div><div class="ttdeci">Result&lt; int &gt; addSpawner(const std::string &amp;entryId, const TerrainSpawnPlan &amp;plan, bool activeInBiome, bool activeInStamper, bool autoAssignResources)</div><div class="ttdoc">Append an owned nonempty spawner entry with a stable unique entry ID.</div><div class="ttdef"><b>Definition</b> <a href="TerrainBiomePreset_8cpp_source.html#l00018">TerrainBiomePreset.cpp:18</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1TerrainBiomePreset_html_a81dc45d271bce2e03409ad2bd3773895"><div class="ttname"><a href="classeve_1_1procgen_1_1TerrainBiomePreset.html#a81dc45d271bce2e03409ad2bd3773895">eve::procgen::TerrainBiomePreset::restoreJson</a></div><div class="ttdeci">Result&lt; void &gt; restoreJson(const std::string &amp;json)</div><div class="ttdoc">Atomically restore version 1 or migrate version 0 (auto-assign defaults true).</div><div class="ttdef"><b>Definition</b> <a href="TerrainBiomePresetCodec_8cpp_source.html#l00044">TerrainBiomePresetCodec.cpp:44</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1TerrainBiomePreset_html_a85bda6c6e3e36dd2834edf57bdfb01e4"><div class="ttname"><a href="classeve_1_1procgen_1_1TerrainBiomePreset.html#a85bda6c6e3e36dd2834edf57bdfb01e4">eve::procgen::TerrainBiomePreset::snapshotJson</a></div><div class="ttdeci">Result&lt; std::string &gt; snapshotJson() const</div><div class="ttdoc">Serialize schema version 1 as deterministic strict JSON with owned nested spawn plans.</div><div class="ttdef"><b>Definition</b> <a href="TerrainBiomePresetCodec_8cpp_source.html#l00018">TerrainBiomePresetCodec.cpp:18</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1TerrainSpawnPlan_html"><div class="ttname"><a href="classeve_1_1procgen_1_1TerrainSpawnPlan.html">eve::procgen::TerrainSpawnPlan</a></div><div class="ttdoc">Own an ordered mixed-domain Pcg-style spawn recipe. Rule IDs are stable and unique....</div><div class="ttdef"><b>Definition</b> <a href="TerrainSpawnPlan_8h_source.html#l00087">TerrainSpawnPlan.h:87</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1TerrainSpawnPlan_html_ac24757dbb3ecf7e9bfcdd873fbbecfb3"><div class="ttname"><a href="classeve_1_1procgen_1_1TerrainSpawnPlan.html#ac24757dbb3ecf7e9bfcdd873fbbecfb3">eve::procgen::TerrainSpawnPlan::restoreJson</a></div><div class="ttdeci">Result&lt; void &gt; restoreJson(const std::string &amp;json)</div><div class="ttdoc">Atomically restore versions 0-3; version 0 migrates all rules to enabled.</div><div class="ttdef"><b>Definition</b> <a href="TerrainSpawnPlanCodec_8cpp_source.html#l00358">TerrainSpawnPlanCodec.cpp:358</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_html"><div class="ttname"><a href="namespaceeve_1_1procgen.html">eve::procgen</a></div><div class="ttdef"><b>Definition</b> <a href="EvpackPointGraphLoader_8h_source.html#l00010">EvpackPointGraphLoader.h:10</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_html_a80c8903e74574705223482b015b06981a689202409e48743b914713f96d93947c"><div class="ttname"><a href="namespaceeve_1_1procgen.html#a80c8903e74574705223482b015b06981a689202409e48743b914713f96d93947c">eve::procgen::TerrainNoiseType::Value</a></div><div class="ttdeci">@ Value</div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::DiagnosticCode::InvalidArgument</a></div><div class="ttdeci">@ InvalidArgument</div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

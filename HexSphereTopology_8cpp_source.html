@@ -1,0 +1,578 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/hexmap/HexSphereTopology.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_9beb90eeb0f208ac74f7b70f24c9d85f.html">hexmap</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">HexSphereTopology.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="HexSphereTopology_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &quot;<a class="code" href="HexSphereTopology_8h.html">hexmap/HexSphereTopology.h</a>&quot;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &lt;algorithm&gt;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &lt;cmath&gt;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;unordered_map&gt;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;utility&gt;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1hexmap.html">eve::hexmap</a> {</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="keyword">namespace </span>{</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span> </div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="keyword">using </span>Vec = HexVec3;</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span> </div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="keyword">constexpr</span> <span class="keywordtype">float</span> kGoldenRatio = 1.618033988749895f;</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span> </div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>[[nodiscard]] <span class="keyword">constexpr</span> <span class="keywordtype">float</span> <a class="code hl_function" href="namespaceeve_1_1procgen_1_1urban.html#a801145dddf90e252b78db277ad210010">dot</a>(Vec <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>, Vec <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>) <span class="keyword">noexcept</span> {</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>.x * <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.x + <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>.y * <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.y + <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>.z * <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.z;</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>}</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span> </div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>[[nodiscard]] <span class="keyword">constexpr</span> Vec <a class="code hl_function" href="namespaceeve_1_1procgen_1_1urban.html#a938dc59eecfd5d9068979e8db608287e">cross</a>(Vec <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>, Vec <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>) <span class="keyword">noexcept</span> {</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>    <span class="keywordflow">return</span> Vec{<a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>.y * <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.z - <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>.z * <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.y, <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>.z * <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.x - <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>.x * <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.z, <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>.x * <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.y - <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>.y * <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>.x};</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>}</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span> </div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>[[nodiscard]] <span class="keywordtype">float</span> <a class="code hl_variable" href="CaveMesh_8cpp.html#a6150639f5295064e97e299a9206d16b1">length</a>(Vec <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>) <span class="keyword">noexcept</span> { <span class="keywordflow">return</span> std::sqrt(<a class="code hl_function" href="namespaceeve_1_1procgen_1_1urban.html#a801145dddf90e252b78db277ad210010">dot</a>(<a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>, <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>)); }</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span> </div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>[[nodiscard]] Vec <a class="code hl_function" href="namespaceeve_1_1procgen_1_1urban.html#a7e72a289370e7236563fd0efdf389a26">normalize</a>(Vec <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>) <span class="keyword">noexcept</span> {</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> len = <a class="code hl_variable" href="CaveMesh_8cpp.html#a6150639f5295064e97e299a9206d16b1">length</a>(<a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>);</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    <span class="keywordflow">if</span> (len &lt;= 1e-20f) <span class="keywordflow">return</span> Vec{0.f, 1.f, 0.f};</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    <span class="keywordflow">return</span> Vec{<a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>.x / len, <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>.y / len, <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>.z / len};</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>}</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span> </div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span><span class="keyword">constexpr</span> <span class="keywordtype">float</span> kIcosahedronVertices[12][3] = {</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    {-1.f, kGoldenRatio, 0.f},  {1.f, kGoldenRatio, 0.f},   {-1.f, -kGoldenRatio, 0.f}, {1.f, -kGoldenRatio, 0.f},</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    {0.f, -1.f, kGoldenRatio},  {0.f, 1.f, kGoldenRatio},   {0.f, -1.f, -kGoldenRatio}, {0.f, 1.f, -kGoldenRatio},</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    {kGoldenRatio, 0.f, -1.f},  {kGoldenRatio, 0.f, 1.f},   {-kGoldenRatio, 0.f, -1.f}, {-kGoldenRatio, 0.f, 1.f},</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>};</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span> </div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span><span class="keyword">constexpr</span> std::int32_t kIcosahedronFaces[20][3] = {</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    {0, 11, 5}, {0, 5, 1},  {0, 1, 7},  {0, 7, 10}, {0, 10, 11}, {1, 5, 9},  {5, 11, 4}, {11, 10, 2},</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    {10, 7, 6}, {7, 1, 8},  {3, 9, 4},  {3, 4, 2},  {3, 2, 6},   {3, 6, 8},  {3, 8, 9},  {4, 9, 5},</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    {2, 4, 11}, {6, 2, 10}, {8, 6, 7},  {9, 8, 1},</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>};</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span> </div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span><span class="keyword">struct </span>Triangle {</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno"><a class="line" href="HexSphereTopology_8cpp.html#a6377a3dc3be19b752d9add78aa7bfbea">   66</a></span>    std::int32_t <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a> = 0;</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno"><a class="line" href="HexSphereTopology_8cpp.html#a780f8db942db173d49bd15d8a4ddda3a">   67</a></span>    std::int32_t <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a> = 0;</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno"><a class="line" href="HexSphereTopology_8cpp.html#a6508ac0a45fccabd203a6f520c69dca8">   68</a></span>    std::int32_t <a class="code hl_variable" href="HexSphereTopology_8cpp.html#a6508ac0a45fccabd203a6f520c69dca8">c</a> = 0;</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>};</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span> </div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>[[nodiscard]] std::uint64_t edgeKey(std::int32_t i, std::int32_t j) <span class="keyword">noexcept</span> {</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    <span class="keyword">const</span> std::uint32_t low  = <span class="keyword">static_cast&lt;</span>std::uint32_t<span class="keyword">&gt;</span>(i &lt; j ? i : j);</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    <span class="keyword">const</span> std::uint32_t high = <span class="keyword">static_cast&lt;</span>std::uint32_t<span class="keyword">&gt;</span>(i &lt; j ? j : i);</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    <span class="keywordflow">return</span> (<span class="keyword">static_cast&lt;</span>std::uint64_t<span class="keyword">&gt;</span>(high) &lt;&lt; 32u) | low;</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>}</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span> </div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span><span class="keyword">struct </span>EdgeFaces {</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno"><a class="line" href="HexSphereTopology_8cpp.html#a9ebd1b92d5226e25efef9e2af5ca8a34">   80</a></span>    std::int32_t <a class="code hl_variable" href="HexSphereTopology_8cpp.html#a9ebd1b92d5226e25efef9e2af5ca8a34">first</a>  = -1;</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno"><a class="line" href="HexSphereTopology_8cpp.html#a1d0c825b660865150899766db0ec7361">   81</a></span>    std::int32_t <a class="code hl_variable" href="HexSphereTopology_8cpp.html#a1d0c825b660865150899766db0ec7361">second</a> = -1;</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>};</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span> </div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>[[nodiscard]] Result&lt;HexSphereTopology&gt; sphereFailure(<span class="keyword">const</span> <span class="keywordtype">char</span>* <a class="code hl_variable" href="GltfAnimation_8cpp.html#a36bd74109f547f7f8198faf5a12d2879">message</a>) {</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">Result&lt;HexSphereTopology&gt;::failure</a>(</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>        <a class="code hl_function" href="classeve_1_1Diagnostic.html#af797f7520cc62e8273da5afdb59d9ef4">Diagnostic::error</a>(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">DiagnosticCode::InvalidArgument</a>, <a class="code hl_variable" href="GltfAnimation_8cpp.html#a36bd74109f547f7f8198faf5a12d2879">message</a>, <span class="stringliteral">&quot;hexmap.sphere&quot;</span>));</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>}</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span> </div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>}  <span class="comment">// namespace</span></div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span> </div>
+<div class="foldopen" id="foldopen00092" data-start="{" data-end="}">
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno"><a class="line" href="classeve_1_1hexmap_1_1HexSphereTopology.html#ae41033809d539f2fbc86277334c9d002">   92</a></span><a class="code hl_class" href="classeve_1_1Result.html">Result&lt;HexSphereTopology&gt;</a> <a class="code hl_function" href="classeve_1_1hexmap_1_1HexSphereTopology.html#ae41033809d539f2fbc86277334c9d002">HexSphereTopology::build</a>(std::int32_t subdivision) {</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>    <span class="keywordflow">if</span> (subdivision &lt; 0 || subdivision &gt; <a class="code hl_variable" href="namespaceeve_1_1hexmap.html#a62fac67253565bdcfef7428b47509d6a">kMaxHexSphereSubdivision</a>) {</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>        <span class="keywordflow">return</span> sphereFailure(<span class="stringliteral">&quot;hex sphere subdivision out of range&quot;</span>);</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>    }</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span> </div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>    <a class="code hl_class" href="classeve_1_1hexmap_1_1HexSphereTopology.html">HexSphereTopology</a> <a class="code hl_variable" href="Pathfinder_8cpp.html#a135992146dd07a4c751eaa500b8f38e6">topology</a>;</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>    <a class="code hl_variable" href="Pathfinder_8cpp.html#a135992146dd07a4c751eaa500b8f38e6">topology</a>.subdivision_ = <a class="code hl_function" href="classeve_1_1hexmap_1_1HexSphereTopology.html#a349b31c4716d859d0cd00f881386c5a0">subdivision</a>;</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>    <a class="code hl_variable" href="Pathfinder_8cpp.html#a135992146dd07a4c751eaa500b8f38e6">topology</a>.frequency_   = std::int32_t{1} &lt;&lt; <a class="code hl_function" href="classeve_1_1hexmap_1_1HexSphereTopology.html#a349b31c4716d859d0cd00f881386c5a0">subdivision</a>;</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span> </div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>    <span class="comment">// --- primal polyhedron --------------------------------------------------</span></div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>    std::vector&lt;Vec&gt; <a class="code hl_variable" href="PlacementSystem_8cpp.html#a31e26c1cfba73f1354aeb3c17673c0a1">vertices</a>;</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>    <a class="code hl_variable" href="PlacementSystem_8cpp.html#a31e26c1cfba73f1354aeb3c17673c0a1">vertices</a>.reserve(12u);</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; vertex : kIcosahedronVertices) <a class="code hl_variable" href="PlacementSystem_8cpp.html#a31e26c1cfba73f1354aeb3c17673c0a1">vertices</a>.push_back(normalize(Vec{vertex[0], vertex[1], vertex[2]}));</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span> </div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>    std::vector&lt;Triangle&gt; <a class="code hl_variable" href="Builder_8cpp.html#a317e3a075fa5ae6cc2d6aca9b59377e6">triangles</a>;</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>    <a class="code hl_variable" href="Builder_8cpp.html#a317e3a075fa5ae6cc2d6aca9b59377e6">triangles</a>.reserve(20u);</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; face : kIcosahedronFaces) <a class="code hl_variable" href="Builder_8cpp.html#a317e3a075fa5ae6cc2d6aca9b59377e6">triangles</a>.push_back(Triangle{face[0], face[1], face[2]});</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>    <span class="keywordflow">for</span> (Triangle&amp; <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a9b7fb3a94d7230e91baab1b890918213">triangle</a> : <a class="code hl_variable" href="Builder_8cpp.html#a317e3a075fa5ae6cc2d6aca9b59377e6">triangles</a>) {</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>        <span class="keyword">const</span> Vec <a class="code hl_variable" href="ModelRenderer_8cpp.html#a7fc298ed6f70a0822720769c13216978">normal</a>  = cross(<a class="code hl_variable" href="PlacementSystem_8cpp.html#a31e26c1cfba73f1354aeb3c17673c0a1">vertices</a>[<a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a9b7fb3a94d7230e91baab1b890918213">triangle</a>.b] - <a class="code hl_variable" href="PlacementSystem_8cpp.html#a31e26c1cfba73f1354aeb3c17673c0a1">vertices</a>[<a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a9b7fb3a94d7230e91baab1b890918213">triangle</a>.a], <a class="code hl_variable" href="PlacementSystem_8cpp.html#a31e26c1cfba73f1354aeb3c17673c0a1">vertices</a>[<a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a9b7fb3a94d7230e91baab1b890918213">triangle</a>.c] - <a class="code hl_variable" href="PlacementSystem_8cpp.html#a31e26c1cfba73f1354aeb3c17673c0a1">vertices</a>[<a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a9b7fb3a94d7230e91baab1b890918213">triangle</a>.a]);</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>        <span class="keyword">const</span> Vec outward = <a class="code hl_variable" href="PlacementSystem_8cpp.html#a31e26c1cfba73f1354aeb3c17673c0a1">vertices</a>[<a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a9b7fb3a94d7230e91baab1b890918213">triangle</a>.a] + <a class="code hl_variable" href="PlacementSystem_8cpp.html#a31e26c1cfba73f1354aeb3c17673c0a1">vertices</a>[<a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a9b7fb3a94d7230e91baab1b890918213">triangle</a>.b] + <a class="code hl_variable" href="PlacementSystem_8cpp.html#a31e26c1cfba73f1354aeb3c17673c0a1">vertices</a>[<a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a9b7fb3a94d7230e91baab1b890918213">triangle</a>.c];</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>        <span class="keywordflow">if</span> (dot(<a class="code hl_variable" href="ModelRenderer_8cpp.html#a7fc298ed6f70a0822720769c13216978">normal</a>, outward) &lt; 0.f) std::swap(<a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a9b7fb3a94d7230e91baab1b890918213">triangle</a>.b, <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a9b7fb3a94d7230e91baab1b890918213">triangle</a>.c);</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>    }</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span> </div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>    <span class="comment">// --- midpoint subdivision, frequency 2^subdivision -----------------------</span></div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>    <span class="comment">//</span></div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>    <span class="comment">// Splitting every triangle into four and welding the shared midpoints by edge</span></div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>    <span class="comment">// key keeps one vertex per physical point, so vertex ids are stable and the</span></div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>    <span class="comment">// original twelve keep their ids 0..11 -- which is what makes the twelve</span></div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>    <span class="comment">// pentagons addressable as cells [0, 12).</span></div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>    <span class="keywordflow">for</span> (std::int32_t level = 0; level &lt; subdivision; ++level) {</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>        std::unordered_map&lt;std::uint64_t, std::int32_t&gt; midpoints;</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>        midpoints.reserve(<a class="code hl_variable" href="PlacementSystem_8cpp.html#a31e26c1cfba73f1354aeb3c17673c0a1">vertices</a>.size() * 2u);</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>        std::vector&lt;Triangle&gt; refined;</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>        refined.reserve(<a class="code hl_variable" href="Builder_8cpp.html#a317e3a075fa5ae6cc2d6aca9b59377e6">triangles</a>.size() * 4u);</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span> </div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>        <span class="keyword">const</span> <span class="keyword">auto</span> midpoint = [&amp;](std::int32_t i, std::int32_t j) {</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>            <span class="keyword">const</span> std::uint64_t <a class="code hl_variable" href="mesh_2MeshModifierGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a>   = edgeKey(i, j);</div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>            <span class="keyword">const</span> <span class="keyword">auto</span>          <a class="code hl_variable" href="RpgDialect_8cpp.html#a7141f237b2648c631ce5b73215683565">found</a> = midpoints.find(<a class="code hl_variable" href="mesh_2MeshModifierGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a>);</div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>            <span class="keywordflow">if</span> (<a class="code hl_variable" href="RpgDialect_8cpp.html#a7141f237b2648c631ce5b73215683565">found</a> != midpoints.end()) <span class="keywordflow">return</span> <a class="code hl_variable" href="RpgDialect_8cpp.html#a7141f237b2648c631ce5b73215683565">found</a>-&gt;second;</div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>            <span class="keyword">const</span> std::int32_t <a class="code hl_variable" href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a> = <span class="keyword">static_cast&lt;</span>std::int32_t<span class="keyword">&gt;</span>(<a class="code hl_variable" href="PlacementSystem_8cpp.html#a31e26c1cfba73f1354aeb3c17673c0a1">vertices</a>.size());</div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>            <a class="code hl_variable" href="PlacementSystem_8cpp.html#a31e26c1cfba73f1354aeb3c17673c0a1">vertices</a>.push_back(normalize(<a class="code hl_variable" href="PlacementSystem_8cpp.html#a31e26c1cfba73f1354aeb3c17673c0a1">vertices</a>[i] + <a class="code hl_variable" href="PlacementSystem_8cpp.html#a31e26c1cfba73f1354aeb3c17673c0a1">vertices</a>[j]));</div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>            midpoints.emplace(<a class="code hl_variable" href="mesh_2MeshModifierGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a>, <a class="code hl_variable" href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>);</div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>            <span class="keywordflow">return</span> <a class="code hl_variable" href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>;</div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>        };</div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span> </div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>        <span class="keywordflow">for</span> (<span class="keyword">const</span> Triangle&amp; <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a9b7fb3a94d7230e91baab1b890918213">triangle</a> : <a class="code hl_variable" href="Builder_8cpp.html#a317e3a075fa5ae6cc2d6aca9b59377e6">triangles</a>) {</div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span>            <span class="keyword">const</span> std::int32_t <a class="code hl_variable" href="GtsMeshSimplifier_8cpp.html#a66017ae0928cf15de1f3cc98b8fd2833">ab</a> = midpoint(<a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a9b7fb3a94d7230e91baab1b890918213">triangle</a>.a, <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a9b7fb3a94d7230e91baab1b890918213">triangle</a>.b);</div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>            <span class="keyword">const</span> std::int32_t bc = midpoint(<a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a9b7fb3a94d7230e91baab1b890918213">triangle</a>.b, <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a9b7fb3a94d7230e91baab1b890918213">triangle</a>.c);</div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span>            <span class="keyword">const</span> std::int32_t ca = midpoint(<a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a9b7fb3a94d7230e91baab1b890918213">triangle</a>.c, <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a9b7fb3a94d7230e91baab1b890918213">triangle</a>.a);</div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>            refined.push_back(Triangle{<a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a9b7fb3a94d7230e91baab1b890918213">triangle</a>.a, <a class="code hl_variable" href="GtsMeshSimplifier_8cpp.html#a66017ae0928cf15de1f3cc98b8fd2833">ab</a>, ca});</div>
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>            refined.push_back(Triangle{<a class="code hl_variable" href="GtsMeshSimplifier_8cpp.html#a66017ae0928cf15de1f3cc98b8fd2833">ab</a>, <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a9b7fb3a94d7230e91baab1b890918213">triangle</a>.b, bc});</div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span>            refined.push_back(Triangle{ca, bc, <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a9b7fb3a94d7230e91baab1b890918213">triangle</a>.c});</div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span>            refined.push_back(Triangle{<a class="code hl_variable" href="GtsMeshSimplifier_8cpp.html#a66017ae0928cf15de1f3cc98b8fd2833">ab</a>, bc, ca});</div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span>        }</div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span>        <a class="code hl_variable" href="Builder_8cpp.html#a317e3a075fa5ae6cc2d6aca9b59377e6">triangles</a>.swap(refined);</div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span>    }</div>
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span> </div>
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span>    <span class="keyword">const</span> std::int32_t cellCount = <span class="keyword">static_cast&lt;</span>std::int32_t<span class="keyword">&gt;</span>(<a class="code hl_variable" href="PlacementSystem_8cpp.html#a31e26c1cfba73f1354aeb3c17673c0a1">vertices</a>.size());</div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>    <a class="code hl_variable" href="Pathfinder_8cpp.html#a135992146dd07a4c751eaa500b8f38e6">topology</a>.directions_         = std::move(<a class="code hl_variable" href="PlacementSystem_8cpp.html#a31e26c1cfba73f1354aeb3c17673c0a1">vertices</a>);</div>
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span> </div>
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span>    <span class="comment">// --- dual corners: one per primal face ----------------------------------</span></div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span>    std::vector&lt;Vec&gt; cornerDirections(<a class="code hl_variable" href="Builder_8cpp.html#a317e3a075fa5ae6cc2d6aca9b59377e6">triangles</a>.size());</div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span>    <span class="keywordflow">for</span> (std::size_t i = 0; i &lt; <a class="code hl_variable" href="Builder_8cpp.html#a317e3a075fa5ae6cc2d6aca9b59377e6">triangles</a>.size(); ++i) {</div>
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span>        <span class="keyword">const</span> Triangle&amp; <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a9b7fb3a94d7230e91baab1b890918213">triangle</a> = <a class="code hl_variable" href="Builder_8cpp.html#a317e3a075fa5ae6cc2d6aca9b59377e6">triangles</a>[i];</div>
+<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span>        cornerDirections[i] =</div>
+<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span>            <a class="code hl_function" href="namespaceeve_1_1procgen_1_1urban.html#a7e72a289370e7236563fd0efdf389a26">normalize</a>(<a class="code hl_variable" href="Pathfinder_8cpp.html#a135992146dd07a4c751eaa500b8f38e6">topology</a>.directions_[<a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a9b7fb3a94d7230e91baab1b890918213">triangle</a>.a] + <a class="code hl_variable" href="Pathfinder_8cpp.html#a135992146dd07a4c751eaa500b8f38e6">topology</a>.directions_[<a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a9b7fb3a94d7230e91baab1b890918213">triangle</a>.b] + <a class="code hl_variable" href="Pathfinder_8cpp.html#a135992146dd07a4c751eaa500b8f38e6">topology</a>.directions_[<a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a9b7fb3a94d7230e91baab1b890918213">triangle</a>.c]);</div>
+<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span>    }</div>
+<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span> </div>
+<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span>    <span class="comment">// --- vertex -&gt; incident face incidence, in CSR form ----------------------</span></div>
+<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span>    <span class="keyword">const</span> std::int32_t        faceCount = <span class="keyword">static_cast&lt;</span>std::int32_t<span class="keyword">&gt;</span>(<a class="code hl_variable" href="Builder_8cpp.html#a317e3a075fa5ae6cc2d6aca9b59377e6">triangles</a>.size());</div>
+<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span>    std::vector&lt;std::int32_t&gt; incidenceCount(<span class="keyword">static_cast&lt;</span>std::size_t<span class="keyword">&gt;</span>(cellCount), 0);</div>
+<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> Triangle&amp; <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a9b7fb3a94d7230e91baab1b890918213">triangle</a> : <a class="code hl_variable" href="Builder_8cpp.html#a317e3a075fa5ae6cc2d6aca9b59377e6">triangles</a>) {</div>
+<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span>        ++incidenceCount[<a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a9b7fb3a94d7230e91baab1b890918213">triangle</a>.a];</div>
+<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span>        ++incidenceCount[<a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a9b7fb3a94d7230e91baab1b890918213">triangle</a>.b];</div>
+<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span>        ++incidenceCount[<a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a9b7fb3a94d7230e91baab1b890918213">triangle</a>.c];</div>
+<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span>    }</div>
+<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span>    std::vector&lt;std::int32_t&gt; incidenceOffset(<span class="keyword">static_cast&lt;</span>std::size_t<span class="keyword">&gt;</span>(cellCount) + 1u, 0);</div>
+<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span>    <span class="keywordflow">for</span> (std::int32_t <a class="code hl_variable" href="TacticsPath_8cpp.html#ac09c70a19f04817cd37f78fe3e752066">cell</a> = 0; <a class="code hl_variable" href="TacticsPath_8cpp.html#ac09c70a19f04817cd37f78fe3e752066">cell</a> &lt; cellCount; ++<a class="code hl_variable" href="TacticsPath_8cpp.html#ac09c70a19f04817cd37f78fe3e752066">cell</a>) {</div>
+<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span>        incidenceOffset[<a class="code hl_variable" href="TacticsPath_8cpp.html#ac09c70a19f04817cd37f78fe3e752066">cell</a> + 1] = incidenceOffset[<a class="code hl_variable" href="TacticsPath_8cpp.html#ac09c70a19f04817cd37f78fe3e752066">cell</a>] + incidenceCount[<a class="code hl_variable" href="TacticsPath_8cpp.html#ac09c70a19f04817cd37f78fe3e752066">cell</a>];</div>
+<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span>    }</div>
+<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span>    std::vector&lt;std::int32_t&gt; incidence(<span class="keyword">static_cast&lt;</span>std::size_t<span class="keyword">&gt;</span>(incidenceOffset[cellCount]), -1);</div>
+<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span>    {</div>
+<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span>        std::vector&lt;std::int32_t&gt; <a class="code hl_variable" href="TacticsPersistence_8cpp.html#abe1c03b69a12641be752dcf349310f1c">cursor</a>(incidenceOffset.begin(), incidenceOffset.end() - 1);</div>
+<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span>        <span class="keywordflow">for</span> (std::int32_t face = 0; face &lt; faceCount; ++face) {</div>
+<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span>            <span class="keyword">const</span> Triangle&amp; <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a9b7fb3a94d7230e91baab1b890918213">triangle</a> = <a class="code hl_variable" href="Builder_8cpp.html#a317e3a075fa5ae6cc2d6aca9b59377e6">triangles</a>[face];</div>
+<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span>            incidence[<a class="code hl_variable" href="TacticsPersistence_8cpp.html#abe1c03b69a12641be752dcf349310f1c">cursor</a>[<a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a9b7fb3a94d7230e91baab1b890918213">triangle</a>.a]++] = face;</div>
+<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span>            incidence[<a class="code hl_variable" href="TacticsPersistence_8cpp.html#abe1c03b69a12641be752dcf349310f1c">cursor</a>[<a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a9b7fb3a94d7230e91baab1b890918213">triangle</a>.b]++] = face;</div>
+<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span>            incidence[<a class="code hl_variable" href="TacticsPersistence_8cpp.html#abe1c03b69a12641be752dcf349310f1c">cursor</a>[<a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a9b7fb3a94d7230e91baab1b890918213">triangle</a>.c]++] = face;</div>
+<div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span>        }</div>
+<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span>    }</div>
+<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span> </div>
+<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span>    <span class="comment">// --- edge -&gt; its one or two faces ---------------------------------------</span></div>
+<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span>    std::unordered_map&lt;std::uint64_t, EdgeFaces&gt; edgeFaces;</div>
+<div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span>    edgeFaces.reserve(<a class="code hl_variable" href="Builder_8cpp.html#a317e3a075fa5ae6cc2d6aca9b59377e6">triangles</a>.size() * 3u);</div>
+<div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span>    <span class="keywordflow">for</span> (std::int32_t face = 0; face &lt; faceCount; ++face) {</div>
+<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span>        <span class="keyword">const</span> Triangle&amp; <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a9b7fb3a94d7230e91baab1b890918213">triangle</a> = <a class="code hl_variable" href="Builder_8cpp.html#a317e3a075fa5ae6cc2d6aca9b59377e6">triangles</a>[face];</div>
+<div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span>        <span class="keyword">const</span> std::int32_t pairs[3][2] = {{<a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a9b7fb3a94d7230e91baab1b890918213">triangle</a>.a, <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a9b7fb3a94d7230e91baab1b890918213">triangle</a>.b}, {<a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a9b7fb3a94d7230e91baab1b890918213">triangle</a>.b, <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a9b7fb3a94d7230e91baab1b890918213">triangle</a>.c}, {<a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a9b7fb3a94d7230e91baab1b890918213">triangle</a>.c, <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a9b7fb3a94d7230e91baab1b890918213">triangle</a>.a}};</div>
+<div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span>        <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; pair : pairs) {</div>
+<div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span>            EdgeFaces&amp; entry = edgeFaces[edgeKey(pair[0], pair[1])];</div>
+<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span>            <span class="keywordflow">if</span> (entry.first &lt; 0) entry.first = face;</div>
+<div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span>            <span class="keywordflow">else</span> <span class="keywordflow">if</span> (entry.second &lt; 0) entry.second = face;</div>
+<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span>        }</div>
+<div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span>    }</div>
+<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span> </div>
+<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span>    <span class="keyword">const</span> <span class="keyword">auto</span> slotOf = [&amp;](std::int32_t face, std::int32_t vertex) {</div>
+<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span>        <span class="keyword">const</span> Triangle&amp; <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a9b7fb3a94d7230e91baab1b890918213">triangle</a> = <a class="code hl_variable" href="Builder_8cpp.html#a317e3a075fa5ae6cc2d6aca9b59377e6">triangles</a>[face];</div>
+<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span>        <span class="keywordflow">if</span> (<a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a9b7fb3a94d7230e91baab1b890918213">triangle</a>.a == vertex) <span class="keywordflow">return</span> 0;</div>
+<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span>        <span class="keywordflow">if</span> (<a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a9b7fb3a94d7230e91baab1b890918213">triangle</a>.b == vertex) <span class="keywordflow">return</span> 1;</div>
+<div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span>        <span class="keywordflow">return</span> 2;</div>
+<div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span>    };</div>
+<div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span>    <span class="keyword">const</span> <span class="keyword">auto</span> vertexAt = [&amp;](std::int32_t face, std::int32_t slot) {</div>
+<div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span>        <span class="keyword">const</span> Triangle&amp; <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a9b7fb3a94d7230e91baab1b890918213">triangle</a> = <a class="code hl_variable" href="Builder_8cpp.html#a317e3a075fa5ae6cc2d6aca9b59377e6">triangles</a>[face];</div>
+<div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span>        <span class="keywordflow">if</span> (slot == 0) <span class="keywordflow">return</span> <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a9b7fb3a94d7230e91baab1b890918213">triangle</a>.a;</div>
+<div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span>        <span class="keywordflow">if</span> (slot == 1) <span class="keywordflow">return</span> <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a9b7fb3a94d7230e91baab1b890918213">triangle</a>.b;</div>
+<div class="line"><a id="l00206" name="l00206"></a><span class="lineno">  206</span>        <span class="keywordflow">return</span> <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a9b7fb3a94d7230e91baab1b890918213">triangle</a>.c;</div>
+<div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span>    };</div>
+<div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span>    <span class="keyword">const</span> <span class="keyword">auto</span> nextVertexInFace = [&amp;](std::int32_t face, std::int32_t vertex) {</div>
+<div class="line"><a id="l00209" name="l00209"></a><span class="lineno">  209</span>        <span class="keywordflow">return</span> vertexAt(face, (slotOf(face, vertex) + 1) % 3);</div>
+<div class="line"><a id="l00210" name="l00210"></a><span class="lineno">  210</span>    };</div>
+<div class="line"><a id="l00211" name="l00211"></a><span class="lineno">  211</span>    <span class="keyword">const</span> <span class="keyword">auto</span> otherFaceOfEdge = [&amp;](std::int32_t face, std::int32_t i, std::int32_t j) {</div>
+<div class="line"><a id="l00212" name="l00212"></a><span class="lineno">  212</span>        <span class="keyword">const</span> <span class="keyword">auto</span> <a class="code hl_variable" href="RpgDialect_8cpp.html#a7141f237b2648c631ce5b73215683565">found</a> = edgeFaces.find(edgeKey(i, j));</div>
+<div class="line"><a id="l00213" name="l00213"></a><span class="lineno">  213</span>        <span class="keywordflow">if</span> (<a class="code hl_variable" href="RpgDialect_8cpp.html#a7141f237b2648c631ce5b73215683565">found</a> == edgeFaces.end()) <span class="keywordflow">return</span> -1;</div>
+<div class="line"><a id="l00214" name="l00214"></a><span class="lineno">  214</span>        <span class="keywordflow">if</span> (<a class="code hl_variable" href="RpgDialect_8cpp.html#a7141f237b2648c631ce5b73215683565">found</a>-&gt;second.first == face) <span class="keywordflow">return</span> <a class="code hl_variable" href="RpgDialect_8cpp.html#a7141f237b2648c631ce5b73215683565">found</a>-&gt;second.second;</div>
+<div class="line"><a id="l00215" name="l00215"></a><span class="lineno">  215</span>        <span class="keywordflow">if</span> (<a class="code hl_variable" href="RpgDialect_8cpp.html#a7141f237b2648c631ce5b73215683565">found</a>-&gt;second.second == face) <span class="keywordflow">return</span> <a class="code hl_variable" href="RpgDialect_8cpp.html#a7141f237b2648c631ce5b73215683565">found</a>-&gt;second.first;</div>
+<div class="line"><a id="l00216" name="l00216"></a><span class="lineno">  216</span>        <span class="keywordflow">return</span> -1;</div>
+<div class="line"><a id="l00217" name="l00217"></a><span class="lineno">  217</span>    };</div>
+<div class="line"><a id="l00218" name="l00218"></a><span class="lineno">  218</span> </div>
+<div class="line"><a id="l00219" name="l00219"></a><span class="lineno">  219</span>    <span class="comment">// --- rotate around every vertex to get its cyclic corner and edge order ---</span></div>
+<div class="line"><a id="l00220" name="l00220"></a><span class="lineno">  220</span>    <a class="code hl_variable" href="Pathfinder_8cpp.html#a135992146dd07a4c751eaa500b8f38e6">topology</a>.cellOffsets_.assign(<span class="keyword">static_cast&lt;</span>std::size_t<span class="keyword">&gt;</span>(cellCount) + 1u, 0);</div>
+<div class="line"><a id="l00221" name="l00221"></a><span class="lineno">  221</span>    <a class="code hl_variable" href="Pathfinder_8cpp.html#a135992146dd07a4c751eaa500b8f38e6">topology</a>.neighbors_.assign(<span class="keyword">static_cast&lt;</span>std::size_t<span class="keyword">&gt;</span>(incidenceOffset[cellCount]), 0);</div>
+<div class="line"><a id="l00222" name="l00222"></a><span class="lineno">  222</span>    <a class="code hl_variable" href="Pathfinder_8cpp.html#a135992146dd07a4c751eaa500b8f38e6">topology</a>.corners_.assign(<a class="code hl_variable" href="Pathfinder_8cpp.html#a135992146dd07a4c751eaa500b8f38e6">topology</a>.neighbors_.size(), 0);</div>
+<div class="line"><a id="l00223" name="l00223"></a><span class="lineno">  223</span> </div>
+<div class="line"><a id="l00224" name="l00224"></a><span class="lineno">  224</span>    std::vector&lt;std::int32_t&gt; orderedFaces(6, -1);</div>
+<div class="line"><a id="l00225" name="l00225"></a><span class="lineno">  225</span>    <span class="keywordflow">for</span> (std::int32_t <a class="code hl_variable" href="TacticsPath_8cpp.html#ac09c70a19f04817cd37f78fe3e752066">cell</a> = 0; <a class="code hl_variable" href="TacticsPath_8cpp.html#ac09c70a19f04817cd37f78fe3e752066">cell</a> &lt; cellCount; ++<a class="code hl_variable" href="TacticsPath_8cpp.html#ac09c70a19f04817cd37f78fe3e752066">cell</a>) {</div>
+<div class="line"><a id="l00226" name="l00226"></a><span class="lineno">  226</span>        <span class="keyword">const</span> std::int32_t <a class="code hl_variable" href="PrimitiveTessellator_8cpp.html#a040a87bf98202a107183d0d7c7f2fbed">begin</a>  = incidenceOffset[<a class="code hl_variable" href="TacticsPath_8cpp.html#ac09c70a19f04817cd37f78fe3e752066">cell</a>];</div>
+<div class="line"><a id="l00227" name="l00227"></a><span class="lineno">  227</span>        <span class="keyword">const</span> std::int32_t degree = incidenceOffset[<a class="code hl_variable" href="TacticsPath_8cpp.html#ac09c70a19f04817cd37f78fe3e752066">cell</a> + 1] - <a class="code hl_variable" href="PrimitiveTessellator_8cpp.html#a040a87bf98202a107183d0d7c7f2fbed">begin</a>;</div>
+<div class="line"><a id="l00228" name="l00228"></a><span class="lineno">  228</span>        <span class="keywordflow">if</span> (degree &lt; 5 || degree &gt; 6) <span class="keywordflow">return</span> sphereFailure(<span class="stringliteral">&quot;hex sphere cell has an unsupported edge count&quot;</span>);</div>
+<div class="line"><a id="l00229" name="l00229"></a><span class="lineno">  229</span>        <a class="code hl_variable" href="Pathfinder_8cpp.html#a135992146dd07a4c751eaa500b8f38e6">topology</a>.cellOffsets_[<a class="code hl_variable" href="TacticsPath_8cpp.html#ac09c70a19f04817cd37f78fe3e752066">cell</a>] = <a class="code hl_variable" href="PrimitiveTessellator_8cpp.html#a040a87bf98202a107183d0d7c7f2fbed">begin</a>;</div>
+<div class="line"><a id="l00230" name="l00230"></a><span class="lineno">  230</span> </div>
+<div class="line"><a id="l00231" name="l00231"></a><span class="lineno">  231</span>        <span class="keyword">const</span> std::int32_t firstFace = incidence[<a class="code hl_variable" href="PrimitiveTessellator_8cpp.html#a040a87bf98202a107183d0d7c7f2fbed">begin</a>];</div>
+<div class="line"><a id="l00232" name="l00232"></a><span class="lineno">  232</span>        std::int32_t       current   = firstFace;</div>
+<div class="line"><a id="l00233" name="l00233"></a><span class="lineno">  233</span>        <span class="keywordflow">for</span> (std::int32_t direction = 0; direction &lt; degree; ++direction) {</div>
+<div class="line"><a id="l00234" name="l00234"></a><span class="lineno">  234</span>            orderedFaces[direction] = current;</div>
+<div class="line"><a id="l00235" name="l00235"></a><span class="lineno">  235</span>            <span class="keyword">const</span> std::int32_t nextFace = otherFaceOfEdge(current, <a class="code hl_variable" href="TacticsPath_8cpp.html#ac09c70a19f04817cd37f78fe3e752066">cell</a>, nextVertexInFace(current, <a class="code hl_variable" href="TacticsPath_8cpp.html#ac09c70a19f04817cd37f78fe3e752066">cell</a>));</div>
+<div class="line"><a id="l00236" name="l00236"></a><span class="lineno">  236</span>            <span class="keywordflow">if</span> (nextFace &lt; 0) <span class="keywordflow">return</span> sphereFailure(<span class="stringliteral">&quot;hex sphere half-edge walk left the surface&quot;</span>);</div>
+<div class="line"><a id="l00237" name="l00237"></a><span class="lineno">  237</span>            current = nextFace;</div>
+<div class="line"><a id="l00238" name="l00238"></a><span class="lineno">  238</span>        }</div>
+<div class="line"><a id="l00239" name="l00239"></a><span class="lineno">  239</span>        <span class="keywordflow">if</span> (current != firstFace) <span class="keywordflow">return</span> sphereFailure(<span class="stringliteral">&quot;hex sphere half-edge walk did not close&quot;</span>);</div>
+<div class="line"><a id="l00240" name="l00240"></a><span class="lineno">  240</span> </div>
+<div class="line"><a id="l00241" name="l00241"></a><span class="lineno">  241</span>        <span class="keywordflow">for</span> (std::int32_t direction = 0; direction &lt; degree; ++direction) {</div>
+<div class="line"><a id="l00242" name="l00242"></a><span class="lineno">  242</span>            <a class="code hl_variable" href="Pathfinder_8cpp.html#a135992146dd07a4c751eaa500b8f38e6">topology</a>.corners_[<a class="code hl_variable" href="PrimitiveTessellator_8cpp.html#a040a87bf98202a107183d0d7c7f2fbed">begin</a> + direction]   = orderedFaces[direction];</div>
+<div class="line"><a id="l00243" name="l00243"></a><span class="lineno">  243</span>            <a class="code hl_variable" href="Pathfinder_8cpp.html#a135992146dd07a4c751eaa500b8f38e6">topology</a>.neighbors_[<a class="code hl_variable" href="PrimitiveTessellator_8cpp.html#a040a87bf98202a107183d0d7c7f2fbed">begin</a> + direction] = nextVertexInFace(orderedFaces[direction], <a class="code hl_variable" href="TacticsPath_8cpp.html#ac09c70a19f04817cd37f78fe3e752066">cell</a>);</div>
+<div class="line"><a id="l00244" name="l00244"></a><span class="lineno">  244</span>        }</div>
+<div class="line"><a id="l00245" name="l00245"></a><span class="lineno">  245</span>    }</div>
+<div class="line"><a id="l00246" name="l00246"></a><span class="lineno">  246</span>    <a class="code hl_variable" href="Pathfinder_8cpp.html#a135992146dd07a4c751eaa500b8f38e6">topology</a>.cellOffsets_[cellCount] = <span class="keyword">static_cast&lt;</span>std::int32_t<span class="keyword">&gt;</span>(<a class="code hl_variable" href="Pathfinder_8cpp.html#a135992146dd07a4c751eaa500b8f38e6">topology</a>.neighbors_.size());</div>
+<div class="line"><a id="l00247" name="l00247"></a><span class="lineno">  247</span>    <a class="code hl_variable" href="Pathfinder_8cpp.html#a135992146dd07a4c751eaa500b8f38e6">topology</a>.cornerDirections_       = std::move(cornerDirections);</div>
+<div class="line"><a id="l00248" name="l00248"></a><span class="lineno">  248</span> </div>
+<div class="line"><a id="l00249" name="l00249"></a><span class="lineno">  249</span>    <span class="comment">// --- handedness ---------------------------------------------------------</span></div>
+<div class="line"><a id="l00250" name="l00250"></a><span class="lineno">  250</span>    <span class="comment">//</span></div>
+<div class="line"><a id="l00251" name="l00251"></a><span class="lineno">  251</span>    <span class="comment">// Walking &quot;the other face of the edge to the next vertex&quot; is a uniform rule,</span></div>
+<div class="line"><a id="l00252" name="l00252"></a><span class="lineno">  252</span>    <span class="comment">// so every cell comes out with the same handedness and the only question is</span></div>
+<div class="line"><a id="l00253" name="l00253"></a><span class="lineno">  253</span>    <span class="comment">// which one. The shared edge of two adjacent cells must expose the same two</span></div>
+<div class="line"><a id="l00254" name="l00254"></a><span class="lineno">  254</span>    <span class="comment">// corners from both sides, in reversed order; if it does not, reversing every</span></div>
+<div class="line"><a id="l00255" name="l00255"></a><span class="lineno">  255</span>    <span class="comment">// cell&#39;s cyclic order flips the handedness of all of them at once.</span></div>
+<div class="line"><a id="l00256" name="l00256"></a><span class="lineno">  256</span>    <span class="keyword">const</span> <span class="keyword">auto</span> cornersAgree = [&amp;<a class="code hl_variable" href="Pathfinder_8cpp.html#a135992146dd07a4c751eaa500b8f38e6">topology</a>]() {</div>
+<div class="line"><a id="l00257" name="l00257"></a><span class="lineno">  257</span>        <span class="keywordflow">for</span> (std::int32_t <a class="code hl_variable" href="TacticsPath_8cpp.html#ac09c70a19f04817cd37f78fe3e752066">cell</a> = 0; <a class="code hl_variable" href="TacticsPath_8cpp.html#ac09c70a19f04817cd37f78fe3e752066">cell</a> &lt; <a class="code hl_variable" href="Pathfinder_8cpp.html#a135992146dd07a4c751eaa500b8f38e6">topology</a>.cellCount(); ++<a class="code hl_variable" href="TacticsPath_8cpp.html#ac09c70a19f04817cd37f78fe3e752066">cell</a>) {</div>
+<div class="line"><a id="l00258" name="l00258"></a><span class="lineno">  258</span>            <span class="keyword">const</span> std::int32_t degree = <a class="code hl_variable" href="Pathfinder_8cpp.html#a135992146dd07a4c751eaa500b8f38e6">topology</a>.neighborCount(<a class="code hl_variable" href="TacticsPath_8cpp.html#ac09c70a19f04817cd37f78fe3e752066">cell</a>);</div>
+<div class="line"><a id="l00259" name="l00259"></a><span class="lineno">  259</span>            <span class="keywordflow">for</span> (std::int32_t direction = 0; direction &lt; degree; ++direction) {</div>
+<div class="line"><a id="l00260" name="l00260"></a><span class="lineno">  260</span>                <span class="keyword">const</span> <a class="code hl_typedef" href="namespaceeve_1_1hexmap.html#aa0e7bedc4b43f36a8fec0a2e73508b65">HexSphereCell</a> other = <a class="code hl_variable" href="Pathfinder_8cpp.html#a135992146dd07a4c751eaa500b8f38e6">topology</a>.neighbor(<a class="code hl_variable" href="TacticsPath_8cpp.html#ac09c70a19f04817cd37f78fe3e752066">cell</a>, direction);</div>
+<div class="line"><a id="l00261" name="l00261"></a><span class="lineno">  261</span>                <span class="keyword">const</span> std::int32_t  back  = <a class="code hl_variable" href="Pathfinder_8cpp.html#a135992146dd07a4c751eaa500b8f38e6">topology</a>.directionOf(other, <a class="code hl_variable" href="TacticsPath_8cpp.html#ac09c70a19f04817cd37f78fe3e752066">cell</a>);</div>
+<div class="line"><a id="l00262" name="l00262"></a><span class="lineno">  262</span>                <span class="keywordflow">if</span> (back &lt; 0) <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00263" name="l00263"></a><span class="lineno">  263</span>                <span class="keyword">const</span> std::int32_t otherDegree = <a class="code hl_variable" href="Pathfinder_8cpp.html#a135992146dd07a4c751eaa500b8f38e6">topology</a>.neighborCount(other);</div>
+<div class="line"><a id="l00264" name="l00264"></a><span class="lineno">  264</span>                <span class="keyword">const</span> std::int32_t here       = <a class="code hl_variable" href="Pathfinder_8cpp.html#a135992146dd07a4c751eaa500b8f38e6">topology</a>.corners_[<a class="code hl_variable" href="Pathfinder_8cpp.html#a135992146dd07a4c751eaa500b8f38e6">topology</a>.cellOffsets_[<a class="code hl_variable" href="TacticsPath_8cpp.html#ac09c70a19f04817cd37f78fe3e752066">cell</a>] + direction];</div>
+<div class="line"><a id="l00265" name="l00265"></a><span class="lineno">  265</span>                <span class="keyword">const</span> std::int32_t hereNext  = <a class="code hl_variable" href="Pathfinder_8cpp.html#a135992146dd07a4c751eaa500b8f38e6">topology</a>.corners_[<a class="code hl_variable" href="Pathfinder_8cpp.html#a135992146dd07a4c751eaa500b8f38e6">topology</a>.cellOffsets_[<a class="code hl_variable" href="TacticsPath_8cpp.html#ac09c70a19f04817cd37f78fe3e752066">cell</a>] + (direction + 1) % degree];</div>
+<div class="line"><a id="l00266" name="l00266"></a><span class="lineno">  266</span>                <span class="keyword">const</span> std::int32_t there      = <a class="code hl_variable" href="Pathfinder_8cpp.html#a135992146dd07a4c751eaa500b8f38e6">topology</a>.corners_[<a class="code hl_variable" href="Pathfinder_8cpp.html#a135992146dd07a4c751eaa500b8f38e6">topology</a>.cellOffsets_[other] + back];</div>
+<div class="line"><a id="l00267" name="l00267"></a><span class="lineno">  267</span>                <span class="keyword">const</span> std::int32_t thereNext = <a class="code hl_variable" href="Pathfinder_8cpp.html#a135992146dd07a4c751eaa500b8f38e6">topology</a>.corners_[<a class="code hl_variable" href="Pathfinder_8cpp.html#a135992146dd07a4c751eaa500b8f38e6">topology</a>.cellOffsets_[other] + (back + 1) % otherDegree];</div>
+<div class="line"><a id="l00268" name="l00268"></a><span class="lineno">  268</span>                <span class="keywordflow">if</span> (here != thereNext || hereNext != there) <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00269" name="l00269"></a><span class="lineno">  269</span>            }</div>
+<div class="line"><a id="l00270" name="l00270"></a><span class="lineno">  270</span>        }</div>
+<div class="line"><a id="l00271" name="l00271"></a><span class="lineno">  271</span>        <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00272" name="l00272"></a><span class="lineno">  272</span>    };</div>
+<div class="line"><a id="l00273" name="l00273"></a><span class="lineno">  273</span> </div>
+<div class="line"><a id="l00274" name="l00274"></a><span class="lineno">  274</span>    <span class="keywordflow">if</span> (!cornersAgree()) {</div>
+<div class="line"><a id="l00275" name="l00275"></a><span class="lineno">  275</span>        <span class="keywordflow">for</span> (std::int32_t <a class="code hl_variable" href="TacticsPath_8cpp.html#ac09c70a19f04817cd37f78fe3e752066">cell</a> = 0; <a class="code hl_variable" href="TacticsPath_8cpp.html#ac09c70a19f04817cd37f78fe3e752066">cell</a> &lt; cellCount; ++<a class="code hl_variable" href="TacticsPath_8cpp.html#ac09c70a19f04817cd37f78fe3e752066">cell</a>) {</div>
+<div class="line"><a id="l00276" name="l00276"></a><span class="lineno">  276</span>            <span class="keyword">const</span> <span class="keyword">auto</span> <a class="code hl_variable" href="PrimitiveTessellator_8cpp.html#a040a87bf98202a107183d0d7c7f2fbed">begin</a>  = <a class="code hl_variable" href="Pathfinder_8cpp.html#a135992146dd07a4c751eaa500b8f38e6">topology</a>.neighbors_.begin() + <a class="code hl_variable" href="Pathfinder_8cpp.html#a135992146dd07a4c751eaa500b8f38e6">topology</a>.cellOffsets_[<a class="code hl_variable" href="TacticsPath_8cpp.html#ac09c70a19f04817cd37f78fe3e752066">cell</a>];</div>
+<div class="line"><a id="l00277" name="l00277"></a><span class="lineno">  277</span>            <span class="keyword">const</span> <span class="keyword">auto</span> <a class="code hl_variable" href="ActionTimelinePayloadEditor_8cpp.html#a831c184a4a6468e68e592a9fafdfec69">end</a>    = <a class="code hl_variable" href="Pathfinder_8cpp.html#a135992146dd07a4c751eaa500b8f38e6">topology</a>.neighbors_.begin() + <a class="code hl_variable" href="Pathfinder_8cpp.html#a135992146dd07a4c751eaa500b8f38e6">topology</a>.cellOffsets_[<a class="code hl_variable" href="TacticsPath_8cpp.html#ac09c70a19f04817cd37f78fe3e752066">cell</a> + 1];</div>
+<div class="line"><a id="l00278" name="l00278"></a><span class="lineno">  278</span>            <span class="keyword">const</span> <span class="keyword">auto</span> cornerBegin = <a class="code hl_variable" href="Pathfinder_8cpp.html#a135992146dd07a4c751eaa500b8f38e6">topology</a>.corners_.begin() + <a class="code hl_variable" href="Pathfinder_8cpp.html#a135992146dd07a4c751eaa500b8f38e6">topology</a>.cellOffsets_[<a class="code hl_variable" href="TacticsPath_8cpp.html#ac09c70a19f04817cd37f78fe3e752066">cell</a>];</div>
+<div class="line"><a id="l00279" name="l00279"></a><span class="lineno">  279</span>            <span class="keyword">const</span> <span class="keyword">auto</span> cornerEnd   = <a class="code hl_variable" href="Pathfinder_8cpp.html#a135992146dd07a4c751eaa500b8f38e6">topology</a>.corners_.begin() + <a class="code hl_variable" href="Pathfinder_8cpp.html#a135992146dd07a4c751eaa500b8f38e6">topology</a>.cellOffsets_[<a class="code hl_variable" href="TacticsPath_8cpp.html#ac09c70a19f04817cd37f78fe3e752066">cell</a> + 1];</div>
+<div class="line"><a id="l00280" name="l00280"></a><span class="lineno">  280</span>            std::reverse(<a class="code hl_variable" href="PrimitiveTessellator_8cpp.html#a040a87bf98202a107183d0d7c7f2fbed">begin</a>, <a class="code hl_variable" href="ActionTimelinePayloadEditor_8cpp.html#a831c184a4a6468e68e592a9fafdfec69">end</a>);</div>
+<div class="line"><a id="l00281" name="l00281"></a><span class="lineno">  281</span>            std::reverse(cornerBegin, cornerEnd);</div>
+<div class="line"><a id="l00282" name="l00282"></a><span class="lineno">  282</span>        }</div>
+<div class="line"><a id="l00283" name="l00283"></a><span class="lineno">  283</span>        <span class="keywordflow">if</span> (!cornersAgree()) <span class="keywordflow">return</span> sphereFailure(<span class="stringliteral">&quot;hex sphere winding is inconsistent&quot;</span>);</div>
+<div class="line"><a id="l00284" name="l00284"></a><span class="lineno">  284</span>    }</div>
+<div class="line"><a id="l00285" name="l00285"></a><span class="lineno">  285</span> </div>
+<div class="line"><a id="l00286" name="l00286"></a><span class="lineno">  286</span>    <span class="comment">// --- Euler characteristic ------------------------------------------------</span></div>
+<div class="line"><a id="l00287" name="l00287"></a><span class="lineno">  287</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="Pathfinder_8cpp.html#a135992146dd07a4c751eaa500b8f38e6">topology</a>.cellCount() - <a class="code hl_variable" href="Pathfinder_8cpp.html#a135992146dd07a4c751eaa500b8f38e6">topology</a>.edgeCount() + <a class="code hl_variable" href="Pathfinder_8cpp.html#a135992146dd07a4c751eaa500b8f38e6">topology</a>.cornerCount() != 2) {</div>
+<div class="line"><a id="l00288" name="l00288"></a><span class="lineno">  288</span>        <span class="keywordflow">return</span> sphereFailure(<span class="stringliteral">&quot;hex sphere does not close into a sphere&quot;</span>);</div>
+<div class="line"><a id="l00289" name="l00289"></a><span class="lineno">  289</span>    }</div>
+<div class="line"><a id="l00290" name="l00290"></a><span class="lineno">  290</span> </div>
+<div class="line"><a id="l00291" name="l00291"></a><span class="lineno">  291</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">Result&lt;HexSphereTopology&gt;::success</a>(std::move(<a class="code hl_variable" href="Pathfinder_8cpp.html#a135992146dd07a4c751eaa500b8f38e6">topology</a>));</div>
+<div class="line"><a id="l00292" name="l00292"></a><span class="lineno">  292</span>}</div>
+</div>
+<div class="line"><a id="l00293" name="l00293"></a><span class="lineno">  293</span> </div>
+<div class="foldopen" id="foldopen00294" data-start="{" data-end="}">
+<div class="line"><a id="l00294" name="l00294"></a><span class="lineno"><a class="line" href="classeve_1_1hexmap_1_1HexSphereTopology.html#a2b15dd359e0d0f04f1ecae3cdaf5b741">  294</a></span>std::int32_t HexSphereTopology::neighborCount(<a class="code hl_typedef" href="namespaceeve_1_1hexmap.html#aa0e7bedc4b43f36a8fec0a2e73508b65">HexSphereCell</a> <a class="code hl_variable" href="TacticsPath_8cpp.html#ac09c70a19f04817cd37f78fe3e752066">cell</a>) <span class="keyword">const</span> <span class="keyword">noexcept</span> {</div>
+<div class="line"><a id="l00295" name="l00295"></a><span class="lineno">  295</span>    <span class="keywordflow">if</span> (!contains(<a class="code hl_variable" href="TacticsPath_8cpp.html#ac09c70a19f04817cd37f78fe3e752066">cell</a>)) <span class="keywordflow">return</span> 0;</div>
+<div class="line"><a id="l00296" name="l00296"></a><span class="lineno">  296</span>    <span class="keywordflow">return</span> cellOffsets_[<span class="keyword">static_cast&lt;</span>std::size_t<span class="keyword">&gt;</span>(<a class="code hl_variable" href="TacticsPath_8cpp.html#ac09c70a19f04817cd37f78fe3e752066">cell</a>) + 1u] - cellOffsets_[<span class="keyword">static_cast&lt;</span>std::size_t<span class="keyword">&gt;</span>(<a class="code hl_variable" href="TacticsPath_8cpp.html#ac09c70a19f04817cd37f78fe3e752066">cell</a>)];</div>
+<div class="line"><a id="l00297" name="l00297"></a><span class="lineno">  297</span>}</div>
+</div>
+<div class="line"><a id="l00298" name="l00298"></a><span class="lineno">  298</span> </div>
+<div class="foldopen" id="foldopen00299" data-start="{" data-end="}">
+<div class="line"><a id="l00299" name="l00299"></a><span class="lineno"><a class="line" href="classeve_1_1hexmap_1_1HexSphereTopology.html#ad8b6bc741dcae955dfdab98e3cc35fad">  299</a></span><a class="code hl_typedef" href="namespaceeve_1_1hexmap.html#aa0e7bedc4b43f36a8fec0a2e73508b65">HexSphereCell</a> HexSphereTopology::neighbor(<a class="code hl_typedef" href="namespaceeve_1_1hexmap.html#aa0e7bedc4b43f36a8fec0a2e73508b65">HexSphereCell</a> <a class="code hl_variable" href="TacticsPath_8cpp.html#ac09c70a19f04817cd37f78fe3e752066">cell</a>, std::int32_t direction) <span class="keyword">const</span> <span class="keyword">noexcept</span> {</div>
+<div class="line"><a id="l00300" name="l00300"></a><span class="lineno">  300</span>    <span class="keywordflow">if</span> (direction &lt; 0 || direction &gt;= neighborCount(<a class="code hl_variable" href="TacticsPath_8cpp.html#ac09c70a19f04817cd37f78fe3e752066">cell</a>)) <span class="keywordflow">return</span> <a class="code hl_variable" href="namespaceeve_1_1hexmap.html#a9c1a239f8f2fb44e9d7caa8a5457b9d8">kNoHexSphereCell</a>;</div>
+<div class="line"><a id="l00301" name="l00301"></a><span class="lineno">  301</span>    <span class="keywordflow">return</span> neighbors_[<span class="keyword">static_cast&lt;</span>std::size_t<span class="keyword">&gt;</span>(cellOffsets_[<span class="keyword">static_cast&lt;</span>std::size_t<span class="keyword">&gt;</span>(<a class="code hl_variable" href="TacticsPath_8cpp.html#ac09c70a19f04817cd37f78fe3e752066">cell</a>)] + direction)];</div>
+<div class="line"><a id="l00302" name="l00302"></a><span class="lineno">  302</span>}</div>
+</div>
+<div class="line"><a id="l00303" name="l00303"></a><span class="lineno">  303</span> </div>
+<div class="foldopen" id="foldopen00304" data-start="{" data-end="}">
+<div class="line"><a id="l00304" name="l00304"></a><span class="lineno"><a class="line" href="classeve_1_1hexmap_1_1HexSphereTopology.html#a020fce1ba2e934c791f95e377533b45c">  304</a></span>std::int32_t HexSphereTopology::directionOf(<a class="code hl_typedef" href="namespaceeve_1_1hexmap.html#aa0e7bedc4b43f36a8fec0a2e73508b65">HexSphereCell</a> <a class="code hl_variable" href="TacticsPath_8cpp.html#ac09c70a19f04817cd37f78fe3e752066">cell</a>, <a class="code hl_typedef" href="namespaceeve_1_1hexmap.html#aa0e7bedc4b43f36a8fec0a2e73508b65">HexSphereCell</a> other) <span class="keyword">const</span> <span class="keyword">noexcept</span> {</div>
+<div class="line"><a id="l00305" name="l00305"></a><span class="lineno">  305</span>    <span class="keywordflow">if</span> (!contains(<a class="code hl_variable" href="TacticsPath_8cpp.html#ac09c70a19f04817cd37f78fe3e752066">cell</a>) || !contains(other)) <span class="keywordflow">return</span> <a class="code hl_variable" href="namespaceeve_1_1hexmap.html#a9c1a239f8f2fb44e9d7caa8a5457b9d8">kNoHexSphereCell</a>;</div>
+<div class="line"><a id="l00306" name="l00306"></a><span class="lineno">  306</span>    <span class="keyword">const</span> std::int32_t <a class="code hl_variable" href="PrimitiveTessellator_8cpp.html#a040a87bf98202a107183d0d7c7f2fbed">begin</a>  = cellOffsets_[<span class="keyword">static_cast&lt;</span>std::size_t<span class="keyword">&gt;</span>(<a class="code hl_variable" href="TacticsPath_8cpp.html#ac09c70a19f04817cd37f78fe3e752066">cell</a>)];</div>
+<div class="line"><a id="l00307" name="l00307"></a><span class="lineno">  307</span>    <span class="keyword">const</span> std::int32_t degree = neighborCount(<a class="code hl_variable" href="TacticsPath_8cpp.html#ac09c70a19f04817cd37f78fe3e752066">cell</a>);</div>
+<div class="line"><a id="l00308" name="l00308"></a><span class="lineno">  308</span>    <span class="keywordflow">for</span> (std::int32_t direction = 0; direction &lt; degree; ++direction) {</div>
+<div class="line"><a id="l00309" name="l00309"></a><span class="lineno">  309</span>        <span class="keywordflow">if</span> (neighbors_[<span class="keyword">static_cast&lt;</span>std::size_t<span class="keyword">&gt;</span>(<a class="code hl_variable" href="PrimitiveTessellator_8cpp.html#a040a87bf98202a107183d0d7c7f2fbed">begin</a> + direction)] == other) <span class="keywordflow">return</span> direction;</div>
+<div class="line"><a id="l00310" name="l00310"></a><span class="lineno">  310</span>    }</div>
+<div class="line"><a id="l00311" name="l00311"></a><span class="lineno">  311</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="namespaceeve_1_1hexmap.html#a9c1a239f8f2fb44e9d7caa8a5457b9d8">kNoHexSphereCell</a>;</div>
+<div class="line"><a id="l00312" name="l00312"></a><span class="lineno">  312</span>}</div>
+</div>
+<div class="line"><a id="l00313" name="l00313"></a><span class="lineno">  313</span> </div>
+<div class="foldopen" id="foldopen00314" data-start="{" data-end="}">
+<div class="line"><a id="l00314" name="l00314"></a><span class="lineno"><a class="line" href="classeve_1_1hexmap_1_1HexSphereTopology.html#a58b5b22231b357494914bef5ecdbd359">  314</a></span>std::int32_t HexSphereTopology::oppositeDirection(<a class="code hl_typedef" href="namespaceeve_1_1hexmap.html#aa0e7bedc4b43f36a8fec0a2e73508b65">HexSphereCell</a> <a class="code hl_variable" href="TacticsPath_8cpp.html#ac09c70a19f04817cd37f78fe3e752066">cell</a>, std::int32_t direction) <span class="keyword">const</span> <span class="keyword">noexcept</span> {</div>
+<div class="line"><a id="l00315" name="l00315"></a><span class="lineno">  315</span>    <span class="keyword">const</span> <a class="code hl_typedef" href="namespaceeve_1_1hexmap.html#aa0e7bedc4b43f36a8fec0a2e73508b65">HexSphereCell</a> other = neighbor(<a class="code hl_variable" href="TacticsPath_8cpp.html#ac09c70a19f04817cd37f78fe3e752066">cell</a>, direction);</div>
+<div class="line"><a id="l00316" name="l00316"></a><span class="lineno">  316</span>    <span class="keywordflow">if</span> (other == <a class="code hl_variable" href="namespaceeve_1_1hexmap.html#a9c1a239f8f2fb44e9d7caa8a5457b9d8">kNoHexSphereCell</a>) <span class="keywordflow">return</span> <a class="code hl_variable" href="namespaceeve_1_1hexmap.html#a9c1a239f8f2fb44e9d7caa8a5457b9d8">kNoHexSphereCell</a>;</div>
+<div class="line"><a id="l00317" name="l00317"></a><span class="lineno">  317</span>    <span class="keywordflow">return</span> directionOf(other, <a class="code hl_variable" href="TacticsPath_8cpp.html#ac09c70a19f04817cd37f78fe3e752066">cell</a>);</div>
+<div class="line"><a id="l00318" name="l00318"></a><span class="lineno">  318</span>}</div>
+</div>
+<div class="line"><a id="l00319" name="l00319"></a><span class="lineno">  319</span> </div>
+<div class="foldopen" id="foldopen00320" data-start="{" data-end="}">
+<div class="line"><a id="l00320" name="l00320"></a><span class="lineno"><a class="line" href="classeve_1_1hexmap_1_1HexSphereTopology.html#a2bbdeeb4c8e445d6c2aecb40b4832921">  320</a></span><a class="code hl_struct" href="structeve_1_1hexmap_1_1HexVec3.html">HexVec3</a> HexSphereTopology::direction(<a class="code hl_typedef" href="namespaceeve_1_1hexmap.html#aa0e7bedc4b43f36a8fec0a2e73508b65">HexSphereCell</a> <a class="code hl_variable" href="TacticsPath_8cpp.html#ac09c70a19f04817cd37f78fe3e752066">cell</a>) <span class="keyword">const</span> <span class="keyword">noexcept</span> {</div>
+<div class="line"><a id="l00321" name="l00321"></a><span class="lineno">  321</span>    <span class="keywordflow">if</span> (!contains(<a class="code hl_variable" href="TacticsPath_8cpp.html#ac09c70a19f04817cd37f78fe3e752066">cell</a>)) <span class="keywordflow">return</span> <a class="code hl_struct" href="structeve_1_1hexmap_1_1HexVec3.html">HexVec3</a>{0.f, 1.f, 0.f};</div>
+<div class="line"><a id="l00322" name="l00322"></a><span class="lineno">  322</span>    <span class="keywordflow">return</span> directions_[<span class="keyword">static_cast&lt;</span>std::size_t<span class="keyword">&gt;</span>(<a class="code hl_variable" href="TacticsPath_8cpp.html#ac09c70a19f04817cd37f78fe3e752066">cell</a>)];</div>
+<div class="line"><a id="l00323" name="l00323"></a><span class="lineno">  323</span>}</div>
+</div>
+<div class="line"><a id="l00324" name="l00324"></a><span class="lineno">  324</span> </div>
+<div class="line"><a id="l00325" name="l00325"></a><span class="lineno"><a class="line" href="classeve_1_1hexmap_1_1HexSphereTopology.html#a029d920304bb708c47e3bc1d5e8cf1e9">  325</a></span>std::int32_t HexSphereTopology::cornerCountOf(<a class="code hl_typedef" href="namespaceeve_1_1hexmap.html#aa0e7bedc4b43f36a8fec0a2e73508b65">HexSphereCell</a> <a class="code hl_variable" href="TacticsPath_8cpp.html#ac09c70a19f04817cd37f78fe3e752066">cell</a>) <span class="keyword">const</span> <span class="keyword">noexcept</span> { <span class="keywordflow">return</span> neighborCount(<a class="code hl_variable" href="TacticsPath_8cpp.html#ac09c70a19f04817cd37f78fe3e752066">cell</a>); }</div>
+<div class="line"><a id="l00326" name="l00326"></a><span class="lineno">  326</span> </div>
+<div class="foldopen" id="foldopen00327" data-start="{" data-end="}">
+<div class="line"><a id="l00327" name="l00327"></a><span class="lineno"><a class="line" href="classeve_1_1hexmap_1_1HexSphereTopology.html#ac320cf378d6e9ea0e8598f69fd4a5ad8">  327</a></span><a class="code hl_struct" href="structeve_1_1hexmap_1_1HexVec3.html">HexVec3</a> HexSphereTopology::corner(<a class="code hl_typedef" href="namespaceeve_1_1hexmap.html#aa0e7bedc4b43f36a8fec0a2e73508b65">HexSphereCell</a> <a class="code hl_variable" href="TacticsPath_8cpp.html#ac09c70a19f04817cd37f78fe3e752066">cell</a>, std::int32_t cornerIndex) <span class="keyword">const</span> <span class="keyword">noexcept</span> {</div>
+<div class="line"><a id="l00328" name="l00328"></a><span class="lineno">  328</span>    <span class="keywordflow">if</span> (cornerIndex &lt; 0 || cornerIndex &gt;= neighborCount(<a class="code hl_variable" href="TacticsPath_8cpp.html#ac09c70a19f04817cd37f78fe3e752066">cell</a>)) <span class="keywordflow">return</span> <a class="code hl_struct" href="structeve_1_1hexmap_1_1HexVec3.html">HexVec3</a>{0.f, 1.f, 0.f};</div>
+<div class="line"><a id="l00329" name="l00329"></a><span class="lineno">  329</span>    <span class="keyword">const</span> std::int32_t <span class="keywordtype">id</span> = corners_[<span class="keyword">static_cast&lt;</span>std::size_t<span class="keyword">&gt;</span>(cellOffsets_[<span class="keyword">static_cast&lt;</span>std::size_t<span class="keyword">&gt;</span>(<a class="code hl_variable" href="TacticsPath_8cpp.html#ac09c70a19f04817cd37f78fe3e752066">cell</a>)] + cornerIndex)];</div>
+<div class="line"><a id="l00330" name="l00330"></a><span class="lineno">  330</span>    <span class="keywordflow">if</span> (id &lt; 0 || id &gt;= cornerCount()) <span class="keywordflow">return</span> <a class="code hl_struct" href="structeve_1_1hexmap_1_1HexVec3.html">HexVec3</a>{0.f, 1.f, 0.f};</div>
+<div class="line"><a id="l00331" name="l00331"></a><span class="lineno">  331</span>    <span class="keywordflow">return</span> cornerDirections_[<span class="keyword">static_cast&lt;</span>std::size_t<span class="keyword">&gt;</span>(<a class="code hl_variable" href="PlayHost_8cpp.html#afd0d68c6d31ff249f3ae8662162663c3">id</a>)];</div>
+<div class="line"><a id="l00332" name="l00332"></a><span class="lineno">  332</span>}</div>
+</div>
+<div class="line"><a id="l00333" name="l00333"></a><span class="lineno">  333</span> </div>
+<div class="foldopen" id="foldopen00334" data-start="{" data-end="}">
+<div class="line"><a id="l00334" name="l00334"></a><span class="lineno"><a class="line" href="classeve_1_1hexmap_1_1HexSphereTopology.html#af9ffd350767daac85385178083b3bee4">  334</a></span><a class="code hl_typedef" href="namespaceeve_1_1hexmap.html#aa0e7bedc4b43f36a8fec0a2e73508b65">HexSphereCell</a> HexSphereTopology::cellAt(<a class="code hl_struct" href="structeve_1_1hexmap_1_1HexVec3.html">HexVec3</a> unitDirection) <span class="keyword">const</span> <span class="keyword">noexcept</span> {</div>
+<div class="line"><a id="l00335" name="l00335"></a><span class="lineno">  335</span>    <span class="keywordflow">if</span> (empty()) <span class="keywordflow">return</span> <a class="code hl_variable" href="namespaceeve_1_1hexmap.html#a9c1a239f8f2fb44e9d7caa8a5457b9d8">kNoHexSphereCell</a>;</div>
+<div class="line"><a id="l00336" name="l00336"></a><span class="lineno">  336</span>    <span class="keyword">const</span> Vec <a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#a16c9300acaea4db7696fb24b3802bfa5">target</a> = normalize(unitDirection);</div>
+<div class="line"><a id="l00337" name="l00337"></a><span class="lineno">  337</span> </div>
+<div class="line"><a id="l00338" name="l00338"></a><span class="lineno">  338</span>    <a class="code hl_typedef" href="namespaceeve_1_1hexmap.html#aa0e7bedc4b43f36a8fec0a2e73508b65">HexSphereCell</a> current = 0;</div>
+<div class="line"><a id="l00339" name="l00339"></a><span class="lineno">  339</span>    <span class="keywordtype">float</span>         best    = dot(directions_[0], <a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#a16c9300acaea4db7696fb24b3802bfa5">target</a>);</div>
+<div class="line"><a id="l00340" name="l00340"></a><span class="lineno">  340</span>    <span class="keyword">const</span> std::int32_t seeds = cellCount() &lt; 12 ? cellCount() : 12;</div>
+<div class="line"><a id="l00341" name="l00341"></a><span class="lineno">  341</span>    <span class="keywordflow">for</span> (std::int32_t <a class="code hl_variable" href="TacticsPath_8cpp.html#ac09c70a19f04817cd37f78fe3e752066">cell</a> = 1; <a class="code hl_variable" href="TacticsPath_8cpp.html#ac09c70a19f04817cd37f78fe3e752066">cell</a> &lt; seeds; ++<a class="code hl_variable" href="TacticsPath_8cpp.html#ac09c70a19f04817cd37f78fe3e752066">cell</a>) {</div>
+<div class="line"><a id="l00342" name="l00342"></a><span class="lineno">  342</span>        <span class="keyword">const</span> <span class="keywordtype">float</span> <a class="code hl_variable" href="Agent_8cpp.html#a40a24ec85daa9ac70aa74e4ca744f838">score</a> = dot(directions_[<span class="keyword">static_cast&lt;</span>std::size_t<span class="keyword">&gt;</span>(<a class="code hl_variable" href="TacticsPath_8cpp.html#ac09c70a19f04817cd37f78fe3e752066">cell</a>)], <a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#a16c9300acaea4db7696fb24b3802bfa5">target</a>);</div>
+<div class="line"><a id="l00343" name="l00343"></a><span class="lineno">  343</span>        <span class="keywordflow">if</span> (<a class="code hl_variable" href="Agent_8cpp.html#a40a24ec85daa9ac70aa74e4ca744f838">score</a> &gt; best) {</div>
+<div class="line"><a id="l00344" name="l00344"></a><span class="lineno">  344</span>            best    = <a class="code hl_variable" href="Agent_8cpp.html#a40a24ec85daa9ac70aa74e4ca744f838">score</a>;</div>
+<div class="line"><a id="l00345" name="l00345"></a><span class="lineno">  345</span>            current = <a class="code hl_variable" href="TacticsPath_8cpp.html#ac09c70a19f04817cd37f78fe3e752066">cell</a>;</div>
+<div class="line"><a id="l00346" name="l00346"></a><span class="lineno">  346</span>        }</div>
+<div class="line"><a id="l00347" name="l00347"></a><span class="lineno">  347</span>    }</div>
+<div class="line"><a id="l00348" name="l00348"></a><span class="lineno">  348</span> </div>
+<div class="line"><a id="l00349" name="l00349"></a><span class="lineno">  349</span>    <span class="keywordflow">for</span> (;;) {</div>
+<div class="line"><a id="l00350" name="l00350"></a><span class="lineno">  350</span>        <span class="keywordtype">bool</span> improved = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00351" name="l00351"></a><span class="lineno">  351</span>        <span class="keyword">const</span> std::int32_t degree = neighborCount(current);</div>
+<div class="line"><a id="l00352" name="l00352"></a><span class="lineno">  352</span>        <span class="keywordflow">for</span> (std::int32_t direction = 0; direction &lt; degree; ++direction) {</div>
+<div class="line"><a id="l00353" name="l00353"></a><span class="lineno">  353</span>            <span class="keyword">const</span> <a class="code hl_typedef" href="namespaceeve_1_1hexmap.html#aa0e7bedc4b43f36a8fec0a2e73508b65">HexSphereCell</a> candidate =</div>
+<div class="line"><a id="l00354" name="l00354"></a><span class="lineno">  354</span>                neighbors_[<span class="keyword">static_cast&lt;</span>std::size_t<span class="keyword">&gt;</span>(cellOffsets_[<span class="keyword">static_cast&lt;</span>std::size_t<span class="keyword">&gt;</span>(current)] + direction)];</div>
+<div class="line"><a id="l00355" name="l00355"></a><span class="lineno">  355</span>            <span class="keyword">const</span> <span class="keywordtype">float</span> <a class="code hl_variable" href="Agent_8cpp.html#a40a24ec85daa9ac70aa74e4ca744f838">score</a> = dot(directions_[<span class="keyword">static_cast&lt;</span>std::size_t<span class="keyword">&gt;</span>(candidate)], <a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#a16c9300acaea4db7696fb24b3802bfa5">target</a>);</div>
+<div class="line"><a id="l00356" name="l00356"></a><span class="lineno">  356</span>            <span class="keywordflow">if</span> (<a class="code hl_variable" href="Agent_8cpp.html#a40a24ec85daa9ac70aa74e4ca744f838">score</a> &gt; best + 1e-7f) {</div>
+<div class="line"><a id="l00357" name="l00357"></a><span class="lineno">  357</span>                best      = <a class="code hl_variable" href="Agent_8cpp.html#a40a24ec85daa9ac70aa74e4ca744f838">score</a>;</div>
+<div class="line"><a id="l00358" name="l00358"></a><span class="lineno">  358</span>                current   = candidate;</div>
+<div class="line"><a id="l00359" name="l00359"></a><span class="lineno">  359</span>                improved  = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00360" name="l00360"></a><span class="lineno">  360</span>            }</div>
+<div class="line"><a id="l00361" name="l00361"></a><span class="lineno">  361</span>        }</div>
+<div class="line"><a id="l00362" name="l00362"></a><span class="lineno">  362</span>        <span class="keywordflow">if</span> (!improved) <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l00363" name="l00363"></a><span class="lineno">  363</span>    }</div>
+<div class="line"><a id="l00364" name="l00364"></a><span class="lineno">  364</span>    <span class="keywordflow">return</span> current;</div>
+<div class="line"><a id="l00365" name="l00365"></a><span class="lineno">  365</span>}</div>
+</div>
+<div class="line"><a id="l00366" name="l00366"></a><span class="lineno">  366</span> </div>
+<div class="foldopen" id="foldopen00367" data-start="{" data-end="}">
+<div class="line"><a id="l00367" name="l00367"></a><span class="lineno"><a class="line" href="classeve_1_1hexmap_1_1HexSphereTopology.html#a3d552efb431b4d56d158941519ae2f2d">  367</a></span><span class="keywordtype">float</span> HexSphereTopology::angularDistance(<a class="code hl_struct" href="structeve_1_1hexmap_1_1HexVec3.html">HexVec3</a> <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>, <a class="code hl_struct" href="structeve_1_1hexmap_1_1HexVec3.html">HexVec3</a> <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>) <span class="keyword">noexcept</span> {</div>
+<div class="line"><a id="l00368" name="l00368"></a><span class="lineno">  368</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> cosine = dot(normalize(<a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>), normalize(<a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>));</div>
+<div class="line"><a id="l00369" name="l00369"></a><span class="lineno">  369</span>    <span class="keywordflow">return</span> std::acos(std::clamp(cosine, -1.f, 1.f));</div>
+<div class="line"><a id="l00370" name="l00370"></a><span class="lineno">  370</span>}</div>
+</div>
+<div class="line"><a id="l00371" name="l00371"></a><span class="lineno">  371</span> </div>
+<div class="line"><a id="l00372" name="l00372"></a><span class="lineno">  372</span>}  <span class="comment">// namespace eve::hexmap</span></div>
+<div class="ttc" id="aActionNotifyRegistry_8cpp_html_a16c9300acaea4db7696fb24b3802bfa5"><div class="ttname"><a href="ActionNotifyRegistry_8cpp.html#a16c9300acaea4db7696fb24b3802bfa5">target</a></div><div class="ttdeci">LogicalId target</div><div class="ttdef"><b>Definition</b> <a href="ActionNotifyRegistry_8cpp_source.html#l00163">ActionNotifyRegistry.cpp:163</a></div></div>
+<div class="ttc" id="aActionTimelinePayloadEditor_8cpp_html_a831c184a4a6468e68e592a9fafdfec69"><div class="ttname"><a href="ActionTimelinePayloadEditor_8cpp.html#a831c184a4a6468e68e592a9fafdfec69">end</a></div><div class="ttdeci">Duration end</div><div class="ttdef"><b>Definition</b> <a href="ActionTimelinePayloadEditor_8cpp_source.html#l00023">ActionTimelinePayloadEditor.cpp:23</a></div></div>
+<div class="ttc" id="aAgent_8cpp_html_a40a24ec85daa9ac70aa74e4ca744f838"><div class="ttname"><a href="Agent_8cpp.html#a40a24ec85daa9ac70aa74e4ca744f838">score</a></div><div class="ttdeci">double score</div><div class="ttdef"><b>Definition</b> <a href="Agent_8cpp_source.html#l00055">Agent.cpp:55</a></div></div>
+<div class="ttc" id="aBuilder_8cpp_html_a317e3a075fa5ae6cc2d6aca9b59377e6"><div class="ttname"><a href="Builder_8cpp.html#a317e3a075fa5ae6cc2d6aca9b59377e6">triangles</a></div><div class="ttdeci">std::vector&lt; std::uint32_t &gt; triangles</div><div class="ttdef"><b>Definition</b> <a href="Builder_8cpp_source.html#l00026">Builder.cpp:26</a></div></div>
+<div class="ttc" id="aCaveMesh_8cpp_html_a6150639f5295064e97e299a9206d16b1"><div class="ttname"><a href="CaveMesh_8cpp.html#a6150639f5295064e97e299a9206d16b1">length</a></div><div class="ttdeci">float length</div><div class="ttdef"><b>Definition</b> <a href="CaveMesh_8cpp_source.html#l00094">CaveMesh.cpp:94</a></div></div>
+<div class="ttc" id="aFluidSurfaceBinding_8cpp_html_a0a0390ed59a97feb6783f87db4086a7c"><div class="ttname"><a href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a></div><div class="ttdeci">uint32_t a</div><div class="ttdef"><b>Definition</b> <a href="FluidSurfaceBinding_8cpp_source.html#l00014">FluidSurfaceBinding.cpp:14</a></div></div>
+<div class="ttc" id="aFluidSurfaceBinding_8cpp_html_a2826644ea978cb49c4ee809b55e128d7"><div class="ttname"><a href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a></div><div class="ttdeci">uint32_t b</div><div class="ttdef"><b>Definition</b> <a href="FluidSurfaceBinding_8cpp_source.html#l00015">FluidSurfaceBinding.cpp:15</a></div></div>
+<div class="ttc" id="aFluidSurfaceBinding_8cpp_html_a9b7fb3a94d7230e91baab1b890918213"><div class="ttname"><a href="FluidSurfaceBinding_8cpp.html#a9b7fb3a94d7230e91baab1b890918213">triangle</a></div><div class="ttdeci">int triangle</div><div class="ttdef"><b>Definition</b> <a href="FluidSurfaceBinding_8cpp_source.html#l00029">FluidSurfaceBinding.cpp:29</a></div></div>
+<div class="ttc" id="aGltfAnimation_8cpp_html_a36bd74109f547f7f8198faf5a12d2879"><div class="ttname"><a href="GltfAnimation_8cpp.html#a36bd74109f547f7f8198faf5a12d2879">message</a></div><div class="ttdeci">std::string message</div><div class="ttdef"><b>Definition</b> <a href="GltfAnimation_8cpp_source.html#l00017">GltfAnimation.cpp:17</a></div></div>
+<div class="ttc" id="aGtsMeshSimplifier_8cpp_html_a66017ae0928cf15de1f3cc98b8fd2833"><div class="ttname"><a href="GtsMeshSimplifier_8cpp.html#a66017ae0928cf15de1f3cc98b8fd2833">ab</a></div><div class="ttdeci">std::uint32_t ab</div><div class="ttdef"><b>Definition</b> <a href="GtsMeshSimplifier_8cpp_source.html#l00017">GtsMeshSimplifier.cpp:17</a></div></div>
+<div class="ttc" id="aHexSphereTopology_8cpp_html_a1d0c825b660865150899766db0ec7361"><div class="ttname"><a href="HexSphereTopology_8cpp.html#a1d0c825b660865150899766db0ec7361">second</a></div><div class="ttdeci">std::int32_t second</div><div class="ttdef"><b>Definition</b> <a href="HexSphereTopology_8cpp_source.html#l00081">HexSphereTopology.cpp:81</a></div></div>
+<div class="ttc" id="aHexSphereTopology_8cpp_html_a6508ac0a45fccabd203a6f520c69dca8"><div class="ttname"><a href="HexSphereTopology_8cpp.html#a6508ac0a45fccabd203a6f520c69dca8">c</a></div><div class="ttdeci">std::int32_t c</div><div class="ttdef"><b>Definition</b> <a href="HexSphereTopology_8cpp_source.html#l00068">HexSphereTopology.cpp:68</a></div></div>
+<div class="ttc" id="aHexSphereTopology_8cpp_html_a9ebd1b92d5226e25efef9e2af5ca8a34"><div class="ttname"><a href="HexSphereTopology_8cpp.html#a9ebd1b92d5226e25efef9e2af5ca8a34">first</a></div><div class="ttdeci">std::int32_t first</div><div class="ttdef"><b>Definition</b> <a href="HexSphereTopology_8cpp_source.html#l00080">HexSphereTopology.cpp:80</a></div></div>
+<div class="ttc" id="aHexSphereTopology_8h_html"><div class="ttname"><a href="HexSphereTopology_8h.html">HexSphereTopology.h</a></div><div class="ttdoc">Icosahedral hex topology: twelve pentagons and hexagons on a sphere.</div></div>
+<div class="ttc" id="aModelRenderer_8cpp_html_a7fc298ed6f70a0822720769c13216978"><div class="ttname"><a href="ModelRenderer_8cpp.html#a7fc298ed6f70a0822720769c13216978">normal</a></div><div class="ttdeci">Texture * normal</div><div class="ttdef"><b>Definition</b> <a href="ModelRenderer_8cpp_source.html#l00118">ModelRenderer.cpp:118</a></div></div>
+<div class="ttc" id="aPathfinder_8cpp_html_a135992146dd07a4c751eaa500b8f38e6"><div class="ttname"><a href="Pathfinder_8cpp.html#a135992146dd07a4c751eaa500b8f38e6">topology</a></div><div class="ttdeci">Topology topology</div><div class="ttdef"><b>Definition</b> <a href="Pathfinder_8cpp_source.html#l00148">Pathfinder.cpp:148</a></div></div>
+<div class="ttc" id="aPlacementSystem_8cpp_html_a31e26c1cfba73f1354aeb3c17673c0a1"><div class="ttname"><a href="PlacementSystem_8cpp.html#a31e26c1cfba73f1354aeb3c17673c0a1">vertices</a></div><div class="ttdeci">std::vector&lt; Point &gt; vertices</div><div class="ttdef"><b>Definition</b> <a href="PlacementSystem_8cpp_source.html#l00046">PlacementSystem.cpp:46</a></div></div>
+<div class="ttc" id="aPlayHost_8cpp_html_afd0d68c6d31ff249f3ae8662162663c3"><div class="ttname"><a href="PlayHost_8cpp.html#afd0d68c6d31ff249f3ae8662162663c3">id</a></div><div class="ttdeci">std::string id</div><div class="ttdef"><b>Definition</b> <a href="PlayHost_8cpp_source.html#l00142">PlayHost.cpp:142</a></div></div>
+<div class="ttc" id="aPrimitiveTessellator_8cpp_html_a040a87bf98202a107183d0d7c7f2fbed"><div class="ttname"><a href="PrimitiveTessellator_8cpp.html#a040a87bf98202a107183d0d7c7f2fbed">begin</a></div><div class="ttdeci">float begin</div><div class="ttdef"><b>Definition</b> <a href="PrimitiveTessellator_8cpp_source.html#l00287">PrimitiveTessellator.cpp:287</a></div></div>
+<div class="ttc" id="aRpgDialect_8cpp_html_a7141f237b2648c631ce5b73215683565"><div class="ttname"><a href="RpgDialect_8cpp.html#a7141f237b2648c631ce5b73215683565">found</a></div><div class="ttdeci">bool found</div><div class="ttdef"><b>Definition</b> <a href="RpgDialect_8cpp_source.html#l00334">RpgDialect.cpp:334</a></div></div>
+<div class="ttc" id="aTacticsPath_8cpp_html_ac09c70a19f04817cd37f78fe3e752066"><div class="ttname"><a href="TacticsPath_8cpp.html#ac09c70a19f04817cd37f78fe3e752066">cell</a></div><div class="ttdeci">Cell cell</div><div class="ttdef"><b>Definition</b> <a href="TacticsPath_8cpp_source.html#l00019">TacticsPath.cpp:19</a></div></div>
+<div class="ttc" id="aTacticsPersistence_8cpp_html_abe1c03b69a12641be752dcf349310f1c"><div class="ttname"><a href="TacticsPersistence_8cpp.html#abe1c03b69a12641be752dcf349310f1c">cursor</a></div><div class="ttdeci">std::size_t cursor</div><div class="ttdef"><b>Definition</b> <a href="TacticsPersistence_8cpp_source.html#l00130">TacticsPersistence.cpp:130</a></div></div>
+<div class="ttc" id="aUnityVegetationMaterial_8cpp_html_aafd95f8c7a99b9189ede7cdf0871ebe8"><div class="ttname"><a href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a></div><div class="ttdeci">uint32_t index</div><div class="ttdef"><b>Definition</b> <a href="UnityVegetationMaterial_8cpp_source.html#l00161">UnityVegetationMaterial.cpp:161</a></div></div>
+<div class="ttc" id="aclasseve_1_1Diagnostic_html_af797f7520cc62e8273da5afdb59d9ef4"><div class="ttname"><a href="classeve_1_1Diagnostic.html#af797f7520cc62e8273da5afdb59d9ef4">eve::Diagnostic::error</a></div><div class="ttdeci">static Diagnostic error(DiagnosticCode code, std::string message, std::string path={}, DiagnosticDetails details={}, std::string source={})</div><div class="ttdoc">Construct an error diagnostic with the standard error severity.</div><div class="ttdef"><b>Definition</b> <a href="Diagnostic_8h_source.html#l00119">Diagnostic.h:119</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html_a10668d27f9f97c9808e0099e0248816b"><div class="ttname"><a href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">eve::Result::success</a></div><div class="ttdeci">static Result success(T value)</div><div class="ttdoc">Construct a successful result owning value.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00157">Result.h:157</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html_af1a297022e9a6a615433003fe6466358"><div class="ttname"><a href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">eve::Result::failure</a></div><div class="ttdeci">static Result failure(Status status)</div><div class="ttdoc">Construct a failed result from a structured status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00166">Result.h:166</a></div></div>
+<div class="ttc" id="aclasseve_1_1hexmap_1_1HexSphereTopology_html"><div class="ttname"><a href="classeve_1_1hexmap_1_1HexSphereTopology.html">eve::hexmap::HexSphereTopology</a></div><div class="ttdoc">Icosahedral (Goldberg) hex topology for a spherical hex map.</div><div class="ttdef"><b>Definition</b> <a href="HexSphereTopology_8h_source.html#l00052">HexSphereTopology.h:52</a></div></div>
+<div class="ttc" id="aclasseve_1_1hexmap_1_1HexSphereTopology_html_a349b31c4716d859d0cd00f881386c5a0"><div class="ttname"><a href="classeve_1_1hexmap_1_1HexSphereTopology.html#a349b31c4716d859d0cd00f881386c5a0">eve::hexmap::HexSphereTopology::subdivision</a></div><div class="ttdeci">std::int32_t subdivision() const noexcept</div><div class="ttdoc">The subdivision level this topology was built at.</div><div class="ttdef"><b>Definition</b> <a href="HexSphereTopology_8h_source.html#l00073">HexSphereTopology.h:73</a></div></div>
+<div class="ttc" id="aclasseve_1_1hexmap_1_1HexSphereTopology_html_ae41033809d539f2fbc86277334c9d002"><div class="ttname"><a href="classeve_1_1hexmap_1_1HexSphereTopology.html#ae41033809d539f2fbc86277334c9d002">eve::hexmap::HexSphereTopology::build</a></div><div class="ttdeci">static Result&lt; HexSphereTopology &gt; build(std::int32_t subdivision)</div><div class="ttdoc">Builds the topology of one subdivision level.</div><div class="ttdef"><b>Definition</b> <a href="HexSphereTopology_8cpp_source.html#l00092">HexSphereTopology.cpp:92</a></div></div>
+<div class="ttc" id="amesh_2MeshModifierGraph_8cpp_html_acd3d88da3c0e0313c3645ff34f62f542"><div class="ttname"><a href="mesh_2MeshModifierGraph_8cpp.html#acd3d88da3c0e0313c3645ff34f62f542">key</a></div><div class="ttdeci">const char * key</div><div class="ttdef"><b>Definition</b> <a href="mesh_2MeshModifierGraph_8cpp_source.html#l00019">MeshModifierGraph.cpp:19</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1hexmap_html"><div class="ttname"><a href="namespaceeve_1_1hexmap.html">eve::hexmap</a></div><div class="ttdef"><b>Definition</b> <a href="HexCell_8h_source.html#l00009">HexCell.h:9</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1hexmap_html_a62fac67253565bdcfef7428b47509d6a"><div class="ttname"><a href="namespaceeve_1_1hexmap.html#a62fac67253565bdcfef7428b47509d6a">eve::hexmap::kMaxHexSphereSubdivision</a></div><div class="ttdeci">constexpr std::int32_t kMaxHexSphereSubdivision</div><div class="ttdoc">Largest supported subdivision level; 10 * 4^7 + 2 = 163842 cells.</div><div class="ttdef"><b>Definition</b> <a href="HexSphereTopology_8h_source.html#l00020">HexSphereTopology.h:20</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1hexmap_html_a9c1a239f8f2fb44e9d7caa8a5457b9d8"><div class="ttname"><a href="namespaceeve_1_1hexmap.html#a9c1a239f8f2fb44e9d7caa8a5457b9d8">eve::hexmap::kNoHexSphereCell</a></div><div class="ttdeci">constexpr HexSphereCell kNoHexSphereCell</div><div class="ttdoc">Returned by a spherical cell query that has no answer.</div><div class="ttdef"><b>Definition</b> <a href="HexSphereTopology_8h_source.html#l00017">HexSphereTopology.h:17</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1hexmap_html_aa0e7bedc4b43f36a8fec0a2e73508b65"><div class="ttname"><a href="namespaceeve_1_1hexmap.html#aa0e7bedc4b43f36a8fec0a2e73508b65">eve::hexmap::HexSphereCell</a></div><div class="ttdeci">std::int32_t HexSphereCell</div><div class="ttdoc">Dense identifier of one cell of a spherical hex topology.</div><div class="ttdef"><b>Definition</b> <a href="HexSphereTopology_8h_source.html#l00014">HexSphereTopology.h:14</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_1_1urban_html_a7e72a289370e7236563fd0efdf389a26"><div class="ttname"><a href="namespaceeve_1_1procgen_1_1urban.html#a7e72a289370e7236563fd0efdf389a26">eve::procgen::urban::normalize</a></div><div class="ttdeci">Vec2 normalize(const Vec2 &amp;a)</div><div class="ttdef"><b>Definition</b> <a href="UrbanTypes_8h_source.html#l00032">UrbanTypes.h:32</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_1_1urban_html_a801145dddf90e252b78db277ad210010"><div class="ttname"><a href="namespaceeve_1_1procgen_1_1urban.html#a801145dddf90e252b78db277ad210010">eve::procgen::urban::dot</a></div><div class="ttdeci">double dot(const Vec2 &amp;a, const Vec2 &amp;b)</div><div class="ttdef"><b>Definition</b> <a href="UrbanTypes_8h_source.html#l00029">UrbanTypes.h:29</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_1_1urban_html_a938dc59eecfd5d9068979e8db608287e"><div class="ttname"><a href="namespaceeve_1_1procgen_1_1urban.html#a938dc59eecfd5d9068979e8db608287e">eve::procgen::urban::cross</a></div><div class="ttdeci">double cross(const Vec2 &amp;a, const Vec2 &amp;b)</div><div class="ttdef"><b>Definition</b> <a href="UrbanTypes_8h_source.html#l00028">UrbanTypes.h:28</a></div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::DiagnosticCode::InvalidArgument</a></div><div class="ttdeci">@ InvalidArgument</div></div>
+<div class="ttc" id="astructeve_1_1hexmap_1_1HexVec3_html"><div class="ttname"><a href="structeve_1_1hexmap_1_1HexVec3.html">eve::hexmap::HexVec3</a></div><div class="ttdoc">Minimal 3-component float vector used by the hex mesh builders.</div><div class="ttdef"><b>Definition</b> <a href="HexMetrics_8h_source.html#l00018">HexMetrics.h:18</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,267 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/graphics/webgpu/PbrVariantPlan.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_0f2af43e49f4758c00cbead1adc79623.html">graphics</a></li><li class="navelem"><a class="el" href="dir_370a268442834cf9d1d0b414d06c917d.html">webgpu</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">PbrVariantPlan.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="PbrVariantPlan_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &lt;array&gt;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;limits&gt;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &quot;<a class="code" href="Result_8h.html">common/Result.h</a>&quot;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &quot;<a class="code" href="PbrSurface_8h.html">graphics/PbrSurface.h</a>&quot;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1graphics_1_1webgpu.html">eve::graphics::webgpu</a> {</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
+<div class="foldopen" id="foldopen00012" data-start="{" data-end="};">
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno"><a class="line" href="namespaceeve_1_1graphics_1_1webgpu.html#ab42a1e61fd862101abe9d64ea35a32fe">   12</a></span><span class="keyword">enum</span> <a class="code hl_enumeration" href="namespaceeve_1_1graphics_1_1webgpu.html#ab42a1e61fd862101abe9d64ea35a32fe">PbrFragmentResourceFlag</a> : std::uint32_t {</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno"><a class="line" href="namespaceeve_1_1graphics_1_1webgpu.html#ab42a1e61fd862101abe9d64ea35a32fea2c742b5db2ac003089133a7fd8c51c34">   13</a></span>    <a class="code hl_enumvalue" href="namespaceeve_1_1graphics_1_1webgpu.html#ab42a1e61fd862101abe9d64ea35a32fea2c742b5db2ac003089133a7fd8c51c34">PbrEnvironment</a> = 1u &lt;&lt; 0,</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno"><a class="line" href="namespaceeve_1_1graphics_1_1webgpu.html#ab42a1e61fd862101abe9d64ea35a32fea95fd81d5571ad962e2cf359ff803ffd0">   14</a></span>    <a class="code hl_enumvalue" href="namespaceeve_1_1graphics_1_1webgpu.html#ab42a1e61fd862101abe9d64ea35a32fea95fd81d5571ad962e2cf359ff803ffd0">PbrShadows</a>     = 1u &lt;&lt; 1,</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno"><a class="line" href="namespaceeve_1_1graphics_1_1webgpu.html#ab42a1e61fd862101abe9d64ea35a32feac8d18142d2a6edb1c7560da03fba30cc">   15</a></span>    <a class="code hl_enumvalue" href="namespaceeve_1_1graphics_1_1webgpu.html#ab42a1e61fd862101abe9d64ea35a32feac8d18142d2a6edb1c7560da03fba30cc">PbrExtras</a>      = 1u &lt;&lt; 2,</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno"><a class="line" href="namespaceeve_1_1graphics_1_1webgpu.html#ab42a1e61fd862101abe9d64ea35a32fea53204d4ba875f5800231493ab1557fa8">   16</a></span>    <a class="code hl_enumvalue" href="namespaceeve_1_1graphics_1_1webgpu.html#ab42a1e61fd862101abe9d64ea35a32fea53204d4ba875f5800231493ab1557fa8">PbrColors</a>      = 1u &lt;&lt; 3,</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno"><a class="line" href="namespaceeve_1_1graphics_1_1webgpu.html#ab42a1e61fd862101abe9d64ea35a32feaf673f940bc6fca2fc82a425edb2d9b96">   17</a></span>    <a class="code hl_enumvalue" href="namespaceeve_1_1graphics_1_1webgpu.html#ab42a1e61fd862101abe9d64ea35a32feaf673f940bc6fca2fc82a425edb2d9b96">PbrFadeNoise</a>   = 1u &lt;&lt; 4,</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>};</div>
+</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span> </div>
+<div class="foldopen" id="foldopen00020" data-start="{" data-end="};">
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno"><a class="line" href="namespaceeve_1_1graphics_1_1webgpu.html#a06623f716f6f1ca8358bb4a77a652d57">   20</a></span><span class="keyword">enum</span> <a class="code hl_enumeration" href="namespaceeve_1_1graphics_1_1webgpu.html#a06623f716f6f1ca8358bb4a77a652d57">PbrVertexResourceFlag</a> : std::uint32_t {</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno"><a class="line" href="namespaceeve_1_1graphics_1_1webgpu.html#a06623f716f6f1ca8358bb4a77a652d57a4d68cad8dfbccfbbcb0ed76671c45ffe">   21</a></span>    <a class="code hl_enumvalue" href="namespaceeve_1_1graphics_1_1webgpu.html#a06623f716f6f1ca8358bb4a77a652d57a4d68cad8dfbccfbbcb0ed76671c45ffe">PbrVertexField</a> = 1u &lt;&lt; 0,</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno"><a class="line" href="namespaceeve_1_1graphics_1_1webgpu.html#a06623f716f6f1ca8358bb4a77a652d57aff831dc66049f38c75d5b35dbc8a4dbe">   22</a></span>    <a class="code hl_enumvalue" href="namespaceeve_1_1graphics_1_1webgpu.html#a06623f716f6f1ca8358bb4a77a652d57aff831dc66049f38c75d5b35dbc8a4dbe">PbrMotionField</a> = 1u &lt;&lt; 1,</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno"><a class="line" href="namespaceeve_1_1graphics_1_1webgpu.html#a06623f716f6f1ca8358bb4a77a652d57a1dab2ef7bab7b85c85425b53f864fb48">   23</a></span>    <a class="code hl_enumvalue" href="namespaceeve_1_1graphics_1_1webgpu.html#a06623f716f6f1ca8358bb4a77a652d57a1dab2ef7bab7b85c85425b53f864fb48">PbrMotionNoise</a> = 1u &lt;&lt; 2,</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>};</div>
+</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span> </div>
+<div class="foldopen" id="foldopen00027" data-start="{" data-end="};">
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1webgpu_1_1PbrVariantLimits.html">   27</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1graphics_1_1webgpu_1_1PbrVariantLimits.html">PbrVariantLimits</a> {</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1webgpu_1_1PbrVariantLimits.html#a7aaa79d459cd48229731f93a87613ed6">   28</a></span>    std::uint32_t <a class="code hl_variable" href="structeve_1_1graphics_1_1webgpu_1_1PbrVariantLimits.html#a7aaa79d459cd48229731f93a87613ed6">sampledTexturesPerStage</a> = 17;</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1webgpu_1_1PbrVariantLimits.html#a2a3ee22c5fb1a9e33180bf69b97ce523">   29</a></span>    std::uint32_t <a class="code hl_variable" href="structeve_1_1graphics_1_1webgpu_1_1PbrVariantLimits.html#a2a3ee22c5fb1a9e33180bf69b97ce523">samplersPerStage</a>        = 16;</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>};</div>
+</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span> </div>
+<div class="foldopen" id="foldopen00033" data-start="{" data-end="};">
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1webgpu_1_1PbrVariantPlan.html">   33</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1graphics_1_1webgpu_1_1PbrVariantPlan.html">PbrVariantPlan</a> {</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1webgpu_1_1PbrVariantPlan.html#a1a4b407ab715419cd6cc7ad3fe38e4f9">   34</a></span>    <span class="keyword">static</span> <span class="keyword">constexpr</span> std::uint32_t <a class="code hl_variable" href="structeve_1_1graphics_1_1webgpu_1_1PbrVariantPlan.html#a1a4b407ab715419cd6cc7ad3fe38e4f9">NoSampler</a> = std::numeric_limits&lt;std::uint32_t&gt;::max();</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span> </div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1webgpu_1_1PbrVariantPlan.html#ad8eea00623bcca5e69f636fb050cf04f">   36</a></span>    std::uint32_t <a class="code hl_variable" href="structeve_1_1graphics_1_1webgpu_1_1PbrVariantPlan.html#ad8eea00623bcca5e69f636fb050cf04f">canonicalTextureMask</a> = 0;</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1webgpu_1_1PbrVariantPlan.html#a27949d7117dacd908fbcc6a9cbc6b4e1">   37</a></span>    std::uint32_t <a class="code hl_variable" href="structeve_1_1graphics_1_1webgpu_1_1PbrVariantPlan.html#a27949d7117dacd908fbcc6a9cbc6b4e1">detailTextureMask</a>    = 0;</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1webgpu_1_1PbrVariantPlan.html#acb5c4175fedad0bf914f447621f90453">   38</a></span>    std::uint32_t <a class="code hl_variable" href="structeve_1_1graphics_1_1webgpu_1_1PbrVariantPlan.html#acb5c4175fedad0bf914f447621f90453">fragmentFlags</a>        = 0;</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1webgpu_1_1PbrVariantPlan.html#a306e6fa2f72b6994676e3e5cc10612a7">   39</a></span>    std::uint32_t <a class="code hl_variable" href="structeve_1_1graphics_1_1webgpu_1_1PbrVariantPlan.html#a306e6fa2f72b6994676e3e5cc10612a7">vertexFlags</a>          = 0;</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1webgpu_1_1PbrVariantPlan.html#aaf1994fa7b55dd80c1fa38e12bc0d5c9">   40</a></span>    std::uint32_t <a class="code hl_variable" href="structeve_1_1graphics_1_1webgpu_1_1PbrVariantPlan.html#aaf1994fa7b55dd80c1fa38e12bc0d5c9">fragmentTextures</a>     = 0;</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1webgpu_1_1PbrVariantPlan.html#a13fb26f1f2652b9e3c5ccc172742fe8d">   41</a></span>    std::uint32_t <a class="code hl_variable" href="structeve_1_1graphics_1_1webgpu_1_1PbrVariantPlan.html#a13fb26f1f2652b9e3c5ccc172742fe8d">fragmentSamplers</a>     = 0;</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1webgpu_1_1PbrVariantPlan.html#ab86a04019116c0656af7998b8731ca85">   42</a></span>    std::uint32_t <a class="code hl_variable" href="structeve_1_1graphics_1_1webgpu_1_1PbrVariantPlan.html#ab86a04019116c0656af7998b8731ca85">vertexTextures</a>       = 0;</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1webgpu_1_1PbrVariantPlan.html#ac7d6a3896732a0dde48d9e4a42c5d67e">   43</a></span>    std::uint32_t <a class="code hl_variable" href="structeve_1_1graphics_1_1webgpu_1_1PbrVariantPlan.html#ac7d6a3896732a0dde48d9e4a42c5d67e">vertexSamplers</a>       = 0;</div>
+<div class="foldopen" id="foldopen00045" data-start="{" data-end="};">
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1webgpu_1_1PbrVariantPlan.html#a98fa4ef9ae3bbd2f3d84f86a98d5d9d5">   45</a></span>    std::array&lt;std::uint32_t, 11&gt; <a class="code hl_variable" href="structeve_1_1graphics_1_1webgpu_1_1PbrVariantPlan.html#a98fa4ef9ae3bbd2f3d84f86a98d5d9d5">canonicalSamplerRepresentatives</a>{</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>        <a class="code hl_variable" href="structeve_1_1graphics_1_1webgpu_1_1PbrVariantPlan.html#a1a4b407ab715419cd6cc7ad3fe38e4f9">NoSampler</a>, <a class="code hl_variable" href="structeve_1_1graphics_1_1webgpu_1_1PbrVariantPlan.html#a1a4b407ab715419cd6cc7ad3fe38e4f9">NoSampler</a>, <a class="code hl_variable" href="structeve_1_1graphics_1_1webgpu_1_1PbrVariantPlan.html#a1a4b407ab715419cd6cc7ad3fe38e4f9">NoSampler</a>, <a class="code hl_variable" href="structeve_1_1graphics_1_1webgpu_1_1PbrVariantPlan.html#a1a4b407ab715419cd6cc7ad3fe38e4f9">NoSampler</a>, <a class="code hl_variable" href="structeve_1_1graphics_1_1webgpu_1_1PbrVariantPlan.html#a1a4b407ab715419cd6cc7ad3fe38e4f9">NoSampler</a>, <a class="code hl_variable" href="structeve_1_1graphics_1_1webgpu_1_1PbrVariantPlan.html#a1a4b407ab715419cd6cc7ad3fe38e4f9">NoSampler</a>,</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>        <a class="code hl_variable" href="structeve_1_1graphics_1_1webgpu_1_1PbrVariantPlan.html#a1a4b407ab715419cd6cc7ad3fe38e4f9">NoSampler</a>, <a class="code hl_variable" href="structeve_1_1graphics_1_1webgpu_1_1PbrVariantPlan.html#a1a4b407ab715419cd6cc7ad3fe38e4f9">NoSampler</a>, <a class="code hl_variable" href="structeve_1_1graphics_1_1webgpu_1_1PbrVariantPlan.html#a1a4b407ab715419cd6cc7ad3fe38e4f9">NoSampler</a>, <a class="code hl_variable" href="structeve_1_1graphics_1_1webgpu_1_1PbrVariantPlan.html#a1a4b407ab715419cd6cc7ad3fe38e4f9">NoSampler</a>, <a class="code hl_variable" href="structeve_1_1graphics_1_1webgpu_1_1PbrVariantPlan.html#a1a4b407ab715419cd6cc7ad3fe38e4f9">NoSampler</a>};</div>
+</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1webgpu_1_1PbrVariantPlan.html#a9c7777e84f87d2e184880d46c0bde2eb">   48</a></span>    std::array&lt;std::uint32_t, 3&gt; <a class="code hl_variable" href="structeve_1_1graphics_1_1webgpu_1_1PbrVariantPlan.html#a9c7777e84f87d2e184880d46c0bde2eb">detailSamplerRepresentatives</a>{<a class="code hl_variable" href="structeve_1_1graphics_1_1webgpu_1_1PbrVariantPlan.html#a1a4b407ab715419cd6cc7ad3fe38e4f9">NoSampler</a>, <a class="code hl_variable" href="structeve_1_1graphics_1_1webgpu_1_1PbrVariantPlan.html#a1a4b407ab715419cd6cc7ad3fe38e4f9">NoSampler</a>, <a class="code hl_variable" href="structeve_1_1graphics_1_1webgpu_1_1PbrVariantPlan.html#a1a4b407ab715419cd6cc7ad3fe38e4f9">NoSampler</a>};</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span> </div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno"><a class="line" href="structeve_1_1graphics_1_1webgpu_1_1PbrVariantPlan.html#a8ce0fa02e3a90e105b615e21c1f34f5a">   50</a></span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="structeve_1_1graphics_1_1webgpu_1_1PbrVariantPlan.html#a8ce0fa02e3a90e105b615e21c1f34f5a">operator==</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1graphics_1_1webgpu_1_1PbrVariantPlan.html">PbrVariantPlan</a>&amp;) <span class="keyword">const</span> = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>};</div>
+</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span> </div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>[[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;PbrVariantPlan&gt;</a> <a class="code hl_function" href="namespaceeve_1_1graphics_1_1webgpu.html#a2b44d072c6a9f79f5e9384be488db312">planPbrVariant</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1graphics_1_1PbrSurface.html">PbrSurface</a>&amp; surface, <span class="keywordtype">bool</span> environment, <span class="keywordtype">bool</span> shadows,</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>                                                    <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1graphics_1_1webgpu_1_1PbrVariantLimits.html">PbrVariantLimits</a>&amp; <a class="code hl_variable" href="UnityVegetationPreset_8cpp.html#ac305f1e828b2cf82b0d6fed8194ce85c">limits</a> = {});</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span> </div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>}  <span class="comment">// namespace eve::graphics::webgpu</span></div>
+<div class="ttc" id="aPbrSurface_8h_html"><div class="ttname"><a href="PbrSurface_8h.html">PbrSurface.h</a></div></div>
+<div class="ttc" id="aResult_8h_html"><div class="ttname"><a href="Result_8h.html">Result.h</a></div><div class="ttdoc">Move-only, checked operation results for the common layer.</div></div>
+<div class="ttc" id="aUnityVegetationPreset_8cpp_html_ac305f1e828b2cf82b0d6fed8194ce85c"><div class="ttname"><a href="UnityVegetationPreset_8cpp.html#ac305f1e828b2cf82b0d6fed8194ce85c">limits</a></div><div class="ttdeci">const AssetImportLimits &amp; limits</div><div class="ttdef"><b>Definition</b> <a href="UnityVegetationPreset_8cpp_source.html#l00030">UnityVegetationPreset.cpp:30</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_1_1webgpu_html"><div class="ttname"><a href="namespaceeve_1_1graphics_1_1webgpu.html">eve::graphics::webgpu</a></div><div class="ttdef"><b>Definition</b> <a href="BindGroupLayoutBuilder_8cpp_source.html#l00005">BindGroupLayoutBuilder.cpp:5</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_1_1webgpu_html_a06623f716f6f1ca8358bb4a77a652d57"><div class="ttname"><a href="namespaceeve_1_1graphics_1_1webgpu.html#a06623f716f6f1ca8358bb4a77a652d57">eve::graphics::webgpu::PbrVertexResourceFlag</a></div><div class="ttdeci">PbrVertexResourceFlag</div><div class="ttdef"><b>Definition</b> <a href="PbrVariantPlan_8h_source.html#l00020">PbrVariantPlan.h:20</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_1_1webgpu_html_a06623f716f6f1ca8358bb4a77a652d57a1dab2ef7bab7b85c85425b53f864fb48"><div class="ttname"><a href="namespaceeve_1_1graphics_1_1webgpu.html#a06623f716f6f1ca8358bb4a77a652d57a1dab2ef7bab7b85c85425b53f864fb48">eve::graphics::webgpu::PbrMotionNoise</a></div><div class="ttdeci">@ PbrMotionNoise</div><div class="ttdef"><b>Definition</b> <a href="PbrVariantPlan_8h_source.html#l00023">PbrVariantPlan.h:23</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_1_1webgpu_html_a06623f716f6f1ca8358bb4a77a652d57a4d68cad8dfbccfbbcb0ed76671c45ffe"><div class="ttname"><a href="namespaceeve_1_1graphics_1_1webgpu.html#a06623f716f6f1ca8358bb4a77a652d57a4d68cad8dfbccfbbcb0ed76671c45ffe">eve::graphics::webgpu::PbrVertexField</a></div><div class="ttdeci">@ PbrVertexField</div><div class="ttdef"><b>Definition</b> <a href="PbrVariantPlan_8h_source.html#l00021">PbrVariantPlan.h:21</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_1_1webgpu_html_a06623f716f6f1ca8358bb4a77a652d57aff831dc66049f38c75d5b35dbc8a4dbe"><div class="ttname"><a href="namespaceeve_1_1graphics_1_1webgpu.html#a06623f716f6f1ca8358bb4a77a652d57aff831dc66049f38c75d5b35dbc8a4dbe">eve::graphics::webgpu::PbrMotionField</a></div><div class="ttdeci">@ PbrMotionField</div><div class="ttdef"><b>Definition</b> <a href="PbrVariantPlan_8h_source.html#l00022">PbrVariantPlan.h:22</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_1_1webgpu_html_a2b44d072c6a9f79f5e9384be488db312"><div class="ttname"><a href="namespaceeve_1_1graphics_1_1webgpu.html#a2b44d072c6a9f79f5e9384be488db312">eve::graphics::webgpu::planPbrVariant</a></div><div class="ttdeci">Result&lt; PbrVariantPlan &gt; planPbrVariant(const PbrSurface &amp;surface, bool environment, bool shadows, const PbrVariantLimits &amp;limits)</div><div class="ttdoc">Plan only resources reachable for an immutable PBR draw snapshot.</div><div class="ttdef"><b>Definition</b> <a href="PbrVariantPlan_8cpp_source.html#l00025">PbrVariantPlan.cpp:25</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_1_1webgpu_html_ab42a1e61fd862101abe9d64ea35a32fe"><div class="ttname"><a href="namespaceeve_1_1graphics_1_1webgpu.html#ab42a1e61fd862101abe9d64ea35a32fe">eve::graphics::webgpu::PbrFragmentResourceFlag</a></div><div class="ttdeci">PbrFragmentResourceFlag</div><div class="ttdef"><b>Definition</b> <a href="PbrVariantPlan_8h_source.html#l00012">PbrVariantPlan.h:12</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_1_1webgpu_html_ab42a1e61fd862101abe9d64ea35a32fea2c742b5db2ac003089133a7fd8c51c34"><div class="ttname"><a href="namespaceeve_1_1graphics_1_1webgpu.html#ab42a1e61fd862101abe9d64ea35a32fea2c742b5db2ac003089133a7fd8c51c34">eve::graphics::webgpu::PbrEnvironment</a></div><div class="ttdeci">@ PbrEnvironment</div><div class="ttdef"><b>Definition</b> <a href="PbrVariantPlan_8h_source.html#l00013">PbrVariantPlan.h:13</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_1_1webgpu_html_ab42a1e61fd862101abe9d64ea35a32fea53204d4ba875f5800231493ab1557fa8"><div class="ttname"><a href="namespaceeve_1_1graphics_1_1webgpu.html#ab42a1e61fd862101abe9d64ea35a32fea53204d4ba875f5800231493ab1557fa8">eve::graphics::webgpu::PbrColors</a></div><div class="ttdeci">@ PbrColors</div><div class="ttdef"><b>Definition</b> <a href="PbrVariantPlan_8h_source.html#l00016">PbrVariantPlan.h:16</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_1_1webgpu_html_ab42a1e61fd862101abe9d64ea35a32fea95fd81d5571ad962e2cf359ff803ffd0"><div class="ttname"><a href="namespaceeve_1_1graphics_1_1webgpu.html#ab42a1e61fd862101abe9d64ea35a32fea95fd81d5571ad962e2cf359ff803ffd0">eve::graphics::webgpu::PbrShadows</a></div><div class="ttdeci">@ PbrShadows</div><div class="ttdef"><b>Definition</b> <a href="PbrVariantPlan_8h_source.html#l00014">PbrVariantPlan.h:14</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_1_1webgpu_html_ab42a1e61fd862101abe9d64ea35a32feac8d18142d2a6edb1c7560da03fba30cc"><div class="ttname"><a href="namespaceeve_1_1graphics_1_1webgpu.html#ab42a1e61fd862101abe9d64ea35a32feac8d18142d2a6edb1c7560da03fba30cc">eve::graphics::webgpu::PbrExtras</a></div><div class="ttdeci">@ PbrExtras</div><div class="ttdef"><b>Definition</b> <a href="PbrVariantPlan_8h_source.html#l00015">PbrVariantPlan.h:15</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_1_1webgpu_html_ab42a1e61fd862101abe9d64ea35a32feaf673f940bc6fca2fc82a425edb2d9b96"><div class="ttname"><a href="namespaceeve_1_1graphics_1_1webgpu.html#ab42a1e61fd862101abe9d64ea35a32feaf673f940bc6fca2fc82a425edb2d9b96">eve::graphics::webgpu::PbrFadeNoise</a></div><div class="ttdeci">@ PbrFadeNoise</div><div class="ttdef"><b>Definition</b> <a href="PbrVariantPlan_8h_source.html#l00017">PbrVariantPlan.h:17</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1PbrSurface_html"><div class="ttname"><a href="structeve_1_1graphics_1_1PbrSurface.html">eve::graphics::PbrSurface</a></div><div class="ttdoc">Owning material parameter snapshot; texture pointers remain borrowed. Base color/metallic/roughness c...</div><div class="ttdef"><b>Definition</b> <a href="PbrSurface_8h_source.html#l00216">PbrSurface.h:216</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1webgpu_1_1PbrVariantLimits_html"><div class="ttname"><a href="structeve_1_1graphics_1_1webgpu_1_1PbrVariantLimits.html">eve::graphics::webgpu::PbrVariantLimits</a></div><div class="ttdoc">Device resource limits relevant to one extended PBR shader variant.</div><div class="ttdef"><b>Definition</b> <a href="PbrVariantPlan_8h_source.html#l00027">PbrVariantPlan.h:27</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1webgpu_1_1PbrVariantLimits_html_a2a3ee22c5fb1a9e33180bf69b97ce523"><div class="ttname"><a href="structeve_1_1graphics_1_1webgpu_1_1PbrVariantLimits.html#a2a3ee22c5fb1a9e33180bf69b97ce523">eve::graphics::webgpu::PbrVariantLimits::samplersPerStage</a></div><div class="ttdeci">std::uint32_t samplersPerStage</div><div class="ttdef"><b>Definition</b> <a href="PbrVariantPlan_8h_source.html#l00029">PbrVariantPlan.h:29</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1webgpu_1_1PbrVariantLimits_html_a7aaa79d459cd48229731f93a87613ed6"><div class="ttname"><a href="structeve_1_1graphics_1_1webgpu_1_1PbrVariantLimits.html#a7aaa79d459cd48229731f93a87613ed6">eve::graphics::webgpu::PbrVariantLimits::sampledTexturesPerStage</a></div><div class="ttdeci">std::uint32_t sampledTexturesPerStage</div><div class="ttdef"><b>Definition</b> <a href="PbrVariantPlan_8h_source.html#l00028">PbrVariantPlan.h:28</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1webgpu_1_1PbrVariantPlan_html"><div class="ttname"><a href="structeve_1_1graphics_1_1webgpu_1_1PbrVariantPlan.html">eve::graphics::webgpu::PbrVariantPlan</a></div><div class="ttdoc">Stable resource-layout key and checked stage counts for a PBR snapshot.</div><div class="ttdef"><b>Definition</b> <a href="PbrVariantPlan_8h_source.html#l00033">PbrVariantPlan.h:33</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1webgpu_1_1PbrVariantPlan_html_a13fb26f1f2652b9e3c5ccc172742fe8d"><div class="ttname"><a href="structeve_1_1graphics_1_1webgpu_1_1PbrVariantPlan.html#a13fb26f1f2652b9e3c5ccc172742fe8d">eve::graphics::webgpu::PbrVariantPlan::fragmentSamplers</a></div><div class="ttdeci">std::uint32_t fragmentSamplers</div><div class="ttdef"><b>Definition</b> <a href="PbrVariantPlan_8h_source.html#l00041">PbrVariantPlan.h:41</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1webgpu_1_1PbrVariantPlan_html_a1a4b407ab715419cd6cc7ad3fe38e4f9"><div class="ttname"><a href="structeve_1_1graphics_1_1webgpu_1_1PbrVariantPlan.html#a1a4b407ab715419cd6cc7ad3fe38e4f9">eve::graphics::webgpu::PbrVariantPlan::NoSampler</a></div><div class="ttdeci">static constexpr std::uint32_t NoSampler</div><div class="ttdef"><b>Definition</b> <a href="PbrVariantPlan_8h_source.html#l00034">PbrVariantPlan.h:34</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1webgpu_1_1PbrVariantPlan_html_a27949d7117dacd908fbcc6a9cbc6b4e1"><div class="ttname"><a href="structeve_1_1graphics_1_1webgpu_1_1PbrVariantPlan.html#a27949d7117dacd908fbcc6a9cbc6b4e1">eve::graphics::webgpu::PbrVariantPlan::detailTextureMask</a></div><div class="ttdeci">std::uint32_t detailTextureMask</div><div class="ttdef"><b>Definition</b> <a href="PbrVariantPlan_8h_source.html#l00037">PbrVariantPlan.h:37</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1webgpu_1_1PbrVariantPlan_html_a306e6fa2f72b6994676e3e5cc10612a7"><div class="ttname"><a href="structeve_1_1graphics_1_1webgpu_1_1PbrVariantPlan.html#a306e6fa2f72b6994676e3e5cc10612a7">eve::graphics::webgpu::PbrVariantPlan::vertexFlags</a></div><div class="ttdeci">std::uint32_t vertexFlags</div><div class="ttdef"><b>Definition</b> <a href="PbrVariantPlan_8h_source.html#l00039">PbrVariantPlan.h:39</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1webgpu_1_1PbrVariantPlan_html_a8ce0fa02e3a90e105b615e21c1f34f5a"><div class="ttname"><a href="structeve_1_1graphics_1_1webgpu_1_1PbrVariantPlan.html#a8ce0fa02e3a90e105b615e21c1f34f5a">eve::graphics::webgpu::PbrVariantPlan::operator==</a></div><div class="ttdeci">bool operator==(const PbrVariantPlan &amp;) const =default</div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1webgpu_1_1PbrVariantPlan_html_a98fa4ef9ae3bbd2f3d84f86a98d5d9d5"><div class="ttname"><a href="structeve_1_1graphics_1_1webgpu_1_1PbrVariantPlan.html#a98fa4ef9ae3bbd2f3d84f86a98d5d9d5">eve::graphics::webgpu::PbrVariantPlan::canonicalSamplerRepresentatives</a></div><div class="ttdeci">std::array&lt; std::uint32_t, 11 &gt; canonicalSamplerRepresentatives</div><div class="ttdef"><b>Definition</b> <a href="PbrVariantPlan_8h_source.html#l00045">PbrVariantPlan.h:45</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1webgpu_1_1PbrVariantPlan_html_a9c7777e84f87d2e184880d46c0bde2eb"><div class="ttname"><a href="structeve_1_1graphics_1_1webgpu_1_1PbrVariantPlan.html#a9c7777e84f87d2e184880d46c0bde2eb">eve::graphics::webgpu::PbrVariantPlan::detailSamplerRepresentatives</a></div><div class="ttdeci">std::array&lt; std::uint32_t, 3 &gt; detailSamplerRepresentatives</div><div class="ttdef"><b>Definition</b> <a href="PbrVariantPlan_8h_source.html#l00048">PbrVariantPlan.h:48</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1webgpu_1_1PbrVariantPlan_html_aaf1994fa7b55dd80c1fa38e12bc0d5c9"><div class="ttname"><a href="structeve_1_1graphics_1_1webgpu_1_1PbrVariantPlan.html#aaf1994fa7b55dd80c1fa38e12bc0d5c9">eve::graphics::webgpu::PbrVariantPlan::fragmentTextures</a></div><div class="ttdeci">std::uint32_t fragmentTextures</div><div class="ttdef"><b>Definition</b> <a href="PbrVariantPlan_8h_source.html#l00040">PbrVariantPlan.h:40</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1webgpu_1_1PbrVariantPlan_html_ab86a04019116c0656af7998b8731ca85"><div class="ttname"><a href="structeve_1_1graphics_1_1webgpu_1_1PbrVariantPlan.html#ab86a04019116c0656af7998b8731ca85">eve::graphics::webgpu::PbrVariantPlan::vertexTextures</a></div><div class="ttdeci">std::uint32_t vertexTextures</div><div class="ttdef"><b>Definition</b> <a href="PbrVariantPlan_8h_source.html#l00042">PbrVariantPlan.h:42</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1webgpu_1_1PbrVariantPlan_html_ac7d6a3896732a0dde48d9e4a42c5d67e"><div class="ttname"><a href="structeve_1_1graphics_1_1webgpu_1_1PbrVariantPlan.html#ac7d6a3896732a0dde48d9e4a42c5d67e">eve::graphics::webgpu::PbrVariantPlan::vertexSamplers</a></div><div class="ttdeci">std::uint32_t vertexSamplers</div><div class="ttdef"><b>Definition</b> <a href="PbrVariantPlan_8h_source.html#l00043">PbrVariantPlan.h:43</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1webgpu_1_1PbrVariantPlan_html_acb5c4175fedad0bf914f447621f90453"><div class="ttname"><a href="structeve_1_1graphics_1_1webgpu_1_1PbrVariantPlan.html#acb5c4175fedad0bf914f447621f90453">eve::graphics::webgpu::PbrVariantPlan::fragmentFlags</a></div><div class="ttdeci">std::uint32_t fragmentFlags</div><div class="ttdef"><b>Definition</b> <a href="PbrVariantPlan_8h_source.html#l00038">PbrVariantPlan.h:38</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1webgpu_1_1PbrVariantPlan_html_ad8eea00623bcca5e69f636fb050cf04f"><div class="ttname"><a href="structeve_1_1graphics_1_1webgpu_1_1PbrVariantPlan.html#ad8eea00623bcca5e69f636fb050cf04f">eve::graphics::webgpu::PbrVariantPlan::canonicalTextureMask</a></div><div class="ttdeci">std::uint32_t canonicalTextureMask</div><div class="ttdef"><b>Definition</b> <a href="PbrVariantPlan_8h_source.html#l00036">PbrVariantPlan.h:36</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,287 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/animation/MotionSequence.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_d4f94f5abbcd2420c156bb9358054568.html">animation</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">MotionSequence.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="MotionSequence_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &quot;<a class="code" href="MotionBuilder_8h.html">animation/MotionBuilder.h</a>&quot;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &quot;<a class="code" href="MotionRuntime_8h.html">animation/MotionRuntime.h</a>&quot;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &quot;<a class="code" href="MotionTypes_8h.html">animation/MotionTypes.h</a>&quot;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &quot;<a class="code" href="Result_8h.html">common/Result.h</a>&quot;</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span> </div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span> </div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1animation.html">eve::animation</a> {</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span> </div>
+<div class="foldopen" id="foldopen00024" data-start="{" data-end="};">
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1MotionSequenceHandle.html">   24</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1animation_1_1MotionSequenceHandle.html">MotionSequenceHandle</a> {</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1MotionSequenceHandle.html#a12826fb241c23e9b744c2c164408f019">   26</a></span>    <a class="code hl_function" href="classeve_1_1animation_1_1MotionSequenceHandle.html#a12826fb241c23e9b744c2c164408f019">MotionSequenceHandle</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    <a class="code hl_function" href="classeve_1_1animation_1_1MotionSequenceHandle.html#a12826fb241c23e9b744c2c164408f019">MotionSequenceHandle</a>(<a class="code hl_class" href="classeve_1_1animation_1_1MotionRuntime.html">MotionRuntime</a> *runtime, std::vector&lt;MotionHandle&gt; <a class="code hl_variable" href="TreeMesh_8cpp.html#a93ed9b546e7fadad14615c5ef0065277">children</a>);</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span> </div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    [[nodiscard]] <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1animation_1_1MotionSequenceHandle.html#ace77e7d0133f631a3326a09c983cc607">isActive</a>() const noexcept;</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1MotionSequenceHandle.html#acf229d240b11edd09639d0c09ee41f85">   30</a></span>    [[nodiscard]] <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1animation_1_1MotionSequenceHandle.html#acf229d240b11edd09639d0c09ee41f85">childCount</a>() const noexcept { <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(children_.size()); }</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    [[nodiscard]] <a class="code hl_struct" href="structeve_1_1animation_1_1MotionHandle.html">MotionHandle</a> <a class="code hl_function" href="classeve_1_1animation_1_1MotionSequenceHandle.html#a375857994e1e7201af9a489a83829d12">child</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span> </div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1animation_1_1MotionSequenceHandle.html#a9cd356f190b2325e19578447f7304911">complete</a>();</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1animation_1_1MotionSequenceHandle.html#abb7701590a6c0a50245b048f94f39e24">cancel</a>();</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span> </div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    <a class="code hl_class" href="classeve_1_1animation_1_1MotionRuntime.html">MotionRuntime</a>             *runtime_ = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    std::vector&lt;MotionHandle&gt;  children_;</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>};</div>
+</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span> </div>
+<div class="foldopen" id="foldopen00056" data-start="{" data-end="};">
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1MotionSequence.html">   56</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1animation_1_1MotionSequence.html">MotionSequence</a> {</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    <span class="keyword">explicit</span> <a class="code hl_class" href="classeve_1_1animation_1_1MotionSequence.html">MotionSequence</a>(<a class="code hl_class" href="classeve_1_1animation_1_1MotionRuntime.html">MotionRuntime</a> &amp;runtime);</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span> </div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1animation_1_1MotionSequence.html#a17766f31df9b13ddc3c76a4c3d255054">append</a>(<a class="code hl_class" href="classeve_1_1animation_1_1MotionBuilder.html">MotionBuilder</a> &amp;&amp;builder);</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1animation_1_1MotionSequence.html#a17766f31df9b13ddc3c76a4c3d255054">append</a>(<a class="code hl_class" href="classeve_1_1animation_1_1MotionVec2Builder.html">MotionVec2Builder</a> &amp;&amp;builder);</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1animation_1_1MotionSequence.html#a17766f31df9b13ddc3c76a4c3d255054">append</a>(<a class="code hl_class" href="classeve_1_1animation_1_1MotionVec3Builder.html">MotionVec3Builder</a> &amp;&amp;builder);</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span> </div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1animation_1_1MotionSequence.html#aa60eaf62995901bbc6c50f07912b21ee">join</a>(<a class="code hl_class" href="classeve_1_1animation_1_1MotionBuilder.html">MotionBuilder</a> &amp;&amp;builder);</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1animation_1_1MotionSequence.html#aa60eaf62995901bbc6c50f07912b21ee">join</a>(<a class="code hl_class" href="classeve_1_1animation_1_1MotionVec2Builder.html">MotionVec2Builder</a> &amp;&amp;builder);</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1animation_1_1MotionSequence.html#aa60eaf62995901bbc6c50f07912b21ee">join</a>(<a class="code hl_class" href="classeve_1_1animation_1_1MotionVec3Builder.html">MotionVec3Builder</a> &amp;&amp;builder);</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span> </div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1animation_1_1MotionSequence.html#a61544c91adc4ba326b6aade4c5df69b5">insert</a>(<span class="keywordtype">float</span> atSeconds, <a class="code hl_class" href="classeve_1_1animation_1_1MotionBuilder.html">MotionBuilder</a> &amp;&amp;builder);</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1animation_1_1MotionSequence.html#a61544c91adc4ba326b6aade4c5df69b5">insert</a>(<span class="keywordtype">float</span> atSeconds, <a class="code hl_class" href="classeve_1_1animation_1_1MotionVec2Builder.html">MotionVec2Builder</a> &amp;&amp;builder);</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1animation_1_1MotionSequence.html#a61544c91adc4ba326b6aade4c5df69b5">insert</a>(<span class="keywordtype">float</span> atSeconds, <a class="code hl_class" href="classeve_1_1animation_1_1MotionVec3Builder.html">MotionVec3Builder</a> &amp;&amp;builder);</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span> </div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1animation_1_1MotionSequence.html#a26f18301b8f7beedd28e9f0d615b5592">appendInterval</a>(<span class="keywordtype">float</span> seconds);</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span> </div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1MotionSequence.html#ad8d33ea8c00e939631c72d6d325de25e">   74</a></span>    [[nodiscard]] <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1animation_1_1MotionSequence.html#ad8d33ea8c00e939631c72d6d325de25e">cursor</a>() const noexcept { <span class="keywordflow">return</span> cursor_; }</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1MotionSequence.html#a7af768b430c8d2008fc2e7eaab9a37a5">   75</a></span>    [[nodiscard]] <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1animation_1_1MotionSequence.html#a7af768b430c8d2008fc2e7eaab9a37a5">duration</a>() const noexcept { <span class="keywordflow">return</span> duration_; }</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1MotionSequence.html#abe5c22d1ca911f09972539d823801c2f">   76</a></span>    [[nodiscard]] <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1animation_1_1MotionSequence.html#abe5c22d1ca911f09972539d823801c2f">itemCount</a>() const noexcept { <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(items_.size()); }</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span> </div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;MotionSequenceHandle&gt;</a> <a class="code hl_function" href="classeve_1_1animation_1_1MotionSequence.html#a4f22c0d5ec0acbd90c4749cf70697459">run</a>();</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span> </div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>    <span class="keyword">enum class</span> Kind : std::uint8_t { <a class="code hl_enumvalue" href="namespaceeve.html#ac05a2d9228e0b283897b75b4c5cdaf2ba22ae0e2b89e5e3d477f988cc36d3272b">Float</a>, Vec2, Vec3 };</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span> </div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>    <span class="keyword">struct </span>Item {</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>        Kind                      <a class="code hl_variable" href="LanguageIndex_8cpp.html#a38de9b52cbbca9313f7d7c8505a64e10">kind</a> = Kind::Float;</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>        <span class="keywordtype">float</span>                     <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#a49e8e0531d987839917d88f5cfa8385f">start</a> = 0.f;</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>        MotionRuntime::FloatDesc  floatDesc{};</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>        MotionRuntime::Vec2Desc   vec2Desc{};</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>        MotionRuntime::Vec3Desc   vec3Desc{};</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>    };</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span> </div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>    [[nodiscard]] <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;float&gt;</a> spanOf(<span class="keywordtype">float</span> delay, <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1animation_1_1MotionSequence.html#a7af768b430c8d2008fc2e7eaab9a37a5">duration</a>, <span class="keywordtype">int</span> loops);</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> schedule(<span class="keywordtype">float</span> <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#a49e8e0531d987839917d88f5cfa8385f">start</a>, <span class="keywordtype">float</span> span, Item item);</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> appendAtCursor(Item item, <span class="keywordtype">float</span> delay, <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1animation_1_1MotionSequence.html#a7af768b430c8d2008fc2e7eaab9a37a5">duration</a>, <span class="keywordtype">int</span> loops);</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> joinAtLast(Item item, <span class="keywordtype">float</span> delay, <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1animation_1_1MotionSequence.html#a7af768b430c8d2008fc2e7eaab9a37a5">duration</a>, <span class="keywordtype">int</span> loops);</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;void&gt;</a> insertAt(<span class="keywordtype">float</span> <a class="code hl_variable" href="UnityVegetationPreset_8cpp.html#af1f11291c39b6010d450a6cc8b755b99">at</a>, Item item, <span class="keywordtype">float</span> delay, <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1animation_1_1MotionSequence.html#a7af768b430c8d2008fc2e7eaab9a37a5">duration</a>, <span class="keywordtype">int</span> loops);</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span> </div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>    MotionRuntime        &amp;runtime_;</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>    std::vector&lt;Item&gt;     items_;</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>    <span class="keywordtype">float</span>                 cursor_          = 0.f;</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>    <span class="keywordtype">float</span>                 duration_        = 0.f;</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>    <span class="keywordtype">float</span>                 lastAppendStart_ = 0.f;</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>    <span class="keywordtype">bool</span>                  hasAppend_       = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>};</div>
+</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span> </div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>}  <span class="comment">// namespace eve::animation</span></div>
+<div class="ttc" id="aActionTimelineWidget_8cpp_html_a49e8e0531d987839917d88f5cfa8385f"><div class="ttname"><a href="ActionTimelineWidget_8cpp.html#a49e8e0531d987839917d88f5cfa8385f">start</a></div><div class="ttdeci">Duration start</div><div class="ttdef"><b>Definition</b> <a href="ActionTimelineWidget_8cpp_source.html#l00030">ActionTimelineWidget.cpp:30</a></div></div>
+<div class="ttc" id="aLanguageIndex_8cpp_html_a38de9b52cbbca9313f7d7c8505a64e10"><div class="ttname"><a href="LanguageIndex_8cpp.html#a38de9b52cbbca9313f7d7c8505a64e10">kind</a></div><div class="ttdeci">TokenKind kind</div><div class="ttdef"><b>Definition</b> <a href="LanguageIndex_8cpp_source.html#l00017">LanguageIndex.cpp:17</a></div></div>
+<div class="ttc" id="aMotionBuilder_8h_html"><div class="ttname"><a href="MotionBuilder_8h.html">MotionBuilder.h</a></div><div class="ttdoc">Fluent LitMotion-style builder that commits into MotionRuntime.</div></div>
+<div class="ttc" id="aMotionRuntime_8h_html"><div class="ttname"><a href="MotionRuntime_8h.html">MotionRuntime.h</a></div><div class="ttdoc">Dense motion storage advanced by Animation::advance(SimulationStep).</div></div>
+<div class="ttc" id="aMotionTypes_8h_html"><div class="ttname"><a href="MotionTypes_8h.html">MotionTypes.h</a></div><div class="ttdoc">LitMotion-style typed motion handles, values, and sink interfaces.</div></div>
+<div class="ttc" id="aResult_8h_html"><div class="ttname"><a href="Result_8h.html">Result.h</a></div><div class="ttdoc">Move-only, checked operation results for the common layer.</div></div>
+<div class="ttc" id="aTreeMesh_8cpp_html_a93ed9b546e7fadad14615c5ef0065277"><div class="ttname"><a href="TreeMesh_8cpp.html#a93ed9b546e7fadad14615c5ef0065277">children</a></div><div class="ttdeci">int children</div><div class="ttdef"><b>Definition</b> <a href="TreeMesh_8cpp_source.html#l00268">TreeMesh.cpp:268</a></div></div>
+<div class="ttc" id="aUnityVegetationMaterial_8cpp_html_aafd95f8c7a99b9189ede7cdf0871ebe8"><div class="ttname"><a href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a></div><div class="ttdeci">uint32_t index</div><div class="ttdef"><b>Definition</b> <a href="UnityVegetationMaterial_8cpp_source.html#l00161">UnityVegetationMaterial.cpp:161</a></div></div>
+<div class="ttc" id="aUnityVegetationPreset_8cpp_html_af1f11291c39b6010d450a6cc8b755b99"><div class="ttname"><a href="UnityVegetationPreset_8cpp.html#af1f11291c39b6010d450a6cc8b755b99">at</a></div><div class="ttdeci">std::size_t at</div><div class="ttdef"><b>Definition</b> <a href="UnityVegetationPreset_8cpp_source.html#l00032">UnityVegetationPreset.cpp:32</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1MotionBuilder_html"><div class="ttname"><a href="classeve_1_1animation_1_1MotionBuilder.html">eve::animation::MotionBuilder</a></div><div class="ttdoc">Configure then bind/run a float motion into a MotionRuntime.</div><div class="ttdef"><b>Definition</b> <a href="MotionBuilder_8h_source.html#l00025">MotionBuilder.h:25</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1MotionRuntime_html"><div class="ttname"><a href="classeve_1_1animation_1_1MotionRuntime.html">eve::animation::MotionRuntime</a></div><div class="ttdoc">Owns typed motion slots and applies SimulationStep updates.</div><div class="ttdef"><b>Definition</b> <a href="MotionRuntime_8h_source.html#l00026">MotionRuntime.h:26</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1MotionSequenceHandle_html"><div class="ttname"><a href="classeve_1_1animation_1_1MotionSequenceHandle.html">eve::animation::MotionSequenceHandle</a></div><div class="ttdoc">Playback handle for a sequence's child motions.</div><div class="ttdef"><b>Definition</b> <a href="MotionSequence_8h_source.html#l00024">MotionSequence.h:24</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1MotionSequenceHandle_html_a12826fb241c23e9b744c2c164408f019"><div class="ttname"><a href="classeve_1_1animation_1_1MotionSequenceHandle.html#a12826fb241c23e9b744c2c164408f019">eve::animation::MotionSequenceHandle::MotionSequenceHandle</a></div><div class="ttdeci">MotionSequenceHandle()=default</div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1MotionSequenceHandle_html_a375857994e1e7201af9a489a83829d12"><div class="ttname"><a href="classeve_1_1animation_1_1MotionSequenceHandle.html#a375857994e1e7201af9a489a83829d12">eve::animation::MotionSequenceHandle::child</a></div><div class="ttdeci">MotionHandle child(int index) const</div><div class="ttdef"><b>Definition</b> <a href="MotionSequence_8cpp_source.html#l00038">MotionSequence.cpp:38</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1MotionSequenceHandle_html_a9cd356f190b2325e19578447f7304911"><div class="ttname"><a href="classeve_1_1animation_1_1MotionSequenceHandle.html#a9cd356f190b2325e19578447f7304911">eve::animation::MotionSequenceHandle::complete</a></div><div class="ttdeci">eve::Result&lt; void &gt; complete()</div><div class="ttdoc">Complete every still-active child (fires onComplete).</div><div class="ttdef"><b>Definition</b> <a href="MotionSequence_8cpp_source.html#l00043">MotionSequence.cpp:43</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1MotionSequenceHandle_html_abb7701590a6c0a50245b048f94f39e24"><div class="ttname"><a href="classeve_1_1animation_1_1MotionSequenceHandle.html#abb7701590a6c0a50245b048f94f39e24">eve::animation::MotionSequenceHandle::cancel</a></div><div class="ttdeci">eve::Result&lt; void &gt; cancel()</div><div class="ttdoc">Cancel every still-active child (fires onCancel).</div><div class="ttdef"><b>Definition</b> <a href="MotionSequence_8cpp_source.html#l00053">MotionSequence.cpp:53</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1MotionSequenceHandle_html_ace77e7d0133f631a3326a09c983cc607"><div class="ttname"><a href="classeve_1_1animation_1_1MotionSequenceHandle.html#ace77e7d0133f631a3326a09c983cc607">eve::animation::MotionSequenceHandle::isActive</a></div><div class="ttdeci">bool isActive() const noexcept</div><div class="ttdef"><b>Definition</b> <a href="MotionSequence_8cpp_source.html#l00030">MotionSequence.cpp:30</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1MotionSequenceHandle_html_acf229d240b11edd09639d0c09ee41f85"><div class="ttname"><a href="classeve_1_1animation_1_1MotionSequenceHandle.html#acf229d240b11edd09639d0c09ee41f85">eve::animation::MotionSequenceHandle::childCount</a></div><div class="ttdeci">int childCount() const noexcept</div><div class="ttdef"><b>Definition</b> <a href="MotionSequence_8h_source.html#l00030">MotionSequence.h:30</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1MotionSequence_html"><div class="ttname"><a href="classeve_1_1animation_1_1MotionSequence.html">eve::animation::MotionSequence</a></div><div class="ttdoc">Schedule unspawned builders onto a shared MotionRuntime timeline.</div><div class="ttdef"><b>Definition</b> <a href="MotionSequence_8h_source.html#l00056">MotionSequence.h:56</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1MotionSequence_html_a17766f31df9b13ddc3c76a4c3d255054"><div class="ttname"><a href="classeve_1_1animation_1_1MotionSequence.html#a17766f31df9b13ddc3c76a4c3d255054">eve::animation::MotionSequence::append</a></div><div class="ttdeci">eve::Result&lt; void &gt; append(MotionBuilder &amp;&amp;builder)</div><div class="ttdef"><b>Definition</b> <a href="MotionSequence_8cpp_source.html#l00120">MotionSequence.cpp:120</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1MotionSequence_html_a26f18301b8f7beedd28e9f0d615b5592"><div class="ttname"><a href="classeve_1_1animation_1_1MotionSequence.html#a26f18301b8f7beedd28e9f0d615b5592">eve::animation::MotionSequence::appendInterval</a></div><div class="ttdeci">eve::Result&lt; void &gt; appendInterval(float seconds)</div><div class="ttdef"><b>Definition</b> <a href="MotionSequence_8cpp_source.html#l00255">MotionSequence.cpp:255</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1MotionSequence_html_a4f22c0d5ec0acbd90c4749cf70697459"><div class="ttname"><a href="classeve_1_1animation_1_1MotionSequence.html#a4f22c0d5ec0acbd90c4749cf70697459">eve::animation::MotionSequence::run</a></div><div class="ttdeci">eve::Result&lt; MotionSequenceHandle &gt; run()</div><div class="ttdoc">Spawn every scheduled item into the runtime.</div><div class="ttdef"><b>Definition</b> <a href="MotionSequence_8cpp_source.html#l00263">MotionSequence.cpp:263</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1MotionSequence_html_a61544c91adc4ba326b6aade4c5df69b5"><div class="ttname"><a href="classeve_1_1animation_1_1MotionSequence.html#a61544c91adc4ba326b6aade4c5df69b5">eve::animation::MotionSequence::insert</a></div><div class="ttdeci">eve::Result&lt; void &gt; insert(float atSeconds, MotionBuilder &amp;&amp;builder)</div><div class="ttdef"><b>Definition</b> <a href="MotionSequence_8cpp_source.html#l00210">MotionSequence.cpp:210</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1MotionSequence_html_a7af768b430c8d2008fc2e7eaab9a37a5"><div class="ttname"><a href="classeve_1_1animation_1_1MotionSequence.html#a7af768b430c8d2008fc2e7eaab9a37a5">eve::animation::MotionSequence::duration</a></div><div class="ttdeci">float duration() const noexcept</div><div class="ttdef"><b>Definition</b> <a href="MotionSequence_8h_source.html#l00075">MotionSequence.h:75</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1MotionSequence_html_aa60eaf62995901bbc6c50f07912b21ee"><div class="ttname"><a href="classeve_1_1animation_1_1MotionSequence.html#aa60eaf62995901bbc6c50f07912b21ee">eve::animation::MotionSequence::join</a></div><div class="ttdeci">eve::Result&lt; void &gt; join(MotionBuilder &amp;&amp;builder)</div><div class="ttdef"><b>Definition</b> <a href="MotionSequence_8cpp_source.html#l00165">MotionSequence.cpp:165</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1MotionSequence_html_abe5c22d1ca911f09972539d823801c2f"><div class="ttname"><a href="classeve_1_1animation_1_1MotionSequence.html#abe5c22d1ca911f09972539d823801c2f">eve::animation::MotionSequence::itemCount</a></div><div class="ttdeci">int itemCount() const noexcept</div><div class="ttdef"><b>Definition</b> <a href="MotionSequence_8h_source.html#l00076">MotionSequence.h:76</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1MotionSequence_html_ad8d33ea8c00e939631c72d6d325de25e"><div class="ttname"><a href="classeve_1_1animation_1_1MotionSequence.html#ad8d33ea8c00e939631c72d6d325de25e">eve::animation::MotionSequence::cursor</a></div><div class="ttdeci">float cursor() const noexcept</div><div class="ttdef"><b>Definition</b> <a href="MotionSequence_8h_source.html#l00074">MotionSequence.h:74</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1MotionVec2Builder_html"><div class="ttname"><a href="classeve_1_1animation_1_1MotionVec2Builder.html">eve::animation::MotionVec2Builder</a></div><div class="ttdoc">Vec2 fluent builder.</div><div class="ttdef"><b>Definition</b> <a href="MotionBuilder_8h_source.html#l00076">MotionBuilder.h:76</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1MotionVec3Builder_html"><div class="ttname"><a href="classeve_1_1animation_1_1MotionVec3Builder.html">eve::animation::MotionVec3Builder</a></div><div class="ttdoc">Vec3 fluent builder.</div><div class="ttdef"><b>Definition</b> <a href="MotionBuilder_8h_source.html#l00114">MotionBuilder.h:114</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1animation_html"><div class="ttname"><a href="namespaceeve_1_1animation.html">eve::animation</a></div><div class="ttdef"><b>Definition</b> <a href="Animation_8cpp_source.html#l00057">Animation.cpp:57</a></div></div>
+<div class="ttc" id="anamespaceeve_html_ac05a2d9228e0b283897b75b4c5cdaf2ba22ae0e2b89e5e3d477f988cc36d3272b"><div class="ttname"><a href="namespaceeve.html#ac05a2d9228e0b283897b75b4c5cdaf2ba22ae0e2b89e5e3d477f988cc36d3272b">eve::ReflectedValueKind::Float</a></div><div class="ttdeci">@ Float</div><div class="ttdoc">OT_FLOAT.</div></div>
+<div class="ttc" id="astructeve_1_1animation_1_1MotionHandle_html"><div class="ttname"><a href="structeve_1_1animation_1_1MotionHandle.html">eve::animation::MotionHandle</a></div><div class="ttdoc">Generation-checked slot identity for a live motion.</div><div class="ttdef"><b>Definition</b> <a href="MotionTypes_8h_source.html#l00019">MotionTypes.h:19</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,529 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::procgen::TerrainPolygonMask类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1procgen.html">procgen</a></li><li class="navelem"><a class="el" href="classeve_1_1procgen_1_1TerrainPolygonMask.html">TerrainPolygonMask</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1procgen_1_1TerrainPolygonMask-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::procgen::TerrainPolygonMask类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Own ordered Pcg-style PolyMask nodes and rasterize them into a caller-owned scalar grid. Nodes are value-copied and no terrain, texture, scene object, callback, clock, or RNG is retained.  
+ <a href="classeve_1_1procgen_1_1TerrainPolygonMask.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="TerrainPolygonMask_8h_source.html">TerrainPolygonMask.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1TerrainPolygonMask_1_1Impl.html">Impl</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a927f17f9856d26506b8598a9923bbb84" id="r_a927f17f9856d26506b8598a9923bbb84"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainPolygonMask.html#a927f17f9856d26506b8598a9923bbb84">TerrainPolygonMask</a> ()</td></tr>
+<tr class="separator:a927f17f9856d26506b8598a9923bbb84"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afe8c4e210f43d91402360cca582e906b" id="r_afe8c4e210f43d91402360cca582e906b"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainPolygonMask.html#afe8c4e210f43d91402360cca582e906b">~TerrainPolygonMask</a> ()</td></tr>
+<tr class="separator:afe8c4e210f43d91402360cca582e906b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af25a87d8b48a9ef0453ccfc1af7552c7" id="r_af25a87d8b48a9ef0453ccfc1af7552c7"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainPolygonMask.html#af25a87d8b48a9ef0453ccfc1af7552c7">TerrainPolygonMask</a> (<a class="el" href="classeve_1_1procgen_1_1TerrainPolygonMask.html">TerrainPolygonMask</a> &amp;&amp;) noexcept</td></tr>
+<tr class="separator:af25a87d8b48a9ef0453ccfc1af7552c7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0c233cc0da0a0688fe06eb0b76c6958d" id="r_a0c233cc0da0a0688fe06eb0b76c6958d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1procgen_1_1TerrainPolygonMask.html">TerrainPolygonMask</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainPolygonMask.html#a0c233cc0da0a0688fe06eb0b76c6958d">operator=</a> (<a class="el" href="classeve_1_1procgen_1_1TerrainPolygonMask.html">TerrainPolygonMask</a> &amp;&amp;) noexcept</td></tr>
+<tr class="separator:a0c233cc0da0a0688fe06eb0b76c6958d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac0efca1a8fce55e45cb85b7f95b627c4" id="r_ac0efca1a8fce55e45cb85b7f95b627c4"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainPolygonMask.html#ac0efca1a8fce55e45cb85b7f95b627c4">TerrainPolygonMask</a> (const <a class="el" href="classeve_1_1procgen_1_1TerrainPolygonMask.html">TerrainPolygonMask</a> &amp;)=delete</td></tr>
+<tr class="separator:ac0efca1a8fce55e45cb85b7f95b627c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad5b7ab6844495dbcd4f62917757914bb" id="r_ad5b7ab6844495dbcd4f62917757914bb"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1procgen_1_1TerrainPolygonMask.html">TerrainPolygonMask</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainPolygonMask.html#ad5b7ab6844495dbcd4f62917757914bb">operator=</a> (const <a class="el" href="classeve_1_1procgen_1_1TerrainPolygonMask.html">TerrainPolygonMask</a> &amp;)=delete</td></tr>
+<tr class="separator:ad5b7ab6844495dbcd4f62917757914bb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5071eaea62ca24b76d6e15132d4b1228" id="r_a5071eaea62ca24b76d6e15132d4b1228"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainPolygonMask.html#a5071eaea62ca24b76d6e15132d4b1228">addNode</a> (double worldX, double worldZ, float <a class="el" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>, float <a class="el" href="TerrainGenerationSession_8cpp.html#a2c1c8f9331368f38bfc3eaee260b59a6">strength</a>)</td></tr>
+<tr class="memdesc:a5071eaea62ca24b76d6e15132d4b1228"><td class="mdescLeft">&#160;</td><td class="mdescRight">Append a finite world-X/Z node with positive radius and retained Pcg strength metadata.  <br /></td></tr>
+<tr class="separator:a5071eaea62ca24b76d6e15132d4b1228"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa1d791623b5c7d57486875ee95641fbe" id="r_aa1d791623b5c7d57486875ee95641fbe"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainPolygonMask.html#aa1d791623b5c7d57486875ee95641fbe">clear</a> ()</td></tr>
+<tr class="memdesc:aa1d791623b5c7d57486875ee95641fbe"><td class="mdescLeft">&#160;</td><td class="mdescRight">Remove every owned node.  <br /></td></tr>
+<tr class="separator:aa1d791623b5c7d57486875ee95641fbe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3f7bc1bebbe0c55c44309c3a121bd574" id="r_a3f7bc1bebbe0c55c44309c3a121bd574"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainPolygonMask.html#a3f7bc1bebbe0c55c44309c3a121bd574">getNodeCount</a> () const noexcept</td></tr>
+<tr class="memdesc:a3f7bc1bebbe0c55c44309c3a121bd574"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the current node count.  <br /></td></tr>
+<tr class="separator:a3f7bc1bebbe0c55c44309c3a121bd574"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af76708862ba7a8558c5d8a60b353cd18" id="r_af76708862ba7a8558c5d8a60b353cd18"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1TerrainPolygonMask.html#af76708862ba7a8558c5d8a60b353cd18">rasterize</a> (<a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;<a class="el" href="ActionNotifyRegistry_8cpp.html#a16c9300acaea4db7696fb24b3802bfa5">target</a>, const <a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;brush, const <a class="el" href="structeve_1_1procgen_1_1TerrainSampleGrid.html">TerrainSampleGrid</a> &amp;grid, <a class="el" href="namespaceeve_1_1procgen.html#a7d3b5a38b842817a82ccc01184f69a6b">TerrainPolygonMaskType</a> <a class="el" href="ActionTimelinePayloadEditor_8cpp.html#acc84214b4748705f4d18dd8d143e70be">type</a>) const</td></tr>
+<tr class="memdesc:af76708862ba7a8558c5d8a60b353cd18"><td class="mdescLeft">&#160;</td><td class="mdescRight">Rasterize closed fill and ordered additive brush strokes atomically.  <br /></td></tr>
+<tr class="separator:af76708862ba7a8558c5d8a60b353cd18"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Own ordered Pcg-style PolyMask nodes and rasterize them into a caller-owned scalar grid. Nodes are value-copied and no terrain, texture, scene object, callback, clock, or RNG is retained. </p>
+
+<p class="definition">在文件 <a class="el" href="TerrainPolygonMask_8h_source.html">TerrainPolygonMask.h</a> 第 <a class="el" href="TerrainPolygonMask_8h_source.html#l00017">17</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a927f17f9856d26506b8598a9923bbb84" name="a927f17f9856d26506b8598a9923bbb84"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a927f17f9856d26506b8598a9923bbb84">&#9670;&#160;</a></span>TerrainPolygonMask() <span class="overload">[1/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::procgen::TerrainPolygonMask::TerrainPolygonMask </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="TerrainPolygonMask_8cpp_source.html">TerrainPolygonMask.cpp</a> 第 <a class="el" href="TerrainPolygonMask_8cpp_source.html#l00021">21</a> 行定义.</p>
+
+</div>
+</div>
+<a id="afe8c4e210f43d91402360cca582e906b" name="afe8c4e210f43d91402360cca582e906b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afe8c4e210f43d91402360cca582e906b">&#9670;&#160;</a></span>~TerrainPolygonMask()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::procgen::TerrainPolygonMask::~TerrainPolygonMask </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="af25a87d8b48a9ef0453ccfc1af7552c7" name="af25a87d8b48a9ef0453ccfc1af7552c7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af25a87d8b48a9ef0453ccfc1af7552c7">&#9670;&#160;</a></span>TerrainPolygonMask() <span class="overload">[2/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::procgen::TerrainPolygonMask::TerrainPolygonMask </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1procgen_1_1TerrainPolygonMask.html">TerrainPolygonMask</a> &amp;&amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ac0efca1a8fce55e45cb85b7f95b627c4" name="ac0efca1a8fce55e45cb85b7f95b627c4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac0efca1a8fce55e45cb85b7f95b627c4">&#9670;&#160;</a></span>TerrainPolygonMask() <span class="overload">[3/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::procgen::TerrainPolygonMask::TerrainPolygonMask </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1procgen_1_1TerrainPolygonMask.html">TerrainPolygonMask</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a5071eaea62ca24b76d6e15132d4b1228" name="a5071eaea62ca24b76d6e15132d4b1228"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5071eaea62ca24b76d6e15132d4b1228">&#9670;&#160;</a></span>addNode()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt; eve::procgen::TerrainPolygonMask::addNode </td>
+          <td>(</td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>worldX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>worldZ</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>radius</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>strength</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Append a finite world-X/Z node with positive radius and retained Pcg strength metadata. </p>
+
+<p class="definition">在文件 <a class="el" href="TerrainPolygonMask_8cpp_source.html">TerrainPolygonMask.cpp</a> 第 <a class="el" href="TerrainPolygonMask_8cpp_source.html#l00026">26</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TerrainRasterInternal_8h_source.html#l00022">eve::procgen::raster_detail::invalid()</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l00042">radius</a>, <a class="el" href="TerrainGenerationSession_8cpp_source.html#l00121">strength</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="aa1d791623b5c7d57486875ee95641fbe" name="aa1d791623b5c7d57486875ee95641fbe"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa1d791623b5c7d57486875ee95641fbe">&#9670;&#160;</a></span>clear()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::procgen::TerrainPolygonMask::clear </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Remove every owned node. </p>
+
+<p class="definition">在文件 <a class="el" href="TerrainPolygonMask_8cpp_source.html">TerrainPolygonMask.cpp</a> 第 <a class="el" href="TerrainPolygonMask_8cpp_source.html#l00036">36</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a3f7bc1bebbe0c55c44309c3a121bd574" name="a3f7bc1bebbe0c55c44309c3a121bd574"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3f7bc1bebbe0c55c44309c3a121bd574">&#9670;&#160;</a></span>getNodeCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::procgen::TerrainPolygonMask::getNodeCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the current node count. </p>
+
+<p class="definition">在文件 <a class="el" href="TerrainPolygonMask_8cpp_source.html">TerrainPolygonMask.cpp</a> 第 <a class="el" href="TerrainPolygonMask_8cpp_source.html#l00040">40</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad5b7ab6844495dbcd4f62917757914bb" name="ad5b7ab6844495dbcd4f62917757914bb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad5b7ab6844495dbcd4f62917757914bb">&#9670;&#160;</a></span>operator=() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1procgen_1_1TerrainPolygonMask.html">TerrainPolygonMask</a> &amp; eve::procgen::TerrainPolygonMask::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1procgen_1_1TerrainPolygonMask.html">TerrainPolygonMask</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a0c233cc0da0a0688fe06eb0b76c6958d" name="a0c233cc0da0a0688fe06eb0b76c6958d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0c233cc0da0a0688fe06eb0b76c6958d">&#9670;&#160;</a></span>operator=() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1procgen_1_1TerrainPolygonMask.html">TerrainPolygonMask</a> &amp; eve::procgen::TerrainPolygonMask::operator= </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1procgen_1_1TerrainPolygonMask.html">TerrainPolygonMask</a> &amp;&amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="af76708862ba7a8558c5d8a60b353cd18" name="af76708862ba7a8558c5d8a60b353cd18"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af76708862ba7a8558c5d8a60b353cd18">&#9670;&#160;</a></span>rasterize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt; eve::procgen::TerrainPolygonMask::rasterize </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;&#160;</td>
+          <td class="paramname"><em>target</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a> &amp;&#160;</td>
+          <td class="paramname"><em>brush</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1procgen_1_1TerrainSampleGrid.html">TerrainSampleGrid</a> &amp;&#160;</td>
+          <td class="paramname"><em>grid</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1procgen.html#a7d3b5a38b842817a82ccc01184f69a6b">TerrainPolygonMaskType</a>&#160;</td>
+          <td class="paramname"><em>type</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Rasterize closed fill and ordered additive brush strokes atomically. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">target</td><td>Exclusively borrowed finite destination; dimensions must match grid. </td></tr>
+    <tr><td class="paramname">brush</td><td>Borrowed finite scalar brush. Samples outside each node's square footprint are zero. </td></tr>
+    <tr><td class="paramname">grid</td><td>Positive finite sample spacing and finite world origin. </td></tr>
+    <tr><td class="paramname">type</td><td>Open draws strokes only; Closed first fills the polygon when at least three nodes exist. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Changed sample count or InvalidArgument; failure leaves target unchanged. </dd></dl>
+<dl class="exception"><dt>异常</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::bad_alloc</td><td>Target remains unchanged. @thread Synchronous exclusive target access; immutable brush and owned-node snapshot, no callbacks. Pcg 4.2.2 passes node strength to ApplyBrushStroke but its shader path does not bind or consume it; this implementation retains the field for asset fidelity and likewise does not scale the brush by it. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="TerrainPolygonMask_8cpp_source.html">TerrainPolygonMask.cpp</a> 第 <a class="el" href="TerrainPolygonMask_8cpp_source.html#l00044">44</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00014">a</a>, <a class="el" href="FluidSurfaceBinding_8cpp_source.html#l00015">b</a>, <a class="el" href="namespaceeve_1_1procgen.html#a7d3b5a38b842817a82ccc01184f69a6ba03f4a47830f97377a35321051685071e">eve::procgen::Closed</a>, <a class="el" href="TerrainMask_8h_source.html#l00122">eve::procgen::TerrainSampleGrid::height</a>, <a class="el" href="PrimitiveDrawList_8cpp_source.html#l00077">hit</a>, <a class="el" href="UrbanCrossField_8cpp_source.html#l00025">inside</a>, <a class="el" href="TerrainRasterInternal_8h_source.html#l00022">eve::procgen::raster_detail::invalid()</a>, <a class="el" href="TerrainMask_8h_source.html#l00121">eve::procgen::TerrainSampleGrid::originX</a>, <a class="el" href="TerrainMask_8h_source.html#l00121">eve::procgen::TerrainSampleGrid::originZ</a>, <a class="el" href="AssetCommand_8cpp_source.html#l00161">output</a>, <a class="el" href="TerrainRasterInternal_8h_source.html#l00050">eve::procgen::raster_detail::publish()</a>, <a class="el" href="TerrainMask_8h_source.html#l00121">eve::procgen::TerrainSampleGrid::spacingX</a>, <a class="el" href="TerrainMask_8h_source.html#l00121">eve::procgen::TerrainSampleGrid::spacingZ</a>, <a class="el" href="ActionNotifyRegistry_8cpp_source.html#l00163">target</a>, <a class="el" href="TerrainRasterInternal_8h_source.html#l00031">eve::procgen::raster_detail::textureSample()</a>, <a class="el" href="ActionTimelinePayloadEditor_8cpp_source.html#l00020">type</a>, <a class="el" href="Grass_8cpp_source.html#l00233">u</a>, <a class="el" href="HexRiverMesh_8cpp_source.html#l00019">v</a>, <a class="el" href="TerrainRasterInternal_8h_source.html#l00014">eve::procgen::raster_detail::validRaster()</a>, <a class="el" href="ActionNotifyRegistry_8cpp_source.html#l00165">value</a>, <a class="el" href="TerrainMask_8h_source.html#l00122">eve::procgen::TerrainSampleGrid::width</a>, <a class="el" href="WorldSnapshot_8cpp_source.html#l00254">wx</a>, <a class="el" href="WorldSnapshot_8cpp_source.html#l00254">wz</a>, <a class="el" href="AnimClip_8cpp_source.html#l00738">x</a>, <a class="el" href="NodeDesc_8h_source.html#l00039">eve::scene::NodeDesc::x</a>, <a class="el" href="AnimClip_8cpp_source.html#l00738">z</a> , 以及 <a class="el" href="NodeDesc_8h_source.html#l00039">eve::scene::NodeDesc::z</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/procgen/heightmap/<a class="el" href="TerrainPolygonMask_8h_source.html">TerrainPolygonMask.h</a></li>
+<li>src/modules/procgen/heightmap/<a class="el" href="TerrainPolygonMask_8cpp_source.html">TerrainPolygonMask.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

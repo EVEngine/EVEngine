@@ -1,0 +1,551 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::camera::PcgPhotoModePostFxState结构体 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1camera.html">camera</a></li><li class="navelem"><a class="el" href="structeve_1_1camera_1_1PcgPhotoModePostFxState.html">PcgPhotoModePostFxState</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-attribs">Public 属性</a> &#124;
+<a href="structeve_1_1camera_1_1PcgPhotoModePostFxState-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::camera::PcgPhotoModePostFxState结构体 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Complete Pcg photo-mode post-processing state retained across render-pipeline projections.  
+ <a href="structeve_1_1camera_1_1PcgPhotoModePostFxState.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="CameraController_8h_source.html">CameraController.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public 属性</h2></td></tr>
+<tr class="memitem:a011726005e94eb714cfe62c488ac8c0b" id="r_a011726005e94eb714cfe62c488ac8c0b"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1camera_1_1PcgPhotoModePostFxState.html#a011726005e94eb714cfe62c488ac8c0b">postFxExposure</a> = 13.5<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a011726005e94eb714cfe62c488ac8c0b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a90472fe8aaecc6291516d0928ae654ab" id="r_a90472fe8aaecc6291516d0928ae654ab"><td class="memItemLeft" align="right" valign="top">int64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1camera_1_1PcgPhotoModePostFxState.html#a90472fe8aaecc6291516d0928ae654ab">postFxExposureMode</a> = 0</td></tr>
+<tr class="separator:a90472fe8aaecc6291516d0928ae654ab"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acbfb354b2a719ae77f932b03656bf5c9" id="r_acbfb354b2a719ae77f932b03656bf5c9"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1camera_1_1PcgPhotoModePostFxState.html#acbfb354b2a719ae77f932b03656bf5c9">depthOfFieldActive</a> = true</td></tr>
+<tr class="separator:acbfb354b2a719ae77f932b03656bf5c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a694e4839efb88bfdc8d2933c95e6e41d" id="r_a694e4839efb88bfdc8d2933c95e6e41d"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1camera_1_1PcgPhotoModePostFxState.html#a694e4839efb88bfdc8d2933c95e6e41d">autoDepthOfFieldFocus</a> = true</td></tr>
+<tr class="separator:a694e4839efb88bfdc8d2933c95e6e41d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5f8a07b700cb94d7b3a03e3504298e7f" id="r_a5f8a07b700cb94d7b3a03e3504298e7f"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1camera_1_1PcgPhotoModePostFxState.html#a5f8a07b700cb94d7b3a03e3504298e7f">focusDistance</a> = 100.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a5f8a07b700cb94d7b3a03e3504298e7f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acdc39ca5c9f18eecfcd2ef6c91abeabd" id="r_acdc39ca5c9f18eecfcd2ef6c91abeabd"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1camera_1_1PcgPhotoModePostFxState.html#acdc39ca5c9f18eecfcd2ef6c91abeabd">aperture</a> = 16.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:acdc39ca5c9f18eecfcd2ef6c91abeabd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab3d208d21d8e1950d7b713afb8a90668" id="r_ab3d208d21d8e1950d7b713afb8a90668"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1camera_1_1PcgPhotoModePostFxState.html#ab3d208d21d8e1950d7b713afb8a90668">focalLength</a> = 50.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:ab3d208d21d8e1950d7b713afb8a90668"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a667d03591c69db4911fa0aaee56dd114" id="r_a667d03591c69db4911fa0aaee56dd114"><td class="memItemLeft" align="right" valign="top">int64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1camera_1_1PcgPhotoModePostFxState.html#a667d03591c69db4911fa0aaee56dd114">kernelSize</a> = 1</td></tr>
+<tr class="separator:a667d03591c69db4911fa0aaee56dd114"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3dc31a94f35eb0f63f59b8ebe95206b6" id="r_a3dc31a94f35eb0f63f59b8ebe95206b6"><td class="memItemLeft" align="right" valign="top">int64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1camera_1_1PcgPhotoModePostFxState.html#a3dc31a94f35eb0f63f59b8ebe95206b6">savedFocusMode</a> = 0</td></tr>
+<tr class="separator:a3dc31a94f35eb0f63f59b8ebe95206b6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5eebf30f49e7e038f0e0f224c26c7dce" id="r_a5eebf30f49e7e038f0e0f224c26c7dce"><td class="memItemLeft" align="right" valign="top">int64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1camera_1_1PcgPhotoModePostFxState.html#a5eebf30f49e7e038f0e0f224c26c7dce">focusModeHdrp</a> = 0</td></tr>
+<tr class="separator:a5eebf30f49e7e038f0e0f224c26c7dce"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7e8ebd10e92cacaef812fcbc81681db9" id="r_a7e8ebd10e92cacaef812fcbc81681db9"><td class="memItemLeft" align="right" valign="top">int64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1camera_1_1PcgPhotoModePostFxState.html#a7e8ebd10e92cacaef812fcbc81681db9">focusModeUrp</a> = 0</td></tr>
+<tr class="separator:a7e8ebd10e92cacaef812fcbc81681db9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa748f187b3421a26280981f69c5ce27a" id="r_aa748f187b3421a26280981f69c5ce27a"><td class="memItemLeft" align="right" valign="top">int64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1camera_1_1PcgPhotoModePostFxState.html#aa748f187b3421a26280981f69c5ce27a">qualityHdrp</a> = 1</td></tr>
+<tr class="separator:aa748f187b3421a26280981f69c5ce27a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acfe2cea1bd8d6cb5a4767aaa20576666" id="r_acfe2cea1bd8d6cb5a4767aaa20576666"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1camera_1_1PcgPhotoModePostFxState.html#acfe2cea1bd8d6cb5a4767aaa20576666">nearBlurStart</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:acfe2cea1bd8d6cb5a4767aaa20576666"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae6ce0a59adb1f6b0ad643a2658489dea" id="r_ae6ce0a59adb1f6b0ad643a2658489dea"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1camera_1_1PcgPhotoModePostFxState.html#ae6ce0a59adb1f6b0ad643a2658489dea">nearBlurEnd</a> = 0.1<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:ae6ce0a59adb1f6b0ad643a2658489dea"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a132ce5d36fbff7dfd9e6fc522414d8e6" id="r_a132ce5d36fbff7dfd9e6fc522414d8e6"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1camera_1_1PcgPhotoModePostFxState.html#a132ce5d36fbff7dfd9e6fc522414d8e6">farBlurStart</a> = 200.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a132ce5d36fbff7dfd9e6fc522414d8e6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4e9532aca62f10866af81a3a8dda3302" id="r_a4e9532aca62f10866af81a3a8dda3302"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1camera_1_1PcgPhotoModePostFxState.html#a4e9532aca62f10866af81a3a8dda3302">farBlurEnd</a> = 2000.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a4e9532aca62f10866af81a3a8dda3302"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acc11ec334a78509dbff4305dc3cb01c9" id="r_acc11ec334a78509dbff4305dc3cb01c9"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1camera_1_1PcgPhotoModePostFxState.html#acc11ec334a78509dbff4305dc3cb01c9">blurStartUrp</a> = 2.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:acc11ec334a78509dbff4305dc3cb01c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abb7205b1bb7db39b627fd4cab1cd8bd5" id="r_abb7205b1bb7db39b627fd4cab1cd8bd5"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1camera_1_1PcgPhotoModePostFxState.html#abb7205b1bb7db39b627fd4cab1cd8bd5">blurEndUrp</a> = 1000.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:abb7205b1bb7db39b627fd4cab1cd8bd5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a94dbb7c6245188a3ddb292e668138dfb" id="r_a94dbb7c6245188a3ddb292e668138dfb"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1camera_1_1PcgPhotoModePostFxState.html#a94dbb7c6245188a3ddb292e668138dfb">maximumBlurRadius</a> = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a94dbb7c6245188a3ddb292e668138dfb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a675de732cbccad36910be6a8e212fbe1" id="r_a675de732cbccad36910be6a8e212fbe1"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1camera_1_1PcgPhotoModePostFxState.html#a675de732cbccad36910be6a8e212fbe1">highQualityUrp</a> = false</td></tr>
+<tr class="separator:a675de732cbccad36910be6a8e212fbe1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Complete Pcg photo-mode post-processing state retained across render-pipeline projections. </p>
+
+<p class="definition">在文件 <a class="el" href="CameraController_8h_source.html">CameraController.h</a> 第 <a class="el" href="CameraController_8h_source.html#l00028">28</a> 行定义.</p>
+</div><h2 class="groupheader">类成员变量说明</h2>
+<a id="acdc39ca5c9f18eecfcd2ef6c91abeabd" name="acdc39ca5c9f18eecfcd2ef6c91abeabd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acdc39ca5c9f18eecfcd2ef6c91abeabd">&#9670;&#160;</a></span>aperture</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::camera::PcgPhotoModePostFxState::aperture = 16.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CameraController_8h_source.html">CameraController.h</a> 第 <a class="el" href="CameraController_8h_source.html#l00034">34</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a694e4839efb88bfdc8d2933c95e6e41d" name="a694e4839efb88bfdc8d2933c95e6e41d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a694e4839efb88bfdc8d2933c95e6e41d">&#9670;&#160;</a></span>autoDepthOfFieldFocus</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::camera::PcgPhotoModePostFxState::autoDepthOfFieldFocus = true</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CameraController_8h_source.html">CameraController.h</a> 第 <a class="el" href="CameraController_8h_source.html#l00032">32</a> 行定义.</p>
+
+</div>
+</div>
+<a id="abb7205b1bb7db39b627fd4cab1cd8bd5" name="abb7205b1bb7db39b627fd4cab1cd8bd5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abb7205b1bb7db39b627fd4cab1cd8bd5">&#9670;&#160;</a></span>blurEndUrp</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::camera::PcgPhotoModePostFxState::blurEndUrp = 1000.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CameraController_8h_source.html">CameraController.h</a> 第 <a class="el" href="CameraController_8h_source.html#l00046">46</a> 行定义.</p>
+
+</div>
+</div>
+<a id="acc11ec334a78509dbff4305dc3cb01c9" name="acc11ec334a78509dbff4305dc3cb01c9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acc11ec334a78509dbff4305dc3cb01c9">&#9670;&#160;</a></span>blurStartUrp</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::camera::PcgPhotoModePostFxState::blurStartUrp = 2.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CameraController_8h_source.html">CameraController.h</a> 第 <a class="el" href="CameraController_8h_source.html#l00045">45</a> 行定义.</p>
+
+</div>
+</div>
+<a id="acbfb354b2a719ae77f932b03656bf5c9" name="acbfb354b2a719ae77f932b03656bf5c9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acbfb354b2a719ae77f932b03656bf5c9">&#9670;&#160;</a></span>depthOfFieldActive</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::camera::PcgPhotoModePostFxState::depthOfFieldActive = true</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CameraController_8h_source.html">CameraController.h</a> 第 <a class="el" href="CameraController_8h_source.html#l00031">31</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a4e9532aca62f10866af81a3a8dda3302" name="a4e9532aca62f10866af81a3a8dda3302"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4e9532aca62f10866af81a3a8dda3302">&#9670;&#160;</a></span>farBlurEnd</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::camera::PcgPhotoModePostFxState::farBlurEnd = 2000.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CameraController_8h_source.html">CameraController.h</a> 第 <a class="el" href="CameraController_8h_source.html#l00044">44</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a132ce5d36fbff7dfd9e6fc522414d8e6" name="a132ce5d36fbff7dfd9e6fc522414d8e6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a132ce5d36fbff7dfd9e6fc522414d8e6">&#9670;&#160;</a></span>farBlurStart</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::camera::PcgPhotoModePostFxState::farBlurStart = 200.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CameraController_8h_source.html">CameraController.h</a> 第 <a class="el" href="CameraController_8h_source.html#l00043">43</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab3d208d21d8e1950d7b713afb8a90668" name="ab3d208d21d8e1950d7b713afb8a90668"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab3d208d21d8e1950d7b713afb8a90668">&#9670;&#160;</a></span>focalLength</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::camera::PcgPhotoModePostFxState::focalLength = 50.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CameraController_8h_source.html">CameraController.h</a> 第 <a class="el" href="CameraController_8h_source.html#l00035">35</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a5f8a07b700cb94d7b3a03e3504298e7f" name="a5f8a07b700cb94d7b3a03e3504298e7f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5f8a07b700cb94d7b3a03e3504298e7f">&#9670;&#160;</a></span>focusDistance</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::camera::PcgPhotoModePostFxState::focusDistance = 100.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CameraController_8h_source.html">CameraController.h</a> 第 <a class="el" href="CameraController_8h_source.html#l00033">33</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a5eebf30f49e7e038f0e0f224c26c7dce" name="a5eebf30f49e7e038f0e0f224c26c7dce"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5eebf30f49e7e038f0e0f224c26c7dce">&#9670;&#160;</a></span>focusModeHdrp</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int64_t eve::camera::PcgPhotoModePostFxState::focusModeHdrp = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CameraController_8h_source.html">CameraController.h</a> 第 <a class="el" href="CameraController_8h_source.html#l00038">38</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a7e8ebd10e92cacaef812fcbc81681db9" name="a7e8ebd10e92cacaef812fcbc81681db9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7e8ebd10e92cacaef812fcbc81681db9">&#9670;&#160;</a></span>focusModeUrp</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int64_t eve::camera::PcgPhotoModePostFxState::focusModeUrp = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CameraController_8h_source.html">CameraController.h</a> 第 <a class="el" href="CameraController_8h_source.html#l00039">39</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a675de732cbccad36910be6a8e212fbe1" name="a675de732cbccad36910be6a8e212fbe1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a675de732cbccad36910be6a8e212fbe1">&#9670;&#160;</a></span>highQualityUrp</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::camera::PcgPhotoModePostFxState::highQualityUrp = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CameraController_8h_source.html">CameraController.h</a> 第 <a class="el" href="CameraController_8h_source.html#l00048">48</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a667d03591c69db4911fa0aaee56dd114" name="a667d03591c69db4911fa0aaee56dd114"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a667d03591c69db4911fa0aaee56dd114">&#9670;&#160;</a></span>kernelSize</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int64_t eve::camera::PcgPhotoModePostFxState::kernelSize = 1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CameraController_8h_source.html">CameraController.h</a> 第 <a class="el" href="CameraController_8h_source.html#l00036">36</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a94dbb7c6245188a3ddb292e668138dfb" name="a94dbb7c6245188a3ddb292e668138dfb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a94dbb7c6245188a3ddb292e668138dfb">&#9670;&#160;</a></span>maximumBlurRadius</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::camera::PcgPhotoModePostFxState::maximumBlurRadius = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CameraController_8h_source.html">CameraController.h</a> 第 <a class="el" href="CameraController_8h_source.html#l00047">47</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae6ce0a59adb1f6b0ad643a2658489dea" name="ae6ce0a59adb1f6b0ad643a2658489dea"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae6ce0a59adb1f6b0ad643a2658489dea">&#9670;&#160;</a></span>nearBlurEnd</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::camera::PcgPhotoModePostFxState::nearBlurEnd = 0.1<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CameraController_8h_source.html">CameraController.h</a> 第 <a class="el" href="CameraController_8h_source.html#l00042">42</a> 行定义.</p>
+
+</div>
+</div>
+<a id="acfe2cea1bd8d6cb5a4767aaa20576666" name="acfe2cea1bd8d6cb5a4767aaa20576666"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acfe2cea1bd8d6cb5a4767aaa20576666">&#9670;&#160;</a></span>nearBlurStart</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::camera::PcgPhotoModePostFxState::nearBlurStart = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CameraController_8h_source.html">CameraController.h</a> 第 <a class="el" href="CameraController_8h_source.html#l00041">41</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a011726005e94eb714cfe62c488ac8c0b" name="a011726005e94eb714cfe62c488ac8c0b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a011726005e94eb714cfe62c488ac8c0b">&#9670;&#160;</a></span>postFxExposure</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::camera::PcgPhotoModePostFxState::postFxExposure = 13.5<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CameraController_8h_source.html">CameraController.h</a> 第 <a class="el" href="CameraController_8h_source.html#l00029">29</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a90472fe8aaecc6291516d0928ae654ab" name="a90472fe8aaecc6291516d0928ae654ab"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a90472fe8aaecc6291516d0928ae654ab">&#9670;&#160;</a></span>postFxExposureMode</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int64_t eve::camera::PcgPhotoModePostFxState::postFxExposureMode = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CameraController_8h_source.html">CameraController.h</a> 第 <a class="el" href="CameraController_8h_source.html#l00030">30</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aa748f187b3421a26280981f69c5ce27a" name="aa748f187b3421a26280981f69c5ce27a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa748f187b3421a26280981f69c5ce27a">&#9670;&#160;</a></span>qualityHdrp</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int64_t eve::camera::PcgPhotoModePostFxState::qualityHdrp = 1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CameraController_8h_source.html">CameraController.h</a> 第 <a class="el" href="CameraController_8h_source.html#l00040">40</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a3dc31a94f35eb0f63f59b8ebe95206b6" name="a3dc31a94f35eb0f63f59b8ebe95206b6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3dc31a94f35eb0f63f59b8ebe95206b6">&#9670;&#160;</a></span>savedFocusMode</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int64_t eve::camera::PcgPhotoModePostFxState::savedFocusMode = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CameraController_8h_source.html">CameraController.h</a> 第 <a class="el" href="CameraController_8h_source.html#l00037">37</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该结构体的文档由以下文件生成:<ul>
+<li>src/modules/camera/<a class="el" href="CameraController_8h_source.html">CameraController.h</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

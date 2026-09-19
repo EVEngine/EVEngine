@@ -1,0 +1,1183 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::hexmap::HexMapModule类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1hexmap.html">hexmap</a></li><li class="navelem"><a class="el" href="classeve_1_1hexmap_1_1HexMapModule.html">HexMapModule</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1hexmap_1_1HexMapModule-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::hexmap::HexMapModule类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Owns the active hex map and the GPU meshes generated from it.  
+ <a href="classeve_1_1hexmap_1_1HexMapModule.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="HexMapModule_8h_source.html">HexMapModule.h</a>&gt;</code></p>
+<div class="dynheader">
+类 eve::hexmap::HexMapModule 继承关系图:</div>
+<div class="dyncontent">
+ <div class="center">
+  <img src="classeve_1_1hexmap_1_1HexMapModule.png" usemap="#eve::hexmap::HexMapModule_map" alt=""/>
+  <map id="eve::hexmap::HexMapModule_map" name="eve::hexmap::HexMapModule_map">
+<area href="classeve_1_1Module.html" alt="eve::Module" shape="rect" coords="0,0,177,24"/>
+  </map>
+</div></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a4453ad681c63cb479698b4e4280644c2" id="r_a4453ad681c63cb479698b4e4280644c2"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexMapModule.html#a4453ad681c63cb479698b4e4280644c2">Module_REG</a> (<a class="el" href="classeve_1_1hexmap_1_1HexMapModule.html">HexMapModule</a>)</td></tr>
+<tr class="separator:a4453ad681c63cb479698b4e4280644c2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8675e29fd4039450be9eab95170c9889" id="r_a8675e29fd4039450be9eab95170c9889"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexMapModule.html#a8675e29fd4039450be9eab95170c9889">HexMapModule</a> ()</td></tr>
+<tr class="memdesc:a8675e29fd4039450be9eab95170c9889"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructs an empty module with no map and no meshes.  <br /></td></tr>
+<tr class="separator:a8675e29fd4039450be9eab95170c9889"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3150a00e7990070a8c403599ccb1822b" id="r_a3150a00e7990070a8c403599ccb1822b"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexMapModule.html#a3150a00e7990070a8c403599ccb1822b">~HexMapModule</a> () override</td></tr>
+<tr class="memdesc:a3150a00e7990070a8c403599ccb1822b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Destructor; GPU meshes must already have been released.  <br /></td></tr>
+<tr class="separator:a3150a00e7990070a8c403599ccb1822b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a975d5f7850b71b1041fb00c697506992" id="r_a975d5f7850b71b1041fb00c697506992"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexMapModule.html#a975d5f7850b71b1041fb00c697506992">newGrid</a> (<a class="el" href="classeve_1_1graphics_1_1Graphics.html">graphics::Graphics</a> *gfx, std::int32_t cellCountX, std::int32_t cellCountZ, std::uint32_t <a class="el" href="PointSet_8cpp.html#a6d401fa547bfb21866c6da56399ee303">seed</a>)</td></tr>
+<tr class="memdesc:a975d5f7850b71b1041fb00c697506992"><td class="mdescLeft">&#160;</td><td class="mdescRight">Replaces the active grid and releases the meshes of the previous one.  <br /></td></tr>
+<tr class="separator:a975d5f7850b71b1041fb00c697506992"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab764ff3bb3c3a3a83e9a6b339ea497ea" id="r_ab764ff3bb3c3a3a83e9a6b339ea497ea"><td class="memItemLeft" align="right" valign="top">std::int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexMapModule.html#ab764ff3bb3c3a3a83e9a6b339ea497ea">rebuildDirtyChunks</a> (<a class="el" href="classeve_1_1graphics_1_1Graphics.html">graphics::Graphics</a> *gfx)</td></tr>
+<tr class="memdesc:ab764ff3bb3c3a3a83e9a6b339ea497ea"><td class="mdescLeft">&#160;</td><td class="mdescRight">Rebuilds every chunk surface currently marked dirty.  <br /></td></tr>
+<tr class="separator:ab764ff3bb3c3a3a83e9a6b339ea497ea"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa4591d1a6b710ce90e6404cd8b2ae0c5" id="r_aa4591d1a6b710ce90e6404cd8b2ae0c5"><td class="memItemLeft" align="right" valign="top">std::int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexMapModule.html#aa4591d1a6b710ce90e6404cd8b2ae0c5">rebuildChunk</a> (<a class="el" href="classeve_1_1graphics_1_1Graphics.html">graphics::Graphics</a> *gfx, std::int32_t chunkIndex)</td></tr>
+<tr class="memdesc:aa4591d1a6b710ce90e6404cd8b2ae0c5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Rebuilds all surfaces of one chunk.  <br /></td></tr>
+<tr class="separator:aa4591d1a6b710ce90e6404cd8b2ae0c5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9d92ef421398242726c04af595ba4ec3" id="r_a9d92ef421398242726c04af595ba4ec3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1Mesh.html">graphics::Mesh</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexMapModule.html#a9d92ef421398242726c04af595ba4ec3">chunkMeshAt</a> (std::int32_t chunkIndex, <a class="el" href="namespaceeve_1_1hexmap.html#a3c1facb3e6721984bbf3b25d2f4151ab">HexSurface</a> surface) const</td></tr>
+<tr class="memdesc:a9d92ef421398242726c04af595ba4ec3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Borrowed GPU mesh of one chunk surface.  <br /></td></tr>
+<tr class="separator:a9d92ef421398242726c04af595ba4ec3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0438005d62a3a32d812ac96022199d00" id="r_a0438005d62a3a32d812ac96022199d00"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexMapModule.html#a0438005d62a3a32d812ac96022199d00">releaseMeshes</a> (<a class="el" href="classeve_1_1graphics_1_1Graphics.html">graphics::Graphics</a> *gfx)</td></tr>
+<tr class="memdesc:a0438005d62a3a32d812ac96022199d00"><td class="mdescLeft">&#160;</td><td class="mdescRight">Releases every mesh owned by the module.  <br /></td></tr>
+<tr class="separator:a0438005d62a3a32d812ac96022199d00"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac96e4fa3895f3a8d3c2db1178ae1186c" id="r_ac96e4fa3895f3a8d3c2db1178ae1186c"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classeve_1_1hexmap_1_1HexMap.html">HexMap</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexMapModule.html#ac96e4fa3895f3a8d3c2db1178ae1186c">map</a> () const noexcept</td></tr>
+<tr class="memdesc:ac96e4fa3895f3a8d3c2db1178ae1186c"><td class="mdescLeft">&#160;</td><td class="mdescRight">The active map.  <br /></td></tr>
+<tr class="separator:ac96e4fa3895f3a8d3c2db1178ae1186c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4c71df8859a9f8c2747d9ee3d495fd23" id="r_a4c71df8859a9f8c2747d9ee3d495fd23"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html">HexMap</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexMapModule.html#a4c71df8859a9f8c2747d9ee3d495fd23">map</a> () noexcept</td></tr>
+<tr class="memdesc:a4c71df8859a9f8c2747d9ee3d495fd23"><td class="mdescLeft">&#160;</td><td class="mdescRight">The active map (mutable, for internal build steps).  <br /></td></tr>
+<tr class="separator:a4c71df8859a9f8c2747d9ee3d495fd23"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a24b079909194ca9a9b4afd49b38ffb8e" id="r_a24b079909194ca9a9b4afd49b38ffb8e"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexMapModule.html#a24b079909194ca9a9b4afd49b38ffb8e">hasGrid</a> () const noexcept</td></tr>
+<tr class="memdesc:a24b079909194ca9a9b4afd49b38ffb8e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether a grid has been created.  <br /></td></tr>
+<tr class="separator:a24b079909194ca9a9b4afd49b38ffb8e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa455aaa7ee4c316399ff3b3b8348ce98" id="r_aa455aaa7ee4c316399ff3b3b8348ce98"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexMapModule.html#aa455aaa7ee4c316399ff3b3b8348ce98">newSphere</a> (<a class="el" href="classeve_1_1graphics_1_1Graphics.html">graphics::Graphics</a> *gfx, std::int32_t subdivision, float <a class="el" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>, std::uint32_t <a class="el" href="PointSet_8cpp.html#a6d401fa547bfb21866c6da56399ee303">seed</a>)</td></tr>
+<tr class="memdesc:aa455aaa7ee4c316399ff3b3b8348ce98"><td class="mdescLeft">&#160;</td><td class="mdescRight">Replaces the spherical map and releases the meshes of the previous one.  <br /></td></tr>
+<tr class="separator:aa455aaa7ee4c316399ff3b3b8348ce98"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4b5f8d3250e77f1addb7c46f566d20b1" id="r_a4b5f8d3250e77f1addb7c46f566d20b1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexMapModule.html#a4b5f8d3250e77f1addb7c46f566d20b1">generateSphere</a> (<a class="el" href="classeve_1_1graphics_1_1Graphics.html">graphics::Graphics</a> *gfx, std::uint32_t <a class="el" href="PointSet_8cpp.html#a6d401fa547bfb21866c6da56399ee303">seed</a>, std::int32_t <a class="el" href="HexMapGenerator_8cpp.html#ab9368240e9e2fe681a1e47e80f6d6efb">landPercentage</a>, std::int32_t <a class="el" href="HexMapGenerator_8cpp.html#af4a3f05e9a960f255dadcd9433456edd">waterLevel</a>)</td></tr>
+<tr class="memdesc:a4b5f8d3250e77f1addb7c46f566d20b1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Regenerates the spherical map procedurally and rebuilds both its meshes.  <br /></td></tr>
+<tr class="separator:a4b5f8d3250e77f1addb7c46f566d20b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a077a07b85abf8c4ac62a42d423c393db" id="r_a077a07b85abf8c4ac62a42d423c393db"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexMapModule.html#a077a07b85abf8c4ac62a42d423c393db">rebuildSphere</a> (<a class="el" href="classeve_1_1graphics_1_1Graphics.html">graphics::Graphics</a> *gfx)</td></tr>
+<tr class="memdesc:a077a07b85abf8c4ac62a42d423c393db"><td class="mdescLeft">&#160;</td><td class="mdescRight">Rebuilds the whole-sphere terrain and ocean meshes from the current cells.  <br /></td></tr>
+<tr class="separator:a077a07b85abf8c4ac62a42d423c393db"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a54536adc1b8d12520badc6b8b29aa63c" id="r_a54536adc1b8d12520badc6b8b29aa63c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexMapModule.html#a54536adc1b8d12520badc6b8b29aa63c">releaseSphereMeshes</a> (<a class="el" href="classeve_1_1graphics_1_1Graphics.html">graphics::Graphics</a> *gfx) noexcept</td></tr>
+<tr class="memdesc:a54536adc1b8d12520badc6b8b29aa63c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Releases every mesh owned by the spherical map.  <br /></td></tr>
+<tr class="separator:a54536adc1b8d12520badc6b8b29aa63c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acf0f2c290d5a9a93143075fedcab3fd9" id="r_acf0f2c290d5a9a93143075fedcab3fd9"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classeve_1_1hexmap_1_1HexSphereMap.html">HexSphereMap</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexMapModule.html#acf0f2c290d5a9a93143075fedcab3fd9">sphere</a> () const noexcept</td></tr>
+<tr class="memdesc:acf0f2c290d5a9a93143075fedcab3fd9"><td class="mdescLeft">&#160;</td><td class="mdescRight">The active spherical map.  <br /></td></tr>
+<tr class="separator:acf0f2c290d5a9a93143075fedcab3fd9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaefac1682efe9522b1196b83ccdef739" id="r_aaefac1682efe9522b1196b83ccdef739"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1hexmap_1_1HexSphereMap.html">HexSphereMap</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexMapModule.html#aaefac1682efe9522b1196b83ccdef739">sphere</a> () noexcept</td></tr>
+<tr class="memdesc:aaefac1682efe9522b1196b83ccdef739"><td class="mdescLeft">&#160;</td><td class="mdescRight">The active spherical map (mutable, for internal build steps).  <br /></td></tr>
+<tr class="separator:aaefac1682efe9522b1196b83ccdef739"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae70c456cd1d7cecb85aeaada5e94c876" id="r_ae70c456cd1d7cecb85aeaada5e94c876"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1Mesh.html">graphics::Mesh</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexMapModule.html#ae70c456cd1d7cecb85aeaada5e94c876">sphereTerrainMesh</a> () const noexcept</td></tr>
+<tr class="memdesc:ae70c456cd1d7cecb85aeaada5e94c876"><td class="mdescLeft">&#160;</td><td class="mdescRight">Borrowed GPU terrain mesh of the sphere. @ownership Borrowed; the module retains ownership until <code>releaseSphereMeshes</code>. @nullable Yes; null before the first build or when the sphere has no cells.  <br /></td></tr>
+<tr class="separator:ae70c456cd1d7cecb85aeaada5e94c876"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5155b13c7ec78518776c63d5cad23a53" id="r_a5155b13c7ec78518776c63d5cad23a53"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1Mesh.html">graphics::Mesh</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexMapModule.html#a5155b13c7ec78518776c63d5cad23a53">sphereWaterMesh</a> () const noexcept</td></tr>
+<tr class="memdesc:a5155b13c7ec78518776c63d5cad23a53"><td class="mdescLeft">&#160;</td><td class="mdescRight">Borrowed GPU ocean mesh of the sphere, or null when nothing is flooded. @ownership Borrowed; the module retains ownership until <code>releaseSphereMeshes</code>. @nullable Yes.  <br /></td></tr>
+<tr class="separator:a5155b13c7ec78518776c63d5cad23a53"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a70cebb21346c9ac3570fc17698249d66" id="r_a70cebb21346c9ac3570fc17698249d66"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1hexmap_1_1HexVisibility.html">HexVisibility</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexMapModule.html#a70cebb21346c9ac3570fc17698249d66">visibility</a> () noexcept</td></tr>
+<tr class="memdesc:a70cebb21346c9ac3570fc17698249d66"><td class="mdescLeft">&#160;</td><td class="mdescRight">Fog-of-war counters of the active map.  <br /></td></tr>
+<tr class="separator:a70cebb21346c9ac3570fc17698249d66"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0c434b4fcefc00d095ec22ccd8fbdb77" id="r_a0c434b4fcefc00d095ec22ccd8fbdb77"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1hexmap_1_1HexUnitRegistry.html">HexUnitRegistry</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexMapModule.html#a0c434b4fcefc00d095ec22ccd8fbdb77">units</a> () noexcept</td></tr>
+<tr class="memdesc:a0c434b4fcefc00d095ec22ccd8fbdb77"><td class="mdescLeft">&#160;</td><td class="mdescRight">Units of the active map.  <br /></td></tr>
+<tr class="separator:a0c434b4fcefc00d095ec22ccd8fbdb77"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af9324603d7868565a6830e2f7366958f" id="r_af9324603d7868565a6830e2f7366958f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1hexmap_1_1HexSearchContext.html">HexSearchContext</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexMapModule.html#af9324603d7868565a6830e2f7366958f">scratch</a> () noexcept</td></tr>
+<tr class="memdesc:af9324603d7868565a6830e2f7366958f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Search scratch sized to the active map.  <br /></td></tr>
+<tr class="separator:af9324603d7868565a6830e2f7366958f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a75407bce8ce90efdbe4f4ca693e3cb1c" id="r_a75407bce8ce90efdbe4f4ca693e3cb1c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexMapModule.html#a75407bce8ce90efdbe4f4ca693e3cb1c">adoptGrid</a> (<a class="el" href="classeve_1_1graphics_1_1Graphics.html">graphics::Graphics</a> *gfx, <a class="el" href="classeve_1_1hexmap_1_1HexMap.html">HexMap</a> &amp;&amp;restored, const std::vector&lt; <a class="el" href="structeve_1_1hexmap_1_1HexUnitState.html">HexUnitState</a> &gt; &amp;<a class="el" href="classeve_1_1hexmap_1_1HexMapModule.html#a0c434b4fcefc00d095ec22ccd8fbdb77">units</a>)</td></tr>
+<tr class="memdesc:a75407bce8ce90efdbe4f4ca693e3cb1c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Replaces the active grid with an already-decoded map.  <br /></td></tr>
+<tr class="separator:a75407bce8ce90efdbe4f4ca693e3cb1c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a34cac8e95bcefa2f41df41b49bd1bdfc" id="r_a34cac8e95bcefa2f41df41b49bd1bdfc"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexMapModule.html#a34cac8e95bcefa2f41df41b49bd1bdfc">syncScratch</a> ()</td></tr>
+<tr class="memdesc:a34cac8e95bcefa2f41df41b49bd1bdfc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Re-sizes the search scratch to the active map. @cost Proportional to the cell count; called by <code>newGrid</code> and by load.  <br /></td></tr>
+<tr class="separator:a34cac8e95bcefa2f41df41b49bd1bdfc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a713d6ba8b9a8dfe4dad859794ffc0efd" id="r_a713d6ba8b9a8dfe4dad859794ffc0efd"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexMapModule.html#a713d6ba8b9a8dfe4dad859794ffc0efd">generateMap</a> (<a class="el" href="classeve_1_1graphics_1_1Graphics.html">graphics::Graphics</a> *gfx, std::uint32_t <a class="el" href="PointSet_8cpp.html#a6d401fa547bfb21866c6da56399ee303">seed</a>, std::int32_t <a class="el" href="HexMapGenerator_8cpp.html#ab9368240e9e2fe681a1e47e80f6d6efb">landPercentage</a>, std::int32_t <a class="el" href="HexMapGenerator_8cpp.html#af4a3f05e9a960f255dadcd9433456edd">waterLevel</a>, std::int32_t <a class="el" href="HexMapGenerator_8cpp.html#a03b9b3824a899b0c66b129f41e02ab4a">riverPercentage</a>)</td></tr>
+<tr class="memdesc:a713d6ba8b9a8dfe4dad859794ffc0efd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Regenerates the active grid procedurally and drops every unit.  <br /></td></tr>
+<tr class="separator:a713d6ba8b9a8dfe4dad859794ffc0efd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classeve_1_1Module"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classeve_1_1Module')"><img src="closed.png" alt="-"/>&#160;Public 成员函数 继承自 <a class="el" href="classeve_1_1Module.html">eve::Module</a></td></tr>
+<tr class="memitem:ab848c8cbc6dab360eb5d37945c8b0111 inherit pub_methods_classeve_1_1Module" id="r_ab848c8cbc6dab360eb5d37945c8b0111"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Module.html#ab848c8cbc6dab360eb5d37945c8b0111">~Module</a> ()</td></tr>
+<tr class="separator:ab848c8cbc6dab360eb5d37945c8b0111 inherit pub_methods_classeve_1_1Module"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae00d561f21eef86f21d032b53ca84da0 inherit pub_methods_classeve_1_1Module" id="r_ae00d561f21eef86f21d032b53ca84da0"><td class="memItemLeft" align="right" valign="top">virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Module.html#ae00d561f21eef86f21d032b53ca84da0">getName</a> () const =0</td></tr>
+<tr class="separator:ae00d561f21eef86f21d032b53ca84da0 inherit pub_methods_classeve_1_1Module"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Owns the active hex map and the GPU meshes generated from it. </p>
+<p>The module exposes exactly one editable map to scripts (the reference hex-map editor also edits a single grid). <code>newGrid</code> replaces it and releases the meshes generated from the previous map.</p>
+<p>Ownership and lifetime:</p><ul>
+<li>The module owns <code><a class="el" href="classeve_1_1hexmap_1_1HexMap.html" title="An editable, chunked, pointy-top hex map.">HexMap</a></code> and every <code><a class="el" href="classeve_1_1graphics_1_1Mesh.html" title="GPU mesh handle (+ optional CPU morph targets).">graphics::Mesh</a></code> it created.</li>
+<li><code>chunkMeshAt</code> returns a borrowed mesh; a <code>Renderable3D</code> may reference it only while this module is alive and the grid has not been replaced.</li>
+<li><code>releaseMeshes</code> must be called with the same <code>Graphics</code> device that created the meshes, before that device is destroyed.</li>
+</ul>
+<p>Thread affinity: main/render thread only; no callbacks are invoked and no lock is held across an external call. </p>
+
+<p class="definition">在文件 <a class="el" href="HexMapModule_8h_source.html">HexMapModule.h</a> 第 <a class="el" href="HexMapModule_8h_source.html#l00043">43</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a8675e29fd4039450be9eab95170c9889" name="a8675e29fd4039450be9eab95170c9889"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8675e29fd4039450be9eab95170c9889">&#9670;&#160;</a></span>HexMapModule()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::hexmap::HexMapModule::HexMapModule </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Constructs an empty module with no map and no meshes. </p>
+
+</div>
+</div>
+<a id="a3150a00e7990070a8c403599ccb1822b" name="a3150a00e7990070a8c403599ccb1822b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3150a00e7990070a8c403599ccb1822b">&#9670;&#160;</a></span>~HexMapModule()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::hexmap::HexMapModule::~HexMapModule </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Destructor; GPU meshes must already have been released. </p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a75407bce8ce90efdbe4f4ca693e3cb1c" name="a75407bce8ce90efdbe4f4ca693e3cb1c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a75407bce8ce90efdbe4f4ca693e3cb1c">&#9670;&#160;</a></span>adoptGrid()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::hexmap::HexMapModule::adoptGrid </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Graphics.html">graphics::Graphics</a> *&#160;</td>
+          <td class="paramname"><em>gfx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html">HexMap</a> &amp;&amp;&#160;</td>
+          <td class="paramname"><em>restored</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="structeve_1_1hexmap_1_1HexUnitState.html">HexUnitState</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>units</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Replaces the active grid with an already-decoded map. </p>
+<p>The load path: the payload was decoded into <code>restored</code> before this call, so the module only has to release the meshes of the previous grid, adopt the new one and rebuild its derived state (scratch, fog of war, mesh slots). The caller must follow it with a whole-map rebuild, because every chunk of the adopted grid starts dirty and no renderable points at the new meshes.</p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">gfx</td><td>Device that owns the current meshes; required. </td></tr>
+    <tr><td class="paramname">restored</td><td>Decoded grid, moved into the module. </td></tr>
+    <tr><td class="paramname">units</td><td>Unit states to restore on the adopted grid. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Success, or InvalidArgument when the device or unit states are invalid. @cost Releases every owned mesh and allocates the derived state for the new grid. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="HexMapModule_8cpp_source.html">HexMapModule.cpp</a> 第 <a class="el" href="HexMapModule_8cpp_source.html#l00082">82</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="HexMap_8h_source.html#l00092">eve::hexmap::HexMap::cellCount()</a>, <a class="el" href="HexMapModule_8cpp_source.html#l00094">releaseMeshes()</a>, <a class="el" href="HexUnits_8cpp_source.html#l00178">eve::hexmap::HexUnitRegistry::removeAll()</a>, <a class="el" href="HexVisibility_8cpp_source.html#l00037">eve::hexmap::HexVisibility::reset()</a>, <a class="el" href="HexUnits_8cpp_source.html#l00357">eve::hexmap::HexUnitRegistry::restore()</a>, <a class="el" href="HexMapModule_8cpp_source.html#l00055">syncScratch()</a> , 以及 <a class="el" href="HexMapModule_8h_source.html#l00180">units()</a>.</p>
+
+</div>
+</div>
+<a id="a9d92ef421398242726c04af595ba4ec3" name="a9d92ef421398242726c04af595ba4ec3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9d92ef421398242726c04af595ba4ec3">&#9670;&#160;</a></span>chunkMeshAt()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1Mesh.html">graphics::Mesh</a> * eve::hexmap::HexMapModule::chunkMeshAt </td>
+          <td>(</td>
+          <td class="paramtype">std::int32_t&#160;</td>
+          <td class="paramname"><em>chunkIndex</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1hexmap.html#a3c1facb3e6721984bbf3b25d2f4151ab">HexSurface</a>&#160;</td>
+          <td class="paramname"><em>surface</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Borrowed GPU mesh of one chunk surface. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">chunkIndex</td><td>Chunk index in <code>[0, chunkCount())</code>. </td></tr>
+    <tr><td class="paramname">surface</td><td>Surface stream to query. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>The mesh, or null when that surface has no geometry or was never built. @ownership Borrowed; the module retains ownership until <code>releaseMeshes</code>. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="HexMapModule_8cpp_source.html">HexMapModule.cpp</a> 第 <a class="el" href="HexMapModule_8cpp_source.html#l00120">120</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="HexMap_8h_source.html#l00090">eve::hexmap::HexMap::chunkCount()</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00233">u</a>.</p>
+
+</div>
+</div>
+<a id="a713d6ba8b9a8dfe4dad859794ffc0efd" name="a713d6ba8b9a8dfe4dad859794ffc0efd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a713d6ba8b9a8dfe4dad859794ffc0efd">&#9670;&#160;</a></span>generateMap()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::hexmap::HexMapModule::generateMap </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Graphics.html">graphics::Graphics</a> *&#160;</td>
+          <td class="paramname"><em>gfx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::uint32_t&#160;</td>
+          <td class="paramname"><em>seed</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::int32_t&#160;</td>
+          <td class="paramname"><em>landPercentage</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::int32_t&#160;</td>
+          <td class="paramname"><em>waterLevel</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::int32_t&#160;</td>
+          <td class="paramname"><em>riverPercentage</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Regenerates the active grid procedurally and drops every unit. </p>
+<p>The grid is rebuilt from <code>seed</code> first, because the terrain perturbation has to match the generation seed; that releases every mesh, unit and visibility counter of the previous grid. The caller must rebuild every chunk afterwards and place new units: a generated map has <b>no explored cells</b>, so nothing is visible until a unit grants vision.</p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">gfx</td><td>Device that owns the current meshes; required. </td></tr>
+    <tr><td class="paramname">seed</td><td>Deterministic seed for both the grid noise and the generator. </td></tr>
+    <tr><td class="paramname">landPercentage</td><td>Target share of land, in percent; clamped by the generator. </td></tr>
+    <tr><td class="paramname">waterLevel</td><td>Cells at or below this elevation are flooded; clamped by the generator. </td></tr>
+    <tr><td class="paramname">riverPercentage</td><td>Target share of the map covered by rivers, in percent; clamped by the generator. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Success, or InvalidArgument when there is no grid or no device, or a failure forwarded from the generator. @cost Releases every owned mesh and allocates the whole grid; proportional to the cell count. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="HexMapModule_8cpp_source.html">HexMapModule.cpp</a> 第 <a class="el" href="HexMapModule_8cpp_source.html#l00059">59</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="HexMap_8h_source.html#l00092">eve::hexmap::HexMap::cellCount()</a>, <a class="el" href="HexMap_8h_source.html#l00082">eve::hexmap::HexMap::cellCountX()</a>, <a class="el" href="HexMap_8h_source.html#l00084">eve::hexmap::HexMap::cellCountZ()</a>, <a class="el" href="HexMap_8h_source.html#l00080">eve::hexmap::HexMap::empty()</a>, <a class="el" href="HexMapGenerator_8cpp_source.html#l01224">eve::hexmap::generateHexMap()</a>, <a class="el" href="HexMapGenerator_8cpp_source.html#l00178">landPercentage</a>, <a class="el" href="HexMapModule_8cpp_source.html#l00094">releaseMeshes()</a>, <a class="el" href="HexUnits_8cpp_source.html#l00178">eve::hexmap::HexUnitRegistry::removeAll()</a>, <a class="el" href="HexVisibility_8cpp_source.html#l00037">eve::hexmap::HexVisibility::reset()</a>, <a class="el" href="HexMap_8cpp_source.html#l00026">eve::hexmap::HexMap::reset()</a>, <a class="el" href="HexMapGenerator_8cpp_source.html#l00194">riverPercentage</a>, <a class="el" href="HexMapGenerator_8h_source.html#l00021">eve::hexmap::HexMapGeneratorSettings::seed</a>, <a class="el" href="PointSet_8cpp_source.html#l00762">seed</a>, <a class="el" href="TerrainGenerationSession_8cpp_source.html#l00095">settings</a>, <a class="el" href="HexMapModule_8cpp_source.html#l00055">syncScratch()</a> , 以及 <a class="el" href="HexMapGenerator_8cpp_source.html#l00179">waterLevel</a>.</p>
+
+</div>
+</div>
+<a id="a4b5f8d3250e77f1addb7c46f566d20b1" name="a4b5f8d3250e77f1addb7c46f566d20b1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4b5f8d3250e77f1addb7c46f566d20b1">&#9670;&#160;</a></span>generateSphere()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::hexmap::HexMapModule::generateSphere </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Graphics.html">graphics::Graphics</a> *&#160;</td>
+          <td class="paramname"><em>gfx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::uint32_t&#160;</td>
+          <td class="paramname"><em>seed</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::int32_t&#160;</td>
+          <td class="paramname"><em>landPercentage</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::int32_t&#160;</td>
+          <td class="paramname"><em>waterLevel</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Regenerates the spherical map procedurally and rebuilds both its meshes. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">gfx</td><td>Device that owns the sphere meshes; required. </td></tr>
+    <tr><td class="paramname">seed</td><td>Deterministic seed for the generator. </td></tr>
+    <tr><td class="paramname">landPercentage</td><td>Target share of land, in percent. </td></tr>
+    <tr><td class="paramname">waterLevel</td><td>Cells at or below this elevation are flooded. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Success, InvalidArgument when there is no sphere or no device, or the generator's own failure status. @cost Overwrites every cell, then one CPU mesh build and one GPU upload for the terrain and for the ocean. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="HexMapModule_8cpp_source.html">HexMapModule.cpp</a> 第 <a class="el" href="HexMapModule_8cpp_source.html#l00209">209</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="HexSphereMap_8h_source.html#l00082">eve::hexmap::HexSphereMap::empty()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="HexSphereGenerator_8cpp_source.html#l00124">eve::hexmap::generateSphereMap()</a>, <a class="el" href="HexMapGenerator_8cpp_source.html#l00178">landPercentage</a>, <a class="el" href="HexMapModule_8cpp_source.html#l00226">rebuildSphere()</a>, <a class="el" href="HexSphereGenerator_8h_source.html#l00023">eve::hexmap::HexSphereGeneratorSettings::seed</a>, <a class="el" href="PointSet_8cpp_source.html#l00762">seed</a>, <a class="el" href="TerrainGenerationSession_8cpp_source.html#l00095">settings</a> , 以及 <a class="el" href="HexMapGenerator_8cpp_source.html#l00179">waterLevel</a>.</p>
+
+</div>
+</div>
+<a id="a24b079909194ca9a9b4afd49b38ffb8e" name="a24b079909194ca9a9b4afd49b38ffb8e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a24b079909194ca9a9b4afd49b38ffb8e">&#9670;&#160;</a></span>hasGrid()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::hexmap::HexMapModule::hasGrid </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Whether a grid has been created. </p>
+
+<p class="definition">在文件 <a class="el" href="HexMapModule_8h_source.html">HexMapModule.h</a> 第 <a class="el" href="HexMapModule_8h_source.html#l00108">108</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="HexMap_8h_source.html#l00080">eve::hexmap::HexMap::empty()</a>.</p>
+
+</div>
+</div>
+<a id="ac96e4fa3895f3a8d3c2db1178ae1186c" name="ac96e4fa3895f3a8d3c2db1178ae1186c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac96e4fa3895f3a8d3c2db1178ae1186c">&#9670;&#160;</a></span>map() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="classeve_1_1hexmap_1_1HexMap.html">HexMap</a> &amp; eve::hexmap::HexMapModule::map </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>The active map. </p>
+
+<p class="definition">在文件 <a class="el" href="HexMapModule_8h_source.html">HexMapModule.h</a> 第 <a class="el" href="HexMapModule_8h_source.html#l00104">104</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a4c71df8859a9f8c2747d9ee3d495fd23" name="a4c71df8859a9f8c2747d9ee3d495fd23"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4c71df8859a9f8c2747d9ee3d495fd23">&#9670;&#160;</a></span>map() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html">HexMap</a> &amp; eve::hexmap::HexMapModule::map </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>The active map (mutable, for internal build steps). </p>
+
+<p class="definition">在文件 <a class="el" href="HexMapModule_8h_source.html">HexMapModule.h</a> 第 <a class="el" href="HexMapModule_8h_source.html#l00106">106</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a4453ad681c63cb479698b4e4280644c2" name="a4453ad681c63cb479698b4e4280644c2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4453ad681c63cb479698b4e4280644c2">&#9670;&#160;</a></span>Module_REG()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::hexmap::HexMapModule::Module_REG </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1hexmap_1_1HexMapModule.html">HexMapModule</a>&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a975d5f7850b71b1041fb00c697506992" name="a975d5f7850b71b1041fb00c697506992"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a975d5f7850b71b1041fb00c697506992">&#9670;&#160;</a></span>newGrid()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::hexmap::HexMapModule::newGrid </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Graphics.html">graphics::Graphics</a> *&#160;</td>
+          <td class="paramname"><em>gfx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::int32_t&#160;</td>
+          <td class="paramname"><em>cellCountX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::int32_t&#160;</td>
+          <td class="paramname"><em>cellCountZ</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::uint32_t&#160;</td>
+          <td class="paramname"><em>seed</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Replaces the active grid and releases the meshes of the previous one. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">gfx</td><td>Graphics device used to release previously created meshes. </td></tr>
+    <tr><td class="paramname">cellCountX</td><td>Columns; must be a positive multiple of the chunk size. </td></tr>
+    <tr><td class="paramname">cellCountZ</td><td>Rows; must be a positive multiple of the chunk size. </td></tr>
+    <tr><td class="paramname">seed</td><td>Deterministic seed for the cell noise field. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Success, or InvalidArgument for an unsupported size. @cost Releases every owned mesh and allocates <code>cellCountX * cellCountZ</code> cells; proportional to the map area, amortized over a whole-map rebuild. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="HexMapModule_8cpp_source.html">HexMapModule.cpp</a> 第 <a class="el" href="HexMapModule_8cpp_source.html#l00104">104</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="HexMap_8h_source.html#l00092">eve::hexmap::HexMap::cellCount()</a>, <a class="el" href="HexMapModule_8cpp_source.html#l00094">releaseMeshes()</a>, <a class="el" href="HexUnits_8cpp_source.html#l00178">eve::hexmap::HexUnitRegistry::removeAll()</a>, <a class="el" href="HexVisibility_8cpp_source.html#l00037">eve::hexmap::HexVisibility::reset()</a>, <a class="el" href="HexMap_8cpp_source.html#l00026">eve::hexmap::HexMap::reset()</a>, <a class="el" href="PointSet_8cpp_source.html#l00762">seed</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="HexMapModule_8cpp_source.html#l00055">syncScratch()</a>.</p>
+
+</div>
+</div>
+<a id="aa455aaa7ee4c316399ff3b3b8348ce98" name="aa455aaa7ee4c316399ff3b3b8348ce98"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa455aaa7ee4c316399ff3b3b8348ce98">&#9670;&#160;</a></span>newSphere()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::hexmap::HexMapModule::newSphere </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Graphics.html">graphics::Graphics</a> *&#160;</td>
+          <td class="paramname"><em>gfx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::int32_t&#160;</td>
+          <td class="paramname"><em>subdivision</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>radius</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::uint32_t&#160;</td>
+          <td class="paramname"><em>seed</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Replaces the spherical map and releases the meshes of the previous one. </p>
+<p>The sphere is a second, independent world alongside the flat grid: it shares the module's device and its cell record types, but neither the flat map nor its meshes are touched, so a script may hold both without one invalidating the other.</p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">gfx</td><td>Device used to release the previously created sphere meshes; required. </td></tr>
+    <tr><td class="paramname">subdivision</td><td>Topology level in <code>[0, kMaxHexSphereSubdivision]</code>. </td></tr>
+    <tr><td class="paramname">radius</td><td>Sphere radius in world units; must be finite and positive. </td></tr>
+    <tr><td class="paramname">seed</td><td>Deterministic seed for the sphere's noise field. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Success, or InvalidArgument for a missing device or a bad shape. @cost Releases the previous sphere meshes and rebuilds the whole topology. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="HexMapModule_8cpp_source.html">HexMapModule.cpp</a> 第 <a class="el" href="HexMapModule_8cpp_source.html#l00202">202</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PlacementSystem_8cpp_source.html#l00042">radius</a>, <a class="el" href="HexMapModule_8cpp_source.html#l00193">releaseSphereMeshes()</a>, <a class="el" href="HexSphereMap_8cpp_source.html#l00056">eve::hexmap::HexSphereMap::reset()</a> , 以及 <a class="el" href="PointSet_8cpp_source.html#l00762">seed</a>.</p>
+
+</div>
+</div>
+<a id="aa4591d1a6b710ce90e6404cd8b2ae0c5" name="aa4591d1a6b710ce90e6404cd8b2ae0c5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa4591d1a6b710ce90e6404cd8b2ae0c5">&#9670;&#160;</a></span>rebuildChunk()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::int32_t eve::hexmap::HexMapModule::rebuildChunk </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Graphics.html">graphics::Graphics</a> *&#160;</td>
+          <td class="paramname"><em>gfx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::int32_t&#160;</td>
+          <td class="paramname"><em>chunkIndex</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Rebuilds all surfaces of one chunk. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">gfx</td><td>Graphics device that owns the chunk meshes. </td></tr>
+    <tr><td class="paramname">chunkIndex</td><td>Chunk to regenerate. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Number of surfaces that produced geometry. @cost One CPU mesh build plus one vertex-buffer update per surface. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="HexMapModule_8cpp_source.html">HexMapModule.cpp</a> 第 <a class="el" href="HexMapModule_8cpp_source.html#l00130">130</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="HexMapMesh_8cpp_source.html#l00005">eve::hexmap::buildChunkSurfaceMesh()</a>, <a class="el" href="HexFeatures_8cpp_source.html#l00640">eve::hexmap::buildFeatureMesh()</a>, <a class="el" href="HexFogMesh_8cpp_source.html#l00116">eve::hexmap::buildFogMesh()</a>, <a class="el" href="HexFeatures_8cpp_source.html#l00628">eve::hexmap::buildWallMesh()</a>, <a class="el" href="HexMap_8h_source.html#l00090">eve::hexmap::HexMap::chunkCount()</a>, <a class="el" href="HexMap_8h_source.html#l00080">eve::hexmap::HexMap::empty()</a>, <a class="el" href="HexMeshData_8h_source.html#l00030">eve::hexmap::HexMeshData::empty()</a>, <a class="el" href="namespaceeve_1_1hexmap.html#a3c1facb3e6721984bbf3b25d2f4151aba21021ea0e52be8e9c599f4dff41e5be0">eve::hexmap::Feature</a>, <a class="el" href="namespaceeve_1_1hexmap.html#a3c1facb3e6721984bbf3b25d2f4151abacd56a9c68c3b6503ccfb283c81775b07">eve::hexmap::Fog</a>, <a class="el" href="GltfImporter_8cpp_source.html#l00023">indexCount</a>, <a class="el" href="HexMeshData_8h_source.html#l00062">eve::hexmap::HexMeshData::indices()</a>, <a class="el" href="HexMap_8h_source.html#l00036">eve::hexmap::kHexSurfaceCount</a>, <a class="el" href="RenderSystem3D_8cpp_source.html#l00641">mesh</a>, <a class="el" href="classeve_1_1graphics_1_1Graphics.html#ad2394ae661385736c667a98446a5b9b4">eve::graphics::Graphics::newMeshFromArrays()</a>, <a class="el" href="HexMeshData_8h_source.html#l00058">eve::hexmap::HexMeshData::normals()</a>, <a class="el" href="HexMeshData_8h_source.html#l00056">eve::hexmap::HexMeshData::positions()</a>, <a class="el" href="Graphics_8h_source.html#l00855">eve::graphics::Graphics::releaseMesh()</a>, <a class="el" href="BattleSystem_8cpp_source.html#l00057">s</a>, <a class="el" href="Grass_8cpp_source.html#l00233">u</a>, <a class="el" href="classeve_1_1graphics_1_1Graphics.html#a806f6e983bb35678a2130ac2a5c68edd">eve::graphics::Graphics::updateMeshVertices()</a>, <a class="el" href="HexMeshData_8h_source.html#l00060">eve::hexmap::HexMeshData::uvs()</a>, <a class="el" href="GltfImporter_8cpp_source.html#l00022">vertexCount</a>, <a class="el" href="HexMeshData_8h_source.html#l00032">eve::hexmap::HexMeshData::vertexCount()</a> , 以及 <a class="el" href="namespaceeve_1_1hexmap.html#a3c1facb3e6721984bbf3b25d2f4151aba94e8a499539d1a472f3b5dbbb85508c0">eve::hexmap::Wall</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HexMapModule_8cpp_source.html#l00180">rebuildDirtyChunks()</a>.</p>
+
+</div>
+</div>
+<a id="ab764ff3bb3c3a3a83e9a6b339ea497ea" name="ab764ff3bb3c3a3a83e9a6b339ea497ea"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab764ff3bb3c3a3a83e9a6b339ea497ea">&#9670;&#160;</a></span>rebuildDirtyChunks()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::int32_t eve::hexmap::HexMapModule::rebuildDirtyChunks </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Graphics.html">graphics::Graphics</a> *&#160;</td>
+          <td class="paramname"><em>gfx</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Rebuilds every chunk surface currently marked dirty. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">gfx</td><td>Graphics device that owns the chunk meshes. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Number of chunk surfaces that were (re)generated. @cost One CPU mesh build plus one vertex-buffer update per dirty surface. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="HexMapModule_8cpp_source.html">HexMapModule.cpp</a> 第 <a class="el" href="HexMapModule_8cpp_source.html#l00180">180</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="HexMap_8h_source.html#l00080">eve::hexmap::HexMap::empty()</a>, <a class="el" href="HexMapModule_8cpp_source.html#l00130">rebuildChunk()</a> , 以及 <a class="el" href="HexMap_8cpp_source.html#l00149">eve::hexmap::HexMap::takeDirtyChunk()</a>.</p>
+
+</div>
+</div>
+<a id="a077a07b85abf8c4ac62a42d423c393db" name="a077a07b85abf8c4ac62a42d423c393db"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a077a07b85abf8c4ac62a42d423c393db">&#9670;&#160;</a></span>rebuildSphere()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::hexmap::HexMapModule::rebuildSphere </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Graphics.html">graphics::Graphics</a> *&#160;</td>
+          <td class="paramname"><em>gfx</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Rebuilds the whole-sphere terrain and ocean meshes from the current cells. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">gfx</td><td>Device that owns the sphere meshes; required. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Success, or InvalidArgument when there is no sphere or no device. @cost One CPU mesh build plus one GPU upload per stream; proportional to the cell count, so build it after a batch of edits rather than after each one. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="HexMapModule_8cpp_source.html">HexMapModule.cpp</a> 第 <a class="el" href="HexMapModule_8cpp_source.html#l00226">226</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="HexSphereMesh_8cpp_source.html#l00681">eve::hexmap::buildSphereTerrainMesh()</a>, <a class="el" href="HexSphereMesh_8cpp_source.html#l00693">eve::hexmap::buildSphereWaterMesh()</a>, <a class="el" href="HexSphereMap_8h_source.html#l00082">eve::hexmap::HexSphereMap::empty()</a>, <a class="el" href="GltfImporter_8cpp_source.html#l00023">indexCount</a>, <a class="el" href="RenderSystem3D_8cpp_source.html#l00641">mesh</a>, <a class="el" href="classeve_1_1graphics_1_1Graphics.html#ad2394ae661385736c667a98446a5b9b4">eve::graphics::Graphics::newMeshFromArrays()</a>, <a class="el" href="Graphics_8h_source.html#l00855">eve::graphics::Graphics::releaseMesh()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="AssetCommand_8cpp_source.html#l00163">terrain</a>, <a class="el" href="classeve_1_1graphics_1_1Graphics.html#a806f6e983bb35678a2130ac2a5c68edd">eve::graphics::Graphics::updateMeshVertices()</a>, <a class="el" href="GltfImporter_8cpp_source.html#l00022">vertexCount</a> , 以及 <a class="el" href="TerrainGenerationSession_8cpp_source.html#l00089">water</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HexMapModule_8cpp_source.html#l00209">generateSphere()</a>.</p>
+
+</div>
+</div>
+<a id="a0438005d62a3a32d812ac96022199d00" name="a0438005d62a3a32d812ac96022199d00"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0438005d62a3a32d812ac96022199d00">&#9670;&#160;</a></span>releaseMeshes()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::hexmap::HexMapModule::releaseMeshes </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Graphics.html">graphics::Graphics</a> *&#160;</td>
+          <td class="paramname"><em>gfx</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Releases every mesh owned by the module. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">gfx</td><td>Device that created them; null releases nothing. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section note"><dt>注解</dt><dd>The script must call this before the grid is replaced by a different device or before shutdown; <code>newGrid</code> only releases through itself. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="HexMapModule_8cpp_source.html">HexMapModule.cpp</a> 第 <a class="el" href="HexMapModule_8cpp_source.html#l00094">94</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RenderSystem3D_8cpp_source.html#l00641">mesh</a>, <a class="el" href="Graphics_8h_source.html#l00855">eve::graphics::Graphics::releaseMesh()</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00233">u</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HexMapModule_8cpp_source.html#l00082">adoptGrid()</a>, <a class="el" href="HexMapModule_8cpp_source.html#l00059">generateMap()</a> , 以及 <a class="el" href="HexMapModule_8cpp_source.html#l00104">newGrid()</a>.</p>
+
+</div>
+</div>
+<a id="a54536adc1b8d12520badc6b8b29aa63c" name="a54536adc1b8d12520badc6b8b29aa63c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a54536adc1b8d12520badc6b8b29aa63c">&#9670;&#160;</a></span>releaseSphereMeshes()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::hexmap::HexMapModule::releaseSphereMeshes </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Graphics.html">graphics::Graphics</a> *&#160;</td>
+          <td class="paramname"><em>gfx</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Releases every mesh owned by the spherical map. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">gfx</td><td>Device that created them; null releases nothing. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="HexMapModule_8cpp_source.html">HexMapModule.cpp</a> 第 <a class="el" href="HexMapModule_8cpp_source.html#l00193">193</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HexMapModule_8cpp_source.html#l00202">newSphere()</a>.</p>
+
+</div>
+</div>
+<a id="af9324603d7868565a6830e2f7366958f" name="af9324603d7868565a6830e2f7366958f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af9324603d7868565a6830e2f7366958f">&#9670;&#160;</a></span>scratch()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1hexmap_1_1HexSearchContext.html">HexSearchContext</a> &amp; eve::hexmap::HexMapModule::scratch </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Search scratch sized to the active map. </p>
+
+<p class="definition">在文件 <a class="el" href="HexMapModule_8h_source.html">HexMapModule.h</a> 第 <a class="el" href="HexMapModule_8h_source.html#l00182">182</a> 行定义.</p>
+
+</div>
+</div>
+<a id="acf0f2c290d5a9a93143075fedcab3fd9" name="acf0f2c290d5a9a93143075fedcab3fd9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acf0f2c290d5a9a93143075fedcab3fd9">&#9670;&#160;</a></span>sphere() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="classeve_1_1hexmap_1_1HexSphereMap.html">HexSphereMap</a> &amp; eve::hexmap::HexMapModule::sphere </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>The active spherical map. </p>
+
+<p class="definition">在文件 <a class="el" href="HexMapModule_8h_source.html">HexMapModule.h</a> 第 <a class="el" href="HexMapModule_8h_source.html#l00161">161</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aaefac1682efe9522b1196b83ccdef739" name="aaefac1682efe9522b1196b83ccdef739"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaefac1682efe9522b1196b83ccdef739">&#9670;&#160;</a></span>sphere() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1hexmap_1_1HexSphereMap.html">HexSphereMap</a> &amp; eve::hexmap::HexMapModule::sphere </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>The active spherical map (mutable, for internal build steps). </p>
+
+<p class="definition">在文件 <a class="el" href="HexMapModule_8h_source.html">HexMapModule.h</a> 第 <a class="el" href="HexMapModule_8h_source.html#l00163">163</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae70c456cd1d7cecb85aeaada5e94c876" name="ae70c456cd1d7cecb85aeaada5e94c876"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae70c456cd1d7cecb85aeaada5e94c876">&#9670;&#160;</a></span>sphereTerrainMesh()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1Mesh.html">graphics::Mesh</a> * eve::hexmap::HexMapModule::sphereTerrainMesh </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Borrowed GPU terrain mesh of the sphere. @ownership Borrowed; the module retains ownership until <code>releaseSphereMeshes</code>. @nullable Yes; null before the first build or when the sphere has no cells. </p>
+
+<p class="definition">在文件 <a class="el" href="HexMapModule_8h_source.html">HexMapModule.h</a> 第 <a class="el" href="HexMapModule_8h_source.html#l00169">169</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a5155b13c7ec78518776c63d5cad23a53" name="a5155b13c7ec78518776c63d5cad23a53"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5155b13c7ec78518776c63d5cad23a53">&#9670;&#160;</a></span>sphereWaterMesh()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1Mesh.html">graphics::Mesh</a> * eve::hexmap::HexMapModule::sphereWaterMesh </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Borrowed GPU ocean mesh of the sphere, or null when nothing is flooded. @ownership Borrowed; the module retains ownership until <code>releaseSphereMeshes</code>. @nullable Yes. </p>
+
+<p class="definition">在文件 <a class="el" href="HexMapModule_8h_source.html">HexMapModule.h</a> 第 <a class="el" href="HexMapModule_8h_source.html#l00175">175</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a34cac8e95bcefa2f41df41b49bd1bdfc" name="a34cac8e95bcefa2f41df41b49bd1bdfc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a34cac8e95bcefa2f41df41b49bd1bdfc">&#9670;&#160;</a></span>syncScratch()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::hexmap::HexMapModule::syncScratch </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Re-sizes the search scratch to the active map. @cost Proportional to the cell count; called by <code>newGrid</code> and by load. </p>
+
+<p class="definition">在文件 <a class="el" href="HexMapModule_8cpp_source.html">HexMapModule.cpp</a> 第 <a class="el" href="HexMapModule_8cpp_source.html#l00055">55</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="HexMap_8h_source.html#l00092">eve::hexmap::HexMap::cellCount()</a> , 以及 <a class="el" href="HexSearch_8cpp_source.html#l00043">eve::hexmap::HexSearchContext::resize()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HexMapModule_8cpp_source.html#l00082">adoptGrid()</a>, <a class="el" href="HexMapModule_8cpp_source.html#l00059">generateMap()</a> , 以及 <a class="el" href="HexMapModule_8cpp_source.html#l00104">newGrid()</a>.</p>
+
+</div>
+</div>
+<a id="a0c434b4fcefc00d095ec22ccd8fbdb77" name="a0c434b4fcefc00d095ec22ccd8fbdb77"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0c434b4fcefc00d095ec22ccd8fbdb77">&#9670;&#160;</a></span>units()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1hexmap_1_1HexUnitRegistry.html">HexUnitRegistry</a> &amp; eve::hexmap::HexMapModule::units </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Units of the active map. </p>
+
+<p class="definition">在文件 <a class="el" href="HexMapModule_8h_source.html">HexMapModule.h</a> 第 <a class="el" href="HexMapModule_8h_source.html#l00180">180</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HexMapModule_8cpp_source.html#l00082">adoptGrid()</a>.</p>
+
+</div>
+</div>
+<a id="a70cebb21346c9ac3570fc17698249d66" name="a70cebb21346c9ac3570fc17698249d66"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a70cebb21346c9ac3570fc17698249d66">&#9670;&#160;</a></span>visibility()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1hexmap_1_1HexVisibility.html">HexVisibility</a> &amp; eve::hexmap::HexMapModule::visibility </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Fog-of-war counters of the active map. </p>
+
+<p class="definition">在文件 <a class="el" href="HexMapModule_8h_source.html">HexMapModule.h</a> 第 <a class="el" href="HexMapModule_8h_source.html#l00178">178</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/hexmap/<a class="el" href="HexMapModule_8h_source.html">HexMapModule.h</a></li>
+<li>src/modules/hexmap/<a class="el" href="HexMapModule_8cpp_source.html">HexMapModule.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

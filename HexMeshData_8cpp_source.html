@@ -1,0 +1,271 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/hexmap/HexMeshData.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_9beb90eeb0f208ac74f7b70f24c9d85f.html">hexmap</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">HexMeshData.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="HexMeshData_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &quot;<a class="code" href="HexMeshData_8h.html">hexmap/HexMeshData.h</a>&quot;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &lt;cmath&gt;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1hexmap.html">eve::hexmap</a> {</div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
+<div class="foldopen" id="foldopen00007" data-start="{" data-end="}">
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno"><a class="line" href="classeve_1_1hexmap_1_1HexMeshData.html#a8738fb2d8eef0f6854b9f29e26c354ac">    7</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1hexmap_1_1HexMeshData.html#a8738fb2d8eef0f6854b9f29e26c354ac">HexMeshData::clear</a>() noexcept {</div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span>    positions_.clear();</div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span>    normals_.clear();</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span>    uvs_.clear();</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span>    indices_.clear();</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span>}</div>
+</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span> </div>
+<div class="foldopen" id="foldopen00014" data-start="{" data-end="}">
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno"><a class="line" href="classeve_1_1hexmap_1_1HexMeshData.html#af9fe418f3f825ab44ecaf7986f37cba0">   14</a></span>std::uint32_t <a class="code hl_function" href="classeve_1_1hexmap_1_1HexMeshData.html#af9fe418f3f825ab44ecaf7986f37cba0">HexMeshData::addVertex</a>(<a class="code hl_struct" href="structeve_1_1hexmap_1_1HexVec3.html">HexVec3</a> <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a60ea6c13eb7a935dc579b69b80cee822">position</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="HexRiverMesh_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>) {</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>    <span class="keyword">const</span> <span class="keyword">auto</span> <a class="code hl_variable" href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a> = <span class="keyword">static_cast&lt;</span>std::uint32_t<span class="keyword">&gt;</span>(positions_.size() / 3u);</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>    positions_.push_back(<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a60ea6c13eb7a935dc579b69b80cee822">position</a>.x);</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>    positions_.push_back(<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a60ea6c13eb7a935dc579b69b80cee822">position</a>.y);</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>    positions_.push_back(<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a60ea6c13eb7a935dc579b69b80cee822">position</a>.z);</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>    uvs_.push_back(<a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>);</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>    uvs_.push_back(<a class="code hl_variable" href="HexRiverMesh_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>);</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>;</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>}</div>
+</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span> </div>
+<div class="foldopen" id="foldopen00024" data-start="{" data-end="}">
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno"><a class="line" href="classeve_1_1hexmap_1_1HexMeshData.html#a30c59acf1ee8c92bba98276ca63207d7">   24</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1hexmap_1_1HexMeshData.html#a30c59acf1ee8c92bba98276ca63207d7">HexMeshData::addTriangle</a>(std::uint32_t <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>, std::uint32_t <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>, std::uint32_t <a class="code hl_variable" href="HexSphereTopology_8cpp.html#a6508ac0a45fccabd203a6f520c69dca8">c</a>) {</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>    indices_.push_back(<a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>);</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    indices_.push_back(<a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>);</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    indices_.push_back(<a class="code hl_variable" href="HexSphereTopology_8cpp.html#a6508ac0a45fccabd203a6f520c69dca8">c</a>);</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>}</div>
+</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span> </div>
+<div class="foldopen" id="foldopen00030" data-start="{" data-end="}">
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno"><a class="line" href="classeve_1_1hexmap_1_1HexMeshData.html#a32d8585ce5c8a14b7083317cc00318fe">   30</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1hexmap_1_1HexMeshData.html#a32d8585ce5c8a14b7083317cc00318fe">HexMeshData::addQuad</a>(std::uint32_t <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>, std::uint32_t <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>, std::uint32_t <a class="code hl_variable" href="HexSphereTopology_8cpp.html#a6508ac0a45fccabd203a6f520c69dca8">c</a>, std::uint32_t <a class="code hl_variable" href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a>) {</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    <a class="code hl_function" href="classeve_1_1hexmap_1_1HexMeshData.html#a30c59acf1ee8c92bba98276ca63207d7">addTriangle</a>(<a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>, <a class="code hl_variable" href="HexSphereTopology_8cpp.html#a6508ac0a45fccabd203a6f520c69dca8">c</a>, <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>);</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    <a class="code hl_function" href="classeve_1_1hexmap_1_1HexMeshData.html#a30c59acf1ee8c92bba98276ca63207d7">addTriangle</a>(<a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>, <a class="code hl_variable" href="HexSphereTopology_8cpp.html#a6508ac0a45fccabd203a6f520c69dca8">c</a>, <a class="code hl_variable" href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a>);</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>}</div>
+</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span> </div>
+<div class="foldopen" id="foldopen00035" data-start="{" data-end="}">
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno"><a class="line" href="classeve_1_1hexmap_1_1HexMeshData.html#a25ba1f00cb3922120d133341f3b9bc21">   35</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1hexmap_1_1HexMeshData.html#a25ba1f00cb3922120d133341f3b9bc21">HexMeshData::finalize</a>() noexcept {</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    normals_.assign(positions_.size(), 0.f);</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    <span class="keywordflow">for</span> (std::size_t <a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a> = 0; <a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a> + 2 &lt; indices_.size(); <a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a> += 3) {</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>        <span class="keyword">const</span> std::uint32_t ia = indices_[<a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a>];</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>        <span class="keyword">const</span> std::uint32_t ib = indices_[<a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a> + 1];</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>        <span class="keyword">const</span> std::uint32_t ic = indices_[<a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a> + 2];</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>        <span class="keyword">const</span> <span class="keyword">auto</span>          <a class="code hl_variable" href="UnityVegetationPreset_8cpp.html#af1f11291c39b6010d450a6cc8b755b99">at</a> = [<span class="keyword">this</span>](std::uint32_t i) {</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>            <span class="keyword">const</span> std::size_t base = <span class="keyword">static_cast&lt;</span>std::size_t<span class="keyword">&gt;</span>(i) * 3u;</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>            <span class="keywordflow">return</span> <a class="code hl_struct" href="structeve_1_1hexmap_1_1HexVec3.html">HexVec3</a>{positions_[base], positions_[base + 1], positions_[base + 2]};</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>        };</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>        <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1hexmap_1_1HexVec3.html">HexVec3</a> <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>  = <a class="code hl_variable" href="UnityVegetationPreset_8cpp.html#af1f11291c39b6010d450a6cc8b755b99">at</a>(ia);</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>        <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1hexmap_1_1HexVec3.html">HexVec3</a> <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>  = <a class="code hl_variable" href="UnityVegetationPreset_8cpp.html#af1f11291c39b6010d450a6cc8b755b99">at</a>(ib);</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>        <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1hexmap_1_1HexVec3.html">HexVec3</a> <a class="code hl_variable" href="HexSphereTopology_8cpp.html#a6508ac0a45fccabd203a6f520c69dca8">c</a>  = <a class="code hl_variable" href="UnityVegetationPreset_8cpp.html#af1f11291c39b6010d450a6cc8b755b99">at</a>(ic);</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>        <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1hexmap_1_1HexVec3.html">HexVec3</a> <a class="code hl_variable" href="GtsMeshSimplifier_8cpp.html#a66017ae0928cf15de1f3cc98b8fd2833">ab</a> = <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a> - <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>;</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>        <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1hexmap_1_1HexVec3.html">HexVec3</a> <a class="code hl_variable" href="GtsMeshSimplifier_8cpp.html#af542beddcae48a74f1099fff8cd51e31">ac</a> = <a class="code hl_variable" href="HexSphereTopology_8cpp.html#a6508ac0a45fccabd203a6f520c69dca8">c</a> - <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>;</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>        <a class="code hl_struct" href="structeve_1_1hexmap_1_1HexVec3.html">HexVec3</a>       <a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a>{<a class="code hl_variable" href="GtsMeshSimplifier_8cpp.html#a66017ae0928cf15de1f3cc98b8fd2833">ab</a>.<a class="code hl_variable" href="structeve_1_1hexmap_1_1HexVec3.html#a45a1bbd4a04e6fd1d7228f0c2a7c1af9">y</a> * <a class="code hl_variable" href="GtsMeshSimplifier_8cpp.html#af542beddcae48a74f1099fff8cd51e31">ac</a>.z - <a class="code hl_variable" href="GtsMeshSimplifier_8cpp.html#a66017ae0928cf15de1f3cc98b8fd2833">ab</a>.z * <a class="code hl_variable" href="GtsMeshSimplifier_8cpp.html#af542beddcae48a74f1099fff8cd51e31">ac</a>.y, <a class="code hl_variable" href="GtsMeshSimplifier_8cpp.html#a66017ae0928cf15de1f3cc98b8fd2833">ab</a>.z * <a class="code hl_variable" href="GtsMeshSimplifier_8cpp.html#af542beddcae48a74f1099fff8cd51e31">ac</a>.x - <a class="code hl_variable" href="GtsMeshSimplifier_8cpp.html#a66017ae0928cf15de1f3cc98b8fd2833">ab</a>.x * <a class="code hl_variable" href="GtsMeshSimplifier_8cpp.html#af542beddcae48a74f1099fff8cd51e31">ac</a>.z, <a class="code hl_variable" href="GtsMeshSimplifier_8cpp.html#a66017ae0928cf15de1f3cc98b8fd2833">ab</a>.x * <a class="code hl_variable" href="GtsMeshSimplifier_8cpp.html#af542beddcae48a74f1099fff8cd51e31">ac</a>.y - <a class="code hl_variable" href="GtsMeshSimplifier_8cpp.html#a66017ae0928cf15de1f3cc98b8fd2833">ab</a>.y * <a class="code hl_variable" href="GtsMeshSimplifier_8cpp.html#af542beddcae48a74f1099fff8cd51e31">ac</a>.x};</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>        <span class="keyword">const</span> <span class="keywordtype">float</span>   len = std::sqrt(<a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a>.x * <a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a>.x + <a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a>.y * <a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a>.y + <a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a>.z * <a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a>.z);</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>        <span class="keywordflow">if</span> (len &gt; 1e-8f) {</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>            <a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a>.x /= len;</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>            <a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a>.y /= len;</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>            <a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a>.z /= len;</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>        } <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>            <a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a> = <a class="code hl_struct" href="structeve_1_1hexmap_1_1HexVec3.html">HexVec3</a>{0.f, 1.f, 0.f};</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>        }</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>        <span class="keywordflow">for</span> (std::uint32_t i : {ia, ib, ic}) {</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>            <span class="keyword">const</span> std::size_t base = <span class="keyword">static_cast&lt;</span>std::size_t<span class="keyword">&gt;</span>(i) * 3u;</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>            normals_[base]         = <a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a>.x;</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>            normals_[base + 1]     = <a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a>.y;</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>            normals_[base + 2]     = <a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a>.z;</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>        }</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    }</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>}</div>
+</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span> </div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>}  <span class="comment">// namespace eve::hexmap</span></div>
+<div class="ttc" id="aFluidSurfaceBinding_8cpp_html_a0a0390ed59a97feb6783f87db4086a7c"><div class="ttname"><a href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a></div><div class="ttdeci">uint32_t a</div><div class="ttdef"><b>Definition</b> <a href="FluidSurfaceBinding_8cpp_source.html#l00014">FluidSurfaceBinding.cpp:14</a></div></div>
+<div class="ttc" id="aFluidSurfaceBinding_8cpp_html_a2826644ea978cb49c4ee809b55e128d7"><div class="ttname"><a href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a></div><div class="ttdeci">uint32_t b</div><div class="ttdef"><b>Definition</b> <a href="FluidSurfaceBinding_8cpp_source.html#l00015">FluidSurfaceBinding.cpp:15</a></div></div>
+<div class="ttc" id="aGrass_8cpp_html_a55831f7eab5ed2917a0191e858852f42"><div class="ttname"><a href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a></div><div class="ttdeci">float u</div><div class="ttdef"><b>Definition</b> <a href="Grass_8cpp_source.html#l00233">Grass.cpp:233</a></div></div>
+<div class="ttc" id="aGrass_8cpp_html_ae7aa396fa4f69446f8f2c53e187578d0"><div class="ttname"><a href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a></div><div class="ttdeci">glm::vec3 n</div><div class="ttdef"><b>Definition</b> <a href="Grass_8cpp_source.html#l00063">Grass.cpp:63</a></div></div>
+<div class="ttc" id="aGtsMeshSimplifier_8cpp_html_a66017ae0928cf15de1f3cc98b8fd2833"><div class="ttname"><a href="GtsMeshSimplifier_8cpp.html#a66017ae0928cf15de1f3cc98b8fd2833">ab</a></div><div class="ttdeci">std::uint32_t ab</div><div class="ttdef"><b>Definition</b> <a href="GtsMeshSimplifier_8cpp_source.html#l00017">GtsMeshSimplifier.cpp:17</a></div></div>
+<div class="ttc" id="aGtsMeshSimplifier_8cpp_html_af542beddcae48a74f1099fff8cd51e31"><div class="ttname"><a href="GtsMeshSimplifier_8cpp.html#af542beddcae48a74f1099fff8cd51e31">ac</a></div><div class="ttdeci">std::uint32_t ac</div><div class="ttdef"><b>Definition</b> <a href="GtsMeshSimplifier_8cpp_source.html#l00017">GtsMeshSimplifier.cpp:17</a></div></div>
+<div class="ttc" id="aHexMeshData_8h_html"><div class="ttname"><a href="HexMeshData_8h.html">HexMeshData.h</a></div><div class="ttdoc">CPU vertex/index container shared by the hex surface builders.</div></div>
+<div class="ttc" id="aHexRiverMesh_8cpp_html_a48d9522e58fa05906c6dba23e5745a72"><div class="ttname"><a href="HexRiverMesh_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a></div><div class="ttdeci">float v</div><div class="ttdef"><b>Definition</b> <a href="HexRiverMesh_8cpp_source.html#l00019">HexRiverMesh.cpp:19</a></div></div>
+<div class="ttc" id="aHexSphereTopology_8cpp_html_a6508ac0a45fccabd203a6f520c69dca8"><div class="ttname"><a href="HexSphereTopology_8cpp.html#a6508ac0a45fccabd203a6f520c69dca8">c</a></div><div class="ttdeci">std::int32_t c</div><div class="ttdef"><b>Definition</b> <a href="HexSphereTopology_8cpp_source.html#l00068">HexSphereTopology.cpp:68</a></div></div>
+<div class="ttc" id="aLegacyAnimationImporter_8cpp_html_a60ea6c13eb7a935dc579b69b80cee822"><div class="ttname"><a href="LegacyAnimationImporter_8cpp.html#a60ea6c13eb7a935dc579b69b80cee822">position</a></div><div class="ttdeci">std::array&lt; float, 3 &gt; position</div><div class="ttdef"><b>Definition</b> <a href="LegacyAnimationImporter_8cpp_source.html#l00016">LegacyAnimationImporter.cpp:16</a></div></div>
+<div class="ttc" id="aPrototypeKit_8cpp_html_a3fbbd8a3959e76a2bc3455d3bade52dc"><div class="ttname"><a href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a></div><div class="ttdeci">float d</div><div class="ttdef"><b>Definition</b> <a href="PrototypeKit_8cpp_source.html#l00109">PrototypeKit.cpp:109</a></div></div>
+<div class="ttc" id="aPrototypeKit_8cpp_html_afea36502e9d227ff62c5fb2719a246f2"><div class="ttname"><a href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a></div><div class="ttdeci">float t</div><div class="ttdef"><b>Definition</b> <a href="PrototypeKit_8cpp_source.html#l00110">PrototypeKit.cpp:110</a></div></div>
+<div class="ttc" id="aUnityVegetationMaterial_8cpp_html_aafd95f8c7a99b9189ede7cdf0871ebe8"><div class="ttname"><a href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a></div><div class="ttdeci">uint32_t index</div><div class="ttdef"><b>Definition</b> <a href="UnityVegetationMaterial_8cpp_source.html#l00161">UnityVegetationMaterial.cpp:161</a></div></div>
+<div class="ttc" id="aUnityVegetationPreset_8cpp_html_af1f11291c39b6010d450a6cc8b755b99"><div class="ttname"><a href="UnityVegetationPreset_8cpp.html#af1f11291c39b6010d450a6cc8b755b99">at</a></div><div class="ttdeci">std::size_t at</div><div class="ttdef"><b>Definition</b> <a href="UnityVegetationPreset_8cpp_source.html#l00032">UnityVegetationPreset.cpp:32</a></div></div>
+<div class="ttc" id="aclasseve_1_1hexmap_1_1HexMeshData_html_a25ba1f00cb3922120d133341f3b9bc21"><div class="ttname"><a href="classeve_1_1hexmap_1_1HexMeshData.html#a25ba1f00cb3922120d133341f3b9bc21">eve::hexmap::HexMeshData::finalize</a></div><div class="ttdeci">void finalize() noexcept</div><div class="ttdoc">Computes flat per-face normals. Must be called before upload.</div><div class="ttdef"><b>Definition</b> <a href="HexMeshData_8cpp_source.html#l00035">HexMeshData.cpp:35</a></div></div>
+<div class="ttc" id="aclasseve_1_1hexmap_1_1HexMeshData_html_a30c59acf1ee8c92bba98276ca63207d7"><div class="ttname"><a href="classeve_1_1hexmap_1_1HexMeshData.html#a30c59acf1ee8c92bba98276ca63207d7">eve::hexmap::HexMeshData::addTriangle</a></div><div class="ttdeci">void addTriangle(std::uint32_t a, std::uint32_t b, std::uint32_t c)</div><div class="ttdoc">Appends a triangle with counter-clockwise winding.</div><div class="ttdef"><b>Definition</b> <a href="HexMeshData_8cpp_source.html#l00024">HexMeshData.cpp:24</a></div></div>
+<div class="ttc" id="aclasseve_1_1hexmap_1_1HexMeshData_html_a32d8585ce5c8a14b7083317cc00318fe"><div class="ttname"><a href="classeve_1_1hexmap_1_1HexMeshData.html#a32d8585ce5c8a14b7083317cc00318fe">eve::hexmap::HexMeshData::addQuad</a></div><div class="ttdeci">void addQuad(std::uint32_t a, std::uint32_t b, std::uint32_t c, std::uint32_t d)</div><div class="ttdoc">Appends a quad as two triangles (a,c,b and b,c,d).</div><div class="ttdef"><b>Definition</b> <a href="HexMeshData_8cpp_source.html#l00030">HexMeshData.cpp:30</a></div></div>
+<div class="ttc" id="aclasseve_1_1hexmap_1_1HexMeshData_html_a8738fb2d8eef0f6854b9f29e26c354ac"><div class="ttname"><a href="classeve_1_1hexmap_1_1HexMeshData.html#a8738fb2d8eef0f6854b9f29e26c354ac">eve::hexmap::HexMeshData::clear</a></div><div class="ttdeci">void clear() noexcept</div><div class="ttdoc">Removes every vertex and index, keeping the allocated capacity.</div><div class="ttdef"><b>Definition</b> <a href="HexMeshData_8cpp_source.html#l00007">HexMeshData.cpp:7</a></div></div>
+<div class="ttc" id="aclasseve_1_1hexmap_1_1HexMeshData_html_af9fe418f3f825ab44ecaf7986f37cba0"><div class="ttname"><a href="classeve_1_1hexmap_1_1HexMeshData.html#af9fe418f3f825ab44ecaf7986f37cba0">eve::hexmap::HexMeshData::addVertex</a></div><div class="ttdeci">std::uint32_t addVertex(HexVec3 position, float u, float v)</div><div class="ttdoc">Appends one vertex.</div><div class="ttdef"><b>Definition</b> <a href="HexMeshData_8cpp_source.html#l00014">HexMeshData.cpp:14</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1hexmap_html"><div class="ttname"><a href="namespaceeve_1_1hexmap.html">eve::hexmap</a></div><div class="ttdef"><b>Definition</b> <a href="HexCell_8h_source.html#l00009">HexCell.h:9</a></div></div>
+<div class="ttc" id="astructeve_1_1hexmap_1_1HexVec3_html"><div class="ttname"><a href="structeve_1_1hexmap_1_1HexVec3.html">eve::hexmap::HexVec3</a></div><div class="ttdoc">Minimal 3-component float vector used by the hex mesh builders.</div><div class="ttdef"><b>Definition</b> <a href="HexMetrics_8h_source.html#l00018">HexMetrics.h:18</a></div></div>
+<div class="ttc" id="astructeve_1_1hexmap_1_1HexVec3_html_a45a1bbd4a04e6fd1d7228f0c2a7c1af9"><div class="ttname"><a href="structeve_1_1hexmap_1_1HexVec3.html#a45a1bbd4a04e6fd1d7228f0c2a7c1af9">eve::hexmap::HexVec3::y</a></div><div class="ttdeci">float y</div><div class="ttdef"><b>Definition</b> <a href="HexMetrics_8h_source.html#l00020">HexMetrics.h:20</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

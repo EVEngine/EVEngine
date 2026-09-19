@@ -1,0 +1,277 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/hexmap/HexMetrics.h 文件参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_9beb90eeb0f208ac74f7b70f24c9d85f.html">hexmap</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#namespaces">命名空间</a> &#124;
+<a href="#enum-members">枚举</a> &#124;
+<a href="#func-members">函数</a> &#124;
+<a href="#var-members">变量</a>  </div>
+  <div class="headertitle"><div class="title">HexMetrics.h 文件参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Pointy-top hex metrics, directions and vertex helpers.  
+<a href="#details">更多...</a></p>
+<div class="textblock"><code>#include &lt;algorithm&gt;</code><br />
+<code>#include &lt;cmath&gt;</code><br />
+<code>#include &lt;cstdint&gt;</code><br />
+</div>
+<p><a href="HexMetrics_8h_source.html">浏览源代码.</a></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1hexmap_1_1HexVec3.html">eve::hexmap::HexVec3</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Minimal 3-component float vector used by the hex mesh builders.  <a href="structeve_1_1hexmap_1_1HexVec3.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1hexmap_1_1HexVec4.html">eve::hexmap::HexVec4</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Four-component float vector, matching the reference four-channel noise sample.  <a href="structeve_1_1hexmap_1_1HexVec4.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexMetrics.html">eve::hexmap::HexMetrics</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Hexagon metrics shared by the map model and every mesh builder.  <a href="classeve_1_1hexmap_1_1HexMetrics.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1hexmap_1_1EdgeVertices.html">eve::hexmap::EdgeVertices</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Five sample points along one hex edge, from v1 to v5.  <a href="structeve_1_1hexmap_1_1EdgeVertices.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
+命名空间</h2></td></tr>
+<tr class="memitem:namespaceeve" id="r_namespaceeve"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve.html">eve</a></td></tr>
+<tr class="memdesc:namespaceeve"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build metadata (engine git commit, build time, third-party version). <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceeve_1_1hexmap" id="r_namespaceeve_1_1hexmap"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1hexmap.html">eve::hexmap</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="enum-members" name="enum-members"></a>
+枚举</h2></td></tr>
+<tr class="memitem:ae3f8c41f9d47d3916e557c7304d1ed50" id="r_ae3f8c41f9d47d3916e557c7304d1ed50"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1hexmap.html#ae3f8c41f9d47d3916e557c7304d1ed50">eve::hexmap::HexDirection</a> : std::int32_t { <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1hexmap.html#ae3f8c41f9d47d3916e557c7304d1ed50adc33066c3993e0d50896e533fd692ce0">eve::hexmap::NE</a> = 0
+, <a class="el" href="namespaceeve_1_1hexmap.html#ae3f8c41f9d47d3916e557c7304d1ed50a3a3ea00cfc35332cedf6e5e9a32e94da">eve::hexmap::E</a> = 1
+, <a class="el" href="namespaceeve_1_1hexmap.html#ae3f8c41f9d47d3916e557c7304d1ed50af003c44deab679aa2edfaff864c77402">eve::hexmap::SE</a> = 2
+, <a class="el" href="namespaceeve_1_1hexmap.html#ae3f8c41f9d47d3916e557c7304d1ed50a6f56aa4e2561eb66f17f6d8de8070a77">eve::hexmap::SW</a> = 3
+, <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1hexmap.html#ae3f8c41f9d47d3916e557c7304d1ed50a61e9c06ea9a85a5088a499df6458d276">eve::hexmap::W</a> = 4
+, <a class="el" href="namespaceeve_1_1hexmap.html#ae3f8c41f9d47d3916e557c7304d1ed50a7f39ac71e81132daad44925b3bdfde5a">eve::hexmap::NW</a> = 5
+<br />
+ }</td></tr>
+<tr class="memdesc:ae3f8c41f9d47d3916e557c7304d1ed50"><td class="mdescLeft">&#160;</td><td class="mdescRight">Hex facing directions, counter-clockwise from north-east.  <a href="namespaceeve_1_1hexmap.html#ae3f8c41f9d47d3916e557c7304d1ed50">更多...</a><br /></td></tr>
+<tr class="separator:ae3f8c41f9d47d3916e557c7304d1ed50"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a742e5be7c7f265870848b215a5a682ba" id="r_a742e5be7c7f265870848b215a5a682ba"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1hexmap.html#a742e5be7c7f265870848b215a5a682ba">eve::hexmap::HexEdgeType</a> : std::int32_t { <a class="el" href="namespaceeve_1_1hexmap.html#a742e5be7c7f265870848b215a5a682baa745e3db6a7ffd50e1a72b39482f0882d">eve::hexmap::Flat</a> = 0
+, <a class="el" href="namespaceeve_1_1hexmap.html#a742e5be7c7f265870848b215a5a682baafe1675056fb642e9a2532abeb8428889">eve::hexmap::Slope</a> = 1
+, <a class="el" href="namespaceeve_1_1hexmap.html#a742e5be7c7f265870848b215a5a682baa9b3411d2812eceb6de37c13f57825a76">eve::hexmap::Cliff</a> = 2
+ }</td></tr>
+<tr class="memdesc:a742e5be7c7f265870848b215a5a682ba"><td class="mdescLeft">&#160;</td><td class="mdescRight">Relationship between two neighbouring cells of different elevation.  <a href="namespaceeve_1_1hexmap.html#a742e5be7c7f265870848b215a5a682ba">更多...</a><br /></td></tr>
+<tr class="separator:a742e5be7c7f265870848b215a5a682ba"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+函数</h2></td></tr>
+<tr class="memitem:a5cd82d8739abe2a4606d3df0108f0cc2" id="r_a5cd82d8739abe2a4606d3df0108f0cc2"><td class="memItemLeft" align="right" valign="top">constexpr <a class="el" href="structeve_1_1hexmap_1_1HexVec3.html">HexVec3</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1hexmap.html#a5cd82d8739abe2a4606d3df0108f0cc2">eve::hexmap::operator+</a> (<a class="el" href="structeve_1_1hexmap_1_1HexVec3.html">HexVec3</a> <a class="el" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>, <a class="el" href="structeve_1_1hexmap_1_1HexVec3.html">HexVec3</a> <a class="el" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>) noexcept</td></tr>
+<tr class="separator:a5cd82d8739abe2a4606d3df0108f0cc2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a05ca6b41a6ae82e26607e8d81cd0ca6f" id="r_a05ca6b41a6ae82e26607e8d81cd0ca6f"><td class="memItemLeft" align="right" valign="top">constexpr <a class="el" href="structeve_1_1hexmap_1_1HexVec3.html">HexVec3</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1hexmap.html#a05ca6b41a6ae82e26607e8d81cd0ca6f">eve::hexmap::operator-</a> (<a class="el" href="structeve_1_1hexmap_1_1HexVec3.html">HexVec3</a> <a class="el" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>, <a class="el" href="structeve_1_1hexmap_1_1HexVec3.html">HexVec3</a> <a class="el" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>) noexcept</td></tr>
+<tr class="separator:a05ca6b41a6ae82e26607e8d81cd0ca6f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa649496000dff66096b2cd351efab8e3" id="r_aa649496000dff66096b2cd351efab8e3"><td class="memItemLeft" align="right" valign="top">constexpr <a class="el" href="structeve_1_1hexmap_1_1HexVec3.html">HexVec3</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1hexmap.html#aa649496000dff66096b2cd351efab8e3">eve::hexmap::operator*</a> (<a class="el" href="structeve_1_1hexmap_1_1HexVec3.html">HexVec3</a> <a class="el" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>, float <a class="el" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>) noexcept</td></tr>
+<tr class="separator:aa649496000dff66096b2cd351efab8e3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3a0d7416f2512b4ec43670fc52d7ecd5" id="r_a3a0d7416f2512b4ec43670fc52d7ecd5"><td class="memItemLeft" align="right" valign="top">constexpr <a class="el" href="structeve_1_1hexmap_1_1HexVec3.html">HexVec3</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1hexmap.html#a3a0d7416f2512b4ec43670fc52d7ecd5">eve::hexmap::operator*</a> (float <a class="el" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>, <a class="el" href="structeve_1_1hexmap_1_1HexVec3.html">HexVec3</a> <a class="el" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>) noexcept</td></tr>
+<tr class="separator:a3a0d7416f2512b4ec43670fc52d7ecd5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adaeef0f71bf4fee18d056a38cec7e9a4" id="r_adaeef0f71bf4fee18d056a38cec7e9a4"><td class="memItemLeft" align="right" valign="top">constexpr <a class="el" href="structeve_1_1hexmap_1_1HexVec3.html">HexVec3</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1hexmap.html#adaeef0f71bf4fee18d056a38cec7e9a4">eve::hexmap::operator+=</a> (<a class="el" href="structeve_1_1hexmap_1_1HexVec3.html">HexVec3</a> &amp;<a class="el" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>, <a class="el" href="structeve_1_1hexmap_1_1HexVec3.html">HexVec3</a> <a class="el" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>) noexcept</td></tr>
+<tr class="separator:adaeef0f71bf4fee18d056a38cec7e9a4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa3a106b94bd21d6f559dc3ed36fe8a3d" id="r_aa3a106b94bd21d6f559dc3ed36fe8a3d"><td class="memItemLeft" align="right" valign="top">constexpr <a class="el" href="structeve_1_1hexmap_1_1HexVec3.html">HexVec3</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1hexmap.html#aa3a106b94bd21d6f559dc3ed36fe8a3d">eve::hexmap::lerp</a> (<a class="el" href="structeve_1_1hexmap_1_1HexVec3.html">HexVec3</a> <a class="el" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>, <a class="el" href="structeve_1_1hexmap_1_1HexVec3.html">HexVec3</a> <a class="el" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>, float <a class="el" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a>) noexcept</td></tr>
+<tr class="memdesc:aa3a106b94bd21d6f559dc3ed36fe8a3d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Linear interpolation between two positions.  <br /></td></tr>
+<tr class="separator:aa3a106b94bd21d6f559dc3ed36fe8a3d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a138a25a53067841271eb5b60e806c87f" id="r_a138a25a53067841271eb5b60e806c87f"><td class="memItemLeft" align="right" valign="top">constexpr <a class="el" href="structeve_1_1hexmap_1_1HexVec3.html">HexVec3</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1hexmap.html#a138a25a53067841271eb5b60e806c87f">eve::hexmap::weightsLerp</a> (<a class="el" href="structeve_1_1hexmap_1_1HexVec3.html">HexVec3</a> <a class="el" href="FluidSurfaceBinding_8cpp.html#a0a0390ed59a97feb6783f87db4086a7c">a</a>, <a class="el" href="structeve_1_1hexmap_1_1HexVec3.html">HexVec3</a> <a class="el" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>, float <a class="el" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a>) noexcept</td></tr>
+<tr class="memdesc:a138a25a53067841271eb5b60e806c87f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Blends the three terrain-layer weights of a hex vertex.  <br /></td></tr>
+<tr class="separator:a138a25a53067841271eb5b60e806c87f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3861c6b2ae761533f82d0177ffda1d1e" id="r_a3861c6b2ae761533f82d0177ffda1d1e"><td class="memItemLeft" align="right" valign="top">constexpr <a class="el" href="namespaceeve_1_1hexmap.html#ae3f8c41f9d47d3916e557c7304d1ed50">HexDirection</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1hexmap.html#a3861c6b2ae761533f82d0177ffda1d1e">eve::hexmap::opposite</a> (<a class="el" href="namespaceeve_1_1hexmap.html#ae3f8c41f9d47d3916e557c7304d1ed50">HexDirection</a> <a class="el" href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a>) noexcept</td></tr>
+<tr class="memdesc:a3861c6b2ae761533f82d0177ffda1d1e"><td class="mdescLeft">&#160;</td><td class="mdescRight">The direction opposite to <code>d</code>.  <br /></td></tr>
+<tr class="separator:a3861c6b2ae761533f82d0177ffda1d1e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3ccdfcf5ae39528881923535baf135d1" id="r_a3ccdfcf5ae39528881923535baf135d1"><td class="memItemLeft" align="right" valign="top">constexpr <a class="el" href="namespaceeve_1_1hexmap.html#ae3f8c41f9d47d3916e557c7304d1ed50">HexDirection</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1hexmap.html#a3ccdfcf5ae39528881923535baf135d1">eve::hexmap::previous</a> (<a class="el" href="namespaceeve_1_1hexmap.html#ae3f8c41f9d47d3916e557c7304d1ed50">HexDirection</a> <a class="el" href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a>) noexcept</td></tr>
+<tr class="memdesc:a3ccdfcf5ae39528881923535baf135d1"><td class="mdescLeft">&#160;</td><td class="mdescRight">The next direction counter-clockwise (NE wraps to NW).  <br /></td></tr>
+<tr class="separator:a3ccdfcf5ae39528881923535baf135d1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9d811bb17cd693e49314a0862472d48b" id="r_a9d811bb17cd693e49314a0862472d48b"><td class="memItemLeft" align="right" valign="top">constexpr <a class="el" href="namespaceeve_1_1hexmap.html#ae3f8c41f9d47d3916e557c7304d1ed50">HexDirection</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1hexmap.html#a9d811bb17cd693e49314a0862472d48b">eve::hexmap::next</a> (<a class="el" href="namespaceeve_1_1hexmap.html#ae3f8c41f9d47d3916e557c7304d1ed50">HexDirection</a> <a class="el" href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a>) noexcept</td></tr>
+<tr class="memdesc:a9d811bb17cd693e49314a0862472d48b"><td class="mdescLeft">&#160;</td><td class="mdescRight">The next direction clockwise (NW wraps to NE).  <br /></td></tr>
+<tr class="separator:a9d811bb17cd693e49314a0862472d48b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4fee14489c0a2e2fdf96efa345282fc9" id="r_a4fee14489c0a2e2fdf96efa345282fc9"><td class="memItemLeft" align="right" valign="top">constexpr <a class="el" href="namespaceeve_1_1hexmap.html#ae3f8c41f9d47d3916e557c7304d1ed50">HexDirection</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1hexmap.html#a4fee14489c0a2e2fdf96efa345282fc9">eve::hexmap::previous2</a> (<a class="el" href="namespaceeve_1_1hexmap.html#ae3f8c41f9d47d3916e557c7304d1ed50">HexDirection</a> <a class="el" href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a>) noexcept</td></tr>
+<tr class="memdesc:a4fee14489c0a2e2fdf96efa345282fc9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Two steps counter-clockwise.  <br /></td></tr>
+<tr class="separator:a4fee14489c0a2e2fdf96efa345282fc9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad4e088143d949993c442c34d54b5e103" id="r_ad4e088143d949993c442c34d54b5e103"><td class="memItemLeft" align="right" valign="top">constexpr <a class="el" href="namespaceeve_1_1hexmap.html#ae3f8c41f9d47d3916e557c7304d1ed50">HexDirection</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1hexmap.html#ad4e088143d949993c442c34d54b5e103">eve::hexmap::next2</a> (<a class="el" href="namespaceeve_1_1hexmap.html#ae3f8c41f9d47d3916e557c7304d1ed50">HexDirection</a> <a class="el" href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a>) noexcept</td></tr>
+<tr class="memdesc:ad4e088143d949993c442c34d54b5e103"><td class="mdescLeft">&#160;</td><td class="mdescRight">Two steps clockwise.  <br /></td></tr>
+<tr class="separator:ad4e088143d949993c442c34d54b5e103"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a62df385de1707d50bf5e34f52852c1fa" id="r_a62df385de1707d50bf5e34f52852c1fa"><td class="memItemLeft" align="right" valign="top">constexpr <a class="el" href="namespaceeve_1_1hexmap.html#a742e5be7c7f265870848b215a5a682ba">HexEdgeType</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1hexmap.html#a62df385de1707d50bf5e34f52852c1fa">eve::hexmap::edgeType</a> (int elevation1, int elevation2) noexcept</td></tr>
+<tr class="memdesc:a62df385de1707d50bf5e34f52852c1fa"><td class="mdescLeft">&#160;</td><td class="mdescRight">The relationship between two elevations (single-step changes are slopes).  <br /></td></tr>
+<tr class="separator:a62df385de1707d50bf5e34f52852c1fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="var-members" name="var-members"></a>
+变量</h2></td></tr>
+<tr class="memitem:a5ec4909a3f971790f5139704638f5dbb" id="r_a5ec4909a3f971790f5139704638f5dbb"><td class="memItemLeft" align="right" valign="top">constexpr std::int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1hexmap.html#a5ec4909a3f971790f5139704638f5dbb">eve::hexmap::kHexDirectionCount</a> = 6</td></tr>
+<tr class="memdesc:a5ec4909a3f971790f5139704638f5dbb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of hex edges / facing directions.  <br /></td></tr>
+<tr class="separator:a5ec4909a3f971790f5139704638f5dbb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Pointy-top hex metrics, directions and vertex helpers. </p>
+
+<p class="definition">在文件 <a class="el" href="HexMetrics_8h_source.html">HexMetrics.h</a> 中定义.</p>
+</div></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

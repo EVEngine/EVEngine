@@ -1,0 +1,357 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/procgen/road/RoadTypes.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_b9cecc0e175b6763f5f5f897464db2c3.html">procgen</a></li><li class="navelem"><a class="el" href="dir_eae28a20e025a9c7686e9c0b6d57b77b.html">road</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">RoadTypes.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="RoadTypes_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="Result_8h.html">common/Result.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span> </div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1procgen_1_1road.html">eve::procgen::road</a> {</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span> </div>
+<div class="foldopen" id="foldopen00012" data-start="{" data-end="};">
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1road_1_1RoadControlPoint.html">   12</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1procgen_1_1road_1_1RoadControlPoint.html">RoadControlPoint</a> {</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1road_1_1RoadControlPoint.html#aeef09fabca1cd7e0afa0ea7fa02c86b4">   13</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1road_1_1RoadControlPoint.html#aeef09fabca1cd7e0afa0ea7fa02c86b4">x</a> = 0.f;</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1road_1_1RoadControlPoint.html#a52c96465eee9df751b8fcc6561582fa5">   14</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1road_1_1RoadControlPoint.html#a52c96465eee9df751b8fcc6561582fa5">y</a> = 0.f;</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1road_1_1RoadControlPoint.html#ab59b35a94427ca5de31545f424a56eea">   15</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1road_1_1RoadControlPoint.html#ab59b35a94427ca5de31545f424a56eea">z</a> = 0.f;</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>};</div>
+</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span> </div>
+<div class="foldopen" id="foldopen00019" data-start="{" data-end="};">
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1road_1_1RoadStyle.html">   19</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1procgen_1_1road_1_1RoadStyle.html">RoadStyle</a> {</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1road_1_1RoadStyle.html#a5d13935b3c60fcdb675dbbeb26a6e059">   20</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1road_1_1RoadStyle.html#a5d13935b3c60fcdb675dbbeb26a6e059">laneWidth</a>      = 3.5f;</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1road_1_1RoadStyle.html#a662f522e699507072f90e08389e7602b">   21</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1road_1_1RoadStyle.html#a662f522e699507072f90e08389e7602b">curbWidth</a>      = 0.45f;   </div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1road_1_1RoadStyle.html#a9992b047f3e37634f5954b63aa962383">   22</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1road_1_1RoadStyle.html#a9992b047f3e37634f5954b63aa962383">curbHeight</a>     = 0.55f;   </div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1road_1_1RoadStyle.html#a903eef9dae325a575fff715e1dfd8f5f">   23</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1road_1_1RoadStyle.html#a903eef9dae325a575fff715e1dfd8f5f">sidewalkWidth</a>  = 1.5f;</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1road_1_1RoadStyle.html#a2964e5bdeae0759d3d124889e53f3f3a">   24</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1road_1_1RoadStyle.html#a2964e5bdeae0759d3d124889e53f3f3a">sidewalkHeight</a> = 0.14f;</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1road_1_1RoadStyle.html#a923ebb078278c196c37462871f23f1a1">   25</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1road_1_1RoadStyle.html#a923ebb078278c196c37462871f23f1a1">deckThickness</a>  = 0.70f;</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1road_1_1RoadStyle.html#aa79ef9e52f5e2e9f15b0330c93bda7f0">   26</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1road_1_1RoadStyle.html#aa79ef9e52f5e2e9f15b0330c93bda7f0">pierWidth</a>      = 1.35f;</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1road_1_1RoadStyle.html#aa8150093a4e51fd70c5fc7870446a499">   27</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1road_1_1RoadStyle.html#aa8150093a4e51fd70c5fc7870446a499">pierDepth</a>      = 1.35f;</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1road_1_1RoadStyle.html#aeb3c1842176f296e6db58de2b7bfd558">   28</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1road_1_1RoadStyle.html#aeb3c1842176f296e6db58de2b7bfd558">pierSpacing</a>    = 11.f;</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1road_1_1RoadStyle.html#ae780f2b0f14a46297742099a7dedff37">   29</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1road_1_1RoadStyle.html#ae780f2b0f14a46297742099a7dedff37">pierClearance</a>  = 1.5f;</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1road_1_1RoadStyle.html#aad6c12161013c9bff0b9ebe7dc5783fb">   30</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1road_1_1RoadStyle.html#aad6c12161013c9bff0b9ebe7dc5783fb">markingWidth</a>   = 0.22f;</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1road_1_1RoadStyle.html#a49f6a3fffd1c6325764dec15fc4aaacf">   31</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1road_1_1RoadStyle.html#a49f6a3fffd1c6325764dec15fc4aaacf">dashLength</a>     = 3.5f;</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1road_1_1RoadStyle.html#ae1dca3418b49d59a4afee7266d98e8a0">   32</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1road_1_1RoadStyle.html#ae1dca3418b49d59a4afee7266d98e8a0">dashGap</a>        = 3.f;</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1road_1_1RoadStyle.html#a441fc20846b284fd424649ab14f90b91">   33</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1road_1_1RoadStyle.html#a441fc20846b284fd424649ab14f90b91">uvMeters</a>       = 8.f;</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>};</div>
+</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span> </div>
+<div class="foldopen" id="foldopen00037" data-start="{" data-end="};">
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1road_1_1RoadNode.html">   37</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1procgen_1_1road_1_1RoadNode.html">RoadNode</a> {</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1road_1_1RoadNode.html#afff86a445b18a3f415bcc4522528d016">   38</a></span>    std::uint32_t <span class="keywordtype">id</span>             = 0;</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1road_1_1RoadNode.html#add9661a83985a3db7cc9ce43d83fbc22">   39</a></span>    <span class="keywordtype">float</span>         <a class="code hl_variable" href="structeve_1_1procgen_1_1road_1_1RoadNode.html#add9661a83985a3db7cc9ce43d83fbc22">x</a>              = 0.f;</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1road_1_1RoadNode.html#a51c83c526f66545a8405e8bdfc76e97b">   40</a></span>    <span class="keywordtype">float</span>         <a class="code hl_variable" href="structeve_1_1procgen_1_1road_1_1RoadNode.html#a51c83c526f66545a8405e8bdfc76e97b">y</a>              = 0.f;</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1road_1_1RoadNode.html#a8714cd51621f2033789e673d616e5372">   41</a></span>    <span class="keywordtype">float</span>         <a class="code hl_variable" href="structeve_1_1procgen_1_1road_1_1RoadNode.html#a8714cd51621f2033789e673d616e5372">z</a>              = 0.f;</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1road_1_1RoadNode.html#a1c09c5955a9fab0f3fe3fa64fc147019">   42</a></span>    <span class="keywordtype">float</span>         <a class="code hl_variable" href="structeve_1_1procgen_1_1road_1_1RoadNode.html#a1c09c5955a9fab0f3fe3fa64fc147019">junctionRadius</a> = 6.f;</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>};</div>
+</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span> </div>
+<div class="foldopen" id="foldopen00046" data-start="{" data-end="};">
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1road_1_1RoadEdge.html">   46</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1procgen_1_1road_1_1RoadEdge.html">RoadEdge</a> {</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1road_1_1RoadEdge.html#ae3e5517c4b9bd2215d9f090bd1efab60">   47</a></span>    std::uint32_t                <span class="keywordtype">id</span>            = 0;</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1road_1_1RoadEdge.html#a604d8f0b27cfadd96ad57aec2b59b48d">   48</a></span>    std::uint32_t                <a class="code hl_variable" href="structeve_1_1procgen_1_1road_1_1RoadEdge.html#a604d8f0b27cfadd96ad57aec2b59b48d">from</a>          = 0;</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1road_1_1RoadEdge.html#ab8552a2d74a25dd3e438d8fee526d2ff">   49</a></span>    std::uint32_t                <a class="code hl_variable" href="structeve_1_1procgen_1_1road_1_1RoadEdge.html#ab8552a2d74a25dd3e438d8fee526d2ff">to</a>            = 0;</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1road_1_1RoadEdge.html#a2818b5247b184289d2553e8f6d65ca22">   50</a></span>    std::vector&lt;RoadControlPoint&gt; <a class="code hl_variable" href="structeve_1_1procgen_1_1road_1_1RoadEdge.html#a2818b5247b184289d2553e8f6d65ca22">controlPoints</a>;</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1road_1_1RoadEdge.html#a8062600c73ecbd9325a5a2f0b02d58fa">   51</a></span>    <span class="keywordtype">int</span>                          <a class="code hl_variable" href="structeve_1_1procgen_1_1road_1_1RoadEdge.html#a8062600c73ecbd9325a5a2f0b02d58fa">lanesForward</a>  = 2;</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1road_1_1RoadEdge.html#a75b3a2aca2940dcac8eb72a1027fef54">   52</a></span>    <span class="keywordtype">int</span>                          <a class="code hl_variable" href="structeve_1_1procgen_1_1road_1_1RoadEdge.html#a75b3a2aca2940dcac8eb72a1027fef54">lanesBackward</a> = 0;</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1road_1_1RoadEdge.html#a7ebb595bf6461a05c66962a2d8cd0f57">   53</a></span>    <a class="code hl_struct" href="structeve_1_1procgen_1_1road_1_1RoadStyle.html">RoadStyle</a>                    <a class="code hl_variable" href="structeve_1_1procgen_1_1road_1_1RoadEdge.html#a7ebb595bf6461a05c66962a2d8cd0f57">style</a>;</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>};</div>
+</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span> </div>
+<div class="foldopen" id="foldopen00062" data-start="{" data-end="};">
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1road_1_1RoadLaneConnection.html">   62</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1procgen_1_1road_1_1RoadLaneConnection.html">RoadLaneConnection</a> {</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1road_1_1RoadLaneConnection.html#a8b971c8d73880783941eb6ea17118080">   63</a></span>    std::uint32_t <a class="code hl_variable" href="structeve_1_1procgen_1_1road_1_1RoadLaneConnection.html#a8b971c8d73880783941eb6ea17118080">inEdge</a>   = 0;</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1road_1_1RoadLaneConnection.html#afdaf4a156c9b95d00f445f034485d6f6">   64</a></span>    <span class="keywordtype">int</span>           <a class="code hl_variable" href="structeve_1_1procgen_1_1road_1_1RoadLaneConnection.html#afdaf4a156c9b95d00f445f034485d6f6">inLane</a>   = 0;</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1road_1_1RoadLaneConnection.html#a4f906e21d0248a4526587abf2156b8c7">   65</a></span>    std::uint32_t <a class="code hl_variable" href="structeve_1_1procgen_1_1road_1_1RoadLaneConnection.html#a4f906e21d0248a4526587abf2156b8c7">outEdge</a>  = 0;</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1road_1_1RoadLaneConnection.html#a4d1535ad72f0b890d05182fb45811383">   66</a></span>    <span class="keywordtype">int</span>           <a class="code hl_variable" href="structeve_1_1procgen_1_1road_1_1RoadLaneConnection.html#a4d1535ad72f0b890d05182fb45811383">outLane</a>  = 0;</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>};</div>
+</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span> </div>
+<div class="foldopen" id="foldopen00070" data-start="{" data-end="};">
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1road_1_1RoadPolyline.html">   70</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1procgen_1_1road_1_1RoadPolyline.html">RoadPolyline</a> {</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1road_1_1RoadPolyline.html#a08101391d29cca1a8906218d6c0856fd">   71</a></span>    std::vector&lt;float&gt; <a class="code hl_variable" href="structeve_1_1procgen_1_1road_1_1RoadPolyline.html#a08101391d29cca1a8906218d6c0856fd">xyz</a>;  </div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1road_1_1RoadPolyline.html#adb8ebf93bb473fa5040c9fe566df0ee3">   72</a></span>    <span class="keywordtype">float</span>              <a class="code hl_variable" href="structeve_1_1procgen_1_1road_1_1RoadPolyline.html#aa6cbffbe47a9cf954663b5a6904cf4ca">r</a> = 0.2f, <a class="code hl_variable" href="structeve_1_1procgen_1_1road_1_1RoadPolyline.html#a7468ae2e3886f325e6487a0178405889">g</a> = 0.85f, <a class="code hl_variable" href="structeve_1_1procgen_1_1road_1_1RoadPolyline.html#a6eadd808ebc172db376f5c3cebc48338">b</a> = 1.f, <a class="code hl_variable" href="structeve_1_1procgen_1_1road_1_1RoadPolyline.html#adb8ebf93bb473fa5040c9fe566df0ee3">a</a> = 1.f;</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1road_1_1RoadPolyline.html#afff65ef90c41d12763fccd8dc7962563">   73</a></span>    <span class="keywordtype">float</span>              <a class="code hl_variable" href="structeve_1_1procgen_1_1road_1_1RoadPolyline.html#afff65ef90c41d12763fccd8dc7962563">width</a> = 0.08f;</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1road_1_1RoadPolyline.html#ab8c22aea2bb1bf05a7bc0c9e4a628771">   74</a></span>    <span class="keywordtype">bool</span>               <a class="code hl_variable" href="structeve_1_1procgen_1_1road_1_1RoadPolyline.html#ab8c22aea2bb1bf05a7bc0c9e4a628771">closed</a> = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>};</div>
+</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span> </div>
+<div class="foldopen" id="foldopen00078" data-start="{" data-end="};">
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1road_1_1RoadOverlay.html">   78</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1procgen_1_1road_1_1RoadOverlay.html">RoadOverlay</a> {</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1road_1_1RoadOverlay.html#a8716bfc36c5eca957aa0bbd8cc83afdb">   79</a></span>    std::vector&lt;RoadPolyline&gt; <a class="code hl_variable" href="structeve_1_1procgen_1_1road_1_1RoadOverlay.html#a8716bfc36c5eca957aa0bbd8cc83afdb">lanes</a>;</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1road_1_1RoadOverlay.html#a0938a6eaf3e78e0bd345da58edae6a92">   80</a></span>    std::vector&lt;RoadPolyline&gt; <a class="code hl_variable" href="structeve_1_1procgen_1_1road_1_1RoadOverlay.html#a0938a6eaf3e78e0bd345da58edae6a92">turns</a>;</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>};</div>
+</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span> </div>
+<div class="foldopen" id="foldopen00084" data-start="{" data-end="};">
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno"><a class="line" href="namespaceeve_1_1procgen_1_1road.html#af191b829859343aa409987fb00d0c798">   84</a></span><span class="keyword">enum class</span> <a class="code hl_enumeration" href="namespaceeve_1_1procgen_1_1road.html#af191b829859343aa409987fb00d0c798">RoadMaterial</a> : std::uint8_t {</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1procgen_1_1road.html#af191b829859343aa409987fb00d0c798a69cdd2c7900c5a4732b4bb63bea57f6c">Asphalt</a> = 0,</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1procgen_1_1road.html#af191b829859343aa409987fb00d0c798a3e67f1383a46b6518f092e755bdea53c">Curb</a>,</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1procgen_1_1road.html#af191b829859343aa409987fb00d0c798ac68f4e6506520a1ae5f89c48dc2fcca1">Sidewalk</a>,</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1procgen_1_1road.html#af191b829859343aa409987fb00d0c798a2b487b0f260da950751013344a2e4cdc">Deck</a>,</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1procgen_1_1road.html#af191b829859343aa409987fb00d0c798a0c7692ba6f3b8b7d2796bd916154b597">Pier</a>,</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1procgen_1_1road.html#af191b829859343aa409987fb00d0c798a2d9d6219cb93df7115866b7c5f7e5a00">Marking</a>,</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1procgen_1_1road.html#af191b829859343aa409987fb00d0c798a637673294e7480eb8adb093b6cadf02c">MarkingYellow</a>,</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1procgen_1_1road.html#af191b829859343aa409987fb00d0c798ac9a3769ba6272f555f757f42643c38c3">Nav</a>,</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>};</div>
+</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span> </div>
+<div class="foldopen" id="foldopen00096" data-start="{" data-end="};">
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1road_1_1RoadProfilePoint.html">   96</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1procgen_1_1road_1_1RoadProfilePoint.html">RoadProfilePoint</a> {</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1road_1_1RoadProfilePoint.html#a657f80394661799daaf365aa78eda080">   97</a></span>    <span class="keywordtype">float</span>        <a class="code hl_variable" href="structeve_1_1procgen_1_1road_1_1RoadProfilePoint.html#a657f80394661799daaf365aa78eda080">side</a>     = 0.f;</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1road_1_1RoadProfilePoint.html#ac157568f2424f1adfb94ac94ea0e30de">   98</a></span>    <span class="keywordtype">float</span>        <a class="code hl_variable" href="structeve_1_1procgen_1_1road_1_1RoadProfilePoint.html#ac157568f2424f1adfb94ac94ea0e30de">up</a>       = 0.f;</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1road_1_1RoadProfilePoint.html#a04c7d06cc55d2cc19658b6a0a3619884">   99</a></span>    <a class="code hl_enumeration" href="namespaceeve_1_1procgen_1_1road.html#af191b829859343aa409987fb00d0c798">RoadMaterial</a> <a class="code hl_variable" href="structeve_1_1procgen_1_1road_1_1RoadProfilePoint.html#a04c7d06cc55d2cc19658b6a0a3619884">material</a> = <a class="code hl_enumvalue" href="namespaceeve_1_1procgen_1_1road.html#af191b829859343aa409987fb00d0c798a69cdd2c7900c5a4732b4bb63bea57f6c">RoadMaterial::Asphalt</a>;</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>};</div>
+</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span> </div>
+<div class="foldopen" id="foldopen00103" data-start="{" data-end="};">
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1road_1_1RoadProfile.html">  103</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1procgen_1_1road_1_1RoadProfile.html">RoadProfile</a> {</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1road_1_1RoadProfile.html#a2c06fa8a7e9d998ba1f790bd7dad26aa">  104</a></span>    std::vector&lt;RoadProfilePoint&gt; <a class="code hl_variable" href="structeve_1_1procgen_1_1road_1_1RoadProfile.html#a2c06fa8a7e9d998ba1f790bd7dad26aa">points</a>;</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1road_1_1RoadProfile.html#a8350de0a228cbe12d2231dae22337a81">  105</a></span>    <span class="keywordtype">float</span>                         <a class="code hl_variable" href="structeve_1_1procgen_1_1road_1_1RoadProfile.html#a8350de0a228cbe12d2231dae22337a81">halfWidth</a> = 0.f;</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>};</div>
+</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span> </div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>[[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;RoadProfile&gt;</a> <a class="code hl_function" href="namespaceeve_1_1procgen_1_1road.html#a95a36eecca85bc6953642ff6b9fd67b2">makeRoadProfile</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1procgen_1_1road_1_1RoadStyle.html">RoadStyle</a>&amp; style, <span class="keywordtype">int</span> lanesForward, <span class="keywordtype">int</span> lanesBackward);</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span> </div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>[[nodiscard]] <span class="keyword">const</span> <span class="keywordtype">char</span>* <a class="code hl_function" href="namespaceeve_1_1procgen_1_1road.html#aaefeee367c37ace266692aee883eb589">roadMaterialGroup</a>(<a class="code hl_enumeration" href="namespaceeve_1_1procgen_1_1road.html#af191b829859343aa409987fb00d0c798">RoadMaterial</a> <a class="code hl_variable" href="RenderSystem3D_8cpp.html#ae5f89cb6e6c69abb9c0b93094fd97a1a">material</a>) <span class="keyword">noexcept</span>;</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span> </div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>}  <span class="comment">// namespace eve::procgen::road</span></div>
+<div class="ttc" id="aRenderSystem3D_8cpp_html_ae5f89cb6e6c69abb9c0b93094fd97a1a"><div class="ttname"><a href="RenderSystem3D_8cpp.html#ae5f89cb6e6c69abb9c0b93094fd97a1a">material</a></div><div class="ttdeci">Material * material</div><div class="ttdef"><b>Definition</b> <a href="RenderSystem3D_8cpp_source.html#l00642">RenderSystem3D.cpp:642</a></div></div>
+<div class="ttc" id="aResult_8h_html"><div class="ttname"><a href="Result_8h.html">Result.h</a></div><div class="ttdoc">Move-only, checked operation results for the common layer.</div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_1_1road_html"><div class="ttname"><a href="namespaceeve_1_1procgen_1_1road.html">eve::procgen::road</a></div><div class="ttdef"><b>Definition</b> <a href="RoadBake_8cpp_source.html#l00012">RoadBake.cpp:12</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_1_1road_html_a95a36eecca85bc6953642ff6b9fd67b2"><div class="ttname"><a href="namespaceeve_1_1procgen_1_1road.html#a95a36eecca85bc6953642ff6b9fd67b2">eve::procgen::road::makeRoadProfile</a></div><div class="ttdeci">Result&lt; RoadProfile &gt; makeRoadProfile(const RoadStyle &amp;style, int lanesForward, int lanesBackward)</div><div class="ttdoc">Build a mathematical road cross-section for the given lane counts.</div><div class="ttdef"><b>Definition</b> <a href="RoadProfile_8cpp_source.html#l00050">RoadProfile.cpp:50</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_1_1road_html_aaefeee367c37ace266692aee883eb589"><div class="ttname"><a href="namespaceeve_1_1procgen_1_1road.html#aaefeee367c37ace266692aee883eb589">eve::procgen::road::roadMaterialGroup</a></div><div class="ttdeci">const char * roadMaterialGroup(RoadMaterial material) noexcept</div><div class="ttdoc">Map a material tag to the MeshBuild group name used by the baker. @ownership borrowed — returns a poi...</div><div class="ttdef"><b>Definition</b> <a href="RoadProfile_8cpp_source.html#l00036">RoadProfile.cpp:36</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_1_1road_html_af191b829859343aa409987fb00d0c798"><div class="ttname"><a href="namespaceeve_1_1procgen_1_1road.html#af191b829859343aa409987fb00d0c798">eve::procgen::road::RoadMaterial</a></div><div class="ttdeci">RoadMaterial</div><div class="ttdoc">Profile material tags used when lofting a road cross-section.</div><div class="ttdef"><b>Definition</b> <a href="RoadTypes_8h_source.html#l00084">RoadTypes.h:84</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_1_1road_html_af191b829859343aa409987fb00d0c798a0c7692ba6f3b8b7d2796bd916154b597"><div class="ttname"><a href="namespaceeve_1_1procgen_1_1road.html#af191b829859343aa409987fb00d0c798a0c7692ba6f3b8b7d2796bd916154b597">eve::procgen::road::RoadMaterial::Pier</a></div><div class="ttdeci">@ Pier</div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_1_1road_html_af191b829859343aa409987fb00d0c798a2b487b0f260da950751013344a2e4cdc"><div class="ttname"><a href="namespaceeve_1_1procgen_1_1road.html#af191b829859343aa409987fb00d0c798a2b487b0f260da950751013344a2e4cdc">eve::procgen::road::RoadMaterial::Deck</a></div><div class="ttdeci">@ Deck</div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_1_1road_html_af191b829859343aa409987fb00d0c798a2d9d6219cb93df7115866b7c5f7e5a00"><div class="ttname"><a href="namespaceeve_1_1procgen_1_1road.html#af191b829859343aa409987fb00d0c798a2d9d6219cb93df7115866b7c5f7e5a00">eve::procgen::road::RoadMaterial::Marking</a></div><div class="ttdeci">@ Marking</div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_1_1road_html_af191b829859343aa409987fb00d0c798a3e67f1383a46b6518f092e755bdea53c"><div class="ttname"><a href="namespaceeve_1_1procgen_1_1road.html#af191b829859343aa409987fb00d0c798a3e67f1383a46b6518f092e755bdea53c">eve::procgen::road::RoadMaterial::Curb</a></div><div class="ttdeci">@ Curb</div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_1_1road_html_af191b829859343aa409987fb00d0c798a637673294e7480eb8adb093b6cadf02c"><div class="ttname"><a href="namespaceeve_1_1procgen_1_1road.html#af191b829859343aa409987fb00d0c798a637673294e7480eb8adb093b6cadf02c">eve::procgen::road::RoadMaterial::MarkingYellow</a></div><div class="ttdeci">@ MarkingYellow</div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_1_1road_html_af191b829859343aa409987fb00d0c798a69cdd2c7900c5a4732b4bb63bea57f6c"><div class="ttname"><a href="namespaceeve_1_1procgen_1_1road.html#af191b829859343aa409987fb00d0c798a69cdd2c7900c5a4732b4bb63bea57f6c">eve::procgen::road::RoadMaterial::Asphalt</a></div><div class="ttdeci">@ Asphalt</div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_1_1road_html_af191b829859343aa409987fb00d0c798ac68f4e6506520a1ae5f89c48dc2fcca1"><div class="ttname"><a href="namespaceeve_1_1procgen_1_1road.html#af191b829859343aa409987fb00d0c798ac68f4e6506520a1ae5f89c48dc2fcca1">eve::procgen::road::RoadMaterial::Sidewalk</a></div><div class="ttdeci">@ Sidewalk</div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_1_1road_html_af191b829859343aa409987fb00d0c798ac9a3769ba6272f555f757f42643c38c3"><div class="ttname"><a href="namespaceeve_1_1procgen_1_1road.html#af191b829859343aa409987fb00d0c798ac9a3769ba6272f555f757f42643c38c3">eve::procgen::road::RoadMaterial::Nav</a></div><div class="ttdeci">@ Nav</div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1road_1_1RoadControlPoint_html"><div class="ttname"><a href="structeve_1_1procgen_1_1road_1_1RoadControlPoint.html">eve::procgen::road::RoadControlPoint</a></div><div class="ttdoc">One authored control point on a road centerline (world space, Y-up).</div><div class="ttdef"><b>Definition</b> <a href="RoadTypes_8h_source.html#l00012">RoadTypes.h:12</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1road_1_1RoadControlPoint_html_a52c96465eee9df751b8fcc6561582fa5"><div class="ttname"><a href="structeve_1_1procgen_1_1road_1_1RoadControlPoint.html#a52c96465eee9df751b8fcc6561582fa5">eve::procgen::road::RoadControlPoint::y</a></div><div class="ttdeci">float y</div><div class="ttdef"><b>Definition</b> <a href="RoadTypes_8h_source.html#l00014">RoadTypes.h:14</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1road_1_1RoadControlPoint_html_ab59b35a94427ca5de31545f424a56eea"><div class="ttname"><a href="structeve_1_1procgen_1_1road_1_1RoadControlPoint.html#ab59b35a94427ca5de31545f424a56eea">eve::procgen::road::RoadControlPoint::z</a></div><div class="ttdeci">float z</div><div class="ttdef"><b>Definition</b> <a href="RoadTypes_8h_source.html#l00015">RoadTypes.h:15</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1road_1_1RoadControlPoint_html_aeef09fabca1cd7e0afa0ea7fa02c86b4"><div class="ttname"><a href="structeve_1_1procgen_1_1road_1_1RoadControlPoint.html#aeef09fabca1cd7e0afa0ea7fa02c86b4">eve::procgen::road::RoadControlPoint::x</a></div><div class="ttdeci">float x</div><div class="ttdef"><b>Definition</b> <a href="RoadTypes_8h_source.html#l00013">RoadTypes.h:13</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1road_1_1RoadEdge_html"><div class="ttname"><a href="structeve_1_1procgen_1_1road_1_1RoadEdge.html">eve::procgen::road::RoadEdge</a></div><div class="ttdoc">Directed centerline edge with optional reverse lanes.</div><div class="ttdef"><b>Definition</b> <a href="RoadTypes_8h_source.html#l00046">RoadTypes.h:46</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1road_1_1RoadEdge_html_a2818b5247b184289d2553e8f6d65ca22"><div class="ttname"><a href="structeve_1_1procgen_1_1road_1_1RoadEdge.html#a2818b5247b184289d2553e8f6d65ca22">eve::procgen::road::RoadEdge::controlPoints</a></div><div class="ttdeci">std::vector&lt; RoadControlPoint &gt; controlPoints</div><div class="ttdef"><b>Definition</b> <a href="RoadTypes_8h_source.html#l00050">RoadTypes.h:50</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1road_1_1RoadEdge_html_a604d8f0b27cfadd96ad57aec2b59b48d"><div class="ttname"><a href="structeve_1_1procgen_1_1road_1_1RoadEdge.html#a604d8f0b27cfadd96ad57aec2b59b48d">eve::procgen::road::RoadEdge::from</a></div><div class="ttdeci">std::uint32_t from</div><div class="ttdef"><b>Definition</b> <a href="RoadTypes_8h_source.html#l00048">RoadTypes.h:48</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1road_1_1RoadEdge_html_a75b3a2aca2940dcac8eb72a1027fef54"><div class="ttname"><a href="structeve_1_1procgen_1_1road_1_1RoadEdge.html#a75b3a2aca2940dcac8eb72a1027fef54">eve::procgen::road::RoadEdge::lanesBackward</a></div><div class="ttdeci">int lanesBackward</div><div class="ttdef"><b>Definition</b> <a href="RoadTypes_8h_source.html#l00052">RoadTypes.h:52</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1road_1_1RoadEdge_html_a7ebb595bf6461a05c66962a2d8cd0f57"><div class="ttname"><a href="structeve_1_1procgen_1_1road_1_1RoadEdge.html#a7ebb595bf6461a05c66962a2d8cd0f57">eve::procgen::road::RoadEdge::style</a></div><div class="ttdeci">RoadStyle style</div><div class="ttdef"><b>Definition</b> <a href="RoadTypes_8h_source.html#l00053">RoadTypes.h:53</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1road_1_1RoadEdge_html_a8062600c73ecbd9325a5a2f0b02d58fa"><div class="ttname"><a href="structeve_1_1procgen_1_1road_1_1RoadEdge.html#a8062600c73ecbd9325a5a2f0b02d58fa">eve::procgen::road::RoadEdge::lanesForward</a></div><div class="ttdeci">int lanesForward</div><div class="ttdef"><b>Definition</b> <a href="RoadTypes_8h_source.html#l00051">RoadTypes.h:51</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1road_1_1RoadEdge_html_ab8552a2d74a25dd3e438d8fee526d2ff"><div class="ttname"><a href="structeve_1_1procgen_1_1road_1_1RoadEdge.html#ab8552a2d74a25dd3e438d8fee526d2ff">eve::procgen::road::RoadEdge::to</a></div><div class="ttdeci">std::uint32_t to</div><div class="ttdef"><b>Definition</b> <a href="RoadTypes_8h_source.html#l00049">RoadTypes.h:49</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1road_1_1RoadLaneConnection_html"><div class="ttname"><a href="structeve_1_1procgen_1_1road_1_1RoadLaneConnection.html">eve::procgen::road::RoadLaneConnection</a></div><div class="ttdoc">One legal lane-to-lane connection inside a junction.</div><div class="ttdef"><b>Definition</b> <a href="RoadTypes_8h_source.html#l00062">RoadTypes.h:62</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1road_1_1RoadLaneConnection_html_a4d1535ad72f0b890d05182fb45811383"><div class="ttname"><a href="structeve_1_1procgen_1_1road_1_1RoadLaneConnection.html#a4d1535ad72f0b890d05182fb45811383">eve::procgen::road::RoadLaneConnection::outLane</a></div><div class="ttdeci">int outLane</div><div class="ttdef"><b>Definition</b> <a href="RoadTypes_8h_source.html#l00066">RoadTypes.h:66</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1road_1_1RoadLaneConnection_html_a4f906e21d0248a4526587abf2156b8c7"><div class="ttname"><a href="structeve_1_1procgen_1_1road_1_1RoadLaneConnection.html#a4f906e21d0248a4526587abf2156b8c7">eve::procgen::road::RoadLaneConnection::outEdge</a></div><div class="ttdeci">std::uint32_t outEdge</div><div class="ttdef"><b>Definition</b> <a href="RoadTypes_8h_source.html#l00065">RoadTypes.h:65</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1road_1_1RoadLaneConnection_html_a8b971c8d73880783941eb6ea17118080"><div class="ttname"><a href="structeve_1_1procgen_1_1road_1_1RoadLaneConnection.html#a8b971c8d73880783941eb6ea17118080">eve::procgen::road::RoadLaneConnection::inEdge</a></div><div class="ttdeci">std::uint32_t inEdge</div><div class="ttdef"><b>Definition</b> <a href="RoadTypes_8h_source.html#l00063">RoadTypes.h:63</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1road_1_1RoadLaneConnection_html_afdaf4a156c9b95d00f445f034485d6f6"><div class="ttname"><a href="structeve_1_1procgen_1_1road_1_1RoadLaneConnection.html#afdaf4a156c9b95d00f445f034485d6f6">eve::procgen::road::RoadLaneConnection::inLane</a></div><div class="ttdeci">int inLane</div><div class="ttdef"><b>Definition</b> <a href="RoadTypes_8h_source.html#l00064">RoadTypes.h:64</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1road_1_1RoadNode_html"><div class="ttname"><a href="structeve_1_1procgen_1_1road_1_1RoadNode.html">eve::procgen::road::RoadNode</a></div><div class="ttdoc">Junction node owned by a road network.</div><div class="ttdef"><b>Definition</b> <a href="RoadTypes_8h_source.html#l00037">RoadTypes.h:37</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1road_1_1RoadNode_html_a1c09c5955a9fab0f3fe3fa64fc147019"><div class="ttname"><a href="structeve_1_1procgen_1_1road_1_1RoadNode.html#a1c09c5955a9fab0f3fe3fa64fc147019">eve::procgen::road::RoadNode::junctionRadius</a></div><div class="ttdeci">float junctionRadius</div><div class="ttdef"><b>Definition</b> <a href="RoadTypes_8h_source.html#l00042">RoadTypes.h:42</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1road_1_1RoadNode_html_a51c83c526f66545a8405e8bdfc76e97b"><div class="ttname"><a href="structeve_1_1procgen_1_1road_1_1RoadNode.html#a51c83c526f66545a8405e8bdfc76e97b">eve::procgen::road::RoadNode::y</a></div><div class="ttdeci">float y</div><div class="ttdef"><b>Definition</b> <a href="RoadTypes_8h_source.html#l00040">RoadTypes.h:40</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1road_1_1RoadNode_html_a8714cd51621f2033789e673d616e5372"><div class="ttname"><a href="structeve_1_1procgen_1_1road_1_1RoadNode.html#a8714cd51621f2033789e673d616e5372">eve::procgen::road::RoadNode::z</a></div><div class="ttdeci">float z</div><div class="ttdef"><b>Definition</b> <a href="RoadTypes_8h_source.html#l00041">RoadTypes.h:41</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1road_1_1RoadNode_html_add9661a83985a3db7cc9ce43d83fbc22"><div class="ttname"><a href="structeve_1_1procgen_1_1road_1_1RoadNode.html#add9661a83985a3db7cc9ce43d83fbc22">eve::procgen::road::RoadNode::x</a></div><div class="ttdeci">float x</div><div class="ttdef"><b>Definition</b> <a href="RoadTypes_8h_source.html#l00039">RoadTypes.h:39</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1road_1_1RoadOverlay_html"><div class="ttname"><a href="structeve_1_1procgen_1_1road_1_1RoadOverlay.html">eve::procgen::road::RoadOverlay</a></div><div class="ttdoc">Owning bake-time overlay snapshot (no pointers into the network).</div><div class="ttdef"><b>Definition</b> <a href="RoadTypes_8h_source.html#l00078">RoadTypes.h:78</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1road_1_1RoadOverlay_html_a0938a6eaf3e78e0bd345da58edae6a92"><div class="ttname"><a href="structeve_1_1procgen_1_1road_1_1RoadOverlay.html#a0938a6eaf3e78e0bd345da58edae6a92">eve::procgen::road::RoadOverlay::turns</a></div><div class="ttdeci">std::vector&lt; RoadPolyline &gt; turns</div><div class="ttdef"><b>Definition</b> <a href="RoadTypes_8h_source.html#l00080">RoadTypes.h:80</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1road_1_1RoadOverlay_html_a8716bfc36c5eca957aa0bbd8cc83afdb"><div class="ttname"><a href="structeve_1_1procgen_1_1road_1_1RoadOverlay.html#a8716bfc36c5eca957aa0bbd8cc83afdb">eve::procgen::road::RoadOverlay::lanes</a></div><div class="ttdeci">std::vector&lt; RoadPolyline &gt; lanes</div><div class="ttdef"><b>Definition</b> <a href="RoadTypes_8h_source.html#l00079">RoadTypes.h:79</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1road_1_1RoadPolyline_html"><div class="ttname"><a href="structeve_1_1procgen_1_1road_1_1RoadPolyline.html">eve::procgen::road::RoadPolyline</a></div><div class="ttdoc">One renderer-neutral polyline chunk for navigation / marking overlays.</div><div class="ttdef"><b>Definition</b> <a href="RoadTypes_8h_source.html#l00070">RoadTypes.h:70</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1road_1_1RoadPolyline_html_a08101391d29cca1a8906218d6c0856fd"><div class="ttname"><a href="structeve_1_1procgen_1_1road_1_1RoadPolyline.html#a08101391d29cca1a8906218d6c0856fd">eve::procgen::road::RoadPolyline::xyz</a></div><div class="ttdeci">std::vector&lt; float &gt; xyz</div><div class="ttdoc">Packed xyz samples.</div><div class="ttdef"><b>Definition</b> <a href="RoadTypes_8h_source.html#l00071">RoadTypes.h:71</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1road_1_1RoadPolyline_html_a6eadd808ebc172db376f5c3cebc48338"><div class="ttname"><a href="structeve_1_1procgen_1_1road_1_1RoadPolyline.html#a6eadd808ebc172db376f5c3cebc48338">eve::procgen::road::RoadPolyline::b</a></div><div class="ttdeci">float b</div><div class="ttdef"><b>Definition</b> <a href="RoadTypes_8h_source.html#l00072">RoadTypes.h:72</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1road_1_1RoadPolyline_html_a7468ae2e3886f325e6487a0178405889"><div class="ttname"><a href="structeve_1_1procgen_1_1road_1_1RoadPolyline.html#a7468ae2e3886f325e6487a0178405889">eve::procgen::road::RoadPolyline::g</a></div><div class="ttdeci">float g</div><div class="ttdef"><b>Definition</b> <a href="RoadTypes_8h_source.html#l00072">RoadTypes.h:72</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1road_1_1RoadPolyline_html_aa6cbffbe47a9cf954663b5a6904cf4ca"><div class="ttname"><a href="structeve_1_1procgen_1_1road_1_1RoadPolyline.html#aa6cbffbe47a9cf954663b5a6904cf4ca">eve::procgen::road::RoadPolyline::r</a></div><div class="ttdeci">float r</div><div class="ttdef"><b>Definition</b> <a href="RoadTypes_8h_source.html#l00072">RoadTypes.h:72</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1road_1_1RoadPolyline_html_ab8c22aea2bb1bf05a7bc0c9e4a628771"><div class="ttname"><a href="structeve_1_1procgen_1_1road_1_1RoadPolyline.html#ab8c22aea2bb1bf05a7bc0c9e4a628771">eve::procgen::road::RoadPolyline::closed</a></div><div class="ttdeci">bool closed</div><div class="ttdef"><b>Definition</b> <a href="RoadTypes_8h_source.html#l00074">RoadTypes.h:74</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1road_1_1RoadPolyline_html_adb8ebf93bb473fa5040c9fe566df0ee3"><div class="ttname"><a href="structeve_1_1procgen_1_1road_1_1RoadPolyline.html#adb8ebf93bb473fa5040c9fe566df0ee3">eve::procgen::road::RoadPolyline::a</a></div><div class="ttdeci">float a</div><div class="ttdef"><b>Definition</b> <a href="RoadTypes_8h_source.html#l00072">RoadTypes.h:72</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1road_1_1RoadPolyline_html_afff65ef90c41d12763fccd8dc7962563"><div class="ttname"><a href="structeve_1_1procgen_1_1road_1_1RoadPolyline.html#afff65ef90c41d12763fccd8dc7962563">eve::procgen::road::RoadPolyline::width</a></div><div class="ttdeci">float width</div><div class="ttdef"><b>Definition</b> <a href="RoadTypes_8h_source.html#l00073">RoadTypes.h:73</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1road_1_1RoadProfilePoint_html"><div class="ttname"><a href="structeve_1_1procgen_1_1road_1_1RoadProfilePoint.html">eve::procgen::road::RoadProfilePoint</a></div><div class="ttdoc">One 2D profile sample in the edge local (side, up) plane.</div><div class="ttdef"><b>Definition</b> <a href="RoadTypes_8h_source.html#l00096">RoadTypes.h:96</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1road_1_1RoadProfilePoint_html_a04c7d06cc55d2cc19658b6a0a3619884"><div class="ttname"><a href="structeve_1_1procgen_1_1road_1_1RoadProfilePoint.html#a04c7d06cc55d2cc19658b6a0a3619884">eve::procgen::road::RoadProfilePoint::material</a></div><div class="ttdeci">RoadMaterial material</div><div class="ttdef"><b>Definition</b> <a href="RoadTypes_8h_source.html#l00099">RoadTypes.h:99</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1road_1_1RoadProfilePoint_html_a657f80394661799daaf365aa78eda080"><div class="ttname"><a href="structeve_1_1procgen_1_1road_1_1RoadProfilePoint.html#a657f80394661799daaf365aa78eda080">eve::procgen::road::RoadProfilePoint::side</a></div><div class="ttdeci">float side</div><div class="ttdef"><b>Definition</b> <a href="RoadTypes_8h_source.html#l00097">RoadTypes.h:97</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1road_1_1RoadProfilePoint_html_ac157568f2424f1adfb94ac94ea0e30de"><div class="ttname"><a href="structeve_1_1procgen_1_1road_1_1RoadProfilePoint.html#ac157568f2424f1adfb94ac94ea0e30de">eve::procgen::road::RoadProfilePoint::up</a></div><div class="ttdeci">float up</div><div class="ttdef"><b>Definition</b> <a href="RoadTypes_8h_source.html#l00098">RoadTypes.h:98</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1road_1_1RoadProfile_html"><div class="ttname"><a href="structeve_1_1procgen_1_1road_1_1RoadProfile.html">eve::procgen::road::RoadProfile</a></div><div class="ttdoc">Owning open profile polyline for one edge style and lane layout.</div><div class="ttdef"><b>Definition</b> <a href="RoadTypes_8h_source.html#l00103">RoadTypes.h:103</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1road_1_1RoadProfile_html_a2c06fa8a7e9d998ba1f790bd7dad26aa"><div class="ttname"><a href="structeve_1_1procgen_1_1road_1_1RoadProfile.html#a2c06fa8a7e9d998ba1f790bd7dad26aa">eve::procgen::road::RoadProfile::points</a></div><div class="ttdeci">std::vector&lt; RoadProfilePoint &gt; points</div><div class="ttdef"><b>Definition</b> <a href="RoadTypes_8h_source.html#l00104">RoadTypes.h:104</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1road_1_1RoadProfile_html_a8350de0a228cbe12d2231dae22337a81"><div class="ttname"><a href="structeve_1_1procgen_1_1road_1_1RoadProfile.html#a8350de0a228cbe12d2231dae22337a81">eve::procgen::road::RoadProfile::halfWidth</a></div><div class="ttdeci">float halfWidth</div><div class="ttdef"><b>Definition</b> <a href="RoadTypes_8h_source.html#l00105">RoadTypes.h:105</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1road_1_1RoadStyle_html"><div class="ttname"><a href="structeve_1_1procgen_1_1road_1_1RoadStyle.html">eve::procgen::road::RoadStyle</a></div><div class="ttdoc">Cross-section and structural style for one road edge.</div><div class="ttdef"><b>Definition</b> <a href="RoadTypes_8h_source.html#l00019">RoadTypes.h:19</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1road_1_1RoadStyle_html_a2964e5bdeae0759d3d124889e53f3f3a"><div class="ttname"><a href="structeve_1_1procgen_1_1road_1_1RoadStyle.html#a2964e5bdeae0759d3d124889e53f3f3a">eve::procgen::road::RoadStyle::sidewalkHeight</a></div><div class="ttdeci">float sidewalkHeight</div><div class="ttdef"><b>Definition</b> <a href="RoadTypes_8h_source.html#l00024">RoadTypes.h:24</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1road_1_1RoadStyle_html_a441fc20846b284fd424649ab14f90b91"><div class="ttname"><a href="structeve_1_1procgen_1_1road_1_1RoadStyle.html#a441fc20846b284fd424649ab14f90b91">eve::procgen::road::RoadStyle::uvMeters</a></div><div class="ttdeci">float uvMeters</div><div class="ttdef"><b>Definition</b> <a href="RoadTypes_8h_source.html#l00033">RoadTypes.h:33</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1road_1_1RoadStyle_html_a49f6a3fffd1c6325764dec15fc4aaacf"><div class="ttname"><a href="structeve_1_1procgen_1_1road_1_1RoadStyle.html#a49f6a3fffd1c6325764dec15fc4aaacf">eve::procgen::road::RoadStyle::dashLength</a></div><div class="ttdeci">float dashLength</div><div class="ttdef"><b>Definition</b> <a href="RoadTypes_8h_source.html#l00031">RoadTypes.h:31</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1road_1_1RoadStyle_html_a5d13935b3c60fcdb675dbbeb26a6e059"><div class="ttname"><a href="structeve_1_1procgen_1_1road_1_1RoadStyle.html#a5d13935b3c60fcdb675dbbeb26a6e059">eve::procgen::road::RoadStyle::laneWidth</a></div><div class="ttdeci">float laneWidth</div><div class="ttdef"><b>Definition</b> <a href="RoadTypes_8h_source.html#l00020">RoadTypes.h:20</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1road_1_1RoadStyle_html_a662f522e699507072f90e08389e7602b"><div class="ttname"><a href="structeve_1_1procgen_1_1road_1_1RoadStyle.html#a662f522e699507072f90e08389e7602b">eve::procgen::road::RoadStyle::curbWidth</a></div><div class="ttdeci">float curbWidth</div><div class="ttdoc">Jersey-barrier thickness.</div><div class="ttdef"><b>Definition</b> <a href="RoadTypes_8h_source.html#l00021">RoadTypes.h:21</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1road_1_1RoadStyle_html_a903eef9dae325a575fff715e1dfd8f5f"><div class="ttname"><a href="structeve_1_1procgen_1_1road_1_1RoadStyle.html#a903eef9dae325a575fff715e1dfd8f5f">eve::procgen::road::RoadStyle::sidewalkWidth</a></div><div class="ttdeci">float sidewalkWidth</div><div class="ttdef"><b>Definition</b> <a href="RoadTypes_8h_source.html#l00023">RoadTypes.h:23</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1road_1_1RoadStyle_html_a923ebb078278c196c37462871f23f1a1"><div class="ttname"><a href="structeve_1_1procgen_1_1road_1_1RoadStyle.html#a923ebb078278c196c37462871f23f1a1">eve::procgen::road::RoadStyle::deckThickness</a></div><div class="ttdeci">float deckThickness</div><div class="ttdef"><b>Definition</b> <a href="RoadTypes_8h_source.html#l00025">RoadTypes.h:25</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1road_1_1RoadStyle_html_a9992b047f3e37634f5954b63aa962383"><div class="ttname"><a href="structeve_1_1procgen_1_1road_1_1RoadStyle.html#a9992b047f3e37634f5954b63aa962383">eve::procgen::road::RoadStyle::curbHeight</a></div><div class="ttdeci">float curbHeight</div><div class="ttdoc">Raised barrier height (readable asphalt channel).</div><div class="ttdef"><b>Definition</b> <a href="RoadTypes_8h_source.html#l00022">RoadTypes.h:22</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1road_1_1RoadStyle_html_aa79ef9e52f5e2e9f15b0330c93bda7f0"><div class="ttname"><a href="structeve_1_1procgen_1_1road_1_1RoadStyle.html#aa79ef9e52f5e2e9f15b0330c93bda7f0">eve::procgen::road::RoadStyle::pierWidth</a></div><div class="ttdeci">float pierWidth</div><div class="ttdef"><b>Definition</b> <a href="RoadTypes_8h_source.html#l00026">RoadTypes.h:26</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1road_1_1RoadStyle_html_aa8150093a4e51fd70c5fc7870446a499"><div class="ttname"><a href="structeve_1_1procgen_1_1road_1_1RoadStyle.html#aa8150093a4e51fd70c5fc7870446a499">eve::procgen::road::RoadStyle::pierDepth</a></div><div class="ttdeci">float pierDepth</div><div class="ttdef"><b>Definition</b> <a href="RoadTypes_8h_source.html#l00027">RoadTypes.h:27</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1road_1_1RoadStyle_html_aad6c12161013c9bff0b9ebe7dc5783fb"><div class="ttname"><a href="structeve_1_1procgen_1_1road_1_1RoadStyle.html#aad6c12161013c9bff0b9ebe7dc5783fb">eve::procgen::road::RoadStyle::markingWidth</a></div><div class="ttdeci">float markingWidth</div><div class="ttdef"><b>Definition</b> <a href="RoadTypes_8h_source.html#l00030">RoadTypes.h:30</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1road_1_1RoadStyle_html_ae1dca3418b49d59a4afee7266d98e8a0"><div class="ttname"><a href="structeve_1_1procgen_1_1road_1_1RoadStyle.html#ae1dca3418b49d59a4afee7266d98e8a0">eve::procgen::road::RoadStyle::dashGap</a></div><div class="ttdeci">float dashGap</div><div class="ttdef"><b>Definition</b> <a href="RoadTypes_8h_source.html#l00032">RoadTypes.h:32</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1road_1_1RoadStyle_html_ae780f2b0f14a46297742099a7dedff37"><div class="ttname"><a href="structeve_1_1procgen_1_1road_1_1RoadStyle.html#ae780f2b0f14a46297742099a7dedff37">eve::procgen::road::RoadStyle::pierClearance</a></div><div class="ttdeci">float pierClearance</div><div class="ttdef"><b>Definition</b> <a href="RoadTypes_8h_source.html#l00029">RoadTypes.h:29</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1road_1_1RoadStyle_html_aeb3c1842176f296e6db58de2b7bfd558"><div class="ttname"><a href="structeve_1_1procgen_1_1road_1_1RoadStyle.html#aeb3c1842176f296e6db58de2b7bfd558">eve::procgen::road::RoadStyle::pierSpacing</a></div><div class="ttdeci">float pierSpacing</div><div class="ttdef"><b>Definition</b> <a href="RoadTypes_8h_source.html#l00028">RoadTypes.h:28</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

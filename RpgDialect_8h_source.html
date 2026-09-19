@@ -1,0 +1,382 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/rpg/RpgDialect.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_7cf76521deace3f584a4db10c759d2c9.html">rpg</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">RpgDialect.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="RpgDialect_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &quot;<a class="code" href="Result_8h.html">common/Result.h</a>&quot;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &quot;<a class="code" href="Value_8h.html">common/Value.h</a>&quot;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span> </div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#include &lt;functional&gt;</span></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">#include &lt;memory&gt;</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span> </div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1dnut.html">eve::dnut</a> {</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="keyword">class </span>StepKindRegistry;</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>}</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span> </div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1inventory.html">eve::inventory</a> {</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="keyword">class </span><a class="code hl_enumvalue" href="namespaceeve_1_1inventory.html#aef2defd905cc472bb517fa2b49bfcfb0ad3ab3d5184fe9b1b4428e4ffb797bdca">Bag</a>;</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="keyword">class </span>EquipmentSet;</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>}  <span class="comment">// namespace eve::inventory</span></div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span> </div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1rpg.html">eve::rpg</a> {</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span> </div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span><span class="keyword">class </span>GameState;</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span><span class="keyword">class </span><a class="code hl_variable" href="namespaceeve_1_1rpg_1_1BattleSide.html#ab4c48d3dad3251d18f039f903b4c6510">Party</a>;</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span><span class="keyword">class </span>RPGActor;</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span> </div>
+<div class="foldopen" id="foldopen00033" data-start="{" data-end="};">
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno"><a class="line" href="namespaceeve_1_1rpg.html#ae3981526f2815d7b8b9241218ac23cae">   33</a></span><span class="keyword">enum class</span> <a class="code hl_enumeration" href="namespaceeve_1_1rpg.html#ae3981526f2815d7b8b9241218ac23cae">StoryMoveStatus</a> : std::uint8_t {</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1rpg.html#ae3981526f2815d7b8b9241218ac23caea168d3e51452f6d8988f75ed882e74eb6">Arrived</a>,</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1rpg.html#ae3981526f2815d7b8b9241218ac23caeaf7e0f46dde348e3a65f4a88d22eed14e">Travelling</a>,</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1rpg.html#ae3981526f2815d7b8b9241218ac23caea4bed942140642650ca78039de000796a">Unreachable</a>,</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>};</div>
+</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span> </div>
+<div class="foldopen" id="foldopen00053" data-start="{" data-end="};">
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno"><a class="line" href="structeve_1_1rpg_1_1StoryMoveRequest.html">   53</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1rpg_1_1StoryMoveRequest.html">StoryMoveRequest</a> {</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno"><a class="line" href="structeve_1_1rpg_1_1StoryMoveRequest.html#a7ec80378f33cbb662c20cc1b65403d5a">   55</a></span>    std::string <a class="code hl_variable" href="structeve_1_1rpg_1_1StoryMoveRequest.html#a7ec80378f33cbb662c20cc1b65403d5a">actorId</a>;</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno"><a class="line" href="structeve_1_1rpg_1_1StoryMoveRequest.html#ad1545fffee9d7aeb83bea2d3eb3a04bb">   65</a></span>    <a class="code hl_class" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a>* <a class="code hl_variable" href="structeve_1_1rpg_1_1StoryMoveRequest.html#ad1545fffee9d7aeb83bea2d3eb3a04bb">actor</a> = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno"><a class="line" href="structeve_1_1rpg_1_1StoryMoveRequest.html#a795ddb02dee0f0fdddb94c3422ff1d6a">   67</a></span>    <span class="keywordtype">double</span> <a class="code hl_variable" href="structeve_1_1rpg_1_1StoryMoveRequest.html#a795ddb02dee0f0fdddb94c3422ff1d6a">x</a> = 0.0;</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno"><a class="line" href="structeve_1_1rpg_1_1StoryMoveRequest.html#ad3af87da66256a8158da81353b7dd26e">   68</a></span>    <span class="keywordtype">double</span> <a class="code hl_variable" href="structeve_1_1rpg_1_1StoryMoveRequest.html#ad3af87da66256a8158da81353b7dd26e">y</a> = 0.0;</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno"><a class="line" href="structeve_1_1rpg_1_1StoryMoveRequest.html#a0ec96061ad02ba2f6956a97ac9ffd6ce">   70</a></span>    <span class="keywordtype">bool</span> <a class="code hl_variable" href="structeve_1_1rpg_1_1StoryMoveRequest.html#a0ec96061ad02ba2f6956a97ac9ffd6ce">hasDuration</a> = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno"><a class="line" href="structeve_1_1rpg_1_1StoryMoveRequest.html#acf0845d34b77cc17e7cb275a82e5b4c3">   72</a></span>    <span class="keywordtype">double</span> <a class="code hl_variable" href="structeve_1_1rpg_1_1StoryMoveRequest.html#acf0845d34b77cc17e7cb275a82e5b4c3">duration</a> = 0.0;</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>};</div>
+</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span> </div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno"><a class="line" href="namespaceeve_1_1rpg.html#a9591cf53665a2650ec2e0a245c1cbc9c">   91</a></span><span class="keyword">using </span><a class="code hl_typedef" href="namespaceeve_1_1rpg.html#a9591cf53665a2650ec2e0a245c1cbc9c">StoryMoveHandler</a> = std::function&lt;eve::Result&lt;StoryMoveStatus&gt;(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1rpg_1_1StoryMoveRequest.html">StoryMoveRequest</a>&amp;)&gt;;</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span> </div>
+<div class="foldopen" id="foldopen00094" data-start="{" data-end="};">
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno"><a class="line" href="namespaceeve_1_1rpg.html#abcb4a294d93e9b4a9c235fa7175ca6a3">   94</a></span><span class="keyword">enum class</span> <a class="code hl_enumeration" href="namespaceeve_1_1rpg.html#abcb4a294d93e9b4a9c235fa7175ca6a3">StoryAnimationStatus</a> : std::uint8_t {</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1rpg.html#abcb4a294d93e9b4a9c235fa7175ca6a3a8f3d10eb21bd36347c258679eba9e92b">Finished</a>,</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1rpg.html#abcb4a294d93e9b4a9c235fa7175ca6a3ac9dbb2b7c84159b632d71e512eba8428">Playing</a>,</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1rpg.html#abcb4a294d93e9b4a9c235fa7175ca6a3a453e6aa38d87b28ccae545967c53004f">Unavailable</a>,</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>};</div>
+</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span> </div>
+<div class="foldopen" id="foldopen00119" data-start="{" data-end="};">
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno"><a class="line" href="structeve_1_1rpg_1_1StoryAnimationRequest.html">  119</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1rpg_1_1StoryAnimationRequest.html">StoryAnimationRequest</a> {</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno"><a class="line" href="structeve_1_1rpg_1_1StoryAnimationRequest.html#a2afa18398c2fbfa250929b146c34b2d9">  121</a></span>    std::string <a class="code hl_variable" href="structeve_1_1rpg_1_1StoryAnimationRequest.html#a2afa18398c2fbfa250929b146c34b2d9">targetId</a>;</div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno"><a class="line" href="structeve_1_1rpg_1_1StoryAnimationRequest.html#a4407fd8d4eda0e9a1f46c5052b78c767">  131</a></span>    <a class="code hl_class" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a>* <a class="code hl_variable" href="structeve_1_1rpg_1_1StoryAnimationRequest.html#a4407fd8d4eda0e9a1f46c5052b78c767">actor</a> = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno"><a class="line" href="structeve_1_1rpg_1_1StoryAnimationRequest.html#a5fceb66c3dad76f39e1a700599f86b1a">  133</a></span>    std::string <a class="code hl_variable" href="structeve_1_1rpg_1_1StoryAnimationRequest.html#a5fceb66c3dad76f39e1a700599f86b1a">clip</a>;</div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno"><a class="line" href="structeve_1_1rpg_1_1StoryAnimationRequest.html#a27fa5d57c3174fbc1fe3fef52225cd5b">  135</a></span>    <span class="keywordtype">bool</span> <a class="code hl_variable" href="structeve_1_1rpg_1_1StoryAnimationRequest.html#a27fa5d57c3174fbc1fe3fef52225cd5b">loop</a> = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno"><a class="line" href="structeve_1_1rpg_1_1StoryAnimationRequest.html#a4e1c0483513ea69cb782b48b37593a72">  137</a></span>    <span class="keywordtype">bool</span> <a class="code hl_variable" href="structeve_1_1rpg_1_1StoryAnimationRequest.html#a4e1c0483513ea69cb782b48b37593a72">hold</a> = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span>};</div>
+</div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span> </div>
+<div class="line"><a id="l00156" name="l00156"></a><span class="lineno"><a class="line" href="namespaceeve_1_1rpg.html#ad1f2e593b122c6e91060d8af1d738fdd">  156</a></span><span class="keyword">using </span><a class="code hl_typedef" href="namespaceeve_1_1rpg.html#ad1f2e593b122c6e91060d8af1d738fdd">StoryAnimationHandler</a> = std::function&lt;eve::Result&lt;StoryAnimationStatus&gt;(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1rpg_1_1StoryAnimationRequest.html">StoryAnimationRequest</a>&amp;)&gt;;</div>
+<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span> </div>
+<div class="foldopen" id="foldopen00167" data-start="{" data-end="};">
+<div class="line"><a id="l00167" name="l00167"></a><span class="lineno"><a class="line" href="structeve_1_1rpg_1_1RpgStoryBinding.html">  167</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1rpg_1_1RpgStoryBinding.html">RpgStoryBinding</a> {</div>
+<div class="line"><a id="l00169" name="l00169"></a><span class="lineno"><a class="line" href="structeve_1_1rpg_1_1RpgStoryBinding.html#a29a538fef159aa207fe8369eb500e41f">  169</a></span>    <a class="code hl_class" href="classeve_1_1rpg_1_1GameState.html">GameState</a>* <a class="code hl_variable" href="structeve_1_1rpg_1_1RpgStoryBinding.html#a29a538fef159aa207fe8369eb500e41f">gameState</a> = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00171" name="l00171"></a><span class="lineno"><a class="line" href="structeve_1_1rpg_1_1RpgStoryBinding.html#a4686914eb7f4b13edde3858d51040ac2">  171</a></span>    <a class="code hl_class" href="classeve_1_1rpg_1_1Party.html">Party</a>* <a class="code hl_variable" href="structeve_1_1rpg_1_1RpgStoryBinding.html#a4686914eb7f4b13edde3858d51040ac2">party</a> = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00173" name="l00173"></a><span class="lineno"><a class="line" href="structeve_1_1rpg_1_1RpgStoryBinding.html#a9f0430711e81f7adf4b4de9d20ed2c4a">  173</a></span>    <a class="code hl_class" href="classeve_1_1inventory_1_1Bag.html">eve::inventory::Bag</a>* <a class="code hl_variable" href="structeve_1_1rpg_1_1RpgStoryBinding.html#a9f0430711e81f7adf4b4de9d20ed2c4a">bag</a> = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00175" name="l00175"></a><span class="lineno"><a class="line" href="structeve_1_1rpg_1_1RpgStoryBinding.html#a28be9e28407f6507288176bfedd96831">  175</a></span>    <a class="code hl_class" href="classeve_1_1inventory_1_1EquipmentSet.html">eve::inventory::EquipmentSet</a>* <a class="code hl_variable" href="structeve_1_1rpg_1_1RpgStoryBinding.html#a28be9e28407f6507288176bfedd96831">equipment</a> = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00182" name="l00182"></a><span class="lineno"><a class="line" href="structeve_1_1rpg_1_1RpgStoryBinding.html#a8cf8dd0b0393c4f46c8028f147c320fb">  182</a></span>    std::function&lt;<a class="code hl_class" href="classeve_1_1rpg_1_1RPGActor.html">RPGActor</a>*(<span class="keyword">const</span> std::string&amp; actorId)&gt; <a class="code hl_variable" href="structeve_1_1rpg_1_1RpgStoryBinding.html#a8cf8dd0b0393c4f46c8028f147c320fb">resolveActor</a>;</div>
+<div class="line"><a id="l00198" name="l00198"></a><span class="lineno"><a class="line" href="structeve_1_1rpg_1_1RpgStoryBinding.html#ad6cca49e8f1279cdd64bf9c5425c08a1">  198</a></span>    <a class="code hl_typedef" href="namespaceeve_1_1rpg.html#a9591cf53665a2650ec2e0a245c1cbc9c">StoryMoveHandler</a> <a class="code hl_variable" href="structeve_1_1rpg_1_1RpgStoryBinding.html#ad6cca49e8f1279cdd64bf9c5425c08a1">moveActor</a>;</div>
+<div class="line"><a id="l00214" name="l00214"></a><span class="lineno"><a class="line" href="structeve_1_1rpg_1_1RpgStoryBinding.html#add5a1d00e152460af285a1a683963c23">  214</a></span>    <a class="code hl_typedef" href="namespaceeve_1_1rpg.html#ad1f2e593b122c6e91060d8af1d738fdd">StoryAnimationHandler</a> <a class="code hl_variable" href="structeve_1_1rpg_1_1RpgStoryBinding.html#add5a1d00e152460af285a1a683963c23">playAnimation</a>;</div>
+<div class="line"><a id="l00215" name="l00215"></a><span class="lineno">  215</span>};</div>
+</div>
+<div class="line"><a id="l00216" name="l00216"></a><span class="lineno">  216</span> </div>
+<div class="line"><a id="l00228" name="l00228"></a><span class="lineno">  228</span>[[nodiscard]] <a class="code hl_class" href="classeve_1_1dnut_1_1StepKindRegistry.html">eve::dnut::StepKindRegistry</a>&amp; <a class="code hl_function" href="namespaceeve_1_1rpg.html#a9e8048e8dfe315563a96c6d78b66ccd0">rpgStoryStepRegistry</a>();</div>
+<div class="line"><a id="l00229" name="l00229"></a><span class="lineno">  229</span> </div>
+<div class="foldopen" id="foldopen00238" data-start="{" data-end="};">
+<div class="line"><a id="l00238" name="l00238"></a><span class="lineno"><a class="line" href="classeve_1_1rpg_1_1RpgStoryCatalogue.html">  238</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1rpg_1_1RpgStoryCatalogue.html">RpgStoryCatalogue</a> {</div>
+<div class="line"><a id="l00239" name="l00239"></a><span class="lineno">  239</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00248" name="l00248"></a><span class="lineno">  248</span>    [[nodiscard]] <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;int&gt;</a> <a class="code hl_function" href="classeve_1_1rpg_1_1RpgStoryCatalogue.html#a2f15083936d4ee9c0d0e20353781a972">replaceFromDnutStrict</a>(<span class="keyword">const</span> std::string&amp; <a class="code hl_variable" href="UnityVegetationPreset_8cpp.html#a176f5b9d50679b93425278a1a59e3eaa">source</a>, <span class="keyword">const</span> std::string&amp; <a class="code hl_variable" href="PlayHost_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>);</div>
+<div class="line"><a id="l00250" name="l00250"></a><span class="lineno">  250</span>    <span class="keyword">static</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1rpg_1_1RpgStoryCatalogue.html#afb49237834b6b780d7f8a160a3c3fa01">clear</a>();</div>
+<div class="line"><a id="l00252" name="l00252"></a><span class="lineno">  252</span>    <span class="keyword">static</span> <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1rpg_1_1RpgStoryCatalogue.html#ab98dfd0d5cfd7c0d4233c97f33e2d427">count</a>();</div>
+<div class="line"><a id="l00254" name="l00254"></a><span class="lineno">  254</span>    <span class="keyword">static</span> <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1rpg_1_1RpgStoryCatalogue.html#ac1a109a2affc433ee7b207d7bc69ae3a">contains</a>(<span class="keyword">const</span> std::string&amp; storyId);</div>
+<div class="line"><a id="l00256" name="l00256"></a><span class="lineno">  256</span>    [[nodiscard]] <span class="keyword">static</span> std::vector&lt;std::string&gt; <a class="code hl_function" href="classeve_1_1rpg_1_1RpgStoryCatalogue.html#a3d6b71f24a0ef8920384f40a55a42ece">storyIds</a>();</div>
+<div class="line"><a id="l00257" name="l00257"></a><span class="lineno">  257</span>};</div>
+</div>
+<div class="line"><a id="l00258" name="l00258"></a><span class="lineno">  258</span> </div>
+<div class="foldopen" id="foldopen00270" data-start="{" data-end="};">
+<div class="line"><a id="l00270" name="l00270"></a><span class="lineno"><a class="line" href="classeve_1_1rpg_1_1RpgStorySession.html">  270</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1rpg_1_1RpgStorySession.html">RpgStorySession</a> {</div>
+<div class="line"><a id="l00271" name="l00271"></a><span class="lineno">  271</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00272" name="l00272"></a><span class="lineno">  272</span>    <a class="code hl_function" href="classeve_1_1rpg_1_1RpgStorySession.html#a7b3c39b10d03f6838ce313ab925a3d3c">RpgStorySession</a>();</div>
+<div class="line"><a id="l00273" name="l00273"></a><span class="lineno"><a class="line" href="classeve_1_1rpg_1_1RpgStorySession.html#ac2eab9d5bbda59039c8572469cd58693">  273</a></span>    <a class="code hl_function" href="classeve_1_1rpg_1_1RpgStorySession.html#ac2eab9d5bbda59039c8572469cd58693">~RpgStorySession</a>();</div>
+<div class="line"><a id="l00274" name="l00274"></a><span class="lineno"><a class="line" href="classeve_1_1rpg_1_1RpgStorySession.html#abfbad903852875f62bbdf6ce7217879b">  274</a></span>    <a class="code hl_function" href="classeve_1_1rpg_1_1RpgStorySession.html#abfbad903852875f62bbdf6ce7217879b">RpgStorySession</a>(<a class="code hl_class" href="classeve_1_1rpg_1_1RpgStorySession.html">RpgStorySession</a>&amp;&amp;) noexcept;</div>
+<div class="line"><a id="l00275" name="l00275"></a><span class="lineno"><a class="line" href="classeve_1_1rpg_1_1RpgStorySession.html#a25149bc8b12b6ac61995b5bdece6ecf2">  275</a></span>    <a class="code hl_class" href="classeve_1_1rpg_1_1RpgStorySession.html">RpgStorySession</a>&amp; operator=(<a class="code hl_class" href="classeve_1_1rpg_1_1RpgStorySession.html">RpgStorySession</a>&amp;&amp;) noexcept;</div>
+<div class="line"><a id="l00276" name="l00276"></a><span class="lineno"><a class="line" href="classeve_1_1rpg_1_1RpgStorySession.html#a89694ed8ac31d588236c52e07918fa34">  276</a></span>    <a class="code hl_class" href="classeve_1_1rpg_1_1RpgStorySession.html">RpgStorySession</a>(const <a class="code hl_class" href="classeve_1_1rpg_1_1RpgStorySession.html">RpgStorySession</a>&amp;) = delete;</div>
+<div class="line"><a id="l00277" name="l00277"></a><span class="lineno"><a class="line" href="classeve_1_1rpg_1_1RpgStorySession.html#a1eea4592dbb4f65b38ee781c2c407dba">  277</a></span>    <a class="code hl_class" href="classeve_1_1rpg_1_1RpgStorySession.html">RpgStorySession</a>&amp; operator=(const <a class="code hl_class" href="classeve_1_1rpg_1_1RpgStorySession.html">RpgStorySession</a>&amp;) = delete;</div>
+<div class="line"><a id="l00278" name="l00278"></a><span class="lineno">  278</span> </div>
+<div class="line"><a id="l00285" name="l00285"></a><span class="lineno">  285</span>    [[nodiscard]] <a class="code hl_namespace" href="namespaceeve.html">eve</a>::<a class="code hl_class" href="classeve_1_1Result.html">Result</a>&lt;<span class="keywordtype">void</span>&gt; <a class="code hl_variable" href="PrimitiveTessellator_8cpp.html#a040a87bf98202a107183d0d7c7f2fbed">begin</a>(const <a class="code hl_namespace" href="namespacestd.html">std</a>::<span class="keywordtype">string</span>&amp; storyId, <a class="code hl_struct" href="structeve_1_1rpg_1_1RpgStoryBinding.html">RpgStoryBinding</a>* <a class="code hl_variable" href="ParticlesCapabilities_8cpp.html#a29e48cdcd5413e721ea32eaef3927e79">binding</a>);</div>
+<div class="line"><a id="l00286" name="l00286"></a><span class="lineno">  286</span> </div>
+<div class="line"><a id="l00300" name="l00300"></a><span class="lineno">  300</span>    [[nodiscard]] <a class="code hl_namespace" href="namespaceeve.html">eve</a>::<a class="code hl_class" href="classeve_1_1Result.html">Result</a>&lt;<span class="keywordtype">void</span>&gt; <a class="code hl_variable" href="PrimitiveTessellator_8cpp.html#a040a87bf98202a107183d0d7c7f2fbed">begin</a>(const <a class="code hl_namespace" href="namespacestd.html">std</a>::<span class="keywordtype">string</span>&amp; storyId, <a class="code hl_class" href="classeve_1_1rpg_1_1GameState.html">GameState</a>* gameState, <a class="code hl_class" href="classeve_1_1rpg_1_1Party.html">Party</a>* party,</div>
+<div class="line"><a id="l00301" name="l00301"></a><span class="lineno">  301</span>                                          <a class="code hl_namespace" href="namespaceeve.html">eve</a>::inventory::Bag* bag, <a class="code hl_namespace" href="namespaceeve.html">eve</a>::inventory::EquipmentSet* equipment);</div>
+<div class="line"><a id="l00302" name="l00302"></a><span class="lineno">  302</span> </div>
+<div class="line"><a id="l00312" name="l00312"></a><span class="lineno">  312</span>    [[nodiscard]] <a class="code hl_namespace" href="namespaceeve.html">eve</a>::<a class="code hl_class" href="classeve_1_1Result.html">Result</a>&lt;<span class="keywordtype">void</span>&gt; <a class="code hl_function" href="classeve_1_1rpg_1_1RpgStorySession.html#aa40dec256de3a7d7d7cacf759a54747d">advance</a>();</div>
+<div class="line"><a id="l00313" name="l00313"></a><span class="lineno">  313</span> </div>
+<div class="line"><a id="l00315" name="l00315"></a><span class="lineno">  315</span>    [[nodiscard]] <a class="code hl_namespace" href="namespaceeve.html">eve</a>::<a class="code hl_class" href="classeve_1_1Result.html">Result</a>&lt;<span class="keywordtype">void</span>&gt; <a class="code hl_function" href="classeve_1_1rpg_1_1RpgStorySession.html#ada5904c25c04541f6dd8dd37101d2ec6">select</a>(const <a class="code hl_namespace" href="namespacestd.html">std</a>::<span class="keywordtype">string</span>&amp; routeLabel);</div>
+<div class="line"><a id="l00316" name="l00316"></a><span class="lineno">  316</span> </div>
+<div class="line"><a id="l00318" name="l00318"></a><span class="lineno">  318</span>    [[nodiscard]] <a class="code hl_namespace" href="namespaceeve.html">eve</a>::<a class="code hl_class" href="classeve_1_1Result.html">Result</a>&lt;<span class="keywordtype">void</span>&gt; <a class="code hl_function" href="classeve_1_1rpg_1_1RpgStorySession.html#a4fe5416cdeaaeb0b095c58b262d9a02c">resume</a>(<a class="code hl_namespace" href="namespaceeve.html">eve</a>::<a class="code hl_class" href="classeve_1_1json_1_1Value.html">Value</a> result);</div>
+<div class="line"><a id="l00319" name="l00319"></a><span class="lineno">  319</span> </div>
+<div class="line"><a id="l00321" name="l00321"></a><span class="lineno">  321</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1rpg_1_1RpgStorySession.html#a673baf8d63e12bf50fb2e03852432be8">stop</a>();</div>
+<div class="line"><a id="l00322" name="l00322"></a><span class="lineno">  322</span> </div>
+<div class="line"><a id="l00324" name="l00324"></a><span class="lineno">  324</span>    [[nodiscard]] <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1rpg_1_1RpgStorySession.html#af63bdcaefa1777966e055341a1d7fb59">isActive</a>() const;</div>
+<div class="line"><a id="l00326" name="l00326"></a><span class="lineno">  326</span>    [[nodiscard]] <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1rpg_1_1RpgStorySession.html#a14021e63bfd4cbd447d9d2ec49318e2b">isBlocked</a>() const;</div>
+<div class="line"><a id="l00328" name="l00328"></a><span class="lineno">  328</span>    [[nodiscard]] <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1rpg_1_1RpgStorySession.html#af05775049a4457c318b158ce7cc2f8ed">isWaitingStep</a>() const;</div>
+<div class="line"><a id="l00330" name="l00330"></a><span class="lineno">  330</span>    [[nodiscard]] <a class="code hl_namespace" href="namespacestd.html">std</a>::<span class="keywordtype">string</span> <a class="code hl_function" href="classeve_1_1rpg_1_1RpgStorySession.html#aca4bff41d341e531f88d385923da5f77">getStoryId</a>() const;</div>
+<div class="line"><a id="l00332" name="l00332"></a><span class="lineno">  332</span>    [[nodiscard]] <a class="code hl_namespace" href="namespacestd.html">std</a>::<span class="keywordtype">string</span> <a class="code hl_function" href="classeve_1_1rpg_1_1RpgStorySession.html#a2ba9c9e476844038fc83728288f5a3ee">getStepKind</a>() const;</div>
+<div class="line"><a id="l00338" name="l00338"></a><span class="lineno">  338</span>    [[nodiscard]] const <a class="code hl_namespace" href="namespaceeve.html">eve</a>::<a class="code hl_class" href="classeve_1_1json_1_1Value.html">Value</a>&amp; <a class="code hl_function" href="classeve_1_1rpg_1_1RpgStorySession.html#ae9fb4d01e210045a6b43965b100841f7">getStepPayload</a>() const;</div>
+<div class="line"><a id="l00340" name="l00340"></a><span class="lineno">  340</span>    [[nodiscard]] <a class="code hl_namespace" href="namespacestd.html">std</a>::vector&lt;<a class="code hl_namespace" href="namespacestd.html">std</a>::<span class="keywordtype">string</span>&gt; <a class="code hl_function" href="classeve_1_1rpg_1_1RpgStorySession.html#a2aa8955fa38dddf968e55982ceb98f01">getChoiceLabels</a>() const;</div>
+<div class="line"><a id="l00341" name="l00341"></a><span class="lineno">  341</span> </div>
+<div class="line"><a id="l00343" name="l00343"></a><span class="lineno">  343</span>    [[nodiscard]] <a class="code hl_namespace" href="namespaceeve.html">eve</a>::<a class="code hl_class" href="classeve_1_1Result.html">Result</a>&lt;<span class="keywordtype">void</span>&gt; <a class="code hl_function" href="classeve_1_1rpg_1_1RpgStorySession.html#a5801e2f31e255a80b1ebc51c6cbc01cc">captureState</a>(<a class="code hl_namespace" href="namespaceeve.html">eve</a>::<a class="code hl_class" href="classeve_1_1json_1_1Value.html">Value</a>&amp; out) const;</div>
+<div class="line"><a id="l00351" name="l00351"></a><span class="lineno">  351</span>    [[nodiscard]] <a class="code hl_namespace" href="namespaceeve.html">eve</a>::<a class="code hl_class" href="classeve_1_1Result.html">Result</a>&lt;<span class="keywordtype">void</span>&gt; <a class="code hl_function" href="classeve_1_1rpg_1_1RpgStorySession.html#aa89f19c1c68332e81c0c2fd0981643ec">restoreState</a>(const <a class="code hl_namespace" href="namespacestd.html">std</a>::<span class="keywordtype">string</span>&amp; storyId, const <a class="code hl_namespace" href="namespaceeve.html">eve</a>::<a class="code hl_class" href="classeve_1_1json_1_1Value.html">Value</a>&amp; in,</div>
+<div class="line"><a id="l00352" name="l00352"></a><span class="lineno">  352</span>                                                 <a class="code hl_struct" href="structeve_1_1rpg_1_1RpgStoryBinding.html">RpgStoryBinding</a>* <a class="code hl_variable" href="ParticlesCapabilities_8cpp.html#a29e48cdcd5413e721ea32eaef3927e79">binding</a>);</div>
+<div class="line"><a id="l00353" name="l00353"></a><span class="lineno">  353</span> </div>
+<div class="line"><a id="l00354" name="l00354"></a><span class="lineno">  354</span>private:</div>
+<div class="line"><a id="l00355" name="l00355"></a><span class="lineno">  355</span>    class <a class="code hl_class" href="classeve_1_1rpg_1_1RpgStorySession_1_1Impl.html">Impl</a>;</div>
+<div class="line"><a id="l00356" name="l00356"></a><span class="lineno">  356</span>    <a class="code hl_namespace" href="namespacestd.html">std</a>::unique_ptr&lt;<a class="code hl_class" href="classeve_1_1rpg_1_1RpgStorySession_1_1Impl.html">Impl</a>&gt; impl_;</div>
+<div class="line"><a id="l00357" name="l00357"></a><span class="lineno">  357</span>};</div>
+</div>
+<div class="line"><a id="l00358" name="l00358"></a><span class="lineno">  358</span> </div>
+<div class="line"><a id="l00359" name="l00359"></a><span class="lineno">  359</span>}  <span class="comment">// namespace eve::rpg</span></div>
+<div class="ttc" id="aParticlesCapabilities_8cpp_html_a29e48cdcd5413e721ea32eaef3927e79"><div class="ttname"><a href="ParticlesCapabilities_8cpp.html#a29e48cdcd5413e721ea32eaef3927e79">binding</a></div><div class="ttdeci">eve::action::ActionVfxBinding binding</div><div class="ttdef"><b>Definition</b> <a href="ParticlesCapabilities_8cpp_source.html#l00169">ParticlesCapabilities.cpp:169</a></div></div>
+<div class="ttc" id="aPlayHost_8cpp_html_a4d455efceee21e97d8e21ee40e9b4a20"><div class="ttname"><a href="PlayHost_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a></div><div class="ttdeci">std::string path</div><div class="ttdef"><b>Definition</b> <a href="PlayHost_8cpp_source.html#l00144">PlayHost.cpp:144</a></div></div>
+<div class="ttc" id="aPrimitiveTessellator_8cpp_html_a040a87bf98202a107183d0d7c7f2fbed"><div class="ttname"><a href="PrimitiveTessellator_8cpp.html#a040a87bf98202a107183d0d7c7f2fbed">begin</a></div><div class="ttdeci">float begin</div><div class="ttdef"><b>Definition</b> <a href="PrimitiveTessellator_8cpp_source.html#l00287">PrimitiveTessellator.cpp:287</a></div></div>
+<div class="ttc" id="aResult_8h_html"><div class="ttname"><a href="Result_8h.html">Result.h</a></div><div class="ttdoc">Move-only, checked operation results for the common layer.</div></div>
+<div class="ttc" id="aUnityVegetationPreset_8cpp_html_a176f5b9d50679b93425278a1a59e3eaa"><div class="ttname"><a href="UnityVegetationPreset_8cpp.html#a176f5b9d50679b93425278a1a59e3eaa">source</a></div><div class="ttdeci">const UnitySourceAsset &amp; source</div><div class="ttdef"><b>Definition</b> <a href="UnityVegetationPreset_8cpp_source.html#l00029">UnityVegetationPreset.cpp:29</a></div></div>
+<div class="ttc" id="aValue_8h_html"><div class="ttname"><a href="Value_8h.html">Value.h</a></div><div class="ttdoc">Owning, renderer-independent dynamic values.</div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1dnut_1_1StepKindRegistry_html"><div class="ttname"><a href="classeve_1_1dnut_1_1StepKindRegistry.html">eve::dnut::StepKindRegistry</a></div><div class="ttdoc">Canonical step vocabulary owner and runtime handler router.</div><div class="ttdef"><b>Definition</b> <a href="StepKindRegistry_8h_source.html#l00106">StepKindRegistry.h:106</a></div></div>
+<div class="ttc" id="aclasseve_1_1inventory_1_1Bag_html"><div class="ttname"><a href="classeve_1_1inventory_1_1Bag.html">eve::inventory::Bag</a></div><div class="ttdoc">格子型物品容器（脚本可直接操作）。</div><div class="ttdef"><b>Definition</b> <a href="Bag_8h_source.html#l00019">Bag.h:19</a></div></div>
+<div class="ttc" id="aclasseve_1_1inventory_1_1EquipmentSet_html"><div class="ttname"><a href="classeve_1_1inventory_1_1EquipmentSet.html">eve::inventory::EquipmentSet</a></div><div class="ttdef"><b>Definition</b> <a href="Equipment_8h_source.html#l00016">Equipment.h:16</a></div></div>
+<div class="ttc" id="aclasseve_1_1json_1_1Value_html"><div class="ttname"><a href="classeve_1_1json_1_1Value.html">eve::json::Value</a></div><div class="ttdef"><b>Definition</b> <a href="Json_8h_source.html#l00037">Json.h:37</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1GameState_html"><div class="ttname"><a href="classeve_1_1rpg_1_1GameState.html">eve::rpg::GameState</a></div><div class="ttdoc">一份游戏状态（开关/变量/独立变量）。</div><div class="ttdef"><b>Definition</b> <a href="GameState_8h_source.html#l00023">GameState.h:23</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1Party_html"><div class="ttname"><a href="classeve_1_1rpg_1_1Party.html">eve::rpg::Party</a></div><div class="ttdoc">Authoritative ordered relationship between stable party member IDs and RPG actors....</div><div class="ttdef"><b>Definition</b> <a href="Party_8h_source.html#l00022">Party.h:22</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1RPGActor_html"><div class="ttname"><a href="classeve_1_1rpg_1_1RPGActor.html">eve::rpg::RPGActor</a></div><div class="ttdoc">属性 / 状态 / 技能三表合一的 ECS 实体。</div><div class="ttdef"><b>Definition</b> <a href="RPGActor_8h_source.html#l00032">RPGActor.h:32</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1RpgStoryCatalogue_html"><div class="ttname"><a href="classeve_1_1rpg_1_1RpgStoryCatalogue.html">eve::rpg::RpgStoryCatalogue</a></div><div class="ttdoc">Strict process-local catalogue of .dnut story assets.</div><div class="ttdef"><b>Definition</b> <a href="RpgDialect_8h_source.html#l00238">RpgDialect.h:238</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1RpgStoryCatalogue_html_a2f15083936d4ee9c0d0e20353781a972"><div class="ttname"><a href="classeve_1_1rpg_1_1RpgStoryCatalogue.html#a2f15083936d4ee9c0d0e20353781a972">eve::rpg::RpgStoryCatalogue::replaceFromDnutStrict</a></div><div class="ttdeci">static eve::Result&lt; int &gt; replaceFromDnutStrict(const std::string &amp;source, const std::string &amp;path)</div><div class="ttdoc">Compile and atomically publish every story block of one document.</div><div class="ttdef"><b>Definition</b> <a href="RpgDialect_8cpp_source.html#l00560">RpgDialect.cpp:560</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1RpgStoryCatalogue_html_a3d6b71f24a0ef8920384f40a55a42ece"><div class="ttname"><a href="classeve_1_1rpg_1_1RpgStoryCatalogue.html#a3d6b71f24a0ef8920384f40a55a42ece">eve::rpg::RpgStoryCatalogue::storyIds</a></div><div class="ttdeci">static std::vector&lt; std::string &gt; storyIds()</div><div class="ttdoc">Return every published story id in lexical order.</div><div class="ttdef"><b>Definition</b> <a href="RpgDialect_8cpp_source.html#l00592">RpgDialect.cpp:592</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1RpgStoryCatalogue_html_ab98dfd0d5cfd7c0d4233c97f33e2d427"><div class="ttname"><a href="classeve_1_1rpg_1_1RpgStoryCatalogue.html#ab98dfd0d5cfd7c0d4233c97f33e2d427">eve::rpg::RpgStoryCatalogue::count</a></div><div class="ttdeci">static int count()</div><div class="ttdoc">Return the published story count.</div><div class="ttdef"><b>Definition</b> <a href="RpgDialect_8cpp_source.html#l00588">RpgDialect.cpp:588</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1RpgStoryCatalogue_html_ac1a109a2affc433ee7b207d7bc69ae3a"><div class="ttname"><a href="classeve_1_1rpg_1_1RpgStoryCatalogue.html#ac1a109a2affc433ee7b207d7bc69ae3a">eve::rpg::RpgStoryCatalogue::contains</a></div><div class="ttdeci">static bool contains(const std::string &amp;storyId)</div><div class="ttdoc">Return whether an exact story id is published.</div><div class="ttdef"><b>Definition</b> <a href="RpgDialect_8cpp_source.html#l00590">RpgDialect.cpp:590</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1RpgStoryCatalogue_html_afb49237834b6b780d7f8a160a3c3fa01"><div class="ttname"><a href="classeve_1_1rpg_1_1RpgStoryCatalogue.html#afb49237834b6b780d7f8a160a3c3fa01">eve::rpg::RpgStoryCatalogue::clear</a></div><div class="ttdeci">static void clear()</div><div class="ttdoc">Discard every published story.</div><div class="ttdef"><b>Definition</b> <a href="RpgDialect_8cpp_source.html#l00586">RpgDialect.cpp:586</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1RpgStorySession_1_1Impl_html"><div class="ttname"><a href="classeve_1_1rpg_1_1RpgStorySession_1_1Impl.html">eve::rpg::RpgStorySession::Impl</a></div><div class="ttdef"><b>Definition</b> <a href="RpgDialect_8cpp_source.html#l00599">RpgDialect.cpp:599</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1RpgStorySession_html"><div class="ttname"><a href="classeve_1_1rpg_1_1RpgStorySession.html">eve::rpg::RpgStorySession</a></div><div class="ttdoc">Caller-owned cursor over one published .dnut story.</div><div class="ttdef"><b>Definition</b> <a href="RpgDialect_8h_source.html#l00270">RpgDialect.h:270</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1RpgStorySession_html_a14021e63bfd4cbd447d9d2ec49318e2b"><div class="ttname"><a href="classeve_1_1rpg_1_1RpgStorySession.html#a14021e63bfd4cbd447d9d2ec49318e2b">eve::rpg::RpgStorySession::isBlocked</a></div><div class="ttdeci">bool isBlocked() const</div><div class="ttdoc">Whether the story is suspended and awaiting acknowledgement.</div><div class="ttdef"><b>Definition</b> <a href="RpgDialect_8cpp_source.html#l00732">RpgDialect.cpp:732</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1RpgStorySession_html_a2aa8955fa38dddf968e55982ceb98f01"><div class="ttname"><a href="classeve_1_1rpg_1_1RpgStorySession.html#a2aa8955fa38dddf968e55982ceb98f01">eve::rpg::RpgStorySession::getChoiceLabels</a></div><div class="ttdeci">std::vector&lt; std::string &gt; getChoiceLabels() const</div><div class="ttdoc">Authored labels of the current choice step, empty for other step types.</div><div class="ttdef"><b>Definition</b> <a href="RpgDialect_8cpp_source.html#l00746">RpgDialect.cpp:746</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1RpgStorySession_html_a2ba9c9e476844038fc83728288f5a3ee"><div class="ttname"><a href="classeve_1_1rpg_1_1RpgStorySession.html#a2ba9c9e476844038fc83728288f5a3ee">eve::rpg::RpgStorySession::getStepKind</a></div><div class="ttdeci">std::string getStepKind() const</div><div class="ttdoc">Current step type (move, choice, wait, …), or an empty string.</div><div class="ttdef"><b>Definition</b> <a href="RpgDialect_8cpp_source.html#l00736">RpgDialect.cpp:736</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1RpgStorySession_html_a4fe5416cdeaaeb0b095c58b262d9a02c"><div class="ttname"><a href="classeve_1_1rpg_1_1RpgStorySession.html#a4fe5416cdeaaeb0b095c58b262d9a02c">eve::rpg::RpgStorySession::resume</a></div><div class="ttdeci">eve::Result&lt; void &gt; resume(eve::Value result)</div><div class="ttdoc">Resume a step whose handler suspended the story.</div><div class="ttdef"><b>Definition</b> <a href="RpgDialect_8cpp_source.html#l00712">RpgDialect.cpp:712</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1RpgStorySession_html_a5801e2f31e255a80b1ebc51c6cbc01cc"><div class="ttname"><a href="classeve_1_1rpg_1_1RpgStorySession.html#a5801e2f31e255a80b1ebc51c6cbc01cc">eve::rpg::RpgStorySession::captureState</a></div><div class="ttdeci">eve::Result&lt; void &gt; captureState(eve::Value &amp;out) const</div><div class="ttdoc">Capture the complete cursor for persistence.</div><div class="ttdef"><b>Definition</b> <a href="RpgDialect_8cpp_source.html#l00755">RpgDialect.cpp:755</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1RpgStorySession_html_a673baf8d63e12bf50fb2e03852432be8"><div class="ttname"><a href="classeve_1_1rpg_1_1RpgStorySession.html#a673baf8d63e12bf50fb2e03852432be8">eve::rpg::RpgStorySession::stop</a></div><div class="ttdeci">void stop()</div><div class="ttdoc">Stop and clear the session.</div><div class="ttdef"><b>Definition</b> <a href="RpgDialect_8cpp_source.html#l00724">RpgDialect.cpp:724</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1RpgStorySession_html_a7b3c39b10d03f6838ce313ab925a3d3c"><div class="ttname"><a href="classeve_1_1rpg_1_1RpgStorySession.html#a7b3c39b10d03f6838ce313ab925a3d3c">eve::rpg::RpgStorySession::RpgStorySession</a></div><div class="ttdeci">RpgStorySession()</div><div class="ttdef"><b>Definition</b> <a href="RpgDialect_8cpp_source.html#l00636">RpgDialect.cpp:636</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1RpgStorySession_html_aa40dec256de3a7d7d7cacf759a54747d"><div class="ttname"><a href="classeve_1_1rpg_1_1RpgStorySession.html#aa40dec256de3a7d7d7cacf759a54747d">eve::rpg::RpgStorySession::advance</a></div><div class="ttdeci">eve::Result&lt; void &gt; advance()</div><div class="ttdoc">Acknowledge the presented move / animation / select / dialogue / message / camera / wait step and con...</div><div class="ttdef"><b>Definition</b> <a href="RpgDialect_8cpp_source.html#l00688">RpgDialect.cpp:688</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1RpgStorySession_html_aa89f19c1c68332e81c0c2fd0981643ec"><div class="ttname"><a href="classeve_1_1rpg_1_1RpgStorySession.html#aa89f19c1c68332e81c0c2fd0981643ec">eve::rpg::RpgStorySession::restoreState</a></div><div class="ttdeci">eve::Result&lt; void &gt; restoreState(const std::string &amp;storyId, const eve::Value &amp;in, RpgStoryBinding *binding)</div><div class="ttdoc">Restore a captured cursor into a fresh session.</div><div class="ttdef"><b>Definition</b> <a href="RpgDialect_8cpp_source.html#l00757">RpgDialect.cpp:757</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1RpgStorySession_html_abfbad903852875f62bbdf6ce7217879b"><div class="ttname"><a href="classeve_1_1rpg_1_1RpgStorySession.html#abfbad903852875f62bbdf6ce7217879b">eve::rpg::RpgStorySession::RpgStorySession</a></div><div class="ttdeci">RpgStorySession(RpgStorySession &amp;&amp;) noexcept</div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1RpgStorySession_html_ac2eab9d5bbda59039c8572469cd58693"><div class="ttname"><a href="classeve_1_1rpg_1_1RpgStorySession.html#ac2eab9d5bbda59039c8572469cd58693">eve::rpg::RpgStorySession::~RpgStorySession</a></div><div class="ttdeci">~RpgStorySession()</div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1RpgStorySession_html_aca4bff41d341e531f88d385923da5f77"><div class="ttname"><a href="classeve_1_1rpg_1_1RpgStorySession.html#aca4bff41d341e531f88d385923da5f77">eve::rpg::RpgStorySession::getStoryId</a></div><div class="ttdeci">std::string getStoryId() const</div><div class="ttdoc">Owning copy of the running story id, or an empty string.</div><div class="ttdef"><b>Definition</b> <a href="RpgDialect_8cpp_source.html#l00734">RpgDialect.cpp:734</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1RpgStorySession_html_ada5904c25c04541f6dd8dd37101d2ec6"><div class="ttname"><a href="classeve_1_1rpg_1_1RpgStorySession.html#ada5904c25c04541f6dd8dd37101d2ec6">eve::rpg::RpgStorySession::select</a></div><div class="ttdeci">eve::Result&lt; void &gt; select(const std::string &amp;routeLabel)</div><div class="ttdoc">Answer a blocked choice step by its authored label.</div><div class="ttdef"><b>Definition</b> <a href="RpgDialect_8cpp_source.html#l00700">RpgDialect.cpp:700</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1RpgStorySession_html_ae9fb4d01e210045a6b43965b100841f7"><div class="ttname"><a href="classeve_1_1rpg_1_1RpgStorySession.html#ae9fb4d01e210045a6b43965b100841f7">eve::rpg::RpgStorySession::getStepPayload</a></div><div class="ttdeci">const eve::Value &amp; getStepPayload() const</div><div class="ttdoc">Current step payload.</div><div class="ttdef"><b>Definition</b> <a href="RpgDialect_8cpp_source.html#l00741">RpgDialect.cpp:741</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1RpgStorySession_html_af05775049a4457c318b158ce7cc2f8ed"><div class="ttname"><a href="classeve_1_1rpg_1_1RpgStorySession.html#af05775049a4457c318b158ce7cc2f8ed">eve::rpg::RpgStorySession::isWaitingStep</a></div><div class="ttdeci">bool isWaitingStep() const</div><div class="ttdoc">Whether the suspension expects resume rather than advance.</div><div class="ttdef"><b>Definition</b> <a href="RpgDialect_8cpp_source.html#l00733">RpgDialect.cpp:733</a></div></div>
+<div class="ttc" id="aclasseve_1_1rpg_1_1RpgStorySession_html_af63bdcaefa1777966e055341a1d7fb59"><div class="ttname"><a href="classeve_1_1rpg_1_1RpgStorySession.html#af63bdcaefa1777966e055341a1d7fb59">eve::rpg::RpgStorySession::isActive</a></div><div class="ttdeci">bool isActive() const</div><div class="ttdoc">Whether a story is loaded.</div><div class="ttdef"><b>Definition</b> <a href="RpgDialect_8cpp_source.html#l00731">RpgDialect.cpp:731</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1dnut_html"><div class="ttname"><a href="namespaceeve_1_1dnut.html">eve::dnut</a></div><div class="ttdef"><b>Definition</b> <a href="DnutCompiler_8cpp_source.html#l00011">DnutCompiler.cpp:11</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1inventory_html"><div class="ttname"><a href="namespaceeve_1_1inventory.html">eve::inventory</a></div><div class="ttdoc">运行时容器：固定格数的背包 / 箱子 / 商店栏等。 行为由 InventorySystem 提供；本类暴露便于脚本绑定的薄封装方法。</div><div class="ttdef"><b>Definition</b> <a href="AvatarInstance_8h_source.html#l00035">AvatarInstance.h:35</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1inventory_html_aef2defd905cc472bb517fa2b49bfcfb0ad3ab3d5184fe9b1b4428e4ffb797bdca"><div class="ttname"><a href="namespaceeve_1_1inventory.html#aef2defd905cc472bb517fa2b49bfcfb0ad3ab3d5184fe9b1b4428e4ffb797bdca">eve::inventory::InventoryContainerKind::Bag</a></div><div class="ttdeci">@ Bag</div></div>
+<div class="ttc" id="anamespaceeve_1_1rpg_1_1BattleSide_html_ab4c48d3dad3251d18f039f903b4c6510"><div class="ttname"><a href="namespaceeve_1_1rpg_1_1BattleSide.html#ab4c48d3dad3251d18f039f903b4c6510">eve::rpg::BattleSide::Party</a></div><div class="ttdeci">constexpr int Party</div><div class="ttdef"><b>Definition</b> <a href="Battle_8h_source.html#l00025">Battle.h:25</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1rpg_html"><div class="ttname"><a href="namespaceeve_1_1rpg.html">eve::rpg</a></div><div class="ttdoc">RPG 模块的基础实体：把属性 / 状态 / 技能三张表挂到一个 ECS 实体上。</div><div class="ttdef"><b>Definition</b> <a href="AttributeSystem_8cpp_source.html#l00006">AttributeSystem.cpp:6</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1rpg_html_a9591cf53665a2650ec2e0a245c1cbc9c"><div class="ttname"><a href="namespaceeve_1_1rpg.html#a9591cf53665a2650ec2e0a245c1cbc9c">eve::rpg::StoryMoveHandler</a></div><div class="ttdeci">std::function&lt; eve::Result&lt; StoryMoveStatus &gt;(const StoryMoveRequest &amp;)&gt; StoryMoveHandler</div><div class="ttdoc">Host movement controller invoked by the move step.</div><div class="ttdef"><b>Definition</b> <a href="RpgDialect_8h_source.html#l00091">RpgDialect.h:91</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1rpg_html_a9e8048e8dfe315563a96c6d78b66ccd0"><div class="ttname"><a href="namespaceeve_1_1rpg.html#a9e8048e8dfe315563a96c6d78b66ccd0">eve::rpg::rpgStoryStepRegistry</a></div><div class="ttdeci">StepKindRegistry &amp; rpgStoryStepRegistry()</div><div class="ttdoc">Process-local step vocabulary for the RPG story dialect.</div><div class="ttdef"><b>Definition</b> <a href="RpgDialect_8cpp_source.html#l00555">RpgDialect.cpp:555</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1rpg_html_abcb4a294d93e9b4a9c235fa7175ca6a3"><div class="ttname"><a href="namespaceeve_1_1rpg.html#abcb4a294d93e9b4a9c235fa7175ca6a3">eve::rpg::StoryAnimationStatus</a></div><div class="ttdeci">StoryAnimationStatus</div><div class="ttdoc">Terminal state of one requested animation playback.</div><div class="ttdef"><b>Definition</b> <a href="RpgDialect_8h_source.html#l00094">RpgDialect.h:94</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1rpg_html_abcb4a294d93e9b4a9c235fa7175ca6a3a453e6aa38d87b28ccae545967c53004f"><div class="ttname"><a href="namespaceeve_1_1rpg.html#abcb4a294d93e9b4a9c235fa7175ca6a3a453e6aa38d87b28ccae545967c53004f">eve::rpg::StoryAnimationStatus::Unavailable</a></div><div class="ttdeci">@ Unavailable</div><div class="ttdoc">The target or the clip cannot be played, so the animation step fails.</div></div>
+<div class="ttc" id="anamespaceeve_1_1rpg_html_abcb4a294d93e9b4a9c235fa7175ca6a3a8f3d10eb21bd36347c258679eba9e92b"><div class="ttname"><a href="namespaceeve_1_1rpg.html#abcb4a294d93e9b4a9c235fa7175ca6a3a8f3d10eb21bd36347c258679eba9e92b">eve::rpg::StoryAnimationStatus::Finished</a></div><div class="ttdeci">@ Finished</div><div class="ttdoc">The clip was applied instantaneously, so the step completes inline.</div></div>
+<div class="ttc" id="anamespaceeve_1_1rpg_html_abcb4a294d93e9b4a9c235fa7175ca6a3ac9dbb2b7c84159b632d71e512eba8428"><div class="ttname"><a href="namespaceeve_1_1rpg.html#abcb4a294d93e9b4a9c235fa7175ca6a3ac9dbb2b7c84159b632d71e512eba8428">eve::rpg::StoryAnimationStatus::Playing</a></div><div class="ttdeci">@ Playing</div><div class="ttdoc">Playback was accepted and is still running; the host acknowledges the step when it ends.</div></div>
+<div class="ttc" id="anamespaceeve_1_1rpg_html_ad1f2e593b122c6e91060d8af1d738fdd"><div class="ttname"><a href="namespaceeve_1_1rpg.html#ad1f2e593b122c6e91060d8af1d738fdd">eve::rpg::StoryAnimationHandler</a></div><div class="ttdeci">std::function&lt; eve::Result&lt; StoryAnimationStatus &gt;(const StoryAnimationRequest &amp;)&gt; StoryAnimationHandler</div><div class="ttdoc">Host animation controller invoked by the animation step.</div><div class="ttdef"><b>Definition</b> <a href="RpgDialect_8h_source.html#l00156">RpgDialect.h:156</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1rpg_html_ae3981526f2815d7b8b9241218ac23cae"><div class="ttname"><a href="namespaceeve_1_1rpg.html#ae3981526f2815d7b8b9241218ac23cae">eve::rpg::StoryMoveStatus</a></div><div class="ttdeci">StoryMoveStatus</div><div class="ttdoc">Terminal state of one requested actor move.</div><div class="ttdef"><b>Definition</b> <a href="RpgDialect_8h_source.html#l00033">RpgDialect.h:33</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1rpg_html_ae3981526f2815d7b8b9241218ac23caea168d3e51452f6d8988f75ed882e74eb6"><div class="ttname"><a href="namespaceeve_1_1rpg.html#ae3981526f2815d7b8b9241218ac23caea168d3e51452f6d8988f75ed882e74eb6">eve::rpg::StoryMoveStatus::Arrived</a></div><div class="ttdeci">@ Arrived</div><div class="ttdoc">The actor is already at the destination, so the step completes inline.</div></div>
+<div class="ttc" id="anamespaceeve_1_1rpg_html_ae3981526f2815d7b8b9241218ac23caea4bed942140642650ca78039de000796a"><div class="ttname"><a href="namespaceeve_1_1rpg.html#ae3981526f2815d7b8b9241218ac23caea4bed942140642650ca78039de000796a">eve::rpg::StoryMoveStatus::Unreachable</a></div><div class="ttdeci">@ Unreachable</div><div class="ttdoc">The destination cannot be reached, so the move step fails.</div></div>
+<div class="ttc" id="anamespaceeve_1_1rpg_html_ae3981526f2815d7b8b9241218ac23caeaf7e0f46dde348e3a65f4a88d22eed14e"><div class="ttname"><a href="namespaceeve_1_1rpg.html#ae3981526f2815d7b8b9241218ac23caeaf7e0f46dde348e3a65f4a88d22eed14e">eve::rpg::StoryMoveStatus::Travelling</a></div><div class="ttdeci">@ Travelling</div><div class="ttdoc">The move was accepted and is still running; the host acknowledges the step when it ends.</div></div>
+<div class="ttc" id="anamespaceeve_html"><div class="ttname"><a href="namespaceeve.html">eve</a></div><div class="ttdoc">Build metadata (engine git commit, build time, third-party version).</div><div class="ttdef"><b>Definition</b> <a href="Build_8cpp_source.html#l00016">Build.cpp:16</a></div></div>
+<div class="ttc" id="anamespacestd_html"><div class="ttname"><a href="namespacestd.html">std</a></div><div class="ttdef"><b>Definition</b> <a href="Container_8h_source.html#l00562">Container.h:562</a></div></div>
+<div class="ttc" id="astructeve_1_1rpg_1_1RpgStoryBinding_html"><div class="ttname"><a href="structeve_1_1rpg_1_1RpgStoryBinding.html">eve::rpg::RpgStoryBinding</a></div><div class="ttdoc">Borrowed domain objects an RPG story step runs against.</div><div class="ttdef"><b>Definition</b> <a href="RpgDialect_8h_source.html#l00167">RpgDialect.h:167</a></div></div>
+<div class="ttc" id="astructeve_1_1rpg_1_1RpgStoryBinding_html_a28be9e28407f6507288176bfedd96831"><div class="ttname"><a href="structeve_1_1rpg_1_1RpgStoryBinding.html#a28be9e28407f6507288176bfedd96831">eve::rpg::RpgStoryBinding::equipment</a></div><div class="ttdeci">eve::inventory::EquipmentSet * equipment</div><div class="ttdoc">Equipment set used by equipment steps, or nullptr when unavailable.</div><div class="ttdef"><b>Definition</b> <a href="RpgDialect_8h_source.html#l00175">RpgDialect.h:175</a></div></div>
+<div class="ttc" id="astructeve_1_1rpg_1_1RpgStoryBinding_html_a29a538fef159aa207fe8369eb500e41f"><div class="ttname"><a href="structeve_1_1rpg_1_1RpgStoryBinding.html#a29a538fef159aa207fe8369eb500e41f">eve::rpg::RpgStoryBinding::gameState</a></div><div class="ttdeci">GameState * gameState</div><div class="ttdoc">Owner of switches, variables and per-story completion facts.</div><div class="ttdef"><b>Definition</b> <a href="RpgDialect_8h_source.html#l00169">RpgDialect.h:169</a></div></div>
+<div class="ttc" id="astructeve_1_1rpg_1_1RpgStoryBinding_html_a4686914eb7f4b13edde3858d51040ac2"><div class="ttname"><a href="structeve_1_1rpg_1_1RpgStoryBinding.html#a4686914eb7f4b13edde3858d51040ac2">eve::rpg::RpgStoryBinding::party</a></div><div class="ttdeci">Party * party</div><div class="ttdoc">Party used to resolve actor=&lt;memberId&gt; when no custom resolver is set.</div><div class="ttdef"><b>Definition</b> <a href="RpgDialect_8h_source.html#l00171">RpgDialect.h:171</a></div></div>
+<div class="ttc" id="astructeve_1_1rpg_1_1RpgStoryBinding_html_a8cf8dd0b0393c4f46c8028f147c320fb"><div class="ttname"><a href="structeve_1_1rpg_1_1RpgStoryBinding.html#a8cf8dd0b0393c4f46c8028f147c320fb">eve::rpg::RpgStoryBinding::resolveActor</a></div><div class="ttdeci">std::function&lt; RPGActor *(const std::string &amp;actorId)&gt; resolveActor</div><div class="ttdoc">Optional actor resolver that overrides party member lookup.</div><div class="ttdef"><b>Definition</b> <a href="RpgDialect_8h_source.html#l00182">RpgDialect.h:182</a></div></div>
+<div class="ttc" id="astructeve_1_1rpg_1_1RpgStoryBinding_html_a9f0430711e81f7adf4b4de9d20ed2c4a"><div class="ttname"><a href="structeve_1_1rpg_1_1RpgStoryBinding.html#a9f0430711e81f7adf4b4de9d20ed2c4a">eve::rpg::RpgStoryBinding::bag</a></div><div class="ttdeci">eve::inventory::Bag * bag</div><div class="ttdoc">Bag used by item and equipment steps, or nullptr when unavailable.</div><div class="ttdef"><b>Definition</b> <a href="RpgDialect_8h_source.html#l00173">RpgDialect.h:173</a></div></div>
+<div class="ttc" id="astructeve_1_1rpg_1_1RpgStoryBinding_html_ad6cca49e8f1279cdd64bf9c5425c08a1"><div class="ttname"><a href="structeve_1_1rpg_1_1RpgStoryBinding.html#ad6cca49e8f1279cdd64bf9c5425c08a1">eve::rpg::RpgStoryBinding::moveActor</a></div><div class="ttdeci">StoryMoveHandler moveActor</div><div class="ttdoc">Optional movement controller for move steps.</div><div class="ttdef"><b>Definition</b> <a href="RpgDialect_8h_source.html#l00198">RpgDialect.h:198</a></div></div>
+<div class="ttc" id="astructeve_1_1rpg_1_1RpgStoryBinding_html_add5a1d00e152460af285a1a683963c23"><div class="ttname"><a href="structeve_1_1rpg_1_1RpgStoryBinding.html#add5a1d00e152460af285a1a683963c23">eve::rpg::RpgStoryBinding::playAnimation</a></div><div class="ttdeci">StoryAnimationHandler playAnimation</div><div class="ttdoc">Optional animation controller for animation steps.</div><div class="ttdef"><b>Definition</b> <a href="RpgDialect_8h_source.html#l00214">RpgDialect.h:214</a></div></div>
+<div class="ttc" id="astructeve_1_1rpg_1_1StoryAnimationRequest_html"><div class="ttname"><a href="structeve_1_1rpg_1_1StoryAnimationRequest.html">eve::rpg::StoryAnimationRequest</a></div><div class="ttdoc">One animation step request, expressed in the host's own animation space.</div><div class="ttdef"><b>Definition</b> <a href="RpgDialect_8h_source.html#l00119">RpgDialect.h:119</a></div></div>
+<div class="ttc" id="astructeve_1_1rpg_1_1StoryAnimationRequest_html_a27fa5d57c3174fbc1fe3fef52225cd5b"><div class="ttname"><a href="structeve_1_1rpg_1_1StoryAnimationRequest.html#a27fa5d57c3174fbc1fe3fef52225cd5b">eve::rpg::StoryAnimationRequest::loop</a></div><div class="ttdeci">bool loop</div><div class="ttdoc">Authored loop flag; false when the step omits it.</div><div class="ttdef"><b>Definition</b> <a href="RpgDialect_8h_source.html#l00135">RpgDialect.h:135</a></div></div>
+<div class="ttc" id="astructeve_1_1rpg_1_1StoryAnimationRequest_html_a2afa18398c2fbfa250929b146c34b2d9"><div class="ttname"><a href="structeve_1_1rpg_1_1StoryAnimationRequest.html#a2afa18398c2fbfa250929b146c34b2d9">eve::rpg::StoryAnimationRequest::targetId</a></div><div class="ttdeci">std::string targetId</div><div class="ttdoc">Authored target=&lt;id&gt; verbatim; the host's own subject space.</div><div class="ttdef"><b>Definition</b> <a href="RpgDialect_8h_source.html#l00121">RpgDialect.h:121</a></div></div>
+<div class="ttc" id="astructeve_1_1rpg_1_1StoryAnimationRequest_html_a4407fd8d4eda0e9a1f46c5052b78c767"><div class="ttname"><a href="structeve_1_1rpg_1_1StoryAnimationRequest.html#a4407fd8d4eda0e9a1f46c5052b78c767">eve::rpg::StoryAnimationRequest::actor</a></div><div class="ttdeci">RPGActor * actor</div><div class="ttdoc">Target resolved through the binding, or nullptr.</div><div class="ttdef"><b>Definition</b> <a href="RpgDialect_8h_source.html#l00131">RpgDialect.h:131</a></div></div>
+<div class="ttc" id="astructeve_1_1rpg_1_1StoryAnimationRequest_html_a4e1c0483513ea69cb782b48b37593a72"><div class="ttname"><a href="structeve_1_1rpg_1_1StoryAnimationRequest.html#a4e1c0483513ea69cb782b48b37593a72">eve::rpg::StoryAnimationRequest::hold</a></div><div class="ttdeci">bool hold</div><div class="ttdoc">Authored hold flag; false when the step omits it.</div><div class="ttdef"><b>Definition</b> <a href="RpgDialect_8h_source.html#l00137">RpgDialect.h:137</a></div></div>
+<div class="ttc" id="astructeve_1_1rpg_1_1StoryAnimationRequest_html_a5fceb66c3dad76f39e1a700599f86b1a"><div class="ttname"><a href="structeve_1_1rpg_1_1StoryAnimationRequest.html#a5fceb66c3dad76f39e1a700599f86b1a">eve::rpg::StoryAnimationRequest::clip</a></div><div class="ttdeci">std::string clip</div><div class="ttdoc">Authored clip=&lt;uri&gt; verbatim; opaque to the engine.</div><div class="ttdef"><b>Definition</b> <a href="RpgDialect_8h_source.html#l00133">RpgDialect.h:133</a></div></div>
+<div class="ttc" id="astructeve_1_1rpg_1_1StoryMoveRequest_html"><div class="ttname"><a href="structeve_1_1rpg_1_1StoryMoveRequest.html">eve::rpg::StoryMoveRequest</a></div><div class="ttdoc">One move step request, expressed in the host's own movement space.</div><div class="ttdef"><b>Definition</b> <a href="RpgDialect_8h_source.html#l00053">RpgDialect.h:53</a></div></div>
+<div class="ttc" id="astructeve_1_1rpg_1_1StoryMoveRequest_html_a0ec96061ad02ba2f6956a97ac9ffd6ce"><div class="ttname"><a href="structeve_1_1rpg_1_1StoryMoveRequest.html#a0ec96061ad02ba2f6956a97ac9ffd6ce">eve::rpg::StoryMoveRequest::hasDuration</a></div><div class="ttdeci">bool hasDuration</div><div class="ttdoc">Whether the authored step carried a duration field at all.</div><div class="ttdef"><b>Definition</b> <a href="RpgDialect_8h_source.html#l00070">RpgDialect.h:70</a></div></div>
+<div class="ttc" id="astructeve_1_1rpg_1_1StoryMoveRequest_html_a795ddb02dee0f0fdddb94c3422ff1d6a"><div class="ttname"><a href="structeve_1_1rpg_1_1StoryMoveRequest.html#a795ddb02dee0f0fdddb94c3422ff1d6a">eve::rpg::StoryMoveRequest::x</a></div><div class="ttdeci">double x</div><div class="ttdoc">Requested destination.</div><div class="ttdef"><b>Definition</b> <a href="RpgDialect_8h_source.html#l00067">RpgDialect.h:67</a></div></div>
+<div class="ttc" id="astructeve_1_1rpg_1_1StoryMoveRequest_html_a7ec80378f33cbb662c20cc1b65403d5a"><div class="ttname"><a href="structeve_1_1rpg_1_1StoryMoveRequest.html#a7ec80378f33cbb662c20cc1b65403d5a">eve::rpg::StoryMoveRequest::actorId</a></div><div class="ttdeci">std::string actorId</div><div class="ttdoc">Authored actor=&lt;id&gt; verbatim; the host's own subject space.</div><div class="ttdef"><b>Definition</b> <a href="RpgDialect_8h_source.html#l00055">RpgDialect.h:55</a></div></div>
+<div class="ttc" id="astructeve_1_1rpg_1_1StoryMoveRequest_html_acf0845d34b77cc17e7cb275a82e5b4c3"><div class="ttname"><a href="structeve_1_1rpg_1_1StoryMoveRequest.html#acf0845d34b77cc17e7cb275a82e5b4c3">eve::rpg::StoryMoveRequest::duration</a></div><div class="ttdeci">double duration</div><div class="ttdoc">Authored travel time in seconds; only meaningful when hasDuration.</div><div class="ttdef"><b>Definition</b> <a href="RpgDialect_8h_source.html#l00072">RpgDialect.h:72</a></div></div>
+<div class="ttc" id="astructeve_1_1rpg_1_1StoryMoveRequest_html_ad1545fffee9d7aeb83bea2d3eb3a04bb"><div class="ttname"><a href="structeve_1_1rpg_1_1StoryMoveRequest.html#ad1545fffee9d7aeb83bea2d3eb3a04bb">eve::rpg::StoryMoveRequest::actor</a></div><div class="ttdeci">RPGActor * actor</div><div class="ttdoc">Actor resolved through the binding, or nullptr.</div><div class="ttdef"><b>Definition</b> <a href="RpgDialect_8h_source.html#l00065">RpgDialect.h:65</a></div></div>
+<div class="ttc" id="astructeve_1_1rpg_1_1StoryMoveRequest_html_ad3af87da66256a8158da81353b7dd26e"><div class="ttname"><a href="structeve_1_1rpg_1_1StoryMoveRequest.html#ad3af87da66256a8158da81353b7dd26e">eve::rpg::StoryMoveRequest::y</a></div><div class="ttdeci">double y</div><div class="ttdef"><b>Definition</b> <a href="RpgDialect_8h_source.html#l00068">RpgDialect.h:68</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

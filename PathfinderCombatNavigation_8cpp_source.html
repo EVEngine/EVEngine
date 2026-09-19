@@ -1,0 +1,317 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/combat/navigation/PathfinderCombatNavigation.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_8ff025988e0b86b4485582b47b9a5d61.html">combat</a></li><li class="navelem"><a class="el" href="dir_16af51824d7607de4307d46291a21521.html">navigation</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">PathfinderCombatNavigation.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="PathfinderCombatNavigation_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &quot;<a class="code" href="PathfinderCombatNavigation_8h.html">combat/navigation/PathfinderCombatNavigation.h</a>&quot;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="Path_8h.html">map/Path.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="Pathfinder_8h.html">map/Pathfinder.h</a>&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span> </div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;cmath&gt;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;limits&gt;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;utility&gt;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
+<div class="foldopen" id="foldopen00010" data-start="{" data-end="}">
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno"><a class="line" href="namespaceeve_1_1combat_1_1navigation.html">   10</a></span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1combat_1_1navigation.html">eve::combat::navigation</a> {</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="keyword">namespace </span>{</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span> </div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><a class="code hl_class" href="classeve_1_1Result.html">Result&lt;T&gt;</a> failure(<a class="code hl_enumeration" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7">DiagnosticCode</a> <a class="code hl_variable" href="GltfAnimation_8cpp.html#ae9304e5e48b5f29bd2351ffc45b2b11a">code</a>, std::string <a class="code hl_variable" href="GltfAnimation_8cpp.html#a36bd74109f547f7f8198faf5a12d2879">message</a>, std::string <a class="code hl_variable" href="PlayHost_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a> = {}) {</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">Result&lt;T&gt;::failure</a>(<a class="code hl_function" href="classeve_1_1Diagnostic.html#af797f7520cc62e8273da5afdb59d9ef4">Diagnostic::error</a>(<a class="code hl_variable" href="GltfAnimation_8cpp.html#ae9304e5e48b5f29bd2351ffc45b2b11a">code</a>, std::move(<a class="code hl_variable" href="GltfAnimation_8cpp.html#a36bd74109f547f7f8198faf5a12d2879">message</a>), std::move(<a class="code hl_variable" href="PlayHost_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>)));</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>}</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span> </div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="keywordtype">bool</span> <a class="code hl_variable" href="OnnxRuntime_8cpp.html#a17baa4f903ac9966a0197d7067d9b425">finite</a>(<a class="code hl_struct" href="structeve_1_1combat_1_1CombatVector2.html">CombatVector2</a> <a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#aee90379adb0307effb138f4871edbc5c">value</a>) { <span class="keywordflow">return</span> std::isfinite(<a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#aee90379adb0307effb138f4871edbc5c">value</a>.x) &amp;&amp; std::isfinite(<a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#aee90379adb0307effb138f4871edbc5c">value</a>.z); }</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span> </div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="keywordtype">double</span> <a class="code hl_variable" href="CaveMesh_8cpp.html#a6150639f5295064e97e299a9206d16b1">length</a>(<a class="code hl_struct" href="structeve_1_1combat_1_1CombatVector2.html">CombatVector2</a> <a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#aee90379adb0307effb138f4871edbc5c">value</a>) { <span class="keywordflow">return</span> std::hypot(<a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#aee90379adb0307effb138f4871edbc5c">value</a>.x, <a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#aee90379adb0307effb138f4871edbc5c">value</a>.z); }</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span> </div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><a class="code hl_struct" href="structeve_1_1combat_1_1CombatVector2.html">CombatVector2</a> normalized(<a class="code hl_struct" href="structeve_1_1combat_1_1CombatVector2.html">CombatVector2</a> <a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#aee90379adb0307effb138f4871edbc5c">value</a>) {</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> magnitude = <a class="code hl_variable" href="CaveMesh_8cpp.html#a6150639f5295064e97e299a9206d16b1">length</a>(<a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#aee90379adb0307effb138f4871edbc5c">value</a>);</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>    <span class="keywordflow">return</span> magnitude &gt; 0.0 ? <a class="code hl_struct" href="structeve_1_1combat_1_1CombatVector2.html">CombatVector2</a>{<a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#aee90379adb0307effb138f4871edbc5c">value</a>.<a class="code hl_variable" href="structeve_1_1combat_1_1CombatVector2.html#a2bf0e3cab4a2e3dcce1b7bfa24a3b58b">x</a> / magnitude, <a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#aee90379adb0307effb138f4871edbc5c">value</a>.z / magnitude} : <a class="code hl_struct" href="structeve_1_1combat_1_1CombatVector2.html">CombatVector2</a>{};</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>}</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span> </div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span><a class="code hl_class" href="classeve_1_1Result.html">Result&lt;int&gt;</a> worldToCell(<span class="keywordtype">double</span> coordinate, <span class="keywordtype">double</span> origin, <span class="keywordtype">double</span> cellSize, std::string <a class="code hl_variable" href="PlayHost_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>) {</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> <a class="code hl_variable" href="CaveMesh_8cpp.html#a09061dea528bcd5029a85075f81eb6c9">projected</a> = std::floor((coordinate - origin) / cellSize);</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    <span class="keywordflow">if</span> (!std::isfinite(<a class="code hl_variable" href="CaveMesh_8cpp.html#a09061dea528bcd5029a85075f81eb6c9">projected</a>) || <a class="code hl_variable" href="CaveMesh_8cpp.html#a09061dea528bcd5029a85075f81eb6c9">projected</a> &lt; <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(std::numeric_limits&lt;int&gt;::min()) ||</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>        <a class="code hl_variable" href="CaveMesh_8cpp.html#a09061dea528bcd5029a85075f81eb6c9">projected</a> &gt; <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(std::numeric_limits&lt;int&gt;::max()))</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>        <span class="keywordflow">return</span> failure&lt;int&gt;(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">DiagnosticCode::InvalidArgument</a>, <span class="stringliteral">&quot;navigation coordinate is outside grid range&quot;</span>,</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>                            std::move(<a class="code hl_variable" href="PlayHost_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>));</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">Result&lt;int&gt;::success</a>(<span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="CaveMesh_8cpp.html#a09061dea528bcd5029a85075f81eb6c9">projected</a>));</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>}</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span> </div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>}  <span class="comment">// namespace</span></div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span> </div>
+<div class="foldopen" id="foldopen00038" data-start="{" data-end="}">
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno"><a class="line" href="structeve_1_1combat_1_1navigation_1_1PathfinderCombatNavigationConfig.html#ab05cdca95854026098a37de717267c3e">   38</a></span><a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> <a class="code hl_function" href="structeve_1_1combat_1_1navigation_1_1PathfinderCombatNavigationConfig.html#ab05cdca95854026098a37de717267c3e">PathfinderCombatNavigationConfig::validate</a>()<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="OnnxRuntime_8cpp.html#a17baa4f903ac9966a0197d7067d9b425">finite</a>(<a class="code hl_variable" href="structeve_1_1combat_1_1navigation_1_1PathfinderCombatNavigationConfig.html#a4dcf9dc992a84e54ffd96388387684b0">origin</a>) || !std::isfinite(<a class="code hl_variable" href="structeve_1_1combat_1_1navigation_1_1PathfinderCombatNavigationConfig.html#acaf141901d56e3c661a78376261b04a8">cellSize</a>) || <a class="code hl_variable" href="structeve_1_1combat_1_1navigation_1_1PathfinderCombatNavigationConfig.html#acaf141901d56e3c661a78376261b04a8">cellSize</a> &lt;= 0.0)</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>        <span class="keywordflow">return</span> failure&lt;void&gt;(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">DiagnosticCode::InvalidArgument</a>, <span class="stringliteral">&quot;combat navigation grid projection is invalid&quot;</span>,</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>                             <span class="stringliteral">&quot;config&quot;</span>);</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">Result&lt;void&gt;::success</a>();</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>}</div>
+</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span> </div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>PathfinderCombatNavigationProvider::PathfinderCombatNavigationProvider(</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    <a class="code hl_class" href="classeve_1_1map_1_1Pathfinder.html">map::Pathfinder</a>&amp; pathfinder, <a class="code hl_struct" href="structeve_1_1combat_1_1navigation_1_1PathfinderCombatNavigationConfig.html">PathfinderCombatNavigationConfig</a> config) noexcept</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    : pathfinder_(pathfinder), config_(config) {}</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span> </div>
+<div class="foldopen" id="foldopen00049" data-start="{" data-end="}">
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno"><a class="line" href="classeve_1_1combat_1_1navigation_1_1PathfinderCombatNavigationProvider.html#acb907771cc25b65386503aa3f38f0eb6">   49</a></span><a class="code hl_class" href="classeve_1_1Result.html">Result&lt;std::unique_ptr&lt;PathfinderCombatNavigationProvider&gt;</a>&gt; <a class="code hl_function" href="classeve_1_1combat_1_1navigation_1_1PathfinderCombatNavigationProvider.html#acb907771cc25b65386503aa3f38f0eb6">PathfinderCombatNavigationProvider::create</a>(</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    <a class="code hl_class" href="classeve_1_1map_1_1Pathfinder.html">map::Pathfinder</a>&amp; pathfinder, <a class="code hl_struct" href="structeve_1_1combat_1_1navigation_1_1PathfinderCombatNavigationConfig.html">PathfinderCombatNavigationConfig</a> config) {</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    <span class="keyword">auto</span> <a class="code hl_variable" href="McpServer_8cpp.html#a28e3c179a86f337095088b3ca02a2b2a">valid</a> = config.<a class="code hl_function" href="structeve_1_1combat_1_1navigation_1_1PathfinderCombatNavigationConfig.html#ab05cdca95854026098a37de717267c3e">validate</a>();</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="McpServer_8cpp.html#a28e3c179a86f337095088b3ca02a2b2a">valid</a>)</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>        <span class="keywordflow">return</span> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;std::unique_ptr&lt;PathfinderCombatNavigationProvider&gt;</a>&gt;::failure(<a class="code hl_variable" href="McpServer_8cpp.html#a28e3c179a86f337095088b3ca02a2b2a">valid</a>.status());</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    <span class="keywordflow">return</span> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;std::unique_ptr&lt;PathfinderCombatNavigationProvider&gt;</a>&gt;::success(</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>        std::unique_ptr&lt;PathfinderCombatNavigationProvider&gt;(</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>            <span class="keyword">new</span> <a class="code hl_class" href="classeve_1_1combat_1_1navigation_1_1PathfinderCombatNavigationProvider.html">PathfinderCombatNavigationProvider</a>(pathfinder, config)));</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>}</div>
+</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span> </div>
+<div class="foldopen" id="foldopen00059" data-start="{" data-end="}">
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno"><a class="line" href="classeve_1_1combat_1_1navigation_1_1PathfinderCombatNavigationProvider.html#a9b6f2772b7810514d62ff7b167d5baa1">   59</a></span><a class="code hl_class" href="classeve_1_1Result.html">Result&lt;CombatNavigationSteering&gt;</a> <a class="code hl_function" href="classeve_1_1combat_1_1navigation_1_1PathfinderCombatNavigationProvider.html#a9b6f2772b7810514d62ff7b167d5baa1">PathfinderCombatNavigationProvider::steer</a>(</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1combat_1_1CombatLocomotionState.html">CombatLocomotionState</a>&amp; state, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1combat_1_1CombatNavigationGoal.html">CombatNavigationGoal</a>&amp; goal, <a class="code hl_class" href="classeve_1_1detail_1_1StrongUint64.html">SimulationTick</a> <a class="code hl_variable" href="TacticsPersistence_8cpp.html#a9be293222289c40e0ca1ad953cb5a07e">tick</a>) {</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    (void)<a class="code hl_variable" href="TacticsPersistence_8cpp.html#a9be293222289c40e0ca1ad953cb5a07e">tick</a>;</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="OnnxRuntime_8cpp.html#a17baa4f903ac9966a0197d7067d9b425">finite</a>(<a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a>.position) || !<a class="code hl_variable" href="OnnxRuntime_8cpp.html#a17baa4f903ac9966a0197d7067d9b425">finite</a>(goal.<a class="code hl_variable" href="structeve_1_1combat_1_1CombatNavigationGoal.html#a7020c14eccf3d1b2e3d7e844987975e6">position</a>) || !std::isfinite(goal.<a class="code hl_variable" href="structeve_1_1combat_1_1CombatNavigationGoal.html#a4a2dece7247abcc78cfd96133152e782">acceptanceRadius</a>) ||</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>        goal.<a class="code hl_variable" href="structeve_1_1combat_1_1CombatNavigationGoal.html#a4a2dece7247abcc78cfd96133152e782">acceptanceRadius</a> &lt; 0.0)</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>        <span class="keywordflow">return</span> failure&lt;CombatNavigationSteering&gt;(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">DiagnosticCode::InvalidArgument</a>,</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>                                                 <span class="stringliteral">&quot;combat navigation request is invalid&quot;</span>, <span class="stringliteral">&quot;navigation&quot;</span>);</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span> </div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1combat_1_1CombatVector2.html">CombatVector2</a> goalDelta{goal.<a class="code hl_variable" href="structeve_1_1combat_1_1CombatNavigationGoal.html#a7020c14eccf3d1b2e3d7e844987975e6">position</a>.<a class="code hl_variable" href="structeve_1_1combat_1_1CombatVector2.html#a2bf0e3cab4a2e3dcce1b7bfa24a3b58b">x</a> - <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a>.position.x,</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>                                  goal.<a class="code hl_variable" href="structeve_1_1combat_1_1CombatNavigationGoal.html#a7020c14eccf3d1b2e3d7e844987975e6">position</a>.<a class="code hl_variable" href="structeve_1_1combat_1_1CombatVector2.html#a0c80189eb13c529c9d8f5fd9bcd48ca5">z</a> - <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a>.position.z};</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="CaveMesh_8cpp.html#a6150639f5295064e97e299a9206d16b1">length</a>(goalDelta) &lt;= goal.<a class="code hl_variable" href="structeve_1_1combat_1_1CombatNavigationGoal.html#a4a2dece7247abcc78cfd96133152e782">acceptanceRadius</a>)</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>        <span class="keywordflow">return</span> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;CombatNavigationSteering&gt;::success</a>(</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>            {<a class="code hl_enumvalue" href="namespaceeve_1_1combat.html#ab64f8f34bb74114b86c1fa33ef740b95a168d3e51452f6d8988f75ed882e74eb6">CombatNavigationPhase::Arrived</a>, {}, 0.0});</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span> </div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    <span class="keyword">auto</span> startX = worldToCell(<a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a>.position.x, config_.<a class="code hl_variable" href="structeve_1_1combat_1_1navigation_1_1PathfinderCombatNavigationConfig.html#a4dcf9dc992a84e54ffd96388387684b0">origin</a>.<a class="code hl_variable" href="structeve_1_1combat_1_1CombatVector2.html#a2bf0e3cab4a2e3dcce1b7bfa24a3b58b">x</a>, config_.<a class="code hl_variable" href="structeve_1_1combat_1_1navigation_1_1PathfinderCombatNavigationConfig.html#acaf141901d56e3c661a78376261b04a8">cellSize</a>, <span class="stringliteral">&quot;state.position.x&quot;</span>);</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    <span class="keywordflow">if</span> (!startX) <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">Result&lt;CombatNavigationSteering&gt;::failure</a>(startX.status());</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    <span class="keyword">auto</span> startY = worldToCell(<a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a>.position.z, config_.<a class="code hl_variable" href="structeve_1_1combat_1_1navigation_1_1PathfinderCombatNavigationConfig.html#a4dcf9dc992a84e54ffd96388387684b0">origin</a>.<a class="code hl_variable" href="structeve_1_1combat_1_1CombatVector2.html#a0c80189eb13c529c9d8f5fd9bcd48ca5">z</a>, config_.<a class="code hl_variable" href="structeve_1_1combat_1_1navigation_1_1PathfinderCombatNavigationConfig.html#acaf141901d56e3c661a78376261b04a8">cellSize</a>, <span class="stringliteral">&quot;state.position.z&quot;</span>);</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    <span class="keywordflow">if</span> (!startY) <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">Result&lt;CombatNavigationSteering&gt;::failure</a>(startY.status());</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>    <span class="keyword">auto</span> goalX = worldToCell(goal.<a class="code hl_variable" href="structeve_1_1combat_1_1CombatNavigationGoal.html#a7020c14eccf3d1b2e3d7e844987975e6">position</a>.<a class="code hl_variable" href="structeve_1_1combat_1_1CombatVector2.html#a2bf0e3cab4a2e3dcce1b7bfa24a3b58b">x</a>, config_.<a class="code hl_variable" href="structeve_1_1combat_1_1navigation_1_1PathfinderCombatNavigationConfig.html#a4dcf9dc992a84e54ffd96388387684b0">origin</a>.<a class="code hl_variable" href="structeve_1_1combat_1_1CombatVector2.html#a2bf0e3cab4a2e3dcce1b7bfa24a3b58b">x</a>, config_.<a class="code hl_variable" href="structeve_1_1combat_1_1navigation_1_1PathfinderCombatNavigationConfig.html#acaf141901d56e3c661a78376261b04a8">cellSize</a>, <span class="stringliteral">&quot;goal.position.x&quot;</span>);</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>    <span class="keywordflow">if</span> (!goalX) <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">Result&lt;CombatNavigationSteering&gt;::failure</a>(goalX.status());</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>    <span class="keyword">auto</span> goalY = worldToCell(goal.<a class="code hl_variable" href="structeve_1_1combat_1_1CombatNavigationGoal.html#a7020c14eccf3d1b2e3d7e844987975e6">position</a>.<a class="code hl_variable" href="structeve_1_1combat_1_1CombatVector2.html#a0c80189eb13c529c9d8f5fd9bcd48ca5">z</a>, config_.<a class="code hl_variable" href="structeve_1_1combat_1_1navigation_1_1PathfinderCombatNavigationConfig.html#a4dcf9dc992a84e54ffd96388387684b0">origin</a>.<a class="code hl_variable" href="structeve_1_1combat_1_1CombatVector2.html#a0c80189eb13c529c9d8f5fd9bcd48ca5">z</a>, config_.<a class="code hl_variable" href="structeve_1_1combat_1_1navigation_1_1PathfinderCombatNavigationConfig.html#acaf141901d56e3c661a78376261b04a8">cellSize</a>, <span class="stringliteral">&quot;goal.position.z&quot;</span>);</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>    <span class="keywordflow">if</span> (!goalY) <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">Result&lt;CombatNavigationSteering&gt;::failure</a>(goalY.status());</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span> </div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>    std::unique_ptr&lt;map::Path&gt; <a class="code hl_variable" href="PlayHost_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>(pathfinder_.get().findPath(startX.value(), startY.value(),</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>                                                               goalX.value(), goalY.value()));</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="PlayHost_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a> || <a class="code hl_variable" href="PlayHost_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>-&gt;empty())</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>        <span class="keywordflow">return</span> failure&lt;CombatNavigationSteering&gt;(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">DiagnosticCode::NotFound</a>,</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>                                                 <span class="stringliteral">&quot;combat navigation goal is unreachable&quot;</span>,</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>                                                 <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a>.subject.format());</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span> </div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>    <a class="code hl_struct" href="structeve_1_1combat_1_1CombatVector2.html">CombatVector2</a> waypoint = goal.<a class="code hl_variable" href="structeve_1_1combat_1_1CombatNavigationGoal.html#a7020c14eccf3d1b2e3d7e844987975e6">position</a>;</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="PlayHost_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>-&gt;getLength() &gt; 1) {</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>        waypoint.<a class="code hl_variable" href="structeve_1_1combat_1_1CombatVector2.html#a2bf0e3cab4a2e3dcce1b7bfa24a3b58b">x</a> = config_.<a class="code hl_variable" href="structeve_1_1combat_1_1navigation_1_1PathfinderCombatNavigationConfig.html#a4dcf9dc992a84e54ffd96388387684b0">origin</a>.<a class="code hl_variable" href="structeve_1_1combat_1_1CombatVector2.html#a2bf0e3cab4a2e3dcce1b7bfa24a3b58b">x</a> + (<span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="PlayHost_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>-&gt;getX(1)) + 0.5) * config_.<a class="code hl_variable" href="structeve_1_1combat_1_1navigation_1_1PathfinderCombatNavigationConfig.html#acaf141901d56e3c661a78376261b04a8">cellSize</a>;</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>        waypoint.<a class="code hl_variable" href="structeve_1_1combat_1_1CombatVector2.html#a0c80189eb13c529c9d8f5fd9bcd48ca5">z</a> = config_.<a class="code hl_variable" href="structeve_1_1combat_1_1navigation_1_1PathfinderCombatNavigationConfig.html#a4dcf9dc992a84e54ffd96388387684b0">origin</a>.<a class="code hl_variable" href="structeve_1_1combat_1_1CombatVector2.html#a0c80189eb13c529c9d8f5fd9bcd48ca5">z</a> + (<span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="PlayHost_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>-&gt;getY(1)) + 0.5) * config_.<a class="code hl_variable" href="structeve_1_1combat_1_1navigation_1_1PathfinderCombatNavigationConfig.html#acaf141901d56e3c661a78376261b04a8">cellSize</a>;</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>    }</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">Result&lt;CombatNavigationSteering&gt;::success</a>(</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>        {<a class="code hl_enumvalue" href="namespaceeve_1_1combat.html#ab64f8f34bb74114b86c1fa33ef740b95adefe967ad0373b2274fc298f19125ca7">CombatNavigationPhase::Moving</a>,</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>         normalized({waypoint.<a class="code hl_variable" href="structeve_1_1combat_1_1CombatVector2.html#a2bf0e3cab4a2e3dcce1b7bfa24a3b58b">x</a> - <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a>.position.x, waypoint.<a class="code hl_variable" href="structeve_1_1combat_1_1CombatVector2.html#a0c80189eb13c529c9d8f5fd9bcd48ca5">z</a> - <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a>.position.z}), 1.0});</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>}</div>
+</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span> </div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>}  <span class="comment">// namespace eve::combat::navigation</span></div>
+</div>
+<div class="ttc" id="aActionNotifyRegistry_8cpp_html_aee90379adb0307effb138f4871edbc5c"><div class="ttname"><a href="ActionNotifyRegistry_8cpp.html#aee90379adb0307effb138f4871edbc5c">value</a></div><div class="ttdeci">double value</div><div class="ttdef"><b>Definition</b> <a href="ActionNotifyRegistry_8cpp_source.html#l00165">ActionNotifyRegistry.cpp:165</a></div></div>
+<div class="ttc" id="aActionTimelineWidget_8cpp_html_ab30ba07e2a0bd07a15e45a92c32db9c5"><div class="ttname"><a href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a></div><div class="ttdeci">bool state</div><div class="ttdef"><b>Definition</b> <a href="ActionTimelineWidget_8cpp_source.html#l00033">ActionTimelineWidget.cpp:33</a></div></div>
+<div class="ttc" id="aCaveMesh_8cpp_html_a09061dea528bcd5029a85075f81eb6c9"><div class="ttname"><a href="CaveMesh_8cpp.html#a09061dea528bcd5029a85075f81eb6c9">projected</a></div><div class="ttdeci">Vec3 projected</div><div class="ttdef"><b>Definition</b> <a href="CaveMesh_8cpp_source.html#l00122">CaveMesh.cpp:122</a></div></div>
+<div class="ttc" id="aCaveMesh_8cpp_html_a6150639f5295064e97e299a9206d16b1"><div class="ttname"><a href="CaveMesh_8cpp.html#a6150639f5295064e97e299a9206d16b1">length</a></div><div class="ttdeci">float length</div><div class="ttdef"><b>Definition</b> <a href="CaveMesh_8cpp_source.html#l00094">CaveMesh.cpp:94</a></div></div>
+<div class="ttc" id="aGltfAnimation_8cpp_html_a36bd74109f547f7f8198faf5a12d2879"><div class="ttname"><a href="GltfAnimation_8cpp.html#a36bd74109f547f7f8198faf5a12d2879">message</a></div><div class="ttdeci">std::string message</div><div class="ttdef"><b>Definition</b> <a href="GltfAnimation_8cpp_source.html#l00017">GltfAnimation.cpp:17</a></div></div>
+<div class="ttc" id="aGltfAnimation_8cpp_html_ae9304e5e48b5f29bd2351ffc45b2b11a"><div class="ttname"><a href="GltfAnimation_8cpp.html#ae9304e5e48b5f29bd2351ffc45b2b11a">code</a></div><div class="ttdeci">DiagnosticCode code</div><div class="ttdef"><b>Definition</b> <a href="GltfAnimation_8cpp_source.html#l00016">GltfAnimation.cpp:16</a></div></div>
+<div class="ttc" id="aMcpServer_8cpp_html_a28e3c179a86f337095088b3ca02a2b2a"><div class="ttname"><a href="McpServer_8cpp.html#a28e3c179a86f337095088b3ca02a2b2a">valid</a></div><div class="ttdeci">bool valid</div><div class="ttdef"><b>Definition</b> <a href="McpServer_8cpp_source.html#l00550">McpServer.cpp:550</a></div></div>
+<div class="ttc" id="aOnnxRuntime_8cpp_html_a17baa4f903ac9966a0197d7067d9b425"><div class="ttname"><a href="OnnxRuntime_8cpp.html#a17baa4f903ac9966a0197d7067d9b425">finite</a></div><div class="ttdeci">bool finite</div><div class="ttdef"><b>Definition</b> <a href="OnnxRuntime_8cpp_source.html#l00026">OnnxRuntime.cpp:26</a></div></div>
+<div class="ttc" id="aPath_8h_html"><div class="ttname"><a href="Path_8h.html">Path.h</a></div></div>
+<div class="ttc" id="aPathfinderCombatNavigation_8h_html"><div class="ttname"><a href="PathfinderCombatNavigation_8h.html">PathfinderCombatNavigation.h</a></div><div class="ttdoc">Map Pathfinder steering adapter for combat locomotion.</div></div>
+<div class="ttc" id="aPathfinder_8h_html"><div class="ttname"><a href="Pathfinder_8h.html">Pathfinder.h</a></div></div>
+<div class="ttc" id="aPlayHost_8cpp_html_a4d455efceee21e97d8e21ee40e9b4a20"><div class="ttname"><a href="PlayHost_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a></div><div class="ttdeci">std::string path</div><div class="ttdef"><b>Definition</b> <a href="PlayHost_8cpp_source.html#l00144">PlayHost.cpp:144</a></div></div>
+<div class="ttc" id="aTacticsPersistence_8cpp_html_a9be293222289c40e0ca1ad953cb5a07e"><div class="ttname"><a href="TacticsPersistence_8cpp.html#a9be293222289c40e0ca1ad953cb5a07e">tick</a></div><div class="ttdeci">SimulationTick tick</div><div class="ttdef"><b>Definition</b> <a href="TacticsPersistence_8cpp_source.html#l00128">TacticsPersistence.cpp:128</a></div></div>
+<div class="ttc" id="aclasseve_1_1Diagnostic_html_af797f7520cc62e8273da5afdb59d9ef4"><div class="ttname"><a href="classeve_1_1Diagnostic.html#af797f7520cc62e8273da5afdb59d9ef4">eve::Diagnostic::error</a></div><div class="ttdeci">static Diagnostic error(DiagnosticCode code, std::string message, std::string path={}, DiagnosticDetails details={}, std::string source={})</div><div class="ttdoc">Construct an error diagnostic with the standard error severity.</div><div class="ttdef"><b>Definition</b> <a href="Diagnostic_8h_source.html#l00119">Diagnostic.h:119</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00148">Result.h:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html_a10668d27f9f97c9808e0099e0248816b"><div class="ttname"><a href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">eve::Result::success</a></div><div class="ttdeci">static Result success(T value)</div><div class="ttdoc">Construct a successful result owning value.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00157">Result.h:157</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html_af1a297022e9a6a615433003fe6466358"><div class="ttname"><a href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">eve::Result::failure</a></div><div class="ttdeci">static Result failure(Status status)</div><div class="ttdoc">Construct a failed result from a structured status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00166">Result.h:166</a></div></div>
+<div class="ttc" id="aclasseve_1_1combat_1_1navigation_1_1PathfinderCombatNavigationProvider_html"><div class="ttname"><a href="classeve_1_1combat_1_1navigation_1_1PathfinderCombatNavigationProvider.html">eve::combat::navigation::PathfinderCombatNavigationProvider</a></div><div class="ttdoc">Synchronous combat steering provider backed by the canonical map Pathfinder.</div><div class="ttdef"><b>Definition</b> <a href="PathfinderCombatNavigation_8h_source.html#l00036">PathfinderCombatNavigation.h:36</a></div></div>
+<div class="ttc" id="aclasseve_1_1combat_1_1navigation_1_1PathfinderCombatNavigationProvider_html_a9b6f2772b7810514d62ff7b167d5baa1"><div class="ttname"><a href="classeve_1_1combat_1_1navigation_1_1PathfinderCombatNavigationProvider.html#a9b6f2772b7810514d62ff7b167d5baa1">eve::combat::navigation::PathfinderCombatNavigationProvider::steer</a></div><div class="ttdeci">Result&lt; CombatNavigationSteering &gt; steer(const CombatLocomotionState &amp;state, const CombatNavigationGoal &amp;goal, SimulationTick tick) override</div><div class="ttdoc">Resolve steering for one subject without mutating locomotion state.</div><div class="ttdef"><b>Definition</b> <a href="PathfinderCombatNavigation_8cpp_source.html#l00059">PathfinderCombatNavigation.cpp:59</a></div></div>
+<div class="ttc" id="aclasseve_1_1combat_1_1navigation_1_1PathfinderCombatNavigationProvider_html_acb907771cc25b65386503aa3f38f0eb6"><div class="ttname"><a href="classeve_1_1combat_1_1navigation_1_1PathfinderCombatNavigationProvider.html#acb907771cc25b65386503aa3f38f0eb6">eve::combat::navigation::PathfinderCombatNavigationProvider::create</a></div><div class="ttdeci">static Result&lt; std::unique_ptr&lt; PathfinderCombatNavigationProvider &gt; &gt; create(map::Pathfinder &amp;pathfinder, PathfinderCombatNavigationConfig config)</div><div class="ttdoc">Validate configuration and create an owning adapter.</div><div class="ttdef"><b>Definition</b> <a href="PathfinderCombatNavigation_8cpp_source.html#l00049">PathfinderCombatNavigation.cpp:49</a></div></div>
+<div class="ttc" id="aclasseve_1_1detail_1_1StrongUint64_html"><div class="ttname"><a href="classeve_1_1detail_1_1StrongUint64.html">eve::detail::StrongUint64&lt; detail::SimulationTickTag &gt;</a></div></div>
+<div class="ttc" id="aclasseve_1_1map_1_1Pathfinder_html"><div class="ttname"><a href="classeve_1_1map_1_1Pathfinder.html">eve::map::Pathfinder</a></div><div class="ttdoc">Pathfinding facade. Single-agent: A*. Group (same goal): Flow Field + follow. Grid/topology internals...</div><div class="ttdef"><b>Definition</b> <a href="Pathfinder_8h_source.html#l00018">Pathfinder.h:18</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1combat_1_1navigation_html"><div class="ttname"><a href="namespaceeve_1_1combat_1_1navigation.html">eve::combat::navigation</a></div><div class="ttdef"><b>Definition</b> <a href="PathfinderCombatNavigation_8cpp_source.html#l00010">PathfinderCombatNavigation.cpp:10</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1combat_html_ab64f8f34bb74114b86c1fa33ef740b95a168d3e51452f6d8988f75ed882e74eb6"><div class="ttname"><a href="namespaceeve_1_1combat.html#ab64f8f34bb74114b86c1fa33ef740b95a168d3e51452f6d8988f75ed882e74eb6">eve::combat::CombatNavigationPhase::Arrived</a></div><div class="ttdeci">@ Arrived</div></div>
+<div class="ttc" id="anamespaceeve_1_1combat_html_ab64f8f34bb74114b86c1fa33ef740b95adefe967ad0373b2274fc298f19125ca7"><div class="ttname"><a href="namespaceeve_1_1combat.html#ab64f8f34bb74114b86c1fa33ef740b95adefe967ad0373b2274fc298f19125ca7">eve::combat::CombatNavigationPhase::Moving</a></div><div class="ttdeci">@ Moving</div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7">eve::DiagnosticCode</a></div><div class="ttdeci">DiagnosticCode</div><div class="ttdoc">Stable machine-readable diagnostic codes.</div><div class="ttdef"><b>Definition</b> <a href="Diagnostic_8h_source.html#l00047">Diagnostic.h:47</a></div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::DiagnosticCode::InvalidArgument</a></div><div class="ttdeci">@ InvalidArgument</div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::DiagnosticCode::NotFound</a></div><div class="ttdeci">@ NotFound</div></div>
+<div class="ttc" id="astructeve_1_1combat_1_1CombatLocomotionState_html"><div class="ttname"><a href="structeve_1_1combat_1_1CombatLocomotionState.html">eve::combat::CombatLocomotionState</a></div><div class="ttdoc">Owning read-only projection of one registered combat subject.</div><div class="ttdef"><b>Definition</b> <a href="CombatLocomotion_8h_source.html#l00041">CombatLocomotion.h:41</a></div></div>
+<div class="ttc" id="astructeve_1_1combat_1_1CombatNavigationGoal_html"><div class="ttname"><a href="structeve_1_1combat_1_1CombatNavigationGoal.html">eve::combat::CombatNavigationGoal</a></div><div class="ttdoc">Owning navigation goal retained by the locomotion authority.</div><div class="ttdef"><b>Definition</b> <a href="CombatLocomotion_8h_source.html#l00035">CombatLocomotion.h:35</a></div></div>
+<div class="ttc" id="astructeve_1_1combat_1_1CombatNavigationGoal_html_a4a2dece7247abcc78cfd96133152e782"><div class="ttname"><a href="structeve_1_1combat_1_1CombatNavigationGoal.html#a4a2dece7247abcc78cfd96133152e782">eve::combat::CombatNavigationGoal::acceptanceRadius</a></div><div class="ttdeci">double acceptanceRadius</div><div class="ttdef"><b>Definition</b> <a href="CombatLocomotion_8h_source.html#l00037">CombatLocomotion.h:37</a></div></div>
+<div class="ttc" id="astructeve_1_1combat_1_1CombatNavigationGoal_html_a7020c14eccf3d1b2e3d7e844987975e6"><div class="ttname"><a href="structeve_1_1combat_1_1CombatNavigationGoal.html#a7020c14eccf3d1b2e3d7e844987975e6">eve::combat::CombatNavigationGoal::position</a></div><div class="ttdeci">CombatVector2 position</div><div class="ttdef"><b>Definition</b> <a href="CombatLocomotion_8h_source.html#l00036">CombatLocomotion.h:36</a></div></div>
+<div class="ttc" id="astructeve_1_1combat_1_1CombatVector2_html"><div class="ttname"><a href="structeve_1_1combat_1_1CombatVector2.html">eve::combat::CombatVector2</a></div><div class="ttdoc">Finite position or direction in the horizontal combat plane.</div><div class="ttdef"><b>Definition</b> <a href="CombatLocomotion_8h_source.html#l00017">CombatLocomotion.h:17</a></div></div>
+<div class="ttc" id="astructeve_1_1combat_1_1CombatVector2_html_a0c80189eb13c529c9d8f5fd9bcd48ca5"><div class="ttname"><a href="structeve_1_1combat_1_1CombatVector2.html#a0c80189eb13c529c9d8f5fd9bcd48ca5">eve::combat::CombatVector2::z</a></div><div class="ttdeci">double z</div><div class="ttdef"><b>Definition</b> <a href="CombatLocomotion_8h_source.html#l00019">CombatLocomotion.h:19</a></div></div>
+<div class="ttc" id="astructeve_1_1combat_1_1CombatVector2_html_a2bf0e3cab4a2e3dcce1b7bfa24a3b58b"><div class="ttname"><a href="structeve_1_1combat_1_1CombatVector2.html#a2bf0e3cab4a2e3dcce1b7bfa24a3b58b">eve::combat::CombatVector2::x</a></div><div class="ttdeci">double x</div><div class="ttdef"><b>Definition</b> <a href="CombatLocomotion_8h_source.html#l00018">CombatLocomotion.h:18</a></div></div>
+<div class="ttc" id="astructeve_1_1combat_1_1navigation_1_1PathfinderCombatNavigationConfig_html"><div class="ttname"><a href="structeve_1_1combat_1_1navigation_1_1PathfinderCombatNavigationConfig.html">eve::combat::navigation::PathfinderCombatNavigationConfig</a></div><div class="ttdoc">World/grid projection used by the map-backed combat navigation provider.</div><div class="ttdef"><b>Definition</b> <a href="PathfinderCombatNavigation_8h_source.html#l00017">PathfinderCombatNavigation.h:17</a></div></div>
+<div class="ttc" id="astructeve_1_1combat_1_1navigation_1_1PathfinderCombatNavigationConfig_html_a4dcf9dc992a84e54ffd96388387684b0"><div class="ttname"><a href="structeve_1_1combat_1_1navigation_1_1PathfinderCombatNavigationConfig.html#a4dcf9dc992a84e54ffd96388387684b0">eve::combat::navigation::PathfinderCombatNavigationConfig::origin</a></div><div class="ttdeci">CombatVector2 origin</div><div class="ttdef"><b>Definition</b> <a href="PathfinderCombatNavigation_8h_source.html#l00018">PathfinderCombatNavigation.h:18</a></div></div>
+<div class="ttc" id="astructeve_1_1combat_1_1navigation_1_1PathfinderCombatNavigationConfig_html_ab05cdca95854026098a37de717267c3e"><div class="ttname"><a href="structeve_1_1combat_1_1navigation_1_1PathfinderCombatNavigationConfig.html#ab05cdca95854026098a37de717267c3e">eve::combat::navigation::PathfinderCombatNavigationConfig::validate</a></div><div class="ttdeci">Result&lt; void &gt; validate() const</div><div class="ttdoc">Reject non-finite coordinates and non-positive cell size.</div><div class="ttdef"><b>Definition</b> <a href="PathfinderCombatNavigation_8cpp_source.html#l00038">PathfinderCombatNavigation.cpp:38</a></div></div>
+<div class="ttc" id="astructeve_1_1combat_1_1navigation_1_1PathfinderCombatNavigationConfig_html_acaf141901d56e3c661a78376261b04a8"><div class="ttname"><a href="structeve_1_1combat_1_1navigation_1_1PathfinderCombatNavigationConfig.html#acaf141901d56e3c661a78376261b04a8">eve::combat::navigation::PathfinderCombatNavigationConfig::cellSize</a></div><div class="ttdeci">double cellSize</div><div class="ttdef"><b>Definition</b> <a href="PathfinderCombatNavigation_8h_source.html#l00019">PathfinderCombatNavigation.h:19</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

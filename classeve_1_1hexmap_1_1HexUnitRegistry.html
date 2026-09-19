@@ -1,0 +1,956 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::hexmap::HexUnitRegistry类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1hexmap.html">hexmap</a></li><li class="navelem"><a class="el" href="classeve_1_1hexmap_1_1HexUnitRegistry.html">HexUnitRegistry</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1hexmap_1_1HexUnitRegistry-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::hexmap::HexUnitRegistry类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Owns the units of one map and their fog-of-war contribution.  
+ <a href="classeve_1_1hexmap_1_1HexUnitRegistry.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="HexUnits_8h_source.html">HexUnits.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a43595355bfde500e6667e0e34161ebbb" id="r_a43595355bfde500e6667e0e34161ebbb"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexUnitRegistry.html#a43595355bfde500e6667e0e34161ebbb">HexUnitRegistry</a> ()=default</td></tr>
+<tr class="separator:a43595355bfde500e6667e0e34161ebbb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2023c1ab9b4fac15934eac563927cd42" id="r_a2023c1ab9b4fac15934eac563927cd42"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="structeve_1_1hexmap_1_1HexUnitTuning.html">HexUnitTuning</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexUnitRegistry.html#a2023c1ab9b4fac15934eac563927cd42">tuning</a> () const noexcept</td></tr>
+<tr class="memdesc:a2023c1ab9b4fac15934eac563927cd42"><td class="mdescLeft">&#160;</td><td class="mdescRight">Current tuning.  <br /></td></tr>
+<tr class="separator:a2023c1ab9b4fac15934eac563927cd42"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1f158d3ab85eb8b68585e159bc23ceb6" id="r_a1f158d3ab85eb8b68585e159bc23ceb6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexUnitRegistry.html#a1f158d3ab85eb8b68585e159bc23ceb6">setTuning</a> (const <a class="el" href="structeve_1_1hexmap_1_1HexUnitTuning.html">HexUnitTuning</a> &amp;<a class="el" href="classeve_1_1hexmap_1_1HexUnitRegistry.html#a2023c1ab9b4fac15934eac563927cd42">tuning</a>) noexcept</td></tr>
+<tr class="memdesc:a1f158d3ab85eb8b68585e159bc23ceb6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Replaces the tuning; ongoing travel keeps its plan but uses the new speed.  <br /></td></tr>
+<tr class="separator:a1f158d3ab85eb8b68585e159bc23ceb6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0be836680dcc552893295034dc5b8983" id="r_a0be836680dcc552893295034dc5b8983"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexUnitRegistry.html#a0be836680dcc552893295034dc5b8983">empty</a> () const noexcept</td></tr>
+<tr class="memdesc:a0be836680dcc552893295034dc5b8983"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether no unit is registered.  <br /></td></tr>
+<tr class="separator:a0be836680dcc552893295034dc5b8983"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a315e1dfae2a63f019a065696b2d686fb" id="r_a315e1dfae2a63f019a065696b2d686fb"><td class="memItemLeft" align="right" valign="top">std::int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexUnitRegistry.html#a315e1dfae2a63f019a065696b2d686fb">unitCount</a> () const noexcept</td></tr>
+<tr class="memdesc:a315e1dfae2a63f019a065696b2d686fb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of registered units.  <br /></td></tr>
+<tr class="separator:a315e1dfae2a63f019a065696b2d686fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adad5025dbc1369bfcbbf4e94ebe86cac" id="r_adad5025dbc1369bfcbbf4e94ebe86cac"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::int32_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexUnitRegistry.html#adad5025dbc1369bfcbbf4e94ebe86cac">addUnit</a> (<a class="el" href="classeve_1_1hexmap_1_1HexMap.html">HexMap</a> &amp;map, <a class="el" href="classeve_1_1hexmap_1_1HexVisibility.html">HexVisibility</a> &amp;visibility, <a class="el" href="classeve_1_1hexmap_1_1HexSearchContext.html">HexSearchContext</a> &amp;scratch, <a class="el" href="structeve_1_1hexmap_1_1HexCoordinates.html">HexCoordinates</a> location, float orientation)</td></tr>
+<tr class="memdesc:adad5025dbc1369bfcbbf4e94ebe86cac"><td class="mdescLeft">&#160;</td><td class="mdescRight">Adds a unit on <code>location</code> and grants its vision.  <br /></td></tr>
+<tr class="separator:adad5025dbc1369bfcbbf4e94ebe86cac"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6d8ddd6fe5ad174b20760c24d5602473" id="r_a6d8ddd6fe5ad174b20760c24d5602473"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexUnitRegistry.html#a6d8ddd6fe5ad174b20760c24d5602473">removeUnit</a> (<a class="el" href="classeve_1_1hexmap_1_1HexMap.html">HexMap</a> &amp;map, <a class="el" href="classeve_1_1hexmap_1_1HexVisibility.html">HexVisibility</a> &amp;visibility, <a class="el" href="classeve_1_1hexmap_1_1HexSearchContext.html">HexSearchContext</a> &amp;scratch, std::int32_t unitId)</td></tr>
+<tr class="memdesc:a6d8ddd6fe5ad174b20760c24d5602473"><td class="mdescLeft">&#160;</td><td class="mdescRight">Removes a unit and withdraws its vision.  <br /></td></tr>
+<tr class="separator:a6d8ddd6fe5ad174b20760c24d5602473"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a290fe84c82969c78c812056f53663b2a" id="r_a290fe84c82969c78c812056f53663b2a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexUnitRegistry.html#a290fe84c82969c78c812056f53663b2a">removeAll</a> (<a class="el" href="classeve_1_1hexmap_1_1HexVisibility.html">HexVisibility</a> &amp;visibility) noexcept</td></tr>
+<tr class="memdesc:a290fe84c82969c78c812056f53663b2a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Removes every unit and clears the visibility counters of the map.  <br /></td></tr>
+<tr class="separator:a290fe84c82969c78c812056f53663b2a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab96ed0c33b055d69577620ce7c03fedd" id="r_ab96ed0c33b055d69577620ce7c03fedd"><td class="memItemLeft" align="right" valign="top">std::int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexUnitRegistry.html#ab96ed0c33b055d69577620ce7c03fedd">unitIdAt</a> (<a class="el" href="structeve_1_1hexmap_1_1HexCoordinates.html">HexCoordinates</a> coordinates) const noexcept</td></tr>
+<tr class="memdesc:ab96ed0c33b055d69577620ce7c03fedd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Id of the unit occupying a cell, or -1 when the cell is free.  <br /></td></tr>
+<tr class="separator:ab96ed0c33b055d69577620ce7c03fedd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7032ffd239fd32fb75fe35fe250a73cc" id="r_a7032ffd239fd32fb75fe35fe250a73cc"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexUnitRegistry.html#a7032ffd239fd32fb75fe35fe250a73cc">isOccupied</a> (<a class="el" href="structeve_1_1hexmap_1_1HexCoordinates.html">HexCoordinates</a> coordinates) const noexcept</td></tr>
+<tr class="memdesc:a7032ffd239fd32fb75fe35fe250a73cc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether any unit occupies a cell.  <br /></td></tr>
+<tr class="separator:a7032ffd239fd32fb75fe35fe250a73cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5aa20e19270f18b1ff1baa11bf0b427d" id="r_a5aa20e19270f18b1ff1baa11bf0b427d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1hexmap.html#a8c8c6ba8cadbf18dc24fb694b921426e">HexOccupancyQuery</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexUnitRegistry.html#a5aa20e19270f18b1ff1baa11bf0b427d">occupancyQuery</a> () const</td></tr>
+<tr class="memdesc:a5aa20e19270f18b1ff1baa11bf0b427d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Occupancy predicate bound to this registry. @ownership The returned callable borrows <code>*this</code>; it must not outlive the registry.  <br /></td></tr>
+<tr class="separator:a5aa20e19270f18b1ff1baa11bf0b427d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab798c7f84082777846312e2d6927baee" id="r_ab798c7f84082777846312e2d6927baee"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexUnitRegistry.html#ab798c7f84082777846312e2d6927baee">beginTravel</a> (<a class="el" href="classeve_1_1hexmap_1_1HexMap.html">HexMap</a> &amp;map, <a class="el" href="classeve_1_1hexmap_1_1HexVisibility.html">HexVisibility</a> &amp;visibility, <a class="el" href="classeve_1_1hexmap_1_1HexSearchContext.html">HexSearchContext</a> &amp;scratch, std::int32_t unitId, const std::vector&lt; std::int32_t &gt; &amp;<a class="el" href="PlayHost_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>)</td></tr>
+<tr class="memdesc:ab798c7f84082777846312e2d6927baee"><td class="mdescLeft">&#160;</td><td class="mdescRight">Starts travelling along <code>path</code>.  <br /></td></tr>
+<tr class="separator:ab798c7f84082777846312e2d6927baee"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5cf06a32dddd8b21dea88e8cdfd29221" id="r_a5cf06a32dddd8b21dea88e8cdfd29221"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1hexmap_1_1HexUnitSample.html">HexUnitSample</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexUnitRegistry.html#a5cf06a32dddd8b21dea88e8cdfd29221">advance</a> (<a class="el" href="classeve_1_1hexmap_1_1HexMap.html">HexMap</a> &amp;map, <a class="el" href="classeve_1_1hexmap_1_1HexVisibility.html">HexVisibility</a> &amp;visibility, <a class="el" href="classeve_1_1hexmap_1_1HexSearchContext.html">HexSearchContext</a> &amp;scratch, std::int32_t unitId, float dt)</td></tr>
+<tr class="memdesc:a5cf06a32dddd8b21dea88e8cdfd29221"><td class="mdescLeft">&#160;</td><td class="mdescRight">Advances one unit's travel by <code>dt</code> seconds and reports where it now is.  <br /></td></tr>
+<tr class="separator:a5cf06a32dddd8b21dea88e8cdfd29221"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a951abd675f97cd297fae14d8a2f34b35" id="r_a951abd675f97cd297fae14d8a2f34b35"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexUnitRegistry.html#a951abd675f97cd297fae14d8a2f34b35">advanceAll</a> (<a class="el" href="classeve_1_1hexmap_1_1HexMap.html">HexMap</a> &amp;map, <a class="el" href="classeve_1_1hexmap_1_1HexVisibility.html">HexVisibility</a> &amp;visibility, <a class="el" href="classeve_1_1hexmap_1_1HexSearchContext.html">HexSearchContext</a> &amp;scratch, float dt)</td></tr>
+<tr class="memdesc:a951abd675f97cd297fae14d8a2f34b35"><td class="mdescLeft">&#160;</td><td class="mdescRight">Advances every travelling unit by <code>dt</code> seconds.  <br /></td></tr>
+<tr class="separator:a951abd675f97cd297fae14d8a2f34b35"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab3f1d4980b952dcb163537594684a520" id="r_ab3f1d4980b952dcb163537594684a520"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexUnitRegistry.html#ab3f1d4980b952dcb163537594684a520">refreshVisibility</a> (<a class="el" href="classeve_1_1hexmap_1_1HexMap.html">HexMap</a> &amp;map, <a class="el" href="classeve_1_1hexmap_1_1HexVisibility.html">HexVisibility</a> &amp;visibility, <a class="el" href="classeve_1_1hexmap_1_1HexSearchContext.html">HexSearchContext</a> &amp;scratch)</td></tr>
+<tr class="memdesc:ab3f1d4980b952dcb163537594684a520"><td class="mdescLeft">&#160;</td><td class="mdescRight">Re-derives the whole fog of war from the units' current cells.  <br /></td></tr>
+<tr class="separator:ab3f1d4980b952dcb163537594684a520"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8c6d15f4c5a74740b35f6654eccbbf93" id="r_a8c6d15f4c5a74740b35f6654eccbbf93"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexUnitRegistry.html#a8c6d15f4c5a74740b35f6654eccbbf93">refreshPositions</a> (const <a class="el" href="classeve_1_1hexmap_1_1HexMap.html">HexMap</a> &amp;map) noexcept</td></tr>
+<tr class="memdesc:a8c6d15f4c5a74740b35f6654eccbbf93"><td class="mdescLeft">&#160;</td><td class="mdescRight">Re-snaps every idle unit onto its cell's current position.  <br /></td></tr>
+<tr class="separator:a8c6d15f4c5a74740b35f6654eccbbf93"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1e397a36f91b01fc97925448547e6b99" id="r_a1e397a36f91b01fc97925448547e6b99"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structeve_1_1hexmap_1_1HexUnitState.html">HexUnitState</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexUnitRegistry.html#a1e397a36f91b01fc97925448547e6b99">snapshot</a> () const</td></tr>
+<tr class="memdesc:a1e397a36f91b01fc97925448547e6b99"><td class="mdescLeft">&#160;</td><td class="mdescRight">Serializable state of every unit, in id order.  <br /></td></tr>
+<tr class="separator:a1e397a36f91b01fc97925448547e6b99"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad19e10e73c2371f251e8ce6aa855143b" id="r_ad19e10e73c2371f251e8ce6aa855143b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexUnitRegistry.html#ad19e10e73c2371f251e8ce6aa855143b">restore</a> (<a class="el" href="classeve_1_1hexmap_1_1HexMap.html">HexMap</a> &amp;map, <a class="el" href="classeve_1_1hexmap_1_1HexVisibility.html">HexVisibility</a> &amp;visibility, <a class="el" href="classeve_1_1hexmap_1_1HexSearchContext.html">HexSearchContext</a> &amp;scratch, const std::vector&lt; <a class="el" href="structeve_1_1hexmap_1_1HexUnitState.html">HexUnitState</a> &gt; &amp;states)</td></tr>
+<tr class="memdesc:ad19e10e73c2371f251e8ce6aa855143b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Replaces every unit with <code>states</code>, granting their vision.  <br /></td></tr>
+<tr class="separator:ad19e10e73c2371f251e8ce6aa855143b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Owns the units of one map and their fog-of-war contribution. </p>
+<p>A unit reserves its <b>destination</b> cell as soon as travel starts, exactly like the reference project: the destination is what other actors path around, and the travelled-through cells are never occupied. Vision moves with the unit as it enters each cell of the path, so the revealed corridor follows the walk.</p>
+<p>Ownership and lifetime: owns one record per unit and one travel plan per travelling unit. <code><a class="el" href="classeve_1_1hexmap_1_1HexUnitRegistry.html#a5aa20e19270f18b1ff1baa11bf0b427d" title="Occupancy predicate bound to this registry. @ownership The returned callable borrows *this; it must n...">occupancyQuery()</a></code> returns a <code>std::function</code> that borrows <code>*this</code>; it stays valid only while this registry is alive and unmodified.</p>
+<p>Thread affinity: main thread only; no locking and no callbacks. </p>
+
+<p class="definition">在文件 <a class="el" href="HexUnits_8h_source.html">HexUnits.h</a> 第 <a class="el" href="HexUnits_8h_source.html#l00067">67</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a43595355bfde500e6667e0e34161ebbb" name="a43595355bfde500e6667e0e34161ebbb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a43595355bfde500e6667e0e34161ebbb">&#9670;&#160;</a></span>HexUnitRegistry()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::hexmap::HexUnitRegistry::HexUnitRegistry </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="adad5025dbc1369bfcbbf4e94ebe86cac" name="adad5025dbc1369bfcbbf4e94ebe86cac"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adad5025dbc1369bfcbbf4e94ebe86cac">&#9670;&#160;</a></span>addUnit()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::int32_t &gt; eve::hexmap::HexUnitRegistry::addUnit </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html">HexMap</a> &amp;&#160;</td>
+          <td class="paramname"><em>map</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1hexmap_1_1HexVisibility.html">HexVisibility</a> &amp;&#160;</td>
+          <td class="paramname"><em>visibility</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1hexmap_1_1HexSearchContext.html">HexSearchContext</a> &amp;&#160;</td>
+          <td class="paramname"><em>scratch</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1hexmap_1_1HexCoordinates.html">HexCoordinates</a>&#160;</td>
+          <td class="paramname"><em>location</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>orientation</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Adds a unit on <code>location</code> and grants its vision. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">map</td><td>Map the unit is placed on. </td></tr>
+    <tr><td class="paramname">visibility</td><td>Fog-of-war state to update. </td></tr>
+    <tr><td class="paramname">scratch</td><td>Search scratch, resized to <code>map.cellCount()</code>. </td></tr>
+    <tr><td class="paramname">location</td><td>Cell to occupy; must be inside the grid and free. </td></tr>
+    <tr><td class="paramname">orientation</td><td>Initial facing angle in degrees. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>The new unit id, or InvalidArgument when the cell is outside the grid or already occupied. @cost One visibility sweep over the unit's vision radius. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="HexUnits_8cpp_source.html">HexUnits.cpp</a> 第 <a class="el" href="HexUnits_8cpp_source.html#l00135">135</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="HexMap_8h_source.html#l00110">eve::hexmap::HexMap::contains()</a>, <a class="el" href="HexMap_8h_source.html#l00080">eve::hexmap::HexMap::empty()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="HexVisibility_8cpp_source.html#l00056">eve::hexmap::HexVisibility::increase()</a>, <a class="el" href="HexMap_8cpp_source.html#l00053">eve::hexmap::HexMap::indexOf()</a>, <a class="el" href="HexUnits_8h_source.html#l00109">isOccupied()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l00113">unit</a> , 以及 <a class="el" href="HexUnits_8h_source.html#l00019">eve::hexmap::HexUnitTuning::visionRange</a>.</p>
+
+</div>
+</div>
+<a id="a5cf06a32dddd8b21dea88e8cdfd29221" name="a5cf06a32dddd8b21dea88e8cdfd29221"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5cf06a32dddd8b21dea88e8cdfd29221">&#9670;&#160;</a></span>advance()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1hexmap_1_1HexUnitSample.html">HexUnitSample</a> &gt; eve::hexmap::HexUnitRegistry::advance </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html">HexMap</a> &amp;&#160;</td>
+          <td class="paramname"><em>map</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1hexmap_1_1HexVisibility.html">HexVisibility</a> &amp;&#160;</td>
+          <td class="paramname"><em>visibility</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1hexmap_1_1HexSearchContext.html">HexSearchContext</a> &amp;&#160;</td>
+          <td class="paramname"><em>scratch</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::int32_t&#160;</td>
+          <td class="paramname"><em>unitId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>dt</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Advances one unit's travel by <code>dt</code> seconds and reports where it now is. </p>
+<p>This is also the single way to read a unit's current pose: <code>dt &lt;= 0</code> performs no motion and no turning, so a caller that only wants to draw an idle unit calls this with a zero delta and uses the returned sample. The sample's position is elevation- and perturbation-aware and interpolated along the travel curve, which is what a renderable needs.</p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">map</td><td>Map the unit lives on. </td></tr>
+    <tr><td class="paramname">visibility</td><td>Fog-of-war state to update as the unit crosses cells. </td></tr>
+    <tr><td class="paramname">scratch</td><td>Search scratch. </td></tr>
+    <tr><td class="paramname">unitId</td><td>Unit to advance. </td></tr>
+    <tr><td class="paramname">dt</td><td>Elapsed seconds; values <code>&lt;= 0</code> leave both position and facing alone. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>The updated sample, or NotFound for an unknown id. @cost One visibility sweep per cell crossed. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="HexUnits_8cpp_source.html">HexUnits.cpp</a> 第 <a class="el" href="HexUnits_8cpp_source.html#l00260">260</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="HexMap_8cpp_source.html#l00058">eve::hexmap::HexMap::coordinatesAt()</a>, <a class="el" href="HexVisibility_8cpp_source.html#l00079">eve::hexmap::HexVisibility::decrease()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="TreeMesh_8cpp_source.html#l00265">heading</a>, <a class="el" href="HexVisibility_8cpp_source.html#l00056">eve::hexmap::HexVisibility::increase()</a>, <a class="el" href="HexSphereMesh_8cpp_source.html#l00163">left</a>, <a class="el" href="HexSphereMesh_8cpp_source.html#l00164">right</a>, <a class="el" href="HexUnits_8h_source.html#l00023">eve::hexmap::HexUnitTuning::rotationSpeed</a>, <a class="el" href="TreeMesh_8cpp_source.html#l00287">step</a>, <a class="el" href="HexUnits_8h_source.html#l00021">eve::hexmap::HexUnitTuning::travelSpeed</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l00119">turn</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l00113">unit</a>, <a class="el" href="HexUnits_8h_source.html#l00019">eve::hexmap::HexUnitTuning::visionRange</a>, <a class="el" href="HexMetrics_8h_source.html#l00019">eve::hexmap::HexVec3::x</a> , 以及 <a class="el" href="HexMetrics_8h_source.html#l00021">eve::hexmap::HexVec3::z</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HexUnits_8cpp_source.html#l00305">advanceAll()</a>.</p>
+
+</div>
+</div>
+<a id="a951abd675f97cd297fae14d8a2f34b35" name="a951abd675f97cd297fae14d8a2f34b35"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a951abd675f97cd297fae14d8a2f34b35">&#9670;&#160;</a></span>advanceAll()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::hexmap::HexUnitRegistry::advanceAll </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html">HexMap</a> &amp;&#160;</td>
+          <td class="paramname"><em>map</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1hexmap_1_1HexVisibility.html">HexVisibility</a> &amp;&#160;</td>
+          <td class="paramname"><em>visibility</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1hexmap_1_1HexSearchContext.html">HexSearchContext</a> &amp;&#160;</td>
+          <td class="paramname"><em>scratch</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>dt</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Advances every travelling unit by <code>dt</code> seconds. </p>
+
+<p class="definition">在文件 <a class="el" href="HexUnits_8cpp_source.html">HexUnits.cpp</a> 第 <a class="el" href="HexUnits_8cpp_source.html#l00305">305</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="HexUnits_8cpp_source.html#l00260">advance()</a>, <a class="el" href="SourceTiff_8cpp_source.html#l00024">count</a> , 以及 <a class="el" href="HexUnits_8h_source.html#l00079">unitCount()</a>.</p>
+
+</div>
+</div>
+<a id="ab798c7f84082777846312e2d6927baee" name="ab798c7f84082777846312e2d6927baee"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab798c7f84082777846312e2d6927baee">&#9670;&#160;</a></span>beginTravel()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::hexmap::HexUnitRegistry::beginTravel </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html">HexMap</a> &amp;&#160;</td>
+          <td class="paramname"><em>map</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1hexmap_1_1HexVisibility.html">HexVisibility</a> &amp;&#160;</td>
+          <td class="paramname"><em>visibility</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1hexmap_1_1HexSearchContext.html">HexSearchContext</a> &amp;&#160;</td>
+          <td class="paramname"><em>scratch</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::int32_t&#160;</td>
+          <td class="paramname"><em>unitId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; std::int32_t &gt; &amp;&#160;</td>
+          <td class="paramname"><em>path</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Starts travelling along <code>path</code>. </p>
+<p><code>path</code> holds linear cell indices from the unit's current cell to the destination, inclusive, as produced by <code>findPath</code>. The destination is reserved immediately; visibility moves to the first step and then follows the walk, so the fog is revealed along the corridor the unit walks.</p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">map</td><td>Map the unit lives on. </td></tr>
+    <tr><td class="paramname">visibility</td><td>Fog-of-war state to update. </td></tr>
+    <tr><td class="paramname">scratch</td><td>Search scratch. </td></tr>
+    <tr><td class="paramname">unitId</td><td>Unit to move. </td></tr>
+    <tr><td class="paramname">path</td><td>Cell indices to walk. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Success, or InvalidArgument for an unknown id, a path that does not start on the unit's cell, a non-adjacent step, or an out-of-range index. @cost One visibility sweep when the unit leaves its cell and one when it enters. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="HexUnits_8cpp_source.html">HexUnits.cpp</a> 第 <a class="el" href="HexUnits_8cpp_source.html#l00210">210</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="HexMap_8h_source.html#l00092">eve::hexmap::HexMap::cellCount()</a>, <a class="el" href="HexMap_8cpp_source.html#l00058">eve::hexmap::HexMap::coordinatesAt()</a>, <a class="el" href="HexVisibility_8cpp_source.html#l00079">eve::hexmap::HexVisibility::decrease()</a>, <a class="el" href="HexCoordinates_8h_source.html#l00053">eve::hexmap::HexCoordinates::distanceTo()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="Result_8h_source.html#l00466">eve::Result&lt; void &gt;::ignore()</a>, <a class="el" href="HexVisibility_8cpp_source.html#l00056">eve::hexmap::HexVisibility::increase()</a>, <a class="el" href="UnityVegetationMaterial_8cpp_source.html#l00161">index</a>, <a class="el" href="HexSearch_8cpp_source.html#l00124">eve::hexmap::isValidDestination()</a>, <a class="el" href="PlayHost_8cpp_source.html#l00144">path</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l00113">unit</a> , 以及 <a class="el" href="HexUnits_8h_source.html#l00019">eve::hexmap::HexUnitTuning::visionRange</a>.</p>
+
+</div>
+</div>
+<a id="a0be836680dcc552893295034dc5b8983" name="a0be836680dcc552893295034dc5b8983"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0be836680dcc552893295034dc5b8983">&#9670;&#160;</a></span>empty()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::hexmap::HexUnitRegistry::empty </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Whether no unit is registered. </p>
+
+<p class="definition">在文件 <a class="el" href="HexUnits_8h_source.html">HexUnits.h</a> 第 <a class="el" href="HexUnits_8h_source.html#l00077">77</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a7032ffd239fd32fb75fe35fe250a73cc" name="a7032ffd239fd32fb75fe35fe250a73cc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7032ffd239fd32fb75fe35fe250a73cc">&#9670;&#160;</a></span>isOccupied()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::hexmap::HexUnitRegistry::isOccupied </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1hexmap_1_1HexCoordinates.html">HexCoordinates</a>&#160;</td>
+          <td class="paramname"><em>coordinates</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Whether any unit occupies a cell. </p>
+
+<p class="definition">在文件 <a class="el" href="HexUnits_8h_source.html">HexUnits.h</a> 第 <a class="el" href="HexUnits_8h_source.html#l00109">109</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="HexUnits_8cpp_source.html#l00117">unitIdAt()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HexUnits_8cpp_source.html#l00135">addUnit()</a> , 以及 <a class="el" href="HexUnits_8cpp_source.html#l00126">occupancyQuery()</a>.</p>
+
+</div>
+</div>
+<a id="a5aa20e19270f18b1ff1baa11bf0b427d" name="a5aa20e19270f18b1ff1baa11bf0b427d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5aa20e19270f18b1ff1baa11bf0b427d">&#9670;&#160;</a></span>occupancyQuery()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1hexmap.html#a8c8c6ba8cadbf18dc24fb694b921426e">HexOccupancyQuery</a> eve::hexmap::HexUnitRegistry::occupancyQuery </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Occupancy predicate bound to this registry. @ownership The returned callable borrows <code>*this</code>; it must not outlive the registry. </p>
+
+<p class="definition">在文件 <a class="el" href="HexUnits_8cpp_source.html">HexUnits.cpp</a> 第 <a class="el" href="HexUnits_8cpp_source.html#l00126">126</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="HexUnits_8h_source.html#l00109">isOccupied()</a>.</p>
+
+</div>
+</div>
+<a id="a8c6d15f4c5a74740b35f6654eccbbf93" name="a8c6d15f4c5a74740b35f6654eccbbf93"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8c6d15f4c5a74740b35f6654eccbbf93">&#9670;&#160;</a></span>refreshPositions()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::hexmap::HexUnitRegistry::refreshPositions </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1hexmap_1_1HexMap.html">HexMap</a> &amp;&#160;</td>
+          <td class="paramname"><em>map</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Re-snaps every idle unit onto its cell's current position. </p>
+
+<p class="definition">在文件 <a class="el" href="HexUnits_8cpp_source.html">HexUnits.cpp</a> 第 <a class="el" href="HexUnits_8cpp_source.html#l00327">327</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="HexMap_8h_source.html#l00092">eve::hexmap::HexMap::cellCount()</a> , 以及 <a class="el" href="TacticsPersistence_8cpp_source.html#l00113">unit</a>.</p>
+
+</div>
+</div>
+<a id="ab3f1d4980b952dcb163537594684a520" name="ab3f1d4980b952dcb163537594684a520"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab3f1d4980b952dcb163537594684a520">&#9670;&#160;</a></span>refreshVisibility()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::hexmap::HexUnitRegistry::refreshVisibility </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html">HexMap</a> &amp;&#160;</td>
+          <td class="paramname"><em>map</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1hexmap_1_1HexVisibility.html">HexVisibility</a> &amp;&#160;</td>
+          <td class="paramname"><em>visibility</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1hexmap_1_1HexSearchContext.html">HexSearchContext</a> &amp;&#160;</td>
+          <td class="paramname"><em>scratch</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Re-derives the whole fog of war from the units' current cells. </p>
+<p>Use after loading a map, after the terrain changed, or after a bulk edit invalidated the counters.</p>
+<p>@cost One visibility sweep per unit. </p>
+
+<p class="definition">在文件 <a class="el" href="HexUnits_8cpp_source.html">HexUnits.cpp</a> 第 <a class="el" href="HexUnits_8cpp_source.html#l00317">317</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="HexVisibility_8cpp_source.html#l00105">eve::hexmap::HexVisibility::clear()</a>, <a class="el" href="HexMap_8cpp_source.html#l00058">eve::hexmap::HexMap::coordinatesAt()</a>, <a class="el" href="HexVisibility_8cpp_source.html#l00056">eve::hexmap::HexVisibility::increase()</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l00113">unit</a> , 以及 <a class="el" href="HexUnits_8h_source.html#l00019">eve::hexmap::HexUnitTuning::visionRange</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HexUnits_8cpp_source.html#l00357">restore()</a>.</p>
+
+</div>
+</div>
+<a id="a290fe84c82969c78c812056f53663b2a" name="a290fe84c82969c78c812056f53663b2a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a290fe84c82969c78c812056f53663b2a">&#9670;&#160;</a></span>removeAll()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::hexmap::HexUnitRegistry::removeAll </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1hexmap_1_1HexVisibility.html">HexVisibility</a> &amp;&#160;</td>
+          <td class="paramname"><em>visibility</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Removes every unit and clears the visibility counters of the map. </p>
+
+<p class="definition">在文件 <a class="el" href="HexUnits_8cpp_source.html">HexUnits.cpp</a> 第 <a class="el" href="HexUnits_8cpp_source.html#l00178">178</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HexMapModule_8cpp_source.html#l00082">eve::hexmap::HexMapModule::adoptGrid()</a>, <a class="el" href="HexMapModule_8cpp_source.html#l00059">eve::hexmap::HexMapModule::generateMap()</a> , 以及 <a class="el" href="HexMapModule_8cpp_source.html#l00104">eve::hexmap::HexMapModule::newGrid()</a>.</p>
+
+</div>
+</div>
+<a id="a6d8ddd6fe5ad174b20760c24d5602473" name="a6d8ddd6fe5ad174b20760c24d5602473"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6d8ddd6fe5ad174b20760c24d5602473">&#9670;&#160;</a></span>removeUnit()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::hexmap::HexUnitRegistry::removeUnit </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html">HexMap</a> &amp;&#160;</td>
+          <td class="paramname"><em>map</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1hexmap_1_1HexVisibility.html">HexVisibility</a> &amp;&#160;</td>
+          <td class="paramname"><em>visibility</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1hexmap_1_1HexSearchContext.html">HexSearchContext</a> &amp;&#160;</td>
+          <td class="paramname"><em>scratch</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::int32_t&#160;</td>
+          <td class="paramname"><em>unitId</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Removes a unit and withdraws its vision. </p>
+<dl class="section return"><dt>返回</dt><dd>Success, or NotFound for an unknown id. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="HexUnits_8cpp_source.html">HexUnits.cpp</a> 第 <a class="el" href="HexUnits_8cpp_source.html#l00161">161</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="HexMap_8cpp_source.html#l00058">eve::hexmap::HexMap::coordinatesAt()</a>, <a class="el" href="HexVisibility_8cpp_source.html#l00079">eve::hexmap::HexVisibility::decrease()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l00113">unit</a> , 以及 <a class="el" href="HexUnits_8h_source.html#l00019">eve::hexmap::HexUnitTuning::visionRange</a>.</p>
+
+</div>
+</div>
+<a id="ad19e10e73c2371f251e8ce6aa855143b" name="ad19e10e73c2371f251e8ce6aa855143b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad19e10e73c2371f251e8ce6aa855143b">&#9670;&#160;</a></span>restore()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::hexmap::HexUnitRegistry::restore </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1hexmap_1_1HexMap.html">HexMap</a> &amp;&#160;</td>
+          <td class="paramname"><em>map</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1hexmap_1_1HexVisibility.html">HexVisibility</a> &amp;&#160;</td>
+          <td class="paramname"><em>visibility</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1hexmap_1_1HexSearchContext.html">HexSearchContext</a> &amp;&#160;</td>
+          <td class="paramname"><em>scratch</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="structeve_1_1hexmap_1_1HexUnitState.html">HexUnitState</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>states</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Replaces every unit with <code>states</code>, granting their vision. </p>
+<p>The registry is cleared first; a failure leaves it empty rather than partially populated.</p>
+<dl class="section return"><dt>返回</dt><dd>Success, or InvalidArgument for an out-of-range or duplicated cell. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="HexUnits_8cpp_source.html">HexUnits.cpp</a> 第 <a class="el" href="HexUnits_8cpp_source.html#l00357">357</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="HexMap_8h_source.html#l00092">eve::hexmap::HexMap::cellCount()</a>, <a class="el" href="HexVisibility_8cpp_source.html#l00105">eve::hexmap::HexVisibility::clear()</a>, <a class="el" href="HexMap_8cpp_source.html#l00058">eve::hexmap::HexMap::coordinatesAt()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="HexSearch_8cpp_source.html#l00124">eve::hexmap::isValidDestination()</a>, <a class="el" href="HexUnits_8cpp_source.html#l00317">refreshVisibility()</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00033">state</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="TacticsPersistence_8cpp_source.html#l00113">unit</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HexMapModule_8cpp_source.html#l00082">eve::hexmap::HexMapModule::adoptGrid()</a>.</p>
+
+</div>
+</div>
+<a id="a1f158d3ab85eb8b68585e159bc23ceb6" name="a1f158d3ab85eb8b68585e159bc23ceb6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1f158d3ab85eb8b68585e159bc23ceb6">&#9670;&#160;</a></span>setTuning()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::hexmap::HexUnitRegistry::setTuning </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1hexmap_1_1HexUnitTuning.html">HexUnitTuning</a> &amp;&#160;</td>
+          <td class="paramname"><em>tuning</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Replaces the tuning; ongoing travel keeps its plan but uses the new speed. </p>
+
+<p class="definition">在文件 <a class="el" href="HexUnits_8h_source.html">HexUnits.h</a> 第 <a class="el" href="HexUnits_8h_source.html#l00074">74</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="HexUnits_8h_source.html#l00072">tuning()</a>.</p>
+
+</div>
+</div>
+<a id="a1e397a36f91b01fc97925448547e6b99" name="a1e397a36f91b01fc97925448547e6b99"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1e397a36f91b01fc97925448547e6b99">&#9670;&#160;</a></span>snapshot()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; <a class="el" href="structeve_1_1hexmap_1_1HexUnitState.html">HexUnitState</a> &gt; eve::hexmap::HexUnitRegistry::snapshot </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Serializable state of every unit, in id order. </p>
+
+<p class="definition">在文件 <a class="el" href="HexUnits_8cpp_source.html">HexUnits.cpp</a> 第 <a class="el" href="HexUnits_8cpp_source.html#l00345">345</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00033">state</a> , 以及 <a class="el" href="TacticsPersistence_8cpp_source.html#l00113">unit</a>.</p>
+
+</div>
+</div>
+<a id="a2023c1ab9b4fac15934eac563927cd42" name="a2023c1ab9b4fac15934eac563927cd42"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2023c1ab9b4fac15934eac563927cd42">&#9670;&#160;</a></span>tuning()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="structeve_1_1hexmap_1_1HexUnitTuning.html">HexUnitTuning</a> &amp; eve::hexmap::HexUnitRegistry::tuning </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Current tuning. </p>
+
+<p class="definition">在文件 <a class="el" href="HexUnits_8h_source.html">HexUnits.h</a> 第 <a class="el" href="HexUnits_8h_source.html#l00072">72</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HexUnits_8h_source.html#l00074">setTuning()</a>.</p>
+
+</div>
+</div>
+<a id="a315e1dfae2a63f019a065696b2d686fb" name="a315e1dfae2a63f019a065696b2d686fb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a315e1dfae2a63f019a065696b2d686fb">&#9670;&#160;</a></span>unitCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::int32_t eve::hexmap::HexUnitRegistry::unitCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Number of registered units. </p>
+
+<p class="definition">在文件 <a class="el" href="HexUnits_8h_source.html">HexUnits.h</a> 第 <a class="el" href="HexUnits_8h_source.html#l00079">79</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HexUnits_8cpp_source.html#l00305">advanceAll()</a>.</p>
+
+</div>
+</div>
+<a id="ab96ed0c33b055d69577620ce7c03fedd" name="ab96ed0c33b055d69577620ce7c03fedd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab96ed0c33b055d69577620ce7c03fedd">&#9670;&#160;</a></span>unitIdAt()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::int32_t eve::hexmap::HexUnitRegistry::unitIdAt </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1hexmap_1_1HexCoordinates.html">HexCoordinates</a>&#160;</td>
+          <td class="paramname"><em>coordinates</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Id of the unit occupying a cell, or -1 when the cell is free. </p>
+
+<p class="definition">在文件 <a class="el" href="HexUnits_8cpp_source.html">HexUnits.cpp</a> 第 <a class="el" href="HexUnits_8cpp_source.html#l00117">117</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="UnityVegetationMaterial_8cpp_source.html#l00161">index</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HexUnits_8h_source.html#l00109">isOccupied()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/hexmap/<a class="el" href="HexUnits_8h_source.html">HexUnits.h</a></li>
+<li>src/modules/hexmap/<a class="el" href="HexUnits_8cpp_source.html">HexUnits.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

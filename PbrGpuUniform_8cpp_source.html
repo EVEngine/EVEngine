@@ -1,0 +1,312 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/graphics/PbrGpuUniform.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_0f2af43e49f4758c00cbead1adc79623.html">graphics</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">PbrGpuUniform.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="PbrGpuUniform_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &quot;<a class="code" href="PbrGpuUniform_8h.html">graphics/PbrGpuUniform.h</a>&quot;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &lt;algorithm&gt;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
+<div class="foldopen" id="foldopen00005" data-start="{" data-end="}">
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno"><a class="line" href="namespaceeve_1_1graphics_1_1detail.html">    5</a></span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1graphics_1_1detail.html">eve::graphics::detail</a> {</div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
+<div class="foldopen" id="foldopen00007" data-start="{" data-end="}">
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno"><a class="line" href="namespaceeve_1_1graphics_1_1detail.html#ab0d3c8e3c8b4e592008cbd5c6774d384">    7</a></span><a class="code hl_struct" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html">PbrUniformGpu</a> <a class="code hl_function" href="namespaceeve_1_1graphics_1_1detail.html#ab0d3c8e3c8b4e592008cbd5c6774d384">buildPbrUniformGpu</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1graphics_1_1detail_1_1PbrUniformBuildInputs.html">PbrUniformBuildInputs</a>&amp; <a class="code hl_variable" href="GridGraph_8cpp.html#a0bf444cb227a40151be0b5220b5b92bf">inputs</a>) {</div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span>    <span class="keyword">const</span> <span class="keyword">auto</span>&amp; <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a> = <a class="code hl_variable" href="GridGraph_8cpp.html#a0bf444cb227a40151be0b5220b5b92bf">inputs</a>.surface;</div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span>    <a class="code hl_struct" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html">PbrUniformGpu</a> <a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>;</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span>    <a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>.<a class="code hl_variable" href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#a1542c650195894a5358891af5ff11179">mvp</a> = <a class="code hl_variable" href="GridGraph_8cpp.html#a0bf444cb227a40151be0b5220b5b92bf">inputs</a>.mvp;</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span>    <a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>.model = <a class="code hl_variable" href="GridGraph_8cpp.html#a0bf444cb227a40151be0b5220b5b92bf">inputs</a>.model;</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span>    <a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>.view = <a class="code hl_variable" href="GridGraph_8cpp.html#a0bf444cb227a40151be0b5220b5b92bf">inputs</a>.view;</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>    <a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>.camera = glm::vec4(<a class="code hl_variable" href="GridGraph_8cpp.html#a0bf444cb227a40151be0b5220b5b92bf">inputs</a>.camera, <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>.anisotropyRotation);</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>    <a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>.tint = <a class="code hl_variable" href="GridGraph_8cpp.html#a0bf444cb227a40151be0b5220b5b92bf">inputs</a>.tint;</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>    <a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>.ambient = glm::vec4(glm::vec3(<a class="code hl_variable" href="GridGraph_8cpp.html#a0bf444cb227a40151be0b5220b5b92bf">inputs</a>.ambient), <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>.anisotropyStrength);</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>    <a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>.material = {<a class="code hl_variable" href="GridGraph_8cpp.html#a0bf444cb227a40151be0b5220b5b92bf">inputs</a>.metallic, <a class="code hl_variable" href="GridGraph_8cpp.html#a0bf444cb227a40151be0b5220b5b92bf">inputs</a>.roughness, <a class="code hl_variable" href="GridGraph_8cpp.html#a0bf444cb227a40151be0b5220b5b92bf">inputs</a>.surfaceCode,</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>                  std::clamp(<a class="code hl_variable" href="GridGraph_8cpp.html#a0bf444cb227a40151be0b5220b5b92bf">inputs</a>.alphaCutoff + <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>.vegetationColor.globalAlphaThresholdOffset, 0.f, 1.f)};</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>    <a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>.emissive = {<a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>.emissive[0], <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>.emissive[1], <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>.emissive[2], <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>.emissiveStrength};</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>    <a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>.specular = {<a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>.specularColor[0], <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>.specularColor[1], <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>.specularColor[2], <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>.specularFactor};</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>    <a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>.coat = {<a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>.clearcoatFactor, <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>.clearcoatRoughness, <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>.clearcoatNormalScale, <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>.ior};</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>    <a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>.colorMaskSecondary = {<a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>.colorMaskSecondary[0], <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>.colorMaskSecondary[1], <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>.colorMaskSecondary[2],</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>                            float(<a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>.normalMode)};</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>    <a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>.colorMaskParams = {<a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>.colorMaskEnabled ? 1.f : 0.f, <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>.colorMaskMin, <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>.colorMaskMax,</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>                         <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>.albedoTextureStrength};</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>    <span class="keyword">const</span> <span class="keyword">auto</span>&amp; trans = <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>.translucency;</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    <a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>.translucencyColor = {trans.color[0], trans.color[1], trans.color[2], trans.intensity};</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    <a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>.translucencyParams = {trans.strength, trans.normalDistortion, trans.scattering, trans.direct};</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    <a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>.translucencyLighting = {trans.ambient, trans.shadow, trans.maskAmount,</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>                              trans.globalIntensity * trans.overlay};</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    <a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>.translucencyMask = {trans.maskMinimum, trans.maskMaximum, 0.f, 0.f};</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    <a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>.motionHighlightColor = {<a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>.motionHighlightColor[0], <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>.motionHighlightColor[1], <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>.motionHighlightColor[2],</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>                              <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>.vegetationColor.overlaySubsurface};</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    <span class="keyword">const</span> <span class="keyword">auto</span>&amp; <a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#af3f2d7fd6f40d5dd418aef858956a49b">color</a> = <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>.vegetationColor;</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    <a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>.vegetationOverlay = {<a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#af3f2d7fd6f40d5dd418aef858956a49b">color</a>.overlayColor[0], <a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#af3f2d7fd6f40d5dd418aef858956a49b">color</a>.overlayColor[1], <a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#af3f2d7fd6f40d5dd418aef858956a49b">color</a>.overlayColor[2], <a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#af3f2d7fd6f40d5dd418aef858956a49b">color</a>.overlay};</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    <a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>.vegetationWetness = {<a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#af3f2d7fd6f40d5dd418aef858956a49b">color</a>.wetness, <a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#af3f2d7fd6f40d5dd418aef858956a49b">color</a>.overlayNormalScale, <a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#af3f2d7fd6f40d5dd418aef858956a49b">color</a>.wetnessNormalScale,</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>                           <a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#af3f2d7fd6f40d5dd418aef858956a49b">color</a>.overlaySmoothness};</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    <a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>.vegetationStageParams = {<a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#af3f2d7fd6f40d5dd418aef858956a49b">color</a>.overlayVariation, <a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#af3f2d7fd6f40d5dd418aef858956a49b">color</a>.overlayProjection, <a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#af3f2d7fd6f40d5dd418aef858956a49b">color</a>.vertexOcclusionAlpha,</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>                               <a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#af3f2d7fd6f40d5dd418aef858956a49b">color</a>.wetnessContrast};</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    <a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>.vegetationFieldColor = {<a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#af3f2d7fd6f40d5dd418aef858956a49b">color</a>.fieldColor[0], <a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#af3f2d7fd6f40d5dd418aef858956a49b">color</a>.fieldColor[1], <a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#af3f2d7fd6f40d5dd418aef858956a49b">color</a>.fieldColor[2], <a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#af3f2d7fd6f40d5dd418aef858956a49b">color</a>.fieldColor[3]};</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    <a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>.vegetationColorParams = {<a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#af3f2d7fd6f40d5dd418aef858956a49b">color</a>.colorsCoverage, <a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#af3f2d7fd6f40d5dd418aef858956a49b">color</a>.colorsIntensity, <a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#af3f2d7fd6f40d5dd418aef858956a49b">color</a>.colorsMask, <a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#af3f2d7fd6f40d5dd418aef858956a49b">color</a>.colorsVariation};</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    <a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>.vegetationOcclusionParams = {<a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#af3f2d7fd6f40d5dd418aef858956a49b">color</a>.vertexOcclusionMinimum, <a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#af3f2d7fd6f40d5dd418aef858956a49b">color</a>.vertexOcclusionMaximum, 0.f, 0.f};</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    <a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>.vegetationOcclusionColor = {<a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#af3f2d7fd6f40d5dd418aef858956a49b">color</a>.vertexOcclusionColor[0], <a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#af3f2d7fd6f40d5dd418aef858956a49b">color</a>.vertexOcclusionColor[1],</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>                                  <a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#af3f2d7fd6f40d5dd418aef858956a49b">color</a>.vertexOcclusionColor[2], float(<a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#af3f2d7fd6f40d5dd418aef858956a49b">color</a>.backfaceNormalMode)};</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    <a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>.vegetationGlobalMasks = {<a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#af3f2d7fd6f40d5dd418aef858956a49b">color</a>.globalColorMaskMinimum, <a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#af3f2d7fd6f40d5dd418aef858956a49b">color</a>.globalColorMaskMaximum,</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>                               <a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#af3f2d7fd6f40d5dd418aef858956a49b">color</a>.globalOverlayMaskMinimum, <a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#af3f2d7fd6f40d5dd418aef858956a49b">color</a>.globalOverlayMaskMaximum};</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    <a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>.vegetationInfo.z = <a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#af3f2d7fd6f40d5dd418aef858956a49b">color</a>.invertVertexOcclusion ? 1u : 0<a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>;</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    <a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>.vegetationInfo.w = <a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#af3f2d7fd6f40d5dd418aef858956a49b">color</a>.invertVertexOcclusionColors ? 1u : 0<a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>;</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span> </div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    <span class="keyword">const</span> <span class="keyword">auto</span>&amp; <a class="code hl_variable" href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a> = <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>.vegetationDetail;</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    <a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>.detailUv = {<a class="code hl_variable" href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a>.uvScale[0], <a class="code hl_variable" href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a>.uvScale[1], <a class="code hl_variable" href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a>.uvOffset[0], <a class="code hl_variable" href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a>.uvOffset[1]};</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    <a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>.detailColor = {<a class="code hl_variable" href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a>.color[0], <a class="code hl_variable" href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a>.color[1], <a class="code hl_variable" href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a>.color[2], <a class="code hl_variable" href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a>.normalBlendValue};</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    <a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>.detailColorTwo = {<a class="code hl_variable" href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a>.colorTwo[0], <a class="code hl_variable" href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a>.colorTwo[1], <a class="code hl_variable" href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a>.colorTwo[2], <a class="code hl_variable" href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a>.colorTwo[3]};</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    <a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>.detailValues = {<a class="code hl_variable" href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a>.value, <a class="code hl_variable" href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a>.normalValue, <a class="code hl_variable" href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a>.albedoValue, <a class="code hl_variable" href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a>.metallicValue};</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    <a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>.detailMaterial = {<a class="code hl_variable" href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a>.occlusionValue, <a class="code hl_variable" href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a>.smoothnessValue, <a class="code hl_variable" href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a>.blendMinimum, <a class="code hl_variable" href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a>.blendMaximum};</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    <a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>.detailMasks = {<a class="code hl_variable" href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a>.maskMinimum, <a class="code hl_variable" href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a>.maskMaximum, <a class="code hl_variable" href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a>.meshMinimum, <a class="code hl_variable" href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a>.meshMaximum};</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    <a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>.detailInfo = {<a class="code hl_variable" href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a>.uvMode, <a class="code hl_variable" href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a>.colorMode, <a class="code hl_variable" href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a>.blendMode, <a class="code hl_variable" href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a>.alphaMode};</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    std::uint32_t detailPresent = 0;</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    <span class="keywordflow">for</span> (std::size_t <a class="code hl_variable" href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a> = 0; <a class="code hl_variable" href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a> &lt; <a class="code hl_variable" href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a>.textures.size(); ++<a class="code hl_variable" href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>)</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>        <span class="keywordflow">if</span> (<a class="code hl_variable" href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a>.textures[<a class="code hl_variable" href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>].texture) detailPresent |= 1u &lt;&lt; <a class="code hl_variable" href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>;</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    <a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>.detailInfo2 = {<a class="code hl_variable" href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a>.maskMode, <a class="code hl_variable" href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a>.meshMode, <a class="code hl_variable" href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a>.inverseUvScale ? 1u : 0<a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>, detailPresent};</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span> </div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    <span class="keyword">const</span> <span class="keyword">auto</span> fillField = [](<span class="keyword">const</span> <span class="keyword">auto</span>&amp; field, glm::vec4&amp; coords,</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>                              glm::vec4&amp; fallback, glm::vec4&amp; usage0, glm::vec4&amp; usage1,</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>                              glm::vec4&amp; usage2) {</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>        coords = {field.coords[0], field.coords[1], field.coords[2], field.coords[3]};</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>        fallback = {field.fallback[0], field.fallback[1], field.fallback[2], field.fallback[3]};</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>        usage0 = {field.usage[0], field.usage[1], field.usage[2], field.usage[3]};</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>        usage1 = {field.usage[4], field.usage[5], field.usage[6], field.usage[7]};</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>        usage2 = {field.usage[8], 0.f, 0.f, 0.f};</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>    };</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    <span class="keyword">const</span> <span class="keyword">auto</span>&amp; extras = <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>.vegetationExtras;</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    fillField(extras, <a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>.extrasCoords, <a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>.extrasFallback, <a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>.extrasUsage0, <a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>.extrasUsage1, <a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>.extrasUsage2);</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    <a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>.extrasInfo = {extras.layer, extras.usePivotPosition ? 1u : 0<a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>, extras.texture ? 1u : 0<a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>,</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>                    <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>.vegetationAlpha.enabled ? 1u : 0<a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>};</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    <a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>.extrasUsage2.y = <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>.vegetationAlpha.global;</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    <a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>.extrasUsage2.z = <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>.vegetationAlpha.variation;</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>    <a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>.extrasUsage2.w = <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>.vegetationAlpha.detailFade ? 1.f : 0.f;</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>    <a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>.vegetationAlphaFade = {<a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>.vegetationAlpha.glancing, <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>.vegetationAlpha.camera,</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>                             <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>.vegetationAlpha.constant, <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>.vegetationAlpha.noiseTiling};</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>    <a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>.vegetationAlphaCamera = {<a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>.vegetationAlpha.cameraFadeMin, <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>.vegetationAlpha.cameraFadeMax, 0.f, 0.f};</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>    <a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>.vegetationEmission = {<a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>.vegetationEmission.minimum, <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>.vegetationEmission.maximum,</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>                            <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>.vegetationEmission.phase,</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>                            <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>.vegetationEmission.enabled ? <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>.vegetationEmission.global : -1.f};</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>    <a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>.vegetationGradientOne = {<a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>.vegetationGradient.colorOne[0], <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>.vegetationGradient.colorOne[1],</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>                               <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>.vegetationGradient.colorOne[2],</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>                               <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>.vegetationGradient.enabled ? <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>.vegetationGradient.minimum : -1.f};</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>    <a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>.vegetationGradientTwo = {<a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>.vegetationGradient.colorTwo[0], <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>.vegetationGradient.colorTwo[1],</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>                               <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>.vegetationGradient.colorTwo[2], <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>.vegetationGradient.maximum};</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span> </div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>    <span class="keyword">const</span> <span class="keyword">auto</span>&amp; colors = <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>.vegetationColors;</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    fillField(colors, <a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>.colorsCoords, <a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>.colorsFallback, <a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>.colorsUsage0, <a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>.colorsUsage1, <a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>.colorsUsage2);</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>    <a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>.colorsInfo = {colors.layer, colors.usePivotPosition ? 1u : 0<a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>, colors.texture ? 1u : 0<a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>, 0<a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>};</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>    <span class="keyword">const</span> <span class="keyword">auto</span>&amp; vertex = <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>.vegetationVertex;</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>    fillField(vertex, <a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>.vertexCoords, <a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>.vertexFallback, <a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>.vertexUsage0, <a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>.vertexUsage1, <a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>.vertexUsage2);</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>    <a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>.vertexSize = {vertex.globalSize, vertex.sizeFadeStart, vertex.sizeFadeEnd, vertex.distanceFadeBias};</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>    <a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>.vertexInfo = {vertex.layer, std::uint32_t(vertex.source), 0<a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>, 0<a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>};</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>    <span class="keyword">const</span> <span class="keyword">auto</span>&amp; motion = <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>.vegetationMotion;</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>    fillField(motion, <a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>.motionCoords, <a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>.motionFallback, <a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>.motionUsage0, <a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>.motionUsage1, <a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>.motionUsage2);</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>    <a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>.motionGlobal0 = {motion.globalDirection[0], motion.globalDirection[1], motion.worldOrigin[0],</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>                       motion.worldOrigin[1]};</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>    <a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>.motionGlobal1 = {motion.worldOrigin[2], motion.dynamicMode, motion.rigidity, motion.facing};</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>    <a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>.motionTime = {float(motion.time), 0.f, 0.f, 0.f};</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>    <a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>.motionBending = {motion.bending, motion.bendingSpeed, motion.bendingScale, motion.bendingVariation};</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>    <a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>.motionBranch = {motion.branch, motion.rolling, motion.branchSpeed, motion.branchScale};</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>    <a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>.motionBranch2 = {motion.branchVariation, motion.globalBending, motion.globalBranch, motion.globalFlutter};</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>    <a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>.motionFlutter = {motion.flutter, motion.flutterSpeed, motion.flutterScale, motion.flutterVariation};</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>    <a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>.motionControl = {motion.noiseTiling, motion.interaction, motion.interactionMask, motion.fadeDistance};</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>    <a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>.motionPerspective = {motion.perspectivePush, motion.perspectiveNoise, motion.perspectiveAngle, 0.f};</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>    <a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>.motionInfo = {motion.layer, std::uint32_t(motion.mode), 0<a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>, 0<a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>};</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span> </div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>    <a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>.misc = {<a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>.normalScale, <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>.occlusionStrength, <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>.unlit ? 1.f : 0.f, float(<a class="code hl_variable" href="GridGraph_8cpp.html#a0bf444cb227a40151be0b5220b5b92bf">inputs</a>.skinCount)};</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> <a class="code hl_variable" href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a> = 0; <a class="code hl_variable" href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a> &lt; std::min(<a class="code hl_variable" href="GridGraph_8cpp.html#a0bf444cb227a40151be0b5220b5b92bf">inputs</a>.lighting.count, 8); ++<a class="code hl_variable" href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>)</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>        <a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>.lights[<a class="code hl_variable" href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>] = <a class="code hl_variable" href="GridGraph_8cpp.html#a0bf444cb227a40151be0b5220b5b92bf">inputs</a>.lighting.lights[<a class="code hl_variable" href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>];</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>    <a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>.lights[0].color.w = <a class="code hl_variable" href="GridGraph_8cpp.html#a0bf444cb227a40151be0b5220b5b92bf">inputs</a>.environmentIntensity;</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>    <span class="keywordflow">for</span> (std::size_t <a class="code hl_variable" href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a> = 0; <a class="code hl_variable" href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a> &lt; <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>.textures.size(); ++<a class="code hl_variable" href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>) {</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>        <span class="keyword">const</span> <span class="keyword">auto</span>&amp; <a class="code hl_variable" href="ParticlesCapabilities_8cpp.html#a29e48cdcd5413e721ea32eaef3927e79">binding</a> = <a class="code hl_variable" href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a>.textures[<a class="code hl_variable" href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>];</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>        <a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>.uvTransform[<a class="code hl_variable" href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>] = {<a class="code hl_variable" href="ParticlesCapabilities_8cpp.html#a29e48cdcd5413e721ea32eaef3927e79">binding</a>.offset[0], <a class="code hl_variable" href="ParticlesCapabilities_8cpp.html#a29e48cdcd5413e721ea32eaef3927e79">binding</a>.offset[1], <a class="code hl_variable" href="ParticlesCapabilities_8cpp.html#a29e48cdcd5413e721ea32eaef3927e79">binding</a>.scale[0], <a class="code hl_variable" href="ParticlesCapabilities_8cpp.html#a29e48cdcd5413e721ea32eaef3927e79">binding</a>.scale[1]};</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>        <a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>.uvInfo[<a class="code hl_variable" href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>] = {<a class="code hl_variable" href="ParticlesCapabilities_8cpp.html#a29e48cdcd5413e721ea32eaef3927e79">binding</a>.rotation, UINT32_MAX, <a class="code hl_variable" href="ParticlesCapabilities_8cpp.html#a29e48cdcd5413e721ea32eaef3927e79">binding</a>.texture ? 1.f : 0.f,</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>                           <a class="code hl_variable" href="ParticlesCapabilities_8cpp.html#a29e48cdcd5413e721ea32eaef3927e79">binding</a>.srgbDecode ? 1.f : 0.f};</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>    }</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>;</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>}</div>
+</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span> </div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>}  <span class="comment">// namespace eve::graphics::detail</span></div>
+</div>
+<div class="ttc" id="aBattleSystem_8cpp_html_ac913d18953c212b83881e974836de358"><div class="ttname"><a href="BattleSystem_8cpp.html#ac913d18953c212b83881e974836de358">s</a></div><div class="ttdeci">const std::string &amp; s</div><div class="ttdef"><b>Definition</b> <a href="BattleSystem_8cpp_source.html#l00057">BattleSystem.cpp:57</a></div></div>
+<div class="ttc" id="aGrass_8cpp_html_a55831f7eab5ed2917a0191e858852f42"><div class="ttname"><a href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a></div><div class="ttdeci">float u</div><div class="ttdef"><b>Definition</b> <a href="Grass_8cpp_source.html#l00233">Grass.cpp:233</a></div></div>
+<div class="ttc" id="aGridGraph_8cpp_html_a0bf444cb227a40151be0b5220b5b92bf"><div class="ttname"><a href="GridGraph_8cpp.html#a0bf444cb227a40151be0b5220b5b92bf">inputs</a></div><div class="ttdeci">int inputs</div><div class="ttdef"><b>Definition</b> <a href="GridGraph_8cpp_source.html#l00023">GridGraph.cpp:23</a></div></div>
+<div class="ttc" id="aParticlesCapabilities_8cpp_html_a29e48cdcd5413e721ea32eaef3927e79"><div class="ttname"><a href="ParticlesCapabilities_8cpp.html#a29e48cdcd5413e721ea32eaef3927e79">binding</a></div><div class="ttdeci">eve::action::ActionVfxBinding binding</div><div class="ttdef"><b>Definition</b> <a href="ParticlesCapabilities_8cpp_source.html#l00169">ParticlesCapabilities.cpp:169</a></div></div>
+<div class="ttc" id="aPbrGpuUniform_8h_html"><div class="ttname"><a href="PbrGpuUniform_8h.html">PbrGpuUniform.h</a></div></div>
+<div class="ttc" id="aPrototypeKit_8cpp_html_a3fbbd8a3959e76a2bc3455d3bade52dc"><div class="ttname"><a href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a></div><div class="ttdeci">float d</div><div class="ttdef"><b>Definition</b> <a href="PrototypeKit_8cpp_source.html#l00109">PrototypeKit.cpp:109</a></div></div>
+<div class="ttc" id="aUnityVegetationMaterial_8cpp_html_aafd95f8c7a99b9189ede7cdf0871ebe8"><div class="ttname"><a href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a></div><div class="ttdeci">uint32_t index</div><div class="ttdef"><b>Definition</b> <a href="UnityVegetationMaterial_8cpp_source.html#l00161">UnityVegetationMaterial.cpp:161</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_1_1detail_html"><div class="ttname"><a href="namespaceeve_1_1graphics_1_1detail.html">eve::graphics::detail</a></div><div class="ttdef"><b>Definition</b> <a href="PbrGpuUniform_8cpp_source.html#l00005">PbrGpuUniform.cpp:5</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_1_1detail_html_ab0d3c8e3c8b4e592008cbd5c6774d384"><div class="ttname"><a href="namespaceeve_1_1graphics_1_1detail.html#ab0d3c8e3c8b4e592008cbd5c6774d384">eve::graphics::detail::buildPbrUniformGpu</a></div><div class="ttdeci">PbrUniformGpu buildPbrUniformGpu(const PbrUniformBuildInputs &amp;inputs)</div><div class="ttdoc">Build all material and scene fields; mesh stream offsets remain disabled for the backend to fill.</div><div class="ttdef"><b>Definition</b> <a href="PbrGpuUniform_8cpp_source.html#l00007">PbrGpuUniform.cpp:7</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1detail_1_1PbrUniformBuildInputs_html"><div class="ttname"><a href="structeve_1_1graphics_1_1detail_1_1PbrUniformBuildInputs.html">eve::graphics::detail::PbrUniformBuildInputs</a></div><div class="ttdoc">Backend-neutral state needed to build one immutable PBR uniform snapshot.</div><div class="ttdef"><b>Definition</b> <a href="PbrGpuUniform_8h_source.html#l00061">PbrGpuUniform.h:61</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1detail_1_1PbrUniformGpu_html"><div class="ttname"><a href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html">eve::graphics::detail::PbrUniformGpu</a></div><div class="ttdoc">Canonical std140 payload consumed by both generated PBR shader stages.</div><div class="ttdef"><b>Definition</b> <a href="PbrGpuUniform_8h_source.html#l00022">PbrGpuUniform.h:22</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1detail_1_1PbrUniformGpu_html_a1542c650195894a5358891af5ff11179"><div class="ttname"><a href="structeve_1_1graphics_1_1detail_1_1PbrUniformGpu.html#a1542c650195894a5358891af5ff11179">eve::graphics::detail::PbrUniformGpu::mvp</a></div><div class="ttdeci">glm::mat4 mvp</div><div class="ttdef"><b>Definition</b> <a href="PbrGpuUniform_8h_source.html#l00023">PbrGpuUniform.h:23</a></div></div>
+<div class="ttc" id="awebgpu_2GraphicsGpuDriven_8cpp_html_af3f2d7fd6f40d5dd418aef858956a49b"><div class="ttname"><a href="webgpu_2GraphicsGpuDriven_8cpp.html#af3f2d7fd6f40d5dd418aef858956a49b">color</a></div><div class="ttdeci">glm::vec4 color</div><div class="ttdef"><b>Definition</b> <a href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00050">GraphicsGpuDriven.cpp:50</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,486 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::hexmap::HexNoise类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1hexmap.html">hexmap</a></li><li class="navelem"><a class="el" href="classeve_1_1hexmap_1_1HexNoise.html">HexNoise</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-static-attribs">静态 Public 属性</a> &#124;
+<a href="classeve_1_1hexmap_1_1HexNoise-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::hexmap::HexNoise类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Deterministic four-channel value noise over the XZ plane.  
+ <a href="classeve_1_1hexmap_1_1HexNoise.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="HexNoise_8h_source.html">HexNoise.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a5c491c1cbb79efd99721868737b44681" id="r_a5c491c1cbb79efd99721868737b44681"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexNoise.html#a5c491c1cbb79efd99721868737b44681">HexNoise</a> (std::uint32_t <a class="el" href="classeve_1_1hexmap_1_1HexNoise.html#a353bf13193ab3b9144997ceb4786365a">seed</a>=0u) noexcept</td></tr>
+<tr class="memdesc:a5c491c1cbb79efd99721868737b44681"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a noise field for <code>seed</code>.  <br /></td></tr>
+<tr class="separator:a5c491c1cbb79efd99721868737b44681"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac87a2532200578d9bb885682b929f0a3" id="r_ac87a2532200578d9bb885682b929f0a3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexNoise.html#ac87a2532200578d9bb885682b929f0a3">reset</a> (std::uint32_t <a class="el" href="classeve_1_1hexmap_1_1HexNoise.html#a353bf13193ab3b9144997ceb4786365a">seed</a>) noexcept</td></tr>
+<tr class="memdesc:ac87a2532200578d9bb885682b929f0a3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reseeds the field.  <br /></td></tr>
+<tr class="separator:ac87a2532200578d9bb885682b929f0a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a353bf13193ab3b9144997ceb4786365a" id="r_a353bf13193ab3b9144997ceb4786365a"><td class="memItemLeft" align="right" valign="top">std::uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexNoise.html#a353bf13193ab3b9144997ceb4786365a">seed</a> () const noexcept</td></tr>
+<tr class="memdesc:a353bf13193ab3b9144997ceb4786365a"><td class="mdescLeft">&#160;</td><td class="mdescRight">The seed this field was created with.  <br /></td></tr>
+<tr class="separator:a353bf13193ab3b9144997ceb4786365a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aba8a1d8344854f8a22e08b348c912ff8" id="r_aba8a1d8344854f8a22e08b348c912ff8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1hexmap_1_1HexVec4.html">HexVec4</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexNoise.html#aba8a1d8344854f8a22e08b348c912ff8">sample</a> (float worldX, float worldZ) const noexcept</td></tr>
+<tr class="memdesc:aba8a1d8344854f8a22e08b348c912ff8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Samples the four noise channels at a world XZ position.  <br /></td></tr>
+<tr class="separator:aba8a1d8344854f8a22e08b348c912ff8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a29f7b5eabb846ffc134a6c4fe6ceba4f" id="r_a29f7b5eabb846ffc134a6c4fe6ceba4f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1hexmap_1_1HexVec3.html">HexVec3</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexNoise.html#a29f7b5eabb846ffc134a6c4fe6ceba4f">perturb</a> (<a class="el" href="structeve_1_1hexmap_1_1HexVec3.html">HexVec3</a> <a class="el" href="LegacyAnimationImporter_8cpp.html#a60ea6c13eb7a935dc579b69b80cee822">position</a>) const noexcept</td></tr>
+<tr class="memdesc:a29f7b5eabb846ffc134a6c4fe6ceba4f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Perturbs a position in XZ by <code>±kCellPerturbStrength</code>.  <br /></td></tr>
+<tr class="separator:a29f7b5eabb846ffc134a6c4fe6ceba4f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8105f34e78724af78cb0bf9b8bdeec46" id="r_a8105f34e78724af78cb0bf9b8bdeec46"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexNoise.html#a8105f34e78724af78cb0bf9b8bdeec46">elevationPerturb</a> (float worldX, float worldZ) const noexcept</td></tr>
+<tr class="memdesc:a8105f34e78724af78cb0bf9b8bdeec46"><td class="mdescLeft">&#160;</td><td class="mdescRight">Vertical perturbation applied to a cell's elevation, <code>±kElevationPerturbStrength</code>.  <br /></td></tr>
+<tr class="separator:a8105f34e78724af78cb0bf9b8bdeec46"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-attribs" name="pub-static-attribs"></a>
+静态 Public 属性</h2></td></tr>
+<tr class="memitem:ab597ebff19ce80bd5f1e46a5e73981cc" id="r_ab597ebff19ce80bd5f1e46a5e73981cc"><td class="memItemLeft" align="right" valign="top">static constexpr float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexNoise.html#ab597ebff19ce80bd5f1e46a5e73981cc">kCellScale</a> = 43.3<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="memdesc:ab597ebff19ce80bd5f1e46a5e73981cc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Scale of the noise relative to one hex cell (world units per noise unit).  <br /></td></tr>
+<tr class="separator:ab597ebff19ce80bd5f1e46a5e73981cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Deterministic four-channel value noise over the XZ plane. </p>
+<p>The reference hex-map project samples a four-channel <code>Noise.png</code> texture. This implementation reproduces the same sampling contract (four independent channels, smooth bilinear interpolation, repeatable for a given seed) without shipping a texture asset, so generated maps stay reproducible from a seed alone.</p>
+<dl class="section note"><dt>注解</dt><dd>Immutable after construction and safe to share across the map and its mesh builders; it holds no process-global state. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="HexNoise_8h_source.html">HexNoise.h</a> 第 <a class="el" href="HexNoise_8h_source.html#l00023">23</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a5c491c1cbb79efd99721868737b44681" name="a5c491c1cbb79efd99721868737b44681"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5c491c1cbb79efd99721868737b44681">&#9670;&#160;</a></span>HexNoise()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::hexmap::HexNoise::HexNoise </td>
+          <td>(</td>
+          <td class="paramtype">std::uint32_t&#160;</td>
+          <td class="paramname"><em>seed</em> = <code>0u</code></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">explicit</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Creates a noise field for <code>seed</code>. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">seed</td><td>Deterministic seed; the same seed always yields the same field. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="HexNoise_8h_source.html">HexNoise.h</a> 第 <a class="el" href="HexNoise_8h_source.html#l00032">32</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a8105f34e78724af78cb0bf9b8bdeec46" name="a8105f34e78724af78cb0bf9b8bdeec46"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8105f34e78724af78cb0bf9b8bdeec46">&#9670;&#160;</a></span>elevationPerturb()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::hexmap::HexNoise::elevationPerturb </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>worldX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>worldZ</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Vertical perturbation applied to a cell's elevation, <code>±kElevationPerturbStrength</code>. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">worldX</td><td>World X coordinate. </td></tr>
+    <tr><td class="paramname">worldZ</td><td>World Z coordinate. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="HexNoise_8cpp_source.html">HexNoise.cpp</a> 第 <a class="el" href="HexNoise_8cpp_source.html#l00063">63</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="HexMetrics_8h_source.html#l00135">eve::hexmap::HexMetrics::kElevationPerturbStrength</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00063">n</a>.</p>
+
+</div>
+</div>
+<a id="a29f7b5eabb846ffc134a6c4fe6ceba4f" name="a29f7b5eabb846ffc134a6c4fe6ceba4f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a29f7b5eabb846ffc134a6c4fe6ceba4f">&#9670;&#160;</a></span>perturb()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1hexmap_1_1HexVec3.html">HexVec3</a> eve::hexmap::HexNoise::perturb </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1hexmap_1_1HexVec3.html">HexVec3</a>&#160;</td>
+          <td class="paramname"><em>position</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Perturbs a position in XZ by <code>±kCellPerturbStrength</code>. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">position</td><td>Input position; Y is preserved. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Perturbed position. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="HexNoise_8cpp_source.html">HexNoise.cpp</a> 第 <a class="el" href="HexNoise_8cpp_source.html#l00056">56</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="HexMetrics_8h_source.html#l00133">eve::hexmap::HexMetrics::kCellPerturbStrength</a>, <a class="el" href="Grass_8cpp_source.html#l00063">n</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00016">position</a>.</p>
+
+</div>
+</div>
+<a id="ac87a2532200578d9bb885682b929f0a3" name="ac87a2532200578d9bb885682b929f0a3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac87a2532200578d9bb885682b929f0a3">&#9670;&#160;</a></span>reset()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::hexmap::HexNoise::reset </td>
+          <td>(</td>
+          <td class="paramtype">std::uint32_t&#160;</td>
+          <td class="paramname"><em>seed</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Reseeds the field. </p>
+
+<p class="definition">在文件 <a class="el" href="HexNoise_8h_source.html">HexNoise.h</a> 第 <a class="el" href="HexNoise_8h_source.html#l00035">35</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="HexNoise_8h_source.html#l00037">seed()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HexMap_8cpp_source.html#l00026">eve::hexmap::HexMap::reset()</a> , 以及 <a class="el" href="HexSphereMap_8cpp_source.html#l00056">eve::hexmap::HexSphereMap::reset()</a>.</p>
+
+</div>
+</div>
+<a id="aba8a1d8344854f8a22e08b348c912ff8" name="aba8a1d8344854f8a22e08b348c912ff8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aba8a1d8344854f8a22e08b348c912ff8">&#9670;&#160;</a></span>sample()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1hexmap_1_1HexVec4.html">HexVec4</a> eve::hexmap::HexNoise::sample </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>worldX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>worldZ</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Samples the four noise channels at a world XZ position. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">worldX</td><td>World X coordinate. </td></tr>
+    <tr><td class="paramname">worldZ</td><td>World Z coordinate. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Channel values in <code>[0, 1]</code>; <code>.x</code>/<code>.z</code> drive XZ perturbation and <code>.y</code> drives vertical elevation perturbation. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="HexNoise_8cpp_source.html">HexNoise.cpp</a> 第 <a class="el" href="HexNoise_8cpp_source.html#l00032">32</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="WorldAnchorProjection_8cpp_source.html#l00017">bottom</a>, <a class="el" href="CaveMesh_8cpp_source.html#l00114">bx</a>, <a class="el" href="CaveMesh_8cpp_source.html#l00114">bz</a>, <a class="el" href="AnimCurveLibrary_8cpp_source.html#l00019">channels</a>, <a class="el" href="AgentBindings_8cpp_source.html#l00016">top</a>, <a class="el" href="HexMetrics_8h_source.html#l00042">eve::hexmap::HexVec4::w</a>, <a class="el" href="HexMetrics_8h_source.html#l00039">eve::hexmap::HexVec4::x</a>, <a class="el" href="HexMetrics_8h_source.html#l00040">eve::hexmap::HexVec4::y</a> , 以及 <a class="el" href="HexMetrics_8h_source.html#l00041">eve::hexmap::HexVec4::z</a>.</p>
+
+</div>
+</div>
+<a id="a353bf13193ab3b9144997ceb4786365a" name="a353bf13193ab3b9144997ceb4786365a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a353bf13193ab3b9144997ceb4786365a">&#9670;&#160;</a></span>seed()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::uint32_t eve::hexmap::HexNoise::seed </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>The seed this field was created with. </p>
+
+<p class="definition">在文件 <a class="el" href="HexNoise_8h_source.html">HexNoise.h</a> 第 <a class="el" href="HexNoise_8h_source.html#l00037">37</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HexNoise_8h_source.html#l00035">reset()</a>, <a class="el" href="HexMap_8h_source.html#l00094">eve::hexmap::HexMap::seed()</a> , 以及 <a class="el" href="HexSphereMap_8h_source.html#l00112">eve::hexmap::HexSphereMap::seed()</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">类成员变量说明</h2>
+<a id="ab597ebff19ce80bd5f1e46a5e73981cc" name="ab597ebff19ce80bd5f1e46a5e73981cc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab597ebff19ce80bd5f1e46a5e73981cc">&#9670;&#160;</a></span>kCellScale</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr float eve::hexmap::HexNoise::kCellScale = 43.3<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Scale of the noise relative to one hex cell (world units per noise unit). </p>
+
+<p class="definition">在文件 <a class="el" href="HexNoise_8h_source.html">HexNoise.h</a> 第 <a class="el" href="HexNoise_8h_source.html#l00026">26</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/hexmap/<a class="el" href="HexNoise_8h_source.html">HexNoise.h</a></li>
+<li>src/modules/hexmap/<a class="el" href="HexNoise_8cpp_source.html">HexNoise.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

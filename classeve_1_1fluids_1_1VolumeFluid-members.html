@@ -1,0 +1,255 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: 成员列表</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1fluids.html">fluids</a></li><li class="navelem"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html">VolumeFluid</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">eve::fluids::VolumeFluid 成员列表</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>成员的完整列表，这些成员属于 <a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html">eve::fluids::VolumeFluid</a>,包括所有继承而来的类成员</p>
+<table class="directory">
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html#a51fa5225aa0484ee9fc0859a26108311">accumulateExternalForceZones</a>(std::span&lt; const VolumeFluidWindZone &gt; zones, float fixedTimeSeconds)</td><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html">eve::fluids::VolumeFluid</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html#a618fdaaea5fc1eca28cd0e8df6f3ca27">accumulateWindZones</a>(std::span&lt; const VolumeFluidWindZone &gt; zones, float fixedTimeSeconds)</td><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html">eve::fluids::VolumeFluid</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html#aeeaf1fce541686d2141da6d97b136b07">actorMassProperties</a>(unsigned actorGroup) const</td><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html">eve::fluids::VolumeFluid</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html#ab6cdcd5c25d121b435f04e360614afcc">actorParticleCount</a>(unsigned actorGroup) const</td><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html">eve::fluids::VolumeFluid</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html#a6b2dd865e9ffe94e6fcc2817b41d3a42">addRandomVelocity</a>(float intensity, uint32_t seed)</td><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html">eve::fluids::VolumeFluid</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html#a257d61595b9dc43dae2b51241b3d0f8e">applyActorGroupColors</a>()</td><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html">eve::fluids::VolumeFluid</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html#af37b75e34527724515a427ccd7d6a125">applyDataColors</a>(unsigned channel, std::span&lt; const VolumeFluidColorKey &gt; gradient)</td><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html">eve::fluids::VolumeFluid</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html#aa1bfc77b43ba5800204400387c88333a">applyMaterialChannels</a>(std::span&lt; const VolumeFluidViscosityColorKey &gt; colorKeys={})</td><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html">eve::fluids::VolumeFluid</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html#a3ae5063cbabe2d7889ba0918e0f1022f">applyParticleDrag</a>(unsigned particleIndex, glm::vec3 targetPosition, float stiffness, float damping, float seconds)</td><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html">eve::fluids::VolumeFluid</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html#a27780bbba771f9a2af9005dc41c8d1bb">applyQueryColors</a>(std::span&lt; const VolumeFluidQueryShape &gt; queries, std::span&lt; const glm::vec4 &gt; overlapColors, glm::vec4 baseColor, unsigned maxHitsPerQuery=4096)</td><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html">eve::fluids::VolumeFluid</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html#ac57efa482275d6d462cc70bcd8060ecb">applyQueryColorsPreservingOutside</a>(std::span&lt; const VolumeFluidQueryShape &gt; queries, std::span&lt; const glm::vec4 &gt; overlapColors, unsigned maxHitsPerQuery=4096)</td><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html">eve::fluids::VolumeFluid</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html#a31ceae9d44d2800fead0eb047bb59109">applyRandomColors</a>(std::span&lt; const VolumeFluidColorKey &gt; gradient, uint32_t seed)</td><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html">eve::fluids::VolumeFluid</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html#a7884151a56d816d28e5c46c9915c823f">applySolidColor</a>(glm::vec4 color)</td><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html">eve::fluids::VolumeFluid</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html#a68f0698b564a89012e9c42a4891fabe9">applyVelocityColors</a>(float sensibility)</td><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html">eve::fluids::VolumeFluid</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html#a2f05ae0499465f2690c2ece460c3d777">attachmentReactions</a>() const</td><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html">eve::fluids::VolumeFluid</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html#a8284f642b93f0bf6f9d2843f1f0ffca7">availableCapacity</a>() const</td><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html">eve::fluids::VolumeFluid</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html#a2bf63ace5a765edede08ce7f42226735">bindDynamicParticles</a>(std::span&lt; const unsigned &gt; particleIndices, unsigned colliderLabel, float compliance, float breakThreshold, bool constrainOrientation=false)</td><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html">eve::fluids::VolumeFluid</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html#aaef772ae6e16e9a666592af476b2067f">bindStaticParticles</a>(std::span&lt; const unsigned &gt; particleIndices, unsigned colliderLabel, bool constrainOrientation=false)</td><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html">eve::fluids::VolumeFluid</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html#a0033275084ecf60e26819109b1f16a48">clear</a>()</td><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html">eve::fluids::VolumeFluid</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html#a00620f7793bb9d086a43ce09e24ef6d6">configureParticleEvents</a>(unsigned capacity)</td><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html">eve::fluids::VolumeFluid</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html#a42ce565e153d564494788422618246f2">contacts</a>() const</td><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html">eve::fluids::VolumeFluid</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html#aadd0bb75c7939c628fc6f90b99e179fd">copyInterpolatedPositions</a>(float alpha, std::vector&lt; glm::vec3 &gt; &amp;positions) const</td><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html">eve::fluids::VolumeFluid</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html#a589e21f3f6ba4102652ac8df182b210b">copyInterpolatedRenderData</a>(float alpha, std::vector&lt; glm::vec3 &gt; &amp;positions, std::vector&lt; glm::vec4 &gt; &amp;colors) const</td><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html">eve::fluids::VolumeFluid</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html#a5f2b3545ef485d2d4072270e93181342">copyInterpolatedSurfaceRenderData</a>(float alpha, std::vector&lt; glm::vec3 &gt; &amp;positions, std::vector&lt; glm::vec4 &gt; &amp;colors, std::vector&lt; glm::vec3 &gt; &amp;radii, std::vector&lt; glm::vec4 &gt; &amp;orientations) const</td><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html">eve::fluids::VolumeFluid</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html#a63ec3f8c33ecb616529e1eeaffee7956">copyParticleImpostors</a>(unsigned actorGroup, float radiusScale, glm::vec4 tint, float alpha, unsigned maxInstances, std::vector&lt; VolumeFluidParticleInstance &gt; &amp;instances) const</td><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html">eve::fluids::VolumeFluid</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html#a827a7ae4ae6e98a6a5893aa085573926">copyPhaseRenderData</a>(VolumeFluidPhase phase, std::vector&lt; glm::vec3 &gt; &amp;positions, std::vector&lt; glm::vec4 &gt; &amp;colors, size_t maxParticles) const</td><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html">eve::fluids::VolumeFluid</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html#ac87c38a4f2bf4bee6d1abc07c3373355">copyRenderData</a>(std::vector&lt; glm::vec3 &gt; &amp;positions, std::vector&lt; glm::vec4 &gt; &amp;colors) const</td><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html">eve::fluids::VolumeFluid</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html#acf94ead2eeee9550bde18c4ea5dfc08d">copySurfaceRenderData</a>(std::vector&lt; glm::vec3 &gt; &amp;positions, std::vector&lt; glm::vec4 &gt; &amp;colors, std::vector&lt; glm::vec3 &gt; &amp;radii, std::vector&lt; glm::vec4 &gt; &amp;orientations) const</td><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html">eve::fluids::VolumeFluid</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html#a2306ec953ebb85d7d9fab29a4cf26178">create</a>(const VolumeFluidSettings &amp;settings)</td><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html">eve::fluids::VolumeFluid</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html#a8c346304baebd6399f6d592374d0ff71">debugParticleFrames</a>(unsigned actorGroup, float size=1.f, unsigned maxParticles=65536) const</td><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html">eve::fluids::VolumeFluid</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html#a4da1bfe8e7af46e8af3a7b6b1c6984a9">debugParticleGrid</a>(unsigned maxCells=65536) const</td><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html">eve::fluids::VolumeFluid</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html#a78db5d77aba6cfa8475e3cd0adba9c64">debugSdfSlice</a>(unsigned colliderLabel, VolumeFluidSdfSliceAxis axis, float slice=.25f, float maxDistance=.5f, unsigned maxSamples=65536) const</td><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html">eve::fluids::VolumeFluid</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html#ac226e98738faec11405be5eab57f3e1f">drainParticleEvents</a>()</td><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html">eve::fluids::VolumeFluid</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html#adde34466a71bd0cb58e4c18086f866c6">emit</a>(std::span&lt; const VolumeFluidParticle &gt; particles)</td><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html">eve::fluids::VolumeFluid</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html#ac866cf43502a346c0809cee5c0eaba1b">grabContactParticles</a>(unsigned colliderLabel, glm::vec3 position, glm::vec4 rotation, float distanceThreshold=.01f)</td><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html">eve::fluids::VolumeFluid</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html#a9df22ff7df5798d1b572009eae90a1bf">gravity</a>() const</td><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html">eve::fluids::VolumeFluid</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html#abe3dc699351eb963c09335e73eba7908">killActorParticle</a>(unsigned actorGroup, unsigned actorParticleIndex)</td><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html">eve::fluids::VolumeFluid</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html#ab4d5ac241a5ba1dfc3e0d7491def29c9">killActorParticles</a>(unsigned actorGroup)</td><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html">eve::fluids::VolumeFluid</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html#a4e554de269dfdc7666cabe86a41c337b">killParticle</a>(unsigned particleIndex)</td><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html">eve::fluids::VolumeFluid</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html#a02f72dbfdb6eb8d9bd91c15a7dc1be33">operator=</a>(const VolumeFluid &amp;)=delete</td><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html">eve::fluids::VolumeFluid</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html#a47f7a6961b64f8430b70a5a3049f4400">overlap</a>(glm::vec3 center, float radius) const</td><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html">eve::fluids::VolumeFluid</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html#aa38ee325691bf795370db6283ff4459c">overlapBox</a>(glm::vec3 center, glm::vec3 halfExtent, glm::vec4 rotation) const</td><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html">eve::fluids::VolumeFluid</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html#a4da43ce53e6ad99365af2f9c74f67a35">paint</a>(glm::vec3 center, float radius, const VolumeFluidMaterial &amp;material)</td><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html">eve::fluids::VolumeFluid</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html#a123009f68ac7b6f302112740af3937d9">particleCount</a>() const</td><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html">eve::fluids::VolumeFluid</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html#a6662870191c9b00ebcaf0c529a2d4f6a">particleImpostors</a>(unsigned actorGroup, float radiusScale, glm::vec4 tint=glm::vec4(1.f), float alpha=1.f, unsigned maxInstances=65536) const</td><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html">eve::fluids::VolumeFluid</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html#a3dcfa5109eed72ed7f93bf00ee9d3e81">particleInstances</a>(unsigned actorGroup, glm::vec3 instanceScale=glm::vec3(1.f), float alpha=1.f, unsigned maxInstances=65536) const</td><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html">eve::fluids::VolumeFluid</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html#ac79d2f3373347bb4dacbe50f4047c035">particles</a>() const</td><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html">eve::fluids::VolumeFluid</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html#a0c3b98fdad7254214ddfc7c3341ed81e">particleView</a>() const</td><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html">eve::fluids::VolumeFluid</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html#a7aabd2b8366a163554357956d6449e9b">queryBatch</a>(std::span&lt; const VolumeFluidQueryShape &gt; queries, unsigned maxHitsPerQuery=64) const</td><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html">eve::fluids::VolumeFluid</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html#a3d0d8fe77f80347ccf25a0e2463ffd10">queryBox</a>(glm::vec3 center, glm::vec3 halfExtent, glm::vec4 rotation, float contactOffset, float maxDistance, unsigned maxHits=64, unsigned phaseMask=0x0f, unsigned collisionFilter=0xffffffffu) const</td><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html">eve::fluids::VolumeFluid</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html#afe4aa82d50666ebe6e971417b64d3a6e">querySimplexes</a>(std::span&lt; const VolumeFluidQueryShape &gt; queries, unsigned maxHitsPerQuery=64) const</td><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html">eve::fluids::VolumeFluid</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html#aadef2a517026200da3066587b224e8af">querySphere</a>(glm::vec3 center, float radius, float contactOffset, float maxDistance, unsigned maxHits=64, unsigned phaseMask=0x0f, unsigned collisionFilter=0xffffffffu) const</td><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html">eve::fluids::VolumeFluid</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html#afa51580269741040282227e9000af4af">raycast</a>(glm::vec3 origin, glm::vec3 direction, float maxDistance, unsigned maxHits=64, unsigned phaseMask=0x0f) const</td><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html">eve::fluids::VolumeFluid</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html#a8cedb38ff32cbb01f8473335fd4333a8">releaseGrabbedParticles</a>(unsigned colliderLabel)</td><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html">eve::fluids::VolumeFluid</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html#a27619d507a8184c053f539d145eea047">restore</a>(const VolumeFluidSnapshot &amp;snapshot)</td><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html">eve::fluids::VolumeFluid</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html#a94109fe18936264053d302ae793d6750">sampleField</a>(std::span&lt; const glm::vec3 &gt; positions) const</td><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html">eve::fluids::VolumeFluid</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html#a70c359bde17a12355344617fd3f60d87">setActorCollisionFilter</a>(unsigned actorGroup, unsigned collisionFilter)</td><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html">eve::fluids::VolumeFluid</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html#ada9cc84d68bcbafa68ca275bc0df97dc">setActorFilterCategory</a>(unsigned actorGroup, unsigned category)</td><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html">eve::fluids::VolumeFluid</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html#a6bbc1de9e287d049dcfa6fd937b93961">setActorSelfCollisions</a>(unsigned actorGroup, bool enabled)</td><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html">eve::fluids::VolumeFluid</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html#ab257270716bd5235a9007714c738e7b8">setColliders</a>(std::span&lt; const VolumeFluidCollider &gt; colliders)</td><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html">eve::fluids::VolumeFluid</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html#ae28f368ab77e1738a6eea57dd3237cb3">setGravity</a>(glm::vec3 gravity)</td><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html">eve::fluids::VolumeFluid</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html#a34c006c78c29f68c6f113d7539192957">setHeightFieldColliders</a>(std::span&lt; const VolumeFluidHeightFieldCollider &gt; colliders)</td><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html">eve::fluids::VolumeFluid</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html#abd52c1941ecc405a562516243be14300">setParticleExternalForces</a>(std::span&lt; const glm::vec3 &gt; forces)</td><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html">eve::fluids::VolumeFluid</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html#ac66da1685fd40b94e683c9b8883489a1">setParticleWinds</a>(std::span&lt; const glm::vec3 &gt; winds)</td><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html">eve::fluids::VolumeFluid</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html#abd61c56a3f337722f04e81997ee1da04">setSdfColliders</a>(std::span&lt; const VolumeFluidSdfCollider &gt; colliders)</td><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html">eve::fluids::VolumeFluid</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html#a02a2722fbccf124bcbb685b51e6fbf76">setSimplexes</a>(std::span&lt; const VolumeFluidSimplex &gt; simplexes)</td><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html">eve::fluids::VolumeFluid</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html#afdd70141d3549cc492d33dbd4a6b203c">setStitches</a>(std::span&lt; const VolumeFluidStitch &gt; stitches)</td><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html">eve::fluids::VolumeFluid</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html#a9cd9d62f9070d0fdc7314b4aae6cff4c">snapshot</a>() const</td><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html">eve::fluids::VolumeFluid</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html#a228d7566fa040ade3305fc0dd5fc92ed">spacing</a>() const</td><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html">eve::fluids::VolumeFluid</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html#a8412ff2791ffeefbbef9bb167f44a6a3">step</a>(float seconds, unsigned substeps=4)</td><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html">eve::fluids::VolumeFluid</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html#a32432e4dd2afa2c0dcf2b4eec1458b6a">stepWithColliders</a>(float seconds, unsigned substeps, std::span&lt; const VolumeFluidCollider &gt; colliders, std::span&lt; const VolumeFluidThermalRule &gt; rules={})</td><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html">eve::fluids::VolumeFluid</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html#acd870e23521a96a6ad3c5bd311645401">stepWithThermalContacts</a>(float seconds, unsigned substeps, std::span&lt; const VolumeFluidThermalRule &gt; rules)</td><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html">eve::fluids::VolumeFluid</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html#aa7e3773512c2c4fba4400c6c8950157f">teleportActor</a>(glm::vec3 currentPosition, glm::vec4 currentRotation, glm::vec3 targetPosition, glm::vec4 targetRotation)</td><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html">eve::fluids::VolumeFluid</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html#a3716f27122936795dc519587344911ff">unbindStaticParticles</a>(std::span&lt; const unsigned &gt; particleIndices)</td><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html">eve::fluids::VolumeFluid</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html#abac6d03e7c9dde60c2bd08a3d1d46bb0">updateActorMaterial</a>(unsigned actorGroup, const VolumeFluidParticle &amp;prototype)</td><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html">eve::fluids::VolumeFluid</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html#af1a19e6bebda423198e5efe7387a5862">updateGrabbedParticles</a>(unsigned colliderLabel, glm::vec3 position, glm::vec4 rotation)</td><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html">eve::fluids::VolumeFluid</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html#ae9ecbc0bb9db8126a825defd69cd23f8">updateSdfColliderPoses</a>(std::span&lt; const VolumeFluidSdfPose &gt; poses)</td><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html">eve::fluids::VolumeFluid</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html#a0be35761f1ea93f2af56450e641c2f99">VolumeFluid</a>(const VolumeFluid &amp;)=delete</td><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html">eve::fluids::VolumeFluid</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html#aca119f36d2d58ab9117a136a13f345dc">VolumeFluidDiffuse</a></td><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html">eve::fluids::VolumeFluid</a></td><td class="entry"><span class="mlabel">friend</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html#a6398a17a2475fa60f1d1fb55145a22b8">VolumeFluidFoam</a></td><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html">eve::fluids::VolumeFluid</a></td><td class="entry"><span class="mlabel">friend</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html#a58dcf1055e27407012d2ff7c51deb048">~VolumeFluid</a>()</td><td class="entry"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html">eve::fluids::VolumeFluid</a></td><td class="entry"></td></tr>
+</table></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

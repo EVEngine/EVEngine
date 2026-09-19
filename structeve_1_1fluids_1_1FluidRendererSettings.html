@@ -1,0 +1,607 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::fluids::FluidRendererSettings结构体 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1fluids.html">fluids</a></li><li class="navelem"><a class="el" href="structeve_1_1fluids_1_1FluidRendererSettings.html">FluidRendererSettings</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-attribs">Public 属性</a> &#124;
+<a href="structeve_1_1fluids_1_1FluidRendererSettings-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::fluids::FluidRendererSettings结构体 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Complete owning mirror of Fluid3DRendererSettings with package defaults.  
+ <a href="structeve_1_1fluids_1_1FluidRendererSettings.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="FluidSurfaceRenderer_8h_source.html">FluidSurfaceRenderer.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public 属性</h2></td></tr>
+<tr class="memitem:ad3665730ea906ba752a2fb7d112f1bba" id="r_ad3665730ea906ba752a2fb7d112f1bba"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1fluids_1_1FluidRendererSettings.html#ad3665730ea906ba752a2fb7d112f1bba">blendSource</a> = 5</td></tr>
+<tr class="separator:ad3665730ea906ba752a2fb7d112f1bba"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a159d387b231f093a8792333d5a1e8055" id="r_a159d387b231f093a8792333d5a1e8055"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1fluids_1_1FluidRendererSettings.html#a159d387b231f093a8792333d5a1e8055">blendDestination</a> = 10</td></tr>
+<tr class="separator:a159d387b231f093a8792333d5a1e8055"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aad88a40f6fdce5971f12e36213862689" id="r_aad88a40f6fdce5971f12e36213862689"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1fluids_1_1FluidRendererSettings.html#aad88a40f6fdce5971f12e36213862689">particleBlendSource</a> = 2</td></tr>
+<tr class="separator:aad88a40f6fdce5971f12e36213862689"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1121308c0eb86bf1eb0f52e53905f518" id="r_a1121308c0eb86bf1eb0f52e53905f518"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1fluids_1_1FluidRendererSettings.html#a1121308c0eb86bf1eb0f52e53905f518">particleBlendDestination</a> = 0</td></tr>
+<tr class="separator:a1121308c0eb86bf1eb0f52e53905f518"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7255d4cdc398e43db4cbed095268231d" id="r_a7255d4cdc398e43db4cbed095268231d"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1fluids_1_1FluidRendererSettings.html#a7255d4cdc398e43db4cbed095268231d">particleZWrite</a> = false</td></tr>
+<tr class="separator:a7255d4cdc398e43db4cbed095268231d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa6483d5a403bbc5a0ff75e89472a4bed" id="r_aa6483d5a403bbc5a0ff75e89472a4bed"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1fluids_1_1FluidRendererSettings.html#aa6483d5a403bbc5a0ff75e89472a4bed">thicknessCutoff</a> = 1.2<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:aa6483d5a403bbc5a0ff75e89472a4bed"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aab78d8e2fc7044a745b7a166ffea1fb7" id="r_aab78d8e2fc7044a745b7a166ffea1fb7"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1fluids_1_1FluidRendererSettings.html#aab78d8e2fc7044a745b7a166ffea1fb7">thicknessDownsample</a> = 2</td></tr>
+<tr class="separator:aab78d8e2fc7044a745b7a166ffea1fb7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1a3719c0efd20389215d04c5991475e1" id="r_a1a3719c0efd20389215d04c5991475e1"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1fluids_1_1FluidRendererSettings.html#a1a3719c0efd20389215d04c5991475e1">generateSurface</a> = true</td></tr>
+<tr class="separator:a1a3719c0efd20389215d04c5991475e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a231e852cb8ed059ee815cb99982a054d" id="r_a231e852cb8ed059ee815cb99982a054d"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1fluids_1_1FluidRendererSettings.html#a231e852cb8ed059ee815cb99982a054d">blurRadius</a> = .02<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a231e852cb8ed059ee815cb99982a054d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7dadf3389f023ea912d06a5021c9e739" id="r_a7dadf3389f023ea912d06a5021c9e739"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1fluids_1_1FluidRendererSettings.html#a7dadf3389f023ea912d06a5021c9e739">surfaceDownsample</a> = 1</td></tr>
+<tr class="separator:a7dadf3389f023ea912d06a5021c9e739"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acf89fdc9bc84aed87f5978289991be7a" id="r_acf89fdc9bc84aed87f5978289991be7a"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1fluids_1_1FluidRendererSettings.html#acf89fdc9bc84aed87f5978289991be7a">lighting</a> = true</td></tr>
+<tr class="separator:acf89fdc9bc84aed87f5978289991be7a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5e51b1c253e24a3ae8b39d414f82c761" id="r_a5e51b1c253e24a3ae8b39d414f82c761"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1fluids_1_1FluidRendererSettings.html#a5e51b1c253e24a3ae8b39d414f82c761">smoothness</a> = .8<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a5e51b1c253e24a3ae8b39d414f82c761"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2a77f3d38ffd48c1b7916379fd0395ef" id="r_a2a77f3d38ffd48c1b7916379fd0395ef"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1fluids_1_1FluidRendererSettings.html#a2a77f3d38ffd48c1b7916379fd0395ef">metalness</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a2a77f3d38ffd48c1b7916379fd0395ef"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a65804c845302078667a2c90879016458" id="r_a65804c845302078667a2c90879016458"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1fluids_1_1FluidRendererSettings.html#a65804c845302078667a2c90879016458">ambientMultiplier</a> = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a65804c845302078667a2c90879016458"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a669fa0eff4998c7120319bbbd5a003d9" id="r_a669fa0eff4998c7120319bbbd5a003d9"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1fluids_1_1FluidRendererSettings.html#a669fa0eff4998c7120319bbbd5a003d9">generateReflection</a> = true</td></tr>
+<tr class="separator:a669fa0eff4998c7120319bbbd5a003d9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab89d7f272281373861d7b838a59e7d87" id="r_ab89d7f272281373861d7b838a59e7d87"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1fluids_1_1FluidRendererSettings.html#ab89d7f272281373861d7b838a59e7d87">reflection</a> = .2<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:ab89d7f272281373861d7b838a59e7d87"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3528373727eb42bd88f21bfa788f48d1" id="r_a3528373727eb42bd88f21bfa788f48d1"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1fluids_1_1FluidRendererSettings.html#a3528373727eb42bd88f21bfa788f48d1">generateRefraction</a> = true</td></tr>
+<tr class="separator:a3528373727eb42bd88f21bfa788f48d1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac458f096a426ee40d1d477f9d8a66870" id="r_ac458f096a426ee40d1d477f9d8a66870"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1fluids_1_1FluidRendererSettings.html#ac458f096a426ee40d1d477f9d8a66870">transparency</a> = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:ac458f096a426ee40d1d477f9d8a66870"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad338c81a078b734f959c0f40afdcf672" id="r_ad338c81a078b734f959c0f40afdcf672"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1fluids_1_1FluidRendererSettings.html#ad338c81a078b734f959c0f40afdcf672">absorption</a> = 5.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:ad338c81a078b734f959c0f40afdcf672"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5076204b90a315bc6fef7ae61b9b43ca" id="r_a5076204b90a315bc6fef7ae61b9b43ca"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1fluids_1_1FluidRendererSettings.html#a5076204b90a315bc6fef7ae61b9b43ca">refraction</a> = .01<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a5076204b90a315bc6fef7ae61b9b43ca"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a29d74ef9466917656fcd6cbdc30b5884" id="r_a29d74ef9466917656fcd6cbdc30b5884"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1fluids_1_1FluidRendererSettings.html#a29d74ef9466917656fcd6cbdc30b5884">refractionDownsample</a> = 1</td></tr>
+<tr class="separator:a29d74ef9466917656fcd6cbdc30b5884"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a74c2146c50be0f5a36c81b5b9dd88182" id="r_a74c2146c50be0f5a36c81b5b9dd88182"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1fluids_1_1FluidRendererSettings.html#a74c2146c50be0f5a36c81b5b9dd88182">generateFoam</a> = true</td></tr>
+<tr class="separator:a74c2146c50be0f5a36c81b5b9dd88182"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab7ef7aff8c69bc6f9b54af2e25018b4e" id="r_ab7ef7aff8c69bc6f9b54af2e25018b4e"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1fluids_1_1FluidRendererSettings.html#ab7ef7aff8c69bc6f9b54af2e25018b4e">foamDownsample</a> = 1</td></tr>
+<tr class="separator:ab7ef7aff8c69bc6f9b54af2e25018b4e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Complete owning mirror of Fluid3DRendererSettings with package defaults. </p>
+
+<p class="definition">在文件 <a class="el" href="FluidSurfaceRenderer_8h_source.html">FluidSurfaceRenderer.h</a> 第 <a class="el" href="FluidSurfaceRenderer_8h_source.html#l00080">80</a> 行定义.</p>
+</div><h2 class="groupheader">类成员变量说明</h2>
+<a id="ad338c81a078b734f959c0f40afdcf672" name="ad338c81a078b734f959c0f40afdcf672"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad338c81a078b734f959c0f40afdcf672">&#9670;&#160;</a></span>absorption</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::fluids::FluidRendererSettings::absorption = 5.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="FluidSurfaceRenderer_8h_source.html">FluidSurfaceRenderer.h</a> 第 <a class="el" href="FluidSurfaceRenderer_8h_source.html#l00094">94</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a65804c845302078667a2c90879016458" name="a65804c845302078667a2c90879016458"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a65804c845302078667a2c90879016458">&#9670;&#160;</a></span>ambientMultiplier</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::fluids::FluidRendererSettings::ambientMultiplier = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="FluidSurfaceRenderer_8h_source.html">FluidSurfaceRenderer.h</a> 第 <a class="el" href="FluidSurfaceRenderer_8h_source.html#l00090">90</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a159d387b231f093a8792333d5a1e8055" name="a159d387b231f093a8792333d5a1e8055"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a159d387b231f093a8792333d5a1e8055">&#9670;&#160;</a></span>blendDestination</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::fluids::FluidRendererSettings::blendDestination = 10</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="FluidSurfaceRenderer_8h_source.html">FluidSurfaceRenderer.h</a> 第 <a class="el" href="FluidSurfaceRenderer_8h_source.html#l00081">81</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad3665730ea906ba752a2fb7d112f1bba" name="ad3665730ea906ba752a2fb7d112f1bba"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad3665730ea906ba752a2fb7d112f1bba">&#9670;&#160;</a></span>blendSource</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::fluids::FluidRendererSettings::blendSource = 5</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="FluidSurfaceRenderer_8h_source.html">FluidSurfaceRenderer.h</a> 第 <a class="el" href="FluidSurfaceRenderer_8h_source.html#l00081">81</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="FluidSurfaceRenderer_8cpp_source.html#l00634">eve::fluids::FluidSurfaceRenderer::rendererSettings()</a>.</p>
+
+</div>
+</div>
+<a id="a231e852cb8ed059ee815cb99982a054d" name="a231e852cb8ed059ee815cb99982a054d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a231e852cb8ed059ee815cb99982a054d">&#9670;&#160;</a></span>blurRadius</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::fluids::FluidRendererSettings::blurRadius = .02<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="FluidSurfaceRenderer_8h_source.html">FluidSurfaceRenderer.h</a> 第 <a class="el" href="FluidSurfaceRenderer_8h_source.html#l00087">87</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab7ef7aff8c69bc6f9b54af2e25018b4e" name="ab7ef7aff8c69bc6f9b54af2e25018b4e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab7ef7aff8c69bc6f9b54af2e25018b4e">&#9670;&#160;</a></span>foamDownsample</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::fluids::FluidRendererSettings::foamDownsample = 1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="FluidSurfaceRenderer_8h_source.html">FluidSurfaceRenderer.h</a> 第 <a class="el" href="FluidSurfaceRenderer_8h_source.html#l00097">97</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a74c2146c50be0f5a36c81b5b9dd88182" name="a74c2146c50be0f5a36c81b5b9dd88182"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a74c2146c50be0f5a36c81b5b9dd88182">&#9670;&#160;</a></span>generateFoam</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::fluids::FluidRendererSettings::generateFoam = true</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="FluidSurfaceRenderer_8h_source.html">FluidSurfaceRenderer.h</a> 第 <a class="el" href="FluidSurfaceRenderer_8h_source.html#l00096">96</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a669fa0eff4998c7120319bbbd5a003d9" name="a669fa0eff4998c7120319bbbd5a003d9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a669fa0eff4998c7120319bbbd5a003d9">&#9670;&#160;</a></span>generateReflection</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::fluids::FluidRendererSettings::generateReflection = true</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="FluidSurfaceRenderer_8h_source.html">FluidSurfaceRenderer.h</a> 第 <a class="el" href="FluidSurfaceRenderer_8h_source.html#l00091">91</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a3528373727eb42bd88f21bfa788f48d1" name="a3528373727eb42bd88f21bfa788f48d1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3528373727eb42bd88f21bfa788f48d1">&#9670;&#160;</a></span>generateRefraction</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::fluids::FluidRendererSettings::generateRefraction = true</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="FluidSurfaceRenderer_8h_source.html">FluidSurfaceRenderer.h</a> 第 <a class="el" href="FluidSurfaceRenderer_8h_source.html#l00093">93</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a1a3719c0efd20389215d04c5991475e1" name="a1a3719c0efd20389215d04c5991475e1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1a3719c0efd20389215d04c5991475e1">&#9670;&#160;</a></span>generateSurface</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::fluids::FluidRendererSettings::generateSurface = true</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="FluidSurfaceRenderer_8h_source.html">FluidSurfaceRenderer.h</a> 第 <a class="el" href="FluidSurfaceRenderer_8h_source.html#l00086">86</a> 行定义.</p>
+
+</div>
+</div>
+<a id="acf89fdc9bc84aed87f5978289991be7a" name="acf89fdc9bc84aed87f5978289991be7a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acf89fdc9bc84aed87f5978289991be7a">&#9670;&#160;</a></span>lighting</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::fluids::FluidRendererSettings::lighting = true</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="FluidSurfaceRenderer_8h_source.html">FluidSurfaceRenderer.h</a> 第 <a class="el" href="FluidSurfaceRenderer_8h_source.html#l00089">89</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a2a77f3d38ffd48c1b7916379fd0395ef" name="a2a77f3d38ffd48c1b7916379fd0395ef"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2a77f3d38ffd48c1b7916379fd0395ef">&#9670;&#160;</a></span>metalness</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::fluids::FluidRendererSettings::metalness = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="FluidSurfaceRenderer_8h_source.html">FluidSurfaceRenderer.h</a> 第 <a class="el" href="FluidSurfaceRenderer_8h_source.html#l00090">90</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a1121308c0eb86bf1eb0f52e53905f518" name="a1121308c0eb86bf1eb0f52e53905f518"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1121308c0eb86bf1eb0f52e53905f518">&#9670;&#160;</a></span>particleBlendDestination</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::fluids::FluidRendererSettings::particleBlendDestination = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="FluidSurfaceRenderer_8h_source.html">FluidSurfaceRenderer.h</a> 第 <a class="el" href="FluidSurfaceRenderer_8h_source.html#l00082">82</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aad88a40f6fdce5971f12e36213862689" name="aad88a40f6fdce5971f12e36213862689"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aad88a40f6fdce5971f12e36213862689">&#9670;&#160;</a></span>particleBlendSource</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::fluids::FluidRendererSettings::particleBlendSource = 2</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="FluidSurfaceRenderer_8h_source.html">FluidSurfaceRenderer.h</a> 第 <a class="el" href="FluidSurfaceRenderer_8h_source.html#l00082">82</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a7255d4cdc398e43db4cbed095268231d" name="a7255d4cdc398e43db4cbed095268231d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7255d4cdc398e43db4cbed095268231d">&#9670;&#160;</a></span>particleZWrite</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::fluids::FluidRendererSettings::particleZWrite = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="FluidSurfaceRenderer_8h_source.html">FluidSurfaceRenderer.h</a> 第 <a class="el" href="FluidSurfaceRenderer_8h_source.html#l00083">83</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab89d7f272281373861d7b838a59e7d87" name="ab89d7f272281373861d7b838a59e7d87"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab89d7f272281373861d7b838a59e7d87">&#9670;&#160;</a></span>reflection</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::fluids::FluidRendererSettings::reflection = .2<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="FluidSurfaceRenderer_8h_source.html">FluidSurfaceRenderer.h</a> 第 <a class="el" href="FluidSurfaceRenderer_8h_source.html#l00092">92</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a5076204b90a315bc6fef7ae61b9b43ca" name="a5076204b90a315bc6fef7ae61b9b43ca"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5076204b90a315bc6fef7ae61b9b43ca">&#9670;&#160;</a></span>refraction</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::fluids::FluidRendererSettings::refraction = .01<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="FluidSurfaceRenderer_8h_source.html">FluidSurfaceRenderer.h</a> 第 <a class="el" href="FluidSurfaceRenderer_8h_source.html#l00094">94</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a29d74ef9466917656fcd6cbdc30b5884" name="a29d74ef9466917656fcd6cbdc30b5884"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a29d74ef9466917656fcd6cbdc30b5884">&#9670;&#160;</a></span>refractionDownsample</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::fluids::FluidRendererSettings::refractionDownsample = 1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="FluidSurfaceRenderer_8h_source.html">FluidSurfaceRenderer.h</a> 第 <a class="el" href="FluidSurfaceRenderer_8h_source.html#l00095">95</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a5e51b1c253e24a3ae8b39d414f82c761" name="a5e51b1c253e24a3ae8b39d414f82c761"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5e51b1c253e24a3ae8b39d414f82c761">&#9670;&#160;</a></span>smoothness</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::fluids::FluidRendererSettings::smoothness = .8<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="FluidSurfaceRenderer_8h_source.html">FluidSurfaceRenderer.h</a> 第 <a class="el" href="FluidSurfaceRenderer_8h_source.html#l00090">90</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a7dadf3389f023ea912d06a5021c9e739" name="a7dadf3389f023ea912d06a5021c9e739"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7dadf3389f023ea912d06a5021c9e739">&#9670;&#160;</a></span>surfaceDownsample</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::fluids::FluidRendererSettings::surfaceDownsample = 1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="FluidSurfaceRenderer_8h_source.html">FluidSurfaceRenderer.h</a> 第 <a class="el" href="FluidSurfaceRenderer_8h_source.html#l00088">88</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aa6483d5a403bbc5a0ff75e89472a4bed" name="aa6483d5a403bbc5a0ff75e89472a4bed"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa6483d5a403bbc5a0ff75e89472a4bed">&#9670;&#160;</a></span>thicknessCutoff</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::fluids::FluidRendererSettings::thicknessCutoff = 1.2<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="FluidSurfaceRenderer_8h_source.html">FluidSurfaceRenderer.h</a> 第 <a class="el" href="FluidSurfaceRenderer_8h_source.html#l00084">84</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aab78d8e2fc7044a745b7a166ffea1fb7" name="aab78d8e2fc7044a745b7a166ffea1fb7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aab78d8e2fc7044a745b7a166ffea1fb7">&#9670;&#160;</a></span>thicknessDownsample</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::fluids::FluidRendererSettings::thicknessDownsample = 2</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="FluidSurfaceRenderer_8h_source.html">FluidSurfaceRenderer.h</a> 第 <a class="el" href="FluidSurfaceRenderer_8h_source.html#l00085">85</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac458f096a426ee40d1d477f9d8a66870" name="ac458f096a426ee40d1d477f9d8a66870"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac458f096a426ee40d1d477f9d8a66870">&#9670;&#160;</a></span>transparency</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::fluids::FluidRendererSettings::transparency = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="FluidSurfaceRenderer_8h_source.html">FluidSurfaceRenderer.h</a> 第 <a class="el" href="FluidSurfaceRenderer_8h_source.html#l00094">94</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该结构体的文档由以下文件生成:<ul>
+<li>src/modules/fluids/<a class="el" href="FluidSurfaceRenderer_8h_source.html">FluidSurfaceRenderer.h</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

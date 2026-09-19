@@ -1,0 +1,445 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::graphics::VegetationElement结构体 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1graphics.html">graphics</a></li><li class="navelem"><a class="el" href="structeve_1_1graphics_1_1VegetationElement.html">VegetationElement</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-attribs">Public 属性</a> &#124;
+<a href="structeve_1_1graphics_1_1VegetationElement-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::graphics::VegetationElement结构体 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Owning element definition; no scene, texture or entity pointers survive admission. Center/extents are world units; yaw is radians around +Y. Layer bits select 0..8. Mask alpha multiplies opacity and mask RGB multiplies the target RGB. Equal priorities preserve input order. Seasons interpolate winter/spring/summer/autumn.  
+ <a href="structeve_1_1graphics_1_1VegetationElement.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="VegetationField_8h_source.html">VegetationField.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public 属性</h2></td></tr>
+<tr class="memitem:ae1e48745cb3c757c8a283702f99e30cb" id="r_ae1e48745cb3c757c8a283702f99e30cb"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1graphics.html#a5afd9225d97f0d1ec0e68859095034ee">VegetationChannel</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1VegetationElement.html#ae1e48745cb3c757c8a283702f99e30cb">channel</a> = <a class="el" href="namespaceeve_1_1graphics.html#a5afd9225d97f0d1ec0e68859095034eeacb5feb1b7314637725a2e73bdc9f7295">VegetationChannel::Color</a></td></tr>
+<tr class="separator:ae1e48745cb3c757c8a283702f99e30cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abf1494965ce3088353834855172f836b" id="r_abf1494965ce3088353834855172f836b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1graphics.html#a34ea33f7bbc6bb44ac512b00ed05c65b">VegetationBlend</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1VegetationElement.html#abf1494965ce3088353834855172f836b">blend</a> = <a class="el" href="namespaceeve_1_1graphics.html#a34ea33f7bbc6bb44ac512b00ed05c65ba0ebe6df8a3ac338e0512acc741823fdb">VegetationBlend::Replace</a></td></tr>
+<tr class="separator:abf1494965ce3088353834855172f836b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abc80aec278f486cff8f40513ea10a58c" id="r_abc80aec278f486cff8f40513ea10a58c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1graphics.html#aa8ce7fcbb570489ca4104b5a69922b0e">VegetationShape</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1VegetationElement.html#abc80aec278f486cff8f40513ea10a58c">shape</a> = <a class="el" href="namespaceeve_1_1graphics.html#aa8ce7fcbb570489ca4104b5a69922b0eaeee5397cecd880d16ef7244819aa383d">VegetationShape::Ellipsoid</a></td></tr>
+<tr class="separator:abc80aec278f486cff8f40513ea10a58c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a007884d0eb9fb20973bce0d0c665a387" id="r_a007884d0eb9fb20973bce0d0c665a387"><td class="memItemLeft" align="right" valign="top">glm::vec3&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1VegetationElement.html#a007884d0eb9fb20973bce0d0c665a387">center</a> {0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>}</td></tr>
+<tr class="separator:a007884d0eb9fb20973bce0d0c665a387"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab92c2ab33cf5755221394d2dec603275" id="r_ab92c2ab33cf5755221394d2dec603275"><td class="memItemLeft" align="right" valign="top">glm::vec3&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1VegetationElement.html#ab92c2ab33cf5755221394d2dec603275">extents</a> {1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>}</td></tr>
+<tr class="separator:ab92c2ab33cf5755221394d2dec603275"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a18e63e6e8520688af29355ffb24c5da2" id="r_a18e63e6e8520688af29355ffb24c5da2"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1VegetationElement.html#a18e63e6e8520688af29355ffb24c5da2">yaw</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a18e63e6e8520688af29355ffb24c5da2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac6e49325ed7b08906a20dfba1cff4548" id="r_ac6e49325ed7b08906a20dfba1cff4548"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1VegetationElement.html#ac6e49325ed7b08906a20dfba1cff4548">opacity</a> = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:ac6e49325ed7b08906a20dfba1cff4548"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2a5d9c0ffb83310911954bf03b5d444e" id="r_a2a5d9c0ffb83310911954bf03b5d444e"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1VegetationElement.html#a2a5d9c0ffb83310911954bf03b5d444e">edgeFade</a> = 0.25<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a2a5d9c0ffb83310911954bf03b5d444e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2877a50f41fae02d53c4b9f72ed4e6d0" id="r_a2877a50f41fae02d53c4b9f72ed4e6d0"><td class="memItemLeft" align="right" valign="top">uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1VegetationElement.html#a2877a50f41fae02d53c4b9f72ed4e6d0">layers</a> = 1</td></tr>
+<tr class="separator:a2877a50f41fae02d53c4b9f72ed4e6d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a703fa6f5c47bcf68efd77db4e0d6e112" id="r_a703fa6f5c47bcf68efd77db4e0d6e112"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1VegetationElement.html#a703fa6f5c47bcf68efd77db4e0d6e112">priority</a> = 0</td></tr>
+<tr class="separator:a703fa6f5c47bcf68efd77db4e0d6e112"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af765854b547f5df482eee94493e70b71" id="r_af765854b547f5df482eee94493e70b71"><td class="memItemLeft" align="right" valign="top">glm::vec4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1VegetationElement.html#af765854b547f5df482eee94493e70b71">value</a> {1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>}</td></tr>
+<tr class="separator:af765854b547f5df482eee94493e70b71"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3decb83ae4b370fd4547832d9a8c3e08" id="r_a3decb83ae4b370fd4547832d9a8c3e08"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1VegetationElement.html#a3decb83ae4b370fd4547832d9a8c3e08">seasonal</a> = false</td></tr>
+<tr class="separator:a3decb83ae4b370fd4547832d9a8c3e08"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad29c16b855a9253a175a2c478bf71305" id="r_ad29c16b855a9253a175a2c478bf71305"><td class="memItemLeft" align="right" valign="top">std::array&lt; glm::vec4, 4 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1VegetationElement.html#ad29c16b855a9253a175a2c478bf71305">seasons</a> {glm::vec4(1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>), glm::vec4(1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>), glm::vec4(1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>), glm::vec4(1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>)}</td></tr>
+<tr class="separator:ad29c16b855a9253a175a2c478bf71305"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5dea64ed1d02713426d3581bb46e6630" id="r_a5dea64ed1d02713426d3581bb46e6630"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1graphics_1_1VegetationMask.html">VegetationMask</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1VegetationElement.html#a5dea64ed1d02713426d3581bb46e6630">mask</a></td></tr>
+<tr class="separator:a5dea64ed1d02713426d3581bb46e6630"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Owning element definition; no scene, texture or entity pointers survive admission. Center/extents are world units; yaw is radians around +Y. Layer bits select 0..8. Mask alpha multiplies opacity and mask RGB multiplies the target RGB. Equal priorities preserve input order. Seasons interpolate winter/spring/summer/autumn. </p>
+
+<p class="definition">在文件 <a class="el" href="VegetationField_8h_source.html">VegetationField.h</a> 第 <a class="el" href="VegetationField_8h_source.html#l00032">32</a> 行定义.</p>
+</div><h2 class="groupheader">类成员变量说明</h2>
+<a id="abf1494965ce3088353834855172f836b" name="abf1494965ce3088353834855172f836b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abf1494965ce3088353834855172f836b">&#9670;&#160;</a></span>blend</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1graphics.html#a34ea33f7bbc6bb44ac512b00ed05c65b">VegetationBlend</a> eve::graphics::VegetationElement::blend = <a class="el" href="namespaceeve_1_1graphics.html#a34ea33f7bbc6bb44ac512b00ed05c65ba0ebe6df8a3ac338e0512acc741823fdb">VegetationBlend::Replace</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VegetationField_8h_source.html">VegetationField.h</a> 第 <a class="el" href="VegetationField_8h_source.html#l00034">34</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a007884d0eb9fb20973bce0d0c665a387" name="a007884d0eb9fb20973bce0d0c665a387"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a007884d0eb9fb20973bce0d0c665a387">&#9670;&#160;</a></span>center</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::vec3 eve::graphics::VegetationElement::center {0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VegetationField_8h_source.html">VegetationField.h</a> 第 <a class="el" href="VegetationField_8h_source.html#l00036">36</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae1e48745cb3c757c8a283702f99e30cb" name="ae1e48745cb3c757c8a283702f99e30cb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae1e48745cb3c757c8a283702f99e30cb">&#9670;&#160;</a></span>channel</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1graphics.html#a5afd9225d97f0d1ec0e68859095034ee">VegetationChannel</a> eve::graphics::VegetationElement::channel = <a class="el" href="namespaceeve_1_1graphics.html#a5afd9225d97f0d1ec0e68859095034eeacb5feb1b7314637725a2e73bdc9f7295">VegetationChannel::Color</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VegetationField_8h_source.html">VegetationField.h</a> 第 <a class="el" href="VegetationField_8h_source.html#l00033">33</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VegetationFieldCodec_8cpp_source.html#l00039">eve::graphics::VegetationField::restore()</a>.</p>
+
+</div>
+</div>
+<a id="a2a5d9c0ffb83310911954bf03b5d444e" name="a2a5d9c0ffb83310911954bf03b5d444e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2a5d9c0ffb83310911954bf03b5d444e">&#9670;&#160;</a></span>edgeFade</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::VegetationElement::edgeFade = 0.25<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VegetationField_8h_source.html">VegetationField.h</a> 第 <a class="el" href="VegetationField_8h_source.html#l00037">37</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab92c2ab33cf5755221394d2dec603275" name="ab92c2ab33cf5755221394d2dec603275"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab92c2ab33cf5755221394d2dec603275">&#9670;&#160;</a></span>extents</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::vec3 eve::graphics::VegetationElement::extents {1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VegetationField_8h_source.html">VegetationField.h</a> 第 <a class="el" href="VegetationField_8h_source.html#l00036">36</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a2877a50f41fae02d53c4b9f72ed4e6d0" name="a2877a50f41fae02d53c4b9f72ed4e6d0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2877a50f41fae02d53c4b9f72ed4e6d0">&#9670;&#160;</a></span>layers</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint16_t eve::graphics::VegetationElement::layers = 1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VegetationField_8h_source.html">VegetationField.h</a> 第 <a class="el" href="VegetationField_8h_source.html#l00038">38</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a5dea64ed1d02713426d3581bb46e6630" name="a5dea64ed1d02713426d3581bb46e6630"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5dea64ed1d02713426d3581bb46e6630">&#9670;&#160;</a></span>mask</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1graphics_1_1VegetationMask.html">VegetationMask</a> eve::graphics::VegetationElement::mask</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VegetationField_8h_source.html">VegetationField.h</a> 第 <a class="el" href="VegetationField_8h_source.html#l00043">43</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac6e49325ed7b08906a20dfba1cff4548" name="ac6e49325ed7b08906a20dfba1cff4548"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac6e49325ed7b08906a20dfba1cff4548">&#9670;&#160;</a></span>opacity</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::VegetationElement::opacity = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VegetationField_8h_source.html">VegetationField.h</a> 第 <a class="el" href="VegetationField_8h_source.html#l00037">37</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a703fa6f5c47bcf68efd77db4e0d6e112" name="a703fa6f5c47bcf68efd77db4e0d6e112"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a703fa6f5c47bcf68efd77db4e0d6e112">&#9670;&#160;</a></span>priority</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::graphics::VegetationElement::priority = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VegetationField_8h_source.html">VegetationField.h</a> 第 <a class="el" href="VegetationField_8h_source.html#l00039">39</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a3decb83ae4b370fd4547832d9a8c3e08" name="a3decb83ae4b370fd4547832d9a8c3e08"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3decb83ae4b370fd4547832d9a8c3e08">&#9670;&#160;</a></span>seasonal</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::graphics::VegetationElement::seasonal = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VegetationField_8h_source.html">VegetationField.h</a> 第 <a class="el" href="VegetationField_8h_source.html#l00041">41</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad29c16b855a9253a175a2c478bf71305" name="ad29c16b855a9253a175a2c478bf71305"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad29c16b855a9253a175a2c478bf71305">&#9670;&#160;</a></span>seasons</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::array&lt;glm::vec4, 4&gt; eve::graphics::VegetationElement::seasons {glm::vec4(1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>), glm::vec4(1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>), glm::vec4(1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>), glm::vec4(1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>)}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VegetationField_8h_source.html">VegetationField.h</a> 第 <a class="el" href="VegetationField_8h_source.html#l00042">42</a> 行定义.</p>
+
+</div>
+</div>
+<a id="abc80aec278f486cff8f40513ea10a58c" name="abc80aec278f486cff8f40513ea10a58c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abc80aec278f486cff8f40513ea10a58c">&#9670;&#160;</a></span>shape</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1graphics.html#aa8ce7fcbb570489ca4104b5a69922b0e">VegetationShape</a> eve::graphics::VegetationElement::shape = <a class="el" href="namespaceeve_1_1graphics.html#aa8ce7fcbb570489ca4104b5a69922b0eaeee5397cecd880d16ef7244819aa383d">VegetationShape::Ellipsoid</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VegetationField_8h_source.html">VegetationField.h</a> 第 <a class="el" href="VegetationField_8h_source.html#l00035">35</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af765854b547f5df482eee94493e70b71" name="af765854b547f5df482eee94493e70b71"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af765854b547f5df482eee94493e70b71">&#9670;&#160;</a></span>value</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">glm::vec4 eve::graphics::VegetationElement::value {1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VegetationField_8h_source.html">VegetationField.h</a> 第 <a class="el" href="VegetationField_8h_source.html#l00040">40</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a18e63e6e8520688af29355ffb24c5da2" name="a18e63e6e8520688af29355ffb24c5da2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a18e63e6e8520688af29355ffb24c5da2">&#9670;&#160;</a></span>yaw</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::graphics::VegetationElement::yaw = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VegetationField_8h_source.html">VegetationField.h</a> 第 <a class="el" href="VegetationField_8h_source.html#l00037">37</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该结构体的文档由以下文件生成:<ul>
+<li>src/modules/graphics/<a class="el" href="VegetationField_8h_source.html">VegetationField.h</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

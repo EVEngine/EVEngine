@@ -1,0 +1,569 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::animation::MotionColorBuilder类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1animation.html">animation</a></li><li class="navelem"><a class="el" href="classeve_1_1animation_1_1MotionColorBuilder.html">MotionColorBuilder</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1animation_1_1MotionColorBuilder-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::animation::MotionColorBuilder类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Color fluent builder (<a class="el" href="classeve_1_1animation_1_1Tween.html" title="Property tween — interpolates named float properties from → to over time.">Tween</a> / lerp only).  
+ <a href="classeve_1_1animation_1_1MotionColorBuilder.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="MotionBuilder_8h_source.html">MotionBuilder.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a2dd7fb4024af6b484b3e96f41e54bbec" id="r_a2dd7fb4024af6b484b3e96f41e54bbec"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1MotionColorBuilder.html#a2dd7fb4024af6b484b3e96f41e54bbec">MotionColorBuilder</a> (<a class="el" href="classeve_1_1animation_1_1MotionRuntime.html">MotionRuntime</a> &amp;<a class="el" href="classeve_1_1animation_1_1MotionColorBuilder.html#a26678925b1d16bd9e502584ede784a71">runtime</a>, <a class="el" href="structeve_1_1animation_1_1MotionColor.html">MotionColor</a> <a class="el" href="AssetCommand_8cpp.html#ad1b6861c9cfa34da8ef12c5bb1cf2114">from</a>, <a class="el" href="structeve_1_1animation_1_1MotionColor.html">MotionColor</a> <a class="el" href="classeve_1_1animation_1_1MotionColorBuilder.html#ae6372dde755ec78aeb46aa1da6d85ca1">to</a>, float <a class="el" href="AnimCurveLibrary_8cpp.html#a66625d8d6c0894b4828b43f826a09b8f">duration</a>)</td></tr>
+<tr class="separator:a2dd7fb4024af6b484b3e96f41e54bbec"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af12c848518d6faf505f793d7c2809571" id="r_af12c848518d6faf505f793d7c2809571"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1animation_1_1MotionColorBuilder.html">MotionColorBuilder</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1MotionColorBuilder.html#af12c848518d6faf505f793d7c2809571">ease</a> (std::string <a class="el" href="LanguageIndex_8cpp.html#a38de9b52cbbca9313f7d7c8505a64e10">kind</a>)</td></tr>
+<tr class="separator:af12c848518d6faf505f793d7c2809571"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3126ff1c21fbfa5e902288bca53f7b93" id="r_a3126ff1c21fbfa5e902288bca53f7b93"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1animation_1_1MotionColorBuilder.html">MotionColorBuilder</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1MotionColorBuilder.html#a3126ff1c21fbfa5e902288bca53f7b93">delay</a> (float seconds)</td></tr>
+<tr class="separator:a3126ff1c21fbfa5e902288bca53f7b93"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeb35994e43b7c8f96044663e6f6fd929" id="r_aeb35994e43b7c8f96044663e6f6fd929"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1animation_1_1MotionColorBuilder.html">MotionColorBuilder</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1MotionColorBuilder.html#aeb35994e43b7c8f96044663e6f6fd929">loops</a> (int <a class="el" href="SourceTiff_8cpp.html#ae2481d00ca648870d2ec0ea81cf49e75">count</a>, <a class="el" href="namespaceeve_1_1animation.html#a6fd515fc95cd748eb3f654b678938c38">MotionLoopMode</a> mode=<a class="el" href="namespaceeve_1_1animation.html#a6fd515fc95cd748eb3f654b678938c38a51cfbcff36da74a9fc47f3a5140f99f2">MotionLoopMode::Restart</a>)</td></tr>
+<tr class="separator:aeb35994e43b7c8f96044663e6f6fd929"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ade29af858d16baa63e3addb470a7fd2d" id="r_ade29af858d16baa63e3addb470a7fd2d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1animation_1_1MotionColorBuilder.html">MotionColorBuilder</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1MotionColorBuilder.html#ade29af858d16baa63e3addb470a7fd2d">onUpdate</a> (<a class="el" href="classeve_1_1animation_1_1MotionRuntime.html#a1796f4070d298851d470ba70e67f4202">MotionRuntime::ColorCallback</a> cb)</td></tr>
+<tr class="separator:ade29af858d16baa63e3addb470a7fd2d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a965a232d0b59ef14f841796b2bef481d" id="r_a965a232d0b59ef14f841796b2bef481d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1animation_1_1MotionColorBuilder.html">MotionColorBuilder</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1MotionColorBuilder.html#a965a232d0b59ef14f841796b2bef481d">onComplete</a> (<a class="el" href="classeve_1_1animation_1_1MotionRuntime.html#ab4f5f3b0c07bf199bd96e93f6e0ce9d4">MotionRuntime::VoidCallback</a> cb)</td></tr>
+<tr class="separator:a965a232d0b59ef14f841796b2bef481d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af1e0abcfe5472224474e501a2aa2e1f9" id="r_af1e0abcfe5472224474e501a2aa2e1f9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1animation_1_1MotionColorBuilder.html">MotionColorBuilder</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1MotionColorBuilder.html#af1e0abcfe5472224474e501a2aa2e1f9">onCancel</a> (<a class="el" href="classeve_1_1animation_1_1MotionRuntime.html#ab4f5f3b0c07bf199bd96e93f6e0ce9d4">MotionRuntime::VoidCallback</a> cb)</td></tr>
+<tr class="separator:af1e0abcfe5472224474e501a2aa2e1f9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9b8ea8fee1c98de021c90a9ed11e9b75" id="r_a9b8ea8fee1c98de021c90a9ed11e9b75"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1animation_1_1MotionColorBuilder.html">MotionColorBuilder</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1MotionColorBuilder.html#a9b8ea8fee1c98de021c90a9ed11e9b75">cancelOnError</a> (bool <a class="el" href="rpg_2Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a>)</td></tr>
+<tr class="separator:a9b8ea8fee1c98de021c90a9ed11e9b75"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae6372dde755ec78aeb46aa1da6d85ca1" id="r_ae6372dde755ec78aeb46aa1da6d85ca1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1animation_1_1MotionColorBuilder.html">MotionColorBuilder</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1MotionColorBuilder.html#ae6372dde755ec78aeb46aa1da6d85ca1">to</a> (<a class="el" href="classeve_1_1animation_1_1IMotionColorSink.html">IMotionColorSink</a> &amp;sink)</td></tr>
+<tr class="separator:ae6372dde755ec78aeb46aa1da6d85ca1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a602ea7bccea546f7e8ef99442c2a32bb" id="r_a602ea7bccea546f7e8ef99442c2a32bb"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1animation_1_1MotionHandle.html">MotionHandle</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1MotionColorBuilder.html#a602ea7bccea546f7e8ef99442c2a32bb">run</a> ()</td></tr>
+<tr class="separator:a602ea7bccea546f7e8ef99442c2a32bb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af1d189d517781bf1bcce612eca002c04" id="r_af1d189d517781bf1bcce612eca002c04"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1animation_1_1MotionHandle.html">MotionHandle</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1MotionColorBuilder.html#af1d189d517781bf1bcce612eca002c04">bind</a> (<a class="el" href="classeve_1_1animation_1_1IMotionColorSink.html">IMotionColorSink</a> &amp;sink)</td></tr>
+<tr class="separator:af1d189d517781bf1bcce612eca002c04"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a26678925b1d16bd9e502584ede784a71" id="r_a26678925b1d16bd9e502584ede784a71"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1animation_1_1MotionRuntime.html">MotionRuntime</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1MotionColorBuilder.html#a26678925b1d16bd9e502584ede784a71">runtime</a> () noexcept</td></tr>
+<tr class="separator:a26678925b1d16bd9e502584ede784a71"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa879c3f48030741410e65592ce8018c5" id="r_aa879c3f48030741410e65592ce8018c5"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classeve_1_1animation_1_1MotionRuntime.html">MotionRuntime</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1MotionColorBuilder.html#aa879c3f48030741410e65592ce8018c5">runtime</a> () const noexcept</td></tr>
+<tr class="separator:aa879c3f48030741410e65592ce8018c5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7aff65bf651e455db8e700634160d63b" id="r_a7aff65bf651e455db8e700634160d63b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1animation_1_1MotionRuntime_1_1ColorDesc.html">MotionRuntime::ColorDesc</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1MotionColorBuilder.html#a7aff65bf651e455db8e700634160d63b">takeDesc</a> ()</td></tr>
+<tr class="separator:a7aff65bf651e455db8e700634160d63b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Color fluent builder (<a class="el" href="classeve_1_1animation_1_1Tween.html" title="Property tween — interpolates named float properties from → to over time.">Tween</a> / lerp only). </p>
+
+<p class="definition">在文件 <a class="el" href="MotionBuilder_8h_source.html">MotionBuilder.h</a> 第 <a class="el" href="MotionBuilder_8h_source.html#l00153">153</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a2dd7fb4024af6b484b3e96f41e54bbec" name="a2dd7fb4024af6b484b3e96f41e54bbec"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2dd7fb4024af6b484b3e96f41e54bbec">&#9670;&#160;</a></span>MotionColorBuilder()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::animation::MotionColorBuilder::MotionColorBuilder </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1animation_1_1MotionRuntime.html">MotionRuntime</a> &amp;&#160;</td>
+          <td class="paramname"><em>runtime</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1animation_1_1MotionColor.html">MotionColor</a>&#160;</td>
+          <td class="paramname"><em>from</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1animation_1_1MotionColor.html">MotionColor</a>&#160;</td>
+          <td class="paramname"><em>to</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>duration</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="MotionBuilder_8cpp_source.html">MotionBuilder.cpp</a> 第 <a class="el" href="MotionBuilder_8cpp_source.html#l00277">277</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AnimCurveLibrary_8cpp_source.html#l00018">duration</a>, <a class="el" href="MotionRuntime_8h_source.html#l00098">eve::animation::MotionRuntime::ColorDesc::duration</a>, <a class="el" href="MotionRuntime_8h_source.html#l00096">eve::animation::MotionRuntime::ColorDesc::from</a>, <a class="el" href="AssetCommand_8cpp_source.html#l00161">from</a>, <a class="el" href="MotionRuntime_8h_source.html#l00097">eve::animation::MotionRuntime::ColorDesc::to</a> , 以及 <a class="el" href="HexUnits_8cpp_source.html#l00064">to</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="af1d189d517781bf1bcce612eca002c04" name="af1d189d517781bf1bcce612eca002c04"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af1d189d517781bf1bcce612eca002c04">&#9670;&#160;</a></span>bind()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1animation_1_1MotionHandle.html">MotionHandle</a> &gt; eve::animation::MotionColorBuilder::bind </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1animation_1_1IMotionColorSink.html">IMotionColorSink</a> &amp;&#160;</td>
+          <td class="paramname"><em>sink</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="MotionBuilder_8cpp_source.html">MotionBuilder.cpp</a> 第 <a class="el" href="MotionBuilder_8cpp_source.html#l00323">323</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="MotionRuntime_8h_source.html#l00103">eve::animation::MotionRuntime::ColorDesc::sink</a> , 以及 <a class="el" href="MotionRuntime_8cpp_source.html#l00951">eve::animation::MotionRuntime::spawnColor()</a>.</p>
+
+</div>
+</div>
+<a id="a9b8ea8fee1c98de021c90a9ed11e9b75" name="a9b8ea8fee1c98de021c90a9ed11e9b75"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9b8ea8fee1c98de021c90a9ed11e9b75">&#9670;&#160;</a></span>cancelOnError()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1animation_1_1MotionColorBuilder.html">MotionColorBuilder</a> &amp; eve::animation::MotionColorBuilder::cancelOnError </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>enabled</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="MotionBuilder_8cpp_source.html">MotionBuilder.cpp</a> 第 <a class="el" href="MotionBuilder_8cpp_source.html#l00309">309</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MotionRuntime_8h_source.html#l00107">eve::animation::MotionRuntime::ColorDesc::cancelOnError</a> , 以及 <a class="el" href="rpg_2Settlement_8cpp_source.html#l00029">enabled</a>.</p>
+
+</div>
+</div>
+<a id="a3126ff1c21fbfa5e902288bca53f7b93" name="a3126ff1c21fbfa5e902288bca53f7b93"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3126ff1c21fbfa5e902288bca53f7b93">&#9670;&#160;</a></span>delay()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1animation_1_1MotionColorBuilder.html">MotionColorBuilder</a> &amp; eve::animation::MotionColorBuilder::delay </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>seconds</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="MotionBuilder_8cpp_source.html">MotionBuilder.cpp</a> 第 <a class="el" href="MotionBuilder_8cpp_source.html#l00288">288</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MotionRuntime_8h_source.html#l00099">eve::animation::MotionRuntime::ColorDesc::delay</a>.</p>
+
+</div>
+</div>
+<a id="af12c848518d6faf505f793d7c2809571" name="af12c848518d6faf505f793d7c2809571"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af12c848518d6faf505f793d7c2809571">&#9670;&#160;</a></span>ease()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1animation_1_1MotionColorBuilder.html">MotionColorBuilder</a> &amp; eve::animation::MotionColorBuilder::ease </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>kind</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="MotionBuilder_8cpp_source.html">MotionBuilder.cpp</a> 第 <a class="el" href="MotionBuilder_8cpp_source.html#l00284">284</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MotionRuntime_8h_source.html#l00102">eve::animation::MotionRuntime::ColorDesc::ease</a> , 以及 <a class="el" href="LanguageIndex_8cpp_source.html#l00017">kind</a>.</p>
+
+</div>
+</div>
+<a id="aeb35994e43b7c8f96044663e6f6fd929" name="aeb35994e43b7c8f96044663e6f6fd929"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeb35994e43b7c8f96044663e6f6fd929">&#9670;&#160;</a></span>loops()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1animation_1_1MotionColorBuilder.html">MotionColorBuilder</a> &amp; eve::animation::MotionColorBuilder::loops </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>count</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1animation.html#a6fd515fc95cd748eb3f654b678938c38">MotionLoopMode</a>&#160;</td>
+          <td class="paramname"><em>mode</em> = <code><a class="el" href="namespaceeve_1_1animation.html#a6fd515fc95cd748eb3f654b678938c38a51cfbcff36da74a9fc47f3a5140f99f2">MotionLoopMode::Restart</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="MotionBuilder_8cpp_source.html">MotionBuilder.cpp</a> 第 <a class="el" href="MotionBuilder_8cpp_source.html#l00292">292</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SourceTiff_8cpp_source.html#l00024">count</a>, <a class="el" href="MotionRuntime_8h_source.html#l00101">eve::animation::MotionRuntime::ColorDesc::loopMode</a> , 以及 <a class="el" href="MotionRuntime_8h_source.html#l00100">eve::animation::MotionRuntime::ColorDesc::loops</a>.</p>
+
+</div>
+</div>
+<a id="af1e0abcfe5472224474e501a2aa2e1f9" name="af1e0abcfe5472224474e501a2aa2e1f9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af1e0abcfe5472224474e501a2aa2e1f9">&#9670;&#160;</a></span>onCancel()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1animation_1_1MotionColorBuilder.html">MotionColorBuilder</a> &amp; eve::animation::MotionColorBuilder::onCancel </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1animation_1_1MotionRuntime.html#ab4f5f3b0c07bf199bd96e93f6e0ce9d4">MotionRuntime::VoidCallback</a>&#160;</td>
+          <td class="paramname"><em>cb</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="MotionBuilder_8cpp_source.html">MotionBuilder.cpp</a> 第 <a class="el" href="MotionBuilder_8cpp_source.html#l00305">305</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MotionRuntime_8h_source.html#l00106">eve::animation::MotionRuntime::ColorDesc::onCancel</a>.</p>
+
+</div>
+</div>
+<a id="a965a232d0b59ef14f841796b2bef481d" name="a965a232d0b59ef14f841796b2bef481d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a965a232d0b59ef14f841796b2bef481d">&#9670;&#160;</a></span>onComplete()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1animation_1_1MotionColorBuilder.html">MotionColorBuilder</a> &amp; eve::animation::MotionColorBuilder::onComplete </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1animation_1_1MotionRuntime.html#ab4f5f3b0c07bf199bd96e93f6e0ce9d4">MotionRuntime::VoidCallback</a>&#160;</td>
+          <td class="paramname"><em>cb</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="MotionBuilder_8cpp_source.html">MotionBuilder.cpp</a> 第 <a class="el" href="MotionBuilder_8cpp_source.html#l00301">301</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MotionRuntime_8h_source.html#l00105">eve::animation::MotionRuntime::ColorDesc::onComplete</a>.</p>
+
+</div>
+</div>
+<a id="ade29af858d16baa63e3addb470a7fd2d" name="ade29af858d16baa63e3addb470a7fd2d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ade29af858d16baa63e3addb470a7fd2d">&#9670;&#160;</a></span>onUpdate()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1animation_1_1MotionColorBuilder.html">MotionColorBuilder</a> &amp; eve::animation::MotionColorBuilder::onUpdate </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1animation_1_1MotionRuntime.html#a1796f4070d298851d470ba70e67f4202">MotionRuntime::ColorCallback</a>&#160;</td>
+          <td class="paramname"><em>cb</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="MotionBuilder_8cpp_source.html">MotionBuilder.cpp</a> 第 <a class="el" href="MotionBuilder_8cpp_source.html#l00297">297</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MotionRuntime_8h_source.html#l00104">eve::animation::MotionRuntime::ColorDesc::onUpdate</a>.</p>
+
+</div>
+</div>
+<a id="a602ea7bccea546f7e8ef99442c2a32bb" name="a602ea7bccea546f7e8ef99442c2a32bb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a602ea7bccea546f7e8ef99442c2a32bb">&#9670;&#160;</a></span>run()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1animation_1_1MotionHandle.html">MotionHandle</a> &gt; eve::animation::MotionColorBuilder::run </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="MotionBuilder_8cpp_source.html">MotionBuilder.cpp</a> 第 <a class="el" href="MotionBuilder_8cpp_source.html#l00317">317</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="MotionRuntime_8h_source.html#l00103">eve::animation::MotionRuntime::ColorDesc::sink</a> , 以及 <a class="el" href="MotionRuntime_8cpp_source.html#l00951">eve::animation::MotionRuntime::spawnColor()</a>.</p>
+
+</div>
+</div>
+<a id="aa879c3f48030741410e65592ce8018c5" name="aa879c3f48030741410e65592ce8018c5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa879c3f48030741410e65592ce8018c5">&#9670;&#160;</a></span>runtime() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="classeve_1_1animation_1_1MotionRuntime.html">MotionRuntime</a> &amp; eve::animation::MotionColorBuilder::runtime </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="MotionBuilder_8h_source.html">MotionBuilder.h</a> 第 <a class="el" href="MotionBuilder_8h_source.html#l00170">170</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a26678925b1d16bd9e502584ede784a71" name="a26678925b1d16bd9e502584ede784a71"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a26678925b1d16bd9e502584ede784a71">&#9670;&#160;</a></span>runtime() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1animation_1_1MotionRuntime.html">MotionRuntime</a> &amp; eve::animation::MotionColorBuilder::runtime </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="MotionBuilder_8h_source.html">MotionBuilder.h</a> 第 <a class="el" href="MotionBuilder_8h_source.html#l00169">169</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a7aff65bf651e455db8e700634160d63b" name="a7aff65bf651e455db8e700634160d63b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7aff65bf651e455db8e700634160d63b">&#9670;&#160;</a></span>takeDesc()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1animation_1_1MotionRuntime_1_1ColorDesc.html">MotionRuntime::ColorDesc</a> &gt; eve::animation::MotionColorBuilder::takeDesc </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="MotionBuilder_8cpp_source.html">MotionBuilder.cpp</a> 第 <a class="el" href="MotionBuilder_8cpp_source.html#l00329">329</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="ae6372dde755ec78aeb46aa1da6d85ca1" name="ae6372dde755ec78aeb46aa1da6d85ca1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae6372dde755ec78aeb46aa1da6d85ca1">&#9670;&#160;</a></span>to()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1animation_1_1MotionColorBuilder.html">MotionColorBuilder</a> &amp; eve::animation::MotionColorBuilder::to </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1animation_1_1IMotionColorSink.html">IMotionColorSink</a> &amp;&#160;</td>
+          <td class="paramname"><em>sink</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="MotionBuilder_8cpp_source.html">MotionBuilder.cpp</a> 第 <a class="el" href="MotionBuilder_8cpp_source.html#l00313">313</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MotionRuntime_8h_source.html#l00103">eve::animation::MotionRuntime::ColorDesc::sink</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/animation/<a class="el" href="MotionBuilder_8h_source.html">MotionBuilder.h</a></li>
+<li>src/modules/animation/<a class="el" href="MotionBuilder_8cpp_source.html">MotionBuilder.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

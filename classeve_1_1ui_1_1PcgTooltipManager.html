@@ -1,0 +1,889 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::ui::PcgTooltipManager类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1ui.html">ui</a></li><li class="navelem"><a class="el" href="classeve_1_1ui_1_1PcgTooltipManager.html">PcgTooltipManager</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1ui_1_1PcgTooltipManager-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::ui::PcgTooltipManager类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Caller-owned runtime model of Pcg Tooltip, TooltipManager, Profile and Trigger.  
+ <a href="classeve_1_1ui_1_1PcgTooltipManager.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="PcgTooltip_8h_source.html">PcgTooltip.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:af9d0d550380991567a9aa6ca30984213" id="r_af9d0d550380991567a9aa6ca30984213"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1PcgTooltipManager.html#af9d0d550380991567a9aa6ca30984213">configure</a> (int interactionMode, int <a class="el" href="EditorHost_8cpp.html#a5f710e8aae55f49281331e55cd4f1c45">theme</a>, float delay, float bottomOffset, float topOffset, int wrapLimit)</td></tr>
+<tr class="memdesc:af9d0d550380991567a9aa6ca30984213"><td class="mdescLeft">&#160;</td><td class="mdescRight">Configure interaction mode (0 <a class="el" href="classeve_1_1ui_1_1UI.html" title="Declarative UI module (eve.UI).">UI</a>, 1 scene, 2 both), theme (0 light, 1 dark), delay and layout.  <br /></td></tr>
+<tr class="separator:af9d0d550380991567a9aa6ca30984213"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a70016244d5bc0c00f4c449a578c9eef9" id="r_a70016244d5bc0c00f4c449a578c9eef9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1PcgTooltipManager.html#a70016244d5bc0c00f4c449a578c9eef9">addTooltip</a> (const std::string &amp;<a class="el" href="PlayHost_8cpp.html#afd0d68c6d31ff249f3ae8662162663c3">id</a>, const std::string &amp;header, const std::string &amp;<a class="el" href="namespaceeve_1_1ui.html#a331f182920f18ad1b8b4ea57e2bd33ea">text</a>)</td></tr>
+<tr class="memdesc:a70016244d5bc0c00f4c449a578c9eef9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Append a tooltip profile entry.  <br /></td></tr>
+<tr class="separator:a70016244d5bc0c00f4c449a578c9eef9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a008bdff9ca8d66d3ca19f488fd73a3a1" id="r_a008bdff9ca8d66d3ca19f488fd73a3a1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; bool &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1PcgTooltipManager.html#a008bdff9ca8d66d3ca19f488fd73a3a1">removeTooltip</a> (const std::string &amp;query)</td></tr>
+<tr class="memdesc:a008bdff9ca8d66d3ca19f488fd73a3a1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Remove first entry whose id contains the query.  <br /></td></tr>
+<tr class="separator:a008bdff9ca8d66d3ca19f488fd73a3a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a249fe564a4b5afb1745e11cd24a7038d" id="r_a249fe564a4b5afb1745e11cd24a7038d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; bool &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1PcgTooltipManager.html#a249fe564a4b5afb1745e11cd24a7038d">enter</a> (int <a class="el" href="UnityVegetationPreset_8cpp.html#a176f5b9d50679b93425278a1a59e3eaa">source</a>, const std::string &amp;query, float now)</td></tr>
+<tr class="memdesc:a249fe564a4b5afb1745e11cd24a7038d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Schedule the first profile entry whose id contains query. source is 0 <a class="el" href="classeve_1_1ui_1_1UI.html" title="Declarative UI module (eve.UI).">UI</a> or 1 scene.  <br /></td></tr>
+<tr class="separator:a249fe564a4b5afb1745e11cd24a7038d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adbeb2dbf78c19c910f6001ea38517d47" id="r_adbeb2dbf78c19c910f6001ea38517d47"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1PcgTooltipManager.html#adbeb2dbf78c19c910f6001ea38517d47">enterText</a> (int <a class="el" href="UnityVegetationPreset_8cpp.html#a176f5b9d50679b93425278a1a59e3eaa">source</a>, const std::string &amp;content, const std::string &amp;header, float now)</td></tr>
+<tr class="memdesc:adbeb2dbf78c19c910f6001ea38517d47"><td class="mdescLeft">&#160;</td><td class="mdescRight">Schedule direct trigger content, matching TooltipTrigger.  <br /></td></tr>
+<tr class="separator:adbeb2dbf78c19c910f6001ea38517d47"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a19ccc2d7f6bf234968b0e97c2a6b66ca" id="r_a19ccc2d7f6bf234968b0e97c2a6b66ca"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1PcgTooltipManager.html#a19ccc2d7f6bf234968b0e97c2a6b66ca">exit</a> (int <a class="el" href="UnityVegetationPreset_8cpp.html#a176f5b9d50679b93425278a1a59e3eaa">source</a>)</td></tr>
+<tr class="memdesc:a19ccc2d7f6bf234968b0e97c2a6b66ca"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cancel matching hover and hide tooltip.  <br /></td></tr>
+<tr class="separator:a19ccc2d7f6bf234968b0e97c2a6b66ca"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0f5716cccb83875458cfda3f28b40803" id="r_a0f5716cccb83875458cfda3f28b40803"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1PcgTooltipManager.html#a0f5716cccb83875458cfda3f28b40803">tick</a> (float now, float mouseX, float mouseY, float screenWidth, float screenHeight, bool anyInput)</td></tr>
+<tr class="memdesc:a0f5716cccb83875458cfda3f28b40803"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update mouse placement, delayed visibility, and input dismissal.  <br /></td></tr>
+<tr class="separator:a0f5716cccb83875458cfda3f28b40803"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa951a6c2be94b1119e172b1580758c64" id="r_aa951a6c2be94b1119e172b1580758c64"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1PcgTooltipManager.html#aa951a6c2be94b1119e172b1580758c64">hide</a> () noexcept</td></tr>
+<tr class="memdesc:aa951a6c2be94b1119e172b1580758c64"><td class="mdescLeft">&#160;</td><td class="mdescRight">Hide and cancel all pending tooltip work.  <br /></td></tr>
+<tr class="separator:aa951a6c2be94b1119e172b1580758c64"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a065f475853140203fc73fb6b966e210e" id="r_a065f475853140203fc73fb6b966e210e"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1PcgTooltipManager.html#a065f475853140203fc73fb6b966e210e">getVisible</a> () const noexcept</td></tr>
+<tr class="memdesc:a065f475853140203fc73fb6b966e210e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return visible state.  <br /></td></tr>
+<tr class="separator:a065f475853140203fc73fb6b966e210e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a997de7b94e7e40dec4943bddd3d1dd53" id="r_a997de7b94e7e40dec4943bddd3d1dd53"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1PcgTooltipManager.html#a997de7b94e7e40dec4943bddd3d1dd53">getPending</a> () const noexcept</td></tr>
+<tr class="memdesc:a997de7b94e7e40dec4943bddd3d1dd53"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return pending-delay state.  <br /></td></tr>
+<tr class="separator:a997de7b94e7e40dec4943bddd3d1dd53"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abf7825ac56843bf3219c257979ca81f0" id="r_abf7825ac56843bf3219c257979ca81f0"><td class="memItemLeft" align="right" valign="top">const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1PcgTooltipManager.html#abf7825ac56843bf3219c257979ca81f0">getHeader</a> () const noexcept</td></tr>
+<tr class="memdesc:abf7825ac56843bf3219c257979ca81f0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return active header.  <br /></td></tr>
+<tr class="separator:abf7825ac56843bf3219c257979ca81f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab3b7ba4e60a9690c1a18da34acb8f163" id="r_ab3b7ba4e60a9690c1a18da34acb8f163"><td class="memItemLeft" align="right" valign="top">const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1PcgTooltipManager.html#ab3b7ba4e60a9690c1a18da34acb8f163">getText</a> () const noexcept</td></tr>
+<tr class="memdesc:ab3b7ba4e60a9690c1a18da34acb8f163"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return active content.  <br /></td></tr>
+<tr class="separator:ab3b7ba4e60a9690c1a18da34acb8f163"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac1baa066088b3444e72ac1e4d25c473c" id="r_ac1baa066088b3444e72ac1e4d25c473c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1PcgTooltipManager.html#ac1baa066088b3444e72ac1e4d25c473c">getHeaderVisible</a> () const noexcept</td></tr>
+<tr class="memdesc:ac1baa066088b3444e72ac1e4d25c473c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return whether header should be shown.  <br /></td></tr>
+<tr class="separator:ac1baa066088b3444e72ac1e4d25c473c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a60938e836ecd8f656374726a26c117d1" id="r_a60938e836ecd8f656374726a26c117d1"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1PcgTooltipManager.html#a60938e836ecd8f656374726a26c117d1">getWrapEnabled</a> () const noexcept</td></tr>
+<tr class="memdesc:a60938e836ecd8f656374726a26c117d1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return whether layout wrapping is enabled.  <br /></td></tr>
+<tr class="separator:a60938e836ecd8f656374726a26c117d1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4d5f89844fbc7ce3731ea5a8a1d5fa7e" id="r_a4d5f89844fbc7ce3731ea5a8a1d5fa7e"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1PcgTooltipManager.html#a4d5f89844fbc7ce3731ea5a8a1d5fa7e">getPivotX</a> () const noexcept</td></tr>
+<tr class="memdesc:a4d5f89844fbc7ce3731ea5a8a1d5fa7e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return pointer pivot X.  <br /></td></tr>
+<tr class="separator:a4d5f89844fbc7ce3731ea5a8a1d5fa7e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a90d86c4d824112319a64ad5caf30349f" id="r_a90d86c4d824112319a64ad5caf30349f"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1PcgTooltipManager.html#a90d86c4d824112319a64ad5caf30349f">getPivotY</a> () const noexcept</td></tr>
+<tr class="memdesc:a90d86c4d824112319a64ad5caf30349f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return pointer pivot Y.  <br /></td></tr>
+<tr class="separator:a90d86c4d824112319a64ad5caf30349f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3b9c973d0ac66bea073431e56c617c26" id="r_a3b9c973d0ac66bea073431e56c617c26"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1PcgTooltipManager.html#a3b9c973d0ac66bea073431e56c617c26">getBackgroundR</a> () const noexcept</td></tr>
+<tr class="memdesc:a3b9c973d0ac66bea073431e56c617c26"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return background red for active theme.  <br /></td></tr>
+<tr class="separator:a3b9c973d0ac66bea073431e56c617c26"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a95f3d313d0c8db491f15877c1562ab61" id="r_a95f3d313d0c8db491f15877c1562ab61"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1PcgTooltipManager.html#a95f3d313d0c8db491f15877c1562ab61">getForeground</a> () const noexcept</td></tr>
+<tr class="memdesc:a95f3d313d0c8db491f15877c1562ab61"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return foreground intensity for active theme.  <br /></td></tr>
+<tr class="separator:a95f3d313d0c8db491f15877c1562ab61"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae7ae085501fd052188080d1775698c44" id="r_ae7ae085501fd052188080d1775698c44"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ui_1_1PcgTooltipManager.html#ae7ae085501fd052188080d1775698c44">getCount</a> () const noexcept</td></tr>
+<tr class="memdesc:ae7ae085501fd052188080d1775698c44"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return profile row count.  <br /></td></tr>
+<tr class="separator:ae7ae085501fd052188080d1775698c44"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Caller-owned runtime model of Pcg Tooltip, TooltipManager, Profile and Trigger. </p>
+
+<p class="definition">在文件 <a class="el" href="PcgTooltip_8h_source.html">PcgTooltip.h</a> 第 <a class="el" href="PcgTooltip_8h_source.html#l00010">10</a> 行定义.</p>
+</div><h2 class="groupheader">成员函数说明</h2>
+<a id="a70016244d5bc0c00f4c449a578c9eef9" name="a70016244d5bc0c00f4c449a578c9eef9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a70016244d5bc0c00f4c449a578c9eef9">&#9670;&#160;</a></span>addTooltip()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::ui::PcgTooltipManager::addTooltip </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>header</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>text</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Append a tooltip profile entry. </p>
+
+<p class="definition">在文件 <a class="el" href="PcgTooltip_8cpp_source.html">PcgTooltip.cpp</a> 第 <a class="el" href="PcgTooltip_8cpp_source.html#l00007">7</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PlayHost_8cpp_source.html#l00142">id</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="LanguageIndex_8cpp_source.html#l00018">text</a>.</p>
+
+</div>
+</div>
+<a id="af9d0d550380991567a9aa6ca30984213" name="af9d0d550380991567a9aa6ca30984213"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af9d0d550380991567a9aa6ca30984213">&#9670;&#160;</a></span>configure()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::ui::PcgTooltipManager::configure </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>interactionMode</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>theme</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>delay</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>bottomOffset</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>topOffset</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>wrapLimit</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Configure interaction mode (0 <a class="el" href="classeve_1_1ui_1_1UI.html" title="Declarative UI module (eve.UI).">UI</a>, 1 scene, 2 both), theme (0 light, 1 dark), delay and layout. </p>
+
+<p class="definition">在文件 <a class="el" href="PcgTooltip_8cpp_source.html">PcgTooltip.cpp</a> 第 <a class="el" href="PcgTooltip_8cpp_source.html#l00006">6</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="WorldAnchorProjection_8cpp_source.html#l00017">bottom</a>, <a class="el" href="PcgTooltip_8h_source.html#l00019">hide()</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="EditorHost_8cpp_source.html#l00458">theme</a> , 以及 <a class="el" href="AgentBindings_8cpp_source.html#l00016">top</a>.</p>
+
+</div>
+</div>
+<a id="a249fe564a4b5afb1745e11cd24a7038d" name="a249fe564a4b5afb1745e11cd24a7038d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a249fe564a4b5afb1745e11cd24a7038d">&#9670;&#160;</a></span>enter()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; bool &gt; eve::ui::PcgTooltipManager::enter </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>source</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>query</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>now</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Schedule the first profile entry whose id contains query. source is 0 <a class="el" href="classeve_1_1ui_1_1UI.html" title="Declarative UI module (eve.UI).">UI</a> or 1 scene. </p>
+
+<p class="definition">在文件 <a class="el" href="PcgTooltip_8cpp_source.html">PcgTooltip.cpp</a> 第 <a class="el" href="PcgTooltip_8cpp_source.html#l00010">10</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="GtsMeshSimplifier_8cpp_source.html#l00014">q</a>, <a class="el" href="UnityVegetationPreset_8cpp_source.html#l00029">source</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="adbeb2dbf78c19c910f6001ea38517d47" name="adbeb2dbf78c19c910f6001ea38517d47"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adbeb2dbf78c19c910f6001ea38517d47">&#9670;&#160;</a></span>enterText()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::ui::PcgTooltipManager::enterText </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>source</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>content</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>header</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>now</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Schedule direct trigger content, matching TooltipTrigger. </p>
+
+<p class="definition">在文件 <a class="el" href="PcgTooltip_8cpp_source.html">PcgTooltip.cpp</a> 第 <a class="el" href="PcgTooltip_8cpp_source.html#l00011">11</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="UnityVegetationPreset_8cpp_source.html#l00029">source</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a19ccc2d7f6bf234968b0e97c2a6b66ca" name="a19ccc2d7f6bf234968b0e97c2a6b66ca"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a19ccc2d7f6bf234968b0e97c2a6b66ca">&#9670;&#160;</a></span>exit()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::ui::PcgTooltipManager::exit </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>source</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Cancel matching hover and hide tooltip. </p>
+
+<p class="definition">在文件 <a class="el" href="PcgTooltip_8cpp_source.html">PcgTooltip.cpp</a> 第 <a class="el" href="PcgTooltip_8cpp_source.html#l00012">12</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="UnityVegetationPreset_8cpp_source.html#l00029">source</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a3b9c973d0ac66bea073431e56c617c26" name="a3b9c973d0ac66bea073431e56c617c26"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3b9c973d0ac66bea073431e56c617c26">&#9670;&#160;</a></span>getBackgroundR()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::ui::PcgTooltipManager::getBackgroundR </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return background red for active theme. </p>
+
+<p class="definition">在文件 <a class="el" href="PcgTooltip_8h_source.html">PcgTooltip.h</a> 第 <a class="el" href="PcgTooltip_8h_source.html#l00028">28</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae7ae085501fd052188080d1775698c44" name="ae7ae085501fd052188080d1775698c44"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae7ae085501fd052188080d1775698c44">&#9670;&#160;</a></span>getCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::ui::PcgTooltipManager::getCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return profile row count. </p>
+
+<p class="definition">在文件 <a class="el" href="PcgTooltip_8h_source.html">PcgTooltip.h</a> 第 <a class="el" href="PcgTooltip_8h_source.html#l00030">30</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a95f3d313d0c8db491f15877c1562ab61" name="a95f3d313d0c8db491f15877c1562ab61"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a95f3d313d0c8db491f15877c1562ab61">&#9670;&#160;</a></span>getForeground()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::ui::PcgTooltipManager::getForeground </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return foreground intensity for active theme. </p>
+
+<p class="definition">在文件 <a class="el" href="PcgTooltip_8h_source.html">PcgTooltip.h</a> 第 <a class="el" href="PcgTooltip_8h_source.html#l00029">29</a> 行定义.</p>
+
+</div>
+</div>
+<a id="abf7825ac56843bf3219c257979ca81f0" name="abf7825ac56843bf3219c257979ca81f0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abf7825ac56843bf3219c257979ca81f0">&#9670;&#160;</a></span>getHeader()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::string &amp; eve::ui::PcgTooltipManager::getHeader </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return active header. </p>
+
+<p class="definition">在文件 <a class="el" href="PcgTooltip_8h_source.html">PcgTooltip.h</a> 第 <a class="el" href="PcgTooltip_8h_source.html#l00022">22</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac1baa066088b3444e72ac1e4d25c473c" name="ac1baa066088b3444e72ac1e4d25c473c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac1baa066088b3444e72ac1e4d25c473c">&#9670;&#160;</a></span>getHeaderVisible()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::ui::PcgTooltipManager::getHeaderVisible </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return whether header should be shown. </p>
+
+<p class="definition">在文件 <a class="el" href="PcgTooltip_8h_source.html">PcgTooltip.h</a> 第 <a class="el" href="PcgTooltip_8h_source.html#l00024">24</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a997de7b94e7e40dec4943bddd3d1dd53" name="a997de7b94e7e40dec4943bddd3d1dd53"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a997de7b94e7e40dec4943bddd3d1dd53">&#9670;&#160;</a></span>getPending()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::ui::PcgTooltipManager::getPending </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return pending-delay state. </p>
+
+<p class="definition">在文件 <a class="el" href="PcgTooltip_8h_source.html">PcgTooltip.h</a> 第 <a class="el" href="PcgTooltip_8h_source.html#l00021">21</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a4d5f89844fbc7ce3731ea5a8a1d5fa7e" name="a4d5f89844fbc7ce3731ea5a8a1d5fa7e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4d5f89844fbc7ce3731ea5a8a1d5fa7e">&#9670;&#160;</a></span>getPivotX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::ui::PcgTooltipManager::getPivotX </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return pointer pivot X. </p>
+
+<p class="definition">在文件 <a class="el" href="PcgTooltip_8h_source.html">PcgTooltip.h</a> 第 <a class="el" href="PcgTooltip_8h_source.html#l00026">26</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a90d86c4d824112319a64ad5caf30349f" name="a90d86c4d824112319a64ad5caf30349f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a90d86c4d824112319a64ad5caf30349f">&#9670;&#160;</a></span>getPivotY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::ui::PcgTooltipManager::getPivotY </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return pointer pivot Y. </p>
+
+<p class="definition">在文件 <a class="el" href="PcgTooltip_8h_source.html">PcgTooltip.h</a> 第 <a class="el" href="PcgTooltip_8h_source.html#l00027">27</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab3b7ba4e60a9690c1a18da34acb8f163" name="ab3b7ba4e60a9690c1a18da34acb8f163"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab3b7ba4e60a9690c1a18da34acb8f163">&#9670;&#160;</a></span>getText()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::string &amp; eve::ui::PcgTooltipManager::getText </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return active content. </p>
+
+<p class="definition">在文件 <a class="el" href="PcgTooltip_8h_source.html">PcgTooltip.h</a> 第 <a class="el" href="PcgTooltip_8h_source.html#l00023">23</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a065f475853140203fc73fb6b966e210e" name="a065f475853140203fc73fb6b966e210e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a065f475853140203fc73fb6b966e210e">&#9670;&#160;</a></span>getVisible()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::ui::PcgTooltipManager::getVisible </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return visible state. </p>
+
+<p class="definition">在文件 <a class="el" href="PcgTooltip_8h_source.html">PcgTooltip.h</a> 第 <a class="el" href="PcgTooltip_8h_source.html#l00020">20</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a60938e836ecd8f656374726a26c117d1" name="a60938e836ecd8f656374726a26c117d1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a60938e836ecd8f656374726a26c117d1">&#9670;&#160;</a></span>getWrapEnabled()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::ui::PcgTooltipManager::getWrapEnabled </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return whether layout wrapping is enabled. </p>
+
+<p class="definition">在文件 <a class="el" href="PcgTooltip_8h_source.html">PcgTooltip.h</a> 第 <a class="el" href="PcgTooltip_8h_source.html#l00025">25</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aa951a6c2be94b1119e172b1580758c64" name="aa951a6c2be94b1119e172b1580758c64"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa951a6c2be94b1119e172b1580758c64">&#9670;&#160;</a></span>hide()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::ui::PcgTooltipManager::hide </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Hide and cancel all pending tooltip work. </p>
+
+<p class="definition">在文件 <a class="el" href="PcgTooltip_8h_source.html">PcgTooltip.h</a> 第 <a class="el" href="PcgTooltip_8h_source.html#l00019">19</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PcgTooltip_8cpp_source.html#l00006">configure()</a> , 以及 <a class="el" href="PcgTooltip_8cpp_source.html#l00013">tick()</a>.</p>
+
+</div>
+</div>
+<a id="a008bdff9ca8d66d3ca19f488fd73a3a1" name="a008bdff9ca8d66d3ca19f488fd73a3a1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a008bdff9ca8d66d3ca19f488fd73a3a1">&#9670;&#160;</a></span>removeTooltip()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; bool &gt; eve::ui::PcgTooltipManager::removeTooltip </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>query</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Remove first entry whose id contains the query. </p>
+
+<p class="definition">在文件 <a class="el" href="PcgTooltip_8cpp_source.html">PcgTooltip.cpp</a> 第 <a class="el" href="PcgTooltip_8cpp_source.html#l00008">8</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="GtsMeshSimplifier_8cpp_source.html#l00014">q</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a0f5716cccb83875458cfda3f28b40803" name="a0f5716cccb83875458cfda3f28b40803"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0f5716cccb83875458cfda3f28b40803">&#9670;&#160;</a></span>tick()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::ui::PcgTooltipManager::tick </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>now</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>mouseX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>mouseY</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>screenWidth</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>screenHeight</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>anyInput</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Update mouse placement, delayed visibility, and input dismissal. </p>
+
+<p class="definition">在文件 <a class="el" href="PcgTooltip_8cpp_source.html">PcgTooltip.cpp</a> 第 <a class="el" href="PcgTooltip_8cpp_source.html#l00013">13</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PcgTooltip_8h_source.html#l00019">hide()</a>, <a class="el" href="Evpack_8cpp_source.html#l00175">input</a>, <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="AnimClip_8cpp_source.html#l00738">x</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00738">y</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/ui/<a class="el" href="PcgTooltip_8h_source.html">PcgTooltip.h</a></li>
+<li>src/modules/ui/<a class="el" href="PcgTooltip_8cpp_source.html">PcgTooltip.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

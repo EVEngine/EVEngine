@@ -1,0 +1,229 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/archspace/ArchSpaceCatalog.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_5f37a5bfda9404d9e8ca1fb80ac23983.html">archspace</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">ArchSpaceCatalog.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="ArchSpaceCatalog_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="ArchSpaceTypes_8h.html">archspace/ArchSpaceTypes.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;optional&gt;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;string_view&gt;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1archspace.html">eve::archspace</a> {</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
+<div class="foldopen" id="foldopen00013" data-start="{" data-end="};">
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno"><a class="line" href="structeve_1_1archspace_1_1CatalogPart.html">   13</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1archspace_1_1CatalogPart.html">CatalogPart</a> {</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno"><a class="line" href="structeve_1_1archspace_1_1CatalogPart.html#ad8132a0f3c2b0eaf10601cec5ffecbb7">   14</a></span>    <a class="code hl_struct" href="structeve_1_1archspace_1_1Vec3.html">Vec3</a>        <a class="code hl_variable" href="structeve_1_1archspace_1_1CatalogPart.html#ad8132a0f3c2b0eaf10601cec5ffecbb7">center</a>{};             </div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno"><a class="line" href="structeve_1_1archspace_1_1CatalogPart.html#ac9e259461d7b26353e7921361ed42a9a">   15</a></span>    <a class="code hl_struct" href="structeve_1_1archspace_1_1Vec3.html">Vec3</a>        <a class="code hl_variable" href="structeve_1_1archspace_1_1CatalogPart.html#ac9e259461d7b26353e7921361ed42a9a">size</a>{0.5, 0.5, 0.5};  </div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno"><a class="line" href="structeve_1_1archspace_1_1CatalogPart.html#af2651df5b94a24fe9cfb7a25e9e562a9">   16</a></span>    std::string <a class="code hl_variable" href="structeve_1_1archspace_1_1CatalogPart.html#af2651df5b94a24fe9cfb7a25e9e562a9">suffix</a>;               </div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>};</div>
+</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span> </div>
+<div class="foldopen" id="foldopen00020" data-start="{" data-end="};">
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno"><a class="line" href="structeve_1_1archspace_1_1CatalogEntry.html">   20</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1archspace_1_1CatalogEntry.html">CatalogEntry</a> {</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno"><a class="line" href="structeve_1_1archspace_1_1CatalogEntry.html#afa3e8994609a81c19fd68cddd714b10e">   21</a></span>    std::string              <a class="code hl_variable" href="structeve_1_1archspace_1_1CatalogEntry.html#afa3e8994609a81c19fd68cddd714b10e">id</a>;</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno"><a class="line" href="structeve_1_1archspace_1_1CatalogEntry.html#adaff9afc7c985e2684be026c08771179">   22</a></span>    std::string              <a class="code hl_variable" href="structeve_1_1archspace_1_1CatalogEntry.html#adaff9afc7c985e2684be026c08771179">displayName</a>;</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno"><a class="line" href="structeve_1_1archspace_1_1CatalogEntry.html#a206b6535e217396fe2d83eb61ad6a8a5">   23</a></span>    std::vector&lt;CatalogPart&gt; <a class="code hl_variable" href="structeve_1_1archspace_1_1CatalogEntry.html#a206b6535e217396fe2d83eb61ad6a8a5">parts</a>;</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>};</div>
+</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span> </div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>[[nodiscard]] std::optional&lt;CatalogEntry&gt; <a class="code hl_function" href="namespaceeve_1_1archspace.html#a92867fc223b469a48a29396f2fc3275b">lookupCatalog</a>(std::string_view catalogId);</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span> </div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>[[nodiscard]] std::vector&lt;std::string&gt; <a class="code hl_function" href="namespaceeve_1_1archspace.html#ae26ea1a38cc3e28392840a12f7ca16c8">listCatalogIds</a>();</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span> </div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span><span class="keywordtype">void</span> <a class="code hl_function" href="namespaceeve_1_1archspace.html#aa4c05cba2cc5e0fdd2d5665c90a1b484">appendCatalogItem</a>(<a class="code hl_struct" href="structeve_1_1archspace_1_1MeshBake.html">MeshBake</a>&amp; bake, <span class="keyword">const</span> std::string&amp; <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ac5758f9b5a368e496aaa5da3aa74dfd6">itemId</a>, <span class="keyword">const</span> std::string&amp; catalogId, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1archspace_1_1Vec3.html">Vec3</a>&amp; <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a60ea6c13eb7a935dc579b69b80cee822">position</a>,</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>                       <span class="keywordtype">double</span> yawDegrees);</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span> </div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span><span class="keywordtype">void</span> <a class="code hl_function" href="namespaceeve_1_1archspace.html#a855152c6fcf0fc69023760f6e739f240">appendWallWithOpenings</a>(<a class="code hl_struct" href="structeve_1_1archspace_1_1MeshBake.html">MeshBake</a>&amp; bake, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1archspace_1_1Node.html">Node</a>&amp; wall, <span class="keywordtype">double</span> <a class="code hl_variable" href="HexTerrain_8cpp.html#a1c921d7f2f6a29b15d709c49d2df1797">elevation</a>,</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>                            <span class="keyword">const</span> std::vector&lt;const Node*&gt;&amp; openings);</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span> </div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>}  <span class="comment">// namespace eve::archspace</span></div>
+<div class="ttc" id="aActionTimelineWidget_8cpp_html_ac5758f9b5a368e496aaa5da3aa74dfd6"><div class="ttname"><a href="ActionTimelineWidget_8cpp.html#ac5758f9b5a368e496aaa5da3aa74dfd6">itemId</a></div><div class="ttdeci">LogicalId itemId</div><div class="ttdef"><b>Definition</b> <a href="ActionTimelineWidget_8cpp_source.html#l00028">ActionTimelineWidget.cpp:28</a></div></div>
+<div class="ttc" id="aArchSpaceTypes_8h_html"><div class="ttname"><a href="ArchSpaceTypes_8h.html">ArchSpaceTypes.h</a></div></div>
+<div class="ttc" id="aHexTerrain_8cpp_html_a1c921d7f2f6a29b15d709c49d2df1797"><div class="ttname"><a href="HexTerrain_8cpp.html#a1c921d7f2f6a29b15d709c49d2df1797">elevation</a></div><div class="ttdeci">float elevation</div><div class="ttdef"><b>Definition</b> <a href="HexTerrain_8cpp_source.html#l00030">HexTerrain.cpp:30</a></div></div>
+<div class="ttc" id="aLegacyAnimationImporter_8cpp_html_a60ea6c13eb7a935dc579b69b80cee822"><div class="ttname"><a href="LegacyAnimationImporter_8cpp.html#a60ea6c13eb7a935dc579b69b80cee822">position</a></div><div class="ttdeci">std::array&lt; float, 3 &gt; position</div><div class="ttdef"><b>Definition</b> <a href="LegacyAnimationImporter_8cpp_source.html#l00016">LegacyAnimationImporter.cpp:16</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1archspace_html"><div class="ttname"><a href="namespaceeve_1_1archspace.html">eve::archspace</a></div><div class="ttdef"><b>Definition</b> <a href="ArchSpace_8cpp_source.html#l00013">ArchSpace.cpp:13</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1archspace_html_a855152c6fcf0fc69023760f6e739f240"><div class="ttname"><a href="namespaceeve_1_1archspace.html#a855152c6fcf0fc69023760f6e739f240">eve::archspace::appendWallWithOpenings</a></div><div class="ttdeci">void appendWallWithOpenings(MeshBake &amp;bake, const Node &amp;wall, double elevation, const std::vector&lt; const Node * &gt; &amp;openings)</div><div class="ttdoc">Bake one wall with merged opening cavities and explicit reveal liners.</div><div class="ttdef"><b>Definition</b> <a href="ArchSpaceCatalog_8cpp_source.html#l00135">ArchSpaceCatalog.cpp:135</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1archspace_html_a92867fc223b469a48a29396f2fc3275b"><div class="ttname"><a href="namespaceeve_1_1archspace.html#a92867fc223b469a48a29396f2fc3275b">eve::archspace::lookupCatalog</a></div><div class="ttdeci">std::optional&lt; CatalogEntry &gt; lookupCatalog(std::string_view catalogId)</div><div class="ttdoc">Resolve a built-in furniture catalog entry.</div><div class="ttdef"><b>Definition</b> <a href="ArchSpaceCatalog_8cpp_source.html#l00106">ArchSpaceCatalog.cpp:106</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1archspace_html_aa4c05cba2cc5e0fdd2d5665c90a1b484"><div class="ttname"><a href="namespaceeve_1_1archspace.html#aa4c05cba2cc5e0fdd2d5665c90a1b484">eve::archspace::appendCatalogItem</a></div><div class="ttdeci">void appendCatalogItem(MeshBake &amp;bake, const std::string &amp;itemId, const std::string &amp;catalogId, const Vec3 &amp;position, double yawDegrees)</div><div class="ttdoc">Append yaw-oriented catalog geometry into a mesh bake.</div><div class="ttdef"><b>Definition</b> <a href="ArchSpaceCatalog_8cpp_source.html#l00120">ArchSpaceCatalog.cpp:120</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1archspace_html_ae26ea1a38cc3e28392840a12f7ca16c8"><div class="ttname"><a href="namespaceeve_1_1archspace.html#ae26ea1a38cc3e28392840a12f7ca16c8">eve::archspace::listCatalogIds</a></div><div class="ttdeci">std::vector&lt; std::string &gt; listCatalogIds()</div><div class="ttdoc">Stable list of built-in catalog ids for tools and inspector UIs.</div><div class="ttdef"><b>Definition</b> <a href="ArchSpaceCatalog_8cpp_source.html#l00112">ArchSpaceCatalog.cpp:112</a></div></div>
+<div class="ttc" id="astructeve_1_1archspace_1_1CatalogEntry_html"><div class="ttname"><a href="structeve_1_1archspace_1_1CatalogEntry.html">eve::archspace::CatalogEntry</a></div><div class="ttdoc">Built-in catalog entry resolved from an item catalogId.</div><div class="ttdef"><b>Definition</b> <a href="ArchSpaceCatalog_8h_source.html#l00020">ArchSpaceCatalog.h:20</a></div></div>
+<div class="ttc" id="astructeve_1_1archspace_1_1CatalogEntry_html_a206b6535e217396fe2d83eb61ad6a8a5"><div class="ttname"><a href="structeve_1_1archspace_1_1CatalogEntry.html#a206b6535e217396fe2d83eb61ad6a8a5">eve::archspace::CatalogEntry::parts</a></div><div class="ttdeci">std::vector&lt; CatalogPart &gt; parts</div><div class="ttdef"><b>Definition</b> <a href="ArchSpaceCatalog_8h_source.html#l00023">ArchSpaceCatalog.h:23</a></div></div>
+<div class="ttc" id="astructeve_1_1archspace_1_1CatalogEntry_html_adaff9afc7c985e2684be026c08771179"><div class="ttname"><a href="structeve_1_1archspace_1_1CatalogEntry.html#adaff9afc7c985e2684be026c08771179">eve::archspace::CatalogEntry::displayName</a></div><div class="ttdeci">std::string displayName</div><div class="ttdef"><b>Definition</b> <a href="ArchSpaceCatalog_8h_source.html#l00022">ArchSpaceCatalog.h:22</a></div></div>
+<div class="ttc" id="astructeve_1_1archspace_1_1CatalogEntry_html_afa3e8994609a81c19fd68cddd714b10e"><div class="ttname"><a href="structeve_1_1archspace_1_1CatalogEntry.html#afa3e8994609a81c19fd68cddd714b10e">eve::archspace::CatalogEntry::id</a></div><div class="ttdeci">std::string id</div><div class="ttdef"><b>Definition</b> <a href="ArchSpaceCatalog_8h_source.html#l00021">ArchSpaceCatalog.h:21</a></div></div>
+<div class="ttc" id="astructeve_1_1archspace_1_1CatalogPart_html"><div class="ttname"><a href="structeve_1_1archspace_1_1CatalogPart.html">eve::archspace::CatalogPart</a></div><div class="ttdoc">One parametric furniture part in catalog-local metres (Y-up).</div><div class="ttdef"><b>Definition</b> <a href="ArchSpaceCatalog_8h_source.html#l00013">ArchSpaceCatalog.h:13</a></div></div>
+<div class="ttc" id="astructeve_1_1archspace_1_1CatalogPart_html_ac9e259461d7b26353e7921361ed42a9a"><div class="ttname"><a href="structeve_1_1archspace_1_1CatalogPart.html#ac9e259461d7b26353e7921361ed42a9a">eve::archspace::CatalogPart::size</a></div><div class="ttdeci">Vec3 size</div><div class="ttdoc">Full extents along local X / Y / Z.</div><div class="ttdef"><b>Definition</b> <a href="ArchSpaceCatalog_8h_source.html#l00015">ArchSpaceCatalog.h:15</a></div></div>
+<div class="ttc" id="astructeve_1_1archspace_1_1CatalogPart_html_ad8132a0f3c2b0eaf10601cec5ffecbb7"><div class="ttname"><a href="structeve_1_1archspace_1_1CatalogPart.html#ad8132a0f3c2b0eaf10601cec5ffecbb7">eve::archspace::CatalogPart::center</a></div><div class="ttdeci">Vec3 center</div><div class="ttdoc">Local center relative to the item origin.</div><div class="ttdef"><b>Definition</b> <a href="ArchSpaceCatalog_8h_source.html#l00014">ArchSpaceCatalog.h:14</a></div></div>
+<div class="ttc" id="astructeve_1_1archspace_1_1CatalogPart_html_af2651df5b94a24fe9cfb7a25e9e562a9"><div class="ttname"><a href="structeve_1_1archspace_1_1CatalogPart.html#af2651df5b94a24fe9cfb7a25e9e562a9">eve::archspace::CatalogPart::suffix</a></div><div class="ttdeci">std::string suffix</div><div class="ttdoc">Appended to the item id for bake primitive ids.</div><div class="ttdef"><b>Definition</b> <a href="ArchSpaceCatalog_8h_source.html#l00016">ArchSpaceCatalog.h:16</a></div></div>
+<div class="ttc" id="astructeve_1_1archspace_1_1MeshBake_html"><div class="ttname"><a href="structeve_1_1archspace_1_1MeshBake.html">eve::archspace::MeshBake</a></div><div class="ttdoc">Renderer-neutral triangle mesh rebuilt from the document.</div><div class="ttdef"><b>Definition</b> <a href="ArchSpaceTypes_8h_source.html#l00066">ArchSpaceTypes.h:66</a></div></div>
+<div class="ttc" id="astructeve_1_1archspace_1_1Node_html"><div class="ttname"><a href="structeve_1_1archspace_1_1Node.html">eve::archspace::Node</a></div><div class="ttdoc">One authored architectural node. Only fields for the active kind are meaningful.</div><div class="ttdef"><b>Definition</b> <a href="ArchSpaceTypes_8h_source.html#l00032">ArchSpaceTypes.h:32</a></div></div>
+<div class="ttc" id="astructeve_1_1archspace_1_1Vec3_html"><div class="ttname"><a href="structeve_1_1archspace_1_1Vec3.html">eve::archspace::Vec3</a></div><div class="ttdoc">Metres in world/level space.</div><div class="ttdef"><b>Definition</b> <a href="ArchSpaceTypes_8h_source.html#l00025">ArchSpaceTypes.h:25</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

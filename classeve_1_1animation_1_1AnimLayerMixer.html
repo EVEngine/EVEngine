@@ -1,0 +1,1329 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::animation::AnimLayerMixer类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1animation.html">animation</a></li><li class="navelem"><a class="el" href="classeve_1_1animation_1_1AnimLayerMixer.html">AnimLayerMixer</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1animation_1_1AnimLayerMixer-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::animation::AnimLayerMixer类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Combines a borrowed base pose source with ordered override/additive layers.  
+ <a href="classeve_1_1animation_1_1AnimLayerMixer.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="AnimLayerMixer_8h_source.html">AnimLayerMixer.h</a>&gt;</code></p>
+<div class="dynheader">
+类 eve::animation::AnimLayerMixer 继承关系图:</div>
+<div class="dyncontent">
+ <div class="center">
+  <img src="classeve_1_1animation_1_1AnimLayerMixer.png" usemap="#eve::animation::AnimLayerMixer_map" alt=""/>
+  <map id="eve::animation::AnimLayerMixer_map" name="eve::animation::AnimLayerMixer_map">
+<area href="classeve_1_1animation_1_1IAnimPoseSource.html" title="Borrowed pose provider consumed by AnimLayerMixer." alt="eve::animation::IAnimPoseSource" shape="rect" coords="0,0,198,24"/>
+  </map>
+</div></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a11db6f7a8b41548b3208708d582563c9" id="r_a11db6f7a8b41548b3208708d582563c9"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimLayerMixer.html#a11db6f7a8b41548b3208708d582563c9">AnimLayerMixer</a> (<a class="el" href="classeve_1_1animation_1_1AnimSkeleton.html">AnimSkeleton</a> *skeleton)</td></tr>
+<tr class="memdesc:a11db6f7a8b41548b3208708d582563c9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create an empty mixer for a skeleton; the skeleton is not owned.  <br /></td></tr>
+<tr class="separator:a11db6f7a8b41548b3208708d582563c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a600558dcc210c460e9ffad70fe26dd75" id="r_a600558dcc210c460e9ffad70fe26dd75"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimLayerMixer.html#a600558dcc210c460e9ffad70fe26dd75">setBaseSource</a> (<a class="el" href="classeve_1_1animation_1_1IAnimPoseSource.html">IAnimPoseSource</a> *<a class="el" href="UnityVegetationPreset_8cpp.html#a176f5b9d50679b93425278a1a59e3eaa">source</a>)</td></tr>
+<tr class="memdesc:a600558dcc210c460e9ffad70fe26dd75"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the borrowed base pose source evaluated before layers.  <br /></td></tr>
+<tr class="separator:a600558dcc210c460e9ffad70fe26dd75"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acdb178a16aee639ae7b0ef17be0d6181" id="r_acdb178a16aee639ae7b0ef17be0d6181"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimLayerMixer.html#acdb178a16aee639ae7b0ef17be0d6181">setBasePlayer</a> (<a class="el" href="classeve_1_1animation_1_1AnimPlayer.html">AnimPlayer</a> *player)</td></tr>
+<tr class="memdesc:acdb178a16aee639ae7b0ef17be0d6181"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compatibility facade over setBaseSource(AnimPlayer*).  <br /></td></tr>
+<tr class="separator:acdb178a16aee639ae7b0ef17be0d6181"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a60a1f0df4b6a84ab0a13a12b6f3809df" id="r_a60a1f0df4b6a84ab0a13a12b6f3809df"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimLayerMixer.html#a60a1f0df4b6a84ab0a13a12b6f3809df">setBaseGraph</a> (<a class="el" href="classeve_1_1animation_1_1AnimGraph.html">AnimGraph</a> *<a class="el" href="Package_8cpp.html#a8d10a8def83a0e25fb0e6300bc085eab">graph</a>)</td></tr>
+<tr class="memdesc:a60a1f0df4b6a84ab0a13a12b6f3809df"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compatibility facade over setBaseSource(AnimGraph*).  <br /></td></tr>
+<tr class="separator:a60a1f0df4b6a84ab0a13a12b6f3809df"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a151fd7b4bfd974f690a34303835367f1" id="r_a151fd7b4bfd974f690a34303835367f1"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimLayerMixer.html#a151fd7b4bfd974f690a34303835367f1">setBaseStateMachine</a> (<a class="el" href="classeve_1_1animation_1_1AnimStateMachine.html">AnimStateMachine</a> *stateMachine)</td></tr>
+<tr class="memdesc:a151fd7b4bfd974f690a34303835367f1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compatibility facade over setBaseSource(AnimStateMachine*).  <br /></td></tr>
+<tr class="separator:a151fd7b4bfd974f690a34303835367f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5185b4e3134949212185a9ef1e81b45a" id="r_a5185b4e3134949212185a9ef1e81b45a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1animation_1_1IAnimPoseSource.html">IAnimPoseSource</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimLayerMixer.html#a5185b4e3134949212185a9ef1e81b45a">getBaseSource</a> () const</td></tr>
+<tr class="memdesc:a5185b4e3134949212185a9ef1e81b45a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the borrowed base source, or null. @ownership Borrowed @lifetime Valid while the owning animation object remains alive; do not retain across destruction.  <br /></td></tr>
+<tr class="separator:a5185b4e3134949212185a9ef1e81b45a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adca984c02e92abc5262d7e670ce099a6" id="r_adca984c02e92abc5262d7e670ce099a6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1animation_1_1AnimPlayer.html">AnimPlayer</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimLayerMixer.html#adca984c02e92abc5262d7e670ce099a6">getBasePlayer</a> () const</td></tr>
+<tr class="memdesc:adca984c02e92abc5262d7e670ce099a6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the base when it is an <a class="el" href="classeve_1_1animation_1_1AnimPlayer.html" title="Single-clip (or cross-fading) 3D animation player. Script type: AnimPlayer.">AnimPlayer</a>; otherwise null. @ownership Borrowed @lifetime Valid while the owning animation object remains alive; do not retain across destruction.  <br /></td></tr>
+<tr class="separator:adca984c02e92abc5262d7e670ce099a6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a77d15eef59e13b8d201295c0292a83a9" id="r_a77d15eef59e13b8d201295c0292a83a9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimLayerMixer.html#a77d15eef59e13b8d201295c0292a83a9">addPoseLayer</a> (const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, <a class="el" href="classeve_1_1animation_1_1IAnimPoseSource.html">IAnimPoseSource</a> *<a class="el" href="UnityVegetationPreset_8cpp.html#a176f5b9d50679b93425278a1a59e3eaa">source</a>, <a class="el" href="classeve_1_1animation_1_1AnimBoneMask.html">AnimBoneMask</a> *<a class="el" href="BuildingFx_8cpp.html#ab77cc972f3ee899689ba053015472ccd">mask</a>, const std::string &amp;mode)</td></tr>
+<tr class="memdesc:a77d15eef59e13b8d201295c0292a83a9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Append a pose layer. mode is "override" or "additive". A null mask affects every bone. Additive layers default to BindPose reference.  <br /></td></tr>
+<tr class="separator:a77d15eef59e13b8d201295c0292a83a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a48dbb6ab14e931773532d7656a49e954" id="r_a48dbb6ab14e931773532d7656a49e954"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimLayerMixer.html#a48dbb6ab14e931773532d7656a49e954">addLayer</a> (const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, <a class="el" href="classeve_1_1animation_1_1AnimPlayer.html">AnimPlayer</a> *player, <a class="el" href="classeve_1_1animation_1_1AnimBoneMask.html">AnimBoneMask</a> *<a class="el" href="BuildingFx_8cpp.html#ab77cc972f3ee899689ba053015472ccd">mask</a>, const std::string &amp;mode)</td></tr>
+<tr class="memdesc:a48dbb6ab14e931773532d7656a49e954"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compatibility facade over addPoseLayer(AnimPlayer*).  <br /></td></tr>
+<tr class="separator:a48dbb6ab14e931773532d7656a49e954"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9af43c1546389b1e35bb07478f02d014" id="r_a9af43c1546389b1e35bb07478f02d014"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimLayerMixer.html#a9af43c1546389b1e35bb07478f02d014">addGraphLayer</a> (const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, <a class="el" href="classeve_1_1animation_1_1AnimGraph.html">AnimGraph</a> *<a class="el" href="Package_8cpp.html#a8d10a8def83a0e25fb0e6300bc085eab">graph</a>, <a class="el" href="classeve_1_1animation_1_1AnimBoneMask.html">AnimBoneMask</a> *<a class="el" href="BuildingFx_8cpp.html#ab77cc972f3ee899689ba053015472ccd">mask</a>, const std::string &amp;mode)</td></tr>
+<tr class="memdesc:a9af43c1546389b1e35bb07478f02d014"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compatibility facade over addPoseLayer(AnimGraph*).  <br /></td></tr>
+<tr class="separator:a9af43c1546389b1e35bb07478f02d014"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a399fa33e1458b2672d94304a8e27c999" id="r_a399fa33e1458b2672d94304a8e27c999"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimLayerMixer.html#a399fa33e1458b2672d94304a8e27c999">addStateMachineLayer</a> (const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, <a class="el" href="classeve_1_1animation_1_1AnimStateMachine.html">AnimStateMachine</a> *stateMachine, <a class="el" href="classeve_1_1animation_1_1AnimBoneMask.html">AnimBoneMask</a> *<a class="el" href="BuildingFx_8cpp.html#ab77cc972f3ee899689ba053015472ccd">mask</a>, const std::string &amp;mode)</td></tr>
+<tr class="memdesc:a399fa33e1458b2672d94304a8e27c999"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compatibility facade over addPoseLayer(AnimStateMachine*).  <br /></td></tr>
+<tr class="separator:a399fa33e1458b2672d94304a8e27c999"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a42f8af19ee196128af1a50175a6ef83b" id="r_a42f8af19ee196128af1a50175a6ef83b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimLayerMixer.html#a42f8af19ee196128af1a50175a6ef83b">removeLayer</a> (const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>)</td></tr>
+<tr class="memdesc:a42f8af19ee196128af1a50175a6ef83b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Remove a layer by name.  <br /></td></tr>
+<tr class="separator:a42f8af19ee196128af1a50175a6ef83b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af58dcf5b438bb0ad0218713e3f595c23" id="r_af58dcf5b438bb0ad0218713e3f595c23"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimLayerMixer.html#af58dcf5b438bb0ad0218713e3f595c23">setLayerWeight</a> (const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, float <a class="el" href="UnityVegetationMaterial_8cpp.html#a99108733d00274978a4979dc072bd513">weight</a>)</td></tr>
+<tr class="memdesc:af58dcf5b438bb0ad0218713e3f595c23"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set a layer's global clamped weight.  <br /></td></tr>
+<tr class="separator:af58dcf5b438bb0ad0218713e3f595c23"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac2fbcbd49a3457eb8b1332e6f40caeed" id="r_ac2fbcbd49a3457eb8b1332e6f40caeed"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimLayerMixer.html#ac2fbcbd49a3457eb8b1332e6f40caeed">setLayerEnabled</a> (const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, bool <a class="el" href="rpg_2Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a>)</td></tr>
+<tr class="memdesc:ac2fbcbd49a3457eb8b1332e6f40caeed"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enable or disable a layer without removing it. Disabled layers still advance.  <br /></td></tr>
+<tr class="separator:ac2fbcbd49a3457eb8b1332e6f40caeed"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a75f0dd2d04161fb0d24bb765b739941b" id="r_a75f0dd2d04161fb0d24bb765b739941b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimLayerMixer.html#a75f0dd2d04161fb0d24bb765b739941b">setLayerAdditiveReference</a> (const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, const std::string &amp;<a class="el" href="Authority_8cpp.html#a7e214a50596aaa2c6748b6e36dda4f63">reference</a>)</td></tr>
+<tr class="memdesc:a75f0dd2d04161fb0d24bb765b739941b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set additive reference for an additive layer: "bind" or "identity".  <br /></td></tr>
+<tr class="separator:a75f0dd2d04161fb0d24bb765b739941b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a92aa4b1b4ea1b9f773e86b4249ca34c0" id="r_a92aa4b1b4ea1b9f773e86b4249ca34c0"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimLayerMixer.html#a92aa4b1b4ea1b9f773e86b4249ca34c0">setLayerAdditiveReferenceCompat</a> (const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, const std::string &amp;<a class="el" href="Authority_8cpp.html#a7e214a50596aaa2c6748b6e36dda4f63">reference</a>)</td></tr>
+<tr class="memdesc:a92aa4b1b4ea1b9f773e86b4249ca34c0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compatibility facade over setLayerAdditiveReference.  <br /></td></tr>
+<tr class="separator:a92aa4b1b4ea1b9f773e86b4249ca34c0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5834cc3c757de90e3d3f0c16a76604ee" id="r_a5834cc3c757de90e3d3f0c16a76604ee"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimLayerMixer.html#a5834cc3c757de90e3d3f0c16a76604ee">getLayerCount</a> () const</td></tr>
+<tr class="memdesc:a5834cc3c757de90e3d3f0c16a76604ee"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the number of configured layers.  <br /></td></tr>
+<tr class="separator:a5834cc3c757de90e3d3f0c16a76604ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa897b8494b80f6fa826f91edd075a577" id="r_aa897b8494b80f6fa826f91edd075a577"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimLayerMixer.html#aa897b8494b80f6fa826f91edd075a577">getLayerName</a> (int <a class="el" href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>) const</td></tr>
+<tr class="memdesc:aa897b8494b80f6fa826f91edd075a577"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return a layer name, or empty for an invalid index.  <br /></td></tr>
+<tr class="separator:aa897b8494b80f6fa826f91edd075a577"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae2e104510d8e6eff44040b82f3d835af" id="r_ae2e104510d8e6eff44040b82f3d835af"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimLayerMixer.html#ae2e104510d8e6eff44040b82f3d835af">getLayerWeight</a> (const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>) const</td></tr>
+<tr class="memdesc:ae2e104510d8e6eff44040b82f3d835af"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return a layer weight, or zero for an unknown name.  <br /></td></tr>
+<tr class="separator:ae2e104510d8e6eff44040b82f3d835af"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5922318108f1818971354e901fd72e2f" id="r_a5922318108f1818971354e901fd72e2f"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimLayerMixer.html#a5922318108f1818971354e901fd72e2f">getLayerEnabled</a> (const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>) const</td></tr>
+<tr class="memdesc:a5922318108f1818971354e901fd72e2f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return whether a layer is enabled; false for unknown names.  <br /></td></tr>
+<tr class="separator:a5922318108f1818971354e901fd72e2f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1109ca09b55a5b9ce68169398ff5c84a" id="r_a1109ca09b55a5b9ce68169398ff5c84a"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimLayerMixer.html#a1109ca09b55a5b9ce68169398ff5c84a">getLayerMode</a> (const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>) const</td></tr>
+<tr class="memdesc:a1109ca09b55a5b9ce68169398ff5c84a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return "override" / "additive", or empty for unknown names.  <br /></td></tr>
+<tr class="separator:a1109ca09b55a5b9ce68169398ff5c84a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a81c4a4c5cf0efb7caf6f8c8f93cde9d8" id="r_a81c4a4c5cf0efb7caf6f8c8f93cde9d8"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimLayerMixer.html#a81c4a4c5cf0efb7caf6f8c8f93cde9d8">getLayerAdditiveReference</a> (const std::string &amp;<a class="el" href="LegacyAnimationImporter_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>) const</td></tr>
+<tr class="memdesc:a81c4a4c5cf0efb7caf6f8c8f93cde9d8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return "bind" / "identity", or empty for unknown names.  <br /></td></tr>
+<tr class="separator:a81c4a4c5cf0efb7caf6f8c8f93cde9d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6a316bf88f71db1c23e9295970b0fd26" id="r_a6a316bf88f71db1c23e9295970b0fd26"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimLayerMixer.html#a6a316bf88f71db1c23e9295970b0fd26">advance</a> (const <a class="el" href="structeve_1_1SimulationStep.html">eve::SimulationStep</a> &amp;<a class="el" href="TreeMesh_8cpp.html#a863c86bdfd96bf9c461846689c2614aa">step</a>) override</td></tr>
+<tr class="memdesc:a6a316bf88f71db1c23e9295970b0fd26"><td class="mdescLeft">&#160;</td><td class="mdescRight">Advance all referenced sources (including disabled layers) and compose.  <br /></td></tr>
+<tr class="separator:a6a316bf88f71db1c23e9295970b0fd26"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a15f4d229069c0fb63ce5f2400f1c73b9" id="r_a15f4d229069c0fb63ce5f2400f1c73b9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimLayerMixer.html#a15f4d229069c0fb63ce5f2400f1c73b9">update</a> (float dt)</td></tr>
+<tr class="memdesc:a15f4d229069c0fb63ce5f2400f1c73b9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Legacy seconds facade; explicitly forwards to <a class="el" href="classeve_1_1animation_1_1AnimLayerMixer.html#a6a316bf88f71db1c23e9295970b0fd26" title="Advance all referenced sources (including disabled layers) and compose.">advance()</a>.  <br /></td></tr>
+<tr class="separator:a15f4d229069c0fb63ce5f2400f1c73b9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5cabeede0612fbf5719779ea7866aae7" id="r_a5cabeede0612fbf5719779ea7866aae7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1animation_1_1AnimPose.html">AnimPose</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimLayerMixer.html#a5cabeede0612fbf5719779ea7866aae7">getPose</a> () override</td></tr>
+<tr class="memdesc:a5cabeede0612fbf5719779ea7866aae7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the most recently combined pose. @ownership Borrowed @lifetime Valid while the owning animation object remains alive; do not retain across destruction.  <br /></td></tr>
+<tr class="separator:a5cabeede0612fbf5719779ea7866aae7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3a75f9d20ce0905c527a11812aea29dc" id="r_a3a75f9d20ce0905c527a11812aea29dc"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1animation_1_1AnimSkeleton.html">AnimSkeleton</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimLayerMixer.html#a3a75f9d20ce0905c527a11812aea29dc">getSkeleton</a> () const override</td></tr>
+<tr class="memdesc:a3a75f9d20ce0905c527a11812aea29dc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the mixer skeleton. @ownership Borrowed @lifetime Valid while the owning animation object remains alive; do not retain across destruction.  <br /></td></tr>
+<tr class="separator:a3a75f9d20ce0905c527a11812aea29dc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a46206930f5bb3e45915f8475d8cfd966" id="r_a46206930f5bb3e45915f8475d8cfd966"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimLayerMixer.html#a46206930f5bb3e45915f8475d8cfd966">hasCurrentTick</a> () const noexcept override</td></tr>
+<tr class="memdesc:a46206930f5bb3e45915f8475d8cfd966"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether advance has consumed at least one checked step.  <br /></td></tr>
+<tr class="separator:a46206930f5bb3e45915f8475d8cfd966"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6493d0ce9bec7402bae42a24f087e671" id="r_a6493d0ce9bec7402bae42a24f087e671"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">eve::SimulationTick</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimLayerMixer.html#a6493d0ce9bec7402bae42a24f087e671">currentTick</a> () const noexcept override</td></tr>
+<tr class="memdesc:a6493d0ce9bec7402bae42a24f087e671"><td class="mdescLeft">&#160;</td><td class="mdescRight">Last scheduler tick consumed by advance.  <br /></td></tr>
+<tr class="separator:a6493d0ce9bec7402bae42a24f087e671"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab529d3a82cde569261438c047d5a4d1a" id="r_ab529d3a82cde569261438c047d5a4d1a"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimLayerMixer.html#ab529d3a82cde569261438c047d5a4d1a">getEventCount</a> () const override</td></tr>
+<tr class="memdesc:ab529d3a82cde569261438c047d5a4d1a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Events emitted by the most recent advance; default is none.  <br /></td></tr>
+<tr class="separator:ab529d3a82cde569261438c047d5a4d1a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a42c3579cfbb077f2f248c292235d718a" id="r_a42c3579cfbb077f2f248c292235d718a"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimLayerMixer.html#a42c3579cfbb077f2f248c292235d718a">getEventName</a> (int <a class="el" href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>) const override</td></tr>
+<tr class="separator:a42c3579cfbb077f2f248c292235d718a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad7b60c603b3d2a3613d85a09cde21867" id="r_ad7b60c603b3d2a3613d85a09cde21867"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimLayerMixer.html#ad7b60c603b3d2a3613d85a09cde21867">getEventPayload</a> (int <a class="el" href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>) const override</td></tr>
+<tr class="separator:ad7b60c603b3d2a3613d85a09cde21867"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ada78d8f8350eca47bee211a4463343d2" id="r_ada78d8f8350eca47bee211a4463343d2"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimLayerMixer.html#ada78d8f8350eca47bee211a4463343d2">getEventLayer</a> (int <a class="el" href="UnityVegetationMaterial_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>) const</td></tr>
+<tr class="memdesc:ada78d8f8350eca47bee211a4463343d2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Source layer name; "base" identifies the base source.  <br /></td></tr>
+<tr class="separator:ada78d8f8350eca47bee211a4463343d2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a72c0aec7613b4fc93c012d2a9bbcdd6d" id="r_a72c0aec7613b4fc93c012d2a9bbcdd6d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1AnimLayerMixer.html#a72c0aec7613b4fc93c012d2a9bbcdd6d">clearEvents</a> ()</td></tr>
+<tr class="memdesc:a72c0aec7613b4fc93c012d2a9bbcdd6d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clear events collected by the most recent update.  <br /></td></tr>
+<tr class="separator:a72c0aec7613b4fc93c012d2a9bbcdd6d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classeve_1_1animation_1_1IAnimPoseSource"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classeve_1_1animation_1_1IAnimPoseSource')"><img src="closed.png" alt="-"/>&#160;Public 成员函数 继承自 <a class="el" href="classeve_1_1animation_1_1IAnimPoseSource.html">eve::animation::IAnimPoseSource</a></td></tr>
+<tr class="memitem:abf789926b2868eb20cf7b1c9e8c4803e inherit pub_methods_classeve_1_1animation_1_1IAnimPoseSource" id="r_abf789926b2868eb20cf7b1c9e8c4803e"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation_1_1IAnimPoseSource.html#abf789926b2868eb20cf7b1c9e8c4803e">~IAnimPoseSource</a> ()=default</td></tr>
+<tr class="separator:abf789926b2868eb20cf7b1c9e8c4803e inherit pub_methods_classeve_1_1animation_1_1IAnimPoseSource"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Combines a borrowed base pose source with ordered override/additive layers. </p>
+<p>Pose sources such as <a class="el" href="classeve_1_1animation_1_1AnimPlayer.html" title="Single-clip (or cross-fading) 3D animation player. Script type: AnimPlayer.">AnimPlayer</a>, <a class="el" href="classeve_1_1animation_1_1AnimGraph.html" title="Composable runtime pose graph supporting clips, blends, additive layers, per-bone masks,...">AnimGraph</a>, <a class="el" href="classeve_1_1animation_1_1AnimStateMachine.html" title="Clip-driven animation state machine with float/bool/trigger parameters and cross-fade transitions....">AnimStateMachine</a>, or a nested mixer, plus masks/clips/skeleton, are referenced but not owned. The mixer owns the evaluation boundary: call advance once per tick and do not advance attached sources separately. </p>
+
+<p class="definition">在文件 <a class="el" href="AnimLayerMixer_8h_source.html">AnimLayerMixer.h</a> 第 <a class="el" href="AnimLayerMixer_8h_source.html#l00051">51</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a11db6f7a8b41548b3208708d582563c9" name="a11db6f7a8b41548b3208708d582563c9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a11db6f7a8b41548b3208708d582563c9">&#9670;&#160;</a></span>AnimLayerMixer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::animation::AnimLayerMixer::AnimLayerMixer </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1animation_1_1AnimSkeleton.html">AnimSkeleton</a> *&#160;</td>
+          <td class="paramname"><em>skeleton</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Create an empty mixer for a skeleton; the skeleton is not owned. </p>
+
+<p class="definition">在文件 <a class="el" href="AnimLayerMixer_8cpp_source.html">AnimLayerMixer.cpp</a> 第 <a class="el" href="AnimLayerMixer_8cpp_source.html#l00072">72</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AnimSkeleton_8cpp_source.html#l00132">eve::animation::AnimSkeleton::applyBindPose()</a>, <a class="el" href="AnimSkeleton_8h_source.html#l00028">eve::animation::AnimSkeleton::getBoneCount()</a> , 以及 <a class="el" href="AnimPose_8cpp_source.html#l00078">eve::animation::AnimPose::resize()</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a9af43c1546389b1e35bb07478f02d014" name="a9af43c1546389b1e35bb07478f02d014"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9af43c1546389b1e35bb07478f02d014">&#9670;&#160;</a></span>addGraphLayer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::animation::AnimLayerMixer::addGraphLayer </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1animation_1_1AnimGraph.html">AnimGraph</a> *&#160;</td>
+          <td class="paramname"><em>graph</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1animation_1_1AnimBoneMask.html">AnimBoneMask</a> *&#160;</td>
+          <td class="paramname"><em>mask</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>mode</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Compatibility facade over addPoseLayer(AnimGraph*). </p>
+
+<p class="definition">在文件 <a class="el" href="AnimLayerMixer_8cpp_source.html">AnimLayerMixer.cpp</a> 第 <a class="el" href="AnimLayerMixer_8cpp_source.html#l00182">182</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AnimLayerMixer_8cpp_source.html#l00152">addPoseLayer()</a>, <a class="el" href="Package_8cpp_source.html#l00059">graph</a>, <a class="el" href="BuildingFx_8cpp_source.html#l00064">mask</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>.</p>
+
+</div>
+</div>
+<a id="a48dbb6ab14e931773532d7656a49e954" name="a48dbb6ab14e931773532d7656a49e954"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a48dbb6ab14e931773532d7656a49e954">&#9670;&#160;</a></span>addLayer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::animation::AnimLayerMixer::addLayer </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1animation_1_1AnimPlayer.html">AnimPlayer</a> *&#160;</td>
+          <td class="paramname"><em>player</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1animation_1_1AnimBoneMask.html">AnimBoneMask</a> *&#160;</td>
+          <td class="paramname"><em>mask</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>mode</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Compatibility facade over addPoseLayer(AnimPlayer*). </p>
+
+<p class="definition">在文件 <a class="el" href="AnimLayerMixer_8cpp_source.html">AnimLayerMixer.cpp</a> 第 <a class="el" href="AnimLayerMixer_8cpp_source.html#l00173">173</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AnimLayerMixer_8cpp_source.html#l00152">addPoseLayer()</a>, <a class="el" href="BuildingFx_8cpp_source.html#l00064">mask</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>.</p>
+
+</div>
+</div>
+<a id="a77d15eef59e13b8d201295c0292a83a9" name="a77d15eef59e13b8d201295c0292a83a9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a77d15eef59e13b8d201295c0292a83a9">&#9670;&#160;</a></span>addPoseLayer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; int &gt; eve::animation::AnimLayerMixer::addPoseLayer </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1animation_1_1IAnimPoseSource.html">IAnimPoseSource</a> *&#160;</td>
+          <td class="paramname"><em>source</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1animation_1_1AnimBoneMask.html">AnimBoneMask</a> *&#160;</td>
+          <td class="paramname"><em>mask</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>mode</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Append a pose layer. mode is "override" or "additive". A null mask affects every bone. Additive layers default to BindPose reference. </p>
+
+<p class="definition">在文件 <a class="el" href="AnimLayerMixer_8cpp_source.html">AnimLayerMixer.cpp</a> 第 <a class="el" href="AnimLayerMixer_8cpp_source.html#l00152">152</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1animation.html#a6b46436a4f2d908828692346dbe944b3a1a210a3bd524c2451d9786ed043599e3">eve::animation::BindPose</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::Conflict</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="BuildingFx_8cpp_source.html#l00064">mask</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>, <a class="el" href="UnityVegetationPreset_8cpp_source.html#l00029">source</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AnimLayerMixer_8cpp_source.html#l00182">addGraphLayer()</a>, <a class="el" href="AnimLayerMixer_8cpp_source.html#l00173">addLayer()</a> , 以及 <a class="el" href="AnimLayerMixer_8cpp_source.html#l00192">addStateMachineLayer()</a>.</p>
+
+</div>
+</div>
+<a id="a399fa33e1458b2672d94304a8e27c999" name="a399fa33e1458b2672d94304a8e27c999"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a399fa33e1458b2672d94304a8e27c999">&#9670;&#160;</a></span>addStateMachineLayer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::animation::AnimLayerMixer::addStateMachineLayer </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1animation_1_1AnimStateMachine.html">AnimStateMachine</a> *&#160;</td>
+          <td class="paramname"><em>stateMachine</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1animation_1_1AnimBoneMask.html">AnimBoneMask</a> *&#160;</td>
+          <td class="paramname"><em>mask</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>mode</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Compatibility facade over addPoseLayer(AnimStateMachine*). </p>
+
+<p class="definition">在文件 <a class="el" href="AnimLayerMixer_8cpp_source.html">AnimLayerMixer.cpp</a> 第 <a class="el" href="AnimLayerMixer_8cpp_source.html#l00192">192</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AnimLayerMixer_8cpp_source.html#l00152">addPoseLayer()</a>, <a class="el" href="BuildingFx_8cpp_source.html#l00064">mask</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>.</p>
+
+</div>
+</div>
+<a id="a6a316bf88f71db1c23e9295970b0fd26" name="a6a316bf88f71db1c23e9295970b0fd26"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6a316bf88f71db1c23e9295970b0fd26">&#9670;&#160;</a></span>advance()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::animation::AnimLayerMixer::advance </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1SimulationStep.html">eve::SimulationStep</a> &amp;&#160;</td>
+          <td class="paramname"><em>step</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Advance all referenced sources (including disabled layers) and compose. </p>
+
+<p>实现了 <a class="el" href="classeve_1_1animation_1_1IAnimPoseSource.html#aa456dcb98d87af7a0c1aa772762e7abc">eve::animation::IAnimPoseSource</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="AnimLayerMixer_8cpp_source.html">AnimLayerMixer.cpp</a> 第 <a class="el" href="AnimLayerMixer_8cpp_source.html#l00333">333</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="classeve_1_1animation_1_1IAnimPoseSource.html#aa456dcb98d87af7a0c1aa772762e7abc">eve::animation::IAnimPoseSource::advance()</a>, <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::Conflict</a>, <a class="el" href="classeve_1_1animation_1_1IAnimPoseSource.html#a1d4cf1e5cba507ef8062e0dc972bdf59">eve::animation::IAnimPoseSource::currentTick()</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="classeve_1_1animation_1_1IAnimPoseSource.html#a26a1ec791c54f67bb257e22f0d7f8d0b">eve::animation::IAnimPoseSource::hasCurrentTick()</a>, <a class="el" href="Pathfinder_8cpp_source.html#l00146">layer</a>, <a class="el" href="AnimationTime_8h_source.html#l00013">eve::animation::detail::secondsForStep()</a>, <a class="el" href="TreeMesh_8cpp_source.html#l00287">step</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AnimLayerMixer_8cpp_source.html#l00363">update()</a>.</p>
+
+</div>
+</div>
+<a id="a72c0aec7613b4fc93c012d2a9bbcdd6d" name="a72c0aec7613b4fc93c012d2a9bbcdd6d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a72c0aec7613b4fc93c012d2a9bbcdd6d">&#9670;&#160;</a></span>clearEvents()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::AnimLayerMixer::clearEvents </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Clear events collected by the most recent update. </p>
+
+<p class="definition">在文件 <a class="el" href="AnimLayerMixer_8h_source.html">AnimLayerMixer.h</a> 第 <a class="el" href="AnimLayerMixer_8h_source.html#l00146">146</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a6493d0ce9bec7402bae42a24f087e671" name="a6493d0ce9bec7402bae42a24f087e671"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6493d0ce9bec7402bae42a24f087e671">&#9670;&#160;</a></span>currentTick()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">eve::SimulationTick</a> eve::animation::AnimLayerMixer::currentTick </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Last scheduler tick consumed by advance. </p>
+
+<p>实现了 <a class="el" href="classeve_1_1animation_1_1IAnimPoseSource.html#a1d4cf1e5cba507ef8062e0dc972bdf59">eve::animation::IAnimPoseSource</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="AnimLayerMixer_8h_source.html">AnimLayerMixer.h</a> 第 <a class="el" href="AnimLayerMixer_8h_source.html#l00138">138</a> 行定义.</p>
+
+</div>
+</div>
+<a id="adca984c02e92abc5262d7e670ce099a6" name="adca984c02e92abc5262d7e670ce099a6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adca984c02e92abc5262d7e670ce099a6">&#9670;&#160;</a></span>getBasePlayer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1animation_1_1AnimPlayer.html">AnimPlayer</a> * eve::animation::AnimLayerMixer::getBasePlayer </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return the base when it is an <a class="el" href="classeve_1_1animation_1_1AnimPlayer.html" title="Single-clip (or cross-fading) 3D animation player. Script type: AnimPlayer.">AnimPlayer</a>; otherwise null. @ownership Borrowed @lifetime Valid while the owning animation object remains alive; do not retain across destruction. </p>
+
+<p class="definition">在文件 <a class="el" href="AnimLayerMixer_8cpp_source.html">AnimLayerMixer.cpp</a> 第 <a class="el" href="AnimLayerMixer_8cpp_source.html#l00150">150</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AvatarInstance_8cpp_source.html#l00562">eve::avatar::AvatarInstance::bindAnimLayerMixer()</a>.</p>
+
+</div>
+</div>
+<a id="a5185b4e3134949212185a9ef1e81b45a" name="a5185b4e3134949212185a9ef1e81b45a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5185b4e3134949212185a9ef1e81b45a">&#9670;&#160;</a></span>getBaseSource()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1animation_1_1IAnimPoseSource.html">IAnimPoseSource</a> * eve::animation::AnimLayerMixer::getBaseSource </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the borrowed base source, or null. @ownership Borrowed @lifetime Valid while the owning animation object remains alive; do not retain across destruction. </p>
+
+<p class="definition">在文件 <a class="el" href="AnimLayerMixer_8h_source.html">AnimLayerMixer.h</a> 第 <a class="el" href="AnimLayerMixer_8h_source.html#l00072">72</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab529d3a82cde569261438c047d5a4d1a" name="ab529d3a82cde569261438c047d5a4d1a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab529d3a82cde569261438c047d5a4d1a">&#9670;&#160;</a></span>getEventCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::animation::AnimLayerMixer::getEventCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Events emitted by the most recent advance; default is none. </p>
+
+<p>重载 <a class="el" href="classeve_1_1animation_1_1IAnimPoseSource.html#a46d78d0802008d2993ced61ea1384623">eve::animation::IAnimPoseSource</a> .</p>
+
+<p class="definition">在文件 <a class="el" href="AnimLayerMixer_8h_source.html">AnimLayerMixer.h</a> 第 <a class="el" href="AnimLayerMixer_8h_source.html#l00139">139</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AvatarSkeletal_8cpp_source.html#l00223">eve::avatar::AvatarInstance::getAnimationEventCount()</a>, <a class="el" href="AnimLayerMixer_8cpp_source.html#l00372">getEventLayer()</a>, <a class="el" href="AnimLayerMixer_8cpp_source.html#l00377">getEventName()</a> , 以及 <a class="el" href="AnimLayerMixer_8cpp_source.html#l00382">getEventPayload()</a>.</p>
+
+</div>
+</div>
+<a id="ada78d8f8350eca47bee211a4463343d2" name="ada78d8f8350eca47bee211a4463343d2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ada78d8f8350eca47bee211a4463343d2">&#9670;&#160;</a></span>getEventLayer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::animation::AnimLayerMixer::getEventLayer </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Source layer name; "base" identifies the base source. </p>
+
+<p class="definition">在文件 <a class="el" href="AnimLayerMixer_8cpp_source.html">AnimLayerMixer.cpp</a> 第 <a class="el" href="AnimLayerMixer_8cpp_source.html#l00372">372</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AnimLayerMixer_8h_source.html#l00139">getEventCount()</a>, <a class="el" href="UnityVegetationMaterial_8cpp_source.html#l00161">index</a> , 以及 <a class="el" href="Pathfinder_8cpp_source.html#l00146">layer</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AvatarSkeletal_8cpp_source.html#l00239">eve::avatar::AvatarInstance::getAnimationEventLayer()</a>.</p>
+
+</div>
+</div>
+<a id="a42c3579cfbb077f2f248c292235d718a" name="a42c3579cfbb077f2f248c292235d718a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a42c3579cfbb077f2f248c292235d718a">&#9670;&#160;</a></span>getEventName()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::animation::AnimLayerMixer::getEventName </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>重载 <a class="el" href="classeve_1_1animation_1_1IAnimPoseSource.html#a3f49b3f382b0b0e162319fb7d6ed937a">eve::animation::IAnimPoseSource</a> .</p>
+
+<p class="definition">在文件 <a class="el" href="AnimLayerMixer_8cpp_source.html">AnimLayerMixer.cpp</a> 第 <a class="el" href="AnimLayerMixer_8cpp_source.html#l00377">377</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AnimLayerMixer_8h_source.html#l00139">getEventCount()</a>, <a class="el" href="UnityVegetationMaterial_8cpp_source.html#l00161">index</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AvatarSkeletal_8cpp_source.html#l00244">eve::avatar::AvatarInstance::getAnimationEventName()</a>.</p>
+
+</div>
+</div>
+<a id="ad7b60c603b3d2a3613d85a09cde21867" name="ad7b60c603b3d2a3613d85a09cde21867"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad7b60c603b3d2a3613d85a09cde21867">&#9670;&#160;</a></span>getEventPayload()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::animation::AnimLayerMixer::getEventPayload </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>重载 <a class="el" href="classeve_1_1animation_1_1IAnimPoseSource.html#a9a969acd6092a07ac3271849fdcc40c6">eve::animation::IAnimPoseSource</a> .</p>
+
+<p class="definition">在文件 <a class="el" href="AnimLayerMixer_8cpp_source.html">AnimLayerMixer.cpp</a> 第 <a class="el" href="AnimLayerMixer_8cpp_source.html#l00382">382</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AnimLayerMixer_8h_source.html#l00139">getEventCount()</a>, <a class="el" href="UnityVegetationMaterial_8cpp_source.html#l00161">index</a> , 以及 <a class="el" href="ActionTimelinePayloadEditor_8cpp_source.html#l00024">payload</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AvatarSkeletal_8cpp_source.html#l00249">eve::avatar::AvatarInstance::getAnimationEventPayload()</a>.</p>
+
+</div>
+</div>
+<a id="a81c4a4c5cf0efb7caf6f8c8f93cde9d8" name="a81c4a4c5cf0efb7caf6f8c8f93cde9d8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a81c4a4c5cf0efb7caf6f8c8f93cde9d8">&#9670;&#160;</a></span>getLayerAdditiveReference()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::animation::AnimLayerMixer::getLayerAdditiveReference </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return "bind" / "identity", or empty for unknown names. </p>
+
+<p class="definition">在文件 <a class="el" href="AnimLayerMixer_8cpp_source.html">AnimLayerMixer.cpp</a> 第 <a class="el" href="AnimLayerMixer_8cpp_source.html#l00280">280</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Pathfinder_8cpp_source.html#l00146">layer</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>.</p>
+
+</div>
+</div>
+<a id="a5834cc3c757de90e3d3f0c16a76604ee" name="a5834cc3c757de90e3d3f0c16a76604ee"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5834cc3c757de90e3d3f0c16a76604ee">&#9670;&#160;</a></span>getLayerCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::animation::AnimLayerMixer::getLayerCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the number of configured layers. </p>
+
+<p class="definition">在文件 <a class="el" href="AnimLayerMixer_8h_source.html">AnimLayerMixer.h</a> 第 <a class="el" href="AnimLayerMixer_8h_source.html#l00109">109</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AnimLayerMixer_8cpp_source.html#l00259">getLayerName()</a>.</p>
+
+</div>
+</div>
+<a id="a5922318108f1818971354e901fd72e2f" name="a5922318108f1818971354e901fd72e2f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5922318108f1818971354e901fd72e2f">&#9670;&#160;</a></span>getLayerEnabled()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::animation::AnimLayerMixer::getLayerEnabled </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return whether a layer is enabled; false for unknown names. </p>
+
+<p class="definition">在文件 <a class="el" href="AnimLayerMixer_8cpp_source.html">AnimLayerMixer.cpp</a> 第 <a class="el" href="AnimLayerMixer_8cpp_source.html#l00269">269</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Pathfinder_8cpp_source.html#l00146">layer</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>.</p>
+
+</div>
+</div>
+<a id="a1109ca09b55a5b9ce68169398ff5c84a" name="a1109ca09b55a5b9ce68169398ff5c84a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1109ca09b55a5b9ce68169398ff5c84a">&#9670;&#160;</a></span>getLayerMode()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::animation::AnimLayerMixer::getLayerMode </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return "override" / "additive", or empty for unknown names. </p>
+
+<p class="definition">在文件 <a class="el" href="AnimLayerMixer_8cpp_source.html">AnimLayerMixer.cpp</a> 第 <a class="el" href="AnimLayerMixer_8cpp_source.html#l00274">274</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Pathfinder_8cpp_source.html#l00146">layer</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>.</p>
+
+</div>
+</div>
+<a id="aa897b8494b80f6fa826f91edd075a577" name="aa897b8494b80f6fa826f91edd075a577"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa897b8494b80f6fa826f91edd075a577">&#9670;&#160;</a></span>getLayerName()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::animation::AnimLayerMixer::getLayerName </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return a layer name, or empty for an invalid index. </p>
+
+<p class="definition">在文件 <a class="el" href="AnimLayerMixer_8cpp_source.html">AnimLayerMixer.cpp</a> 第 <a class="el" href="AnimLayerMixer_8cpp_source.html#l00259">259</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AnimLayerMixer_8h_source.html#l00109">getLayerCount()</a>, <a class="el" href="UnityVegetationMaterial_8cpp_source.html#l00161">index</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>.</p>
+
+</div>
+</div>
+<a id="ae2e104510d8e6eff44040b82f3d835af" name="ae2e104510d8e6eff44040b82f3d835af"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae2e104510d8e6eff44040b82f3d835af">&#9670;&#160;</a></span>getLayerWeight()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::animation::AnimLayerMixer::getLayerWeight </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return a layer weight, or zero for an unknown name. </p>
+
+<p class="definition">在文件 <a class="el" href="AnimLayerMixer_8cpp_source.html">AnimLayerMixer.cpp</a> 第 <a class="el" href="AnimLayerMixer_8cpp_source.html#l00264">264</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Pathfinder_8cpp_source.html#l00146">layer</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>.</p>
+
+</div>
+</div>
+<a id="a5cabeede0612fbf5719779ea7866aae7" name="a5cabeede0612fbf5719779ea7866aae7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5cabeede0612fbf5719779ea7866aae7">&#9670;&#160;</a></span>getPose()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1animation_1_1AnimPose.html">AnimPose</a> * eve::animation::AnimLayerMixer::getPose </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the most recently combined pose. @ownership Borrowed @lifetime Valid while the owning animation object remains alive; do not retain across destruction. </p>
+
+<p>实现了 <a class="el" href="classeve_1_1animation_1_1IAnimPoseSource.html#a9eca902e1aeed26b81cc1ddc2735e553">eve::animation::IAnimPoseSource</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="AnimLayerMixer_8h_source.html">AnimLayerMixer.h</a> 第 <a class="el" href="AnimLayerMixer_8h_source.html#l00130">130</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a3a75f9d20ce0905c527a11812aea29dc" name="a3a75f9d20ce0905c527a11812aea29dc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3a75f9d20ce0905c527a11812aea29dc">&#9670;&#160;</a></span>getSkeleton()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1animation_1_1AnimSkeleton.html">AnimSkeleton</a> * eve::animation::AnimLayerMixer::getSkeleton </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the mixer skeleton. @ownership Borrowed @lifetime Valid while the owning animation object remains alive; do not retain across destruction. </p>
+
+<p>实现了 <a class="el" href="classeve_1_1animation_1_1IAnimPoseSource.html#a68476b9d30fe6315a553006a77a200db">eve::animation::IAnimPoseSource</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="AnimLayerMixer_8h_source.html">AnimLayerMixer.h</a> 第 <a class="el" href="AnimLayerMixer_8h_source.html#l00136">136</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AvatarInstance_8cpp_source.html#l00562">eve::avatar::AvatarInstance::bindAnimLayerMixer()</a>.</p>
+
+</div>
+</div>
+<a id="a46206930f5bb3e45915f8475d8cfd966" name="a46206930f5bb3e45915f8475d8cfd966"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a46206930f5bb3e45915f8475d8cfd966">&#9670;&#160;</a></span>hasCurrentTick()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::animation::AnimLayerMixer::hasCurrentTick </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Whether advance has consumed at least one checked step. </p>
+
+<p>实现了 <a class="el" href="classeve_1_1animation_1_1IAnimPoseSource.html#a26a1ec791c54f67bb257e22f0d7f8d0b">eve::animation::IAnimPoseSource</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="AnimLayerMixer_8h_source.html">AnimLayerMixer.h</a> 第 <a class="el" href="AnimLayerMixer_8h_source.html#l00137">137</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a42f8af19ee196128af1a50175a6ef83b" name="a42f8af19ee196128af1a50175a6ef83b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a42f8af19ee196128af1a50175a6ef83b">&#9670;&#160;</a></span>removeLayer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::animation::AnimLayerMixer::removeLayer </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Remove a layer by name. </p>
+
+<p class="definition">在文件 <a class="el" href="AnimLayerMixer_8cpp_source.html">AnimLayerMixer.cpp</a> 第 <a class="el" href="AnimLayerMixer_8cpp_source.html#l00214">214</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Pathfinder_8cpp_source.html#l00146">layer</a>.</p>
+
+</div>
+</div>
+<a id="a60a1f0df4b6a84ab0a13a12b6f3809df" name="a60a1f0df4b6a84ab0a13a12b6f3809df"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a60a1f0df4b6a84ab0a13a12b6f3809df">&#9670;&#160;</a></span>setBaseGraph()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::animation::AnimLayerMixer::setBaseGraph </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1animation_1_1AnimGraph.html">AnimGraph</a> *&#160;</td>
+          <td class="paramname"><em>graph</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Compatibility facade over setBaseSource(AnimGraph*). </p>
+
+<p class="definition">在文件 <a class="el" href="AnimLayerMixer_8cpp_source.html">AnimLayerMixer.cpp</a> 第 <a class="el" href="AnimLayerMixer_8cpp_source.html#l00132">132</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Package_8cpp_source.html#l00059">graph</a> , 以及 <a class="el" href="AnimLayerMixer_8cpp_source.html#l00102">setBaseSource()</a>.</p>
+
+</div>
+</div>
+<a id="acdb178a16aee639ae7b0ef17be0d6181" name="acdb178a16aee639ae7b0ef17be0d6181"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acdb178a16aee639ae7b0ef17be0d6181">&#9670;&#160;</a></span>setBasePlayer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::animation::AnimLayerMixer::setBasePlayer </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1animation_1_1AnimPlayer.html">AnimPlayer</a> *&#160;</td>
+          <td class="paramname"><em>player</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Compatibility facade over setBaseSource(AnimPlayer*). </p>
+
+<p class="definition">在文件 <a class="el" href="AnimLayerMixer_8cpp_source.html">AnimLayerMixer.cpp</a> 第 <a class="el" href="AnimLayerMixer_8cpp_source.html#l00123">123</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AnimLayerMixer_8cpp_source.html#l00102">setBaseSource()</a>.</p>
+
+</div>
+</div>
+<a id="a600558dcc210c460e9ffad70fe26dd75" name="a600558dcc210c460e9ffad70fe26dd75"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a600558dcc210c460e9ffad70fe26dd75">&#9670;&#160;</a></span>setBaseSource()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::animation::AnimLayerMixer::setBaseSource </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1animation_1_1IAnimPoseSource.html">IAnimPoseSource</a> *&#160;</td>
+          <td class="paramname"><em>source</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set the borrowed base pose source evaluated before layers. </p>
+<dl class="section return"><dt>返回</dt><dd>Applied on success; Conflict/InvalidArgument on failure. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="AnimLayerMixer_8cpp_source.html">AnimLayerMixer.cpp</a> 第 <a class="el" href="AnimLayerMixer_8cpp_source.html#l00102">102</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::Conflict</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="Pathfinder_8cpp_source.html#l00146">layer</a>, <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa60832e2e4bbebccf26555b9ba658bad5">eve::NoOp</a>, <a class="el" href="UnityVegetationPreset_8cpp_source.html#l00029">source</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AnimLayerMixer_8cpp_source.html#l00132">setBaseGraph()</a>, <a class="el" href="AnimLayerMixer_8cpp_source.html#l00123">setBasePlayer()</a> , 以及 <a class="el" href="AnimLayerMixer_8cpp_source.html#l00141">setBaseStateMachine()</a>.</p>
+
+</div>
+</div>
+<a id="a151fd7b4bfd974f690a34303835367f1" name="a151fd7b4bfd974f690a34303835367f1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a151fd7b4bfd974f690a34303835367f1">&#9670;&#160;</a></span>setBaseStateMachine()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::animation::AnimLayerMixer::setBaseStateMachine </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1animation_1_1AnimStateMachine.html">AnimStateMachine</a> *&#160;</td>
+          <td class="paramname"><em>stateMachine</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Compatibility facade over setBaseSource(AnimStateMachine*). </p>
+
+<p class="definition">在文件 <a class="el" href="AnimLayerMixer_8cpp_source.html">AnimLayerMixer.cpp</a> 第 <a class="el" href="AnimLayerMixer_8cpp_source.html#l00141">141</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AnimLayerMixer_8cpp_source.html#l00102">setBaseSource()</a>.</p>
+
+</div>
+</div>
+<a id="a75f0dd2d04161fb0d24bb765b739941b" name="a75f0dd2d04161fb0d24bb765b739941b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a75f0dd2d04161fb0d24bb765b739941b">&#9670;&#160;</a></span>setLayerAdditiveReference()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::animation::AnimLayerMixer::setLayerAdditiveReference </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>reference</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set additive reference for an additive layer: "bind" or "identity". </p>
+<dl class="section return"><dt>返回</dt><dd>Applied on success; NotFound/InvalidArgument otherwise. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="AnimLayerMixer_8cpp_source.html">AnimLayerMixer.cpp</a> 第 <a class="el" href="AnimLayerMixer_8cpp_source.html#l00236">236</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="Diagnostic_8h_source.html#l00119">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00166">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="Pathfinder_8cpp_source.html#l00146">layer</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="Authority_8cpp_source.html#l00024">reference</a>, <a class="el" href="Status_8h_source.html#l00081">eve::Status::success()</a> , 以及 <a class="el" href="Result_8h_source.html#l00157">eve::Result&lt; T &gt;::success()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AnimLayerMixer_8cpp_source.html#l00250">setLayerAdditiveReferenceCompat()</a>.</p>
+
+</div>
+</div>
+<a id="a92aa4b1b4ea1b9f773e86b4249ca34c0" name="a92aa4b1b4ea1b9f773e86b4249ca34c0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a92aa4b1b4ea1b9f773e86b4249ca34c0">&#9670;&#160;</a></span>setLayerAdditiveReferenceCompat()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::animation::AnimLayerMixer::setLayerAdditiveReferenceCompat </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>reference</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Compatibility facade over setLayerAdditiveReference. </p>
+
+<p class="definition">在文件 <a class="el" href="AnimLayerMixer_8cpp_source.html">AnimLayerMixer.cpp</a> 第 <a class="el" href="AnimLayerMixer_8cpp_source.html#l00250">250</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>, <a class="el" href="Authority_8cpp_source.html#l00024">reference</a> , 以及 <a class="el" href="AnimLayerMixer_8cpp_source.html#l00236">setLayerAdditiveReference()</a>.</p>
+
+</div>
+</div>
+<a id="ac2fbcbd49a3457eb8b1332e6f40caeed" name="ac2fbcbd49a3457eb8b1332e6f40caeed"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac2fbcbd49a3457eb8b1332e6f40caeed">&#9670;&#160;</a></span>setLayerEnabled()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::animation::AnimLayerMixer::setLayerEnabled </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>enabled</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Enable or disable a layer without removing it. Disabled layers still advance. </p>
+
+<p class="definition">在文件 <a class="el" href="AnimLayerMixer_8cpp_source.html">AnimLayerMixer.cpp</a> 第 <a class="el" href="AnimLayerMixer_8cpp_source.html#l00229">229</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="rpg_2Settlement_8cpp_source.html#l00029">enabled</a>, <a class="el" href="Pathfinder_8cpp_source.html#l00146">layer</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a>.</p>
+
+</div>
+</div>
+<a id="af58dcf5b438bb0ad0218713e3f595c23" name="af58dcf5b438bb0ad0218713e3f595c23"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af58dcf5b438bb0ad0218713e3f595c23">&#9670;&#160;</a></span>setLayerWeight()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::animation::AnimLayerMixer::setLayerWeight </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>weight</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set a layer's global clamped weight. </p>
+
+<p class="definition">在文件 <a class="el" href="AnimLayerMixer_8cpp_source.html">AnimLayerMixer.cpp</a> 第 <a class="el" href="AnimLayerMixer_8cpp_source.html#l00222">222</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AnimMath_8h_source.html#l00031">eve::animation::clampf()</a>, <a class="el" href="Pathfinder_8cpp_source.html#l00146">layer</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00015">name</a> , 以及 <a class="el" href="UnityVegetationMaterial_8cpp_source.html#l00162">weight</a>.</p>
+
+</div>
+</div>
+<a id="a15f4d229069c0fb63ce5f2400f1c73b9" name="a15f4d229069c0fb63ce5f2400f1c73b9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a15f4d229069c0fb63ce5f2400f1c73b9">&#9670;&#160;</a></span>update()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::animation::AnimLayerMixer::update </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>dt</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Legacy seconds facade; explicitly forwards to <a class="el" href="classeve_1_1animation_1_1AnimLayerMixer.html#a6a316bf88f71db1c23e9295970b0fd26" title="Advance all referenced sources (including disabled layers) and compose.">advance()</a>. </p>
+
+<p class="definition">在文件 <a class="el" href="AnimLayerMixer_8cpp_source.html">AnimLayerMixer.cpp</a> 第 <a class="el" href="AnimLayerMixer_8cpp_source.html#l00363">363</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AnimLayerMixer_8cpp_source.html#l00333">advance()</a>, <a class="el" href="Result_8h_source.html#l00466">eve::Result&lt; void &gt;::ignore()</a>, <a class="el" href="AnimationTime_8h_source.html#l00030">eve::animation::detail::legacyStep()</a> , 以及 <a class="el" href="TreeMesh_8cpp_source.html#l00287">step</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/animation/<a class="el" href="AnimLayerMixer_8h_source.html">AnimLayerMixer.h</a></li>
+<li>src/modules/animation/<a class="el" href="AnimLayerMixer_8cpp_source.html">AnimLayerMixer.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,791 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::hexmap::HexValues类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1hexmap.html">hexmap</a></li><li class="navelem"><a class="el" href="classeve_1_1hexmap_1_1HexValues.html">HexValues</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1hexmap_1_1HexValues-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::hexmap::HexValues类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Packed numeric cell state.  
+ <a href="classeve_1_1hexmap_1_1HexValues.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="HexCell_8h_source.html">HexCell.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:afa0269f7dabf3d84d3a25b2a8d4debb3" id="r_afa0269f7dabf3d84d3a25b2a8d4debb3"><td class="memItemLeft" align="right" valign="top">constexpr&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexValues.html#afa0269f7dabf3d84d3a25b2a8d4debb3">HexValues</a> () noexcept=default</td></tr>
+<tr class="separator:afa0269f7dabf3d84d3a25b2a8d4debb3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a637759d9eaed0aa996eb531fbbf5ca71" id="r_a637759d9eaed0aa996eb531fbbf5ca71"><td class="memItemLeft" align="right" valign="top">constexpr&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexValues.html#a637759d9eaed0aa996eb531fbbf5ca71">HexValues</a> (std::uint32_t packed) noexcept</td></tr>
+<tr class="separator:a637759d9eaed0aa996eb531fbbf5ca71"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abdd40f2d4db3c2c3af25bebddf16052b" id="r_abdd40f2d4db3c2c3af25bebddf16052b"><td class="memItemLeft" align="right" valign="top">constexpr std::uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexValues.html#abdd40f2d4db3c2c3af25bebddf16052b">raw</a> () const noexcept</td></tr>
+<tr class="separator:abdd40f2d4db3c2c3af25bebddf16052b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae01ff7790ae39f4d41263af92bcd5d1d" id="r_ae01ff7790ae39f4d41263af92bcd5d1d"><td class="memItemLeft" align="right" valign="top">constexpr std::int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexValues.html#ae01ff7790ae39f4d41263af92bcd5d1d">elevation</a> () const noexcept</td></tr>
+<tr class="separator:ae01ff7790ae39f4d41263af92bcd5d1d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afb922c284d7e82cb7f29d1ea5ca979e8" id="r_afb922c284d7e82cb7f29d1ea5ca979e8"><td class="memItemLeft" align="right" valign="top">constexpr std::int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexValues.html#afb922c284d7e82cb7f29d1ea5ca979e8">waterLevel</a> () const noexcept</td></tr>
+<tr class="separator:afb922c284d7e82cb7f29d1ea5ca979e8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a15f403becc5f7590e33c30df77d18641" id="r_a15f403becc5f7590e33c30df77d18641"><td class="memItemLeft" align="right" valign="top">constexpr std::int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexValues.html#a15f403becc5f7590e33c30df77d18641">urbanLevel</a> () const noexcept</td></tr>
+<tr class="separator:a15f403becc5f7590e33c30df77d18641"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a02c261d3326f01e6772e1878f2b68d56" id="r_a02c261d3326f01e6772e1878f2b68d56"><td class="memItemLeft" align="right" valign="top">constexpr std::int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexValues.html#a02c261d3326f01e6772e1878f2b68d56">farmLevel</a> () const noexcept</td></tr>
+<tr class="separator:a02c261d3326f01e6772e1878f2b68d56"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae359a9f53a7f9d3c20a36047f8484677" id="r_ae359a9f53a7f9d3c20a36047f8484677"><td class="memItemLeft" align="right" valign="top">constexpr std::int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexValues.html#ae359a9f53a7f9d3c20a36047f8484677">plantLevel</a> () const noexcept</td></tr>
+<tr class="separator:ae359a9f53a7f9d3c20a36047f8484677"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abba566cad862a94f6ca65a605e8a3af3" id="r_abba566cad862a94f6ca65a605e8a3af3"><td class="memItemLeft" align="right" valign="top">constexpr std::int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexValues.html#abba566cad862a94f6ca65a605e8a3af3">specialIndex</a> () const noexcept</td></tr>
+<tr class="separator:abba566cad862a94f6ca65a605e8a3af3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4cb1279b9a536c65f5ad02c5585d4880" id="r_a4cb1279b9a536c65f5ad02c5585d4880"><td class="memItemLeft" align="right" valign="top">constexpr std::int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexValues.html#a4cb1279b9a536c65f5ad02c5585d4880">terrainType</a> () const noexcept</td></tr>
+<tr class="separator:a4cb1279b9a536c65f5ad02c5585d4880"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abe188020b06a95cf5202739215a71762" id="r_abe188020b06a95cf5202739215a71762"><td class="memItemLeft" align="right" valign="top">constexpr std::int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexValues.html#abe188020b06a95cf5202739215a71762">viewElevation</a> () const noexcept</td></tr>
+<tr class="memdesc:abe188020b06a95cf5202739215a71762"><td class="mdescLeft">&#160;</td><td class="mdescRight">Elevation used for line of sight: the higher of land and water.  <br /></td></tr>
+<tr class="separator:abe188020b06a95cf5202739215a71762"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3d8d1ae07beda55b8ee86f66d5f0c4b8" id="r_a3d8d1ae07beda55b8ee86f66d5f0c4b8"><td class="memItemLeft" align="right" valign="top">constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexValues.html#a3d8d1ae07beda55b8ee86f66d5f0c4b8">isUnderwater</a> () const noexcept</td></tr>
+<tr class="memdesc:a3d8d1ae07beda55b8ee86f66d5f0c4b8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether the cell is flooded above its terrain surface.  <br /></td></tr>
+<tr class="separator:a3d8d1ae07beda55b8ee86f66d5f0c4b8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a94f5f55c4c3c47449a7c0afd97fb51e4" id="r_a94f5f55c4c3c47449a7c0afd97fb51e4"><td class="memItemLeft" align="right" valign="top">constexpr <a class="el" href="classeve_1_1hexmap_1_1HexValues.html">HexValues</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexValues.html#a94f5f55c4c3c47449a7c0afd97fb51e4">withElevation</a> (std::int32_t <a class="el" href="ActionNotifyRegistry_8cpp.html#aee90379adb0307effb138f4871edbc5c">value</a>) const noexcept</td></tr>
+<tr class="separator:a94f5f55c4c3c47449a7c0afd97fb51e4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ade31205ca9b451414ba21d179f27e8dd" id="r_ade31205ca9b451414ba21d179f27e8dd"><td class="memItemLeft" align="right" valign="top">constexpr <a class="el" href="classeve_1_1hexmap_1_1HexValues.html">HexValues</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexValues.html#ade31205ca9b451414ba21d179f27e8dd">withWaterLevel</a> (std::int32_t <a class="el" href="ActionNotifyRegistry_8cpp.html#aee90379adb0307effb138f4871edbc5c">value</a>) const noexcept</td></tr>
+<tr class="separator:ade31205ca9b451414ba21d179f27e8dd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae83a183239bb8c1f41b70ace2fef71e2" id="r_ae83a183239bb8c1f41b70ace2fef71e2"><td class="memItemLeft" align="right" valign="top">constexpr <a class="el" href="classeve_1_1hexmap_1_1HexValues.html">HexValues</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexValues.html#ae83a183239bb8c1f41b70ace2fef71e2">withUrbanLevel</a> (std::int32_t <a class="el" href="ActionNotifyRegistry_8cpp.html#aee90379adb0307effb138f4871edbc5c">value</a>) const noexcept</td></tr>
+<tr class="separator:ae83a183239bb8c1f41b70ace2fef71e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a271ebfa48dc2f373ad830b7b23c3bda3" id="r_a271ebfa48dc2f373ad830b7b23c3bda3"><td class="memItemLeft" align="right" valign="top">constexpr <a class="el" href="classeve_1_1hexmap_1_1HexValues.html">HexValues</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexValues.html#a271ebfa48dc2f373ad830b7b23c3bda3">withFarmLevel</a> (std::int32_t <a class="el" href="ActionNotifyRegistry_8cpp.html#aee90379adb0307effb138f4871edbc5c">value</a>) const noexcept</td></tr>
+<tr class="separator:a271ebfa48dc2f373ad830b7b23c3bda3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac7ae962a03b356231d30c48957bcb553" id="r_ac7ae962a03b356231d30c48957bcb553"><td class="memItemLeft" align="right" valign="top">constexpr <a class="el" href="classeve_1_1hexmap_1_1HexValues.html">HexValues</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexValues.html#ac7ae962a03b356231d30c48957bcb553">withPlantLevel</a> (std::int32_t <a class="el" href="ActionNotifyRegistry_8cpp.html#aee90379adb0307effb138f4871edbc5c">value</a>) const noexcept</td></tr>
+<tr class="separator:ac7ae962a03b356231d30c48957bcb553"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7c3a0fd78eb787be460047b723d5cffb" id="r_a7c3a0fd78eb787be460047b723d5cffb"><td class="memItemLeft" align="right" valign="top">constexpr <a class="el" href="classeve_1_1hexmap_1_1HexValues.html">HexValues</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexValues.html#a7c3a0fd78eb787be460047b723d5cffb">withSpecialIndex</a> (std::int32_t <a class="el" href="ActionNotifyRegistry_8cpp.html#aee90379adb0307effb138f4871edbc5c">value</a>) const noexcept</td></tr>
+<tr class="separator:a7c3a0fd78eb787be460047b723d5cffb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2442275ddd9d502bfc38ed419a46576c" id="r_a2442275ddd9d502bfc38ed419a46576c"><td class="memItemLeft" align="right" valign="top">constexpr <a class="el" href="classeve_1_1hexmap_1_1HexValues.html">HexValues</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1hexmap_1_1HexValues.html#a2442275ddd9d502bfc38ed419a46576c">withTerrainType</a> (std::int32_t <a class="el" href="ActionNotifyRegistry_8cpp.html#aee90379adb0307effb138f4871edbc5c">value</a>) const noexcept</td></tr>
+<tr class="separator:a2442275ddd9d502bfc38ed419a46576c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Packed numeric cell state. </p>
+<p>Bit layout (most significant first): <code>TTTTTTTT SSSSSSSS PPFFUUWW WWWEEEEE</code> where <code>T</code> is the terrain type, <code>S</code> the special-feature index, <code>P</code> the plant level, <code>F</code> the farm level, <code>U</code> the urban level, <code>W</code> the water level and <code>E</code> the elevation (stored biased by 15 so five bits cover <code>[-15, 16]</code>).</p>
+<dl class="section note"><dt>注解</dt><dd>This is a transient in-memory record; it is not a persistence format. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="HexCell_8h_source.html">HexCell.h</a> 第 <a class="el" href="HexCell_8h_source.html#l00038">38</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="afa0269f7dabf3d84d3a25b2a8d4debb3" name="afa0269f7dabf3d84d3a25b2a8d4debb3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afa0269f7dabf3d84d3a25b2a8d4debb3">&#9670;&#160;</a></span>HexValues() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr eve::hexmap::HexValues::HexValues </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">constexpr</span><span class="mlabel">default</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a637759d9eaed0aa996eb531fbbf5ca71" name="a637759d9eaed0aa996eb531fbbf5ca71"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a637759d9eaed0aa996eb531fbbf5ca71">&#9670;&#160;</a></span>HexValues() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr eve::hexmap::HexValues::HexValues </td>
+          <td>(</td>
+          <td class="paramtype">std::uint32_t&#160;</td>
+          <td class="paramname"><em>packed</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">explicit</span><span class="mlabel">constexpr</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="HexCell_8h_source.html">HexCell.h</a> 第 <a class="el" href="HexCell_8h_source.html#l00041">41</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="ae01ff7790ae39f4d41263af92bcd5d1d" name="ae01ff7790ae39f4d41263af92bcd5d1d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae01ff7790ae39f4d41263af92bcd5d1d">&#9670;&#160;</a></span>elevation()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr std::int32_t eve::hexmap::HexValues::elevation </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="HexCell_8h_source.html">HexCell.h</a> 第 <a class="el" href="HexCell_8h_source.html#l00045">45</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Grass_8cpp_source.html#l00233">u</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HexCell_8h_source.html#l00064">isUnderwater()</a> , 以及 <a class="el" href="HexCell_8h_source.html#l00060">viewElevation()</a>.</p>
+
+</div>
+</div>
+<a id="a02c261d3326f01e6772e1878f2b68d56" name="a02c261d3326f01e6772e1878f2b68d56"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a02c261d3326f01e6772e1878f2b68d56">&#9670;&#160;</a></span>farmLevel()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr std::int32_t eve::hexmap::HexValues::farmLevel </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="HexCell_8h_source.html">HexCell.h</a> 第 <a class="el" href="HexCell_8h_source.html#l00050">50</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a3d8d1ae07beda55b8ee86f66d5f0c4b8" name="a3d8d1ae07beda55b8ee86f66d5f0c4b8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3d8d1ae07beda55b8ee86f66d5f0c4b8">&#9670;&#160;</a></span>isUnderwater()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr bool eve::hexmap::HexValues::isUnderwater </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Whether the cell is flooded above its terrain surface. </p>
+
+<p class="definition">在文件 <a class="el" href="HexCell_8h_source.html">HexCell.h</a> 第 <a class="el" href="HexCell_8h_source.html#l00064">64</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="HexCell_8h_source.html#l00045">elevation()</a> , 以及 <a class="el" href="HexCell_8h_source.html#l00048">waterLevel()</a>.</p>
+
+</div>
+</div>
+<a id="ae359a9f53a7f9d3c20a36047f8484677" name="ae359a9f53a7f9d3c20a36047f8484677"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae359a9f53a7f9d3c20a36047f8484677">&#9670;&#160;</a></span>plantLevel()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr std::int32_t eve::hexmap::HexValues::plantLevel </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="HexCell_8h_source.html">HexCell.h</a> 第 <a class="el" href="HexCell_8h_source.html#l00051">51</a> 行定义.</p>
+
+</div>
+</div>
+<a id="abdd40f2d4db3c2c3af25bebddf16052b" name="abdd40f2d4db3c2c3af25bebddf16052b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abdd40f2d4db3c2c3af25bebddf16052b">&#9670;&#160;</a></span>raw()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr std::uint32_t eve::hexmap::HexValues::raw </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="HexCell_8h_source.html">HexCell.h</a> 第 <a class="el" href="HexCell_8h_source.html#l00043">43</a> 行定义.</p>
+
+</div>
+</div>
+<a id="abba566cad862a94f6ca65a605e8a3af3" name="abba566cad862a94f6ca65a605e8a3af3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abba566cad862a94f6ca65a605e8a3af3">&#9670;&#160;</a></span>specialIndex()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr std::int32_t eve::hexmap::HexValues::specialIndex </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="HexCell_8h_source.html">HexCell.h</a> 第 <a class="el" href="HexCell_8h_source.html#l00052">52</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HexMap_8cpp_source.html#l00534">eve::hexmap::HexMap::addRoad()</a> , 以及 <a class="el" href="HexSphereMap_8cpp_source.html#l00575">eve::hexmap::HexSphereMap::addRoad()</a>.</p>
+
+</div>
+</div>
+<a id="a4cb1279b9a536c65f5ad02c5585d4880" name="a4cb1279b9a536c65f5ad02c5585d4880"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4cb1279b9a536c65f5ad02c5585d4880">&#9670;&#160;</a></span>terrainType()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr std::int32_t eve::hexmap::HexValues::terrainType </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="HexCell_8h_source.html">HexCell.h</a> 第 <a class="el" href="HexCell_8h_source.html#l00055">55</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a15f403becc5f7590e33c30df77d18641" name="a15f403becc5f7590e33c30df77d18641"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a15f403becc5f7590e33c30df77d18641">&#9670;&#160;</a></span>urbanLevel()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr std::int32_t eve::hexmap::HexValues::urbanLevel </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="HexCell_8h_source.html">HexCell.h</a> 第 <a class="el" href="HexCell_8h_source.html#l00049">49</a> 行定义.</p>
+
+</div>
+</div>
+<a id="abe188020b06a95cf5202739215a71762" name="abe188020b06a95cf5202739215a71762"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abe188020b06a95cf5202739215a71762">&#9670;&#160;</a></span>viewElevation()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr std::int32_t eve::hexmap::HexValues::viewElevation </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Elevation used for line of sight: the higher of land and water. </p>
+
+<p class="definition">在文件 <a class="el" href="HexCell_8h_source.html">HexCell.h</a> 第 <a class="el" href="HexCell_8h_source.html#l00060">60</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="HexCell_8h_source.html#l00045">elevation()</a> , 以及 <a class="el" href="HexCell_8h_source.html#l00048">waterLevel()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HexSearch_8cpp_source.html#l00242">eve::hexmap::collectVisibleCells()</a>.</p>
+
+</div>
+</div>
+<a id="afb922c284d7e82cb7f29d1ea5ca979e8" name="afb922c284d7e82cb7f29d1ea5ca979e8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afb922c284d7e82cb7f29d1ea5ca979e8">&#9670;&#160;</a></span>waterLevel()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr std::int32_t eve::hexmap::HexValues::waterLevel </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="HexCell_8h_source.html">HexCell.h</a> 第 <a class="el" href="HexCell_8h_source.html#l00048">48</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HexCell_8h_source.html#l00064">isUnderwater()</a> , 以及 <a class="el" href="HexCell_8h_source.html#l00060">viewElevation()</a>.</p>
+
+</div>
+</div>
+<a id="a94f5f55c4c3c47449a7c0afd97fb51e4" name="a94f5f55c4c3c47449a7c0afd97fb51e4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a94f5f55c4c3c47449a7c0afd97fb51e4">&#9670;&#160;</a></span>withElevation()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr <a class="el" href="classeve_1_1hexmap_1_1HexValues.html">HexValues</a> eve::hexmap::HexValues::withElevation </td>
+          <td>(</td>
+          <td class="paramtype">std::int32_t&#160;</td>
+          <td class="paramname"><em>value</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="HexCell_8h_source.html">HexCell.h</a> 第 <a class="el" href="HexCell_8h_source.html#l00066">66</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Grass_8cpp_source.html#l00233">u</a> , 以及 <a class="el" href="ActionNotifyRegistry_8cpp_source.html#l00165">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HexMap_8cpp_source.html#l00026">eve::hexmap::HexMap::reset()</a>.</p>
+
+</div>
+</div>
+<a id="a271ebfa48dc2f373ad830b7b23c3bda3" name="a271ebfa48dc2f373ad830b7b23c3bda3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a271ebfa48dc2f373ad830b7b23c3bda3">&#9670;&#160;</a></span>withFarmLevel()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr <a class="el" href="classeve_1_1hexmap_1_1HexValues.html">HexValues</a> eve::hexmap::HexValues::withFarmLevel </td>
+          <td>(</td>
+          <td class="paramtype">std::int32_t&#160;</td>
+          <td class="paramname"><em>value</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="HexCell_8h_source.html">HexCell.h</a> 第 <a class="el" href="HexCell_8h_source.html#l00075">75</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ActionNotifyRegistry_8cpp_source.html#l00165">value</a>.</p>
+
+</div>
+</div>
+<a id="ac7ae962a03b356231d30c48957bcb553" name="ac7ae962a03b356231d30c48957bcb553"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac7ae962a03b356231d30c48957bcb553">&#9670;&#160;</a></span>withPlantLevel()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr <a class="el" href="classeve_1_1hexmap_1_1HexValues.html">HexValues</a> eve::hexmap::HexValues::withPlantLevel </td>
+          <td>(</td>
+          <td class="paramtype">std::int32_t&#160;</td>
+          <td class="paramname"><em>value</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="HexCell_8h_source.html">HexCell.h</a> 第 <a class="el" href="HexCell_8h_source.html#l00078">78</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ActionNotifyRegistry_8cpp_source.html#l00165">value</a>.</p>
+
+</div>
+</div>
+<a id="a7c3a0fd78eb787be460047b723d5cffb" name="a7c3a0fd78eb787be460047b723d5cffb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7c3a0fd78eb787be460047b723d5cffb">&#9670;&#160;</a></span>withSpecialIndex()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr <a class="el" href="classeve_1_1hexmap_1_1HexValues.html">HexValues</a> eve::hexmap::HexValues::withSpecialIndex </td>
+          <td>(</td>
+          <td class="paramtype">std::int32_t&#160;</td>
+          <td class="paramname"><em>value</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="HexCell_8h_source.html">HexCell.h</a> 第 <a class="el" href="HexCell_8h_source.html#l00081">81</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ActionNotifyRegistry_8cpp_source.html#l00165">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HexMap_8cpp_source.html#l00470">eve::hexmap::HexMap::setOutgoingRiver()</a> , 以及 <a class="el" href="HexSphereMap_8cpp_source.html#l00499">eve::hexmap::HexSphereMap::setOutgoingRiver()</a>.</p>
+
+</div>
+</div>
+<a id="a2442275ddd9d502bfc38ed419a46576c" name="a2442275ddd9d502bfc38ed419a46576c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2442275ddd9d502bfc38ed419a46576c">&#9670;&#160;</a></span>withTerrainType()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr <a class="el" href="classeve_1_1hexmap_1_1HexValues.html">HexValues</a> eve::hexmap::HexValues::withTerrainType </td>
+          <td>(</td>
+          <td class="paramtype">std::int32_t&#160;</td>
+          <td class="paramname"><em>value</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="HexCell_8h_source.html">HexCell.h</a> 第 <a class="el" href="HexCell_8h_source.html#l00084">84</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ActionNotifyRegistry_8cpp_source.html#l00165">value</a>.</p>
+
+</div>
+</div>
+<a id="ae83a183239bb8c1f41b70ace2fef71e2" name="ae83a183239bb8c1f41b70ace2fef71e2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae83a183239bb8c1f41b70ace2fef71e2">&#9670;&#160;</a></span>withUrbanLevel()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr <a class="el" href="classeve_1_1hexmap_1_1HexValues.html">HexValues</a> eve::hexmap::HexValues::withUrbanLevel </td>
+          <td>(</td>
+          <td class="paramtype">std::int32_t&#160;</td>
+          <td class="paramname"><em>value</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="HexCell_8h_source.html">HexCell.h</a> 第 <a class="el" href="HexCell_8h_source.html#l00072">72</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ActionNotifyRegistry_8cpp_source.html#l00165">value</a>.</p>
+
+</div>
+</div>
+<a id="ade31205ca9b451414ba21d179f27e8dd" name="ade31205ca9b451414ba21d179f27e8dd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ade31205ca9b451414ba21d179f27e8dd">&#9670;&#160;</a></span>withWaterLevel()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr <a class="el" href="classeve_1_1hexmap_1_1HexValues.html">HexValues</a> eve::hexmap::HexValues::withWaterLevel </td>
+          <td>(</td>
+          <td class="paramtype">std::int32_t&#160;</td>
+          <td class="paramname"><em>value</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="HexCell_8h_source.html">HexCell.h</a> 第 <a class="el" href="HexCell_8h_source.html#l00069">69</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ActionNotifyRegistry_8cpp_source.html#l00165">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="HexMap_8cpp_source.html#l00026">eve::hexmap::HexMap::reset()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/hexmap/<a class="el" href="HexCell_8h_source.html">HexCell.h</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

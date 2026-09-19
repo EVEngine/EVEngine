@@ -1,0 +1,290 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/graphics/WaterSystemBindings.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.5.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">系统信息模块</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_0f2af43e49f4758c00cbead1adc79623.html">graphics</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">WaterSystemBindings.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="WaterSystemBindings_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &quot;<a class="code" href="WaterSystem_8h.html">graphics/WaterSystem.h</a>&quot;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="SquirrelBinding_8h.html">common/SquirrelBinding.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;simplesquirrel/simplesquirrel.hpp&gt;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1graphics.html">eve::graphics</a> {</div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="keyword">namespace </span>{</div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span>Result&lt;void&gt; missing() {</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">Result&lt;void&gt;::failure</a>(</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span>        <a class="code hl_function" href="classeve_1_1Diagnostic.html#af797f7520cc62e8273da5afdb59d9ef4">Diagnostic::error</a>(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">DiagnosticCode::InvalidArgument</a>, <span class="stringliteral">&quot;water.system: non-null state, settings and scene required&quot;</span>));</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span>}</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>}  <span class="comment">// namespace</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span> </div>
+<div class="foldopen" id="foldopen00015" data-start="{" data-end="}">
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno"><a class="line" href="namespaceeve_1_1graphics.html#aaa9d071aa96b1643e3a6894e3c9aa9fc">   15</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="namespaceeve_1_1graphics.html#aaa9d071aa96b1643e3a6894e3c9aa9fc">exposeWaterSystemBindings</a>(ssq::Table&amp; table) {</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>    <span class="keyword">auto</span> <a class="code hl_variable" href="PrimitiveScriptBindings_8cpp.html#a5b83fac640501a116489fd013eab82db">scene</a> = table.addClass(<span class="stringliteral">&quot;WaterSceneConditions&quot;</span>, ssq::Class::Ctor&lt;<a class="code hl_struct" href="structeve_1_1graphics_1_1WaterSceneConditions.html">WaterSceneConditions</a>()&gt;());</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>    <a class="code hl_variable" href="PrimitiveScriptBindings_8cpp.html#a5b83fac640501a116489fd013eab82db">scene</a>.addVar(<span class="stringliteral">&quot;sunIntensity&quot;</span>, &amp;<a class="code hl_variable" href="structeve_1_1graphics_1_1WaterSceneConditions.html#af6973361300a75e86ec8fe29536e6045">WaterSceneConditions::sunIntensity</a>);</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>    <a class="code hl_variable" href="PrimitiveScriptBindings_8cpp.html#a5b83fac640501a116489fd013eab82db">scene</a>.addVar(<span class="stringliteral">&quot;hour&quot;</span>, &amp;<a class="code hl_variable" href="structeve_1_1graphics_1_1WaterSceneConditions.html#a2eb18e111e347f05b2708860f4dcddcb">WaterSceneConditions::hour</a>);</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>    <a class="code hl_variable" href="PrimitiveScriptBindings_8cpp.html#a5b83fac640501a116489fd013eab82db">scene</a>.addVar(<span class="stringliteral">&quot;minute&quot;</span>, &amp;<a class="code hl_variable" href="structeve_1_1graphics_1_1WaterSceneConditions.html#a94349c341dfd04043f64fe98b9c60ddc">WaterSceneConditions::minute</a>);</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>    <a class="code hl_variable" href="PrimitiveScriptBindings_8cpp.html#a5b83fac640501a116489fd013eab82db">scene</a>.addVar(<span class="stringliteral">&quot;sunAvailable&quot;</span>, &amp;<a class="code hl_variable" href="structeve_1_1graphics_1_1WaterSceneConditions.html#ae42fb60078565a2e525803ab9a7900ec">WaterSceneConditions::sunAvailable</a>);</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>    <a class="code hl_variable" href="PrimitiveScriptBindings_8cpp.html#a5b83fac640501a116489fd013eab82db">scene</a>.addVar(<span class="stringliteral">&quot;timeAvailable&quot;</span>, &amp;<a class="code hl_variable" href="structeve_1_1graphics_1_1WaterSceneConditions.html#a9bc31434e6e88d606db415bc9dd2bc21">WaterSceneConditions::timeAvailable</a>);</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>    <a class="code hl_variable" href="PrimitiveScriptBindings_8cpp.html#a5b83fac640501a116489fd013eab82db">scene</a>.addFunc(<span class="stringliteral">&quot;setSunColor&quot;</span>, [](<a class="code hl_struct" href="structeve_1_1graphics_1_1WaterSceneConditions.html">WaterSceneConditions</a>* <a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#aee90379adb0307effb138f4871edbc5c">value</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="GtsMeshSimplifier_8cpp.html#a880a49112fedae68e714341a9a082fb6">r</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="GpuGraph_8cpp.html#aaae841ffb46b13fecc7328d10de4a9f6">g</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>) {</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>        <a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#aee90379adb0307effb138f4871edbc5c">value</a>-&gt;sunColor = {<a class="code hl_variable" href="GtsMeshSimplifier_8cpp.html#a880a49112fedae68e714341a9a082fb6">r</a>, <a class="code hl_variable" href="GpuGraph_8cpp.html#aaae841ffb46b13fecc7328d10de4a9f6">g</a>, <a class="code hl_variable" href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a>};</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>    });</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>    <a class="code hl_variable" href="PrimitiveScriptBindings_8cpp.html#a5b83fac640501a116489fd013eab82db">scene</a>.addFunc(<span class="stringliteral">&quot;setSunDirection&quot;</span>, [](<a class="code hl_struct" href="structeve_1_1graphics_1_1WaterSceneConditions.html">WaterSceneConditions</a>* <a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#aee90379adb0307effb138f4871edbc5c">value</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>) {</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>        <a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#aee90379adb0307effb138f4871edbc5c">value</a>-&gt;sunDirection = {<a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, <a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>};</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    });</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span> </div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    <span class="keyword">auto</span> <a class="code hl_variable" href="TerrainGenerationSession_8cpp.html#a2cb7ed603050f09effb7bd111713786c">settings</a> = table.addClass(<span class="stringliteral">&quot;WaterSystemSettings&quot;</span>, ssq::Class::Ctor&lt;<a class="code hl_struct" href="structeve_1_1graphics_1_1WaterSystemSettings.html">WaterSystemSettings</a>()&gt;());</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    <a class="code hl_variable" href="TerrainGenerationSession_8cpp.html#a2cb7ed603050f09effb7bd111713786c">settings</a>.addVar(<span class="stringliteral">&quot;refreshRate&quot;</span>, &amp;<a class="code hl_variable" href="structeve_1_1graphics_1_1WaterSystemSettings.html#ad35db66ed1eecaf7c6ac439c083da98d">WaterSystemSettings::refreshRate</a>);</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    <a class="code hl_variable" href="TerrainGenerationSession_8cpp.html#a2cb7ed603050f09effb7bd111713786c">settings</a>.addVar(<span class="stringliteral">&quot;infiniteMode&quot;</span>, &amp;<a class="code hl_variable" href="structeve_1_1graphics_1_1WaterSystemSettings.html#aa16c03bfd710276982c4c1360c964a3f">WaterSystemSettings::infiniteMode</a>);</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    <a class="code hl_variable" href="TerrainGenerationSession_8cpp.html#a2cb7ed603050f09effb7bd111713786c">settings</a>.addVar(<span class="stringliteral">&quot;autoRefresh&quot;</span>, &amp;<a class="code hl_variable" href="structeve_1_1graphics_1_1WaterSystemSettings.html#a8ba38c7009a4b28770373ed626995f11">WaterSystemSettings::autoRefresh</a>);</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    <a class="code hl_variable" href="TerrainGenerationSession_8cpp.html#a2cb7ed603050f09effb7bd111713786c">settings</a>.addVar(<span class="stringliteral">&quot;ignoreSceneConditions&quot;</span>, &amp;<a class="code hl_variable" href="structeve_1_1graphics_1_1WaterSystemSettings.html#a1b6d77bedc944b2785c5cb16374dcf0b">WaterSystemSettings::ignoreSceneConditions</a>);</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    <a class="code hl_variable" href="TerrainGenerationSession_8cpp.html#a2cb7ed603050f09effb7bd111713786c">settings</a>.addFunc(<span class="stringliteral">&quot;setAutoUpdateMode&quot;</span>, [](<a class="code hl_struct" href="structeve_1_1graphics_1_1WaterSystemSettings.html">WaterSystemSettings</a>* <a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#aee90379adb0307effb138f4871edbc5c">value</a>, <span class="keywordtype">int</span> mode) {</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>        <a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#aee90379adb0307effb138f4871edbc5c">value</a>-&gt;autoUpdateMode = <span class="keyword">static_cast&lt;</span><a class="code hl_enumeration" href="namespaceeve_1_1graphics.html#ad9f81f2fcb529ae282ba16501ee0dd67">WaterAutoUpdateMode</a><span class="keyword">&gt;</span>(mode);</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    });</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span> </div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    <span class="keyword">auto</span> <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a> = table.addClass(<span class="stringliteral">&quot;WaterSystemState&quot;</span>, ssq::Class::Ctor&lt;<a class="code hl_struct" href="structeve_1_1graphics_1_1WaterSystemState.html">WaterSystemState</a>()&gt;());</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a>.addVar(<span class="stringliteral">&quot;seaLevel&quot;</span>, &amp;<a class="code hl_variable" href="structeve_1_1graphics_1_1WaterSystemState.html#a9768f9b785a078433c90ca3e5dab6dd3">WaterSystemState::seaLevel</a>);</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a>.addVar(<span class="stringliteral">&quot;positionX&quot;</span>, &amp;<a class="code hl_variable" href="structeve_1_1graphics_1_1WaterSystemState.html#aa1b109c8a7fb2e500869d37edf02933d">WaterSystemState::positionX</a>);</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a>.addVar(<span class="stringliteral">&quot;positionY&quot;</span>, &amp;<a class="code hl_variable" href="structeve_1_1graphics_1_1WaterSystemState.html#af77385d08e893d304af9065f83f60bcd">WaterSystemState::positionY</a>);</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a>.addVar(<span class="stringliteral">&quot;positionZ&quot;</span>, &amp;<a class="code hl_variable" href="structeve_1_1graphics_1_1WaterSystemState.html#a9bd3e122804a95f5cae14febbbe8a8b4">WaterSystemState::positionZ</a>);</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a>.addVar(<span class="stringliteral">&quot;refreshRemaining&quot;</span>, &amp;<a class="code hl_variable" href="structeve_1_1graphics_1_1WaterSystemState.html#aafd0d8f8f2cd27f98b4ae0214efe9954">WaterSystemState::refreshRemaining</a>);</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a>.addVar(<span class="stringliteral">&quot;sceneCheckFrames&quot;</span>, &amp;<a class="code hl_variable" href="structeve_1_1graphics_1_1WaterSystemState.html#ad340b2b6f8df107e8ff39ad9b4a2708c">WaterSystemState::sceneCheckFrames</a>);</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a>.addVar(<span class="stringliteral">&quot;refreshRevision&quot;</span>, &amp;<a class="code hl_variable" href="structeve_1_1graphics_1_1WaterSystemState.html#a40cbb03e7c879215222eafbb3e47ac01">WaterSystemState::refreshRevision</a>);</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a>.addVar(<span class="stringliteral">&quot;initialized&quot;</span>, &amp;<a class="code hl_variable" href="structeve_1_1graphics_1_1WaterSystemState.html#acc2f515d4da2fbcd467c00e2ed44c3f3">WaterSystemState::initialized</a>);</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span> </div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    table.addFunc(<span class="stringliteral">&quot;initializeWaterSystem&quot;</span>,</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>                  [<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a> = table.getHandle()](<a class="code hl_struct" href="structeve_1_1graphics_1_1WaterSystemState.html">WaterSystemState</a>* <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a>, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1graphics_1_1WaterSystemSettings.html">WaterSystemSettings</a>* <a class="code hl_variable" href="TerrainGenerationSession_8cpp.html#a2cb7ed603050f09effb7bd111713786c">settings</a>,</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>                                           <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1graphics_1_1WaterSceneConditions.html">WaterSceneConditions</a>* <a class="code hl_variable" href="PrimitiveScriptBindings_8cpp.html#a5b83fac640501a116489fd013eab82db">scene</a>, <span class="keywordtype">int</span> initialDelay) {</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>                      <span class="keyword">auto</span> result = <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a> &amp;&amp; <a class="code hl_variable" href="TerrainGenerationSession_8cpp.html#a2cb7ed603050f09effb7bd111713786c">settings</a> &amp;&amp; <a class="code hl_variable" href="PrimitiveScriptBindings_8cpp.html#a5b83fac640501a116489fd013eab82db">scene</a></div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>                                        ? <a class="code hl_function" href="namespaceeve_1_1graphics.html#a60e2c9a0c737b36ff95f0e568b6d0a46">initializeWaterSystem</a>(*<a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a>, *<a class="code hl_variable" href="TerrainGenerationSession_8cpp.html#a2cb7ed603050f09effb7bd111713786c">settings</a>, *<a class="code hl_variable" href="PrimitiveScriptBindings_8cpp.html#a5b83fac640501a116489fd013eab82db">scene</a>, initialDelay)</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>                                        : missing();</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>                      <span class="keywordflow">return</span> <a class="code hl_function" href="namespaceeve_1_1script.html#aaf4df5edc4f47ca3cc0e7e160d4a3b7c">eve::script::projectResult</a>(<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, std::move(result));</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>                  });</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    table.addFunc(<span class="stringliteral">&quot;advanceWaterSystem&quot;</span>,</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>                  [<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a> = table.getHandle()](<a class="code hl_struct" href="structeve_1_1graphics_1_1WaterSystemState.html">WaterSystemState</a>* <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a>, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1graphics_1_1WaterSystemSettings.html">WaterSystemSettings</a>* <a class="code hl_variable" href="TerrainGenerationSession_8cpp.html#a2cb7ed603050f09effb7bd111713786c">settings</a>,</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>                                           <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1graphics_1_1WaterSceneConditions.html">WaterSceneConditions</a>* <a class="code hl_variable" href="PrimitiveScriptBindings_8cpp.html#a5b83fac640501a116489fd013eab82db">scene</a>, <span class="keywordtype">float</span> playerX, <span class="keywordtype">float</span> playerZ, <span class="keywordtype">float</span> dt,</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>                                           <span class="keywordtype">int</span> nextDelay) {</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>                      <span class="keyword">auto</span> result = <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a> &amp;&amp; <a class="code hl_variable" href="TerrainGenerationSession_8cpp.html#a2cb7ed603050f09effb7bd111713786c">settings</a> &amp;&amp; <a class="code hl_variable" href="PrimitiveScriptBindings_8cpp.html#a5b83fac640501a116489fd013eab82db">scene</a></div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>                                        ? <a class="code hl_function" href="namespaceeve_1_1graphics.html#ab25741bbff25fb4d131040adfdb66037">advanceWaterSystem</a>(*<a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a>, *<a class="code hl_variable" href="TerrainGenerationSession_8cpp.html#a2cb7ed603050f09effb7bd111713786c">settings</a>, *<a class="code hl_variable" href="PrimitiveScriptBindings_8cpp.html#a5b83fac640501a116489fd013eab82db">scene</a>, playerX, playerZ, dt, nextDelay)</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>                                        : <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">Result&lt;bool&gt;::failure</a>(missing().<a class="code hl_variable" href="GraphicsTextureMips_8cpp.html#ae2ee633a7768658281259907a29fc401">status</a>());</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>                      <span class="keywordflow">return</span> <a class="code hl_function" href="namespaceeve_1_1script.html#aaf4df5edc4f47ca3cc0e7e160d4a3b7c">eve::script::projectResult</a>(<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, std::move(result), [](<span class="keywordtype">bool</span> <a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#aee90379adb0307effb138f4871edbc5c">value</a>) { <span class="keywordflow">return</span> <a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#aee90379adb0307effb138f4871edbc5c">value</a>; });</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>                  });</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    table.addFunc(<span class="stringliteral">&quot;updateWaterSeaLevel&quot;</span>, [<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a> = table.getHandle()](<a class="code hl_struct" href="structeve_1_1graphics_1_1WaterSystemState.html">WaterSystemState</a>* <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a>, <span class="keywordtype">float</span> seaLevel,</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>                                                                  <span class="keywordtype">bool</span> regenerate) {</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>        <span class="keyword">auto</span> result = <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a> ? <a class="code hl_function" href="namespaceeve_1_1graphics.html#af95bbe631dce6a5eb98da110d50ff08f">updateWaterSeaLevel</a>(*<a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a>, seaLevel, regenerate)</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>                            : <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">Result&lt;bool&gt;::failure</a>(missing().<a class="code hl_variable" href="GraphicsTextureMips_8cpp.html#ae2ee633a7768658281259907a29fc401">status</a>());</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="namespaceeve_1_1script.html#aaf4df5edc4f47ca3cc0e7e160d4a3b7c">eve::script::projectResult</a>(<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, std::move(result), [](<span class="keywordtype">bool</span> <a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#aee90379adb0307effb138f4871edbc5c">value</a>) { <span class="keywordflow">return</span> <a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#aee90379adb0307effb138f4871edbc5c">value</a>; });</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>    });</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>}</div>
+</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span> </div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>}  <span class="comment">// namespace eve::graphics</span></div>
+<div class="ttc" id="aActionNotifyRegistry_8cpp_html_aee90379adb0307effb138f4871edbc5c"><div class="ttname"><a href="ActionNotifyRegistry_8cpp.html#aee90379adb0307effb138f4871edbc5c">value</a></div><div class="ttdeci">double value</div><div class="ttdef"><b>Definition</b> <a href="ActionNotifyRegistry_8cpp_source.html#l00165">ActionNotifyRegistry.cpp:165</a></div></div>
+<div class="ttc" id="aActionTimelineWidget_8cpp_html_ab30ba07e2a0bd07a15e45a92c32db9c5"><div class="ttname"><a href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a></div><div class="ttdeci">bool state</div><div class="ttdef"><b>Definition</b> <a href="ActionTimelineWidget_8cpp_source.html#l00033">ActionTimelineWidget.cpp:33</a></div></div>
+<div class="ttc" id="aAnimClip_8cpp_html_aa4f0d3eebc3c443f9be81bf48561a217"><div class="ttname"><a href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a></div><div class="ttdeci">float y</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00738">AnimClip.cpp:738</a></div></div>
+<div class="ttc" id="aAnimClip_8cpp_html_ad0da36b2558901e21e7a30f6c227a45e"><div class="ttname"><a href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a></div><div class="ttdeci">float x</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00738">AnimClip.cpp:738</a></div></div>
+<div class="ttc" id="aAnimClip_8cpp_html_af73583b1e980b0aa03f9884812e9fd4d"><div class="ttname"><a href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a></div><div class="ttdeci">float z</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00738">AnimClip.cpp:738</a></div></div>
+<div class="ttc" id="aECS_8cpp_html_a02347a3d911f31a15d03c50c85070bfe"><div class="ttname"><a href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a></div><div class="ttdeci">HSQUIRRELVM vm</div><div class="ttdef"><b>Definition</b> <a href="ECS_8cpp_source.html#l00020">ECS.cpp:20</a></div></div>
+<div class="ttc" id="aFluidSurfaceBinding_8cpp_html_a2826644ea978cb49c4ee809b55e128d7"><div class="ttname"><a href="FluidSurfaceBinding_8cpp.html#a2826644ea978cb49c4ee809b55e128d7">b</a></div><div class="ttdeci">uint32_t b</div><div class="ttdef"><b>Definition</b> <a href="FluidSurfaceBinding_8cpp_source.html#l00015">FluidSurfaceBinding.cpp:15</a></div></div>
+<div class="ttc" id="aGpuGraph_8cpp_html_aaae841ffb46b13fecc7328d10de4a9f6"><div class="ttname"><a href="GpuGraph_8cpp.html#aaae841ffb46b13fecc7328d10de4a9f6">g</a></div><div class="ttdeci">tensor::Graph g</div><div class="ttdef"><b>Definition</b> <a href="GpuGraph_8cpp_source.html#l00007">GpuGraph.cpp:7</a></div></div>
+<div class="ttc" id="aGraphicsTextureMips_8cpp_html_ae2ee633a7768658281259907a29fc401"><div class="ttname"><a href="GraphicsTextureMips_8cpp.html#ae2ee633a7768658281259907a29fc401">status</a></div><div class="ttdeci">wgpu::PopErrorScopeStatus status</div><div class="ttdef"><b>Definition</b> <a href="GraphicsTextureMips_8cpp_source.html#l00013">GraphicsTextureMips.cpp:13</a></div></div>
+<div class="ttc" id="aGtsMeshSimplifier_8cpp_html_a880a49112fedae68e714341a9a082fb6"><div class="ttname"><a href="GtsMeshSimplifier_8cpp.html#a880a49112fedae68e714341a9a082fb6">r</a></div><div class="ttdeci">double r</div><div class="ttdef"><b>Definition</b> <a href="GtsMeshSimplifier_8cpp_source.html#l00012">GtsMeshSimplifier.cpp:12</a></div></div>
+<div class="ttc" id="aPrimitiveScriptBindings_8cpp_html_a5b83fac640501a116489fd013eab82db"><div class="ttname"><a href="PrimitiveScriptBindings_8cpp.html#a5b83fac640501a116489fd013eab82db">scene</a></div><div class="ttdeci">std::weak_ptr&lt; PrimitiveScene &gt; scene</div><div class="ttdef"><b>Definition</b> <a href="PrimitiveScriptBindings_8cpp_source.html#l00020">PrimitiveScriptBindings.cpp:20</a></div></div>
+<div class="ttc" id="aSquirrelBinding_8h_html"><div class="ttname"><a href="SquirrelBinding_8h.html">SquirrelBinding.h</a></div><div class="ttdoc">The single Squirrel projection for common Result, Status and Value.</div></div>
+<div class="ttc" id="aTerrainGenerationSession_8cpp_html_a2cb7ed603050f09effb7bd111713786c"><div class="ttname"><a href="TerrainGenerationSession_8cpp.html#a2cb7ed603050f09effb7bd111713786c">settings</a></div><div class="ttdeci">TerrainThermalSettings settings</div><div class="ttdef"><b>Definition</b> <a href="TerrainGenerationSession_8cpp_source.html#l00095">TerrainGenerationSession.cpp:95</a></div></div>
+<div class="ttc" id="aWaterSystem_8h_html"><div class="ttname"><a href="WaterSystem_8h.html">WaterSystem.h</a></div></div>
+<div class="ttc" id="aclasseve_1_1Diagnostic_html_af797f7520cc62e8273da5afdb59d9ef4"><div class="ttname"><a href="classeve_1_1Diagnostic.html#af797f7520cc62e8273da5afdb59d9ef4">eve::Diagnostic::error</a></div><div class="ttdeci">static Diagnostic error(DiagnosticCode code, std::string message, std::string path={}, DiagnosticDetails details={}, std::string source={})</div><div class="ttdoc">Construct an error diagnostic with the standard error severity.</div><div class="ttdef"><b>Definition</b> <a href="Diagnostic_8h_source.html#l00119">Diagnostic.h:119</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html_af1a297022e9a6a615433003fe6466358"><div class="ttname"><a href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">eve::Result::failure</a></div><div class="ttdeci">static Result failure(Status status)</div><div class="ttdoc">Construct a failed result from a structured status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00166">Result.h:166</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_html"><div class="ttname"><a href="namespaceeve_1_1graphics.html">eve::graphics</a></div><div class="ttdoc">卡牌游戏 UI 工具模块：工厂 + 脚本绑定入口。 功能参考 ycarowr/UiCard：扇形手牌布局、抽牌/洗牌、悬浮放大、拖拽到落牌区、 敌方手牌（背面/偷看）、费用不足置灰，以及可实时调节的布局...</div><div class="ttdef"><b>Definition</b> <a href="Animation_8h_source.html#l00020">Animation.h:20</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_html_a60e2c9a0c737b36ff95f0e568b6d0a46"><div class="ttname"><a href="namespaceeve_1_1graphics.html#a60e2c9a0c737b36ff95f0e568b6d0a46">eve::graphics::initializeWaterSystem</a></div><div class="ttdeci">Result&lt; void &gt; initializeWaterSystem(WaterSystemState &amp;state, const WaterSystemSettings &amp;settings, const WaterSceneConditions &amp;scene, int initialSceneCheckFrames)</div><div class="ttdoc">Initialize a water controller from an authored policy and current scene snapshot.</div><div class="ttdef"><b>Definition</b> <a href="WaterSystem_8cpp_source.html#l00033">WaterSystem.cpp:33</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_html_aaa9d071aa96b1643e3a6894e3c9aa9fc"><div class="ttname"><a href="namespaceeve_1_1graphics.html#aaa9d071aa96b1643e3a6894e3c9aa9fc">eve::graphics::exposeWaterSystemBindings</a></div><div class="ttdeci">void exposeWaterSystemBindings(ssq::Table &amp;table)</div><div class="ttdoc">Register water-system value types and checked operations with the VM owner thread.</div><div class="ttdef"><b>Definition</b> <a href="WaterSystemBindings_8cpp_source.html#l00015">WaterSystemBindings.cpp:15</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_html_ab25741bbff25fb4d131040adfdb66037"><div class="ttname"><a href="namespaceeve_1_1graphics.html#ab25741bbff25fb4d131040adfdb66037">eve::graphics::advanceWaterSystem</a></div><div class="ttdeci">Result&lt; bool &gt; advanceWaterSystem(WaterSystemState &amp;state, const WaterSystemSettings &amp;settings, const WaterSceneConditions &amp;scene, float playerX, float playerZ, float dt, int nextSceneCheckFrames)</div><div class="ttdoc">Advance infinite placement and Pcg-compatible reflection refresh scheduling.</div><div class="ttdef"><b>Definition</b> <a href="WaterSystem_8cpp_source.html#l00050">WaterSystem.cpp:50</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_html_ad9f81f2fcb529ae282ba16501ee0dd67"><div class="ttname"><a href="namespaceeve_1_1graphics.html#ad9f81f2fcb529ae282ba16501ee0dd67">eve::graphics::WaterAutoUpdateMode</a></div><div class="ttdeci">WaterAutoUpdateMode</div><div class="ttdoc">Reflection refresh policy used by the caller-owned water controller.</div><div class="ttdef"><b>Definition</b> <a href="WaterSystem_8h_source.html#l00016">WaterSystem.h:16</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_html_af95bbe631dce6a5eb98da110d50ff08f"><div class="ttname"><a href="namespaceeve_1_1graphics.html#af95bbe631dce6a5eb98da110d50ff08f">eve::graphics::updateWaterSeaLevel</a></div><div class="ttdeci">Result&lt; bool &gt; updateWaterSeaLevel(WaterSystemState &amp;state, float seaLevel, bool regenerateReflections)</div><div class="ttdoc">Atomically move the water surface to a new sea level.</div><div class="ttdef"><b>Definition</b> <a href="WaterSystem_8cpp_source.html#l00097">WaterSystem.cpp:97</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1script_html_aaf4df5edc4f47ca3cc0e7e160d4a3b7c"><div class="ttname"><a href="namespaceeve_1_1script.html#aaf4df5edc4f47ca3cc0e7e160d4a3b7c">eve::script::projectResult</a></div><div class="ttdeci">ssq::Table projectResult(HSQUIRRELVM vm, Result&lt; void &gt; &amp;&amp;result)</div><div class="ttdoc">Consume and project a void native Result using the common schema.</div><div class="ttdef"><b>Definition</b> <a href="SquirrelBinding_8cpp_source.html#l00438">SquirrelBinding.cpp:438</a></div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::DiagnosticCode::InvalidArgument</a></div><div class="ttdeci">@ InvalidArgument</div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1WaterSceneConditions_html"><div class="ttname"><a href="structeve_1_1graphics_1_1WaterSceneConditions.html">eve::graphics::WaterSceneConditions</a></div><div class="ttdoc">Immutable scene inputs used to decide whether water reflections are stale.</div><div class="ttdef"><b>Definition</b> <a href="WaterSystem_8h_source.html#l00019">WaterSystem.h:19</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1WaterSceneConditions_html_a2eb18e111e347f05b2708860f4dcddcb"><div class="ttname"><a href="structeve_1_1graphics_1_1WaterSceneConditions.html#a2eb18e111e347f05b2708860f4dcddcb">eve::graphics::WaterSceneConditions::hour</a></div><div class="ttdeci">int hour</div><div class="ttdef"><b>Definition</b> <a href="WaterSystem_8h_source.html#l00023">WaterSystem.h:23</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1WaterSceneConditions_html_a94349c341dfd04043f64fe98b9c60ddc"><div class="ttname"><a href="structeve_1_1graphics_1_1WaterSceneConditions.html#a94349c341dfd04043f64fe98b9c60ddc">eve::graphics::WaterSceneConditions::minute</a></div><div class="ttdeci">int minute</div><div class="ttdef"><b>Definition</b> <a href="WaterSystem_8h_source.html#l00024">WaterSystem.h:24</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1WaterSceneConditions_html_a9bc31434e6e88d606db415bc9dd2bc21"><div class="ttname"><a href="structeve_1_1graphics_1_1WaterSceneConditions.html#a9bc31434e6e88d606db415bc9dd2bc21">eve::graphics::WaterSceneConditions::timeAvailable</a></div><div class="ttdeci">bool timeAvailable</div><div class="ttdef"><b>Definition</b> <a href="WaterSystem_8h_source.html#l00026">WaterSystem.h:26</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1WaterSceneConditions_html_ae42fb60078565a2e525803ab9a7900ec"><div class="ttname"><a href="structeve_1_1graphics_1_1WaterSceneConditions.html#ae42fb60078565a2e525803ab9a7900ec">eve::graphics::WaterSceneConditions::sunAvailable</a></div><div class="ttdeci">bool sunAvailable</div><div class="ttdef"><b>Definition</b> <a href="WaterSystem_8h_source.html#l00025">WaterSystem.h:25</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1WaterSceneConditions_html_af6973361300a75e86ec8fe29536e6045"><div class="ttname"><a href="structeve_1_1graphics_1_1WaterSceneConditions.html#af6973361300a75e86ec8fe29536e6045">eve::graphics::WaterSceneConditions::sunIntensity</a></div><div class="ttdeci">float sunIntensity</div><div class="ttdef"><b>Definition</b> <a href="WaterSystem_8h_source.html#l00022">WaterSystem.h:22</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1WaterSystemSettings_html"><div class="ttname"><a href="structeve_1_1graphics_1_1WaterSystemSettings.html">eve::graphics::WaterSystemSettings</a></div><div class="ttdoc">Authored policy for Pcg-compatible water placement and reflection refresh.</div><div class="ttdef"><b>Definition</b> <a href="WaterSystem_8h_source.html#l00030">WaterSystem.h:30</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1WaterSystemSettings_html_a1b6d77bedc944b2785c5cb16374dcf0b"><div class="ttname"><a href="structeve_1_1graphics_1_1WaterSystemSettings.html#a1b6d77bedc944b2785c5cb16374dcf0b">eve::graphics::WaterSystemSettings::ignoreSceneConditions</a></div><div class="ttdeci">bool ignoreSceneConditions</div><div class="ttdef"><b>Definition</b> <a href="WaterSystem_8h_source.html#l00035">WaterSystem.h:35</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1WaterSystemSettings_html_a8ba38c7009a4b28770373ed626995f11"><div class="ttname"><a href="structeve_1_1graphics_1_1WaterSystemSettings.html#a8ba38c7009a4b28770373ed626995f11">eve::graphics::WaterSystemSettings::autoRefresh</a></div><div class="ttdeci">bool autoRefresh</div><div class="ttdef"><b>Definition</b> <a href="WaterSystem_8h_source.html#l00034">WaterSystem.h:34</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1WaterSystemSettings_html_aa16c03bfd710276982c4c1360c964a3f"><div class="ttname"><a href="structeve_1_1graphics_1_1WaterSystemSettings.html#aa16c03bfd710276982c4c1360c964a3f">eve::graphics::WaterSystemSettings::infiniteMode</a></div><div class="ttdeci">bool infiniteMode</div><div class="ttdef"><b>Definition</b> <a href="WaterSystem_8h_source.html#l00033">WaterSystem.h:33</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1WaterSystemSettings_html_ad35db66ed1eecaf7c6ac439c083da98d"><div class="ttname"><a href="structeve_1_1graphics_1_1WaterSystemSettings.html#ad35db66ed1eecaf7c6ac439c083da98d">eve::graphics::WaterSystemSettings::refreshRate</a></div><div class="ttdeci">float refreshRate</div><div class="ttdef"><b>Definition</b> <a href="WaterSystem_8h_source.html#l00032">WaterSystem.h:32</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1WaterSystemState_html"><div class="ttname"><a href="structeve_1_1graphics_1_1WaterSystemState.html">eve::graphics::WaterSystemState</a></div><div class="ttdoc">Caller-owned water-system state; contains no scene pointers or hidden clock.</div><div class="ttdef"><b>Definition</b> <a href="WaterSystem_8h_source.html#l00039">WaterSystem.h:39</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1WaterSystemState_html_a40cbb03e7c879215222eafbb3e47ac01"><div class="ttname"><a href="structeve_1_1graphics_1_1WaterSystemState.html#a40cbb03e7c879215222eafbb3e47ac01">eve::graphics::WaterSystemState::refreshRevision</a></div><div class="ttdeci">std::uint64_t refreshRevision</div><div class="ttdef"><b>Definition</b> <a href="WaterSystem_8h_source.html#l00047">WaterSystem.h:47</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1WaterSystemState_html_a9768f9b785a078433c90ca3e5dab6dd3"><div class="ttname"><a href="structeve_1_1graphics_1_1WaterSystemState.html#a9768f9b785a078433c90ca3e5dab6dd3">eve::graphics::WaterSystemState::seaLevel</a></div><div class="ttdeci">float seaLevel</div><div class="ttdef"><b>Definition</b> <a href="WaterSystem_8h_source.html#l00041">WaterSystem.h:41</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1WaterSystemState_html_a9bd3e122804a95f5cae14febbbe8a8b4"><div class="ttname"><a href="structeve_1_1graphics_1_1WaterSystemState.html#a9bd3e122804a95f5cae14febbbe8a8b4">eve::graphics::WaterSystemState::positionZ</a></div><div class="ttdeci">float positionZ</div><div class="ttdef"><b>Definition</b> <a href="WaterSystem_8h_source.html#l00044">WaterSystem.h:44</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1WaterSystemState_html_aa1b109c8a7fb2e500869d37edf02933d"><div class="ttname"><a href="structeve_1_1graphics_1_1WaterSystemState.html#aa1b109c8a7fb2e500869d37edf02933d">eve::graphics::WaterSystemState::positionX</a></div><div class="ttdeci">float positionX</div><div class="ttdef"><b>Definition</b> <a href="WaterSystem_8h_source.html#l00042">WaterSystem.h:42</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1WaterSystemState_html_aafd0d8f8f2cd27f98b4ae0214efe9954"><div class="ttname"><a href="structeve_1_1graphics_1_1WaterSystemState.html#aafd0d8f8f2cd27f98b4ae0214efe9954">eve::graphics::WaterSystemState::refreshRemaining</a></div><div class="ttdeci">float refreshRemaining</div><div class="ttdef"><b>Definition</b> <a href="WaterSystem_8h_source.html#l00045">WaterSystem.h:45</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1WaterSystemState_html_acc2f515d4da2fbcd467c00e2ed44c3f3"><div class="ttname"><a href="structeve_1_1graphics_1_1WaterSystemState.html#acc2f515d4da2fbcd467c00e2ed44c3f3">eve::graphics::WaterSystemState::initialized</a></div><div class="ttdeci">bool initialized</div><div class="ttdef"><b>Definition</b> <a href="WaterSystem_8h_source.html#l00048">WaterSystem.h:48</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1WaterSystemState_html_ad340b2b6f8df107e8ff39ad9b4a2708c"><div class="ttname"><a href="structeve_1_1graphics_1_1WaterSystemState.html#ad340b2b6f8df107e8ff39ad9b4a2708c">eve::graphics::WaterSystemState::sceneCheckFrames</a></div><div class="ttdeci">int sceneCheckFrames</div><div class="ttdef"><b>Definition</b> <a href="WaterSystem_8h_source.html#l00046">WaterSystem.h:46</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1WaterSystemState_html_af77385d08e893d304af9065f83f60bcd"><div class="ttname"><a href="structeve_1_1graphics_1_1WaterSystemState.html#af77385d08e893d304af9065f83f60bcd">eve::graphics::WaterSystemState::positionY</a></div><div class="ttdeci">float positionY</div><div class="ttdef"><b>Definition</b> <a href="WaterSystem_8h_source.html#l00043">WaterSystem.h:43</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>
