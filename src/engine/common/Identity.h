@@ -39,6 +39,28 @@ struct TransactionIdTag {};
 struct OperationIdTag {};
 struct EffectIdTag {};
 
+/** @brief Byte representation shared by every tagged 128-bit identity. */
+using UuidBytes = std::array<std::uint8_t, 16>;
+
+/**
+ * @brief Parses canonical UUID text without knowing the domain tag.
+ *
+ * The tagged Id128<Tag> methods below only forward here. Keeping parse, format
+ * and derivation non-template means one machine-code copy each instead of one
+ * per domain tag, while the tag set stays open: adding a domain tag no longer
+ * duplicates any of them.
+ *
+ * @param text A 36-character UUID with 8-4-4-4-12 hexadecimal groups.
+ * @return The bytes, or empty when the text is malformed.
+ */
+[[nodiscard]] EVENGINE_API std::optional<UuidBytes> parseUuidText(std::string_view text) noexcept;
+
+/** @brief Formats UUID bytes as lower-case canonical 8-4-4-4-12 text. */
+[[nodiscard]] EVENGINE_API std::string formatUuidBytes(const UuidBytes& bytes);
+
+/** @brief Derives a deterministic child UUID from a parent and a role. */
+[[nodiscard]] EVENGINE_API UuidBytes childUuidBytes(const UuidBytes& parent, std::string_view role) noexcept;
+
 template <typename Tag>
 class Id128 {
 public:
@@ -78,29 +100,8 @@ public:
      *          does not accept braces or non-canonical separators.
      */
     [[nodiscard]] static std::optional<Id128> parse(std::string_view text) noexcept {
-        if (text.size() != 36 || text[8] != '-' || text[13] != '-' || text[18] != '-' || text[23] != '-') {
-            return std::nullopt;
-        }
-
-        Bytes       bytes{};
-        std::size_t byteIndex = 0;
-        for (std::size_t i = 0; i < text.size();) {
-            if (text[i] == '-') {
-                ++i;
-                continue;
-            }
-
-            if (i + 1 >= text.size()) return std::nullopt;
-            const auto high = hexValue(text[i]);
-            const auto low  = hexValue(text[i + 1]);
-            if (!high || !low || byteIndex >= bytes.size()) {
-                return std::nullopt;
-            }
-            bytes[byteIndex++] = static_cast<std::uint8_t>((*high << 4u) | *low);
-            i += 2;
-        }
-        if (byteIndex != bytes.size()) return std::nullopt;
-        return Id128(bytes);
+        if (const auto bytes = parseUuidText(text)) return Id128(*bytes);
+        return std::nullopt;
     }
 
     /**
@@ -119,17 +120,7 @@ public:
      * @brief Formats the ID in lower-case canonical UUID text.
      * @return A stable 8-4-4-4-12 textual representation.
      */
-    [[nodiscard]] std::string format() const {
-        static constexpr char digits[] = "0123456789abcdef";
-        std::string           result;
-        result.reserve(36);
-        for (std::size_t i = 0; i < bytes_.size(); ++i) {
-            if (i == 4 || i == 6 || i == 8 || i == 10) result.push_back('-');
-            result.push_back(digits[(bytes_[i] >> 4u) & 0x0fu]);
-            result.push_back(digits[bytes_[i] & 0x0fu]);
-        }
-        return result;
-    }
+    [[nodiscard]] std::string format() const { return formatUuidBytes(bytes_); }
 
     /** @brief Returns whether this value is the all-zero nil ID. */
     [[nodiscard]] constexpr bool isNil() const noexcept {
@@ -150,19 +141,7 @@ public:
      */
     [[nodiscard]] Id128 child(std::string_view role) const noexcept {
         if (isNil() || role.empty()) return Id128::nil();
-
-        Bytes         result = bytes_;
-        std::uint64_t hash   = 14695981039346656037ull;
-        for (const unsigned char byte : role) {
-            hash ^= byte;
-            hash *= 1099511628211ull;
-        }
-        for (std::size_t i = 0; i < sizeof(hash); ++i) {
-            result[8 + i] ^= static_cast<std::uint8_t>((hash >> (i * 8u)) & 0xffu);
-        }
-        // Preserve the UUID variant while retaining the parent's namespace.
-        result[8] = static_cast<std::uint8_t>((result[8] & 0x3fu) | 0x80u);
-        return Id128(result);
+        return Id128(childUuidBytes(bytes_, role));
     }
 
     /**
