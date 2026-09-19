@@ -5,20 +5,16 @@
 #include <cmath>
 
 namespace eve::physics {
-namespace {
-template <typename T>
-Result<T> invalid(const char* message) {
-    return Result<T>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, message));
-}
-}
+namespace {}
 
 Result<void> beginTerrainLoadGravity(TerrainLoadGravityState* state, Body3D* body,
                                      bool terrainFound) {
     if (!state || !body || !body->isValid())
-        return invalid<void>("physics.terrainLoadGravity.begin: live state and body required");
+        return Result<void>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "physics.terrainLoadGravity.begin: live state and body required"));
     if (state->monitoring_ || state->completed_)
-        return invalid<void>("physics.terrainLoadGravity.begin: state already initialized");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                       "physics.terrainLoadGravity.begin: state already initialized"));
     state->gravityScale_ = body->getGravityScale();
     if (!terrainFound) {
         state->completed_ = true;
@@ -34,8 +30,9 @@ Result<bool> advanceTerrainLoadGravity(TerrainLoadGravityState* state, Body3D* b
                                        float activationDelay) {
     if (!state || !body || !body->isValid() || !std::isfinite(deltaSeconds) ||
         deltaSeconds < 0.f || !std::isfinite(activationDelay) || activationDelay < 0.f)
-        return invalid<bool>(
-            "physics.terrainLoadGravity.advance: live objects and non-negative finite time required");
+        return Result<bool>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument,
+            "physics.terrainLoadGravity.advance: live objects and non-negative finite time required"));
     if (!state->monitoring_) return Result<bool>::success(false);
     if (!state->activationScheduled_) {
         if (!terrainLoaded) {

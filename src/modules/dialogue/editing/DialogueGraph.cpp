@@ -7,11 +7,6 @@
 namespace eve::dialogue_editing {
 namespace {
 
-template <class T>
-EditorResult<T> dialogueError(EditorStatus status, const char* rule, std::string message) {
-    return eve::editing::failed<T>(status, RuleId(rule), std::move(message));
-}
-
 const EditorValue* field(const EditorValue& value, const char* key) {
     const auto* object = value.getIf<EditorValue::Object>();
     if (!object) return nullptr;
@@ -81,8 +76,8 @@ GraphConnectionDecision DialogueGraphDomain::canConnect(const GraphPinRecord& fr
 EditorResult<GraphNodeRecord> DialogueGraphDomain::makeNode(const GraphNodeId& id,
                                                             const std::string& kind) const {
     if (id.empty() || !isDialogueKind(kind))
-        return dialogueError<GraphNodeRecord>(EditorStatus::Rejected, "editor.dialogue.invalid-node",
-                                              "Dialogue node requires an id and supported kind");
+        return eve::editing::failed<GraphNodeRecord>(EditorStatus::Rejected, RuleId("editor.dialogue.invalid-node"),
+                                                     "Dialogue node requires an id and supported kind");
     GraphNodeRecord node;
     node.id = id;
     node.type = "dialogue." + kind;
@@ -97,8 +92,8 @@ EditorResult<GraphNodeRecord> DialogueGraphDomain::makeNode(const GraphNodeId& i
 EditorResult<GraphNodeRecord> DialogueGraphDomain::makeRouteNode(const GraphNodeId& id,
                                                                  const std::string& label) const {
     if (id.empty())
-        return dialogueError<GraphNodeRecord>(EditorStatus::Rejected, "editor.dialogue.invalid-route",
-                                              "Dialogue route requires an id");
+        return eve::editing::failed<GraphNodeRecord>(EditorStatus::Rejected, RuleId("editor.dialogue.invalid-route"),
+                                                     "Dialogue route requires an id");
     GraphNodeRecord node;
     node.id = id;
     node.type = "dialogue.route";

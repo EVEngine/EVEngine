@@ -7,12 +7,7 @@
 #include <vector>
 
 namespace eve::avatar_editing {
-namespace {
-template <class T>
-EditorResult<T> fail(EditorStatus s, const char* r, std::string m) {
-    return eve::editing::failed<T>(s, RuleId(r), std::move(m));
-}
-}  // namespace
+namespace {}  // namespace
 AvatarDocumentRuntime::AvatarDocumentRuntime()  = default;
 AvatarDocumentRuntime::~AvatarDocumentRuntime() = default;
 EditorResult<void> AvatarDocumentRuntime::publish(const AvatarDocumentTarget&   document,
@@ -25,18 +20,19 @@ EditorResult<void> AvatarDocumentRuntime::publish(const AvatarDocumentTarget&   
     resolved.reserve(document.layers().size());
     for (const auto& layer : document.layers()) {
         if (!textures)
-            return fail<void>(EditorStatus::Rejected, "editor.avatar.textures",
-                              "Image layers require an Avatar texture resolver");
+            return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.avatar.textures"),
+                                              "Image layers require an Avatar texture resolver");
         auto texture = textures->texture(layer.textureAsset);
         if (!texture.ok()) return EditorResult<void>::failure(texture.status());
         if (!texture.value())
-            return fail<void>(EditorStatus::NotFound, "editor.avatar.texture",
-                              "Avatar texture resolver returned no texture");
+            return eve::editing::failed<void>(EditorStatus::NotFound, RuleId("editor.avatar.texture"),
+                                              "Avatar texture resolver returned no texture");
         resolved.push_back(texture.value());
     }
     auto candidate = std::make_unique<avatar::AvatarInstance>(document.kind());
     if (document.kind() == "live2d" && !candidate->loadLive2DModel(document.sourceAsset()))
-        return fail<void>(EditorStatus::Failed, "editor.avatar.live2d", "Live2D backend rejected the Avatar model");
+        return eve::editing::failed<void>(EditorStatus::Failed, RuleId("editor.avatar.live2d"),
+                                          "Live2D backend rejected the Avatar model");
     if (document.kind() == "vroid") {
         auto imported = candidate->loadVroidModel(document.sourceAsset());
         if (!imported.ok()) return EditorResult<void>::failure(imported.status());
@@ -48,13 +44,13 @@ EditorResult<void> AvatarDocumentRuntime::publish(const AvatarDocumentTarget&   
             !candidate->setLayerOffset(layer.name, layer.offset[0], layer.offset[1]) ||
             !candidate->setLayerSize(layer.name, layer.size[0], layer.size[1]) ||
             !candidate->setLayerColor(layer.name, layer.color[0], layer.color[1], layer.color[2], layer.color[3]))
-            return fail<void>(EditorStatus::Failed, "editor.avatar.layer",
-                              "Avatar runtime rejected a validated image layer");
+            return eve::editing::failed<void>(EditorStatus::Failed, RuleId("editor.avatar.layer"),
+                                              "Avatar runtime rejected a validated image layer");
     }
     for (const auto& parameter : document.parameters()) {
         if (!candidate->defineParameter(parameter.name, parameter.defaultValue, parameter.minimum, parameter.maximum))
-            return fail<void>(EditorStatus::Failed, "editor.avatar.parameter",
-                              "Avatar runtime rejected validated parameter metadata");
+            return eve::editing::failed<void>(EditorStatus::Failed, RuleId("editor.avatar.parameter"),
+                                              "Avatar runtime rejected validated parameter metadata");
         candidate->setParameter(parameter.name, parameter.value);
     }
     for (const auto& expression : document.expressions()) {
@@ -66,8 +62,8 @@ EditorResult<void> AvatarDocumentRuntime::publish(const AvatarDocumentTarget&   
             spec << name << '=' << value;
         }
         if (!candidate->defineExpression(expression.name, spec.str()))
-            return fail<void>(EditorStatus::Failed, "editor.avatar.expression",
-                              "Avatar runtime rejected a validated expression");
+            return eve::editing::failed<void>(EditorStatus::Failed, RuleId("editor.avatar.expression"),
+                                              "Avatar runtime rejected a validated expression");
     }
     instance_                 = std::move(candidate);
     revision_                 = document.revision();

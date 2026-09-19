@@ -10,13 +10,6 @@
 namespace eve::pixelworld {
 namespace {
 
-template <class T>
-eve::Result<T> missingWorld() {
-    return eve::Result<T>::failure(eve::Diagnostic::error(
-        eve::DiagnosticCode::NotFound, "PixelWorld is not live", "world", {},
-        "pixelworld.control"));
-}
-
 PixelWorldSummary summarize(const PixelWorld& world) {
     return {world.worldLink(), world.seed(), world.revision(), world.tickValue(),
             world.lastEditSequence(), std::uint32_t(world.chunkCount()),
@@ -84,12 +77,15 @@ std::vector<PixelWorldSummary> PixelWorldControlService::worlds() const {
 eve::Result<PixelWorldSummary> PixelWorldControlService::world(std::uint64_t worldId) const {
     const PixelWorld* value = find(worldId);
     return value ? eve::Result<PixelWorldSummary>::success(summarize(*value))
-                 : missingWorld<PixelWorldSummary>();
+                 : eve::Result<PixelWorldSummary>::failure(eve::Diagnostic::error(
+                       eve::DiagnosticCode::NotFound, "PixelWorld is not live", "world", {}, "pixelworld.control"));
 }
 
 eve::Result<void> PixelWorldControlService::setPaused(std::uint64_t worldId, bool paused) {
     PixelWorld* value = find(worldId);
-    if (!value) return missingWorld<void>();
+    if (!value)
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::NotFound, "PixelWorld is not live", "world", {}, "pixelworld.control"));
     value->setPaused(paused);
     return eve::Result<void>::success();
 }
@@ -97,7 +93,9 @@ eve::Result<void> PixelWorldControlService::setPaused(std::uint64_t worldId, boo
 eve::Result<PixelWorldStepReceipt> PixelWorldControlService::step(std::uint64_t worldId,
                                                                  std::uint32_t count) {
     PixelWorld* value = find(worldId);
-    if (!value) return missingWorld<PixelWorldStepReceipt>();
+    if (!value)
+        return eve::Result<PixelWorldStepReceipt>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::NotFound, "PixelWorld is not live", "world", {}, "pixelworld.control"));
     if (count == 0 || count > 1024)
         return eve::Result<PixelWorldStepReceipt>::failure(eve::Diagnostic::error(
             eve::DiagnosticCode::InvalidArgument, "step count must be in [1, 1024]", "count", {},
@@ -122,14 +120,18 @@ eve::Result<PixelWorldStepReceipt> PixelWorldControlService::step(std::uint64_t 
 eve::Result<PixelEditReceipt> PixelWorldControlService::applyEdit(
     std::uint64_t worldId, const PixelEditCommand& command) {
     PixelWorld* value = find(worldId);
-    return value ? value->applyEdit(command) : missingWorld<PixelEditReceipt>();
+    return value ? value->applyEdit(command)
+                 : eve::Result<PixelEditReceipt>::failure(eve::Diagnostic::error(
+                       eve::DiagnosticCode::NotFound, "PixelWorld is not live", "world", {}, "pixelworld.control"));
 }
 
 eve::Result<PixelCatalogReloadReceipt> PixelWorldControlService::reloadMaterialCatalog(
     std::uint64_t worldId, std::string_view catalogJson,
     std::uint64_t expectedFingerprint) {
     PixelWorld* value = find(worldId);
-    if (!value) return missingWorld<PixelCatalogReloadReceipt>();
+    if (!value)
+        return eve::Result<PixelCatalogReloadReceipt>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::NotFound, "PixelWorld is not live", "world", {}, "pixelworld.control"));
     auto catalog = decodeMaterialCatalogJson(catalogJson);
     if (!catalog.ok())
         return eve::Result<PixelCatalogReloadReceipt>::failure(catalog.status());
@@ -140,12 +142,15 @@ eve::Result<std::vector<PixelChunkDiagnostic>> PixelWorldControlService::chunkDi
     std::uint64_t worldId, PixelChunkRegion region) const {
     const PixelWorld* value = find(worldId);
     return value ? value->chunkDiagnostics(region)
-                 : missingWorld<std::vector<PixelChunkDiagnostic>>();
+                 : eve::Result<std::vector<PixelChunkDiagnostic>>::failure(eve::Diagnostic::error(
+                       eve::DiagnosticCode::NotFound, "PixelWorld is not live", "world", {}, "pixelworld.control"));
 }
 
 eve::Result<std::vector<PixelWorldPerformanceSample>>
 PixelWorldControlService::performanceSamples(std::uint64_t worldId, std::uint32_t limit) const {
-    if (!find(worldId)) return missingWorld<std::vector<PixelWorldPerformanceSample>>();
+    if (!find(worldId))
+        return eve::Result<std::vector<PixelWorldPerformanceSample>>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::NotFound, "PixelWorld is not live", "world", {}, "pixelworld.control"));
     if (limit == 0 || limit > 256)
         return eve::Result<std::vector<PixelWorldPerformanceSample>>::failure(eve::Diagnostic::error(
             eve::DiagnosticCode::InvalidArgument, "sample limit must be in [1, 256]", "limit", {},
@@ -164,13 +169,17 @@ PixelWorldControlService::performanceSamples(std::uint64_t worldId, std::uint32_
 eve::Result<std::vector<std::byte>> PixelWorldControlService::captureSnapshot(
     std::uint64_t worldId) const {
     const PixelWorld* value = find(worldId);
-    return value ? value->saveSnapshot() : missingWorld<std::vector<std::byte>>();
+    return value ? value->saveSnapshot()
+                 : eve::Result<std::vector<std::byte>>::failure(eve::Diagnostic::error(
+                       eve::DiagnosticCode::NotFound, "PixelWorld is not live", "world", {}, "pixelworld.control"));
 }
 
 eve::Result<void> PixelWorldControlService::restoreSnapshot(
     std::uint64_t worldId, std::span<const std::byte> bytes) {
     PixelWorld* value = find(worldId);
-    return value ? value->restoreSnapshot(bytes) : missingWorld<void>();
+    return value ? value->restoreSnapshot(bytes)
+                 : eve::Result<void>::failure(eve::Diagnostic::error(
+                       eve::DiagnosticCode::NotFound, "PixelWorld is not live", "world", {}, "pixelworld.control"));
 }
 
 }  // namespace eve::pixelworld

@@ -9,10 +9,6 @@
 
 namespace eve::stylize_editing {
 namespace {
-template <class T>
-EditorResult<T> fail(EditorStatus s, const char* r, std::string m) {
-    return eve::editing::failed<T>(s, RuleId(r), std::move(m));
-}
 const EditorValue* field(const EditorValue& v, const char* k) {
     const auto* o = v.getIf<EditorValue::Object>();
     if (!o) return nullptr;
@@ -38,14 +34,15 @@ EditorResult<StylizePassValue> parsePass(const EditorValue& v) {
     const auto* overrides = overridesv ? overridesv->getIf<EditorValue::Object>() : nullptr;
     if (!id || id->empty() || !style || !stylize::isKnownStyle(*style) || !enabled || !priority ||
         *priority < -100000 || *priority > 100000 || !overrides)
-        return fail<StylizePassValue>(EditorStatus::Rejected, "editor.stylize.pass", "Invalid stylize pass fields");
+        return eve::editing::failed<StylizePassValue>(EditorStatus::Rejected, RuleId("editor.stylize.pass"),
+                                                      "Invalid stylize pass fields");
     StylizePassValue p{ObjectId(*id), *style, *enabled, static_cast<int>(*priority), {}};
     for (const auto& [name, value] : *overrides) {
         const auto* n = value.getIf<double>();
         const auto* d = stylize::findStyleParameter(*style, name);
         if (!n || !std::isfinite(*n) || !d || *n < d->minValue || *n > d->maxValue)
-            return fail<StylizePassValue>(EditorStatus::Rejected, "editor.stylize.parameter",
-                                          "Invalid stylize parameter override");
+            return eve::editing::failed<StylizePassValue>(EditorStatus::Rejected, RuleId("editor.stylize.parameter"),
+                                                          "Invalid stylize parameter override");
         p.overrides[name] = *n;
     }
     return eve::editing::applied<StylizePassValue>(std::move(p));
@@ -154,12 +151,12 @@ EditorResult<DomainOperation> StylizeRecipeTarget::makeSet(const SelectionSnapsh
     if (mode == PropertySetMode::Reset) return makeReset(s, path);
     auto d = schema(s).find(path);
     if (!matches(s) || !d || mode != PropertySetMode::Absolute)
-        return fail<DomainOperation>(EditorStatus::Rejected, "editor.stylize.set",
-                                     "Stylize property requires matching absolute selection");
+        return eve::editing::failed<DomainOperation>(EditorStatus::Rejected, RuleId("editor.stylize.set"),
+                                                     "Stylize property requires matching absolute selection");
     auto checked = validatePropertyValue(*d, value);
     if (!checked.ok())
-        return fail<DomainOperation>(EditorStatus::Rejected, "editor.stylize.value",
-                                     "Stylize property is outside its metadata range");
+        return eve::editing::failed<DomainOperation>(EditorStatus::Rejected, RuleId("editor.stylize.value"),
+                                                     "Stylize property is outside its metadata range");
     auto candidate = *this;
     for (const auto& i : s.items) {
         auto& p = candidate.passes_[ObjectId(i.item.value())];
@@ -171,15 +168,16 @@ EditorResult<DomainOperation> StylizeRecipeTarget::makeSet(const SelectionSnapsh
             p.overrides[path.value().substr(10)] = *value.getIf<double>();
     }
     if (hasError(candidate.validate()))
-        return fail<DomainOperation>(EditorStatus::Rejected, "editor.stylize.invalid",
-                                     "Stylize edit produces an invalid recipe");
+        return eve::editing::failed<DomainOperation>(EditorStatus::Rejected, RuleId("editor.stylize.invalid"),
+                                                     "Stylize edit produces an invalid recipe");
     return replacement(candidate.contentValue(), path.value());
 }
 EditorResult<DomainOperation> StylizeRecipeTarget::makeReset(const SelectionSnapshot& s,
                                                              const PropertyPath&      path) const {
     auto d = schema(s).find(path);
     if (!d)
-        return fail<DomainOperation>(EditorStatus::Unsupported, "editor.stylize.property", "Unknown stylize property");
+        return eve::editing::failed<DomainOperation>(EditorStatus::Unsupported, RuleId("editor.stylize.property"),
+                                                     "Unknown stylize property");
     if (path.value().starts_with("parameter.")) {
         auto candidate = *this;
         for (const auto& i : s.items)
@@ -190,19 +188,20 @@ EditorResult<DomainOperation> StylizeRecipeTarget::makeReset(const SelectionSnap
 }
 EditorResult<DomainOperation> StylizeRecipeTarget::makeCreate(const ObjectId& id, const std::string& style) const {
     if (id.empty() || passes_.contains(id) || !stylize::isKnownStyle(style))
-        return fail<DomainOperation>(EditorStatus::Rejected, "editor.stylize.create",
-                                     "Stylize pass ID or style is invalid");
+        return eve::editing::failed<DomainOperation>(EditorStatus::Rejected, RuleId("editor.stylize.create"),
+                                                     "Stylize pass ID or style is invalid");
     auto candidate        = *this;
     candidate.passes_[id] = {id, style, true, static_cast<int>(order_.size()), {}};
     candidate.order_.push_back(id);
     if (hasError(candidate.validate()))
-        return fail<DomainOperation>(EditorStatus::Rejected, "editor.stylize.stage",
-                                     "Stylize recipe cannot mix post and mesh stages");
+        return eve::editing::failed<DomainOperation>(EditorStatus::Rejected, RuleId("editor.stylize.stage"),
+                                                     "Stylize recipe cannot mix post and mesh stages");
     return replacement(candidate.contentValue());
 }
 EditorResult<DomainOperation> StylizeRecipeTarget::makeDelete(const ObjectId& id) const {
     if (!passes_.contains(id))
-        return fail<DomainOperation>(EditorStatus::NotFound, "editor.stylize.pass", "Stylize pass does not exist");
+        return eve::editing::failed<DomainOperation>(EditorStatus::NotFound, RuleId("editor.stylize.pass"),
+                                                     "Stylize pass does not exist");
     auto candidate = *this;
     candidate.passes_.erase(id);
     std::erase(candidate.order_, id);
@@ -210,8 +209,8 @@ EditorResult<DomainOperation> StylizeRecipeTarget::makeDelete(const ObjectId& id
 }
 EditorResult<DomainOperation> StylizeRecipeTarget::makeMove(const ObjectId& id, std::size_t index) const {
     if (!passes_.contains(id) || index >= order_.size())
-        return fail<DomainOperation>(EditorStatus::Rejected, "editor.stylize.move",
-                                     "Stylize move target or index is invalid");
+        return eve::editing::failed<DomainOperation>(EditorStatus::Rejected, RuleId("editor.stylize.move"),
+                                                     "Stylize move target or index is invalid");
     auto candidate = *this;
     std::erase(candidate.order_, id);
     candidate.order_.insert(candidate.order_.begin() + static_cast<std::ptrdiff_t>(index), id);
@@ -221,24 +220,25 @@ EditorResult<DomainOperation> StylizeRecipeTarget::makeMove(const ObjectId& id, 
 }
 EditorResult<void> StylizeRecipeTarget::applyDomainOperation(const DomainOperation& op) {
     if (op.target != TargetId(id_) || op.type != "stylize.recipe.replace.v1")
-        return fail<void>(EditorStatus::Rejected, "editor.stylize.operation", "Stylize operation mismatch");
+        return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.stylize.operation"),
+                                          "Stylize operation mismatch");
     const auto* p     = field(op.payload, "passes");
     const auto* array = p ? p->getIf<EditorValue::Array>() : nullptr;
     if (!array || array->size() > 64)
-        return fail<void>(EditorStatus::Rejected, "editor.stylize.payload",
-                          "Stylize recipe payload is invalid or exceeds 64 passes");
+        return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.stylize.payload"),
+                                          "Stylize recipe payload is invalid or exceeds 64 passes");
     StylizeRecipeTarget candidate(id_);
     for (const auto& entry : *array) {
         auto parsed = parsePass(entry);
         if (!parsed.ok() || candidate.passes_.contains(parsed.value().id))
-            return fail<void>(EditorStatus::Rejected, "editor.stylize.pass",
-                              "Stylize recipe contains invalid or duplicate passes");
+            return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.stylize.pass"),
+                                              "Stylize recipe contains invalid or duplicate passes");
         candidate.order_.push_back(parsed.value().id);
         candidate.passes_.emplace(parsed.value().id, parsed.value());
     }
     if (hasError(candidate.validate()))
-        return fail<void>(EditorStatus::Rejected, "editor.stylize.invalid",
-                          "Stylize recipe violates stage or parameter rules");
+        return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.stylize.invalid"),
+                                          "Stylize recipe violates stage or parameter rules");
     passes_ = std::move(candidate.passes_);
     order_  = std::move(candidate.order_);
     bumpRevision();
@@ -251,7 +251,8 @@ std::unique_ptr<IDomainOperationTarget> StylizeRecipeTarget::cloneDomainState() 
 EditorResult<void> StylizeRecipeTarget::commitDomainState(std::unique_ptr<IDomainOperationTarget> candidate) {
     auto* t = dynamic_cast<StylizeRecipeTarget*>(candidate.get());
     if (!t || t->id_ != id_)
-        return fail<void>(EditorStatus::Conflict, "editor.stylize.candidate", "Stylize candidate mismatch");
+        return eve::editing::failed<void>(EditorStatus::Conflict, RuleId("editor.stylize.candidate"),
+                                          "Stylize candidate mismatch");
     *this = *t;
     return eve::editing::applied<void>();
 }
@@ -296,7 +297,8 @@ EditorResult<void> StylizeRecipeTarget::loadSnapshot(const EditorValue& s) {
     const auto *v = field(s, "schemaVersion"), *content = field(s, "content");
     const auto* version = v ? v->getIf<int64_t>() : nullptr;
     if (!version || *version != 1 || !content)
-        return fail<void>(EditorStatus::Unsupported, "editor.stylize.snapshot", "Unsupported stylize snapshot");
+        return eve::editing::failed<void>(EditorStatus::Unsupported, RuleId("editor.stylize.snapshot"),
+                                          "Unsupported stylize snapshot");
     DomainOperation op;
     op.target   = TargetId(id_);
     op.type     = "stylize.recipe.replace.v1";

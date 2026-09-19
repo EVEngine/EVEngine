@@ -10,12 +10,6 @@
 namespace eve::asset {
 namespace {
 
-template <class T>
-Result<T> failure(DiagnosticCode code, std::string message, std::string path = {}) {
-    return Result<T>::failure(Diagnostic::error(code, std::move(message), std::move(path), {},
-                                                "asset.cook.pcg"));
-}
-
 const Value* field(const Value::Object& object, std::string_view name) {
     const auto found = object.find(std::string(name));
     return found == object.end() ? nullptr : &found->second;
@@ -52,11 +46,11 @@ Result<CookedCanonicalPcgGraph> cookCanonicalPcgGraph(
     if (!schema || !schema->isString() || schema->asString() != "eve.pcg-graph" ||
         !version || !version->isInt64() || version->asInt() != 1 || !algorithm ||
         !algorithm->isString() || algorithm->asString() != "terrain-layer-scatter-v1" || !rules)
-        return failure<CookedCanonicalPcgGraph>(DiagnosticCode::Unsupported,
-                                                "unsupported eve.pcg-graph/1 definition");
+        return Result<CookedCanonicalPcgGraph>::failure(Diagnostic::error(
+            DiagnosticCode::Unsupported, "unsupported eve.pcg-graph/1 definition", {}, {}, "asset.cook.pcg"));
     if (rules->empty() || rules->size() > maximumRules)
-        return failure<CookedCanonicalPcgGraph>(DiagnosticCode::InvalidArgument,
-                                                "PCG rule count exceeds Cook limits", "$.rules");
+        return Result<CookedCanonicalPcgGraph>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "PCG rule count exceeds Cook limits", "$.rules", {}, "asset.cook.pcg"));
 
     std::ostringstream plan;
     plan << "EVPCG_POINT_GRAPH 1\n" << std::setprecision(9);
@@ -77,9 +71,9 @@ Result<CookedCanonicalPcgGraph> cookCanonicalPcgGraph(
             !number(rule ? field(*rule, "minimumSlopeRadians") : nullptr, minimumSlope) ||
             !number(rule ? field(*rule, "maximumSlopeRadians") : nullptr, maximumSlope) ||
             minimumSlope < 0 || maximumSlope < minimumSlope || maximumSlope > 3.141592653589793)
-            return failure<CookedCanonicalPcgGraph>(DiagnosticCode::InvalidArgument,
-                                                    "PCG scatter rule is invalid",
-                                                    "$.rules[" + std::to_string(i) + "]");
+            return Result<CookedCanonicalPcgGraph>::failure(
+                Diagnostic::error(DiagnosticCode::InvalidArgument, "PCG scatter rule is invalid",
+                                  "$.rules[" + std::to_string(i) + "]", {}, "asset.cook.pcg"));
         const std::string suffix = std::to_string(i);
         const std::string sample = "sample." + suffix;
         const std::string project = "project." + suffix;
@@ -126,8 +120,8 @@ Result<CookedCanonicalPcgGraph> cookCanonicalPcgGraph(
     plan << "END\n";
     const std::string encodedPlan = plan.str();
     if (encodedPlan.size() > maximumPlanBytes)
-        return failure<CookedCanonicalPcgGraph>(DiagnosticCode::InvalidArgument,
-                                                "compiled PCG plan exceeds Cook budget");
+        return Result<CookedCanonicalPcgGraph>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "compiled PCG plan exceeds Cook budget", {}, {}, "asset.cook.pcg"));
     Value::Object runtime{{"schema", Value("eve.pcg-graph")},
                           {"schemaVersion", Value(std::int64_t(1))},
                           {"executionPlan", Value("chunk:1")},

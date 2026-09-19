@@ -6,11 +6,6 @@
 namespace eve::audio_editing {
 namespace {
 
-template <class T>
-EditorResult<T> audioError(EditorStatus status, const char* rule, std::string message) {
-    return eve::editing::failed<T>(status, RuleId(rule), std::move(message));
-}
-
 const EditorValue* field(const EditorValue& value, const char* key) {
     const auto* object = value.getIf<EditorValue::Object>();
     if (!object) return nullptr;
@@ -48,18 +43,18 @@ void* AudioSourceTarget::queryCapability(const CapabilityId& capability) {
 
 EditorResult<void> AudioSourceTarget::applyDomainOperation(const DomainOperation& operation) {
     if (operation.target != TargetId(id_) || operation.type != "audio.source.property.set.v1")
-        return audioError<void>(EditorStatus::Rejected, "editor.audio.operation",
-                                "Operation is not valid for this audio source");
+        return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.audio.operation"),
+                                          "Operation is not valid for this audio source");
     const EditorValue* pathValue = field(operation.payload, "path");
     const EditorValue* value = field(operation.payload, "value");
     const auto* path = pathValue ? pathValue->getIf<std::string>() : nullptr;
     if (!path || !value)
-        return audioError<void>(EditorStatus::Rejected, "editor.audio.payload",
-                                "Audio source operation requires path and value");
+        return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.audio.payload"),
+                                          "Audio source operation requires path and value");
     auto descriptor = sourceSchema().find(PropertyPath(*path));
     if (!descriptor)
-        return audioError<void>(EditorStatus::Unsupported, "editor.audio.property",
-                                "Unknown audio source property: " + *path);
+        return eve::editing::failed<void>(EditorStatus::Unsupported, RuleId("editor.audio.property"),
+                                          "Unknown audio source property: " + *path);
     auto valid = validatePropertyValue(*descriptor, *value);
     if (!valid.ok()) return valid;
     values_[*path] = *value;
@@ -76,8 +71,8 @@ EditorResult<void> AudioSourceTarget::commitDomainState(
     std::unique_ptr<IDomainOperationTarget> candidate) {
     auto* typed = dynamic_cast<AudioSourceTarget*>(candidate.get());
     if (!typed || typed->id_ != id_)
-        return audioError<void>(EditorStatus::Conflict, "editor.audio.candidate-mismatch",
-                                "Audio source candidate belongs to another target");
+        return eve::editing::failed<void>(EditorStatus::Conflict, RuleId("editor.audio.candidate-mismatch"),
+                                          "Audio source candidate belongs to another target");
     *this = *typed;
     return eve::editing::applied<void>();
 }
@@ -105,16 +100,16 @@ EditorResult<DomainOperation> AudioSourceTarget::makeSet(const SelectionSnapshot
                                                           const EditorValue& value,
                                                           PropertySetMode mode) const {
     if (!selectionMatches(selection))
-        return audioError<DomainOperation>(EditorStatus::Rejected, "editor.audio.selection",
-                                           "Selection does not belong to this audio source");
+        return eve::editing::failed<DomainOperation>(EditorStatus::Rejected, RuleId("editor.audio.selection"),
+                                                     "Selection does not belong to this audio source");
     if (mode == PropertySetMode::Reset) return makeReset(selection, path);
     if (mode != PropertySetMode::Absolute)
-        return audioError<DomainOperation>(EditorStatus::Unsupported, "editor.audio.property-mode",
-                                           "Audio source properties require absolute assignment");
+        return eve::editing::failed<DomainOperation>(EditorStatus::Unsupported, RuleId("editor.audio.property-mode"),
+                                                     "Audio source properties require absolute assignment");
     auto descriptor = sourceSchema().find(path);
     if (!descriptor)
-        return audioError<DomainOperation>(EditorStatus::Unsupported, "editor.audio.property",
-                                           "Unknown audio source property: " + path.value());
+        return eve::editing::failed<DomainOperation>(EditorStatus::Unsupported, RuleId("editor.audio.property"),
+                                                     "Unknown audio source property: " + path.value());
     auto valid = validatePropertyValue(*descriptor, value);
     if (!valid.ok()) return EditorResult<DomainOperation>::failure(valid.status());
     auto payload = [&](const EditorValue& assigned) {
@@ -138,8 +133,8 @@ EditorResult<DomainOperation> AudioSourceTarget::makeReset(const SelectionSnapsh
                                                             const PropertyPath& path) const {
     auto descriptor = sourceSchema().find(path);
     if (!descriptor)
-        return audioError<DomainOperation>(EditorStatus::Unsupported, "editor.audio.property",
-                                           "Unknown audio source property: " + path.value());
+        return eve::editing::failed<DomainOperation>(EditorStatus::Unsupported, RuleId("editor.audio.property"),
+                                                     "Unknown audio source property: " + path.value());
     return makeSet(selection, path, descriptor->defaultValue, PropertySetMode::Absolute);
 }
 

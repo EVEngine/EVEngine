@@ -11,11 +11,6 @@
 namespace eve::stylize {
 namespace {
 
-template <typename T>
-eve::Result<T> failure(eve::DiagnosticCode code, std::string message, std::string path = {}) {
-    return eve::Result<T>::failure(eve::Diagnostic::error(code, std::move(message), std::move(path)));
-}
-
 bool finiteNonNegative(float value) { return std::isfinite(value) && value >= 0.f; }
 
 eve::Result<void> rejectUnknown(const eve::Value::Object& object, const std::set<std::string>& allowed,
@@ -23,7 +18,8 @@ eve::Result<void> rejectUnknown(const eve::Value::Object& object, const std::set
     for (const auto& [key, value] : object) {
         (void)value;
         if (!allowed.contains(key))
-            return failure<void>(eve::DiagnosticCode::InvalidArgument, "unknown mesh VFX field", path + "." + key);
+            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                     "unknown mesh VFX field", path + "." + key));
     }
     return eve::Result<void>::success();
 }
@@ -31,14 +27,17 @@ eve::Result<void> rejectUnknown(const eve::Value::Object& object, const std::set
 eve::Result<float> number(const eve::Value& value, const std::string& path) {
     if (const auto* v = value.getIf<double>()) return eve::Result<float>::success(static_cast<float>(*v));
     if (const auto* v = value.getIf<std::int64_t>()) return eve::Result<float>::success(static_cast<float>(*v));
-    return failure<float>(eve::DiagnosticCode::InvalidArgument, "expected number", path);
+    return eve::Result<float>::failure(
+        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "expected number", path));
 }
 
 eve::Result<MeshEffectPlayback> parsePlayback(const eve::Value* value, const std::string& path) {
     MeshEffectPlayback result{};
     if (!value) return eve::Result<MeshEffectPlayback>::success(result);
     const auto* object = value->getIf<eve::Value::Object>();
-    if (!object) return failure<MeshEffectPlayback>(eve::DiagnosticCode::InvalidArgument, "expected object", path);
+    if (!object)
+        return eve::Result<MeshEffectPlayback>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "expected object", path));
     auto known = rejectUnknown(*object, {"fadeIn", "hold", "fadeOut", "loop"}, path);
     if (!known) return eve::Result<MeshEffectPlayback>::failure(known.status());
     const auto read = [&](const char* key, float& target) -> eve::Result<void> {
@@ -58,7 +57,9 @@ eve::Result<MeshEffectPlayback> parsePlayback(const eve::Value* value, const std
     const auto loop = object->find("loop");
     if (loop != object->end()) {
         const auto* enabled = loop->second.getIf<bool>();
-        if (!enabled) return failure<MeshEffectPlayback>(eve::DiagnosticCode::InvalidArgument, "expected boolean", path + ".loop");
+        if (!enabled)
+            return eve::Result<MeshEffectPlayback>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "expected boolean", path + ".loop"));
         result.loop = *enabled;
     }
     return eve::Result<MeshEffectPlayback>::success(result);
@@ -67,12 +68,15 @@ eve::Result<MeshEffectPlayback> parsePlayback(const eve::Value* value, const std
 eve::Result<MeshVfxLayerAsset> parseLayer(const eve::Value& value, std::size_t index) {
     const std::string path = "layers[" + std::to_string(index) + "]";
     const auto* object = value.getIf<eve::Value::Object>();
-    if (!object) return failure<MeshVfxLayerAsset>(eve::DiagnosticCode::InvalidArgument, "expected object", path);
+    if (!object)
+        return eve::Result<MeshVfxLayerAsset>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "expected object", path));
     auto known = rejectUnknown(*object, {"style", "playback", "parameters", "curves"}, path);
     if (!known) return eve::Result<MeshVfxLayerAsset>::failure(known.status());
     const auto style = object->find("style");
     if (style == object->end() || !style->second.isString())
-        return failure<MeshVfxLayerAsset>(eve::DiagnosticCode::InvalidArgument, "style must be a string", path + ".style");
+        return eve::Result<MeshVfxLayerAsset>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "style must be a string", path + ".style"));
     MeshVfxLayerAsset layer;
     layer.style = style->second.asString();
     const auto playback = object->find("playback");
@@ -82,7 +86,9 @@ eve::Result<MeshVfxLayerAsset> parseLayer(const eve::Value& value, std::size_t i
     const auto parameters = object->find("parameters");
     if (parameters != object->end()) {
         const auto* values = parameters->second.getIf<eve::Value::Object>();
-        if (!values) return failure<MeshVfxLayerAsset>(eve::DiagnosticCode::InvalidArgument, "expected object", path + ".parameters");
+        if (!values)
+            return eve::Result<MeshVfxLayerAsset>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "expected object", path + ".parameters"));
         for (const auto& [name, raw] : *values) {
             auto parsed = number(raw, path + ".parameters." + name);
             if (!parsed) return eve::Result<MeshVfxLayerAsset>::failure(parsed.status());
@@ -92,16 +98,21 @@ eve::Result<MeshVfxLayerAsset> parseLayer(const eve::Value& value, std::size_t i
     const auto curves = object->find("curves");
     if (curves != object->end()) {
         const auto* values = curves->second.getIf<eve::Value::Object>();
-        if (!values) return failure<MeshVfxLayerAsset>(eve::DiagnosticCode::InvalidArgument, "expected object", path + ".curves");
+        if (!values)
+            return eve::Result<MeshVfxLayerAsset>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "expected object", path + ".curves"));
         for (const auto& [name, rawCurve] : *values) {
             const auto* rawKeys = rawCurve.getIf<eve::Value::Array>();
-            if (!rawKeys) return failure<MeshVfxLayerAsset>(eve::DiagnosticCode::InvalidArgument, "curve must be an array", path + ".curves." + name);
+            if (!rawKeys)
+                return eve::Result<MeshVfxLayerAsset>::failure(eve::Diagnostic::error(
+                    eve::DiagnosticCode::InvalidArgument, "curve must be an array", path + ".curves." + name));
             MeshVfxFloatCurve curve;
             for (std::size_t keyIndex = 0; keyIndex < rawKeys->size(); ++keyIndex) {
                 const auto* pair = (*rawKeys)[keyIndex].getIf<eve::Value::Array>();
                 const std::string keyPath = path + ".curves." + name + "[" + std::to_string(keyIndex) + "]";
                 if (!pair || pair->size() != 2)
-                    return failure<MeshVfxLayerAsset>(eve::DiagnosticCode::InvalidArgument, "curve key must be [time, value]", keyPath);
+                    return eve::Result<MeshVfxLayerAsset>::failure(eve::Diagnostic::error(
+                        eve::DiagnosticCode::InvalidArgument, "curve key must be [time, value]", keyPath));
                 auto time = number((*pair)[0], keyPath + "[0]");
                 if (!time) return eve::Result<MeshVfxLayerAsset>::failure(time.status());
                 auto keyValue = number((*pair)[1], keyPath + "[1]");
@@ -116,7 +127,9 @@ eve::Result<MeshVfxLayerAsset> parseLayer(const eve::Value& value, std::size_t i
 
 eve::Result<TrailSettings> parseTrail(const eve::Value& value) {
     const auto* object = value.getIf<eve::Value::Object>();
-    if (!object) return failure<TrailSettings>(eve::DiagnosticCode::InvalidArgument, "expected object", "trail");
+    if (!object)
+        return eve::Result<TrailSettings>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "expected object", "trail"));
     auto known = rejectUnknown(*object, {"maxSamples", "lifetime", "minDistance", "teleportDistance",
                                          "rootAttachment", "tipAttachment", "rootOffset", "tipOffset"}, "trail");
     if (!known) return eve::Result<TrailSettings>::failure(known.status());
@@ -132,7 +145,9 @@ eve::Result<TrailSettings> parseTrail(const eve::Value& value) {
     const auto maxSamples = object->find("maxSamples");
     if (maxSamples != object->end()) {
         const auto* count = maxSamples->second.getIf<std::int64_t>();
-        if (!count || *count <= 0) return failure<TrailSettings>(eve::DiagnosticCode::InvalidArgument, "maxSamples must be a positive integer", "trail.maxSamples");
+        if (!count || *count <= 0)
+            return eve::Result<TrailSettings>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::InvalidArgument, "maxSamples must be a positive integer", "trail.maxSamples"));
         trail.maxSamples = static_cast<std::size_t>(*count);
     }
     auto status = read("lifetime", trail.lifetime);
@@ -148,8 +163,8 @@ eve::Result<eve::AttachmentPoint> parseAttachmentOffset(const eve::Value* value,
     if (!value) return eve::Result<eve::AttachmentPoint>::success({});
     const auto* array = value->getIf<eve::Value::Array>();
     if (!array || array->size() != 3)
-        return failure<eve::AttachmentPoint>(eve::DiagnosticCode::InvalidArgument,
-                                              "attachment offset must be a three-number array", path);
+        return eve::Result<eve::AttachmentPoint>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "attachment offset must be a three-number array", path));
     eve::AttachmentPoint point;
     float* components[] = {&point.x, &point.y, &point.z};
     for (std::size_t index = 0; index < 3; ++index) {
@@ -162,15 +177,17 @@ eve::Result<eve::AttachmentPoint> parseAttachmentOffset(const eve::Value* value,
 
 eve::Result<std::optional<MeshVfxTrailBinding>> parseTrailBinding(const eve::Value& value) {
     const auto* object = value.getIf<eve::Value::Object>();
-    if (!object) return failure<std::optional<MeshVfxTrailBinding>>(eve::DiagnosticCode::InvalidArgument,
-                                                                    "expected object", "trail");
+    if (!object)
+        return eve::Result<std::optional<MeshVfxTrailBinding>>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "expected object", "trail"));
     const auto root = object->find("rootAttachment");
     const auto tip = object->find("tipAttachment");
     if (root == object->end() && tip == object->end())
         return eve::Result<std::optional<MeshVfxTrailBinding>>::success(std::nullopt);
     if (root == object->end() || tip == object->end() || !root->second.isString() || !tip->second.isString())
-        return failure<std::optional<MeshVfxTrailBinding>>(eve::DiagnosticCode::InvalidArgument,
-                                                            "trail rootAttachment and tipAttachment must both be strings", "trail");
+        return eve::Result<std::optional<MeshVfxTrailBinding>>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                   "trail rootAttachment and tipAttachment must both be strings", "trail"));
     const auto rootOffsetIt = object->find("rootOffset");
     const auto tipOffsetIt = object->find("tipOffset");
     auto rootOffset = parseAttachmentOffset(rootOffsetIt == object->end() ? nullptr : &rootOffsetIt->second,
@@ -186,20 +203,27 @@ eve::Result<std::optional<MeshVfxTrailBinding>> parseTrailBinding(const eve::Val
 
 eve::Result<std::vector<MeshVfxEventAsset>> parseEvents(const eve::Value& value) {
     const auto* array = value.getIf<eve::Value::Array>();
-    if (!array) return failure<std::vector<MeshVfxEventAsset>>(eve::DiagnosticCode::InvalidArgument, "events must be an array", "events");
+    if (!array)
+        return eve::Result<std::vector<MeshVfxEventAsset>>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "events must be an array", "events"));
     std::vector<MeshVfxEventAsset> events;
     events.reserve(array->size());
     for (std::size_t index = 0; index < array->size(); ++index) {
         const std::string path = "events[" + std::to_string(index) + "]";
         const auto* object = (*array)[index].getIf<eve::Value::Object>();
-        if (!object) return failure<std::vector<MeshVfxEventAsset>>(eve::DiagnosticCode::InvalidArgument, "event must be an object", path);
+        if (!object)
+            return eve::Result<std::vector<MeshVfxEventAsset>>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "event must be an object", path));
         auto known = rejectUnknown(*object, {"time", "name"}, path);
         if (!known) return eve::Result<std::vector<MeshVfxEventAsset>>::failure(known.status());
         const auto timeIt = object->find("time");
         const auto nameIt = object->find("name");
-        if (timeIt == object->end()) return failure<std::vector<MeshVfxEventAsset>>(eve::DiagnosticCode::InvalidArgument, "event time is required", path + ".time");
+        if (timeIt == object->end())
+            return eve::Result<std::vector<MeshVfxEventAsset>>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "event time is required", path + ".time"));
         if (nameIt == object->end() || !nameIt->second.isString())
-            return failure<std::vector<MeshVfxEventAsset>>(eve::DiagnosticCode::InvalidArgument, "event name must be a string", path + ".name");
+            return eve::Result<std::vector<MeshVfxEventAsset>>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::InvalidArgument, "event name must be a string", path + ".name"));
         auto time = number(timeIt->second, path + ".time");
         if (!time) return eve::Result<std::vector<MeshVfxEventAsset>>::failure(time.status());
         events.push_back({std::move(time).takeValue(), nameIt->second.asString()});
@@ -210,15 +234,16 @@ eve::Result<std::vector<MeshVfxEventAsset>> parseEvents(const eve::Value& value)
 eve::Result<std::vector<std::string>> parseEventNames(const eve::Value* value, const std::string& path) {
     if (!value) return eve::Result<std::vector<std::string>>::success({});
     const auto* array = value->getIf<eve::Value::Array>();
-    if (!array) return failure<std::vector<std::string>>(eve::DiagnosticCode::InvalidArgument,
-                                                         "animation trigger list must be an array", path);
+    if (!array)
+        return eve::Result<std::vector<std::string>>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "animation trigger list must be an array", path));
     std::vector<std::string> names;
     names.reserve(array->size());
     for (std::size_t index = 0; index < array->size(); ++index) {
         if (!(*array)[index].isString())
-            return failure<std::vector<std::string>>(eve::DiagnosticCode::InvalidArgument,
-                                                      "animation trigger name must be a string",
-                                                      path + "[" + std::to_string(index) + "]");
+            return eve::Result<std::vector<std::string>>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "animation trigger name must be a string",
+                                       path + "[" + std::to_string(index) + "]"));
         names.push_back((*array)[index].asString());
     }
     return eve::Result<std::vector<std::string>>::success(std::move(names));
@@ -226,8 +251,9 @@ eve::Result<std::vector<std::string>> parseEventNames(const eve::Value* value, c
 
 eve::Result<MeshVfxAnimationTriggers> parseAnimationTriggers(const eve::Value& value) {
     const auto* object = value.getIf<eve::Value::Object>();
-    if (!object) return failure<MeshVfxAnimationTriggers>(eve::DiagnosticCode::InvalidArgument,
-                                                           "animationTriggers must be an object", "animationTriggers");
+    if (!object)
+        return eve::Result<MeshVfxAnimationTriggers>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "animationTriggers must be an object", "animationTriggers"));
     auto known = rejectUnknown(*object, {"play", "stop", "trailBreak"}, "animationTriggers");
     if (!known) return eve::Result<MeshVfxAnimationTriggers>::failure(known.status());
     MeshVfxAnimationTriggers triggers;
@@ -248,10 +274,13 @@ eve::Result<MeshVfxAsset> MeshVfxAsset::fromJson(std::string_view json) {
     auto parsed = eve::Value::fromJson(json);
     if (!parsed) return eve::Result<MeshVfxAsset>::failure(parsed.status());
     const auto* root = parsed.value().getIf<eve::Value::Object>();
-    if (!root) return failure<MeshVfxAsset>(eve::DiagnosticCode::InvalidArgument, "mesh VFX root must be an object");
+    if (!root)
+        return eve::Result<MeshVfxAsset>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "mesh VFX root must be an object", {}));
     const auto versionIt = root->find("schemaVersion");
     if (versionIt == root->end() || !versionIt->second.getIf<std::int64_t>())
-        return failure<MeshVfxAsset>(eve::DiagnosticCode::InvalidArgument, "schemaVersion must be an integer", "schemaVersion");
+        return eve::Result<MeshVfxAsset>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "schemaVersion must be an integer", "schemaVersion"));
     const auto version = *versionIt->second.getIf<std::int64_t>();
     MeshVfxAsset asset;
     if (version == 0) {
@@ -270,17 +299,21 @@ eve::Result<MeshVfxAsset> MeshVfxAsset::fromJson(std::string_view json) {
         if (!known) return eve::Result<MeshVfxAsset>::failure(known.status());
         const auto schema = root->find("schema");
         if (schema == root->end() || !schema->second.isString() || schema->second.asString() != schemaId)
-            return failure<MeshVfxAsset>(eve::DiagnosticCode::InvalidArgument, "unsupported mesh VFX schema", "schema");
+            return eve::Result<MeshVfxAsset>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "unsupported mesh VFX schema", "schema"));
         const auto layers = root->find("layers");
         const auto* array = layers == root->end() ? nullptr : layers->second.getIf<eve::Value::Array>();
-        if (!array) return failure<MeshVfxAsset>(eve::DiagnosticCode::InvalidArgument, "layers must be an array", "layers");
+        if (!array)
+            return eve::Result<MeshVfxAsset>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "layers must be an array", "layers"));
         for (std::size_t index = 0; index < array->size(); ++index) {
             auto layer = parseLayer((*array)[index], index);
             if (!layer) return eve::Result<MeshVfxAsset>::failure(layer.status());
             asset.layers.push_back(std::move(layer).takeValue());
         }
     } else {
-        return failure<MeshVfxAsset>(eve::DiagnosticCode::UnknownVersion, "unsupported mesh VFX schema version", "schemaVersion");
+        return eve::Result<MeshVfxAsset>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::UnknownVersion, "unsupported mesh VFX schema version", "schemaVersion"));
     }
     const auto trail = root->find("trail");
     if (trail != root->end()) {
@@ -393,48 +426,63 @@ eve::Result<std::string> MeshVfxAsset::toJson() const {
 }
 
 eve::Result<void> MeshVfxAsset::validate() const {
-    if (layers.empty()) return failure<void>(eve::DiagnosticCode::InvalidArgument, "mesh VFX requires at least one layer", "layers");
+    if (layers.empty())
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                 "mesh VFX requires at least one layer", "layers"));
     for (std::size_t index = 0; index < layers.size(); ++index) {
         const auto& layer = layers[index];
         const std::string path = "layers[" + std::to_string(index) + "]";
-        if (layer.style.empty()) return failure<void>(eve::DiagnosticCode::InvalidArgument, "style must not be empty", path + ".style");
+        if (layer.style.empty())
+            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                     "style must not be empty", path + ".style"));
         if (!finiteNonNegative(layer.playback.fadeIn) || !finiteNonNegative(layer.playback.duration) ||
             !finiteNonNegative(layer.playback.fadeOut))
-            return failure<void>(eve::DiagnosticCode::InvalidArgument, "playback durations must be finite and non-negative", path + ".playback");
+            return eve::Result<void>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                       "playback durations must be finite and non-negative", path + ".playback"));
         for (const auto& [name, value] : layer.floatParameters)
             if (name.empty() || !std::isfinite(value))
-                return failure<void>(eve::DiagnosticCode::InvalidArgument, "parameter names must be non-empty and values finite", path + ".parameters");
+                return eve::Result<void>::failure(eve::Diagnostic::error(
+                    eve::DiagnosticCode::InvalidArgument, "parameter names must be non-empty and values finite",
+                    path + ".parameters"));
         for (const auto& [name, curve] : layer.floatCurves) {
             if (name.empty() || curve.keys.empty())
-                return failure<void>(eve::DiagnosticCode::InvalidArgument, "curve names and key arrays must not be empty", path + ".curves");
+                return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                         "curve names and key arrays must not be empty",
+                                                                         path + ".curves"));
             float previous = -1.f;
             for (const auto& key : curve.keys) {
                 if (!std::isfinite(key.time) || !std::isfinite(key.value) || key.time < 0.f || key.time > 1.f || key.time <= previous)
-                    return failure<void>(eve::DiagnosticCode::InvalidArgument, "curve times must be finite, normalized, and strictly increasing", path + ".curves." + name);
+                    return eve::Result<void>::failure(eve::Diagnostic::error(
+                        eve::DiagnosticCode::InvalidArgument,
+                        "curve times must be finite, normalized, and strictly increasing", path + ".curves." + name));
                 previous = key.time;
             }
         }
     }
     if (trail && (trail->maxSamples == 0 || !finiteNonNegative(trail->lifetime) ||
                   !finiteNonNegative(trail->minSampleDistance) || !finiteNonNegative(trail->teleportDistance)))
-        return failure<void>(eve::DiagnosticCode::InvalidArgument, "invalid trail settings", "trail");
+        return eve::Result<void>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "invalid trail settings", "trail"));
     if (trailBinding && (!trail || trailBinding->rootAttachment.empty() || trailBinding->tipAttachment.empty()))
-        return failure<void>(eve::DiagnosticCode::InvalidArgument,
-                             "trail attachment binding requires a trail and two non-empty attachment names", "trail");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument,
+            "trail attachment binding requires a trail and two non-empty attachment names", "trail"));
     float previousEventTime = -1.f;
     for (const auto& event : events) {
         if (!std::isfinite(event.time) || event.time < 0.f || event.time > 1.f || event.time < previousEventTime || event.name.empty())
-            return failure<void>(eve::DiagnosticCode::InvalidArgument,
-                                 "events require non-empty names and non-decreasing normalized times", "events");
+            return eve::Result<void>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                       "events require non-empty names and non-decreasing normalized times", "events"));
         previousEventTime = event.time;
     }
     std::set<std::string> triggerNames;
     const auto validateTriggers = [&](const std::vector<std::string>& names) -> eve::Result<void> {
         for (const auto& name : names)
             if (name.empty() || !triggerNames.insert(name).second)
-                return failure<void>(eve::DiagnosticCode::InvalidArgument,
-                                     "animation trigger names must be non-empty and map to exactly one action",
-                                     "animationTriggers");
+                return eve::Result<void>::failure(eve::Diagnostic::error(
+                    eve::DiagnosticCode::InvalidArgument,
+                    "animation trigger names must be non-empty and map to exactly one action", "animationTriggers"));
         return eve::Result<void>::success();
     };
     auto triggerStatus = validateTriggers(animationTriggers.play);
@@ -471,11 +519,11 @@ eve::Result<std::unique_ptr<MeshVfxAssetInstance>> MeshVfxAssetInstance::create(
         return eve::Result<std::unique_ptr<MeshVfxAssetInstance>>::success(
             std::unique_ptr<MeshVfxAssetInstance>(new MeshVfxAssetInstance(asset, externalStyles)));
     } catch (const eve::Exception& error) {
-        return failure<std::unique_ptr<MeshVfxAssetInstance>>(eve::DiagnosticCode::InvalidArgument, error.what(),
-                                                              "layers.parameters");
+        return eve::Result<std::unique_ptr<MeshVfxAssetInstance>>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, error.what(), "layers.parameters"));
     } catch (const std::exception& error) {
-        return failure<std::unique_ptr<MeshVfxAssetInstance>>(eve::DiagnosticCode::Failed, error.what(),
-                                                              "layers");
+        return eve::Result<std::unique_ptr<MeshVfxAssetInstance>>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::Failed, error.what(), "layers"));
     }
 }
 
@@ -549,8 +597,8 @@ std::vector<std::string> MeshVfxAssetInstance::drainEvents() {
 
 eve::Result<TrailAppendResult> MeshVfxAssetInstance::sampleTrail(const eve::IAttachmentPointSource& source) {
     if (!trail_ || !trailBinding_)
-        return failure<TrailAppendResult>(eve::DiagnosticCode::PreconditionViolation,
-                                          "mesh VFX has no authored trail attachment binding", "trail");
+        return eve::Result<TrailAppendResult>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::PreconditionViolation, "mesh VFX has no authored trail attachment binding", "trail"));
     auto root = source.sampleAttachmentPoint(trailBinding_->rootAttachment, trailBinding_->rootOffset);
     if (!root) return eve::Result<TrailAppendResult>::failure(root.status());
     auto tip = source.sampleAttachmentPoint(trailBinding_->tipAttachment, trailBinding_->tipOffset);
@@ -599,7 +647,8 @@ eve::Result<std::uint64_t> MeshVfxAssetSlot::reload(std::string_view json) {
     auto candidate = MeshVfxAsset::fromJson(json);
     if (!candidate) return eve::Result<std::uint64_t>::failure(candidate.status());
     if (revision_ == UINT64_MAX)
-        return failure<std::uint64_t>(eve::DiagnosticCode::InvariantViolation, "mesh VFX asset revision exhausted");
+        return eve::Result<std::uint64_t>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvariantViolation, "mesh VFX asset revision exhausted", {}));
     asset_ = std::move(candidate).takeValue();
     return eve::Result<std::uint64_t>::success(++revision_);
 }

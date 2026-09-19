@@ -105,11 +105,6 @@ constexpr std::string_view kWorld3DType     = "physics.world3d";
 constexpr std::string_view kWorld3DSchema   = "physics:world3d";
 constexpr std::uint64_t    kSnapshotVersion = 2;
 
-template <typename T>
-eve::Result<T> failure(eve::DiagnosticCode code, std::string message, std::string path = {}) {
-    return eve::Result<T>::failure(eve::Diagnostic::error(code, std::move(message), std::move(path)));
-}
-
 bool hasExactFields(const eve::Value::Object& object, std::initializer_list<std::string_view> expected) {
     if (object.size() != expected.size()) return false;
     for (const std::string_view field : expected) {
@@ -126,8 +121,8 @@ const eve::Value* field(const eve::Value::Object& object, std::string_view name)
 eve::Result<std::string> readString(const eve::Value::Object& object, std::string_view name) {
     const eve::Value* value = field(object, name);
     if (!value || !value->isString())
-        return failure<std::string>(eve::DiagnosticCode::ParseError, "snapshot field must be a string",
-                                    std::string(name));
+        return eve::Result<std::string>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::ParseError, "snapshot field must be a string", std::string(name)));
     return eve::Result<std::string>::success(value->asString());
 }
 
@@ -138,8 +133,8 @@ eve::Result<std::uint64_t> readUint64(const eve::Value::Object& object, std::str
     const std::string& value  = text.value();
     const auto [end, error]   = std::from_chars(value.data(), value.data() + value.size(), output);
     if (value.empty() || error != std::errc{} || end != value.data() + value.size())
-        return failure<std::uint64_t>(eve::DiagnosticCode::ParseError,
-                                      "snapshot integer is not a uint64 decimal string", std::string(name));
+        return eve::Result<std::uint64_t>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::ParseError, "snapshot integer is not a uint64 decimal string", std::string(name)));
     return eve::Result<std::uint64_t>::success(output);
 }
 
@@ -150,19 +145,20 @@ eve::Result<std::int64_t> readInt64(const eve::Value::Object& object, std::strin
     const std::string& value  = text.value();
     const auto [end, error]   = std::from_chars(value.data(), value.data() + value.size(), output);
     if (value.empty() || error != std::errc{} || end != value.data() + value.size())
-        return failure<std::int64_t>(eve::DiagnosticCode::ParseError, "snapshot integer is not an int64 decimal string",
-                                     std::string(name));
+        return eve::Result<std::int64_t>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::ParseError, "snapshot integer is not an int64 decimal string", std::string(name)));
     return eve::Result<std::int64_t>::success(output);
 }
 
 eve::Result<double> readNumber(const eve::Value::Object& object, std::string_view name) {
     const eve::Value* value = field(object, name);
     if (!value || !value->isNumeric())
-        return failure<double>(eve::DiagnosticCode::ParseError, "snapshot field must be numeric", std::string(name));
+        return eve::Result<double>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::ParseError, "snapshot field must be numeric", std::string(name)));
     const double result = value->isDouble() ? value->asDouble() : static_cast<double>(value->asInt());
     if (!std::isfinite(result))
-        return failure<double>(eve::DiagnosticCode::InvalidArgument, "snapshot numeric field must be finite",
-                               std::string(name));
+        return eve::Result<double>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "snapshot numeric field must be finite", std::string(name)));
     return eve::Result<double>::success(result);
 }
 
@@ -170,23 +166,24 @@ eve::Result<float> readFloat(const eve::Value::Object& object, std::string_view 
     auto number = readNumber(object, name);
     if (!number) return eve::Result<float>::failure(number.status());
     if (number.value() < -std::numeric_limits<float>::max() || number.value() > std::numeric_limits<float>::max())
-        return failure<float>(eve::DiagnosticCode::InvalidArgument, "snapshot numeric field is outside float range",
-                              std::string(name));
+        return eve::Result<float>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "snapshot numeric field is outside float range", std::string(name)));
     return eve::Result<float>::success(static_cast<float>(number.value()));
 }
 
 eve::Result<bool> readBool(const eve::Value::Object& object, std::string_view name) {
     const eve::Value* value = field(object, name);
     if (!value || !value->isBool())
-        return failure<bool>(eve::DiagnosticCode::ParseError, "snapshot field must be boolean", std::string(name));
+        return eve::Result<bool>::failure(eve::Diagnostic::error(eve::DiagnosticCode::ParseError,
+                                                                 "snapshot field must be boolean", std::string(name)));
     return eve::Result<bool>::success(value->asBool());
 }
 
 eve::Result<eve::LogicalId> snapshotSchema(std::string_view text) {
     const auto parsed = eve::LogicalId::parse(text);
     if (!parsed)
-        return failure<eve::LogicalId>(eve::DiagnosticCode::InvariantViolation,
-                                       "physics snapshot schema constant is invalid", "schema");
+        return eve::Result<eve::LogicalId>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvariantViolation, "physics snapshot schema constant is invalid", "schema"));
     return eve::Result<eve::LogicalId>::success(*parsed);
 }
 
@@ -220,9 +217,9 @@ eve::Result<ObservationState> parseObservation(const eve::Value::Object&    obje
     if (!lastDelta) return eve::Result<ObservationState>::failure(lastDelta.status());
     if (duration.value() < 0 || revision.value() != stepCount.value() || tick.value() != snapshot.tick.value() ||
         stepCount.value() != snapshot.revision.value()) {
-        return failure<ObservationState>(eve::DiagnosticCode::Conflict,
-                                         "physics snapshot payload progress disagrees with its envelope",
-                                         "payload.observation");
+        return eve::Result<ObservationState>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Conflict, "physics snapshot payload progress disagrees with its envelope",
+            "payload.observation"));
     }
 
     ObservationState result;
@@ -261,18 +258,19 @@ eve::Result<Body2DState> parseBody2D(const eve::Value& value) {
     const auto* object = value.getIf<eve::Value::Object>();
     if (!object || !hasExactFields(*object, {"active", "angle", "awake", "bullet", "fixedRotation", "fixtures", "id", "type", "vx",
                                              "vy", "angularVelocity", "x", "y"}))
-        return failure<Body2DState>(eve::DiagnosticCode::ParseError,
-                                    "2D physics snapshot body has unknown or missing fields", "payload.bodies");
+        return eve::Result<Body2DState>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::ParseError,
+                                   "2D physics snapshot body has unknown or missing fields", "payload.bodies"));
     Body2DState state;
     auto        id = readUint64(*object, "id");
     if (!id || id.value() > static_cast<std::uint64_t>(std::numeric_limits<int>::max()))
-        return failure<Body2DState>(eve::DiagnosticCode::ParseError, "2D physics snapshot body id is invalid",
-                                    "payload.bodies.id");
+        return eve::Result<Body2DState>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::ParseError, "2D physics snapshot body id is invalid", "payload.bodies.id"));
     state.id  = static_cast<int>(id.value());
     auto type = readString(*object, "type");
     if (!type || !validBodyType(type.value()))
-        return failure<Body2DState>(eve::DiagnosticCode::InvalidArgument, "2D physics snapshot body type is invalid",
-                                    "payload.bodies.type");
+        return eve::Result<Body2DState>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "2D physics snapshot body type is invalid", "payload.bodies.type"));
     state.type = std::move(type).takeValue();
     auto x     = readFloat(*object, "x");
     if (!x) return eve::Result<Body2DState>::failure(x.status());
@@ -306,8 +304,9 @@ eve::Result<Body2DState> parseBody2D(const eve::Value& value) {
     state.fixedRotation = fixed.value();
     const eve::Value* fixtures = field(*object, "fixtures");
     if (!fixtures || !fixtures->isArray())
-        return failure<Body2DState>(eve::DiagnosticCode::ParseError,
-                                    "2D physics snapshot fixtures must be an array", "payload.bodies.fixtures");
+        return eve::Result<Body2DState>::failure(eve::Diagnostic::error(eve::DiagnosticCode::ParseError,
+                                                                        "2D physics snapshot fixtures must be an array",
+                                                                        "payload.bodies.fixtures"));
     state.fixtures = *fixtures;
     return eve::Result<Body2DState>::success(std::move(state));
 }
@@ -316,18 +315,19 @@ eve::Result<Body3DState> parseBody3D(const eve::Value& value) {
     const auto* object = value.getIf<eve::Value::Object>();
     if (!object || !hasExactFields(*object, {"active", "awake", "bullet", "fixedRotation", "id", "type", "x", "y", "z",
                                              "qx", "qy", "qz", "qw", "vx", "vy", "vz", "wx", "wy", "wz"}))
-        return failure<Body3DState>(eve::DiagnosticCode::ParseError,
-                                    "3D physics snapshot body has unknown or missing fields", "payload.bodies");
+        return eve::Result<Body3DState>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::ParseError,
+                                   "3D physics snapshot body has unknown or missing fields", "payload.bodies"));
     Body3DState state;
     auto        id = readUint64(*object, "id");
     if (!id || id.value() > static_cast<std::uint64_t>(std::numeric_limits<int>::max()))
-        return failure<Body3DState>(eve::DiagnosticCode::ParseError, "3D physics snapshot body id is invalid",
-                                    "payload.bodies.id");
+        return eve::Result<Body3DState>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::ParseError, "3D physics snapshot body id is invalid", "payload.bodies.id"));
     state.id  = static_cast<int>(id.value());
     auto type = readString(*object, "type");
     if (!type || !validBodyType(type.value()))
-        return failure<Body3DState>(eve::DiagnosticCode::InvalidArgument, "3D physics snapshot body type is invalid",
-                                    "payload.bodies.type");
+        return eve::Result<Body3DState>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "3D physics snapshot body type is invalid", "payload.bodies.type"));
     state.type = std::move(type).takeValue();
 #define EV_READ_BODY3D_FLOAT(name)                                            \
     do {                                                                      \
@@ -353,8 +353,9 @@ eve::Result<Body3DState> parseBody3D(const eve::Value& value) {
         static_cast<double>(state.qx) * state.qx + static_cast<double>(state.qy) * state.qy +
         static_cast<double>(state.qz) * state.qz + static_cast<double>(state.qw) * state.qw;
     if (!(quaternionLengthSquared > 1e-16))
-        return failure<Body3DState>(eve::DiagnosticCode::InvalidArgument,
-                                    "3D physics snapshot rotation must be non-zero", "payload.bodies.rotation");
+        return eve::Result<Body3DState>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                        "3D physics snapshot rotation must be non-zero",
+                                                                        "payload.bodies.rotation"));
 #define EV_READ_BODY3D_BOOL(name)                                             \
     do {                                                                      \
         auto value = readBool(*object, #name);                                \
@@ -564,8 +565,8 @@ eve::Result<std::vector<Body2DState>> parseBodies2D(const eve::Value::Object& ob
     const eve::Value* value = field(object, "bodies");
     const auto*       array = value ? value->getIf<eve::Value::Array>() : nullptr;
     if (!array)
-        return failure<std::vector<Body2DState>>(eve::DiagnosticCode::ParseError,
-                                                 "physics snapshot bodies must be an array", "payload.bodies");
+        return eve::Result<std::vector<Body2DState>>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::ParseError, "physics snapshot bodies must be an array", "payload.bodies"));
     std::vector<Body2DState> result;
     result.reserve(array->size());
     for (const eve::Value& entry : *array) {
@@ -580,8 +581,8 @@ eve::Result<std::vector<Body3DState>> parseBodies3D(const eve::Value::Object& ob
     const eve::Value* value = field(object, "bodies");
     const auto*       array = value ? value->getIf<eve::Value::Array>() : nullptr;
     if (!array)
-        return failure<std::vector<Body3DState>>(eve::DiagnosticCode::ParseError,
-                                                 "physics snapshot bodies must be an array", "payload.bodies");
+        return eve::Result<std::vector<Body3DState>>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::ParseError, "physics snapshot bodies must be an array", "payload.bodies"));
     std::vector<Body3DState> result;
     result.reserve(array->size());
     for (const eve::Value& entry : *array) {
@@ -607,25 +608,25 @@ eve::Result<std::unique_ptr<World>> prepareWorld2D(const std::vector<Body2DState
             for (auto it = fixtures->rbegin(); it != fixtures->rend(); ++it) {
                 const auto* fixture = it->getIf<eve::Value::Object>();
                 if (!fixture || !hasExactFields(*fixture, {"geometry", "radius", "type"}))
-                    return failure<std::unique_ptr<World>>(eve::DiagnosticCode::ParseError,
-                                                           "2D fixture has unknown or missing fields",
-                                                           "payload.bodies.fixtures");
+                    return eve::Result<std::unique_ptr<World>>::failure(
+                        eve::Diagnostic::error(eve::DiagnosticCode::ParseError,
+                                               "2D fixture has unknown or missing fields", "payload.bodies.fixtures"));
                 auto type = readInt64(*fixture, "type");
                 auto radius = readFloat(*fixture, "radius");
                 const eve::Value* geometryValue = field(*fixture, "geometry");
                 const auto* geometry = geometryValue ? geometryValue->getIf<eve::Value::Array>() : nullptr;
                 if (!type || !radius || !geometry)
-                    return failure<std::unique_ptr<World>>(eve::DiagnosticCode::ParseError,
-                                                           "2D fixture geometry is malformed",
-                                                           "payload.bodies.fixtures.geometry");
+                    return eve::Result<std::unique_ptr<World>>::failure(
+                        eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "2D fixture geometry is malformed",
+                                               "payload.bodies.fixtures.geometry"));
                 std::vector<float> values;
                 values.reserve(geometry->size());
                 for (const eve::Value& component : *geometry) {
                     if (!component.isNumeric()) {
                         if (component.isBool()) continue;
-                        return failure<std::unique_ptr<World>>(eve::DiagnosticCode::ParseError,
-                                                               "2D fixture coordinate must be numeric",
-                                                               "payload.bodies.fixtures.geometry");
+                        return eve::Result<std::unique_ptr<World>>::failure(eve::Diagnostic::error(
+                            eve::DiagnosticCode::ParseError, "2D fixture coordinate must be numeric",
+                            "payload.bodies.fixtures.geometry"));
                     }
                     values.push_back(static_cast<float>(component.isDouble() ? component.asDouble() : component.asInt()) * meter);
                 }
@@ -641,9 +642,9 @@ eve::Result<std::unique_ptr<World>> prepareWorld2D(const std::vector<Body2DState
                     created = body->newChainFixture(values, loop);
                 }
                 if (!created)
-                    return failure<std::unique_ptr<World>>(eve::DiagnosticCode::Unsupported,
-                                                           "2D fixture shape cannot be reconstructed",
-                                                           "payload.bodies.fixtures.type");
+                    return eve::Result<std::unique_ptr<World>>::failure(eve::Diagnostic::error(
+                        eve::DiagnosticCode::Unsupported, "2D fixture shape cannot be reconstructed",
+                        "payload.bodies.fixtures.type"));
             }
             body->setFixedRotation(state.fixedRotation);
             body->setBullet(state.bullet);
@@ -657,20 +658,24 @@ eve::Result<std::unique_ptr<World>> prepareWorld2D(const std::vector<Body2DState
         if (!restored) return eve::Result<std::unique_ptr<World>>::failure(restored.status());
         return eve::Result<std::unique_ptr<World>>::success(std::move(prepared));
     } catch (const std::exception& error) {
-        return failure<std::unique_ptr<World>>(eve::DiagnosticCode::Failed,
-                                               std::string("2D topology preparation failed: ") + error.what(),
-                                               "physics.world.restore.prepare");
+        return eve::Result<std::unique_ptr<World>>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Failed, std::string("2D topology preparation failed: ") + error.what(),
+            "physics.world.restore.prepare"));
     }
 }
 
 eve::Result<std::vector<float>> readFloatArray(const eve::Value::Object& object, std::string_view name) {
     const eve::Value* value = field(object, name);
     const auto* array = value ? value->getIf<eve::Value::Array>() : nullptr;
-    if (!array) return failure<std::vector<float>>(eve::DiagnosticCode::ParseError, "snapshot field must be an array", std::string(name));
+    if (!array)
+        return eve::Result<std::vector<float>>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::ParseError, "snapshot field must be an array", std::string(name)));
     std::vector<float> result;
     result.reserve(array->size());
     for (const eve::Value& item : *array) {
-        if (!item.isNumeric()) return failure<std::vector<float>>(eve::DiagnosticCode::ParseError, "snapshot array item must be numeric", std::string(name));
+        if (!item.isNumeric())
+            return eve::Result<std::vector<float>>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::ParseError, "snapshot array item must be numeric", std::string(name)));
         result.push_back(static_cast<float>(item.isDouble() ? item.asDouble() : item.asInt()));
     }
     return eve::Result<std::vector<float>>::success(std::move(result));
@@ -679,15 +684,20 @@ eve::Result<std::vector<float>> readFloatArray(const eve::Value::Object& object,
 eve::Result<std::vector<std::int32_t>> readIntArray(const eve::Value::Object& object, std::string_view name) {
     const eve::Value* value = field(object, name);
     const auto* array = value ? value->getIf<eve::Value::Array>() : nullptr;
-    if (!array) return failure<std::vector<std::int32_t>>(eve::DiagnosticCode::ParseError, "snapshot field must be an array", std::string(name));
+    if (!array)
+        return eve::Result<std::vector<std::int32_t>>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::ParseError, "snapshot field must be an array", std::string(name)));
     std::vector<std::int32_t> result;
     for (const eve::Value& item : *array) {
-        if (!item.isString()) return failure<std::vector<std::int32_t>>(eve::DiagnosticCode::ParseError, "snapshot integer array item must be a string", std::string(name));
+        if (!item.isString())
+            return eve::Result<std::vector<std::int32_t>>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::ParseError, "snapshot integer array item must be a string", std::string(name)));
         std::int64_t parsed = 0;
         const std::string& text = item.asString();
         const auto [end, ec] = std::from_chars(text.data(), text.data() + text.size(), parsed);
         if (ec != std::errc{} || end != text.data() + text.size() || parsed < INT32_MIN || parsed > INT32_MAX)
-            return failure<std::vector<std::int32_t>>(eve::DiagnosticCode::ParseError, "snapshot integer array item is invalid", std::string(name));
+            return eve::Result<std::vector<std::int32_t>>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::ParseError, "snapshot integer array item is invalid", std::string(name)));
         result.push_back(static_cast<std::int32_t>(parsed));
     }
     return eve::Result<std::vector<std::int32_t>>::success(std::move(result));
@@ -720,7 +730,9 @@ eve::Result<std::unique_ptr<World3D>> prepareWorld3D(const std::vector<Body3DSta
         std::set<int> shapeIds;
         for (const eve::Value& value : shapes) {
             const auto* object = value.getIf<eve::Value::Object>();
-            if (!object) return failure<std::unique_ptr<World3D>>(eve::DiagnosticCode::ParseError, "3D shape must be an object", "payload.shapes");
+            if (!object)
+                return eve::Result<std::unique_ptr<World3D>>::failure(eve::Diagnostic::error(
+                    eve::DiagnosticCode::ParseError, "3D shape must be an object", "payload.shapes"));
             auto bodyId = readInt64(*object, "bodyId");
             auto id = readInt64(*object, "id");
             auto kind = readString(*object, "kind");
@@ -728,7 +740,8 @@ eve::Result<std::unique_ptr<World3D>> prepareWorld3D(const std::vector<Body3DSta
             if (!bodyId || !id || id.value() <= 0 || id.value() > std::numeric_limits<int>::max() ||
                 !shapeIds.insert(static_cast<int>(id.value())).second || !kind || !a || !b || !c ||
                 !bodyById.contains(static_cast<int>(bodyId.value())))
-                return failure<std::unique_ptr<World3D>>(eve::DiagnosticCode::Conflict, "3D shape references invalid identity or source", "payload.shapes");
+                return eve::Result<std::unique_ptr<World3D>>::failure(eve::Diagnostic::error(
+                    eve::DiagnosticCode::Conflict, "3D shape references invalid identity or source", "payload.shapes"));
             Body3D* body = bodyById.at(static_cast<int>(bodyId.value()));
             Shape3D* shape = nullptr;
             if (kind.value() == "box") shape = body->newBoxShape(a.value() * 2.f, b.value() * 2.f, c.value() * 2.f);
@@ -736,21 +749,29 @@ eve::Result<std::unique_ptr<World3D>> prepareWorld3D(const std::vector<Body3DSta
             else if (kind.value() == "capsule") shape = body->newCapsuleShape(a.value() * 2.f, b.value());
             else if (kind.value() == "convexHull") {
                 auto vertices = readFloatArray(*object, "hullVertices"); auto maxVertices = readInt64(*object, "hullMaxVertices");
-                if (!vertices || !maxVertices) return failure<std::unique_ptr<World3D>>(eve::DiagnosticCode::ParseError, "convex hull source is invalid", "payload.shapes");
+                if (!vertices || !maxVertices)
+                    return eve::Result<std::unique_ptr<World3D>>::failure(eve::Diagnostic::error(
+                        eve::DiagnosticCode::ParseError, "convex hull source is invalid", "payload.shapes"));
                 shape = body->newConvexHullShape(vertices.value(), static_cast<int>(maxVertices.value()));
             } else if (kind.value() == "triangleMesh") {
                 auto vertices = readFloatArray(*object, "meshVertices"); auto indices = readIntArray(*object, "meshIndices");
                 auto weld = readBool(*object, "meshWeldVertices"); auto tolerance = readFloat(*object, "meshWeldTolerance");
                 auto edges = readBool(*object, "meshIdentifyEdges"); auto median = readBool(*object, "meshUseMedianSplit");
-                if (!vertices || !indices || !weld || !tolerance || !edges || !median) return failure<std::unique_ptr<World3D>>(eve::DiagnosticCode::ParseError, "mesh source is invalid", "payload.shapes");
+                if (!vertices || !indices || !weld || !tolerance || !edges || !median)
+                    return eve::Result<std::unique_ptr<World3D>>::failure(eve::Diagnostic::error(
+                        eve::DiagnosticCode::ParseError, "mesh source is invalid", "payload.shapes"));
                 shape = body->newTriangleMeshShape(vertices.value(), indices.value(), weld.value(), tolerance.value(), edges.value(), median.value());
             } else if (kind.value() == "heightField") {
                 auto heights = readFloatArray(*object, "heightValues"); auto cx = readInt64(*object, "heightCountX"); auto cz = readInt64(*object, "heightCountZ");
                 auto sx = readFloat(*object, "heightCellSizeX"); auto sz = readFloat(*object, "heightCellSizeZ"); auto mn = readFloat(*object, "heightGlobalMin"); auto mx = readFloat(*object, "heightGlobalMax"); auto clockwise = readBool(*object, "heightClockwise");
-                if (!heights || !cx || !cz || !sx || !sz || !mn || !mx || !clockwise) return failure<std::unique_ptr<World3D>>(eve::DiagnosticCode::ParseError, "height field source is invalid", "payload.shapes");
+                if (!heights || !cx || !cz || !sx || !sz || !mn || !mx || !clockwise)
+                    return eve::Result<std::unique_ptr<World3D>>::failure(eve::Diagnostic::error(
+                        eve::DiagnosticCode::ParseError, "height field source is invalid", "payload.shapes"));
                 shape = body->newHeightFieldShape(static_cast<int>(cx.value()), static_cast<int>(cz.value()), sx.value(), sz.value(), heights.value(), mn.value(), mx.value(), clockwise.value());
             }
-            if (!shape) return failure<std::unique_ptr<World3D>>(eve::DiagnosticCode::Unsupported, "3D shape kind cannot be reconstructed", "payload.shapes.kind");
+            if (!shape)
+                return eve::Result<std::unique_ptr<World3D>>::failure(eve::Diagnostic::error(
+                    eve::DiagnosticCode::Unsupported, "3D shape kind cannot be reconstructed", "payload.shapes.kind"));
             WorldSnapshotAccess::setShapeId(*shape, static_cast<int>(id.value()));
             maxShapeId = std::max(maxShapeId, static_cast<int>(id.value()));
         }
@@ -759,14 +780,16 @@ eve::Result<std::unique_ptr<World3D>> prepareWorld3D(const std::vector<Body3DSta
         for (const eve::Value& value : joints) {
             const auto* object = value.getIf<eve::Value::Object>();
             if (!object || !hasExactFields(*object, {"bodyAId", "bodyBId", "id", "kind", "localFrames"}))
-                return failure<std::unique_ptr<World3D>>(eve::DiagnosticCode::ParseError, "3D joint has unknown or missing fields", "payload.joints");
+                return eve::Result<std::unique_ptr<World3D>>::failure(eve::Diagnostic::error(
+                    eve::DiagnosticCode::ParseError, "3D joint has unknown or missing fields", "payload.joints"));
             auto bodyAId = readInt64(*object, "bodyAId"); auto bodyBId = readInt64(*object, "bodyBId");
             auto id = readInt64(*object, "id");
             auto kind = readString(*object, "kind"); auto frames = readFloatArray(*object, "localFrames");
             if (!bodyAId || !bodyBId || !id || id.value() <= 0 || id.value() > std::numeric_limits<int>::max() ||
                 !jointIds.insert(static_cast<int>(id.value())).second || !kind || !frames || frames.value().size() != 14 ||
                 !bodyById.contains(static_cast<int>(bodyAId.value())) || !bodyById.contains(static_cast<int>(bodyBId.value())))
-                return failure<std::unique_ptr<World3D>>(eve::DiagnosticCode::Conflict, "3D joint references invalid bodies or frames", "payload.joints");
+                return eve::Result<std::unique_ptr<World3D>>::failure(eve::Diagnostic::error(
+                    eve::DiagnosticCode::Conflict, "3D joint references invalid bodies or frames", "payload.joints"));
             Body3D* aBody = bodyById.at(static_cast<int>(bodyAId.value())); Body3D* bBody = bodyById.at(static_cast<int>(bodyBId.value()));
             const auto& f = frames.value();
             const b3Pos anchorA = b3Body_GetWorldPoint(aBody->raw(), b3Pos{f[0], f[1], f[2]});
@@ -790,7 +813,9 @@ eve::Result<std::unique_ptr<World3D>> prepareWorld3D(const std::vector<Body3DSta
                 const b3Vec3 wheel = b3Body_GetWorldVector(bBody->raw(), b3RotateVector(qb, b3Vec3_axisZ));
                 joint = prepared->newWheelJoint(aBody, bBody, anchorA.x, anchorA.y, anchorA.z, suspension.x, suspension.y, suspension.z, wheel.x, wheel.y, wheel.z);
             }
-            if (!joint) return failure<std::unique_ptr<World3D>>(eve::DiagnosticCode::Unsupported, "3D joint kind cannot be reconstructed", "payload.joints.kind");
+            if (!joint)
+                return eve::Result<std::unique_ptr<World3D>>::failure(eve::Diagnostic::error(
+                    eve::DiagnosticCode::Unsupported, "3D joint kind cannot be reconstructed", "payload.joints.kind"));
             WorldSnapshotAccess::setJointId(*joint, static_cast<int>(id.value()));
             maxJointId = std::max(maxJointId, static_cast<int>(id.value()));
         }
@@ -799,7 +824,9 @@ eve::Result<std::unique_ptr<World3D>> prepareWorld3D(const std::vector<Body3DSta
         if (!restored) return eve::Result<std::unique_ptr<World3D>>::failure(restored.status());
         return eve::Result<std::unique_ptr<World3D>>::success(std::move(prepared));
     } catch (const std::exception& error) {
-        return failure<std::unique_ptr<World3D>>(eve::DiagnosticCode::Failed, std::string("3D topology preparation failed: ") + error.what(), "physics.world3d.restore.prepare");
+        return eve::Result<std::unique_ptr<World3D>>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Failed, std::string("3D topology preparation failed: ") + error.what(),
+            "physics.world3d.restore.prepare"));
     }
 }
 
@@ -807,9 +834,9 @@ eve::Result<std::unique_ptr<World3D>> prepareWorld3D(const std::vector<Body3DSta
 
 eve::Result<eve::SnapshotEnvelope> World::snapshot(const eve::SnapshotHashProvider& hashProvider) const {
     if (!isValid() || !simulation_)
-        return failure<eve::SnapshotEnvelope>(eve::DiagnosticCode::PreconditionViolation,
-                                              "Cannot snapshot a destroyed or uninitialized physics world",
-                                              "physics.world.snapshot");
+        return eve::Result<eve::SnapshotEnvelope>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::PreconditionViolation, "Cannot snapshot a destroyed or uninitialized physics world",
+            "physics.world.snapshot"));
     auto schema = snapshotSchema(kWorld2DSchema);
     if (!schema) return eve::Result<eve::SnapshotEnvelope>::failure(schema.status());
     const auto         observation = simulationObservation();
@@ -832,20 +859,28 @@ eve::Result<void> World::restore(const eve::SnapshotEnvelope&     snapshotValue,
     if (!envelope) return envelope;
     const bool legacyV1 = snapshotValue.schemaVersion.value() == 1;
     if (!legacyV1 && (snapshotValue.instanceId.isNil() || snapshotValue.instanceId != instanceId_))
-        return failure<void>(eve::DiagnosticCode::Conflict,
-                             "physics snapshot belongs to a different world instance", "snapshot.instanceId");
+        return eve::Result<void>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::Conflict,
+                                   "physics snapshot belongs to a different world instance", "snapshot.instanceId"));
     eve::Value migratedPayload = snapshotValue.payload;
     if (legacyV1) {
         auto* migrated = migratedPayload.getIf<eve::Value::Object>();
         auto* bodyValues = migrated ? (*migrated)["bodies"].getIf<eve::Value::Array>() : nullptr;
-        if (!bodyValues) return failure<void>(eve::DiagnosticCode::ParseError, "v1 physics snapshot bodies are malformed", "payload.bodies");
+        if (!bodyValues)
+            return eve::Result<void>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::ParseError, "v1 physics snapshot bodies are malformed", "payload.bodies"));
         for (eve::Value& value : *bodyValues) {
             auto* bodyObject = value.getIf<eve::Value::Object>();
-            if (!bodyObject) return failure<void>(eve::DiagnosticCode::ParseError, "v1 physics snapshot body is malformed", "payload.bodies");
+            if (!bodyObject)
+                return eve::Result<void>::failure(eve::Diagnostic::error(
+                    eve::DiagnosticCode::ParseError, "v1 physics snapshot body is malformed", "payload.bodies"));
             auto id = readUint64(*bodyObject, "id");
             Body* live = nullptr;
             for (Body* candidate : bodies_) if (candidate && id && candidate->getId() == static_cast<int>(id.value())) live = candidate;
-            if (!live) return failure<void>(eve::DiagnosticCode::Conflict, "v1 snapshot requires topology-compatible live bodies", "payload.bodies");
+            if (!live)
+                return eve::Result<void>::failure(
+                    eve::Diagnostic::error(eve::DiagnosticCode::Conflict,
+                                           "v1 snapshot requires topology-compatible live bodies", "payload.bodies"));
             bodyObject->emplace("fixtures", fixtureTopologyValue(*live));
         }
     }
@@ -865,8 +900,8 @@ eve::Result<void> World::restore(const eve::SnapshotEnvelope&     snapshotValue,
     auto meter = readFloat(*object, "meter");
     if (!meter) return eve::Result<void>::failure(meter.status());
     if (meter.value() <= 0.f)
-        return failure<void>(eve::DiagnosticCode::InvalidArgument, "physics snapshot meter must be positive",
-                             "payload.meter");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "physics snapshot meter must be positive", "payload.meter"));
 
     std::set<int> snapshotIds;
     auto          matched = matchBodyIds(bodies.value(), snapshotIds);
@@ -884,9 +919,9 @@ eve::Result<void> World::restore(const eve::SnapshotEnvelope&     snapshotValue,
 
 eve::Result<eve::SnapshotEnvelope> World3D::snapshot(const eve::SnapshotHashProvider& hashProvider) const {
     if (!isValid() || !simulation_)
-        return failure<eve::SnapshotEnvelope>(eve::DiagnosticCode::PreconditionViolation,
-                                              "Cannot snapshot a destroyed or uninitialized 3D physics world",
-                                              "physics.world3d.snapshot");
+        return eve::Result<eve::SnapshotEnvelope>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::PreconditionViolation, "Cannot snapshot a destroyed or uninitialized 3D physics world",
+            "physics.world3d.snapshot"));
     auto schema = snapshotSchema(kWorld3DSchema);
     if (!schema) return eve::Result<eve::SnapshotEnvelope>::failure(schema.status());
     const auto           observation = simulationObservation();
@@ -910,17 +945,22 @@ eve::Result<void> World3D::restore(const eve::SnapshotEnvelope&     snapshotValu
     if (!envelope) return envelope;
     const bool legacyV1 = snapshotValue.schemaVersion.value() == 1;
     if (!legacyV1 && (snapshotValue.instanceId.isNil() || snapshotValue.instanceId != instanceId_))
-        return failure<void>(eve::DiagnosticCode::Conflict,
-                             "3D physics snapshot belongs to a different world instance", "snapshot.instanceId");
+        return eve::Result<void>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::Conflict,
+                                   "3D physics snapshot belongs to a different world instance", "snapshot.instanceId"));
     eve::Value migratedPayload = snapshotValue.payload;
     if (legacyV1) {
         auto* migrated = migratedPayload.getIf<eve::Value::Object>();
-        if (!migrated) return failure<void>(eve::DiagnosticCode::ParseError, "v1 3D physics payload is malformed", "payload");
+        if (!migrated)
+            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::ParseError,
+                                                                     "v1 3D physics payload is malformed", "payload"));
         migrated->emplace("shapes", shapesTopologyValue(std::vector<Shape3D*>(shapes_.begin(), shapes_.end())));
         migrated->emplace("joints", jointsTopologyValue(std::vector<Joint3D*>(joints_.begin(), joints_.end())));
         const eve::Value* bodyValues = field(*migrated, "bodies");
         if (!bodyValues || bodyValues->arraySize() != bodies_.size())
-            return failure<void>(eve::DiagnosticCode::Conflict, "v1 snapshot requires topology-compatible live bodies", "payload.bodies");
+            return eve::Result<void>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::Conflict,
+                                       "v1 snapshot requires topology-compatible live bodies", "payload.bodies"));
     }
     const auto* object = migratedPayload.getIf<eve::Value::Object>();
     if (!object || !hasExactFields(*object, {"bodies", "gravityX", "gravityY", "gravityZ", "joints", "shapes", "tick", "revision",
@@ -940,8 +980,8 @@ eve::Result<void> World3D::restore(const eve::SnapshotEnvelope&     snapshotValu
     const eve::Value* snapshotShapes = field(*object, "shapes");
     const eve::Value* snapshotJoints = field(*object, "joints");
     if (!snapshotShapes || !snapshotShapes->isArray() || !snapshotJoints || !snapshotJoints->isArray())
-        return failure<void>(eve::DiagnosticCode::ParseError,
-                             "3D physics snapshot topology fields must be arrays", "payload.shapes");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::ParseError, "3D physics snapshot topology fields must be arrays", "payload.shapes"));
     std::set<int> snapshotIds;
     auto          matched = matchBodyIds(bodies.value(), snapshotIds);
     if (!matched) return matched;
@@ -964,9 +1004,9 @@ eve::Result<void> World::prepareRuntimeHandleRefresh() const {
     const auto available =
         static_cast<std::uint64_t>(PhysicsBodyHandle::invalidIndex) - nextBodyHandleIndex_;
     if (bodies_.size() > available)
-        return failure<void>(eve::DiagnosticCode::InvariantViolation,
-                             "2D physics body handle space cannot represent restored links",
-                             "physics.world.restore.handles");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvariantViolation, "2D physics body handle space cannot represent restored links",
+            "physics.world.restore.handles"));
     return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
 }
 
@@ -980,9 +1020,9 @@ eve::Result<void> World3D::prepareRuntimeHandleRefresh() const {
     const auto shapeAvailable = static_cast<std::uint64_t>(PhysicsShapeHandle::invalidIndex) - nextShapeHandleIndex_;
     const auto jointAvailable = static_cast<std::uint64_t>(PhysicsJointHandle::invalidIndex) - nextJointHandleIndex_;
     if (bodies_.size() > bodyAvailable || shapes_.size() > shapeAvailable || joints_.size() > jointAvailable)
-        return failure<void>(eve::DiagnosticCode::InvariantViolation,
-                             "3D physics handle space cannot represent restored links",
-                             "physics.world3d.restore.handles");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvariantViolation, "3D physics handle space cannot represent restored links",
+            "physics.world3d.restore.handles"));
     return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
 }
 

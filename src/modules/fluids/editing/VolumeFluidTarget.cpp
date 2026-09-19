@@ -12,11 +12,6 @@ constexpr std::int64_t  kSchemaVersion                    = 1;
 constexpr std::uint64_t kEstimatedScratchBytesPerParticle = 2ULL * sizeof(fluids::VolumeFluidParticle) +
                                                             12ULL * sizeof(glm::vec3) + 2ULL * sizeof(glm::vec4) +
                                                             5ULL * sizeof(float) + 4ULL * sizeof(std::uint32_t);
-
-template <class T>
-EditorResult<T> targetError(EditorStatus status, const char* rule, std::string message) {
-    return eve::editing::failed<T>(status, RuleId(rule), std::move(message));
-}
 EditorDiagnostic targetDiagnostic(const char* rule, DiagnosticSeverity severity, std::string message) {
     return eve::editing::ruleDiagnostic(eve::DiagnosticCode::InvalidArgument, RuleId(rule), severity,
                                         std::move(message));
@@ -83,8 +78,9 @@ std::vector<EditorDiagnostic> validateSettings(const VolumeFluidAuthoringSetting
 EditorResult<VolumeFluidAuthoringSettings> parseSettings(const EditorValue& value) {
     const auto* object = value.getIf<EditorValue::Object>();
     if (!object || object->size() != 7)
-        return targetError<VolumeFluidAuthoringSettings>(EditorStatus::Rejected, "editor.volume-fluid.fields",
-                                                         "Volume fluid settings require exactly seven fields");
+        return eve::editing::failed<VolumeFluidAuthoringSettings>(EditorStatus::Rejected,
+                                                                  RuleId("editor.volume-fluid.fields"),
+                                                                  "Volume fluid settings require exactly seven fields");
     const auto* cv         = field(value, "capacity");
     const auto* pv         = field(value, "previewParticles");
     const auto* sv         = field(value, "spacing");
@@ -95,8 +91,8 @@ EditorResult<VolumeFluidAuthoringSettings> parseSettings(const EditorValue& valu
     const auto* iterations = iv ? iv->getIf<std::int64_t>() : nullptr;
     if (!capacity || !preview || !spacing || !iterations || *capacity < 0 || *preview < 0 || *iterations < 0 ||
         *capacity > 1000000 || *preview > 1000000 || *iterations > 20)
-        return targetError<VolumeFluidAuthoringSettings>(EditorStatus::Rejected, "editor.volume-fluid.types",
-                                                         "Volume fluid scalar fields are invalid");
+        return eve::editing::failed<VolumeFluidAuthoringSettings>(
+            EditorStatus::Rejected, RuleId("editor.volume-fluid.types"), "Volume fluid scalar fields are invalid");
     VolumeFluidAuthoringSettings s;
     s.capacity         = static_cast<std::uint32_t>(*capacity);
     s.previewParticles = static_cast<std::uint32_t>(*preview);
@@ -105,13 +101,14 @@ EditorResult<VolumeFluidAuthoringSettings> parseSettings(const EditorValue& valu
     if (!readVec3(value, "gravity", s.gravityX, s.gravityY, s.gravityZ) ||
         !readVec3(value, "minimum", s.minimumX, s.minimumY, s.minimumZ) ||
         !readVec3(value, "maximum", s.maximumX, s.maximumY, s.maximumZ))
-        return targetError<VolumeFluidAuthoringSettings>(EditorStatus::Rejected, "editor.volume-fluid.vectors",
-                                                         "Gravity and bounds must be finite Vec3 values");
+        return eve::editing::failed<VolumeFluidAuthoringSettings>(EditorStatus::Rejected,
+                                                                  RuleId("editor.volume-fluid.vectors"),
+                                                                  "Gravity and bounds must be finite Vec3 values");
     const auto diagnostics = validateSettings(s);
     if (std::any_of(diagnostics.begin(), diagnostics.end(),
                     [](const auto& d) { return d.severity() == DiagnosticSeverity::Error; })) {
-        return targetError<VolumeFluidAuthoringSettings>(EditorStatus::Rejected, "editor.volume-fluid.invalid",
-                                                         "Volume fluid settings are invalid");
+        return eve::editing::failed<VolumeFluidAuthoringSettings>(
+            EditorStatus::Rejected, RuleId("editor.volume-fluid.invalid"), "Volume fluid settings are invalid");
     }
     return eve::editing::applied<VolumeFluidAuthoringSettings>(s);
 }
@@ -183,8 +180,8 @@ EditorResult<DomainOperation> VolumeFluidTarget::makeSet(const SelectionSnapshot
     }
     auto property = schema(s).find(p);
     if (!matches(s) || !property || mode != PropertySetMode::Absolute) {
-        return targetError<DomainOperation>(EditorStatus::Rejected, "editor.volume-fluid.set",
-                                            "Volume fluid property requires a matching absolute edit");
+        return eve::editing::failed<DomainOperation>(EditorStatus::Rejected, RuleId("editor.volume-fluid.set"),
+                                                     "Volume fluid property requires a matching absolute edit");
     }
     auto valid = validatePropertyValue(*property, value);
     if (!valid.ok()) {
@@ -210,15 +207,15 @@ EditorResult<DomainOperation> VolumeFluidTarget::makeSet(const SelectionSnapshot
 EditorResult<DomainOperation> VolumeFluidTarget::makeReset(const SelectionSnapshot& s, const PropertyPath& p) const {
     auto property = schema(s).find(p);
     if (!property) {
-        return targetError<DomainOperation>(EditorStatus::Unsupported, "editor.volume-fluid.property",
-                                            "Unknown volume fluid property");
+        return eve::editing::failed<DomainOperation>(EditorStatus::Unsupported, RuleId("editor.volume-fluid.property"),
+                                                     "Unknown volume fluid property");
     }
     return makeSet(s, p, property->defaultValue, PropertySetMode::Absolute);
 }
 EditorResult<void> VolumeFluidTarget::applyDomainOperation(const DomainOperation& op) {
     if (op.target != TargetId(id_) || op.type != "volume-fluid.settings.replace.v1") {
-        return targetError<void>(EditorStatus::Rejected, "editor.volume-fluid.operation",
-                                 "Volume fluid operation mismatch");
+        return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.volume-fluid.operation"),
+                                          "Volume fluid operation mismatch");
     }
     auto parsed = parseSettings(op.payload);
     if (!parsed.ok()) {
@@ -264,8 +261,8 @@ EditorResult<void> VolumeFluidTarget::loadSnapshot(const EditorValue& snapshot) 
     const auto* version      = versionValue ? versionValue->getIf<std::int64_t>() : nullptr;
     if (!object || object->size() != 3 || !schemaId || *schemaId != kSchemaId || !version ||
         *version != kSchemaVersion || !settings)
-        return targetError<void>(EditorStatus::Unsupported, "editor.volume-fluid.snapshot",
-                                 "Unsupported or non-canonical volume fluid authoring snapshot");
+        return eve::editing::failed<void>(EditorStatus::Unsupported, RuleId("editor.volume-fluid.snapshot"),
+                                          "Unsupported or non-canonical volume fluid authoring snapshot");
     auto parsed = parseSettings(*settings);
     if (!parsed.ok()) {
         return EditorResult<void>::failure(parsed.status());
@@ -278,12 +275,13 @@ EditorResult<void> VolumeFluidTarget::loadSnapshot(const EditorValue& snapshot) 
 EditorResult<void> VolumeFluidRuntimeApplier::apply(const VolumeFluidTarget& target,
                                                     fluids::VolumeFluid*     simulation) const {
     if (!simulation) {
-        return targetError<void>(EditorStatus::Rejected, "editor.volume-fluid.runtime-required",
-                                 "Volume fluid publication requires a live simulation");
+        return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.volume-fluid.runtime-required"),
+                                          "Volume fluid publication requires a live simulation");
     }
     for (const auto& d : target.validate()) {
         if (d.severity() == DiagnosticSeverity::Error) {
-            return targetError<void>(EditorStatus::Rejected, "editor.volume-fluid.runtime-invalid", d.message());
+            return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.volume-fluid.runtime-invalid"),
+                                              d.message());
         }
     }
     auto       snapshot          = simulation->snapshot();
@@ -299,8 +297,8 @@ EditorResult<void> VolumeFluidRuntimeApplier::apply(const VolumeFluidTarget& tar
     snapshot.settings.iterations = s.iterations;
     auto restored                = simulation->restore(snapshot);
     if (!restored.ok()) {
-        return targetError<void>(
-            EditorStatus::Conflict, "editor.volume-fluid.runtime-rejected",
+        return eve::editing::failed<void>(
+            EditorStatus::Conflict, RuleId("editor.volume-fluid.runtime-rejected"),
             restored.error() ? restored.error()->message() : "Volume fluid runtime rejected authored settings");
     }
     return eve::editing::applied<void>();

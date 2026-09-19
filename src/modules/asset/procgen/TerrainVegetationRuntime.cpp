@@ -15,12 +15,6 @@
 namespace eve::asset_procgen {
 namespace {
 
-template <class T>
-Result<T> failure(DiagnosticCode code, std::string message, std::string path = {}) {
-    return Result<T>::failure(
-        Diagnostic::error(code, std::move(message), std::move(path), {}, "asset.procgen.terrainVegetation"));
-}
-
 std::array<float, 4> quaternionDegrees(float pitch, float yaw, float roll) {
     constexpr float halfRadians = 0.008726646259971648f;
     const float     px = pitch * halfRadians, yy = yaw * halfRadians, rz = roll * halfRadians;
@@ -88,17 +82,20 @@ Result<TerrainVegetationRealization> realizeTerrainVegetation(LoadedPointGraph* 
                                                               const LoadedInstanceSet*       explicitInstances,
                                                               const TerrainVegetationLimits& limits) {
     if (!graph && !explicitInstances)
-        return failure<TerrainVegetationRealization>(DiagnosticCode::NotFound,
-                                                     "terrain has no PCG or baked vegetation provider");
+        return Result<TerrainVegetationRealization>::failure(
+            Diagnostic::error(DiagnosticCode::NotFound, "terrain has no PCG or baked vegetation provider", {}, {},
+                              "asset.procgen.terrainVegetation"));
     if (limits.maximumGeneratedInstances == 0 || limits.maximumTotalInstances == 0 || limits.maximumGraphNodes == 0)
-        return failure<TerrainVegetationRealization>(DiagnosticCode::InvalidArgument,
-                                                     "terrain vegetation limits must be non-zero");
+        return Result<TerrainVegetationRealization>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "terrain vegetation limits must be non-zero", {}, {},
+                              "asset.procgen.terrainVegetation"));
 
     TerrainVegetationRealization result;
     if (graph) {
         if (!graph->graph || graph->outputNode.empty())
-            return failure<TerrainVegetationRealization>(DiagnosticCode::InvalidArgument,
-                                                         "loaded terrain PCG graph is incomplete");
+            return Result<TerrainVegetationRealization>::failure(
+                Diagnostic::error(DiagnosticCode::InvalidArgument, "loaded terrain PCG graph is incomplete", {}, {},
+                                  "asset.procgen.terrainVegetation"));
         graph->graph->setExecutionNodeBudget(static_cast<int>(
             std::min<std::uint32_t>(limits.maximumGraphNodes, std::uint32_t(std::numeric_limits<int>::max()))));
         graph->graph->setMaxNodeOutputPoints(static_cast<int>(
@@ -108,8 +105,9 @@ Result<TerrainVegetationRealization> realizeTerrainVegetation(LoadedPointGraph* 
         const auto ended  = std::chrono::steady_clock::now();
         if (!points) return Result<TerrainVegetationRealization>::failure(points.status());
         if (points.value().points().size() > limits.maximumGeneratedInstances)
-            return failure<TerrainVegetationRealization>(DiagnosticCode::InvalidArgument,
-                                                         "generated terrain vegetation exceeds budget");
+            return Result<TerrainVegetationRealization>::failure(
+                Diagnostic::error(DiagnosticCode::InvalidArgument, "generated terrain vegetation exceeds budget", {},
+                                  {}, "asset.procgen.terrainVegetation"));
         result.generatedCount = static_cast<std::uint32_t>(points.value().points().size());
         result.instances.reserve(result.generatedCount + (explicitInstances ? explicitInstances->instances.size() : 0));
         for (std::size_t index = 0; index < points.value().points().size(); ++index) {
@@ -124,8 +122,9 @@ Result<TerrainVegetationRealization> realizeTerrainVegetation(LoadedPointGraph* 
             instance.normal    = {point.normalX, point.normalY, point.normalZ};
             instance.seed      = point.seed;
             if (instance.prototype.empty() || !finite(instance))
-                return failure<TerrainVegetationRealization>(
-                    DiagnosticCode::ParseError, "generated vegetation instance is invalid", std::to_string(index));
+                return Result<TerrainVegetationRealization>::failure(
+                    Diagnostic::error(DiagnosticCode::ParseError, "generated vegetation instance is invalid",
+                                      std::to_string(index), {}, "asset.procgen.terrainVegetation"));
             result.instances.push_back(std::move(instance));
         }
         result.graphNodesEvaluated = static_cast<std::uint32_t>(graph->graph->getMetricCount());
@@ -140,8 +139,9 @@ Result<TerrainVegetationRealization> realizeTerrainVegetation(LoadedPointGraph* 
         result.prototypes    = explicitInstances->prototypes;
         result.explicitCount = static_cast<std::uint32_t>(explicitInstances->instances.size());
         if (std::uint64_t(result.instances.size()) + explicitInstances->instances.size() > limits.maximumTotalInstances)
-            return failure<TerrainVegetationRealization>(DiagnosticCode::InvalidArgument,
-                                                         "total terrain vegetation exceeds budget");
+            return Result<TerrainVegetationRealization>::failure(
+                Diagnostic::error(DiagnosticCode::InvalidArgument, "total terrain vegetation exceeds budget", {}, {},
+                                  "asset.procgen.terrainVegetation"));
         result.instances.reserve(result.instances.size() + explicitInstances->instances.size());
         for (std::size_t index = 0; index < explicitInstances->instances.size(); ++index) {
             const auto&               source = explicitInstances->instances[index];
@@ -152,14 +152,16 @@ Result<TerrainVegetationRealization> realizeTerrainVegetation(LoadedPointGraph* 
             instance.rotation  = source.rotation;
             instance.scale     = source.scale;
             if (instance.prototype.empty() || !finite(instance))
-                return failure<TerrainVegetationRealization>(
-                    DiagnosticCode::ParseError, "baked vegetation instance is invalid", std::to_string(index));
+                return Result<TerrainVegetationRealization>::failure(
+                    Diagnostic::error(DiagnosticCode::ParseError, "baked vegetation instance is invalid",
+                                      std::to_string(index), {}, "asset.procgen.terrainVegetation"));
             result.instances.push_back(std::move(instance));
         }
     }
     if (result.instances.size() > limits.maximumTotalInstances)
-        return failure<TerrainVegetationRealization>(DiagnosticCode::InvalidArgument,
-                                                     "total terrain vegetation exceeds budget");
+        return Result<TerrainVegetationRealization>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "total terrain vegetation exceeds budget", {}, {},
+                              "asset.procgen.terrainVegetation"));
 
     rebuildBuckets(result);
     return Result<TerrainVegetationRealization>::success(std::move(result));
@@ -170,16 +172,19 @@ Result<TerrainVegetationRealization> filterTerrainVegetationByLayerWeights(
     const TerrainMaterialAtlases& atlases, const TerrainVegetationWeightDomain& domain) {
     if (!std::isfinite(domain.minimumX) || !std::isfinite(domain.minimumZ) || !std::isfinite(domain.maximumX) ||
         !std::isfinite(domain.maximumZ) || domain.maximumX <= domain.minimumX || domain.maximumZ <= domain.minimumZ)
-        return failure<TerrainVegetationRealization>(DiagnosticCode::InvalidArgument,
-                                                     "terrain vegetation weight domain is invalid");
+        return Result<TerrainVegetationRealization>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "terrain vegetation weight domain is invalid", {}, {},
+                              "asset.procgen.terrainVegetation"));
     if (material.layers.empty() || atlases.groups.size() != (material.layers.size() + 3) / 4)
-        return failure<TerrainVegetationRealization>(DiagnosticCode::InvalidArgument,
-                                                     "terrain material control groups are incomplete");
+        return Result<TerrainVegetationRealization>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "terrain material control groups are incomplete", {}, {},
+                              "asset.procgen.terrainVegetation"));
     std::map<std::string, std::uint32_t, std::less<>> layerIndices;
     for (std::uint32_t index = 0; index < material.layers.size(); ++index)
         if (material.layers[index].name.empty() || !layerIndices.emplace(material.layers[index].name, index).second)
-            return failure<TerrainVegetationRealization>(DiagnosticCode::Conflict,
-                                                         "terrain layer names must be non-empty and unique");
+            return Result<TerrainVegetationRealization>::failure(
+                Diagnostic::error(DiagnosticCode::Conflict, "terrain layer names must be non-empty and unique", {}, {},
+                                  "asset.procgen.terrainVegetation"));
     for (std::size_t index = 0; index < atlases.groups.size(); ++index) {
         const auto&         group = atlases.groups[index];
         const std::uint32_t expected =
@@ -187,8 +192,9 @@ Result<TerrainVegetationRealization> filterTerrainVegetationByLayerWeights(
         if (group.firstLayer != index * 4 || group.layerCount != expected || group.control.width == 0 ||
             group.control.height == 0 ||
             group.control.pixels.size() != std::size_t(group.control.width) * group.control.height * 4)
-            return failure<TerrainVegetationRealization>(DiagnosticCode::InvalidArgument,
-                                                         "terrain control image is invalid", std::to_string(index));
+            return Result<TerrainVegetationRealization>::failure(
+                Diagnostic::error(DiagnosticCode::InvalidArgument, "terrain control image is invalid",
+                                  std::to_string(index), {}, "asset.procgen.terrainVegetation"));
     }
 
     TerrainVegetationRealization result = realization;
@@ -202,8 +208,9 @@ Result<TerrainVegetationRealization> filterTerrainVegetationByLayerWeights(
         }
         const auto found = layerIndices.find(instance.layer);
         if (found == layerIndices.end())
-            return failure<TerrainVegetationRealization>(
-                DiagnosticCode::NotFound, "vegetation rule references an unknown terrain layer", instance.layer);
+            return Result<TerrainVegetationRealization>::failure(
+                Diagnostic::error(DiagnosticCode::NotFound, "vegetation rule references an unknown terrain layer",
+                                  instance.layer, {}, "asset.procgen.terrainVegetation"));
         const std::uint32_t layer = found->second;
         const float         u     = (instance.position[0] - domain.minimumX) / (domain.maximumX - domain.minimumX);
         float               v     = (instance.position[2] - domain.minimumZ) / (domain.maximumZ - domain.minimumZ);
@@ -215,8 +222,9 @@ Result<TerrainVegetationRealization> filterTerrainVegetationByLayerWeights(
             ++result.weightCulledCount;
     }
     if (result.weightCulledCount - realization.weightCulledCount > result.generatedCount)
-        return failure<TerrainVegetationRealization>(DiagnosticCode::Conflict,
-                                                     "terrain layer filtering culled non-procedural instances");
+        return Result<TerrainVegetationRealization>::failure(
+            Diagnostic::error(DiagnosticCode::Conflict, "terrain layer filtering culled non-procedural instances", {},
+                              {}, "asset.procgen.terrainVegetation"));
     result.generatedCount -= result.weightCulledCount - realization.weightCulledCount;
     rebuildBuckets(result);
     return Result<TerrainVegetationRealization>::success(std::move(result));

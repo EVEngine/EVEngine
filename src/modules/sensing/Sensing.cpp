@@ -47,16 +47,6 @@ std::string join(const std::set<std::string>& s) {
 }
 bool finite(float v) { return std::isfinite(v); }
 
-template <class T>
-eve::Result<T> sensingFailure(eve::DiagnosticCode code, std::string message, std::string path = {}) {
-    return eve::Result<T>::failure(eve::Diagnostic::error(code, std::move(message), std::move(path), {}, "sensing"));
-}
-
-template <class T>
-eve::Result<T> sensingFailure(const eve::Status& status) {
-    return eve::Result<T>::failure(status);
-}
-
 template <class Ref, class Proxy, class Release>
 ssq::Table makeOwnedProxy(HSQUIRRELVM vm, eve::Result<Ref>&& reference, Release&& release) {
     if (!reference) return eve::script::projectStatusResult(vm, reference.status(), false, false);
@@ -125,9 +115,9 @@ eve::Result<QuerySpec> circleSpec(float x, float y, float radius, std::string_vi
                                   std::string_view excludeTagsCsv, std::string_view includeFactionsCsv,
                                   std::string_view excludeFactionsCsv, std::string_view visibleTo, int limit) {
     if (!finite(x) || !finite(y) || !finite(radius) || radius < 0.f || limit < 0) {
-        return sensingFailure<QuerySpec>(eve::DiagnosticCode::InvalidArgument,
-                                         "circle query requires finite coordinates, non-negative radius and limit",
-                                         "query");
+        return eve::Result<QuerySpec>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument,
+            "circle query requires finite coordinates, non-negative radius and limit", "query", {}, "sensing"));
     }
     QuerySpec spec;
     spec.shape            = QueryCircle{x, y, radius};
@@ -149,8 +139,9 @@ eve::Result<QuerySpec> boxSpec(float minX, float minY, float maxX, float maxY, s
                                std::string_view excludeTagsCsv, std::string_view includeFactionsCsv,
                                std::string_view excludeFactionsCsv, std::string_view visibleTo, int limit) {
     if (!finite(minX) || !finite(minY) || !finite(maxX) || !finite(maxY) || minX > maxX || minY > maxY || limit < 0) {
-        return sensingFailure<QuerySpec>(eve::DiagnosticCode::InvalidArgument,
-                                         "box query requires finite ordered bounds and a non-negative limit", "query");
+        return eve::Result<QuerySpec>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "box query requires finite ordered bounds and a non-negative limit",
+            "query", {}, "sensing"));
     }
     QuerySpec spec;
     spec.shape           = QueryBox{minX, minY, maxX, maxY};
@@ -169,64 +160,72 @@ eve::Result<QuerySpec> boxSpec(float minX, float minY, float maxX, float maxY, s
 
 eve::Result<void> QuerySpec::validate() const {
     if (!std::isfinite(minRange) || minRange < 0.f) {
-        return sensingFailure<void>(eve::DiagnosticCode::InvalidArgument, "QuerySpec.minRange must be finite and >= 0",
-                                    "query.minRange");
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                 "QuerySpec.minRange must be finite and >= 0",
+                                                                 "query.minRange", {}, "sensing"));
     }
     if (!(std::isfinite(maxRange) || maxRange == std::numeric_limits<float>::infinity()) || maxRange < minRange) {
-        return sensingFailure<void>(eve::DiagnosticCode::InvalidArgument,
-                                    "QuerySpec.maxRange must be >= minRange (finite or +inf)", "query.maxRange");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "QuerySpec.maxRange must be >= minRange (finite or +inf)",
+            "query.maxRange", {}, "sensing"));
     }
     if (minCount > maxCount) {
-        return sensingFailure<void>(eve::DiagnosticCode::InvalidArgument, "QuerySpec.minCount exceeds maxCount",
-                                    "query.count");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "QuerySpec.minCount exceeds maxCount", "query.count", {}, "sensing"));
     }
     for (const auto& tag : requiredTags) {
         if (tag.empty())
-            return sensingFailure<void>(eve::DiagnosticCode::InvalidArgument, "requiredTags cannot contain empty keys",
-                                        "query.requiredTags");
+            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                     "requiredTags cannot contain empty keys",
+                                                                     "query.requiredTags", {}, "sensing"));
     }
     for (const auto& tag : excludedTags) {
         if (tag.empty())
-            return sensingFailure<void>(eve::DiagnosticCode::InvalidArgument, "excludedTags cannot contain empty keys",
-                                        "query.excludedTags");
+            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                     "excludedTags cannot contain empty keys",
+                                                                     "query.excludedTags", {}, "sensing"));
     }
     for (const auto& faction : includeFactions) {
         if (faction.empty())
-            return sensingFailure<void>(eve::DiagnosticCode::InvalidArgument,
-                                        "includeFactions cannot contain empty keys", "query.includeFactions");
+            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                     "includeFactions cannot contain empty keys",
+                                                                     "query.includeFactions", {}, "sensing"));
     }
     for (const auto& faction : excludeFactions) {
         if (faction.empty())
-            return sensingFailure<void>(eve::DiagnosticCode::InvalidArgument,
-                                        "excludeFactions cannot contain empty keys", "query.excludeFactions");
+            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                     "excludeFactions cannot contain empty keys",
+                                                                     "query.excludeFactions", {}, "sensing"));
     }
     if (visibleTo && visibleTo->empty()) {
-        return sensingFailure<void>(eve::DiagnosticCode::InvalidArgument, "visibleTo cannot be empty when set",
-                                    "query.visibleTo");
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                 "visibleTo cannot be empty when set",
+                                                                 "query.visibleTo", {}, "sensing"));
     }
     const auto shapeOk = std::visit(
         [](const auto& value) -> eve::Result<void> {
             using T = std::decay_t<decltype(value)>;
             if constexpr (std::is_same_v<T, QueryCircle>) {
                 if (!finite(value.x) || !finite(value.y) || !finite(value.radius) || value.radius < 0.f) {
-                    return sensingFailure<void>(eve::DiagnosticCode::InvalidArgument,
-                                                "QueryCircle requires finite center and non-negative radius",
-                                                "query.shape");
+                    return eve::Result<void>::failure(eve::Diagnostic::error(
+                        eve::DiagnosticCode::InvalidArgument,
+                        "QueryCircle requires finite center and non-negative radius", "query.shape", {}, "sensing"));
                 }
             } else if constexpr (std::is_same_v<T, QueryBox>) {
                 if (!finite(value.minX) || !finite(value.minY) || !finite(value.maxX) || !finite(value.maxY) ||
                     value.minX > value.maxX || value.minY > value.maxY) {
-                    return sensingFailure<void>(eve::DiagnosticCode::InvalidArgument,
-                                                "QueryBox requires finite ordered bounds", "query.shape");
+                    return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                             "QueryBox requires finite ordered bounds",
+                                                                             "query.shape", {}, "sensing"));
                 }
             } else if constexpr (std::is_same_v<T, QueryCone>) {
                 if (!finite(value.x) || !finite(value.y) || !finite(value.dirX) || !finite(value.dirY) ||
                     !finite(value.halfAngle) || !finite(value.range) || value.halfAngle < 0.f ||
                     value.halfAngle > 3.14159265f || value.range < 0.f || !(std::hypot(value.dirX, value.dirY) > 0.f)) {
-                    return sensingFailure<void>(
+                    return eve::Result<void>::failure(eve::Diagnostic::error(
                         eve::DiagnosticCode::InvalidArgument,
                         "QueryCone requires finite apex/dir, halfAngle in [0,pi], non-negative range, non-zero dir",
-                        "query.shape");
+                        "query.shape", {}, "sensing"));
                 }
             }
             return eve::Result<void>::success();
@@ -239,8 +238,9 @@ eve::Result<void> QuerySpec::validate() const {
 eve::Result<void> SensingWorld::upsert(std::string_view id, float x, float y, std::string_view f, std::string_view t,
                                        std::string_view v) {
     if (id.empty() || !finite(x) || !finite(y)) {
-        return sensingFailure<void>(eve::DiagnosticCode::InvalidArgument,
-                                    "subject id and finite coordinates are required", "subject");
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                 "subject id and finite coordinates are required",
+                                                                 "subject", {}, "sensing"));
     }
     Subject subject{std::string(id), x, y, std::string(f), csv(t), csv(v)};
     subjects_[subject.id] = subject;
@@ -252,7 +252,8 @@ eve::Result<void> SensingWorld::remove(std::string_view id) {
     results_.clear();
     const std::string key(id);
     if (subjects_.erase(key) == 0)
-        return sensingFailure<void>(eve::DiagnosticCode::NotFound, "subject is not registered", "subject.id");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::NotFound, "subject is not registered", "subject.id", {}, "sensing"));
     unindexSubject(key);
     return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
 }
@@ -261,15 +262,18 @@ eve::Result<void> SensingWorld::setZones(std::string_view id, std::string_view z
     const std::string key(id);
     auto              it = subjects_.find(key);
     if (it == subjects_.end())
-        return sensingFailure<void>(eve::DiagnosticCode::NotFound, "subject is not registered", "subject.id");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::NotFound, "subject is not registered", "subject.id", {}, "sensing"));
     auto zones = csv(zonesCsv);
     for (const auto& zone : zones) {
         if (zone.empty())
-            return sensingFailure<void>(eve::DiagnosticCode::InvalidArgument, "zones cannot contain empty keys",
-                                        "subject.zones");
+            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                     "zones cannot contain empty keys", "subject.zones",
+                                                                     {}, "sensing"));
         if (!eve::LogicalId::parse(zone))
-            return sensingFailure<void>(eve::DiagnosticCode::InvalidArgument,
-                                        "zones entries must be valid LogicalId texts", "subject.zones");
+            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                     "zones entries must be valid LogicalId texts",
+                                                                     "subject.zones", {}, "sensing"));
     }
     it->second.zones = std::move(zones);
     return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
@@ -281,8 +285,9 @@ eve::Result<void> SensingWorld::setSpatialIndexEnabled(bool enabled, float cellS
         return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
     }
     if (!finite(cellSize) || !(cellSize > 0.f)) {
-        return sensingFailure<void>(eve::DiagnosticCode::InvalidArgument,
-                                    "spatial index cellSize must be finite and > 0", "spatial.cellSize");
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                 "spatial index cellSize must be finite and > 0",
+                                                                 "spatial.cellSize", {}, "sensing"));
     }
     clearSpatialIndex();
     spatialIndex_ = std::make_unique<eve::spatial::SpatialHash2D>(cellSize);
@@ -400,10 +405,11 @@ void SensingWorld::publishResults(std::vector<RankedCandidate> ranked) {
 
 eve::Result<CandidateQueryResult> SensingWorld::query(const QueryOrigin& origin, const QuerySpec& spec) {
     auto valid = spec.validate();
-    if (!valid) return sensingFailure<CandidateQueryResult>(valid.status());
+    if (!valid) return eve::Result<CandidateQueryResult>::failure(valid.status());
     if (!finite(origin.x) || !finite(origin.y)) {
-        return sensingFailure<CandidateQueryResult>(eve::DiagnosticCode::InvalidArgument,
-                                                    "QueryOrigin coordinates must be finite", "query.origin");
+        return eve::Result<CandidateQueryResult>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "QueryOrigin coordinates must be finite",
+                                   "query.origin", {}, "sensing"));
     }
 
     std::vector<const Subject*> candidates;
@@ -448,14 +454,15 @@ eve::Result<CandidateQueryResult> SensingWorld::query(const QueryOrigin& origin,
     if (spec.countPolicy == CountPolicy::TruncateToMax) {
         if (ranked.size() > static_cast<std::size_t>(spec.maxCount)) ranked.resize(static_cast<std::size_t>(spec.maxCount));
         if (ranked.size() < static_cast<std::size_t>(spec.minCount)) {
-            return sensingFailure<CandidateQueryResult>(
+            return eve::Result<CandidateQueryResult>::failure(eve::Diagnostic::error(
                 eve::DiagnosticCode::PreconditionViolation,
-                "candidate count is below QuerySpec.minCount after truncation", "query.count");
+                "candidate count is below QuerySpec.minCount after truncation", "query.count", {}, "sensing"));
         }
     } else if (ranked.size() < static_cast<std::size_t>(spec.minCount) ||
                ranked.size() > static_cast<std::size_t>(spec.maxCount)) {
-        return sensingFailure<CandidateQueryResult>(eve::DiagnosticCode::PreconditionViolation,
-                                                    "candidate count violates QuerySpec count policy", "query.count");
+        return eve::Result<CandidateQueryResult>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation,
+                                   "candidate count violates QuerySpec count policy", "query.count", {}, "sensing"));
     }
 
     lastQuery_.usedSpatial = usedSpatial;
@@ -479,20 +486,20 @@ eve::Result<CandidateQueryResult> SensingWorld::query(const QueryOrigin& origin,
 eve::Result<int> SensingWorld::circle(float x, float y, float radius, std::string_view r, std::string_view e,
                                       std::string_view i, std::string_view ef, std::string_view v, int limit) {
     auto spec = circleSpec(x, y, radius, r, e, i, ef, v, limit);
-    if (!spec) return sensingFailure<int>(spec.status());
+    if (!spec) return eve::Result<int>::failure(spec.status());
     auto result = query(QueryOrigin{x, y, std::nullopt}, std::move(spec).takeValue());
-    if (!result) return sensingFailure<int>(result.status());
+    if (!result) return eve::Result<int>::failure(result.status());
     return eve::Result<int>::success(static_cast<int>(std::move(result).takeValue().size()));
 }
 
 eve::Result<int> SensingWorld::box(float a, float b, float c, float d, std::string_view r, std::string_view e,
                                    std::string_view i, std::string_view ef, std::string_view v, int limit) {
     auto spec = boxSpec(a, b, c, d, r, e, i, ef, v, limit);
-    if (!spec) return sensingFailure<int>(spec.status());
+    if (!spec) return eve::Result<int>::failure(spec.status());
     const float originX = (a + c) * 0.5f;
     const float originY = (b + d) * 0.5f;
     auto        result  = query(QueryOrigin{originX, originY, std::nullopt}, std::move(spec).takeValue());
-    if (!result) return sensingFailure<int>(result.status());
+    if (!result) return eve::Result<int>::failure(result.status());
     return eve::Result<int>::success(static_cast<int>(std::move(result).takeValue().size()));
 }
 
@@ -504,7 +511,7 @@ eve::Result<int> SensingWorld::executePreset(std::string_view presetId, float or
     context.dirX   = dirX;
     context.dirY   = dirY;
     auto executed  = TargetingPipeline::sharedBuiltins().executePreset(context, presetId);
-    if (!executed) return sensingFailure<int>(executed.status());
+    if (!executed) return eve::Result<int>::failure(executed.status());
     auto rankedResult = std::move(executed).takeValue();
     std::vector<RankedCandidate> ranked(rankedResult.ranked().begin(), rankedResult.ranked().end());
     const int count = static_cast<int>(ranked.size());
@@ -599,7 +606,8 @@ eve::script::Borrowed<SensingWorld> Sensing::resolve(SensingWorldHandleRef refer
 eve::Result<void> Sensing::release(SensingWorldHandleRef reference) {
     Sensing* module = ModuleManager::getInstance<Sensing>("Sensing");
     if (!module)
-        return sensingFailure<void>(eve::DiagnosticCode::StaleHandle, "Sensing module is no longer loaded", "world");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::StaleHandle, "Sensing module is no longer loaded", "world", {}, "sensing"));
     return module->worlds_.erase(reference);
 }
 
@@ -635,43 +643,46 @@ void Sensing::expose(ssq::Table& t) {
     w.addFunc("isStale", [](ScriptSensingWorld* value) { return !value || Sensing::isStale(value->reference); });
     w.addFunc("release", [vm](ScriptSensingWorld* value) {
         if (!value)
-            return eve::script::projectResult(
-                vm, sensingFailure<void>(eve::DiagnosticCode::InvalidArgument, "sensing world proxy must not be null",
-                                         "world"));
+            return eve::script::projectResult(vm, eve::Result<void>::failure(eve::Diagnostic::error(
+                                                      eve::DiagnosticCode::InvalidArgument,
+                                                      "sensing world proxy must not be null", "world", {}, "sensing")));
         return eve::script::projectResult(vm, Sensing::release(value->reference));
     });
     w.addFunc("upsert", [vm](ScriptSensingWorld* value, const std::string& id, float x, float y,
                              const std::string& faction, const std::string& tags, const std::string& visibleTo) {
         if (!value)
-            return eve::script::projectResult(
-                vm, sensingFailure<void>(eve::DiagnosticCode::InvalidArgument, "sensing world proxy must not be null",
-                                         "world"));
+            return eve::script::projectResult(vm, eve::Result<void>::failure(eve::Diagnostic::error(
+                                                      eve::DiagnosticCode::InvalidArgument,
+                                                      "sensing world proxy must not be null", "world", {}, "sensing")));
         auto world = Sensing::resolve(value->reference);
         if (!world.isBound())
             return eve::script::projectResult(
-                vm, sensingFailure<void>(eve::DiagnosticCode::StaleHandle, "sensing world handle is stale", "world"));
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(
+                        eve::DiagnosticCode::StaleHandle, "sensing world handle is stale", "world", {}, "sensing")));
         return eve::script::projectResult(vm, world->upsert(id, x, y, faction, tags, visibleTo));
     });
     w.addFunc("remove", [vm](ScriptSensingWorld* value, const std::string& id) {
         if (!value)
-            return eve::script::projectResult(
-                vm, sensingFailure<void>(eve::DiagnosticCode::InvalidArgument, "sensing world proxy must not be null",
-                                         "world"));
+            return eve::script::projectResult(vm, eve::Result<void>::failure(eve::Diagnostic::error(
+                                                      eve::DiagnosticCode::InvalidArgument,
+                                                      "sensing world proxy must not be null", "world", {}, "sensing")));
         auto world = Sensing::resolve(value->reference);
         if (!world.isBound())
             return eve::script::projectResult(
-                vm, sensingFailure<void>(eve::DiagnosticCode::StaleHandle, "sensing world handle is stale", "world"));
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(
+                        eve::DiagnosticCode::StaleHandle, "sensing world handle is stale", "world", {}, "sensing")));
         return eve::script::projectResult(vm, world->remove(id));
     });
     w.addFunc("setZones", [vm](ScriptSensingWorld* value, const std::string& id, const std::string& zones) {
         if (!value)
-            return eve::script::projectResult(
-                vm, sensingFailure<void>(eve::DiagnosticCode::InvalidArgument, "sensing world proxy must not be null",
-                                         "world"));
+            return eve::script::projectResult(vm, eve::Result<void>::failure(eve::Diagnostic::error(
+                                                      eve::DiagnosticCode::InvalidArgument,
+                                                      "sensing world proxy must not be null", "world", {}, "sensing")));
         auto world = Sensing::resolve(value->reference);
         if (!world.isBound())
             return eve::script::projectResult(
-                vm, sensingFailure<void>(eve::DiagnosticCode::StaleHandle, "sensing world handle is stale", "world"));
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(
+                        eve::DiagnosticCode::StaleHandle, "sensing world handle is stale", "world", {}, "sensing")));
         return eve::script::projectResult(vm, world->setZones(id, zones));
     });
     auto projectCount = [vm](eve::Result<int>&& result) {
@@ -684,13 +695,16 @@ void Sensing::expose(ssq::Table& t) {
                                            const std::string& visibleTo, int limit) {
         if (!value)
             return eve::script::projectResult(vm,
-                                              sensingFailure<int>(eve::DiagnosticCode::InvalidArgument,
-                                                                  "sensing world proxy must not be null", "world"),
+                                              eve::Result<int>::failure(eve::Diagnostic::error(
+                                                  eve::DiagnosticCode::InvalidArgument,
+                                                  "sensing world proxy must not be null", "world", {}, "sensing")),
                                               [](int count) { return eve::Value(static_cast<std::int64_t>(count)); });
         auto world = Sensing::resolve(value->reference);
         if (!world.isBound())
             return eve::script::projectResult(
-                vm, sensingFailure<int>(eve::DiagnosticCode::StaleHandle, "sensing world handle is stale", "world"),
+                vm,
+                eve::Result<int>::failure(eve::Diagnostic::error(
+                    eve::DiagnosticCode::StaleHandle, "sensing world handle is stale", "world", {}, "sensing")),
                 [](int count) { return eve::Value(static_cast<std::int64_t>(count)); });
         return projectCount(
             world->circle(x, y, radius, required, excluded, includedFactions, excludedFactions, visibleTo, limit));
@@ -701,13 +715,16 @@ void Sensing::expose(ssq::Table& t) {
                                         const std::string& visibleTo, int limit) {
         if (!value)
             return eve::script::projectResult(vm,
-                                              sensingFailure<int>(eve::DiagnosticCode::InvalidArgument,
-                                                                  "sensing world proxy must not be null", "world"),
+                                              eve::Result<int>::failure(eve::Diagnostic::error(
+                                                  eve::DiagnosticCode::InvalidArgument,
+                                                  "sensing world proxy must not be null", "world", {}, "sensing")),
                                               [](int count) { return eve::Value(static_cast<std::int64_t>(count)); });
         auto world = Sensing::resolve(value->reference);
         if (!world.isBound())
             return eve::script::projectResult(
-                vm, sensingFailure<int>(eve::DiagnosticCode::StaleHandle, "sensing world handle is stale", "world"),
+                vm,
+                eve::Result<int>::failure(eve::Diagnostic::error(
+                    eve::DiagnosticCode::StaleHandle, "sensing world handle is stale", "world", {}, "sensing")),
                 [](int count) { return eve::Value(static_cast<std::int64_t>(count)); });
         return projectCount(world->box(minX, minY, maxX, maxY, required, excluded, includedFactions, excludedFactions,
                                        visibleTo, limit));
@@ -716,13 +733,16 @@ void Sensing::expose(ssq::Table& t) {
                                                   float originY, float dirX, float dirY) {
         if (!value)
             return eve::script::projectResult(vm,
-                                              sensingFailure<int>(eve::DiagnosticCode::InvalidArgument,
-                                                                  "sensing world proxy must not be null", "world"),
+                                              eve::Result<int>::failure(eve::Diagnostic::error(
+                                                  eve::DiagnosticCode::InvalidArgument,
+                                                  "sensing world proxy must not be null", "world", {}, "sensing")),
                                               [](int count) { return eve::Value(static_cast<std::int64_t>(count)); });
         auto world = Sensing::resolve(value->reference);
         if (!world.isBound())
             return eve::script::projectResult(
-                vm, sensingFailure<int>(eve::DiagnosticCode::StaleHandle, "sensing world handle is stale", "world"),
+                vm,
+                eve::Result<int>::failure(eve::Diagnostic::error(
+                    eve::DiagnosticCode::StaleHandle, "sensing world handle is stale", "world", {}, "sensing")),
                 [](int count) { return eve::Value(static_cast<std::int64_t>(count)); });
         return projectCount(world->executePreset(presetId, originX, originY, dirX, dirY));
     });
@@ -735,40 +755,43 @@ void Sensing::expose(ssq::Table& t) {
     });
     w.addFunc("snapshotJson", [vm](ScriptSensingWorld* value) {
         if (!value)
-            return eve::script::projectResult(
-                vm,
-                sensingFailure<std::string>(eve::DiagnosticCode::InvalidArgument,
-                                            "sensing world proxy must not be null", "world"),
-                [](std::string text) { return eve::Value(std::move(text)); });
+            return eve::script::projectResult(vm,
+                                              eve::Result<std::string>::failure(eve::Diagnostic::error(
+                                                  eve::DiagnosticCode::InvalidArgument,
+                                                  "sensing world proxy must not be null", "world", {}, "sensing")),
+                                              [](std::string text) { return eve::Value(std::move(text)); });
         auto world = Sensing::resolve(value->reference);
         if (!world.isBound())
             return eve::script::projectResult(
                 vm,
-                sensingFailure<std::string>(eve::DiagnosticCode::StaleHandle, "sensing world handle is stale", "world"),
+                eve::Result<std::string>::failure(eve::Diagnostic::error(
+                    eve::DiagnosticCode::StaleHandle, "sensing world handle is stale", "world", {}, "sensing")),
                 [](std::string text) { return eve::Value(std::move(text)); });
         return eve::script::projectResult(vm, eve::Result<std::string>::success(world->snapshotJson()),
                                           [](std::string text) { return eve::Value(std::move(text)); });
     });
     w.addFunc("restoreJson", [vm](ScriptSensingWorld* value, const std::string& json) {
         if (!value)
-            return eve::script::projectResult(
-                vm, sensingFailure<void>(eve::DiagnosticCode::InvalidArgument, "sensing world proxy must not be null",
-                                         "world"));
+            return eve::script::projectResult(vm, eve::Result<void>::failure(eve::Diagnostic::error(
+                                                      eve::DiagnosticCode::InvalidArgument,
+                                                      "sensing world proxy must not be null", "world", {}, "sensing")));
         auto world = Sensing::resolve(value->reference);
         if (!world.isBound())
             return eve::script::projectResult(
-                vm, sensingFailure<void>(eve::DiagnosticCode::StaleHandle, "sensing world handle is stale", "world"));
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(
+                        eve::DiagnosticCode::StaleHandle, "sensing world handle is stale", "world", {}, "sensing")));
         return eve::script::projectResult(vm, world->restoreJson(json));
     });
     w.addFunc("setSpatialIndexEnabled", [vm](ScriptSensingWorld* value, bool enabled, float cellSize) {
         if (!value)
-            return eve::script::projectResult(
-                vm, sensingFailure<void>(eve::DiagnosticCode::InvalidArgument, "sensing world proxy must not be null",
-                                         "world"));
+            return eve::script::projectResult(vm, eve::Result<void>::failure(eve::Diagnostic::error(
+                                                      eve::DiagnosticCode::InvalidArgument,
+                                                      "sensing world proxy must not be null", "world", {}, "sensing")));
         auto world = Sensing::resolve(value->reference);
         if (!world.isBound())
             return eve::script::projectResult(
-                vm, sensingFailure<void>(eve::DiagnosticCode::StaleHandle, "sensing world handle is stale", "world"));
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(
+                        eve::DiagnosticCode::StaleHandle, "sensing world handle is stale", "world", {}, "sensing")));
         return eve::script::projectResult(vm, world->setSpatialIndexEnabled(enabled, cellSize));
     });
     w.addFunc("spatialIndexEnabled", [](ScriptSensingWorld* value) {
@@ -778,16 +801,17 @@ void Sensing::expose(ssq::Table& t) {
     });
     w.addFunc("debugLastQueryJson", [vm](ScriptSensingWorld* value) {
         if (!value)
-            return eve::script::projectResult(
-                vm,
-                sensingFailure<std::string>(eve::DiagnosticCode::InvalidArgument,
-                                            "sensing world proxy must not be null", "world"),
-                [](std::string text) { return eve::Value(std::move(text)); });
+            return eve::script::projectResult(vm,
+                                              eve::Result<std::string>::failure(eve::Diagnostic::error(
+                                                  eve::DiagnosticCode::InvalidArgument,
+                                                  "sensing world proxy must not be null", "world", {}, "sensing")),
+                                              [](std::string text) { return eve::Value(std::move(text)); });
         auto world = Sensing::resolve(value->reference);
         if (!world.isBound())
             return eve::script::projectResult(
                 vm,
-                sensingFailure<std::string>(eve::DiagnosticCode::StaleHandle, "sensing world handle is stale", "world"),
+                eve::Result<std::string>::failure(eve::Diagnostic::error(
+                    eve::DiagnosticCode::StaleHandle, "sensing world handle is stale", "world", {}, "sensing")),
                 [](std::string text) { return eve::Value(std::move(text)); });
         return eve::script::projectResult(vm, eve::Result<std::string>::success(world->debugLastQueryJson()),
                                           [](std::string text) { return eve::Value(std::move(text)); });

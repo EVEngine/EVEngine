@@ -10,11 +10,6 @@
 namespace eve::animation_editing {
 namespace {
 
-template <class T>
-EditorResult<T> clipError(EditorStatus status, const char* rule, std::string message) {
-    return eve::editing::failed<T>(status, RuleId(rule), std::move(message));
-}
-
 const EditorValue* field(const EditorValue& value, const char* key) {
     const auto* object = value.getIf<EditorValue::Object>();
     if (!object) return nullptr;
@@ -56,17 +51,20 @@ EditorResult<AnimationTransformKey> parseKey(const EditorValue& value) {
         !readNumber(value, "py", py) || !readNumber(value, "pz", pz) || !readNumber(value, "rx", rx) ||
         !readNumber(value, "ry", ry) || !readNumber(value, "rz", rz) || !readNumber(value, "rw", rw) ||
         !readNumber(value, "sx", sx) || !readNumber(value, "sy", sy) || !readNumber(value, "sz", sz))
-        return clipError<AnimationTransformKey>(EditorStatus::Rejected, "editor.animation.invalid-key",
-                                                "Transform key requires a stable id, time and complete TRS");
+        return eve::editing::failed<AnimationTransformKey>(EditorStatus::Rejected,
+                                                           RuleId("editor.animation.invalid-key"),
+                                                           "Transform key requires a stable id, time and complete TRS");
     const double values[]{time, px, py, pz, rx, ry, rz, rw, sx, sy, sz};
     for (double component : values)
         if (!std::isfinite(component))
-            return clipError<AnimationTransformKey>(EditorStatus::Rejected, "editor.animation.nonfinite-key",
-                                                    "Transform key components must be finite");
+            return eve::editing::failed<AnimationTransformKey>(EditorStatus::Rejected,
+                                                               RuleId("editor.animation.nonfinite-key"),
+                                                               "Transform key components must be finite");
     const double length = std::sqrt(rx * rx + ry * ry + rz * rz + rw * rw);
     if (time < 0.0 || sx <= 0.0 || sy <= 0.0 || sz <= 0.0 || length < 1e-8)
-        return clipError<AnimationTransformKey>(EditorStatus::Rejected, "editor.animation.invalid-key-range",
-                                                "Key time must be non-negative, scale positive and rotation non-zero");
+        return eve::editing::failed<AnimationTransformKey>(
+            EditorStatus::Rejected, RuleId("editor.animation.invalid-key-range"),
+            "Key time must be non-negative, scale positive and rotation non-zero");
     return eve::editing::applied<AnimationTransformKey>({StableId(*id), time, px, py, pz,
                                                           rx / length, ry / length, rz / length, rw / length,
                                                           sx, sy, sz});
@@ -84,15 +82,17 @@ EditorResult<AnimationBoneTrack> parseTrack(const EditorValue& value) {
     const EditorValue* keyEntry = field(value, "keys");
     const auto* keys = keyEntry ? keyEntry->getIf<EditorValue::Array>() : nullptr;
     if (!id || id->empty() || !bone || bone->empty() || !keys)
-        return clipError<AnimationBoneTrack>(EditorStatus::Rejected, "editor.animation.invalid-track",
-                                             "Bone track requires stable id, bone name and keys");
+        return eve::editing::failed<AnimationBoneTrack>(EditorStatus::Rejected,
+                                                        RuleId("editor.animation.invalid-track"),
+                                                        "Bone track requires stable id, bone name and keys");
     AnimationBoneTrack result{StableId(*id), *bone, {}};
     std::set<StableId> ids;
     for (const auto& entry : *keys) {
         auto key = parseKey(entry);
         if (!key.ok() || !ids.insert(key.value().id).second)
-            return clipError<AnimationBoneTrack>(EditorStatus::Rejected, "editor.animation.duplicate-key",
-                                                 "Transform key ids must be unique inside a track");
+            return eve::editing::failed<AnimationBoneTrack>(EditorStatus::Rejected,
+                                                            RuleId("editor.animation.duplicate-key"),
+                                                            "Transform key ids must be unique inside a track");
         result.keys.push_back(std::move(key).value());
     }
     std::sort(result.keys.begin(), result.keys.end(), [](const auto& a, const auto& b) {
@@ -113,8 +113,9 @@ EditorResult<AnimationEventRecord> parseEvent(const EditorValue& value) {
     const auto* payload = stringField(value, "payload");
     if (!id || id->empty() || !readNumber(value, "time", time) || !std::isfinite(time) || time < 0.0 ||
         !name || name->empty() || !payload)
-        return clipError<AnimationEventRecord>(EditorStatus::Rejected, "editor.animation.invalid-event",
-                                               "Event requires stable id, non-negative time, name and payload");
+        return eve::editing::failed<AnimationEventRecord>(
+            EditorStatus::Rejected, RuleId("editor.animation.invalid-event"),
+            "Event requires stable id, non-negative time, name and payload");
     return eve::editing::applied<AnimationEventRecord>({StableId(*id), time, *name, *payload});
 }
 
@@ -167,40 +168,58 @@ void* AnimationClipDocumentTarget::queryCapability(const CapabilityId& capabilit
 
 EditorResult<void> AnimationClipDocumentTarget::applyDomainOperation(const DomainOperation& op) {
     if (op.target != TargetId(id_))
-        return clipError<void>(EditorStatus::Rejected, "editor.animation.target-mismatch", "Operation targets another clip");
+        return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.animation.target-mismatch"),
+                                          "Operation targets another clip");
     if (op.type == "animation.clip.settings.v1") {
         double duration = 0, rate = 0;
         const EditorValue* loopEntry = field(op.payload, "loop"); const auto* loop = loopEntry ? loopEntry->getIf<bool>() : nullptr;
         if (!readNumber(op.payload, "duration", duration) || !readNumber(op.payload, "sampleRate", rate) ||
             !loop || !std::isfinite(duration) || !std::isfinite(rate) || duration <= 0.0 || rate <= 0.0)
-            return clipError<void>(EditorStatus::Rejected, "editor.animation.invalid-settings", "Duration and sample rate must be positive");
+            return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.animation.invalid-settings"),
+                                              "Duration and sample rate must be positive");
         duration_ = duration; sampleRate_ = rate; loop_ = *loop;
     } else if (op.type == "animation.clip.track.set.v1") {
-        auto track = parseTrack(op.payload); if (!track.ok()) return clipError<void>(track.code(), "editor.animation.invalid-track", "Track payload is invalid");
+        auto track = parseTrack(op.payload);
+        if (!track.ok())
+            return eve::editing::failed<void>(track.code(), RuleId("editor.animation.invalid-track"),
+                                              "Track payload is invalid");
         for (const auto& key : track.value().keys)
-            if (key.time > duration_) return clipError<void>(EditorStatus::Rejected, "editor.animation.key-after-duration", "Track key exceeds clip duration");
+            if (key.time > duration_)
+                return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.animation.key-after-duration"),
+                                                  "Track key exceeds clip duration");
         for (const auto& [id, current] : tracks_)
             if (id != track.value().id && current.bone == track.value().bone)
-                return clipError<void>(EditorStatus::Conflict, "editor.animation.duplicate-bone-track", "A bone may have only one track");
+                return eve::editing::failed<void>(EditorStatus::Conflict,
+                                                  RuleId("editor.animation.duplicate-bone-track"),
+                                                  "A bone may have only one track");
         auto trackRecord = std::move(track).value(); tracks_[trackRecord.id] = std::move(trackRecord);
     } else if (op.type == "animation.clip.track.delete.v1") {
         auto track = parseTrack(op.payload); if (!track.ok() || !tracks_.erase(track.value().id))
-            return clipError<void>(EditorStatus::NotFound, "editor.animation.track-not-found", "Bone track was not found");
+            return eve::editing::failed<void>(EditorStatus::NotFound, RuleId("editor.animation.track-not-found"),
+                                              "Bone track was not found");
     } else if (op.type == "animation.clip.event.set.v1") {
-        auto event = parseEvent(op.payload); if (!event.ok()) return clipError<void>(event.code(), "editor.animation.invalid-event", "Event payload is invalid");
-        if (event.value().time > duration_) return clipError<void>(EditorStatus::Rejected, "editor.animation.event-after-duration", "Event exceeds clip duration");
+        auto event = parseEvent(op.payload);
+        if (!event.ok())
+            return eve::editing::failed<void>(event.code(), RuleId("editor.animation.invalid-event"),
+                                              "Event payload is invalid");
+        if (event.value().time > duration_)
+            return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.animation.event-after-duration"),
+                                              "Event exceeds clip duration");
         auto eventRecord = std::move(event).value(); events_[eventRecord.id] = std::move(eventRecord);
     } else if (op.type == "animation.clip.event.delete.v1") {
         auto event = parseEvent(op.payload); if (!event.ok() || !events_.erase(event.value().id))
-            return clipError<void>(EditorStatus::NotFound, "editor.animation.event-not-found", "Event was not found");
+            return eve::editing::failed<void>(EditorStatus::NotFound, RuleId("editor.animation.event-not-found"),
+                                              "Event was not found");
     } else if (op.type == "animation.clip.mask.set.v1") {
         const auto* bone = stringField(op.payload, "bone"); double weight = 0;
         if (!bone || bone->empty() || !readNumber(op.payload, "weight", weight) || !std::isfinite(weight) ||
             weight < 0.0 || weight > 1.0)
-            return clipError<void>(EditorStatus::Rejected, "editor.animation.invalid-mask", "Mask weight must be in [0, 1]");
+            return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.animation.invalid-mask"),
+                                              "Mask weight must be in [0, 1]");
         mask_[*bone] = weight;
     } else {
-        return clipError<void>(EditorStatus::Unsupported, "editor.animation.unsupported-operation", "Unsupported clip operation");
+        return eve::editing::failed<void>(EditorStatus::Unsupported, RuleId("editor.animation.unsupported-operation"),
+                                          "Unsupported clip operation");
     }
     bumpRevision(); widenDirty(0, 0); return eve::editing::applied<void>();
 }
@@ -211,48 +230,72 @@ std::unique_ptr<IDomainOperationTarget> AnimationClipDocumentTarget::cloneDomain
 
 EditorResult<void> AnimationClipDocumentTarget::commitDomainState(std::unique_ptr<IDomainOperationTarget> candidate) {
     auto* clip = dynamic_cast<AnimationClipDocumentTarget*>(candidate.get());
-    if (!clip || clip->id_ != id_) return clipError<void>(EditorStatus::Rejected, "editor.animation.invalid-candidate", "Candidate is not this clip document");
+    if (!clip || clip->id_ != id_)
+        return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.animation.invalid-candidate"),
+                                          "Candidate is not this clip document");
     *this = std::move(*clip); return eve::editing::applied<void>();
 }
 
 EditorResult<DomainOperation> AnimationClipDocumentTarget::makeSetSettings(double duration, double sampleRate, bool loop) const {
     if (!std::isfinite(duration) || !std::isfinite(sampleRate) || duration <= 0.0 || sampleRate <= 0.0)
-        return clipError<DomainOperation>(EditorStatus::Rejected, "editor.animation.invalid-settings", "Duration and sample rate must be positive");
+        return eve::editing::failed<DomainOperation>(EditorStatus::Rejected,
+                                                     RuleId("editor.animation.invalid-settings"),
+                                                     "Duration and sample rate must be positive");
     for (const auto& [id, track] : tracks_) { static_cast<void>(id); for (const auto& key : track.keys)
-        if (key.time > duration) return clipError<DomainOperation>(EditorStatus::Rejected, "editor.animation.duration-truncates-key", "New duration would truncate a transform key"); }
+            if (key.time > duration)
+                return eve::editing::failed<DomainOperation>(EditorStatus::Rejected,
+                                                             RuleId("editor.animation.duration-truncates-key"),
+                                                             "New duration would truncate a transform key");
+    }
     for (const auto& [id, event] : events_) { static_cast<void>(id); if (event.time > duration)
-        return clipError<DomainOperation>(EditorStatus::Rejected, "editor.animation.duration-truncates-event", "New duration would truncate an event"); }
+            return eve::editing::failed<DomainOperation>(EditorStatus::Rejected,
+                                                         RuleId("editor.animation.duration-truncates-event"),
+                                                         "New duration would truncate an event");
+    }
     return eve::editing::applied<DomainOperation>(operation("animation.clip.settings.v1", "animation.clip.settings.v1", id_,
         settingsValue(duration, sampleRate, loop), settingsValue(duration_, sampleRate_, loop_), "settings"));
 }
 
 EditorResult<DomainOperation> AnimationClipDocumentTarget::makeSetTrack(const AnimationBoneTrack& track) const {
-    auto parsed = parseTrack(trackValue(track)); if (!parsed.ok()) return clipError<DomainOperation>(parsed.code(), "editor.animation.invalid-track", "Track is invalid");
+    auto parsed = parseTrack(trackValue(track));
+    if (!parsed.ok())
+        return eve::editing::failed<DomainOperation>(parsed.code(), RuleId("editor.animation.invalid-track"),
+                                                     "Track is invalid");
     const auto old = tracks_.find(track.id); EditorValue inverse = old == tracks_.end() ? trackValue(track) : trackValue(old->second);
     return eve::editing::applied<DomainOperation>(operation("animation.clip.track.set.v1",
         old == tracks_.end() ? "animation.clip.track.delete.v1" : "animation.clip.track.set.v1", id_, trackValue(parsed.value()), std::move(inverse), track.id.value()));
 }
 
 EditorResult<DomainOperation> AnimationClipDocumentTarget::makeDeleteTrack(const StableId& id) const {
-    const auto found = tracks_.find(id); if (found == tracks_.end()) return clipError<DomainOperation>(EditorStatus::NotFound, "editor.animation.track-not-found", "Bone track was not found");
+    const auto found = tracks_.find(id);
+    if (found == tracks_.end())
+        return eve::editing::failed<DomainOperation>(EditorStatus::NotFound, RuleId("editor.animation.track-not-found"),
+                                                     "Bone track was not found");
     return eve::editing::applied<DomainOperation>(operation("animation.clip.track.delete.v1", "animation.clip.track.set.v1", id_, trackValue(found->second), trackValue(found->second), id.value()));
 }
 
 EditorResult<DomainOperation> AnimationClipDocumentTarget::makeSetEvent(const AnimationEventRecord& event) const {
-    auto parsed = parseEvent(eventValue(event)); if (!parsed.ok()) return clipError<DomainOperation>(parsed.code(), "editor.animation.invalid-event", "Event is invalid");
+    auto parsed = parseEvent(eventValue(event));
+    if (!parsed.ok())
+        return eve::editing::failed<DomainOperation>(parsed.code(), RuleId("editor.animation.invalid-event"),
+                                                     "Event is invalid");
     const auto old = events_.find(event.id); EditorValue inverse = old == events_.end() ? eventValue(event) : eventValue(old->second);
     return eve::editing::applied<DomainOperation>(operation("animation.clip.event.set.v1",
         old == events_.end() ? "animation.clip.event.delete.v1" : "animation.clip.event.set.v1", id_, eventValue(parsed.value()), std::move(inverse), event.id.value()));
 }
 
 EditorResult<DomainOperation> AnimationClipDocumentTarget::makeDeleteEvent(const StableId& id) const {
-    const auto found = events_.find(id); if (found == events_.end()) return clipError<DomainOperation>(EditorStatus::NotFound, "editor.animation.event-not-found", "Event was not found");
+    const auto found = events_.find(id);
+    if (found == events_.end())
+        return eve::editing::failed<DomainOperation>(EditorStatus::NotFound, RuleId("editor.animation.event-not-found"),
+                                                     "Event was not found");
     return eve::editing::applied<DomainOperation>(operation("animation.clip.event.delete.v1", "animation.clip.event.set.v1", id_, eventValue(found->second), eventValue(found->second), id.value()));
 }
 
 EditorResult<DomainOperation> AnimationClipDocumentTarget::makeSetMask(const AnimationMaskEntry& mask) const {
     if (mask.bone.empty() || !std::isfinite(mask.weight) || mask.weight < 0.0 || mask.weight > 1.0)
-        return clipError<DomainOperation>(EditorStatus::Rejected, "editor.animation.invalid-mask", "Mask weight must be in [0, 1]");
+        return eve::editing::failed<DomainOperation>(EditorStatus::Rejected, RuleId("editor.animation.invalid-mask"),
+                                                     "Mask weight must be in [0, 1]");
     const auto old = mask_.find(mask.bone); const double oldWeight = old == mask_.end() ? 1.0 : old->second;
     return eve::editing::applied<DomainOperation>(operation("animation.clip.mask.set.v1", "animation.clip.mask.set.v1", id_,
         EditorValue::Object{{"bone", mask.bone}, {"weight", mask.weight}}, EditorValue::Object{{"bone", mask.bone}, {"weight", oldWeight}}, mask.bone));
@@ -323,16 +366,49 @@ EditorResult<void> AnimationClipDocumentTarget::loadSnapshot(const EditorValue& 
     const EditorValue* versionEntry = field(snapshot, "schemaVersion"); const auto* version = versionEntry ? versionEntry->getIf<int64_t>() : nullptr;
     const EditorValue* settings = field(snapshot, "settings"); const EditorValue* tracksEntry = field(snapshot, "tracks"); const EditorValue* eventsEntry = field(snapshot, "events"); const EditorValue* masksEntry = field(snapshot, "masks");
     const auto* tracks = tracksEntry ? tracksEntry->getIf<EditorValue::Array>() : nullptr; const auto* events = eventsEntry ? eventsEntry->getIf<EditorValue::Array>() : nullptr; const auto* masks = masksEntry ? masksEntry->getIf<EditorValue::Array>() : nullptr;
-    if (!version || *version != 1 || !settings || !tracks || !events || !masks) return clipError<void>(EditorStatus::Unsupported, "editor.animation.invalid-snapshot", "Clip snapshot schema is unsupported");
+    if (!version || *version != 1 || !settings || !tracks || !events || !masks)
+        return eve::editing::failed<void>(EditorStatus::Unsupported, RuleId("editor.animation.invalid-snapshot"),
+                                          "Clip snapshot schema is unsupported");
     double duration = 0, rate = 0;
     const EditorValue* loopEntry = field(*settings, "loop"); const auto* loop = loopEntry ? loopEntry->getIf<bool>() : nullptr;
     if (!readNumber(*settings, "duration", duration) || !readNumber(*settings, "sampleRate", rate) || !loop)
-        return clipError<void>(EditorStatus::Rejected, "editor.animation.invalid-settings", "Clip snapshot settings are incomplete");
+        return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.animation.invalid-settings"),
+                                          "Clip snapshot settings are incomplete");
     AnimationClipDocumentTarget candidate(id_); auto settingsOp = candidate.makeSetSettings(duration, rate, *loop);
-    if (!settingsOp.ok() || !candidate.applyDomainOperation(settingsOp.value()).ok()) return clipError<void>(EditorStatus::Rejected, "editor.animation.invalid-settings", "Clip snapshot settings are invalid");
-    for (const auto& entry : *tracks) { auto parsed = parseTrack(entry); if (!parsed.ok()) return clipError<void>(EditorStatus::Rejected, "editor.animation.invalid-track", "Clip snapshot contains invalid track"); auto op = candidate.makeSetTrack(parsed.value()); if (!op.ok() || !candidate.applyDomainOperation(op.value()).ok()) return clipError<void>(EditorStatus::Rejected, "editor.animation.invalid-track", "Clip snapshot track cannot be applied"); }
-    for (const auto& entry : *events) { auto parsed = parseEvent(entry); if (!parsed.ok()) return clipError<void>(EditorStatus::Rejected, "editor.animation.invalid-event", "Clip snapshot contains invalid event"); auto op = candidate.makeSetEvent(parsed.value()); if (!op.ok() || !candidate.applyDomainOperation(op.value()).ok()) return clipError<void>(EditorStatus::Rejected, "editor.animation.invalid-event", "Clip snapshot event cannot be applied"); }
-    for (const auto& entry : *masks) { const auto* bone = stringField(entry, "bone"); double weight = 0; if (!bone || !readNumber(entry, "weight", weight)) return clipError<void>(EditorStatus::Rejected, "editor.animation.invalid-mask", "Clip snapshot contains invalid mask"); auto op = candidate.makeSetMask({*bone, weight}); if (!op.ok() || !candidate.applyDomainOperation(op.value()).ok()) return clipError<void>(EditorStatus::Rejected, "editor.animation.invalid-mask", "Clip snapshot mask cannot be applied"); }
+    if (!settingsOp.ok() || !candidate.applyDomainOperation(settingsOp.value()).ok())
+        return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.animation.invalid-settings"),
+                                          "Clip snapshot settings are invalid");
+    for (const auto& entry : *tracks) {
+        auto parsed = parseTrack(entry);
+        if (!parsed.ok())
+            return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.animation.invalid-track"),
+                                              "Clip snapshot contains invalid track");
+        auto op = candidate.makeSetTrack(parsed.value());
+        if (!op.ok() || !candidate.applyDomainOperation(op.value()).ok())
+            return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.animation.invalid-track"),
+                                              "Clip snapshot track cannot be applied");
+    }
+    for (const auto& entry : *events) {
+        auto parsed = parseEvent(entry);
+        if (!parsed.ok())
+            return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.animation.invalid-event"),
+                                              "Clip snapshot contains invalid event");
+        auto op = candidate.makeSetEvent(parsed.value());
+        if (!op.ok() || !candidate.applyDomainOperation(op.value()).ok())
+            return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.animation.invalid-event"),
+                                              "Clip snapshot event cannot be applied");
+    }
+    for (const auto& entry : *masks) {
+        const auto* bone   = stringField(entry, "bone");
+        double      weight = 0;
+        if (!bone || !readNumber(entry, "weight", weight))
+            return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.animation.invalid-mask"),
+                                              "Clip snapshot contains invalid mask");
+        auto op = candidate.makeSetMask({*bone, weight});
+        if (!op.ok() || !candidate.applyDomainOperation(op.value()).ok())
+            return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.animation.invalid-mask"),
+                                              "Clip snapshot mask cannot be applied");
+    }
     candidate.setRevision(revisionValue() + 1); candidate.widenDirty(0, 0); *this = std::move(candidate); return eve::editing::applied<void>();
 }
 

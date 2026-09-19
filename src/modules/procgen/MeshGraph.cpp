@@ -39,11 +39,6 @@ const Spec* specFor(std::string_view id) {
     return found == std::end(specs) ? nullptr : found;
 }
 
-template <class T>
-Result<T> failure(DiagnosticCode code, std::string message, std::string path = {}) {
-    return Result<T>::failure(Diagnostic::error(code, std::move(message), std::move(path), {}, "procgen.meshGraph"));
-}
-
 Result<void> failureVoid(DiagnosticCode code, std::string message, std::string path = {}) {
     return Result<void>::failure(Diagnostic::error(code, std::move(message), std::move(path), {}, "procgen.meshGraph"));
 }
@@ -209,26 +204,31 @@ Result<void> MeshGraph::setNodeString(std::string_view id, std::string key, std:
 Result<MeshGraphValue> MeshGraph::evaluate(std::string_view id, std::unordered_map<std::string, int>& states) {
     const auto found = nodes_.find(std::string(id));
     if (found == nodes_.end())
-        return failure<MeshGraphValue>(DiagnosticCode::NotFound, "unknown node", std::string(id));
+        return Result<MeshGraphValue>::failure(
+            Diagnostic::error(DiagnosticCode::NotFound, "unknown node", std::string(id), {}, "procgen.meshGraph"));
     Node& node = found->second;
     if (node.cacheValid) return Result<MeshGraphValue>::success(node.cache);
     if (states[node.id] == 1)
-        return failure<MeshGraphValue>(DiagnosticCode::Conflict, "graph contains a cycle", node.id);
+        return Result<MeshGraphValue>::failure(
+            Diagnostic::error(DiagnosticCode::Conflict, "graph contains a cycle", node.id, {}, "procgen.meshGraph"));
     states[node.id]                  = 1;
     const Spec*                 spec = specFor(node.operation);
     std::vector<MeshGraphValue> inputs;
     for (int input = 0; input < spec->inputs; ++input) {
         if (node.inputs[input].empty())
-            return failure<MeshGraphValue>(DiagnosticCode::NotFound, "required input is disconnected", node.id);
+            return Result<MeshGraphValue>::failure(Diagnostic::error(
+                DiagnosticCode::NotFound, "required input is disconnected", node.id, {}, "procgen.meshGraph"));
         auto value = evaluate(node.inputs[input], states);
         if (!value.ok()) return value;
         if (typeOf(value.value()) != spec->input[input])
-            return failure<MeshGraphValue>(DiagnosticCode::TypeMismatch, "runtime port type mismatch", node.id);
+            return Result<MeshGraphValue>::failure(Diagnostic::error(
+                DiagnosticCode::TypeMismatch, "runtime port type mismatch", node.id, {}, "procgen.meshGraph"));
         inputs.push_back(std::move(value).takeValue());
     }
     if (spec->inputs == 0) {
         if (!node.hasValue)
-            return failure<MeshGraphValue>(DiagnosticCode::NotFound, "input node has no value", node.id);
+            return Result<MeshGraphValue>::failure(Diagnostic::error(
+                DiagnosticCode::NotFound, "input node has no value", node.id, {}, "procgen.meshGraph"));
         node.cache = node.value;
     } else if (node.operation == "mesh.grid_tiles") {
         const auto& grid = std::get<Grid2D>(inputs[0]);
@@ -244,7 +244,8 @@ Result<MeshGraphValue> MeshGraph::evaluate(std::string_view id, std::unordered_m
         MeshBuild        result = std::get<MeshBuild>(inputs[0]);
         const MeshBuild& other  = std::get<MeshBuild>(inputs[1]);
         if (!result.appendTransformed(&other, 0.f, 0.f, 0.f, 0.f, 1.f, 1.f, 1.f))
-            return failure<MeshGraphValue>(DiagnosticCode::Failed, "mesh merge failed", node.id);
+            return Result<MeshGraphValue>::failure(
+                Diagnostic::error(DiagnosticCode::Failed, "mesh merge failed", node.id, {}, "procgen.meshGraph"));
         node.cache = std::move(result);
     } else if (node.operation == "mesh.transform") {
         MeshBuild        result;
@@ -253,7 +254,8 @@ Result<MeshGraphValue> MeshGraph::evaluate(std::string_view id, std::unordered_m
                                       node.floats.contains("sx") ? node.floats["sx"] : 1.f,
                                       node.floats.contains("sy") ? node.floats["sy"] : 1.f,
                                       node.floats.contains("sz") ? node.floats["sz"] : 1.f))
-            return failure<MeshGraphValue>(DiagnosticCode::InvalidArgument, "mesh transform failed", node.id);
+            return Result<MeshGraphValue>::failure(Diagnostic::error(
+                DiagnosticCode::InvalidArgument, "mesh transform failed", node.id, {}, "procgen.meshGraph"));
         node.cache = std::move(result);
     } else if (node.operation == "mesh.instance_points") {
         MeshBuild        result;
@@ -263,7 +265,8 @@ Result<MeshGraphValue> MeshGraph::evaluate(std::string_view id, std::unordered_m
         for (int index = 0; index < points.getCount(); ++index)
             if (!result.appendTransformed(&source, points.getX(index), points.getY(index), points.getZ(index), 0.f,
                                           scale, scale, scale))
-                return failure<MeshGraphValue>(DiagnosticCode::InvalidArgument, "point instancing failed", node.id);
+                return Result<MeshGraphValue>::failure(Diagnostic::error(
+                    DiagnosticCode::InvalidArgument, "point instancing failed", node.id, {}, "procgen.meshGraph"));
         node.cache = std::move(result);
     }
     states[node.id] = 2;
@@ -277,7 +280,8 @@ Result<MeshBuild> MeshGraph::execute(std::string_view outputId) {
     if (!value.ok()) return Result<MeshBuild>::failure(value.status());
     const auto* mesh = std::get_if<MeshBuild>(&value.value());
     if (!mesh)
-        return failure<MeshBuild>(DiagnosticCode::TypeMismatch, "output node is not a mesh", std::string(outputId));
+        return Result<MeshBuild>::failure(Diagnostic::error(DiagnosticCode::TypeMismatch, "output node is not a mesh",
+                                                            std::string(outputId), {}, "procgen.meshGraph"));
     return Result<MeshBuild>::success(*mesh);
 }
 

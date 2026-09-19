@@ -15,12 +15,6 @@
 
 namespace eve::asset_graphics {
 namespace {
-template <class T>
-Result<T> fail(DiagnosticCode code, std::string message, std::string path = {}) {
-    return Result<T>::failure(Diagnostic::error(code, std::move(message), std::move(path), {},
-                                                "asset.graphics.vegetation-scene"));
-}
-
 const Value& member(const Value::Object& object, std::string_view name) { return object.at(std::string(name)); }
 
 bool exact(const Value::Object& object, std::initializer_list<std::string_view> fields) {
@@ -128,10 +122,14 @@ Result<LoadedVegetationScene> EvpackVegetationSceneLoader::load(
     const asset::RuntimeAssetChunk* definition = nullptr;
     for (const auto& chunk : payload.value().chunks) {
         if (chunk.kind != asset::EvpackChunkKind::Definition) continue;
-        if (definition) return fail<LoadedVegetationScene>(DiagnosticCode::Conflict, "duplicate scene definition");
+        if (definition)
+            return Result<LoadedVegetationScene>::failure(Diagnostic::error(
+                DiagnosticCode::Conflict, "duplicate scene definition", {}, {}, "asset.graphics.vegetation-scene"));
         definition = &chunk;
     }
-    if (!definition) return fail<LoadedVegetationScene>(DiagnosticCode::NotFound, "scene definition is missing");
+    if (!definition)
+        return Result<LoadedVegetationScene>::failure(Diagnostic::error(
+            DiagnosticCode::NotFound, "scene definition is missing", {}, {}, "asset.graphics.vegetation-scene"));
     asset::RuntimeDefinitionLimits limits;
     limits.maximumBytes = maximumDecodedBytes;
     auto decoded = asset::decodeRuntimeDefinition(definition->bytes, limits);
@@ -141,10 +139,14 @@ Result<LoadedVegetationScene> EvpackVegetationSceneLoader::load(
         !member(*root, "schema").isString() || member(*root, "schema").asString() != "eve.vegetation-scene" ||
         !member(*root, "schemaVersion").isInt64() || member(*root, "schemaVersion").asInt() != 1 ||
         !member(*root, "sourceGuid").isString())
-        return fail<LoadedVegetationScene>(DiagnosticCode::ParseError, "vegetation scene root is malformed");
+        return Result<LoadedVegetationScene>::failure(Diagnostic::error(DiagnosticCode::ParseError,
+                                                                        "vegetation scene root is malformed", {}, {},
+                                                                        "asset.graphics.vegetation-scene"));
     std::string sourceGuid;
     if (!validGuid(member(*root, "sourceGuid"), sourceGuid) || sourceGuid.empty())
-        return fail<LoadedVegetationScene>(DiagnosticCode::InvalidArgument, "vegetation scene source GUID is invalid");
+        return Result<LoadedVegetationScene>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                                        "vegetation scene source GUID is invalid", {},
+                                                                        {}, "asset.graphics.vegetation-scene"));
 
     const auto* control = member(*root, "control").getIf<Value::Object>();
     const auto* details = member(*root, "details").getIf<Value::Object>();
@@ -157,7 +159,9 @@ Result<LoadedVegetationScene> EvpackVegetationSceneLoader::load(
                           "motionHighlight", "bending", "flutter", "interactionAmplitude"}) ||
         !exact(*motion, {"values", "direction", "noiseTextureGuid"}) ||
         !exact(*volume, {"values", "colors", "extras", "motion", "vertex"}))
-        return fail<LoadedVegetationScene>(DiagnosticCode::ParseError, "vegetation scene sections are malformed");
+        return Result<LoadedVegetationScene>::failure(Diagnostic::error(DiagnosticCode::ParseError,
+                                                                        "vegetation scene sections are malformed", {},
+                                                                        {}, "asset.graphics.vegetation-scene"));
 
     LoadedVegetationScene result{asset, std::move(sourceGuid), payload.value().variant, {}, {}, {}, {}, {}};
     std::array<float, 17> controls{};
@@ -172,7 +176,9 @@ Result<LoadedVegetationScene> EvpackVegetationSceneLoader::load(
         !validGuid(member(*control, "overlayNormalGuid"), result.control.overlayNormalGuid) ||
         !validGuid(member(*control, "noiseTextureGuid"), result.control.noiseTextureGuid) ||
         !validGuid(member(*motion, "noiseTextureGuid"), result.motion.noiseTextureGuid))
-        return fail<LoadedVegetationScene>(DiagnosticCode::ParseError, "vegetation scene values are malformed");
+        return Result<LoadedVegetationScene>::failure(Diagnostic::error(DiagnosticCode::ParseError,
+                                                                        "vegetation scene values are malformed", {}, {},
+                                                                        "asset.graphics.vegetation-scene"));
     auto& c = result.control;
     c.season = controls[0]; c.globalAlpha = controls[1]; c.globalOverlay = controls[2];
     c.globalWetness = controls[3]; c.globalEmissive = controls[4]; c.globalSubsurface = controls[5];
@@ -185,18 +191,22 @@ Result<LoadedVegetationScene> EvpackVegetationSceneLoader::load(
     m.flutter = motions[4]; m.speed = motions[5]; m.animatedTime = motions[6] >= .5f; m.fadeDistance = motions[7];
     m.direction = direction;
     if (!whole(volumes[1]) || !whole(volumes[2]))
-        return fail<LoadedVegetationScene>(DiagnosticCode::InvalidArgument,
-                                           "vegetation volume policy enum is not integral");
+        return Result<LoadedVegetationScene>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                                        "vegetation volume policy enum is not integral",
+                                                                        {}, {}, "asset.graphics.vegetation-scene"));
     result.volume.renderScale = volumes[0]; result.volume.edgeFade = volumes[3];
     result.volume.visibility = std::uint32_t(volumes[1]); result.volume.sorting = std::uint32_t(volumes[2]);
     const std::array<std::string_view, 4> channelNames{"colors", "extras", "motion", "vertex"};
     for (std::size_t index = 0; index < channelNames.size(); ++index) {
         std::array<float, 3> channel{};
         if (!values(member(*volume, channelNames[index]), channel))
-            return fail<LoadedVegetationScene>(DiagnosticCode::ParseError, "vegetation volume channel is malformed");
+            return Result<LoadedVegetationScene>::failure(Diagnostic::error(DiagnosticCode::ParseError,
+                                                                            "vegetation volume channel is malformed",
+                                                                            {}, {}, "asset.graphics.vegetation-scene"));
         if (!whole(channel[0]) || !whole(channel[1]) || !whole(channel[2]) || channel[1] < 0 || channel[2] < 0)
-            return fail<LoadedVegetationScene>(DiagnosticCode::InvalidArgument,
-                                               "vegetation volume channel integers are invalid");
+            return Result<LoadedVegetationScene>::failure(
+                Diagnostic::error(DiagnosticCode::InvalidArgument, "vegetation volume channel integers are invalid", {},
+                                  {}, "asset.graphics.vegetation-scene"));
         result.volume.channels[index] = {std::int32_t(channel[0]), std::uint32_t(channel[1]),
                                          std::uint32_t(channel[2])};
     }
@@ -217,7 +227,9 @@ Result<LoadedVegetationScene> EvpackVegetationSceneLoader::load(
             return (channel.renderMode == -1 || channel.renderMode == 10 || channel.renderMode == 20) &&
                    channel.width >= 32 && channel.height >= 32 && channel.width <= 16384 && channel.height <= 16384;
         }))
-        return fail<LoadedVegetationScene>(DiagnosticCode::InvalidArgument, "vegetation scene values are out of range");
+        return Result<LoadedVegetationScene>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                                        "vegetation scene values are out of range", {},
+                                                                        {}, "asset.graphics.vegetation-scene"));
 
     Value detailDocument = Value::object({{"schema", "eve.graphics.vegetation-details"}, {"version", 1},
         {"layers", member(*details, "layers")}, {"global", member(*details, "global")},
@@ -231,7 +243,9 @@ Result<LoadedVegetationScene> EvpackVegetationSceneLoader::load(
 
     const auto* elementValues = member(*root, "elements").getIf<Value::Array>();
     if (!elementValues || elementValues->size() > 4096)
-        return fail<LoadedVegetationScene>(DiagnosticCode::InvalidArgument, "vegetation scene element count is invalid");
+        return Result<LoadedVegetationScene>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                                        "vegetation scene element count is invalid", {},
+                                                                        {}, "asset.graphics.vegetation-scene"));
     result.elements.reserve(elementValues->size());
     const std::set<std::string> kinds{
         "color-effect", "color-map", "color-noise", "color-tint", "extras-alpha", "extras-emissive",
@@ -244,7 +258,9 @@ Result<LoadedVegetationScene> EvpackVegetationSceneLoader::load(
                                           "rotation", "scale", "layers", "intensity", "value", "seasonal",
                                           "seasons", "textureGuid", "textureAsset", "remap", "blendRgb", "blendAlpha", "directionMode",
                                           "invertDirection", "volumeFade", "motionMode", "motionPower"}))
-            return fail<LoadedVegetationScene>(DiagnosticCode::ParseError, "vegetation scene element is malformed");
+            return Result<LoadedVegetationScene>::failure(Diagnostic::error(DiagnosticCode::ParseError,
+                                                                            "vegetation scene element is malformed", {},
+                                                                            {}, "asset.graphics.vegetation-scene"));
         VegetationSceneElement decodedElement;
         const auto& sourceFileId = member(*element, "sourceFileId");
         const auto& shaderGuid = member(*element, "shaderGuid");
@@ -274,14 +290,19 @@ Result<LoadedVegetationScene> EvpackVegetationSceneLoader::load(
             !numeric(member(*element, "motionPower"), decodedElement.motionPower) ||
             !validGuid(member(*element, "textureGuid"), decodedElement.textureGuid) ||
             !member(*element, "textureAsset").isString())
-            return fail<LoadedVegetationScene>(DiagnosticCode::ParseError, "vegetation scene element values are malformed");
+            return Result<LoadedVegetationScene>::failure(
+                Diagnostic::error(DiagnosticCode::ParseError, "vegetation scene element values are malformed", {}, {},
+                                  "asset.graphics.vegetation-scene"));
         decodedElement.textureAsset = member(*element, "textureAsset").asString();
         if (!decodedElement.textureAsset.empty() && !AssetRef::parse(decodedElement.textureAsset))
-            return fail<LoadedVegetationScene>(DiagnosticCode::ParseError, "vegetation scene element texture asset is invalid");
+            return Result<LoadedVegetationScene>::failure(
+                Diagnostic::error(DiagnosticCode::ParseError, "vegetation scene element texture asset is invalid", {},
+                                  {}, "asset.graphics.vegetation-scene"));
         const auto* propertyValues = member(*element, "properties").getIf<Value::Array>();
         if (!propertyValues || propertyValues->size() > 256)
-            return fail<LoadedVegetationScene>(DiagnosticCode::InvalidArgument,
-                                               "vegetation scene element property count is invalid");
+            return Result<LoadedVegetationScene>::failure(
+                Diagnostic::error(DiagnosticCode::InvalidArgument, "vegetation scene element property count is invalid",
+                                  {}, {}, "asset.graphics.vegetation-scene"));
         decodedElement.properties.reserve(propertyValues->size());
         std::set<std::string> propertyNames;
         for (const auto& encodedProperty : *propertyValues) {
@@ -296,22 +317,28 @@ Result<LoadedVegetationScene> EvpackVegetationSceneLoader::load(
                 !values(member(*property, "vector"), decodedProperty.vector) ||
                 !numeric(member(*property, "value"), decodedProperty.value) ||
                 !propertyNames.emplace(member(*property, "name").asString()).second)
-                return fail<LoadedVegetationScene>(DiagnosticCode::ParseError,
-                                                   "vegetation scene element property is malformed");
+                return Result<LoadedVegetationScene>::failure(
+                    Diagnostic::error(DiagnosticCode::ParseError, "vegetation scene element property is malformed", {},
+                                      {}, "asset.graphics.vegetation-scene"));
             decodedProperty.name = member(*property, "name").asString();
             decodedProperty.type = std::int32_t(member(*property, "type").asInt());
             decodedProperty.textureAsset = member(*property, "textureAsset").asString();
             if (!decodedProperty.textureAsset.empty() && !AssetRef::parse(decodedProperty.textureAsset))
-                return fail<LoadedVegetationScene>(DiagnosticCode::ParseError,
-                                                   "vegetation scene element property texture asset is invalid");
+                return Result<LoadedVegetationScene>::failure(Diagnostic::error(
+                    DiagnosticCode::ParseError, "vegetation scene element property texture asset is invalid", {}, {},
+                    "asset.graphics.vegetation-scene"));
             decodedElement.properties.push_back(std::move(decodedProperty));
         }
         const auto* seasonValues = member(*element, "seasons").getIf<Value::Array>();
         if (!seasonValues || seasonValues->size() != 4)
-            return fail<LoadedVegetationScene>(DiagnosticCode::ParseError, "vegetation scene seasons are malformed");
+            return Result<LoadedVegetationScene>::failure(Diagnostic::error(DiagnosticCode::ParseError,
+                                                                            "vegetation scene seasons are malformed",
+                                                                            {}, {}, "asset.graphics.vegetation-scene"));
         for (std::size_t index = 0; index < 4; ++index)
             if (!values((*seasonValues)[index], decodedElement.seasons[index]))
-                return fail<LoadedVegetationScene>(DiagnosticCode::ParseError, "vegetation scene season is malformed");
+                return Result<LoadedVegetationScene>::failure(
+                    Diagnostic::error(DiagnosticCode::ParseError, "vegetation scene season is malformed", {}, {},
+                                      "asset.graphics.vegetation-scene"));
         const auto rawChannel = channel.asInt(), rawVisibility = visibility.asInt(), rawLayers = layers.asInt();
         const auto rawBlendRgb = blendRgb.asInt(), rawBlendAlpha = blendAlpha.asInt();
         const auto rawDirectionMode = directionMode.asInt(), rawMotionMode = motionMode.asInt();
@@ -319,8 +346,9 @@ Result<LoadedVegetationScene> EvpackVegetationSceneLoader::load(
             rawLayers > 0x1ff || rawBlendRgb < 0 || rawBlendRgb > 2 || rawBlendAlpha < 0 || rawBlendAlpha > 1 ||
             rawDirectionMode < 10 || rawDirectionMode > 40 ||
             rawMotionMode < 13 || rawMotionMode > 15)
-            return fail<LoadedVegetationScene>(DiagnosticCode::InvalidArgument,
-                                               "vegetation scene element integers are out of range");
+            return Result<LoadedVegetationScene>::failure(
+                Diagnostic::error(DiagnosticCode::InvalidArgument, "vegetation scene element integers are out of range",
+                                  {}, {}, "asset.graphics.vegetation-scene"));
         decodedElement.sourceFileId = sourceFileId.asInt(); decodedElement.kind = kind.asString();
         decodedElement.channel = std::uint32_t(rawChannel); decodedElement.enabled = enabled.asBool();
         decodedElement.visibility = std::int32_t(rawVisibility); decodedElement.layers = std::uint16_t(rawLayers);
@@ -346,7 +374,9 @@ Result<LoadedVegetationScene> EvpackVegetationSceneLoader::load(
             (decodedElement.directionMode != 10 && decodedElement.directionMode != 20 &&
              decodedElement.directionMode != 30 && decodedElement.directionMode != 40) ||
             (decodedElement.motionMode != 13 && decodedElement.motionMode != 15))
-            return fail<LoadedVegetationScene>(DiagnosticCode::InvalidArgument, "vegetation scene element is out of range");
+            return Result<LoadedVegetationScene>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                                            "vegetation scene element is out of range",
+                                                                            {}, {}, "asset.graphics.vegetation-scene"));
         result.elements.push_back(std::move(decodedElement));
     }
     return Result<LoadedVegetationScene>::success(std::move(result));
@@ -408,10 +438,14 @@ Result<std::map<std::string, graphics::VegetationMask>> loadVegetationSceneEleme
     auto admit = [&](const std::string& guid, const std::string& asset) -> Result<void> {
         if (guid.empty()) return Result<void>::success();
         if (asset.empty())
-            return fail<void>(DiagnosticCode::NotFound, "vegetation element texture dependency is unavailable", guid);
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::NotFound,
+                                                           "vegetation element texture dependency is unavailable", guid,
+                                                           {}, "asset.graphics.vegetation-scene"));
         const auto [position, inserted] = required.emplace(guid, asset);
         if (!inserted && position->second != asset)
-            return fail<void>(DiagnosticCode::Conflict, "vegetation element texture GUID has conflicting assets", guid);
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::Conflict,
+                                                           "vegetation element texture GUID has conflicting assets",
+                                                           guid, {}, "asset.graphics.vegetation-scene"));
         return Result<void>::success();
     };
     for (const auto& element : scene.elements) {
@@ -427,8 +461,9 @@ Result<std::map<std::string, graphics::VegetationMask>> loadVegetationSceneEleme
     std::uint64_t usedBytes = 0;
     for (const auto& [guid, encodedAsset] : required) {
         if (usedBytes >= maximumDecodedBytes)
-            return fail<std::map<std::string, graphics::VegetationMask>>(
-                DiagnosticCode::InvalidArgument, "vegetation element masks exceed aggregate decoded budget");
+            return Result<std::map<std::string, graphics::VegetationMask>>::failure(Diagnostic::error(
+                DiagnosticCode::InvalidArgument, "vegetation element masks exceed aggregate decoded budget", {}, {},
+                "asset.graphics.vegetation-scene"));
         auto image = AssetRef::parse(encodedAsset);
         if (!image) return Result<std::map<std::string, graphics::VegetationMask>>::failure(image.status());
         asset::EvpackImageDecodeLimits limits;
@@ -442,8 +477,9 @@ Result<std::map<std::string, graphics::VegetationMask>> loadVegetationSceneEleme
         const std::uint64_t maskBytes = pixelCount * sizeof(glm::vec4);
         if (decodedBytes > maximumDecodedBytes - usedBytes ||
             maskBytes > maximumDecodedBytes - usedBytes - decodedBytes)
-            return fail<std::map<std::string, graphics::VegetationMask>>(
-                DiagnosticCode::InvalidArgument, "vegetation element masks exceed aggregate decoded budget");
+            return Result<std::map<std::string, graphics::VegetationMask>>::failure(Diagnostic::error(
+                DiagnosticCode::InvalidArgument, "vegetation element masks exceed aggregate decoded budget", {}, {},
+                "asset.graphics.vegetation-scene"));
         graphics::VegetationMask mask;
         mask.width = decoded.value().width;
         mask.height = decoded.value().height;
@@ -459,8 +495,9 @@ Result<std::map<std::string, graphics::VegetationMask>> loadVegetationSceneEleme
     }
     return Result<std::map<std::string, graphics::VegetationMask>>::success(std::move(output));
     } catch (const std::bad_alloc&) {
-        return fail<std::map<std::string, graphics::VegetationMask>>(DiagnosticCode::Failed,
-                                                                    "vegetation element mask allocation failed");
+        return Result<std::map<std::string, graphics::VegetationMask>>::failure(
+            Diagnostic::error(DiagnosticCode::Failed, "vegetation element mask allocation failed", {}, {},
+                              "asset.graphics.vegetation-scene"));
     }
 }
 
@@ -474,8 +511,9 @@ Result<VegetationSceneElementPixel> evaluateVegetationSceneElementPixel(
         !unit(input.volumeFade) || !std::isfinite(input.season) || input.season < 0.f ||
         input.season > 4.f || !unit(element.intensity) || element.blendRgb < 0 || element.blendRgb > 2 ||
         element.blendAlpha < 0 || element.blendAlpha > 1)
-        return fail<VegetationSceneElementPixel>(DiagnosticCode::InvalidArgument,
-                                                 "vegetation element pixel inputs are invalid");
+        return Result<VegetationSceneElementPixel>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "vegetation element pixel inputs are invalid", {}, {},
+                              "asset.graphics.vegetation-scene"));
 
     VegetationSceneElementPixel output;
     output.blendRgb = element.blendRgb;
@@ -549,8 +587,9 @@ Result<VegetationSceneElementPixel> evaluateVegetationSceneElementPixel(
             case 30: direction = glm::vec2(input.vertexColor) * 2.f - 1.f; break;
             case 40: direction = input.velocityDirection; break;
             default:
-                return fail<VegetationSceneElementPixel>(DiagnosticCode::InvalidArgument,
-                                                         "TVE advanced motion direction mode is invalid");
+                return Result<VegetationSceneElementPixel>::failure(
+                    Diagnostic::error(DiagnosticCode::InvalidArgument, "TVE advanced motion direction mode is invalid",
+                                      {}, {}, "asset.graphics.vegetation-scene"));
         }
         if (element.invertDirection) direction = -direction;
         const float noiseMinimum = propertyScalar(element, "_NoiseMinValue", 0.f);
@@ -615,12 +654,14 @@ Result<VegetationSceneElementPixel> evaluateVegetationSceneElementPixel(
         output.value = {input.mainSample.r, input.mainSample.b, 0.f, element.intensity * volume};
         output.colorMask = 12;
     } else {
-        return fail<VegetationSceneElementPixel>(DiagnosticCode::Unsupported,
-                                                 "TVE Element pixel shader is not implemented", element.kind);
+        return Result<VegetationSceneElementPixel>::failure(
+            Diagnostic::error(DiagnosticCode::Unsupported, "TVE Element pixel shader is not implemented", element.kind,
+                              {}, "asset.graphics.vegetation-scene"));
     }
     if (!finite(output.value))
-        return fail<VegetationSceneElementPixel>(DiagnosticCode::InvalidArgument,
-                                                 "vegetation element pixel evaluation overflowed");
+        return Result<VegetationSceneElementPixel>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "vegetation element pixel evaluation overflowed", {}, {},
+                              "asset.graphics.vegetation-scene"));
     return Result<VegetationSceneElementPixel>::success(output);
 }
 
@@ -654,15 +695,17 @@ Result<graphics::VegetationChannelAtlas> bakeVegetationSceneChannel(
         !std::isfinite(base.center.z) || !std::isfinite(base.extent.x) || !std::isfinite(base.extent.y) ||
         !std::isfinite(base.extent.z) || base.extent.x <= 0.f || base.extent.y <= 0.f || base.extent.z <= 0.f ||
         layer > 8)
-        return fail<graphics::VegetationChannelAtlas>(DiagnosticCode::InvalidArgument,
-                                                      "vegetation scene channel geometry or layer is invalid");
+        return Result<graphics::VegetationChannelAtlas>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "vegetation scene channel geometry or layer is invalid",
+                              {}, {}, "asset.graphics.vegetation-scene"));
     const std::size_t pixelCount = std::size_t(pixelCount64);
     if (base.pixels.size() != pixelCount ||
         (!worldNormals.empty() && worldNormals.size() != pixelCount) ||
         (!terrainHeights.empty() && terrainHeights.size() != pixelCount) ||
         (!noiseSamples.empty() && noiseSamples.size() != pixelCount))
-        return fail<graphics::VegetationChannelAtlas>(DiagnosticCode::InvalidArgument,
-                                                      "vegetation scene channel input sizes are inconsistent");
+        return Result<graphics::VegetationChannelAtlas>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "vegetation scene channel input sizes are inconsistent",
+                              {}, {}, "asset.graphics.vegetation-scene"));
     try {
         graphics::VegetationChannelAtlas output = base;
         const std::size_t channelIndex = static_cast<std::size_t>(channel);
@@ -674,9 +717,9 @@ Result<graphics::VegetationChannelAtlas> bakeVegetationSceneChannel(
             if (!element.textureGuid.empty()) {
                 const auto found = masks.find(element.textureGuid);
                 if (found == masks.end())
-                    return fail<graphics::VegetationChannelAtlas>(DiagnosticCode::NotFound,
-                                                                  "vegetation scene element mask is missing",
-                                                                  element.textureGuid);
+                    return Result<graphics::VegetationChannelAtlas>::failure(
+                        Diagnostic::error(DiagnosticCode::NotFound, "vegetation scene element mask is missing",
+                                          element.textureGuid, {}, "asset.graphics.vegetation-scene"));
                 mask = &found->second;
             }
             for (std::uint32_t y = 0; y < base.height; ++y) {
@@ -723,8 +766,9 @@ Result<graphics::VegetationChannelAtlas> bakeVegetationSceneChannel(
         }
         return Result<graphics::VegetationChannelAtlas>::success(std::move(output));
     } catch (const std::bad_alloc&) {
-        return fail<graphics::VegetationChannelAtlas>(DiagnosticCode::Failed,
-                                                      "vegetation scene channel allocation failed");
+        return Result<graphics::VegetationChannelAtlas>::failure(
+            Diagnostic::error(DiagnosticCode::Failed, "vegetation scene channel allocation failed", {}, {},
+                              "asset.graphics.vegetation-scene"));
     }
 }
 
@@ -757,13 +801,15 @@ Result<graphics::VegetationChannelAtlas> convertVegetationSceneChannelToNative(
         !std::isfinite(tveAtlas.center.z) || !std::isfinite(tveAtlas.extent.x) ||
         !std::isfinite(tveAtlas.extent.y) || !std::isfinite(tveAtlas.extent.z) || tveAtlas.extent.x <= 0.f ||
         tveAtlas.extent.y <= 0.f || tveAtlas.extent.z <= 0.f)
-        return fail<graphics::VegetationChannelAtlas>(DiagnosticCode::InvalidArgument,
-                                                      "TVE vegetation channel geometry is invalid");
+        return Result<graphics::VegetationChannelAtlas>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "TVE vegetation channel geometry is invalid", {}, {},
+                              "asset.graphics.vegetation-scene"));
     const std::size_t pixelCount = std::size_t(pixelCount64);
     if (tveAtlas.pixels.size() != pixelCount ||
         std::any_of(tveAtlas.pixels.begin(), tveAtlas.pixels.end(), [](glm::vec4 value) { return !finite(value); }))
-        return fail<graphics::VegetationChannelAtlas>(DiagnosticCode::InvalidArgument,
-                                                      "TVE vegetation channel pixels are invalid");
+        return Result<graphics::VegetationChannelAtlas>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "TVE vegetation channel pixels are invalid", {}, {},
+                              "asset.graphics.vegetation-scene"));
     try {
         graphics::VegetationChannelAtlas native = tveAtlas;
         if (channel == graphics::VegetationChannel::Motion) {
@@ -774,8 +820,9 @@ Result<graphics::VegetationChannelAtlas> convertVegetationSceneChannelToNative(
         }
         return Result<graphics::VegetationChannelAtlas>::success(std::move(native));
     } catch (const std::bad_alloc&) {
-        return fail<graphics::VegetationChannelAtlas>(DiagnosticCode::Failed,
-                                                      "native vegetation channel allocation failed");
+        return Result<graphics::VegetationChannelAtlas>::failure(
+            Diagnostic::error(DiagnosticCode::Failed, "native vegetation channel allocation failed", {}, {},
+                              "asset.graphics.vegetation-scene"));
     }
 }
 
@@ -801,8 +848,9 @@ Result<std::unique_ptr<VegetationSceneGpuRuntime>> VegetationSceneGpuRuntime::cr
     const graphics::VegetationMotion& baseMotion, const LoadedVegetationScene& scene,
     const std::map<std::string, graphics::VegetationMask>& masks, const VegetationSceneGpuBuild& build) {
     if (build.sourceRevision == 0)
-        return fail<std::unique_ptr<VegetationSceneGpuRuntime>>(DiagnosticCode::InvalidArgument,
-                                                                "vegetation scene GPU revision must be nonzero");
+        return Result<std::unique_ptr<VegetationSceneGpuRuntime>>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "vegetation scene GPU revision must be nonzero", {}, {},
+                              "asset.graphics.vegetation-scene"));
     auto projected = projectVegetationScene(baseSurface, baseMotion, scene);
     if (!projected) return Result<std::unique_ptr<VegetationSceneGpuRuntime>>::failure(projected.status());
     try {
@@ -849,14 +897,16 @@ Result<std::unique_ptr<VegetationSceneGpuRuntime>> VegetationSceneGpuRuntime::cr
         if (!bound) {
             auto released = runtime->release();
             if (!released)
-                return fail<std::unique_ptr<VegetationSceneGpuRuntime>>(
-                    DiagnosticCode::Failed, "vegetation scene GPU binding rollback failed");
+                return Result<std::unique_ptr<VegetationSceneGpuRuntime>>::failure(
+                    Diagnostic::error(DiagnosticCode::Failed, "vegetation scene GPU binding rollback failed", {}, {},
+                                      "asset.graphics.vegetation-scene"));
             return Result<std::unique_ptr<VegetationSceneGpuRuntime>>::failure(bound.status());
         }
         return Result<std::unique_ptr<VegetationSceneGpuRuntime>>::success(std::move(runtime));
     } catch (const std::bad_alloc&) {
-        return fail<std::unique_ptr<VegetationSceneGpuRuntime>>(DiagnosticCode::Failed,
-                                                                "vegetation scene GPU runtime allocation failed");
+        return Result<std::unique_ptr<VegetationSceneGpuRuntime>>::failure(
+            Diagnostic::error(DiagnosticCode::Failed, "vegetation scene GPU runtime allocation failed", {}, {},
+                              "asset.graphics.vegetation-scene"));
     }
 }
 
@@ -865,14 +915,17 @@ Result<VegetationSceneGpuPublication> VegetationSceneGpuRuntime::replace(
     const graphics::VegetationMotion& baseMotion, const LoadedVegetationScene& scene,
     const std::map<std::string, graphics::VegetationMask>& masks, const VegetationSceneGpuBuild& build) {
     if (!factory_)
-        return fail<VegetationSceneGpuPublication>(DiagnosticCode::Conflict,
-                                                   "released vegetation scene runtime cannot be replaced");
+        return Result<VegetationSceneGpuPublication>::failure(
+            Diagnostic::error(DiagnosticCode::Conflict, "released vegetation scene runtime cannot be replaced", {}, {},
+                              "asset.graphics.vegetation-scene"));
     if (expectedRevision != sourceRevision_)
-        return fail<VegetationSceneGpuPublication>(DiagnosticCode::Conflict,
-                                                   "vegetation scene GPU revision changed before replacement");
+        return Result<VegetationSceneGpuPublication>::failure(
+            Diagnostic::error(DiagnosticCode::Conflict, "vegetation scene GPU revision changed before replacement", {},
+                              {}, "asset.graphics.vegetation-scene"));
     if (build.sourceRevision <= sourceRevision_)
-        return fail<VegetationSceneGpuPublication>(DiagnosticCode::InvalidArgument,
-                                                   "vegetation scene replacement revision must increase");
+        return Result<VegetationSceneGpuPublication>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "vegetation scene replacement revision must increase",
+                              {}, {}, "asset.graphics.vegetation-scene"));
 
     auto candidate = create(*factory_, baseSurface, baseMotion, scene, masks, build);
     if (!candidate) return Result<VegetationSceneGpuPublication>::failure(candidate.status());
@@ -880,8 +933,9 @@ Result<VegetationSceneGpuPublication> VegetationSceneGpuRuntime::replace(
         retiredFields_.reserve(retiredFields_.size() + 1);
         retiredFields_.push_back(std::move(fields_));
     } catch (const std::bad_alloc&) {
-        return fail<VegetationSceneGpuPublication>(DiagnosticCode::Failed,
-                                                   "vegetation scene replacement retirement allocation failed");
+        return Result<VegetationSceneGpuPublication>::failure(
+            Diagnostic::error(DiagnosticCode::Failed, "vegetation scene replacement retirement allocation failed", {},
+                              {}, "asset.graphics.vegetation-scene"));
     }
 
     fields_ = std::move(candidate.value()->fields_);

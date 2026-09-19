@@ -7,12 +7,6 @@
 namespace eve::attributes {
 namespace {
 
-template <class T>
-eve::Result<T> invalid(std::string message, std::string path) {
-    return eve::Result<T>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, std::move(message), std::move(path)));
-}
-
 }  // namespace
 
 AttributeResourceAccountAdapter::AttributeResourceAccountAdapter(AttributeSetResourceAccount& account,
@@ -30,7 +24,9 @@ const char* AttributeResourceAccountAdapter::resourceName(AttributeResourceKind 
 eve::Result<eve::resource::CostSpec> AttributeResourceAccountAdapter::makeCost(AttributeResourceKind kind,
                                                                                std::int64_t          amount) {
     const char* name = resourceName(kind);
-    if (name == nullptr) return invalid<eve::resource::CostSpec>("attribute resource kind is invalid", "resource.kind");
+    if (name == nullptr)
+        return eve::Result<eve::resource::CostSpec>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "attribute resource kind is invalid", "resource.kind"));
     return eve::resource::CostSpec::single(name, amount);
 }
 

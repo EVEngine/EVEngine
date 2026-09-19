@@ -9,10 +9,6 @@
 
 namespace eve::housegen_editing {
 namespace {
-template <class T>
-EditorResult<T> fail(EditorStatus status, const char* rule, std::string message) {
-    return eve::editing::failed<T>(status, RuleId(rule), std::move(message));
-}
 const EditorValue* field(const EditorValue& value, const char* key) {
     const auto* object = value.getIf<EditorValue::Object>();
     if (!object) return nullptr;
@@ -131,8 +127,8 @@ EditorResult<HouseKitComponentValue> parseComponent(const EditorValue& value) {
     const auto* models     = model ? model->getIf<std::string>() : nullptr;
     const auto* categories = category ? category->getIf<std::string>() : nullptr;
     if (!editorIds || editorIds->empty() || !ids || !models || !categories)
-        return fail<HouseKitComponentValue>(EditorStatus::Rejected, "editor.housegen.component",
-                                            "House component identity is invalid");
+        return eve::editing::failed<HouseKitComponentValue>(EditorStatus::Rejected, RuleId("editor.housegen.component"),
+                                                            "House component identity is invalid");
     out.id                  = ObjectId(*editorIds);
     out.component.id        = *ids;
     out.component.modelPath = *models;
@@ -143,19 +139,19 @@ EditorResult<HouseKitComponentValue> parseComponent(const EditorValue& value) {
         const auto* v = field(value, fields[i]);
         const auto* n = v ? v->getIf<int64_t>() : nullptr;
         if (!n)
-            return fail<HouseKitComponentValue>(EditorStatus::Rejected, "editor.housegen.dimension",
-                                                "House component dimension is invalid");
+            return eve::editing::failed<HouseKitComponentValue>(
+                EditorStatus::Rejected, RuleId("editor.housegen.dimension"), "House component dimension is invalid");
         *values[i] = static_cast<int>(*n);
     }
     if (!readIntegers(field(value, "rotations"), out.component.rotations) ||
         !readStrings(field(value, "tags"), out.component.tags))
-        return fail<HouseKitComponentValue>(EditorStatus::Rejected, "editor.housegen.arrays",
-                                            "House component rotations or tags are invalid");
+        return eve::editing::failed<HouseKitComponentValue>(EditorStatus::Rejected, RuleId("editor.housegen.arrays"),
+                                                            "House component rotations or tags are invalid");
     const auto* socketValues = field(value, "sockets");
     const auto* socketArray  = socketValues ? socketValues->getIf<EditorValue::Array>() : nullptr;
     if (!socketArray)
-        return fail<HouseKitComponentValue>(EditorStatus::Rejected, "editor.housegen.sockets",
-                                            "House sockets are invalid");
+        return eve::editing::failed<HouseKitComponentValue>(EditorStatus::Rejected, RuleId("editor.housegen.sockets"),
+                                                            "House sockets are invalid");
     for (const auto& socketValue : *socketArray) {
         housegen::HouseSocket socket;
         const auto *          d = field(socketValue, "direction"), *t = field(socketValue, "type");
@@ -163,15 +159,15 @@ EditorResult<HouseKitComponentValue> parseComponent(const EditorValue& value) {
         const auto*           ts = t ? t->getIf<std::string>() : nullptr;
         if (!ds || !ts || !direction(*ds, socket.direction) ||
             !readStrings(field(socketValue, "accepts"), socket.accepts))
-            return fail<HouseKitComponentValue>(EditorStatus::Rejected, "editor.housegen.socket",
-                                                "House socket is invalid");
+            return eve::editing::failed<HouseKitComponentValue>(
+                EditorStatus::Rejected, RuleId("editor.housegen.socket"), "House socket is invalid");
         socket.type = *ts;
         out.component.sockets.push_back(std::move(socket));
     }
     const auto* material = field(value, "material");
     if (!material)
-        return fail<HouseKitComponentValue>(EditorStatus::Rejected, "editor.housegen.material",
-                                            "House material is missing");
+        return eve::editing::failed<HouseKitComponentValue>(EditorStatus::Rejected, RuleId("editor.housegen.material"),
+                                                            "House material is missing");
     auto&       m   = out.component.material;
     const auto *hbc = field(*material, "hasBaseColor"), *hm = field(*material, "hasMetallic"),
                *hr         = field(*material, "hasRoughness");
@@ -181,24 +177,24 @@ EditorResult<HouseKitComponentValue> parseComponent(const EditorValue& value) {
     const auto* colorValue = field(*material, "baseColor");
     const auto* color      = colorValue ? colorValue->getIf<EditorValue::Array>() : nullptr;
     if (!hbcb || !hmb || !hrb || !color || color->size() != 4)
-        return fail<HouseKitComponentValue>(EditorStatus::Rejected, "editor.housegen.material",
-                                            "House material flags or color are invalid");
+        return eve::editing::failed<HouseKitComponentValue>(EditorStatus::Rejected, RuleId("editor.housegen.material"),
+                                                            "House material flags or color are invalid");
     m.hasBaseColor  = *hbcb;
     m.hasMetallic   = *hmb;
     m.hasRoughness  = *hrb;
     float* colors[] = {&m.baseColorR, &m.baseColorG, &m.baseColorB, &m.baseColorA};
     for (int i = 0; i < 4; ++i)
         if (!number(&(*color)[i], *colors[i]))
-            return fail<HouseKitComponentValue>(EditorStatus::Rejected, "editor.housegen.color",
-                                                "House material color is invalid");
+            return eve::editing::failed<HouseKitComponentValue>(EditorStatus::Rejected, RuleId("editor.housegen.color"),
+                                                                "House material color is invalid");
     std::string* paths[]      = {&m.baseColorTexture, &m.normalTexture, &m.heightTexture};
     const char*  pathFields[] = {"baseColorTexture", "normalTexture", "heightTexture"};
     for (int i = 0; i < 3; ++i) {
         const auto* p = field(*material, pathFields[i]);
         const auto* s = p ? p->getIf<std::string>() : nullptr;
         if (!s)
-            return fail<HouseKitComponentValue>(EditorStatus::Rejected, "editor.housegen.texture",
-                                                "House material texture is invalid");
+            return eve::editing::failed<HouseKitComponentValue>(
+                EditorStatus::Rejected, RuleId("editor.housegen.texture"), "House material texture is invalid");
         *paths[i] = *s;
     }
     float*      scalars[]      = {&m.metallic,          &m.roughness,     &m.parallaxScale,    &m.parallaxMinLayers,
@@ -207,8 +203,8 @@ EditorResult<HouseKitComponentValue> parseComponent(const EditorValue& value) {
                                   "parallaxMaxLayers", "cellBombScale", "cellBombStrength", "cellBombRotation"};
     for (int i = 0; i < 8; ++i)
         if (!number(field(*material, scalarFields[i]), *scalars[i]))
-            return fail<HouseKitComponentValue>(EditorStatus::Rejected, "editor.housegen.material-number",
-                                                "House material number is invalid");
+            return eve::editing::failed<HouseKitComponentValue>(
+                EditorStatus::Rejected, RuleId("editor.housegen.material-number"), "House material number is invalid");
     return eve::editing::applied<HouseKitComponentValue>(std::move(out));
 }
 EditorValue requestValue(const housegen::HouseRequest& r) {
@@ -232,7 +228,8 @@ EditorResult<housegen::HouseRequest> parseRequest(const EditorValue& value) {
     const auto* seed  = field(value, "seed");
     const auto* seedn = seed ? seed->getIf<int64_t>() : nullptr;
     if (!seedn || *seedn < 0 || *seedn > UINT32_MAX)
-        return fail<housegen::HouseRequest>(EditorStatus::Rejected, "editor.housegen.seed", "House seed is invalid");
+        return eve::editing::failed<housegen::HouseRequest>(EditorStatus::Rejected, RuleId("editor.housegen.seed"),
+                                                            "House seed is invalid");
     r.seed                  = static_cast<uint32_t>(*seedn);
     int*        ints[]      = {&r.width, &r.depth, &r.floors, &r.maxAttempts};
     const char* intFields[] = {"width", "depth", "floors", "maxAttempts"};
@@ -240,26 +237,26 @@ EditorResult<housegen::HouseRequest> parseRequest(const EditorValue& value) {
         const auto* v = field(value, intFields[i]);
         const auto* n = v ? v->getIf<int64_t>() : nullptr;
         if (!n)
-            return fail<housegen::HouseRequest>(EditorStatus::Rejected, "editor.housegen.request-number",
-                                                "House request integer is invalid");
+            return eve::editing::failed<housegen::HouseRequest>(
+                EditorStatus::Rejected, RuleId("editor.housegen.request-number"), "House request integer is invalid");
         *ints[i] = static_cast<int>(*n);
     }
     if (!number(field(value, "moduleSize"), r.moduleSize) || !number(field(value, "floorHeight"), r.floorHeight))
-        return fail<housegen::HouseRequest>(EditorStatus::Rejected, "editor.housegen.request-number",
-                                            "House request scale is invalid");
+        return eve::editing::failed<housegen::HouseRequest>(
+            EditorStatus::Rejected, RuleId("editor.housegen.request-number"), "House request scale is invalid");
     std::string* values[] = {&r.style, &r.footprint, &r.roof, &r.entrance};
     const char*  fields[] = {"style", "footprint", "roof", "entrance"};
     for (int i = 0; i < 4; ++i) {
         const auto* v = field(value, fields[i]);
         const auto* s = v ? v->getIf<std::string>() : nullptr;
         if (!s)
-            return fail<housegen::HouseRequest>(EditorStatus::Rejected, "editor.housegen.request-string",
-                                                "House request string is invalid");
+            return eve::editing::failed<housegen::HouseRequest>(
+                EditorStatus::Rejected, RuleId("editor.housegen.request-string"), "House request string is invalid");
         *values[i] = *s;
     }
     if (!readStrings(field(value, "requiredRooms"), r.requiredRooms))
-        return fail<housegen::HouseRequest>(EditorStatus::Rejected, "editor.housegen.rooms",
-                                            "Required rooms are invalid");
+        return eve::editing::failed<housegen::HouseRequest>(EditorStatus::Rejected, RuleId("editor.housegen.rooms"),
+                                                            "Required rooms are invalid");
     return eve::editing::applied<housegen::HouseRequest>(std::move(r));
 }
 PropertyDescriptor prop(std::string path, PropertyType type, EditorValue defaultValue, double minimum = -1e9,
@@ -372,8 +369,8 @@ EditorResult<DomainOperation> HouseGenDocumentTarget::makeSet(const SelectionSna
     if (mode == PropertySetMode::Reset) return makeReset(s, path);
     auto d = schema(s).find(path);
     if (!matches(s) || !d || mode != PropertySetMode::Absolute || !validatePropertyValue(*d, value).ok())
-        return fail<DomainOperation>(EditorStatus::Rejected, "editor.housegen.set",
-                                     "House component property is invalid");
+        return eve::editing::failed<DomainOperation>(EditorStatus::Rejected, RuleId("editor.housegen.set"),
+                                                     "House component property is invalid");
     auto candidate = *this;
     for (const auto& item : s.items) {
         auto& c = std::find_if(candidate.components_.begin(), candidate.components_.end(), [&](const auto& v) {
@@ -400,16 +397,16 @@ EditorResult<DomainOperation> HouseGenDocumentTarget::makeSet(const SelectionSna
         }
     }
     if (hasErrors(candidate.validate()))
-        return fail<DomainOperation>(EditorStatus::Rejected, "editor.housegen.invalid",
-                                     "House component edit invalidates the kit");
+        return eve::editing::failed<DomainOperation>(EditorStatus::Rejected, RuleId("editor.housegen.invalid"),
+                                                     "House component edit invalidates the kit");
     return replacement(candidate.contentValue(), path.value());
 }
 EditorResult<DomainOperation> HouseGenDocumentTarget::makeReset(const SelectionSnapshot& s,
                                                                 const PropertyPath&      path) const {
     auto d = schema(s).find(path);
     if (!d)
-        return fail<DomainOperation>(EditorStatus::Unsupported, "editor.housegen.property",
-                                     "Unknown house component property");
+        return eve::editing::failed<DomainOperation>(EditorStatus::Unsupported, RuleId("editor.housegen.property"),
+                                                     "Unknown house component property");
     return makeSet(s, path, d->defaultValue, PropertySetMode::Absolute);
 }
 EditorResult<DomainOperation> HouseGenDocumentTarget::makeCreateComponent(
@@ -417,20 +414,20 @@ EditorResult<DomainOperation> HouseGenDocumentTarget::makeCreateComponent(
     if (component.id.empty() || std::any_of(components_.begin(), components_.end(), [&](const auto& c) {
             return c.id == component.id || c.component.id == component.component.id;
         }))
-        return fail<DomainOperation>(EditorStatus::Rejected, "editor.housegen.component-id",
-                                     "House editor and runtime component IDs must be unique");
+        return eve::editing::failed<DomainOperation>(EditorStatus::Rejected, RuleId("editor.housegen.component-id"),
+                                                     "House editor and runtime component IDs must be unique");
     auto candidate = *this;
     candidate.components_.push_back(component);
     housegen::HouseComponentLibrary library;
     if (!library.registerComponent(component.component).ok())
-        return fail<DomainOperation>(EditorStatus::Rejected, "editor.housegen.component",
-                                     "House runtime rejected the component");
+        return eve::editing::failed<DomainOperation>(EditorStatus::Rejected, RuleId("editor.housegen.component"),
+                                                     "House runtime rejected the component");
     return replacement(candidate.contentValue());
 }
 EditorResult<DomainOperation> HouseGenDocumentTarget::makeDeleteComponent(const ObjectId& id) const {
     if (std::none_of(components_.begin(), components_.end(), [&](const auto& c) { return c.id == id; }))
-        return fail<DomainOperation>(EditorStatus::NotFound, "editor.housegen.component",
-                                     "House component does not exist");
+        return eve::editing::failed<DomainOperation>(EditorStatus::NotFound, RuleId("editor.housegen.component"),
+                                                     "House component does not exist");
     auto candidate = *this;
     std::erase_if(candidate.components_, [&](const auto& c) { return c.id == id; });
     return replacement(candidate.contentValue());
@@ -439,8 +436,8 @@ EditorResult<DomainOperation> HouseGenDocumentTarget::makeSetRequest(const house
     auto candidate     = *this;
     candidate.request_ = request;
     if (hasErrors(candidate.validate()))
-        return fail<DomainOperation>(EditorStatus::Rejected, "editor.housegen.request",
-                                     "House generation request is invalid");
+        return eve::editing::failed<DomainOperation>(EditorStatus::Rejected, RuleId("editor.housegen.request"),
+                                                     "House generation request is invalid");
     return replacement(candidate.contentValue(), "request");
 }
 std::vector<EditorDiagnostic> HouseGenDocumentTarget::validate() const {
@@ -491,26 +488,30 @@ std::vector<EditorDiagnostic> HouseGenDocumentTarget::validate() const {
 }
 EditorResult<void> HouseGenDocumentTarget::applyDomainOperation(const DomainOperation& op) {
     if (op.target != TargetId(id_) || op.type != "housegen.document.replace.v1")
-        return fail<void>(EditorStatus::Rejected, "editor.housegen.operation", "House operation mismatch");
+        return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.housegen.operation"),
+                                          "House operation mismatch");
     const auto *componentsValue = field(op.payload, "components"), *requestValueField = field(op.payload, "request");
     const auto* components = componentsValue ? componentsValue->getIf<EditorValue::Array>() : nullptr;
     if (!components || !requestValueField || components->size() > 2048 ||
         !op.payload.isWithinLimits(10, 200000, 16 * 1024 * 1024))
-        return fail<void>(EditorStatus::Rejected, "editor.housegen.payload", "House document payload exceeds limits");
+        return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.housegen.payload"),
+                                          "House document payload exceeds limits");
     HouseGenDocumentTarget candidate(id_);
     for (const auto& value : *components) {
         auto parsed = parseComponent(value);
         if (!parsed.ok())
-            return fail<void>(EditorStatus::Rejected, "editor.housegen.component",
-                              "House document component cannot be parsed");
+            return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.housegen.component"),
+                                              "House document component cannot be parsed");
         candidate.components_.push_back(parsed.value());
     }
     auto request = parseRequest(*requestValueField);
     if (!request.ok())
-        return fail<void>(EditorStatus::Rejected, "editor.housegen.request", "House document request cannot be parsed");
+        return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.housegen.request"),
+                                          "House document request cannot be parsed");
     candidate.request_ = request.value();
     if (hasErrors(candidate.validate()))
-        return fail<void>(EditorStatus::Rejected, "editor.housegen.invalid", "House document validation failed");
+        return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.housegen.invalid"),
+                                          "House document validation failed");
     components_ = std::move(candidate.components_);
     request_    = std::move(candidate.request_);
     bumpRevision();
@@ -524,7 +525,8 @@ EditorResult<void> HouseGenDocumentTarget::commitDomainState(
     std::unique_ptr<IDomainOperationTarget> candidate) {
     auto* typed = dynamic_cast<HouseGenDocumentTarget*>(candidate.get());
     if (!typed || typed->id_ != id_)
-        return fail<void>(EditorStatus::Conflict, "editor.housegen.candidate", "House candidate mismatch");
+        return eve::editing::failed<void>(EditorStatus::Conflict, RuleId("editor.housegen.candidate"),
+                                          "House candidate mismatch");
     *this = *typed;
     return eve::editing::applied<void>();
 }
@@ -535,7 +537,8 @@ EditorResult<void> HouseGenDocumentTarget::loadSnapshot(const EditorValue& snaps
     const auto *versionValue = field(snapshot, "schemaVersion"), *content = field(snapshot, "content");
     const auto* version = versionValue ? versionValue->getIf<int64_t>() : nullptr;
     if (!version || *version != 1 || !content)
-        return fail<void>(EditorStatus::Unsupported, "editor.housegen.snapshot", "Unsupported house snapshot");
+        return eve::editing::failed<void>(EditorStatus::Unsupported, RuleId("editor.housegen.snapshot"),
+                                          "Unsupported house snapshot");
     DomainOperation op;
     op.target   = TargetId(id_);
     op.type     = "housegen.document.replace.v1";

@@ -6,10 +6,6 @@
 
 namespace eve::spritestack_editing {
 namespace {
-template <class T>
-EditorResult<T> fail(EditorStatus status, const char* rule, std::string message) {
-    return eve::editing::failed<T>(status, RuleId(rule), std::move(message));
-}
 const EditorValue* field(const EditorValue& value, const char* key) {
     const auto* object = value.getIf<EditorValue::Object>();
     if (!object) return nullptr;
@@ -151,8 +147,8 @@ EditorResult<DomainOperation> SpriteStackDocumentTarget::makeSet(const Selection
     if (mode == PropertySetMode::Reset) return makeReset(s, p);
     auto d = schema(s).find(p);
     if (!matches(s) || !d || mode != PropertySetMode::Absolute || !validatePropertyValue(*d, value).ok())
-        return fail<DomainOperation>(EditorStatus::Rejected, "editor.spritestack.set",
-                                     "SpriteStack property edit is invalid");
+        return eve::editing::failed<DomainOperation>(EditorStatus::Rejected, RuleId("editor.spritestack.set"),
+                                                     "SpriteStack property edit is invalid");
     auto  candidate = *this;
     auto& v         = candidate.value_;
     if (p == PropertyPath("source.kind"))
@@ -191,16 +187,16 @@ EditorResult<DomainOperation> SpriteStackDocumentTarget::makeSet(const Selection
     else
         v.outlineWidth = static_cast<float>(*value.getIf<double>());
     if (errors(candidate.validate()))
-        return fail<DomainOperation>(EditorStatus::Rejected, "editor.spritestack.invalid",
-                                     "SpriteStack edit violates bake budgets");
+        return eve::editing::failed<DomainOperation>(EditorStatus::Rejected, RuleId("editor.spritestack.invalid"),
+                                                     "SpriteStack edit violates bake budgets");
     return replacement(candidate.contentValue(), p.value());
 }
 EditorResult<DomainOperation> SpriteStackDocumentTarget::makeReset(const SelectionSnapshot& s,
                                                                    const PropertyPath&      p) const {
     auto d = schema(s).find(p);
     if (!d)
-        return fail<DomainOperation>(EditorStatus::Unsupported, "editor.spritestack.property",
-                                     "Unknown SpriteStack property");
+        return eve::editing::failed<DomainOperation>(EditorStatus::Unsupported, RuleId("editor.spritestack.property"),
+                                                     "Unknown SpriteStack property");
     return makeSet(s, p, d->defaultValue, PropertySetMode::Absolute);
 }
 std::vector<EditorDiagnostic> SpriteStackDocumentTarget::validate() const {
@@ -246,7 +242,8 @@ std::vector<EditorDiagnostic> SpriteStackDocumentTarget::validate() const {
 EditorResult<void> SpriteStackDocumentTarget::applyDomainOperation(const DomainOperation& op) {
     if (op.target != TargetId(id_) || op.type != "spritestack.document.replace.v1" ||
         !op.payload.isWithinLimits(5, 64, 4096))
-        return fail<void>(EditorStatus::Rejected, "editor.spritestack.operation", "SpriteStack operation is invalid");
+        return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.spritestack.operation"),
+                                          "SpriteStack operation is invalid");
     SpriteStackAssetValue v;
     const auto *          sKind = field(op.payload, "sourceKind"), *source = field(op.payload, "source"),
                *axis = field(op.payload, "axis"), *shade = field(op.payload, "shade"),
@@ -257,8 +254,8 @@ EditorResult<void> SpriteStackDocumentTarget::applyDomainOperation(const DomainO
     const auto* sh     = shade ? shade->getIf<bool>() : nullptr;
     const auto* sd     = shadow ? shadow->getIf<bool>() : nullptr;
     if (!sk || !sv || !av || !sh || !sd)
-        return fail<void>(EditorStatus::Rejected, "editor.spritestack.payload",
-                          "SpriteStack text or bool field is invalid");
+        return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.spritestack.payload"),
+                                          "SpriteStack text or bool field is invalid");
     v.sourceKind            = *sk;
     v.source                = *sv;
     v.bake.axis             = *av;
@@ -270,7 +267,8 @@ EditorResult<void> SpriteStackDocumentTarget::applyDomainOperation(const DomainO
         const auto* x = field(op.payload, intFields[i]);
         const auto* n = x ? x->getIf<int64_t>() : nullptr;
         if (!n)
-            return fail<void>(EditorStatus::Rejected, "editor.spritestack.integer", "SpriteStack integer is invalid");
+            return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.spritestack.integer"),
+                                              "SpriteStack integer is invalid");
         *ints[i] = static_cast<int>(*n);
     }
     float*      floats[]      = {&v.bake.thickness, &v.bake.padding, &v.layerOffset, &v.shadowOpacity, &v.outlineWidth};
@@ -279,31 +277,35 @@ EditorResult<void> SpriteStackDocumentTarget::applyDomainOperation(const DomainO
         const auto* x = field(op.payload, floatFields[i]);
         const auto* n = x ? x->getIf<double>() : nullptr;
         if (!n || !std::isfinite(*n))
-            return fail<void>(EditorStatus::Rejected, "editor.spritestack.number", "SpriteStack number is invalid");
+            return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.spritestack.number"),
+                                              "SpriteStack number is invalid");
         *floats[i] = static_cast<float>(*n);
     }
     const auto *tintValue = field(op.payload, "tint"), *sizeValue = field(op.payload, "displaySize");
     const auto* tint = tintValue ? tintValue->getIf<EditorValue::Array>() : nullptr;
     const auto* size = sizeValue ? sizeValue->getIf<EditorValue::Array>() : nullptr;
     if (!tint || tint->size() != 4 || !size || size->size() != 2)
-        return fail<void>(EditorStatus::Rejected, "editor.spritestack.vector", "SpriteStack vector is invalid");
+        return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.spritestack.vector"),
+                                          "SpriteStack vector is invalid");
     float* tints[] = {&v.bake.tintR, &v.bake.tintG, &v.bake.tintB};
     for (int i = 0; i < 3; ++i) {
         const auto* n = (*tint)[i].getIf<double>();
         if (!n || !std::isfinite(*n))
-            return fail<void>(EditorStatus::Rejected, "editor.spritestack.tint", "SpriteStack tint is invalid");
+            return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.spritestack.tint"),
+                                              "SpriteStack tint is invalid");
         *tints[i] = static_cast<float>(*n);
     }
     const auto *w = (*size)[0].getIf<double>(), *h = (*size)[1].getIf<double>();
     if (!w || !h)
-        return fail<void>(EditorStatus::Rejected, "editor.spritestack.size", "SpriteStack display size is invalid");
+        return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.spritestack.size"),
+                                          "SpriteStack display size is invalid");
     v.displayWidth  = static_cast<float>(*w);
     v.displayHeight = static_cast<float>(*h);
     SpriteStackDocumentTarget candidate(id_);
     candidate.value_ = v;
     if (errors(candidate.validate()))
-        return fail<void>(EditorStatus::Rejected, "editor.spritestack.invalid",
-                          "SpriteStack document validation failed");
+        return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.spritestack.invalid"),
+                                          "SpriteStack document validation failed");
     value_ = std::move(v);
     bumpRevision();
     widenDirty(0, 0);
@@ -316,7 +318,8 @@ EditorResult<void> SpriteStackDocumentTarget::commitDomainState(
     std::unique_ptr<IDomainOperationTarget> candidate) {
     auto* typed = dynamic_cast<SpriteStackDocumentTarget*>(candidate.get());
     if (!typed || typed->id_ != id_)
-        return fail<void>(EditorStatus::Conflict, "editor.spritestack.candidate", "SpriteStack candidate mismatch");
+        return eve::editing::failed<void>(EditorStatus::Conflict, RuleId("editor.spritestack.candidate"),
+                                          "SpriteStack candidate mismatch");
     *this = *typed;
     return eve::editing::applied<void>();
 }
@@ -327,7 +330,8 @@ EditorResult<void> SpriteStackDocumentTarget::loadSnapshot(const EditorValue& sn
     const auto *v = field(snapshot, "schemaVersion"), *content = field(snapshot, "content");
     const auto* version = v ? v->getIf<int64_t>() : nullptr;
     if (!version || *version != 1 || !content)
-        return fail<void>(EditorStatus::Unsupported, "editor.spritestack.snapshot", "Unsupported SpriteStack snapshot");
+        return eve::editing::failed<void>(EditorStatus::Unsupported, RuleId("editor.spritestack.snapshot"),
+                                          "Unsupported SpriteStack snapshot");
     DomainOperation op;
     op.target   = TargetId(id_);
     op.type     = "spritestack.document.replace.v1";

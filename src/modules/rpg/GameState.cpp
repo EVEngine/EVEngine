@@ -6,26 +6,21 @@
 
 namespace {
 
-template <typename T>
-eve::Result<T> gameStateFailure(eve::DiagnosticCode code, std::string message, std::string path = {}) {
-    return eve::Result<T>::failure(eve::Diagnostic::error(code, std::move(message), std::move(path)));
-}
-
 eve::Result<std::unordered_map<std::string, double>> parseNumbers(const eve::Value *value,
                                                                   const std::string &path) {
     if (!value || !value->isObject())
-        return gameStateFailure<std::unordered_map<std::string, double>>(
-            eve::DiagnosticCode::ParseError, "game state field must be an object", path);
+        return eve::Result<std::unordered_map<std::string, double>>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "game state field must be an object", path));
     std::unordered_map<std::string, double> result;
     for (const auto &key : value->keys()) {
         const eve::Value *item = value->find(key);
         if (!item || !item->isNumeric())
-            return gameStateFailure<std::unordered_map<std::string, double>>(
-                eve::DiagnosticCode::ParseError, "game state variable must be numeric", path + "." + key);
+            return eve::Result<std::unordered_map<std::string, double>>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::ParseError, "game state variable must be numeric", path + "." + key));
         const double number = item->isInt64() ? static_cast<double>(item->asInt()) : item->asDouble();
         if (!std::isfinite(number))
-            return gameStateFailure<std::unordered_map<std::string, double>>(
-                eve::DiagnosticCode::InvalidArgument, "game state variable must be finite", path + "." + key);
+            return eve::Result<std::unordered_map<std::string, double>>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::InvalidArgument, "game state variable must be finite", path + "." + key));
         result.emplace(key, number);
     }
     return eve::Result<std::unordered_map<std::string, double>>::success(std::move(result));
@@ -105,26 +100,27 @@ eve::Result<void> GameState::restoreSnapshotJson(std::string_view json) {
     if (!parsed.ok()) return eve::Result<void>::failure(parsed.status());
     const eve::Value &root = parsed.value();
     if (!root.isObject())
-        return gameStateFailure<void>(eve::DiagnosticCode::ParseError, "game state root must be an object", "$.");
+        return eve::Result<void>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "game state root must be an object", "$."));
     const eve::Value *schema = root.find("schema");
     if (!schema || !schema->isString() || schema->asString() != "eve.rpg.game-state")
-        return gameStateFailure<void>(eve::DiagnosticCode::InvalidArgument,
-                                      "snapshot does not belong to RPG GameState", "$.schema");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "snapshot does not belong to RPG GameState", "$.schema"));
     const eve::Value *version = root.find("version");
     if (!version || !version->isInt64() || version->asInt() != 1)
-        return gameStateFailure<void>(eve::DiagnosticCode::UnknownVersion,
-                                      "unsupported RPG GameState snapshot version", "$.version");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::UnknownVersion, "unsupported RPG GameState snapshot version", "$.version"));
 
     const eve::Value *switches = root.find("switches");
     if (!switches || !switches->isObject())
-        return gameStateFailure<void>(eve::DiagnosticCode::ParseError,
-                                      "game state switches must be an object", "$.switches");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::ParseError, "game state switches must be an object", "$.switches"));
     std::unordered_map<std::string, bool> candidateSwitches;
     for (const auto &key : switches->keys()) {
         const eve::Value *item = switches->find(key);
         if (!item || !item->isBool())
-            return gameStateFailure<void>(eve::DiagnosticCode::ParseError,
-                                          "game state switch must be boolean", "$.switches." + key);
+            return eve::Result<void>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::ParseError, "game state switch must be boolean", "$.switches." + key));
         candidateSwitches.emplace(key, item->asBool());
     }
 
@@ -132,8 +128,8 @@ eve::Result<void> GameState::restoreSnapshotJson(std::string_view json) {
     if (!candidateVariables.ok()) return eve::Result<void>::failure(candidateVariables.status());
     const eve::Value *scoped = root.find("selfVariables");
     if (!scoped || !scoped->isObject())
-        return gameStateFailure<void>(eve::DiagnosticCode::ParseError,
-                                      "game state selfVariables must be an object", "$.selfVariables");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::ParseError, "game state selfVariables must be an object", "$.selfVariables"));
     std::unordered_map<std::string, std::unordered_map<std::string, double>> candidateScoped;
     for (const auto &scope : scoped->keys()) {
         auto values = parseNumbers(scoped->find(scope), "$.selfVariables." + scope);

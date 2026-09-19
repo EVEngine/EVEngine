@@ -8,10 +8,6 @@
 
 namespace eve::avatar_editing {
 namespace {
-template <class T>
-EditorResult<T> fail(EditorStatus s, const char* r, std::string m) {
-    return eve::editing::failed<T>(s, RuleId(r), std::move(m));
-}
 const EditorValue* field(const EditorValue& v, const char* k) {
     const auto* o = v.getIf<EditorValue::Object>();
     if (!o) return nullptr;
@@ -64,7 +60,8 @@ EditorResult<AvatarLayerValue> parseLayer(const EditorValue& v) {
     if (!ids || ids->empty() || !names || !textures || !zs || !vis ||
         !readFloats(field(v, "offset"), out.offset.data(), 2) || !readFloats(field(v, "size"), out.size.data(), 2) ||
         !readFloats(field(v, "color"), out.color.data(), 4))
-        return fail<AvatarLayerValue>(EditorStatus::Rejected, "editor.avatar.layer", "Avatar layer is invalid");
+        return eve::editing::failed<AvatarLayerValue>(EditorStatus::Rejected, RuleId("editor.avatar.layer"),
+                                                      "Avatar layer is invalid");
     out.id           = ObjectId(*ids);
     out.name         = *names;
     out.textureAsset = *textures;
@@ -78,8 +75,8 @@ EditorResult<AvatarParameterValue> parseParameter(const EditorValue& v) {
     const auto*          ids   = id ? id->getIf<std::string>() : nullptr;
     const auto*          names = name ? name->getIf<std::string>() : nullptr;
     if (!ids || ids->empty() || !names)
-        return fail<AvatarParameterValue>(EditorStatus::Rejected, "editor.avatar.parameter",
-                                          "Avatar parameter identity is invalid");
+        return eve::editing::failed<AvatarParameterValue>(EditorStatus::Rejected, RuleId("editor.avatar.parameter"),
+                                                          "Avatar parameter identity is invalid");
     out.id               = ObjectId(*ids);
     out.name             = *names;
     float*      values[] = {&out.defaultValue, &out.minimum, &out.maximum, &out.value};
@@ -88,8 +85,8 @@ EditorResult<AvatarParameterValue> parseParameter(const EditorValue& v) {
         const auto* x = field(v, fields[i]);
         const auto* n = x ? x->getIf<double>() : nullptr;
         if (!n || !std::isfinite(*n))
-            return fail<AvatarParameterValue>(EditorStatus::Rejected, "editor.avatar.parameter-number",
-                                              "Avatar parameter number is invalid");
+            return eve::editing::failed<AvatarParameterValue>(
+                EditorStatus::Rejected, RuleId("editor.avatar.parameter-number"), "Avatar parameter number is invalid");
         *values[i] = static_cast<float>(*n);
     }
     return eve::editing::applied<AvatarParameterValue>(std::move(out));
@@ -101,15 +98,16 @@ EditorResult<AvatarExpressionValue> parseExpression(const EditorValue& v) {
     const auto*           names  = name ? name->getIf<std::string>() : nullptr;
     const auto*           object = channels ? channels->getIf<EditorValue::Object>() : nullptr;
     if (!ids || ids->empty() || !names || !object)
-        return fail<AvatarExpressionValue>(EditorStatus::Rejected, "editor.avatar.expression",
-                                           "Avatar expression is invalid");
+        return eve::editing::failed<AvatarExpressionValue>(EditorStatus::Rejected, RuleId("editor.avatar.expression"),
+                                                           "Avatar expression is invalid");
     out.id   = ObjectId(*ids);
     out.name = *names;
     for (const auto& [key, value] : *object) {
         const auto* n = value.getIf<double>();
         if (!n || !std::isfinite(*n))
-            return fail<AvatarExpressionValue>(EditorStatus::Rejected, "editor.avatar.expression-channel",
-                                               "Avatar expression channel is invalid");
+            return eve::editing::failed<AvatarExpressionValue>(EditorStatus::Rejected,
+                                                               RuleId("editor.avatar.expression-channel"),
+                                                               "Avatar expression channel is invalid");
         out.channels[key] = static_cast<float>(*n);
     }
     return eve::editing::applied<AvatarExpressionValue>(std::move(out));
@@ -256,7 +254,8 @@ EditorResult<DomainOperation> AvatarDocumentTarget::makeSet(const SelectionSnaps
     if (mode == PropertySetMode::Reset) return makeReset(s, p);
     auto d = schema(s).find(p);
     if (!matches(s) || !d || mode != PropertySetMode::Absolute || !validatePropertyValue(*d, value).ok())
-        return fail<DomainOperation>(EditorStatus::Rejected, "editor.avatar.set", "Avatar property edit is invalid");
+        return eve::editing::failed<DomainOperation>(EditorStatus::Rejected, RuleId("editor.avatar.set"),
+                                                     "Avatar property edit is invalid");
     auto candidate = *this;
     for (const auto& i : s.items)
         if (i.type == "avatar.layer") {
@@ -288,14 +287,15 @@ EditorResult<DomainOperation> AvatarDocumentTarget::makeSet(const SelectionSnaps
                 v.value = n;
         }
     if (errors(candidate.validate()))
-        return fail<DomainOperation>(EditorStatus::Rejected, "editor.avatar.invalid",
-                                     "Avatar edit produces an invalid asset");
+        return eve::editing::failed<DomainOperation>(EditorStatus::Rejected, RuleId("editor.avatar.invalid"),
+                                                     "Avatar edit produces an invalid asset");
     return replacement(candidate.contentValue(), p.value());
 }
 EditorResult<DomainOperation> AvatarDocumentTarget::makeReset(const SelectionSnapshot& s, const PropertyPath& p) const {
     auto d = schema(s).find(p);
     if (!d)
-        return fail<DomainOperation>(EditorStatus::Unsupported, "editor.avatar.property", "Unknown Avatar property");
+        return eve::editing::failed<DomainOperation>(EditorStatus::Unsupported, RuleId("editor.avatar.property"),
+                                                     "Unknown Avatar property");
     return makeSet(s, p, d->defaultValue, PropertySetMode::Absolute);
 }
 EditorResult<DomainOperation> AvatarDocumentTarget::makeSetSource(std::string kind, std::string asset) const {
@@ -303,28 +303,32 @@ EditorResult<DomainOperation> AvatarDocumentTarget::makeSetSource(std::string ki
     candidate.kind_        = std::move(kind);
     candidate.sourceAsset_ = std::move(asset);
     if (errors(candidate.validate()))
-        return fail<DomainOperation>(EditorStatus::Rejected, "editor.avatar.source", "Avatar source is invalid");
+        return eve::editing::failed<DomainOperation>(EditorStatus::Rejected, RuleId("editor.avatar.source"),
+                                                     "Avatar source is invalid");
     return replacement(candidate.contentValue(), "source");
 }
 EditorResult<DomainOperation> AvatarDocumentTarget::makeCreateLayer(const AvatarLayerValue& v) const {
     if (v.id.empty() ||
         std::any_of(layers_.begin(), layers_.end(), [&](const auto& x) { return x.id == v.id || x.name == v.name; }))
-        return fail<DomainOperation>(EditorStatus::Rejected, "editor.avatar.layer-id",
-                                     "Avatar layer ID and name must be unique");
+        return eve::editing::failed<DomainOperation>(EditorStatus::Rejected, RuleId("editor.avatar.layer-id"),
+                                                     "Avatar layer ID and name must be unique");
     auto c = *this;
     c.layers_.push_back(v);
     if (errors(c.validate()))
-        return fail<DomainOperation>(EditorStatus::Rejected, "editor.avatar.layer", "Avatar layer is invalid");
+        return eve::editing::failed<DomainOperation>(EditorStatus::Rejected, RuleId("editor.avatar.layer"),
+                                                     "Avatar layer is invalid");
     return replacement(c.contentValue());
 }
 EditorResult<DomainOperation> AvatarDocumentTarget::makeDeleteLayer(const ObjectId& id) const {
     if (std::none_of(layers_.begin(), layers_.end(), [&](const auto& v) { return v.id == id; }))
-        return fail<DomainOperation>(EditorStatus::NotFound, "editor.avatar.layer", "Avatar layer does not exist");
+        return eve::editing::failed<DomainOperation>(EditorStatus::NotFound, RuleId("editor.avatar.layer"),
+                                                     "Avatar layer does not exist");
     const auto& name = std::find_if(layers_.begin(), layers_.end(), [&](const auto& v) { return v.id == id; })->name;
     for (const auto& e : expressions_)
         if (e.channels.contains(name))
-            return fail<DomainOperation>(EditorStatus::Conflict, "editor.avatar.layer-reference",
-                                         "Avatar expressions still reference this layer");
+            return eve::editing::failed<DomainOperation>(EditorStatus::Conflict,
+                                                         RuleId("editor.avatar.layer-reference"),
+                                                         "Avatar expressions still reference this layer");
     auto c = *this;
     std::erase_if(c.layers_, [&](const auto& v) { return v.id == id; });
     return replacement(c.contentValue());
@@ -332,24 +336,26 @@ EditorResult<DomainOperation> AvatarDocumentTarget::makeDeleteLayer(const Object
 EditorResult<DomainOperation> AvatarDocumentTarget::makeCreateParameter(const AvatarParameterValue& v) const {
     if (v.id.empty() || std::any_of(parameters_.begin(), parameters_.end(),
                                     [&](const auto& x) { return x.id == v.id || x.name == v.name; }))
-        return fail<DomainOperation>(EditorStatus::Rejected, "editor.avatar.parameter-id",
-                                     "Avatar parameter ID and name must be unique");
+        return eve::editing::failed<DomainOperation>(EditorStatus::Rejected, RuleId("editor.avatar.parameter-id"),
+                                                     "Avatar parameter ID and name must be unique");
     auto c = *this;
     c.parameters_.push_back(v);
     if (errors(c.validate()))
-        return fail<DomainOperation>(EditorStatus::Rejected, "editor.avatar.parameter", "Avatar parameter is invalid");
+        return eve::editing::failed<DomainOperation>(EditorStatus::Rejected, RuleId("editor.avatar.parameter"),
+                                                     "Avatar parameter is invalid");
     return replacement(c.contentValue());
 }
 EditorResult<DomainOperation> AvatarDocumentTarget::makeDeleteParameter(const ObjectId& id) const {
     if (std::none_of(parameters_.begin(), parameters_.end(), [&](const auto& v) { return v.id == id; }))
-        return fail<DomainOperation>(EditorStatus::NotFound, "editor.avatar.parameter",
-                                     "Avatar parameter does not exist");
+        return eve::editing::failed<DomainOperation>(EditorStatus::NotFound, RuleId("editor.avatar.parameter"),
+                                                     "Avatar parameter does not exist");
     const auto& name =
         std::find_if(parameters_.begin(), parameters_.end(), [&](const auto& v) { return v.id == id; })->name;
     for (const auto& e : expressions_)
         if (e.channels.contains(name))
-            return fail<DomainOperation>(EditorStatus::Conflict, "editor.avatar.parameter-reference",
-                                         "Avatar expressions still reference this parameter");
+            return eve::editing::failed<DomainOperation>(EditorStatus::Conflict,
+                                                         RuleId("editor.avatar.parameter-reference"),
+                                                         "Avatar expressions still reference this parameter");
     auto c = *this;
     std::erase_if(c.parameters_, [&](const auto& v) { return v.id == id; });
     return replacement(c.contentValue());
@@ -357,19 +363,19 @@ EditorResult<DomainOperation> AvatarDocumentTarget::makeDeleteParameter(const Ob
 EditorResult<DomainOperation> AvatarDocumentTarget::makeCreateExpression(const AvatarExpressionValue& v) const {
     if (v.id.empty() || std::any_of(expressions_.begin(), expressions_.end(),
                                     [&](const auto& x) { return x.id == v.id || x.name == v.name; }))
-        return fail<DomainOperation>(EditorStatus::Rejected, "editor.avatar.expression-id",
-                                     "Avatar expression ID and name must be unique");
+        return eve::editing::failed<DomainOperation>(EditorStatus::Rejected, RuleId("editor.avatar.expression-id"),
+                                                     "Avatar expression ID and name must be unique");
     auto c = *this;
     c.expressions_.push_back(v);
     if (errors(c.validate()))
-        return fail<DomainOperation>(EditorStatus::Rejected, "editor.avatar.expression",
-                                     "Avatar expression is invalid");
+        return eve::editing::failed<DomainOperation>(EditorStatus::Rejected, RuleId("editor.avatar.expression"),
+                                                     "Avatar expression is invalid");
     return replacement(c.contentValue());
 }
 EditorResult<DomainOperation> AvatarDocumentTarget::makeDeleteExpression(const ObjectId& id) const {
     if (std::none_of(expressions_.begin(), expressions_.end(), [&](const auto& v) { return v.id == id; }))
-        return fail<DomainOperation>(EditorStatus::NotFound, "editor.avatar.expression",
-                                     "Avatar expression does not exist");
+        return eve::editing::failed<DomainOperation>(EditorStatus::NotFound, RuleId("editor.avatar.expression"),
+                                                     "Avatar expression does not exist");
     auto c = *this;
     std::erase_if(c.expressions_, [&](const auto& v) { return v.id == id; });
     return replacement(c.contentValue());
@@ -424,7 +430,8 @@ std::vector<EditorDiagnostic> AvatarDocumentTarget::validate() const {
 EditorResult<void> AvatarDocumentTarget::applyDomainOperation(const DomainOperation& op) {
     if (op.target != TargetId(id_) || op.type != "avatar.document.replace.v1" ||
         !op.payload.isWithinLimits(8, 100000, 8 * 1024 * 1024))
-        return fail<void>(EditorStatus::Rejected, "editor.avatar.operation", "Avatar operation is invalid");
+        return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.avatar.operation"),
+                                          "Avatar operation is invalid");
     const auto *kind = field(op.payload, "kind"), *source = field(op.payload, "source"),
                *layers = field(op.payload, "layers"), *parameters = field(op.payload, "parameters"),
                *expressions = field(op.payload, "expressions");
@@ -434,31 +441,35 @@ EditorResult<void> AvatarDocumentTarget::applyDomainOperation(const DomainOperat
     const auto* pa          = parameters ? parameters->getIf<EditorValue::Array>() : nullptr;
     const auto* ea          = expressions ? expressions->getIf<EditorValue::Array>() : nullptr;
     if (!k || !s || !la || !pa || !ea || la->size() > 512 || pa->size() > 2048 || ea->size() > 1024)
-        return fail<void>(EditorStatus::Rejected, "editor.avatar.payload",
-                          "Avatar payload is invalid or exceeds budgets");
+        return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.avatar.payload"),
+                                          "Avatar payload is invalid or exceeds budgets");
     AvatarDocumentTarget c(id_);
     c.kind_        = *k;
     c.sourceAsset_ = *s;
     for (const auto& v : *la) {
         auto parsed = parseLayer(v);
         if (!parsed.ok())
-            return fail<void>(EditorStatus::Rejected, "editor.avatar.layer", "Avatar layer cannot be parsed");
+            return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.avatar.layer"),
+                                              "Avatar layer cannot be parsed");
         c.layers_.push_back(std::move(parsed.value()));
     }
     for (const auto& v : *pa) {
         auto parsed = parseParameter(v);
         if (!parsed.ok())
-            return fail<void>(EditorStatus::Rejected, "editor.avatar.parameter", "Avatar parameter cannot be parsed");
+            return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.avatar.parameter"),
+                                              "Avatar parameter cannot be parsed");
         c.parameters_.push_back(std::move(parsed.value()));
     }
     for (const auto& v : *ea) {
         auto parsed = parseExpression(v);
         if (!parsed.ok())
-            return fail<void>(EditorStatus::Rejected, "editor.avatar.expression", "Avatar expression cannot be parsed");
+            return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.avatar.expression"),
+                                              "Avatar expression cannot be parsed");
         c.expressions_.push_back(std::move(parsed.value()));
     }
     if (errors(c.validate()))
-        return fail<void>(EditorStatus::Rejected, "editor.avatar.invalid", "Avatar document validation failed");
+        return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.avatar.invalid"),
+                                          "Avatar document validation failed");
     kind_        = std::move(c.kind_);
     sourceAsset_ = std::move(c.sourceAsset_);
     layers_      = std::move(c.layers_);
@@ -474,7 +485,8 @@ std::unique_ptr<IDomainOperationTarget> AvatarDocumentTarget::cloneDomainState()
 EditorResult<void> AvatarDocumentTarget::commitDomainState(std::unique_ptr<IDomainOperationTarget> c) {
     auto* t = dynamic_cast<AvatarDocumentTarget*>(c.get());
     if (!t || t->id_ != id_)
-        return fail<void>(EditorStatus::Conflict, "editor.avatar.candidate", "Avatar candidate mismatch");
+        return eve::editing::failed<void>(EditorStatus::Conflict, RuleId("editor.avatar.candidate"),
+                                          "Avatar candidate mismatch");
     *this = *t;
     return eve::editing::applied<void>();
 }
@@ -485,7 +497,8 @@ EditorResult<void> AvatarDocumentTarget::loadSnapshot(const EditorValue& s) {
     const auto *v = field(s, "schemaVersion"), *content = field(s, "content");
     const auto* version = v ? v->getIf<int64_t>() : nullptr;
     if (!version || *version != 1 || !content)
-        return fail<void>(EditorStatus::Unsupported, "editor.avatar.snapshot", "Unsupported Avatar snapshot");
+        return eve::editing::failed<void>(EditorStatus::Unsupported, RuleId("editor.avatar.snapshot"),
+                                          "Unsupported Avatar snapshot");
     DomainOperation op;
     op.target   = TargetId(id_);
     op.type     = "avatar.document.replace.v1";

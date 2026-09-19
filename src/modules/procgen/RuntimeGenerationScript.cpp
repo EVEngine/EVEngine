@@ -5,13 +5,7 @@
 #include "procgen/RuntimeGeneration.h"
 
 namespace eve::procgen {
-namespace {
-template <class T>
-Result<T> procgenBindingFailure(DiagnosticCode code, std::string message, std::string path) {
-    return Result<T>::failure(
-        Diagnostic::error(code, std::move(message), std::move(path), {}, "procgen.runtimeGeneration"));
-}
-}  // namespace
+namespace {}  // namespace
 void exposeRuntimeGeneration(ssq::Table& table) {
     auto job = table.addClass<ProcgenGenerationJob>(
         "ProcgenGenerationJob", std::function<ProcgenGenerationJob*()>([] { return nullptr; }), true);
@@ -68,16 +62,16 @@ void exposeRuntimeGeneration(ssq::Table& table) {
     runtimeGeneration.addFunc("getRefreshWorkBudget", &RuntimeGeneration::getRefreshWorkBudget);
     runtimeGeneration.addFunc("isRefreshPending", &RuntimeGeneration::isRefreshPending);
     runtimeGeneration.addFunc("getCommittedRefreshRevision", &RuntimeGeneration::getCommittedRefreshRevision);
-    runtimeGeneration.addFunc(
-        "continueGenerationRefresh", [vm = runtimeGeneration.getHandle()](RuntimeGeneration* value) {
-            return eve::script::projectResult(
-                vm,
-                value ? value->continueGenerationRefresh()
-                      : procgenBindingFailure<std::uint64_t>(eve::DiagnosticCode::InvalidArgument,
-                                                             "continueGenerationRefresh requires RuntimeGeneration",
-                                                             "runtimeGeneration"),
-                [](std::uint64_t processed) { return eve::Value(std::to_string(processed)); });
-        });
+    runtimeGeneration.addFunc("continueGenerationRefresh", [vm = runtimeGeneration.getHandle()](
+                                                               RuntimeGeneration* value) {
+        return eve::script::projectResult(
+            vm,
+            value ? value->continueGenerationRefresh()
+                  : Result<std::uint64_t>::failure(Diagnostic::error(
+                        eve::DiagnosticCode::InvalidArgument, "continueGenerationRefresh requires RuntimeGeneration",
+                        "runtimeGeneration", {}, "procgen.runtimeGeneration")),
+            [](std::uint64_t processed) { return eve::Value(std::to_string(processed)); });
+    });
     runtimeGeneration.addFunc("updateSource", &RuntimeGeneration::updateSource);
     runtimeGeneration.addFunc("setGenerationSource", &RuntimeGeneration::setGenerationSource);
     runtimeGeneration.addFunc("removeGenerationSource", &RuntimeGeneration::removeGenerationSource);
@@ -117,15 +111,17 @@ void exposeRuntimeGeneration(ssq::Table& table) {
             return eve::script::projectResult(
                 vm,
                 job && output ? self->completeGenerationJob({*job, *output})
-                              : procgenBindingFailure<uint64_t>(DiagnosticCode::InvalidArgument,
-                                                                "job and output are required", "completion"),
+                              : Result<uint64_t>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                                            "job and output are required", "completion",
+                                                                            {}, "procgen.runtimeGeneration")),
                 [](uint64_t revision) { return Value(std::to_string(revision)); });
         });
     runtimeGeneration.addFunc(
         "failGenerationJob", [vm = runtimeGeneration.getHandle()](RuntimeGeneration* self, ProcgenGenerationJob* job) {
             return eve::script::projectResult(
                 vm, job ? self->failGenerationJob(*job)
-                        : procgenBindingFailure<void>(DiagnosticCode::InvalidArgument, "job is required", "job"));
+                        : Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "job is required",
+                                                                  "job", {}, "procgen.runtimeGeneration")));
         });
     runtimeGeneration.addFunc("nextCleanupRequest", [vm = runtimeGeneration.getHandle()](RuntimeGeneration* self) {
         // Allocate the registered script wrapper before consuming a queue entry.
@@ -144,12 +140,12 @@ void exposeRuntimeGeneration(ssq::Table& table) {
     });
     runtimeGeneration.addFunc("completeCleanupRequest", [vm = runtimeGeneration.getHandle()](
                                                             RuntimeGeneration* self, ProcgenCellRequest* request) {
-        return eve::script::projectResult(
-            vm,
-            request ? self->completeCleanupRequest(*request)
-                    : procgenBindingFailure<uint64_t>(DiagnosticCode::InvalidArgument, "cleanup request is required",
-                                                      "request"),
-            [](uint64_t count) { return Value(std::to_string(count)); });
+        return eve::script::projectResult(vm,
+                                          request ? self->completeCleanupRequest(*request)
+                                                  : Result<uint64_t>::failure(Diagnostic::error(
+                                                        DiagnosticCode::InvalidArgument, "cleanup request is required",
+                                                        "request", {}, "procgen.runtimeGeneration")),
+                                          [](uint64_t count) { return Value(std::to_string(count)); });
     });
     runtimeGeneration.addFunc("nextCleanup", &RuntimeGeneration::nextCleanup);
     runtimeGeneration.addFunc("isRequestCurrent", &RuntimeGeneration::isRequestCurrent);
@@ -164,10 +160,10 @@ void exposeRuntimeGeneration(ssq::Table& table) {
             requests.push_back(requestArray.get<ProcgenCellRequest*>(index));
         return eve::script::projectResult(
             vm,
-            value
-                ? value->completeCleanupsAtomic(requests)
-                : procgenBindingFailure<std::uint64_t>(eve::DiagnosticCode::InvalidArgument,
-                                                       "completeCleanupsAtomic requires RuntimeGeneration", "runtime"),
+            value ? value->completeCleanupsAtomic(requests)
+                  : Result<std::uint64_t>::failure(Diagnostic::error(
+                        eve::DiagnosticCode::InvalidArgument, "completeCleanupsAtomic requires RuntimeGeneration",
+                        "runtime", {}, "procgen.runtimeGeneration")),
             [](std::uint64_t completed) { return eve::Value(std::to_string(completed)); });
     });
     runtimeGeneration.addFunc("hasCell", &RuntimeGeneration::hasCell);
@@ -182,9 +178,10 @@ void exposeRuntimeGeneration(ssq::Table& table) {
             if (!output || error != std::errc{} || end != revisionText.data() + revisionText.size() || revision == 0)
                 return eve::script::projectResult(
                     vm,
-                    procgenBindingFailure<std::uint64_t>(
-                        eve::DiagnosticCode::InvalidArgument,
-                        "applyCellUpdate requires an output and a non-zero decimal revision", "revision"),
+                    Result<std::uint64_t>::failure(
+                        Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                          "applyCellUpdate requires an output and a non-zero decimal revision",
+                                          "revision", {}, "procgen.runtimeGeneration")),
                     [](std::uint64_t committed) { return eve::Value(std::to_string(committed)); });
             return eve::script::projectResult(
                 vm, value->applyCellUpdate(level, x, z, revision, *output),
@@ -199,9 +196,10 @@ void exposeRuntimeGeneration(ssq::Table& table) {
             if (error != std::errc{} || end != revisionText.data() + revisionText.size() || revision == 0)
                 return eve::script::projectResult(
                     vm,
-                    procgenBindingFailure<std::uint64_t>(eve::DiagnosticCode::InvalidArgument,
-                                                         "migrateCellPointIds requires a non-zero decimal revision",
-                                                         "revision"),
+                    Result<std::uint64_t>::failure(
+                        Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                          "migrateCellPointIds requires a non-zero decimal revision", "revision", {},
+                                          "procgen.runtimeGeneration")),
                     [](std::uint64_t committed) { return eve::Value(std::to_string(committed)); });
             return eve::script::projectResult(
                 vm, value->migrateCellPointIds(level, x, z, revision),

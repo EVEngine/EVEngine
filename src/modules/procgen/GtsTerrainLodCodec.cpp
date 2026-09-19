@@ -11,11 +11,7 @@ namespace eve::procgen {
 namespace {
 constexpr std::size_t kMaxJsonBytes = 256U * 1024U * 1024U, kMaxTiles = 65536, kMaxLevels = 32,
                       kMaxVertices = 8U * 1024U * 1024U;
-template <class T>
-Result<T> bad(const char* m) {
-    return Result<T>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, m, "procgen.gtsTerrainLod.codec"));
-}
-bool exact(const Value::Object& o, std::initializer_list<const char*> names) {
+bool                  exact(const Value::Object& o, std::initializer_list<const char*> names) {
     if (o.size() != names.size()) return false;
     for (auto* n : names)
         if (!o.contains(n)) return false;
@@ -141,12 +137,17 @@ Result<std::string> GtsTerrainMeshSettings::snapshotJson() const {
 }
 
 Result<void> GtsTerrainMeshSettings::restoreJson(const std::string& json) {
-    if (json.size() > 64U * 1024U) return bad<void>("GTS terrain mesh settings JSON exceeds size limit");
+    if (json.size() > 64U * 1024U)
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                       "GTS terrain mesh settings JSON exceeds size limit",
+                                                       "procgen.gtsTerrainLod.codec"));
     auto parsed = Value::fromJson(json);
     if (!parsed) return Result<void>::failure(parsed.status());
     auto* root = parsed.value().getIf<Value::Object>();
     if (!root || !exact(*root, {"lodCount", "lodQuality", "saveResolution", "schema", "subTiles", "version"}))
-        return bad<void>("GTS terrain mesh settings fields are invalid");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                       "GTS terrain mesh settings fields are invalid",
+                                                       "procgen.gtsTerrainLod.codec"));
     auto* schema     = root->at("schema").getIf<std::string>();
     auto* version    = root->at("version").getIf<int64_t>();
     auto* resolution = root->at("saveResolution").getIf<int64_t>();
@@ -156,7 +157,9 @@ Result<void> GtsTerrainMeshSettings::restoreJson(const std::string& json) {
     if (!schema || *schema != "eve.procgen.gts-terrain-mesh-settings" || !version || *version != 1 || !resolution ||
         *resolution < 0 || *resolution > 4 || !count || *count < 1 || *count > 4 || !subTiles || *subTiles < 0 ||
         *subTiles > 5 || !qualities || qualities->size() != 4)
-        return bad<void>("GTS terrain mesh settings schema or values are invalid");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                       "GTS terrain mesh settings schema or values are invalid",
+                                                       "procgen.gtsTerrainLod.codec"));
     GtsTerrainMeshSettings candidate;
     auto                   a = candidate.setSaveResolution(int(*resolution));
     if (!a) return a;
@@ -166,7 +169,10 @@ Result<void> GtsTerrainMeshSettings::restoreJson(const std::string& json) {
     if (!c) return c;
     for (int i = 0; i < 4; ++i) {
         auto* quality = num((*qualities)[size_t(i)]);
-        if (!quality) return bad<void>("GTS terrain mesh LOD quality is invalid");
+        if (!quality)
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                           "GTS terrain mesh LOD quality is invalid",
+                                                           "procgen.gtsTerrainLod.codec"));
         auto set = candidate.setLodQuality(i, float(*quality));
         if (!set) return set;
     }
@@ -176,7 +182,9 @@ Result<void> GtsTerrainMeshSettings::restoreJson(const std::string& json) {
 
 Result<std::string> GtsTerrainLodSet::snapshotJson() const {
     if (tiles_.size() > kMaxTiles || settings_.empty() || settings_.size() > kMaxLevels)
-        return bad<std::string>("GTS terrain LOD set exceeds codec limits");
+        return Result<std::string>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                              "GTS terrain LOD set exceeds codec limits",
+                                                              "procgen.gtsTerrainLod.codec"));
     Value::Array settings, tiles;
     for (auto& s : settings_)
         settings.emplace_back(Value::Object{{"options", options(s.simplification)},
@@ -196,17 +204,22 @@ Result<std::string> GtsTerrainLodSet::snapshotJson() const {
                                     {"version", 2}})
                     .toJson();
     if (!json) return json;
-    if (json.value().size() > kMaxJsonBytes) return bad<std::string>("GTS terrain LOD JSON exceeds size limit");
+    if (json.value().size() > kMaxJsonBytes)
+        return Result<std::string>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "GTS terrain LOD JSON exceeds size limit", "procgen.gtsTerrainLod.codec"));
     return json;
 }
 
 Result<void> GtsTerrainLodSet::restoreJson(const std::string& json) {
-    if (json.size() > kMaxJsonBytes) return bad<void>("GTS terrain LOD JSON exceeds size limit");
+    if (json.size() > kMaxJsonBytes)
+        return Result<void>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "GTS terrain LOD JSON exceeds size limit", "procgen.gtsTerrainLod.codec"));
     auto parsed = Value::fromJson(json);
     if (!parsed) return Result<void>::failure(parsed.status());
     auto* root = parsed.value().getIf<Value::Object>();
     if (!root || !exact(*root, {"columns", "rows", "schema", "settings", "tiles", "version"}))
-        return bad<void>("GTS terrain LOD root fields are invalid");
+        return Result<void>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "GTS terrain LOD root fields are invalid", "procgen.gtsTerrainLod.codec"));
     auto* schema   = root->at("schema").getIf<std::string>();
     auto* version  = root->at("version").getIf<int64_t>();
     auto* columns  = root->at("columns").getIf<int64_t>();
@@ -217,7 +230,9 @@ Result<void> GtsTerrainLodSet::restoreJson(const std::string& json) {
         !columns || !rows || *columns <= 0 || *rows <= 0 || *columns > 65536 || *rows > 65536 || !settings ||
         settings->empty() || settings->size() > kMaxLevels || !tiles || tiles->size() > kMaxTiles ||
         uint64_t(*columns) * uint64_t(*rows) != tiles->size())
-        return bad<void>("GTS terrain LOD schema, layout or counts are invalid");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                       "GTS terrain LOD schema, layout or counts are invalid",
+                                                       "procgen.gtsTerrainLod.codec"));
     GtsTerrainLodSet candidate;
     candidate.columns_ = int(*columns);
     candidate.rows_    = int(*rows);
@@ -225,12 +240,16 @@ Result<void> GtsTerrainLodSet::restoreJson(const std::string& json) {
     for (auto& encoded : *settings) {
         auto* o = encoded.getIf<Value::Object>();
         if (!o || !exact(*o, {"options", "quality", "transitionHeight"}))
-            return bad<void>("GTS terrain LOD setting fields are invalid");
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                           "GTS terrain LOD setting fields are invalid",
+                                                           "procgen.gtsTerrainLod.codec"));
         auto *                     q = num(o->at("quality")), *h = num(o->at("transitionHeight"));
         GtsTerrainLodLevelSettings s;
         if (!q || !h || !std::isfinite(*q) || *q < 0 || *q > 1 || !std::isfinite(*h) || *h < 0 || *h >= previous ||
             !decodeOptions(o->at("options"), s.simplification))
-            return bad<void>("GTS terrain LOD setting values are invalid");
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                           "GTS terrain LOD setting values are invalid",
+                                                           "procgen.gtsTerrainLod.codec"));
         s.quality                        = float(*q);
         s.screenRelativeTransitionHeight = float(*h);
         previous                         = s.screenRelativeTransitionHeight;
@@ -239,18 +258,24 @@ Result<void> GtsTerrainLodSet::restoreJson(const std::string& json) {
     for (auto& encoded : *tiles) {
         auto* o = encoded.getIf<Value::Object>();
         if (!o || !exact(*o, {"levels", "offsetX", "offsetZ"}))
-            return bad<void>("GTS terrain LOD tile fields are invalid");
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                           "GTS terrain LOD tile fields are invalid",
+                                                           "procgen.gtsTerrainLod.codec"));
         auto *x = num(o->at("offsetX")), *z = num(o->at("offsetZ"));
         auto* levels = o->at("levels").getIf<Value::Array>();
         if (!x || !z || !std::isfinite(*x) || !std::isfinite(*z) || !levels ||
             levels->size() != candidate.settings_.size())
-            return bad<void>("GTS terrain LOD tile values are invalid");
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                           "GTS terrain LOD tile values are invalid",
+                                                           "procgen.gtsTerrainLod.codec"));
         GtsTerrainLodTile tile;
         tile.offsetX = float(*x);
         tile.offsetZ = float(*z);
         for (auto& m : *levels) {
             MeshBuild decoded;
-            if (!decodeMesh(m, decoded, *version == 1)) return bad<void>("GTS terrain LOD mesh is invalid");
+            if (!decodeMesh(m, decoded, *version == 1))
+                return Result<void>::failure(Diagnostic::error(
+                    DiagnosticCode::InvalidArgument, "GTS terrain LOD mesh is invalid", "procgen.gtsTerrainLod.codec"));
             tile.levels.push_back(std::move(decoded));
         }
         candidate.tiles_.push_back(std::move(tile));

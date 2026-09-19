@@ -21,16 +21,6 @@
 namespace eve::rts {
 namespace {
 
-template <typename T>
-Result<T> failure(DiagnosticCode code, std::string message, std::string path = {}) {
-    return Result<T>::failure(Diagnostic::error(code, std::move(message), std::move(path)));
-}
-
-template <typename T>
-Result<T> failureFrom(const Status& status) {
-    return Result<T>::failure(status);
-}
-
 bool finitePosition(WorldPosition position) { return std::isfinite(position.x) && std::isfinite(position.y); }
 
 SubjectRef stableSubject(ecs::Entity* entity) {
@@ -196,12 +186,12 @@ Result<std::optional<OrderRecord>> readCurrent(OrderComponent& orders) {
         current.ignore("RTS entity has no active order");
         return Result<std::optional<OrderRecord>>::success(std::nullopt, Status::success(StatusCode::NoOp));
     }
-    return failureFrom<std::optional<OrderRecord>>(current.status());
+    return Result<std::optional<OrderRecord>>::failure(current.status());
 }
 
 Result<std::size_t> advanceEffects(RTSEffectComponent& effects, const SimulationStep& step) {
     auto advanced = effects.advance(step);
-    if (!advanced) return failureFrom<std::size_t>(advanced.status());
+    if (!advanced) return Result<std::size_t>::failure(advanced.status());
     const auto result = std::move(advanced).takeValue();
     return Result<std::size_t>::success(result.settled,
                                         Status::success(result.settled == 0 ? StatusCode::NoOp : StatusCode::Applied));
@@ -214,9 +204,9 @@ Result<int> VeterancySystem::award(Unit& unit, float experience) {
     auto durability = unit.durability();
     auto combatPolicy = unit.combat();
     if (!durability->alive || !std::isfinite(experience) || experience <= 0.0f)
-        return failure<int>(DiagnosticCode::InvalidArgument,
-                            "RTS veterancy award requires a live unit and positive finite experience",
-                            "experience");
+        return Result<int>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument,
+                              "RTS veterancy award requires a live unit and positive finite experience", "experience"));
     if (veterancy->veteranThreshold <= 0.0f)
         return Result<int>::success(0, Status::success(StatusCode::NoOp));
     if (!std::isfinite(veterancy->experience) || veterancy->experience < 0.0f ||
@@ -231,8 +221,9 @@ Result<int> VeterancySystem::award(Unit& unit, float experience) {
         veterancy->veteranHealthFactor < 1.0f ||
         veterancy->eliteHealthFactor < veterancy->veteranHealthFactor ||
         veterancy->level < 0 || veterancy->level > 2)
-        return failure<int>(DiagnosticCode::InvalidArgument,
-                            "RTS veterancy thresholds and factors are inconsistent", "unit.veterancy");
+        return Result<int>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                      "RTS veterancy thresholds and factors are inconsistent",
+                                                      "unit.veterancy"));
     veterancy->experience += experience;
     const int oldLevel = veterancy->level;
     if (veterancy->eliteThreshold > 0.0f && veterancy->experience >= veterancy->eliteThreshold)
@@ -396,25 +387,27 @@ std::span<const SystemContract> systemContracts() noexcept {
 
 Result<void> FormationSpec::validate() const {
     if (!std::isfinite(spacing) || spacing <= 0.0f)
-        return failure<void>(DiagnosticCode::InvalidArgument, "formation spacing must be finite and positive",
-                             "spacing");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                       "formation spacing must be finite and positive", "spacing"));
     if (columns < 0)
-        return failure<void>(DiagnosticCode::InvalidArgument, "formation columns must be non-negative", "columns");
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "formation columns must be non-negative", "columns"));
     switch (kind) {
         case FormationKind::Line:
         case FormationKind::Grid:
         case FormationKind::Wedge: return Result<void>::success(Status::success(StatusCode::Applied));
     }
-    return failure<void>(DiagnosticCode::InvalidArgument, "formation kind is invalid", "kind");
+    return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "formation kind is invalid", "kind"));
 }
 
 Result<std::vector<WorldPosition>> FormationPlanner::plan(std::size_t count, WorldPosition anchor,
                                                           const FormationSpec& spec) {
     auto valid = spec.validate();
-    if (!valid) return failureFrom<std::vector<WorldPosition>>(valid.status());
+    if (!valid) return Result<std::vector<WorldPosition>>::failure(valid.status());
     if (!finitePosition(anchor))
-        return failure<std::vector<WorldPosition>>(DiagnosticCode::InvalidArgument, "formation anchor must be finite",
-                                                   "anchor");
+        return Result<std::vector<WorldPosition>>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "formation anchor must be finite", "anchor"));
 
     std::vector<WorldPosition> result;
     result.reserve(count);
@@ -435,8 +428,8 @@ Result<std::vector<WorldPosition>> FormationPlanner::plan(std::size_t count, Wor
                 spec.columns > 0 ? static_cast<std::size_t>(spec.columns)
                                  : static_cast<std::size_t>(std::ceil(std::sqrt(static_cast<double>(count))));
             if (columns == 0)
-                return failure<std::vector<WorldPosition>>(DiagnosticCode::InvariantViolation,
-                                                           "grid formation computed zero columns", "columns");
+                return Result<std::vector<WorldPosition>>::failure(Diagnostic::error(
+                    DiagnosticCode::InvariantViolation, "grid formation computed zero columns", "columns"));
             const std::size_t rows         = (count + columns - 1) / columns;
             const float       columnCenter = static_cast<float>(columns - 1) * 0.5f;
             const float       rowCenter    = static_cast<float>(rows - 1) * 0.5f;
@@ -471,9 +464,9 @@ Result<void> BuildInfluenceSystem::validate(Faction& faction, WorldPosition posi
                                             LogicalId definition, const PlacementValidation& placement,
                                             bool requireInfluence) {
     if (!std::isfinite(position.x) || !std::isfinite(position.y) || !definition.isValid() || !placement)
-        return failure<void>(DiagnosticCode::InvalidArgument,
-                             "RTS building placement requires finite position, definition and provider",
-                             "placement");
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument,
+                              "RTS building placement requires finite position, definition and provider", "placement"));
     if (requireInfluence) {
         bool covered = false;
         auto buildings = ecs::View<Building, Building::Placement, Building::Faction,
@@ -494,9 +487,9 @@ Result<void> BuildInfluenceSystem::validate(Faction& faction, WorldPosition posi
             }
         }
         if (!covered)
-            return failure<void>(DiagnosticCode::Conflict,
-                                 "RTS building position is outside powered allied build influence",
-                                 "placement.influence");
+            return Result<void>::failure(Diagnostic::error(
+                DiagnosticCode::Conflict, "RTS building position is outside powered allied build influence",
+                "placement.influence"));
     }
     return placement(position, std::move(definition));
 }
@@ -504,15 +497,15 @@ Result<void> BuildInfluenceSystem::validate(Faction& faction, WorldPosition posi
 Result<FanOutReceipt> CommandFanOutSystem::fanOut(std::span<const ecs::EntityHandle> unitHandles,
                                                   const CommandSpec& command, const FormationSpec& formation) {
     if (unitHandles.empty())
-        return failure<FanOutReceipt>(DiagnosticCode::InvalidArgument, "RTS command fan-out requires at least one Unit",
-                                      "selection.units");
+        return Result<FanOutReceipt>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "RTS command fan-out requires at least one Unit", "selection.units"));
     auto commandValid = command.validate();
-    if (!commandValid) return failureFrom<FanOutReceipt>(commandValid.status());
+    if (!commandValid) return Result<FanOutReceipt>::failure(commandValid.status());
 
     auto formationValid = formation.validate();
-    if (!formationValid) return failureFrom<FanOutReceipt>(formationValid.status());
+    if (!formationValid) return Result<FanOutReceipt>::failure(formationValid.status());
     auto targets = FormationPlanner::plan(unitHandles.size(), command.target, formation);
-    if (!targets) return failureFrom<FanOutReceipt>(targets.status());
+    if (!targets) return Result<FanOutReceipt>::failure(targets.status());
     auto plannedTargets = std::move(targets).takeValue();
 
     // The explicit View is the closure proof for this command boundary: a
@@ -535,16 +528,17 @@ Result<FanOutReceipt> CommandFanOutSystem::fanOut(std::span<const ecs::EntityHan
         auto* entity = ecs::try_get(handle);
         auto* unit   = entity == nullptr ? nullptr : dynamic_cast<Unit*>(entity);
         if (unit == nullptr)
-            return failure<FanOutReceipt>(DiagnosticCode::StaleHandle,
-                                          "RTS fan-out selection contains a stale or non-Unit handle",
-                                          "selection.units");
+            return Result<FanOutReceipt>::failure(
+                Diagnostic::error(DiagnosticCode::StaleHandle,
+                                  "RTS fan-out selection contains a stale or non-Unit handle", "selection.units"));
         const auto liveHandle = ecs::handle_of(unit);
         const bool inView = std::any_of(visibleUnits.begin(), visibleUnits.end(), [&liveHandle](const auto& candidate) {
             return sameHandle(candidate, liveHandle);
         });
         if (!inView)
-            return failure<FanOutReceipt>(DiagnosticCode::InvariantViolation,
-                                          "RTS Unit selection is outside the declared View closure", "selection.units");
+            return Result<FanOutReceipt>::failure(
+                Diagnostic::error(DiagnosticCode::InvariantViolation,
+                                  "RTS Unit selection is outside the declared View closure", "selection.units"));
         selected.push_back(unit);
     }
 
@@ -582,7 +576,7 @@ Result<FanOutReceipt> CommandFanOutSystem::fanOut(std::span<const ecs::EntityHan
     previous.reserve(selected.size());
     for (Unit* unit : selected) {
         auto snapshot = unit->orders()->values.snapshotState();
-        if (!snapshot) return failureFrom<FanOutReceipt>(snapshot.status());
+        if (!snapshot) return Result<FanOutReceipt>::failure(snapshot.status());
         previous.push_back(std::move(snapshot).takeValue());
     }
     for (std::size_t index = 0; index < selected.size(); ++index) {
@@ -606,8 +600,8 @@ Result<FanOutReceipt> CommandFanOutSystem::fanOut(std::span<const ecs::EntityHan
 
 Result<std::size_t> TacticsSystem::step(const combat::DamageRuntime* damage, const SimulationStep& step) {
     if (step.delta.nanoseconds() < 0)
-        return failure<std::size_t>(DiagnosticCode::InvalidArgument,
-                                    "RTS tactics step delta must be non-negative", "step.delta");
+        return Result<std::size_t>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "RTS tactics step delta must be non-negative", "step.delta"));
     struct Candidate {
         ecs::EntityHandle handle{};
         FactionLink* faction = nullptr;
@@ -664,7 +658,7 @@ Result<std::size_t> TacticsSystem::step(const combat::DamageRuntime* damage, con
         auto* self = dynamic_cast<Unit*>(ecs::try_get(identity->self));
         if (self == nullptr) continue;
         auto current = readCurrent(orders->values);
-        if (!current) return failureFrom<std::size_t>(current.status());
+        if (!current) return Result<std::size_t>::failure(current.status());
         auto order = std::move(current).takeValue();
         if (!self->morale()->retreating || tactics->combatGroup == 0 || weaponLink->link.resolve() == nullptr ||
             (order && order->kind == OrderKind::Attack)) {
@@ -690,7 +684,7 @@ Result<std::size_t> TacticsSystem::step(const combat::DamageRuntime* damage, con
             }
             if (protectedFaction == nullptr || !FactionRelationSystem::isAllied(*protectedFaction, faction->link)) {
                 auto failed = orders->values.fail(order->id, "escort target is invalid or hostile");
-                if (!failed) return failureFrom<std::size_t>(failed.status());
+                if (!failed) return Result<std::size_t>::failure(failed.status());
                 tactics->escortTarget = {};
                 tactics->guardSet = false;
                 tactics->escortInterceptTarget = {};
@@ -728,7 +722,7 @@ Result<std::size_t> TacticsSystem::step(const combat::DamageRuntime* damage, con
                             std::hypot(member->motion()->x - center.x, member->motion()->y - center.y));
                     if (auto* convoyLeader = dynamic_cast<Unit*>(ecs::try_get(leader)); convoyLeader != nullptr) {
                         auto leaderOrder = readCurrent(convoyLeader->orders()->values);
-                        if (!leaderOrder) return failureFrom<std::size_t>(leaderOrder.status());
+                        if (!leaderOrder) return Result<std::size_t>::failure(leaderOrder.status());
                         if (leaderOrder.value()) {
                             travelDirection = {leaderOrder.value()->target.x - convoyLeader->motion()->x,
                                                leaderOrder.value()->target.y - convoyLeader->motion()->y};
@@ -1011,7 +1005,7 @@ Result<std::size_t> TacticsSystem::step(const combat::DamageRuntime* damage, con
                     request.damageType = definition.damageType.empty() ? "damage.physical" : definition.damageType;
                     request.healthDamage = definition.damage;
                     auto previewed = damage->preview(*candidate.durability, request);
-                    if (!previewed) return failureFrom<std::size_t>(previewed.status());
+                    if (!previewed) return Result<std::size_t>::failure(previewed.status());
                     effectiveness = static_cast<float>(previewed.value().healthDamage / definition.damage);
                 }
                 const bool preferred = best == nullptr ||
@@ -1032,7 +1026,7 @@ Result<std::size_t> TacticsSystem::step(const combat::DamageRuntime* damage, con
             shooter->tactics()->fireControlEffectiveness = bestEffectiveness < 0.0f ? 1.0f : bestEffectiveness;
             auto committedShot = commitShot(shooter->identity()->subject, shooter->faction()->link.resolve(),
                                             {shooter->motion()->x, shooter->motion()->y}, definition, *best, 1.0f);
-            if (!committedShot) return failureFrom<std::size_t>(committedShot.status());
+            if (!committedShot) return Result<std::size_t>::failure(committedShot.status());
             ++processed;
         }
     }
@@ -1064,7 +1058,7 @@ Result<std::size_t> TacticsSystem::step(const combat::DamageRuntime* damage, con
     for (const TurretNode& turret : turrets) {
         Building* building = turret.building;
         auto current = readCurrent(building->orders()->values);
-        if (!current) return failureFrom<std::size_t>(current.status());
+        if (!current) return Result<std::size_t>::failure(current.status());
         if (current.value() && current.value()->kind == OrderKind::Attack) continue;
         const auto& definition = *turret.weapon;
         Candidate* best = nullptr;
@@ -1097,7 +1091,7 @@ Result<std::size_t> TacticsSystem::step(const combat::DamageRuntime* damage, con
                 request.damageType = definition.damageType.empty() ? "damage.physical" : definition.damageType;
                 request.healthDamage = definition.damage;
                 auto previewed = damage->preview(*candidate.durability, request);
-                if (!previewed) return failureFrom<std::size_t>(previewed.status());
+                if (!previewed) return Result<std::size_t>::failure(previewed.status());
                 effectiveness = static_cast<float>(previewed.value().healthDamage / definition.damage);
             }
             if (best == nullptr || effectiveness > bestEffectiveness ||
@@ -1117,7 +1111,7 @@ Result<std::size_t> TacticsSystem::step(const combat::DamageRuntime* damage, con
             auto committedShot = commitShot(building->identity()->subject, building->faction()->link.resolve(),
                                             {building->placement()->worldX, building->placement()->worldY},
                                             definition, *best, garrisonFactor);
-            if (!committedShot) return failureFrom<std::size_t>(committedShot.status());
+            if (!committedShot) return Result<std::size_t>::failure(committedShot.status());
         }
         ++processed;
     }
@@ -1137,9 +1131,9 @@ Result<std::size_t> TacticsSystem::step(const combat::DamageRuntime* damage, con
         combat->airDefenseNetworkRoot = {};
         combat->airDefenseNetworkSize = 0;
         if (!std::isfinite(combat->airDefenseNetworkRange) || combat->airDefenseNetworkRange < 0.0f)
-            return failure<std::size_t>(DiagnosticCode::InvalidArgument,
-                                        "RTS air-defense network range must be finite and non-negative",
-                                        "building.combat.airDefenseNetworkRange");
+            return Result<std::size_t>::failure(Diagnostic::error(
+                DiagnosticCode::InvalidArgument, "RTS air-defense network range must be finite and non-negative",
+                "building.combat.airDefenseNetworkRange"));
         auto* building = dynamic_cast<Building*>(ecs::try_get(identity->self));
         auto* weaponEntity = dynamic_cast<weapon::WeaponEntity*>(weaponLink->link.resolve());
         if (building == nullptr || !integrity->alive || construction->progress < 1.0f ||
@@ -1185,7 +1179,7 @@ Result<std::size_t> TacticsSystem::step(const combat::DamageRuntime* damage, con
             building->combat()->airDefenseNetworkRoot = root;
             building->combat()->airDefenseNetworkSize = component.size();
             auto current = readCurrent(building->orders()->values);
-            if (!current) return failureFrom<std::size_t>(current.status());
+            if (!current) return Result<std::size_t>::failure(current.status());
             if (current.value() && current.value()->kind == OrderKind::Attack) continue;
             Candidate* best = nullptr;
             float bestPreference = -1.0f;
@@ -1226,8 +1220,8 @@ Result<std::size_t> TacticsSystem::step(const combat::DamageRuntime* damage, con
 
 Result<std::size_t> AISystem::step(const SimulationStep& step, const AIProductionRequest& requestProduction) {
     if (step.delta.nanoseconds() < 0)
-        return failure<std::size_t>(DiagnosticCode::InvalidArgument, "RTS AI step delta must be non-negative",
-                                    "step.delta");
+        return Result<std::size_t>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "RTS AI step delta must be non-negative", "step.delta"));
     std::size_t processed = 0;
     auto factions = ecs::View<Faction, Faction::Identity, Faction::Strategy>();
     for (auto it = factions.begin(); it != factions.end(); ++it) {
@@ -1237,8 +1231,8 @@ Result<std::size_t> AISystem::step(const SimulationStep& step, const AIProductio
         if (!std::isfinite(strategy->thinkInterval) || strategy->thinkInterval <= 0.0f ||
             strategy->desiredWorkers < 0 || strategy->attackThreshold <= 0 ||
             !std::isfinite(strategy->formationSpacing) || strategy->formationSpacing <= 0.0f)
-            return failure<std::size_t>(DiagnosticCode::InvalidArgument, "RTS AI policy values are invalid",
-                                        "faction.strategy");
+            return Result<std::size_t>::failure(Diagnostic::error(
+                DiagnosticCode::InvalidArgument, "RTS AI policy values are invalid", "faction.strategy"));
         strategy->thinkAccumulator += static_cast<float>(step.delta.seconds());
         if (strategy->thinkAccumulator + 1e-6f < strategy->thinkInterval) continue;
         strategy->thinkAccumulator = std::fmod(strategy->thinkAccumulator, strategy->thinkInterval);
@@ -1275,7 +1269,7 @@ Result<std::size_t> AISystem::step(const SimulationStep& step, const AIProductio
                 }
                 if (producer != nullptr) {
                     auto requested = requestProduction(*faction, *producer, wanted);
-                    if (!requested) return failureFrom<std::size_t>(requested.status());
+                    if (!requested) return Result<std::size_t>::failure(requested.status());
                     ++processed;
                 }
             }
@@ -1322,7 +1316,7 @@ Result<std::size_t> AISystem::step(const SimulationStep& step, const AIProductio
         formation.kind = FormationKind::Grid;
         formation.spacing = strategy->formationSpacing;
         auto issued = CommandFanOutSystem::fanOut(idleArmy, attackMove, formation);
-        if (!issued) return failureFrom<std::size_t>(issued.status());
+        if (!issued) return Result<std::size_t>::failure(issued.status());
         const std::uint64_t group = static_cast<std::uint64_t>(identity->self.id) + 1u;
         for (const auto& handle : idleArmy) {
             auto* unit = dynamic_cast<Unit*>(ecs::try_get(handle));
@@ -1336,8 +1330,8 @@ Result<std::size_t> AISystem::step(const SimulationStep& step, const AIProductio
 
 Result<std::size_t> MotionSystem::step(const SimulationStep& step) {
     if (step.delta.nanoseconds() < 0)
-        return failure<std::size_t>(DiagnosticCode::InvalidArgument, "RTS motion step delta must be non-negative",
-                                    "step.delta");
+        return Result<std::size_t>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "RTS motion step delta must be non-negative", "step.delta"));
     const double deltaSeconds = step.delta.seconds();
     std::size_t  processed    = 0;
     auto view = ecs::View<Unit, Unit::Identity, Unit::Motion, Unit::Navigation, Unit::Orders, Unit::Combat,
@@ -1351,11 +1345,12 @@ Result<std::size_t> MotionSystem::step(const SimulationStep& step) {
         if (unit->crowd()->link.isBound() || containment->container.isBound()) continue;
         if (!std::isfinite(motion->x) || !std::isfinite(motion->y) || !std::isfinite(motion->speed) ||
             !std::isfinite(motion->arrivalRadius) || motion->speed < 0.0f || motion->arrivalRadius < 0.0f)
-            return failure<std::size_t>(DiagnosticCode::InvalidArgument,
-                                        "RTS motion state must contain finite non-negative values", "unit.motion");
+            return Result<std::size_t>::failure(
+                Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                  "RTS motion state must contain finite non-negative values", "unit.motion"));
 
         auto current = readCurrent(orders->values);
-        if (!current) return failureFrom<std::size_t>(current.status());
+        if (!current) return Result<std::size_t>::failure(current.status());
         auto record = std::move(current).takeValue();
         if (!record) continue;
         if (!movementOrder(record->kind)) {
@@ -1399,8 +1394,8 @@ Result<std::size_t> MotionSystem::step(const SimulationStep& step) {
         const float dy       = target.y - motion->y;
         const float distance = std::hypot(dx, dy);
         if (!std::isfinite(distance))
-            return failure<std::size_t>(DiagnosticCode::InvariantViolation, "RTS motion target distance is non-finite",
-                                        "order.target");
+            return Result<std::size_t>::failure(Diagnostic::error(
+                DiagnosticCode::InvariantViolation, "RTS motion target distance is non-finite", "order.target"));
         float arrivalRadius = motion->arrivalRadius;
         if (record->kind == OrderKind::Attack)
             arrivalRadius = std::max(arrivalRadius, combat->engagementRange);
@@ -1420,8 +1415,8 @@ Result<std::size_t> MotionSystem::step(const SimulationStep& step) {
             const float speedFactor = moraleFactor * commandFactor * effectFactor;
             const double travel = static_cast<double>(motion->speed * speedFactor) * deltaSeconds;
             if (!std::isfinite(travel))
-                return failure<std::size_t>(DiagnosticCode::InvalidArgument, "RTS motion travel distance is non-finite",
-                                            "unit.motion.speed");
+                return Result<std::size_t>::failure(Diagnostic::error(
+                    DiagnosticCode::InvalidArgument, "RTS motion travel distance is non-finite", "unit.motion.speed"));
             const float amount = static_cast<float>(std::min<double>(travel, distance));
             motion->x += dx / distance * amount;
             motion->y += dy / distance * amount;
@@ -1447,11 +1442,11 @@ Result<std::size_t> MovementOrderSystem::step() {
     for (auto it = view.begin(); it != view.end(); ++it) {
         auto [identity, motion, navigation, orders, containment] = *it;
         if (identity == nullptr)
-            return failure<std::size_t>(DiagnosticCode::InvariantViolation,
-                                        "RTS movement order candidate has no identity", "unit.identity");
+            return Result<std::size_t>::failure(Diagnostic::error(
+                DiagnosticCode::InvariantViolation, "RTS movement order candidate has no identity", "unit.identity"));
         if (containment->container.isBound() || !motion->arrived || navigation->trafficWaiting) continue;
         auto current = readCurrent(orders->values);
-        if (!current) return failureFrom<std::size_t>(current.status());
+        if (!current) return Result<std::size_t>::failure(current.status());
         auto record = std::move(current).takeValue();
         if (!record || (record->kind != OrderKind::Move && record->kind != OrderKind::AttackMove)) continue;
         if (record->kind == OrderKind::AttackMove && orders->values.orderCount() <= 1) continue;
@@ -1459,7 +1454,7 @@ Result<std::size_t> MovementOrderSystem::step() {
                                    navigation->waypointIndex < navigation->waypoints.size();
         if (hasActivePath && navigation->waypointIndex + 1 < navigation->waypoints.size()) continue;
         auto completed = orders->values.complete(record->id);
-        if (!completed) return failureFrom<std::size_t>(completed.status());
+        if (!completed) return Result<std::size_t>::failure(completed.status());
         navigation->waypoints.clear();
         navigation->waypointIndex = 0;
         navigation->plannedOrderId.clear();
@@ -1477,10 +1472,10 @@ Result<std::size_t> CommandStateSystem::step() {
     for (auto it = view.begin(); it != view.end(); ++it) {
         auto [identity, motion, navigation, orders, combat, containment] = *it;
         if (identity == nullptr)
-            return failure<std::size_t>(DiagnosticCode::InvariantViolation,
-                                        "RTS command-state candidate has no identity", "unit.identity");
+            return Result<std::size_t>::failure(Diagnostic::error(
+                DiagnosticCode::InvariantViolation, "RTS command-state candidate has no identity", "unit.identity"));
         auto current = readCurrent(orders->values);
-        if (!current) return failureFrom<std::size_t>(current.status());
+        if (!current) return Result<std::size_t>::failure(current.status());
         auto record = std::move(current).takeValue();
         const bool holding = record && record->kind == OrderKind::HoldPosition;
         const bool attackMoving = record && record->kind == OrderKind::AttackMove;
@@ -1501,7 +1496,7 @@ Result<std::size_t> CommandStateSystem::step() {
         navigation->patrolInitialized = false;
         motion->arrived = true;
         auto completed = orders->values.complete(record->id);
-        if (!completed) return failureFrom<std::size_t>(completed.status());
+        if (!completed) return Result<std::size_t>::failure(completed.status());
         ++processed;
         (void)containment;
     }
@@ -1513,9 +1508,9 @@ Result<std::size_t> NavigationSystem::step(map::Pathfinder& pathfinder, const Na
                                            const NavigationEvent& unreachable) {
     if (!std::isfinite(grid.cellSize) || grid.cellSize <= 0.0f || !std::isfinite(grid.originX) ||
         !std::isfinite(grid.originY))
-        return failure<std::size_t>(DiagnosticCode::InvalidArgument,
-                                    "RTS navigation grid requires finite origin and positive cell size",
-                                    "navigation.grid");
+        return Result<std::size_t>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument,
+                              "RTS navigation grid requires finite origin and positive cell size", "navigation.grid"));
     const auto worldToCell = [&](float value, float origin) {
         return static_cast<int>(std::lround((value - origin) / grid.cellSize));
     };
@@ -1531,7 +1526,7 @@ Result<std::size_t> NavigationSystem::step(map::Pathfinder& pathfinder, const Na
         if (unit == nullptr || &*unit->identity() != identity) continue;
         if (containment->container.isBound()) continue;
         auto current = readCurrent(orders->values);
-        if (!current) return failureFrom<std::size_t>(current.status());
+        if (!current) return Result<std::size_t>::failure(current.status());
         auto record = std::move(current).takeValue();
         if (!record || !movementOrder(record->kind)) {
             navigation->waypoints.clear();
@@ -1653,10 +1648,10 @@ Result<std::size_t> PatrolSystem::step() {
     for (auto it = view.begin(); it != view.end(); ++it) {
         auto [identity, motion, navigation, orders, containment] = *it;
         if (identity == nullptr)
-            return failure<std::size_t>(DiagnosticCode::InvariantViolation,
-                                        "RTS patrol candidate has no identity", "unit.identity");
+            return Result<std::size_t>::failure(Diagnostic::error(
+                DiagnosticCode::InvariantViolation, "RTS patrol candidate has no identity", "unit.identity"));
         auto current = readCurrent(orders->values);
-        if (!current) return failureFrom<std::size_t>(current.status());
+        if (!current) return Result<std::size_t>::failure(current.status());
         auto record = std::move(current).takeValue();
         if (!record || record->kind != OrderKind::Patrol || containment->container.isBound()) {
             navigation->patrolInitialized = false;
@@ -1689,9 +1684,9 @@ Result<std::size_t> TrafficReservationSystem::step(const map::Pathfinder& pathfi
                                                     const NavigationGrid& grid) {
     if (!std::isfinite(grid.cellSize) || grid.cellSize <= 0.0f || !std::isfinite(grid.originX) ||
         !std::isfinite(grid.originY))
-        return failure<std::size_t>(DiagnosticCode::InvalidArgument,
-                                    "RTS traffic grid requires finite origin and positive cell size",
-                                    "traffic.grid");
+        return Result<std::size_t>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument,
+                              "RTS traffic grid requires finite origin and positive cell size", "traffic.grid"));
     struct Candidate {
         Unit::Navigation* navigation = nullptr;
         SubjectRef subject;
@@ -1703,12 +1698,12 @@ Result<std::size_t> TrafficReservationSystem::step(const map::Pathfinder& pathfi
     for (auto it = view.begin(); it != view.end(); ++it) {
         auto [identity, navigation, orders, containment] = *it;
         if (identity == nullptr)
-            return failure<std::size_t>(DiagnosticCode::InvariantViolation,
-                                        "RTS traffic candidate has no identity", "unit.identity");
+            return Result<std::size_t>::failure(Diagnostic::error(
+                DiagnosticCode::InvariantViolation, "RTS traffic candidate has no identity", "unit.identity"));
         navigation->trafficWaiting = false;
         if (containment->container.isBound()) continue;
         auto current = readCurrent(orders->values);
-        if (!current) return failureFrom<std::size_t>(current.status());
+        if (!current) return Result<std::size_t>::failure(current.status());
         auto record = std::move(current).takeValue();
         if (!record || !movementOrder(record->kind) || navigation->unreachable ||
             navigation->plannedOrderId != record->id || navigation->waypointIndex >= navigation->waypoints.size())
@@ -1756,9 +1751,11 @@ const Faction::Intel::Contact* FogOfWarSystem::contact(const Faction& faction, S
 Result<std::size_t> FogOfWarSystem::step(const SimulationStep& step, const NavigationGrid& grid, State& state,
                                          const FogProvider& provider) {
     if (!provider)
-        return failure<std::size_t>(DiagnosticCode::InvalidArgument, "RTS fog provider is required", "fog.provider");
+        return Result<std::size_t>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "RTS fog provider is required", "fog.provider"));
     if (step.delta.nanoseconds() < 0 || !std::isfinite(grid.cellSize) || grid.cellSize <= 0.0f)
-        return failure<std::size_t>(DiagnosticCode::InvalidArgument, "RTS fog step/grid is invalid", "fog.grid");
+        return Result<std::size_t>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "RTS fog step/grid is invalid", "fog.grid"));
     struct Source {
         ecs::EntityHandle handle{};
         ecs::EntityHandle faction{};
@@ -1782,8 +1779,8 @@ Result<std::size_t> FogOfWarSystem::step(const SimulationStep& step, const Navig
             !std::isfinite(radarResolution) || !std::isfinite(jammingRange) || sight < 0.0f ||
             detectionRange < 0.0f || detectionStrength < 0.0f || radarRange < 0.0f ||
             radarResolution < 0.0f || jammingRange < 0.0f)
-            return failure<void>(DiagnosticCode::InvalidArgument, "RTS vision values must be finite and non-negative",
-                                 "vision");
+            return Result<void>::failure(Diagnostic::error(
+                DiagnosticCode::InvalidArgument, "RTS vision values must be finite and non-negative", "vision"));
         auto* faction = dynamic_cast<Faction*>(factionLink.resolve());
         if (faction == nullptr) return Result<void>::success(Status::success(StatusCode::NoOp));
         map::Fov* fov = provider(*faction);
@@ -1799,7 +1796,7 @@ Result<std::size_t> FogOfWarSystem::step(const SimulationStep& step, const Navig
         auto added = addSource(identity->self, faction->link, {motion->x, motion->y}, vision->sightRange,
                                vision->detectionRange, vision->detectionStrength, vision->radarRange,
                                vision->radarResolution, vision->jammingRange, vision->enabled);
-        if (!added) return failureFrom<std::size_t>(added.status());
+        if (!added) return Result<std::size_t>::failure(added.status());
     }
     auto buildings = ecs::View<Building, Building::Identity, Building::Placement, Building::Faction,
                                Building::Vision, Building::Construction>();
@@ -1810,7 +1807,7 @@ Result<std::size_t> FogOfWarSystem::step(const SimulationStep& step, const Navig
                                vision->sightRange, vision->detectionRange, vision->detectionStrength,
                                vision->radarRange, vision->radarResolution, vision->jammingRange,
                                vision->enabled);
-        if (!added) return failureFrom<std::size_t>(added.status());
+        if (!added) return Result<std::size_t>::failure(added.status());
     }
     state.bindings.erase(std::remove_if(state.bindings.begin(), state.bindings.end(), [&](const auto& binding) {
         const bool retained = std::any_of(sources.begin(), sources.end(), [&](const Source& source) {
@@ -1943,8 +1940,8 @@ Result<std::size_t> FogOfWarSystem::step(const SimulationStep& step, const Navig
 
 Result<std::size_t> CrowdMotionSystem::step(const SimulationStep& step, crowd::Crowd& crowd) {
     if (step.delta.nanoseconds() < 0)
-        return failure<std::size_t>(DiagnosticCode::InvalidArgument, "RTS crowd step delta must be non-negative",
-                                    "step.delta");
+        return Result<std::size_t>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "RTS crowd step delta must be non-negative", "step.delta"));
     struct LinkedUnit {
         Unit* unit;
         Unit::Motion* motion;
@@ -1971,8 +1968,8 @@ Result<std::size_t> CrowdMotionSystem::step(const SimulationStep& step, crowd::C
         if (!settings->link.isBound() || containment->container.isBound()) continue;
         const std::string& key = settings->link.key();
         if (std::find(keys.begin(), keys.end(), key) != keys.end())
-            return failure<std::size_t>(DiagnosticCode::Conflict, "RTS crowd agent keys must be unique",
-                                        "unit.crowd.link");
+            return Result<std::size_t>::failure(
+                Diagnostic::error(DiagnosticCode::Conflict, "RTS crowd agent keys must be unique", "unit.crowd.link"));
         keys.push_back(key);
         linked.push_back({unit, motion, navigation, settings, combat, supply, morale, tactics, command, effects,
                           &orders->values});
@@ -1986,12 +1983,12 @@ Result<std::size_t> CrowdMotionSystem::step(const SimulationStep& step, crowd::C
         if (agent < 0) agent = crowd.addNamedAgent(key, entry.motion->x, entry.motion->y,
                                                   entry.settings->heading, entry.settings->radius);
         if (agent < 0)
-            return failure<std::size_t>(DiagnosticCode::Failed, "canonical Crowd rejected an RTS agent",
-                                        "unit.crowd.link");
+            return Result<std::size_t>::failure(
+                Diagnostic::error(DiagnosticCode::Failed, "canonical Crowd rejected an RTS agent", "unit.crowd.link"));
         crowd.setAgentPosition(agent, entry.motion->x, entry.motion->y);
         crowd.setAgentRadius(agent, entry.settings->radius);
         auto priority = crowd.setAgentAvoidancePriority(agent, entry.navigation->movementPriority);
-        if (!priority) return failureFrom<std::size_t>(priority.status());
+        if (!priority) return Result<std::size_t>::failure(priority.status());
         const float speedFactor = entry.morale->active
                                       ? std::clamp(entry.morale->suppressedSpeedFactor, 0.0f, 1.0f) : 1.0f;
         const float commandFactor = entry.command->requiresCommand && !entry.command->inCommand
@@ -1999,7 +1996,7 @@ Result<std::size_t> CrowdMotionSystem::step(const SimulationStep& step, crowd::C
         const float effectFactor = static_cast<float>(entry.effects->values.multiplier("speedMultiplier"));
         crowd.setAgentSpeed(agent, entry.motion->speed * speedFactor * commandFactor * effectFactor);
         auto current = readCurrent(*entry.orders);
-        if (!current) return failureFrom<std::size_t>(current.status());
+        if (!current) return Result<std::size_t>::failure(current.status());
         auto record = std::move(current).takeValue();
         bool attackMoveEngaged = false;
         if (record && record->kind == OrderKind::AttackMove && entry.combat->engagementRange > 0.0f) {
@@ -2036,13 +2033,13 @@ Result<std::size_t> CrowdMotionSystem::step(const SimulationStep& step, crowd::C
         const int agent = crowd.getNamedAgentIndex(entry.settings->link.key());
         const auto state = crowd.getAgentState(agent);
         if (state.action < 0)
-            return failure<std::size_t>(DiagnosticCode::InvariantViolation, "canonical Crowd lost an RTS agent",
-                                        "unit.crowd.link");
+            return Result<std::size_t>::failure(Diagnostic::error(
+                DiagnosticCode::InvariantViolation, "canonical Crowd lost an RTS agent", "unit.crowd.link"));
         entry.motion->x = state.x;
         entry.motion->y = state.y;
         entry.settings->heading = state.heading;
         auto current = readCurrent(*entry.orders);
-        if (!current) return failureFrom<std::size_t>(current.status());
+        if (!current) return Result<std::size_t>::failure(current.status());
         auto record = std::move(current).takeValue();
         if (!record || !movementOrder(record->kind)) {
             entry.motion->arrived = true;
@@ -2116,7 +2113,7 @@ Result<std::size_t> WorkerAssignmentSystem::step() {
         if (candidates.empty()) continue;
         ResourceNode* node = candidates.front().node;
         auto link = ResourceNodeLink::bind(ecs::handle_of(node));
-        if (!link) return failureFrom<std::size_t>(link.status());
+        if (!link) return Result<std::size_t>::failure(link.status());
         worker->resourceNode = std::move(link).takeValue();
         node->harvest()->workers.push_back(ecs::handle_of(unit));
         CommandSpec command;
@@ -2124,7 +2121,7 @@ Result<std::size_t> WorkerAssignmentSystem::step() {
         command.target       = {node->position()->x, node->position()->y};
         command.targetEntity = ecs::handle_of(node);
         auto queued = orders->values.enqueue(command);
-        if (!queued) return failureFrom<std::size_t>(queued.status());
+        if (!queued) return Result<std::size_t>::failure(queued.status());
         std::move(queued).takeValue();
         ++assigned;
     }
@@ -2134,8 +2131,9 @@ Result<std::size_t> WorkerAssignmentSystem::step() {
 
 Result<std::size_t> MiningSystem::step(const SimulationStep& step, const ResourceCredit& credit) {
     if (step.delta.nanoseconds() < 0 || !credit)
-        return failure<std::size_t>(DiagnosticCode::InvalidArgument,
-                                    "RTS mining requires non-negative time and a resource credit callback", "mining");
+        return Result<std::size_t>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument,
+                              "RTS mining requires non-negative time and a resource credit callback", "mining"));
     std::size_t processed = 0;
     auto workers = ecs::View<Unit, Unit::Identity, Unit::Motion, Unit::Orders, Unit::Worker>();
     for (auto it = workers.begin(); it != workers.end(); ++it) {
@@ -2143,7 +2141,7 @@ Result<std::size_t> MiningSystem::step(const SimulationStep& step, const Resourc
         auto* unit = identity == nullptr ? nullptr : dynamic_cast<Unit*>(ecs::try_get(identity->self));
         if (unit == nullptr || &*unit->identity() != identity) continue;
         auto current = readCurrent(orders->values);
-        if (!current) return failureFrom<std::size_t>(current.status());
+        if (!current) return Result<std::size_t>::failure(current.status());
         auto record = std::move(current).takeValue();
         if (!record) continue;
 
@@ -2151,7 +2149,7 @@ Result<std::size_t> MiningSystem::step(const SimulationStep& step, const Resourc
             auto* node = dynamic_cast<ResourceNode*>(worker->resourceNode.resolve());
             if (node == nullptr) {
                 auto failed = orders->values.fail(record->id, "resource node is stale");
-                if (!failed) return failureFrom<std::size_t>(failed.status());
+                if (!failed) return Result<std::size_t>::failure(failed.status());
                 worker->resourceNode.reset();
                 continue;
             }
@@ -2164,29 +2162,29 @@ Result<std::size_t> MiningSystem::step(const SimulationStep& step, const Resourc
                 auto* dropoff = dynamic_cast<Building*>(worker->dropoff.resolve());
                 if (dropoff == nullptr) {
                     auto failed = orders->values.fail(record->id, "dropoff is stale");
-                    if (!failed) return failureFrom<std::size_t>(failed.status());
+                    if (!failed) return Result<std::size_t>::failure(failed.status());
                     continue;
                 }
                 auto completed = orders->values.complete(record->id);
-                if (!completed) return failureFrom<std::size_t>(completed.status());
+                if (!completed) return Result<std::size_t>::failure(completed.status());
                 CommandSpec returning;
                 returning.kind         = OrderKind::ReturnCargo;
                 returning.target       = {dropoff->placement()->worldX, dropoff->placement()->worldY};
                 returning.targetEntity = ecs::handle_of(dropoff);
                 auto queued = orders->values.enqueue(returning);
-                if (!queued) return failureFrom<std::size_t>(queued.status());
+                if (!queued) return Result<std::size_t>::failure(queued.status());
                 std::move(queued).takeValue();
             }
             ++processed;
         } else if (record->kind == OrderKind::ReturnCargo && motion->arrived && worker->cargo >= 1.0f) {
             const auto whole = static_cast<std::int64_t>(std::floor(worker->cargo));
             auto cost = resource::CostSpec::single(worker->resourceType, whole);
-            if (!cost) return failureFrom<std::size_t>(cost.status());
+            if (!cost) return Result<std::size_t>::failure(cost.status());
             auto credited = credit(*unit, cost.value());
-            if (!credited) return failureFrom<std::size_t>(credited.status());
+            if (!credited) return Result<std::size_t>::failure(credited.status());
             worker->cargo -= static_cast<float>(whole);
             auto completed = orders->values.complete(record->id);
-            if (!completed) return failureFrom<std::size_t>(completed.status());
+            if (!completed) return Result<std::size_t>::failure(completed.status());
             auto* node = dynamic_cast<ResourceNode*>(worker->resourceNode.resolve());
             if (node != nullptr && (node->stock()->infinite || node->stock()->remaining > 0.0f)) {
                 CommandSpec gather;
@@ -2194,7 +2192,7 @@ Result<std::size_t> MiningSystem::step(const SimulationStep& step, const Resourc
                 gather.target       = {node->position()->x, node->position()->y};
                 gather.targetEntity = ecs::handle_of(node);
                 auto queued = orders->values.enqueue(gather);
-                if (!queued) return failureFrom<std::size_t>(queued.status());
+                if (!queued) return Result<std::size_t>::failure(queued.status());
                 std::move(queued).takeValue();
             } else {
                 worker->resourceNode.reset();
@@ -2208,8 +2206,8 @@ Result<std::size_t> MiningSystem::step(const SimulationStep& step, const Resourc
 
 Result<std::size_t> ConstructionSystem::step(const SimulationStep& step, const LifecycleEventSink& events) {
     if (step.delta.nanoseconds() < 0)
-        return failure<std::size_t>(DiagnosticCode::InvalidArgument,
-                                    "RTS construction step delta must be non-negative", "step.delta");
+        return Result<std::size_t>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "RTS construction step delta must be non-negative", "step.delta"));
     std::size_t processed = 0;
     auto buildings = ecs::View<Building, Building::Identity, Building::Construction, Building::Faction>();
     for (auto it = buildings.begin(); it != buildings.end(); ++it) {
@@ -2218,8 +2216,8 @@ Result<std::size_t> ConstructionSystem::step(const SimulationStep& step, const L
         if (building == nullptr || &*building->identity() != identity) continue;
         if (!std::isfinite(construction->progress) || !std::isfinite(construction->buildTimeSeconds) ||
             construction->buildTimeSeconds < 0.0f)
-            return failure<std::size_t>(DiagnosticCode::InvalidArgument, "invalid RTS construction state",
-                                        "building.construction");
+            return Result<std::size_t>::failure(Diagnostic::error(
+                DiagnosticCode::InvalidArgument, "invalid RTS construction state", "building.construction"));
         if (construction->progress >= 1.0f || construction->paused) continue;
 
         construction->builders.clear();
@@ -2235,7 +2233,7 @@ Result<std::size_t> ConstructionSystem::step(const SimulationStep& step, const L
                 unitFaction->link.resolve() != faction->link.resolve())
                 continue;
             auto current = readCurrent(orders->values);
-            if (!current) return failureFrom<std::size_t>(current.status());
+            if (!current) return Result<std::size_t>::failure(current.status());
             auto record = std::move(current).takeValue();
             if (!record || record->kind != OrderKind::Build || !sameHandle(record->targetEntity, identity->self))
                 continue;
@@ -2252,11 +2250,11 @@ Result<std::size_t> ConstructionSystem::step(const SimulationStep& step, const L
             auto* unit = dynamic_cast<Unit*>(ecs::try_get(builderHandle));
             if (unit == nullptr) continue;
             auto current = readCurrent(unit->orders()->values);
-            if (!current) return failureFrom<std::size_t>(current.status());
+            if (!current) return Result<std::size_t>::failure(current.status());
             auto record = std::move(current).takeValue();
             if (record && record->kind == OrderKind::Build && sameHandle(record->targetEntity, identity->self)) {
                 auto completed = unit->orders()->values.complete(record->id);
-                if (!completed) return failureFrom<std::size_t>(completed.status());
+                if (!completed) return Result<std::size_t>::failure(completed.status());
             }
         }
         construction->builders.clear();
@@ -2274,8 +2272,9 @@ Result<std::size_t> WorkforceAssignmentSystem::step() {
         auto [factionIdentity, policy] = *factionIt;
         if (!policy->autoConstruction && !policy->autoRepair) continue;
         if (policy->maxBuildersPerSite == 0 || policy->maxRepairersPerBuilding == 0)
-            return failure<std::size_t>(DiagnosticCode::InvalidArgument,
-                                        "RTS workforce assignment limits must be positive", "faction.workforce");
+            return Result<std::size_t>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                                  "RTS workforce assignment limits must be positive",
+                                                                  "faction.workforce"));
         std::vector<WorkerCandidate> idle;
         auto units = ecs::View<Unit, Unit::Identity, Unit::Orders, Unit::Worker, Unit::Faction,
                                Unit::Containment, Unit::Durability>();
@@ -2314,7 +2313,7 @@ Result<std::size_t> WorkforceAssignmentSystem::step() {
                 auto [orders, faction] = *it;
                 if (faction->link.resolve() != ecs::try_get(factionIdentity->self)) continue;
                 auto current = readCurrent(orders->values);
-                if (!current) return failureFrom<std::size_t>(current.status());
+                if (!current) return Result<std::size_t>::failure(current.status());
                 auto record = std::move(current).takeValue();
                 if (record && record->kind == target.kind &&
                     sameHandle(record->targetEntity, target.building->identity()->self)) ++assigned;
@@ -2341,7 +2340,7 @@ Result<std::size_t> WorkforceAssignmentSystem::step() {
                 command.target = {target.building->placement()->worldX, target.building->placement()->worldY};
                 command.targetEntity = target.building->identity()->self;
                 auto queued = best->unit->orders()->values.replace(command);
-                if (!queued) return failureFrom<std::size_t>(queued.status());
+                if (!queued) return Result<std::size_t>::failure(queued.status());
                 std::move(queued).takeValue();
                 idle.erase(best);
                 --budget;
@@ -2356,8 +2355,8 @@ Result<std::size_t> WorkforceAssignmentSystem::step() {
 
 Result<std::size_t> RepairSystem::step(const SimulationStep& step, const RepairDebit& debit) {
     if (step.delta.nanoseconds() < 0 || !debit)
-        return failure<std::size_t>(DiagnosticCode::InvalidArgument,
-                                    "RTS repair requires non-negative time and a debit callback", "repair");
+        return Result<std::size_t>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "RTS repair requires non-negative time and a debit callback", "repair"));
     std::size_t processed = 0;
     auto units = ecs::View<Unit, Unit::Identity, Unit::Motion, Unit::Orders, Unit::Worker, Unit::Faction>();
     for (auto it = units.begin(); it != units.end(); ++it) {
@@ -2365,21 +2364,21 @@ Result<std::size_t> RepairSystem::step(const SimulationStep& step, const RepairD
         auto* unit = identity == nullptr ? nullptr : dynamic_cast<Unit*>(ecs::try_get(identity->self));
         if (unit == nullptr || !motion->arrived || worker->repairRate <= 0.0f) continue;
         auto current = readCurrent(orders->values);
-        if (!current) return failureFrom<std::size_t>(current.status());
+        if (!current) return Result<std::size_t>::failure(current.status());
         auto record = std::move(current).takeValue();
         if (!record || record->kind != OrderKind::Repair) continue;
         auto* building = dynamic_cast<Building*>(ecs::try_get(record->targetEntity));
         if (building == nullptr || building->faction()->link.resolve() != faction->link.resolve() ||
             building->construction()->progress < 1.0f) {
             auto failed = orders->values.fail(record->id, "repair target is invalid");
-            if (!failed) return failureFrom<std::size_t>(failed.status());
+            if (!failed) return Result<std::size_t>::failure(failed.status());
             continue;
         }
         auto integrity = building->integrity();
         const float missing = static_cast<float>(std::max(0.0, integrity->state.maxHealth - integrity->state.health));
         if (missing <= 0.0f) {
             auto completed = orders->values.complete(record->id);
-            if (!completed) return failureFrom<std::size_t>(completed.status());
+            if (!completed) return Result<std::size_t>::failure(completed.status());
             continue;
         }
         const float healed = std::min(missing, worker->repairRate * static_cast<float>(step.delta.seconds()));
@@ -2387,9 +2386,9 @@ Result<std::size_t> RepairSystem::step(const SimulationStep& step, const RepairD
         const auto wholeCost = static_cast<std::int64_t>(std::floor(accumulatedCost));
         if (wholeCost > 0) {
             auto cost = resource::CostSpec::single(integrity->repairResource, wholeCost);
-            if (!cost) return failureFrom<std::size_t>(cost.status());
+            if (!cost) return Result<std::size_t>::failure(cost.status());
             auto paid = debit(*unit, *building, cost.value());
-            if (!paid) return failureFrom<std::size_t>(paid.status());
+            if (!paid) return Result<std::size_t>::failure(paid.status());
         }
         integrity->repairCostRemainder = accumulatedCost - static_cast<float>(wholeCost);
         integrity->state.health += healed;
@@ -2401,8 +2400,8 @@ Result<std::size_t> RepairSystem::step(const SimulationStep& step, const RepairD
 
 Result<std::size_t> CaptureSystem::step(const SimulationStep& step, const LifecycleEventSink& events) {
     if (step.delta.nanoseconds() < 0)
-        return failure<std::size_t>(DiagnosticCode::InvalidArgument,
-                                    "RTS capture step delta must be non-negative", "step.delta");
+        return Result<std::size_t>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "RTS capture step delta must be non-negative", "step.delta"));
     struct Force { ecs::EntityHandle faction{}; float strength = 0.0f; std::vector<Unit*> units; };
     std::size_t processed = 0;
     auto buildings = ecs::View<Building, Building::Identity, Building::Capture, Building::Construction,
@@ -2414,8 +2413,9 @@ Result<std::size_t> CaptureSystem::step(const SimulationStep& step, const Lifecy
             construction->progress < 1.0f)
             continue;
         if (!std::isfinite(capture->durationSeconds) || capture->durationSeconds <= 0.0f)
-            return failure<std::size_t>(DiagnosticCode::InvalidArgument, "capture duration must be positive",
-                                        "building.capture.durationSeconds");
+            return Result<std::size_t>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                                  "capture duration must be positive",
+                                                                  "building.capture.durationSeconds"));
         std::vector<Force> forces;
         auto units = ecs::View<Unit, Unit::Identity, Unit::Motion, Unit::Orders, Unit::Capture, Unit::Faction>();
         for (auto unitIt = units.begin(); unitIt != units.end(); ++unitIt) {
@@ -2425,7 +2425,7 @@ Result<std::size_t> CaptureSystem::step(const SimulationStep& step, const Lifecy
                 faction->link.resolve() == nullptr || FactionRelationSystem::isAllied(faction->link, owner->link))
                 continue;
             auto current = readCurrent(orders->values);
-            if (!current) return failureFrom<std::size_t>(current.status());
+            if (!current) return Result<std::size_t>::failure(current.status());
             auto record = std::move(current).takeValue();
             if (!record || record->kind != OrderKind::Capture || !sameHandle(record->targetEntity, identity->self))
                 continue;
@@ -2455,7 +2455,7 @@ Result<std::size_t> CaptureSystem::step(const SimulationStep& step, const Lifecy
         ++processed;
         if (capture->progress < 1.0f) continue;
         auto linked = FactionLink::bind(force.faction);
-        if (!linked) return failureFrom<std::size_t>(linked.status());
+        if (!linked) return Result<std::size_t>::failure(linked.status());
         owner->link = std::move(linked).takeValue();
         if (rally->enabled && rally->combatGroup != 0) {
             rally->combatGroup = ((static_cast<std::uint64_t>(force.faction.id) + 1u) << 32u) |
@@ -2477,11 +2477,11 @@ Result<std::size_t> CaptureSystem::step(const SimulationStep& step, const Lifecy
         }
         for (Unit* unit : force.units) {
             auto current = readCurrent(unit->orders()->values);
-            if (!current) return failureFrom<std::size_t>(current.status());
+            if (!current) return Result<std::size_t>::failure(current.status());
             auto record = std::move(current).takeValue();
             if (record) {
                 auto completed = unit->orders()->values.complete(record->id);
-                if (!completed) return failureFrom<std::size_t>(completed.status());
+                if (!completed) return Result<std::size_t>::failure(completed.status());
             }
         }
     }
@@ -2492,8 +2492,8 @@ Result<std::size_t> CaptureSystem::step(const SimulationStep& step, const Lifecy
 Result<std::size_t> InfrastructureSystem::step(const SimulationStep& step,
                                                const PassiveIncomeCredit& credit) {
     if (step.delta.nanoseconds() < 0)
-        return failure<std::size_t>(DiagnosticCode::InvalidArgument,
-                                    "RTS infrastructure step delta must be non-negative", "step.delta");
+        return Result<std::size_t>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "RTS infrastructure step delta must be non-negative", "step.delta"));
 
     struct Group { std::vector<Building*> buildings; };
     std::map<std::string, Group> groups;
@@ -2508,9 +2508,9 @@ Result<std::size_t> InfrastructureSystem::step(const SimulationStep& step,
             !std::isfinite(infrastructure->incomeRate) || infrastructure->incomeRate < 0.0f ||
             !std::isfinite(infrastructure->incomeProgress) || infrastructure->incomeProgress < 0.0f ||
             !std::isfinite(infrastructure->buildInfluenceRadius) || infrastructure->buildInfluenceRadius < 0.0f)
-            return failure<std::size_t>(DiagnosticCode::InvalidArgument,
-                                        "RTS building infrastructure values must be finite and non-negative",
-                                        "building.infrastructure");
+            return Result<std::size_t>::failure(Diagnostic::error(
+                DiagnosticCode::InvalidArgument, "RTS building infrastructure values must be finite and non-negative",
+                "building.infrastructure"));
         if (!integrity->alive || integrity->state.health <= 0.0 || construction->progress < 1.0f) {
             infrastructure->powered = false;
             continue;
@@ -2546,9 +2546,9 @@ Result<std::size_t> InfrastructureSystem::step(const SimulationStep& step,
             const auto whole = static_cast<std::int64_t>(std::floor(infrastructure->incomeProgress));
             if (whole <= 0) continue;
             auto cost = resource::CostSpec::single(infrastructure->incomeResource, whole);
-            if (!cost) return failureFrom<std::size_t>(cost.status());
+            if (!cost) return Result<std::size_t>::failure(cost.status());
             auto receipt = credit(*building, cost.value());
-            if (!receipt) return failureFrom<std::size_t>(receipt.status());
+            if (!receipt) return Result<std::size_t>::failure(receipt.status());
             infrastructure->incomeProgress -= static_cast<float>(whole);
         }
     }
@@ -2609,7 +2609,7 @@ Result<std::size_t> ContainmentSystem::step() {
         }
 
         auto current = readCurrent(orders->values);
-        if (!current) return failureFrom<std::size_t>(current.status());
+        if (!current) return Result<std::size_t>::failure(current.status());
         auto record = std::move(current).takeValue();
         if (!record || (record->kind != OrderKind::Garrison && record->kind != OrderKind::BoardTransport) ||
             !motion->arrived)
@@ -2640,11 +2640,11 @@ Result<std::size_t> ContainmentSystem::step() {
         if (occupants == nullptr || owner == nullptr || !FactionRelationSystem::isAllied(*owner, faction->link) ||
             occupants->size() >= capacity) {
             auto failed = orders->values.fail(record->id, "container is invalid, hostile, or full");
-            if (!failed) return failureFrom<std::size_t>(failed.status());
+            if (!failed) return Result<std::size_t>::failure(failed.status());
             continue;
         }
         auto link = ContainerLink::bind(record->targetEntity);
-        if (!link) return failureFrom<std::size_t>(link.status());
+        if (!link) return Result<std::size_t>::failure(link.status());
         containment->container = std::move(link).takeValue();
         occupants->push_back(identity->self);
         std::sort(occupants->begin(), occupants->end(), [](const auto& left, const auto& right) {
@@ -2656,7 +2656,7 @@ Result<std::size_t> ContainmentSystem::step() {
         motion->arrived = true;
         if (auto* building = dynamic_cast<Building*>(target)) building->capture()->blockedByGarrison = true;
         auto completed = orders->values.complete(record->id);
-        if (!completed) return failureFrom<std::size_t>(completed.status());
+        if (!completed) return Result<std::size_t>::failure(completed.status());
         ++processed;
     }
     return Result<std::size_t>::success(processed,
@@ -2666,8 +2666,8 @@ Result<std::size_t> ContainmentSystem::step() {
 namespace {
 Result<std::size_t> releaseOccupants(std::vector<ecs::EntityHandle>& occupants, WorldPosition destination) {
     if (!std::isfinite(destination.x) || !std::isfinite(destination.y))
-        return failure<std::size_t>(DiagnosticCode::InvalidArgument,
-                                    "RTS unload destination must be finite", "destination");
+        return Result<std::size_t>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "RTS unload destination must be finite", "destination"));
     const auto retained = occupants;
     occupants.clear();
     std::size_t released = 0;
@@ -2686,7 +2686,7 @@ Result<std::size_t> releaseOccupants(std::vector<ecs::EntityHandle>& occupants, 
         move.kind = OrderKind::Move;
         move.target = slot;
         auto ordered = unit->orders()->values.replace(move);
-        if (!ordered) return failureFrom<std::size_t>(ordered.status());
+        if (!ordered) return Result<std::size_t>::failure(ordered.status());
         std::move(ordered).takeValue();
         ++released;
     }
@@ -2710,18 +2710,17 @@ Result<SupplyRendezvousSelection> SupplyRendezvousSystem::select(
     map::Pathfinder& pathfinder, const NavigationGrid& grid) {
     if (!finitePosition(predicted) || !std::isfinite(grid.cellSize) || grid.cellSize <= 0.0f ||
         !std::isfinite(grid.originX) || !std::isfinite(grid.originY))
-        return failure<SupplyRendezvousSelection>(DiagnosticCode::InvalidArgument,
-                                                  "RTS supply rendezvous requires a finite prediction and grid",
-                                                  "supply.rendezvous");
+        return Result<SupplyRendezvousSelection>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument,
+                              "RTS supply rendezvous requires a finite prediction and grid", "supply.rendezvous"));
     auto* faction = dynamic_cast<Faction*>(supplier.faction()->link.resolve());
     if (faction == nullptr || !FactionRelationSystem::isAllied(relay.faction()->link, supplier.faction()->link))
-        return failure<SupplyRendezvousSelection>(DiagnosticCode::StaleHandle,
-                                                  "RTS supply rendezvous requires a shared live faction",
-                                                  "supply.faction");
+        return Result<SupplyRendezvousSelection>::failure(Diagnostic::error(
+            DiagnosticCode::StaleHandle, "RTS supply rendezvous requires a shared live faction", "supply.faction"));
     WorldPosition forward{relay.motion()->x - supplier.motion()->x,
                           relay.motion()->y - supplier.motion()->y};
     auto relayOrder = readCurrent(relay.orders()->values);
-    if (!relayOrder) return failureFrom<SupplyRendezvousSelection>(relayOrder.status());
+    if (!relayOrder) return Result<SupplyRendezvousSelection>::failure(relayOrder.status());
     const auto active = std::move(relayOrder).takeValue();
     if (active && movementOrder(active->kind)) {
         WorldPosition goal = active->target;
@@ -2772,9 +2771,8 @@ Result<SupplyRendezvousSelection> SupplyRendezvousSystem::select(
             best = evaluated;
     }
     if (!best)
-        return failure<SupplyRendezvousSelection>(DiagnosticCode::NotFound,
-                                                  "RTS supply rendezvous has no reachable candidate",
-                                                  "supply.rendezvous");
+        return Result<SupplyRendezvousSelection>::failure(Diagnostic::error(
+            DiagnosticCode::NotFound, "RTS supply rendezvous has no reachable candidate", "supply.rendezvous"));
     SupplyRendezvousSelection result{best->target, best->threat, false};
     if (baseline) result.avoidedThreat = best->threat < baseline->threat - 1e-4f;
     return Result<SupplyRendezvousSelection>::success(result, Status::success(StatusCode::Applied));
@@ -2784,8 +2782,8 @@ Result<std::size_t> SupplySystem::step(const SimulationStep& step, const AmmoPro
                                        map::Pathfinder* pathfinder, const NavigationGrid& grid,
                                        const LifecycleEventSink& events) {
     if (step.delta.nanoseconds() < 0)
-        return failure<std::size_t>(DiagnosticCode::InvalidArgument, "RTS supply step delta must be non-negative",
-                                    "step.delta");
+        return Result<std::size_t>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "RTS supply step delta must be non-negative", "step.delta"));
     std::size_t processed = 0;
     auto producers = ecs::View<Building, Building::Identity, Building::Construction, Building::Integrity,
                                Building::Infrastructure, Building::Supply>();
@@ -2797,8 +2795,9 @@ Result<std::size_t> SupplySystem::step(const SimulationStep& step, const AmmoPro
             !std::isfinite(supply->productionRate) || !std::isfinite(supply->productionProgress) ||
             supply->stock < 0.0f || supply->capacity < 0.0f || supply->productionRate < 0.0f ||
             supply->productionProgress < 0.0f || supply->productionCostPerRound < 0)
-            return failure<std::size_t>(DiagnosticCode::InvalidArgument,
-                "RTS building ammunition production values must be finite and non-negative", "building.supply");
+            return Result<std::size_t>::failure(Diagnostic::error(
+                DiagnosticCode::InvalidArgument,
+                "RTS building ammunition production values must be finite and non-negative", "building.supply"));
         const float remaining = std::max(0.0f, supply->capacity - supply->stock);
         if (!integrity->alive || construction->progress < 1.0f || !infrastructure->powered ||
             supply->productionResource.empty() || supply->productionRate <= 0.0f || remaining < 1.0f) {
@@ -2810,8 +2809,9 @@ Result<std::size_t> SupplySystem::step(const SimulationStep& step, const AmmoPro
         const double readyValue = std::min<double>(
             std::floor(supply->productionProgress), std::floor(remaining));
         if (readyValue > static_cast<double>(std::numeric_limits<std::size_t>::max()))
-            return failure<std::size_t>(DiagnosticCode::InvalidArgument,
-                "RTS ammunition production batch exceeds addressable size", "building.supply.productionProgress");
+            return Result<std::size_t>::failure(Diagnostic::error(
+                DiagnosticCode::InvalidArgument, "RTS ammunition production batch exceeds addressable size",
+                "building.supply.productionProgress"));
         const auto ready = static_cast<std::size_t>(readyValue);
         if (ready == 0) continue;
         std::size_t purchased = ready;
@@ -2819,11 +2819,12 @@ Result<std::size_t> SupplySystem::step(const SimulationStep& step, const AmmoPro
             if (!purchase) continue;
             auto paid = purchase(*building, supply->productionResource,
                                  supply->productionCostPerRound, ready);
-            if (!paid) return failureFrom<std::size_t>(paid.status());
+            if (!paid) return Result<std::size_t>::failure(paid.status());
             purchased = std::move(paid).takeValue();
             if (purchased > ready)
-                return failure<std::size_t>(DiagnosticCode::InvariantViolation,
-                    "RTS ammunition purchase returned more rounds than requested", "purchase");
+                return Result<std::size_t>::failure(
+                    Diagnostic::error(DiagnosticCode::InvariantViolation,
+                                      "RTS ammunition purchase returned more rounds than requested", "purchase"));
         }
         supply->stock += static_cast<float>(purchased);
         supply->productionProgress -= static_cast<float>(purchased);
@@ -2933,7 +2934,7 @@ Result<std::size_t> SupplySystem::step(const SimulationStep& step, const AmmoPro
             supply->transferRate <= 0.0f)
             continue;
         auto current = readCurrent(orders->values);
-        if (!current) return failureFrom<std::size_t>(current.status());
+        if (!current) return Result<std::size_t>::failure(current.status());
         auto order = std::move(current).takeValue();
         if ((!order || (order->kind != OrderKind::Resupply && order->kind != OrderKind::SupplyRelay)) &&
             supply->assignedTarget.table != nullptr) {
@@ -2976,7 +2977,7 @@ Result<std::size_t> SupplySystem::step(const SimulationStep& step, const AmmoPro
                 command.target = {candidate.unit->motion()->x, candidate.unit->motion()->y};
                 command.targetEntity = candidate.unit->identity()->self;
                 auto queued = orders->values.enqueue(command);
-                if (!queued) return failureFrom<std::size_t>(queued.status());
+                if (!queued) return Result<std::size_t>::failure(queued.status());
                 std::move(queued).takeValue();
                 supply->assignedTarget = candidate.unit->identity()->self;
                 supply->returnPoint = {motion->x, motion->y};
@@ -2984,7 +2985,7 @@ Result<std::size_t> SupplySystem::step(const SimulationStep& step, const AmmoPro
                 recipientReservations[recipientKey] += supply->reservedStock;
                 supply->returning = false;
                 auto assigned = readCurrent(orders->values);
-                if (!assigned) return failureFrom<std::size_t>(assigned.status());
+                if (!assigned) return Result<std::size_t>::failure(assigned.status());
                 order = std::move(assigned).takeValue();
                 if (events)
                     events({LifecycleEventKind::SupplyDispatched, identity->subject,
@@ -3027,7 +3028,7 @@ Result<std::size_t> SupplySystem::step(const SimulationStep& step, const AmmoPro
                     command.target = {relayTarget->motion()->x, relayTarget->motion()->y};
                     command.targetEntity = relayTarget->identity()->self;
                     auto queued = orders->values.enqueue(command);
-                    if (!queued) return failureFrom<std::size_t>(queued.status());
+                    if (!queued) return Result<std::size_t>::failure(queued.status());
                     std::move(queued).takeValue();
                     supply->assignedTarget = relayTarget->identity()->self;
                     supply->returnPoint = {motion->x, motion->y};
@@ -3035,7 +3036,7 @@ Result<std::size_t> SupplySystem::step(const SimulationStep& step, const AmmoPro
                     recipientReservations[relayKey] += supply->reservedStock;
                     supply->returning = false;
                     auto assigned = readCurrent(orders->values);
-                    if (!assigned) return failureFrom<std::size_t>(assigned.status());
+                    if (!assigned) return Result<std::size_t>::failure(assigned.status());
                     order = std::move(assigned).takeValue();
                     if (events)
                         events({LifecycleEventKind::SupplyRelayDispatched, identity->subject,
@@ -3049,7 +3050,7 @@ Result<std::size_t> SupplySystem::step(const SimulationStep& step, const AmmoPro
         if (target == nullptr || !target->durability()->alive || target->containment()->container.isBound() ||
             !FactionRelationSystem::isAllied(target->faction()->link, faction->link)) {
             auto failed = orders->values.fail(order->id, "supply target is invalid or hostile");
-            if (!failed) return failureFrom<std::size_t>(failed.status());
+            if (!failed) return Result<std::size_t>::failure(failed.status());
             if (target != nullptr) {
                 float& reserved = recipientReservations[target->identity()->subject.format()];
                 reserved = std::max(0.0f, reserved - supply->reservedStock);
@@ -3074,7 +3075,7 @@ Result<std::size_t> SupplySystem::step(const SimulationStep& step, const AmmoPro
         if (order->kind == OrderKind::SupplyRelay &&
             (!target->supply()->relayEnabled || target->supply()->capacity >= supply->capacity)) {
             auto failed = orders->values.fail(order->id, "supply relay requires a smaller-capacity relay target");
-            if (!failed) return failureFrom<std::size_t>(failed.status());
+            if (!failed) return Result<std::size_t>::failure(failed.status());
             supply->assignedTarget = {};
             supply->reservedStock = 0.0f;
             supply->rendezvousActive = false;
@@ -3085,7 +3086,7 @@ Result<std::size_t> SupplySystem::step(const SimulationStep& step, const AmmoPro
         if (order->kind == OrderKind::SupplyRelay) {
             WorldPosition rendezvous{target->motion()->x, target->motion()->y};
             auto targetOrder = readCurrent(target->orders()->values);
-            if (!targetOrder) return failureFrom<std::size_t>(targetOrder.status());
+            if (!targetOrder) return Result<std::size_t>::failure(targetOrder.status());
             const auto moving = std::move(targetOrder).takeValue();
             if (moving && movementOrder(moving->kind)) {
                 WorldPosition goal = moving->target;
@@ -3117,7 +3118,7 @@ Result<std::size_t> SupplySystem::step(const SimulationStep& step, const AmmoPro
                     supply->rendezvousThreat = selection.threat;
                     supply->rendezvousAvoidedThreat = selection.avoidedThreat;
                 } else if (safe.code() != StatusCode::NotFound) {
-                    return failureFrom<std::size_t>(safe.status());
+                    return Result<std::size_t>::failure(safe.status());
                 } else {
                     safe.ignore("supply relay falls back when no safe map candidate is reachable");
                 }
@@ -3161,7 +3162,7 @@ Result<std::size_t> SupplySystem::step(const SimulationStep& step, const AmmoPro
             (order->kind == OrderKind::SupplyRelay && target->supply()->stock >= target->supply()->capacity) ||
             supply->stock < 1.0f) {
             auto completed = orders->values.complete(order->id);
-            if (!completed) return failureFrom<std::size_t>(completed.status());
+            if (!completed) return Result<std::size_t>::failure(completed.status());
             float& reserved = recipientReservations[target->identity()->subject.format()];
             reserved = std::max(0.0f, reserved - supply->reservedStock);
             supply->assignedTarget = {};
@@ -3177,7 +3178,7 @@ Result<std::size_t> SupplySystem::step(const SimulationStep& step, const AmmoPro
             returnCommand.kind = OrderKind::Move;
             returnCommand.target = supply->returnPoint;
             auto queued = orders->values.enqueue(returnCommand);
-            if (!queued) return failureFrom<std::size_t>(queued.status());
+            if (!queued) return Result<std::size_t>::failure(queued.status());
             std::move(queued).takeValue();
         }
     }
@@ -3229,7 +3230,7 @@ Result<std::size_t> SupplyConvoySystem::step() {
         supply->convoyWaiting = false;
         if (!durability->alive || containment->container.isBound() || supply->returning) continue;
         auto current = readCurrent(orders->values);
-        if (!current) return failureFrom<std::size_t>(current.status());
+        if (!current) return Result<std::size_t>::failure(current.status());
         const auto order = std::move(current).takeValue();
         if (!order || (order->kind != OrderKind::Resupply && order->kind != OrderKind::SupplyRelay)) continue;
         auto* target = dynamic_cast<Unit*>(ecs::try_get(order->targetEntity));
@@ -3282,8 +3283,8 @@ Result<std::size_t> SupplyConvoySystem::step() {
 
 Result<std::size_t> MoraleSystem::step(const SimulationStep& step, const LifecycleEventSink& events) {
     if (step.delta.nanoseconds() < 0)
-        return failure<std::size_t>(DiagnosticCode::InvalidArgument, "RTS morale step delta must be non-negative",
-                                    "step.delta");
+        return Result<std::size_t>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "RTS morale step delta must be non-negative", "step.delta"));
     std::size_t processed = 0;
     auto units = ecs::View<Unit, Unit::Identity, Unit::Motion, Unit::Faction, Unit::Morale, Unit::Containment,
                            Unit::Durability>();
@@ -3292,8 +3293,8 @@ Result<std::size_t> MoraleSystem::step(const SimulationStep& step, const Lifecyc
         if (!durability->alive || containment->container.isBound() || morale->capacity <= 0.0f) continue;
         if (!std::isfinite(morale->suppression) || !std::isfinite(morale->capacity) || morale->capacity < 0.0f ||
             !std::isfinite(morale->recoveryRate) || morale->recoveryRate < 0.0f)
-            return failure<std::size_t>(DiagnosticCode::InvalidArgument, "RTS morale values must be finite",
-                                        "unit.morale");
+            return Result<std::size_t>::failure(
+                Diagnostic::error(DiagnosticCode::InvalidArgument, "RTS morale values must be finite", "unit.morale"));
         float recoveryBonus = 0.0f;
         auto sources = ecs::View<Unit, Unit::Motion, Unit::Faction, Unit::Morale, Unit::Containment,
                                  Unit::Durability>();
@@ -3325,8 +3326,8 @@ Result<std::size_t> MoraleSystem::step(const SimulationStep& step, const Lifecyc
 
 Result<std::size_t> ShieldSystem::step(const SimulationStep& step, const LifecycleEventSink& events) {
     if (step.delta.nanoseconds() < 0)
-        return failure<std::size_t>(DiagnosticCode::InvalidArgument, "RTS shield step delta must be non-negative",
-                                    "step.delta");
+        return Result<std::size_t>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "RTS shield step delta must be non-negative", "step.delta"));
     const float dt = static_cast<float>(step.delta.seconds());
     std::size_t processed = 0;
     auto advance = [&](auto* shield, bool alive, SubjectRef subject) -> Result<void> {
@@ -3335,8 +3336,9 @@ Result<std::size_t> ShieldSystem::step(const SimulationStep& step, const Lifecyc
             !std::isfinite(shield->cooldown) || shield->capacity < 0.0f || shield->value < 0.0f ||
             shield->value > shield->capacity || shield->regenRate < 0.0f || shield->regenDelay < 0.0f ||
             shield->cooldown < 0.0f)
-            return failure<void>(DiagnosticCode::InvalidArgument,
-                                 "RTS shield values must be finite and within configured ranges", "shield");
+            return Result<void>::failure(
+                Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                  "RTS shield values must be finite and within configured ranges", "shield"));
         if (!alive || shield->capacity == 0.0f) return Result<void>::success();
         const float beforeValue = shield->value;
         const float beforeCooldown = shield->cooldown;
@@ -3353,14 +3355,14 @@ Result<std::size_t> ShieldSystem::step(const SimulationStep& step, const Lifecyc
         auto [identity, shield, durability] = *it;
         auto result = advance(shield, durability->alive && durability->state.health > 0.0,
                               identity->subject);
-        if (!result) return failureFrom<std::size_t>(result.status());
+        if (!result) return Result<std::size_t>::failure(result.status());
     }
     auto buildings = ecs::View<Building, Building::Identity, Building::Shield, Building::Integrity>();
     for (auto it = buildings.begin(); it != buildings.end(); ++it) {
         auto [identity, shield, integrity] = *it;
         auto result = advance(shield, integrity->alive && integrity->state.health > 0.0,
                               identity->subject);
-        if (!result) return failureFrom<std::size_t>(result.status());
+        if (!result) return Result<std::size_t>::failure(result.status());
     }
     return Result<std::size_t>::success(processed,
         Status::success(processed == 0 ? StatusCode::NoOp : StatusCode::Applied));
@@ -3419,8 +3421,8 @@ Result<std::size_t> CommandNetworkSystem::step() {
             !std::isfinite(command->outOfCommandSpeedFactor) || command->outOfCommandSpeedFactor < 0.0f ||
             command->outOfCommandSpeedFactor > 1.0f || !std::isfinite(command->outOfCommandDamageFactor) ||
             command->outOfCommandDamageFactor < 0.0f || command->outOfCommandDamageFactor > 1.0f)
-            return failure<std::size_t>(DiagnosticCode::InvalidArgument,
-                                        "RTS unit command policy is invalid", "unit.command");
+            return Result<std::size_t>::failure(Diagnostic::error(
+                DiagnosticCode::InvalidArgument, "RTS unit command policy is invalid", "unit.command"));
         command->load = 0;
         command->source = {};
         command->uplink = {};
@@ -3450,8 +3452,8 @@ Result<std::size_t> CommandNetworkSystem::step() {
         command->active = false;
         if (!std::isfinite(command->range) || command->range < 0.0f || command->capacity < 0 ||
             !std::isfinite(command->jammingRange) || command->jammingRange < 0.0f)
-            return failure<std::size_t>(DiagnosticCode::InvalidArgument,
-                                        "RTS building command policy is invalid", "building.command");
+            return Result<std::size_t>::failure(Diagnostic::error(
+                DiagnosticCode::InvalidArgument, "RTS building command policy is invalid", "building.command"));
         const bool live = integrity->alive && integrity->state.health > 0.0 && construction->progress >= 1.0f &&
                           infrastructure->powered;
         command->jammed = live && isJammed(faction->link.resolve(), {placement->worldX, placement->worldY});
@@ -3523,7 +3525,9 @@ Result<void> settleAbility(Unit& caster, const AbilitySpec& spec, ecs::EntityHan
                            const DamageEventSink& damageEvents, SimulationTick tick,
                            const LifecycleEventSink& events) {
     auto affect = [&](ecs::Entity* entity) -> Result<void> {
-        if (entity == nullptr) return failure<void>(DiagnosticCode::StaleHandle, "ability target is stale", "target");
+        if (entity == nullptr)
+            return Result<void>::failure(
+                Diagnostic::error(DiagnosticCode::StaleHandle, "ability target is stale", "target"));
         combat::CombatState* state = nullptr;
         bool* alive = nullptr;
         FactionLink* faction = nullptr;
@@ -3533,24 +3537,33 @@ Result<void> settleAbility(Unit& caster, const AbilitySpec& spec, ecs::EntityHan
         float shieldDelay = 0.0f;
         SubjectRef subject;
         if (auto* unit = dynamic_cast<Unit*>(entity)) {
-            state = &unit->durability()->state; alive = &unit->durability()->alive;
-            faction = &unit->faction()->link; effects = &unit->effects()->values;
-            shield = &unit->shield()->value; shieldCooldown = &unit->shield()->cooldown;
-            shieldDelay = unit->shield()->regenDelay; subject = unit->identity()->subject;
+            state = &unit->durability()->state;
+            alive          = &unit->durability()->alive;
+            faction = &unit->faction()->link;
+            effects        = &unit->effects()->values;
+            shield = &unit->shield()->value;
+            shieldCooldown = &unit->shield()->cooldown;
+            shieldDelay = unit->shield()->regenDelay;
+            subject        = unit->identity()->subject;
         } else if (auto* building = dynamic_cast<Building*>(entity)) {
-            state = &building->integrity()->state; alive = &building->integrity()->alive;
-            faction = &building->faction()->link; effects = &building->effects()->values;
-            shield = &building->shield()->value; shieldCooldown = &building->shield()->cooldown;
-            shieldDelay = building->shield()->regenDelay; subject = building->identity()->subject;
+            state = &building->integrity()->state;
+            alive          = &building->integrity()->alive;
+            faction = &building->faction()->link;
+            effects        = &building->effects()->values;
+            shield = &building->shield()->value;
+            shieldCooldown = &building->shield()->cooldown;
+            shieldDelay = building->shield()->regenDelay;
+            subject        = building->identity()->subject;
         }
         if (state == nullptr || alive == nullptr || !*alive || !subject.isValid())
-            return failure<void>(DiagnosticCode::InvalidArgument, "ability target is not a live RTS combat subject",
-                                 "target");
+            return Result<void>::failure(Diagnostic::error(
+                DiagnosticCode::InvalidArgument, "ability target is not a live RTS combat subject", "target"));
         const bool allied = faction != nullptr && FactionRelationSystem::isAllied(*faction, caster.faction()->link);
         if ((spec.target == AbilityTarget::Enemy && allied) ||
             (spec.target == AbilityTarget::Ally && !allied) ||
             (spec.target == AbilityTarget::Self && entity != &caster))
-            return failure<void>(DiagnosticCode::Conflict, "ability target relationship is invalid", "target");
+            return Result<void>::failure(
+                Diagnostic::error(DiagnosticCode::Conflict, "ability target relationship is invalid", "target"));
         if (spec.damage > 0.0f) {
             combat::DamageRequest request;
             request.source = caster.identity()->subject;
@@ -3626,25 +3639,29 @@ Result<void> validateAbility(Unit& caster, const AbilitySpec& spec, ecs::EntityH
         (spec.resourceCost > 0 && spec.resourceType.empty()) ||
         (spec.channelTickInterval > 0.0f && spec.castTime <= 0.0f) ||
         !finitePosition(point))
-        return failure<void>(DiagnosticCode::InvalidArgument, "RTS ability definition or target point is invalid",
-                             "ability");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                       "RTS ability definition or target point is invalid", "ability"));
     if (spec.casterDefinition.isValid() && caster.definition()->id != spec.casterDefinition)
-        return failure<void>(DiagnosticCode::Conflict, "unit definition cannot cast this ability", "caster");
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::Conflict, "unit definition cannot cast this ability", "caster"));
     WorldPosition destination = point;
     if (spec.target == AbilityTarget::Self) destination = {caster.motion()->x, caster.motion()->y};
     else if (spec.target != AbilityTarget::Point) {
         auto position = entityPosition(target);
-        if (!position) return failure<void>(DiagnosticCode::StaleHandle, "ability target is stale", "target");
+        if (!position)
+            return Result<void>::failure(
+                Diagnostic::error(DiagnosticCode::StaleHandle, "ability target is stale", "target"));
         destination = *position;
         if (spec.target == AbilityTarget::Enemy &&
             !FactionIntelSystem::isTargetable(dynamic_cast<Faction*>(caster.faction()->link.resolve()),
                                               stableSubject(ecs::try_get(target))))
-            return failure<void>(DiagnosticCode::Conflict,
-                                 "enemy ability target is not currently visible and detected", "target");
+            return Result<void>::failure(Diagnostic::error(
+                DiagnosticCode::Conflict, "enemy ability target is not currently visible and detected", "target"));
     }
     if (distanceSquared(caster.motion()->x, caster.motion()->y, destination.x, destination.y) >
         spec.range * spec.range)
-        return failure<void>(DiagnosticCode::Conflict, "ability target is outside cast range", "target");
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::Conflict, "ability target is outside cast range", "target"));
     return Result<void>::success();
 }
 
@@ -3658,13 +3675,17 @@ Result<void> AbilitySystem::cast(Unit& caster, const AbilitySpec& spec, ecs::Ent
     auto valid = validateAbility(caster, spec, target, point);
     if (!valid) return valid;
     if (caster.abilities()->channel)
-        return failure<void>(DiagnosticCode::Conflict, "unit is already casting an ability", "ability.channel");
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::Conflict, "unit is already casting an ability", "ability.channel"));
     auto found = std::find_if(caster.abilities()->cooldowns.begin(), caster.abilities()->cooldowns.end(),
                               [&](const auto& cooldown) { return cooldown.id == spec.id; });
     if (found != caster.abilities()->cooldowns.end() && found->remaining > 0.0f)
-        return failure<void>(DiagnosticCode::Conflict, "ability is on cooldown", "ability.cooldown");
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::Conflict, "ability is on cooldown", "ability.cooldown"));
     if (spec.resourceCost > 0) {
-        if (!debit) return failure<void>(DiagnosticCode::Unsupported, "ability resource debit provider is absent");
+        if (!debit)
+            return Result<void>::failure(
+                Diagnostic::error(DiagnosticCode::Unsupported, "ability resource debit provider is absent", {}));
         auto cost = resource::CostSpec::single(spec.resourceType, spec.resourceCost);
         if (!cost) return Result<void>::failure(cost.status());
         auto paid = debit(caster, cost.value());
@@ -3693,8 +3714,8 @@ Result<std::size_t> AbilitySystem::step(const SimulationStep& step, combat::Dama
                                         const DamageEventSink& damageEvents,
                                         const LifecycleEventSink& events) {
     if (step.delta.nanoseconds() < 0)
-        return failure<std::size_t>(DiagnosticCode::InvalidArgument, "RTS ability delta must be non-negative",
-                                    "step.delta");
+        return Result<std::size_t>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "RTS ability delta must be non-negative", "step.delta"));
     const float dt = static_cast<float>(step.delta.seconds());
     std::size_t processed = 0;
     auto units = ecs::View<Unit, Unit::Identity, Unit::Abilities, Unit::Durability>();
@@ -3722,7 +3743,7 @@ Result<std::size_t> AbilitySystem::step(const SimulationStep& step, combat::Dama
             while (channel.tickRemaining <= 1e-6f) {
                 auto settled = settleAbility(*unit, channel.spec, channel.target, channel.point,
                                               damage, damageEvents, step.tick, events);
-                if (!settled) return failureFrom<std::size_t>(settled.status());
+                if (!settled) return Result<std::size_t>::failure(settled.status());
                 if (events)
                     events({LifecycleEventKind::AbilityChannelTick, identity->subject,
                             stableSubject(ecs::try_get(channel.target)), channel.spec.id,
@@ -3737,7 +3758,7 @@ Result<std::size_t> AbilitySystem::step(const SimulationStep& step, combat::Dama
             if (channel.spec.channelTickInterval == 0.0f) {
                 auto settled = settleAbility(*unit, channel.spec, channel.target, channel.point,
                                               damage, damageEvents, step.tick, events);
-                if (!settled) return failureFrom<std::size_t>(settled.status());
+                if (!settled) return Result<std::size_t>::failure(settled.status());
                 if (events)
                     events({LifecycleEventKind::AbilityCast, identity->subject, completedTarget,
                             completedSpec.id, 1.0}, step.tick);
@@ -3755,8 +3776,8 @@ Result<std::size_t> AbilitySystem::step(const SimulationStep& step, combat::Dama
 
 Result<std::size_t> ArtillerySystem::step(const SimulationStep& step) {
     if (step.delta.nanoseconds() < 0)
-        return failure<std::size_t>(DiagnosticCode::InvalidArgument, "RTS artillery step delta must be non-negative",
-                                    "step.delta");
+        return Result<std::size_t>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "RTS artillery step delta must be non-negative", "step.delta"));
     std::size_t processed = 0;
     auto units = ecs::View<Unit, Unit::Motion, Unit::Artillery, Unit::Containment, Unit::Durability,
                            Unit::Orders>();
@@ -3765,9 +3786,9 @@ Result<std::size_t> ArtillerySystem::step(const SimulationStep& step) {
         if (!durability->alive || containment->container.isBound()) continue;
         if (!std::isfinite(artillery->deployTime) || artillery->deployTime < 0.0f ||
             !std::isfinite(artillery->deployRemaining) || artillery->deployRemaining < 0.0f)
-            return failure<std::size_t>(DiagnosticCode::InvalidArgument,
-                                        "RTS artillery deployment values must be finite and non-negative",
-                                        "unit.artillery");
+            return Result<std::size_t>::failure(
+                Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                  "RTS artillery deployment values must be finite and non-negative", "unit.artillery"));
         if (!artillery->positionInitialized) {
             artillery->previousX = motion->x;
             artillery->previousY = motion->y;
@@ -3781,7 +3802,7 @@ Result<std::size_t> ArtillerySystem::step(const SimulationStep& step) {
         artillery->previousY = motion->y;
         if (artillery->relocating) {
             auto current = readCurrent(orders->values);
-            if (!current) return failureFrom<std::size_t>(current.status());
+            if (!current) return Result<std::size_t>::failure(current.status());
             const auto record = std::move(current).takeValue();
             if (!record || record->kind != OrderKind::Move) artillery->relocating = false;
         }
@@ -3804,16 +3825,15 @@ Result<ArtilleryRelocationSelection> ArtilleryRelocationSystem::select(
     if (!finitePosition(target) || !std::isfinite(distance) || distance <= 0.0f ||
         !std::isfinite(weaponRange) || weaponRange < 0.0f || !std::isfinite(grid.cellSize) ||
         grid.cellSize <= 0.0f || !std::isfinite(grid.originX) || !std::isfinite(grid.originY))
-        return failure<ArtilleryRelocationSelection>(
-            DiagnosticCode::InvalidArgument,
-            "RTS artillery relocation requires finite target, range and navigation grid values",
-            "artillery.relocation");
+        return Result<ArtilleryRelocationSelection>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument,
+                              "RTS artillery relocation requires finite target, range and navigation grid values",
+                              "artillery.relocation"));
 
     auto* ownFaction = dynamic_cast<Faction*>(unit.faction()->link.resolve());
     if (ownFaction == nullptr)
-        return failure<ArtilleryRelocationSelection>(DiagnosticCode::StaleHandle,
-                                                      "RTS artillery faction link is stale",
-                                                      "unit.faction");
+        return Result<ArtilleryRelocationSelection>::failure(
+            Diagnostic::error(DiagnosticCode::StaleHandle, "RTS artillery faction link is stale", "unit.faction"));
     const auto visibleToFaction = [&](SubjectRef subject) {
         if (ownFaction->intel()->contacts.empty()) return true;
         const auto found = std::find_if(ownFaction->intel()->contacts.begin(), ownFaction->intel()->contacts.end(),
@@ -3938,9 +3958,8 @@ Result<ArtilleryRelocationSelection> ArtilleryRelocationSystem::select(
         if (better) best = evaluated;
     }
     if (!best)
-        return failure<ArtilleryRelocationSelection>(DiagnosticCode::NotFound,
-                                                      "RTS artillery has no reachable relocation candidate",
-                                                      "artillery.relocation");
+        return Result<ArtilleryRelocationSelection>::failure(Diagnostic::error(
+            DiagnosticCode::NotFound, "RTS artillery has no reachable relocation candidate", "artillery.relocation"));
     ArtilleryRelocationSelection selection;
     selection.target = best->target;
     selection.threat = best->threat;
@@ -3959,8 +3978,8 @@ Result<std::size_t> FireSupportSystem::request(Unit& requester, WorldPosition ce
     if (!finitePosition(center) || !std::isfinite(radius) || radius <= 0.0f || shotsPerResponder <= 0 ||
         !requester.durability()->alive || requester.containment()->container.isBound() ||
         requester.faction()->link.resolve() == nullptr)
-        return failure<std::size_t>(DiagnosticCode::InvalidArgument,
-                                    "RTS fire support request is invalid", "fireSupport");
+        return Result<std::size_t>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "RTS fire support request is invalid", "fireSupport"));
     struct Candidate { Unit* unit = nullptr; float distance = 0.0f; std::string id; };
     std::vector<Candidate> candidates;
     auto view = ecs::View<Unit, Unit::Identity, Unit::Motion, Unit::Faction, Unit::Orders, Unit::Weapon,
@@ -3977,7 +3996,7 @@ Result<std::size_t> FireSupportSystem::request(Unit& requester, WorldPosition ce
         if (definition.projectile.speed <= 0.0f ||
             (definition.projectile.gravity <= 0.0f && artillery->deployTime <= 0.0f)) continue;
         auto current = readCurrent(orders->values);
-        if (!current) return failureFrom<std::size_t>(current.status());
+        if (!current) return Result<std::size_t>::failure(current.status());
         auto record = std::move(current).takeValue();
         if (record && record->kind != OrderKind::HoldPosition && record->kind != OrderKind::AttackMove &&
             record->kind != OrderKind::Patrol) continue;
@@ -4001,7 +4020,7 @@ Result<std::size_t> FireSupportSystem::request(Unit& requester, WorldPosition ce
         command.secondaryTarget = {center.x + lateral.x, center.y + lateral.y};
         command.radius = radius;
         auto assigned = candidate.unit->orders()->values.replace(command);
-        if (!assigned) return failureFrom<std::size_t>(assigned.status());
+        if (!assigned) return Result<std::size_t>::failure(assigned.status());
         std::move(assigned).takeValue();
         candidate.unit->artillery()->suppressionShotsRemaining = shotsPerResponder;
         candidate.unit->artillery()->fireSupportRequester = requester.identity()->self;
@@ -4017,11 +4036,11 @@ Result<std::size_t> FireSupportSystem::cancel(Unit& requester) {
         auto [identity, orders, artillery] = *it;
         if (!sameHandle(artillery->fireSupportRequester, requester.identity()->self)) continue;
         auto current = readCurrent(orders->values);
-        if (!current) return failureFrom<std::size_t>(current.status());
+        if (!current) return Result<std::size_t>::failure(current.status());
         auto record = std::move(current).takeValue();
         if (record && record->kind == OrderKind::SuppressArea) {
             auto stopped = orders->values.cancel(record->id, "fire support cancelled");
-            if (!stopped) return failureFrom<std::size_t>(stopped.status());
+            if (!stopped) return Result<std::size_t>::failure(stopped.status());
             ++cancelled;
         }
         artillery->fireSupportRequester = {};
@@ -4060,11 +4079,11 @@ Result<std::size_t> FireSupportSystem::step(const SimulationStep& step) {
         if (artillery->fireSupportRequester.table != nullptr &&
             ecs::try_get(artillery->fireSupportRequester) == nullptr) {
             auto current = readCurrent(orders->values);
-            if (!current) return failureFrom<std::size_t>(current.status());
+            if (!current) return Result<std::size_t>::failure(current.status());
             auto record = std::move(current).takeValue();
             if (record && record->kind == OrderKind::SuppressArea) {
                 auto stopped = orders->values.cancel(record->id, "fire support requester lost");
-                if (!stopped) return failureFrom<std::size_t>(stopped.status());
+                if (!stopped) return Result<std::size_t>::failure(stopped.status());
             }
             artillery->fireSupportRequester = {};
             ++processed;
@@ -4072,7 +4091,7 @@ Result<std::size_t> FireSupportSystem::step(const SimulationStep& step) {
         if (!artillery->autoCounterBattery || artillery->counterBatteryWindowTicks == 0 ||
             !durability->alive || containment->container.isBound()) continue;
         auto current = readCurrent(orders->values);
-        if (!current) return failureFrom<std::size_t>(current.status());
+        if (!current) return Result<std::size_t>::failure(current.status());
         auto record = std::move(current).takeValue();
         if (record && record->kind != OrderKind::HoldPosition) continue;
         auto* weaponEntity = dynamic_cast<weapon::WeaponEntity*>(weaponLink->link.resolve());
@@ -4099,7 +4118,7 @@ Result<std::size_t> FireSupportSystem::step(const SimulationStep& step) {
         counter.kind = OrderKind::AttackGround;
         counter.target = best->position;
         auto assigned = orders->values.replace(counter);
-        if (!assigned) return failureFrom<std::size_t>(assigned.status());
+        if (!assigned) return Result<std::size_t>::failure(assigned.status());
         std::move(assigned).takeValue();
         ++processed;
     }
@@ -4131,17 +4150,18 @@ RTSProjectileSystemSnapshot RTSProjectileSystem::snapshot() const {
 Result<void> RTSProjectileSystem::restore(const RTSProjectileSystemSnapshot& snapshot,
                                           const ProjectileSubjectResolver& resolver) {
     if (!resolver)
-        return failure<void>(DiagnosticCode::InvalidArgument,
-                             "RTS projectile restore requires a stable subject resolver", "projectiles.resolver");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                       "RTS projectile restore requires a stable subject resolver",
+                                                       "projectiles.resolver"));
     weapon::ProjectileRuntime stagedRuntime;
     auto runtimeRestored = stagedRuntime.restore(snapshot.runtime);
     if (!runtimeRestored) return runtimeRestored;
     std::set<std::uint64_t> liveKeys;
     for (const auto& state : stagedRuntime.states()) liveKeys.insert(key(state.handle));
     if (liveKeys.size() != snapshot.payloads.size())
-        return failure<void>(DiagnosticCode::InvalidArgument,
-                             "RTS projectile snapshot payload count does not match live trajectories",
-                             "projectiles.payloads");
+        return Result<void>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "RTS projectile snapshot payload count does not match live trajectories",
+            "projectiles.payloads"));
     std::map<std::uint64_t, Payload> stagedPayloads;
     for (const auto& value : snapshot.payloads) {
         if (!liveKeys.contains(value.key) || stagedPayloads.contains(value.key) || !value.source.isValid() ||
@@ -4150,8 +4170,9 @@ Result<void> RTSProjectileSystem::restore(const RTSProjectileSystemSnapshot& sna
             !std::isfinite(value.damage) || value.damage < 0.0 || !std::isfinite(value.radius) || value.radius < 0.0f ||
             !std::isfinite(value.splashMinimumDamageFactor) || value.splashMinimumDamageFactor < 0.0f ||
             value.splashMinimumDamageFactor > 1.0f || (!value.targetsGround && !value.targetsAir))
-            return failure<void>(DiagnosticCode::InvalidArgument,
-                                 "RTS projectile snapshot contains an invalid payload", "projectiles.payloads");
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                           "RTS projectile snapshot contains an invalid payload",
+                                                           "projectiles.payloads"));
         auto* faction = dynamic_cast<Faction*>(resolver(value.faction));
         ecs::Entity* target = value.target.isValid() ? resolver(value.target) : nullptr;
         ecs::Entity* observer = value.observer.isValid() ? resolver(value.observer) : nullptr;
@@ -4159,8 +4180,9 @@ Result<void> RTSProjectileSystem::restore(const RTSProjectileSystemSnapshot& sna
                                    dynamic_cast<Building*>(target) == nullptr) ||
             (value.observer.isValid() && dynamic_cast<Unit*>(observer) == nullptr &&
              dynamic_cast<Building*>(observer) == nullptr))
-            return failure<void>(DiagnosticCode::NotFound,
-                                 "RTS projectile snapshot relationship cannot be resolved", "projectiles.payloads");
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::NotFound,
+                                                           "RTS projectile snapshot relationship cannot be resolved",
+                                                           "projectiles.payloads"));
         Payload payload;
         payload.source = value.source;
         payload.faction = ecs::handle_of(faction);
@@ -4188,8 +4210,8 @@ Result<void> RTSProjectileSystem::restore(const RTSProjectileSystemSnapshot& sna
 Result<weapon::ProjectilePoint> RTSProjectileSystem::position(ecs::EntityHandle target) const {
     auto value = entityPosition(target);
     if (!value)
-        return failure<weapon::ProjectilePoint>(DiagnosticCode::StaleHandle,
-                                                "RTS projectile homing target is stale", "target");
+        return Result<weapon::ProjectilePoint>::failure(
+            Diagnostic::error(DiagnosticCode::StaleHandle, "RTS projectile homing target is stale", "target"));
     return Result<weapon::ProjectilePoint>::success({value->x, 0.0, value->y});
 }
 
@@ -4199,10 +4221,13 @@ Result<void> RTSProjectileSystem::launch(SubjectRef source, ecs::EntityHandle fa
                                          ecs::EntityHandle observer, float originHeight, float targetHeight) {
     if (!source.isValid() || definition.projectile.speed <= 0.0f || !std::isfinite(damageFactor) ||
         damageFactor < 0.0)
-        return failure<void>(DiagnosticCode::InvalidArgument,
-                             "RTS projectile requires a source and positive canonical weapon speed", "projectile");
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument,
+                              "RTS projectile requires a source and positive canonical weapon speed", "projectile"));
     auto id = LogicalId::fromParts("projectile", definition.id.empty() ? "weapon" : definition.id);
-    if (!id) return failure<void>(DiagnosticCode::InvalidArgument, "weapon id cannot identify a projectile");
+    if (!id)
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "weapon id cannot identify a projectile", {}));
     weapon::ProjectileDefinition projectile;
     projectile.id = *id;
     projectile.speed = definition.projectile.speed;
@@ -4261,8 +4286,8 @@ Result<std::size_t> RTSProjectileSystem::step(const SimulationStep& step, combat
                                               const ProjectileCollisionQuery& collision,
                                               const DamageEventSink& damageEvents) {
     if (step.delta.nanoseconds() < 0)
-        return failure<std::size_t>(DiagnosticCode::InvalidArgument, "RTS projectile delta must be non-negative",
-                                    "step.delta");
+        return Result<std::size_t>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "RTS projectile delta must be non-negative", "step.delta"));
     auto observerSees = [](ecs::EntityHandle observerHandle, ecs::EntityHandle targetHandle) {
         const auto targetPosition = entityPosition(targetHandle);
         if (!targetPosition) return false;
@@ -4298,7 +4323,7 @@ Result<std::size_t> RTSProjectileSystem::step(const SimulationStep& step, combat
     std::map<std::uint64_t, weapon::ProjectileState> before;
     for (const auto& state : runtime_.states()) before.emplace(key(state.handle), state);
     auto updated = runtime_.update(step.delta, this);
-    if (!updated) return failureFrom<std::size_t>(updated.status());
+    if (!updated) return Result<std::size_t>::failure(updated.status());
     for (const auto& released : updated.value().released) payloads_.erase(key(released));
     std::size_t impacts = 0;
     for (const auto& handle : updated.value().advanced) {
@@ -4319,7 +4344,7 @@ Result<std::size_t> RTSProjectileSystem::step(const SimulationStep& step, combat
                                      {static_cast<float>(bx), static_cast<float>(by)},
                                      static_cast<float>(current->position.y),
                                      payload.source, payload.target);
-            if (!queried) return failureFrom<std::size_t>(queried.status());
+            if (!queried) return Result<std::size_t>::failure(queried.status());
             if (queried.value()) {
                 destination = queried.value()->position;
                 impactEntity = queried.value()->entity;
@@ -4392,7 +4417,7 @@ Result<std::size_t> RTSProjectileSystem::step(const SimulationStep& step, combat
         };
         if (payload.radius <= 0.0f) {
             auto result = apply(ecs::try_get(impactEntity), 1.0);
-            if (!result) return failureFrom<std::size_t>(result.status());
+            if (!result) return Result<std::size_t>::failure(result.status());
         } else {
             auto units = ecs::View<Unit, Unit::Identity, Unit::Motion>();
             for (auto it = units.begin(); it != units.end(); ++it) {
@@ -4402,7 +4427,7 @@ Result<std::size_t> RTSProjectileSystem::step(const SimulationStep& step, combat
                 const double radial = 1.0 - distance / payload.radius;
                 auto result = apply(ecs::try_get(identity->self),
                     std::max<double>(payload.splashMinimumDamageFactor, radial));
-                if (!result) return failureFrom<std::size_t>(result.status());
+                if (!result) return Result<std::size_t>::failure(result.status());
             }
             auto buildings = ecs::View<Building, Building::Identity, Building::Placement>();
             for (auto it = buildings.begin(); it != buildings.end(); ++it) {
@@ -4413,11 +4438,11 @@ Result<std::size_t> RTSProjectileSystem::step(const SimulationStep& step, combat
                 const double radial = 1.0 - distance / payload.radius;
                 auto result = apply(ecs::try_get(identity->self),
                     std::max<double>(payload.splashMinimumDamageFactor, radial));
-                if (!result) return failureFrom<std::size_t>(result.status());
+                if (!result) return Result<std::size_t>::failure(result.status());
             }
         }
         auto released = runtime_.release(handle);
-        if (!released) return failureFrom<std::size_t>(released.status());
+        if (!released) return Result<std::size_t>::failure(released.status());
         payloads_.erase(key(handle));
         ++impacts;
     }
@@ -4433,8 +4458,8 @@ Result<std::size_t> CombatFireSystem::step(const SimulationStep& step, State& st
                                            const DamageEventSink& damageEvents,
                                            const CombatFireEventSink& fireEvents) {
     if (step.delta.nanoseconds() < 0)
-        return failure<std::size_t>(DiagnosticCode::InvalidArgument, "RTS combat step delta must be non-negative",
-                                    "step.delta");
+        return Result<std::size_t>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "RTS combat step delta must be non-negative", "step.delta"));
     const auto launchHeights = [&](WorldPosition origin, WorldPosition target,
                                     ecs::EntityHandle source, ecs::EntityHandle targetEntity) {
         return heightQuery ? heightQuery(origin, target, source, targetEntity) : CombatHeightProfile{};
@@ -4499,7 +4524,7 @@ Result<std::size_t> CombatFireSystem::step(const SimulationStep& step, State& st
     std::map<std::string, Target> targets;
     for (const auto& id : state.mirroredSubjects) {
         auto removed = sensing.remove(id);
-        if (!removed && removed.code() != StatusCode::NotFound) return failureFrom<std::size_t>(removed.status());
+        if (!removed && removed.code() != StatusCode::NotFound) return Result<std::size_t>::failure(removed.status());
         if (!removed) removed.ignore("RTS sensing mirror was already absent");
     }
     state.mirroredSubjects.clear();
@@ -4525,7 +4550,7 @@ Result<std::size_t> CombatFireSystem::step(const SimulationStep& step, State& st
                                   &shield->cooldown, shield->regenDelay, &effects->values, &tags->values, motion->airborne,
                                   unitDefinition->id.format(), vision->cloaked},
                                  "combat-target,unit");
-            if (!result) return failureFrom<std::size_t>(result.status());
+            if (!result) return Result<std::size_t>::failure(result.status());
         }
     }
     {
@@ -4541,7 +4566,7 @@ Result<std::size_t> CombatFireSystem::step(const SimulationStep& step, State& st
                                   nullptr, &shield->value, &shield->cooldown, shield->regenDelay,
                                   &effects->values, &tags->values, false, buildingDefinition->id.format(), false},
                                  "building,combat-target");
-            if (!result) return failureFrom<std::size_t>(result.status());
+            if (!result) return Result<std::size_t>::failure(result.status());
         }
     }
 
@@ -4601,32 +4626,32 @@ Result<std::size_t> CombatFireSystem::step(const SimulationStep& step, State& st
             veterancy->veteranHealthFactor < 1.0f ||
             veterancy->eliteHealthFactor < veterancy->veteranHealthFactor || veterancy->level < 0 ||
             veterancy->level > 2)
-            return failure<std::size_t>(DiagnosticCode::InvalidArgument,
-                                        "RTS veterancy thresholds and factors are inconsistent",
-                                        "unit.veterancy");
+            return Result<std::size_t>::failure(
+                Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                  "RTS veterancy thresholds and factors are inconsistent", "unit.veterancy"));
         auto* weaponEntity = dynamic_cast<weapon::WeaponEntity*>(weaponLink->link.resolve());
         if (weaponEntity == nullptr || weaponEntity->definition()->def == nullptr) continue;
         updateWeapon(*weaponEntity, identity->subject, {motion->x, motion->y});
         const weapon::WeaponDefinition& definition = *weaponEntity->definition()->def;
         if (!std::isfinite(definition.preferredTargetBonus) || definition.preferredTargetBonus < 1.0f)
-            return failure<std::size_t>(DiagnosticCode::InvalidArgument,
-                                        "RTS weapon preferred target bonus must be finite and at least one",
-                                        "weapon.preferredTargetBonus");
+            return Result<std::size_t>::failure(Diagnostic::error(
+                DiagnosticCode::InvalidArgument, "RTS weapon preferred target bonus must be finite and at least one",
+                "weapon.preferredTargetBonus"));
         policy->engagementRange = std::max(0.0f, definition.range);
         if (std::any_of(policy->targetPriorities.begin(), policy->targetPriorities.end(), [](const auto& entry) {
                 return entry.first.empty() || !std::isfinite(entry.second) || entry.second < 0.0f;
             }))
-            return failure<std::size_t>(DiagnosticCode::InvalidArgument,
-                                        "RTS target priority entries require non-empty ids and finite weights",
-                                        "unit.combat.targetPriorities");
+            return Result<std::size_t>::failure(Diagnostic::error(
+                DiagnosticCode::InvalidArgument, "RTS target priority entries require non-empty ids and finite weights",
+                "unit.combat.targetPriorities"));
         if (!std::isfinite(policy->turnRateDegrees) || policy->turnRateDegrees < 0.0f ||
             !std::isfinite(policy->aimToleranceDegrees) || policy->aimToleranceDegrees < 0.0f)
-            return failure<std::size_t>(DiagnosticCode::InvalidArgument,
-                                        "RTS turret turn rate and aim tolerance must be finite and non-negative",
-                                        "unit.combat.aim");
+            return Result<std::size_t>::failure(Diagnostic::error(
+                DiagnosticCode::InvalidArgument,
+                "RTS turret turn rate and aim tolerance must be finite and non-negative", "unit.combat.aim"));
 
         auto current = readCurrent(orders->values);
-        if (!current) return failureFrom<std::size_t>(current.status());
+        if (!current) return Result<std::size_t>::failure(current.status());
         auto record = std::move(current).takeValue();
         const bool explicitAttack = record && record->kind == OrderKind::Attack;
         if (explicitAttack) policy->target = record->targetEntity;
@@ -4634,9 +4659,9 @@ Result<std::size_t> CombatFireSystem::step(const SimulationStep& step, State& st
         if (!std::isfinite(tactics->coordinatedVolleyInterval) ||
             tactics->coordinatedVolleyInterval < 0.0f ||
             !std::isfinite(tactics->volleyReleaseRemaining) || tactics->volleyReleaseRemaining < 0.0f)
-            return failure<std::size_t>(DiagnosticCode::InvalidArgument,
-                                        "RTS coordinated volley timing must be finite and non-negative",
-                                        "unit.tactics.coordinatedVolley");
+            return Result<std::size_t>::failure(Diagnostic::error(
+                DiagnosticCode::InvalidArgument, "RTS coordinated volley timing must be finite and non-negative",
+                "unit.tactics.coordinatedVolley"));
         bool volleyReleased = true;
         if (!explicitAttack && tactics->combatGroup != 0 && tactics->coordinatedVolleyInterval > 0.0f) {
             if (tactics->volleyReleaseRemaining <= 1e-5f)
@@ -4661,7 +4686,7 @@ Result<std::size_t> CombatFireSystem::step(const SimulationStep& step, State& st
                 const float lineLength = std::hypot(lineX, lineY);
                 if (lineLength <= 1e-5f) {
                     auto failed = orders->values.fail(record->id, "suppression line must have non-zero length");
-                    if (!failed) return failureFrom<std::size_t>(failed.status());
+                    if (!failed) return Result<std::size_t>::failure(failed.status());
                     continue;
                 }
                 const std::uint32_t sequence = artillery->shotSequence++;
@@ -4675,7 +4700,7 @@ Result<std::size_t> CombatFireSystem::step(const SimulationStep& step, State& st
             if (distanceSquared(motion->x, motion->y, aimPoint.x, aimPoint.y) > range * range) continue;
             if (fireLine && definition.blockedByObstacles && definition.projectile.gravity <= 0.0f) {
                 auto clear = fireLine({motion->x, motion->y}, aimPoint, identity->self, {}, definition);
-                if (!clear) return failureFrom<std::size_t>(clear.status());
+                if (!clear) return Result<std::size_t>::failure(clear.status());
                 if (!clear.value()) {
                     publishBlocked(identity->subject, {}, aimPoint);
                     continue;
@@ -4710,7 +4735,7 @@ Result<std::size_t> CombatFireSystem::step(const SimulationStep& step, State& st
                                                      moraleFactor * commandFactor * policy->upgradeDamageFactor *
                                                      static_cast<float>(effects->values.multiplier("damageMultiplier")),
                                                      {}, heights.source, heights.target);
-                if (!launched) return failureFrom<std::size_t>(launched.status());
+                if (!launched) return Result<std::size_t>::failure(launched.status());
             }
             publishShot(*weaponEntity, identity->subject, {}, shot.point,
                         definition.projectile.speed > 0.0f, shot.missed);
@@ -4740,18 +4765,18 @@ Result<std::size_t> CombatFireSystem::step(const SimulationStep& step, State& st
                         artillery->relocationThreat = choice.threat;
                         artillery->relocationConflictCount = choice.conflicts;
                     } else if (selected.code() != StatusCode::NotFound) {
-                        return failureFrom<std::size_t>(selected.status());
+                        return Result<std::size_t>::failure(selected.status());
                     } else {
                         selected.ignore("artillery falls back when no canonical-map candidate is reachable");
                     }
                 }
                 auto completed = orders->values.complete(record->id);
-                if (!completed) return failureFrom<std::size_t>(completed.status());
+                if (!completed) return Result<std::size_t>::failure(completed.status());
                 CommandSpec relocate;
                 relocate.kind = OrderKind::Move;
                 relocate.target = relocation;
                 auto moveOrder = orders->values.enqueue(relocate);
-                if (!moveOrder) return failureFrom<std::size_t>(moveOrder.status());
+                if (!moveOrder) return Result<std::size_t>::failure(moveOrder.status());
                 std::move(moveOrder).takeValue();
                 if (!finished && record->kind == OrderKind::SuppressArea) {
                     CommandSpec resume;
@@ -4760,7 +4785,7 @@ Result<std::size_t> CombatFireSystem::step(const SimulationStep& step, State& st
                     resume.secondaryTarget = record->secondaryTarget;
                     resume.radius = record->radius;
                     auto resumed = orders->values.enqueue(resume);
-                    if (!resumed) return failureFrom<std::size_t>(resumed.status());
+                    if (!resumed) return Result<std::size_t>::failure(resumed.status());
                     std::move(resumed).takeValue();
                 }
                 artillery->departedPosition = {motion->x, motion->y};
@@ -4769,7 +4794,7 @@ Result<std::size_t> CombatFireSystem::step(const SimulationStep& step, State& st
                 artillery->relocating = true;
             } else if (finished) {
                 auto completed = orders->values.complete(record->id);
-                if (!completed) return failureFrom<std::size_t>(completed.status());
+                if (!completed) return Result<std::size_t>::failure(completed.status());
             }
             continue;
         }
@@ -4812,7 +4837,7 @@ Result<std::size_t> CombatFireSystem::step(const SimulationStep& step, State& st
         Target* target = validTarget(policy->target, !explicitAttack);
         if (explicitAttack && target == nullptr) {
             auto failed = orders->values.fail(record->id, "attack target is stale, allied, or destroyed");
-            if (!failed) return failureFrom<std::size_t>(failed.status());
+            if (!failed) return Result<std::size_t>::failure(failed.status());
             policy->target = {};
             continue;
         }
@@ -4833,7 +4858,7 @@ Result<std::size_t> CombatFireSystem::step(const SimulationStep& step, State& st
             acquisition.countPolicy     = eve::sensing::CountPolicy::TruncateToMax;
             acquisition.sortKey         = eve::sensing::SortKey::DistanceAscending;
             auto queried = sensing.query(eve::sensing::QueryOrigin{motion->x, motion->y, std::nullopt}, acquisition);
-            if (!queried) return failureFrom<std::size_t>(queried.status());
+            if (!queried) return Result<std::size_t>::failure(queried.status());
             float bestPriority = -1.0f;
             for (const auto& candidate : queried.value().ranked()) {
                 auto found = targets.find(candidate.id);
@@ -4872,7 +4897,7 @@ Result<std::size_t> CombatFireSystem::step(const SimulationStep& step, State& st
         if (fireLine && definition.blockedByObstacles && definition.projectile.gravity <= 0.0f) {
             auto clear = fireLine({motion->x, motion->y}, target->position, identity->self,
                                   target->handle, definition);
-            if (!clear) return failureFrom<std::size_t>(clear.status());
+            if (!clear) return Result<std::size_t>::failure(clear.status());
             if (!clear.value()) {
                 publishBlocked(identity->subject, target->subject, target->position);
                 continue;
@@ -4916,7 +4941,7 @@ Result<std::size_t> CombatFireSystem::step(const SimulationStep& step, State& st
                                                                  policy->upgradeDamageFactor *
                                                                  static_cast<float>(effects->values.multiplier("damageMultiplier")),
                                                  artillery->observedFireSpotter, heights.source, heights.target);
-            if (!launched) return failureFrom<std::size_t>(launched.status());
+            if (!launched) return Result<std::size_t>::failure(launched.status());
         }
         publishShot(*weaponEntity, identity->subject, target->subject, shot.point,
                     definition.projectile.speed > 0.0f, shot.missed);
@@ -4946,7 +4971,7 @@ Result<std::size_t> CombatFireSystem::step(const SimulationStep& step, State& st
                 if (target->shieldCooldown != nullptr) *target->shieldCooldown = target->shieldDelay;
             }
             auto outcome = damage.apply(*target->durability, request);
-            if (!outcome) return failureFrom<std::size_t>(outcome.status());
+            if (!outcome) return Result<std::size_t>::failure(outcome.status());
             if (damageEvents) damageEvents(request, outcome.value(), step.tick, DamageChannel::Weapon);
             if (target->morale != nullptr && target->morale->capacity > 0.0f && policy->suppressionPerShot > 0.0f) {
                 float auraFactor = 1.0f;
@@ -4978,7 +5003,7 @@ Result<std::size_t> CombatFireSystem::step(const SimulationStep& step, State& st
                         retreat.target = {target->position.x + awayX * target->morale->retreatDistance,
                                           target->position.y + awayY * target->morale->retreatDistance};
                         auto replaced = targetUnit->orders()->values.replace(retreat);
-                        if (!replaced) return failureFrom<std::size_t>(replaced.status());
+                        if (!replaced) return Result<std::size_t>::failure(replaced.status());
                         std::move(replaced).takeValue();
                         target->morale->retreating = true;
                     }
@@ -4989,12 +5014,12 @@ Result<std::size_t> CombatFireSystem::step(const SimulationStep& step, State& st
                 auto awarded = VeterancySystem::award(
                     *dynamic_cast<Unit*>(ecs::try_get(identity->self)),
                     static_cast<float>(std::max(1.0, target->durability->maxHealth)));
-                if (!awarded) return failureFrom<std::size_t>(awarded.status());
+                if (!awarded) return Result<std::size_t>::failure(awarded.status());
                 std::move(awarded).takeValue();
                 policy->target = {};
                 if (explicitAttack) {
                     auto completed = orders->values.complete(record->id);
-                    if (!completed) return failureFrom<std::size_t>(completed.status());
+                    if (!completed) return Result<std::size_t>::failure(completed.status());
                 }
             }
         }
@@ -5010,26 +5035,26 @@ Result<std::size_t> CombatFireSystem::step(const SimulationStep& step, State& st
         updateWeapon(*weaponEntity, identity->subject, {placement->worldX, placement->worldY});
         const weapon::WeaponDefinition& definition = *weaponEntity->definition()->def;
         if (!std::isfinite(definition.preferredTargetBonus) || definition.preferredTargetBonus < 1.0f)
-            return failure<std::size_t>(DiagnosticCode::InvalidArgument,
-                                        "RTS weapon preferred target bonus must be finite and at least one",
-                                        "weapon.preferredTargetBonus");
+            return Result<std::size_t>::failure(Diagnostic::error(
+                DiagnosticCode::InvalidArgument, "RTS weapon preferred target bonus must be finite and at least one",
+                "weapon.preferredTargetBonus"));
         policy->engagementRange = std::max(0.0f, definition.range);
         if (std::any_of(policy->targetPriorities.begin(), policy->targetPriorities.end(), [](const auto& entry) {
                 return entry.first.empty() || !std::isfinite(entry.second) || entry.second < 0.0f;
             }))
-            return failure<std::size_t>(DiagnosticCode::InvalidArgument,
-                                        "RTS target priority entries require non-empty ids and finite weights",
-                                        "building.combat.targetPriorities");
+            return Result<std::size_t>::failure(Diagnostic::error(
+                DiagnosticCode::InvalidArgument, "RTS target priority entries require non-empty ids and finite weights",
+                "building.combat.targetPriorities"));
         if (!std::isfinite(policy->turnRateDegrees) || policy->turnRateDegrees < 0.0f ||
             !std::isfinite(policy->aimToleranceDegrees) || policy->aimToleranceDegrees < 0.0f)
-            return failure<std::size_t>(DiagnosticCode::InvalidArgument,
-                                        "RTS turret turn rate and aim tolerance must be finite and non-negative",
-                                        "building.combat.aim");
+            return Result<std::size_t>::failure(Diagnostic::error(
+                DiagnosticCode::InvalidArgument,
+                "RTS turret turn rate and aim tolerance must be finite and non-negative", "building.combat.aim"));
         const float acquisitionRange = policy->acquisitionRange > 0.0f ? policy->acquisitionRange
                                                                        : policy->engagementRange;
 
         auto current = readCurrent(orders->values);
-        if (!current) return failureFrom<std::size_t>(current.status());
+        if (!current) return Result<std::size_t>::failure(current.status());
         auto record = std::move(current).takeValue();
         const bool explicitAttack = record && record->kind == OrderKind::Attack;
         if (explicitAttack) policy->target = record->targetEntity;
@@ -5057,7 +5082,7 @@ Result<std::size_t> CombatFireSystem::step(const SimulationStep& step, State& st
         Target* target = resolveTarget(policy->target);
         if (explicitAttack && target == nullptr) {
             auto failed = orders->values.fail(record->id, "building attack target is invalid or destroyed");
-            if (!failed) return failureFrom<std::size_t>(failed.status());
+            if (!failed) return Result<std::size_t>::failure(failed.status());
             policy->target = {};
             continue;
         }
@@ -5073,7 +5098,7 @@ Result<std::size_t> CombatFireSystem::step(const SimulationStep& step, State& st
             acquisition.sortKey         = eve::sensing::SortKey::DistanceAscending;
             auto queried = sensing.query(
                 eve::sensing::QueryOrigin{placement->worldX, placement->worldY, std::nullopt}, acquisition);
-            if (!queried) return failureFrom<std::size_t>(queried.status());
+            if (!queried) return Result<std::size_t>::failure(queried.status());
             float bestPriority = -1.0f;
             for (const auto& candidate : queried.value().ranked()) {
                 auto found = targets.find(candidate.id);
@@ -5098,7 +5123,7 @@ Result<std::size_t> CombatFireSystem::step(const SimulationStep& step, State& st
         if (fireLine && definition.blockedByObstacles && definition.projectile.gravity <= 0.0f) {
             auto clear = fireLine({placement->worldX, placement->worldY}, target->position, identity->self,
                                   target->handle, definition);
-            if (!clear) return failureFrom<std::size_t>(clear.status());
+            if (!clear) return Result<std::size_t>::failure(clear.status());
             if (!clear.value()) {
                 publishBlocked(identity->subject, target->subject, target->position);
                 continue;
@@ -5140,7 +5165,7 @@ Result<std::size_t> CombatFireSystem::step(const SimulationStep& step, State& st
                                                  shot.missed ? ecs::EntityHandle{} : target->handle,
                                                  shot.point, definition, garrisonFactor, {},
                                                  heights.source, heights.target);
-            if (!launched) return failureFrom<std::size_t>(launched.status());
+            if (!launched) return Result<std::size_t>::failure(launched.status());
         }
         publishShot(*weaponEntity, identity->subject, target->subject, shot.point,
                     definition.projectile.speed > 0.0f, shot.missed);
@@ -5165,14 +5190,14 @@ Result<std::size_t> CombatFireSystem::step(const SimulationStep& step, State& st
                 if (target->shieldCooldown != nullptr) *target->shieldCooldown = target->shieldDelay;
             }
             auto outcome = damage.apply(*target->durability, request);
-            if (!outcome) return failureFrom<std::size_t>(outcome.status());
+            if (!outcome) return Result<std::size_t>::failure(outcome.status());
             if (damageEvents) damageEvents(request, outcome.value(), step.tick, DamageChannel::Weapon);
             if (outcome.value().reaction == combat::HitReaction::Death) {
                 *target->alive = false;
                 policy->target = {};
                 if (explicitAttack) {
                     auto completed = orders->values.complete(record->id);
-                    if (!completed) return failureFrom<std::size_t>(completed.status());
+                    if (!completed) return Result<std::size_t>::failure(completed.status());
                 }
             }
         }
@@ -5184,8 +5209,8 @@ Result<std::size_t> CombatFireSystem::step(const SimulationStep& step, State& st
 
 Result<std::size_t> OrderActionSystem::step(const SimulationStep& step, IRTSActionExecutor& executor) {
     if (step.delta.nanoseconds() < 0)
-        return failure<std::size_t>(DiagnosticCode::InvalidArgument, "RTS action step delta must be non-negative",
-                                    "step.delta");
+        return Result<std::size_t>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "RTS action step delta must be non-negative", "step.delta"));
     std::size_t processed = 0;
     auto        view      = ecs::View<Unit, Unit::Identity, Unit::Orders, Unit::Action>();
     for (auto it = view.begin(); it != view.end(); ++it) {
@@ -5194,7 +5219,7 @@ Result<std::size_t> OrderActionSystem::step(const SimulationStep& step, IRTSActi
         Unit* unit = identity == nullptr ? nullptr : dynamic_cast<Unit*>(ecs::try_get(identity->self));
         if (unit == nullptr || &*unit->identity() != identity) continue;
         auto current = readCurrent(orders->values);
-        if (!current) return failureFrom<std::size_t>(current.status());
+        if (!current) return Result<std::size_t>::failure(current.status());
         auto record = std::move(current).takeValue();
         if (!record) continue;
         if (record->kind == OrderKind::Gather || record->kind == OrderKind::ReturnCargo ||
@@ -5210,11 +5235,11 @@ Result<std::size_t> OrderActionSystem::step(const SimulationStep& step, IRTSActi
             continue;
 
         auto executed = executor.execute(*unit, *record, step);
-        if (!executed) return failureFrom<std::size_t>(executed.status());
+        if (!executed) return Result<std::size_t>::failure(executed.status());
         const auto outcome = std::move(executed).takeValue();
         if (outcome.disposition == ActionDisposition::Completed) {
             auto completed = orders->values.complete(record->id);
-            if (!completed) return failureFrom<std::size_t>(completed.status());
+            if (!completed) return Result<std::size_t>::failure(completed.status());
         }
         ++processed;
     }
@@ -5224,8 +5249,9 @@ Result<std::size_t> OrderActionSystem::step(const SimulationStep& step, IRTSActi
 Result<ReinforcementRequestReceipt> ReinforcementProductionPolicySystem::request(
     Building& building, std::string preferredProduct, const ReinforcementEnqueue& enqueue) {
     if (preferredProduct.empty() || !enqueue)
-        return failure<ReinforcementRequestReceipt>(DiagnosticCode::InvalidArgument,
-            "RTS reinforcement request requires a preferred product and enqueue boundary", "reinforcement");
+        return Result<ReinforcementRequestReceipt>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument,
+            "RTS reinforcement request requires a preferred product and enqueue boundary", "reinforcement"));
     std::set<std::string> visited;
     std::string candidate = preferredProduct;
     Status lastFailure = Status::success(StatusCode::NotFound);
@@ -5241,15 +5267,16 @@ Result<ReinforcementRequestReceipt> ReinforcementProductionPolicySystem::request
             return Result<ReinforcementRequestReceipt>::failure(lastFailure);
         candidate = fallback->second;
     }
-    return failure<ReinforcementRequestReceipt>(DiagnosticCode::InvalidArgument,
-        "RTS reinforcement fallback chain contains a cycle", "building.rally.reinforcementFallbacks");
+    return Result<ReinforcementRequestReceipt>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "RTS reinforcement fallback chain contains a cycle",
+                          "building.rally.reinforcementFallbacks"));
 }
 
 Result<std::size_t> ReinforcementProductionPolicySystem::step(
     const SimulationStep& step, const ReinforcementCancel& cancel) {
     if (step.delta.nanoseconds() < 0)
-        return failure<std::size_t>(DiagnosticCode::InvalidArgument,
-            "RTS reinforcement policy delta must be non-negative", "step.delta");
+        return Result<std::size_t>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "RTS reinforcement policy delta must be non-negative", "step.delta"));
     struct Demand {
         Building* building = nullptr;
         production::ProductionTask* task = nullptr;
@@ -5326,13 +5353,13 @@ Result<std::size_t> ReinforcementProductionPolicySystem::step(
             const bool capped = totalCapped || typeCapped;
             if (capped && demand.task->state != production::TaskState::Paused) {
                 auto paused = demand.building->production()->values.pause(demand.task->id);
-                if (!paused) return failureFrom<std::size_t>(paused.status());
+                if (!paused) return Result<std::size_t>::failure(paused.status());
                 rally->reinforcementPolicyPausedTask = demand.task->id;
                 ++processed;
             } else if (!capped && demand.task->state == production::TaskState::Paused &&
                        rally->reinforcementPolicyPausedTask == demand.task->id) {
                 auto resumed = demand.building->production()->values.resume(demand.task->id);
-                if (!resumed) return failureFrom<std::size_t>(resumed.status());
+                if (!resumed) return Result<std::size_t>::failure(resumed.status());
                 rally->reinforcementPolicyPausedTask.clear();
                 ++processed;
             }
@@ -5343,7 +5370,7 @@ Result<std::size_t> ReinforcementProductionPolicySystem::step(
                     rally->reinforcementCappedSeconds + 1e-5f >= rally->reinforcementAutoCancelDelay && cancel) {
                     const std::string taskId = demand.task->id;
                     auto cancelled = cancel(*demand.building, taskId);
-                    if (!cancelled) return failureFrom<std::size_t>(cancelled.status());
+                    if (!cancelled) return Result<std::size_t>::failure(cancelled.status());
                     rally->reinforcementPolicyPausedTask.clear();
                     rally->reinforcementCappedSeconds = 0.0f;
                     rally->reinforcementCapped = false;
@@ -5367,8 +5394,8 @@ Result<std::size_t> BuildingProductionSystem::step(const SimulationStep& step, c
                                                     const ProductionSpawnPosition& position,
                                                     const LifecycleEventSink& events) {
     if (step.delta.nanoseconds() < 0)
-        return failure<std::size_t>(DiagnosticCode::InvalidArgument, "RTS production step delta must be non-negative",
-                                    "step.delta");
+        return Result<std::size_t>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "RTS production step delta must be non-negative", "step.delta"));
     std::size_t processed = 0;
     struct Settlement { ecs::EntityHandle building; production::ProductionTask task; };
     std::vector<Settlement> settlements;
@@ -5378,7 +5405,7 @@ Result<std::size_t> BuildingProductionSystem::step(const SimulationStep& step, c
         Building* building = identity == nullptr ? nullptr : dynamic_cast<Building*>(ecs::try_get(identity->self));
         if (building == nullptr || &*building->identity() != identity) continue;
         auto advanced = production->values.advance(step);
-        if (!advanced) return failureFrom<std::size_t>(advanced.status());
+        if (!advanced) return Result<std::size_t>::failure(advanced.status());
         advanced.value();
         ++processed;
         if (!spawn) continue;
@@ -5401,14 +5428,15 @@ Result<std::size_t> BuildingProductionSystem::step(const SimulationStep& step, c
     for (const auto& settlement : settlements) {
             auto* building = dynamic_cast<Building*>(ecs::try_get(settlement.building));
             if (building == nullptr)
-                return failure<std::size_t>(DiagnosticCode::StaleHandle,
-                                            "RTS producer disappeared during production settlement", "production");
+                return Result<std::size_t>::failure(
+                    Diagnostic::error(DiagnosticCode::StaleHandle,
+                                      "RTS producer disappeared during production settlement", "production"));
             auto& settled = building->rally()->settledProductionTasks;
             if (std::find(settled.begin(), settled.end(), settlement.task.id) != settled.end()) continue;
             std::optional<WorldPosition> spawnPosition;
             if (position) {
                 auto available = position(*building, settlement.task);
-                if (!available) return failureFrom<std::size_t>(available.status());
+                if (!available) return Result<std::size_t>::failure(available.status());
                 spawnPosition = std::move(available).takeValue();
                 if (!spawnPosition) {
                     const bool newlyBlocked = !building->rally()->productionSpawnBlocked;
@@ -5421,11 +5449,11 @@ Result<std::size_t> BuildingProductionSystem::step(const SimulationStep& step, c
                 }
             }
             auto created = spawn(*building, settlement.task);
-            if (!created) return failureFrom<std::size_t>(created.status());
+            if (!created) return Result<std::size_t>::failure(created.status());
             Unit* unit = std::move(created).takeValue();
             if (unit == nullptr)
-                return failure<std::size_t>(DiagnosticCode::Failed,
-                                            "RTS production factory returned a null unit", "production.spawn");
+                return Result<std::size_t>::failure(Diagnostic::error(
+                    DiagnosticCode::Failed, "RTS production factory returned a null unit", "production.spawn"));
             unit->motion()->x = spawnPosition ? spawnPosition->x : building->placement()->worldX;
             unit->motion()->y = spawnPosition ? spawnPosition->y : building->placement()->worldY;
             const bool wasBlocked = building->rally()->productionSpawnBlocked;
@@ -5444,14 +5472,14 @@ Result<std::size_t> BuildingProductionSystem::step(const SimulationStep& step, c
                 transport->containment()->occupants.size() < transport->containment()->capacity &&
                 FactionRelationSystem::isAllied(transport->faction()->link, building->faction()->link)) {
                 auto link = ContainerLink::bind(transport->identity()->self);
-                if (!link) return failureFrom<std::size_t>(link.status());
+                if (!link) return Result<std::size_t>::failure(link.status());
                 unit->containment()->container = std::move(link).takeValue();
                 transport->containment()->occupants.push_back(unit->identity()->self);
                 boarded = true;
             }
             if (!boarded && building->rally()->enabled) {
                 auto queued = unit->orders()->values.replace(building->rally()->command);
-                if (!queued) return failureFrom<std::size_t>(queued.status());
+                if (!queued) return Result<std::size_t>::failure(queued.status());
                 std::move(queued).takeValue();
             }
             settled.push_back(settlement.task.id);
@@ -5484,7 +5512,7 @@ Result<std::size_t> ReinforcementSystem::step() {
         if (!rally->transportActive) {
             if (occupants.size() < std::max<std::size_t>(1, rally->minimumTransportLoad)) continue;
             auto dispatched = transport->orders()->values.replace(rally->command);
-            if (!dispatched) return failureFrom<std::size_t>(dispatched.status());
+            if (!dispatched) return Result<std::size_t>::failure(dispatched.status());
             std::move(dispatched).takeValue();
             transport->tactics()->combatGroup = rally->combatGroup;
             rally->transportActive = true;
@@ -5502,7 +5530,7 @@ Result<std::size_t> ReinforcementSystem::step() {
             passenger->motion()->y = transport->motion()->y;
             passenger->tactics()->combatGroup = rally->combatGroup;
             auto ordered = passenger->orders()->values.replace(rally->command);
-            if (!ordered) return failureFrom<std::size_t>(ordered.status());
+            if (!ordered) return Result<std::size_t>::failure(ordered.status());
             std::move(ordered).takeValue();
             ++processed;
         }
@@ -5514,8 +5542,8 @@ Result<std::size_t> ReinforcementSystem::step() {
 
 Result<std::size_t> EffectSystem::step(const SimulationStep& step, const LifecycleEventSink& events) {
     if (step.delta.nanoseconds() < 0)
-        return failure<std::size_t>(DiagnosticCode::InvalidArgument, "RTS effects step delta must be non-negative",
-                                    "step.delta");
+        return Result<std::size_t>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "RTS effects step delta must be non-negative", "step.delta"));
     std::size_t processed = 0;
     {
         auto view = ecs::View<Unit, Unit::Identity, Unit::Effects, Unit::Durability>();
@@ -5529,7 +5557,7 @@ Result<std::size_t> EffectSystem::step(const SimulationStep& step, const Lifecyc
                                                      durability->state.health + healing);
             const auto before = effects->values.snapshot();
             auto advanced = advanceEffects(effects->values, step);
-            if (!advanced) return failureFrom<std::size_t>(advanced.status());
+            if (!advanced) return Result<std::size_t>::failure(advanced.status());
             if (events && advanced.value() > 0) {
                 const auto after = effects->values.snapshot();
                 for (int index = 0; index < before.effects.effectCount(); ++index) {
@@ -5550,7 +5578,7 @@ Result<std::size_t> EffectSystem::step(const SimulationStep& step, const Lifecyc
             if (building == nullptr || &*building->identity() != identity || &*building->effects() != effects) continue;
             const auto before = effects->values.snapshot();
             auto advanced = advanceEffects(effects->values, step);
-            if (!advanced) return failureFrom<std::size_t>(advanced.status());
+            if (!advanced) return Result<std::size_t>::failure(advanced.status());
             if (events && advanced.value() > 0) {
                 const auto after = effects->values.snapshot();
                 for (int index = 0; index < before.effects.effectCount(); ++index) {

@@ -24,11 +24,6 @@ eve::Result<ClothModel> invalidModel(const char* message) {
         eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, message, "physics.clothModel"));
 }
 
-template <typename T>
-eve::Result<T> decodeFailure(eve::DiagnosticCode code, std::string message, std::string path = "physics.clothModel") {
-    return eve::Result<T>::failure(eve::Diagnostic::error(code, std::move(message), std::move(path)));
-}
-
 bool hasExactFields(const eve::Value::Object& object, std::initializer_list<std::string_view> expected) {
     if (object.size() != expected.size()) return false;
     for (std::string_view name : expected)
@@ -316,20 +311,20 @@ eve::Result<ClothModel> ClothModel::fromJson(std::string_view json) {
 eve::Result<ClothModel> ClothModel::fromValue(const eve::Value& value) {
     const auto* root = value.getIf<eve::Value::Object>();
     if (!root || !hasExactFields(*root, {"schema", "schemaVersion", "positions", "inverseMasses", "triangles", "grid"}))
-        return decodeFailure<ClothModel>(eve::DiagnosticCode::ParseError,
-                                         "cloth model root has missing or unknown fields");
+        return eve::Result<ClothModel>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::ParseError, "cloth model root has missing or unknown fields", {}));
 
     const eve::Value* schema  = field(*root, "schema");
     const eve::Value* version = field(*root, "schemaVersion");
     if (!schema || !schema->isString() || schema->asString() != "eve.cloth-model")
-        return decodeFailure<ClothModel>(eve::DiagnosticCode::ParseError, "cloth model schema must be eve.cloth-model",
-                                         "schema");
+        return eve::Result<ClothModel>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::ParseError, "cloth model schema must be eve.cloth-model", "schema"));
     if (!version || !version->isInt64())
-        return decodeFailure<ClothModel>(eve::DiagnosticCode::ParseError,
-                                         "cloth model schemaVersion must be an integer", "schemaVersion");
+        return eve::Result<ClothModel>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::ParseError, "cloth model schemaVersion must be an integer", "schemaVersion"));
     if (version->asInt() != SchemaVersion)
-        return decodeFailure<ClothModel>(eve::DiagnosticCode::UnknownVersion,
-                                         "cloth model schema version is not supported", "schemaVersion");
+        return eve::Result<ClothModel>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::UnknownVersion, "cloth model schema version is not supported", "schemaVersion"));
 
     const auto* encodedPositions = field(*root, "positions")->getIf<eve::Value::Array>();
     const auto* encodedMasses    = field(*root, "inverseMasses")->getIf<eve::Value::Array>();
@@ -338,7 +333,8 @@ eve::Result<ClothModel> ClothModel::fromValue(const eve::Value& value) {
         encodedPositions->size() / 3 > kMaximumDecodedParticles || !encodedMasses ||
         encodedMasses->size() != encodedPositions->size() / 3 || !encodedTriangles || encodedTriangles->empty() ||
         encodedTriangles->size() % 3 != 0)
-        return decodeFailure<ClothModel>(eve::DiagnosticCode::ParseError, "cloth model arrays have invalid sizes");
+        return eve::Result<ClothModel>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "cloth model arrays have invalid sizes", {}));
 
     std::vector<float> positions;
     std::vector<float> inverseMasses;
@@ -349,21 +345,22 @@ eve::Result<ClothModel> ClothModel::fromValue(const eve::Value& value) {
     for (const eve::Value& encoded : *encodedPositions) {
         float decoded = 0.f;
         if (!readFiniteFloat(encoded, decoded))
-            return decodeFailure<ClothModel>(eve::DiagnosticCode::ParseError, "cloth position must be a finite float",
-                                             "positions");
+            return eve::Result<ClothModel>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::ParseError, "cloth position must be a finite float", "positions"));
         positions.push_back(decoded);
     }
     for (const eve::Value& encoded : *encodedMasses) {
         float decoded = 0.f;
         if (!readFiniteFloat(encoded, decoded) || decoded < 0.f)
-            return decodeFailure<ClothModel>(eve::DiagnosticCode::ParseError,
-                                             "cloth inverse mass must be finite and non-negative", "inverseMasses");
+            return eve::Result<ClothModel>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::ParseError,
+                                       "cloth inverse mass must be finite and non-negative", "inverseMasses"));
         inverseMasses.push_back(decoded);
     }
     for (const eve::Value& encoded : *encodedTriangles) {
         if (!encoded.isInt64() || encoded.asInt() < 0 || encoded.asInt() > std::numeric_limits<int>::max())
-            return decodeFailure<ClothModel>(eve::DiagnosticCode::ParseError,
-                                             "cloth triangle index must be a non-negative integer", "triangles");
+            return eve::Result<ClothModel>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::ParseError, "cloth triangle index must be a non-negative integer", "triangles"));
         triangles.push_back(static_cast<int>(encoded.asInt()));
     }
 
@@ -374,8 +371,8 @@ eve::Result<ClothModel> ClothModel::fromValue(const eve::Value& value) {
     if (gridValue->isNull()) return decoded;
     const auto* gridObject = gridValue->getIf<eve::Value::Object>();
     if (!gridObject || !hasExactFields(*gridObject, {"cols", "rows", "spacing"}))
-        return decodeFailure<ClothModel>(eve::DiagnosticCode::ParseError,
-                                         "cloth grid metadata has missing or unknown fields", "grid");
+        return eve::Result<ClothModel>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::ParseError, "cloth grid metadata has missing or unknown fields", "grid"));
     const eve::Value* colsValue    = field(*gridObject, "cols");
     const eve::Value* rowsValue    = field(*gridObject, "rows");
     const eve::Value* spacingValue = field(*gridObject, "spacing");
@@ -384,8 +381,8 @@ eve::Result<ClothModel> ClothModel::fromValue(const eve::Value& value) {
         colsValue->asInt() > std::numeric_limits<int>::max() || rowsValue->asInt() < 2 ||
         rowsValue->asInt() > std::numeric_limits<int>::max() || !spacingValue ||
         !readFiniteFloat(*spacingValue, spacing) || spacing <= 0.f)
-        return decodeFailure<ClothModel>(eve::DiagnosticCode::ParseError, "cloth grid metadata values are invalid",
-                                         "grid");
+        return eve::Result<ClothModel>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "cloth grid metadata values are invalid", "grid"));
 
     const int cols      = static_cast<int>(colsValue->asInt());
     const int rows      = static_cast<int>(rowsValue->asInt());
@@ -393,21 +390,21 @@ eve::Result<ClothModel> ClothModel::fromValue(const eve::Value& value) {
     if (!canonical) return eve::Result<ClothModel>::failure(canonical.status());
     if (canonical.value().particles().size() != decoded.value().particles().size() ||
         canonical.value().triangles().size() != decoded.value().triangles().size())
-        return decodeFailure<ClothModel>(eve::DiagnosticCode::Conflict,
-                                         "cloth grid metadata disagrees with its topology", "grid");
+        return eve::Result<ClothModel>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Conflict, "cloth grid metadata disagrees with its topology", "grid"));
     for (size_t i = 0; i < canonical.value().particles().size(); ++i) {
         const auto& expected = canonical.value().particles()[i];
         const auto& actual   = decoded.value().particles()[i];
         if (std::abs(expected.x - actual.x) > 1e-5f || std::abs(expected.y - actual.y) > 1e-5f ||
             std::abs(expected.z - actual.z) > 1e-5f || expected.inverseMass != actual.inverseMass)
-            return decodeFailure<ClothModel>(eve::DiagnosticCode::Conflict,
-                                             "cloth grid metadata disagrees with its particles", "grid");
+            return eve::Result<ClothModel>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::Conflict, "cloth grid metadata disagrees with its particles", "grid"));
     }
     for (size_t i = 0; i < canonical.value().triangles().size(); ++i)
         for (int vertex = 0; vertex < 3; ++vertex)
             if (canonical.value().triangles()[i].vertices[vertex] != decoded.value().triangles()[i].vertices[vertex])
-                return decodeFailure<ClothModel>(eve::DiagnosticCode::Conflict,
-                                                 "cloth grid metadata disagrees with triangle ordering", "grid");
+                return eve::Result<ClothModel>::failure(eve::Diagnostic::error(
+                    eve::DiagnosticCode::Conflict, "cloth grid metadata disagrees with triangle ordering", "grid"));
     return canonical;
 }
 

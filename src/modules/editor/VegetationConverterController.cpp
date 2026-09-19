@@ -2,11 +2,6 @@
 
 namespace eve::editor {
 namespace {
-template <class T>
-EditorResult<T> fail(EditorStatus status, const char* rule, std::string message) {
-    return editing::failed<T>(status, RuleId(rule), std::move(message));
-}
-
 std::vector<EditorDiagnostic> project(const std::vector<Diagnostic>& diagnostics) { return diagnostics; }
 }  // namespace
 
@@ -23,8 +18,8 @@ EditorResult<void> VegetationConverterController::setRequest(asset_import::Unity
                                                              std::uint64_t expectedPublicationGeneration) {
     if (request.package.packageId.isNil() || request.package.packageName.empty() ||
         request.package.packageVersion.empty() || request.objects.empty())
-        return fail<void>(EditorStatus::Rejected, "editor.vegetation-converter.request",
-                          "Vegetation conversion requires package identity and at least one object");
+        return editing::failed<void>(EditorStatus::Rejected, RuleId("editor.vegetation-converter.request"),
+                                     "Vegetation conversion requires package identity and at least one object");
     request_ = std::move(request);
     candidate_.reset();
     expectedPublicationGeneration_ = expectedPublicationGeneration;
@@ -41,8 +36,8 @@ EditorResult<void> VegetationConverterController::setRequest(asset_import::Unity
 
 EditorResult<void> VegetationConverterController::prepare() {
     if (!request_)
-        return fail<void>(EditorStatus::Rejected, "editor.vegetation-converter.no-request",
-                          "Set a vegetation conversion request before preparing it");
+        return editing::failed<void>(EditorStatus::Rejected, RuleId("editor.vegetation-converter.no-request"),
+                                     "Set a vegetation conversion request before preparing it");
     auto prepared = preparer_.prepare(*request_);
     if (!prepared.ok()) {
         candidate_.reset();
@@ -64,8 +59,9 @@ EditorResult<void> VegetationConverterController::prepare() {
 
 EditorResult<std::uint64_t> VegetationConverterController::publish() {
     if (!candidate_ || state_.preparedRevision != state_.requestRevision)
-        return fail<std::uint64_t>(EditorStatus::Conflict, "editor.vegetation-converter.stale-candidate",
-                                   "Prepare the current vegetation request before publishing it");
+        return editing::failed<std::uint64_t>(EditorStatus::Conflict,
+                                              RuleId("editor.vegetation-converter.stale-candidate"),
+                                              "Prepare the current vegetation request before publishing it");
     auto published = publisher_.publish(*candidate_, expectedPublicationGeneration_);
     if (!published.ok()) {
         state_.diagnostics = published.diagnostics();

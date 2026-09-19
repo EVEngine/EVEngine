@@ -297,13 +297,6 @@ ssq::Table makeOwnedProxy(HSQUIRRELVM vm, eve::Result<Ref>&& reference, Release&
     return result;
 }
 
-template <class T>
-ssq::Table staleProcgenResult(HSQUIRRELVM vm, const char* objectName) {
-    return eve::script::projectResult(
-        vm, procgenBindingFailure<T>(eve::DiagnosticCode::StaleHandle,
-                                     std::string("owned procgen ") + objectName + " handle is stale", objectName));
-}
-
 /** @brief Projects a decoded terrain file as an owned heightmap proxy plus metadata.
  *
  * The heightmap arrives through the same owning-handle path as `newHeightmap`, so
@@ -3225,49 +3218,97 @@ void Procgen::expose(ssq::Table& table) {
         return eve::script::projectResult(vm, Procgen::release(value->reference));
     });
     ownedParams.addFunc("setSeed", [vm](ScriptProcgenParams* value, uint32_t seed) {
-        if (!value) return staleProcgenResult<void>(vm, "params");
+        if (!value)
+            return eve::script::projectResult(
+                vm,
+                procgenBindingFailure<void>(eve::DiagnosticCode::StaleHandle,
+                                            std::string("owned procgen ") + "params" + " handle is stale", "params"));
         auto view = Procgen::resolve(value->reference);
-        if (!view.isBound()) return staleProcgenResult<void>(vm, "params");
+        if (!view.isBound())
+            return eve::script::projectResult(
+                vm,
+                procgenBindingFailure<void>(eve::DiagnosticCode::StaleHandle,
+                                            std::string("owned procgen ") + "params" + " handle is stale", "params"));
         view->setSeed(seed);
         return eve::script::projectResult(vm,
                                           eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied)));
     });
     ownedParams.addFunc("setSize", [vm](ScriptProcgenParams* value, int width, int height) {
-        if (!value) return staleProcgenResult<void>(vm, "params");
+        if (!value)
+            return eve::script::projectResult(
+                vm,
+                procgenBindingFailure<void>(eve::DiagnosticCode::StaleHandle,
+                                            std::string("owned procgen ") + "params" + " handle is stale", "params"));
         auto view = Procgen::resolve(value->reference);
-        if (!view.isBound()) return staleProcgenResult<void>(vm, "params");
+        if (!view.isBound())
+            return eve::script::projectResult(
+                vm,
+                procgenBindingFailure<void>(eve::DiagnosticCode::StaleHandle,
+                                            std::string("owned procgen ") + "params" + " handle is stale", "params"));
         view->setSize(width, height);
         return eve::script::projectResult(vm,
                                           eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied)));
     });
     ownedParams.addFunc("setInt", [vm](ScriptProcgenParams* value, const std::string& key, int number) {
-        if (!value) return staleProcgenResult<void>(vm, "params");
+        if (!value)
+            return eve::script::projectResult(
+                vm,
+                procgenBindingFailure<void>(eve::DiagnosticCode::StaleHandle,
+                                            std::string("owned procgen ") + "params" + " handle is stale", "params"));
         auto view = Procgen::resolve(value->reference);
-        if (!view.isBound()) return staleProcgenResult<void>(vm, "params");
+        if (!view.isBound())
+            return eve::script::projectResult(
+                vm,
+                procgenBindingFailure<void>(eve::DiagnosticCode::StaleHandle,
+                                            std::string("owned procgen ") + "params" + " handle is stale", "params"));
         view->setInt(key, number);
         return eve::script::projectResult(vm,
                                           eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied)));
     });
     ownedParams.addFunc("setFloat", [vm](ScriptProcgenParams* value, const std::string& key, float number) {
-        if (!value) return staleProcgenResult<void>(vm, "params");
+        if (!value)
+            return eve::script::projectResult(
+                vm,
+                procgenBindingFailure<void>(eve::DiagnosticCode::StaleHandle,
+                                            std::string("owned procgen ") + "params" + " handle is stale", "params"));
         auto view = Procgen::resolve(value->reference);
-        if (!view.isBound()) return staleProcgenResult<void>(vm, "params");
+        if (!view.isBound())
+            return eve::script::projectResult(
+                vm,
+                procgenBindingFailure<void>(eve::DiagnosticCode::StaleHandle,
+                                            std::string("owned procgen ") + "params" + " handle is stale", "params"));
         view->setFloat(key, number);
         return eve::script::projectResult(vm,
                                           eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied)));
     });
     ownedParams.addFunc("setBool", [vm](ScriptProcgenParams* value, const std::string& key, bool flag) {
-        if (!value) return staleProcgenResult<void>(vm, "params");
+        if (!value)
+            return eve::script::projectResult(
+                vm,
+                procgenBindingFailure<void>(eve::DiagnosticCode::StaleHandle,
+                                            std::string("owned procgen ") + "params" + " handle is stale", "params"));
         auto view = Procgen::resolve(value->reference);
-        if (!view.isBound()) return staleProcgenResult<void>(vm, "params");
+        if (!view.isBound())
+            return eve::script::projectResult(
+                vm,
+                procgenBindingFailure<void>(eve::DiagnosticCode::StaleHandle,
+                                            std::string("owned procgen ") + "params" + " handle is stale", "params"));
         view->setBool(key, flag);
         return eve::script::projectResult(vm,
                                           eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied)));
     });
     ownedParams.addFunc("setString", [vm](ScriptProcgenParams* value, const std::string& key, const std::string& text) {
-        if (!value) return staleProcgenResult<void>(vm, "params");
+        if (!value)
+            return eve::script::projectResult(
+                vm,
+                procgenBindingFailure<void>(eve::DiagnosticCode::StaleHandle,
+                                            std::string("owned procgen ") + "params" + " handle is stale", "params"));
         auto view = Procgen::resolve(value->reference);
-        if (!view.isBound()) return staleProcgenResult<void>(vm, "params");
+        if (!view.isBound())
+            return eve::script::projectResult(
+                vm,
+                procgenBindingFailure<void>(eve::DiagnosticCode::StaleHandle,
+                                            std::string("owned procgen ") + "params" + " handle is stale", "params"));
         view->setString(key, text);
         return eve::script::projectResult(vm,
                                           eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied)));
@@ -3328,25 +3369,43 @@ void Procgen::expose(ssq::Table& table) {
         return eve::script::projectResult(vm, Procgen::release(value->reference));
     });
     ownedGrid.addFunc("resize", [vm](ScriptProcgenGrid* value, int width, int height) {
-        if (!value) return staleProcgenResult<void>(vm, "grid");
+        if (!value)
+            return eve::script::projectResult(
+                vm, procgenBindingFailure<void>(eve::DiagnosticCode::StaleHandle,
+                                                std::string("owned procgen ") + "grid" + " handle is stale", "grid"));
         auto view = Procgen::resolve(value->reference);
-        if (!view.isBound()) return staleProcgenResult<void>(vm, "grid");
+        if (!view.isBound())
+            return eve::script::projectResult(
+                vm, procgenBindingFailure<void>(eve::DiagnosticCode::StaleHandle,
+                                                std::string("owned procgen ") + "grid" + " handle is stale", "grid"));
         view->resize(width, height);
         return eve::script::projectResult(vm,
                                           eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied)));
     });
     ownedGrid.addFunc("fill", [vm](ScriptProcgenGrid* value, int semantic) {
-        if (!value) return staleProcgenResult<void>(vm, "grid");
+        if (!value)
+            return eve::script::projectResult(
+                vm, procgenBindingFailure<void>(eve::DiagnosticCode::StaleHandle,
+                                                std::string("owned procgen ") + "grid" + " handle is stale", "grid"));
         auto view = Procgen::resolve(value->reference);
-        if (!view.isBound()) return staleProcgenResult<void>(vm, "grid");
+        if (!view.isBound())
+            return eve::script::projectResult(
+                vm, procgenBindingFailure<void>(eve::DiagnosticCode::StaleHandle,
+                                                std::string("owned procgen ") + "grid" + " handle is stale", "grid"));
         view->fill(semantic);
         return eve::script::projectResult(vm,
                                           eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied)));
     });
     ownedGrid.addFunc("setCell", [vm](ScriptProcgenGrid* value, int x, int y, int semantic) {
-        if (!value) return staleProcgenResult<void>(vm, "grid");
+        if (!value)
+            return eve::script::projectResult(
+                vm, procgenBindingFailure<void>(eve::DiagnosticCode::StaleHandle,
+                                                std::string("owned procgen ") + "grid" + " handle is stale", "grid"));
         auto view = Procgen::resolve(value->reference);
-        if (!view.isBound()) return staleProcgenResult<void>(vm, "grid");
+        if (!view.isBound())
+            return eve::script::projectResult(
+                vm, procgenBindingFailure<void>(eve::DiagnosticCode::StaleHandle,
+                                                std::string("owned procgen ") + "grid" + " handle is stale", "grid"));
         view->setCell(x, y, semantic);
         return eve::script::projectResult(vm,
                                           eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied)));
@@ -3364,9 +3423,15 @@ void Procgen::expose(ssq::Table& table) {
         return view.isBound() ? view->getCell(x, y) : 0;
     });
     ownedGrid.addFunc("setDetail", [vm](ScriptProcgenGrid* value, int x, int y, int detail) {
-        if (!value) return staleProcgenResult<void>(vm, "grid");
+        if (!value)
+            return eve::script::projectResult(
+                vm, procgenBindingFailure<void>(eve::DiagnosticCode::StaleHandle,
+                                                std::string("owned procgen ") + "grid" + " handle is stale", "grid"));
         auto view = Procgen::resolve(value->reference);
-        if (!view.isBound()) return staleProcgenResult<void>(vm, "grid");
+        if (!view.isBound())
+            return eve::script::projectResult(
+                vm, procgenBindingFailure<void>(eve::DiagnosticCode::StaleHandle,
+                                                std::string("owned procgen ") + "grid" + " handle is stale", "grid"));
         view->setDetail(x, y, detail);
         return eve::script::projectResult(vm, eve::Result<void>::success());
     });
@@ -3423,9 +3488,15 @@ void Procgen::expose(ssq::Table& table) {
         return view.isBound() ? view->getMeta(key, fallback) : fallback;
     });
     ownedGrid.addFunc("setMeta", [vm](ScriptProcgenGrid* value, const std::string& key, const std::string& data) {
-        if (!value) return staleProcgenResult<void>(vm, "grid");
+        if (!value)
+            return eve::script::projectResult(
+                vm, procgenBindingFailure<void>(eve::DiagnosticCode::StaleHandle,
+                                                std::string("owned procgen ") + "grid" + " handle is stale", "grid"));
         auto view = Procgen::resolve(value->reference);
-        if (!view.isBound()) return staleProcgenResult<void>(vm, "grid");
+        if (!view.isBound())
+            return eve::script::projectResult(
+                vm, procgenBindingFailure<void>(eve::DiagnosticCode::StaleHandle,
+                                                std::string("owned procgen ") + "grid" + " handle is stale", "grid"));
         view->setMeta(key, data);
         return eve::script::projectResult(vm, eve::Result<void>::success());
     });
@@ -3500,7 +3571,11 @@ void Procgen::expose(ssq::Table& table) {
         if (view.isBound()) view->fail(error);
     });
     ownedContext.addFunc("commit", [vm](ScriptProcgenContext* value) {
-        if (!value) return staleProcgenResult<void>(vm, "context");
+        if (!value)
+            return eve::script::projectResult(
+                vm,
+                procgenBindingFailure<void>(eve::DiagnosticCode::StaleHandle,
+                                            std::string("owned procgen ") + "context" + " handle is stale", "context"));
         auto* module = ModuleManager::getInstance<Procgen>("Procgen");
         if (!module)
             return eve::script::projectResult(
@@ -3509,7 +3584,11 @@ void Procgen::expose(ssq::Table& table) {
         return eve::script::projectResult(vm, module->commitSystem(value->reference));
     });
     ownedContext.addFunc("abort", [vm](ScriptProcgenContext* value) {
-        if (!value) return staleProcgenResult<void>(vm, "context");
+        if (!value)
+            return eve::script::projectResult(
+                vm,
+                procgenBindingFailure<void>(eve::DiagnosticCode::StaleHandle,
+                                            std::string("owned procgen ") + "context" + " handle is stale", "context"));
         auto* module = ModuleManager::getInstance<Procgen>("Procgen");
         if (!module)
             return eve::script::projectResult(

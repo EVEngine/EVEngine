@@ -4,12 +4,7 @@
 #include <new>
 #include "asset/CanonicalMesh.h"
 namespace eve::asset_graphics {
-namespace {
-template <class T>
-Result<T> failure(DiagnosticCode code, std::string message) {
-    return Result<T>::failure(Diagnostic::error(code, std::move(message), {}, {}, "asset.graphics"));
-}
-}
+namespace {}
 Result<LoadedGraphicsMesh> EvpackGraphicsLoader::loadMesh(const AssetRef&                  asset,
                                                           const asset::EvpackCapabilities& capabilities,
                                                           const GraphicsAssetLoadLimits&   limits,
@@ -24,21 +19,24 @@ Result<LoadedGraphicsMesh> EvpackGraphicsLoader::loadMesh(const AssetRef&       
     for (const auto& chunk : payload.value().chunks) {
         if (chunk.kind != asset::EvpackChunkKind::Bulk) continue;
         if (bulk)
-            return failure<LoadedGraphicsMesh>(DiagnosticCode::ParseError,
-                                               "eve.mesh must contain exactly one bulk chunk");
+            return Result<LoadedGraphicsMesh>::failure(Diagnostic::error(
+                DiagnosticCode::ParseError, "eve.mesh must contain exactly one bulk chunk", {}, {}, "asset.graphics"));
         bulk = &chunk;
     }
-    if (!bulk) return failure<LoadedGraphicsMesh>(DiagnosticCode::NotFound, "eve.mesh bulk chunk is missing");
+    if (!bulk)
+        return Result<LoadedGraphicsMesh>::failure(
+            Diagnostic::error(DiagnosticCode::NotFound, "eve.mesh bulk chunk is missing", {}, {}, "asset.graphics"));
     auto staging = asset::decodeCanonicalMesh(
         bulk->bytes, {limits.maximumVertices, limits.maximumIndices, limits.maximumDecodedBytes});
     if (!staging) return Result<LoadedGraphicsMesh>::failure(staging.status());
     if (staging.value().positions.size() / 3 > size_t(std::numeric_limits<int>::max()) ||
         staging.value().indices.size() > size_t(std::numeric_limits<int>::max()))
-        return failure<LoadedGraphicsMesh>(DiagnosticCode::InvalidArgument, "mesh exceeds backend count range");
+        return Result<LoadedGraphicsMesh>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "mesh exceeds backend count range", {}, {}, "asset.graphics"));
     const auto uv = staging.value().texcoords.find(texcoordSet);
     if (uv == staging.value().texcoords.end() && (texcoordSet != 0 || !staging.value().texcoords.empty()))
-        return failure<LoadedGraphicsMesh>(DiagnosticCode::NotFound,
-                                           "requested UV set is absent; no remapping performed");
+        return Result<LoadedGraphicsMesh>::failure(Diagnostic::error(
+            DiagnosticCode::NotFound, "requested UV set is absent; no remapping performed", {}, {}, "asset.graphics"));
     auto uploaded = staging.value().colors.empty()
         ? factory_.uploadMesh(staging.value().positions.data(),
                               staging.value().normals.empty() ? nullptr : staging.value().normals.data(),

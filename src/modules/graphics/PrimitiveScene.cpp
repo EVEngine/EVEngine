@@ -10,11 +10,6 @@
 namespace eve::graphics {
 namespace {
 
-template <class T>
-eve::Result<T> primitiveFailure(eve::DiagnosticCode code, std::string message) {
-    return eve::Result<T>::failure(eve::Diagnostic::error(code, std::move(message), "primitive", {}, "graphics"));
-}
-
 bool finite(glm::vec3 value) { return std::isfinite(value.x) && std::isfinite(value.y) && std::isfinite(value.z); }
 
 bool nonZero(glm::vec3 value) {
@@ -45,30 +40,38 @@ eve::Result<void> validateDescriptor(const PrimitiveDescriptor3D& descriptor) {
         !std::isfinite(stroke.miterLimit) || stroke.miterLimit <= 0.f ||
         !std::isfinite(paint.color.r) || !std::isfinite(paint.color.g) ||
         !std::isfinite(paint.color.b) || !std::isfinite(paint.color.a))
-        return primitiveFailure<void>(eve::DiagnosticCode::InvalidArgument, "primitive paint must be finite and valid");
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                 "primitive paint must be finite and valid",
+                                                                 "primitive", {}, "graphics"));
     if (stroke.dash) {
         const auto& dash = *stroke.dash;
         float period = 0.f;
         if (dash.intervals.empty() || dash.intervals.size() % 2 != 0 || !std::isfinite(dash.phase))
-            return primitiveFailure<void>(eve::DiagnosticCode::InvalidArgument, "invalid primitive dash pattern");
+            return eve::Result<void>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::InvalidArgument, "invalid primitive dash pattern", "primitive", {}, "graphics"));
         for (float interval : dash.intervals) {
             if (!std::isfinite(interval) || interval <= 0.f)
-                return primitiveFailure<void>(eve::DiagnosticCode::InvalidArgument, "invalid primitive dash interval");
+                return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                         "invalid primitive dash interval", "primitive",
+                                                                         {}, "graphics"));
             period += interval;
         }
         if (!std::isfinite(period))
-            return primitiveFailure<void>(eve::DiagnosticCode::InvalidArgument, "primitive dash period overflow");
+            return eve::Result<void>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::InvalidArgument, "primitive dash period overflow", "primitive", {}, "graphics"));
     }
     try {
         descriptor.paint.validate();
     } catch (const std::exception& error) {
-        return primitiveFailure<void>(eve::DiagnosticCode::InvalidArgument, error.what());
+        return eve::Result<void>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, error.what(), "primitive", {}, "graphics"));
     }
     for (glm::length_t column = 0; column < 4; ++column)
         for (glm::length_t row = 0; row < 4; ++row)
             if (!std::isfinite(descriptor.transform[column][row]))
-                return primitiveFailure<void>(eve::DiagnosticCode::InvalidArgument,
-                                              "primitive transform must be finite");
+                return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                         "primitive transform must be finite",
+                                                                         "primitive", {}, "graphics"));
     const bool valid = std::visit(
         [](const auto& geometry) {
             using Geometry = std::decay_t<decltype(geometry)>;
@@ -120,8 +123,9 @@ eve::Result<void> validateDescriptor(const PrimitiveDescriptor3D& descriptor) {
         },
         descriptor.geometry);
     if (!valid)
-        return primitiveFailure<void>(eve::DiagnosticCode::InvalidArgument,
-                                      "primitive geometry is invalid or non-finite");
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                 "primitive geometry is invalid or non-finite",
+                                                                 "primitive", {}, "graphics"));
     return eve::Result<void>::success();
 }
 
@@ -143,8 +147,8 @@ eve::Result<PrimitiveHandle> PrimitiveScene::add(PrimitiveDescriptor3D descripto
         slots_[index].descriptor = std::move(descriptor);
     } else {
         if (slots_.size() >= PrimitiveHandle::invalidIndex) {
-            return primitiveFailure<PrimitiveHandle>(eve::DiagnosticCode::Failed,
-                                                     "primitive scene slot capacity exceeded");
+            return eve::Result<PrimitiveHandle>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::Failed, "primitive scene slot capacity exceeded", "primitive", {}, "graphics"));
         }
         index = static_cast<PrimitiveHandle::index_type>(slots_.size());
         slots_.push_back(Slot{std::move(descriptor), 1, false, {}});
@@ -155,7 +159,8 @@ eve::Result<PrimitiveHandle> PrimitiveScene::add(PrimitiveDescriptor3D descripto
 
 eve::Result<PrimitiveUpdateStatus> PrimitiveScene::update(PrimitiveHandle handle, PrimitiveDescriptor3D descriptor) {
     if (!matches(handle)) {
-        return primitiveFailure<PrimitiveUpdateStatus>(eve::DiagnosticCode::StaleHandle, "primitive handle is stale");
+        return eve::Result<PrimitiveUpdateStatus>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::StaleHandle, "primitive handle is stale", "primitive", {}, "graphics"));
     }
     auto validation = validateDescriptor(descriptor);
     if (!validation) return eve::Result<PrimitiveUpdateStatus>::failure(validation.status());
@@ -166,7 +171,8 @@ eve::Result<PrimitiveUpdateStatus> PrimitiveScene::update(PrimitiveHandle handle
 
 eve::Result<PrimitiveRemoveStatus> PrimitiveScene::remove(PrimitiveHandle handle) {
     if (!matches(handle)) {
-        return primitiveFailure<PrimitiveRemoveStatus>(eve::DiagnosticCode::StaleHandle, "primitive handle is stale");
+        return eve::Result<PrimitiveRemoveStatus>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::StaleHandle, "primitive handle is stale", "primitive", {}, "graphics"));
     }
     Slot& slot = slots_[handle.index()];
     slot.descriptor.reset();
@@ -185,8 +191,9 @@ eve::Result<PrimitiveRemoveStatus> PrimitiveScene::remove(PrimitiveHandle handle
 eve::Result<std::size_t> PrimitiveScene::updateMany(std::span<const PrimitiveBatchUpdate> updates) {
     for (const PrimitiveBatchUpdate& update : updates) {
         if (!matches(update.handle))
-            return primitiveFailure<std::size_t>(eve::DiagnosticCode::StaleHandle,
-                                                 "primitive batch contains a stale handle");
+            return eve::Result<std::size_t>::failure(eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle,
+                                                                            "primitive batch contains a stale handle",
+                                                                            "primitive", {}, "graphics"));
         auto validation = validateDescriptor(update.descriptor);
         if (!validation) return eve::Result<std::size_t>::failure(validation.status());
     }
@@ -284,7 +291,8 @@ eve::Result<void> PrimitiveScene::tryRender(PrimitiveSceneCanvas3D& destination)
         const auto  used   = destination.commands_.size() + destination.triangles_.size();
         if (used > destination.hardCommandLimit_ || count > destination.hardCommandLimit_ - used) {
             destination.statistics_.droppedCommands += count + cached.statistics_.droppedCommands;
-            return primitiveFailure<void>(eve::DiagnosticCode::Failed, "primitive scene command budget exceeded");
+            return eve::Result<void>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::Failed, "primitive scene command budget exceeded", "primitive", {}, "graphics"));
         }
         // Prepare all owning payloads and capacity before publishing this slot.
         auto lines     = cached.commands_;

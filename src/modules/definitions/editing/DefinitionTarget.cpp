@@ -10,11 +10,6 @@
 namespace eve::definitions_editing {
 namespace {
 
-template <class T>
-EditorResult<T> definitionError(EditorStatus status, const char* rule, std::string message) {
-    return eve::editing::failed<T>(status, RuleId(rule), std::move(message));
-}
-
 const EditorValue* field(const EditorValue& value, const char* key) {
     const auto* object = value.getIf<EditorValue::Object>();
     if (!object) return nullptr;
@@ -43,8 +38,8 @@ TargetDescriptor DefinitionDocument::describe() const {
 
 EditorResult<void> DefinitionDocument::applyDomainOperation(const DomainOperation& operation) {
     if (operation.target != TargetId(targetId_) || operation.type != "definition.field.set.v1")
-        return definitionError<void>(EditorStatus::Rejected, "editor.definition.operation-mismatch",
-                                     "Definition field operation targets another document or type");
+        return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.definition.operation-mismatch"),
+                                          "Definition field operation targets another document or type");
     const auto* pathValue = field(operation.payload, "field");
     const auto* assigned = field(operation.payload, "value");
     const auto* presentValue = field(operation.payload, "present");
@@ -53,8 +48,8 @@ EditorResult<void> DefinitionDocument::applyDomainOperation(const DomainOperatio
     auto parsed = editorValueFromJson(json_);
     auto* object = parsed.ok() ? parsed.value().getIf<EditorValue::Object>() : nullptr;
     if (!path || path->empty() || !assigned || !present || !object)
-        return definitionError<void>(EditorStatus::Rejected, "editor.definition.invalid-field-operation",
-                                     "Definition field operation requires an object payload and field name");
+        return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.definition.invalid-field-operation"),
+                                          "Definition field operation requires an object payload and field name");
     if (*present) (*object)[*path] = *assigned;
     else object->erase(*path);
     json_ = editorValueToJson(parsed.value());
@@ -65,8 +60,8 @@ EditorResult<void> DefinitionDocument::applyDomainOperation(const DomainOperatio
 
 EditorResult<void> DefinitionDocument::setJson(std::string json) {
     if (!looksLikeJsonValue(json))
-        return definitionError<void>(EditorStatus::Rejected, "editor.definition.invalid-json-shape",
-                                     "Definition payload must be a JSON object or array");
+        return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.definition.invalid-json-shape"),
+                                          "Definition payload must be a JSON object or array");
     json_ = std::move(json);
     bumpRevision();
     widenDirty(0, 0);
@@ -75,8 +70,8 @@ EditorResult<void> DefinitionDocument::setJson(std::string json) {
 
 EditorResult<void> DefinitionDocument::setVersion(int version) {
     if (version <= 0)
-        return definitionError<void>(EditorStatus::Rejected, "editor.definition.invalid-version",
-                                     "Definition schema version must be positive");
+        return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.definition.invalid-version"),
+                                          "Definition schema version must be positive");
     version_ = version;
     bumpRevision();
     widenDirty(0, 0);
@@ -87,8 +82,9 @@ EditorResult<void> DefinitionDocument::setReferences(std::vector<DefinitionRefer
     std::set<std::string> paths;
     for (const DefinitionReferenceField& reference : references)
         if (reference.path.empty() || !paths.insert(reference.path).second)
-            return definitionError<void>(EditorStatus::Rejected, "editor.definition.invalid-reference-path",
-                                         "Definition reference paths must be unique and non-empty");
+            return eve::editing::failed<void>(EditorStatus::Rejected,
+                                              RuleId("editor.definition.invalid-reference-path"),
+                                              "Definition reference paths must be unique and non-empty");
     references_ = std::move(references);
     bumpRevision();
     widenDirty(0, 0);
@@ -98,13 +94,14 @@ EditorResult<void> DefinitionDocument::setReferences(std::vector<DefinitionRefer
 EditorResult<DomainOperation> DefinitionDocument::makeSetField(const std::string& fieldName,
                                                                const EditorValue& value) const {
     if (fieldName.empty())
-        return definitionError<DomainOperation>(EditorStatus::Rejected, "editor.definition.empty-field",
-                                                "Definition field name must not be empty");
+        return eve::editing::failed<DomainOperation>(EditorStatus::Rejected, RuleId("editor.definition.empty-field"),
+                                                     "Definition field name must not be empty");
     auto parsed = editorValueFromJson(json_);
     const auto* object = parsed.ok() ? parsed.value().getIf<EditorValue::Object>() : nullptr;
     if (!object)
-        return definitionError<DomainOperation>(EditorStatus::Unsupported, "editor.definition.form-object-required",
-                                                "Schema form editing requires an object definition payload");
+        return eve::editing::failed<DomainOperation>(EditorStatus::Unsupported,
+                                                     RuleId("editor.definition.form-object-required"),
+                                                     "Schema form editing requires an object definition payload");
     const auto current = object->find(fieldName);
     const EditorValue before = current == object->end() ? EditorValue{} : current->second;
     DomainOperation operation;
@@ -182,8 +179,8 @@ EditorResult<void> DefinitionDocument::loadSnapshot(const EditorValue& snapshot)
     const auto* references = referencesValue ? referencesValue->getIf<EditorValue::Array>() : nullptr;
     if (!schema || *schema != 1 || !type || type->empty() || !id || id->empty() || !version || *version <= 0 ||
         !json || !looksLikeJsonValue(*json) || !references)
-        return definitionError<void>(EditorStatus::Rejected, "editor.definition.invalid-snapshot",
-                                     "Definition snapshot is invalid or unsupported");
+        return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.definition.invalid-snapshot"),
+                                          "Definition snapshot is invalid or unsupported");
     std::vector<DefinitionReferenceField> parsed;
     for (const EditorValue& value : *references) {
         const auto* pathValue = field(value, "path");
@@ -195,14 +192,14 @@ EditorResult<void> DefinitionDocument::loadSnapshot(const EditorValue& snapshot)
         const auto* refId = refIdValue ? refIdValue->getIf<std::string>() : nullptr;
         const auto* required = requiredValue ? requiredValue->getIf<bool>() : nullptr;
         if (!path || !refType || !refId || !required)
-            return definitionError<void>(EditorStatus::Rejected, "editor.definition.invalid-reference",
-                                         "Definition snapshot contains an invalid reference");
+            return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.definition.invalid-reference"),
+                                              "Definition snapshot contains an invalid reference");
         parsed.push_back({*path, *refType, *refId, *required});
     }
     DefinitionDocument candidate(*type, *id, static_cast<int>(*version));
     if (!candidate.setJson(*json).ok() || !candidate.setReferences(std::move(parsed)).ok())
-        return definitionError<void>(EditorStatus::Rejected, "editor.definition.invalid-snapshot",
-                                     "Definition snapshot could not be applied");
+        return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.definition.invalid-snapshot"),
+                                          "Definition snapshot could not be applied");
     type_ = std::move(candidate.type_);
     id_ = std::move(candidate.id_);
     version_ = candidate.version_;

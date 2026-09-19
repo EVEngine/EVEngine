@@ -8,11 +8,6 @@
 namespace eve::rts {
 namespace {
 
-template <typename T>
-Result<T> snapshotFailure(DiagnosticCode code, std::string message, std::string path = {}) {
-    return Result<T>::failure(Diagnostic::error(code, std::move(message), std::move(path)));
-}
-
 SubjectRef subjectOf(ecs::Entity* entity) {
     if (auto* value = dynamic_cast<Unit*>(entity)) return value->identity()->subject;
     if (auto* value = dynamic_cast<Building*>(entity)) return value->identity()->subject;
@@ -214,8 +209,9 @@ Result<RTSStateSnapshot> RTS::snapshotState() const {
         value.tactics.escortTarget = {};
         value.technology = *unit->technology();
         auto orders = unit->orders()->values.snapshotState();
-        if (!orders) return snapshotFailure<RTSStateSnapshot>(DiagnosticCode::Failed,
-            "failed to snapshot RTS unit orders", "units.orders");
+        if (!orders)
+            return Result<RTSStateSnapshot>::failure(
+                Diagnostic::error(DiagnosticCode::Failed, "failed to snapshot RTS unit orders", "units.orders"));
         value.orders = std::move(orders).takeValue();
         stabilizeOrders(value.orders, value.orderTargets);
         result.units.push_back(std::move(value));
@@ -262,12 +258,14 @@ Result<RTSStateSnapshot> RTS::snapshotState() const {
         value.command = *building->command();
         value.indirectFire = *building->indirectFire();
         auto production = building->production()->values.snapshot();
-        if (!production) return snapshotFailure<RTSStateSnapshot>(DiagnosticCode::Failed,
-                                                                  "failed to snapshot RTS production", "buildings.production");
+        if (!production)
+            return Result<RTSStateSnapshot>::failure(
+                Diagnostic::error(DiagnosticCode::Failed, "failed to snapshot RTS production", "buildings.production"));
         value.productionJson = std::move(production).takeValue();
         auto orders = building->orders()->values.snapshotState();
-        if (!orders) return snapshotFailure<RTSStateSnapshot>(DiagnosticCode::Failed,
-                                                              "failed to snapshot RTS building orders", "buildings.orders");
+        if (!orders)
+            return Result<RTSStateSnapshot>::failure(Diagnostic::error(
+                DiagnosticCode::Failed, "failed to snapshot RTS building orders", "buildings.orders"));
         value.orders = std::move(orders).takeValue();
         stabilizeOrders(value.orders, value.orderTargets);
         result.buildings.push_back(std::move(value));
@@ -660,8 +658,8 @@ Result<std::string> RTS::canonicalStateJson() const {
 
 Result<ContentId> RTS::stateHash(const SnapshotHashProvider& hashProvider) const {
     if (!hashProvider)
-        return snapshotFailure<ContentId>(DiagnosticCode::InvalidArgument,
-                                          "RTS state hash provider is required", "hashProvider");
+        return Result<ContentId>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "RTS state hash provider is required", "hashProvider"));
     auto canonical = canonicalStateJson();
     if (!canonical) return Result<ContentId>::failure(canonical.status());
     return hashProvider(canonical.value());
@@ -672,8 +670,8 @@ Result<void> RTS::restoreState(const RTSStateSnapshot& snapshot) {
         snapshot.buildings.size() != buildingCount() || snapshot.resourceNodes.size() != resourceNodeCount() ||
         snapshot.players.size() != playerCount() || snapshot.factions.size() != factionCount() ||
         snapshot.matches.size() != matchCount())
-        return snapshotFailure<void>(DiagnosticCode::Conflict,
-                                     "RTS snapshot topology/version does not match this module", "snapshot");
+        return Result<void>::failure(Diagnostic::error(
+            DiagnosticCode::Conflict, "RTS snapshot topology/version does not match this module", "snapshot"));
 
     auto resolve = [&](SubjectRef subject) -> ecs::Entity* {
         if (!subject.isValid()) return nullptr;
@@ -705,17 +703,24 @@ Result<void> RTS::restoreState(const RTSStateSnapshot& snapshot) {
         return subject.isValid() && resolve(subject) != nullptr && seen.insert(subject).second;
     };
     for (const auto& value : snapshot.units) if (!requireUnique(value.subject) || findUnit(value.subject) == nullptr)
-        return snapshotFailure<void>(DiagnosticCode::Conflict, "RTS snapshot contains an unknown/duplicate unit", "units.subject");
+            return Result<void>::failure(Diagnostic::error(
+                DiagnosticCode::Conflict, "RTS snapshot contains an unknown/duplicate unit", "units.subject"));
     for (const auto& value : snapshot.buildings) if (!requireUnique(value.subject) || findBuilding(value.subject) == nullptr)
-        return snapshotFailure<void>(DiagnosticCode::Conflict, "RTS snapshot contains an unknown/duplicate building", "buildings.subject");
+            return Result<void>::failure(Diagnostic::error(
+                DiagnosticCode::Conflict, "RTS snapshot contains an unknown/duplicate building", "buildings.subject"));
     for (const auto& value : snapshot.resourceNodes) if (!requireUnique(value.subject) || findResourceNode(value.subject) == nullptr)
-        return snapshotFailure<void>(DiagnosticCode::Conflict, "RTS snapshot contains an unknown/duplicate resource node", "resourceNodes.subject");
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::Conflict,
+                                                           "RTS snapshot contains an unknown/duplicate resource node",
+                                                           "resourceNodes.subject"));
     for (const auto& value : snapshot.players) if (!requireUnique(value.subject) || findPlayer(value.subject) == nullptr)
-        return snapshotFailure<void>(DiagnosticCode::Conflict, "RTS snapshot contains an unknown/duplicate player", "players.subject");
+            return Result<void>::failure(Diagnostic::error(
+                DiagnosticCode::Conflict, "RTS snapshot contains an unknown/duplicate player", "players.subject"));
     for (const auto& value : snapshot.factions) if (!requireUnique(value.subject) || findFaction(value.subject) == nullptr)
-        return snapshotFailure<void>(DiagnosticCode::Conflict, "RTS snapshot contains an unknown/duplicate faction", "factions.subject");
+            return Result<void>::failure(Diagnostic::error(
+                DiagnosticCode::Conflict, "RTS snapshot contains an unknown/duplicate faction", "factions.subject"));
     for (const auto& value : snapshot.matches) if (!requireUnique(value.subject) || findMatch(value.subject) == nullptr)
-        return snapshotFailure<void>(DiagnosticCode::Conflict, "RTS snapshot contains an unknown/duplicate match", "matches.subject");
+            return Result<void>::failure(Diagnostic::error(
+                DiagnosticCode::Conflict, "RTS snapshot contains an unknown/duplicate match", "matches.subject"));
 
     auto validType = [&](SubjectRef subject, auto* tag) {
         using T = std::remove_pointer_t<decltype(tag)>;
@@ -734,8 +739,9 @@ Result<void> RTS::restoreState(const RTSStateSnapshot& snapshot) {
              !validType(value.container, static_cast<Building*>(nullptr))) || !validUnits(value.occupants) ||
             !validType(value.supplyTarget, static_cast<Unit*>(nullptr)) ||
             !validType(value.fireSupportRequester, static_cast<Unit*>(nullptr)))
-            return snapshotFailure<void>(DiagnosticCode::Conflict,
-                                         "RTS unit snapshot contains a relationship of the wrong type", "units.relationships");
+            return Result<void>::failure(Diagnostic::error(
+                DiagnosticCode::Conflict, "RTS unit snapshot contains a relationship of the wrong type",
+                "units.relationships"));
     }
     for (const auto& value : snapshot.buildings) {
         if (!validType(value.faction, static_cast<Faction*>(nullptr)) || !validUnits(value.builders) ||
@@ -743,30 +749,32 @@ Result<void> RTS::restoreState(const RTSStateSnapshot& snapshot) {
             (value.rallyCommandTarget.isValid() && resolve(value.rallyCommandTarget) == nullptr) ||
             !validType(value.rallyTransport, static_cast<Unit*>(nullptr)) || !validUnits(value.reinforcements) ||
             !validUnits(value.occupants))
-            return snapshotFailure<void>(DiagnosticCode::Conflict,
-                                         "RTS building snapshot contains a relationship of the wrong type", "buildings.relationships");
+            return Result<void>::failure(Diagnostic::error(
+                DiagnosticCode::Conflict, "RTS building snapshot contains a relationship of the wrong type",
+                "buildings.relationships"));
     }
     for (const auto& value : snapshot.resourceNodes) if (!validUnits(value.workers))
-        return snapshotFailure<void>(DiagnosticCode::Conflict,
-                                     "RTS resource snapshot contains a non-unit worker", "resourceNodes.workers");
+            return Result<void>::failure(Diagnostic::error(
+                DiagnosticCode::Conflict, "RTS resource snapshot contains a non-unit worker", "resourceNodes.workers"));
     for (const auto& value : snapshot.players)
         if (!validUnits(value.units) || !std::all_of(value.buildings.begin(), value.buildings.end(), [&](SubjectRef id) {
                 return validType(id, static_cast<Building*>(nullptr));
             }))
-            return snapshotFailure<void>(DiagnosticCode::Conflict,
-                                         "RTS player snapshot contains an invalid selection", "players.selection");
+            return Result<void>::failure(Diagnostic::error(
+                DiagnosticCode::Conflict, "RTS player snapshot contains an invalid selection", "players.selection"));
     for (const auto& value : snapshot.factions)
         if (!validUnits(value.units) || !std::all_of(value.buildings.begin(), value.buildings.end(), [&](SubjectRef id) {
                 return validType(id, static_cast<Building*>(nullptr));
             }))
-            return snapshotFailure<void>(DiagnosticCode::Conflict,
-                                         "RTS faction snapshot contains invalid membership", "factions.members");
+            return Result<void>::failure(Diagnostic::error(
+                DiagnosticCode::Conflict, "RTS faction snapshot contains invalid membership", "factions.members"));
     for (const auto& value : snapshot.matches)
         if (!std::all_of(value.participants.begin(), value.participants.end(), [&](const auto& participant) {
                 return validType(participant.faction, static_cast<Faction*>(nullptr));
             }))
-            return snapshotFailure<void>(DiagnosticCode::Conflict,
-                                         "RTS match snapshot contains an invalid participant", "matches.participants");
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::Conflict,
+                                                           "RTS match snapshot contains an invalid participant",
+                                                           "matches.participants"));
 
     RTSProjectileSystem stagedProjectiles;
     if (!snapshot.projectiles.runtime.slots.empty() || !snapshot.projectiles.payloads.empty()) {
@@ -781,8 +789,8 @@ Result<void> RTS::restoreState(const RTSStateSnapshot& snapshot) {
             auto found = candidate.extended.find(id);
             auto* target = resolve(subject);
             if (found == candidate.extended.end() || target == nullptr)
-                return snapshotFailure<OrderComponent::Snapshot>(DiagnosticCode::Conflict,
-                    "RTS snapshot order target cannot be rebound", "orders.target");
+                return Result<OrderComponent::Snapshot>::failure(Diagnostic::error(
+                    DiagnosticCode::Conflict, "RTS snapshot order target cannot be rebound", "orders.target"));
             found->second.targetEntity = ecs::handle_of(target);
         }
         OrderComponent validator;
@@ -941,10 +949,11 @@ Result<void> RTS::restoreState(const RTSStateSnapshot& snapshot) {
 Result<void> RTS::rebuildState(const RTSStateSnapshot& snapshot) {
     if (unitCount() != 0 || buildingCount() != 0 || resourceNodeCount() != 0 || playerCount() != 0 ||
         factionCount() != 0 || matchCount() != 0)
-        return snapshotFailure<void>(DiagnosticCode::Conflict,
-                                     "RTS snapshot topology can only be rebuilt into an empty module", "snapshot");
+        return Result<void>::failure(Diagnostic::error(
+            DiagnosticCode::Conflict, "RTS snapshot topology can only be rebuilt into an empty module", "snapshot"));
     if (snapshot.version != 1)
-        return snapshotFailure<void>(DiagnosticCode::Conflict, "unsupported RTS snapshot version", "snapshot.version");
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::Conflict, "unsupported RTS snapshot version", "snapshot.version"));
 
     // A topology rebuild can follow destruction performed while an ECS view was
     // deferred. Publish those tombstones before allocating replacement roots so
@@ -956,17 +965,23 @@ Result<void> RTS::rebuildState(const RTSStateSnapshot& snapshot) {
         return subject.isValid() && subjects.insert(subject).second;
     };
     for (const auto& value : snapshot.units) if (!reserveSubject(value.subject))
-        return snapshotFailure<void>(DiagnosticCode::Conflict, "invalid/duplicate unit subject", "units.subject");
+            return Result<void>::failure(
+                Diagnostic::error(DiagnosticCode::Conflict, "invalid/duplicate unit subject", "units.subject"));
     for (const auto& value : snapshot.buildings) if (!reserveSubject(value.subject))
-        return snapshotFailure<void>(DiagnosticCode::Conflict, "invalid/duplicate building subject", "buildings.subject");
+            return Result<void>::failure(
+                Diagnostic::error(DiagnosticCode::Conflict, "invalid/duplicate building subject", "buildings.subject"));
     for (const auto& value : snapshot.resourceNodes) if (!reserveSubject(value.subject))
-        return snapshotFailure<void>(DiagnosticCode::Conflict, "invalid/duplicate resource subject", "resourceNodes.subject");
+            return Result<void>::failure(Diagnostic::error(
+                DiagnosticCode::Conflict, "invalid/duplicate resource subject", "resourceNodes.subject"));
     for (const auto& value : snapshot.players) if (!reserveSubject(value.subject))
-        return snapshotFailure<void>(DiagnosticCode::Conflict, "invalid/duplicate player subject", "players.subject");
+            return Result<void>::failure(
+                Diagnostic::error(DiagnosticCode::Conflict, "invalid/duplicate player subject", "players.subject"));
     for (const auto& value : snapshot.factions) if (!reserveSubject(value.subject))
-        return snapshotFailure<void>(DiagnosticCode::Conflict, "invalid/duplicate faction subject", "factions.subject");
+            return Result<void>::failure(
+                Diagnostic::error(DiagnosticCode::Conflict, "invalid/duplicate faction subject", "factions.subject"));
     for (const auto& value : snapshot.matches) if (!reserveSubject(value.subject))
-        return snapshotFailure<void>(DiagnosticCode::Conflict, "invalid/duplicate match subject", "matches.subject");
+            return Result<void>::failure(
+                Diagnostic::error(DiagnosticCode::Conflict, "invalid/duplicate match subject", "matches.subject"));
 
     auto failAndClear = [&](const Status& status) {
         clearOwnedRoots();

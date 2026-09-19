@@ -10,21 +10,11 @@
 namespace eve::action {
 namespace {
 
-template <class T>
-Result<T> failure(DiagnosticCode code, std::string message, std::string path = {}) {
-    return Result<T>::failure(Diagnostic::error(code, std::move(message), std::move(path)));
-}
-
 Result<void> failure(DiagnosticCode code, std::string message, std::string path = {}) {
     return Result<void>::failure(Diagnostic::error(code, std::move(message), std::move(path)));
 }
 
 Result<void> failureFrom(const Status& status) { return Result<void>::failure(status); }
-
-template <class T>
-Result<T> failureFrom(const Status& status) {
-    return Result<T>::failure(status);
-}
 
 bool isEmptyCondition(const decision::Condition& condition) {
     return condition.kind() == decision::ConditionKind::All && condition.children().empty() && condition.isValid();
@@ -157,25 +147,25 @@ Result<sensing::TargetSet> SensingTargetingAdapter::resolve(const sensing::Targe
 
 Result<ActionExecutionId> ActionRuntime::nextExecutionId() {
     if (nextId_.isZero())
-        return failure<ActionExecutionId>(DiagnosticCode::InvariantViolation, "action execution id is zero",
-                                          "execution.id");
+        return Result<ActionExecutionId>::failure(
+            Diagnostic::error(DiagnosticCode::InvariantViolation, "action execution id is zero", "execution.id"));
     const ActionExecutionId id   = nextId_;
     const auto              next = nextId_.incremented();
     if (!next)
-        return failure<ActionExecutionId>(DiagnosticCode::InvariantViolation, "action execution id exhausted",
-                                          "execution.id");
+        return Result<ActionExecutionId>::failure(
+            Diagnostic::error(DiagnosticCode::InvariantViolation, "action execution id exhausted", "execution.id"));
     nextId_ = *next;
     return Result<ActionExecutionId>::success(id);
 }
 
 Result<ActionExecutionId> ActionRuntime::submit(ActionDefinition definition, ActionRequest request) {
     auto definitionValid = definition.validate();
-    if (!definitionValid) return failureFrom<ActionExecutionId>(definitionValid.status());
+    if (!definitionValid) return Result<ActionExecutionId>::failure(definitionValid.status());
     auto requestValid = request.validate(definition);
-    if (!requestValid) return failureFrom<ActionExecutionId>(requestValid.status());
+    if (!requestValid) return Result<ActionExecutionId>::failure(requestValid.status());
 
     auto idResult = nextExecutionId();
-    if (!idResult) return failureFrom<ActionExecutionId>(idResult.status());
+    if (!idResult) return Result<ActionExecutionId>::failure(idResult.status());
     const ActionExecutionId id = std::move(idResult).takeValue();
     // Construct inside this friend member rather than using make_unique:
     // ActionExecution's constructor is intentionally private so adapters
@@ -183,7 +173,8 @@ Result<ActionExecutionId> ActionRuntime::submit(ActionDefinition definition, Act
     std::unique_ptr<ActionExecution> execution(new ActionExecution(id, std::move(definition), std::move(request)));
     const auto [it, inserted] = executions_.emplace(id, std::move(execution));
     if (!inserted)
-        return failure<ActionExecutionId>(DiagnosticCode::Conflict, "action execution id collided", "execution.id");
+        return Result<ActionExecutionId>::failure(
+            Diagnostic::error(DiagnosticCode::Conflict, "action execution id collided", "execution.id"));
     return Result<ActionExecutionId>::success(it->first, Status::success(StatusCode::Pending));
 }
 
@@ -384,11 +375,11 @@ void ActionRuntime::failExecution(ActionExecution& execution, Status status, Sim
 
 Result<ActionAdvance> ActionRuntime::advance(ActionExecutionId id, SimulationTick tick, Duration delta) {
     ActionExecution* execution = find(id);
-    if (execution == nullptr) return failureFrom<ActionAdvance>(notFoundStatus());
+    if (execution == nullptr) return Result<ActionAdvance>::failure(notFoundStatus());
     if (delta.nanoseconds() < 0)
-        return failureFrom<ActionAdvance>(invalidStatus("action advance duration must be non-negative", "delta"));
+        return Result<ActionAdvance>::failure(invalidStatus("action advance duration must be non-negative", "delta"));
     if (tick < execution->lastTick_)
-        return failureFrom<ActionAdvance>(invalidStatus("action simulation tick moved backwards", "tick"));
+        return Result<ActionAdvance>::failure(invalidStatus("action simulation tick moved backwards", "tick"));
     execution->lastTick_            = tick;
     const Duration timelinePrevious = execution->totalElapsed_;
 
@@ -397,7 +388,7 @@ Result<ActionAdvance> ActionRuntime::advance(ActionExecutionId id, SimulationTic
         return Result<ActionAdvance>::success(std::move(result), Status::success(StatusCode::NoOp));
     }
     if (execution->phase_ == ActionPhase::Cancelled || execution->phase_ == ActionPhase::Failed)
-        return failureFrom<ActionAdvance>(execution->status());
+        return Result<ActionAdvance>::failure(execution->status());
 
     Duration                      remaining = delta;
     std::vector<ActionTransition> transitions;
@@ -407,7 +398,7 @@ Result<ActionAdvance> ActionRuntime::advance(ActionExecutionId id, SimulationTic
             auto valid = validateExecution(*execution);
             if (!valid) {
                 failExecution(*execution, valid.status(), tick, &transitions);
-                return failureFrom<ActionAdvance>(execution->status());
+                return Result<ActionAdvance>::failure(execution->status());
             }
             continue;
         }
@@ -427,7 +418,7 @@ Result<ActionAdvance> ActionRuntime::advance(ActionExecutionId id, SimulationTic
                 auto added = addElapsed(*execution, remaining);
                 if (!added) {
                     failExecution(*execution, added.status(), tick, &transitions);
-                    return failureFrom<ActionAdvance>(execution->status());
+                    return Result<ActionAdvance>::failure(execution->status());
                 }
                 remaining = Duration::zero();
                 break;
@@ -435,7 +426,7 @@ Result<ActionAdvance> ActionRuntime::advance(ActionExecutionId id, SimulationTic
             auto added = addElapsed(*execution, Duration::fromNanoseconds(needed));
             if (!added) {
                 failExecution(*execution, added.status(), tick, &transitions);
-                return failureFrom<ActionAdvance>(execution->status());
+                return Result<ActionAdvance>::failure(execution->status());
             }
             remaining = Duration::fromNanoseconds(remaining.nanoseconds() - needed);
             transition(*execution, ActionPhase::Active, tick, transitions);
@@ -447,7 +438,7 @@ Result<ActionAdvance> ActionRuntime::advance(ActionExecutionId id, SimulationTic
                 auto active = enterActive(*execution, tick);
                 if (!active) {
                     failExecution(*execution, active.status(), tick, &transitions);
-                    return failureFrom<ActionAdvance>(execution->status());
+                    return Result<ActionAdvance>::failure(execution->status());
                 }
             }
             const Duration phase  = execution->definition_.timing.active;
@@ -460,7 +451,7 @@ Result<ActionAdvance> ActionRuntime::advance(ActionExecutionId id, SimulationTic
                 auto added = addElapsed(*execution, remaining);
                 if (!added) {
                     failExecution(*execution, added.status(), tick, &transitions);
-                    return failureFrom<ActionAdvance>(execution->status());
+                    return Result<ActionAdvance>::failure(execution->status());
                 }
                 remaining = Duration::zero();
                 break;
@@ -468,7 +459,7 @@ Result<ActionAdvance> ActionRuntime::advance(ActionExecutionId id, SimulationTic
             auto added = addElapsed(*execution, Duration::fromNanoseconds(needed));
             if (!added) {
                 failExecution(*execution, added.status(), tick, &transitions);
-                return failureFrom<ActionAdvance>(execution->status());
+                return Result<ActionAdvance>::failure(execution->status());
             }
             remaining = Duration::fromNanoseconds(remaining.nanoseconds() - needed);
             transition(*execution, ActionPhase::Recover, tick, transitions);
@@ -486,7 +477,7 @@ Result<ActionAdvance> ActionRuntime::advance(ActionExecutionId id, SimulationTic
                 auto added = addElapsed(*execution, remaining);
                 if (!added) {
                     failExecution(*execution, added.status(), tick, &transitions);
-                    return failureFrom<ActionAdvance>(execution->status());
+                    return Result<ActionAdvance>::failure(execution->status());
                 }
                 remaining = Duration::zero();
                 break;
@@ -494,7 +485,7 @@ Result<ActionAdvance> ActionRuntime::advance(ActionExecutionId id, SimulationTic
             auto added = addElapsed(*execution, Duration::fromNanoseconds(needed));
             if (!added) {
                 failExecution(*execution, added.status(), tick, &transitions);
-                return failureFrom<ActionAdvance>(execution->status());
+                return Result<ActionAdvance>::failure(execution->status());
             }
             remaining = Duration::fromNanoseconds(remaining.nanoseconds() - needed);
             transition(*execution, ActionPhase::Completed, tick, transitions);
@@ -511,14 +502,14 @@ Result<ActionAdvance> ActionRuntime::advance(ActionExecutionId id, SimulationTic
                                                                !execution->timelineStarted_);
         if (!sampled) {
             failExecution(*execution, sampled.status(), tick, &transitions);
-            return failureFrom<ActionAdvance>(execution->status());
+            return Result<ActionAdvance>::failure(execution->status());
         }
         timelineEvents              = std::move(sampled).takeValue();
         execution->timelineStarted_ = true;
         auto active = execution->definition_.timeline->activeBlocks(execution->totalElapsed_);
         if (!active) {
             failExecution(*execution, active.status(), tick, &transitions);
-            return failureFrom<ActionAdvance>(execution->status());
+            return Result<ActionAdvance>::failure(execution->status());
         }
         activeBlocks = std::move(active).takeValue();
     }

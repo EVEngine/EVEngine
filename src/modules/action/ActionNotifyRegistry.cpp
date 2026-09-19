@@ -19,11 +19,6 @@
 namespace eve::action {
 namespace {
 
-template <typename T>
-Result<T> failure(DiagnosticCode code, std::string message, std::string path = {}) {
-    return Result<T>::failure(Diagnostic::error(code, std::move(message), std::move(path)));
-}
-
 Result<void> failure(DiagnosticCode code, std::string message, std::string path = {}) {
     return Result<void>::failure(Diagnostic::error(code, std::move(message), std::move(path)));
 }
@@ -268,8 +263,8 @@ Result<void> ActionNotifyRegistry::unregisterHandler(std::string_view type) {
 Result<ActionNotifyDescriptor> ActionNotifyRegistry::descriptor(std::string_view type) const {
     const auto found = descriptors_.find(type);
     if (found == descriptors_.end())
-        return failure<ActionNotifyDescriptor>(DiagnosticCode::NotFound, "Notify descriptor is not registered",
-                                               std::string(type));
+        return Result<ActionNotifyDescriptor>::failure(
+            Diagnostic::error(DiagnosticCode::NotFound, "Notify descriptor is not registered", std::string(type)));
     return Result<ActionNotifyDescriptor>::success(found->second);
 }
 

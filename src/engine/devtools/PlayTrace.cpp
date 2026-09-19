@@ -10,18 +10,13 @@ namespace {
 constexpr std::string_view kTraceSchemaId = "evengine.play-trace";
 constexpr std::int64_t     kTraceVersion  = 1;
 
-template <typename T>
-Result<T> failure(DiagnosticCode code, std::string message, std::string path) {
-    return Result<T>::failure(Diagnostic::error(code, std::move(message), std::move(path)));
-}
-
 Result<void> knownFields(const Value::Object& object, const std::set<std::string>& allowed,
                          std::string_view path) {
     for (const auto& [name, value] : object) {
         (void)value;
         if (!allowed.contains(name))
-            return failure<void>(DiagnosticCode::ParseError, "unknown play-trace field",
-                                 std::string(path) + "." + name);
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::ParseError, "unknown play-trace field",
+                                                           std::string(path) + "." + name));
     }
     return Result<void>::success();
 }
@@ -29,8 +24,8 @@ Result<void> knownFields(const Value::Object& object, const std::set<std::string
 Result<const Value::Object*> asObject(const Value& value, std::string path) {
     const auto* object = value.getIf<Value::Object>();
     if (!object)
-        return failure<const Value::Object*>(DiagnosticCode::ParseError, "play-trace value must be an object",
-                                             std::move(path));
+        return Result<const Value::Object*>::failure(
+            Diagnostic::error(DiagnosticCode::ParseError, "play-trace value must be an object", std::move(path)));
     return Result<const Value::Object*>::success(object);
 }
 
@@ -52,8 +47,8 @@ std::uint64_t fnv1a64(std::string_view text) {
 Result<std::string> stringField(const Value::Object& object, std::string_view name, std::string_view path) {
     const auto found = object.find(std::string(name));
     if (found == object.end() || !found->second.isString())
-        return failure<std::string>(DiagnosticCode::ParseError, "missing play-trace string",
-                                    std::string(path) + "." + std::string(name));
+        return Result<std::string>::failure(Diagnostic::error(DiagnosticCode::ParseError, "missing play-trace string",
+                                                              std::string(path) + "." + std::string(name)));
     return Result<std::string>::success(found->second.asString());
 }
 
@@ -77,12 +72,15 @@ Result<Value> parsePlayTrace(const Value& recording) {
     if (!schema) return Result<Value>::failure(schema.status());
     const auto version = root.value()->find("schemaVersion");
     if (version == root.value()->end() || !version->second.isInt64() || version->second.asInt() != kTraceVersion)
-        return failure<Value>(DiagnosticCode::Unsupported, "unsupported play-trace schema", "recording.schemaVersion");
+        return Result<Value>::failure(
+            Diagnostic::error(DiagnosticCode::Unsupported, "unsupported play-trace schema", "recording.schemaVersion"));
     if (schema.value() != kTraceSchemaId)
-        return failure<Value>(DiagnosticCode::Unsupported, "unsupported play-trace schema", "recording.schemaId");
+        return Result<Value>::failure(
+            Diagnostic::error(DiagnosticCode::Unsupported, "unsupported play-trace schema", "recording.schemaId"));
     const auto steps = root.value()->find("steps");
     if (steps == root.value()->end() || !steps->second.isArray())
-        return failure<Value>(DiagnosticCode::ParseError, "play-trace requires steps", "recording.steps");
+        return Result<Value>::failure(
+            Diagnostic::error(DiagnosticCode::ParseError, "play-trace requires steps", "recording.steps"));
     const auto* array = steps->second.getIf<Value::Array>();
     for (std::size_t index = 0; index < array->size(); ++index) {
         const std::string itemPath = "recording.steps." + std::to_string(index);
@@ -93,7 +91,8 @@ Result<Value> parsePlayTrace(const Value& recording) {
         if (!itemKnown) return Result<Value>::failure(itemKnown.status());
         const auto request = item.value()->find("request");
         if (request == item.value()->end())
-            return failure<Value>(DiagnosticCode::ParseError, "trace step requires request", itemPath + ".request");
+            return Result<Value>::failure(
+                Diagnostic::error(DiagnosticCode::ParseError, "trace step requires request", itemPath + ".request"));
     }
     return Result<Value>::success(recording);
 }
@@ -117,25 +116,28 @@ Result<Value> replayPlayTrace(const Value& recording, IPlayHostRuntime& runtime)
     for (std::size_t index = 0; index < steps->size(); ++index) {
         const auto* step = (*steps)[index].getIf<Value::Object>();
         if (!step)
-            return failure<Value>(DiagnosticCode::ParseError, "trace step must be an object",
-                                  "recording.steps." + std::to_string(index));
+            return Result<Value>::failure(Diagnostic::error(DiagnosticCode::ParseError, "trace step must be an object",
+                                                            "recording.steps." + std::to_string(index)));
         auto replayed = executePlayRequest(step->at("request"), runtime);
         if (!replayed) return Result<Value>::failure(replayed.status());
         const auto digest = step->find("observationDigest");
         if (digest != step->end() && digest->second.isString() && !digest->second.asString().empty()) {
             const auto* response = replayed.value().getIf<Value::Object>();
             if (!response)
-                return failure<Value>(DiagnosticCode::Failed, "replay response must be an object",
-                                      "recording.steps." + std::to_string(index));
+                return Result<Value>::failure(Diagnostic::error(DiagnosticCode::Failed,
+                                                                "replay response must be an object",
+                                                                "recording.steps." + std::to_string(index)));
             const auto state = response->find("state");
             if (state == response->end())
-                return failure<Value>(DiagnosticCode::HashMismatch, "replay observe is missing state",
-                                      "recording.steps." + std::to_string(index));
+                return Result<Value>::failure(Diagnostic::error(DiagnosticCode::HashMismatch,
+                                                                "replay observe is missing state",
+                                                                "recording.steps." + std::to_string(index)));
             auto actual = playObservationDigest(state->second);
             if (!actual) return Result<Value>::failure(actual.status());
             if (actual.value() != digest->second.asString())
-                return failure<Value>(DiagnosticCode::HashMismatch, "play-trace observation digest mismatch",
-                                      "recording.steps." + std::to_string(index));
+                return Result<Value>::failure(Diagnostic::error(DiagnosticCode::HashMismatch,
+                                                                "play-trace observation digest mismatch",
+                                                                "recording.steps." + std::to_string(index)));
         }
     }
     return Result<Value>::success(Value(Value::Object{

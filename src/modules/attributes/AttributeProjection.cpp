@@ -9,12 +9,6 @@
 namespace eve::attributes {
 namespace {
 
-template <typename T>
-Result<T> failure(DiagnosticCode code, std::string message, std::string path = {}) {
-    return Result<T>::failure(
-        Diagnostic::error(code, std::move(message), std::move(path), {}, "attributes.projection"));
-}
-
 Result<void> failureVoid(DiagnosticCode code, std::string message, std::string path = {}) {
     return Result<void>::failure(
         Diagnostic::error(code, std::move(message), std::move(path), {}, "attributes.projection"));
@@ -101,8 +95,9 @@ Result<void> AttributeProjection::modifyBase(std::string_view attribute, double 
 
 Result<double> AttributeProjection::getFinal(std::string_view attribute, double fallback) const {
     if (attribute.empty() || !std::isfinite(fallback))
-        return failure<double>(DiagnosticCode::InvalidArgument,
-                               "attribute query requires a non-empty finite key/fallback", "attribute");
+        return Result<double>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                         "attribute query requires a non-empty finite key/fallback",
+                                                         "attribute", {}, "attributes.projection"));
     return Result<double>::success(values_.getFinal(std::string(attribute), fallback));
 }
 
@@ -122,8 +117,9 @@ Result<ModifierId> AttributeProjection::addModifier(AttributeModifier modifier) 
 Result<AttributeProjectionSnapshot> AttributeProjection::snapshot(std::span<const std::string_view> attributes) const {
     for (const auto name : attributes) {
         if (name.empty())
-            return failure<AttributeProjectionSnapshot>(DiagnosticCode::InvalidArgument,
-                                                        "snapshot attribute name is empty", "attributes");
+            return Result<AttributeProjectionSnapshot>::failure(
+                Diagnostic::error(DiagnosticCode::InvalidArgument, "snapshot attribute name is empty", "attributes", {},
+                                  "attributes.projection"));
     }
     AttributeProjectionSnapshot result;
     result.owner            = owner_;

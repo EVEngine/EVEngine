@@ -10,11 +10,6 @@ namespace {
 constexpr const char* defaultAsset =
     R"({"schema":"eve.stylize.mesh-vfx","schemaVersion":1,"layers":[{"style":"rim"}]})";
 
-template <class T>
-EditorResult<T> fail(editing::Status status, const char* rule, std::string message) {
-    return editing::failed<T>(status, editing::RuleId(rule), std::move(message));
-}
-
 const EditorValue* field(const EditorValue& value, const char* name) {
     const auto* object = value.getIf<EditorValue::Object>();
     if (!object) return nullptr;
@@ -95,20 +90,23 @@ EditorResult<DomainOperation> MeshVfxAssetTarget::makeSet(const SelectionSnapsho
                                                           const PropertyPath& path, const EditorValue& value,
                                                           PropertySetMode mode) const {
     if (!matches(selection) || path != PropertyPath("asset.json") || mode != PropertySetMode::Absolute)
-        return fail<DomainOperation>(editing::Status::Rejected, "editor.stylize.mesh-vfx.set",
-                                     "Mesh VFX requires a matching absolute asset.json edit");
+        return editing::failed<DomainOperation>(editing::Status::Rejected,
+                                                editing::RuleId("editor.stylize.mesh-vfx.set"),
+                                                "Mesh VFX requires a matching absolute asset.json edit");
     const auto* json = value.getIf<std::string>();
     if (!json)
-        return fail<DomainOperation>(editing::Status::Rejected, "editor.stylize.mesh-vfx.value",
-                                     "Mesh VFX asset.json must be a string");
+        return editing::failed<DomainOperation>(editing::Status::Rejected,
+                                                editing::RuleId("editor.stylize.mesh-vfx.value"),
+                                                "Mesh VFX asset.json must be a string");
     auto parsed = stylize::MeshVfxAsset::fromJson(*json);
     if (!parsed)
-        return fail<DomainOperation>(editing::Status::Rejected, "editor.stylize.mesh-vfx.invalid",
-                                     parsed.status().describe());
+        return editing::failed<DomainOperation>(
+            editing::Status::Rejected, editing::RuleId("editor.stylize.mesh-vfx.invalid"), parsed.status().describe());
     auto canonical = parsed.value().toJson();
     if (!canonical)
-        return fail<DomainOperation>(editing::Status::Rejected, "editor.stylize.mesh-vfx.serialize",
-                                     canonical.status().describe());
+        return editing::failed<DomainOperation>(editing::Status::Rejected,
+                                                editing::RuleId("editor.stylize.mesh-vfx.serialize"),
+                                                canonical.status().describe());
     DomainOperation operation;
     operation.type = "stylize.mesh-vfx.replace.v1";
     operation.inverseType = operation.type;
@@ -128,17 +126,17 @@ EditorResult<DomainOperation> MeshVfxAssetTarget::makeReset(const SelectionSnaps
 
 EditorResult<void> MeshVfxAssetTarget::applyDomainOperation(const DomainOperation& operation) {
     if (operation.target != TargetId(id_) || operation.type != "stylize.mesh-vfx.replace.v1")
-        return fail<void>(editing::Status::Rejected, "editor.stylize.mesh-vfx.operation",
-                          "Mesh VFX operation mismatch");
+        return editing::failed<void>(editing::Status::Rejected, editing::RuleId("editor.stylize.mesh-vfx.operation"),
+                                     "Mesh VFX operation mismatch");
     const auto* jsonValue = field(operation.payload, "assetJson");
     const auto* json = jsonValue ? jsonValue->getIf<std::string>() : nullptr;
     if (!json)
-        return fail<void>(editing::Status::Rejected, "editor.stylize.mesh-vfx.payload",
-                          "Mesh VFX operation payload is invalid");
+        return editing::failed<void>(editing::Status::Rejected, editing::RuleId("editor.stylize.mesh-vfx.payload"),
+                                     "Mesh VFX operation payload is invalid");
     auto candidate = stylize::MeshVfxAsset::fromJson(*json);
     if (!candidate)
-        return fail<void>(editing::Status::Rejected, "editor.stylize.mesh-vfx.invalid",
-                          candidate.status().describe());
+        return editing::failed<void>(editing::Status::Rejected, editing::RuleId("editor.stylize.mesh-vfx.invalid"),
+                                     candidate.status().describe());
     asset_ = std::make_unique<stylize::MeshVfxAsset>(std::move(candidate).takeValue());
     bumpRevision();
     widenDirty(0, 0);
@@ -152,8 +150,8 @@ std::unique_ptr<IDomainOperationTarget> MeshVfxAssetTarget::cloneDomainState() c
 EditorResult<void> MeshVfxAssetTarget::commitDomainState(std::unique_ptr<IDomainOperationTarget> candidate) {
     auto* target = dynamic_cast<MeshVfxAssetTarget*>(candidate.get());
     if (!target || target->id_ != id_)
-        return fail<void>(editing::Status::Conflict, "editor.stylize.mesh-vfx.candidate",
-                          "Mesh VFX candidate mismatch");
+        return editing::failed<void>(editing::Status::Conflict, editing::RuleId("editor.stylize.mesh-vfx.candidate"),
+                                     "Mesh VFX candidate mismatch");
     *this = *target;
     return editing::applied<void>();
 }
@@ -170,8 +168,8 @@ EditorResult<void> MeshVfxAssetTarget::loadSnapshot(const EditorValue& snapshot)
     const auto* version = versionValue ? versionValue->getIf<std::int64_t>() : nullptr;
     const auto* json = jsonValue ? jsonValue->getIf<std::string>() : nullptr;
     if (!version || *version != 1 || !json)
-        return fail<void>(editing::Status::Unsupported, "editor.stylize.mesh-vfx.snapshot",
-                          "Unsupported Mesh VFX editor snapshot");
+        return editing::failed<void>(editing::Status::Unsupported, editing::RuleId("editor.stylize.mesh-vfx.snapshot"),
+                                     "Unsupported Mesh VFX editor snapshot");
     DomainOperation operation;
     operation.target = TargetId(id_);
     operation.type = "stylize.mesh-vfx.replace.v1";
@@ -187,8 +185,8 @@ MeshVfxPreviewRuntime::~MeshVfxPreviewRuntime() = default;
 EditorResult<void> MeshVfxPreviewRuntime::publish(const MeshVfxAssetTarget& document) {
     auto candidate = stylize::MeshVfxAssetInstance::create(document.asset());
     if (!candidate)
-        return fail<void>(editing::Status::Rejected, "editor.stylize.mesh-vfx.preview",
-                          candidate.status().describe());
+        return editing::failed<void>(editing::Status::Rejected, editing::RuleId("editor.stylize.mesh-vfx.preview"),
+                                     candidate.status().describe());
     instance_ = std::move(candidate).takeValue();
     revision_ = Revision(document.revision());
     return editing::applied<void>();

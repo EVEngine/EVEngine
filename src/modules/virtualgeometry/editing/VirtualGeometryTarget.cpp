@@ -6,10 +6,6 @@
 
 namespace eve::virtualgeometry_editing {
 namespace {
-template <class T>
-EditorResult<T> fail(EditorStatus s, const char* r, std::string m) {
-    return eve::editing::failed<T>(s, RuleId(r), std::move(m));
-}
 const EditorValue* field(const EditorValue& v, const char* k) {
     const auto* o = v.getIf<EditorValue::Object>();
     if (!o) return nullptr;
@@ -137,8 +133,8 @@ EditorResult<DomainOperation> VirtualGeometryDocumentTarget::makeSet(const Selec
     if (mode == PropertySetMode::Reset) return makeReset(s, p);
     auto d = schema(s).find(p);
     if (!matches(s) || !d || mode != PropertySetMode::Absolute || !validatePropertyValue(*d, value).ok())
-        return fail<DomainOperation>(EditorStatus::Rejected, "editor.virtualgeometry.set",
-                                     "VirtualGeometry property is invalid");
+        return eve::editing::failed<DomainOperation>(EditorStatus::Rejected, RuleId("editor.virtualgeometry.set"),
+                                                     "VirtualGeometry property is invalid");
     auto  candidate = *this;
     auto& v         = candidate.value_;
     if (p == PropertyPath("source.asset"))
@@ -166,16 +162,16 @@ EditorResult<DomainOperation> VirtualGeometryDocumentTarget::makeSet(const Selec
     else
         v.distanceSamples = static_cast<int>(*value.getIf<int64_t>());
     if (errors(candidate.validate()))
-        return fail<DomainOperation>(EditorStatus::Rejected, "editor.virtualgeometry.invalid",
-                                     "VirtualGeometry edit violates importer invariants");
+        return eve::editing::failed<DomainOperation>(EditorStatus::Rejected, RuleId("editor.virtualgeometry.invalid"),
+                                                     "VirtualGeometry edit violates importer invariants");
     return replacement(candidate.contentValue(), p.value());
 }
 EditorResult<DomainOperation> VirtualGeometryDocumentTarget::makeReset(const SelectionSnapshot& s,
                                                                        const PropertyPath&      p) const {
     auto d = schema(s).find(p);
     if (!d)
-        return fail<DomainOperation>(EditorStatus::Unsupported, "editor.virtualgeometry.property",
-                                     "Unknown VirtualGeometry property");
+        return eve::editing::failed<DomainOperation>(
+            EditorStatus::Unsupported, RuleId("editor.virtualgeometry.property"), "Unknown VirtualGeometry property");
     return makeSet(s, p, d->defaultValue, PropertySetMode::Absolute);
 }
 std::vector<EditorDiagnostic> VirtualGeometryDocumentTarget::validate() const {
@@ -205,13 +201,14 @@ std::vector<EditorDiagnostic> VirtualGeometryDocumentTarget::validate() const {
 EditorResult<void> VirtualGeometryDocumentTarget::applyDomainOperation(const DomainOperation& op) {
     if (op.target != TargetId(id_) || op.type != "virtualgeometry.document.replace.v1" ||
         !op.payload.isWithinLimits(4, 64, 4096))
-        return fail<void>(EditorStatus::Rejected, "editor.virtualgeometry.operation",
-                          "VirtualGeometry operation is invalid");
+        return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.virtualgeometry.operation"),
+                                          "VirtualGeometry operation is invalid");
     VirtualGeometryImportValue v;
     const auto*                source = field(op.payload, "source");
     const auto*                s      = source ? source->getIf<std::string>() : nullptr;
     if (!s)
-        return fail<void>(EditorStatus::Rejected, "editor.virtualgeometry.source", "VirtualGeometry source is invalid");
+        return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.virtualgeometry.source"),
+                                          "VirtualGeometry source is invalid");
     v.sourceAsset         = *s;
     int*        ints[]    = {&v.builder.maxVerticesPerCluster,
                              &v.builder.maxTrianglesPerCluster,
@@ -224,8 +221,8 @@ EditorResult<void> VirtualGeometryDocumentTarget::applyDomainOperation(const Dom
         const auto* x = field(op.payload, ifields[i]);
         const auto* n = x ? x->getIf<int64_t>() : nullptr;
         if (!n)
-            return fail<void>(EditorStatus::Rejected, "editor.virtualgeometry.integer",
-                              "VirtualGeometry integer is invalid");
+            return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.virtualgeometry.integer"),
+                                              "VirtualGeometry integer is invalid");
         *ints[i] = static_cast<int>(*n);
     }
     float*      floats[]  = {&v.builder.lodTargetRatio, &v.previewFov, &v.errorPixels, &v.nearDistance, &v.farDistance};
@@ -234,15 +231,15 @@ EditorResult<void> VirtualGeometryDocumentTarget::applyDomainOperation(const Dom
         const auto* x = field(op.payload, ffields[i]);
         const auto* n = x ? x->getIf<double>() : nullptr;
         if (!n || !std::isfinite(*n))
-            return fail<void>(EditorStatus::Rejected, "editor.virtualgeometry.number",
-                              "VirtualGeometry number is invalid");
+            return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.virtualgeometry.number"),
+                                              "VirtualGeometry number is invalid");
         *floats[i] = static_cast<float>(*n);
     }
     VirtualGeometryDocumentTarget candidate(id_);
     candidate.value_ = v;
     if (errors(candidate.validate()))
-        return fail<void>(EditorStatus::Rejected, "editor.virtualgeometry.invalid",
-                          "VirtualGeometry document validation failed");
+        return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.virtualgeometry.invalid"),
+                                          "VirtualGeometry document validation failed");
     value_ = std::move(v);
     bumpRevision();
     widenDirty(0, 0);
@@ -255,8 +252,8 @@ EditorResult<void> VirtualGeometryDocumentTarget::commitDomainState(
     std::unique_ptr<IDomainOperationTarget> candidate) {
     auto* typed = dynamic_cast<VirtualGeometryDocumentTarget*>(candidate.get());
     if (!typed || typed->id_ != id_)
-        return fail<void>(EditorStatus::Conflict, "editor.virtualgeometry.candidate",
-                          "VirtualGeometry candidate mismatch");
+        return eve::editing::failed<void>(EditorStatus::Conflict, RuleId("editor.virtualgeometry.candidate"),
+                                          "VirtualGeometry candidate mismatch");
     *this = *typed;
     return eve::editing::applied<void>();
 }
@@ -267,8 +264,8 @@ EditorResult<void> VirtualGeometryDocumentTarget::loadSnapshot(const EditorValue
     const auto *v = field(snapshot, "schemaVersion"), *content = field(snapshot, "content");
     const auto* version = v ? v->getIf<int64_t>() : nullptr;
     if (!version || *version != 1 || !content)
-        return fail<void>(EditorStatus::Unsupported, "editor.virtualgeometry.snapshot",
-                          "Unsupported VirtualGeometry snapshot");
+        return eve::editing::failed<void>(EditorStatus::Unsupported, RuleId("editor.virtualgeometry.snapshot"),
+                                          "Unsupported VirtualGeometry snapshot");
     DomainOperation op;
     op.target   = TargetId(id_);
     op.type     = "virtualgeometry.document.replace.v1";

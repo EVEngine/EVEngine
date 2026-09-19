@@ -7,11 +7,6 @@
 namespace eve::ui_editing {
 namespace {
 
-template <class T>
-EditorResult<T> tokenError(EditorStatus status, const char* rule, std::string message) {
-    return eve::editing::failed<T>(status, RuleId(rule), std::move(message));
-}
-
 EditorDiagnostic tokenDiagnostic(const char* rule, std::string message) {
     return eve::editing::ruleDiagnostic(eve::DiagnosticCode::InvalidArgument, RuleId(rule),
                                         DiagnosticSeverity::Error, std::move(message));
@@ -213,29 +208,30 @@ EditorValue themeTokensValue(const ui::Theme& theme) {
 
 EditorResult<ui::Theme> parseThemeTokens(const EditorValue& value) {
     if (!value.getIf<EditorValue::Object>())
-        return tokenError<ui::Theme>(EditorStatus::Rejected, "editor.ui-theme.tokens",
-                                     "Theme tokens must be an object");
+        return eve::editing::failed<ui::Theme>(EditorStatus::Rejected, RuleId("editor.ui-theme.tokens"),
+                                               "Theme tokens must be an object");
     ui::Theme theme;
     for (const ColorTok& token : kColors) {
         const EditorValue* entry = field(value, token.path);
         if (!entry || !readColor(*entry, theme.*(token.member)))
-            return tokenError<ui::Theme>(EditorStatus::Rejected, "editor.ui-theme.color",
-                                         std::string("Theme color is missing or invalid: ") + token.path);
+            return eve::editing::failed<ui::Theme>(EditorStatus::Rejected, RuleId("editor.ui-theme.color"),
+                                                   std::string("Theme color is missing or invalid: ") + token.path);
     }
     for (const FloatTok& token : kFloats) {
         const EditorValue* entry  = field(value, token.path);
         const auto*        number = entry ? entry->getIf<double>() : nullptr;
         if (!number || !std::isfinite(*number))
-            return tokenError<ui::Theme>(EditorStatus::Rejected, "editor.ui-theme.float",
-                                         std::string("Theme number is missing or invalid: ") + token.path);
+            return eve::editing::failed<ui::Theme>(EditorStatus::Rejected, RuleId("editor.ui-theme.float"),
+                                                   std::string("Theme number is missing or invalid: ") + token.path);
         theme.*(token.member) = static_cast<float>(*number);
     }
     for (const LayoutTok& token : kLayout) {
         const EditorValue* entry  = field(value, token.path);
         const auto*        number = entry ? entry->getIf<double>() : nullptr;
         if (!number || !std::isfinite(*number))
-            return tokenError<ui::Theme>(EditorStatus::Rejected, "editor.ui-theme.layout",
-                                         std::string("Theme layout number is missing or invalid: ") + token.path);
+            return eve::editing::failed<ui::Theme>(
+                EditorStatus::Rejected, RuleId("editor.ui-theme.layout"),
+                std::string("Theme layout number is missing or invalid: ") + token.path);
         theme.layout.*(token.member) = static_cast<float>(*number);
     }
     const EditorValue* keyboard = field(value, "nav.keyboard");
@@ -243,14 +239,14 @@ EditorResult<ui::Theme> parseThemeTokens(const EditorValue& value) {
     const auto* keyboardFlag = keyboard ? keyboard->getIf<bool>() : nullptr;
     const auto* gamepadFlag  = gamepad ? gamepad->getIf<bool>() : nullptr;
     if (!keyboardFlag || !gamepadFlag)
-        return tokenError<ui::Theme>(EditorStatus::Rejected, "editor.ui-theme.nav",
-                                     "Theme navigation flags are required");
+        return eve::editing::failed<ui::Theme>(EditorStatus::Rejected, RuleId("editor.ui-theme.nav"),
+                                               "Theme navigation flags are required");
     theme.navEnableKeyboard = *keyboardFlag;
     theme.navEnableGamepad  = *gamepadFlag;
     auto diagnostics = validateThemeTokens(theme);
     if (!diagnostics.empty())
-        return tokenError<ui::Theme>(EditorStatus::Rejected, "editor.ui-theme.range",
-                                     diagnostics.front().message());
+        return eve::editing::failed<ui::Theme>(EditorStatus::Rejected, RuleId("editor.ui-theme.range"),
+                                               diagnostics.front().message());
     return eve::editing::applied<ui::Theme>(theme);
 }
 
@@ -258,16 +254,16 @@ EditorResult<void> assignThemeToken(ui::Theme& theme, const PropertyPath& path, 
     for (const ColorTok& token : kColors) {
         if (path != PropertyPath(token.path)) continue;
         if (!readColor(value, theme.*(token.member)))
-            return tokenError<void>(EditorStatus::Rejected, "editor.ui-theme.token-color",
-                                    std::string("Theme color token is invalid: ") + token.path);
+            return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.ui-theme.token-color"),
+                                              std::string("Theme color token is invalid: ") + token.path);
         return eve::editing::applied<void>();
     }
     for (const FloatTok& token : kFloats) {
         if (path != PropertyPath(token.path)) continue;
         const auto* number = value.getIf<double>();
         if (!number || !inRange(static_cast<float>(*number), token.minimum, token.maximum))
-            return tokenError<void>(EditorStatus::Rejected, "editor.ui-theme.token-float",
-                                    std::string("Theme number token is invalid: ") + token.path);
+            return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.ui-theme.token-float"),
+                                              std::string("Theme number token is invalid: ") + token.path);
         theme.*(token.member) = static_cast<float>(*number);
         return eve::editing::applied<void>();
     }
@@ -275,29 +271,29 @@ EditorResult<void> assignThemeToken(ui::Theme& theme, const PropertyPath& path, 
         if (path != PropertyPath(token.path)) continue;
         const auto* number = value.getIf<double>();
         if (!number || !inRange(static_cast<float>(*number), token.minimum, token.maximum))
-            return tokenError<void>(EditorStatus::Rejected, "editor.ui-theme.token-layout",
-                                    std::string("Theme layout token is invalid: ") + token.path);
+            return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.ui-theme.token-layout"),
+                                              std::string("Theme layout token is invalid: ") + token.path);
         theme.layout.*(token.member) = static_cast<float>(*number);
         return eve::editing::applied<void>();
     }
     if (path == PropertyPath("nav.keyboard")) {
         const auto* flag = value.getIf<bool>();
         if (!flag)
-            return tokenError<void>(EditorStatus::Rejected, "editor.ui-theme.token-nav",
-                                    "Theme navigation token is invalid");
+            return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.ui-theme.token-nav"),
+                                              "Theme navigation token is invalid");
         theme.navEnableKeyboard = *flag;
         return eve::editing::applied<void>();
     }
     if (path == PropertyPath("nav.gamepad")) {
         const auto* flag = value.getIf<bool>();
         if (!flag)
-            return tokenError<void>(EditorStatus::Rejected, "editor.ui-theme.token-nav",
-                                    "Theme navigation token is invalid");
+            return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.ui-theme.token-nav"),
+                                              "Theme navigation token is invalid");
         theme.navEnableGamepad = *flag;
         return eve::editing::applied<void>();
     }
-    return tokenError<void>(EditorStatus::NotFound, "editor.ui-theme.token",
-                            "Unknown theme token: " + path.value());
+    return eve::editing::failed<void>(EditorStatus::NotFound, RuleId("editor.ui-theme.token"),
+                                      "Unknown theme token: " + path.value());
 }
 
 EditorValue readThemeToken(const ui::Theme& theme, const PropertyPath& path) {
@@ -388,8 +384,8 @@ EditorResult<UiThemeBasePreset> parsePreset(const std::string& name) {
     if (name == "dark") return eve::editing::applied<UiThemeBasePreset>(UiThemeBasePreset::Dark);
     if (name == "light") return eve::editing::applied<UiThemeBasePreset>(UiThemeBasePreset::Light);
     if (name == "custom") return eve::editing::applied<UiThemeBasePreset>(UiThemeBasePreset::Custom);
-    return tokenError<UiThemeBasePreset>(EditorStatus::Rejected, "editor.ui-theme.preset",
-                                         "Theme base preset must be dark, light, or custom");
+    return eve::editing::failed<UiThemeBasePreset>(EditorStatus::Rejected, RuleId("editor.ui-theme.preset"),
+                                                   "Theme base preset must be dark, light, or custom");
 }
 
 }  // namespace eve::ui_editing

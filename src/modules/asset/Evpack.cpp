@@ -24,11 +24,6 @@ constexpr std::array<std::uint8_t, 8> kSignatureMagic = {'E', 'V', 'S', 'I', 'G'
 constexpr std::size_t kSignatureSize = 128;
 constexpr std::uint32_t kSignedFlag = 1;
 
-template <class T>
-Result<T> packFailure(DiagnosticCode code, std::string message, std::string path = {}) {
-    return Result<T>::failure(Diagnostic::error(code, std::move(message), std::move(path), {}, "asset.evpack"));
-}
-
 void put16(std::vector<std::uint8_t>& bytes, std::uint16_t value) {
     bytes.push_back(static_cast<std::uint8_t>(value));
     bytes.push_back(static_cast<std::uint8_t>(value >> 8));
@@ -214,8 +209,8 @@ bool variantMatches(const EvpackVariant& variant, const EvpackCapabilities& capa
 Result<std::vector<std::uint8_t>> encodeSignature(const EvpackSignature& signature) {
     if (signature.algorithm.empty() || signature.algorithm.size() > 15 ||
         !validText(signature.algorithm, EvpackLimits{}))
-        return packFailure<std::vector<std::uint8_t>>(DiagnosticCode::InvalidArgument,
-                                                      "signature algorithm identifier is invalid");
+        return Result<std::vector<std::uint8_t>>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "signature algorithm identifier is invalid", {}, {}, "asset.evpack"));
     std::vector<std::uint8_t> bytes(kSignatureSize, 0);
     std::copy(kSignatureMagic.begin(), kSignatureMagic.end(), bytes.begin());
     std::copy(signature.algorithm.begin(), signature.algorithm.end(), bytes.begin() + 8);
@@ -227,22 +222,22 @@ Result<std::vector<std::uint8_t>> encodeSignature(const EvpackSignature& signatu
 Result<EvpackSignature> decodeSignature(std::span<const std::uint8_t> bytes) {
     if (bytes.size() != kSignatureSize ||
         !std::equal(kSignatureMagic.begin(), kSignatureMagic.end(), bytes.begin()))
-        return packFailure<EvpackSignature>(DiagnosticCode::ParseError,
-                                            "runtime package signature block is invalid");
+        return Result<EvpackSignature>::failure(Diagnostic::error(
+            DiagnosticCode::ParseError, "runtime package signature block is invalid", {}, {}, "asset.evpack"));
     const auto terminator = std::find(bytes.begin() + 8, bytes.begin() + 24, std::uint8_t(0));
     if (terminator == bytes.begin() + 8)
-        return packFailure<EvpackSignature>(DiagnosticCode::ParseError,
-                                            "runtime package signature algorithm is empty");
+        return Result<EvpackSignature>::failure(Diagnostic::error(
+            DiagnosticCode::ParseError, "runtime package signature algorithm is empty", {}, {}, "asset.evpack"));
     if (std::any_of(terminator, bytes.begin() + 24, [](std::uint8_t value) { return value != 0; }) ||
         std::any_of(bytes.begin() + 120, bytes.end(), [](std::uint8_t value) { return value != 0; }))
-        return packFailure<EvpackSignature>(DiagnosticCode::ParseError,
-                                            "runtime package signature padding is not canonical");
+        return Result<EvpackSignature>::failure(Diagnostic::error(
+            DiagnosticCode::ParseError, "runtime package signature padding is not canonical", {}, {}, "asset.evpack"));
     EvpackSignature signature;
     signature.algorithm.assign(reinterpret_cast<const char*>(&bytes[8]),
                                static_cast<std::size_t>(terminator - (bytes.begin() + 8)));
     if (!validText(signature.algorithm, EvpackLimits{}))
-        return packFailure<EvpackSignature>(DiagnosticCode::ParseError,
-                                            "runtime package signature algorithm is invalid");
+        return Result<EvpackSignature>::failure(Diagnostic::error(
+            DiagnosticCode::ParseError, "runtime package signature algorithm is invalid", {}, {}, "asset.evpack"));
     std::copy_n(bytes.begin() + 24, 32, signature.keyId.begin());
     std::copy_n(bytes.begin() + 56, 64, signature.bytes.begin());
     return Result<EvpackSignature>::success(std::move(signature));
@@ -252,19 +247,19 @@ Result<EvpackSignature> decodeSignature(std::span<const std::uint8_t> bytes) {
 
 Result<std::vector<std::uint8_t>> buildEvpack(EvpackBuild build, const EvpackLimits& limits) {
     if (build.packageId.isNil() || build.buildId.isNil())
-        return packFailure<std::vector<std::uint8_t>>(DiagnosticCode::InvalidArgument,
-                                                      "packageId and buildId must be non-nil");
+        return Result<std::vector<std::uint8_t>>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "packageId and buildId must be non-nil", {}, {}, "asset.evpack"));
     if (build.variants.empty() || build.variants.size() > limits.maximumVariants ||
         build.chunks.size() > limits.maximumChunks)
-        return packFailure<std::vector<std::uint8_t>>(DiagnosticCode::InvalidArgument,
-                                                      "variant or chunk count is outside limits");
+        return Result<std::vector<std::uint8_t>>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "variant or chunk count is outside limits", {}, {}, "asset.evpack"));
     for (const auto& variant : build.variants) {
         if (!validText(variant.os, limits) || !validText(variant.arch, limits) ||
             !validText(variant.graphics, limits) || !validText(variant.shaderFormat, limits) ||
             !validText(variant.quality, limits) || !validStrings(variant.textureFamilies, limits) ||
             !validStrings(variant.features, limits))
-            return packFailure<std::vector<std::uint8_t>>(DiagnosticCode::InvalidArgument,
-                                                          "variant contains invalid capability text");
+            return Result<std::vector<std::uint8_t>>::failure(Diagnostic::error(
+                DiagnosticCode::InvalidArgument, "variant contains invalid capability text", {}, {}, "asset.evpack"));
     }
 
     std::vector<BuildRecord> records;
@@ -277,16 +272,18 @@ Result<std::vector<std::uint8_t>> buildEvpack(EvpackBuild build, const EvpackLim
             input.bytes.size() > limits.maximumChunkBytes ||
             input.bytes.size() > limits.maximumDecodedBytes ||
             decodedTotal > limits.maximumDecodedBytes - input.bytes.size())
-            return packFailure<std::vector<std::uint8_t>>(DiagnosticCode::InvalidArgument,
-                                                          "chunk metadata or resource budget is invalid", input.type);
+            return Result<std::vector<std::uint8_t>>::failure(
+                Diagnostic::error(DiagnosticCode::InvalidArgument, "chunk metadata or resource budget is invalid",
+                                  input.type, {}, "asset.evpack"));
         for (const auto& dependency : input.dependencies)
             if (dependency.isNil())
-                return packFailure<std::vector<std::uint8_t>>(DiagnosticCode::InvalidArgument,
-                                                              "chunk dependency must be non-nil", input.type);
+                return Result<std::vector<std::uint8_t>>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                                                    "chunk dependency must be non-nil",
+                                                                                    input.type, {}, "asset.evpack"));
         std::sort(input.dependencies.begin(), input.dependencies.end());
         if (std::adjacent_find(input.dependencies.begin(), input.dependencies.end()) != input.dependencies.end())
-            return packFailure<std::vector<std::uint8_t>>(DiagnosticCode::Conflict,
-                                                          "chunk dependencies contain duplicates", input.type);
+            return Result<std::vector<std::uint8_t>>::failure(Diagnostic::error(
+                DiagnosticCode::Conflict, "chunk dependencies contain duplicates", input.type, {}, "asset.evpack"));
         decodedTotal += input.bytes.size();
         records.push_back({std::move(input), {}, {}, 0});
         records.back().hash = sha256(records.back().input.bytes);
@@ -294,9 +291,9 @@ Result<std::vector<std::uint8_t>> buildEvpack(EvpackBuild build, const EvpackLim
         if (!compressed) return Result<std::vector<std::uint8_t>>::failure(compressed.status());
         records.back().stored = std::move(compressed).takeValue();
         if (records.back().stored.size() > limits.maximumChunkBytes)
-            return packFailure<std::vector<std::uint8_t>>(DiagnosticCode::InvalidArgument,
-                                                          "stored chunk exceeds size limits",
-                                                          records.back().input.type);
+            return Result<std::vector<std::uint8_t>>::failure(
+                Diagnostic::error(DiagnosticCode::InvalidArgument, "stored chunk exceeds size limits",
+                                  records.back().input.type, {}, "asset.evpack"));
     }
     std::sort(records.begin(), records.end(), [](const BuildRecord& left, const BuildRecord& right) {
         return std::tie(left.input.assetId, left.input.type, left.input.schemaVersion, left.input.variantIndex,
@@ -310,23 +307,24 @@ Result<std::vector<std::uint8_t>> buildEvpack(EvpackBuild build, const EvpackLim
                             value.input.variantIndex, value.input.kind, value.input.chunkId);
         };
         if (key(records[index - 1]) == key(records[index]))
-            return packFailure<std::vector<std::uint8_t>>(DiagnosticCode::Conflict,
-                                                          "duplicate runtime chunk key", records[index].input.type);
+            return Result<std::vector<std::uint8_t>>::failure(
+                Diagnostic::error(DiagnosticCode::Conflict, "duplicate runtime chunk key", records[index].input.type,
+                                  {}, "asset.evpack"));
     }
 
     auto manifest = encodeManifest(build.variants);
     auto preliminaryToc = encodeToc(records);
     if (manifest.size() > limits.maximumMetadataBytes || preliminaryToc.size() > limits.maximumMetadataBytes ||
         manifest.size() > limits.maximumMetadataBytes - preliminaryToc.size())
-        return packFailure<std::vector<std::uint8_t>>(DiagnosticCode::InvalidArgument,
-                                                      "runtime package metadata exceeds size limits");
+        return Result<std::vector<std::uint8_t>>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "runtime package metadata exceeds size limits", {}, {}, "asset.evpack"));
     const std::uint64_t signatureSize = build.signer ? kSignatureSize : 0;
     std::uint64_t cursor = kHeaderSize + manifest.size() + preliminaryToc.size() + signatureSize;
     for (auto& record : records) {
         if (!alignUp(cursor, record.input.alignment, record.offset) ||
             !checkedAdd(record.offset, record.stored.size(), cursor) || cursor > limits.maximumPackageBytes)
-            return packFailure<std::vector<std::uint8_t>>(DiagnosticCode::InvalidArgument,
-                                                          "encoded package exceeds size limits");
+            return Result<std::vector<std::uint8_t>>::failure(Diagnostic::error(
+                DiagnosticCode::InvalidArgument, "encoded package exceeds size limits", {}, {}, "asset.evpack"));
     }
     auto toc = encodeToc(records);
     std::vector<std::uint8_t> bytes(static_cast<std::size_t>(cursor), 0);
@@ -364,7 +362,8 @@ Result<Evpack> parseEvpackMetadata(std::span<const std::uint8_t> bytes, std::uin
                                    const EvpackLimits& limits, const EvpackTrust& trust) {
     if (packageSize < kHeaderSize || packageSize > limits.maximumPackageBytes ||
         bytes.size() < kHeaderSize || bytes.size() > packageSize)
-        return packFailure<Evpack>(DiagnosticCode::ParseError, "package size is outside limits");
+        return Result<Evpack>::failure(
+            Diagnostic::error(DiagnosticCode::ParseError, "package size is outside limits", {}, {}, "asset.evpack"));
     const bool completePackage = bytes.size() == packageSize;
     Reader header(bytes, 0, kHeaderSize);
     std::span<const std::uint8_t> magic;
@@ -380,7 +379,8 @@ Result<Evpack> parseEvpackMetadata(std::span<const std::uint8_t> bytes, std::uin
         !header.u64(manifestOffset) || !header.u64(manifestSize) || !header.u64(signatureOffset) ||
         !header.u64(signatureSize) ||
         !header.raw(32, storedHeaderHash) || !header.finished())
-        return packFailure<Evpack>(DiagnosticCode::ParseError, "runtime package header is invalid");
+        return Result<Evpack>::failure(
+            Diagnostic::error(DiagnosticCode::ParseError, "runtime package header is invalid", {}, {}, "asset.evpack"));
     const auto validRange = [&](std::uint64_t offset, std::uint64_t size) {
         return offset >= kHeaderSize && offset <= packageSize && size <= packageSize - offset;
     };
@@ -388,15 +388,18 @@ Result<Evpack> parseEvpackMetadata(std::span<const std::uint8_t> bytes, std::uin
         manifestOffset != kHeaderSize || manifestOffset + manifestSize != tocOffset ||
         manifestSize > limits.maximumMetadataBytes || tocSize > limits.maximumMetadataBytes ||
         manifestSize > limits.maximumMetadataBytes - tocSize)
-        return packFailure<Evpack>(DiagnosticCode::ParseError, "manifest or TOC range is invalid");
+        return Result<Evpack>::failure(
+            Diagnostic::error(DiagnosticCode::ParseError, "manifest or TOC range is invalid", {}, {}, "asset.evpack"));
     const bool signedPackage = (flags & kSignedFlag) != 0;
     if (signedPackage != (signatureSize != 0) ||
         (signedPackage && (signatureSize != kSignatureSize || signatureOffset != tocOffset + tocSize ||
                            !validRange(signatureOffset, signatureSize))) ||
         (!signedPackage && (signatureOffset != 0 || signatureSize != 0)))
-        return packFailure<Evpack>(DiagnosticCode::ParseError, "signature range is invalid");
+        return Result<Evpack>::failure(
+            Diagnostic::error(DiagnosticCode::ParseError, "signature range is invalid", {}, {}, "asset.evpack"));
     if (tocOffset + tocSize > bytes.size())
-        return packFailure<Evpack>(DiagnosticCode::ParseError, "metadata prefix does not contain the complete TOC");
+        return Result<Evpack>::failure(Diagnostic::error(
+            DiagnosticCode::ParseError, "metadata prefix does not contain the complete TOC", {}, {}, "asset.evpack"));
     std::vector<std::uint8_t> metadataHashInput(bytes.begin(), bytes.begin() + kHeaderSize);
     std::fill(metadataHashInput.begin() + 96, metadataHashInput.end(), 0);
     metadataHashInput.insert(metadataHashInput.end(), bytes.begin() + static_cast<std::size_t>(manifestOffset),
@@ -405,29 +408,33 @@ Result<Evpack> parseEvpackMetadata(std::span<const std::uint8_t> bytes, std::uin
                              bytes.begin() + static_cast<std::size_t>(tocOffset + tocSize));
     const auto computedMetadataHash = sha256(metadataHashInput);
     if (!std::equal(storedHeaderHash.begin(), storedHeaderHash.end(), computedMetadataHash.begin()))
-        return packFailure<Evpack>(DiagnosticCode::HashMismatch,
-                                   "runtime package header and metadata hash does not match");
+        return Result<Evpack>::failure(Diagnostic::error(DiagnosticCode::HashMismatch,
+                                                         "runtime package header and metadata hash does not match", {},
+                                                         {}, "asset.evpack"));
 
     Evpack pack;
     pack.packageId_ = packageId;
     pack.buildId_ = buildId;
     if (signedPackage) {
         if (signatureOffset + signatureSize > bytes.size())
-            return packFailure<Evpack>(DiagnosticCode::ParseError,
-                                       "metadata prefix does not contain the signature block");
+            return Result<Evpack>::failure(Diagnostic::error(DiagnosticCode::ParseError,
+                                                             "metadata prefix does not contain the signature block", {},
+                                                             {}, "asset.evpack"));
         auto signature = decodeSignature(bytes.subspan(static_cast<std::size_t>(signatureOffset),
                                                        static_cast<std::size_t>(signatureSize)));
         if (!signature) return Result<Evpack>::failure(signature.status());
         if (!trust.verifier)
-            return packFailure<Evpack>(DiagnosticCode::PreconditionViolation,
-                                       "signed package requires a configured trust verifier");
+            return Result<Evpack>::failure(Diagnostic::error(DiagnosticCode::PreconditionViolation,
+                                                             "signed package requires a configured trust verifier", {},
+                                                             {}, "asset.evpack"));
         auto verified = trust.verifier->verify(computedMetadataHash, signature.value());
         if (!verified) return Result<Evpack>::failure(verified.status());
         pack.signature_ = signature.value();
         pack.trustedSignature_ = true;
     } else if (trust.policy == EvpackSignaturePolicy::RequireTrustedSignature) {
-        return packFailure<Evpack>(DiagnosticCode::PreconditionViolation,
-                                   "project policy requires a trusted package signature");
+        return Result<Evpack>::failure(Diagnostic::error(DiagnosticCode::PreconditionViolation,
+                                                         "project policy requires a trusted package signature", {}, {},
+                                                         "asset.evpack"));
     }
 
     Reader manifestReader(bytes, static_cast<std::size_t>(manifestOffset),
@@ -436,7 +443,8 @@ Result<Evpack> parseEvpackMetadata(std::span<const std::uint8_t> bytes, std::uin
     if (!manifestReader.raw(8, magic) || !std::equal(magic.begin(), magic.end(), kManifestMagic.begin()) ||
         !manifestReader.u32(variantCount) || variantCount == 0 || variantCount > limits.maximumVariants ||
         !manifestReader.u32(reserved) || reserved != 0)
-        return packFailure<Evpack>(DiagnosticCode::ParseError, "binary Cook manifest is invalid");
+        return Result<Evpack>::failure(
+            Diagnostic::error(DiagnosticCode::ParseError, "binary Cook manifest is invalid", {}, {}, "asset.evpack"));
     pack.variants_.reserve(variantCount);
     for (std::uint32_t index = 0; index < variantCount; ++index) {
         EvpackVariant variant;
@@ -445,18 +453,21 @@ Result<Evpack> parseEvpackMetadata(std::span<const std::uint8_t> bytes, std::uin
             !manifestReader.strings(variant.textureFamilies, limits) ||
             !manifestReader.string(variant.shaderFormat, limits) || !manifestReader.string(variant.quality, limits) ||
             !manifestReader.strings(variant.features, limits))
-            return packFailure<Evpack>(DiagnosticCode::ParseError, "variant record is invalid");
+            return Result<Evpack>::failure(
+                Diagnostic::error(DiagnosticCode::ParseError, "variant record is invalid", {}, {}, "asset.evpack"));
         pack.variants_.push_back(std::move(variant));
     }
     if (!manifestReader.finished())
-        return packFailure<Evpack>(DiagnosticCode::ParseError, "binary Cook manifest has trailing bytes");
+        return Result<Evpack>::failure(Diagnostic::error(
+            DiagnosticCode::ParseError, "binary Cook manifest has trailing bytes", {}, {}, "asset.evpack"));
 
     Reader tocReader(bytes, static_cast<std::size_t>(tocOffset), static_cast<std::size_t>(tocOffset + tocSize));
     std::uint32_t chunkCount = 0;
     if (!tocReader.raw(8, magic) || !std::equal(magic.begin(), magic.end(), kTocMagic.begin()) ||
         !tocReader.u32(chunkCount) || chunkCount > limits.maximumChunks ||
         !tocReader.u32(reserved) || reserved != 0)
-        return packFailure<Evpack>(DiagnosticCode::ParseError, "runtime package TOC is invalid");
+        return Result<Evpack>::failure(
+            Diagnostic::error(DiagnosticCode::ParseError, "runtime package TOC is invalid", {}, {}, "asset.evpack"));
     std::uint64_t decodedTotal = 0;
     std::uint64_t previousEnd = signedPackage ? signatureOffset + signatureSize : tocOffset + tocSize;
     using ChunkKey = std::tuple<PersistentId, std::string, std::uint64_t, std::uint32_t,
@@ -476,7 +487,8 @@ Result<Evpack> parseEvpackMetadata(std::span<const std::uint8_t> bytes, std::uin
             !tocReader.u64(chunk.storedSize) || !tocReader.u64(chunk.decodedSize) ||
             !tocReader.raw(32, hash) || !tocReader.u32(dependencyCount) ||
             dependencyCount > limits.maximumDependencies || !tocReader.string(chunk.type, limits))
-            return packFailure<Evpack>(DiagnosticCode::ParseError, "runtime chunk record is invalid");
+            return Result<Evpack>::failure(Diagnostic::error(
+                DiagnosticCode::ParseError, "runtime chunk record is invalid", {}, {}, "asset.evpack"));
         chunk.schemaVersion = SchemaVersion(schemaVersion);
         chunk.kind = static_cast<EvpackChunkKind>(kind);
         chunk.codec = static_cast<EvpackCodec>(codec);
@@ -486,22 +498,26 @@ Result<Evpack> parseEvpackMetadata(std::span<const std::uint8_t> bytes, std::uin
             chunk.storedSize > limits.maximumChunkBytes || chunk.decodedSize > limits.maximumDecodedBytes ||
             decodedTotal > limits.maximumDecodedBytes - chunk.decodedSize || chunk.offset % chunk.alignment != 0 ||
             chunk.offset < previousEnd || chunk.offset > packageSize || chunk.storedSize > packageSize - chunk.offset)
-            return packFailure<Evpack>(DiagnosticCode::Unsupported, "unsupported or unsafe runtime chunk", chunk.type);
+            return Result<Evpack>::failure(Diagnostic::error(
+                DiagnosticCode::Unsupported, "unsupported or unsafe runtime chunk", chunk.type, {}, "asset.evpack"));
         ChunkKey key{chunk.assetId, chunk.type, chunk.schemaVersion.value(), chunk.variantIndex, kind, chunk.chunkId};
         if (previousKey && !(*previousKey < key))
-            return packFailure<Evpack>(DiagnosticCode::Conflict, "runtime chunk TOC is not canonical", chunk.type);
+            return Result<Evpack>::failure(Diagnostic::error(
+                DiagnosticCode::Conflict, "runtime chunk TOC is not canonical", chunk.type, {}, "asset.evpack"));
         previousKey = std::move(key);
         std::copy(hash.begin(), hash.end(), chunk.contentHash.begin());
         chunk.dependencies.reserve(dependencyCount);
         for (std::uint32_t dependency = 0; dependency < dependencyCount; ++dependency) {
             PersistentId id;
             if (!tocReader.id(id))
-                return packFailure<Evpack>(DiagnosticCode::ParseError, "chunk dependency is invalid", chunk.type);
+                return Result<Evpack>::failure(Diagnostic::error(
+                    DiagnosticCode::ParseError, "chunk dependency is invalid", chunk.type, {}, "asset.evpack"));
             chunk.dependencies.push_back(id);
         }
         if (!std::is_sorted(chunk.dependencies.begin(), chunk.dependencies.end()) ||
             std::adjacent_find(chunk.dependencies.begin(), chunk.dependencies.end()) != chunk.dependencies.end())
-            return packFailure<Evpack>(DiagnosticCode::Conflict, "chunk dependencies are not canonical", chunk.type);
+            return Result<Evpack>::failure(Diagnostic::error(
+                DiagnosticCode::Conflict, "chunk dependencies are not canonical", chunk.type, {}, "asset.evpack"));
         if (completePackage) {
             const auto payload = bytes.subspan(static_cast<std::size_t>(chunk.offset),
                                                static_cast<std::size_t>(chunk.storedSize));
@@ -509,14 +525,16 @@ Result<Evpack> parseEvpackMetadata(std::span<const std::uint8_t> bytes, std::uin
                                                  limits.maximumDecodedBytes);
             if (!decoded) return Result<Evpack>::failure(decoded.status());
             if (sha256(decoded.value()) != chunk.contentHash)
-                return packFailure<Evpack>(DiagnosticCode::HashMismatch, "runtime chunk hash does not match", chunk.type);
+                return Result<Evpack>::failure(Diagnostic::error(
+                    DiagnosticCode::HashMismatch, "runtime chunk hash does not match", chunk.type, {}, "asset.evpack"));
         }
         decodedTotal += chunk.decodedSize;
         previousEnd = chunk.offset + chunk.storedSize;
         pack.chunks_.push_back(std::move(chunk));
     }
     if (!tocReader.finished())
-        return packFailure<Evpack>(DiagnosticCode::ParseError, "runtime package TOC has trailing bytes");
+        return Result<Evpack>::failure(Diagnostic::error(
+            DiagnosticCode::ParseError, "runtime package TOC has trailing bytes", {}, {}, "asset.evpack"));
     if (completePackage) pack.bytes_.assign(bytes.begin(), bytes.end());
     return Result<Evpack>::success(std::move(pack));
 }
@@ -528,15 +546,17 @@ Result<Evpack> parseEvpack(std::span<const std::uint8_t> bytes, const EvpackLimi
 
 Result<std::span<const std::uint8_t>> Evpack::chunkBytes(std::size_t index) const {
     if (index >= chunks_.size())
-        return packFailure<std::span<const std::uint8_t>>(DiagnosticCode::InvalidArgument,
-                                                          "chunk index is outside the TOC");
+        return Result<std::span<const std::uint8_t>>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "chunk index is outside the TOC", {}, {}, "asset.evpack"));
     if (bytes_.empty())
-        return packFailure<std::span<const std::uint8_t>>(DiagnosticCode::PreconditionViolation,
-                                                          "metadata-only package requires a range source");
+        return Result<std::span<const std::uint8_t>>::failure(
+            Diagnostic::error(DiagnosticCode::PreconditionViolation, "metadata-only package requires a range source",
+                              {}, {}, "asset.evpack"));
     const auto& chunk = chunks_[index];
     if (chunk.codec != EvpackCodec::None)
-        return packFailure<std::span<const std::uint8_t>>(DiagnosticCode::PreconditionViolation,
-                                                          "compressed chunk requires decodeChunk()", chunk.type);
+        return Result<std::span<const std::uint8_t>>::failure(
+            Diagnostic::error(DiagnosticCode::PreconditionViolation, "compressed chunk requires decodeChunk()",
+                              chunk.type, {}, "asset.evpack"));
     return Result<std::span<const std::uint8_t>>::success(
         std::span<const std::uint8_t>(bytes_).subspan(static_cast<std::size_t>(chunk.offset),
                                                       static_cast<std::size_t>(chunk.storedSize)));
@@ -545,19 +565,20 @@ Result<std::span<const std::uint8_t>> Evpack::chunkBytes(std::size_t index) cons
 Result<std::vector<std::uint8_t>> Evpack::decodeChunk(
     std::size_t index, std::uint64_t maximumDecodedBytes) const {
     if (index >= chunks_.size())
-        return packFailure<std::vector<std::uint8_t>>(DiagnosticCode::InvalidArgument,
-                                                       "chunk index is outside the TOC");
+        return Result<std::vector<std::uint8_t>>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "chunk index is outside the TOC", {}, {}, "asset.evpack"));
     if (bytes_.empty())
-        return packFailure<std::vector<std::uint8_t>>(DiagnosticCode::PreconditionViolation,
-                                                       "metadata-only package requires a range source");
+        return Result<std::vector<std::uint8_t>>::failure(
+            Diagnostic::error(DiagnosticCode::PreconditionViolation, "metadata-only package requires a range source",
+                              {}, {}, "asset.evpack"));
     const auto& chunk = chunks_[index];
     const auto stored = std::span<const std::uint8_t>(bytes_).subspan(
         static_cast<std::size_t>(chunk.offset), static_cast<std::size_t>(chunk.storedSize));
     auto decoded = decompressEvpackChunk(chunk.codec, stored, chunk.decodedSize, maximumDecodedBytes);
     if (!decoded) return decoded;
     if (sha256(decoded.value()) != chunk.contentHash)
-        return packFailure<std::vector<std::uint8_t>>(DiagnosticCode::HashMismatch,
-                                                       "runtime chunk hash does not match", chunk.type);
+        return Result<std::vector<std::uint8_t>>::failure(Diagnostic::error(
+            DiagnosticCode::HashMismatch, "runtime chunk hash does not match", chunk.type, {}, "asset.evpack"));
     return decoded;
 }
 
@@ -568,8 +589,9 @@ Result<EvpackVariantSelection> selectEvpackVariant(const Evpack& pack,
             return Result<EvpackVariantSelection>::success(
                 {static_cast<std::uint32_t>(index), index != 0});
     }
-    return packFailure<EvpackVariantSelection>(DiagnosticCode::Unsupported,
-                                                "no runtime package variant satisfies device capabilities");
+    return Result<EvpackVariantSelection>::failure(
+        Diagnostic::error(DiagnosticCode::Unsupported, "no runtime package variant satisfies device capabilities", {},
+                          {}, "asset.evpack"));
 }
 
 }  // namespace eve::asset

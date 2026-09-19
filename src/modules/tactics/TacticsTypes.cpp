@@ -7,11 +7,6 @@
 namespace eve::tactics {
 namespace {
 
-template <typename T>
-Result<T> failure(DiagnosticCode code, std::string message, std::string path) {
-    return Result<T>::failure(Diagnostic::error(code, std::move(message), std::move(path)));
-}
-
 Result<void> failure(DiagnosticCode code, std::string message, std::string path) {
     return Result<void>::failure(Diagnostic::error(code, std::move(message), std::move(path)));
 }
@@ -35,7 +30,8 @@ bool BoardState::contains(Cell cellValue) const noexcept { return cells_.contain
 Result<CellState> BoardState::cell(Cell cellValue) const {
     const auto found = cells_.find(cellValue);
     if (found == cells_.end())
-        return failure<CellState>(DiagnosticCode::NotFound, "tactics board cell does not exist", "cell");
+        return Result<CellState>::failure(
+            Diagnostic::error(DiagnosticCode::NotFound, "tactics board cell does not exist", "cell"));
     return Result<CellState>::success(found->second);
 }
 

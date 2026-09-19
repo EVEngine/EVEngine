@@ -18,11 +18,6 @@ Result<void> projectileError(DiagnosticCode code, std::string message, std::stri
     return Result<void>::failure(Diagnostic::error(code, std::move(message), std::move(path)));
 }
 
-template <typename T>
-Result<T> projectileValueError(DiagnosticCode code, std::string message, std::string path = {}) {
-    return Result<T>::failure(Diagnostic::error(code, std::move(message), std::move(path)));
-}
-
 bool finite(const ProjectilePoint& value) {
     return std::isfinite(value.x) && std::isfinite(value.y) && std::isfinite(value.z);
 }
@@ -112,7 +107,8 @@ Result<ProjectileHandle> ProjectileRuntime::spawn(const ProjectileDefinition&   
     if (!valid) return Result<ProjectileHandle>::failure(valid.status());
     auto free = std::find_if(slots_.begin(), slots_.end(), [](const Slot& slot) { return !slot.state.has_value(); });
     if (free == slots_.end())
-        return projectileValueError<ProjectileHandle>(DiagnosticCode::Conflict, "Projectile pool is exhausted");
+        return Result<ProjectileHandle>::failure(
+            Diagnostic::error(DiagnosticCode::Conflict, "Projectile pool is exhausted", {}));
     const std::size_t index = static_cast<std::size_t>(std::distance(slots_.begin(), free));
     ++free->generation;
     if (free->generation == 0) ++free->generation;
@@ -134,8 +130,8 @@ Result<ProjectileHandle> ProjectileRuntime::spawn(const ProjectileDefinition&   
 
 Result<ProjectileUpdate> ProjectileRuntime::update(Duration delta, const IProjectileTargetProvider* targets) {
     if (delta < Duration::zero())
-        return projectileValueError<ProjectileUpdate>(DiagnosticCode::InvalidArgument,
-                                                      "Projectile delta must be non-negative", "delta");
+        return Result<ProjectileUpdate>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "Projectile delta must be non-negative", "delta"));
     if (delta.isZero()) return Result<ProjectileUpdate>::success({}, Status::success(StatusCode::NoOp));
 
     std::vector<Slot> staged = slots_;
@@ -154,14 +150,14 @@ Result<ProjectileUpdate> ProjectileRuntime::update(Duration delta, const IProjec
         }
         if (state.mode == ProjectileMode::Homing) {
             if (!targets)
-                return projectileValueError<ProjectileUpdate>(DiagnosticCode::Unsupported,
-                                                              "Homing projectile target provider is unavailable");
+                return Result<ProjectileUpdate>::failure(Diagnostic::error(
+                    DiagnosticCode::Unsupported, "Homing projectile target provider is unavailable", {}));
             auto target = targets->position(*state.target);
             if (!target) return Result<ProjectileUpdate>::failure(target.status());
             ProjectileVector desired = directionTo(state.position, target.value());
             if (length(desired) <= 1e-12)
-                return projectileValueError<ProjectileUpdate>(DiagnosticCode::Conflict,
-                                                              "Homing projectile overlaps its target");
+                return Result<ProjectileUpdate>::failure(
+                    Diagnostic::error(DiagnosticCode::Conflict, "Homing projectile overlaps its target", {}));
             state.velocity = steer(state.velocity, desired, state.maxTurnRateDegrees * kPi / 180.0 * seconds);
         }
         if (state.mode == ProjectileMode::Ballistic) state.velocity.y -= state.gravity * seconds;

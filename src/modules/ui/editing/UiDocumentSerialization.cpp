@@ -7,11 +7,6 @@
 namespace eve::ui_editing {
 namespace {
 
-template <class T>
-EditorResult<T> serializationError(EditorStatus status, const char* rule, std::string message) {
-    return eve::editing::failed<T>(status, RuleId(rule), std::move(message));
-}
-
 const EditorValue* field(const EditorValue& value, const char* key) {
     const auto* object = value.getIf<EditorValue::Object>();
     if (!object) return nullptr;
@@ -52,8 +47,8 @@ EditorResult<UiLayoutValue> UiDocumentTarget::parseLayout(const EditorValue& val
         *width < 0.0 || *height < 0.0 || *anchorX < 0.0 || *anchorX > 1.0 ||
         *anchorY < 0.0 || *anchorY > 1.0 || *pivotX < 0.0 || *pivotX > 1.0 ||
         *pivotY < 0.0 || *pivotY > 1.0)
-        return serializationError<UiLayoutValue>(EditorStatus::Rejected, "editor.ui.invalid-layout",
-                                                  "UI layout fields are missing or out of range");
+        return eve::editing::failed<UiLayoutValue>(EditorStatus::Rejected, RuleId("editor.ui.invalid-layout"),
+                                                   "UI layout fields are missing or out of range");
     return eve::editing::applied<UiLayoutValue>(
         {*x, *y, *width, *height, *anchorX, *anchorY, *pivotX, *pivotY});
 }
@@ -81,8 +76,8 @@ EditorResult<UiStyleValue> UiDocumentTarget::parseStyle(const EditorValue& value
     for (std::size_t i = 0; i < std::size(outputs); ++i) {
         const double* number = numberField(value, keys[i]);
         if (!number || !std::isfinite(*number))
-            return serializationError<UiStyleValue>(EditorStatus::Rejected, "editor.ui.invalid-style",
-                                                     "UI style numeric fields are missing or invalid");
+            return eve::editing::failed<UiStyleValue>(EditorStatus::Rejected, RuleId("editor.ui.invalid-style"),
+                                                      "UI style numeric fields are missing or invalid");
         *outputs[i] = *number;
     }
     const EditorValue* directionValue = field(value, "direction");
@@ -92,20 +87,20 @@ EditorResult<UiStyleValue> UiDocumentTarget::parseStyle(const EditorValue& value
     const auto* align = alignValue ? alignValue->getIf<std::string>() : nullptr;
     const auto* justify = justifyValue ? justifyValue->getIf<std::string>() : nullptr;
     if (!direction || !align || !justify)
-        return serializationError<UiStyleValue>(EditorStatus::Rejected, "editor.ui.invalid-style",
-                                                 "UI flex style fields are missing");
+        return eve::editing::failed<UiStyleValue>(EditorStatus::Rejected, RuleId("editor.ui.invalid-style"),
+                                                  "UI flex style fields are missing");
     style.direction = *direction; style.align = *align; style.justify = *justify;
     const std::set<std::string> directions{"row", "column"};
     const std::set<std::string> aligns{"start", "center", "end", "stretch"};
     const std::set<std::string> justifies{"start", "center", "end", "space-between", "space-around"};
     for (std::size_t i = 0; i < std::size(outputs); ++i)
         if (*outputs[i] < 0.0 || (i >= 8 && i <= 11 && *outputs[i] > 1.0))
-            return serializationError<UiStyleValue>(EditorStatus::Rejected, "editor.ui.invalid-style-range",
-                                                     "UI box values must be non-negative and tint normalized");
+            return eve::editing::failed<UiStyleValue>(EditorStatus::Rejected, RuleId("editor.ui.invalid-style-range"),
+                                                      "UI box values must be non-negative and tint normalized");
     if (!directions.contains(style.direction) || !aligns.contains(style.align) ||
         !justifies.contains(style.justify))
-        return serializationError<UiStyleValue>(EditorStatus::Rejected, "editor.ui.invalid-flex-style",
-                                                 "UI flex direction, alignment or justification is invalid");
+        return eve::editing::failed<UiStyleValue>(EditorStatus::Rejected, RuleId("editor.ui.invalid-flex-style"),
+                                                  "UI flex direction, alignment or justification is invalid");
     return eve::editing::applied<UiStyleValue>(std::move(style));
 }
 
@@ -138,8 +133,8 @@ EditorResult<UiContentValue> UiDocumentTarget::parseContent(const EditorValue& v
     const double* textA = numberField(value, "textA");
     if (!fontAsset || !horizontal || !vertical || !textureAsset || !fit || !clip || !fontSize ||
         !textR || !textG || !textB || !textA)
-        return serializationError<UiContentValue>(EditorStatus::Rejected,
-            "editor.ui.invalid-content", "UI content fields are missing");
+        return eve::editing::failed<UiContentValue>(EditorStatus::Rejected, RuleId("editor.ui.invalid-content"),
+                                                    "UI content fields are missing");
     content = {*fontAsset, *fontSize, *textR, *textG, *textB, *textA, *horizontal, *vertical,
                *textureAsset, *fit, *clip};
     const std::set<std::string> aligns{"start", "center", "end"};
@@ -151,8 +146,8 @@ EditorResult<UiContentValue> UiDocumentTarget::parseContent(const EditorValue& v
         content.textB < 0.0 || content.textB > 1.0 || content.textA < 0.0 ||
         content.textA > 1.0 || !aligns.contains(content.horizontalAlign) ||
         !aligns.contains(content.verticalAlign) || !fits.contains(content.imageFit))
-        return serializationError<UiContentValue>(EditorStatus::Rejected,
-            "editor.ui.invalid-content-range", "UI content size, color, alignment or image fit is invalid");
+        return eve::editing::failed<UiContentValue>(EditorStatus::Rejected, RuleId("editor.ui.invalid-content-range"),
+                                                    "UI content size, color, alignment or image fit is invalid");
     return eve::editing::applied<UiContentValue>(std::move(content));
 }
 
@@ -191,26 +186,27 @@ EditorResult<UiWidgetSnapshot> UiDocumentTarget::parseWidget(const EditorValue& 
     const auto* enabled = enabledValue ? enabledValue->getIf<bool>() : nullptr;
     if (!id || id->empty() || !parent || !type || type->empty() || !name || name->empty() ||
         !text || !visible || !enabled || !layout)
-        return serializationError<UiWidgetSnapshot>(EditorStatus::Rejected, "editor.ui.invalid-widget",
-                                                     "UI widget fields are missing or invalid");
+        return eve::editing::failed<UiWidgetSnapshot>(EditorStatus::Rejected, RuleId("editor.ui.invalid-widget"),
+                                                      "UI widget fields are missing or invalid");
     auto parsedLayout = parseLayout(*layout);
     if (!parsedLayout.ok())
-        return serializationError<UiWidgetSnapshot>(EditorStatus::Rejected, "editor.ui.invalid-widget-layout",
-                                                     "UI widget layout is invalid");
+        return eve::editing::failed<UiWidgetSnapshot>(EditorStatus::Rejected, RuleId("editor.ui.invalid-widget-layout"),
+                                                      "UI widget layout is invalid");
     UiStyleValue parsedStyle;
     if (styleValueEntry) {
         auto style = parseStyle(*styleValueEntry);
         if (!style.ok())
-            return serializationError<UiWidgetSnapshot>(EditorStatus::Rejected, "editor.ui.invalid-widget-style",
-                                                         "UI widget style is invalid");
+            return eve::editing::failed<UiWidgetSnapshot>(
+                EditorStatus::Rejected, RuleId("editor.ui.invalid-widget-style"), "UI widget style is invalid");
         parsedStyle = std::move(style).value();
     }
     UiContentValue parsedContent;
     if (contentValueEntry) {
         auto content = parseContent(*contentValueEntry);
         if (!content.ok())
-            return serializationError<UiWidgetSnapshot>(EditorStatus::Rejected,
-                "editor.ui.invalid-widget-content", "UI widget content skin is invalid");
+            return eve::editing::failed<UiWidgetSnapshot>(EditorStatus::Rejected,
+                                                          RuleId("editor.ui.invalid-widget-content"),
+                                                          "UI widget content skin is invalid");
         parsedContent = std::move(content).value();
     }
     return eve::editing::applied<UiWidgetSnapshot>(
@@ -237,24 +233,24 @@ EditorResult<void> UiDocumentTarget::loadSnapshot(const EditorValue& snapshot) {
     const auto* version = versionValue ? versionValue->getIf<int64_t>() : nullptr;
     const auto* widgets = widgetsValue ? widgetsValue->getIf<EditorValue::Array>() : nullptr;
     if (!version || (*version != 1 && *version != 2) || !widgets)
-        return serializationError<void>(EditorStatus::Rejected, "editor.ui.snapshot-format",
-                                        "UI snapshot requires schemaVersion 1 or 2 and a widget array");
+        return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.ui.snapshot-format"),
+                                          "UI snapshot requires schemaVersion 1 or 2 and a widget array");
     std::map<ObjectId, UiWidgetSnapshot> candidate;
     for (const EditorValue& value : *widgets) {
         auto parsed = parseWidget(value);
         if (!parsed.ok())
-            return serializationError<void>(EditorStatus::Rejected, "editor.ui.snapshot-widget",
-                                            "UI snapshot contains an invalid widget");
+            return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.ui.snapshot-widget"),
+                                              "UI snapshot contains an invalid widget");
         const auto& widget = parsed.value();
         if (!candidate.emplace(widget.id, widget).second)
-            return serializationError<void>(EditorStatus::Conflict, "editor.ui.snapshot-duplicate",
-                                            "UI snapshot contains duplicate widget ids");
+            return eve::editing::failed<void>(EditorStatus::Conflict, RuleId("editor.ui.snapshot-duplicate"),
+                                              "UI snapshot contains duplicate widget ids");
     }
     for (const auto& [id, widget] : candidate) {
         if ((!widget.parent.empty() && !candidate.contains(widget.parent)) ||
             wouldCycle(id, widget.parent, candidate))
-            return serializationError<void>(EditorStatus::Rejected, "editor.ui.snapshot-hierarchy",
-                                            "UI snapshot hierarchy is missing a parent or contains a cycle");
+            return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.ui.snapshot-hierarchy"),
+                                              "UI snapshot hierarchy is missing a parent or contains a cycle");
     }
     widgets_ = std::move(candidate);
     bumpRevision();

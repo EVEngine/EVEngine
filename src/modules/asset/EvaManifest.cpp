@@ -6,12 +6,6 @@
 namespace eve::asset {
 namespace {
 
-template <class T>
-Result<T> manifestFailure(DiagnosticCode code, std::string message, std::string path) {
-    return Result<T>::failure(Diagnostic::error(code, std::move(message), std::move(path), {},
-                                                "asset.eva.manifest"));
-}
-
 const Value* required(const Value::Object& object, std::string_view key) {
     const auto found = object.find(std::string(key));
     return found == object.end() ? nullptr : &found->second;
@@ -19,12 +13,12 @@ const Value* required(const Value::Object& object, std::string_view key) {
 
 Result<AssetRef> parseAssetRef(const Value& value, std::string path) {
     if (!value.isString())
-        return manifestFailure<AssetRef>(DiagnosticCode::ParseError, "asset reference must be a string",
-                                         std::move(path));
+        return Result<AssetRef>::failure(Diagnostic::error(
+            DiagnosticCode::ParseError, "asset reference must be a string", std::move(path), {}, "asset.eva.manifest"));
     auto parsed = AssetRef::parse(value.asString());
     if (!parsed)
-        return manifestFailure<AssetRef>(DiagnosticCode::ParseError, "asset reference is not canonical",
-                                         std::move(path));
+        return Result<AssetRef>::failure(Diagnostic::error(
+            DiagnosticCode::ParseError, "asset reference is not canonical", std::move(path), {}, "asset.eva.manifest"));
     return Result<AssetRef>::success(std::move(parsed).takeValue());
 }
 
@@ -33,11 +27,12 @@ Result<std::string> parseString(const Value::Object& object, std::string_view ke
     const Value* value = required(object, key);
     const std::string path = std::string(pathPrefix) + std::string(key);
     if (!value || !value->isString())
-        return manifestFailure<std::string>(DiagnosticCode::ParseError,
-                                            "required manifest field must be a string", path);
+        return Result<std::string>::failure(Diagnostic::error(
+            DiagnosticCode::ParseError, "required manifest field must be a string", path, {}, "asset.eva.manifest"));
     if (value->asString().empty())
-        return manifestFailure<std::string>(DiagnosticCode::InvalidArgument,
-                                            "required manifest string must not be empty", path);
+        return Result<std::string>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                              "required manifest string must not be empty", path, {},
+                                                              "asset.eva.manifest"));
     return Result<std::string>::success(value->asString());
 }
 
@@ -46,15 +41,15 @@ Result<SchemaVersion> parseVersion(const Value::Object& object, std::string_view
     const Value* value = required(object, key);
     const std::string path = std::string(pathPrefix) + std::string(key);
     if (!value || !value->isInt64() || value->asInt() <= 0)
-        return manifestFailure<SchemaVersion>(DiagnosticCode::ParseError,
-                                              "schema version must be a positive integer", path);
+        return Result<SchemaVersion>::failure(Diagnostic::error(
+            DiagnosticCode::ParseError, "schema version must be a positive integer", path, {}, "asset.eva.manifest"));
     return Result<SchemaVersion>::success(SchemaVersion(static_cast<std::uint64_t>(value->asInt())));
 }
 
 Result<EvaDependencyKind> parseDependencyKind(const Value& value, std::string path) {
     if (!value.isString())
-        return manifestFailure<EvaDependencyKind>(DiagnosticCode::ParseError,
-                                                  "dependency kind must be a string", std::move(path));
+        return Result<EvaDependencyKind>::failure(Diagnostic::error(
+            DiagnosticCode::ParseError, "dependency kind must be a string", std::move(path), {}, "asset.eva.manifest"));
     const std::string& text = value.asString();
     if (text == "runtime-required") return Result<EvaDependencyKind>::success(EvaDependencyKind::RuntimeRequired);
     if (text == "runtime-optional") return Result<EvaDependencyKind>::success(EvaDependencyKind::RuntimeOptional);
@@ -62,8 +57,8 @@ Result<EvaDependencyKind> parseDependencyKind(const Value& value, std::string pa
     if (text == "editor") return Result<EvaDependencyKind>::success(EvaDependencyKind::Editor);
     if (text == "source") return Result<EvaDependencyKind>::success(EvaDependencyKind::Source);
     if (text == "platform") return Result<EvaDependencyKind>::success(EvaDependencyKind::Platform);
-    return manifestFailure<EvaDependencyKind>(DiagnosticCode::Unsupported, "unknown dependency kind",
-                                              std::move(path));
+    return Result<EvaDependencyKind>::failure(Diagnostic::error(DiagnosticCode::Unsupported, "unknown dependency kind",
+                                                                std::move(path), {}, "asset.eva.manifest"));
 }
 
 Value assetRefValue(const AssetRef& reference) { return Value(reference.format()); }
@@ -89,10 +84,9 @@ Result<Value::Object> parseFallback(const Value::Object& entry, EvaDependencyKin
     const Value* value = required(entry, "fallback");
     if (!value) {
         if (kind == EvaDependencyKind::RuntimeOptional)
-            return manifestFailure<Value::Object>(
-                DiagnosticCode::InvalidArgument,
-                "runtime-optional dependency requires an explicit fallback policy",
-                prefix + "fallback");
+            return Result<Value::Object>::failure(Diagnostic::error(
+                DiagnosticCode::InvalidArgument, "runtime-optional dependency requires an explicit fallback policy",
+                prefix + "fallback", {}, "asset.eva.manifest"));
         return Result<Value::Object>::success({});
     }
     const auto* object = value->getIf<Value::Object>();
@@ -102,21 +96,21 @@ Result<Value::Object> parseFallback(const Value::Object& entry, EvaDependencyKin
         (behavior->asString() != "omit-feature" && behavior->asString() != "use-default" &&
          behavior->asString() != "use-asset") || !observableCode ||
         !observableCode->isString() || observableCode->asString().empty())
-        return manifestFailure<Value::Object>(
-            DiagnosticCode::ParseError,
-            "fallback requires a supported behavior and non-empty observableCode",
-            prefix + "fallback");
+        return Result<Value::Object>::failure(Diagnostic::error(
+            DiagnosticCode::ParseError, "fallback requires a supported behavior and non-empty observableCode",
+            prefix + "fallback", {}, "asset.eva.manifest"));
     const Value* asset = required(*object, "asset");
     if (behavior->asString() == "use-asset") {
-        if (!asset) return manifestFailure<Value::Object>(DiagnosticCode::ParseError,
-                                                           "use-asset fallback requires asset",
-                                                           prefix + "fallback.asset");
+        if (!asset)
+            return Result<Value::Object>::failure(
+                Diagnostic::error(DiagnosticCode::ParseError, "use-asset fallback requires asset",
+                                  prefix + "fallback.asset", {}, "asset.eva.manifest"));
         auto parsed = parseAssetRef(*asset, prefix + "fallback.asset");
         if (!parsed) return Result<Value::Object>::failure(parsed.status());
     } else if (asset) {
-        return manifestFailure<Value::Object>(DiagnosticCode::ParseError,
-                                              "only use-asset fallback may declare asset",
-                                              prefix + "fallback.asset");
+        return Result<Value::Object>::failure(Diagnostic::error(DiagnosticCode::ParseError,
+                                                                "only use-asset fallback may declare asset",
+                                                                prefix + "fallback.asset", {}, "asset.eva.manifest"));
     }
     return Result<Value::Object>::success(*object);
 }
@@ -141,18 +135,21 @@ Result<EvaManifest> parseEvaManifest(std::string_view json) {
     Value root = std::move(parsed).takeValue();
     const auto* object = root.getIf<Value::Object>();
     if (!object)
-        return manifestFailure<EvaManifest>(DiagnosticCode::ParseError, "manifest root must be an object", "$");
+        return Result<EvaManifest>::failure(Diagnostic::error(
+            DiagnosticCode::ParseError, "manifest root must be an object", "$", {}, "asset.eva.manifest"));
 
     auto schema = parseString(*object, "schema", "$");
     if (!schema) return Result<EvaManifest>::failure(schema.status());
     if (std::move(schema).takeValue() != EvaManifest::kSchema)
-        return manifestFailure<EvaManifest>(DiagnosticCode::Unsupported, "unsupported manifest schema", "$.schema");
+        return Result<EvaManifest>::failure(Diagnostic::error(
+            DiagnosticCode::Unsupported, "unsupported manifest schema", "$.schema", {}, "asset.eva.manifest"));
 
     auto envelopeVersion = parseVersion(*object, "schemaVersion", "$");
     if (!envelopeVersion) return Result<EvaManifest>::failure(envelopeVersion.status());
     if (std::move(envelopeVersion).takeValue().value() != EvaManifest::kVersion)
-        return manifestFailure<EvaManifest>(DiagnosticCode::UnknownVersion, "unsupported manifest version",
-                                            "$.schemaVersion");
+        return Result<EvaManifest>::failure(Diagnostic::error(DiagnosticCode::UnknownVersion,
+                                                              "unsupported manifest version", "$.schemaVersion", {},
+                                                              "asset.eva.manifest"));
 
     auto packageName = parseString(*object, "packageName", "$");
     if (!packageName) return Result<EvaManifest>::failure(packageName.status());
@@ -162,13 +159,15 @@ Result<EvaManifest> parseEvaManifest(std::string_view json) {
     if (!packageIdText) return Result<EvaManifest>::failure(packageIdText.status());
     auto packageId = PersistentId::parse(std::move(packageIdText).takeValue());
     if (!packageId || packageId->isNil())
-        return manifestFailure<EvaManifest>(DiagnosticCode::ParseError, "packageId must be a non-nil canonical UUID",
-                                            "$.packageId");
+        return Result<EvaManifest>::failure(Diagnostic::error(DiagnosticCode::ParseError,
+                                                              "packageId must be a non-nil canonical UUID",
+                                                              "$.packageId", {}, "asset.eva.manifest"));
 
     const Value* unknownPolicy = required(*object, "unknownFields");
     if (!unknownPolicy || !unknownPolicy->isString() || unknownPolicy->asString() != "preserve")
-        return manifestFailure<EvaManifest>(DiagnosticCode::Unsupported,
-                                            "eva v1 requires unknownFields=preserve", "$.unknownFields");
+        return Result<EvaManifest>::failure(Diagnostic::error(DiagnosticCode::Unsupported,
+                                                              "eva v1 requires unknownFields=preserve",
+                                                              "$.unknownFields", {}, "asset.eva.manifest"));
 
     EvaManifest manifest;
     manifest.packageId      = *packageId;
@@ -178,24 +177,26 @@ Result<EvaManifest> parseEvaManifest(std::string_view json) {
     const Value* assets = required(*object, "assets");
     const auto* assetArray = assets ? assets->getIf<Value::Array>() : nullptr;
     if (!assetArray)
-        return manifestFailure<EvaManifest>(DiagnosticCode::ParseError, "assets must be an array", "$.assets");
+        return Result<EvaManifest>::failure(Diagnostic::error(DiagnosticCode::ParseError, "assets must be an array",
+                                                              "$.assets", {}, "asset.eva.manifest"));
     std::set<PersistentId> identities;
     for (std::size_t index = 0; index < assetArray->size(); ++index) {
         const std::string prefix = "$.assets[" + std::to_string(index) + "].";
         const auto* entry = (*assetArray)[index].getIf<Value::Object>();
         if (!entry)
-            return manifestFailure<EvaManifest>(DiagnosticCode::ParseError, "asset entry must be an object",
-                                                prefix.substr(0, prefix.size() - 1));
+            return Result<EvaManifest>::failure(
+                Diagnostic::error(DiagnosticCode::ParseError, "asset entry must be an object",
+                                  prefix.substr(0, prefix.size() - 1), {}, "asset.eva.manifest"));
         const Value* refValue = required(*entry, "asset");
         if (!refValue)
-            return manifestFailure<EvaManifest>(DiagnosticCode::ParseError, "asset field is required",
-                                                prefix + "asset");
+            return Result<EvaManifest>::failure(Diagnostic::error(DiagnosticCode::ParseError, "asset field is required",
+                                                                  prefix + "asset", {}, "asset.eva.manifest"));
         auto reference = parseAssetRef(*refValue, prefix + "asset");
         if (!reference) return Result<EvaManifest>::failure(reference.status());
         AssetRef assetRef = std::move(reference).takeValue();
         if (!identities.emplace(assetRef.id()).second)
-            return manifestFailure<EvaManifest>(DiagnosticCode::Conflict, "duplicate asset identity",
-                                                prefix + "asset");
+            return Result<EvaManifest>::failure(Diagnostic::error(DiagnosticCode::Conflict, "duplicate asset identity",
+                                                                  prefix + "asset", {}, "asset.eva.manifest"));
         auto type = parseString(*entry, "type", prefix);
         if (!type) return Result<EvaManifest>::failure(type.status());
         auto version = parseVersion(*entry, "schemaVersion", prefix);
@@ -205,19 +206,21 @@ Result<EvaManifest> parseEvaManifest(std::string_view json) {
         auto contentHash = parseString(*entry, "contentHash", prefix);
         if (!contentHash) return Result<EvaManifest>::failure(contentHash.status());
         if (!canonicalSha256(contentHash.value()))
-            return manifestFailure<EvaManifest>(DiagnosticCode::ParseError,
-                                                "contentHash must be canonical lowercase sha256", prefix + "contentHash");
+            return Result<EvaManifest>::failure(Diagnostic::error(DiagnosticCode::ParseError,
+                                                                  "contentHash must be canonical lowercase sha256",
+                                                                  prefix + "contentHash", {}, "asset.eva.manifest"));
 
         std::vector<std::string> tags;
         if (const Value* tagValue = required(*entry, "tags")) {
             const auto* tagArray = tagValue->getIf<Value::Array>();
             if (!tagArray)
-                return manifestFailure<EvaManifest>(DiagnosticCode::ParseError, "tags must be an array",
-                                                    prefix + "tags");
+                return Result<EvaManifest>::failure(Diagnostic::error(
+                    DiagnosticCode::ParseError, "tags must be an array", prefix + "tags", {}, "asset.eva.manifest"));
             for (std::size_t tagIndex = 0; tagIndex < tagArray->size(); ++tagIndex) {
                 if (!(*tagArray)[tagIndex].isString())
-                    return manifestFailure<EvaManifest>(DiagnosticCode::ParseError, "tag must be a string",
-                                                        prefix + "tags[" + std::to_string(tagIndex) + "]");
+                    return Result<EvaManifest>::failure(
+                        Diagnostic::error(DiagnosticCode::ParseError, "tag must be a string",
+                                          prefix + "tags[" + std::to_string(tagIndex) + "]", {}, "asset.eva.manifest"));
                 tags.push_back((*tagArray)[tagIndex].asString());
             }
         }
@@ -229,20 +232,21 @@ Result<EvaManifest> parseEvaManifest(std::string_view json) {
     const Value* dependencies = required(*object, "dependencies");
     const auto* dependencyArray = dependencies ? dependencies->getIf<Value::Array>() : nullptr;
     if (!dependencyArray)
-        return manifestFailure<EvaManifest>(DiagnosticCode::ParseError, "dependencies must be an array",
-                                            "$.dependencies");
+        return Result<EvaManifest>::failure(Diagnostic::error(
+            DiagnosticCode::ParseError, "dependencies must be an array", "$.dependencies", {}, "asset.eva.manifest"));
     for (std::size_t index = 0; index < dependencyArray->size(); ++index) {
         const std::string prefix = "$.dependencies[" + std::to_string(index) + "].";
         const auto* entry = (*dependencyArray)[index].getIf<Value::Object>();
         if (!entry)
-            return manifestFailure<EvaManifest>(DiagnosticCode::ParseError, "dependency must be an object",
-                                                prefix.substr(0, prefix.size() - 1));
+            return Result<EvaManifest>::failure(
+                Diagnostic::error(DiagnosticCode::ParseError, "dependency must be an object",
+                                  prefix.substr(0, prefix.size() - 1), {}, "asset.eva.manifest"));
         const Value* fromValue = required(*entry, "from");
         const Value* toValue   = required(*entry, "to");
         const Value* kindValue = required(*entry, "kind");
         if (!fromValue || !toValue || !kindValue)
-            return manifestFailure<EvaManifest>(DiagnosticCode::ParseError,
-                                                "dependency requires from, to and kind", prefix);
+            return Result<EvaManifest>::failure(Diagnostic::error(
+                DiagnosticCode::ParseError, "dependency requires from, to and kind", prefix, {}, "asset.eva.manifest"));
         auto from = parseAssetRef(*fromValue, prefix + "from");
         if (!from) return Result<EvaManifest>::failure(from.status());
         auto to = parseAssetRef(*toValue, prefix + "to");
@@ -252,27 +256,30 @@ Result<EvaManifest> parseEvaManifest(std::string_view json) {
         std::string path;
         if (const Value* pathValue = required(*entry, "path")) {
             if (!pathValue->isString())
-                return manifestFailure<EvaManifest>(DiagnosticCode::ParseError, "dependency path must be a string",
-                                                    prefix + "path");
+                return Result<EvaManifest>::failure(Diagnostic::error(DiagnosticCode::ParseError,
+                                                                      "dependency path must be a string",
+                                                                      prefix + "path", {}, "asset.eva.manifest"));
             path = pathValue->asString();
         }
         Value::Object predicate;
         if (const Value* predicateValue = required(*entry, "predicate")) {
             const auto* predicateObject = predicateValue->getIf<Value::Object>();
             if (!predicateObject)
-                return manifestFailure<EvaManifest>(DiagnosticCode::ParseError,
-                                                    "dependency predicate must be an object", prefix + "predicate");
+                return Result<EvaManifest>::failure(Diagnostic::error(DiagnosticCode::ParseError,
+                                                                      "dependency predicate must be an object",
+                                                                      prefix + "predicate", {}, "asset.eva.manifest"));
             predicate = *predicateObject;
         }
         if (kind.value() == EvaDependencyKind::Platform && predicate.empty())
-            return manifestFailure<EvaManifest>(DiagnosticCode::InvalidArgument,
-                                                "platform dependency requires a predicate", prefix + "predicate");
+            return Result<EvaManifest>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                                  "platform dependency requires a predicate",
+                                                                  prefix + "predicate", {}, "asset.eva.manifest"));
         std::string expectedType;
         if (const Value* expected = required(*entry, "expectedType")) {
             if (!expected->isString() || !canonicalExpectedType(expected->asString()))
-                return manifestFailure<EvaManifest>(DiagnosticCode::ParseError,
-                                                    "expectedType must be a canonical type/version pair",
-                                                    prefix + "expectedType");
+                return Result<EvaManifest>::failure(
+                    Diagnostic::error(DiagnosticCode::ParseError, "expectedType must be a canonical type/version pair",
+                                      prefix + "expectedType", {}, "asset.eva.manifest"));
             expectedType = expected->asString();
         }
         auto fallback = parseFallback(*entry, kind.value(), prefix);
@@ -285,8 +292,9 @@ Result<EvaManifest> parseEvaManifest(std::string_view json) {
     if (const Value* entrypoints = required(*object, "entrypoints")) {
         const auto* entries = entrypoints->getIf<Value::Object>();
         if (!entries)
-            return manifestFailure<EvaManifest>(DiagnosticCode::ParseError, "entrypoints must be an object",
-                                                "$.entrypoints");
+            return Result<EvaManifest>::failure(Diagnostic::error(DiagnosticCode::ParseError,
+                                                                  "entrypoints must be an object", "$.entrypoints", {},
+                                                                  "asset.eva.manifest"));
         for (const auto& [name, referenceValue] : *entries) {
             auto reference = parseAssetRef(referenceValue, "$.entrypoints." + name);
             if (!reference) return Result<EvaManifest>::failure(reference.status());
@@ -296,8 +304,8 @@ Result<EvaManifest> parseEvaManifest(std::string_view json) {
     if (const Value* provenance = required(*object, "provenance")) {
         const auto* value = provenance->getIf<Value::Object>();
         if (!value)
-            return manifestFailure<EvaManifest>(DiagnosticCode::ParseError, "provenance must be an object",
-                                                "$.provenance");
+            return Result<EvaManifest>::failure(Diagnostic::error(
+                DiagnosticCode::ParseError, "provenance must be an object", "$.provenance", {}, "asset.eva.manifest"));
         manifest.provenance = *value;
     }
 

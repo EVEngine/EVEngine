@@ -9,12 +9,6 @@
 namespace eve::action {
 namespace {
 
-template <typename T>
-Result<T> invalid(std::string message, std::string path) {
-    return Result<T>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move(message), std::move(path)));
-}
-
 const Value* field(const Value& value, std::string_view name) {
     if (!value.isObject()) return nullptr;
     const auto& object = *value.getIf<Value::Object>();
@@ -24,37 +18,50 @@ const Value* field(const Value& value, std::string_view name) {
 
 Result<std::string> text(const Value& value, std::string_view name, std::string path) {
     const auto* item = field(value, name);
-    if (!item || !item->isString()) return invalid<std::string>("expected text field", std::move(path));
+    if (!item || !item->isString())
+        return Result<std::string>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "expected text field", std::move(path)));
     return Result<std::string>::success(item->asString());
 }
 
 Result<std::int64_t> integer(const Value& value, std::string_view name, std::string path) {
     const auto* item = field(value, name);
-    if (!item || !item->isInt64()) return invalid<std::int64_t>("expected integer field", std::move(path));
+    if (!item || !item->isInt64())
+        return Result<std::int64_t>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "expected integer field", std::move(path)));
     return Result<std::int64_t>::success(item->asInt());
 }
 
 Result<bool> boolean(const Value& value, std::string_view name, std::string path) {
     const auto* item = field(value, name);
-    if (!item || !item->isBool()) return invalid<bool>("expected boolean field", std::move(path));
+    if (!item || !item->isBool())
+        return Result<bool>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "expected boolean field", std::move(path)));
     return Result<bool>::success(item->asBool());
 }
 
 Result<double> number(const Value& value, std::string_view name, std::string path) {
     const auto* item = field(value, name);
     if (!item || (!item->isDouble() && !item->isInt64()))
-        return invalid<double>("expected numeric field", std::move(path));
+        return Result<double>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "expected numeric field", std::move(path)));
     const double result = item->isDouble() ? item->asDouble() : static_cast<double>(item->asInt());
-    if (!std::isfinite(result)) return invalid<double>("numeric field must be finite", std::move(path));
+    if (!std::isfinite(result))
+        return Result<double>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "numeric field must be finite", std::move(path)));
     return Result<double>::success(result);
 }
 
 Result<void> rejectUnknown(const Value& value, const std::set<std::string, std::less<>>& known,
                            std::string path) {
-    if (!value.isObject()) return invalid<void>("expected object", std::move(path));
+    if (!value.isObject())
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "expected object", std::move(path)));
     for (const auto& [name, item] : *value.getIf<Value::Object>()) {
         (void)item;
-        if (!known.contains(name)) return invalid<void>("unknown field", path + "." + name);
+        if (!known.contains(name))
+            return Result<void>::failure(
+                Diagnostic::error(DiagnosticCode::InvalidArgument, "unknown field", path + "." + name));
     }
     return Result<void>::success();
 }
@@ -74,7 +81,8 @@ Result<AbilityInstancingPolicy> parseInstancing(std::string_view value) {
     if (value == "per_owner") return Result<AbilityInstancingPolicy>::success(AbilityInstancingPolicy::PerOwner);
     if (value == "per_execution")
         return Result<AbilityInstancingPolicy>::success(AbilityInstancingPolicy::PerExecution);
-    return invalid<AbilityInstancingPolicy>("unknown ability instancing policy", "instancing");
+    return Result<AbilityInstancingPolicy>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "unknown ability instancing policy", "instancing"));
 }
 
 std::string_view groupName(AbilityActivationGroup value) {
@@ -92,7 +100,8 @@ Result<AbilityActivationGroup> parseGroup(std::string_view value) {
         return Result<AbilityActivationGroup>::success(AbilityActivationGroup::ExclusiveReplaceable);
     if (value == "exclusive_blocking")
         return Result<AbilityActivationGroup>::success(AbilityActivationGroup::ExclusiveBlocking);
-    return invalid<AbilityActivationGroup>("unknown ability activation group", "activationGroup");
+    return Result<AbilityActivationGroup>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "unknown ability activation group", "activationGroup"));
 }
 
 std::string_view targetingModeName(TargetingMode value) {
@@ -108,7 +117,8 @@ Result<TargetingMode> parseTargetingMode(std::string_view value) {
     if (value == "none") return Result<TargetingMode>::success(TargetingMode::None);
     if (value == "explicit") return Result<TargetingMode>::success(TargetingMode::Explicit);
     if (value == "query") return Result<TargetingMode>::success(TargetingMode::Query);
-    return invalid<TargetingMode>("unknown targeting mode", "action.targetingMode");
+    return Result<TargetingMode>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "unknown targeting mode", "action.targetingMode"));
 }
 
 Value encodeCondition(const decision::Condition& condition) {
@@ -163,7 +173,8 @@ Result<decision::Condition> decodeCondition(const Value& value, const std::strin
     auto children = [&]() -> Result<std::vector<decision::Condition>> {
         const auto* source = field(value, "children");
         if (!source || !source->isArray())
-            return invalid<std::vector<decision::Condition>>("expected children array", path + ".children");
+            return Result<std::vector<decision::Condition>>::failure(
+                Diagnostic::error(DiagnosticCode::InvalidArgument, "expected children array", path + ".children"));
         std::vector<decision::Condition> result;
         const auto& array = *source->getIf<Value::Array>();
         result.reserve(array.size());
@@ -182,7 +193,8 @@ Result<decision::Condition> decodeCondition(const Value& value, const std::strin
         if (kind.value() == "any")
             return Result<decision::Condition>::success(decision::Condition::any(std::move(decoded).takeValue()));
         if (decoded.value().size() != 1)
-            return invalid<decision::Condition>("not condition requires one child", path + ".children");
+            return Result<decision::Condition>::failure(Diagnostic::error(
+                DiagnosticCode::InvalidArgument, "not condition requires one child", path + ".children"));
         return Result<decision::Condition>::success(decision::Condition::not_(std::move(decoded.value().front())));
     }
     auto key = text(value, "key", path + ".key");
@@ -190,7 +202,9 @@ Result<decision::Condition> decodeCondition(const Value& value, const std::strin
     if (kind.value() == "compare") {
         auto op = text(value, "operator", path + ".operator");
         const auto* expected = field(value, "expected");
-        if (!op || !expected) return invalid<decision::Condition>("compare condition is incomplete", path);
+        if (!op || !expected)
+            return Result<decision::Condition>::failure(
+                Diagnostic::error(DiagnosticCode::InvalidArgument, "compare condition is incomplete", path));
         const std::pair<std::string_view, decision::CompareOperator> operators[] = {
             {"eq", decision::CompareOperator::Equal}, {"ne", decision::CompareOperator::NotEqual},
             {"lt", decision::CompareOperator::Less}, {"le", decision::CompareOperator::LessEqual},
@@ -199,11 +213,14 @@ Result<decision::Condition> decodeCondition(const Value& value, const std::strin
             if (op.value() == name)
                 return Result<decision::Condition>::success(
                     decision::Condition::compare(key.value(), parsed, *expected));
-        return invalid<decision::Condition>("unknown comparison operator", path + ".operator");
+        return Result<decision::Condition>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "unknown comparison operator", path + ".operator"));
     }
     if (kind.value() == "state_equals") {
         const auto* expected = field(value, "expected");
-        if (!expected) return invalid<decision::Condition>("state condition is incomplete", path);
+        if (!expected)
+            return Result<decision::Condition>::failure(
+                Diagnostic::error(DiagnosticCode::InvalidArgument, "state condition is incomplete", path));
         return Result<decision::Condition>::success(decision::Condition::stateEquals(key.value(), *expected));
     }
     if (kind.value() == "has_tag")
@@ -216,7 +233,9 @@ Result<decision::Condition> decodeCondition(const Value& value, const std::strin
         return Result<decision::Condition>::success(decision::Condition::authorityCheck(key.value()));
     if (kind.value() == "policy_call") {
         const auto* arguments = field(value, "arguments");
-        if (!arguments) return invalid<decision::Condition>("policy arguments are missing", path + ".arguments");
+        if (!arguments)
+            return Result<decision::Condition>::failure(Diagnostic::error(
+                DiagnosticCode::InvalidArgument, "policy arguments are missing", path + ".arguments"));
         std::optional<decision::ScriptConditionDeclaration> declaration;
         if (const auto* script = field(value, "script")) {
             auto name = text(*script, "name", path + ".script.name");
@@ -228,7 +247,8 @@ Result<decision::Condition> decodeCondition(const Value& value, const std::strin
             if (determinism.value() < 0 || determinism.value() >
                                                static_cast<std::int64_t>(
                                                    decision::DeterminismLevel::ExplicitlyNondeterministic))
-                return invalid<decision::Condition>("script condition declaration is invalid", path + ".script");
+                return Result<decision::Condition>::failure(Diagnostic::error(
+                    DiagnosticCode::InvalidArgument, "script condition declaration is invalid", path + ".script"));
             declaration = decision::ScriptConditionDeclaration{
                 name.value(), std::move(dependencies).takeValue(),
                 static_cast<decision::DeterminismLevel>(determinism.value())};
@@ -236,7 +256,8 @@ Result<decision::Condition> decodeCondition(const Value& value, const std::strin
         return Result<decision::Condition>::success(
             decision::Condition::policyCall(key.value(), *arguments, std::move(declaration)));
     }
-    return invalid<decision::Condition>("unknown condition kind", path + ".kind");
+    return Result<decision::Condition>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "unknown condition kind", path + ".kind"));
 }
 
 Value::Array strings(const std::vector<std::string>& values) {
@@ -248,13 +269,15 @@ Value::Array strings(const std::vector<std::string>& values) {
 
 Result<std::vector<std::string>> decodeStrings(const Value& parent, std::string_view name, std::string path) {
     const auto* source = field(parent, name);
-    if (!source || !source->isArray()) return invalid<std::vector<std::string>>("expected text array", path);
+    if (!source || !source->isArray())
+        return Result<std::vector<std::string>>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "expected text array", path));
     std::vector<std::string> result;
     for (std::size_t index = 0; index < source->getIf<Value::Array>()->size(); ++index) {
         const auto& item = source->getIf<Value::Array>()->at(index);
         if (!item.isString())
-            return invalid<std::vector<std::string>>("expected text item",
-                                                     path + "[" + std::to_string(index) + "]");
+            return Result<std::vector<std::string>>::failure(Diagnostic::error(
+                DiagnosticCode::InvalidArgument, "expected text item", path + "[" + std::to_string(index) + "]"));
         result.push_back(item.asString());
     }
     return Result<std::vector<std::string>>::success(std::move(result));
@@ -294,15 +317,18 @@ Value encodeTargetingSpec(const sensing::TargetingSpec& spec) {
 Result<std::array<double, 3>> vector3(const Value& value, std::string_view name, std::string path) {
     const auto* item = field(value, name);
     if (!item || !item->isArray() || item->getIf<Value::Array>()->size() != 3)
-        return invalid<std::array<double, 3>>("expected three-component array", std::move(path));
+        return Result<std::array<double, 3>>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "expected three-component array", std::move(path)));
     std::array<double, 3> result{};
     for (std::size_t index = 0; index < result.size(); ++index) {
         const auto& component = item->getIf<Value::Array>()->at(index);
         if (!component.isDouble() && !component.isInt64())
-            return invalid<std::array<double, 3>>("vector component must be numeric", path);
+            return Result<std::array<double, 3>>::failure(
+                Diagnostic::error(DiagnosticCode::InvalidArgument, "vector component must be numeric", path));
         result[index] = component.isDouble() ? component.asDouble() : static_cast<double>(component.asInt());
         if (!std::isfinite(result[index]))
-            return invalid<std::array<double, 3>>("vector component must be finite", path);
+            return Result<std::array<double, 3>>::failure(
+                Diagnostic::error(DiagnosticCode::InvalidArgument, "vector component must be finite", path));
     }
     return Result<std::array<double, 3>>::success(result);
 }
@@ -317,7 +343,8 @@ Result<std::array<std::int32_t, 3>> gridVector3(const Value& value, std::string_
         if (std::trunc(component) != component ||
             component < static_cast<double>(std::numeric_limits<std::int32_t>::min()) ||
             component > static_cast<double>(std::numeric_limits<std::int32_t>::max()))
-            return invalid<std::array<std::int32_t, 3>>("grid component must be an int32", path);
+            return Result<std::array<std::int32_t, 3>>::failure(
+                Diagnostic::error(DiagnosticCode::InvalidArgument, "grid component must be an int32", path));
         result[index] = static_cast<std::int32_t>(component);
     }
     return Result<std::array<std::int32_t, 3>>::success(result);
@@ -352,28 +379,35 @@ Result<sensing::TargetingSpec> decodeTargetingSpec(const Value& value) {
         minCount.value() < 0 || maxCount.value() < 0 ||
         minCount.value() > std::numeric_limits<std::uint32_t>::max() ||
         maxCount.value() > std::numeric_limits<std::uint32_t>::max())
-        return invalid<sensing::TargetingSpec>("targeting specification enum or count is invalid",
-                                               "action.targetingSpec");
+        return Result<sensing::TargetingSpec>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "targeting specification enum or count is invalid",
+                              "action.targetingSpec"));
     result.domain = static_cast<sensing::TargetDomain>(domain.value());
     result.minCount = static_cast<std::uint32_t>(minCount.value());
     result.maxCount = static_cast<std::uint32_t>(maxCount.value());
     result.minRange = static_cast<float>(minRange.value());
     const auto* maxRange = field(value, "maxRange");
-    if (!maxRange) return invalid<sensing::TargetingSpec>("maximum range is missing", "action.targetingSpec.maxRange");
+    if (!maxRange)
+        return Result<sensing::TargetingSpec>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "maximum range is missing", "action.targetingSpec.maxRange"));
     if (maxRange->isNull()) result.maxRange = std::numeric_limits<float>::infinity();
     else if (maxRange->isDouble() || maxRange->isInt64())
         result.maxRange = static_cast<float>(maxRange->isDouble() ? maxRange->asDouble() : maxRange->asInt());
     else
-        return invalid<sensing::TargetingSpec>("maximum range must be numeric or null",
-                                               "action.targetingSpec.maxRange");
+        return Result<sensing::TargetingSpec>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "maximum range must be numeric or null", "action.targetingSpec.maxRange"));
     result.requiredTags = std::move(required).takeValue();
     result.excludedTags = std::move(excluded).takeValue();
     result.lineOfSight = lineOfSight.value() ? sensing::LineOfSightMode::Required
                                              : sensing::LineOfSightMode::NotRequired;
     if (const auto* zone = field(value, "zone")) {
-        if (!zone->isString()) return invalid<sensing::TargetingSpec>("zone must be text", "action.targetingSpec.zone");
+        if (!zone->isString())
+            return Result<sensing::TargetingSpec>::failure(
+                Diagnostic::error(DiagnosticCode::InvalidArgument, "zone must be text", "action.targetingSpec.zone"));
         auto id = LogicalId::parse(zone->asString());
-        if (!id) return invalid<sensing::TargetingSpec>("zone id is invalid", "action.targetingSpec.zone");
+        if (!id)
+            return Result<sensing::TargetingSpec>::failure(
+                Diagnostic::error(DiagnosticCode::InvalidArgument, "zone id is invalid", "action.targetingSpec.zone"));
         result.zone = sensing::ZoneRef::fromLogicalId(*id);
     }
     if (const auto* area = field(value, "worldArea")) {
@@ -386,7 +420,8 @@ Result<sensing::TargetingSpec> decodeTargetingSpec(const Value& value) {
         auto radius = number(*area, "radius", "action.targetingSpec.worldArea.radius");
         if (!radius) return Result<sensing::TargetingSpec>::failure(radius.status());
         if (shape.value() < 0 || shape.value() > 3)
-            return invalid<sensing::TargetingSpec>("world area is invalid", "action.targetingSpec.worldArea");
+            return Result<sensing::TargetingSpec>::failure(Diagnostic::error(
+                DiagnosticCode::InvalidArgument, "world area is invalid", "action.targetingSpec.worldArea"));
         const auto makePoint = [&](const std::array<double, 3>& point) {
             return result.space == sensing::CoordinateSpace::World2D
                        ? sensing::WorldPoint::world2D(static_cast<float>(point[0]), static_cast<float>(point[1]))
@@ -416,7 +451,8 @@ Result<sensing::TargetingSpec> decodeTargetingSpec(const Value& value) {
         auto maximum = gridVector3(*area, "maximum", "action.targetingSpec.gridArea.maximum");
         if (!maximum) return Result<sensing::TargetingSpec>::failure(maximum.status());
         if (shape.value() < 0 || shape.value() > 1)
-            return invalid<sensing::TargetingSpec>("grid area is invalid", "action.targetingSpec.gridArea");
+            return Result<sensing::TargetingSpec>::failure(Diagnostic::error(
+                DiagnosticCode::InvalidArgument, "grid area is invalid", "action.targetingSpec.gridArea"));
         const auto makePoint = [&](const std::array<std::int32_t, 3>& point) {
             return result.space == sensing::CoordinateSpace::Grid2D
                        ? sensing::GridPoint::grid2D(point[0], point[1])
@@ -436,12 +472,16 @@ Result<sensing::TargetingSpec> decodeTargetingSpec(const Value& value) {
 Result<Duration> durationField(const Value& value, std::string_view nsName, std::string_view msName,
                                std::uint64_t version, std::string path) {
     if (field(value, version == 1 ? nsName : msName))
-        return invalid<Duration>("duration field does not match schema version", std::move(path));
+        return Result<Duration>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "duration field does not match schema version", std::move(path)));
     auto raw = integer(value, version == 1 ? msName : nsName, path);
     if (!raw) return Result<Duration>::failure(raw.status());
-    if (raw.value() < 0) return invalid<Duration>("duration must be non-negative", std::move(path));
+    if (raw.value() < 0)
+        return Result<Duration>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "duration must be non-negative", std::move(path)));
     if (version == 1 && raw.value() > std::numeric_limits<std::int64_t>::max() / 1'000'000)
-        return invalid<Duration>("millisecond duration overflows nanoseconds", std::move(path));
+        return Result<Duration>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "millisecond duration overflows nanoseconds", std::move(path)));
     return Result<Duration>::success(Duration::fromNanoseconds(version == 1 ? raw.value() * 1'000'000 : raw.value()));
 }
 
@@ -499,9 +539,11 @@ Result<AbilityDefinition> decodeAbilityAsset(const Value& value) {
     auto versionRaw = integer(value, "schemaVersion", "schemaVersion");
     if (!versionRaw) return Result<AbilityDefinition>::failure(versionRaw.status());
     if (schema.value() != kAbilityAssetSchemaId)
-        return invalid<AbilityDefinition>("unexpected ability asset schema", "schema");
+        return Result<AbilityDefinition>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "unexpected ability asset schema", "schema"));
     if (versionRaw.value() < 1 || versionRaw.value() > static_cast<std::int64_t>(kAbilityAssetSchemaVersion))
-        return invalid<AbilityDefinition>("unsupported ability asset schema version", "schemaVersion");
+        return Result<AbilityDefinition>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "unsupported ability asset schema version", "schemaVersion"));
     const auto version = static_cast<std::uint64_t>(versionRaw.value());
     auto idText = text(value, "id", "id");
     if (!idText) return Result<AbilityDefinition>::failure(idText.status());
@@ -514,14 +556,16 @@ Result<AbilityDefinition> decodeAbilityAsset(const Value& value) {
     const auto* actionValue = field(value, "action");
     const auto* triggerValue = field(value, "triggers");
     if (!actionValue || !triggerValue || !triggerValue->isArray())
-        return invalid<AbilityDefinition>("ability asset is incomplete", "ability");
+        return Result<AbilityDefinition>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "ability asset is incomplete", "ability"));
     auto id = LogicalId::parse(idText.value());
     auto instancing = parseInstancing(instancingText.value());
     if (!instancing) return Result<AbilityDefinition>::failure(instancing.status());
     auto group = parseGroup(groupText.value());
     if (!group) return Result<AbilityDefinition>::failure(group.status());
     if (!id || !actionValue->isObject())
-        return invalid<AbilityDefinition>("ability identity or policy is invalid", "ability");
+        return Result<AbilityDefinition>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "ability identity or policy is invalid", "ability"));
 
     AbilityDefinition result;
     result.id = *id;
@@ -540,7 +584,8 @@ Result<AbilityDefinition> decodeAbilityAsset(const Value& value) {
     const auto* metadata = field(*actionValue, "metadata");
     const auto* condition = field(*actionValue, "condition");
     if (!timing || !timing->isObject() || !metadata || !metadata->isObject() || !condition)
-        return invalid<AbilityDefinition>("action definition is incomplete", "action");
+        return Result<AbilityDefinition>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "action definition is incomplete", "action"));
     auto actionId = LogicalId::parse(actionIdText.value());
     auto windup = durationField(*timing, "windupNs", "windupMs", version, "action.timing.windup");
     if (!windup) return Result<AbilityDefinition>::failure(windup.status());
@@ -552,7 +597,9 @@ Result<AbilityDefinition> decodeAbilityAsset(const Value& value) {
     if (!mode) return Result<AbilityDefinition>::failure(mode.status());
     auto decodedCondition = decodeCondition(*condition, "action.condition");
     if (!decodedCondition) return Result<AbilityDefinition>::failure(decodedCondition.status());
-    if (!actionId) return invalid<AbilityDefinition>("action identity is invalid", "action.id");
+    if (!actionId)
+        return Result<AbilityDefinition>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "action identity is invalid", "action.id"));
     result.action.id = *actionId;
     result.action.timing = {windup.value(), active.value(), recover.value()};
     result.action.condition = std::move(decodedCondition).takeValue();
@@ -566,7 +613,9 @@ Result<AbilityDefinition> decodeAbilityAsset(const Value& value) {
         result.action.targetingSpec = std::move(decoded).takeValue();
     }
     if (const auto* cost = field(*actionValue, "cost"); cost && !cost->isNull()) {
-        if (!cost->isArray()) return invalid<AbilityDefinition>("action cost must be an array or null", "action.cost");
+        if (!cost->isArray())
+            return Result<AbilityDefinition>::failure(Diagnostic::error(
+                DiagnosticCode::InvalidArgument, "action cost must be an array or null", "action.cost"));
         std::vector<resource::ResourceCost> items;
         const auto& array = *cost->getIf<Value::Array>();
         for (std::size_t index = 0; index < array.size(); ++index) {
@@ -594,7 +643,9 @@ Result<AbilityDefinition> decodeAbilityAsset(const Value& value) {
         auto match = text(item, "match", "triggers[" + std::to_string(index) + "].match");
         if (!match) return Result<AbilityDefinition>::failure(match.status());
         if (match.value() != "exact" && match.value() != "include_descendants")
-            return invalid<AbilityDefinition>("ability trigger is invalid", "triggers[" + std::to_string(index) + "]");
+            return Result<AbilityDefinition>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                                        "ability trigger is invalid",
+                                                                        "triggers[" + std::to_string(index) + "]"));
         result.triggers.push_back({tag.value(), match.value() == "exact" ? tags::GameplayTagMatch::Exact
                                                                          : tags::GameplayTagMatch::IncludeDescendants});
     }
