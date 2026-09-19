@@ -357,3 +357,20 @@ DLL 真正链通（= §7.2 的跨组 `EVENGINE_API` 标注完成）后再把它�
 
 debug SDK（`make sdk/win32-debug`）**沿用开发配置，即动态**：它从 `build/win32-debug` 安装，会连 7 个
 组 DLL 一起发布，所以「运行时 DLL 发现」必须先解决（§7.3）。只有 release SDK 承诺单个自包含 exe。
+
+### 7.5 逐组迁移的固定流水线与两条坑（2026-09-19，实施中记录）
+
+每刀（cut N = 让第 N 个组 DLL 链通）必须走完这五步，少一步都会在更高层复发：
+
+1. `python annotate_group.py <GROUP> --apply` —— 按 `cross-group-symbols.txt` 标注该切口需要的 owner 类型；
+2. `python add_export_includes.py --apply` —— 给首次用宏的头文件补 `#include "common/Export.h"`；
+3. `python rewrite_group_api.py` —— 把裸 `EVENGINE_API` 换成该文件所属组的宏。**漏掉这步，被标注的类在消费方仍是 dllexport**（模块对象始终定义 `EVENGINE_ENGINE_EXPORTS`），会重演数据符号 LNK2001；
+4. `python apply_inline_variant.py` —— 没有类外成员定义的头文件类型改用 `_INLINE`，否则消费方 dllimport 必然 LNK2019（vtable / 隐式特殊成员 / `static constexpr` 都是 vague linkage，拥有者组无物可导出）；
+5. `ninja <GROUP>.dll` 反复修到零未解析，再跑 `C:\evs` 的 `ninja eve` 做 OBJECT/静态回归。
+
+两条必记的坑：
+
+- **数据符号**（`Module_REG` 的 `<Module>::name`、`capabilityName` 这类静态数据）：导入库里数据只有 `__imp_<data>`，函数才有 thunk。所以这类声明绝不能以 dllexport 出现在消费方 TU 里，必须归到拥有者组的宏。
+- **类级 `dllexport` 会实例化全部成员函数**：持有 `vector<unique_ptr<T>>` / `deque<unique_ptr<T>>` 的类会因此撞 C2280（`vector::operator=` 声明不受约束、函数体才失败，隐式拷贝赋值没有被 deleted，于是强制实例化即硬错）。修法是显式写出四个特殊成员 —— 删拷贝、default 移动，语义不变；含裸 `unique_ptr`/`mutex`/`atomic` 成员的类不受影响（隐式拷贝赋值本来就是 deleted，无函数体可实例化）。
+
+进度（2026-09-19）：EVFoundation / EVPlatform / EVBackends 三个组 DLL 已链通（导出 471→461，依赖含 `ucrtbased.dll` / `VCRUNTIME140D.dll` / `MSVCP140D.dll`），OBJECT 模式 `eve.exe` 每刀后都回归通过；其余四组按上面流水线推进。
