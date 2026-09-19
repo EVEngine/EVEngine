@@ -314,25 +314,26 @@ SDL 头：实测 `#include <SDL.h>` 的预处理输出在 `-DHAVE_LIBC=1` 下多
 `ucrtbased.dll`、`VCRUNTIME140D.dll`、`MSVCP140D.dll`（CRT 初始化确实接上了），入口点是
 `_DllMainCRTStartup` —— 这次来自 CRT。
 
-### 7.2 下一个硬阻塞：跨组符号没有导出（未解决）
+### 7.2 跨组符号面（已枚举，2026-09-19）
 
-`EVPlatform.dll` 链接失败：153 个未解析外部符号，全是**下组定义、但没有导出**的引擎符号，例如
-`eve::isValidUtf8(std::string_view, eve::Utf8NullPolicy)`、
-`eve::asset::SpriteAnimationClip::decode(eve::Value const&)`、
-`eve::platform_event::Message::~Message()`、
-`eve::data::ByteData::ByteData(void const*, unsigned long long)`。
-`dumpbin /exports EVFoundation.dll` = **2,041 个符号**，上述符号都不在其中。
+方法：从 `build.ninja` 的 7 条组 DLL 链接语句取出每组自己的 `.obj`（分别 206 / 152 / 195 / 254 / 388 /
+123 / 84 个），用 `dumpbin /symbols` 汇总每组的 `External` 定义集与未定义集，再按切口分类：
 
-也就是说：N 组切分要求**每一处跨组的模块 API 都带 `EVENGINE_API`**。目前 `src/` 内 219 处标注
-基本只覆盖宿主/插件/测试面（这正是单体与 per-module OBJECT 库不需要更多标注的原因）。
-一个组就要 153 个符号，说明 7 组切分的标注量是数千级，并且会把大量内部 API 变成引擎的导出契约。
-三种切分的代价对比（**待定方向**）：
+- **需要导出**（本组未定义、下组已定义）：`EVPlatform` 230、`EVBackends` 170、`EVWorld` 387、
+  `EVDomains` 761、`EVOrchestration` 419、`EVEditors` 460，去重后 **1,848 个符号 / 349 个 owner 类型**。
+- **只能靠改分层**（只在上层定义、下层拿不到）：**3 个**，全在 `EVPlatform` 切口，都是
+  `eve::scene::Scene` 的 `pickScreenAt` / `collectFrustumIdsAt` / `applyPcgTerrainCullingAt`：
+  声明在 `src/modules/scene/Scene.h`（scene，L1），实现却在 `src/modules/graphics/ScenePicking.cpp`
+  （graphics，L4）。这是真实的上行引用，导出救不了 —— 要么把实现搬回 scene，要么按
+  「低层经接口/能力调用高层」改成 capability + 注册。
 
-| 切分 | 跨组需标注的符号 | 磁盘收益（引擎调试信息只存一份） | 代价 |
-| --- | --- | --- | --- |
-| 7 组（既定路线） | 数千（EVPlatform 一组 153） | 同下 | 标注量最大，导出面变契约面 |
-| 2~3 组 | 随切分数下降 | 相同 | 组内裁剪粒度变粗 |
-| 单个引擎 DLL | ≈ 宿主/测试面（基本已标注） | 相同 | 回到单体 DLL，失去分层裁剪 |
+校准：`EVPlatform` 这一刀有 ground truth（那次失败链接报出的 153 条未解析符号）。上表对这 153 个的
+**召回率 1.000**；反方向 230 个里有 77 个是假阳 —— 它们只出现在被链接器丢弃的 COMDAT（未使用的内联
+函数体）里，标注同一批 owner 时会被一并覆盖，无害。
+
+结论：既定路线（7 组命名 DLL + `EVENGINE_API`）的代价是**约 1,850 处跨组导出标注**（不是数万）
+加 3 个上行引用的重构；磁盘收益不变（引擎调试信息只存一份）。标注按 owner 类型做（349 个），
+所以实际改动是数百个头文件里的类/函数声明。完整清单用同样方法可复现（枚举脚本落在工作目录，未入库）。
 
 ### 7.3 运行时发现与待办
 
