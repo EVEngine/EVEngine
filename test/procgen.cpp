@@ -2,31 +2,12 @@
 #include "zeroerr/unittest.h"
 #include <bit>
 
+#include "asset/procgen/TerrainMaterialAtlas.h"
 #include "data/ByteData.h"
 #include "filesystem/FileData.h"
 #include "graphics/AmbientOcclusion.h"
 #include "graphics/AntiAliasing.h"
 #include "graphics/Canvas.h"
-#include "procgen/Procgen.h"
-#include "procgen/GeneratorRegistry.h"
-#include "procgen/Semantic.h"
-#include "procgen/JsonExport.h"
-#include "procgen/MeshBuild.h"
-#include "procgen/algorithms/MarchingCubes.h"
-#include "procgen/algorithms/LinearStructure.h"
-#include "procgen/heightmap/TerrainAsset.h"
-#include "procgen/heightmap/TerrainFile.h"
-#include "procgen/heightmap/TerrainPipeline.h"
-#include "procgen/heightmap/TerrainStreaming.h"
-#include "procgen/algorithms/CastleMesh.h"
-#include "procgen/texture/TextureRecipe.h"
-#include "water_scene_fixture.h"
-#include "procgen/texture/PbrMaterial.h"
-#include "procgen/texture/NoiseField.h"
-#include "procgen/texture/ColorRamp.h"
-#include "map/TileLayer.h"
-#include "image/ImageData.h"
-#include "graphics/Graphics.h"
 #include "graphics/ClipSpace.h"
 #include "graphics/DrawItem2D.h"
 #include "graphics/Font.h"
@@ -56,13 +37,19 @@
 #include "procgen/MeshBuild.h"
 #include "procgen/Procgen.h"
 #include "procgen/Semantic.h"
+#include "procgen/algorithms/CastleMesh.h"
+#include "procgen/algorithms/HexTerrain.h"
 #include "procgen/algorithms/LinearStructure.h"
 #include "procgen/algorithms/MarchingCubes.h"
-#include "procgen/algorithms/HexTerrain.h"
+#include "procgen/heightmap/TerrainAsset.h"
+#include "procgen/heightmap/TerrainFile.h"
+#include "procgen/heightmap/TerrainPipeline.h"
+#include "procgen/heightmap/TerrainStreaming.h"
 #include "procgen/texture/ColorRamp.h"
 #include "procgen/texture/NoiseField.h"
 #include "procgen/texture/PbrMaterial.h"
 #include "procgen/texture/TextureRecipe.h"
+#include "water_scene_fixture.h"
 #include "window/Window.h"
 
 #include <glm/gtc/matrix_transform.hpp>
@@ -1942,6 +1929,118 @@ TEST_CASE("procgen.terrain.mesh.lodSkirtsStableSeamsAndMaterialWeights") {
     CHECK(lakeMesh.getVertexCount() > 0);
     CHECK(meshIndicesInRange(lakeMesh));
     CHECK(meshNormalsFiniteUnit(lakeMesh, 0.001f));
+}
+
+TEST_CASE("procgen.terrain.materialShaderRendersPortableSixteenLayerContract") {
+    auto *gfx = eve::graphics::Graphics::create();
+    if (!gfx->isHeadless()) gfx->initHeadless(64, 64);
+    Procgen procgen;
+    auto   *shader = procgen.createTerrainMaterialShader(gfx);
+    REQUIRE(shader != nullptr);
+    CHECK_EQ(shader->usedFloats(), 32);
+    CHECK(shader->hasUniform("terrainLayer0ST"));
+    CHECK(shader->hasUniform("terrainLayer3ST"));
+    CHECK(shader->hasUniform("terrainMetallic"));
+    CHECK(shader->hasUniform("terrainNormalScale"));
+    CHECK(shader->hasUniform("terrainSmoothness"));
+    CHECK(shader->hasUniform("terrainFeatures"));
+    float normalScale[4]{};
+    CHECK_EQ(shader->getFromVar("terrainNormalScale", normalScale, sizeof(normalScale)), int(sizeof(normalScale)));
+    for (float value : normalScale) CHECK_EQ(value, 1.f);
+
+    const float positions[] = {
+        -1.f, -1.f, 0.5f, 1.f, -1.f, 0.5f, 1.f, 1.f, 0.5f, -1.f, 1.f, 0.5f,
+    };
+    const float normals[] = {
+        0.f, 0.f, 1.f, 0.f, 0.f, 1.f, 0.f, 0.f, 1.f, 0.f, 0.f, 1.f,
+    };
+    const float    uvs[]     = {0.f, 0.f, 1.f, 0.f, 1.f, 1.f, 0.f, 1.f};
+    const uint32_t indices[] = {0, 2, 1, 2, 0, 3};
+    auto          *mesh      = gfx->newMeshFromArrays(positions, normals, uvs, 4, indices, 6);
+    REQUIRE(mesh != nullptr);
+    auto solidImage = [](std::uint32_t width, std::uint32_t height, std::array<std::uint8_t, 4> color) {
+        eve::asset_procgen::TerrainAtlasImage image{width, height};
+        image.pixels.resize(std::size_t(width) * height * 4);
+        for (std::size_t offset = 0; offset < image.pixels.size(); offset += 4)
+            std::copy(color.begin(), color.end(), image.pixels.begin() + std::ptrdiff_t(offset));
+        return image;
+    };
+    eve::asset_procgen::TerrainMaterialAtlases    atlases;
+    eve::asset_procgen::TerrainMaterialAtlasGroup group;
+    group.firstLayer = 0;
+    group.layerCount = 1;
+    group.tileWidth  = 1;
+    group.tileHeight = 1;
+    group.albedo     = solidImage(2, 2, {16, 240, 24, 255});
+    group.normal     = solidImage(2, 2, {128, 128, 255, 255});
+    group.mask       = solidImage(2, 2, {0, 0, 0, 255});
+    group.control    = solidImage(1, 1, {255, 0, 0, 255});
+    atlases.groups.push_back(std::move(group));
+    atlases.holes = solidImage(1, 1, {255, 255, 255, 255});
+    auto uploaded = eve::asset_procgen::uploadTerrainMaterialAtlases(*gfx, atlases);
+    REQUIRE(uploaded.ok());
+    auto materialRef = eve::AssetRef::parse("asset://550e8400-e29b-41d4-a716-446655440000");
+    REQUIRE(materialRef.ok());
+    eve::asset_procgen::LoadedTerrainMaterial material{materialRef.value()};
+    material.layers.resize(1);
+    material.layers[0].normalConvention = "opengl";
+    REQUIRE(eve::asset_procgen::bindTerrainMaterialGroup(*shader, uploaded.value(), material, 0).ok());
+
+    eve::graphics::Lighting3DPack lighting{};
+    lighting.ambient = glm::vec4(1.f, 1.f, 1.f, 0.f);
+    gfx->setMesh3DLighting(lighting);
+    gfx->setMesh3DViewProj(glm::mat4(1.f));
+    gfx->setMesh3DView(glm::mat4(1.f));
+    gfx->setMesh3DCameraPos(glm::vec3(0.f, 0.f, 3.f));
+    auto *canvas = gfx->newCanvas(64, 64);
+    REQUIRE(canvas != nullptr);
+    gfx->begin3DFrameToCanvas(canvas);
+    gfx->drawMeshShader(mesh, glm::mat4(1.f), uploaded.value().groups[0].control, glm::vec4(1.f), shader);
+    gfx->end3DFrameToCanvas();
+    std::unique_ptr<eve::image::ImageData> pixels(canvas->newImageData());
+    REQUIRE(pixels != nullptr);
+    const auto *rgba = static_cast<const uint8_t *>(pixels->getData()) + (32 * 64 + 32) * 4;
+    CHECK(rgba[1] > rgba[0] + 40);
+    CHECK(rgba[1] > rgba[2] + 40);
+    REQUIRE(eve::asset_procgen::releaseTerrainMaterialAtlases(*gfx, uploaded.value()).ok());
+
+    eve::asset_procgen::TerrainMaterialAtlases    grouped;
+    eve::asset_procgen::TerrainMaterialAtlasGroup firstGroup;
+    firstGroup.firstLayer = 0;
+    firstGroup.layerCount = 4;
+    firstGroup.tileWidth = firstGroup.tileHeight = 1;
+    firstGroup.albedo                            = solidImage(2, 2, {240, 16, 16, 255});
+    firstGroup.normal                            = solidImage(2, 2, {128, 128, 255, 255});
+    firstGroup.mask                              = solidImage(2, 2, {0, 0, 0, 255});
+    firstGroup.control                           = solidImage(1, 1, {0, 0, 0, 0});
+    eve::asset_procgen::TerrainMaterialAtlasGroup secondGroup;
+    secondGroup.firstLayer = 4;
+    secondGroup.layerCount = 1;
+    secondGroup.tileWidth = secondGroup.tileHeight = 1;
+    secondGroup.albedo                             = solidImage(2, 2, {16, 240, 24, 255});
+    secondGroup.normal                             = solidImage(2, 2, {128, 128, 255, 255});
+    secondGroup.mask                               = solidImage(2, 2, {0, 0, 0, 255});
+    secondGroup.control                            = solidImage(1, 1, {255, 0, 0, 0});
+    grouped.groups                                 = {std::move(firstGroup), std::move(secondGroup)};
+    grouped.holes                                  = solidImage(1, 1, {255, 255, 255, 255});
+    material.layers.resize(5);
+    for (auto &layer : material.layers) layer.normalConvention = "opengl";
+    auto packed = eve::asset_procgen::packTerrainMaterialAtlases(grouped, material);
+    REQUIRE(packed.ok());
+    auto packedGpu = eve::asset_procgen::uploadPackedTerrainMaterialAtlases(*gfx, packed.value());
+    REQUIRE(packedGpu.ok());
+    REQUIRE(eve::asset_procgen::bindPackedTerrainMaterial(*shader, packedGpu.value()).ok());
+    auto *packedCanvas = gfx->newCanvas(64, 64);
+    REQUIRE(packedCanvas != nullptr);
+    gfx->begin3DFrameToCanvas(packedCanvas);
+    gfx->drawMeshShader(mesh, glm::mat4(1.f), packedGpu.value().controls, glm::vec4(1.f), shader);
+    gfx->end3DFrameToCanvas();
+    std::unique_ptr<eve::image::ImageData> packedPixels(packedCanvas->newImageData());
+    REQUIRE(packedPixels != nullptr);
+    const auto *packedRgba = static_cast<const uint8_t *>(packedPixels->getData()) + (32 * 64 + 32) * 4;
+    CHECK(packedRgba[1] > packedRgba[0] + 40);
+    CHECK(packedRgba[1] > packedRgba[2] + 40);
+    REQUIRE(eve::asset_procgen::releasePackedTerrainMaterialAtlases(*gfx, packedGpu.value()).ok());
 }
 
 TEST_CASE("procgen.wfc.simple.reproducible") {

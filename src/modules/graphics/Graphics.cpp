@@ -51,6 +51,7 @@
 #include "graphics/ScreenSpaceReflection.h"
 #include "graphics/ShaderScriptBindings.h"
 #include "graphics/Texture.h"
+#include "graphics/VegetationScriptBindings.h"
 #include "graphics/Volumetric.h"
 #include "graphics/Water.h"
 #include "graphics/PcgWaterPhotoMode.h"
@@ -277,6 +278,7 @@ void Graphics::expose(ssq::Table& table) {
     exposePcgWaterPhotoModeBindings(table);
     exposeWaterUnderwaterEffectsBindings(table);
     exposeShaderScriptBindings(table, cls);
+    exposeVegetationScriptBindings(table, cls);
     exposeCanvasScriptBindings(table);
 
 #ifndef EVENGINE_WEBGPU
@@ -372,6 +374,11 @@ void Graphics::expose(ssq::Table& table) {
     shader.addFunc("sendVec2", &Shader::sendVec2);
     shader.addFunc("sendVec3", &Shader::sendVec3);
     shader.addFunc("sendVec4", &Shader::sendVec4);
+    shader.addFunc("setMeshTexture", [](Shader* self, int slot, Texture* texture) {
+        if (slot < 0) throw Exception("Shader.setMeshTexture: slot must be in [0,4)");
+        auto result = self->setMeshTexture(static_cast<std::size_t>(slot), texture);
+        if (!result) throw Exception("Shader.setMeshTexture: slot must be in [0,4)");
+    });
     shader.addFunc("hasUniform", &Shader::hasUniform);
     shader.addFunc("getUniformIndex", &Shader::getUniformIndex);
 
@@ -590,6 +597,8 @@ void Graphics::expose(ssq::Table& table) {
     material.addFunc("getDepthWrite", &Material::getDepthWrite);
     material.addFunc("setDoubleSided", &Material::setDoubleSided);
     material.addFunc("getDoubleSided", &Material::getDoubleSided);
+    material.addFunc("setCameraFacing", &Material::setCameraFacing);
+    material.addFunc("getCameraFacing", &Material::getCameraFacing);
     material.addFunc("setSortPriority", &Material::setSortPriority);
     material.addFunc("getSortPriority", &Material::getSortPriority);
     material.addFunc("setAlphaTechnique", &Material::setAlphaTechnique);

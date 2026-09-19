@@ -4,6 +4,11 @@
 #include "graphics/Mesh.h"
 
 namespace eve::asset_graphics {
+Result<void> GraphicsMeshFactoryAdapter::setMeshTangentFrame(graphics::Mesh* mesh, std::span<const float> tangents,
+                                                             std::span<const float> bitangents) {
+    if (!mesh) return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "null mesh"));
+    return mesh->setTangentFrame(tangents, bitangents);
+}
 namespace {
 
 template <class T>

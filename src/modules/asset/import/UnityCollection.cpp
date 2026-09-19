@@ -36,12 +36,21 @@ Result<PreparedAssetImport> importSource(const UnityProjectImportRequest& reques
             DiagnosticCode::Unsupported, "a .meta GUID is required for stable collection asset identity", source.path);
     const auto ext = detail::extension(source.path);
     if (ext == "anim") return prepareUnitySpriteAnimation(request, source);
-    if (ext == "asset") return prepareUnityNativeMesh(request, source);
+    if (ext == "asset") {
+        const auto&            bytes = request.files.at(source.path);
+        const std::string_view text(reinterpret_cast<const char*>(bytes.data()), bytes.size());
+        if (text.find("\nTexture2D:") != std::string_view::npos) return prepareUnityNativeTexture(request, source);
+        if (text.find("\nTexture3D:") != std::string_view::npos)
+            return prepareUnityNativeVolumeTexture(request, source);
+        return prepareUnityNativeMesh(request, source);
+    }
     if (ext == "fbx") return prepareUnityFbx(request, source);
+    if (ext == "tvepreset") return prepareUnityVegetationPreset(request, source);
+    if (source.kind == UnitySourceKind::Scene) return prepareUnityVegetationScene(request, source);
     if (source.kind == UnitySourceKind::Material) return prepareUnityMaterial(request, source);
     auto identity      = request.package;
     identity.packageId = request.package.packageId.child("unity:" + source.guid);
-    if (ext == "png" || ext == "jpg" || ext == "jpeg") {
+    if (ext == "png" || ext == "jpg" || ext == "jpeg" || ext == "tif" || ext == "tiff" || ext == "tga") {
         const auto&       meta = request.files.at(source.path + ".meta");
         const std::string text(meta.begin(), meta.end());
         const std::regex  srgb(R"((?:^|\n)\s*sRGBTexture:\s*0(?:\s|$))");
@@ -114,10 +123,14 @@ Result<PreparedAssetImport> prepareUnityCollection(const UnityProjectImportReque
         auto imported = importSource(resolved, source);
         if (!imported) {
             const auto* error = imported.status().primaryDiagnostic();
-            if (!error || error->code() != DiagnosticCode::Unsupported)
+            const bool missingMaterialDependency =
+                error && error->code() == DiagnosticCode::NotFound &&
+                source.kind == UnitySourceKind::Material;
+            if (!error || (error->code() != DiagnosticCode::Unsupported && !missingMaterialDependency))
                 return Result<PreparedAssetImport>::failure(imported.status());
             out.findings.push_back(
-                {source.path, "resource.conversion", ImportDisposition::Unsupported, error->message()});
+                {source.path, missingMaterialDependency ? "resource.dependency" : "resource.conversion",
+                 ImportDisposition::Unsupported, error->message()});
             continue;
         }
         auto merged = mergeImport(out, std::move(imported).takeValue(), source, request.limits);

@@ -2,6 +2,7 @@
 
 /** @file EvpackGraphicsLoader.h @brief Transactional graphics consumers for canonical runtime assets. */
 
+#include "asset/CanonicalMesh.h"
 #include "asset/EvpackResourceReader.h"
 #include "graphics/IMeshResourceFactory.h"
 
@@ -21,6 +22,11 @@ struct LoadedGraphicsMesh {
     std::uint32_t texcoordSet = 0;
     /** @brief Available source UV channels, validated before upload. */
     std::vector<std::uint32_t> availableTexcoordSets;
+    /** @brief Detached owning authoring streams; retained for deformation and material adapters.
+     * These CPU
+     * values outlive archive staging and are not implicitly consumed by the PBR shader.
+     */
+    std::map<std::string, asset::CanonicalMeshAttribute> attributes;
 };
 
 /** @brief Bounds applied before allocating canonical mesh staging arrays. */
@@ -60,6 +66,9 @@ public:
     /** @copydoc graphics::IMeshResourceFactory::setMeshTexcoords */
     [[nodiscard]] Result<void> setMeshTexcoords(graphics::Mesh* mesh, std::uint32_t set,
                                                 std::span<const float> values) override;
+    /** @copydoc graphics::IMeshResourceFactory::setMeshTangentFrame */
+    [[nodiscard]] Result<void> setMeshTangentFrame(graphics::Mesh* mesh, std::span<const float> tangents,
+                                                   std::span<const float> bitangents) override;
 
 private:
     graphics::IResourceFactory& factory_;

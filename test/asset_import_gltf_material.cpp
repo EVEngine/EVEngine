@@ -5,6 +5,7 @@
 #include "asset/EvpackResourceReader.h"
 #include "asset/RuntimeDefinition.h"
 #include "asset/import/AssetImporter.h"
+#include "asset/import/ImportCommon.h"
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 using namespace eve;
@@ -69,6 +70,57 @@ TEST_CASE("asset.import.gltfMissingTextureFailsAtomically") {
     REQUIRE(!prepareGltfImport(request).ok());
 }
 
+#ifdef EVE_TEST_MESH_UPLOAD
+TEST_CASE("asset.import.materialV14ColorParametersSurviveV15CookWithImageDependency") {
+    auto imported = prepareGltfImport(materialTriangle());
+    REQUIRE(imported.ok());
+    auto bytes = asset::buildEvaArchive(imported.value().manifest, imported.value().entries);
+    REQUIRE(bytes.ok());
+    auto archive = asset::parseEvaArchive(bytes.value());
+    REQUIRE(archive.ok());
+    const auto ref = imported.value().manifest.entrypoints.at("material:0");
+    // Stage an authored N-1 definition. Cooking migrates and rehashes the owning candidate.
+    for (auto& material : archive.value().manifest.assets) {
+        if (material.asset != ref) continue;
+        material.schemaVersion = SchemaVersion(14);
+        for (auto& entry : archive.value().entries) {
+            if (entry.path != material.definition) continue;
+            auto decoded = Value::fromJson(std::string(entry.bytes.begin(), entry.bytes.end()));
+            REQUIRE(decoded.ok());
+            auto& root                    = *decoded.value().getIf<Value::Object>();
+            root["schemaVersion"]         = 14;
+            root.erase("alphaToCoverage");
+            root["albedoTextureStrength"] = .25;
+            root["colorMask"] =
+                Value::Object{{"secondary", Value::Array{2.0, .1, .3}}, {"minimum", .2}, {"maximum", .8}};
+            auto json = decoded.value().toJson();
+            REQUIRE(json.ok());
+            entry.bytes.assign(json.value().begin(), json.value().end());
+            material.contentHash = asset_import::detail::sha256(entry.bytes);
+        }
+    }
+    for (auto& dependency : archive.value().manifest.dependencies)
+        if (dependency.to == ref) dependency.expectedType = "eve.material/14";
+    auto profile = asset::assetCookProfileForTarget("windows-x86_64-vulkan");
+    REQUIRE(profile.ok());
+    auto cooked = asset::cookEvaToEvpack(archive.value(), profile.value());
+    if (!cooked) std::cerr << cooked.error()->message() << '\n';
+    REQUIRE(cooked.ok());
+    auto pack = asset::parseEvpack(cooked.value().bytes);
+    REQUIRE(pack.ok());
+    asset::EvpackResourceReader reader(std::make_shared<const asset::Evpack>(std::move(pack).takeValue()));
+    asset::EvpackCapabilities   caps{"windows", "x86_64", "vulkan", {"rgba8"}, {"spirv-1.6"}, {"high"}, {}};
+    auto                        runtime = asset_graphics::detail::readCookedMaterial(reader, ref, caps);
+    REQUIRE(runtime.ok());
+    REQUIRE(runtime.value().surface.colorMaskEnabled);
+    REQUIRE_EQ(runtime.value().surface.colorMaskSecondary[0], 2.f);
+    REQUIRE_EQ(runtime.value().surface.albedoTextureStrength, .25f);
+    REQUIRE(runtime.value().images[1].has_value());
+    auto image = reader.read(*runtime.value().images[1], "eve.image/3", caps, 1024 * 1024);
+    REQUIRE(image.ok());
+}
+#endif
+
 TEST_CASE("asset.import.gltfMaterialSupportsIdentityTransformAndRejectsBudget") {
     auto        request = materialTriangle();
     std::string text(request.documentBytes.begin(), request.documentBytes.end());
@@ -106,7 +158,8 @@ TEST_CASE("asset.import.gltfMaterialExtensionsRetainParametersAndTextures") {
         REQUIRE(value.ok());
         auto* o = value.value().getIf<Value::Object>();
         if (o->at("schema").asString() != "eve.material") continue;
-        REQUIRE_EQ(o->at("schemaVersion").asInt(), int64_t(2));
+        REQUIRE_EQ(o->at("schemaVersion").asInt(), int64_t(15));
+        REQUIRE(!o->at("alphaToCoverage").asBool());
         REQUIRE_EQ(o->at("specularFactor").asDouble(), 0.4);
         REQUIRE_EQ(o->at("anisotropyRotation").asDouble(), -1.5);
         REQUIRE_EQ(o->at("emissiveStrength").asDouble(), 3.0);
@@ -129,7 +182,7 @@ TEST_CASE("asset.import.gltfMaterialExtensionsRetainParametersAndTextures") {
     asset::EvpackResourceReader reader(std::make_shared<const asset::Evpack>(std::move(pack).takeValue()));
     asset::EvpackCapabilities   caps{"windows", "x86_64", "vulkan", {"rgba8"}, {"spirv-1.6"}, {"high"}, {}};
     auto                        payload =
-        reader.read(imported.value().manifest.entrypoints.at("material:0"), "eve.material/2", caps, 1024 * 1024);
+        reader.read(imported.value().manifest.entrypoints.at("material:0"), "eve.material/15", caps, 1024 * 1024);
     REQUIRE(payload.ok());
 #ifdef EVE_TEST_MESH_UPLOAD
     auto runtime = eve::asset_graphics::detail::readCookedMaterial(
@@ -152,7 +205,7 @@ TEST_CASE("asset.import.gltfMaterialExtensionsRetainParametersAndTextures") {
         REQUIRE_EQ(material.at("clearcoatNormalScale").asDouble(), 0.3);
         auto imageRef = AssetRef::parse(material.at("specularColorTexture").asString());
         REQUIRE(imageRef.ok());
-        auto image = reader.read(imageRef.value(), "eve.image/2", caps, 1024 * 1024);
+        auto image = reader.read(imageRef.value(), "eve.image/3", caps, 1024 * 1024);
         REQUIRE(image.ok());
         retained = true;
     }

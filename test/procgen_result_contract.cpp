@@ -172,8 +172,73 @@ TEST_CASE("procgen.result.squirrelExecutionAndSchedulerShareProjection") {
         assert(graph.validateResult().ok);
         local result = graph.executeResult("source");
         assert(result.ok && result.hasValue && result.value.getCount() == 1);
+        local objectLayer = eve.ProcgenObjectBuildLayer();
+        assert(objectLayer.addAsset("props/rock", 1.0).ok);
+        objectLayer.setSeed(99);
+        assert(objectLayer.setRandomScale(0.8, 1.2, 0.8, 1.2, 0.8, 1.2, true).ok);
+        assert(objectLayer.addChild("props/rubble", 2, 0.5, 0.2, 0.4, -180.0, 180.0).ok);
+        local builtObjects = objectLayer.build(result.value);
+        assert(builtObjects.ok && builtObjects.value.getCount() == 3);
+        assert(builtObjects.value.getStringAttribute(0, "asset", "") == "props/rock");
+        assert(builtObjects.value.getStringAttribute(1, "object_role", "") == "child");
+        assert(builtObjects.value.getIntAttribute(1, "parent_index", -2) == 0);
+        local buildStack = eve.ProcgenBuildLayerStack();
+        assert(buildStack.addTileLayer("tiles", true, 1.0, 0.25, "script").ok);
+        assert(buildStack.addObjectLayer("objects", true, objectLayer).ok);
+        local stackDefinition = buildStack.serializeDefinition();
+        local restoredStack = eve.ProcgenBuildLayerStack();
+        assert(restoredStack.deserializeDefinition(stackDefinition).ok);
+        local stackGrid = procgen.newGrid(1, 1).value;
+        assert(stackGrid.setCell(0, 0, 2).ok);
+        local stackResult = restoredStack.execute(stackGrid, result.value);
+        assert(stackResult.ok && stackResult.value.getCount() == 2);
+        assert(stackResult.value.getType(0) == "mesh" && stackResult.value.getMesh(0).ok);
+        assert(stackResult.value.getType(1) == "points" && stackResult.value.getPoints(1).ok);
+        local incremental = eve.ProcgenIncrementalBuildExecutor();
+        local firstDelta = incremental.update(restoredStack, stackGrid, result.value, 1, 1.0);
+        assert(firstDelta.ok && firstDelta.value.getCount() == 1);
+        assert(firstDelta.value.getClusterX(0) == 0 && !firstDelta.value.isRemoved(0));
+        assert(firstDelta.value.getArtifacts(0).ok);
+        local stableDelta = incremental.update(restoredStack, stackGrid, result.value, 1, 1.0);
+        assert(stableDelta.ok && stableDelta.value.getCount() == 0);
+        assert(incremental.getCachedClusterCount() == 1);
+        assert(incremental.getCachedArtifacts(0, 0).ok);
         local missing = graph.executeResult("missing");
         assert(!missing.ok && missing.value == null && missing.diagnostics[0].path == "missing");
+        local gridGraph = procgen.newGridGraph().value;
+        assert(gridGraph.addNode("noise", "generate.random_noise").ok);
+        assert(gridGraph.setNodeInt("noise", "width", 4).ok);
+        assert(gridGraph.setNodeInt("noise", "height", 4).ok);
+        assert(gridGraph.setNodeInt("noise", "seed", 7).ok);
+        assert(gridGraph.setNodeFloat("noise", "x", 1.0).ok);
+        local generatedGrid = gridGraph.execute("noise");
+        assert(generatedGrid.ok && generatedGrid.value.getWidth() == 4);
+        local ownedGrid = procgen.newGrid(3, 2);
+        assert(ownedGrid.ok && ownedGrid.value.fill(0).ok);
+        assert(ownedGrid.value.setCell(1, 1, 1).ok);
+        local ownedInputGraph = procgen.newGridGraph().value;
+        assert(ownedInputGraph.addNode("input", "grid.input").ok);
+        assert(ownedInputGraph.setNodeGrid("input", ownedGrid.value).ok);
+        local ownedGridCopy = ownedInputGraph.execute("input");
+        assert(ownedGridCopy.ok && ownedGridCopy.value.getCell(1, 1) == 1);
+        local registryGraph = procgen.newGridGraph().value;
+        assert(registryGraph.addNode("level", "generate.registry").ok);
+        assert(registryGraph.setNodeString("level", "algorithm", "level.roguelike").ok);
+        assert(registryGraph.setNodeInt("level", "width", 25).ok);
+        assert(registryGraph.setNodeInt("level", "height", 19).ok);
+        assert(registryGraph.setNodeInt("level", "seed", 435).ok);
+        assert(registryGraph.addNode("floors", "select.semantic").ok);
+        assert(registryGraph.setNodeInt("floors", "semantic", 2).ok);
+        assert(registryGraph.connect("level", "floors", 0).ok);
+        local semanticFloors = registryGraph.execute("floors");
+        assert(semanticFloors.ok && semanticFloors.value.getWidth() == 25);
+        local meshGraph = procgen.newMeshGraph().value;
+        assert(meshGraph.addNode("grid", "grid.input").ok);
+        assert(meshGraph.addNode("tiles", "mesh.grid_tiles").ok);
+        assert(meshGraph.setNodeGrid("grid", generatedGrid.value).ok);
+        assert(meshGraph.connect("grid", "tiles", 0).ok);
+        local generatedMesh = meshGraph.execute("tiles");
+        assert(generatedMesh.ok && generatedMesh.value.getIndexCount() > 0);
         local runtime = procgen.newRuntimeGeneration(19).value;
         local empty = runtime.nextCleanupRequest();
         assert(empty.ok && empty.value == null);
@@ -194,4 +259,54 @@ TEST_CASE("procgen.result.squirrelExecutionAndSchedulerShareProjection") {
         assert(runtime.failGenerationJob(retry.value).ok);
         assert(!runtime.failGenerationJob(retry.value).ok);
     )"));
+}
+
+TEST_CASE("procgen.scriptHostCommitsAndRollsBackGeneratorsAtomically") {
+    ssq::VM vm(2048, ssq::Libs::ALL);
+    eve::ModuleManager::expose(vm);
+    vm.run(vm.compileSource(R"(
+        local procgen = eve.Procgen();
+        local params = procgen.newParams().value;
+        params.setInt("count", 3);
+        local good = {
+            generate = function(params, ctx) {
+                local points = procgen.sampleGrid(params.getInt("count", 1), 1, 2.0,
+                                                  ctx.seedFor("points"), 0.0).value;
+                if (!ctx.captureDebug("sampled", points)) throw ctx.getError();
+                if (!ctx.publish("points", points)) throw ctx.getError();
+            }
+        };
+        firstRun <- procgen.runScriptGenerator(good, params, "script-host-test", 41);
+        firstOutput <- procgen.getSystemOutput("script-host-test", "points");
+        firstCount <- firstOutput.value.getCount();
+        firstRevision <- procgen.getSystemRevision("script-host-test");
+        local broken = {
+            generate = function(params, ctx) {
+                local replacement = procgen.sampleGrid(1, 1, 1.0, 1, 0.0).value;
+                ctx.publish("points", replacement);
+                throw "intentional generator failure";
+            }
+        };
+        failedRun <- procgen.runScriptGenerator(broken, params, "script-host-test", 99);
+        afterFailure <- procgen.getSystemOutput("script-host-test", "points");
+        afterFailureCount <- afterFailure.value.getCount();
+        afterFailureRevision <- procgen.getSystemRevision("script-host-test");
+        local unfinished = {
+            generate = function(params, ctx) { ctx.beginTrace("open", 0); }
+        };
+        unfinishedRun <- procgen.runScriptGenerator(unfinished, params, "script-host-test", 99);
+        afterUnfinishedRevision <- procgen.getSystemRevision("script-host-test");
+    )"));
+
+    auto first = vm.find("firstRun").toTable();
+    REQUIRE(first.get<bool>("ok"));
+    auto receipt = first.get<ssq::Table>("value");
+    CHECK_EQ(receipt.get<std::int64_t>("revision"), std::int64_t(1));
+    CHECK_EQ(vm.find("firstCount").toInt(), 3);
+    CHECK_EQ(vm.find("firstRevision").toInt(), 1);
+    CHECK(!vm.find("failedRun").toTable().get<bool>("ok"));
+    CHECK_EQ(vm.find("afterFailureCount").toInt(), 3);
+    CHECK_EQ(vm.find("afterFailureRevision").toInt(), 1);
+    CHECK(!vm.find("unfinishedRun").toTable().get<bool>("ok"));
+    CHECK_EQ(vm.find("afterUnfinishedRevision").toInt(), 1);
 }

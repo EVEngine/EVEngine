@@ -258,7 +258,7 @@ void applySolidMarch(float mode, float scale, float minLayers, float maxLayers,
     shadow = mix(1.0, selfShadow(uv, 1.0 - hit.w, lightTS, scale,
                                  minLayers, maxLayers), 0.55);
     // Mild contact darkening in mortar trenches (reads depth without soft pillows).
-    float trench = smoothstep(0.85, 0.40, h);
+    float trench = 1.0 - smoothstep(0.40, 0.85, h);
     shadow *= mix(1.0, 0.72, trench);
 }
 

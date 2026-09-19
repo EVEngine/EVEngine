@@ -734,6 +734,26 @@ bool autotileGridInPlace(Grid2D &grid) {
     return grid.getWidth() > 0 && grid.getHeight() > 0;
 }
 
+eve::Result<void> autotileOccupiedGridInPlace(Grid2D &grid) {
+    if (grid.getWidth() <= 0 || grid.getHeight() <= 0)
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "autotile grid dimensions must be positive", {}, {},
+            "procgen.gridGraph"));
+    constexpr int dx[] = {0, 1, 0, -1, 1, 1, -1, -1};
+    constexpr int dy[] = {-1, 0, 1, 0, -1, 1, 1, -1};
+    for (int y = 0; y < grid.getHeight(); ++y) {
+        for (int x = 0; x < grid.getWidth(); ++x) {
+            int mask = 0;
+            if (uint32_t(grid.getCell(x, y)) != Semantic::Empty)
+                for (int direction = 0; direction < 8; ++direction)
+                    if (uint32_t(grid.getCell(x + dx[direction], y + dy[direction])) != Semantic::Empty)
+                        mask |= 1 << direction;
+            grid.setDetail(x, y, mask);
+        }
+    }
+    return eve::Result<void>::success();
+}
+
 uint32_t randomSeedValue() {
     std::random_device rd;
     const uint32_t v = rd();

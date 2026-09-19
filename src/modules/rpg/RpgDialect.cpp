@@ -229,6 +229,105 @@ StepOutcome applyVariable(const SequenceNode& node, const StepContext& context) 
     return completed();
 }
 
+// --- movement controller ---------------------------------------------------------------------
+
+/** @brief Render a coordinate without trailing zeros, for diagnostics. */
+std::string formatCoordinate(double value) {
+    if (std::fabs(value - std::round(value)) <= kNumberEpsilon)
+        return std::to_string(static_cast<long long>(std::llround(value)));
+    return std::to_string(value);
+}
+
+/**
+ * @brief Route a `move` step to the host movement controller, or present it.
+ *
+ * Without a controller the handler returns `Blocked` without doing anything,
+ * which is observationally identical to the runtime's own host-presented
+ * suspension: the story suspends, the host reads the payload and acknowledges
+ * with `advance`. A binding that installs no controller therefore behaves
+ * exactly as it did before a controller could be installed.
+ */
+StepOutcome performMove(const SequenceNode& node, const StepContext& context) {
+    auto* binding = static_cast<RpgStoryBinding*>(context.host);
+    if (!binding || !binding->moveActor) {
+        StepOutcome presented;
+        presented.status = StepStatus::Blocked;
+        return presented;
+    }
+
+    StoryMoveRequest request;
+    request.actorId = stringField(node, "actor");
+    request.actor   = resolveActor(binding, request.actorId);
+    request.x       = numberField(node, "x", 0.0);
+    request.y       = numberField(node, "y", 0.0);
+    if (const eve::Value* duration = field(node, "duration"); duration && duration->isNumeric()) {
+        request.hasDuration = true;
+        request.duration    = numberField(node, "duration", 0.0);
+    }
+
+    auto started = binding->moveActor(request);
+    if (!started.ok()) {
+        const auto* diagnostic = started.error();
+        return failed(diagnostic ? diagnostic->message() : "move step: the movement controller failed");
+    }
+    switch (started.value()) {
+        case StoryMoveStatus::Arrived: return completed();
+        case StoryMoveStatus::Unreachable:
+            return failed("move step: actor '" + request.actorId + "' cannot reach (" + formatCoordinate(request.x) +
+                          ", " + formatCoordinate(request.y) + ")");
+        case StoryMoveStatus::Travelling: break;
+    }
+    StepOutcome travelling;
+    travelling.status = StepStatus::Blocked;
+    return travelling;
+}
+
+// --- animation controller --------------------------------------------------------------------
+
+/**
+ * @brief Route an `animation` step to the host playback controller, or present it.
+ *
+ * Without a controller the handler returns `Blocked` without doing anything,
+ * which is observationally identical to the runtime's own host-presented
+ * suspension: the story suspends, the host reads the payload and acknowledges
+ * with `advance`. A binding that installs no controller therefore behaves
+ * exactly as it did before a controller could be installed.
+ *
+ * `clip` is passed through verbatim: resolving it would have to pick a rig, a
+ * clip format and a playback model, which is precisely the game-mode assumption
+ * the port exists to avoid.
+ */
+StepOutcome performAnimation(const SequenceNode& node, const StepContext& context) {
+    auto* binding = static_cast<RpgStoryBinding*>(context.host);
+    if (!binding || !binding->playAnimation) {
+        StepOutcome presented;
+        presented.status = StepStatus::Blocked;
+        return presented;
+    }
+
+    StoryAnimationRequest request;
+    request.targetId = stringField(node, "target");
+    request.actor    = resolveActor(binding, request.targetId);
+    request.clip     = stringField(node, "clip");
+    request.loop     = boolField(node, "loop", false);
+    request.hold     = boolField(node, "hold", false);
+
+    auto started = binding->playAnimation(request);
+    if (!started.ok()) {
+        const auto* diagnostic = started.error();
+        return failed(diagnostic ? diagnostic->message() : "animation step: the playback controller failed");
+    }
+    switch (started.value()) {
+        case StoryAnimationStatus::Finished: return completed();
+        case StoryAnimationStatus::Unavailable:
+            return failed("animation step: target '" + request.targetId + "' cannot play clip '" + request.clip + "'");
+        case StoryAnimationStatus::Playing: break;
+    }
+    StepOutcome playing;
+    playing.status = StepStatus::Blocked;
+    return playing;
+}
+
 // --- condition evaluation --------------------------------------------------------------------
 
 struct ResolvedState {
@@ -339,14 +438,25 @@ StepKindRegistry buildRpgStoryRegistry() {
         registry.registerHandler(type, std::move(handler)).expect("RPG story step handler must bind");
     };
 
-    // Host-presented steps: registered without a handler, so the runtime suspends
-    // and the host presents the payload before acknowledging with advance().
+    // `move` carries a handler so a host can install a movement controller. With
+    // no controller bound the handler presents the step itself, so both paths
+    // suspend the story and acknowledge with advance().
     declare({"move", "Move an actor", "presentation", StepShape::Await,
              {requiredField("actor", StepFieldType::String), requiredField("x", StepFieldType::Number),
               requiredField("y", StepFieldType::Number), optionalField("duration", StepFieldType::Number)}});
+    bind("move", performMove);
+
+    // `animation` carries a handler for the same reason `move` does: a host can
+    // install a playback controller and stop branching on the step kind. With no
+    // controller bound the handler presents the step itself, so it takes the
+    // same host-presented path as the steps below.
     declare({"animation", "Play an animation clip", "presentation", StepShape::Await,
              {requiredField("target", StepFieldType::String), requiredField("clip", StepFieldType::String),
               optionalField("loop", StepFieldType::Boolean), optionalField("hold", StepFieldType::Boolean)}});
+    bind("animation", performAnimation);
+
+    // Host-presented steps: registered without a handler, so the runtime suspends
+    // and the host presents the payload before acknowledging with advance().
     declare({"select", "Select a world object", "presentation", StepShape::Await,
              {requiredField("object", StepFieldType::String), optionalField("prompt", StepFieldType::String)}});
     declare({"camera", "Move the camera", "presentation", StepShape::Await,

@@ -2,7 +2,7 @@
 
 > 上位设计：`docs/dev/superpowers/specs/2026-09-15-dnut-interpreter-l1-design.md`
 > 状态：**已实施**（§1.1 语言核心、§1.2 RPG 词表、§1.3 测试与文档全部落地；
-> `SequenceDocument` 与 dialogue 迁移按 §4 登记为后续增量）
+> §5 角色移动与 §6 动画播放按增量补齐；`SequenceDocument` 与 dialogue 迁移按 §4 登记为后续增量）
 > 目标（用户原话）：给 dnut 语言中的 rpg 方言添加人物的移动、动画播放、对象的选取、
 > 技能的获取、属性的修改、物品、装备获取等等功能——**完整实现**。
 
@@ -57,7 +57,7 @@ RPG 方言与其 L1 语言核心**，把 dialogue 迁移留作后续增量，理
 ```
 story <id> [repeatable] {
     move      actor=<id> x=<n> y=<n> [duration=<n>]
-    animation target=<id> clip=<uri> [loop] [await]
+    animation target=<id> clip=<uri> [loop] [hold]
     select    object=<id> [prompt=<text>]
     skill     actor=<id> learn=<id>          # forget=<id> 亦为同一步骤的模式
     attribute actor=<id> name=<id> op=set|add value=<n>
@@ -95,3 +95,87 @@ build/win32-debug/test/unit_test.exe "rpg_dialect.*"
 - dialogue 的 conversation/pool 方言尚未迁到 L1 语言核心（设计阶段 1 剩余部分）。
   迁移前，`.dnut` 仍有两套前端；本计划**不新增第三套**——RPG 方言直接消费 L1 词法器与
   块切分器，dialogue 的两套方言保持原状，待迁移时统一。
+
+## 5. 增量：角色移动（对设计 §8 阶段 3 的有意偏离）
+
+设计文档 `2026-09-15-dnut-interpreter-l1-design.md` §8 阶段 3 把移动描述为
+「**基于既有 `map::Pathfinder` + 一个按格移动控制器**」。本次交付**不那样做**，
+改为在 `rpg` 侧提供一个宿主注入的移动端口：
+
+```cpp
+struct RpgStoryBinding {
+    …
+    StoryMoveHandler moveActor;   // Result<StoryMoveStatus>(const StoryMoveRequest&)
+};
+```
+
+偏离理由——设计里那条路会把方言**焊死在一种玩法上**：
+
+1. `map::Pathfinder` 是**格子地图**的寻路器。把 `move` 的实现接到它上面，等于规定
+   `actor` 必须是地图上的实体、`x`/`y` 必须是格坐标、移动必须存在一条格子路径。
+   战棋、连续 3D、横版与轨道序列都会被迫先造一张假地图。
+2. `rpg` 是 **L1**，`map` 更高层；直接依赖会新增一条上行依赖，违反
+   `scripts/module_depgraph.py --check-layers` 的判据。
+3. `move` 的真值只有「谁、去哪里、多久」——**怎么走**是玩法的自由度，不是语言事实。
+
+端口形态保留了两个方向的能力：
+
+- **便捷**：装一个 handler，`move` 步骤自动派发，宿主不再需要在循环里写
+  `if (kind == "move")`；返回 `Arrived` 时（瞬移、已在目标点）剧情不挂起。
+- **灵活**：不装 handler 时行为**逐字不变**——仍是宿主呈现步骤，脚本读 payload 后
+  `advance()`。非队伍主体（地图物件、相机、编队）也能移动，`actor` 投影为 null
+  而步骤照常执行。
+
+取舍明说：**本次不提供按格移动控制器**，因此「内容作者想要一条自动绕障的路径」这件事
+仍然没有开箱实现——那是某个具体玩法适配器的职责，应该建在 `map` 之上而不是
+`dnut_interpreter` 或 `rpg` 里。`x`/`y` 的单位与语义由宿主定义并在其文档中写明。
+
+证据：
+
+- `src/modules/rpg/RpgDialect.h`：`StoryMoveStatus` / `StoryMoveRequest` / `StoryMoveHandler`。
+- `src/modules/rpg/RpgDialect.cpp`：`performMove` + `bind("move", performMove)`；无控制器时
+  返回 `Blocked`，与运行时的宿主呈现挂起**观测等价**。
+- `test/rpg_dialect.cpp`：`FakeMoveWorld` 参考端口 + 六条语义/失败/模式无关用例。
+- `test/rpg_dnut_script.cpp`：Squirrel 端到端驱动 `move` 并核对效果。
+
+## 6. 增量：动画播放（与 §5 同构）
+
+§2 的词表早就声明了 `animation`，但只到「编译能过、运行时把它当宿主呈现步骤挂起」为止：
+没有 handler、没有端口、没有测试、没有样例。本次按 §5 已定的同一形状补齐它，理由是
+这两步的**真值形状完全一样**——「谁、播什么、播完没有」，而「怎么播」同样是玩法的自由度。
+
+端口形态：
+
+```cpp
+enum class StoryAnimationStatus { Finished, Playing, Unavailable };
+struct StoryAnimationRequest { targetId, actor, clip, loop, hold };
+
+struct RpgStoryBinding {
+    …
+    StoryAnimationHandler playAnimation;   // Result<StoryAnimationStatus>(const StoryAnimationRequest&)
+};
+```
+
+与 §5 一致的取舍：
+
+- **便捷**：装一个 handler，`animation` 步骤自动派发，宿主不再需要在循环里写
+  `if (kind == "animation")`；返回 `Finished` 时（瞬发、零长 clip）剧情不挂起。
+- **灵活**：不装 handler 时行为**逐字不变**——仍是宿主呈现步骤，脚本读 payload 后
+  `advance()`。特效挂点、UI 元素等非队伍主体也能作为 `target`，`actor` 投影为 null
+  而步骤照常执行。
+- **不绑死**：`clip` 对引擎是不透明字符串，不解析、不加载。接上某个动画栈（骨骼、
+  Sprite、Spine、montage）是宿主适配器的职责，不是 `dnut_interpreter` 或 `rpg` 的。
+
+字段命名修正：§2 原先写 `[await]`，实现与 `docs/usr/modules/rpg.md` 都是 `[hold]`。
+**以 `hold` 为准**——`await` 与步骤形状 `StepShape::Await`（该步骤本来就挂起）语义重复，
+而 `hold`（播完停在最后一帧）才是宿主真正需要的、引擎无法自行推断的信息。本次同步把
+计划书的 `[await]` 改成 `[hold]`。`loop` / `hold` 均按作者原样透传，引擎不解释。
+
+证据：
+
+- `src/modules/rpg/RpgDialect.h`：`StoryAnimationStatus` / `StoryAnimationRequest` / `StoryAnimationHandler`。
+- `src/modules/rpg/RpgDialect.cpp`：`performAnimation` + `bind("animation", performAnimation)`；无控制器时
+  返回 `Blocked`，与运行时的宿主呈现挂起**观测等价**。
+- `test/rpg_dialect.cpp`：`FakeAnimStage` 参考端口 + 七条语义/失败/模式无关用例。
+- `test/rpg_dnut_script.cpp`：Squirrel 端到端驱动 `animation` 并核对效果。
+

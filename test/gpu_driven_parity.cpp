@@ -1,6 +1,6 @@
+#include "Fixtures.h"
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
-#include "Fixtures.h"
 
 #include "graphics/Graphics.h"
 #include "graphics/Light.h"
@@ -17,6 +17,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <cstdio>
 #include <cstring>
 #include <vector>
 
@@ -24,13 +25,13 @@ using namespace eve::graphics;
 
 namespace {
 
-std::vector<float> captureLuma(Graphics *gfx) {
+std::vector<float> captureLuma(Graphics* gfx) {
     for (int i = 0; i < 4; ++i) {
         RenderSystem3D::render(*gfx);
         RenderSystem::render(*gfx);
     }
-    const int width = gfx->getWidth();
-    const int height = gfx->getHeight();
+    const int          width  = gfx->getWidth();
+    const int          height = gfx->getHeight();
     std::vector<float> pixels;
     pixels.reserve(size_t(width / 4) * size_t(height / 4));
     for (int y = 0; y < height; y += 4) {
@@ -44,29 +45,185 @@ std::vector<float> captureLuma(Graphics *gfx) {
 
 }  // namespace
 
+/** @brief Simplified GPU-driven shaders must reject surface features they do not encode. */
+TEST_CASE("GpuDrivenParity.rejectsUnrepresentedSurfaceFeatures") {
+    eve::window::Window* window = nullptr;
+    Graphics*            gfx    = nullptr;
+    openGfxWindow(window, gfx, 160, 120);
+    if (!gfx->supportsGpuDriven3D()) {
+        window->close();
+        return;
+    }
+
+    Material* transparent = gfx->newMaterial();
+    transparent->setSurfaceMode("transparent");
+    CHECK(!gfx->gpuDrivenMaterialUsable(transparent));
+
+    Material* masked = gfx->newMaterial();
+    masked->setSurfaceMode("masked");
+    CHECK(gfx->gpuDrivenMaterialUsable(masked));
+
+    Material*  extended = gfx->newMaterial();
+    PbrSurface surface;
+    surface.vegetationColor.overlay = 0.5f;
+    REQUIRE(extended->setPbrSurface(surface).ok());
+    CHECK(!gfx->gpuDrivenMaterialUsable(extended));
+    window->close();
+}
+
+TEST_CASE("GpuDrivenParity.materialRecordsReleaseIdempotentlyAndReuseSlots") {
+    eve::window::Window* window = nullptr;
+    Graphics*            gfx    = nullptr;
+    openGfxWindow(window, gfx, 160, 120);
+    if (!gfx->supportsGpuDriven3D()) {
+        window->close();
+        return;
+    }
+
+    Material* first = gfx->newMaterial();
+    REQUIRE(gfx->gpuDrivenMaterialUsable(first));
+    const uint32_t firstSlot = gfx->gpuDrivenMaterialRecord(first);
+    REQUIRE(firstSlot != kInvalidGpuDrivenSlot);
+    REQUIRE(gfx->gpuDrivenReleaseMaterialRecord(first).ok());
+    REQUIRE(gfx->gpuDrivenReleaseMaterialRecord(first).ok());
+
+    Material* second = gfx->newMaterial();
+    REQUIRE(gfx->gpuDrivenMaterialUsable(second));
+    const uint32_t secondSlot = gfx->gpuDrivenMaterialRecord(second);
+    CHECK_EQ(secondSlot, firstSlot);
+    REQUIRE(gfx->gpuDrivenReleaseMaterialRecord(second).ok());
+    window->close();
+}
+
+TEST_CASE("GpuDrivenParity.cameraFacingCardTurnsTowardSideCamera") {
+    eve::window::Window* window = nullptr;
+    Graphics*            gfx    = nullptr;
+    openGfxWindow(window, gfx, 160, 120);
+    if (!gfx->supportsGpuDriven3D()) {
+        window->close();
+        return;
+    }
+
+    const float    positions[] = {-.5f, 0.f, 0.f, .5f, 0.f, 0.f, .5f, 1.f, 0.f, -.5f, 1.f, 0.f};
+    const float    normals[]   = {0.f, 0.f, 1.f, 0.f, 0.f, 1.f, 0.f, 0.f, 1.f, 0.f, 0.f, 1.f};
+    const float    texcoords[] = {0.f, 0.f, 1.f, 0.f, 1.f, 1.f, 0.f, 1.f};
+    const uint32_t indices[]   = {0, 2, 1, 0, 3, 2};
+    Mesh*          mesh        = gfx->newMeshFromArrays(positions, normals, texcoords, 4, indices, 6);
+    REQUIRE(mesh != nullptr);
+    const uint8_t green[]  = {32, 240, 64, 255};
+    Material*     material = gfx->newMaterial();
+    material->setAlbedoTexture(gfx->newTexture(1, 1, green));
+    material->setDoubleSided(true);
+    material->setCastShadow(false);
+    material->setCastOcclusion(false);
+    auto* card = Renderable3D::create();
+    card->setMesh(mesh);
+    card->setMaterial(material);
+
+    auto* camera = Camera3D::createCamera();
+    camera->setEye(3.f, .5f, 0.f);
+    camera->setTarget(0.f, .5f, 0.f);
+    camera->setAmbient(1.f, 1.f, 1.f);
+    gfx->setScreenReadbackEnabled(true);
+    auto* control = gfx->getRenderControl();
+    for (const char* pass : {"ao", "gi", "aa", "atmosphere", "msaa", "visResolve"}) control->disable(pass);
+    control->enable("gpuDriven");
+
+    auto sum = [&]() {
+        const auto pixels = captureLuma(gfx);
+        float      total  = 0.f;
+        for (float value : pixels) total += value;
+        return total;
+    };
+    material->setCameraFacing(false);
+    const float edgeOn = sum();
+    material->setCameraFacing(true);
+    const float facing = sum();
+    REQUIRE(gfx->gpuDrivenEnabled());
+    CHECK(facing > edgeOn + 2.f);
+    CHECK(facing > 5.f);
+    window->close();
+}
+
+/** @brief Both backends preserve an authored masked cutoff in GPU-driven shading. */
+TEST_CASE("GpuDrivenParity.maskedAlphaCutoff") {
+    eve::window::Window* window = nullptr;
+    Graphics*            gfx    = nullptr;
+    openGfxWindow(window, gfx, 160, 120);
+    if (!gfx->supportsGpuDriven3D()) {
+        window->close();
+        return;
+    }
+
+    const float    positions[] = {-.7f, -.7f, 0.f, .7f, -.7f, 0.f, .7f, .7f, 0.f, -.7f, .7f, 0.f};
+    const float    normals[]   = {0.f, 0.f, 1.f, 0.f, 0.f, 1.f, 0.f, 0.f, 1.f, 0.f, 0.f, 1.f};
+    const float    texcoords[] = {0.f, 0.f, 1.f, 0.f, 1.f, 1.f, 0.f, 1.f};
+    const uint32_t indices[]   = {0, 1, 2, 0, 2, 3};
+    Mesh*          mesh        = gfx->newMeshFromArrays(positions, normals, texcoords, 4, indices, 6);
+    REQUIRE(mesh != nullptr);
+    const uint8_t orange[] = {230, 100, 32, 153};  // alpha = 0.6
+    Texture*      texture  = gfx->newTexture(1, 1, orange);
+    auto          makeMaterial = [&](float cutoff) {
+        Material* material = gfx->newMaterial();
+        material->setAlbedoTexture(texture);
+        material->setSurfaceMode("masked");
+        material->setAlphaCutoff(cutoff);
+        material->setDoubleSided(true);
+        material->setCastShadow(false);
+        material->setCastOcclusion(false);
+        return material;
+    };
+    Material* visible = makeMaterial(.25f);
+    Material* clipped = makeMaterial(.75f);
+    auto*     card    = Renderable3D::create();
+    card->setMesh(mesh);
+    card->setMaterial(visible);
+
+    auto* camera = Camera3D::createCamera();
+    camera->setEye(0.f, 0.f, 3.f);
+    camera->setTarget(0.f, 0.f, 0.f);
+    camera->setAmbient(1.f, 1.f, 1.f);
+    gfx->setScreenReadbackEnabled(true);
+    auto* control = gfx->getRenderControl();
+    for (const char* pass : {"ao", "gi", "aa", "atmosphere", "msaa", "visResolve"}) control->disable(pass);
+    control->enable("gpuDriven");
+
+    auto sum = [&]() {
+        float total = 0.f;
+        for (float value : captureLuma(gfx)) total += value;
+        return total;
+    };
+    const float visibleSum = sum();
+    card->setMaterial(clipped);
+    const float clippedSum = sum();
+    REQUIRE(gfx->gpuDrivenEnabled());
+    CHECK(visibleSum > clippedSum + 5.f);
+    window->close();
+}
+
 /** @brief Backend-neutral parity for opaque GPU culling and indirect submission. */
 TEST_CASE("GpuDrivenParity.opaqueStage1") {
-    eve::window::Window *window = nullptr;
-    Graphics *gfx = nullptr;
+    eve::window::Window* window = nullptr;
+    Graphics*            gfx    = nullptr;
     openGfxWindow(window, gfx, 320, 240);
     if (!gfx->supportsGpuDriven3D()) {
         window->close();
         return;
     }
 
-    auto *camera = Camera3D::createCamera();
+    auto* camera = Camera3D::createCamera();
     camera->setEye(0.f, 3.5f, 5.5f);
     camera->setTarget(0.f, 0.f, 0.f);
     camera->setAmbient(0.08f, 0.08f, 0.1f);
 
-    const uint8_t red[4] = {210, 65, 55, 255};
+    const uint8_t red[4]   = {210, 65, 55, 255};
     const uint8_t green[4] = {55, 205, 85, 255};
-    Mesh *mesh = gfx->newMeshSphere(24, 16);
-    auto addBall = [&](float x, float y, float z, const uint8_t *rgba) {
-        Material *material = gfx->newMaterial();
+    Mesh*         mesh     = gfx->newMeshSphere(24, 16);
+    auto          addBall  = [&](float x, float y, float z, const uint8_t* rgba) {
+        Material* material = gfx->newMaterial();
         material->setAlbedoTexture(gfx->newTexture(1, 1, rgba));
         material->setRoughness(0.5f);
-        auto *object = Renderable3D::create();
+        auto* object = Renderable3D::create();
         object->setMesh(mesh);
         object->setMaterial(material);
         object->setPosition(x, y, z);
@@ -79,13 +236,13 @@ TEST_CASE("GpuDrivenParity.opaqueStage1") {
     addBall(-1.17f, -0.595f, -1.65f, red);
     addBall(0.f, 0.35f, 20.f, red);  // Behind the camera; rejected by culling.
 
-    auto *sun = Light3D::createLight("dir");
+    auto* sun = Light3D::createLight("dir");
     sun->setDirection(0.55f, 1.f, 0.35f);
     sun->setColor(1.f, 1.f, 1.f, 2.5f);
     sun->setCastShadow(false);
 
     gfx->setScreenReadbackEnabled(true);
-    RenderControl *control = gfx->getRenderControl();
+    RenderControl* control = gfx->getRenderControl();
     // Isolate opaque submission and reconstruction from temporal/post passes.
     control->disable("ao");
     control->disable("gi");
@@ -98,7 +255,7 @@ TEST_CASE("GpuDrivenParity.opaqueStage1") {
     const std::vector<float> driven = captureLuma(gfx);
     REQUIRE(gfx->gpuDrivenEnabled());
 #ifdef EVENGINE_WEBGPU
-    auto *webgpu = dynamic_cast<eve::graphics::webgpu::Graphics *>(gfx);
+    auto* webgpu = dynamic_cast<eve::graphics::webgpu::Graphics*>(gfx);
     REQUIRE(webgpu != nullptr);
     REQUIRE(webgpu->debugGpuDrivenVisibleCount() == 3);
     REQUIRE(webgpu->debugGpuDrivenHzbMipCount() > 1);
@@ -107,14 +264,13 @@ TEST_CASE("GpuDrivenParity.opaqueStage1") {
     REQUIRE(webgpu->debugGpuDrivenIndirectDrawCount() == 2);
 #endif
     REQUIRE(legacy.size() == driven.size());
-    float maxDelta = 0.f;
-    float legacySum = 0.f;
-    float drivenSum = 0.f;
-    float deltaSum = 0.f;
+    float  maxDelta        = 0.f;
+    float  legacySum       = 0.f;
+    float  drivenSum       = 0.f;
+    float  deltaSum        = 0.f;
     size_t divergentPixels = 0;
-    size_t maxIndex = 0;
-    for (size_t i = 0; i < legacy.size(); ++i)
-    {
+    size_t maxIndex        = 0;
+    for (size_t i = 0; i < legacy.size(); ++i) {
         const float delta = std::abs(legacy[i] - driven[i]);
         if (delta > maxDelta) {
             maxDelta = delta;
@@ -125,10 +281,11 @@ TEST_CASE("GpuDrivenParity.opaqueStage1") {
         deltaSum += delta;
         if (delta >= 0.03f) ++divergentPixels;
     }
-    std::printf("GpuDrivenParity forward maxDelta=%f index=%zu legacy=%f driven=%f "
-                "legacySum=%f drivenSum=%f meanDelta=%f divergent=%zu/%zu\n",
-                maxDelta, maxIndex, legacy[maxIndex], driven[maxIndex], legacySum, drivenSum,
-                deltaSum / float(legacy.size()), divergentPixels, legacy.size());
+    std::printf(
+        "GpuDrivenParity forward maxDelta=%f index=%zu legacy=%f driven=%f "
+        "legacySum=%f drivenSum=%f meanDelta=%f divergent=%zu/%zu\n",
+        maxDelta, maxIndex, legacy[maxIndex], driven[maxIndex], legacySum, drivenSum, deltaSum / float(legacy.size()),
+        divergentPixels, legacy.size());
     // Indirect and direct rasterization can select opposite samples along a
     // sub-pixel silhouette. Measure whole-frame agreement while still bounding
     // both aggregate error and the number of visibly divergent samples.
@@ -153,19 +310,19 @@ TEST_CASE("GpuDrivenParity.opaqueStage1") {
 
 /** @brief Backend-neutral VG compute-cull, indirect-vis and resolve coverage. */
 TEST_CASE("GpuDrivenParity.virtualGeometry") {
-    eve::window::Window *window = nullptr;
-    Graphics *gfx = nullptr;
+    eve::window::Window* window = nullptr;
+    Graphics*            gfx    = nullptr;
     openGfxWindow(window, gfx, 320, 240);
     if (!gfx->supportsGpuDriven3D()) {
         window->close();
         return;
     }
 
-    const float positions[] = {-1.1f, -0.9f, 0.f, 1.1f, -0.9f, 0.f, 0.f, 1.1f, 0.f};
-    const float normals[] = {0.f, 0.f, 1.f, 0.f, 0.f, 1.f, 0.f, 0.f, 1.f};
-    const uint32_t indices[] = {0, 1, 2};
-    GpuVgCluster cluster{};
-    auto bits = [](float value) {
+    const float    positions[] = {-1.1f, -0.9f, 0.f, 1.1f, -0.9f, 0.f, 0.f, 1.1f, 0.f};
+    const float    normals[]   = {0.f, 0.f, 1.f, 0.f, 0.f, 1.f, 0.f, 0.f, 1.f};
+    const uint32_t indices[]   = {0, 1, 2};
+    GpuVgCluster   cluster{};
+    auto           bits = [](float value) {
         uint32_t out = 0;
         std::memcpy(&out, &value, sizeof(out));
         return out;
@@ -177,15 +334,15 @@ TEST_CASE("GpuDrivenParity.virtualGeometry") {
     cluster.u1[0] = 0;
     cluster.u1[1] = 1;
     cluster.u1[3] = 0xFFFFFFFFu;
-    for (uint32_t &child : cluster.u3) child = 0xFFFFFFFFu;
+    for (uint32_t& child : cluster.u3) child = 0xFFFFFFFFu;
     GpuVgAssetUpload upload{};
-    upload.positions = positions;
-    upload.vertexCount = 3;
-    upload.normals = normals;
-    upload.triangles = indices;
-    upload.triangleCount = 3;
-    upload.clusters = &cluster;
-    upload.clusterCount = 1;
+    upload.positions       = positions;
+    upload.vertexCount     = 3;
+    upload.normals         = normals;
+    upload.triangles       = indices;
+    upload.triangleCount   = 3;
+    upload.clusters        = &cluster;
+    upload.clusterCount    = 1;
     const uint32_t assetId = gfx->gpuDrivenVgUpload(upload);
     // Vulkan devices without drawIndirectCount still support the ordinary
     // GPU-driven path, but intentionally reject compacted VG command streams.
@@ -194,13 +351,13 @@ TEST_CASE("GpuDrivenParity.virtualGeometry") {
         return;
     }
 
-    Mesh *mesh = gfx->newMeshFromArrays(positions, normals, nullptr, 3, indices, 3);
+    Mesh* mesh = gfx->newMeshFromArrays(positions, normals, nullptr, 3, indices, 3);
     REQUIRE(mesh != nullptr);
     REQUIRE(gfx->gpuDrivenVgAttachToMesh(mesh, assetId));
     REQUIRE(gfx->gpuDrivenVgAssetId(mesh) == assetId);
-    Material *material = gfx->newMaterial();
+    Material* material = gfx->newMaterial();
     material->setTint(0.9f, 0.2f, 0.1f);
-    auto *object = Renderable3D::create();
+    auto* object = Renderable3D::create();
     object->setMesh(mesh);
     object->setMaterial(material);
     object->setPosition(0.f, 0.f, 0.f);
@@ -210,24 +367,24 @@ TEST_CASE("GpuDrivenParity.virtualGeometry") {
     // the previous-frame HZB is available.
     const uint32_t hiddenAssetId = gfx->gpuDrivenVgUpload(upload);
     REQUIRE(hiddenAssetId != kInvalidGpuDrivenSlot);
-    Mesh *hiddenMesh = gfx->newMeshFromArrays(positions, normals, nullptr, 3, indices, 3);
+    Mesh* hiddenMesh = gfx->newMeshFromArrays(positions, normals, nullptr, 3, indices, 3);
     REQUIRE(gfx->gpuDrivenVgAttachToMesh(hiddenMesh, hiddenAssetId));
-    auto *hiddenObject = Renderable3D::create();
+    auto* hiddenObject = Renderable3D::create();
     hiddenObject->setMesh(hiddenMesh);
     hiddenObject->setMaterial(material);
     hiddenObject->setPosition(0.f, 0.f, -4.f);
 
-    auto *camera = Camera3D::createCamera();
+    auto* camera = Camera3D::createCamera();
     camera->setEye(0.f, 0.f, 3.2f);
     camera->setTarget(0.f, 0.f, 0.f);
     camera->setAmbient(0.35f, 0.35f, 0.35f);
-    auto *sun = Light3D::createLight("dir");
+    auto* sun = Light3D::createLight("dir");
     sun->setDirection(0.f, 0.f, -1.f);
     sun->setColor(1.f, 1.f, 1.f, 1.5f);
     sun->setCastShadow(false);
 
     gfx->setScreenReadbackEnabled(true);
-    RenderControl *control = gfx->getRenderControl();
+    RenderControl* control = gfx->getRenderControl();
     control->disable("ao");
     control->disable("gi");
     control->disable("aa");
@@ -240,7 +397,7 @@ TEST_CASE("GpuDrivenParity.virtualGeometry") {
 #ifdef EVENGINE_WEBGPU
     const Color visible = gfx->getPixel(gfx->getWidth() / 2, gfx->getHeight() / 2);
     REQUIRE(visible.r > visible.b + 0.05f);
-    auto *webgpu = dynamic_cast<eve::graphics::webgpu::Graphics *>(gfx);
+    auto* webgpu = dynamic_cast<eve::graphics::webgpu::Graphics*>(gfx);
     REQUIRE(webgpu != nullptr);
     REQUIRE(webgpu->debugGpuDrivenVgDispatchCount() == 2);
     REQUIRE(webgpu->debugGpuDrivenVgGpuVisibleCount() == 1);

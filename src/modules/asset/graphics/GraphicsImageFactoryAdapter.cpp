@@ -1,6 +1,7 @@
 #include "asset/graphics/EvpackImageLoader.h"
 
 #include "graphics/IResourceFactory.h"
+#include "graphics/Texture.h"
 
 #include <limits>
 
@@ -33,6 +34,18 @@ Result<graphics::Texture*> GraphicsImageFactoryAdapter::uploadRgba8(
     return Result<graphics::Texture*>::success(texture);
 }
 
+Result<graphics::Texture*> GraphicsImageFactoryAdapter::uploadRgba8MipChain(uint32_t width, uint32_t height,
+                                                                            uint32_t                 levels,
+                                                                            std::span<const uint8_t> pixels) {
+    return factory_.newTextureMipChain(width, height, levels, pixels);
+}
+
+Result<graphics::Texture*> GraphicsImageFactoryAdapter::uploadRgba8Volume(uint32_t width, uint32_t height,
+                                                                          uint32_t                 depth,
+                                                                          std::span<const uint8_t> pixels) {
+    return factory_.newTexture3DRgba8(width, height, depth, pixels);
+}
+
 Result<void> GraphicsImageFactoryAdapter::releaseImage(graphics::Texture* texture) {
     if (!texture)
         return failure<void>(DiagnosticCode::InvalidArgument,
@@ -40,6 +53,8 @@ Result<void> GraphicsImageFactoryAdapter::releaseImage(graphics::Texture* textur
     if (!factory_.releaseTexture(texture))
         return failure<void>(DiagnosticCode::Failed,
                              "graphics backend rejected texture release");
+    // Successful backend release transfers the detached CPU facade to this caller.
+    delete texture;
     return Result<void>::success();
 }
 

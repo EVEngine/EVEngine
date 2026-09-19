@@ -46,6 +46,18 @@ struct CaptureExtraDrawerEntry {
 };
 std::vector<CaptureExtraDrawerEntry> g_captureDrawers;
 uint64_t                             g_nextCaptureDrawerToken = 1;
+struct ForwardExtraDrawerEntry {
+    uint64_t                           token = 0;
+    RenderSystem3D::ForwardExtraDrawer drawer;
+};
+std::vector<ForwardExtraDrawerEntry> g_forwardDrawers;
+uint64_t                             g_nextForwardExtraDrawerToken = 1;
+struct GpuOpaqueCollectorEntry {
+    uint64_t                           token = 0;
+    RenderSystem3D::GpuOpaqueCollector collector;
+};
+std::vector<GpuOpaqueCollectorEntry> g_gpuOpaqueCollectors;
+uint64_t                             g_nextGpuOpaqueCollectorToken = 1;
 
 glm::vec3 gLightDir   = glm::normalize(glm::vec3(0.4f, 1.f, 0.3f));
 glm::vec3 gLightColor = glm::vec3(1.f);
@@ -458,6 +470,36 @@ void RenderSystem3D::removeCaptureExtraDrawer(uint64_t token) {
         std::remove_if(g_captureDrawers.begin(), g_captureDrawers.end(),
                        [token](const CaptureExtraDrawerEntry& entry) { return entry.token == token; }),
         g_captureDrawers.end());
+}
+
+uint64_t RenderSystem3D::addForwardExtraDrawer(ForwardExtraDrawer drawer) {
+    if (!drawer) return 0;
+    const uint64_t token = g_nextForwardExtraDrawerToken++;
+    g_forwardDrawers.push_back(ForwardExtraDrawerEntry{token, std::move(drawer)});
+    return token;
+}
+
+void RenderSystem3D::removeForwardExtraDrawer(uint64_t token) {
+    if (token == 0) return;
+    g_forwardDrawers.erase(
+        std::remove_if(g_forwardDrawers.begin(), g_forwardDrawers.end(),
+                       [token](const ForwardExtraDrawerEntry& entry) { return entry.token == token; }),
+        g_forwardDrawers.end());
+}
+
+uint64_t RenderSystem3D::addGpuOpaqueCollector(GpuOpaqueCollector collector) {
+    if (!collector) return 0;
+    const uint64_t token = g_nextGpuOpaqueCollectorToken++;
+    g_gpuOpaqueCollectors.push_back(GpuOpaqueCollectorEntry{token, std::move(collector)});
+    return token;
+}
+
+void RenderSystem3D::removeGpuOpaqueCollector(uint64_t token) {
+    if (token == 0) return;
+    g_gpuOpaqueCollectors.erase(
+        std::remove_if(g_gpuOpaqueCollectors.begin(), g_gpuOpaqueCollectors.end(),
+                       [token](const GpuOpaqueCollectorEntry& entry) { return entry.token == token; }),
+        g_gpuOpaqueCollectors.end());
 }
 
 uint64_t RenderSystem3D::addShadowExtraDrawer(ShadowExtraDrawer drawer) {
@@ -904,7 +946,8 @@ void RenderSystem3D::render(Graphics& gfx) {
     }
 
     // G-buffer fill (sampleable depth/normal) — before the forward swapchain pass.
-    if (doGBuffer && defaultCam && (haveManager || !g_gbufferDrawers.empty())) {
+    if (doGBuffer && defaultCam &&
+        (haveManager || !g_gbufferDrawers.empty() || !g_gpuOpaqueCollectors.empty())) {
         eve::debug::rtPassBegin("GBufferPass");
         const CameraView& cv = cams[0];  // default camera is slot 0
         const int         gw = std::max(1, gfx.getPixelWidth() > 0 ? gfx.getPixelWidth() : gfx.getWidth());
@@ -991,7 +1034,7 @@ void RenderSystem3D::render(Graphics& gfx) {
         if (!canvas.commands().empty() || !canvas.triangles().empty()) gfx.drawPrimitiveScene(canvas);
     };
 
-    if (!haveManager) {
+    if (!haveManager && g_forwardDrawers.empty() && g_gpuOpaqueCollectors.empty()) {
         drawPersistentPrimitives();
         return;
     }
@@ -1164,7 +1207,8 @@ void RenderSystem3D::render(Graphics& gfx) {
 
     if (doForward) {
         bool gpuDrivenUsed = false;
-        if (gpuDrivenWanted && !useClustered && defaultCam && !opaque.empty()) {
+        if (gpuDrivenWanted && !useClustered && defaultCam &&
+            (!opaque.empty() || !g_gpuOpaqueCollectors.empty())) {
             bool eligible = true;
             for (const CulledItem* it : opaque) {
                 if (it->mesh->hasGpuSkinning() || it->camIdx != 0 || !it->material || it->mr->camera != nullptr ||
@@ -1234,6 +1278,11 @@ void RenderSystem3D::render(Graphics& gfx) {
                     }
                     instances.push_back(inst);
                 }
+                if (recordsOk && !g_gpuOpaqueCollectors.empty()) {
+                    const auto collectors = g_gpuOpaqueCollectors;
+                    for (const auto& entry : collectors)
+                        entry.collector(gfx, *cd, cv.viewProj, aspect, instances);
+                }
                 if (recordsOk) {
                     // Stage 2: GPU frustum/HZB cull + GPU-written indirect commands.
                     if (gfx.gpuDrivenCullEnabled() && !instances.empty() &&
@@ -1270,6 +1319,28 @@ void RenderSystem3D::render(Graphics& gfx) {
         if (!gpuDrivenUsed) {
             if (gfx.gpuDrivenScenePassPending()) gfx.gpuDrivenOpenScenePass();
             for (const CulledItem* item : opaque) drawMeshWithMaterial(*item, cams[size_t(item->camIdx)]);
+        }
+        if (defaultCam && !g_forwardDrawers.empty()) {
+            if (gfx.gpuDrivenScenePassPending()) gfx.gpuDrivenOpenScenePass();
+            const CameraView&     cv = cams.front();
+            const Camera3D::Data* cd = cv.data;
+            gfx.setMesh3DViewProj(cv.viewProj);
+            gfx.setMesh3DView(cv.view);
+            gfx.setMesh3DClip(cd->nearZ, cd->farZ);
+            gfx.setMesh3DCameraPos(cv.eye);
+            gfx.setMesh3DEnv(cd->envMap, cd->envIntensity);
+            gfx.setMesh3DEnvProbe(cd->envProbeCenter, cd->envProbeExtent);
+            gfx.setMesh3DReflectionProbes(ReflectionProbeUpload{});
+            gfx.setMesh3DLighting(cv.lighting);
+            if (useClustered)
+                gfx.setMesh3DClusteredLighting(cv.clustered);
+            else {
+                ClusteredLightingUpload off{};
+                off.active = false;
+                gfx.setMesh3DClusteredLighting(off);
+            }
+            const auto drawers = g_forwardDrawers;
+            for (const auto& entry : drawers) entry.drawer(gfx, *cd, cv.viewProj, aspect);
         }
     }
     if (doForward || doHair) {
