@@ -371,9 +371,10 @@ jobs:
       - name: Build win32 debug
         # A PR that changes the third-party patch/cache key must do a full cold
         # dependency plus engine/test build. Recent windows-2025 runners can
-        # exceed 40 minutes without any compiler failure, so retain a bounded
-        # hang guard while allowing the cold build to finish.
-        timeout-minutes: 60
+        # exceed 60 minutes without any compiler failure as the full test
+        # manifest grows, so retain a bounded hang guard while allowing the
+        # cold build and final unit-test link to finish.
+        timeout-minutes: 75
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |

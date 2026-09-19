@@ -75,6 +75,7 @@ void EditorHost::exposeScriptApi(ssq::VM&) {}
 #include "platform_event/PlatformEvent.h"
 #include "timer/Timer.h"
 #include "ui/UI.h"
+#include "ui/ControlPrimitives.h"
 #include "window/Window.h"
 
 #include <Poco/Dynamic/Var.h>
@@ -85,6 +86,7 @@ void EditorHost::exposeScriptApi(ssq::VM&) {}
 #include <Poco/JSON/Stringifier.h>
 
 #include <imgui.h>
+#include <imgui_internal.h>
 #include <simplesquirrel/simplesquirrel.hpp>
 #include <squirrel.h>
 
@@ -822,6 +824,7 @@ void renderWidget(EditorHost::Impl& I, Editor& ed, Object::Ptr w) {
     const bool enabled = boolOf(w, "enabled", true);
     if (!enabled) {
         ImGui::PushStyleVar(ImGuiStyleVar_Alpha, ImGui::GetStyle().Alpha * 0.5f);
+        ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
     }
 
     const auto cur = [&](const char* key, const Var& def) -> Var {
@@ -859,17 +862,12 @@ void renderWidget(EditorHost::Impl& I, Editor& ed, Object::Ptr w) {
     } else if (type == "input") {
         std::string buf = varString(cur("value", strOf(w, "value")));
         const bool multi = boolOf(w, "multiline", false);
-        bool changed = false;
-        if (multi) {
-            changed = ImGui::InputTextMultiline(widgetIdLabel(w).c_str(), buf.data(),
-                                                buf.size() + 64,
-                                                ImVec2(floatOf(w, "width", 0.f), floatOf(w, "height", 96.f)));
-        } else {
-            buf.resize(512);
-            changed = ImGui::InputText(widgetIdLabel(w).c_str(), buf.data(), buf.size());
-        }
+        const bool changed =
+            controls::inputText(widgetIdLabel(w).c_str(), buf, multi,
+                                ImVec2(floatOf(w, "width", 0.f),
+                                       floatOf(w, "height", 96.f))) ==
+            controls::ControlEdit::Changed;
         if (enabled && changed && !id.empty()) {
-            buf.resize(strlen(buf.c_str()));
             setWidgetValue(I, ed, id, Var(buf));
         }
         recordRect(ed, id);
@@ -881,7 +879,9 @@ void renderWidget(EditorHost::Impl& I, Editor& ed, Object::Ptr w) {
         const float lo = floatOf(w, "min", 0.f), hi = floatOf(w, "max", 1.f);
         const std::string fmt = strOf(w, "format", "%.2f");
         bool changed = false;
-        if (n == 1) changed = ImGui::SliderFloat(widgetIdLabel(w).c_str(), &v[0], lo, hi, fmt.c_str());
+        if (n == 1)
+            changed = controls::slider(widgetIdLabel(w).c_str(), v[0], lo, hi, fmt.c_str()) ==
+                      controls::ControlEdit::Changed;
         else if (n == 2) changed = ImGui::SliderFloat2(widgetIdLabel(w).c_str(), v, lo, hi, fmt.c_str());
         else changed = ImGui::SliderFloat3(widgetIdLabel(w).c_str(), v, lo, hi, fmt.c_str());
         if (enabled && changed && !id.empty()) {
@@ -906,7 +906,9 @@ void renderWidget(EditorHost::Impl& I, Editor& ed, Object::Ptr w) {
         recordRect(ed, id);
     } else if (type == "checkbox") {
         bool b = varBool(cur("value", false), boolOf(w, "value", false));
-        if (enabled && ImGui::Checkbox(widgetIdLabel(w).c_str(), &b) && !id.empty())
+        if (enabled &&
+            controls::checkbox(widgetIdLabel(w).c_str(), b) == controls::ControlEdit::Changed &&
+            !id.empty())
             setWidgetValue(I, ed, id, Var(b));
         recordRect(ed, id);
     } else if (type == "dropdown" || type == "listbox") {
@@ -919,8 +921,8 @@ void renderWidget(EditorHost::Impl& I, Editor& ed, Object::Ptr w) {
             if (opts[i] == sel) idx = static_cast<int>(i);
         bool changed = false;
         if (type == "dropdown")
-            changed = !opts.empty() && ImGui::Combo(widgetIdLabel(w).c_str(), &idx, items.data(),
-                                                    static_cast<int>(items.size()));
+            changed = controls::combo(widgetIdLabel(w).c_str(), idx, items) ==
+                      controls::ControlEdit::Changed;
         else
             changed = !opts.empty() && ImGui::ListBox(widgetIdLabel(w).c_str(), &idx, items.data(),
                                                       static_cast<int>(items.size()),
@@ -929,7 +931,9 @@ void renderWidget(EditorHost::Impl& I, Editor& ed, Object::Ptr w) {
             setWidgetValue(I, ed, id, Var(opts[static_cast<size_t>(idx)]));
         recordRect(ed, id);
     } else if (type == "button") {
-        if (enabled && ImGui::Button(widgetIdLabel(w).c_str(), ImVec2(floatOf(w, "width", 0.f), 0.f))) {
+        if (enabled &&
+            controls::button(widgetIdLabel(w).c_str(), floatOf(w, "width", 0.f)) ==
+                controls::ControlEdit::Changed) {
             emitEvent(ed, "click", id, Var());
             const std::string cmd = strOf(w, "command", strOf(w, "action"));
             if (!cmd.empty() && !ed.vmName.empty() && I.vm) {
@@ -1041,6 +1045,7 @@ void renderWidget(EditorHost::Impl& I, Editor& ed, Object::Ptr w) {
     const std::string tip = strOf(w, "tooltip");
     if (!tip.empty() && ImGui::IsItemHovered()) ImGui::SetTooltip("%s", tip.c_str());
     if (!enabled) {
+        ImGui::PopItemFlag();
         ImGui::PopStyleVar();
     }
 }
