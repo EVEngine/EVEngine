@@ -483,6 +483,11 @@ function(main)
     endif()
     add_subdirectory(src/engine)
     add_subdirectory(src/modules)
+
+# Group the module OBJECT libraries into the link units consumers use
+# (EVENGINE_MODULE_LINKAGE=SHARED). Must come after src/modules so every module
+# target exists, and before anything that links EVE_LINK_TARGETS.
+include(${CMAKE_SOURCE_DIR}/cmake/link_groups.cmake)
     if(EVENGINE_BUILD_PIXELWORLD_BENCHMARK)
         add_subdirectory(benchmarks/pixelworld)
     endif()
@@ -613,56 +618,20 @@ macro(create_module libname folder)
     # like Window.cpp). Use STATIC archives under Xcode to keep linking stable.
     if(CMAKE_GENERATOR MATCHES "Xcode")
         add_library(${libname} STATIC ${module_src})
-    elseif(EVENGINE_MODULE_LINKAGE STREQUAL "SHARED")
-        add_library(${libname} SHARED ${module_src})
-        if(WIN32)
-            # Per-module .def built from this module's objects only. The symbol
-            # count is a few hundred to a few thousand, far below MSVC's 65535
-            # export limit that a single whole-engine DLL would exceed.
-            set_target_properties(${libname} PROPERTIES
-                WINDOWS_EXPORT_ALL_SYMBOLS ON)
-        else()
-            # ELF/Mach-O need default visibility for the module boundary to be
-            # usable by consumers; inline code stays hidden so it is emitted in
-            # the consumer instead of duplicated in every module.
-            set_target_properties(${libname} PROPERTIES
-                CXX_VISIBILITY_PRESET default
-                VISIBILITY_INLINES_HIDDEN OFF)
-        endif()
     else()
         add_library(${libname} OBJECT ${module_src})
+    endif()
+    # In SHARED mode these objects are aggregated into a link-group shared
+    # library (cmake/link_groups.cmake), so they must be position independent on
+    # ELF/Mach-O. The module stays an OBJECT library: the manifest, profiles,
+    # per-module compile settings and the source scan are unchanged, and the
+    # grouping lives entirely in EVE_LINK_GROUP_TABLE.
+    if(EVENGINE_MODULE_LINKAGE STREQUAL "SHARED")
+        set_target_properties(${libname} PROPERTIES POSITION_INDEPENDENT_CODE ON)
     endif()
     # Opt the module into the shared engine include set (was global
     # include_directories before; see eve_engine_includes in main()).
     target_link_libraries(${libname} PUBLIC eve_engine_includes)
-
-    # Materialize the manifest DEPS as real link edges. OBJECT libraries never
-    # needed them -- every consumer absorbed every object -- but a module DLL has
-    # to link the module DLLs it calls into. `folder` is the module name at every
-    # call site (the manifest passes ${_mod}, src/engine passes the module name),
-    # so no call site has to change. PRIVATE: EVELIBS already links every enabled
-    # module into every consumer, so nothing depends on this propagating.
-    if(EVENGINE_MODULE_LINKAGE STREQUAL "SHARED")
-        # LAYER -1 `common` is the base every module sits on: CORE, REQUIRED, and
-        # the only foundation module with no DEPS of its own (Exception, Result,
-        # Assert, Capability). Every module uses it, so it is a base edge rather
-        # than 200 identical manifest rows; EVE_MODULE_*_DEPS stays the place for
-        # real module-to-module dependencies. Skipped for common itself, which
-        # would otherwise be a self-cycle.
-        if(DEFINED EVE_MODULE_common_LIB
-           AND TARGET "${EVE_MODULE_common_LIB}"
-           AND NOT "${libname}" STREQUAL "${EVE_MODULE_common_LIB}")
-            target_link_libraries(${libname} PRIVATE "${EVE_MODULE_common_LIB}")
-        endif()
-        if(DEFINED EVE_MODULE_${folder}_DEPS)
-            foreach(_eve_dep IN LISTS EVE_MODULE_${folder}_DEPS
-                                    EVE_MODULE_${folder}_OPTIONAL_DEPS)
-                if(TARGET "${EVE_MODULE_${_eve_dep}_LIB}")
-                    target_link_libraries(${libname} PRIVATE "${EVE_MODULE_${_eve_dep}_LIB}")
-                endif()
-            endforeach()
-        endif()
-    endif()
 
     if(NOT EVENGINE_PROFILE_HOSTLESS)
         add_dependencies(${libname} third-party)

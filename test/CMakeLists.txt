@@ -292,7 +292,7 @@ eve_append_system_libraries(SystemLibraries)
 eve_thirdparty_libs(_eve_test_tp_libs ${EVE_THIRDPARTY_GROUPS})
 set(ThirdParty ${_eve_test_tp_libs} ${SystemLibraries})
 
-set(EVELIBS EVScripts ${EVE_MODULE_LIBS})
+set(EVELIBS EVScripts ${EVE_LINK_TARGETS})
 
 if(TARGET eve_imgui)
   list(APPEND EVELIBS eve_imgui)
