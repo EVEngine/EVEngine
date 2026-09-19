@@ -139,6 +139,22 @@ if (!result.ok) {
 阶段；调用必须发生在 Graphics 所属的渲染线程。GLSL 是 Vulkan 开发路径，WGSL 是
 WebGPU 开发路径；当前后端不支持对应源码格式时会返回 `Unsupported` 和诊断信息。
 
+自定义网格着色器可用 `Shader.setMeshTexture(slot, texture)` 绑定 0..3 四个可移植纹理槽；
+传入 `null` 清除对应槽，越界会抛出脚本异常。纹理由调用方持有，必须存活到解除绑定且
+相关绘制结束；该接口只能在 Graphics 所属的渲染线程调用。
+
+### 植被全局字段与细节设置
+
+`gfx.newVegetationField()` 创建脚本拥有的 `VegetationField`，返回带 `ok`、`value` 和
+`ownership="owned"` 的 Result 表。字段可以通过 `restore(document)` 原子恢复，并用
+`snapshot()` 保存。`field.sample(x, y, z, colorLayer, extrasLayer, motionLayer, vertexLayer)`
+在世界坐标采样四个通道；各层编号必须在 0..8，成功结果的 `value` 包含 `color`、
+`extras`、`motion` 和 `vertex` 四个四元向量。
+
+`gfx.newVegetationDetails()` 同样返回脚本拥有的 `VegetationDetails` Result，用于保存和恢复
+全局颜色、覆盖、湿润及顶点阶段参数。创建和恢复失败不会发布部分状态；调用方必须检查
+Result 的 `ok`。
+
 ### 纹理过滤（mipmap / 各向异性 / LOD）
 
 默认 `newTexture` 仍为线性过滤、单级 mip（兼容旧行为）。需要三线性与各向异性时：
@@ -189,6 +205,7 @@ mat.setSurfaceMode("transparent"); // opaque | masked | transparent
 mat.setBlendMode("alpha");         // alpha | premultiplied | additive | multiply
 mat.setDepthWrite(false);
 mat.setDoubleSided(true);
+mat.setCameraFacing(false);         // true：草卡片绕世界 Y 轴朝向活动相机
 mat.setSortPriority(0);             // 同优先级按相机深度从后向前排序
 mat.setMetallic(0.2);
 mat.setRoughness(0.5);
@@ -204,7 +221,9 @@ local effectiveOrder = r.getPartSortPriority(0);
 遮罩材质使用 `setSurfaceMode("masked")`、`setAlphaCutoff()` 和
 `setAlphaTechnique("cutoff" | "dither" | "coverage")`。对应查询接口为
 `getSurfaceMode()`、`getBlendMode()`、`getDepthWrite()`、`getDoubleSided()`、
-`getSortPriority()`、`getAlphaCutoff()` 和 `getAlphaTechnique()`。纹理 Alpha 数据可用
+`getCameraFacing()`、`getSortPriority()`、`getAlphaCutoff()` 和 `getAlphaTechnique()`。
+`setCameraFacing(true)` 为 GPU-driven 草片启用保持底部锚定的圆柱公告板，使顶点仅绕世界 Y 轴
+朝向活动相机；关闭时保留实例原始朝向。纹理 Alpha 数据可用
 `Texture.setAlphaConvention("straight" | "premultiplied")` 声明，并通过
 `Texture.getAlphaConvention()` 查询。
 

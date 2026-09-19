@@ -1,0 +1,30 @@
+{
+  "source": "The Vegetation Engine 12.6.0 Plant Standard shader and TVEUtils.cs",
+  "sourceSemantics": {
+    "texture": "saturate((emissiveTexture.rgb - _EmissiveTexMinValue) / (_EmissiveTexMaxValue - _EmissiveTexMinValue + 0.0001))",
+    "field": "lerp(1, Global_Extras_Emissive, _GlobalEmissive)",
+    "mask": "saturate(remappedTexture + field * _EmissivePhaseValue - 1)",
+    "output": "_EmissiveColor.rgb * mask * _emissive_intensity_value",
+    "nitsFallback": "_EmissiveIntensityValue",
+    "ev100Fallback": "0.125 * pow(2, _EmissiveIntensityValue)"
+  },
+  "nativeOwnership": {
+    "materialLocal": [
+      "eve.material/13 emissive HDR RGB and strength",
+      "eve.material/13 vegetationEmission exact controls",
+      "eve.material/13 emissiveTexture binding and UV transform"
+    ],
+    "runtimeGlobal": [
+      "Extras RGBA16F array",
+      "selected Extras layer and projection",
+      "field revision"
+    ],
+    "textureLifetime": "Graphics owns emissive and Extras textures until releaseTexture succeeds; PbrSurface borrows them through queued draws"
+  },
+  "evidence": [
+    "strict Unity property import through canonical cook and runtime load",
+    "missing texture and malformed controls reject atomically",
+    "validation-layer Vulkan Canvas comparison against the evaluated source formula",
+    "strict v12 to v13 migration"
+  ]
+}

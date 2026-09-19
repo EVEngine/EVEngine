@@ -242,6 +242,19 @@ public:
     }
 
     /**
+     * @brief Release a lazily-created GPU material-table record.
+     * @param material Material previously passed to gpuDrivenMaterialRecord; null is invalid.
+     * @return Success when removed or already absent; Unsupported when the backend owns no table.
+     * @thread Graphics thread only, outside an open frame submission.
+     * @lifetime The caller may destroy the material after this call succeeds.
+     */
+    [[nodiscard]] virtual Result<void> gpuDrivenReleaseMaterialRecord(Material *material) {
+        (void)material;
+        return Result<void>::failure(Diagnostic::error(
+            DiagnosticCode::Unsupported, "GPU-driven material records are unavailable on this backend"));
+    }
+
+    /**
      * @brief Whether a material can be shaded by the GPU-driven opaque path.
      * Backends/drivers with descriptor-indexing limitations return false for
      * materials that would hit the limitation; RenderSystem3D then falls back.

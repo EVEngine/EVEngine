@@ -73,10 +73,13 @@ layout(location = 0) out vec4 outColor;
 void main() {
     GpuMaterialRecord m = materials[vMaterialId];
     GpuInstance gi = instances[vInstanceId];
+    m.tint *= vTint;
     vec3 Ngeom = normalize(vNormal);
     vec3 V = normalize(vCameraPos - vWorldPos);
     if (dot(Ngeom, V) < 0.0)
         Ngeom = -Ngeom;
+    if (m.surface.y == 1.0 && fetchAlbedo(m, Ngeom, V, vWorldPos, vUV).a < m.surface.x)
+        discard;
     vec3 color = shadeGpuDrivenPixel(m, gi, Ngeom, V, vWorldPos, vViewPos, vUV);
 
     outColor = vec4(color, 1.0);

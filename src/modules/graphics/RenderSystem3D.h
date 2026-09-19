@@ -2,6 +2,7 @@
 
 #include "common/ECS.h"
 #include "common/Result.h"
+#include "graphics/GpuDrivenTypes.h"
 #include "graphics/Material.h"
 #include "graphics/MeshInstanceRange.h"
 #include "zeroerr/assert.h"
@@ -12,6 +13,7 @@
 #include <glm/mat4x4.hpp>
 #include <optional>
 #include <string>
+#include <vector>
 
 namespace eve::graphics {
 
@@ -519,6 +521,40 @@ public:
      * @param token Token returned by addCaptureExtraDrawer. Zero is ignored.
      */
     static void removeCaptureExtraDrawer(uint64_t token);
+
+    /**
+     * @brief Draw custom opaque geometry after the main scene pass is open.
+     * @thread Register, unregister and invoke on the graphics thread.
+     * @reentrancy The callback must not mutate this contributor registry.
+     */
+    using ForwardExtraDrawer =
+        std::function<void(Graphics& gfx, const Camera3D::Data& cam, const glm::mat4& viewProj, float aspect)>;
+
+    /** @brief Register a main forward-pass contributor. @return Non-zero removal token, or zero when empty. */
+    [[nodiscard]] static uint64_t addForwardExtraDrawer(ForwardExtraDrawer drawer);
+
+    /** @brief Unregister a main forward-pass contributor. @param token Token returned by addForwardExtraDrawer. */
+    static void removeForwardExtraDrawer(uint64_t token);
+
+    /**
+     * @brief Collect non-ECS geometry for the normal GPU-driven opaque submission.
+     * @param gfx Graphics backend receiving the eventual instance batch.
+     * @param cam Active default camera; borrowed for this callback only.
+     * @param viewProj Active camera view-projection matrix.
+     * @param aspect Active render-target aspect ratio.
+     * @param instances Frame-local destination; appended records are copied by the backend.
+     * @thread Register, unregister and invoke on the graphics thread.
+     * @reentrancy The callback must not mutate this contributor registry.
+     */
+    using GpuOpaqueCollector =
+        std::function<void(Graphics& gfx, const Camera3D::Data& cam, const glm::mat4& viewProj, float aspect,
+                           std::vector<GpuInstance>& instances)>;
+
+    /** @brief Register a GPU-driven opaque contributor. @return Non-zero removal token, or zero for an empty callback. */
+    [[nodiscard]] static uint64_t addGpuOpaqueCollector(GpuOpaqueCollector collector);
+
+    /** @brief Unregister a GPU-driven opaque contributor. @param token Token returned by addGpuOpaqueCollector. */
+    static void removeGpuOpaqueCollector(uint64_t token);
 
     /**
      * @brief Register a callback that fills the G-buffer (depth/normal/albedo) for

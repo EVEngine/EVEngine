@@ -130,7 +130,7 @@ def run_cases(build_dir, selected):
                 name = case.attrib["name"]
                 status = "passed"
                 if (case.find("failure") is not None or case.find("error") is not None
-                        or "Assertion Failed" in case.findtext("system-out", "")):
+                        or "ERROR Assertion Failed:" in case.findtext("system-out", "")):
                     status = "failed"
                 elif case.find("skipped") is not None or case.get("status") in ("notrun", "disabled"):
                     status = "skipped"

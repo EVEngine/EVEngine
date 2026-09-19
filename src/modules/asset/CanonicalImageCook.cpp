@@ -1,4 +1,6 @@
 #include "asset/CanonicalImageCook.h"
+#include "asset/SourceTga.h"
+#include "asset/SourceTiff.h"
 
 #include "common/Value.h"
 
@@ -177,19 +179,72 @@ Result<CookedCanonicalImage> cookCanonicalImageRgba8(
     const Value* color = object ? field(*object, "color") : nullptr;
     const auto* colorObject = color ? color->getIf<Value::Object>() : nullptr;
     const Value* transfer = colorObject ? field(*colorObject, "transfer") : nullptr;
-    if (!schema || !schema->isString() || schema->asString() != "eve.image" || !version ||
-        !version->isInt64() || version->asInt() != 2 || !widthValue || !widthValue->isInt64() ||
-        widthValue->asInt() <= 0 || !heightValue || !heightValue->isInt64() ||
-        heightValue->asInt() <= 0 || !encoding || !encoding->isString() || !transfer ||
-        !transfer->isString() || (transfer->asString() != "srgb" && transfer->asString() != "linear"))
+    if (!schema || !schema->isString() || schema->asString() != "eve.image" || !version || !version->isInt64() ||
+        (version->asInt() != 2 && version->asInt() != 3) || !widthValue || !widthValue->isInt64() ||
+        widthValue->asInt() <= 0 || !heightValue || !heightValue->isInt64() || heightValue->asInt() <= 0 || !encoding ||
+        !encoding->isString() || !transfer || !transfer->isString() ||
+        (transfer->asString() != "srgb" && transfer->asString() != "linear"))
         return failure<CookedCanonicalImage>(DiagnosticCode::ParseError,
-                                             "eve.image/2 runtime Cook definition is malformed");
-    if (encoding->asString() != "png")
+                                             "eve.image runtime Cook definition is malformed");
+    const bool   explicitSchema = version->asInt() == 3;
+    const Value* mipValue       = field(*object, "mipCount");
+    if ((!explicitSchema && mipValue) ||
+        (explicitSchema && (!mipValue || !mipValue->isInt64() || mipValue->asInt() < 1 || mipValue->asInt() > 32)))
+        return failure<CookedCanonicalImage>(DiagnosticCode::ParseError,
+                                             "image mip count requires schema 3 and a positive bounded integer");
+    const uint32_t mipCount   = explicitSchema ? uint32_t(mipValue->asInt()) : 1;
+    const bool     packedMips = encoding->asString() == "rgba8-mips";
+    if (encoding->asString() != "png" && encoding->asString() != "tiff" && encoding->asString() != "tga" &&
+        !(explicitSchema && packedMips))
         return failure<CookedCanonicalImage>(DiagnosticCode::Unsupported,
-                                             "runtime RGBA8 Cook currently supports PNG source encoding");
+                                             "runtime RGBA8 Cook supports PNG and admitted TIFF/TGA source encoding");
+    if (widthValue->asInt() > UINT32_MAX || heightValue->asInt() > UINT32_MAX)
+        return failure<CookedCanonicalImage>(DiagnosticCode::ParseError, "image dimensions exceed uint32");
     const auto width = static_cast<std::uint32_t>(widthValue->asInt());
     const auto height = static_cast<std::uint32_t>(heightValue->asInt());
-    auto rgba = decodePng(encodedSource, width, height, maximumDecodedBytes);
+    const uint64_t headerBytes   = explicitSchema ? 28 : 24;
+    uint64_t       expectedBytes = 0;
+    uint32_t       fullCount = 0, mipWidth = width, mipHeight = height;
+    for (;;) {
+        const uint64_t pixels = uint64_t(mipWidth) * mipHeight;
+        if (fullCount < mipCount) {
+            if (maximumDecodedBytes < headerBytes || expectedBytes > maximumDecodedBytes - headerBytes ||
+                pixels > (maximumDecodedBytes - headerBytes - expectedBytes) / 4)
+                return failure<CookedCanonicalImage>(DiagnosticCode::InvalidArgument,
+                                                     "image mip chain exceeds Cook budget");
+            expectedBytes += pixels * 4;
+        }
+        ++fullCount;
+        if (mipWidth == 1 && mipHeight == 1) break;
+        mipWidth  = std::max(mipWidth / 2, 1u);
+        mipHeight = std::max(mipHeight / 2, 1u);
+    }
+    if ((mipCount != 1 && mipCount != fullCount) || (!packedMips && mipCount != 1))
+        return failure<CookedCanonicalImage>(DiagnosticCode::InvalidArgument,
+                                             "image requires a base level or full halving chain");
+    auto rgba = [&]() -> Result<std::vector<std::uint8_t>> {
+        if (packedMips) {
+            if (encodedSource.size() != expectedBytes)
+                return failure<std::vector<std::uint8_t>>(DiagnosticCode::ParseError,
+                                                          "packed mip byte count differs from definition");
+            return Result<std::vector<std::uint8_t>>::success({encodedSource.begin(), encodedSource.end()});
+        }
+        if (encoding->asString() == "png") return decodePng(encodedSource, width, height, maximumDecodedBytes);
+        if (encoding->asString() == "tga") {
+            auto tga = detail::decodeTgaRgba8(encodedSource, maximumDecodedBytes);
+            if (!tga) return Result<std::vector<std::uint8_t>>::failure(tga.status());
+            if (tga.value().width != width || tga.value().height != height)
+                return failure<std::vector<std::uint8_t>>(DiagnosticCode::ParseError,
+                                                          "TGA dimensions differ from definition");
+            return Result<std::vector<std::uint8_t>>::success(std::move(tga.value().rgba));
+        }
+        auto tiff = detail::decodeTiffRgba8(encodedSource, maximumDecodedBytes);
+        if (!tiff) return Result<std::vector<std::uint8_t>>::failure(tiff.status());
+        if (tiff.value().width != width || tiff.value().height != height)
+            return failure<std::vector<std::uint8_t>>(DiagnosticCode::ParseError,
+                                                      "TIFF dimensions differ from definition");
+        return Result<std::vector<std::uint8_t>>::success(std::move(tiff.value().rgba));
+    }();
     if (!rgba) return Result<CookedCanonicalImage>::failure(rgba.status());
     const bool sourceSrgb = transfer->asString() == "srgb";
     if (sourceSrgb) {
@@ -205,13 +260,15 @@ Result<CookedCanonicalImage> cookCanonicalImageRgba8(
         }
     }
     std::vector<std::uint8_t> bulk = {'E', 'V', 'I', 'M', 'G', 0, 1, 0};
+    if (explicitSchema) bulk[6] = 2;
     put32(bulk, width);
     put32(bulk, height);
     put32(bulk, 0);
-    put32(bulk, 0);
+    put32(bulk, explicitSchema ? mipCount : 0);
+    if (explicitSchema) put32(bulk, 0);
     bulk.insert(bulk.end(), rgba.value().begin(), rgba.value().end());
-    (*object)["encoding"] = Value("rgba8");
-    (*object)["sourceEncoding"] = Value("png");
+    (*object)["sourceEncoding"]    = *encoding;
+    (*object)["encoding"]          = Value("rgba8");
     (*object)["blob"] = Value("chunk:1");
     auto runtimeColor = *colorObject;
     runtimeColor["sourceTransfer"] = Value(transfer->asString());

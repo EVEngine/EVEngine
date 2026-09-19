@@ -56,6 +56,15 @@ public:
             reinterpret_cast<eve::graphics::Mesh*>(&token));
     }
     Result<void> releaseMesh(eve::graphics::Mesh*) override { return Result<void>::success(); }
+    Result<void> setMeshTangentFrame(eve::graphics::Mesh*, std::span<const float> tangents,
+                                     std::span<const float> bitangents) override {
+        REQUIRE_EQ(tangents.size(), size_t(vertexCount) * 3);
+        REQUIRE_EQ(bitangents.size(), tangents.size());
+        tangentValues.assign(tangents.begin(), tangents.end());
+        bitangentValues.assign(bitangents.begin(), bitangents.end());
+        return Result<void>::success();
+    }
+    std::vector<float> tangentValues, bitangentValues;
     int vertexCount = 0;
     int indexCount = 0;
 
@@ -131,7 +140,7 @@ TEST_CASE("asset.import.pngTraversesEvaCookAndEvpack") {
     const auto* definitionObject = definition.value().getIf<Value::Object>();
     REQUIRE(definitionObject != nullptr);
     CHECK_EQ(definitionObject->at("encoding"), Value("rgba8"));
-    REQUIRE_EQ(runtimePixels.value().size(), std::size_t(28));
+    REQUIRE_EQ(runtimePixels.value().size(), std::size_t(32));
     CHECK_EQ(std::string(reinterpret_cast<const char*>(runtimePixels.value().data()), 5),
              std::string("EVIMG"));
 
