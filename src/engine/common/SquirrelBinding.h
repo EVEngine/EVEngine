@@ -98,6 +98,32 @@ void pushReceiver(HSQUIRRELVM vm, const Receiver& receiver) {
 }
 
 /**
+ * @brief Prepare one callFunction() argument, converting C strings to `std::string`.
+ *
+ * simplesquirrel has no `const char*` overload of `pushValue`, and the generic template
+ * it falls back to treats the value as an opaque user type: a `const char*` argument
+ * therefore reached script as **userdata** (measured: `typeof v == "userdata"`), and a
+ * string literal (`const char[N]`) did not compile at all -- `pushByCopy` fails with
+ * "cannot convert from 'const char [9]' to 'char'". Both are wrong for the most natural
+ * way to pass a script string, so C strings are converted to `std::string` here, which
+ * is the overload that reaches `sq_pushstring`.
+ *
+ * @param arg Argument passed to callFunction(); anything that is not a C string is
+ *            forwarded unchanged (referenced, not copied).
+ * @return A `std::string` for `char*`, `const char*` and character arrays; otherwise the
+ *         argument itself.
+ */
+template <typename Arg>
+decltype(auto) scriptArgument(const Arg& arg) {
+    using Bare = std::remove_cv_t<std::remove_reference_t<Arg>>;
+    if constexpr (std::is_array_v<Bare> || std::is_same_v<Bare, char*> || std::is_same_v<Bare, const char*>) {
+        return std::string(arg);
+    } else {
+        return (arg);
+    }
+}
+
+/**
  * @brief Report a failed engine-to-script call, consuming the VM's script error.
  *
  * A callback that throws used to leave nothing behind: the caller either discarded
@@ -173,6 +199,8 @@ EVENGINE_API SQRESULT compileAndRunChunk(HSQUIRRELVM vm, const char* name, const
  * @param receiver Bound as `this`. Pass the root table when the callee has none.
  * @param args Arguments, pushed in order through `ssq::detail::pushValue`, so any type
  *             that helper supports (HSQOBJECT, ssq handles, scalars, strings) works.
+ *             C strings are converted first (see scriptArgument()): a `const char*` used
+ *             to arrive as userdata and a string literal did not compile.
  * @return SQ_OK, or SQ_ERROR when the call failed; the VM keeps the error for
  *         `takeLastScriptError`.
  * @note Ownership/lifetime: nothing is retained; the pushed values belong to the VM.
@@ -185,7 +213,7 @@ SQRESULT callFunction(HSQUIRRELVM vm, const HSQOBJECT& fn, const Receiver& recei
     const SQInteger top = sq_gettop(vm);
     sq_pushobject(vm, fn);
     pushReceiver(vm, receiver);
-    (ssq::detail::pushValue(vm, args), ...);
+    (ssq::detail::pushValue(vm, scriptArgument(args)), ...);
     // Everything above the callable: the receiver plus the arguments. The callable itself is not
     // part of the count (sq_call takes the callee at -(params)-1).
     const SQInteger params = sq_gettop(vm) - top - 1;
@@ -213,7 +241,7 @@ SQRESULT callFunctionResult(HSQUIRRELVM vm, const HSQOBJECT& fn, const Receiver&
     const SQInteger top = sq_gettop(vm);
     sq_pushobject(vm, fn);
     pushReceiver(vm, receiver);
-    (ssq::detail::pushValue(vm, args), ...);
+    (ssq::detail::pushValue(vm, scriptArgument(args)), ...);
     // Everything above the callable: the receiver plus the arguments. The callable itself is not
     // part of the count (sq_call takes the callee at -(params)-1).
     const SQInteger params = sq_gettop(vm) - top - 1;
