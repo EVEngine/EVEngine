@@ -284,6 +284,21 @@ SQInteger scriptErrorHook(HSQUIRRELVM vm) {
 
 }  // namespace
 
+namespace script {
+
+void installScriptErrorHook(HSQUIRRELVM vm) {
+    if (!vm) return;
+    // Line numbers in sq_stackinfos require debug info at compile time.
+    sq_enabledebuginfo(vm, SQTrue);
+    // Call the hook for try/catch as well, while the throw-site stack is live.
+    // load.nut's eve_frame catch would otherwise print only the error string.
+    sq_notifyallexceptions(vm, SQTrue);
+    sq_newclosure(vm, &scriptErrorHook, 0);  // pushes the closure
+    sq_seterrorhandler(vm);                  // pops the closure
+}
+
+}  // namespace script
+
 struct Runtime::ScriptRecord {
     ScriptInfo info;
     std::string source_text;
@@ -436,14 +451,7 @@ void Runtime::initialize() {
 
 void Runtime::installErrorHandler() {
     if (!vm_) return;
-    HSQUIRRELVM vm = handle();
-    // Line numbers in sq_stackinfos require debug info at compile time.
-    sq_enabledebuginfo(vm, SQTrue);
-    // Call the hook for try/catch as well, while the throw-site stack is live.
-    // load.nut's eve_frame catch would otherwise print only the error string.
-    sq_notifyallexceptions(vm, SQTrue);
-    sq_newclosure(vm, &scriptErrorHook, 0);  // pushes the closure
-    sq_seterrorhandler(vm);  // pops the closure
+    script::installScriptErrorHook(handle());
 }
 
 void Runtime::shutdown() noexcept {

@@ -1,30 +1,41 @@
 #include "common/ScriptProvider.h"
 
+#include "common/Assert.h"
 #include "common/Diagnostic.h"
 #include "common/ScriptError.h"
 #include "common/SquirrelOwnership.h"
 
 #include <simplesquirrel/simplesquirrel.hpp>
 
+#include <algorithm>
+#include <cstddef>
 #include <string>
 #include <unordered_map>
 #include <utility>
+#include <vector>
 
 namespace eve {
 
-struct ScriptProviderRegistry::Impl {
-    struct Entry {
-        /** Rooted while published; unbound after retirement. */
-        script::OwnedSquirrelObject instance;
-        /** 0 means "never published". Retired entries keep an advanced value so an
-         *  old handle can never resolve against a later incarnation. */
-        std::uint64_t generation = 0;
-    };
+namespace {
 
-    std::unordered_map<std::string, Entry> entries;
+/** One published provider: its rooted instance plus its publishing bookkeeping. */
+struct ProviderEntry {
+    /** Rooted while published; unbound after retirement. */
+    script::OwnedSquirrelObject instance;
+    /** 0 means "never published". Retired entries keep an advanced value so an old
+     *  handle can never resolve against a later incarnation. */
+    std::uint64_t generation = 0;
+    /** Capability this provider was published for; empty when published plainly. */
+    std::string capability;
+    /** Removes the adapter `capability` was bound with. Empty when not bound. */
+    ScriptCapabilityUnbinder unbinder;
 };
 
-namespace {
+/** Composition-time declaration that one capability may be served from script. */
+struct CapabilitySeam {
+    ScriptCapabilityBinder   binder;
+    ScriptCapabilityUnbinder unbinder;
+};
 
 Diagnostic providerDiagnostic(DiagnosticCode code, std::string message, const std::string& path) {
     return Diagnostic::error(code, std::move(message), path);
@@ -41,6 +52,26 @@ std::string lastScriptErrorText(HSQUIRRELVM vm) {
     const script::ScriptErrorContext context = script::takeLastScriptError(vm);
     if (context.empty()) return "unknown script error";
     return script::formatScriptError(context);
+}
+
+/**
+ * @brief Retire one entry: drop its VM reference and its capability adapter.
+ *
+ * `entry` is not touched after the unbinder runs, because the unbinder is
+ * user-provided and may publish again, which can rehash the registry's map.
+ *
+ * @return The unbinder's outcome, or success when the entry had no adapter.
+ */
+Result<void> retireEntry(ProviderEntry& entry, const std::string& name) {
+    const std::uint64_t retiredGeneration = entry.generation;
+    entry.instance                        = script::OwnedSquirrelObject{};
+    ++entry.generation;
+    entry.capability.clear();
+    ScriptCapabilityUnbinder unbinder = std::move(entry.unbinder);
+    entry.unbinder                    = {};
+    if (!unbinder) return Result<void>::success();
+    const ScriptProviderHandle retired{name, retiredGeneration};
+    return unbinder(retired);
 }
 
 /**
@@ -66,7 +97,114 @@ Result<void> pushProviderMethod(HSQUIRRELVM vm, HSQOBJECT instance, const std::s
     return Result<void>::success();
 }
 
+/** @brief Push one marshalled argument; the inverse of the `ScriptArg` factories. */
+void pushScriptArg(HSQUIRRELVM vm, const ScriptArg& arg) {
+    switch (arg.kind) {
+        case ScriptArg::Kind::Integer: sq_pushinteger(vm, SQInteger(arg.integer)); break;
+        case ScriptArg::Kind::Number: sq_pushfloat(vm, SQFloat(arg.number)); break;
+        case ScriptArg::Kind::Boolean: sq_pushbool(vm, arg.boolean ? SQTrue : SQFalse); break;
+        case ScriptArg::Kind::Text: sq_pushstring(vm, arg.text.c_str(), SQInteger(arg.text.size())); break;
+    }
+}
+
+/** @brief Read a numeric script value; `-1` and `+1` report type/read failures. */
+Result<double> readNumericResult(HSQUIRRELVM vm, const std::string& methodName) {
+    const SQObjectType resultType = sq_gettype(vm, -1);
+    if (resultType != OT_FLOAT && resultType != OT_INTEGER) {
+        return Result<double>::failure(
+            providerDiagnostic(DiagnosticCode::InvalidArgument,
+                               "script provider method '" + methodName + "' did not return a number", methodName));
+    }
+    if (resultType == OT_FLOAT) {
+        SQFloat value = 0.f;
+        if (SQ_FAILED(sq_getfloat(vm, -1, &value))) {
+            return Result<double>::failure(providerDiagnostic(
+                DiagnosticCode::InvalidArgument, "script provider returned an unreadable float", methodName));
+        }
+        return Result<double>::success(double(value));
+    }
+    SQInteger value = 0;
+    if (SQ_FAILED(sq_getinteger(vm, -1, &value))) {
+        return Result<double>::failure(providerDiagnostic(
+            DiagnosticCode::InvalidArgument, "script provider returned an unreadable integer", methodName));
+    }
+    return Result<double>::success(double(value));
+}
+
+/**
+ * @brief Invoke one provider method with `args` and optionally collect a number.
+ * @param wantNumber When set, `sq_call` is asked for a return value.
+ * @return Success, or `Unsupported`/`Failed`/`InvalidArgument`.
+ * @remarks The VM stack is restored to its entry depth on every path.
+ */
+Result<double> invokeProvider(const ssq::Object& instance, std::string_view method, std::span<const ScriptArg> args,
+                              bool wantNumber) {
+    HSQUIRRELVM       vm = instance.getHandle();
+    const std::string methodName(method);
+    if (!vm) {
+        return Result<double>::failure(
+            providerDiagnostic(DiagnosticCode::Failed, "script provider has no live VM", methodName));
+    }
+
+    const HSQOBJECT raw    = instance.getRaw();
+    auto            pushed = pushProviderMethod(vm, raw, methodName);
+    if (!pushed) return Result<double>::failure(pushed.status());
+
+    const SQInteger top = sq_gettop(vm);
+    sq_pushobject(vm, raw);  // `this`
+    for (const ScriptArg& arg : args) pushScriptArg(vm, arg);
+
+    const SQInteger argCount = SQInteger(args.size()) + 1;
+    if (SQ_FAILED(sq_call(vm, argCount, wantNumber ? SQTrue : SQFalse, SQFalse))) {
+        const std::string detail = lastScriptErrorText(vm);
+        sq_settop(vm, top);
+        return Result<double>::failure(providerDiagnostic(
+            DiagnosticCode::Failed, "script provider method '" + methodName + "' raised: " + detail, methodName));
+    }
+
+    if (wantNumber) {
+        auto result = readNumericResult(vm, methodName);
+        sq_settop(vm, top);
+        return result;
+    }
+    sq_settop(vm, top);
+    return Result<double>::success(0.0);
+}
+
 }  // namespace
+
+struct ScriptProviderRegistry::Impl {
+    std::unordered_map<std::string, ProviderEntry>  entries;
+    std::unordered_map<std::string, CapabilitySeam> capabilities;
+};
+
+ScriptArg ScriptArg::fromInteger(std::int64_t value) {
+    ScriptArg arg;
+    arg.kind    = Kind::Integer;
+    arg.integer = value;
+    return arg;
+}
+
+ScriptArg ScriptArg::fromNumber(double value) {
+    ScriptArg arg;
+    arg.kind   = Kind::Number;
+    arg.number = value;
+    return arg;
+}
+
+ScriptArg ScriptArg::fromBoolean(bool value) {
+    ScriptArg arg;
+    arg.kind    = Kind::Boolean;
+    arg.boolean = value;
+    return arg;
+}
+
+ScriptArg ScriptArg::fromText(std::string value) {
+    ScriptArg arg;
+    arg.kind = Kind::Text;
+    arg.text = std::move(value);
+    return arg;
+}
 
 ScriptProviderRegistry::ScriptProviderRegistry() : impl_(new Impl()) {}
 ScriptProviderRegistry::~ScriptProviderRegistry() = default;
@@ -88,9 +226,19 @@ Result<ScriptProviderHandle> ScriptProviderRegistry::publish(std::string name, c
             providerDiagnostic(DiagnosticCode::InvalidArgument, "script provider must be a live class instance", name));
     }
 
-    Impl::Entry& entry = impl_->entries[name];
-    // Assignment releases any previous generation's VM reference.
-    entry.instance                 = script::OwnedSquirrelObject(instance);
+    // Superseding a capability-bound provider must also remove its adapter; leaving
+    // it installed would keep routing native consumers into a dead script object.
+    auto previous = impl_->entries.find(name);
+    if (previous != impl_->entries.end() && previous->second.unbinder) {
+        auto retired = retireEntry(previous->second, name);
+        if (!retired) return Result<ScriptProviderHandle>::failure(retired.status());
+    }
+
+    // Re-lookup: running the unbinder above may have rehashed the map.
+    ProviderEntry& entry = impl_->entries[name];
+    entry.instance       = script::OwnedSquirrelObject(instance);
+    entry.capability.clear();
+    entry.unbinder                 = {};
     const std::uint64_t generation = ++entry.generation;
     return Result<ScriptProviderHandle>::success(ScriptProviderHandle{std::move(name), generation});
 }
@@ -104,9 +252,7 @@ Result<void> ScriptProviderRegistry::unload(const ScriptProviderHandle& handle) 
     }
     // Keep the slot so the retired generation can never be resolved again, and so a
     // later publish cannot hand an old handle a new instance.
-    found->second.instance = script::OwnedSquirrelObject{};
-    ++found->second.generation;
-    return Result<void>::success();
+    return retireEntry(found->second, handle.name);
 }
 
 std::uint64_t ScriptProviderRegistry::generationOf(std::string_view name) const {
@@ -126,132 +272,168 @@ std::size_t ScriptProviderRegistry::size() const {
     return count;
 }
 
-void ScriptProviderRegistry::clearAll() { impl_->entries.clear(); }
+std::vector<std::string> ScriptProviderRegistry::capabilities() const {
+    std::vector<std::string> names;
+    names.reserve(impl_->capabilities.size());
+    for (const auto& [name, seam] : impl_->capabilities) {
+        (void)seam;
+        names.push_back(name);
+    }
+    std::sort(names.begin(), names.end());
+    return names;
+}
 
-Result<void> ScriptProviderRegistry::call(const ScriptProviderHandle& handle, std::string_view method) const {
+std::vector<ScriptProviderInfo> ScriptProviderRegistry::published() const {
+    std::vector<ScriptProviderInfo> entries;
+    entries.reserve(impl_->entries.size());
+    for (const auto& [name, entry] : impl_->entries) {
+        if (!entry.instance.isBound()) continue;
+        entries.push_back(ScriptProviderInfo{name, entry.generation, entry.capability});
+    }
+    std::sort(entries.begin(), entries.end(),
+              [](const ScriptProviderInfo& lhs, const ScriptProviderInfo& rhs) { return lhs.name < rhs.name; });
+    return entries;
+}
+
+void ScriptProviderRegistry::declareCapability(std::string capability, ScriptCapabilityBinder binder,
+                                               ScriptCapabilityUnbinder unbinder) {
+    const bool complete = !capability.empty() && binder && unbinder;
+    EV_PARAM_CHECK(complete, "declareCapability requires a capability name, a binder and an unbinder");
+    if (!complete) return;
+    impl_->capabilities[std::move(capability)] = CapabilitySeam{std::move(binder), std::move(unbinder)};
+}
+
+bool ScriptProviderRegistry::hasCapabilitySeam(std::string_view capability) const {
+    return impl_->capabilities.find(std::string(capability)) != impl_->capabilities.end();
+}
+
+Result<void> ScriptProviderRegistry::removeCapability(std::string_view capability) {
+    const std::string key(capability);
+    if (impl_->capabilities.erase(key) == 0) {
+        return Result<void>::failure(providerDiagnostic(
+            DiagnosticCode::NotFound, "capability '" + key + "' has no declared script binding seam", key));
+    }
+    return Result<void>::success();
+}
+
+Result<ScriptProviderHandle> ScriptProviderRegistry::publishForCapability(std::string_view capability, std::string name,
+                                                                          const ssq::Object& instance) {
+    auto seam = impl_->capabilities.find(std::string(capability));
+    if (seam == impl_->capabilities.end()) {
+        return Result<ScriptProviderHandle>::failure(providerDiagnostic(
+            DiagnosticCode::NotFound,
+            "no script binding seam is declared for capability '" + std::string(capability) + "'", name));
+    }
+
+    // Copy the seam before publishing: the binder is user code and may redeclare
+    // capabilities, which can rehash the map and invalidate `seam`.
+    ScriptCapabilityBinder   binder   = seam->second.binder;
+    ScriptCapabilityUnbinder unbinder = seam->second.unbinder;
+
+    auto published = publish(std::move(name), instance);
+    if (!published) return Result<ScriptProviderHandle>::failure(published.status());
+    const ScriptProviderHandle handle = published.value();
+
+    auto bound = binder(handle);
+    if (!bound) {
+        // Roll back so a caller never observes a published provider that serves
+        // nothing. `unload` also runs the unbinder, which is what a partial bind
+        // needs; its own outcome is secondary to the binder's.
+        auto rolledBack = unload(handle);
+        rolledBack.ignore("a failed bind is already reported; the rollback only has to retire the generation");
+        return Result<ScriptProviderHandle>::failure(bound.status());
+    }
+
+    auto entry = impl_->entries.find(handle.name);
+    if (entry == impl_->entries.end() || entry->second.generation != handle.generation) {
+        // The binder re-published the same name; that generation owns its own bind.
+        return Result<ScriptProviderHandle>::failure(providerDiagnostic(
+            DiagnosticCode::Failed, "the capability binder replaced the provider it was binding", handle.name));
+    }
+    entry->second.capability = std::string(capability);
+    entry->second.unbinder   = std::move(unbinder);
+    return Result<ScriptProviderHandle>::success(handle);
+}
+
+void ScriptProviderRegistry::clearAll() {
+    // Detach every adapter before invoking any unbinder: an unbinder is
+    // user-provided and may publish again, which would rehash the map under a live
+    // iterator. Declared capability seams survive, because they are composition-time
+    // declarations rather than published state.
+    std::vector<std::pair<std::string, ScriptProviderHandle>> retired;
+    std::vector<ScriptCapabilityUnbinder>                     unbinders;
+    for (auto& [name, entry] : impl_->entries) {
+        if (!entry.unbinder) continue;
+        retired.emplace_back(name, ScriptProviderHandle{name, entry.generation});
+        unbinders.push_back(std::move(entry.unbinder));
+        entry.unbinder = {};
+        entry.capability.clear();
+    }
+    impl_->entries.clear();
+
+    for (std::size_t i = 0; i < unbinders.size(); ++i) {
+        auto removed = unbinders[i](retired[i].second);
+        // Shutdown teardown: the adapter dies with the VM either way, so the only
+        // requirement is that the unbinder ran.
+        removed.ignore("clearAll cannot report per-adapter teardown failures");
+    }
+}
+
+Result<const ssq::Object*> ScriptProviderRegistry::resolve(const ScriptProviderHandle& handle) const {
     auto found = impl_->entries.find(handle.name);
     if (found == impl_->entries.end() || !found->second.instance.isBound() ||
         found->second.generation != handle.generation) {
-        return Result<void>::failure(providerDiagnostic(
+        return Result<const ssq::Object*>::failure(providerDiagnostic(
             DiagnosticCode::StaleHandle, "script provider generation is no longer published", handle.name));
     }
-
     const ssq::Object& instance = found->second.instance.get();
-    HSQUIRRELVM        vm       = instance.getHandle();
-    const std::string  methodName(method);
-    if (!vm) {
-        return Result<void>::failure(
-            providerDiagnostic(DiagnosticCode::Failed, "script provider has no live VM", methodName));
+    if (!instance.getHandle()) {
+        return Result<const ssq::Object*>::failure(
+            providerDiagnostic(DiagnosticCode::Failed, "script provider has no live VM", handle.name));
     }
+    return Result<const ssq::Object*>::success(&instance);
+}
 
-    const HSQOBJECT raw    = instance.getRaw();
-    auto            pushed = pushProviderMethod(vm, raw, methodName);
-    if (!pushed) return Result<void>::failure(pushed.status());
-
-    const SQInteger top = sq_gettop(vm);
-    sq_pushobject(vm, raw);  // `this`
-    if (SQ_FAILED(sq_call(vm, 1, SQFalse, SQFalse))) {
-        const std::string detail = lastScriptErrorText(vm);
-        sq_settop(vm, top);
-        return Result<void>::failure(providerDiagnostic(
-            DiagnosticCode::Failed, "script provider method '" + methodName + "' raised: " + detail, methodName));
-    }
-    sq_settop(vm, top);
+Result<void> ScriptProviderRegistry::call(const ScriptProviderHandle& handle, std::string_view method) const {
+    auto instance = resolve(handle);
+    if (!instance) return Result<void>::failure(instance.status());
+    auto invoked = invokeProvider(*instance.value(), method, {}, false);
+    if (!invoked) return Result<void>::failure(invoked.status());
     return Result<void>::success();
 }
 
 Result<void> ScriptProviderRegistry::call(const ScriptProviderHandle& handle, std::string_view method,
                                           double dt) const {
-    auto found = impl_->entries.find(handle.name);
-    if (found == impl_->entries.end() || !found->second.instance.isBound() ||
-        found->second.generation != handle.generation) {
-        return Result<void>::failure(providerDiagnostic(
-            DiagnosticCode::StaleHandle, "script provider generation is no longer published", handle.name));
-    }
+    const ScriptArg args[]   = {ScriptArg::fromNumber(dt)};
+    auto            instance = resolve(handle);
+    if (!instance) return Result<void>::failure(instance.status());
+    auto invoked = invokeProvider(*instance.value(), method, args, false);
+    if (!invoked) return Result<void>::failure(invoked.status());
+    return Result<void>::success();
+}
 
-    const ssq::Object& instance = found->second.instance.get();
-    HSQUIRRELVM        vm       = instance.getHandle();
-    const std::string  methodName(method);
-    if (!vm) {
-        return Result<void>::failure(
-            providerDiagnostic(DiagnosticCode::Failed, "script provider has no live VM", methodName));
-    }
-
-    const HSQOBJECT raw    = instance.getRaw();
-    auto            pushed = pushProviderMethod(vm, raw, methodName);
-    if (!pushed) return Result<void>::failure(pushed.status());
-
-    const SQInteger top = sq_gettop(vm);
-    sq_pushobject(vm, raw);         // `this`
-    sq_pushfloat(vm, SQFloat(dt));  // the injected step
-    if (SQ_FAILED(sq_call(vm, 2, SQFalse, SQFalse))) {
-        const std::string detail = lastScriptErrorText(vm);
-        sq_settop(vm, top);
-        return Result<void>::failure(providerDiagnostic(
-            DiagnosticCode::Failed, "script provider method '" + methodName + "' raised: " + detail, methodName));
-    }
-    sq_settop(vm, top);
+Result<void> ScriptProviderRegistry::call(const ScriptProviderHandle& handle, std::string_view method,
+                                          std::span<const ScriptArg> args) const {
+    auto instance = resolve(handle);
+    if (!instance) return Result<void>::failure(instance.status());
+    auto invoked = invokeProvider(*instance.value(), method, args, false);
+    if (!invoked) return Result<void>::failure(invoked.status());
     return Result<void>::success();
 }
 
 Result<double> ScriptProviderRegistry::callNumber(const ScriptProviderHandle& handle, std::string_view method,
                                                   double dt) const {
-    auto found = impl_->entries.find(handle.name);
-    if (found == impl_->entries.end() || !found->second.instance.isBound() ||
-        found->second.generation != handle.generation) {
-        return Result<double>::failure(providerDiagnostic(
-            DiagnosticCode::StaleHandle, "script provider generation is no longer published", handle.name));
-    }
+    const ScriptArg args[]   = {ScriptArg::fromNumber(dt)};
+    auto            instance = resolve(handle);
+    if (!instance) return Result<double>::failure(instance.status());
+    return invokeProvider(*instance.value(), method, args, true);
+}
 
-    const ssq::Object& instance = found->second.instance.get();
-    HSQUIRRELVM        vm       = instance.getHandle();
-    const std::string  methodName(method);
-    if (!vm) {
-        return Result<double>::failure(
-            providerDiagnostic(DiagnosticCode::Failed, "script provider has no live VM", methodName));
-    }
-
-    const HSQOBJECT raw    = instance.getRaw();
-    auto            pushed = pushProviderMethod(vm, raw, methodName);
-    if (!pushed) return Result<double>::failure(pushed.status());
-
-    const SQInteger top = sq_gettop(vm);
-    sq_pushobject(vm, raw);         // `this`
-    sq_pushfloat(vm, SQFloat(dt));  // the injected step
-    if (SQ_FAILED(sq_call(vm, 2, SQTrue, SQFalse))) {
-        const std::string detail = lastScriptErrorText(vm);
-        sq_settop(vm, top);
-        return Result<double>::failure(providerDiagnostic(
-            DiagnosticCode::Failed, "script provider method '" + methodName + "' raised: " + detail, methodName));
-    }
-
-    const SQObjectType resultType = sq_gettype(vm, -1);
-    if (resultType != OT_FLOAT && resultType != OT_INTEGER) {
-        sq_settop(vm, top);
-        return Result<double>::failure(
-            providerDiagnostic(DiagnosticCode::InvalidArgument,
-                               "script provider method '" + methodName + "' did not return a number", methodName));
-    }
-    double result = 0.0;
-    if (resultType == OT_FLOAT) {
-        SQFloat value = 0.f;
-        if (SQ_FAILED(sq_getfloat(vm, -1, &value))) {
-            sq_settop(vm, top);
-            return Result<double>::failure(providerDiagnostic(
-                DiagnosticCode::InvalidArgument, "script provider returned an unreadable float", methodName));
-        }
-        result = double(value);
-    } else {
-        SQInteger value = 0;
-        if (SQ_FAILED(sq_getinteger(vm, -1, &value))) {
-            sq_settop(vm, top);
-            return Result<double>::failure(providerDiagnostic(
-                DiagnosticCode::InvalidArgument, "script provider returned an unreadable integer", methodName));
-        }
-        result = double(value);
-    }
-    sq_settop(vm, top);
-    return Result<double>::success(result);
+Result<double> ScriptProviderRegistry::callNumber(const ScriptProviderHandle& handle, std::string_view method,
+                                                  std::span<const ScriptArg> args) const {
+    auto instance = resolve(handle);
+    if (!instance) return Result<double>::failure(instance.status());
+    return invokeProvider(*instance.value(), method, args, true);
 }
 
 }  // namespace eve

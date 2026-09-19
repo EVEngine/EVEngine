@@ -129,4 +129,19 @@ template <class T, class Projector>
  */
 EVENGINE_API void exposeResultBindings(ssq::Table& eveTable);
 
+/**
+ * @brief Expose `eve.provider`: script-published providers and capability seams.
+ *
+ * The seam table is a common script contract, not a domain-module convenience: it
+ * is how user script answers a native extension point without a C++ build. Every
+ * operation returns the common `{ok, code, status, diagnostics, value}` result
+ * table, so a script author gets the same structured failure shape they get from
+ * `eve.result`.
+ *
+ * @param eveTable Shared engine root table created by ModuleManager.
+ * @remarks Idempotent for the initial root-table exposure; call once from the
+ *          common composition root, before any module constructor runs.
+ */
+EVENGINE_API void exposeProviderBindings(ssq::Table& eveTable);
+
 }  // namespace eve::script

@@ -5,9 +5,10 @@
 #include <iostream>
 #include <simplesquirrel/simplesquirrel.hpp>
 
-#include "window/Window.h"
+#include "common/ScriptError.h"
 #include "filesystem/Filesystem.h"
 #include "mouse/Mouse.h"
+#include "window/Window.h"
 
 #define UnitSciptTest(name, content) \
     class name : public ScriptTest { \
@@ -28,7 +29,13 @@ public:
 
 protected:
   static void expose(ssq::VM& vm) {
-    ModuleManager::expose(vm);
+      // Match the engine's own VM configuration. A bare `ssq::VM` keeps
+      // simplesquirrel's `defaultRuntimeErrorFunc` as the Squirrel error handler, and
+      // that handler dereferences the callback stack without checking it -- a script
+      // error raised at call setup reaches it whatever `sq_call`'s `raiseerror` says,
+      // so a test VM without the engine hook can crash where a game never would.
+      eve::script::installScriptErrorHook(vm.getHandle());
+      ModuleManager::expose(vm);
   }
 
   const char* script;

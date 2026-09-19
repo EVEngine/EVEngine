@@ -1,11 +1,13 @@
 #include "vehicle/Vehicle.h"
 
 #include "common/Capability.h"
+#include "common/CrashLog.h"
+#include "common/ScriptProvider.h"
 #include "common/Value.h"
 #include "vehicle/VehicleDefinitionRuntime.h"
 #include "vehicle/VehicleOrderQueueAdapter.h"
-#include "vehicle/VehicleSystem.h"
 #include "vehicle/VehiclePhysics.h"
+#include "vehicle/VehicleSystem.h"
 #include "weapon/Weapon.h"
 
 #include <squirrel.h>
@@ -13,6 +15,10 @@
 
 #include <algorithm>
 #include <cmath>
+#include <memory>
+#include <string>
+#include <utility>
+#include <vector>
 
 namespace eve::vehicle {
 
@@ -114,16 +120,172 @@ VehicleEntity* VehicleEntity::createVehicle() {
 }
 
 // ---------------------------------------------------------------------------
+// 脚本伤害修饰器：IVehicleDamageModifier 的脚本提供方
+// ---------------------------------------------------------------------------
+
+namespace {
+
+/**
+ * @brief Serves `IVehicleDamageModifier` from one published script provider.
+ *
+ * The script rule sees only stable identity plus scalars -- it never receives a
+ * borrowed `VehicleEntity*`, so a rule cannot retain engine-internal layout across
+ * frames or name components the script ECS does not own.
+ *
+ * @ownership Holds a generation-qualified handle, never the script object.
+ * @lifetime The owned holder in `ScriptDamageModifiers` outlives every dispatch.
+ * @thread Dispatched from `Vehicle::applyDamage` on the owning ECS thread; the
+ *         registry is script-thread affine, which is the same thread.
+ * @reentrancy Calls user script, which may publish or unload providers, including
+ *              this one. A withdrawn adapter stays alive (see below) and reports
+ *              `StaleHandle` instead of being called again.
+ * @cost One script call plus two short-string copies per damage event. A damage
+ *       event is not a per-frame-per-entity path; a rule that needs that frequency
+ *       belongs in native code (see the plan's §6 non-goals).
+ */
+class ScriptVehicleDamageModifier final : public IVehicleDamageModifier {
+public:
+    explicit ScriptVehicleDamageModifier(ScriptProviderHandle handle) : handle_(std::move(handle)) {}
+
+    /** @brief Handle identifying the script generation this adapter serves. */
+    [[nodiscard]] const ScriptProviderHandle& handle() const noexcept { return handle_; }
+
+    float modifyDamage(VehicleEntity& v, float amount, const std::string& zone, int sourceId) override {
+        // Identity is copied out before the script call: the rule runs user code and
+        // may mutate the ECS world, so no component accessor stays live across it.
+        const auto      identity = v.identity();
+        const ScriptArg args[]   = {
+            ScriptArg::fromText(identity->id),     ScriptArg::fromText(identity->defId),
+            ScriptArg::fromNumber(double(amount)), ScriptArg::fromText(zone),
+            ScriptArg::fromInteger(sourceId),
+        };
+
+        auto modified = ScriptProviderRegistry::instance().callNumber(handle_, "modifyDamage", args);
+        if (!modified) {
+            // Fail open on the incoming amount: the alternative is silently dropping
+            // a hit because a game rule has a typo. Report the first failure of each
+            // generation so the fallback stays observable without flooding the log.
+            if (reportedGeneration_ != handle_.generation) {
+                reportedGeneration_ = handle_.generation;
+                recordLogEvent("error",
+                               "vehicle damage rule '" + handle_.name +
+                                   "' failed and the incoming amount was kept: " + modified.status().describe());
+            }
+            return amount;
+        }
+        return static_cast<float>(modified.value());
+    }
+
+private:
+    ScriptProviderHandle handle_;
+    /** Generation whose failure was already logged; 0 means "none yet". */
+    std::uint64_t reportedGeneration_ = 0;
+};
+
+/**
+ * @brief Process-lifetime owner of the script damage-rule adapters.
+ *
+ * Process-lifetime on purpose. The capability tables are process-global, so the
+ * adapter bookkeeping must outlive any single `Vehicle` instance; and an adapter
+ * that was withdrawn from inside its own callback must stay alive until the
+ * `cap::forEach` dispatch already in progress returns -- dispatch runs over a
+ * pointer snapshot taken before the first callback (`Capability.h:113-120`).
+ * `retired` therefore retains the object and only its registration is dropped. The
+ * cost is one small object per unload, and unloads only happen on script
+ * load/hot reload.
+ */
+struct ScriptDamageModifiers {
+    std::vector<std::unique_ptr<ScriptVehicleDamageModifier>> live;
+    std::vector<std::unique_ptr<ScriptVehicleDamageModifier>> retired;
+};
+
+ScriptDamageModifiers& scriptDamageModifiers() {
+    static ScriptDamageModifiers state;
+    return state;
+}
+
+/**
+ * @brief Declare the script binding seam for `IVehicleDamageModifier`.
+ *
+ * The vehicle module owns this interface (it is the party that asks for a damage
+ * rule), so it owns the marshalling too. `R-COHESION-6`.
+ *
+ * @remarks Idempotent: `declareCapability` replaces the previous pair. Script rules
+ *          register at the default listener priority, so a native provider can
+ *          still run before them by passing a lower priority.
+ */
+void declareScriptDamageSeam() {
+    ScriptDamageModifiers& owned = scriptDamageModifiers();
+    ScriptProviderRegistry::instance().declareCapability(
+        IVehicleDamageModifier::capabilityName,
+        [&owned](const ScriptProviderHandle& handle) -> eve::Result<void> {
+            auto adapter = std::make_unique<ScriptVehicleDamageModifier>(handle);
+            // Register before publishing ownership: from here on the listener table
+            // holds the raw pointer, and `owned.live` is what keeps it valid.
+            eve::cap::addListener<IVehicleDamageModifier>(adapter.get());
+            owned.live.push_back(std::move(adapter));
+            return eve::Result<void>::success();
+        },
+        [&owned](const ScriptProviderHandle& handle) -> eve::Result<void> {
+            const auto match = std::find_if(owned.live.begin(), owned.live.end(),
+                                            [&handle](const std::unique_ptr<ScriptVehicleDamageModifier>& adapter) {
+                                                return adapter->handle() == handle;
+                                            });
+            if (match == owned.live.end()) {
+                // Idempotent on purpose: the postcondition is "this generation has no
+                // adapter", and module teardown may already have withdrawn it. Returning
+                // a failure here would make a later `publish` of the same name fail for a
+                // state that is already correct.
+                return eve::Result<void>::success();
+            }
+            eve::cap::removeListener<IVehicleDamageModifier>(match->get());
+            owned.retired.push_back(std::move(*match));
+            owned.live.erase(match);
+            return eve::Result<void>::success();
+        });
+}
+
+/**
+ * @brief Stop dispatching every script-backed damage rule this module bound.
+ *
+ * Called when the module goes away. Adapters are retained rather than destroyed,
+ * for the reason documented on `ScriptDamageModifiers`: a rule may have been
+ * withdrawn from inside its own callback, and the dispatch already in progress
+ * still holds its pointer. A stale handle is then reported instead of invoked.
+ *
+ * @remarks The seam state is process-wide because the capability tables are; a
+ *          second live `Vehicle` instance (test-only, since production reaches the
+ *          module through `ModuleManager::requireInstance`) shares it.
+ */
+void withdrawScriptDamageSeam() {
+    ScriptDamageModifiers& owned = scriptDamageModifiers();
+    for (auto& adapter : owned.live) {
+        eve::cap::removeListener<IVehicleDamageModifier>(adapter.get());
+        owned.retired.push_back(std::move(adapter));
+    }
+    owned.live.clear();
+
+    // Withdraw the declaration too: with no consumer left, a seam would advertise a
+    // binding whose only possible outcome is a rule nothing ever dispatches.
+    auto withdrawn = ScriptProviderRegistry::instance().removeCapability(IVehicleDamageModifier::capabilityName);
+    withdrawn.ignore("a module may be destroyed without ever having declared the seam");
+}
+
+}  // namespace
+
+// ---------------------------------------------------------------------------
 // 模块生命周期
 // ---------------------------------------------------------------------------
 
 Vehicle::Vehicle() {
     VehicleSystem::setEventSink([this](const VehicleEvent& e) { events_.push_back(e); });
+    declareScriptDamageSeam();
 }
 
 Vehicle::~Vehicle() {
     destroyHandles(vehicles_);
     VehicleSystem::setEventSink(nullptr);
+    withdrawScriptDamageSeam();
 }
 
 // ---------------------------------------------------------------------------

@@ -1,6 +1,7 @@
 #include "common/SquirrelBinding.h"
 
 #include "common/Assert.h"
+#include "common/ScriptProvider.h"
 
 #include <algorithm>
 #include <cctype>
@@ -471,11 +472,72 @@ bool ignoreResult(const ssq::Object& result, const std::string& reason) {
     return true;
 }
 
+namespace {
+
+/** Projects one provider handle into the Value payload of a result table. */
+Value providerHandleValue(ScriptProviderHandle handle) {
+    return Value::object({{"name", Value::string(std::move(handle.name))},
+                          {"generation", Value::integer(static_cast<std::int64_t>(handle.generation))}});
+}
+
+}  // namespace
+
 void exposeResultBindings(ssq::Table& eveTable) {
     ssq::Table result = eveTable.addTable("result");
     result.addFunc("ignore", [](ssq::Object value, const std::string& reason) { return ignoreResult(value, reason); });
     result.addFunc("isChecked", [](ssq::Object value) { return readBoolField(value, "checked"); });
     result.addFunc("isIgnored", [](ssq::Object value) { return readBoolField(value, "ignored"); });
+}
+
+void exposeProviderBindings(ssq::Table& eveTable) {
+    ssq::Table  provider = eveTable.addTable("provider");
+    HSQUIRRELVM vm       = eveTable.getHandle();
+
+    provider.addFunc("publish", [vm](const std::string& name, const ssq::Object& instance) {
+        return projectResult(vm, ScriptProviderRegistry::instance().publish(name, instance), providerHandleValue);
+    });
+
+    provider.addFunc("publishFor", [vm](const std::string& capability, const std::string& name,
+                                        const ssq::Object& instance) {
+        return projectResult(vm, ScriptProviderRegistry::instance().publishForCapability(capability, name, instance),
+                             providerHandleValue);
+    });
+
+    // Script addresses a provider by name: the registry keeps exactly one live
+    // generation per name, so a script-held numeric generation would add no safety
+    // over the registry's own check. Native callers keep the generation-qualified
+    // handle, which is what protects them across a supersede.
+    provider.addFunc("unload", [vm](const std::string& name) {
+        ScriptProviderRegistry& registry = ScriptProviderRegistry::instance();
+        return projectResult(vm, registry.unload(ScriptProviderHandle{name, registry.generationOf(name)}));
+    });
+
+    provider.addFunc("contains",
+                     [](const std::string& name) { return ScriptProviderRegistry::instance().contains(name); });
+
+    provider.addFunc("generationOf", [](const std::string& name) {
+        return static_cast<std::int64_t>(ScriptProviderRegistry::instance().generationOf(name));
+    });
+
+    provider.addFunc("size", [] { return static_cast<std::int64_t>(ScriptProviderRegistry::instance().size()); });
+
+    provider.addFunc("capabilities", [vm] {
+        ssq::Array out(vm);
+        for (const std::string& name : ScriptProviderRegistry::instance().capabilities()) out.push(name);
+        return out;
+    });
+
+    provider.addFunc("published", [vm] {
+        ssq::Array out(vm);
+        for (const ScriptProviderInfo& info : ScriptProviderRegistry::instance().published()) {
+            ssq::Table entry(vm);
+            entry.set("name", info.name);
+            entry.set("generation", static_cast<std::int64_t>(info.generation));
+            entry.set("capability", info.capability);
+            out.push(entry);
+        }
+        return out;
+    });
 }
 
 }  // namespace eve::script

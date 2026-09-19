@@ -4,6 +4,7 @@
 #include "ScriptTest.h"
 #include "common/Capability.h"
 #include "common/ECS.h"
+#include "common/ScriptProvider.h"
 #include "vehicle/Vehicle.h"
 #include "vehicle/VehicleMobility.h"
 #include "weapon/Weapon.h"
@@ -312,6 +313,123 @@ UnitSciptTest(VehicleViewScriptTest, kViewScript);
 
 TEST_CASE_FIXTURE(VehicleViewScriptTest, "vehicle.script.viewSeesNewVehicle") {
     CHECK(vm.callFunc(vm.findFunc("testVehicleCppView"), vm).toBool());
+}
+
+/**
+ * 脚本伤害规则。`note` 是自由函数，因此 `seen = text` 写的是根表槽位，测试据此断言
+ * 参数编组；`modifyDamage` 只接收稳定标识与标量，收不到引擎内部借用指针。
+ */
+static const char* kScriptDamageRule = R"SQ(
+seen <- ""
+function note(text) { seen = text }
+class HalfDamage {
+    function modifyDamage(vehicleId, defId, amount, zone, sourceId) {
+        note(vehicleId + "|" + defId + "|" + amount.tointeger() + "|" + zone + "|" + sourceId)
+        return amount * 0.5
+    }
+}
+class BrokenRule {
+    function modifyDamage(vehicleId, defId, amount, zone, sourceId) { throw "rule is broken" }
+}
+modifier <- HalfDamage()
+broken <- BrokenRule()
+)SQ";
+
+/**
+ * Script rule shared by the two probes for judgement criterion J-4. The fixture
+ * only defines the class; the test body runs the `eve.provider` calls, because the
+ * binding seam is declared by `Vehicle`'s constructor and fixture members are
+ * constructed after the script has already run.
+ */
+class VehicleScriptDamageTest : public ScriptTest {
+public:
+    VehicleScriptDamageTest() : ScriptTest(kScriptDamageRule) { eve::ScriptProviderRegistry::instance().clearAll(); }
+    ~VehicleScriptDamageTest() { eve::ScriptProviderRegistry::instance().clearAll(); }
+};
+
+TEST_CASE_FIXTURE(VehicleScriptDamageTest, "vehicle.script.damageRule.present") {
+    // Provider-present probe: script answers the native damage socket.
+    Vehicle module;
+    module.registerVehiclesFromJson(kFpsDefs);
+    VehicleEntity* v = module.newVehicle("tank.fps", 0.f, 0.f);
+    REQUIRE(v != nullptr);
+
+    CHECK(eve::ScriptProviderRegistry::instance().hasCapabilitySeam("IVehicleDamageModifier"));
+    CHECK_EQ(eve::cap::listenerCount<IVehicleDamageModifier>(), std::size_t{0});
+
+    // The publish happens in script, through the same API a game would use.
+    vm.run(
+        vm.compileSource("published <- eve.provider.publishFor(\"IVehicleDamageModifier\","
+                         " \"vehicle.half\", modifier)"));
+    ssq::Object published = vm.find("published");
+    CHECK_EQ(published.getType(), ssq::Type::TABLE);
+    CHECK(published.find("ok").toBool());
+    CHECK_EQ(published.find("value").find("name").toString(), std::string("vehicle.half"));
+    CHECK_EQ(eve::cap::listenerCount<IVehicleDamageModifier>(), std::size_t{1});
+    CHECK_EQ(vm.find("seen").toString(), std::string(""));
+
+    // 100 * 0.5 * front(1.0) == 50, and the rule saw the marshalled arguments.
+    module.applyDamage(v, 100.f, "front", 7);
+    CHECK_EQ(module.getHealth(v), 550.f);
+    const std::string firstSeen = v->identity()->id + "|tank.fps|100|front|7";
+    CHECK_EQ(vm.find("seen").toString(), firstSeen);
+
+    // The script rule is retired by name, and dispatch stops with it.
+    vm.run(vm.compileSource("unloaded <- eve.provider.unload(\"vehicle.half\")"));
+    ssq::Object unloaded = vm.find("unloaded");
+    CHECK_EQ(unloaded.getType(), ssq::Type::TABLE);
+    CHECK(unloaded.find("ok").toBool());
+    CHECK_EQ(eve::cap::listenerCount<IVehicleDamageModifier>(), std::size_t{0});
+
+    module.applyDamage(v, 40.f, "front", 7);
+    CHECK_EQ(module.getHealth(v), 510.f);
+    // `seen` still holds the first call's text, so the retired rule was not invoked.
+    CHECK_EQ(vm.find("seen").toString(), firstSeen);
+}
+
+TEST_CASE_FIXTURE(VehicleScriptDamageTest, "vehicle.script.damageRule.absent") {
+    // Provider-absent probe. No `Vehicle` instance exists, so the module never
+    // declared the seam: the pipeline keeps its old behaviour and a publish attempt
+    // is refused with `NotFound` instead of silently binding nothing.
+    CHECK(!eve::ScriptProviderRegistry::instance().hasCapabilitySeam("IVehicleDamageModifier"));
+
+    vm.run(
+        vm.compileSource("refused <- eve.provider.publishFor(\"IVehicleDamageModifier\","
+                         " \"vehicle.half\", modifier)"));
+    ssq::Object refused = vm.find("refused");
+    CHECK_EQ(refused.getType(), ssq::Type::TABLE);
+    CHECK(!refused.find("ok").toBool());
+    CHECK_EQ(refused.find("code").toString(), std::string("not_found"));
+    CHECK_EQ(eve::cap::listenerCount<IVehicleDamageModifier>(), std::size_t{0});
+
+    // The same absence through the plain publish path: published, but nothing is
+    // dispatched, which is what "absent provider" has to mean.
+    vm.run(vm.compileSource("plain <- eve.provider.publish(\"vehicle.orphan\", modifier)"));
+    CHECK(vm.find("plain").find("ok").toBool());
+    CHECK_EQ(eve::cap::listenerCount<IVehicleDamageModifier>(), std::size_t{0});
+}
+
+TEST_CASE_FIXTURE(VehicleScriptDamageTest, "vehicle.script.damageRule.failureKeepsAmount") {
+    // A rule that raises must not drop the hit. The alternative -- swallowing the
+    // damage because a game rule has a typo -- is the failure mode this asserts
+    // against, and the fallback is reported through the engine log.
+    Vehicle module;
+    module.registerVehiclesFromJson(kFpsDefs);
+    VehicleEntity* v = module.newVehicle("tank.fps", 0.f, 0.f);
+    REQUIRE(v != nullptr);
+
+    vm.run(
+        vm.compileSource("brokenPublish <- eve.provider.publishFor(\"IVehicleDamageModifier\","
+                         " \"vehicle.broken\", broken)"));
+    CHECK(vm.find("brokenPublish").find("ok").toBool());
+    CHECK_EQ(eve::cap::listenerCount<IVehicleDamageModifier>(), std::size_t{1});
+
+    module.applyDamage(v, 100.f, "front", 7);
+    CHECK_EQ(module.getHealth(v), 500.f);
+
+    // The provider survives its own failure: the raising call restored the VM stack.
+    module.applyDamage(v, 100.f, "front", 7);
+    CHECK_EQ(module.getHealth(v), 400.f);
 }
 
 static const char* kRtsFlowScript = R"SQ(

@@ -670,6 +670,35 @@
       }
     },
     {
+      "id": "vehicle-module-interface",
+      "rule": "module-interface",
+      "scope": "src/modules/vehicle/**",
+      "owner": "vehicle",
+      "issue": "EVENGINE-ARCH-MODULE-INTERFACE",
+      "reason": "The damage pipeline consumes the multi-listener IVehicleDamageModifier socket, which is now answerable from script through eve.provider.publishFor; recording the face makes the provider and any further consumer declare themselves.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/vehicle/VehicleTypes.h",
+        "src/modules/vehicle/Vehicle.cpp"
+      ],
+      "tests": [
+        "scripts/tests/test_architecture_contracts.py"
+      ],
+      "provides": [
+        "IVehicleDamageModifier"
+      ],
+      "requires": [],
+      "emits": [],
+      "observes": [],
+      "binds": [
+        "eve.Vehicle (unchanged); eve.provider.publishFor('IVehicleDamageModifier', name, instance)"
+      ],
+      "trim": {
+        "absent_profile": "not yet recorded; this entry is filled in on first touch (spec 8.3)",
+        "layer": "L3 runtime"
+      }
+    },
+    {
       "id": "quality-debt-policy",
       "rule": "debt-metadata",
       "scope": "scripts/**",

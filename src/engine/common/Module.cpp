@@ -274,6 +274,10 @@ void ModuleManager::exposeVM(ssq::VM& vm) {
     // domain-module convenience. Expose it before module constructors run so
     // every checked binding observes the same `eve.result` helper.
     script::exposeResultBindings(table);
+    // Script-side provider publication is the same kind of common contract: it is
+    // how user script answers a native extension point, and it must exist before
+    // any module constructor declares a capability seam.
+    script::exposeProviderBindings(table);
     installLazyClassGet(table);
     table.addFunc("_bindAllNativeClasses", []() { return ModuleManager::exposeAllForCompatibility(); });
     table.addFunc("_ensureScriptECS", []() { return ModuleManager::ensureScriptEcs(); });
