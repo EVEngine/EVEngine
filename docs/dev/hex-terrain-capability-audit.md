@@ -289,6 +289,23 @@ seam work. Captured at the same camera pose, the planet frame changes by 24.4% o
 (23.5% by more than 8/255) against the pre-change binary - and the three runs of the fixed
 binary are byte-identical.
 
+**The spherical water mesh had the same winding defect, and it is the one that reads as missing
+triangles.** `SphereWaterMesher` emits its caps with its own `HexMeshData::addTriangle` rather
+than through the oriented emitters, so the fix above did not reach it: 652 of its triangles were
+inward-facing at subdivision 2. The planar water mesh had always been covered
+(`hexmap.mesh.waterIsFlatAtAShore` asserts every face is wound to +Y); the sphere was the one
+emitter with no winding check at all. It now takes the same `facesInward` decision, and
+`hexmap.sphereMesh.waterCapsFaceOutwardAndCoverEveryFloodedCell` asserts both the winding and
+that every flooded cell contributes exactly one cap of `cornerCountOf(cell)` triangles.
+
+The visible effect was not subtle once the shader is read: `hex_planet_water.frag` derives
+`ndv = dot(N, V)` and uses `pow(1 - ndv, 4)` for a Fresnel term meant to apply *at the limb*
+("which is also what keeps the far hemisphere from reading as flat navy"). With the normal
+inverted, `ndv` clamps to 0.001 everywhere, Fresnel saturates, and the whole ocean collapses to
+one flat sky-blue disc - exactly the look the comment says the term exists to avoid. With the
+winding corrected the ocean shades as deep water, lightens at the shore, and only mirrors the
+sky at the limb.
+
 Still open, unchanged from the gap list above: bindable texture arrays and independent
 ORM maps (gaps 2-4), production hydrology (gap 6), and instanced vegetation independent of
 the terrain rebuild (gap 7). `HexMapModule` now has a test file

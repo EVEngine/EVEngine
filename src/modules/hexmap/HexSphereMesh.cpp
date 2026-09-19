@@ -157,6 +157,30 @@ namespace {
     return cell == nullptr ? 0 : cell->values.elevation();
 }
 
+/**
+ * @brief Whether `(a, b, c)` is wound so that its normal points towards the sphere centre.
+ *
+ * Every surface these meshers build lies on a shell around the origin - the terrain is a closed
+ * one, the water is a set of caps on another - so "faces outward" is the winding rule for all of
+ * it. The corner branches permute their three points by elevation, and whether that permutation
+ * is even or odd depends on which of the three cells emitted the corner, so the same junction
+ * came out wound either way; reading the orientation off the emitted triangle is what makes
+ * every branch agree. The water mesher is a separate emitter and needs the same treatment: its
+ * caps are wound from a centre and corner ring, which is inward for this engine's front face.
+ *
+ * The vertex normals are flat geometric normals (see `HexMeshData::finalize`), which is why
+ * `hexmap.sphereMesh.facesPointAwayFromTheCentre` and its water counterpart are the checks that
+ * measure this.
+ */
+[[nodiscard]] bool facesInward(HexVec3 a, HexVec3 b, HexVec3 c) noexcept {
+    const HexVec3 ab = b - a;
+    const HexVec3 ac = c - a;
+    const HexVec3 normal{ab.y * ac.z - ab.z * ac.y, ab.z * ac.x - ab.x * ac.z, ab.x * ac.y - ab.y * ac.x};
+    // The centroid's direction from the origin is the outward direction; leaving both vectors
+    // unnormalised is fine because only the sign matters.
+    return normal.x * (a.x + b.x + c.x) + normal.y * (a.y + b.y + c.y) + normal.z * (a.z + b.z + c.z) < 0.f;
+}
+
 /** @brief The three cells meeting at a corner, kept together while they are sorted by elevation. */
 struct CornerCells {
     HexVec3            up{};
@@ -499,26 +523,6 @@ private:
         out_.addVertex(tangentPerturb(map_.noise(), position, perturbStrength_), u, v);
     }
 
-    /**
-     * @brief Whether `(a, b, c)` is wound so that its normal points towards the sphere centre.
-     *
-     * Every surface this mesher builds is a closed shell around the origin, so "faces outward"
-     * is the winding rule for all of it. The corner branches permute their three points by
-     * elevation and whether that permutation is even or odd depends on which of the three
-     * cells emitted the corner, so the same junction came out wound either way; reading the
-     * orientation off the emitted triangle is what makes every branch agree. The vertex
-     * normals are flat geometric normals (see `HexMeshData::finalize`), which is why
-     * `hexmap.sphereMesh.facesPointAwayFromTheCentre` is the check that measures this.
-     */
-    [[nodiscard]] static bool facesInward(HexVec3 a, HexVec3 b, HexVec3 c) noexcept {
-        const HexVec3 ab = b - a;
-        const HexVec3 ac = c - a;
-        const HexVec3 normal{ab.y * ac.z - ab.z * ac.y, ab.z * ac.x - ab.x * ac.z, ab.x * ac.y - ab.y * ac.x};
-        // The centroid's direction from the origin is the outward direction; leaving both
-        // vectors unnormalised is fine because only the sign matters.
-        return normal.x * (a.x + b.x + c.x) + normal.y * (a.y + b.y + c.y) + normal.z * (a.z + b.z + c.z) < 0.f;
-    }
-
     /** @brief The position `vertex` will actually emit for `position`. */
     [[nodiscard]] HexVec3 perturbedPosition(HexVec3 position) const noexcept {
         return tangentPerturb(map_.noise(), position, perturbStrength_);
@@ -723,7 +727,6 @@ private:
         const float        radius  = waterRadius(data->values.waterLevel());
         const HexVec3      center  = map_.direction(cell) * radius;
         const std::int32_t corners = map_.cornerCountOf(cell);
-        // Same winding as the terrain fan: centre, then the corners in increasing index.
         for (std::int32_t k = 0; k < corners; ++k) {
             const HexVec3       a  = map_.cornerDirection(cell, k) * radius;
             const HexVec3       b  = map_.cornerDirection(cell, (k + 1) % corners) * radius;
@@ -731,7 +734,12 @@ private:
             out_.addVertex(center, shore, 0.f);
             out_.addVertex(a, shore, 0.f);
             out_.addVertex(b, shore, 0.f);
-            out_.addTriangle(i0, i0 + 1u, i0 + 2u);
+            // A cap wound inward is culled, which reads as a hole in the sea, so the orientation
+            // is taken from the vertices rather than from the corner ordering.
+            if (facesInward(center, a, b))
+                out_.addTriangle(i0, i0 + 2u, i0 + 1u);
+            else
+                out_.addTriangle(i0, i0 + 1u, i0 + 2u);
         }
     }
 

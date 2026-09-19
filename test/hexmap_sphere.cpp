@@ -799,21 +799,65 @@ TEST_CASE("hexmap.sphereMesh.isAWatertightSurface") {
         // Guard against a vacuously small mesh passing the census.
         CHECK(report.triangles > 1000u);
     }
+
+    // The level `examples/hex-planet` actually renders. A missing triangle anywhere would leave
+    // boundary edges, so the census is what rules out a hole in the shipped frame.
+    {
+        HexSphereMap map = makeMap(4, 100.f, 4u);
+        scatterElevation(map);
+
+        HexMeshData mesh;
+        buildSphereTerrainMesh(map, mesh);
+        const WeldReport report = analyseWeld(mesh);
+        checkClosedSphere(report);
+        CHECK(report.triangles > 10000u);
+    }
 }
 
 TEST_CASE("hexmap.sphereMesh.facesPointAwayFromTheCentre") {
-    HexSphereMap map = makeMap(2, 100.f, 6u);
+    // Subdivision 4 is what `examples/hex-planet` renders, so it is checked explicitly rather
+    // than trusting the property to hold at every level. A clockwise fan or a reversed strip
+    // would light the planet from inside out. REQUIRE, not CHECK: with CHECK this assertion was
+    // reporting 10030 inward-facing triangles and the test still exited zero, which is how the
+    // corner fans stayed inside-out.
+    for (const std::int32_t subdivision : {1, 2, 4}) {
+        HexSphereMap map = makeMap(subdivision, 100.f, 6u);
+        scatterElevation(map);
+
+        HexMeshData mesh;
+        buildSphereTerrainMesh(map, mesh);
+        REQUIRE(!mesh.empty());
+        REQUIRE(mesh.hasNormals());
+        REQUIRE_EQ(countInwardFacingTriangles(mesh), static_cast<std::size_t>(0));
+    }
+}
+
+TEST_CASE("hexmap.sphereMesh.waterCapsFaceOutwardAndCoverEveryFloodedCell") {
+    HexSphereMap map = makeMap(2, 100.f, 5u);
     scatterElevation(map);
+    // Flood everything above the scattered relief so the mesh has open ocean, shoreline and
+    // land in one frame.
+    for (HexSphereCell cell = 0; cell < map.cellCount(); ++cell) {
+        REQUIRE(map.setWaterLevel(cell, 1).ok());
+    }
 
-    HexMeshData mesh;
-    buildSphereTerrainMesh(map, mesh);
-    REQUIRE(!mesh.empty());
-    REQUIRE(mesh.hasNormals());
+    HexMeshData water;
+    buildSphereWaterMesh(map, water);
+    REQUIRE(!water.empty());
 
-    // A clockwise fan or a reversed strip would light the planet from inside out. REQUIRE, not
-    // CHECK: with CHECK this assertion was reporting 10030 inward-facing triangles and the test
-    // still exited zero, which is how the corner fans stayed inside-out.
-    REQUIRE_EQ(countInwardFacingTriangles(mesh), static_cast<std::size_t>(0));
+    // The water is a separate mesh with its own emitter, so it needs its own winding check: a
+    // cap wound inward is culled and reads as a hole in the sea.
+    REQUIRE_EQ(countInwardFacingTriangles(water), static_cast<std::size_t>(0));
+
+    // One fan per flooded cell, one triangle per corner.
+    std::size_t expected = 0;
+    for (HexSphereCell cell = 0; cell < map.cellCount(); ++cell) {
+        const HexCellData* data = map.cellAt(cell);
+        if (data == nullptr || !data->values.isUnderwater()) continue;
+        expected += static_cast<std::size_t>(map.cornerCountOf(cell));
+    }
+    REQUIRE(expected > 0u);
+    REQUIRE_EQ(water.triangleCount(), expected);
 }
 
 TEST_CASE("hexmap.sphereMesh.verticesStayOnTheirSurfaceRadius") {
