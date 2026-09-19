@@ -36,9 +36,12 @@ bool compileDnutConversations(const std::string& source, const std::string& path
 
 eve::Result<DnutDocument> compileDnutDocument(const std::string& source, const std::string& path,
                                               std::vector<ConversationDiagnostic>& diagnostics) {
-    DnutDocument document;
-    if (!parseDnutDocument(source, path, document, diagnostics) ||
-        !lintConversations(document.conversations, path, diagnostics)) {
+    auto parsed = parseDnutDocument(source, path, diagnostics);
+    if (!parsed) {
+        return eve::Result<DnutDocument>::failure(parsed.status());
+    }
+    DnutDocument document = std::move(parsed).takeValue();
+    if (!lintConversations(document.conversations, path, diagnostics)) {
         const std::string message = diagnostics.empty() ? "dnut compilation failed" : diagnostics.front().message;
         return eve::Result<DnutDocument>::failure(eve::Diagnostic::error(
             eve::DiagnosticCode::InvalidArgument, message, path, {}, "dialogue.dnut.compile"));

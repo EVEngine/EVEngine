@@ -526,19 +526,6 @@ eve::Result<int> DialogueFlow::loadDnutFileChecked(const std::string& path) {
     return dnutLoadResult(loadDnutFileImpl(path), failureMessage_, path);
 }
 
-int DialogueFlow::loadDnutScript(const std::string& source, const std::string& sourceId) {
-    auto result = loadDnutChecked(source, sourceId);
-    return result ? result.value() : 0;
-}
-int DialogueFlow::reloadDnutScript(const std::string& source, const std::string& sourceId) {
-    auto result = reloadDnutChecked(source, sourceId);
-    return result ? result.value() : 0;
-}
-int DialogueFlow::loadDnutFileScript(const std::string& path) {
-    auto result = loadDnutFileChecked(path);
-    return result ? result.value() : 0;
-}
-
 int DialogueFlow::mergeImported(std::vector<ConversationAsset> imported) {
     runner_.stop();
     const int count = static_cast<int>(imported.size());
@@ -1042,9 +1029,21 @@ void DialogueFlow::expose(ssq::Table& table) {
 
 void DialogueFlow::expose(ssq::Class& cls) {
     cls.addFunc("getName", &DialogueFlow::getName);
-    cls.addFunc("loadDnutChecked", &DialogueFlow::loadDnutScript);
-    cls.addFunc("reloadDnutChecked", &DialogueFlow::reloadDnutScript);
-    cls.addFunc("loadDnutFileChecked", &DialogueFlow::loadDnutFileScript);
+    const auto projectCount = [](int count) { return eve::Value(count); };
+    cls.addFunc("loadDnutChecked", [vm = cls.getHandle(), projectCount](DialogueFlow* value,
+                                                                        const std::string& source,
+                                                                        const std::string& sourceId) {
+        return eve::script::projectResult(vm, value->loadDnutChecked(source, sourceId), projectCount);
+    });
+    cls.addFunc("reloadDnutChecked", [vm = cls.getHandle(), projectCount](DialogueFlow* value,
+                                                                          const std::string& source,
+                                                                          const std::string& sourceId) {
+        return eve::script::projectResult(vm, value->reloadDnutChecked(source, sourceId), projectCount);
+    });
+    cls.addFunc("loadDnutFileChecked", [vm = cls.getHandle(), projectCount](DialogueFlow* value,
+                                                                            const std::string& path) {
+        return eve::script::projectResult(vm, value->loadDnutFileChecked(path), projectCount);
+    });
     cls.addFunc("importYarn", &DialogueFlow::importYarn);
     cls.addFunc("importTwee", &DialogueFlow::importTwee);
     cls.addFunc("removeSource", &DialogueFlow::removeSource);

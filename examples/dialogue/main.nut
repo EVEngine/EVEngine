@@ -133,7 +133,7 @@ function eve_asset_reload(path) {
     // Pools and conversations reload as one transaction; failure keeps the live workspace.
     if (path == "pools.dnut") {
         local loaded = dialogueFlow.reloadDnutFileChecked("pools.dnut");
-        if (loaded <= 0) print("dialogue dnut reload rolled back: " + path + "\n");
+        if (!loaded.ok || loaded.value <= 0) print("dialogue dnut reload rolled back: " + path + "\n");
         else print("dialogue dnut workspace reloaded: " + path + "\n");
     }
 }
@@ -249,7 +249,8 @@ function eve_init() {
         i18n.setAutoReload(true);
     }
     // One versioned dnut transaction installs pools and conversations.
-    if (dialogueFlow.loadDnutFileChecked("pools.dnut") <= 0)
+    local loaded = dialogueFlow.loadDnutFileChecked("pools.dnut");
+    if (!loaded.ok || loaded.value <= 0)
         throw "dialogue: failed to load canonical dnut workspace";
     dialogueFlow.setLocale(i18n.getLanguage());
     dialogueFlow.setManualCommandMode(true);

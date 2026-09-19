@@ -696,10 +696,16 @@ private:
 
 }  // namespace
 
-bool parseDnutDocument(const std::string& source, const std::string& path, DnutDocument& out,
-                       std::vector<ConversationDiagnostic>& diagnostics) {
+eve::Result<DnutDocument> parseDnutDocument(const std::string& source, const std::string& path,
+                                            std::vector<ConversationDiagnostic>& diagnostics) {
     Parser parser(source, path);
-    return parser.parseDocument(out, diagnostics);
+    DnutDocument document;
+    if (!parser.parseDocument(document, diagnostics)) {
+        const std::string message = diagnostics.empty() ? "dnut parsing failed" : diagnostics.back().message;
+        return eve::Result<DnutDocument>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, message, path, {}, "dialogue.dnut.parse"));
+    }
+    return eve::Result<DnutDocument>::success(std::move(document));
 }
 
 }  // namespace eve::dialogue

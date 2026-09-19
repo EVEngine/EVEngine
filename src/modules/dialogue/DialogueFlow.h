@@ -225,9 +225,6 @@ public:
     void        clearToneRules() { textRenderer_.clearToneRules(); }
 
 private:
-    int loadDnutScript(const std::string& source, const std::string& sourceId);
-    int reloadDnutScript(const std::string& source, const std::string& sourceId);
-    int loadDnutFileScript(const std::string& path);
     int loadDnutImpl(const std::string& source, const std::string& sourceId);
     int reloadDnutImpl(const std::string& source, const std::string& sourceId);
     int loadDnutFileImpl(const std::string& path);

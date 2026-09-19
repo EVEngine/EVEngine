@@ -17,17 +17,16 @@ conversation greeting.scene entry=end {
   node end end
 }
 )";
-    DnutDocument document;
     std::vector<ConversationDiagnostic> diagnostics;
-    REQUIRE(parseDnutDocument(source, "mixed.dnut", document, diagnostics));
+    auto parsed = parseDnutDocument(source, "mixed.dnut", diagnostics);
+    REQUIRE(parsed.ok());
+    DnutDocument document = std::move(parsed).takeValue();
     CHECK_EQ(document.conversations.size(), size_t(1));
     CHECK_EQ(document.conversations[0].parameters[0].defaultValue.asInt(), 2);
     REQUIRE(document.poolRoot.find("pools") != nullptr);
 
-    DnutDocument rejected;
     diagnostics.clear();
-    CHECK(!parseDnutDocument("schema \"eve.dnut\"\nversion 1\nunknown thing\n", "bad.dnut", rejected,
-                             diagnostics));
+    CHECK(!parseDnutDocument("schema \"eve.dnut\"\nversion 1\nunknown thing\n", "bad.dnut", diagnostics));
     REQUIRE(!diagnostics.empty());
     CHECK_EQ(diagnostics[0].code, std::string("DnutParseError"));
 }
