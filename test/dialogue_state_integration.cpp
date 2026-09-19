@@ -88,6 +88,7 @@ ConversationAsset makeWorldBranchAsset() {
     ConversationAsset asset;
     asset.id    = "p1.world-branch";
     asset.entry = "branch";
+    asset.parameters.push_back(ConversationAsset::Parameter{"mood"});
 
     ConversationAsset::Node branch;
     branch.id   = "branch";
@@ -165,9 +166,7 @@ TEST_CASE("dialogueState.conversationLocalsDoNotBecomeWorldState") {
 
     eve::StateValue bindings = eve::StateValue::object();
     bindings.set("mood", eve::StateValue::string("local-mood"));
-    std::string error;
-    CHECK(runner.start(&asset, std::move(bindings), &error));
-    CHECK(error.empty());
+    CHECK(runner.startChecked(&asset, std::move(bindings)).ok());
     CHECK(runner.currentNodeId() == "world-line");
     CHECK(runner.bindings().find("mood")->asString() == "local-mood");
 
@@ -315,11 +314,11 @@ TEST_CASE("dialogueState.dialogueFlowConfiguresAllCrossDomainHooks") {
 
     ConversationAsset asset    = makeFacadeAsset();
     auto*             document = new eve::dialogue::ConversationDocument(asset);
-    CHECK(flow.applyDocument(document));
+    CHECK(flow.applyDocumentChecked(document).ok());
     delete document;
 
     std::string error;
-    CHECK(flow.start(asset.id, ssq::Object{}));
+    CHECK(flow.startChecked(asset.id, ssq::Object{}).ok());
     CHECK(error.empty());
     CHECK(customConditionCalled);
     REQUIRE(requests.size() == 2);

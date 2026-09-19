@@ -57,10 +57,10 @@ void acceptQuestThroughDialogue(const std::vector<eve::dialogue::ConversationAss
     REQUIRE(conversation != nullptr);
     eve::dialogue::ConversationRunner runner;
     std::string                       error;
-    REQUIRE(runner.start(conversation, eve::StateValue::object(), &error));
-    REQUIRE(runner.advance(&error));
+    REQUIRE(runner.startChecked(conversation, eve::StateValue::object()).ok());
+    REQUIRE(runner.advanceChecked().ok());
     REQUIRE_EQ(runner.currentNodeId(), std::string("decision"));
-    REQUIRE(runner.select("accept", &error));
+    REQUIRE(runner.selectChecked("accept").ok());
     REQUIRE(tracker.activate(questId));
 }
 
@@ -125,10 +125,11 @@ TEST_CASE("rpg.classic.playthroughCompletesBothQuestsAndRestoresCheckpoint") {
     auto shopCatalogue = eve::rpg::ShopCatalogue::replaceFromJsonStrict(readClassicContent(contentRoot, "shop.json"));
     REQUIRE(shopCatalogue.ok());
 
-    std::vector<eve::dialogue::ConversationAsset>      conversations;
     std::vector<eve::dialogue::ConversationDiagnostic> diagnostics;
-    REQUIRE(eve::dialogue::compileDnutConversations(readClassicContent(contentRoot, "village-dialogue.dnut"),
-                                                    "village-dialogue.dnut", conversations, diagnostics));
+    auto compiled = eve::dialogue::compileDnutConversations(
+        readClassicContent(contentRoot, "village-dialogue.dnut"), "village-dialogue.dnut", diagnostics);
+    REQUIRE(compiled.ok());
+    auto conversations = std::move(compiled).takeValue();
     REQUIRE(diagnostics.empty());
     auto* localization = eve::i18n::I18n::create();
     REQUIRE(localization != nullptr);
