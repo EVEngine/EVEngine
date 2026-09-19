@@ -464,12 +464,19 @@ bool Dialogue::evalScriptPredicate(const std::string &name,
     if (it == predicates_.end()) return false;
 
     const SQInteger top = sq_gettop(vm_);
-    sq_pushobject(vm_, it->second);  // closure first; sq_call expects fn below its args
-    sq_newtable(vm_);  // ctx
+    // sq_call's parameter count includes the receiver slot, so the closure must be
+    // pushed as fn + this + ctx. Pushing only fn + ctx and calling with 1 bound the
+    // ctx table as `this`, leaving the callback zero arguments: SQVM::StartCall then
+    // rejected the call on arity and every registered condition silently evaluated to
+    // false (plan doc 9.21). Adding the receiver below ctx keeps the relative
+    // sq_newslot indices below unchanged.
+    sq_pushobject(vm_, it->second);  // fn
+    sq_pushroottable(vm_);           // this
+    sq_newtable(vm_);                // ctx
 
     sq_pushstring(vm_, "vars", -1);
     pushVarTable(vm_, merged);
-    sq_newslot(vm_, -3, SQFalse);  // fn at -4, key at -2, var table at -1 -> slot into ctx(-3)
+    sq_newslot(vm_, -3, SQFalse);  // ctx at -3, key at -2, var table at -1
 
     sq_pushstring(vm_, "params", -1);
     pushVarTable(vm_, params);
@@ -479,7 +486,7 @@ bool Dialogue::evalScriptPredicate(const std::string &name,
     sq_pushstring(vm_, lineId.c_str(), lineId.size());
     sq_newslot(vm_, -3, SQFalse);
 
-    if (SQ_FAILED(sq_call(vm_, 1, SQTrue, SQTrue))) {
+    if (SQ_FAILED(sq_call(vm_, 2, SQTrue, SQTrue))) {
         sq_settop(vm_, top);
         return false;
     }

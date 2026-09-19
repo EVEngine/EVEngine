@@ -16,19 +16,29 @@ namespace {
 const char* kReloadScript = R"(
 // Mirror of the load.nut migrate_instance helper (tables fully; class
 // instances via their declared members).
+//
+// Two Squirrel facts this has to respect (probed; plan doc 9.21):
+//  * `n[k] <- v` throws "class instances do not support the new slot operator"
+//    whenever the key is dynamic, so the catch swallowed every field and the
+//    migration silently copied nothing. `n[k] = v` works for a member the new
+//    class declares and throws for one it does not -- which is what the catch is
+//    there for.
+//  * `foreach` over an instance raises "_nexti failed": instances are not
+//    enumerable. `getclass()` is an *instance method* (there is no global
+//    getclass), and a class object is enumerable.
 function migrate_inst(old, NewClass) {
     local n = NewClass();
     if (old == null) return n;
     if (typeof old == "table") {
         foreach (k, v in old) {
-            try { n[k] <- v; } catch (e) {}
+            try { n[k] = v; } catch (e) {}
         }
         return n;
     }
     if (typeof old != "instance") return n;
-    foreach (k, v in getclass(old)) {
+    foreach (k, v in old.getclass()) {
         if (typeof v == "function") continue;
-        try { n[k] <- old[k]; } catch (e) {}
+        try { n[k] = old[k]; } catch (e) {}
     }
     return n;
 }
@@ -231,19 +241,15 @@ TEST_CASE_FIXTURE(ReloadScriptTestFixture, "reloadScript.abortRollsBack") {
 }
 
 TEST_CASE_FIXTURE(ReloadScriptTestFixture, "reloadScript.migrateInstanceCopiesFieldsAndKeepsDefaults") {
-    // CHECK, not REQUIRE: the script returns false. Pre-existing, untriaged (9.15);
-    // the sweep only revealed that it never asserted.
-    CHECK(vm.callFunc(vm.findFunc("migrateInstanceCopiesFieldsAndKeepsDefaults"), vm).toBool());
+    REQUIRE(vm.callFunc(vm.findFunc("migrateInstanceCopiesFieldsAndKeepsDefaults"), vm).toBool());
 }
 
 TEST_CASE_FIXTURE(ReloadScriptTestFixture, "reloadScript.migrateInstanceFromTable") {
-    // CHECK, not REQUIRE: the script returns false. Pre-existing, untriaged (9.15).
-    CHECK(vm.callFunc(vm.findFunc("migrateInstanceFromTable"), vm).toBool());
+    REQUIRE(vm.callFunc(vm.findFunc("migrateInstanceFromTable"), vm).toBool());
 }
 
 TEST_CASE_FIXTURE(ReloadScriptTestFixture, "reloadScript.remapInstancesContainer") {
-    // CHECK, not REQUIRE: the script returns false. Pre-existing, untriaged (9.15).
-    CHECK(vm.callFunc(vm.findFunc("remapInstancesContainer"), vm).toBool());
+    REQUIRE(vm.callFunc(vm.findFunc("remapInstancesContainer"), vm).toBool());
 }
 
 TEST_CASE_FIXTURE(ReloadScriptTestFixture, "reloadScript.stateRootsReportsMarkedAndHeuristic") {

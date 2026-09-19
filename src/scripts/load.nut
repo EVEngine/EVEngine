@@ -337,14 +337,39 @@ function track_script(path) {
 
 // Copy the enumerable fields of an old instance/table into a fresh instance
 // of NewClass; fields missing on the new class keep their defaults.
+//
+// Two Squirrel facts this depends on (probed; see
+// docs/dev/2026-09-19-脚本定义组件与引擎扩展性方案.md 9.21):
+//   * `n[k] <- v` throws "class instances do not support the new slot operator"
+//     whenever the key is dynamic. The catch below therefore swallowed *every*
+//     field and migration silently copied nothing -- old state was replaced by
+//     the new class's defaults. `n[k] = v` assigns a member the new class
+//     declares and throws for one it does not, which is the case the catch is
+//     meant to handle.
+//   * Instances are not enumerable: `foreach (k, v in instance)` raises
+//     "_nexti failed". `getclass()` is an instance method (there is no global
+//     getclass) and a class object *is* enumerable, so enumerate that.
 function migrate_instance(old, NewClass) {
     local n = NewClass();
     if (old == null) return n;
-    foreach (k, v in old) {
+    local kind = typeof old;
+    if (kind == "table") {
+        foreach (k, v in old) {
+            try {
+                n[k] = v;
+            } catch (e) {
+                // Not declared on the new class; keep the default.
+            }
+        }
+        return n;
+    }
+    if (kind != "instance") return n;
+    foreach (k, v in old.getclass()) {
+        if (typeof v == "function") continue;  // methods stay as the new class defines them
         try {
-            n[k] <- v;
+            n[k] = old[k];
         } catch (e) {
-            // Not assignable on the new class; keep the default.
+            // Not declared on the new class; keep the default.
         }
     }
     return n;
