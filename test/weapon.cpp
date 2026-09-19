@@ -572,8 +572,44 @@ function testWeaponCppView() {
     }
     return false
 }
+
+// 统计某个原生实体类视图里出现指定 id 的次数。
+// weapon 模块为四个实体类各登记了一个原生→脚本视图收集器：登记到错误的类上
+// 只会得到空视图，四个类共用同一个收集器则会把别的类也数进来——两种错误都必须
+// 能被这里发现，所以同时检查"本类恰好一次"和"他类一次都没有"。
+function countVisible(cls, id) {
+    local n = 0
+    foreach (e in eve.view(cls)) {
+        if (e.getId() == id) n++
+    }
+    return n
+}
+
+function testEveryWeaponEntityClassIsVisible() {
+    local weapon = eve.Weapon()
+    weapon.registerWeaponsFromJson("[{\"id\":\"probe\",\"kind\":\"melee\",\"logic\":\"melee\"}]")
+    local w = weapon.newWeapon("probe")
+    local mount = weapon.newMount("probe-mount", "turret")
+    local rig = weapon.newRig("probe-rig", "right_hand")
+    local pool = weapon.newAmmoPool("probe-pool", "probe-ammo", -1)
+    if (w == null || mount == null || rig == null || pool == null) return false
+
+    if (countVisible(eve.WeaponEntity, w.getId()) != 1) return false
+    if (countVisible(eve.WeaponMountEntity, mount.getId()) != 1) return false
+    if (countVisible(eve.WeaponRigEntity, rig.getId()) != 1) return false
+    if (countVisible(eve.AmmoPoolEntity, pool.getId()) != 1) return false
+
+    if (countVisible(eve.WeaponMountEntity, w.getId()) != 0) return false
+    if (countVisible(eve.WeaponEntity, mount.getId()) != 0) return false
+    if (countVisible(eve.AmmoPoolEntity, rig.getId()) != 0) return false
+    return true
+}
 )SQ";
 
 UnitSciptTest(WeaponViewScriptTest, kViewScript);
 
 TEST_CASE_FIXTURE(WeaponViewScriptTest, "weapon.script.viewSeesNewWeapon") { REQUIRE(callScript("testWeaponCppView")); }
+
+TEST_CASE_FIXTURE(WeaponViewScriptTest, "weapon.script.viewSeesEveryNativeEntityClass") {
+    REQUIRE(callScript("testEveryWeaponEntityClassIsVisible"));
+}
