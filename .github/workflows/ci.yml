@@ -759,7 +759,9 @@ jobs:
     needs: [source-quality, change-scope]
     if: ${{ needs.source-quality.result == 'success' && needs.change-scope.outputs.macos == 'true' && (github.event_name != 'workflow_call' || inputs.build_type == 'debug' || inputs.build_type == 'both') }}
     runs-on: macos-latest
-    timeout-minutes: 120
+    # The full isolated test suite now exceeds 30 minutes on hosted Apple
+    # Silicon, and the native Dawn lane still follows it in this job.
+    timeout-minutes: 135
     env:
       SCCACHE_GHA_ENABLED: "true"
       SCCACHE_GHA_VERSION: evengine-cpp-v1-macos-arm64-debug
@@ -806,7 +808,9 @@ jobs:
           CMAKE_EXTRA_ARGS="-DEVENGINE_COMPILER_CACHE=SCCACHE"
 
       - name: Run macosx unit tests
-        timeout-minutes: 30
+        # Run 35376121813 reached 5403/5451 passing cases before the former
+        # 30-minute guard terminated ctest; retain a bounded completion margin.
+        timeout-minutes: 40
         env:
           ALSOFT_DRIVERS: "null"
         run: make test/macosx-debug
