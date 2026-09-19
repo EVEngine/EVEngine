@@ -6,6 +6,10 @@ namespace eve::graphics {
 class Graphics;
 }
 
+namespace eve::filesystem {
+class Filesystem;
+}
+
 namespace eve::particles {
 
 class ParticleEmitter;
@@ -15,14 +19,29 @@ class ParticleSimSystem {
 public:
     /**
      * @brief Advances emitters using one scheduler-owned deterministic step.
-     * @return Checked status; the step is never sourced from a wall clock.
+     * @param step Scheduler-owned step; the sim never sources time from a wall clock.
+     * @param gfx Resolved Graphics provider used for the offscreen cull, or null.
+     *            Passing it in keeps the per-emitter loop free of registry lookups.
+     * @return Checked status.
      * @remarks CPU integration is deterministic for a fixed seed/tick within
      *          the documented float tolerance. A resident GPU path is
      *          tolerance-bounded and exposes its backend through emitter stats.
      */
-    [[nodiscard]] static eve::Result<void> advance(const eve::SimulationStep& step);
+    [[nodiscard]] static eve::Result<void> advance(const eve::SimulationStep& step, graphics::Graphics* gfx);
 
-    /** @brief Legacy seconds facade; conversion and Result consumption are explicit. */
+    /** @brief Legacy seconds facade with an explicit Graphics dependency. */
+    static void update(float dt, graphics::Graphics* gfx);
+
+    /**
+     * @brief Compatibility overload that resolves the Graphics provider itself.
+     * @return Checked status.
+     * @cost One registry lookup while no Graphics module is registered; once one is,
+     *       a cached pointer read. Never a per-emitter lookup.
+     * @remarks Defined in Particles.cpp -- the module's composition boundary -- so the
+     *          declared hot-path translation unit holds no lookup of its own.
+     */
+    [[nodiscard]] static eve::Result<void> advance(const eve::SimulationStep& step);
+    /** @brief Legacy seconds facade; resolves Graphics like the overload above. */
     static void update(float dt);
 };
 
@@ -49,6 +68,20 @@ public:
  */
 class ParticleConfigSystem {
 public:
+    /**
+     * @brief Poll with an explicit filesystem dependency.
+     * @param fs Resolved Filesystem provider, or null to create a private one.
+     * @return Number of emitters reloaded.
+     */
+    static int poll(eve::filesystem::Filesystem* fs);
+
+    /**
+     * @brief Compatibility overload that resolves the Filesystem provider itself.
+     * @return Number of emitters reloaded.
+     * @cost One registry lookup while no Filesystem module is registered; once one
+     *       is, a cached pointer read.
+     * @remarks Defined in Particles.cpp; see the note on ParticleSimSystem.
+     */
     static int poll();
 };
 

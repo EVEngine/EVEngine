@@ -206,8 +206,7 @@ bool emitterOffscreen(graphics::Graphics* gfx, const ParticleEmitter::Config& cf
     return sx < -margin || sx > viewW + margin || sy < -margin || sy > viewH + margin;
 }
 
-int64_t fileModtime(const std::string &path) {
-    auto *fs = eve::ModuleManager::getInstance<eve::filesystem::Filesystem>("Filesystem");
+int64_t fileModtime(eve::filesystem::Filesystem* fs, const std::string& path) {
     if (!fs) fs = eve::filesystem::Filesystem::create();
     eve::filesystem::Filesystem::Info info{};
     if (!fs->getInfo(path, info)) return -1;
@@ -341,7 +340,7 @@ eve::Result<bool> advanceResidentGpu(graphics::Graphics *gfx, ParticleEmitter *e
 
 }  // namespace
 
-eve::Result<void> runParticleSimulation(const eve::SimulationStep &step, bool legacyControls) {
+eve::Result<void> runParticleSimulation(const eve::SimulationStep& step, bool legacyControls, graphics::Graphics* gfx) {
     if (step.delta.nanoseconds() < 0)
         return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
                                                                  "particle simulation delta must be non-negative"));
@@ -397,8 +396,6 @@ eve::Result<void> runParticleSimulation(const eve::SimulationStep &step, bool le
     }
     int reservedAlive = 0;
     for (auto* emitter : emitters) reservedAlive += liveParticleCount(emitter);
-
-    auto* gfx = eve::ModuleManager::getInstance<eve::graphics::Graphics>("Graphics");
 
     int processedAlive = 0;
     for (auto *emitter : emitters) {
@@ -497,17 +494,17 @@ eve::Result<void> runParticleSimulation(const eve::SimulationStep &step, bool le
     return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
 }
 
-eve::Result<void> ParticleSimSystem::advance(const eve::SimulationStep &step) {
-    return runParticleSimulation(step, false);
+eve::Result<void> ParticleSimSystem::advance(const eve::SimulationStep& step, graphics::Graphics* gfx) {
+    return runParticleSimulation(step, false, gfx);
 }
 
-void ParticleSimSystem::update(float dt) {
+void ParticleSimSystem::update(float dt, graphics::Graphics* gfx) {
     auto duration = eve::Duration::fromSeconds(dt);
     if (!duration) {
         duration.ignore("legacy particle update received an invalid duration");
         return;
     }
-    runParticleSimulation({eve::SimulationTick(1), std::move(duration).takeValue()}, true)
+    runParticleSimulation({eve::SimulationTick(1), std::move(duration).takeValue()}, true, gfx)
         .ignore("legacy particle update facade");
 }
 
@@ -641,7 +638,7 @@ void ParticleLightSystem::update() {
     }
 }
 
-int ParticleConfigSystem::poll() {
+int ParticleConfigSystem::poll(eve::filesystem::Filesystem* fs) {
     if (ecs::current()->getManager<ParticleEmitter>() == nullptr) return 0;
 
     // Watch events are drained by load.nut / HotReload. This polling path is a
@@ -662,7 +659,7 @@ int ParticleConfigSystem::poll() {
             continue;
         }
 
-        const int64_t mt = fileModtime(res->path);
+        const int64_t mt = fileModtime(fs, res->path);
         if (mt < 0) {
             res->lastReloadObservation = ParticleEmitter::Resource::ReloadObservation::MtimeUnavailable;
             continue;

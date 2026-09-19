@@ -85,18 +85,55 @@ ParticleEffect* Particles::newEffectFromFile(const std::string& path) {
     return ParticleEffect::fromFile(path, &lastEffectError_);
 }
 
+namespace {
+
+/**
+ * Resolve-once caches for the particles module's composition boundary.
+ *
+ * The facade below runs every frame while Graphics and Filesystem are process-level
+ * singletons that ModuleManager never destroys, so the mechanism the module-boundary
+ * spec derives for "every frame + single provider + process scope" is "resolve once,
+ * keep the pointer" (spec 4.1) -- not a per-frame registry lookup.
+ *
+ * A null result is deliberately not latched: while the provider is absent the next
+ * call retries, which is exactly how the unit tests (no Graphics module) behave.
+ */
+eve::graphics::Graphics* cachedGraphics() {
+    static eve::graphics::Graphics* cached = nullptr;
+    if (!cached) cached = eve::ModuleManager::getInstance<eve::graphics::Graphics>("Graphics");
+    return cached;
+}
+
+eve::filesystem::Filesystem* cachedFilesystem() {
+    static eve::filesystem::Filesystem* cached = nullptr;
+    if (!cached) cached = eve::ModuleManager::getInstance<eve::filesystem::Filesystem>("Filesystem");
+    return cached;
+}
+
+}  // namespace
+
+// Compatibility overloads. Particles.cpp is the module facade, not a declared hot
+// path, so the resolve lives here and ParticleSystem.cpp stays lookup-free.
+eve::Result<void> ParticleSimSystem::advance(const eve::SimulationStep& step) {
+    return advance(step, cachedGraphics());
+}
+
+void ParticleSimSystem::update(float dt) { update(dt, cachedGraphics()); }
+
+int ParticleConfigSystem::poll() { return poll(cachedFilesystem()); }
+
 void Particles::update(float dt) {
     EV_PROFILE_MODULE("particles", "Particles::update");
-    ParticleConfigSystem::poll();
-    ParticleSimSystem::update(dt);
+    ParticleConfigSystem::poll(cachedFilesystem());
+    ParticleSimSystem::update(dt, cachedGraphics());
     ParticleLightSystem::update();
 }
 
 eve::Result<void> Particles::advance(const eve::SimulationStep &step) {
     // Config polling is an asset-side concern. Simulation itself is driven
     // exclusively by the injected scheduler step below.
-    ParticleConfigSystem::poll();
-    auto simulation = ParticleSimSystem::advance(step);
+    ParticleConfigSystem::poll(cachedFilesystem());
+    auto simulation = ParticleSimSystem::advance(step, cachedGraphics());
     if (!simulation) return eve::Result<void>::failure(simulation.status());
     ParticleLightSystem::update();
     return simulation;
@@ -104,7 +141,7 @@ eve::Result<void> Particles::advance(const eve::SimulationStep &step) {
 
 void Particles::render(graphics::Graphics *gfx) { ParticleRenderSystem::render(gfx); }
 
-int Particles::pollConfigs() { return ParticleConfigSystem::poll(); }
+int Particles::pollConfigs() { return ParticleConfigSystem::poll(cachedFilesystem()); }
 
 int Particles::getEmitterCount() const {
     if (ecs::current()->getManager<ParticleEmitter>() == nullptr) return 0;
