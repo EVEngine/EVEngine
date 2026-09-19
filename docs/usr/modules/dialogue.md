@@ -185,6 +185,11 @@ node end end
 }
 ```
 
+`command` 节点和 `choice` route 可重复声明结构化世界状态变更，例如
+`mutation(subject="player", key="quest.accepted", kind="set", value=true, persistent=true)`。
+`kind` 支持 `set/remove/addTag/removeTag/addNumber`；未知字段、缺失 subject/key、类型错误以及
+不适用于该 kind 的 value 都是编译错误，不会降级或静默忽略。
+
 - 内容：`loadDnutChecked/loadDnutFileChecked`、`importYarn/importTwee`、`clear`、
   `getConversationCount()`、`getConversationId(index)`、`hasConversation`；失败详情通过诊断查询 API 获取。
 - 外部格式：Yarn Spinner 节点和 Twine Twee 3 passages 会转换为相同的稳定节点模型；

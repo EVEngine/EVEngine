@@ -518,10 +518,48 @@ private:
         return std::move(parsed).takeValue();
     }
 
+    eve::StateMutation parseMutation() {
+        DataValue fields = parseObjectArguments();
+        const DataValue* subject = fields.find("subject");
+        const DataValue* key = fields.find("key");
+        const DataValue* kind = fields.find("kind");
+        const DataValue* value = fields.find("value");
+        const DataValue* persistent = fields.find("persistent");
+        for (const auto& field : fields.keys())
+            if (field != "subject" && field != "key" && field != "kind" && field != "value" &&
+                field != "persistent")
+                fail("未知 mutation 字段 '" + field + "'");
+        if (!subject || !subject->isString() || subject->asString().empty())
+            fail("mutation.subject 必须是非空字符串");
+        if (!key || !key->isString() || key->asString().empty())
+            fail("mutation.key 必须是非空字符串");
+        if (!kind || !kind->isString()) fail("mutation.kind 必须是字符串");
+        eve::StateMutation mutation;
+        mutation.subject = subject->asString();
+        mutation.key = key->asString();
+        if (kind->asString() == "set") mutation.kind = eve::MutationKind::Set;
+        else if (kind->asString() == "remove") mutation.kind = eve::MutationKind::Remove;
+        else if (kind->asString() == "addTag") mutation.kind = eve::MutationKind::AddTag;
+        else if (kind->asString() == "removeTag") mutation.kind = eve::MutationKind::RemoveTag;
+        else if (kind->asString() == "addNumber") mutation.kind = eve::MutationKind::AddNumber;
+        else fail("mutation.kind 不受支持 '" + kind->asString() + "'");
+        if (mutation.kind == eve::MutationKind::Set || mutation.kind == eve::MutationKind::AddNumber) {
+            if (!value) fail("set/addNumber mutation 缺少 value");
+            mutation.value = *value;
+        } else if (value) {
+            fail("remove/tag mutation 不允许 value");
+        }
+        if (persistent) {
+            if (!persistent->isBool()) fail("mutation.persistent 必须是 bool");
+            mutation.persistent = persistent->asBool();
+        }
+        return mutation;
+    }
+
     void parseNodeAttributes(ConversationAsset::Node& node, int line) {
         static const std::unordered_set<std::string> allowed = {
             "next", "speaker", "text", "pool", "i18n", "voice", "target", "return", "result", "kind",
-            "arguments", "payment"};
+            "arguments", "payment", "mutation"};
         while (cur().kind != Tok::Eof && cur().line == line && !isPunct("{") && !isPunct("}")) {
             const std::string key = expectIdent("node 属性");
             if (!allowed.contains(key)) fail("未知 node 字段 '" + key + "'");
@@ -531,6 +569,10 @@ private:
             }
             if (key == "payment") {
                 node.payment = parsePayment();
+                continue;
+            }
+            if (key == "mutation") {
+                node.stateMutations.push_back(parseMutation());
                 continue;
             }
             expectPunct("=");
@@ -560,10 +602,15 @@ private:
         bool hasTarget = false;
         while (cur().kind != Tok::Eof && cur().line == line && !isPunct("}")) {
             const std::string key = expectIdent("route 字段");
-            if (key != "target" && key != "when" && key != "text" && key != "i18n" && key != "payment")
+            if (key != "target" && key != "when" && key != "text" && key != "i18n" && key != "payment" &&
+                key != "mutation")
                 fail("未知 route 字段 '" + key + "'");
             if (key == "payment") {
                 route.payment = parsePayment();
+                continue;
+            }
+            if (key == "mutation") {
+                route.stateMutations.push_back(parseMutation());
                 continue;
             }
             expectPunct("=");
