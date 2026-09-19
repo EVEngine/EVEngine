@@ -410,6 +410,10 @@ function(eve_resolve_modules)
         endif()
         list(GET _eve_row_parts 0 _eve_group)
         list(GET _eve_row_parts 1 _eve_group_layers)
+        # The row separates layers with spaces (a ';' cannot appear inside a
+        # CMake list element), but `foreach(... IN LISTS ...)` splits on ';', so
+        # turn them into a real list before iterating.
+        string(REPLACE " " ";" _eve_group_layers "${_eve_group_layers}")
         list(APPEND _eve_group_order "${_eve_group}")
         foreach(_eve_group_layer IN LISTS _eve_group_layers)
             set(_eve_layer_group_${_eve_group_layer} "${_eve_group}")
