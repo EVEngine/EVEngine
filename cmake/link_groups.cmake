@@ -66,16 +66,25 @@ foreach(_eve_group IN LISTS EVE_LINK_GROUP_NAMES)
         EVScripts zeroerr ${_eve_group_tp_libs} ${_eve_group_system_libs}
         ${EVENGINE_VULKAN_LIB} ${EVENGINE_WEBGPU_LIB})
     if(MSVC)
-        # box3dd.lib (third-party) is the one archive that carries
-        # /DEFAULTLIB:LIBCMTD -- the STATIC debug CRT -- while every other archive
-        # and every compile step in this build uses the dynamic /MDd CRT. In an
-        # executable link that mix is only LNK4098 ("defaultlib 'LIBCMTD'
-        # conflicts with use of other libs"); in a shared library it is fatal,
-        # because MSVCRTD.lib's startup object then cannot resolve
-        # __acrt_initialize / __vcrt_initialize / __acrt_thread_attach and the
-        # link stops with LNK1120. /NODEFAULTLIB is the documented remedy for
-        # LNK4098. The real fix belongs in the third-party build (Box3D should be
-        # compiled /MDd like its siblings); see cmake/third_party_build.cmake.
+        # Two things are needed here, and both were established by measurement:
+        #
+        # 1. The UCRT and VC runtime import libraries must be named. The module
+        #    objects request only MSVCRTD (verified with dumpbin /directives), so
+        #    without this the link stops on 241 bare CRT internals
+        #    (__acrt_initialize, __CxxFrameHandler4, __current_exception, ...).
+        #    Naming them takes that to 11.
+        # 2. box3dd.lib is the one third-party archive carrying
+        #    /DEFAULTLIB:LIBCMTD -- the STATIC debug CRT -- while every other
+        #    archive and every compile step uses the dynamic /MDd CRT. In an
+        #    executable that mix is only LNK4098; in a shared library it leaves
+        #    MSVCRTD.lib's startup object unable to resolve __acrt_initialize and
+        #    __vcrt_initialize. /NODEFAULTLIB is the documented LNK4098 remedy.
+        #
+        # The third-party half belongs upstream: Box3D should compile /MDd like
+        # its siblings, see cmake/third_party_build.cmake.
+        target_link_libraries(${_eve_group} PRIVATE
+            $<$<CONFIG:Debug>:ucrtd vcruntimed>
+            $<$<NOT:$<CONFIG:Debug>>:ucrt vcruntime>)
         target_link_options(${_eve_group} PRIVATE
             $<$<CONFIG:Debug>:/NODEFAULTLIB:LIBCMTD>
             $<$<NOT:$<CONFIG:Debug>>:/NODEFAULTLIB:LIBCMT>)
