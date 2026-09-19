@@ -496,3 +496,6 @@ debug SDK（`make sdk/win32-debug`）**沿用开发配置，即动态**：它从
 **回归对账**：platform 27/27、particles 25/34、scene 69/70、building 92/96 —— 与记录逐项一致，本批标注无回归；静态 OBJECT `ninja -C C:\evs eve` 正常。
 
 进度：30 个域中 **21 个已链通**（19 个全绿）；仍待迁移 `animation` / `physics` / `rpg` / `procgen` / `graphics`。
+**补充（batch 5b 最终报告，2026-09-20）**：`editor` LNK1120 **220 → 0**（exe 13.18 MiB）、`core` **253 → 0**（exe 32.99 MiB），两域未解析符号互不相交；标注落在 **94 个站点 / 66 个文件**（类 82、自由函数 12），C2280 四特殊成员 **4 类**（`LevelDocument`（`vector<LevelLayer>` → `unique_ptr<TileBuffer>` 的两级形态）、`LevelFormatRegistry`、`Ledger`、`Transaction`），`Export.h` include 54 处，`_INLINE` 0。
+
+`core` 那条失败**已定性，不是跨 DLL 复制状态**：SHARED 打断了"插件夹具从宿主 exe 导入引擎符号"的契约 —— SHARED 下 `unit_test_core.exe` 没有导出表、`unit_test_core.lib` 与 `native_test_plugin.dll` 均不存在（构建插件目标报 LNK1104），于是 `LoadLibrary` err=126。**决定性 OBJECT 对照**（`C:\evs`）：宿主为单链接单元时导出引擎符号并生成 `unit_test_core.lib`(9.42 MiB)、`native_test_plugin.dll` 构建成功（73,216 B）、同一用例 1/1 通过（OBJECT 下 editor 181/181、core 507/507）。修法方向：SHARED 下让插件夹具改链组 DLL 的导入库，或在该配置下跳过该用例。
