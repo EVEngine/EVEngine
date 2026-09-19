@@ -668,7 +668,7 @@ def lint_contract_coverage(lines: list[SourceLine], metadata: Mapping[str, Any])
     # own `module-interface` entry. The pre-existing triggers above only match a
     # rule plus a path scope, so they accept any entry for the file; this check
     # is what makes `provides` / `requires` falsifiable (R-FACE-1, R-FACE-2).
-    for item in lines:
+    for item in uncommented_lines(lines):
         for use in CAPABILITY_USE.finditer(item.text):
             operation = use.group(1)
             capability = use.group(2).split("::")[-1]
@@ -725,6 +725,51 @@ def is_primitive_definition(text: str) -> bool:
     return text.lstrip().startswith("#define")
 
 
+def is_line_commented(text: str, match_start: int) -> bool:
+    """True when the match at `match_start` sits behind a `//` on the same line.
+
+    These gates are regex-only and have no C++ parser, so a comment that merely
+    mentions a forbidden primitive (e.g. one explaining why it is avoided) must
+    not be reported as a use.
+    """
+
+    marker = text.find("//")
+    return marker != -1 and marker < match_start
+
+
+def uncommented_lines(lines: list[SourceLine]) -> list[SourceLine]:
+    """Drop whole-line comments so prose naming a primitive is not read as a use.
+
+    Documentation legitimately quotes these primitives (this repository's own
+    capability docs do), and a doc block is not a call site. Line comments are
+    dropped per line; `/* ... */` state is carried across lines, per file, so
+    continuation lines are dropped too.
+
+    A code line followed by a trailing block comment stays a code line, which is
+    the conservative direction for a gate that reports uses.
+    """
+
+    kept: list[SourceLine] = []
+    in_block = False
+    path: str | None = None
+    for item in lines:
+        if item.path != path:
+            path, in_block = item.path, False
+        stripped = item.text.lstrip()
+        if in_block:
+            if "*/" in item.text:
+                in_block = False
+            continue
+        if stripped.startswith("/*"):
+            if "*/" not in stripped[2:]:
+                in_block = True
+            continue
+        if stripped.startswith("//"):
+            continue
+        kept.append(item)
+    return kept
+
+
 def declared_hot_paths(entries: Iterable[Mapping[str, Any]]) -> list[tuple[str, str]]:
     """Return every (glob, entry id) hot path declared by a module-interface entry."""
 
@@ -750,14 +795,14 @@ def lint_hot_paths(lines: list[SourceLine], metadata: Mapping[str, Any]) -> list
         return []
     findings: list[Finding] = []
     seen: set[tuple[str, int]] = set()
-    for item in lines:
+    for item in uncommented_lines(lines):
         owners = sorted({entry_id for glob, entry_id in hot_paths if path_matches(item.path, glob)})
         if not owners:
             continue
         if is_primitive_definition(item.text):
             continue
         match = HOT_PATH_PRIMITIVES.search(item.text)
-        if match is None:
+        if match is None or is_line_commented(item.text, match.start()):
             continue
         key = (item.path, item.line)
         if key in seen:
@@ -809,13 +854,13 @@ def lint_runtime_convenience(lines: list[SourceLine]) -> list[Finding]:
 
     findings: list[Finding] = []
     seen: set[tuple[str, int]] = set()
-    for item in lines:
+    for item in uncommented_lines(lines):
         if not is_runtime_module_path(item.path):
             continue
         if is_primitive_definition(item.text):
             continue
         match = RUNTIME_CONVENIENCE_PRIMITIVES.search(item.text)
-        if match is None:
+        if match is None or is_line_commented(item.text, match.start()):
             continue
         key = (item.path, item.line)
         if key in seen:

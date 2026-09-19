@@ -231,6 +231,91 @@ class ArchitectureContractTests(unittest.TestCase):
         }
         self.assertEqual([], contracts.lint_hot_paths(definition, hot))
 
+    def test_commented_primitive_mention_is_not_a_use(self):
+        # A comment that names a forbidden primitive (typically to explain why it
+        # is avoided) must not be reported as a use; a real call with a trailing
+        # comment still must be.
+        commented = [
+            contracts.SourceLine(
+                "src/modules/mouse/sdl/Mouse.cpp",
+                122,
+                "\t// Avoid `auto window = getModInst(window, ...)` -- local name shadows namespace `window`.",
+            )
+        ]
+        self.assertEqual([], contracts.lint_runtime_convenience(commented))
+
+        trailing = [
+            contracts.SourceLine(
+                "src/modules/mouse/sdl/Mouse.cpp", 9, "auto* m = requireModInst(Window, Window);  // boundary"
+            )
+        ]
+        self.assertEqual(1, len(contracts.lint_runtime_convenience(trailing)))
+
+        hot = {
+            "entries": [
+                {
+                    "rule": "module-interface",
+                    "id": "hot-module",
+                    "scope": "src/modules/particles/**",
+                    "hot_path": ["src/modules/particles/ParticleSystem.cpp"],
+                }
+            ]
+        }
+        commented_hot = [
+            contracts.SourceLine(
+                "src/modules/particles/ParticleSystem.cpp",
+                8,
+                '// auto* g = eve::ModuleManager::getInstance<Gfx>("Gfx");',
+            )
+        ]
+        self.assertEqual([], contracts.lint_hot_paths(commented_hot, hot))
+
+    def test_block_comment_naming_a_capability_is_not_a_use(self):
+        # Documentation legitimately quotes `cap::query<T>()`; a doc block is not a
+        # call site. Capability.h's own ProviderRef doc has exactly this shape and
+        # must not force a provides/requires declaration for a comment.
+        metadata = {
+            "entries": [
+                {
+                    "rule": "module-interface",
+                    "id": "common-module-interface",
+                    "scope": "src/engine/common/**",
+                    "provides": [],
+                    "requires": [],
+                }
+            ]
+        }
+        lines = [
+            contracts.SourceLine("src/engine/common/Capability.h", 157, "/**"),
+            contracts.SourceLine("src/engine/common/Capability.h", 158, " * @brief Resolve-once reference."),
+            contracts.SourceLine(
+                "src/engine/common/Capability.h", 159, " * `cap::query<T>()` cannot hide behind it."
+            ),
+            contracts.SourceLine("src/engine/common/Capability.h", 160, " */"),
+            # A real use on a code line is still reported, with its own line number.
+            contracts.SourceLine("src/engine/common/Capability.h", 161, "auto* widget = cap::query<IWidget>();"),
+        ]
+        findings = [
+            finding
+            for finding in contracts.lint_contract_coverage(lines, metadata)
+            if finding.code == "undeclared-capability-face"
+        ]
+        self.assertEqual(1, len(findings))
+        self.assertEqual(161, findings[0].line)
+
+        # A whole-line `//` mention is dropped as well.
+        line_commented = [
+            contracts.SourceLine("src/engine/common/Capability.h", 1, "// cap::query<IWidget>() is a lookup")
+        ]
+        self.assertEqual(
+            [],
+            [
+                finding
+                for finding in contracts.lint_contract_coverage(line_commented, metadata)
+                if finding.code == "undeclared-capability-face"
+            ],
+        )
+
 
 if __name__ == "__main__":
     unittest.main()
