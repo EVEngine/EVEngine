@@ -438,7 +438,13 @@ private:
     void cornerCliffTerraces(const HexVec3& bottom, const HexVec3& low, const HexVec3& high,
                              const HexCellData* bottomCell, const HexCellData* lowCell, const HexCellData* highCell) {
         if (edgeType(elevationOf(highCell), elevationOf(lowCell)) == HexEdgeType::Slope) {
-            cornerTerracesToApex(bottom, bottomCell, low, lowCell, high, highCell);
+            // The mirror of the branch above: both `bottom -> high` and `high -> low` carry rungs,
+            // each measured from its own lower end, so the fan runs from `bottom` over the two
+            // ladders laid end to end and the straight `bottom -> low` chord closes it.
+            appendBoundaryTriangle(bottom, HexTerrainWeights::primary(), bottom, HexTerrainWeights::primary(), high,
+                                   HexTerrainWeights::primary(), bottomCell, lowCell, highCell);
+            appendBoundaryTriangle(bottom, HexTerrainWeights::primary(), high, HexTerrainWeights::primary(), low,
+                                   HexTerrainWeights::primary(), bottomCell, lowCell, highCell);
         } else {
             appendBoundaryTriangle(low, HexTerrainWeights::primary(), bottom, HexTerrainWeights::primary(), high,
                                    HexTerrainWeights::primary(), bottomCell, lowCell, highCell);
