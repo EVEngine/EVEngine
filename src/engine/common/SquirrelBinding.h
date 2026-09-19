@@ -107,14 +107,24 @@ void pushReceiver(HSQUIRRELVM vm, const Receiver& receiver) {
  * that breaks every frame does not flood the log. Every failure still counts, so the
  * condition stays observable even while the text is deduplicated.
  *
+ * The formatted text is also the return value. Some callers cannot report by printing:
+ * a tool response, an editor `err` string or a thrown exception has to carry the reason
+ * back to whoever asked. Those callers used to be stuck with a generic "runtime failed"
+ * because the text was only ever printed, and building it themselves would have made a
+ * second consumer of the VM's pending error. Handing back the text this function already
+ * formatted keeps the failure text single-sourced.
+ *
  * @param vm Active Squirrel VM whose pending script error should be consumed.
  * @param what Short caller description used in the report.
+ * @return The reported text: the formatted script error, or "unknown script error" when
+ *         the VM had no pending context. Returned even when the stderr line was
+ *         suppressed by deduplication, so the caller's own message stays specific.
  * @note Ownership/lifetime: consumes the VM's error context; nothing is retained except
  *       the last message text used for deduplication.
  * @note Thread affinity: the owning VM's thread only.
  * @note Reentrancy: not reentrant; takes an internal lock.
  */
-EVENGINE_API void reportScriptCallFailure(HSQUIRRELVM vm, const char* what);
+EVENGINE_API std::string reportScriptCallFailure(HSQUIRRELVM vm, const char* what);
 
 /** @brief Count of engine-to-script call failures reported since the last reset. */
 [[nodiscard]] EVENGINE_API int reportedScriptCallFailures();

@@ -2,6 +2,7 @@
 #include "zeroerr/unittest.h"
 
 #include "common/Module.h"
+#include "common/SquirrelBinding.h"
 #include "editor/Editor.h"
 #include "editor/EditorProtocol.h"
 #include "editor/EditorValue.h"
@@ -211,4 +212,35 @@ TEST_CASE("editor.v2.runtime_builder_quick_add_click_executes_command") {
     CHECK_EQ(vm.find("quickAddCanvasDraws").toInt(), 1);
     CHECK(vm.find("quickAddRenderedTree").toBool());
     CHECK(vm.find("cleanupResult").toBool());
+}
+
+TEST_CASE("editor.v2.script_command_failure_is_not_silent") {
+    eve::script::resetReportedScriptCallFailures();
+    Editor*         editor = Editor::create();
+    const CommandId commandId("test.script.exploding");
+    editor->commandService().unregisterCommand(commandId);
+
+    ssq::VM vm(1024, ssq::Libs::ALL);
+    eve::ModuleManager::expose(vm);
+    vm.run(vm.compileSource(R"(
+        editor <- eve.Editor();
+        registered <- editor.registerScriptCommand(
+            "test.script.exploding", "Explode", "Build",
+            function(payload) { throw "command exploded"; });
+        session <- editor.newSession();
+        planned <- session.planCommand("test.script.exploding", {});
+        executed <- session.executePlan(planned.planId, {});
+    )"));
+
+    REQUIRE(vm.find("registered").toBool());
+    ssq::Table planned(vm.find("planned"));
+    ssq::Table executed(vm.find("executed"));
+    CHECK(planned.get<bool>("accepted"));
+    REQUIRE(!executed.get<bool>("accepted"));
+    // A callback that threw used to reach the author as "Script command callback rejected
+    // the planned payload", which reads as a deliberate `return false`. The failure now
+    // goes through the shared reporter as well.
+    REQUIRE(eve::script::reportedScriptCallFailures() >= 1);
+
+    CHECK(editor->commandService().unregisterCommand(commandId, "script:test.script.exploding"));
 }

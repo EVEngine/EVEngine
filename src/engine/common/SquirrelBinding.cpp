@@ -47,9 +47,11 @@ void reportFailureText(const char* what, const std::string& text) {
 }
 }  // namespace
 
-void reportScriptCallFailure(HSQUIRRELVM vm, const char* what) {
+std::string reportScriptCallFailure(HSQUIRRELVM vm, const char* what) {
     const ScriptErrorContext context = takeLastScriptError(vm);
-    reportFailureText(what, context.empty() ? std::string("unknown script error") : formatScriptError(context));
+    const std::string        text = context.empty() ? std::string("unknown script error") : formatScriptError(context);
+    reportFailureText(what, text);
+    return text;
 }
 
 SQRESULT compileAndRunChunk(HSQUIRRELVM vm, const char* name, const char* source) {

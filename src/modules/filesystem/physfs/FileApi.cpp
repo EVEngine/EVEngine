@@ -64,6 +64,12 @@ SQInteger compileAndMaybeRun(HSQUIRRELVM vm, bool run) {
     if (!run) return 1;  // leave the closure on the stack
 
     sq_pushroottable(vm);
+    // `return SQ_ERROR` is the correct Squirrel native convention here, not a swallowed
+    // failure: the inner call already raised, so SQVM::CallNative re-raises `_lasterror`
+    // and the script's `catch` receives the original message. Reporting it through
+    // eve::script::reportScriptCallFailure() would print it twice and would consume the
+    // context before the VM re-raises. The plan doc listed this site as "reports too
+    // little"; reading the VM settled that it reports the whole error.
     if (SQ_FAILED(sq_call(vm, 1, SQFalse, SQTrue))) return SQ_ERROR;
     sq_pop(vm, 1);
     return 0;

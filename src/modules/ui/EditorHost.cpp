@@ -69,6 +69,8 @@ void EditorHost::exposeScriptApi(ssq::VM&) {}
 #else  // full implementation
 
 #include "common/Module.h"
+#include "common/ScriptError.h"
+#include "common/SquirrelBinding.h"
 #include "filesystem/FileData.h"
 #include "graphics/Graphics.h"
 #include "image/ImageData.h"
@@ -316,13 +318,23 @@ std::string runSquirrel(HSQUIRRELVM vm, const std::string& source, const char* n
     const SQInteger top = sq_gettop(vm);
     if (SQ_FAILED(sq_compilebuffer(vm, source.c_str(), static_cast<SQInteger>(source.size()),
                                    name, SQTrue))) {
+        // A compile error never reaches the runtime error store, so it is read from the
+        // compiler's own context. Both halves used to be reported as one bare word
+        // ("compile failed" / "runtime failed"), which told the tool caller nothing.
+        const script::ScriptErrorContext context = script::captureCompileError(vm);
         sq_settop(vm, top);
-        return "compile failed";
+        if (context.empty()) return "compile failed";
+        return "compile failed: " + script::formatScriptError(context);
     }
     sq_pushroottable(vm);
-    if (SQ_FAILED(sq_call(vm, 1, SQFalse, SQTrue))) {
+    // The count is derived from the pushes (R-FACE-7): the compiled chunk plus its
+    // receiver. The failure report is consumed here because the caller needs the reason
+    // text for its own message.
+    const SQInteger params = sq_gettop(vm) - top - 1;  // receiver + arguments
+    if (SQ_FAILED(sq_call(vm, params, SQFalse, SQTrue))) {
+        const std::string detail = script::reportScriptCallFailure(vm, name);
         sq_settop(vm, top);
-        return "runtime failed";
+        return "runtime failed: " + detail;
     }
     sq_settop(vm, top);
     return {};
@@ -342,8 +354,11 @@ void callRootFunc(HSQUIRRELVM vm, const std::string& name, const std::vector<Var
     }
     sq_pushroottable(vm);
     for (const auto& a : args) pushVar(vm, a);
-    if (SQ_FAILED(sq_call(vm, static_cast<SQInteger>(args.size()) + 1, SQFalse, SQTrue)))
-        fprintf(stderr, "eve.host: %s() failed\n", name.c_str());
+    // `Var` is a runtime variant, so the shared helper's typed-argument form does not fit;
+    // the count is derived from the pushes instead -- the same rule (R-FACE-7). The report
+    // used to be a bare "%s() failed" that left out the reason the hook raised.
+    const SQInteger params = sq_gettop(vm) - top - 1;  // receiver + arguments
+    if (SQ_FAILED(sq_call(vm, params, SQFalse, SQTrue))) script::reportScriptCallFailure(vm, name.c_str());
     sq_settop(vm, top);
 }
 
@@ -356,8 +371,12 @@ bool callTableFunc(HSQUIRRELVM vm, const ssq::Table& tbl, const std::string& nam
         sq_pushobject(vm, fn.getRaw());
         sq_pushobject(vm, tbl.getRaw());
         for (const auto& a : args) pushVar(vm, a);
-        if (SQ_FAILED(sq_call(vm, static_cast<SQInteger>(args.size()) + 1, SQFalse, SQTrue))) {
-            if (err) *err = "runtime failed: " + name;
+        // Same runtime-variant exception as callRootFunc(): derive the count, and let the
+        // shared reporter produce the reason the callback raised.
+        const SQInteger params = sq_gettop(vm) - top - 1;  // receiver + arguments
+        if (SQ_FAILED(sq_call(vm, params, SQFalse, SQTrue))) {
+            const std::string detail = script::reportScriptCallFailure(vm, name.c_str());
+            if (err) *err = "runtime failed: " + name + ": " + detail;
             sq_settop(vm, top);
             return false;
         }

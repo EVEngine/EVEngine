@@ -2,6 +2,7 @@
 
 #include "common/Capability.h"
 #include "common/EditorAutomation.h"
+#include "common/SquirrelBinding.h"
 #include "editor/EditorAutomationProvider.h"
 #include "editor/EditorDock.h"
 #include "editor/EditorInspector.h"
@@ -218,10 +219,18 @@ bool invokeScriptCommand(const ssq::Object& callback, const EditorValue& payload
     sq_pushobject(vm, callback.getRaw());
     sq_pushroottable(vm);
     pushEditorValue(vm, payload);
+    // `pushEditorValue` pushes an EditorValue, which is not one of the types the shared
+    // helper's typed-argument form accepts, so the parameter count is derived from the
+    // pushes instead -- the same rule (R-FACE-7). A script command that threw used to be
+    // reported to the author as "callback rejected the planned payload", which reads as a
+    // deliberate `return false`.
+    const SQInteger params   = sq_gettop(vm) - top - 1;  // receiver + arguments
     bool accepted = false;
-    if (SQ_SUCCEEDED(sq_call(vm, 2, SQTrue, SQTrue))) {
+    if (SQ_SUCCEEDED(sq_call(vm, params, SQTrue, SQTrue))) {
         SQBool result = SQFalse;
         accepted      = SQ_SUCCEEDED(sq_getbool(vm, -1, &result)) && result != SQFalse;
+    } else {
+        script::reportScriptCallFailure(vm, "editor.script-command");
     }
     sq_settop(vm, top);
     return accepted;
