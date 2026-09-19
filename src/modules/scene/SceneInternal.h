@@ -10,6 +10,7 @@
 
 #include <glm/glm.hpp>
 #include <glm/gtc/quaternion.hpp>
+#include <glm/gtx/euler_angles.hpp>
 
 #include <string>
 
@@ -46,6 +47,24 @@ glm::quat nodeQuaternion(const SceneNode &n) {
            glm::angleAxis(n.roll, glm::vec3(0.f, 0.f, 1.f));
 }
 
+/**
+ * @brief Yaw/pitch/roll for the Y*X*Z order that `localMatrix()` composes.
+ *
+ * `glm::eulerAngles()` inverts a *different* order (its pitch/yaw/roll belong to the
+ * ZYX family), so extracting with it and feeding the result back through
+ * `localMatrix()`/`nodeQuaternion()` mangled every multi-axis rotation — the
+ * get/setRotation vs get/setQuaternion round trip did not close. Use this for every
+ * quaternion/rotation-matrix -> SceneNode yaw/pitch/roll conversion.
+ */
+void eulerYxzFromQuat(const glm::quat& q, float& yaw, float& pitch, float& roll) {
+    glm::extractEulerAngleYXZ(glm::mat4_cast(glm::normalize(q)), yaw, pitch, roll);
+}
+
+/** @brief Bare rotation matrix variant of eulerYxzFromQuat() (scale already removed). */
+void eulerYxzFromRotation(const glm::mat3& rot, float& yaw, float& pitch, float& roll) {
+    glm::extractEulerAngleYXZ(glm::mat4(rot), yaw, pitch, roll);
+}
+
 /** Decompose a world matrix into position / euler(yaw,pitch,roll) / scale. */
 void decomposeWorld(const glm::mat4 &w, glm::vec3 &pos, glm::vec3 &euler,
                     glm::vec3 &scale) {
@@ -56,9 +75,7 @@ void decomposeWorld(const glm::mat4 &w, glm::vec3 &pos, glm::vec3 &euler,
     if (scale.y > 1e-8f) c1 /= scale.y;
     if (scale.z > 1e-8f) c2 /= scale.z;
     glm::mat3 rot(c0, c1, c2);
-    glm::quat q = glm::quat_cast(rot);
-    glm::vec3 e = glm::eulerAngles(q);  // pitch(x), yaw(y), roll(z)
-    euler = glm::vec3(e.y, e.x, e.z);
+    eulerYxzFromRotation(rot, euler.x, euler.y, euler.z);
 }
 
 }  // namespace

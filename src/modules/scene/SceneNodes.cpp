@@ -294,10 +294,7 @@ bool Scene::setNodeQuaternionAt(const std::string &hostName, const std::string &
     SceneNode *n = h ? borrowSceneResult(h->findById(nodeId)) : nullptr;
     if (!h || !n) return false;
     glm::quat q(qw, qx, qy, qz);
-    glm::vec3 e = glm::eulerAngles(q);  // pitch(x), yaw(y), roll(z)
-    n->yaw = e.y;
-    n->pitch = e.x;
-    n->roll = e.z;
+    eulerYxzFromQuat(q, n->yaw, n->pitch, n->roll);
     h->markSubtreeDirtyById(nodeId);
     return true;
 }
@@ -327,10 +324,7 @@ bool Scene::setNodeLookAtAt(const std::string &hostName, const std::string &node
     glm::vec3 up2 = glm::normalize(glm::cross(f, right));
     glm::mat3 rot(right, up2, f);
     glm::quat q = glm::quat_cast(rot);
-    glm::vec3 e = glm::eulerAngles(q);
-    n->yaw = e.y;
-    n->pitch = e.x;
-    n->roll = e.z;
+    eulerYxzFromQuat(q, n->yaw, n->pitch, n->roll);
     h->markSubtreeDirtyById(nodeId);
     return true;
 }
@@ -423,11 +417,17 @@ void Scene::callEventCallback(const std::string &hostName, const std::string &ac
     auto it = eventCbs_.find(hostName);
     if (it == eventCbs_.end()) return;
     const SQInteger top = sq_gettop(vm_);
+    // sq_call's parameter count includes the receiver slot, so the handler must be
+    // pushed as fn + this + (action, nodeId, parentId) — the same shape UI's
+    // callScriptHandler() uses. Pushing only fn + three strings and calling with 3
+    // made the handler receive two arguments, so the call failed on arity and the
+    // handler never ran at all (plan doc 9.20).
     sq_pushobject(vm_, it->second);
-    sq_pushstring(vm_, action.c_str(), -1);
-    sq_pushstring(vm_, nodeId.c_str(), -1);
-    sq_pushstring(vm_, parentId.c_str(), -1);
-    if (SQ_FAILED(sq_call(vm_, 3, SQFalse, SQTrue))) {
+    sq_pushroottable(vm_);                     // this
+    sq_pushstring(vm_, action.c_str(), -1);    // action
+    sq_pushstring(vm_, nodeId.c_str(), -1);    // nodeId
+    sq_pushstring(vm_, parentId.c_str(), -1);  // parentId
+    if (SQ_FAILED(sq_call(vm_, 4, SQFalse, SQTrue))) {
         sq_settop(vm_, top);
         return;
     }

@@ -1281,18 +1281,33 @@ function testSceneApiCompleteness() {
     scene.setNodeVisible("ball", false)
     if (scene.getNodeVisible("ball")) return false
 
-    // world + space conversion
+    // world + space conversion. addNode() adds a *sibling* of the open node (the
+    // documented order used by examples/scene-ecs/main.nut), so ball hangs off root,
+    // not off pivot: its world position is its own local position here.
     scene.updateTransforms()
+    local wpi = scene.getNodeWorldPosition("pivot")
+    if (wpi[0] != 10.0 || wpi[1] != 0.0 || wpi[2] != 0.0) return false
     local wp = scene.getNodeWorldPosition("ball")
-    if (wp[0] != 11.0 || wp[1] != 2.0 || wp[2] != 3.0) return false
+    if (wp[0] != 1.0 || wp[1] != 2.0 || wp[2] != 3.0) return false
     local lw = scene.localToWorld("ball", 0.0, 0.0, 0.0)
-    if (lw[0] != 11.0) return false
-    local wl = scene.worldToLocal("ball", 11.0, 2.0, 3.0)
+    if (lw[0] != 1.0) return false
+    local wl = scene.worldToLocal("ball", 1.0, 2.0, 3.0)
     if (wl[0] != 0.0 || wl[1] != 0.0) return false
 
     // hierarchy ops
     if (!scene.setNodeParent("ball", "pivot")) return false
     if (scene.getParentId("ball") != "pivot") return false
+
+    // Reparenting keeps the local transform (SceneHost::setParent only relinks), so
+    // the parent's offset now shows up: pivot(10) + ball local(1) == 11.
+    scene.updateTransforms()
+    local wp2 = scene.getNodeWorldPosition("ball")
+    if (wp2[0] != 11.0 || wp2[1] != 2.0 || wp2[2] != 3.0) return false
+    local lw2 = scene.localToWorld("ball", 0.0, 0.0, 0.0)
+    if (lw2[0] != 11.0) return false
+    local wl2 = scene.worldToLocal("ball", 11.0, 2.0, 3.0)
+    if (wl2[0] != 0.0 || wl2[1] != 0.0) return false
+
     if (!scene.removeNode("ball")) return false
     if (scene.getParentId("ball") != "") return false
     if (!scene.addNodeChild("root", "ball")) return false
@@ -1471,27 +1486,15 @@ TEST_CASE_FIXTURE(SceneEcsBridgeFixture, "Scene.script.entityViewCacheAfterDetac
 }
 
 TEST_CASE_FIXTURE(SceneEcsBridgeFixture, "Scene.script.linkPhysics2D") {
-    // CHECK, not REQUIRE: the script still returns false. The link itself registers
-    // (linkCount == 1 passes); the first failing check is script line 1247 — after
-    // scene.updateTransforms() the linked physics body still holds the stale
-    // position, so the node->body push does not happen for a script-created link.
-    // Untriaged (plan doc 9.19).
-    CHECK(vm.callFunc(vm.findFunc("testSceneLinkPhysics2D"), vm).toBool());
+    REQUIRE(vm.callFunc(vm.findFunc("testSceneLinkPhysics2D"), vm).toBool());
 }
 
 TEST_CASE_FIXTURE(SceneEcsBridgeFixture, "Scene.script.apiCompleteness") {
-    // CHECK, not REQUIRE: the script still returns false. The local getters now pass
-    // (setBuild* cursor fix, plan doc 9.19); the first failing check is script line
-    // 1288 — scene.getNodeWorldPosition("ball") misses the parent offset after
-    // scene.updateTransforms(). Untriaged.
-    CHECK(vm.callFunc(vm.findFunc("testSceneApiCompleteness"), vm).toBool());
+    REQUIRE(vm.callFunc(vm.findFunc("testSceneApiCompleteness"), vm).toBool());
 }
 
 TEST_CASE_FIXTURE(SceneEcsBridgeFixture, "Scene.script.nodeEvents") {
-    // CHECK, not REQUIRE: the script still returns false. The first failing check is
-    // script line 1350 — a reconcile patch that moves one child expects two
-    // node_changed events (root then the child) but fewer fire. Untriaged (9.19).
-    CHECK(vm.callFunc(vm.findFunc("testSceneNodeEvents"), vm).toBool());
+    REQUIRE(vm.callFunc(vm.findFunc("testSceneNodeEvents"), vm).toBool());
 }
 
 TEST_CASE_FIXTURE(SceneEcsBridgeFixture, "Scene.script.componentOnMount") {
