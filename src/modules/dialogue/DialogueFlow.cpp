@@ -768,7 +768,7 @@ int DialogueFlow::getRouteCount() const {
 std::string DialogueFlow::getRouteId(int index) const {
     const auto* node = runner_.currentNode();
     return node && index >= 0 && static_cast<size_t>(index) < node->routes.size()
-               ? node->routes[static_cast<size_t>(index)].first
+               ? node->routes[static_cast<size_t>(index)].id
                : std::string{};
 }
 

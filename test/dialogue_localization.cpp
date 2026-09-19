@@ -64,9 +64,9 @@ TEST_CASE("dialogueLocalization.validatesExactRuntimeLocaleCoverage") {
       }
     })");
     REQUIRE(bundle.ok());
-    REQUIRE_EQ(flow->loadFromDnut("conversation intro version=1 entry=welcome\n"
+    REQUIRE_EQ(flow->loadFromDnut("schema \"eve.dnut\"\nversion 1\nconversation intro version=1 entry=welcome {\n"
                                   "node welcome line speaker=guide i18n=intro.welcome next=end\n"
-                                  "node end end\nendconversation\n",
+                                  "node end end\n}\n",
                                   "localized.dnut"),
                1);
     auto validated = flow->validateLocalization(*localization, "zh-CN");
@@ -75,9 +75,9 @@ TEST_CASE("dialogueLocalization.validatesExactRuntimeLocaleCoverage") {
     auto missingLocale = flow->validateLocalization(*localization, "fr");
     CHECK(!missingLocale.ok());
 
-    REQUIRE_EQ(flow->loadFromDnut("conversation broken version=1 entry=line\n"
+    REQUIRE_EQ(flow->loadFromDnut("schema \"eve.dnut\"\nversion 1\nconversation broken version=1 entry=line {\n"
                                   "node line line speaker=guide i18n=intro.missing next=end\n"
-                                  "node end end\nendconversation\n",
+                                  "node end end\n}\n",
                                   "missing.dnut"),
                1);
     auto missingKey = flow->validateLocalization(*localization, "en");

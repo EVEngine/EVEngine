@@ -24,7 +24,7 @@ TEST_CASE("dialogueHotReload.fileLoadingUsesInjectedCapability") {
     DialogueFlow flow;
     CHECK_EQ(flow.loadFromDnutFile("missing.dnut"), 0);
     DialogueMemoryFileSystem filesystem;
-    filesystem.content = "conversation loaded entry=end\nnode end end\nendconversation\n";
+    filesystem.content = "schema \"eve.dnut\"\nversion 1\nconversation loaded entry=end {\nnode end end\n}\n";
     eve::cap::provide<eve::service::IFileSystem>(&filesystem);
     CHECK_EQ(flow.loadFromDnutFile("memory.dnut"), 1);
     CHECK(flow.hasConversation("loaded"));
@@ -34,10 +34,12 @@ TEST_CASE("dialogueHotReload.fileLoadingUsesInjectedCapability") {
 TEST_CASE("dialogueHotReload.transactionalCrossFileValidation") {
     DialogueFlow      flow;
     const std::string greeting = R"(
-conversation greeting entry=line
+schema "eve.dnut"
+version 1
+conversation greeting entry=line {
 node line line text="hello" next=end
 node end end
-endconversation
+}
 )";
     REQUIRE(flow.loadFromDnut(greeting, "greeting.dnut") == 1);
     CHECK(flow.hasConversation("greeting"));
@@ -47,26 +49,32 @@ endconversation
     CHECK(!flow.getLastLoadChanged());
 
     const std::string brokenReference = R"(
-conversation greeting entry=call
+schema "eve.dnut"
+version 1
+conversation greeting entry=call {
 node call call target=missing next=end
 node end end
-endconversation
+}
 )";
     CHECK(flow.reloadFromDnut(brokenReference, "greeting.dnut") == 0);
     CHECK(flow.hasConversation("greeting"));
     CHECK(flow.getDiagnosticMessage(0).find("missing conversation") != std::string::npos);
 
     const std::string shared = R"(
-conversation shared entry=end
+schema "eve.dnut"
+version 1
+conversation shared entry=end {
 node end end
-endconversation
+}
 )";
     REQUIRE(flow.loadFromDnut(shared, "shared.dnut") == 1);
     const std::string validReference = R"(
-conversation greeting version=2 entry=call
+schema "eve.dnut"
+version 1
+conversation greeting version=2 entry=call {
 node call call target=shared next=end
 node end end
-endconversation
+}
 )";
     CHECK(flow.reloadFromDnut(validReference, "greeting.dnut") == 1);
     CHECK(flow.getLastLoadChanged());
@@ -76,9 +84,11 @@ endconversation
 TEST_CASE("dialogueHotReload.rejectsDuplicateCrossSourceOwnership") {
     DialogueFlow flow;
     const std::string source = R"(
-conversation shared.id entry=end
+schema "eve.dnut"
+version 1
+conversation shared.id entry=end {
 node end end
-endconversation
+}
 )";
     REQUIRE(flow.loadFromDnut(source, "first.dnut") == 1);
     CHECK(flow.loadFromDnut(source, "second.dnut") == 0);

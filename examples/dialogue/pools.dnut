@@ -1,3 +1,6 @@
+schema "eve.dnut"
+version 1
+
 // EVEngine Dialogue 台词池示例（.dnut）
 // 由 dlg.loadPoolsFromDnutFile("pools.dnut") 解析并注册到 eve.Dialogue。
 // 玩法：mood / hour 是故事变量，playPool 按条件加权选词；meta 自动切表情/动作。

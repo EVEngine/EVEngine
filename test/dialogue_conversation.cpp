@@ -15,7 +15,9 @@ ConversationAsset makeGreeting() {
     ConversationAsset::Node decide;
     decide.id = "decide";
     decide.kind = ConversationAsset::Node::Kind::Branch;
-    decide.routes = {{"speaker.mood == happy", "friendly"}, {"else", "formal"}};
+    ConversationRoute happy{"friendly", "friendly"};
+    happy.expression = "speaker.mood == happy";
+    decide.routes = {happy, {"formal", "formal"}};
     ConversationAsset::Node friendly;
     friendly.id = "friendly";
     friendly.kind = ConversationAsset::Node::Kind::Line;
@@ -33,6 +35,32 @@ ConversationAsset makeGreeting() {
 }
 
 }  // namespace
+
+TEST_CASE("dialogueConversation.typedDefaultsAndExcessBindings") {
+    ConversationAsset asset;
+    asset.id = "typed";
+    asset.entry = "line";
+    ConversationAsset::Parameter count;
+    count.name = "count";
+    count.type = ConversationAsset::Parameter::Type::Int;
+    count.required = false;
+    count.defaultValue = StateValue::integer(3);
+    asset.parameters = {count};
+    asset.nodes = {{"line", ConversationAsset::Node::Kind::Line, "end"},
+                   {"end", ConversationAsset::Node::Kind::End}};
+    ConversationRunner runner;
+    std::string error;
+    REQUIRE(runner.start(&asset, StateValue::object(), &error));
+    REQUIRE(runner.bindings().find("count") != nullptr);
+    CHECK_EQ(runner.bindings().find("count")->asInt(), 3);
+    runner.stop();
+    StateValue wrongType = StateValue::object();
+    wrongType.set("count", StateValue::string("bad"));
+    CHECK(!runner.start(&asset, std::move(wrongType), &error));
+    StateValue excess = StateValue::object();
+    excess.set("extra", StateValue::integer(1));
+    CHECK(!runner.start(&asset, std::move(excess), &error));
+}
 
 TEST_CASE("dialogueConversation.parameterizedRunner") {
     ConversationAsset asset = makeGreeting();

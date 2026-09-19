@@ -22,6 +22,14 @@ namespace eve::dialogue {
  * it is not interpreted by a dialogue-local condition language.
  */
 struct ConversationRoute {
+    /** @brief Stable route identifier, independent from presentation text. */
+    std::string id;
+    /** @brief Source-language display text. */
+    std::string text;
+    /** @brief Optional localization key for display text. */
+    std::string i18nKey;
+    /** @brief Optional legacy expression evaluated as a checked boolean. */
+    std::string expression;
     std::string first;
     std::string second;
     eve::Value  condition;
@@ -32,7 +40,7 @@ struct ConversationRoute {
 
     /** @brief Construct an unconditional or legacy-expression route. */
     ConversationRoute(std::string label = {}, std::string target = {}, eve::Value routeCondition = {})
-        : first(std::move(label)), second(std::move(target)), condition(std::move(routeCondition)) {}
+        : id(label), first(std::move(label)), second(std::move(target)), condition(std::move(routeCondition)) {}
 };
 
 /** @brief Short spelling used by authoring and gameplay integration code. */
@@ -40,6 +48,16 @@ using Route = ConversationRoute;
 
 /** @brief Immutable, parameterized conversation definition. */
 struct ConversationAsset {
+    /** @brief Typed invocation parameter declared by the content schema. */
+    struct Parameter {
+        enum class Type { Any, String, Int, Float, Bool };
+        std::string name;
+        Type type = Type::Any;
+        bool required = true;
+        StateValue defaultValue = StateValue::null();
+        Parameter() = default;
+        Parameter(std::string parameterName) : name(std::move(parameterName)) {}
+    };
     /** @brief A serializable step in a conversation. */
     struct Node {
         enum class Kind { Line, Branch, Choice, Call, Command, Wait, End };
@@ -67,7 +85,7 @@ struct ConversationAsset {
     std::string id;
     int version = 1;
     std::string entry;
-    std::vector<std::string> parameters;
+    std::vector<Parameter> parameters;
     std::vector<Node> nodes;
 
     /** @brief Find a node by its stable identifier. */

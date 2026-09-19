@@ -28,6 +28,14 @@ bool ConversationAsset::validate(std::string* error) const {
     };
     if (id.empty()) return fail("missing id");
     if (entry.empty()) return fail("missing entry node");
+    std::unordered_set<std::string> parameterIds;
+    for (const auto& parameter : parameters) {
+        if (parameter.name.empty()) return fail("parameter has an empty name");
+        if (!parameterIds.insert(parameter.name).second)
+            return fail("duplicate parameter '" + parameter.name + "'");
+        if (parameter.required && !parameter.defaultValue.isNull())
+            return fail("required parameter '" + parameter.name + "' cannot declare a default");
+    }
     std::unordered_set<std::string> ids;
     for (const auto& node : nodes) {
         if (node.id.empty()) return fail("node has an empty id");
@@ -75,16 +83,31 @@ bool ConversationRunner::start(const ConversationAsset* asset, StateValue bindin
     if (!asset) return fail(error, "conversation: null asset");
     if (!bindings.isObject()) return fail(error, "conversation: bindings must be an object");
     if (!asset->validate(error)) return false;
+    StateValue resolvedBindings = bindings;
     for (const auto& parameter : asset->parameters) {
-        if (!bindings.find(parameter))
-            return fail(error, "conversation '" + asset->id + "': missing required binding '" + parameter + "'");
+        const StateValue* value = resolvedBindings.find(parameter.name);
+        if (!value && !parameter.defaultValue.isNull()) {
+            resolvedBindings.set(parameter.name, parameter.defaultValue);
+            value = resolvedBindings.find(parameter.name);
+        }
+        if (!value && parameter.required)
+            return fail(error, "conversation '" + asset->id + "': missing required binding '" + parameter.name + "'");
+        if (!value) continue;
+        const bool typeMatches = parameter.type == ConversationAsset::Parameter::Type::Any ||
+            (parameter.type == ConversationAsset::Parameter::Type::String && value->isString()) ||
+            (parameter.type == ConversationAsset::Parameter::Type::Int && value->isInt()) ||
+            (parameter.type == ConversationAsset::Parameter::Type::Float && (value->isFloat() || value->isInt())) ||
+            (parameter.type == ConversationAsset::Parameter::Type::Bool && value->isBool());
+        if (!typeMatches)
+            return fail(error, "conversation '" + asset->id + "': binding '" + parameter.name + "' has the wrong type");
     }
     for (const auto& key : bindings.keys()) {
-        if (std::find(asset->parameters.begin(), asset->parameters.end(), key) == asset->parameters.end())
+        if (std::none_of(asset->parameters.begin(), asset->parameters.end(),
+                         [&](const auto& parameter) { return parameter.name == key; }))
             return fail(error, "conversation '" + asset->id + "': undeclared binding '" + key + "'");
     }
     asset_ = asset;
-    bindings_ = std::move(bindings);
+    bindings_ = std::move(resolvedBindings);
     locals_ = StateValue::object();
     callStack_.clear();
     blocked_ = false;
@@ -160,19 +183,19 @@ std::string ConversationRunner::evaluateRoute(const ConversationAsset::Node& nod
             if (result.passed()) return route.second;
             continue;
         }
-        if (route.first.empty() || route.first == "else") return route.second;
+        if (route.expression.empty()) return route.second;
         if (!expressionEvaluator_) {
             fail(error, "conversation: branch requires an expression evaluator");
             return {};
         }
-        auto evaluated = expressionEvaluator_(route.first, bindings_, locals_);
+        auto evaluated = expressionEvaluator_(route.expression, bindings_, locals_);
         if (!evaluated) {
             fail(error, evaluated.status().describe());
             return {};
         }
         const StateValue value = std::move(evaluated).takeValue();
         if (!value.isBool()) {
-            fail(error, "conversation: expression '" + route.first + "' did not return bool");
+            fail(error, "conversation: expression '" + route.expression + "' did not return bool");
             return {};
         }
         if (value.asBool()) return route.second;
@@ -469,7 +492,7 @@ bool ConversationRunner::select(const std::string& routeId, std::string* error) 
     const auto* node = currentNode();
     if (node) {
         for (const auto& route : node->routes) {
-            if (route.first == routeId && (!route.payment.empty() || !route.stateMutations.empty()))
+            if (route.id == routeId && (!route.payment.empty() || !route.stateMutations.empty()))
                 return fail(error, "conversation: payment-bearing choice requires DialogueFlow integration");
         }
     }
@@ -488,7 +511,7 @@ eve::Result<void> ConversationRunner::selectRouteForTransaction(const std::strin
         return runnerFailure(eve::DiagnosticCode::DialogueNotWaitingForChoice,
                              "conversation: runner is not waiting for a choice", "route");
     for (const auto& route : node->routes) {
-        if (route.first != routeId) continue;
+        if (route.id != routeId) continue;
         if (!route.condition.isNull()) {
             if (!conditionEvaluator_)
                 return runnerFailure(eve::DiagnosticCode::PreconditionViolation,

@@ -1,19 +1,12 @@
 #pragma once
 
 #include "dialogue/Conversation.h"
+#include "dialogue/DnutDocument.h"
 
 #include <string>
 #include <vector>
 
 namespace eve::dialogue {
-
-struct ConversationDiagnostic {
-    enum class Severity { Warning, Error };
-    Severity severity = Severity::Error;
-    std::string path;
-    int line = 0;
-    std::string message;
-};
 
 /** @brief Compile parameterized conversation blocks embedded in .dnut text. */
 bool compileDnutConversations(const std::string& source, const std::string& path,

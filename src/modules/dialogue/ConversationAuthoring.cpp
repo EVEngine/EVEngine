@@ -117,12 +117,13 @@ bool ConversationDocument::setEntry(const std::string& nodeId) {
 int ConversationDocument::getParameterCount() const { return static_cast<int>(asset_.parameters.size()); }
 
 std::string ConversationDocument::getParameter(int index) const {
-    return index >= 0 && index < getParameterCount() ? asset_.parameters[static_cast<size_t>(index)] : std::string{};
+    return index >= 0 && index < getParameterCount() ? asset_.parameters[static_cast<size_t>(index)].name : std::string{};
 }
 
 bool ConversationDocument::addParameter(const std::string& name) {
     if (name.empty()) return fail("parameter name must not be empty");
-    if (std::find(asset_.parameters.begin(), asset_.parameters.end(), name) != asset_.parameters.end())
+    if (std::any_of(asset_.parameters.begin(), asset_.parameters.end(),
+                    [&](const auto& parameter) { return parameter.name == name; }))
         return fail("parameter already exists: " + name);
     asset_.parameters.push_back(name);
     failureMessage_.clear();
@@ -130,7 +131,8 @@ bool ConversationDocument::addParameter(const std::string& name) {
 }
 
 bool ConversationDocument::removeParameter(const std::string& name) {
-    const auto it = std::find(asset_.parameters.begin(), asset_.parameters.end(), name);
+    const auto it = std::find_if(asset_.parameters.begin(), asset_.parameters.end(),
+                                 [&](const auto& parameter) { return parameter.name == name; });
     if (it == asset_.parameters.end()) return false;
     asset_.parameters.erase(it);
     return true;
@@ -268,7 +270,7 @@ int ConversationDocument::getRouteCount(const std::string& nodeId) const {
 std::string ConversationDocument::getRouteLabel(const std::string& nodeId, int index) const {
     const auto* node = findNode(nodeId);
     return node && index >= 0 && index < static_cast<int>(node->routes.size())
-               ? node->routes[static_cast<size_t>(index)].first
+               ? node->routes[static_cast<size_t>(index)].id
                : std::string{};
 }
 

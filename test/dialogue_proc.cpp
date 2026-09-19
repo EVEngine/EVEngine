@@ -357,6 +357,8 @@ TEST_CASE("dialogueProc.dnutParser") {
     resetDialogue(dlg);
 
     const std::string src =
+        "schema \"eve.dnut\"\n"
+        "version 1\n"
         "pool alice.greet noRepeat=4 {\n"
         "    when mood == \"happy\" && hour >= 18 {\n"
         "        alice: \"晚上好，{name}！\" weight=2 meta(expression=\"happy\", motion=\"wave\") tags=[\"greet\",\"evening\"]\n"
@@ -412,6 +414,8 @@ TEST_CASE("dialogueProc.dnutAttrsAndErrors") {
     resetDialogue(dlg);
 
     const std::string src =
+        "schema \"eve.dnut\"\n"
+        "version 1\n"
         "pool x {\n"
         "    alice: \"hi\" weight=3 i18n=\"line.hi\" id=\"custom\"\n"
         "}\n";
@@ -422,15 +426,15 @@ TEST_CASE("dialogueProc.dnutAttrsAndErrors") {
     CHECK_EQ(dlg->pickLineWithParams("x", {}), std::string("custom"));
 
     // 语法错误：行号与路径出现在 getLastPoolsError。
-    CHECK_EQ(dlg->loadPoolsFromDnut("pool x {\n  alice: hi\n}\n", "bad.dnut"), 0);
-    CHECK(dlg->getLastPoolsError().find("bad.dnut:2") != std::string::npos);
+    CHECK_EQ(dlg->loadPoolsFromDnut("schema \"eve.dnut\"\nversion 1\npool x {\n  alice: hi\n}\n", "bad.dnut"), 0);
+    CHECK(dlg->getLastPoolsError().find("bad.dnut:4") != std::string::npos);
 
     // 未知属性。
-    CHECK_EQ(dlg->loadPoolsFromDnut("pool x { alice: \"hi\" bogus=1 }\n", "bad2.dnut"), 0);
+    CHECK_EQ(dlg->loadPoolsFromDnut("schema \"eve.dnut\"\nversion 1\npool x { alice: \"hi\" bogus=1 }\n", "bad2.dnut"), 0);
     CHECK(!dlg->getLastPoolsError().empty());
 
     // 未闭合的 pool。
-    CHECK_EQ(dlg->loadPoolsFromDnut("pool x {\n  alice: \"hi\"\n", "bad3.dnut"), 0);
+    CHECK_EQ(dlg->loadPoolsFromDnut("schema \"eve.dnut\"\nversion 1\npool x {\n  alice: \"hi\"\n", "bad3.dnut"), 0);
     CHECK(dlg->getLastPoolsError().find("bad3.dnut") != std::string::npos);
 
     resetDialogue(dlg);
