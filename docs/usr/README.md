@@ -127,7 +127,15 @@ my-game/
 | `eve_asset_reload(path)` | 非脚本资源变化后（可选） | 响应纹理、地图等资源变化 |
 | `eve_quit()` | 退出时（可选） | 保存数据或执行清理 |
 
-启用 `config.hotReload` 后，引擎会监视脚本和资源。需要跨热重载保存的 root 状态使用 EveScript 的 `persist` 声明：
+启用 `config.hotReload` 后，引擎会监视脚本和资源。默认监视游戏工作目录（`hot.watchTree(".")`）。
+`apps/<editor>` 这类入口需要看见父级的 `editors/`、`lib/` 时，在 `config.nut` 里设置：
+
+```squirrel
+hotReload = true
+hotReloadWatch = [".."]   // 字符串或数组；默认 ["."]
+```
+
+事件路径相对监视根报告：工作目录内仍是 `main.nut`，父级兄弟目录是 `editors/skill.vm.nut`。需要跨热重载保存的 root 状态使用 EveScript 的 `persist` 声明：
 
 ```squirrel
 persist player = null

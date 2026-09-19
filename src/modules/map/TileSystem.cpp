@@ -160,7 +160,8 @@ void applyTiledTransform(graphics::DrawItem2D &item, uint32_t raw) {
 }
 
 bool chunkVisible(const TileLayer::Config &cfg, const TileLayer::Tileset &ts, const ViewCam &cam,
-                  int viewWidth, int viewHeight, int x0, int y0, int x1, int y1) {
+                  int viewWidth, int viewHeight, int x0, int y0, int x1, int y1, float scaleX,
+                  float scaleY) {
     if (!cam.valid || viewWidth <= 0 || viewHeight <= 0) return true;
     float minX = 1e30f, minY = 1e30f, maxX = -1e30f, maxY = -1e30f;
     const int xs[] = {x0, std::max(x0, x1 - 1)};
@@ -171,15 +172,15 @@ bool chunkVisible(const TileLayer::Config &cfg, const TileLayer::Tileset &ts, co
             tileToWorld(cfg, x, y, wx, wy);
             minX = std::min(minX, wx);
             minY = std::min(minY, wy);
-            maxX = std::max(maxX, wx + cfg.tileW);
-            maxY = std::max(maxY, wy + cfg.tileH);
+            maxX = std::max(maxX, wx + cfg.tileW * scaleX);
+            maxY = std::max(maxY, wy + cfg.tileH * scaleY);
         }
     }
-    float expandX = cfg.tileW;
-    float expandY = cfg.tileH;
+    float expandX = cfg.tileW * scaleX;
+    float expandY = cfg.tileH * scaleY;
     for (const auto &visual : ts.visuals) {
-        expandX = std::max(expandX, float(visual.width) + std::fabs(visual.pivotX));
-        expandY = std::max(expandY, float(visual.height) + std::fabs(visual.pivotY));
+        expandX = std::max(expandX, float(visual.width) * scaleX + std::fabs(visual.pivotX) * scaleX);
+        expandY = std::max(expandY, float(visual.height) * scaleY + std::fabs(visual.pivotY) * scaleY);
     }
     minX -= expandX;
     minY -= expandY;
@@ -217,6 +218,8 @@ void TileRenderSystem::collect(std::vector<graphics::DrawItem2D> &out, int viewW
 
         const Color &tint = draw->tint;
         const ViewCam cam = fromEntity(draw->camera);
+        const float scaleX = draw->visualScaleX > 0.f ? draw->visualScaleX : 1.f;
+        const float scaleY = draw->visualScaleY > 0.f ? draw->visualScaleY : 1.f;
 
         const int chunkColumns = std::max(1, tiles->chunkColumns);
         const int chunkRows = std::max(1, tiles->chunkRows);
@@ -231,7 +234,8 @@ void TileRenderSystem::collect(std::vector<graphics::DrawItem2D> &out, int viewW
                 const int y0 = cy * TileLayer::Tiles::kChunkSize;
                 const int x1 = std::min(cfg->mapW, x0 + TileLayer::Tiles::kChunkSize);
                 const int y1 = std::min(cfg->mapH, y0 + TileLayer::Tiles::kChunkSize);
-                if (!chunkVisible(*cfg, *ts, cam, viewWidth, viewHeight, x0, y0, x1, y1))
+                if (!chunkVisible(*cfg, *ts, cam, viewWidth, viewHeight, x0, y0, x1, y1, scaleX,
+                                  scaleY))
                     continue;
                 ++gLastVisitedChunkCount;
                 for (int ty = y0; ty < y1; ++ty) {
@@ -243,8 +247,8 @@ void TileRenderSystem::collect(std::vector<graphics::DrawItem2D> &out, int viewW
 
                         graphics::DrawItem2D item;
                         tileToWorld(*cfg, tx, ty, item.x, item.y);
-                        item.w            = cfg->tileW;
-                        item.h            = cfg->tileH;
+                        item.w            = cfg->tileW * scaleX;
+                        item.h            = cfg->tileH * scaleY;
                         item.depthY       = tileToDepthY(*cfg, tx, ty);
                         item.layer        = draw->layer;
                         item.canvas       = draw->canvas;
@@ -265,15 +269,19 @@ void TileRenderSystem::collect(std::vector<graphics::DrawItem2D> &out, int viewW
                             for (const auto &part : subtiles->parts) {
                                 graphics::DrawItem2D quarter = item;
                                 if (!subtileUV(*atlas, part, u0, v0, u1, v1)) continue;
-                                float centerX = part.offsetX + float(part.width) * 0.5f - cfg->tileW * 0.5f;
-                                float centerY = part.offsetY + float(part.height) * 0.5f - cfg->tileH * 0.5f;
+                                float centerX = (part.offsetX + float(part.width) * 0.5f) * scaleX
+                                                - cfg->tileW * scaleX * 0.5f;
+                                float centerY = (part.offsetY + float(part.height) * 0.5f) * scaleY
+                                                - cfg->tileH * scaleY * 0.5f;
                                 if (raw & 0x20000000u) std::swap(centerX, centerY);
                                 if (raw & 0x80000000u) centerX = -centerX;
                                 if (raw & 0x40000000u) centerY = -centerY;
-                                quarter.x += cfg->tileW * 0.5f + centerX - float(part.width) * 0.5f;
-                                quarter.y += cfg->tileH * 0.5f + centerY - float(part.height) * 0.5f;
-                                quarter.w       = float(part.width);
-                                quarter.h       = float(part.height);
+                                quarter.x += cfg->tileW * scaleX * 0.5f + centerX
+                                             - float(part.width) * scaleX * 0.5f;
+                                quarter.y += cfg->tileH * scaleY * 0.5f + centerY
+                                             - float(part.height) * scaleY * 0.5f;
+                                quarter.w       = float(part.width) * scaleX;
+                                quarter.h       = float(part.height) * scaleY;
                                 quarter.texture = atlas->texture;
                                 quarter.hasUV   = true;
                                 quarter.u0      = u0;
@@ -290,10 +298,10 @@ void TileRenderSystem::collect(std::vector<graphics::DrawItem2D> &out, int viewW
                         }
                         if (visual && atlas && visualUV(*atlas, *visual, u0, v0, u1, v1)) {
                             ++gLastCustomVisualCount;
-                            item.x -= visual->pivotX;
-                            item.y -= visual->pivotY;
-                            item.w = float(visual->width);
-                            item.h = float(visual->height);
+                            item.x -= visual->pivotX * scaleX;
+                            item.y -= visual->pivotY * scaleY;
+                            item.w = float(visual->width) * scaleX;
+                            item.h = float(visual->height) * scaleY;
                             item.depthY += visual->sortBias;
                             item.texture = atlas->texture;
                             item.hasUV   = true;

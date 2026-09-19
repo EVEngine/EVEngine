@@ -69,7 +69,7 @@ function activateLanguageService(context) {
     if (cfg.get('languageServer.enabled') === false) return null;
 
     const workspaceRoot = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
-    const evePath = resolveEvePath(cfg.get('eve.executable') || 'eve', workspaceRoot);
+    const evePath = resolveEvePath(cfg.get('executable') || 'eve', workspaceRoot);
     if (!evePath || (evePath !== 'eve' && fs.existsSync(evePath) === false)) {
       if (!missingEveWarned) {
         missingEveWarned = true;

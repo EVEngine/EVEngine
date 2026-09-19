@@ -18,8 +18,11 @@ Opening a `.nut` file starts the language server for the nearest game directory
 references, rename, outline, signature help, format, folding, and semantic
 highlighting (class / function / method / variable).
 
-Set `eve.executable` if `eve` is not on `PATH` and the repo `build/` tree is not
-the workspace root. Set `eve.languageServer.enabled` to `false` to keep debug-only.
+The default `eve.executable` / `evePath` value `"eve"` runs the `eve` on `PATH`
+(SDK install, not a workspace `build/` copy) so the language server does not
+lock `eve.exe` while you relink. Set `eve.executable` to a full path if you
+need a specific binary. Set `eve.languageServer.enabled` to `false` to keep
+debug-only.
 
 ## Test
 
@@ -71,7 +74,7 @@ VS Code can still load the folder as an Extension Development Host (F5).
 ```
 
 - `program` — game directory (cwd + mount root)
-- `evePath` — path to `eve`, or `"eve"` to auto-detect `build/<platform>-debug/...`
+- `evePath` — path to `eve`, or `"eve"` for the `eve` on `PATH`
 - `port` — `0` picks a free TCP port
 
 Press **F5** in VS Code (or Run and Debug ▶).

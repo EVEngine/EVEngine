@@ -125,7 +125,7 @@ struct ScriptModuleResolver::Impl {
         }
     }
 
-    static SQRESULT importCallback(HSQUIRRELVM, const SQChar* importer, const SQChar* specifier, SQUserPointer user,
+    static SQRESULT importCallback(HSQUIRRELVM vm, const SQChar* importer, const SQChar* specifier, SQUserPointer user,
                                    HSQOBJECT* exports) {
         auto& self = *static_cast<Impl*>(user);
         try {
@@ -137,7 +137,7 @@ struct ScriptModuleResolver::Impl {
             return SQ_OK;
         } catch (const std::exception& error) {
             self.recordCompilationFailure(error.what());
-            return SQ_ERROR;
+            return sq_throwerror(vm, error.what());
         }
     }
 
