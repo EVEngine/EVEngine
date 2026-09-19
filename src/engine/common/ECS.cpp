@@ -170,6 +170,7 @@ eve._ecsTypes <- {}   // EntityClass -> { cls, instances }
 // view 结果缓存：create/destroy 时按类链失效；C++ 桥接类（_cppHasView=true）不缓存。
 eve._ecsViewCache <- {}       // EntityClass -> array
 eve._ecsSlotsCache <- {}      // EntityClass -> { fieldName = ComponentClass }
+eve._ecsFieldSlotsCache <- {} // EntityClass -> { fieldName = true }：只有这些槽位有真实字段
 eve._ecsCompDefaults <- {}    // ComponentClass -> { fieldName = resolvedDefault }
 eve._ecsRevision <- 0         // increments on script entity structural changes
 
@@ -236,6 +237,33 @@ function eve::_ecsCollectSlots(cls) {
     }
     this._ecsSlotsCache[cls] <- slots
     return slots
+}
+
+// 哪些槽位在实体类里有**真实字段**（`pos = Pos` 或 `pos = null`），哪些只是登记在
+// `static components` 表里。判据是"这个类有没有声明同名的非函数成员"，而不是"它的值
+// 是不是组件类"——`static components = { pos = Pos }` + `pos = null` 这种写法里字段值
+// 是 null，但字段确实存在、可以赋值。
+//
+// 只有有字段的槽位能用 `e.pos` 访问：Squirrel 拒绝对 class 实例新建槽位，所以
+// `e[name] = c` 对未声明的键会抛 "the index 'name' does not exist"（`=` 编译成
+// _OP_SET；只有 `<-` 才是 new-slot 操作码，报的是另一句
+// "class instances do not support the new slot operator"）。
+function eve::_ecsCollectFieldSlots(cls) {
+    if (cls in this._ecsFieldSlotsCache) return this._ecsFieldSlotsCache[cls]
+    local fields = {}
+    local cur = cls
+    local guard = 0
+    while (cur != null && guard < 64) {
+        if (!this.isSubclass(cur, this.Entity)) break
+        foreach (k, v in this.inspectClassFields(cur)) {
+            if (k == "components") continue
+            if (!(k in fields)) fields[k] <- true
+        }
+        cur = this.getClassBase(cur)
+        guard += 1
+    }
+    this._ecsFieldSlotsCache[cls] <- fields
+    return fields
 }
 
 function eve::_ecsInvalidateViews(cls) {
@@ -314,18 +342,16 @@ eve.Entity <- class {
         e._alive = true
         e._slots = eve._ecsCollectSlots(this)
         e._comps = {}
+        local fieldSlots = eve._ecsCollectFieldSlots(this)
         foreach (name, compClass in e._slots) {
             local c = eve._ecsInstantiateComponent(compClass)
             e._comps[name] <- c
-            // 这一步**从来没有成功过**，而且失败被吞掉了。`e[name] = c` 的键是动态的，
-            // 因此编译成 new-slot 操作码，而 Squirrel 拒绝对 class 实例新建槽位
-            // （"class instances do not support the new slot operator"）。
-            // 结果是：组件实例只存在于 `_comps`，`e.pos` 读到的是**类默认值**——对
-            // `pos = Pos` 而言就是组件**类**本身，于是 `e.pos.x = 1` 写的是类级字段。
-            // 两个存储不只是可能分叉：字段那条路根本没接上。修复属于阶段 5 的 F4，
-            // 需要先定方案（给 Entity 加带 MT_NEWSLOT 的 delegate，还是让 `_comps`
-            // 成为唯一存储并改 GPU 打包侧的读取），不是一行改动。
-            try { e[name] = c } catch (ex) {}
+            // 已声明的槽位（`pos = Pos`）同时写进实体字段，于是 `e.pos` 与
+            // `e.getComponent(Pos)` 是**同一个对象**，两条路径读写一致（实测，见 §9.38）。
+            // 只登记在 `static components` 表里、没有同名字段的槽位没有字段可写，它只
+            // 能经 getComponent()/hasComponent() 访问。这里因此按"是否真实字段"分流，
+            // 而不是用 try/catch 把真正的失败吞掉。
+            if (name in fieldSlots) e[name] = c
         }
         eve._ecsRegisterInstance(e, this)
         return e
@@ -363,9 +389,16 @@ eve.Entity <- class {
         if (_etype != null) eve._ecsUnregisterInstance(this, _etype)
         // 组件状态一并释放。留着它的话，销毁后的实体仍然可读可写、却对任何 view 无效
         // （静默 no-op），而且每个组件对象都被这个已销毁的实体继续引用着。
-        // 只能清 `_comps`：用 `this[name] = null` 清字段会抛
-        // "class instances do not support the new slot operator"（动态键赋值走 new-slot
-        // 操作码，Squirrel 拒绝给 class 实例新建槽位；见 create() 里的说明）。
+        // 两条引用都要清：`_comps` 是槽位表，已声明字段槽位是 `e.pos` 那条路。只清前者
+        // 会让 `e.pos` 继续指向一个活着的组件实例，于是对已销毁实体写 `e.pos.x = 1`
+        // 会静默改一个孤儿——正是上面要避免的状态。`this[name] = null` 对**已声明**成员
+        // 是普通赋值，实测不抛（"会抛"的旧结论是把 `<-` 的行为记到了 `=` 上，见 §9.38）。
+        if (_slots != null && _etype != null) {
+            local fieldSlots = eve._ecsCollectFieldSlots(_etype)
+            foreach (name, compClass in _slots) {
+                if (name in fieldSlots) this[name] = null
+            }
+        }
         _comps = null
     }
 }

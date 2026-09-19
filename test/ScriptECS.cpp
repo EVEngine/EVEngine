@@ -426,19 +426,78 @@ function testDestroyClearsComponentState() {
     n.destroy()
 
     // Destroyed means gone: the component is unreachable and no longer silently
-    // writable-but-ignored through the lookup path.
-    // `n.pos` is deliberately not asserted here: the field path never received the
-    // component instance at all (dynamic-key assignment cannot create a slot on a
-    // class instance, see create()), so it still reads the class default. That is
-    // phase 5's F4 item, not something destroy() can fix.
+    // writable-but-ignored through either path.
     if (n.isAlive()) return false
     if (n.getComponent(Pos) != null) return false
     if (n.hasComponent(Pos)) return false
+    // 字段槽位也必须清：只清 `_comps` 会让 `n.pos` 继续指向一个活着的组件实例，
+    // 于是 `n.pos.x = 1` 静默改一个任何 view 都看不到的孤儿（§9.38 实测到的漏洞）。
+    if (n.pos != null) return false
     if (eve.view(Node).len() != 0) return false
 
     // Destroying twice stays a no-op.
     n.destroy()
     if (n.getComponent(Pos) != null) return false
+    if (n.pos != null) return false
+    return true
+}
+
+function testFieldSlotIsTheSameComponentInstance() {
+    class Pos extends eve.Component { x = 0.0; y = 0.0 }
+    class Node extends eve.Entity { pos = Pos }
+
+    local a = Node.create()
+    local b = Node.create()
+
+    // 已声明槽位的字段与槽位表指向**同一个**组件实例（这曾是 §9.14.2 记错的地方：
+    // 它断言 `e.pos` 读到的是组件类对象、写的是类级字段）。
+    if (a.pos != a.getComponent(Pos)) return false
+    if (typeof a.pos != "instance") return false
+
+    // 逐实体隔离：如果写的是类级共享状态，新建实体会立刻看到 10.0。
+    a.pos.x = 10.0
+    if (a.getComponent(Pos).x != 10.0) return false
+    if (b.pos.x != 0.0) return false
+    if (b.getComponent(Pos).x != 0.0) return false
+
+    // 反向：经槽位表写，字段路径要读得到。
+    a.getComponent(Pos).y = 4.0
+    if (a.pos.y != 4.0) return false
+
+    // 清掉字段（`=` 对已声明成员是普通赋值，不抛）：槽位表仍持有实例，所以显式把两边
+    // 都处理掉才是销毁该做的事——这里只钉住"字段可写"这条语义。
+    local key = "pos"
+    a[key] = null
+    if (a.pos != null) return false
+    return true
+}
+
+function testRegistryOnlySlotHasNoField() {
+    class Pos extends eve.Component { x = 1.0 }
+    class Node extends eve.Entity {
+        static components = { pos = Pos }
+    }
+
+    local n = Node.create()
+    // 只登记在 components 表、没有同名字段的槽位只能经 getComponent()/hasComponent() 访问。
+    if (n.getComponent(Pos) == null) return false
+    if (!n.hasComponent(Pos)) return false
+    if (n.getComponent(Pos).x != 1.0) return false
+
+    // Squirrel 拒绝对 class 实例新建槽位：未声明的键读不到，
+    // `=`（_OP_SET）与 `<-`（new-slot 操作码）报的是**两句不同**的话。这三条语义是
+    // create()/destroy() 分流实现的依据，所以钉在这里。
+    local readFailed = false
+    try { local ignored = n.pos } catch (ex) { readFailed = true }
+    if (!readFailed) return false
+
+    local setMessage = ""
+    try { n.pos = Pos() } catch (ex) { setMessage = "" + ex }
+    if (setMessage.find("does not exist") == null) return false
+
+    local newSlotMessage = ""
+    try { n.pos <- Pos() } catch (ex) { newSlotMessage = "" + ex }
+    if (newSlotMessage.find("new slot operator") == null) return false
     return true
 }
 
@@ -508,6 +567,14 @@ TEST_CASE_FIXTURE(ScriptEcsTest, "ScriptECS.componentDefaultsAndSlotsCached") {
 
 TEST_CASE_FIXTURE(ScriptEcsTest, "ScriptECS.destroyClearsComponentState") {
     REQUIRE(callScript("testDestroyClearsComponentState"));
+}
+
+TEST_CASE_FIXTURE(ScriptEcsTest, "ScriptECS.fieldSlotIsTheSameComponentInstance") {
+    REQUIRE(callScript("testFieldSlotIsTheSameComponentInstance"));
+}
+
+TEST_CASE_FIXTURE(ScriptEcsTest, "ScriptECS.registryOnlySlotHasNoField") {
+    REQUIRE(callScript("testRegistryOnlySlotHasNoField"));
 }
 
 TEST_CASE_FIXTURE(ScriptEcsTest, "ScriptECS.gpuDrivenBindingSurface") {
