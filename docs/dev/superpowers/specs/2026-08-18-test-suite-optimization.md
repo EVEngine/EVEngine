@@ -217,3 +217,48 @@ ctest --test-dir build/linux-debug -L bundle -R '^bundle/particles'  # 只看某
 
 > 注：zeroerr 增强保存在本地分支 `evengine-test-opt`，父仓库 gitlink 未改动，因此任意环境
 > 都能正常编译；启用新接口只需推送该分支并按 3.3 更新 gitlink。
+
+## 6. 分域链接的实测结论（2026-09-19，实施后回填）
+
+§1 的规模数字已过时（当时 115 个测试 `.cpp` / 1438 用例；实测时已到 **789 个文件 / 5188 用例**，
+注册 CTest 条目 6058 条）。据此把 `unit_test` 拆成 `unit_test_<domain>`（见
+`test/test_domains.cmake`、`scripts/test_domains.py`），并在 Windows/worktree 上做了完整配置 + 编译 + 链接的实测。
+
+### 6.1 实测数据（`unit_test_climbing`，该域 4 个测试文件）
+
+| 产物 | 单体（789 测试） | `unit_test_climbing` + `/INCREMENTAL` | `unit_test_climbing` + `/INCREMENTAL:NO` |
+| --- | --- | --- | --- |
+| `.exe` | 362.5 MB | 218.4 MB | **176.3 MB** |
+| `.ilk` | 2309.5 MB | 1819.4 MB | **不生成（0）** |
+| `.pdb` | 1831.2 MB | 1216.7 MB | 1217.1 MB |
+| 测试侧 `.obj` | 792 个 / 2.36 GB | **6 个 / 18.3 MB** | — |
+| 全量链接耗时 | — | — | **50.2 s** |
+
+> 口径说明：单体的数字取自主仓构建（`EVENGINE_COMPILER_CACHE=OFF`，编译用 `/Zi`），
+> 分域构建启用 sccache（`/Z7` Embedded），因此 `.exe`/`.pdb` 的横向差值含口径差异。
+> 但结论对口径不敏感：**测试代码只占 `.exe` 的 40%，引擎闭包占 60%** —— 只有 4 个测试的域，
+> `.exe` 仍是单体的 60%，`.ilk` 仍有 1.8 GB。
+
+### 6.2 结论：拆分不是省磁盘的手段，`/INCREMENTAL:NO` 才是；两者必须配对
+
+- **只拆分**：每个域各留一份 `.ilk`/`.pdb`。若 30 个域都建出来并保留，估算 `.exe` ≈ 5.2 GB、
+  `.pdb` ≈ 35.7 GB、`.ilk` ≈ 53.3 GB —— **比单体（约 4.5 GB）差一个数量级**。测试文件数量
+  对链接产物大小几乎没有影响，因为决定映像大小的是引擎闭包。
+- **只 `/INCREMENTAL:NO`**：`.ilk` 全盘归零（省 ~45 GB），代价是每次链接都变成全量链接，
+  对单体（0.35 GB 映像）是分钟级。
+- **拆分 + `/INCREMENTAL:NO`**：既没有 `.ilk`，每次全量链接又只有 **50 秒**。这才是正解 ——
+  拆分的真正价值是**让关掉增量链接变得可承受**，而不是自己省磁盘。
+
+### 6.3 由此确定的工作流与后续
+
+- 正确用法是「**建一个域 → 跑它 → 删掉**」：`make unit-test/win32-debug DOMAIN=<域>` +
+  `ctest -L unit_test_<域>`，**不要**把 30 个域都建出来留着。
+- 下一个瓶颈是 `.pdb`（1.2 GB/域，几乎全是引擎闭包的调试信息）。要压它需要
+  `/DEBUG:FASTLINK`，或让 per-domain 测试构建不带引擎调试信息 —— 这是新的待办，不是本方案能覆盖的。
+- **实测发现的坑（已修）**：`TEST_INCLUDE_FILES` 登记了全部 30 个 `<target>_zeroerr_tests.cmake`，
+  而每个文件由该目标的 POST_BUILD 写出；只建一个域时另外 29 个文件不存在，`ctest` 会直接
+  以 include 错误中止，使「只建一个域再跑它的测试」完全失效。修法是在配置期先写空 stub，
+  目标链接后由 POST_BUILD 覆盖。**这个问题只有真编译一个域才会暴露。**
+- 另需注意：CMake 的对象路径上限为 250 字符。把 worktree 放在深目录（如
+  `...\EVEngine--worktrees\EVEngine--<长名>--worktree`）会让 `third-party` 的 mpg123 对象
+  路径达到 260 字符而编译失败；worktree 与构建目录应使用短路径。
