@@ -7,6 +7,7 @@
 
 #include <cmath>
 #include <functional>
+#include <type_traits>
 #include <vector>
 
 class Node : public ecs::Entity {
@@ -370,4 +371,161 @@ TEST_CASE_FIXTURE(ScriptEcsBridgeFixture, "ECS.script.destroyFromScript") {
     for (auto it = view.begin(); it != view.end(); ++it)
         ++live;
     CHECK_EQ(live, 0);
+}
+
+// ---------------------------------------------------------------------------
+// Storage contract.
+//
+// An entity record only has to be constructible from the arguments it is
+// created with, and destructible. An attached component only has to be
+// movable. Neither has to be copyable, and a component only has to be
+// default constructible when its value is asked for without arguments.
+//
+// These types are deliberately minimal examples of each shape. They exist so a
+// later change cannot quietly put the old requirements back: storing a
+// component as std::optional<T>, or deriving the entity record buffer from the
+// component slot buffer, both fail to compile here.
+// ---------------------------------------------------------------------------
+
+/** @brief Entity root with no default constructor and no copy. */
+class StrictNode : public ecs::Entity {
+public:
+    ENTITY(StrictNode, ecs::Entity)
+    void release() override { ecs::DestroyEntity(this); }
+
+    explicit StrictNode(int seed) : seed_(seed) {}
+    StrictNode(const StrictNode&)                = delete;
+    StrictNode& operator=(const StrictNode&)     = delete;
+    StrictNode(StrictNode&&) noexcept            = default;
+    StrictNode& operator=(StrictNode&&) noexcept = default;
+
+    /** @brief Value passed to create(), proving the ctor argument arrived. */
+    [[nodiscard]] int seed() const { return seed_; }
+
+private:
+    int seed_ = 0;
+};
+
+static_assert(!std::is_default_constructible_v<StrictNode>,
+              "entity root must stay non-default-constructible");
+static_assert(!std::is_copy_constructible_v<StrictNode>, "entity root must stay move-only");
+
+/** @brief Component that is move-only but still default constructible. */
+struct MoveOnlyComponent {
+    float x = 0.f;
+
+    MoveOnlyComponent()                                    = default;
+    MoveOnlyComponent(const MoveOnlyComponent&)            = delete;
+    MoveOnlyComponent& operator=(const MoveOnlyComponent&) = delete;
+    MoveOnlyComponent(MoveOnlyComponent&&) noexcept            = default;
+    MoveOnlyComponent& operator=(MoveOnlyComponent&&) noexcept = default;
+};
+
+static_assert(!std::is_copy_constructible_v<MoveOnlyComponent>, "component must stay move-only");
+
+/** @brief Entity root carrying a move-only component. */
+class MoveOnlyHolder : public ecs::Entity {
+public:
+    ENTITY(MoveOnlyHolder, ecs::Entity)
+    void release() override { ecs::DestroyEntity(this); }
+    COMPONENT(MoveOnlyComponent, moveOnly)
+};
+
+/** @brief Component with no default constructor and no copy. */
+struct SeededComponent {
+    int value = 0;
+
+    explicit SeededComponent(int v) : value(v) {}
+    SeededComponent()                                      = delete;
+    SeededComponent(const SeededComponent&)                = delete;
+    SeededComponent& operator=(const SeededComponent&)     = delete;
+    SeededComponent(SeededComponent&&) noexcept            = default;
+    SeededComponent& operator=(SeededComponent&&) noexcept = default;
+};
+
+static_assert(!std::is_default_constructible_v<SeededComponent>,
+              "component must stay non-default-constructible");
+
+/** @brief Entity root carrying a component that must be constructed with an argument. */
+class SeededHolder : public ecs::Entity {
+public:
+    ENTITY(SeededHolder, ecs::Entity)
+    void release() override { ecs::DestroyEntity(this); }
+    COMPONENT(SeededComponent, seeded)
+};
+
+TEST_CASE("ECS.moveOnlyEntityRootAndMoveOnlyComponent") {
+    ecs::Table world;
+    ecs::ScopedTable guard(world);
+
+    // A record whose constructor needs an argument, with copy deleted.
+    StrictNode* strict = StrictNode::create(42);
+    CHECK_EQ(strict->seed(), 42);
+
+    // The existing first-touch idiom still materialises a component, even
+    // though that component is move-only.
+    MoveOnlyHolder* holder = MoveOnlyHolder::create();
+    holder->moveOnly()->x = 3.f;
+    CHECK(std::abs(holder->moveOnly()->x - 3.f) < 1e-5f);
+
+    strict->release();
+    holder->release();
+}
+
+TEST_CASE("ECS.nonDefaultConstructibleComponentNeedsExplicitConstruction") {
+    ecs::Table world;
+    ecs::ScopedTable guard(world);
+
+    SeededHolder* seeded = SeededHolder::create();
+    SeededHolder* empty  = SeededHolder::create();
+
+    CHECK(!seeded->seeded().has());
+    CHECK(!empty->seeded().has());
+
+    seeded->seeded().emplace(7);
+    CHECK(seeded->seeded().has());
+    CHECK_EQ(seeded->seeded()->value, 7);
+
+    // Nothing may conjure a value for a component that has no default
+    // constructor, so the other entity stays empty.
+    CHECK(!empty->seeded().has());
+
+    // A View over such a component therefore yields only the entity that
+    // really holds a value, rather than materialising one per entity.
+    int seen = 0;
+    auto view = ecs::View<SeededHolder, SeededComponent>();
+    for (auto it = view.begin(); it != view.end(); ++it) {
+        auto [component] = *it;
+        CHECK(component != nullptr);
+        CHECK_EQ(component->value, 7);
+        ++seen;
+    }
+    CHECK_EQ(seen, 1);
+
+    seeded->release();
+    empty->release();
+}
+
+TEST_CASE("ECS.deferredPublishTransfersNonDefaultComponent") {
+    ecs::Table world;
+    ecs::ScopedTable guard(world);
+
+    {
+        ecs::ScopedDefer defer;
+        SeededHolder* staged = SeededHolder::create();
+        staged->seeded().emplace(11);
+        CHECK((staged->flags & ecs::kEntityStaging) != 0);
+        CHECK_EQ(staged->seeded()->value, 11);
+    }
+
+    // The record and its component survived publish_from, which is the only
+    // caller of transfer_slot.
+    int found = 0;
+    auto view = ecs::View<SeededHolder, SeededComponent>();
+    for (auto it = view.begin(); it != view.end(); ++it) {
+        auto [component] = *it;
+        if (component->value == 11)
+            ++found;
+    }
+    CHECK_EQ(found, 1);
 }
