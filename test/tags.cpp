@@ -140,6 +140,4 @@ function testTagsBindings() {
 
 UnitSciptTest(TagsScriptTest, kTagsScript);
 
-TEST_CASE_FIXTURE(TagsScriptTest, "tags.script.bindings") {
-    CHECK(vm.callFunc(vm.findFunc("testTagsBindings"), vm).toBool());
-}
+TEST_CASE_FIXTURE(TagsScriptTest, "tags.script.bindings") { REQUIRE(callScript("testTagsBindings")); }

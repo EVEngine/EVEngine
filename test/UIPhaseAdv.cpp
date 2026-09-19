@@ -158,9 +158,7 @@ function testScriptComponent() {
 
 UnitSciptTest(UIScriptComponentTest, kScriptComponentContent);
 
-TEST_CASE_FIXTURE(UIScriptComponentTest, "UI.adv.scriptUIComponent") {
-    CHECK(vm.callFunc(vm.findFunc("testScriptComponent"), vm).toBool());
-}
+TEST_CASE_FIXTURE(UIScriptComponentTest, "UI.adv.scriptUIComponent") { REQUIRE(callScript("testScriptComponent")); }
 
 TEST_CASE("UI.adv.flexRowColumnSpacer") {
     ui::UIHost *h = resolveHost(ui::UIHost::createHost("flex"));
@@ -481,7 +479,7 @@ function fireTestEvents() {
 UnitSciptTest(UIScriptCallbackTest, kScriptCallbackContent);
 
 TEST_CASE_FIXTURE(UIScriptCallbackTest, "UI.p0.scriptEventCallbacks") {
-    CHECK(vm.callFunc(vm.findFunc("testScriptCallbacks"), vm).toBool());
+    REQUIRE(callScript("testScriptCallbacks"));
     ui::UIHost *host = resolveHost(ui::UISystem::findHost("cb"));
     REQUIRE(host != nullptr);
     ui::UINode *go = findNode(host, "go");
@@ -506,7 +504,7 @@ TEST_CASE_FIXTURE(UIScriptCallbackTest, "UI.p0.scriptEventCallbacks") {
     change.floatValue = 0.75f;
     ui::UISystem::pendingEvents().push_back(change);
 
-    CHECK(vm.callFunc(vm.findFunc("fireTestEvents"), vm).toBool());
+    REQUIRE(callScript("fireTestEvents"));
     CHECK(std::abs(vm.find("clicks").toFloat() - 1.f) < 1e-5f);
     CHECK(vm.find("changeKind").toString() == "value");
     CHECK(std::abs(vm.find("changeValue").toFloat() - 0.75f) < 1e-5f);

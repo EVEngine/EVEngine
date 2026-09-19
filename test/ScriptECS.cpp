@@ -451,65 +451,69 @@ function testGpuDrivenBindingSurface() {
 
 UnitSciptTest(ScriptEcsTest, kScriptEcsContent);
 
-TEST_CASE_FIXTURE(ScriptEcsTest, "ScriptECS.ready") { REQUIRE(vm.callFunc(vm.findFunc("testEcsReady"), vm).toBool()); }
+TEST_CASE_FIXTURE(ScriptEcsTest, "ScriptECS.ready") { REQUIRE(callScript("testEcsReady")); }
 
 TEST_CASE_FIXTURE(ScriptEcsTest, "ScriptECS.defineClassAndComponent") {
-    REQUIRE(vm.callFunc(vm.findFunc("testDefineClassAndComponent"), vm).toBool());
+    REQUIRE(callScript("testDefineClassAndComponent"));
 }
 
-TEST_CASE_FIXTURE(ScriptEcsTest, "ScriptECS.viewIncludesSubclass") {
-    REQUIRE(vm.callFunc(vm.findFunc("testViewIncludesSubclass"), vm).toBool());
-}
+TEST_CASE_FIXTURE(ScriptEcsTest, "ScriptECS.viewIncludesSubclass") { REQUIRE(callScript("testViewIncludesSubclass")); }
 
-TEST_CASE_FIXTURE(ScriptEcsTest, "ScriptECS.systemUpdate") {
-    REQUIRE(vm.callFunc(vm.findFunc("testSystemUpdate"), vm).toBool());
-}
+TEST_CASE_FIXTURE(ScriptEcsTest, "ScriptECS.systemUpdate") { REQUIRE(callScript("testSystemUpdate")); }
 
 TEST_CASE_FIXTURE(ScriptEcsTest, "ScriptECS.systemDynamicSpawnDespawn") {
-    REQUIRE(vm.callFunc(vm.findFunc("testSystemDynamicSpawnDespawn"), vm).toBool());
+    REQUIRE(callScript("testSystemDynamicSpawnDespawn"));
 }
 
 TEST_CASE_FIXTURE(ScriptEcsTest, "ScriptECS.systemQueryArrayAndSubclass") {
-    REQUIRE(vm.callFunc(vm.findFunc("testSystemQueryArrayAndSubclass"), vm).toBool());
+    REQUIRE(callScript("testSystemQueryArrayAndSubclass"));
 }
 
 TEST_CASE_FIXTURE(ScriptEcsTest, "ScriptECS.typeMarkersAndEntityContainer") {
-    REQUIRE(vm.callFunc(vm.findFunc("testTypeMarkersAndEntityContainer"), vm).toBool());
+    REQUIRE(callScript("testTypeMarkersAndEntityContainer"));
 }
 
 TEST_CASE_FIXTURE(ScriptEcsTest, "ScriptECS.staticComponentsTable") {
-    REQUIRE(vm.callFunc(vm.findFunc("testStaticComponentsTable"), vm).toBool());
+    REQUIRE(callScript("testStaticComponentsTable"));
 }
 
 TEST_CASE_FIXTURE(ScriptEcsTest, "ScriptECS.shaderSystemClassExists") {
     // CHECK, not REQUIRE, on purpose: this script returns false in this fixture because
     // the gpgpu module is never instantiated, so `eve.ShaderSystem` is not reachable.
     // It has therefore been reporting a warning all along. See the plan doc 9.14.1.
-    CHECK(vm.callFunc(vm.findFunc("testShaderSystemClassExists"), vm).toBool());
+    // CHECK, not REQUIRE, on purpose: this script returns false in this fixture because
+    // the gpgpu module is never instantiated, so `eve.ShaderSystem` is not reachable.
+    // It has therefore been reporting a warning all along. See the plan doc 9.14.1.
+    // CHECK, not REQUIRE, on purpose: returns false because this fixture never
+    // instantiates the gpgpu module, so `eve.ShaderSystem` is unreachable.
+    CHECK(callScript("testShaderSystemClassExists"));
 }
 
 TEST_CASE_FIXTURE(ScriptEcsTest, "ScriptECS.shaderSystemGpuResidentTransfers") {
-    REQUIRE(vm.callFunc(vm.findFunc("testShaderSystemGpuResidentTransfers"), vm).toBool());
+    REQUIRE(callScript("testShaderSystemGpuResidentTransfers"));
 }
 
 TEST_CASE_FIXTURE(ScriptEcsTest, "ScriptECS.viewCacheStableAndInvalidated") {
-    REQUIRE(vm.callFunc(vm.findFunc("testViewCacheStableAndInvalidated"), vm).toBool());
+    REQUIRE(callScript("testViewCacheStableAndInvalidated"));
 }
 
 TEST_CASE_FIXTURE(ScriptEcsTest, "ScriptECS.viewCacheBaseClassIncludesSubclasses") {
-    REQUIRE(vm.callFunc(vm.findFunc("testViewCacheBaseClassIncludesSubclasses"), vm).toBool());
+    REQUIRE(callScript("testViewCacheBaseClassIncludesSubclasses"));
 }
 
 TEST_CASE_FIXTURE(ScriptEcsTest, "ScriptECS.componentDefaultsAndSlotsCached") {
-    REQUIRE(vm.callFunc(vm.findFunc("testComponentDefaultsAndSlotsCached"), vm).toBool());
+    REQUIRE(callScript("testComponentDefaultsAndSlotsCached"));
 }
 
 TEST_CASE_FIXTURE(ScriptEcsTest, "ScriptECS.destroyClearsComponentState") {
-    REQUIRE(vm.callFunc(vm.findFunc("testDestroyClearsComponentState"), vm).toBool());
+    REQUIRE(callScript("testDestroyClearsComponentState"));
 }
 
 TEST_CASE_FIXTURE(ScriptEcsTest, "ScriptECS.gpuDrivenBindingSurface") {
     // CHECK, not REQUIRE, for the same reason as shaderSystemClassExists above:
     // `eve.Gpgpu()` is unavailable in this fixture, so the script returns false.
-    CHECK(vm.callFunc(vm.findFunc("testGpuDrivenBindingSurface"), vm).toBool());
+    // CHECK, not REQUIRE, for the same reason as shaderSystemClassExists above:
+    // `eve.Gpgpu()` is unavailable in this fixture, so the script returns false.
+    // CHECK, not REQUIRE, for the same reason: `eve.Gpgpu()` is unavailable here.
+    CHECK(callScript("testGpuDrivenBindingSurface"));
 }

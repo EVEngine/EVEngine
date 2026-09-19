@@ -38,6 +38,40 @@ protected:
       ModuleManager::expose(vm);
   }
 
+  /**
+   * @brief Calls one script test function and returns its boolean result.
+   *
+   * Prefer this over `vm.callFunc(vm.findFunc(name), vm).toBool()`: a raised script
+   * error otherwise arrives as simplesquirrel's "Unknown squirrel runtime error"
+   * (the engine's error hook records the context instead of filling simplesquirrel's
+   * `runtimeException`), which hides the file, line and reason. This prints the
+   * recorded context before returning false.
+   *
+   * @param name Name of the script function, which must take no arguments.
+   * @return The function's boolean result, or false when it raised or returned a
+   *         non-boolean.
+   * @remarks A non-boolean return is reported but not converted, so a test that
+   *       returns a string cannot silently pass.
+   */
+  bool callScript(const char* name) {
+      try {
+          const ssq::Object result = vm.callFunc(vm.findFunc(name), vm);
+          if (result.getType() != ssq::Type::BOOL) {
+              std::cerr << "[script] " << name << " returned " << result.getTypeStr();
+              // Several scripts return a reason string instead of false; surface it.
+              if (result.getType() == ssq::Type::STRING) std::cerr << ": " << result.toString();
+              std::cerr << std::endl;
+              return false;
+          }
+          if (!result.toBool()) std::cerr << "[script] " << name << " returned false" << std::endl;
+          return result.toBool();
+      } catch (const std::exception& error) {
+          std::cerr << "[script] " << name << " raised: " << error.what() << "\n"
+                    << eve::script::formatLastScriptError(vm.getHandle()) << std::endl;
+          return false;
+      }
+  }
+
   const char* script;
   ssq::VM vm;
 };

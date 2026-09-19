@@ -12,9 +12,7 @@
 extern const char* simplesquirrel_content;
 UnitSciptTest(SimpleSquirrelTest, simplesquirrel_content);
 
-TEST_CASE_FIXTURE(SimpleSquirrelTest, "SimpleSquirrelTest.ExportClass") {
-    CHECK(vm.callFunc(vm.findFunc("exportClass"), vm).toBool());
-}
+TEST_CASE_FIXTURE(SimpleSquirrelTest, "SimpleSquirrelTest.ExportClass") { REQUIRE(callScript("exportClass")); }
 
 class A {
 public:
@@ -70,7 +68,7 @@ void B::expose(ssq::Class& cls) {
 TEST_CASE_FIXTURE(SimpleSquirrelTest, "SimpleSquirrelTest.RefTest") {
     A::expose(vm);
     B::expose(vm);
-    CHECK(vm.callFunc(vm.findFunc("refTest"), vm).toBool());
+    REQUIRE(callScript("refTest"));
 }
 
 #if !(defined(__APPLE__) && defined(NDEBUG))
@@ -108,7 +106,7 @@ TEST_CASE_FIXTURE(SimpleSquirrelTest, "SimpleSquirrelTest.TestDefClass") {
     ssq::Object obj = cls.find("attr1");
     ssq::Class attr = obj.toClass();
 
-    CHECK(vm.callFunc(vm.findFunc("testDefClass"), vm).toBool());
+    REQUIRE(callScript("testDefClass"));
 }
 #endif
 
@@ -147,9 +145,7 @@ TEST_CASE("SimpleSquirrelTest.PerformInteration") {
 }
 
 
-TEST_CASE_FIXTURE(SimpleSquirrelTest, "SimpleSquirrelTest.GetterTest") {
-    CHECK(vm.callFunc(vm.findFunc("getterTest"), vm).toBool());
-}
+TEST_CASE_FIXTURE(SimpleSquirrelTest, "SimpleSquirrelTest.GetterTest") { REQUIRE(callScript("getterTest")); }
 
 
 TEST_CASE("SimpleSquirrelTest.GetAttr") {

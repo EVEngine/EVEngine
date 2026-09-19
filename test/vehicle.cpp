@@ -299,7 +299,7 @@ static const char* kViewScript = R"SQ(
 function testVehicleCppView() {
     local vehicle = eve.Vehicle()
     vehicle.registerVehiclesFromJson("[{\"id\":\"jeep\"}]")
-    local v = vehicle.newVehicle("jeep", 5.0, 6.0)
+    local v = vehicle.newVehicle("jeep", 5.0, 6.0, 0.0, "")
     if (v == null) return false
     local all = eve.view(eve.VehicleEntity)
     foreach (e in all) {
@@ -312,7 +312,7 @@ function testVehicleCppView() {
 UnitSciptTest(VehicleViewScriptTest, kViewScript);
 
 TEST_CASE_FIXTURE(VehicleViewScriptTest, "vehicle.script.viewSeesNewVehicle") {
-    CHECK(vm.callFunc(vm.findFunc("testVehicleCppView"), vm).toBool());
+    REQUIRE(callScript("testVehicleCppView"));
 }
 
 /**
@@ -438,7 +438,7 @@ function testVehicleRtsFlow() {
     weapon.registerWeaponsFromJson("[{\"id\":\"cannon\",\"logic\":\"hitscan\",\"cooldown\":1.0,\"ammo\":{\"mag\":5,\"reserve\":20,\"reload\":2.0}}]")
     local vehicle = eve.Vehicle()
     vehicle.registerVehiclesFromJson("[{\"id\":\"tank\",\"mobility\":\"kinematic\",\"maxSpeed\":100,\"accel\":80,\"turnRate\":90,\"maxHealth\":300,\"mounts\":[{\"name\":\"turret\",\"weapon\":\"cannon\",\"type\":\"turret\",\"rotSpeed\":90,\"aimMode\":\"auto\"}]}]")
-    local v = vehicle.newVehicle("tank", 0.0, 0.0)
+    local v = vehicle.newVehicle("tank", 0.0, 0.0, 0.0, "")
     if (v == null) return false
 
     vehicle.moveTo(v, 100.0, 0.0)
@@ -460,6 +460,4 @@ function testVehicleRtsFlow() {
 
 UnitSciptTest(VehicleRtsFlowTest, kRtsFlowScript);
 
-TEST_CASE_FIXTURE(VehicleRtsFlowTest, "vehicle.script.rtsFlow") {
-    CHECK(vm.callFunc(vm.findFunc("testVehicleRtsFlow"), vm).toBool());
-}
+TEST_CASE_FIXTURE(VehicleRtsFlowTest, "vehicle.script.rtsFlow") { REQUIRE(callScript("testVehicleRtsFlow")); }

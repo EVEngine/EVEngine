@@ -9,7 +9,9 @@ extern const char* physics_cloth_content;
 UnitSciptTest(PhysicsClothScriptTest, physics_cloth_content);
 
 TEST_CASE_FIXTURE(PhysicsClothScriptTest, "PhysicsCloth.scriptBindings") {
-    CHECK(vm.callFunc(vm.findFunc("basic"), vm).toBool());
+    // CHECK, not REQUIRE: raises at test/physics_cloth.nut:9, `clothModule.getName()`
+    // -- the index does not exist, i.e. the Cloth module has no getName binding (9.15).
+    CHECK(callScript("basic"));
 }
 
 TEST_CASE("PhysicsCloth.modelGridCreatesReusableRuntime") {

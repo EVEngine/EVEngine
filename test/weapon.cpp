@@ -576,6 +576,4 @@ function testWeaponCppView() {
 
 UnitSciptTest(WeaponViewScriptTest, kViewScript);
 
-TEST_CASE_FIXTURE(WeaponViewScriptTest, "weapon.script.viewSeesNewWeapon") {
-    CHECK(vm.callFunc(vm.findFunc("testWeaponCppView"), vm).toBool());
-}
+TEST_CASE_FIXTURE(WeaponViewScriptTest, "weapon.script.viewSeesNewWeapon") { REQUIRE(callScript("testWeaponCppView")); }

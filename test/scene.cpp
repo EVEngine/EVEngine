@@ -1122,7 +1122,7 @@ TEST_CASE("Scene.spatial.syncOctree") {
 // Script side: eve.SceneEntity attach / detach / update / view integration
 // ---------------------------------------------------------------------------
 
-static const char *kSceneEcsScriptContent = R"SQ(
+static const char* kSceneEcsScriptContent = R"SQ(
 function testSceneEntityLifecycle() {
     class MoveComp extends eve.Component { speed = 2.0 }
     class EnemyAI extends eve.SceneEntity {
@@ -1140,8 +1140,8 @@ function testSceneEntityLifecycle() {
 
     local scene = eve.Scene()
     scene.beginBuild()
-    scene.beginNode("root")
-    scene.addNode("enemy")
+    scene.beginNode("root", "")
+    scene.addNode("enemy", "")
     scene.end()
     scene.mountBuildAs("battle")
 
@@ -1172,8 +1172,8 @@ function testSceneEntityLifecycle() {
 
     // reconcile keeps the binding alive (same node id)
     scene.beginBuild()
-    scene.beginNode("root")
-    scene.addNode("enemy")
+    scene.beginNode("root", "")
+    scene.addNode("enemy", "")
     scene.end()
     scene.remountBuildAs("battle")
     if (!scene.hasEntity("enemy", EnemyAI)) return false
@@ -1182,7 +1182,7 @@ function testSceneEntityLifecycle() {
 
     // full rebuild removing the node tears the binding down
     scene.beginBuild()
-    scene.beginNode("root")
+    scene.beginNode("root", "")
     scene.end()
     scene.mountBuildAs("battle")
     if (scene.hasEntity("enemy", EnemyAI)) return false
@@ -1198,9 +1198,9 @@ function testSceneEntityViewCacheAfterDetach() {
 
     local scene = eve.Scene()
     scene.beginBuild()
-    scene.beginNode("root")
-    scene.addNode("a")
-    scene.addNode("b")
+    scene.beginNode("root", "")
+    scene.addNode("a", "")
+    scene.addNode("b", "")
     scene.end()
     scene.mountBuildAs("units")
 
@@ -1221,8 +1221,8 @@ function testSceneEntityViewCacheAfterDetach() {
 function testSceneLinkPhysics2D() {
     local scene = eve.Scene()
     scene.beginBuild()
-    scene.beginNode("root")
-    scene.addNode("ball")
+    scene.beginNode("root", "")
+    scene.addNode("ball", "")
     scene.setBuildPosition(50.0, 60.0, 0.0)
     scene.end()
     scene.mountBuildAs("links")
@@ -1255,10 +1255,10 @@ function testSceneLinkPhysics2D() {
 function testSceneApiCompleteness() {
     local scene = eve.Scene()
     scene.beginBuild()
-    scene.beginNode("root")
-    scene.addNode("pivot")
+    scene.beginNode("root", "")
+    scene.addNode("pivot", "")
     scene.setBuildPosition(10.0, 0.0, 0.0)
-    scene.addNode("ball")
+    scene.addNode("ball", "")
     scene.setBuildPosition(1.0, 2.0, 3.0)
     scene.end()
     scene.mountBuildAs("api")
@@ -1318,8 +1318,8 @@ function testSceneApiCompleteness() {
 function testSceneNodeEvents() {
     local scene = eve.Scene()
     scene.beginBuild()
-    scene.beginNode("root")
-    scene.addNode("a")
+    scene.beginNode("root", "")
+    scene.addNode("a", "")
     scene.end()
     scene.mountBuildAs("evt")
 
@@ -1332,8 +1332,8 @@ function testSceneNodeEvents() {
     // reconcile patch fires node_changed per affected node
     events.clear()
     scene.beginBuild()
-    scene.beginNode("root")
-    scene.addNode("a")
+    scene.beginNode("root", "")
+    scene.addNode("a", "")
     scene.setBuildPosition(3.0, 0.0, 0.0)
     scene.end()
     scene.remountBuildAs("evt")
@@ -1343,16 +1343,16 @@ function testSceneNodeEvents() {
     // full rebuild removing a node fires node_removed
     events.clear()
     scene.beginBuild()
-    scene.beginNode("root")
+    scene.beginNode("root", "")
     scene.end()
     scene.mountBuildAs("evt")
     if (events.len() < 1 || events[0] != "node_removed:a") return false
 
     // reparent fires node_moved
     scene.beginBuild()
-    scene.beginNode("root")
-    scene.addNode("x")
-    scene.addNode("y")
+    scene.beginNode("root", "")
+    scene.addNode("x", "")
+    scene.addNode("y", "")
     scene.end()
     scene.mountBuildAs("evt")
     events.clear()
@@ -1368,7 +1368,7 @@ function testSceneComponentOnMount() {
         function onMount() { mounted += 1 }
         function build() {
             scene.beginBuild()
-            scene.beginNode("root")
+            scene.beginNode("root", "")
             scene.end()
         }
     }
@@ -1384,8 +1384,8 @@ function testSceneComponentOnMount() {
 function testSceneErrorSemantics() {
     local scene = eve.Scene()
     scene.beginBuild()
-    scene.beginNode("root")
-    scene.addNode("a")
+    scene.beginNode("root", "")
+    scene.addNode("a", "")
     scene.end()
     scene.mountBuildAs("err")
     local threw = false
@@ -1401,8 +1401,8 @@ function testSceneErrorSemantics() {
 function testSceneSerializeAndPick() {
     local scene = eve.Scene()
     scene.beginBuild()
-    scene.beginNode("root")
-    scene.addNode("target")
+    scene.beginNode("root", "")
+    scene.addNode("target", "")
     scene.end()
     scene.mountBuildAs("spk")
     scene.setNodeBounds("target", -1.0, -1.0, -1.0, 1.0, 1.0, 1.0)
@@ -1430,35 +1430,45 @@ public:
 };
 
 TEST_CASE_FIXTURE(SceneEcsBridgeFixture, "Scene.script.entityLifecycle") {
+    // CHECK, not REQUIRE: the script returns false. Pre-existing and untriaged
+    // (plan doc 9.15); the sweep only revealed that it never asserted.
     CHECK(vm.callFunc(vm.findFunc("testSceneEntityLifecycle"), vm).toBool());
 }
 
 TEST_CASE_FIXTURE(SceneEcsBridgeFixture, "Scene.script.entityViewCacheAfterDetach") {
+    // CHECK, not REQUIRE: the script returns false. Pre-existing and untriaged
+    // (plan doc 9.15); the sweep only revealed that it never asserted.
     CHECK(vm.callFunc(vm.findFunc("testSceneEntityViewCacheAfterDetach"), vm).toBool());
 }
 
 TEST_CASE_FIXTURE(SceneEcsBridgeFixture, "Scene.script.linkPhysics2D") {
+    // CHECK, not REQUIRE: the script returns false. Pre-existing and untriaged
+    // (plan doc 9.15); the sweep only revealed that it never asserted.
     CHECK(vm.callFunc(vm.findFunc("testSceneLinkPhysics2D"), vm).toBool());
 }
 
 TEST_CASE_FIXTURE(SceneEcsBridgeFixture, "Scene.script.apiCompleteness") {
+    // CHECK, not REQUIRE: the script returns false. Pre-existing and untriaged
+    // (plan doc 9.15); the sweep only revealed that it never asserted.
     CHECK(vm.callFunc(vm.findFunc("testSceneApiCompleteness"), vm).toBool());
 }
 
 TEST_CASE_FIXTURE(SceneEcsBridgeFixture, "Scene.script.nodeEvents") {
+    // CHECK, not REQUIRE: the script returns false. Pre-existing, untriaged (9.15).
     CHECK(vm.callFunc(vm.findFunc("testSceneNodeEvents"), vm).toBool());
 }
 
 TEST_CASE_FIXTURE(SceneEcsBridgeFixture, "Scene.script.componentOnMount") {
+    // CHECK, not REQUIRE: the script returns false. Pre-existing, untriaged (9.15).
     CHECK(vm.callFunc(vm.findFunc("testSceneComponentOnMount"), vm).toBool());
 }
 
 TEST_CASE_FIXTURE(SceneEcsBridgeFixture, "Scene.script.errorSemantics") {
-    CHECK(vm.callFunc(vm.findFunc("testSceneErrorSemantics"), vm).toBool());
+    REQUIRE(vm.callFunc(vm.findFunc("testSceneErrorSemantics"), vm).toBool());
 }
 
 TEST_CASE_FIXTURE(SceneEcsBridgeFixture, "Scene.script.serializeAndPick") {
-    CHECK(vm.callFunc(vm.findFunc("testSceneSerializeAndPick"), vm).toBool());
+    REQUIRE(vm.callFunc(vm.findFunc("testSceneSerializeAndPick"), vm).toBool());
 }
 
 TEST_CASE("Scene.nodeRef.transformsAndStructure") {

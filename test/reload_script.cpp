@@ -219,43 +219,47 @@ public:
 UnitReloadScriptTest(ReloadScriptTestFixture, kReloadScript);
 
 TEST_CASE_FIXTURE(ReloadScriptTestFixture, "reloadScript.protocolKeepsOldValuesAndNewFields") {
-    CHECK(vm.callFunc(vm.findFunc("reloadProtocolKeepsOldValuesAndNewFields"), vm).toBool());
+    REQUIRE(vm.callFunc(vm.findFunc("reloadProtocolKeepsOldValuesAndNewFields"), vm).toBool());
 }
 
 TEST_CASE_FIXTURE(ReloadScriptTestFixture, "reloadScript.protocolRestoresMissingRoot") {
-    CHECK(vm.callFunc(vm.findFunc("reloadProtocolRestoresMissingRoot"), vm).toBool());
+    REQUIRE(vm.callFunc(vm.findFunc("reloadProtocolRestoresMissingRoot"), vm).toBool());
 }
 
 TEST_CASE_FIXTURE(ReloadScriptTestFixture, "reloadScript.abortRollsBack") {
-    CHECK(vm.callFunc(vm.findFunc("reloadAbortRollsBack"), vm).toBool());
+    REQUIRE(vm.callFunc(vm.findFunc("reloadAbortRollsBack"), vm).toBool());
 }
 
 TEST_CASE_FIXTURE(ReloadScriptTestFixture, "reloadScript.migrateInstanceCopiesFieldsAndKeepsDefaults") {
+    // CHECK, not REQUIRE: the script returns false. Pre-existing, untriaged (9.15);
+    // the sweep only revealed that it never asserted.
     CHECK(vm.callFunc(vm.findFunc("migrateInstanceCopiesFieldsAndKeepsDefaults"), vm).toBool());
 }
 
 TEST_CASE_FIXTURE(ReloadScriptTestFixture, "reloadScript.migrateInstanceFromTable") {
+    // CHECK, not REQUIRE: the script returns false. Pre-existing, untriaged (9.15).
     CHECK(vm.callFunc(vm.findFunc("migrateInstanceFromTable"), vm).toBool());
 }
 
 TEST_CASE_FIXTURE(ReloadScriptTestFixture, "reloadScript.remapInstancesContainer") {
+    // CHECK, not REQUIRE: the script returns false. Pre-existing, untriaged (9.15).
     CHECK(vm.callFunc(vm.findFunc("remapInstancesContainer"), vm).toBool());
 }
 
 TEST_CASE_FIXTURE(ReloadScriptTestFixture, "reloadScript.stateRootsReportsMarkedAndHeuristic") {
-    CHECK(vm.callFunc(vm.findFunc("stateRootsReportsMarkedAndHeuristic"), vm).toBool());
+    REQUIRE(vm.callFunc(vm.findFunc("stateRootsReportsMarkedAndHeuristic"), vm).toBool());
 }
 
 TEST_CASE_FIXTURE(ReloadScriptTestFixture, "reloadScript.transientRootsAreExcludedFromCapture") {
-    CHECK(vm.callFunc(vm.findFunc("transientRootsAreExcludedFromCapture"), vm).toBool());
+    REQUIRE(vm.callFunc(vm.findFunc("transientRootsAreExcludedFromCapture"), vm).toBool());
 }
 
 TEST_CASE_FIXTURE(ReloadScriptTestFixture, "reloadScript.abortRestoresStateRootPolicies") {
-    CHECK(vm.callFunc(vm.findFunc("abortRestoresStateRootPolicies"), vm).toBool());
+    REQUIRE(vm.callFunc(vm.findFunc("abortRestoresStateRootPolicies"), vm).toBool());
 }
 
 TEST_CASE_FIXTURE(ReloadScriptTestFixture, "reloadScript.commitKeepsNewStateRootPolicies") {
-    CHECK(vm.callFunc(vm.findFunc("commitKeepsNewStateRootPolicies"), vm).toBool());
+    REQUIRE(vm.callFunc(vm.findFunc("commitKeepsNewStateRootPolicies"), vm).toBool());
 }
 
 TEST_CASE("reloadScript.embeddedLoadScriptCompiles") {

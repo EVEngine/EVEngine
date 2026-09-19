@@ -315,7 +315,7 @@ protected:
 TEST_CASE_FIXTURE(ScriptEcsBridgeFixture, "ECS.script.inheritCppEntityAndAccess") {
     ecs::Table world;
     ecs::ScopedTable guard(world);
-    CHECK(vm.callFunc(vm.findFunc("testInheritCppEntityAndAccess"), vm).toBool());
+    REQUIRE(vm.callFunc(vm.findFunc("testInheritCppEntityAndAccess"), vm).toBool());
 
     int found = 0;
     auto view = ecs::View<Node, Node::Position>();
@@ -330,7 +330,7 @@ TEST_CASE_FIXTURE(ScriptEcsBridgeFixture, "ECS.script.inheritCppEntityAndAccess"
 TEST_CASE_FIXTURE(ScriptEcsBridgeFixture, "ECS.script.systemOverCppEntities") {
     ecs::Table world;
     ecs::ScopedTable guard(world);
-    CHECK(vm.callFunc(vm.findFunc("testSystemOverCppEntities"), vm).toBool());
+    REQUIRE(vm.callFunc(vm.findFunc("testSystemOverCppEntities"), vm).toBool());
 
     int atTwo = 0, atFourteen = 0;
     auto view = ecs::View<Movable, Node::Position>();
@@ -353,7 +353,7 @@ TEST_CASE_FIXTURE(ScriptEcsBridgeFixture, "ECS.script.cppCreatedEntitiesVisible"
     Node* n2 = Node::create();
     n1->position()->x = 42.f;
 
-    CHECK(vm.callFunc(vm.findFunc("testCppCreatedEntitiesVisible"), vm).toBool());
+    REQUIRE(vm.callFunc(vm.findFunc("testCppCreatedEntitiesVisible"), vm).toBool());
 
     // Script view() wrapped the C++ entities and mutated their components.
     CHECK(std::abs(n1->position()->x - 43.f) < 1e-5f);
@@ -363,7 +363,7 @@ TEST_CASE_FIXTURE(ScriptEcsBridgeFixture, "ECS.script.cppCreatedEntitiesVisible"
 TEST_CASE_FIXTURE(ScriptEcsBridgeFixture, "ECS.script.destroyFromScript") {
     ecs::Table world;
     ecs::ScopedTable guard(world);
-    CHECK(vm.callFunc(vm.findFunc("testDestroyFromScript"), vm).toBool());
+    REQUIRE(vm.callFunc(vm.findFunc("testDestroyFromScript"), vm).toBool());
 
     int live = 0;
     auto view = ecs::View<Node, Node::Position>();

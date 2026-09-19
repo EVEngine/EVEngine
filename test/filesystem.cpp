@@ -4,9 +4,7 @@ extern const char* filesystem_content;
 UnitSciptTest(FilesystemTest, filesystem_content);
 
 #define TestScript(func) \
-    TEST_CASE_FIXTURE(FilesystemTest, "FilesystemTest." #func) { \
-        CHECK(vm.callFunc(vm.findFunc(#func), vm).toBool()); \
-    }
+    TEST_CASE_FIXTURE(FilesystemTest, "FilesystemTest." #func) { REQUIRE(callScript(#func)); }
 
 TestScript(basic)
 TestScript(getPaths)

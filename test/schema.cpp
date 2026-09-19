@@ -190,7 +190,7 @@ TEST_CASE("schema.module.scriptBinding") {
         }
     )");
     vm.run(script);
-    CHECK(vm.callFunc(vm.findFunc("schemaBindingTest"), vm).toBool());
+    REQUIRE(vm.callFunc(vm.findFunc("schemaBindingTest"), vm).toBool());
 }
 
 TEST_CASE("schema.module.reflectFromClass") {
@@ -234,5 +234,14 @@ TEST_CASE("schema.module.reflectFromClass") {
         }
     )");
     vm.run(script);
-    CHECK(vm.callFunc(vm.findFunc("schemaReflectTest"), vm).toBool());
+    // The script returns `true` on success and a reason string on failure, so a plain
+    // .toBool() would throw a cast error and hide the reason.
+    const ssq::Object reflected = vm.callFunc(vm.findFunc("schemaReflectTest"), vm);
+    if (reflected.getType() == ssq::Type::STRING) {
+        std::cerr << "[script] schemaReflectTest failed: " << reflected.toString() << std::endl;
+    }
+    // CHECK, not REQUIRE: the script returns the reason "type", i.e.
+    // getFieldType("card.definition", 3) is not "integer". Reflection mismatch,
+    // untriaged (plan doc 9.15).
+    CHECK(reflected.getType() == ssq::Type::BOOL && reflected.toBool());
 }
