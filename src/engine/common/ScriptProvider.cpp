@@ -107,7 +107,7 @@ void pushScriptArg(HSQUIRRELVM vm, const ScriptArg& arg) {
     }
 }
 
-/** @brief Read a numeric script value; `-1` and `+1` report type/read failures. */
+/** @brief Read a numeric script value; the method name makes the failure actionable. */
 Result<double> readNumericResult(HSQUIRRELVM vm, const std::string& methodName) {
     const SQObjectType resultType = sq_gettype(vm, -1);
     if (resultType != OT_FLOAT && resultType != OT_INTEGER) {
@@ -131,44 +131,105 @@ Result<double> readNumericResult(HSQUIRRELVM vm, const std::string& methodName) 
     return Result<double>::success(double(value));
 }
 
+/** Upper bound on a returned array: the payload is untrusted script data. */
+constexpr SQInteger kMaxResultElements = 64;
+
+/** @brief Read the top of the stack as a number, whatever numeric kind it is. */
+Result<double> readNumericElement(HSQUIRRELVM vm, SQInteger index, const std::string& methodName) {
+    const SQObjectType type = sq_gettype(vm, index);
+    if (type == OT_FLOAT) {
+        SQFloat value = 0.f;
+        if (SQ_FAILED(sq_getfloat(vm, index, &value))) {
+            return Result<double>::failure(providerDiagnostic(
+                DiagnosticCode::InvalidArgument, "script provider returned an unreadable float", methodName));
+        }
+        return Result<double>::success(double(value));
+    }
+    SQInteger value = 0;
+    if (SQ_FAILED(sq_getinteger(vm, index, &value))) {
+        return Result<double>::failure(providerDiagnostic(
+            DiagnosticCode::InvalidArgument, "script provider returned an unreadable integer", methodName));
+    }
+    return Result<double>::success(double(value));
+}
+
+/** @brief Read the top of the stack as an array of numbers. */
+Result<std::vector<double>> readNumericArray(HSQUIRRELVM vm, const std::string& methodName) {
+    if (sq_gettype(vm, -1) != OT_ARRAY) {
+        return Result<std::vector<double>>::failure(
+            providerDiagnostic(DiagnosticCode::InvalidArgument,
+                               "script provider method '" + methodName + "' did not return an array", methodName));
+    }
+    const SQInteger count = sq_getsize(vm, -1);
+    if (count < 0 || count > kMaxResultElements) {
+        return Result<std::vector<double>>::failure(
+            providerDiagnostic(DiagnosticCode::InvalidArgument,
+                               "script provider method '" + methodName + "' returned " + std::to_string(count) +
+                                   " elements; the limit is " + std::to_string(kMaxResultElements),
+                               methodName));
+    }
+
+    std::vector<double> out;
+    out.reserve(std::size_t(count));
+    const SQInteger top = sq_gettop(vm);
+    for (SQInteger i = 0; i < count; ++i) {
+        sq_pushinteger(vm, i);
+        if (SQ_FAILED(sq_get(vm, -2))) break;
+        auto element = readNumericElement(vm, -1, methodName);
+        sq_settop(vm, top);  // drop the element again
+        if (!element) return Result<std::vector<double>>::failure(element.status());
+        out.push_back(element.value());
+    }
+    return Result<std::vector<double>>::success(std::move(out));
+}
+
+/** @brief Reader used when the caller does not want the script's return value. */
+Result<double> ignoreResult(HSQUIRRELVM, const std::string&) { return Result<double>::success(0.0); }
+
 /**
- * @brief Invoke one provider method with `args` and optionally collect a number.
- * @param wantNumber When set, `sq_call` is asked for a return value.
- * @return Success, or `Unsupported`/`Failed`/`InvalidArgument`.
- * @remarks The VM stack is restored to its entry depth on every path.
+ * @brief Invoke one provider method with `args`, letting `readResult` collect the value.
+ *
+ * The whole call discipline lives here: a missing or non-method member is
+ * `Unsupported` rather than a silent no-op, a raising method is `Failed` rather
+ * than a raise into the native frame, and the VM stack is restored to its entry
+ * depth on every path. The return value is always requested, so `readResult` only
+ * has to decide whether it cares about it.
+ *
+ * @tparam Reader Callable taking `(HSQUIRRELVM, const std::string& methodName)`
+ *         and returning `Result<T>`; it runs with the return value on top of the
+ *         stack.
  */
-Result<double> invokeProvider(const ssq::Object& instance, std::string_view method, std::span<const ScriptArg> args,
-                              bool wantNumber) {
+template <class Reader>
+auto invokeProvider(const ssq::Object& instance, std::string_view method, std::span<const ScriptArg> args,
+                    Reader&& readResult) -> std::invoke_result_t<Reader, HSQUIRRELVM, const std::string&> {
+    using Outcome = std::invoke_result_t<Reader, HSQUIRRELVM, const std::string&>;
+
     HSQUIRRELVM       vm = instance.getHandle();
     const std::string methodName(method);
     if (!vm) {
-        return Result<double>::failure(
+        return Outcome::failure(
             providerDiagnostic(DiagnosticCode::Failed, "script provider has no live VM", methodName));
     }
 
     const HSQOBJECT raw    = instance.getRaw();
     auto            pushed = pushProviderMethod(vm, raw, methodName);
-    if (!pushed) return Result<double>::failure(pushed.status());
+    if (!pushed) return Outcome::failure(pushed.status());
 
     const SQInteger top = sq_gettop(vm);
     sq_pushobject(vm, raw);  // `this`
     for (const ScriptArg& arg : args) pushScriptArg(vm, arg);
 
     const SQInteger argCount = SQInteger(args.size()) + 1;
-    if (SQ_FAILED(sq_call(vm, argCount, wantNumber ? SQTrue : SQFalse, SQFalse))) {
+    if (SQ_FAILED(sq_call(vm, argCount, SQTrue, SQFalse))) {
         const std::string detail = lastScriptErrorText(vm);
         sq_settop(vm, top);
-        return Result<double>::failure(providerDiagnostic(
+        return Outcome::failure(providerDiagnostic(
             DiagnosticCode::Failed, "script provider method '" + methodName + "' raised: " + detail, methodName));
     }
 
-    if (wantNumber) {
-        auto result = readNumericResult(vm, methodName);
-        sq_settop(vm, top);
-        return result;
-    }
+    auto outcome = std::invoke(readResult, vm, methodName);
     sq_settop(vm, top);
-    return Result<double>::success(0.0);
+    return outcome;
 }
 
 }  // namespace
@@ -397,7 +458,7 @@ Result<const ssq::Object*> ScriptProviderRegistry::resolve(const ScriptProviderH
 Result<void> ScriptProviderRegistry::call(const ScriptProviderHandle& handle, std::string_view method) const {
     auto instance = resolve(handle);
     if (!instance) return Result<void>::failure(instance.status());
-    auto invoked = invokeProvider(*instance.value(), method, {}, false);
+    auto invoked = invokeProvider(*instance.value(), method, {}, ignoreResult);
     if (!invoked) return Result<void>::failure(invoked.status());
     return Result<void>::success();
 }
@@ -407,7 +468,7 @@ Result<void> ScriptProviderRegistry::call(const ScriptProviderHandle& handle, st
     const ScriptArg args[]   = {ScriptArg::fromNumber(dt)};
     auto            instance = resolve(handle);
     if (!instance) return Result<void>::failure(instance.status());
-    auto invoked = invokeProvider(*instance.value(), method, args, false);
+    auto invoked = invokeProvider(*instance.value(), method, args, ignoreResult);
     if (!invoked) return Result<void>::failure(invoked.status());
     return Result<void>::success();
 }
@@ -416,7 +477,7 @@ Result<void> ScriptProviderRegistry::call(const ScriptProviderHandle& handle, st
                                           std::span<const ScriptArg> args) const {
     auto instance = resolve(handle);
     if (!instance) return Result<void>::failure(instance.status());
-    auto invoked = invokeProvider(*instance.value(), method, args, false);
+    auto invoked = invokeProvider(*instance.value(), method, args, ignoreResult);
     if (!invoked) return Result<void>::failure(invoked.status());
     return Result<void>::success();
 }
@@ -426,14 +487,29 @@ Result<double> ScriptProviderRegistry::callNumber(const ScriptProviderHandle& ha
     const ScriptArg args[]   = {ScriptArg::fromNumber(dt)};
     auto            instance = resolve(handle);
     if (!instance) return Result<double>::failure(instance.status());
-    return invokeProvider(*instance.value(), method, args, true);
+    return invokeProvider(*instance.value(), method, args, readNumericResult);
 }
 
 Result<double> ScriptProviderRegistry::callNumber(const ScriptProviderHandle& handle, std::string_view method,
                                                   std::span<const ScriptArg> args) const {
     auto instance = resolve(handle);
     if (!instance) return Result<double>::failure(instance.status());
-    return invokeProvider(*instance.value(), method, args, true);
+    return invokeProvider(*instance.value(), method, args, readNumericResult);
+}
+
+Result<std::vector<double>> ScriptProviderRegistry::callNumbers(const ScriptProviderHandle& handle,
+                                                                std::string_view            method) const {
+    auto instance = resolve(handle);
+    if (!instance) return Result<std::vector<double>>::failure(instance.status());
+    return invokeProvider(*instance.value(), method, {}, readNumericArray);
+}
+
+Result<std::vector<double>> ScriptProviderRegistry::callNumbers(const ScriptProviderHandle& handle,
+                                                                std::string_view            method,
+                                                                std::span<const ScriptArg>  args) const {
+    auto instance = resolve(handle);
+    if (!instance) return Result<std::vector<double>>::failure(instance.status());
+    return invokeProvider(*instance.value(), method, args, readNumericArray);
 }
 
 }  // namespace eve

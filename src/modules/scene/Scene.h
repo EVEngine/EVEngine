@@ -144,6 +144,30 @@ public:
                           const std::string &kind);
     int linkCountAt(const std::string &hostName, const std::string &nodeId);
 
+    /**
+     * @brief Link a published script provider to a node as the "script" link kind.
+     *
+     * The provider is published through `eve.provider` first; this call only
+     * attaches it. The node then drives the provider through
+     * `onNodeTransform(...)`, and a retired provider generation stops being driven
+     * and its link is dropped.
+     *
+     * @param hostName Host that owns the node.
+     * @param nodeId Node to attach to.
+     * @param providerName Name the script provider was published under.
+     * @param mode "node" (node drives the provider) or "body" (the provider's
+     *        `nodeTransform()` drives the node).
+     * @return Success, or `NotFound` when the host, the node or the published
+     *         provider is missing.
+     * @cost One link insert plus one transform update of the host. Link-time only;
+     *       the per-frame cost is the dispatch described in `scene/ScriptLinks.cpp`.
+     * @remarks The link target is a process-lifetime record, never a script
+     *          pointer: a retired generation must stay answerable until the scene
+     *          has purged the link.
+     */
+    [[nodiscard]] Result<void> linkScriptAt(const std::string& hostName, const std::string& nodeId,
+                                            const std::string& providerName, const std::string& mode);
+
     // --- Script-API completeness (host-scoped primitives; script wrappers in
     // kSceneEntityScript provide selected-host convenience + NodeRef forms) ---
 

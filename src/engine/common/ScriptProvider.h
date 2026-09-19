@@ -211,6 +211,26 @@ public:
                                             std::span<const ScriptArg> args) const;
 
     /**
+     * @brief Call `method()` and read an array of numbers.
+     * @return The script result as doubles, or the same failures as `call`, plus
+     *         `InvalidArgument` when the method returned a non-array, a non-numeric
+     *         element, or more than 64 elements.
+     * @cost One script call plus one copy per element. For a target that reports a
+     *       whole transform back, not for streaming data: the result is copied, not
+     *       viewed.
+     */
+    [[nodiscard]] Result<std::vector<double>> callNumbers(const ScriptProviderHandle& handle,
+                                                          std::string_view            method) const;
+
+    /**
+     * @brief Call `method(...)` with explicit scalar arguments and read an array of numbers.
+     * @param args Positional arguments in call order; may be empty.
+     * @return As the zero-argument overload of `callNumbers`.
+     */
+    [[nodiscard]] Result<std::vector<double>> callNumbers(const ScriptProviderHandle& handle, std::string_view method,
+                                                          std::span<const ScriptArg> args) const;
+
+    /**
      * @brief Declare that one native capability may be served by a script provider.
      *
      * Called once per capability by the module that owns the interface, at

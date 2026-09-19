@@ -1259,6 +1259,8 @@ void Scene::expose(ssq::Class &cls) {
     cls.addFunc("unlinkNodeAt", &Scene::unlinkNodeAt);
     cls.addFunc("unlinkNodeKindAt", &Scene::unlinkNodeKindAt);
     cls.addFunc("linkCountAt", &Scene::linkCountAt);
+    // The "script" link kind's own face; defined with the kind in ScriptLinks.cpp.
+    exposeScriptLinkBindings(cls);
 
     // Script-API completeness primitives (host-scoped)
     cls.addFunc("getNodePositionAt", &Scene::getNodePositionAt);

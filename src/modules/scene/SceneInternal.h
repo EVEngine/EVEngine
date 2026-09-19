@@ -13,7 +13,20 @@
 
 #include <string>
 
+namespace ssq {
+class Class;
+}
+
 namespace eve::scene {
+
+/**
+ * @brief Register `eve.Scene`'s script-link surface.
+ * @param cls The `eve.Scene` class being exposed.
+ * @remarks Defined in `scene/ScriptLinks.cpp` so the link kind, its marshalling and
+ *          its script binding stay in one translation unit.
+ */
+void exposeScriptLinkBindings(ssq::Class& cls);
+
 namespace {
 
 /**

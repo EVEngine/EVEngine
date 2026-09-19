@@ -670,6 +670,34 @@
       }
     },
     {
+      "id": "scene-script-link-module-interface",
+      "rule": "module-interface",
+      "scope": "src/modules/scene/ScriptLinks.cpp",
+      "owner": "scene",
+      "issue": "EVENGINE-ARCH-MODULE-INTERFACE",
+      "reason": "The scene module gains a link kind whose target is a user script object, plus the script binding that attaches it. The scope is the one file, not the directory: src/modules/scene/** also holds the separately built scene.loader, scene.editor and scene.physics modules, whose capabilities must not be attributed to this entry.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/scene/ScriptLinks.cpp",
+        "src/modules/scene/Scene.h",
+        "src/modules/scene/SceneLink.h"
+      ],
+      "tests": [
+        "test/scene_script_link.cpp"
+      ],
+      "provides": [],
+      "requires": [],
+      "emits": [],
+      "observes": [],
+      "binds": [
+        "eve.Scene.linkScriptAt(hostName, nodeId, providerName, mode) -> {ok, code, status, diagnostics}; the link kind itself is the registered name 'script', driven through eve.provider.publish/unload"
+      ],
+      "trim": {
+        "absent_profile": "not yet recorded; this entry is filled in on first touch (spec 8.3)",
+        "layer": "L3 runtime"
+      }
+    },
+    {
       "id": "vehicle-module-interface",
       "rule": "module-interface",
       "scope": "src/modules/vehicle/**",
