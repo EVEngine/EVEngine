@@ -13,51 +13,30 @@
 
 namespace {
 
+/**
+ * @brief The production state-migration helpers, taken verbatim from the bootstrap.
+ *
+ * These used to be a hand-written mirror in this file, which meant the test could keep
+ * passing while `load.nut`'s real helper diverged -- and it did: the production version
+ * silently copied nothing for a while because `n[k] <- v` throws for a dynamic key on a
+ * class instance (plan doc 9.21.1). Slicing the two functions out of `eve::load_content`
+ * makes the test execute the same source scripts run, and a rename or a rewrite in
+ * load.nut fails the reload cases instead of drifting unnoticed.
+ *
+ * The whole bootstrap cannot simply be run here: its top level reads config.nut,
+ * instantiates modules, opens a window and drives frames.
+ */
+std::string migrationHelpersSource() {
+    const std::string source(eve::load_content);
+    const size_t      begin = source.find("function migrate_instance(");
+    const size_t      remap = source.find("function remap_instances(");
+    if (begin == std::string::npos || remap == std::string::npos || remap < begin) return {};
+    const size_t end = source.find("\n}\n", remap);
+    if (end == std::string::npos) return {};
+    return source.substr(begin, end - begin + 3);
+}
+
 const char* kReloadScript = R"(
-// Mirror of the load.nut migrate_instance helper (tables fully; class
-// instances via their declared members).
-//
-// Two Squirrel facts this has to respect (probed; plan doc 9.21):
-//  * `n[k] <- v` throws "class instances do not support the new slot operator"
-//    whenever the key is dynamic, so the catch swallowed every field and the
-//    migration silently copied nothing. `n[k] = v` works for a member the new
-//    class declares and throws for one it does not -- which is what the catch is
-//    there for.
-//  * `foreach` over an instance raises "_nexti failed": instances are not
-//    enumerable. `getclass()` is an *instance method* (there is no global
-//    getclass), and a class object is enumerable.
-function migrate_inst(old, NewClass) {
-    local n = NewClass();
-    if (old == null) return n;
-    if (typeof old == "table") {
-        foreach (k, v in old) {
-            try { n[k] = v; } catch (e) {}
-        }
-        return n;
-    }
-    if (typeof old != "instance") return n;
-    foreach (k, v in old.getclass()) {
-        if (typeof v == "function") continue;
-        try { n[k] = old[k]; } catch (e) {}
-    }
-    return n;
-}
-
-function remap_inst(container, NewClass) {
-    if (typeof container == "array") {
-        for (local i = 0; i < container.len(); ++i) {
-            container[i] = migrate_inst(container[i], NewClass);
-        }
-    } else if (typeof container == "table") {
-        local keys = [];
-        foreach (k, v in container) keys.append(k);
-        foreach (k in keys) {
-            container[k] = migrate_inst(container[k], NewClass);
-        }
-    }
-    return container;
-}
-
 function reloadProtocolKeepsOldValuesAndNewFields() {
     eve.dev.clearStateRoots();
     getroottable().gameState <- { level = 3, hero = "alice" };
@@ -110,7 +89,7 @@ function migrateInstanceCopiesFieldsAndKeepsDefaults() {
     local old = HeroV1();
     old.level = 5;
     old.name = "alice";
-    local n = migrate_inst(old, HeroV2);
+    local n = migrate_instance(old, HeroV2);
     return n.level == 5 && n.name == "alice" && n.title == "novice";
 }
 
@@ -121,7 +100,7 @@ function migrateInstanceFromTable() {
         title = "novice";
     }
     local t = { level = 9, name = "bob" };
-    local n = migrate_inst(t, HeroV2);
+    local n = migrate_instance(t, HeroV2);
     return n.level == 9 && n.name == "bob" && n.title == "novice";
 }
 
@@ -136,7 +115,7 @@ function remapInstancesContainer() {
     local arr = [ItemV1(), ItemV1()];
     arr[0].id = "a";
     arr[1].id = "b";
-    remap_inst(arr, ItemV2);
+    remap_instances(arr, ItemV2);
     return arr[0].id == "a" && arr[0].tag == "new" && arr[1].id == "b" &&
            arr[1].tag == "new";
 }
@@ -211,6 +190,10 @@ public:
         eve::ModuleManager::expose(vm);
         eve::dev::DevTool::instance().attach(vm);
         eve::dev::DevTool::instance().exposeScriptApi(vm);
+        // The production migration helpers first, then the cases that call them.
+        const std::string helpersSource = migrationHelpersSource();
+        ssq::Script       helpers       = vm.compileSource(helpersSource.c_str());
+        vm.run(helpers);
         ssq::Script s = vm.compileSource(script);
         vm.run(s);
     }
@@ -266,6 +249,17 @@ TEST_CASE_FIXTURE(ReloadScriptTestFixture, "reloadScript.abortRestoresStateRootP
 
 TEST_CASE_FIXTURE(ReloadScriptTestFixture, "reloadScript.commitKeepsNewStateRootPolicies") {
     REQUIRE(vm.callFunc(vm.findFunc("commitKeepsNewStateRootPolicies"), vm).toBool());
+}
+
+TEST_CASE("reloadScript.migrationHelpersComeFromTheBootstrap") {
+    // The migration cases above must exercise load.nut's helpers, not a copy of them:
+    // a mirror let them pass while the real helper silently copied nothing (plan doc
+    // 9.21.1). This pins the wiring, and a rename in load.nut fails here instead of
+    // quietly turning the three migration cases into no-ops.
+    const std::string source = migrationHelpersSource();
+    REQUIRE(!source.empty());
+    REQUIRE(source.rfind("function migrate_instance(", 0) == 0);
+    CHECK(source.find("function remap_instances(") != std::string::npos);
 }
 
 TEST_CASE("reloadScript.embeddedLoadScriptCompiles") {
