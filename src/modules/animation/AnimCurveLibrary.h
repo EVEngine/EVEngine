@@ -1,4 +1,6 @@
 #pragma once
+
+#include "common/Export.h"
 #include <cstddef>
 #include <memory>
 #include <optional>
@@ -12,7 +14,7 @@ namespace eve::animation {
  * are owner-thread only, with no callbacks or reentrancy. Concurrent const sampling
  * is allowed while the owner guarantees no load/destruction. Samples use injected time.
  */
-class AnimCurveLibrary {
+class EVENGINE_API_WORLD AnimCurveLibrary {
 public:
     /** @brief Construct an empty library with independent lifetime. */
     AnimCurveLibrary();

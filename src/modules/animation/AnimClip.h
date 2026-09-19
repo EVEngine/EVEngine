@@ -24,7 +24,7 @@ class AnimSkeleton;
  * punctuation and case removed (for example `mixamorig:Hips` matches `hips`).
  * Script type: `AnimRetargetProfile`.
  */
-class AnimRetargetProfile {
+class EVENGINE_API_WORLD AnimRetargetProfile {
 public:
     /** @brief Map one source bone to one target bone; replaces an existing mapping for that target. */
     void addBoneMapping(const std::string& sourceBone, const std::string& targetBone);

@@ -29,7 +29,7 @@ struct EVENGINE_API_FOUNDATION ItemDefinition {
 };
 
 /** @brief 容器中的一格堆叠（空槽：itemId 为空或 quantity <= 0）。 */
-struct ItemStack {
+struct EVENGINE_API_FOUNDATION ItemStack {
     int instanceId = 0;
     std::string itemId;
     int quantity = 0;

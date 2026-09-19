@@ -1,4 +1,5 @@
 #pragma once
+#include "common/Export.h"
 
 /**
  * @file MotionTypes.h
@@ -131,7 +132,7 @@ public:
  * @brief Sink that writes into a borrowed float*.
  * @ownership Does not own `target`; caller must keep it alive while bound.
  */
-class FloatPointerSink final : public IMotionFloatSink {
+class EVENGINE_API_WORLD FloatPointerSink final : public IMotionFloatSink {
 public:
     explicit FloatPointerSink(float *target) : target_(target) {}
 
@@ -145,7 +146,7 @@ private:
  * @brief Sink that writes into `buffer[index]` (batch-friendly contiguous target).
  * @ownership Does not own `buffer`; caller must keep the span alive while bound.
  */
-class FloatBufferSink final : public IMotionFloatSink {
+class EVENGINE_API_WORLD FloatBufferSink final : public IMotionFloatSink {
 public:
     FloatBufferSink(float *buffer, std::size_t index) : buffer_(buffer), index_(index) {}
 
@@ -162,7 +163,7 @@ private:
  * @brief Sink that writes into borrowed float x/y pointers.
  * @ownership Does not own the pointers; caller must keep them alive while bound.
  */
-class Vec2PointerSink final : public IMotionVec2Sink {
+class EVENGINE_API_WORLD Vec2PointerSink final : public IMotionVec2Sink {
 public:
     Vec2PointerSink(float *x, float *y) : x_(x), y_(y) {}
 
@@ -193,7 +194,7 @@ private:
  * @brief Sink that writes into borrowed RGBA float pointers.
  * @ownership Does not own the pointers; caller must keep them alive while bound.
  */
-class ColorPointerSink final : public IMotionColorSink {
+class EVENGINE_API_WORLD ColorPointerSink final : public IMotionColorSink {
 public:
     ColorPointerSink(float *r, float *g, float *b, float *a) : r_(r), g_(g), b_(b), a_(a) {}
 
@@ -210,7 +211,7 @@ private:
  * @brief Sink that writes into borrowed quaternion xyzw float pointers.
  * @ownership Does not own the pointers; caller must keep them alive while bound.
  */
-class QuatPointerSink final : public IMotionQuatSink {
+class EVENGINE_API_WORLD QuatPointerSink final : public IMotionQuatSink {
 public:
     QuatPointerSink(float *x, float *y, float *z, float *w) : x_(x), y_(y), z_(z), w_(w) {}
 
@@ -224,7 +225,7 @@ private:
 };
 
 /** @brief Evaluate an ease curve; kinds match Math.ease / Tween. */
-[[nodiscard]] float evaluateMotionEase(float t, const char *kind);
+[[nodiscard]] EVENGINE_API_WORLD float evaluateMotionEase(float t, const char *kind);
 
 /**
  * @brief LitMotion-style damped sine envelope in [0,1] progress.
@@ -232,13 +233,13 @@ private:
  * @param frequency Oscillation count until end (>= 1).
  * @param dampingRatio 0 = no damping, 1 = fully damped (LitMotion default).
  */
-[[nodiscard]] float evaluateMotionOscillation(float t, int frequency, float dampingRatio);
+[[nodiscard]] EVENGINE_API_WORLD float evaluateMotionOscillation(float t, int frequency, float dampingRatio);
 
 /**
  * @brief Deterministic shake sign in [-1,1] for axis (0..n).
  * @note Stable across SimulationStep replay for the same seed/progress/frequency.
  */
-[[nodiscard]] float evaluateMotionShakeSign(std::uint32_t seed, int frequency, float t, int axis);
+[[nodiscard]] EVENGINE_API_WORLD float evaluateMotionShakeSign(std::uint32_t seed, int frequency, float t, int axis);
 
 /** @brief Component-wise lerp for MotionColor. */
 [[nodiscard]] MotionColor lerpMotionColor(MotionColor a, MotionColor b, float t);

@@ -1,4 +1,5 @@
 #pragma once
+#include "common/Export.h"
 
 #include "animation/MotionBuilder.h"
 #include "animation/MotionSequence.h"
@@ -71,11 +72,24 @@ class SpineAnim;
  * `ControlPose` (pose tracking with the same control laws).
  * Trails: `AnimTrail` records samples and draws fading trajectories.
  */
-class Animation : public Module {
+class EVENGINE_API_WORLD Animation : public Module {
 public:
     Module_REG(Animation);
-    Animation() = default;
+    // Declared, not `= default`: class-level dllexport forces MSVC to compute the
+    // defaulted constructor's exception specification, which needs the destructor of
+    // every member -- and `SpriteSheet` is only forward-declared here (line 47), so an
+    // in-class `= default` is C2027 "can't delete an incomplete type". Defined in
+    // Animation.cpp, which includes animation/SpriteSheet.h.
+    Animation();
     ~Animation() override;
+    // `spriteSequenceCache_` is a container of `unique_ptr`: dllexport instantiates
+    // every member, so the implicitly-defined copy operations would instantiate the
+    // container's copy (hard C2280). Copy is deleted; no move is declared because
+    // `MotionRuntime motions_` is itself neither copyable nor movable
+    // (MotionRuntime.h:130 deletes copy and declares no move), which would make a
+    // defaulted move operation ill-formed.
+    Animation(const Animation&)            = delete;
+    Animation& operator=(const Animation&) = delete;
 
     /** @brief Create a tween (duration in seconds). Returned pointer is owned by script GC. */
     Tween *newTween(float duration = 1.f);

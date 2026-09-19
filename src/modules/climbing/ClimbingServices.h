@@ -1,4 +1,5 @@
 #pragma once
+#include "common/Export.h"
 
 /**
  * @file ClimbingServices.h
@@ -114,7 +115,7 @@ public:
     ClimbingServiceSubject subject, std::span<const ClimbingEvent> events);
 
 /** @brief Dispatch to the optional pose/IK adapter, returning ProviderAbsent when trimmed out. */
-[[nodiscard]] eve::Result<ClimbingOptionalServiceState> applyClimbingPose(
+[[nodiscard]] EVENGINE_API_DOMAINS eve::Result<ClimbingOptionalServiceState> applyClimbingPose(
     ClimbingServiceSubject subject, const ClimbingAdvance& advance);
 
 }  // namespace eve::climbing

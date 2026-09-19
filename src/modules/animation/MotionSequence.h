@@ -1,4 +1,5 @@
 #pragma once
+#include "common/Export.h"
 
 /**
  * @file MotionSequence.h
@@ -21,7 +22,7 @@ namespace eve::animation {
  * @ownership Does not own the runtime; borrows Animation's MotionRuntime.
  * @thread Main-thread animation API only.
  */
-class MotionSequenceHandle {
+class EVENGINE_API_WORLD MotionSequenceHandle {
 public:
     MotionSequenceHandle() = default;
     MotionSequenceHandle(MotionRuntime *runtime, std::vector<MotionHandle> children);
@@ -53,7 +54,7 @@ private:
  *
  * @ownership Borrows MotionRuntime; does not spawn until run().
  */
-class MotionSequence {
+class EVENGINE_API_WORLD MotionSequence {
 public:
     explicit MotionSequence(MotionRuntime &runtime);
 

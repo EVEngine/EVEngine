@@ -1,4 +1,5 @@
 #pragma once
+#include "common/Export.h"
 
 #include "common/Module.h"
 
@@ -7,7 +8,7 @@
 namespace eve::animation_editor {
 
 /** @brief Composition adapter that contributes animation editing commands and automation targets. */
-class AnimationEditorModule final : public Module {
+class EVENGINE_API_EDITORS AnimationEditorModule final : public Module {
 public:
     Module_REG(AnimationEditorModule);
     AnimationEditorModule();

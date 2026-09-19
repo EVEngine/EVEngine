@@ -1,4 +1,5 @@
 #pragma once
+#include "common/Export.h"
 
 /**
  * @file Climbing.h
@@ -640,7 +641,7 @@ struct ClimbingDebugSnapshot {
  * The runtime owns definitions and execution state, but never retains a World3D pointer. Every
  * physics call accepts a borrowed world for that synchronous call and validates its runtime handle.
  */
-class ClimbingRuntime {
+class EVENGINE_API_DOMAINS ClimbingRuntime {
 public:
     /** @brief Stable schema id for owning runtime snapshots. */
     static constexpr std::string_view SnapshotSchemaId = "evengine.climbing-runtime";

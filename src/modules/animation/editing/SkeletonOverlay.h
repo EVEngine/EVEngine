@@ -56,7 +56,7 @@ public:
 };
 
 /** @brief Optional bridge extracting an overlay from a real animation pose. */
-class AnimationSkeletonOverlayAdapter {
+class EVENGINE_API_DOMAINS AnimationSkeletonOverlayAdapter {
 public:
     /**
      * @brief Compute pose world cache and build an immutable overlay.

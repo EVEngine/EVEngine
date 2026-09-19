@@ -499,3 +499,20 @@ debug SDK（`make sdk/win32-debug`）**沿用开发配置，即动态**：它从
 **补充（batch 5b 最终报告，2026-09-20）**：`editor` LNK1120 **220 → 0**（exe 13.18 MiB）、`core` **253 → 0**（exe 32.99 MiB），两域未解析符号互不相交；标注落在 **94 个站点 / 66 个文件**（类 82、自由函数 12），C2280 四特殊成员 **4 类**（`LevelDocument`（`vector<LevelLayer>` → `unique_ptr<TileBuffer>` 的两级形态）、`LevelFormatRegistry`、`Ledger`、`Transaction`），`Export.h` include 54 处，`_INLINE` 0。
 
 `core` 那条失败**已定性，不是跨 DLL 复制状态**：SHARED 打断了"插件夹具从宿主 exe 导入引擎符号"的契约 —— SHARED 下 `unit_test_core.exe` 没有导出表、`unit_test_core.lib` 与 `native_test_plugin.dll` 均不存在（构建插件目标报 LNK1104），于是 `LoadLibrary` err=126。**决定性 OBJECT 对照**（`C:\evs`）：宿主为单链接单元时导出引擎符号并生成 `unit_test_core.lib`(9.42 MiB)、`native_test_plugin.dll` 构建成功（73,216 B）、同一用例 1/1 通过（OBJECT 下 editor 181/181、core 507/507）。修法方向：SHARED 下让插件夹具改链组 DLL 的导入库，或在该配置下跳过该用例。
+### 7.14 SHARED 测试面标注：animation（2026-09-20）
+
+| 域 | LNK1120 前→后 | exe | ctest（`-E "^bundle/" --timeout 120`） |
+| --- | --- | --- | --- |
+| animation | 269 → 0 | 11.85 MiB | **301/301 通过**（0 失败 0 超时） |
+
+静态 `ninja -C C:\evs eve` exit 0。标注 **270 站 / 38 头文件**（自动 266 + 手工 4 处同名重载：`beginClimbingAnimation`×2、`applyClimbingPose`×2）、`Export.h` include 33 处、`_INLINE` 0；清 11 模块 / 148 个对象。
+
+**口径修正**：§7.13 之后流传的"animation 545 个符号"是 animation+physics 的**并集**——两域共用的提取器在两个域都回退了 animation 日志。按 `Linking CXX executable unit_test_<域>.exe` 切分后：animation 269、physics 287（都与各自 LNK1120 吻合）。切片器 `C:\evb2\b6c_harvest.py`。
+
+**两条新坑（并入 §7.5）**：
+1. **头内 `ClassName() = default;` 会触发 C2027**：类级 dllexport 需要计算默认构造函数的异常规格，而它依赖成员容器的析构（`unordered_map<string, unique_ptr<SpriteSheet>>`），`SpriteSheet` 在该处只有前向声明 → `can't delete an incomplete type`。修法：头里只**声明**构造函数，在 `.cpp` 里 `= default`。
+2. **四件套不是万能**：当类的成员本身既不可拷贝也不可移动（`Animation` 的 `MotionRuntime motions_`）时，`Class(Class&&) = default` 会失败。此时正确做法是**只删拷贝、不声明移动**，而不是硬套四行。
+
+**跨 DLL 静态状态取证**（新脚本 `C:\evb2\b6c_dll_state.py`，扫 2438 个 `.obj` / 260 个 link unit）：ECS `external/ECS.hpp` 的 `default_table()` 27 unit / 173 obj 各一份；ImGui `GImGui` 2 unit / 4 obj；SDL video 静态状态 7 个组 DLL + 若干测试 exe 各一份。animation 的 301 个用例不建 `SDL_WINDOW_VULKAN`、不建 ImGui context，且它唯一持 ECS 表的 link unit 就是测试 exe 本身（EVWorld.dll 为 0）→ 三族**潜伏未触发**：该域 0 失败 0 挂起，且没有任何"既不属于三族"的遗留失败。
+
+进度：30 个域中 **22 个已链通**（20 个全绿）；`physics` 仍有 256 个未解析（本轮顺带减掉 31 个 animation 侧符号）。

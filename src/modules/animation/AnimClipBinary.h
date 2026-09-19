@@ -1,4 +1,6 @@
 #pragma once
+
+#include "common/Export.h"
 #include <cstddef>
 #include <functional>
 #include <span>
@@ -16,7 +18,7 @@ class AnimSkeleton;
  * @details Unknown versions/flags/trailing bytes are rejected. No implicit migration. Float32 tracks
  * retain source sampling precision; the offline encoder only removes exactly constant keys.
  */
-[[nodiscard]] eve::Result<void> loadAnimationTracks(AnimClip& destination, std::span<const std::byte> bytes,
+[[nodiscard]] EVENGINE_API_WORLD eve::Result<void> loadAnimationTracks(AnimClip& destination, std::span<const std::byte> bytes,
                                                     const AnimSkeleton& skeleton);
 
 /** @brief One synchronous borrowed batch input; destination and bytes must outlive the call. */
@@ -33,6 +35,6 @@ struct AnimationTrackInput {
  * candidates and immutable inputs. No VM, filesystem, callbacks, retained jobs, or reentrancy.
  * @details Uses the same version-1 codec and exact sampling as loadAnimationTracks.
  */
-[[nodiscard]] eve::Result<int> loadAnimationTrackBatch(std::span<const AnimationTrackInput> inputs,
+[[nodiscard]] EVENGINE_API_WORLD eve::Result<int> loadAnimationTrackBatch(std::span<const AnimationTrackInput> inputs,
                                                        const AnimSkeleton& skeleton, int workerCount = 0);
 }  // namespace eve::animation

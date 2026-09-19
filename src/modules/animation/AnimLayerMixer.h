@@ -17,7 +17,7 @@ class AnimSkeleton;
 class AnimStateMachine;
 
 /** @brief Per-bone weights used by override and additive animation layers. */
-class AnimBoneMask {
+class EVENGINE_API_WORLD AnimBoneMask {
 public:
     /** @brief Create a zero-weight mask for a skeleton; the skeleton is not owned. */
     explicit AnimBoneMask(AnimSkeleton* skeleton);

@@ -1,4 +1,5 @@
 #pragma once
+#include "common/Export.h"
 
 #include "animation/AnimControlMath.h"
 #include "animation/AnimPose.h"
@@ -19,7 +20,7 @@ class AnimSkeleton;
  * Position and scale use independent scalar channels. Rotations use shortest-path
  * quaternion components with renormalization after each step.
  */
-class ControlPose {
+class EVENGINE_API_WORLD ControlPose {
 public:
     explicit ControlPose(AnimSkeleton *skeleton);
     ~ControlPose() = default;

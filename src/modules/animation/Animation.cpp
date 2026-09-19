@@ -91,6 +91,11 @@ bool updateDeformedNormalsFromArray(AnimLattice *self, ssq::Array posArr, ssq::A
 
 Module_IMPL(Animation, new Animation());
 
+// Defaulted out of line: `SpriteSheet.h` is included above, so the destructor of
+// `unique_ptr<SpriteSheet>` (needed for this constructor's exception specification)
+// sees a complete type; Animation.h only forward-declares `SpriteSheet`.
+Animation::Animation() = default;
+
 Animation::~Animation() {
     // Owned players may outlive the module if script GC still holds them; detach.
     for (Tween *t : tweens_) {

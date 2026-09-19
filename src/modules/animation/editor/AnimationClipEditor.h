@@ -1,4 +1,5 @@
 #pragma once
+#include "common/Export.h"
 
 /**
  * @file AnimationClipEditor.h
@@ -33,7 +34,7 @@ namespace eve::animation_editor {
  * @threadaffinity Owner thread only.
  * @reentrancy No unknown callbacks.
  */
-class AnimationClipEditor {
+class EVENGINE_API_EDITORS AnimationClipEditor {
 public:
     /** @brief Construct a seeded two-bone preview clip. */
     explicit AnimationClipEditor(std::string targetId);

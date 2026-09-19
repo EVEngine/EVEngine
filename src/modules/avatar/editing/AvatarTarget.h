@@ -136,7 +136,7 @@ public:
 };
 
 /** @brief Candidate-first live AvatarInstance generation. */
-class AvatarDocumentRuntime {
+class EVENGINE_API_ORCHESTRATION AvatarDocumentRuntime {
 public:
     AvatarDocumentRuntime();
     ~AvatarDocumentRuntime();
