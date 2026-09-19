@@ -628,6 +628,11 @@ macro(create_module libname folder)
     # grouping lives entirely in EVE_LINK_GROUP_TABLE.
     if(EVENGINE_MODULE_LINKAGE STREQUAL "SHARED")
         set_target_properties(${libname} PROPERTIES POSITION_INDEPENDENT_CODE ON)
+        # These objects are the defining side of the module DLL boundary, so the
+        # EVENGINE_API-annotated declarations compile to dllexport (see
+        # src/engine/common/Export.h). Checked before EVENGINE_MODULE_DLL, which
+        # eve_engine_includes hands to every target including these.
+        target_compile_definitions(${libname} PRIVATE EVENGINE_ENGINE_EXPORTS)
     endif()
     # Opt the module into the shared engine include set (was global
     # include_directories before; see eve_engine_includes in main()).

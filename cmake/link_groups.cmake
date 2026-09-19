@@ -22,6 +22,12 @@ if(NOT EVENGINE_MODULE_LINKAGE STREQUAL "SHARED")
     return()
 endif()
 
+# The host, the tests, the benchmarks and the plugins all consume the annotated
+# engine surface from these DLLs, so their view of EVENGINE_API is dllimport.
+# Modules get this too (eve_engine_includes is what they link), but Export.h
+# checks EVENGINE_ENGINE_EXPORTS first, so the defining side still exports.
+target_compile_definitions(eve_engine_includes INTERFACE EVENGINE_MODULE_DLL)
+
 # The same external closure the host and the test runner link. ThirdParty is a
 # directory-scoped variable in src/engine and test/, so this file derives its own
 # copy from the manifest rather than reading theirs.
@@ -57,13 +63,18 @@ foreach(_eve_group IN LISTS EVE_LINK_GROUP_NAMES)
     endif()
     list(APPEND _eve_lower_groups "${_eve_group}")
 
+    # The export surface is the EVENGINE_API-annotated API only (see
+    # src/engine/common/Export.h). WINDOWS_EXPORT_ALL_SYMBOLS is deliberately NOT
+    # enabled: it exports every symbol the objects define -- 75,885 for the
+    # 39-module EVFoundation group, measured from its generated .exports.def --
+    # which trips MSVC LNK1189's 65535 limit. The module objects already compile
+    # exactly the annotated declarations to dllexport.
     if(WIN32)
         set_target_properties(${_eve_group} PROPERTIES
-            WINDOWS_EXPORT_ALL_SYMBOLS ON
             RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}")
     else()
-        # ELF/Mach-O: default visibility is what makes the group boundary usable
-        # by consumers; inline code stays hidden so it is emitted in the consumer
+        # ELF/Mach-O: the annotated symbols carry default visibility themselves
+        # (Export.h); inline code stays hidden so it is emitted in the consumer
         # instead of being duplicated into every group.
         set_target_properties(${_eve_group} PROPERTIES
             CXX_VISIBILITY_PRESET default
