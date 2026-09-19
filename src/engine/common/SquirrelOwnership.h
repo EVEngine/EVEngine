@@ -468,6 +468,12 @@ private:
 
 namespace detail {
 
+/** @brief Release hook signature shared by every owned Squirrel instance. */
+using SquirrelReleaseHook = SQInteger (*)(SQUserPointer, SQInteger);
+
+/** @brief Destroys one owned C++ wrapper without knowing its type. */
+using OwnedInstanceDestroy = void (*)(void*) noexcept;
+
 template <class T>
 [[nodiscard]] inline std::size_t squirrelTypeHash() {
     static const std::size_t value = std::hash<std::string>{}(typeid(T).name());
@@ -480,6 +486,37 @@ SQInteger ownedInstanceReleaseHook(SQUserPointer pointer, SQInteger) noexcept {
     return 0;
 }
 
+/** @brief Type-erased cleanup used when the VM never took the object. */
+template <class T>
+void ownedInstanceDestroy(void* pointer) noexcept {
+    delete static_cast<T*>(pointer);
+}
+
+/** @brief Diagnostic for a null VM or null object, built once instead of per T. */
+[[nodiscard]] EVENGINE_API Diagnostic ownedInstanceArgumentDiagnostic();
+
+/**
+ * @brief Non-template core of makeOwnedSquirrelInstance.
+ *
+ * Every type-dependent fact arrives as a value or a hook, so the ~45 lines of
+ * stack discipline, instance creation, typing, rooting and exception handling
+ * are emitted once instead of once per wrapper type.
+ *
+ * @param vm Active Squirrel VM.
+ * @param object Ownership transfers to this call on entry.
+ * @param releaseHook Hook the created instance will run to destroy @p object.
+ * @param destroy Cleanup used only on a failure path that never reached the VM.
+ * @param typeHash Value of squirrelTypeHash<T*>() for the instance type tag.
+ * @return The rooted instance, or a structured failure.
+ * @ownership On success the VM owns @p object. On failure this call either
+ *            destroyed it once through @p destroy, or already handed it to a
+ *            live instance whose release hook will run. It never leaks and
+ *            never double-frees.
+ */
+[[nodiscard]] EVENGINE_API eve::Result<ssq::Object> makeOwnedSquirrelInstanceRaw(
+    HSQUIRRELVM vm, void* object, SquirrelReleaseHook releaseHook, OwnedInstanceDestroy destroy,
+    std::size_t typeHash);
+
 }  // namespace detail
 
 /**
@@ -488,52 +525,19 @@ SQInteger ownedInstanceReleaseHook(SQUserPointer pointer, SQInteger) noexcept {
  * The class for `T*` must have been registered in this VM with
  * `ssq::Table::addClass<T>()`. The returned `ssq::Object` is itself a rooted
  * owner and can safely cross the current native call into script storage.
+ *
+ * @remarks This is a thin wrapper: the only per-type code it adds is the two
+ *          one-line adapters above and the type hash.
  */
 template <class T>
 [[nodiscard]] eve::Result<ssq::Object> makeOwnedSquirrelInstance(HSQUIRRELVM vm, Owned<T> object) {
     if (!vm || !object) {
-        return eve::Result<ssq::Object>::failure(eve::Diagnostic::error(
-            eve::DiagnosticCode::InvalidArgument, "owned Squirrel instance requires a VM and non-null object", {}, {},
-            "squirrel.ownership"));
+        return eve::Result<ssq::Object>::failure(detail::ownedInstanceArgumentDiagnostic());
     }
-
-    const SQInteger top         = sq_gettop(vm);
-    bool            transferred = false;
-    try {
-        const size_t hashCode = detail::squirrelTypeHash<T*>();
-        const HSQOBJECT& classObject = ssq::detail::getClassObj(vm, hashCode);
-        sq_pushobject(vm, classObject);
-        if (SQ_FAILED(sq_createinstance(vm, -1)))
-            throw ssq::RuntimeException("failed to create owned Squirrel instance");
-        sq_remove(vm, -2);
-        if (SQ_FAILED(sq_setinstanceup(vm, -1, static_cast<SQUserPointer>(object.get()))))
-            throw ssq::RuntimeException("failed to attach owned Squirrel instance");
-        sq_settypetag(vm, -1, reinterpret_cast<SQUserPointer>(hashCode));
-        sq_setreleasehook(vm, -1, &detail::ownedInstanceReleaseHook<T>);
-        object.release();
-        transferred = true;
-
-        ssq::Object result(vm);
-        if (SQ_FAILED(sq_getstackobj(vm, -1, &result.getRaw())))
-            throw ssq::RuntimeException("failed to root owned Squirrel instance");
-        sq_addref(vm, &result.getRaw());
-        sq_settop(vm, top);
-        return eve::Result<ssq::Object>::success(std::move(result));
-    } catch (const std::exception& error) {
-        sq_settop(vm, top);
-        if (!transferred) {
-            return eve::Result<ssq::Object>::failure(eve::Diagnostic::error(
-                eve::DiagnosticCode::Failed, std::string("owned Squirrel instance creation failed: ") + error.what(),
-                {}, {}, "squirrel.ownership"));
-        }
-        return eve::Result<ssq::Object>::failure(eve::Diagnostic::error(
-            eve::DiagnosticCode::Failed, std::string("owned Squirrel instance rooting failed: ") + error.what(), {}, {},
-            "squirrel.ownership"));
-    } catch (...) {
-        sq_settop(vm, top);
-        return eve::Result<ssq::Object>::failure(eve::Diagnostic::error(
-            eve::DiagnosticCode::Failed, "owned Squirrel instance creation failed", {}, {}, "squirrel.ownership"));
-    }
+    return detail::makeOwnedSquirrelInstanceRaw(vm, static_cast<void*>(object.release()),
+                                                &detail::ownedInstanceReleaseHook<T>,
+                                                &detail::ownedInstanceDestroy<T>,
+                                                detail::squirrelTypeHash<T*>());
 }
 
 }  // namespace eve::script
