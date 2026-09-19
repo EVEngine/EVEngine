@@ -818,6 +818,11 @@ eve_frame <- function() {
             }
             dev_notify_frame_done();
         }
+        // Coalesce dirty declarative UI components after game logic and before
+        // rendering. State changes made by dispatched UI events are therefore
+        // applied at the start of the following frame.
+        if ("eve_ui_flush_components" in getroottable())
+            eve_ui_flush_components();
         eve_render();
         // ImGui AI/MCP panel (requires ui.beginFrameAndRender in eve_render).
         dev_draw_ai();

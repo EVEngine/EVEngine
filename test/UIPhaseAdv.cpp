@@ -114,6 +114,8 @@ static const char *kScriptComponentContent = R"SQ(
 function testScriptComponent() {
     local u = eve.UI()
     class PriceLabel extends eve.UIComponent {
+        unmounted = false
+        function onUnmount() { unmounted = true }
         function build() {
             ui().text(props.prefix + state.amount, "gold")
         }
@@ -123,17 +125,29 @@ function testScriptComponent() {
         child = null
         mounted = false
         updated = false
+        unmounted = false
+        updateCount = 0
         constructor(uiRef) {
             base.constructor(uiRef)
             gold = 10
             child = PriceLabel(uiRef, { prefix = "Gold " })
+            local self = this
+            bindClick("buy", function() { self.gold += 1 })
+            // Rebinding the same component event replaces the prior closure.
+            bindClick("buy", function() { self.gold += 2 })
         }
         function onMount() { mounted = true }
-        function onUpdated() { updated = true }
+        function onUpdated() { updated = true; updateCount += 1 }
+        function onUnmount() { unmounted = true }
         function build() {
             local uu = ui()
             uu.beginWindow("Shop", "root")
             renderChild(child, { prefix = props.prefix })
+            if (!("showKeyed" in state) || state.showKeyed) {
+                renderKeyed("stable-price", function() {
+                    return PriceLabel(ui(), { prefix = "Stable " })
+                }, { prefix = "Stable " })
+            }
             uu.button("Buy", "buy")
             if (state.gold > 5) uu.text("Rich", "rich")
             uu.end()
@@ -143,14 +157,29 @@ function testScriptComponent() {
     panel.setProps({ prefix = "Coins " })
     panel.setState({ gold = 10 })
     panel.child.setState({ amount = 10 })
+    panel.setState({ showKeyed = true })
     panel.mountAs("shop_panel")
     if (!panel.mounted) return false
+    if (panel._eventBindings.len() != 1) return false
+    if (!("stable-price" in panel._keyedChildren)) return false
+    local stableChild = panel._keyedChildren["stable-price"]
     if (!u.select("shop_panel")) return false
     panel.setState({ gold = 3 })
     panel.child.setState({ amount = 3 })
     if (!panel.dirty) return false
-    if (!panel.updateIfDirty()) return false
+    // Multiple state changes in one frame are coalesced into one rebuild.
+    eve_ui_flush_components()
     if (!panel.updated) return false
+    if (panel.updateCount != 1) return false
+    if (panel.dirty) return false
+    if (panel._keyedChildren["stable-price"] != stableChild) return false
+    panel.setState({ showKeyed = false })
+    eve_ui_flush_components()
+    if (!stableChild.unmounted) return false
+    if ("stable-price" in panel._keyedChildren) return false
+    if (!panel.unmount()) return false
+    if (!panel.unmounted) return false
+    if (panel.child._mounted) return false
     if (eve.UIComponent == null) return false
     return true
 }
@@ -224,10 +253,17 @@ TEST_CASE("UI.adv.flexBuilderAPI") {
     uimod->beginRow("tools", 6.f);
     uimod->setFlexJustify("space-between");
     uimod->setFlexAlign("center");
+    uimod->setFlexWrap(true);
+    uimod->setLayoutGaps(6.f, 9.f);
+    uimod->setLayoutOverflow("clip");
     uimod->addButton("Save", "save");
     uimod->addSpacer("sp");
     uimod->addButton("Quit", "quit");
     uimod->setItemFlexGrow(0.f);
+    uimod->setItemFlexShrink(0.5f);
+    uimod->setItemFlexBasis(64.f);
+    uimod->setItemAlignSelf("end");
+    uimod->setItemAspectRatio(2.f);
     uimod->setItemSize(80.f, 0.f);
     uimod->end();
     uimod->beginColumn("body", 2.f);
@@ -236,6 +272,11 @@ TEST_CASE("UI.adv.flexBuilderAPI") {
     uimod->end();
     uimod->beginFlex("column", "side", 0.f);
     uimod->addButton("X", "x");
+    uimod->end();
+    uimod->beginGrid(3, "cards", 10.f, 12.f);
+    uimod->addButton("Wide", "wide");
+    uimod->setItemGridColumnSpan(2);
+    uimod->addButton("Narrow", "narrow");
     uimod->end();
     uimod->end();
     CHECK(uimod->mountBuildAs("bar"));
@@ -249,10 +290,18 @@ TEST_CASE("UI.adv.flexBuilderAPI") {
     CHECK_EQ(int(tools->justifyContent), int(ui::FlexJustify::SpaceBetween));
     CHECK_EQ(int(tools->alignItems), int(ui::FlexAlign::Center));
     CHECK(std::abs(tools->gap - 6.f) < 1e-5f);
+    CHECK(std::abs(tools->columnGap - 6.f) < 1e-5f);
+    CHECK(std::abs(tools->rowGap - 9.f) < 1e-5f);
+    CHECK_EQ(int(tools->flexWrap), int(ui::FlexWrap::Wrap));
+    CHECK_EQ(int(tools->overflow), int(ui::OverflowMode::Clip));
 
     auto *quit = findNode(current, "quit");
     CHECK(quit != nullptr);
     CHECK(std::abs(quit->sizeX - 80.f) < 1e-5f);
+    CHECK(std::abs(quit->flexShrink - 0.5f) < 1e-5f);
+    CHECK(std::abs(quit->flexBasis - 64.f) < 1e-5f);
+    CHECK_EQ(quit->alignSelf, int(ui::FlexAlign::End));
+    CHECK(std::abs(quit->aspectRatio - 2.f) < 1e-5f);
 
     auto *sp = findNode(current, "sp");
     CHECK(sp != nullptr);
@@ -261,6 +310,11 @@ TEST_CASE("UI.adv.flexBuilderAPI") {
     auto *side = findNode(current, "side");
     CHECK(side != nullptr);
     CHECK_EQ(int(side->flexDirection), int(ui::FlexDirection::Column));
+    auto *cards = findNode(current, "cards");
+    REQUIRE(cards != nullptr);
+    CHECK_EQ(int(cards->type), int(ui::NodeType::Grid));
+    CHECK_EQ(cards->gridColumns, 3);
+    CHECK_EQ(findNode(current, "wide")->gridColumnSpan, 2);
 }
 
 TEST_CASE("UI.adv.flexReconcileKeepsStructure") {
@@ -346,6 +400,63 @@ TEST_CASE("UI.layout.flexArrangeMarginsPercentAbsolute") {
     CHECK(std::abs(ar.items[0].y - 0.f) < 1e-4f);
 }
 
+TEST_CASE("UI.layout.flexBasisShrinkAlignSelfAndOverflow") {
+    std::vector<ui::FlexItemSpec> items(2);
+    items[0].basisMain = 10.f;
+    items[0].flexBasis = 80.f;
+    items[0].basisCross = 10.f;
+    items[0].alignSelf = int(ui::FlexAlign::End);
+    items[1].basisMain = 80.f;
+    items[1].basisCross = 10.f;
+    ui::FlexResult r =
+        ui::flexArrange(true, 0.f, 100.f, 30.f, ui::FlexAlign::Start,
+                        ui::FlexJustify::Start, items);
+    CHECK(std::abs(r.items[0].w - 50.f) < 1e-4f);
+    CHECK(std::abs(r.items[1].w - 50.f) < 1e-4f);
+    CHECK(std::abs(r.items[0].y - 20.f) < 1e-4f);
+    CHECK(std::abs(r.overflowMain) < 1e-4f);
+
+    items[0].flexShrink = 0.f;
+    items[1].minMain = 30.f;
+    r = ui::flexArrange(true, 0.f, 100.f, 30.f, ui::FlexAlign::Start,
+                        ui::FlexJustify::Start, items);
+    CHECK(std::abs(r.items[0].w - 80.f) < 1e-4f);
+    CHECK(std::abs(r.items[1].w - 30.f) < 1e-4f);
+    CHECK(std::abs(r.overflowMain - 10.f) < 1e-4f);
+}
+
+TEST_CASE("UI.layout.flexWrapIndependentGaps") {
+    std::vector<ui::FlexItemSpec> items(3);
+    for (auto &item : items) {
+        item.basisMain = 60.f;
+        item.basisCross = 20.f;
+        item.flexShrink = 0.f;
+    }
+    const ui::FlexResult r =
+        ui::flexArrange(true, 10.f, 130.f, 100.f, ui::FlexAlign::Start,
+                        ui::FlexJustify::Start, items, true, 7.f);
+    CHECK(std::abs(r.items[0].x - 0.f) < 1e-4f);
+    CHECK(std::abs(r.items[1].x - 70.f) < 1e-4f);
+    CHECK(std::abs(r.items[2].x - 0.f) < 1e-4f);
+    CHECK(std::abs(r.items[2].y - 27.f) < 1e-4f);
+    CHECK(std::abs(r.contentH - 47.f) < 1e-4f);
+}
+
+TEST_CASE("UI.layout.gridArrangeSpanAspectAndRows") {
+    std::vector<ui::GridItemSpec> items(3);
+    items[0].basisH = 20.f;
+    items[0].columnSpan = 2;
+    items[1].aspectRatio = 2.f;
+    items[2].basisH = 30.f;
+    const ui::GridResult r = ui::gridArrange(3, 10.f, 5.f, 320.f, items);
+    REQUIRE_EQ(int(r.items.size()), 3);
+    CHECK(std::abs(r.items[0].w - 210.f) < 1e-4f);
+    CHECK(std::abs(r.items[1].x - 220.f) < 1e-4f);
+    CHECK(std::abs(r.items[1].h - 50.f) < 1e-4f);
+    CHECK(std::abs(r.items[2].y - 55.f) < 1e-4f);
+    CHECK(std::abs(r.contentH - 85.f) < 1e-4f);
+}
+
 TEST_CASE("UI.layout.measureNestedFlexAndWindowContent") {
     ImGuiContext *saved = ImGui::GetCurrentContext();
     IMGUI_CHECKVERSION();
@@ -394,6 +505,59 @@ TEST_CASE("UI.layout.measureNestedFlexAndWindowContent") {
     ImGui::EndFrame();
     ImGui::DestroyContext(headless);
     if (saved) ImGui::SetCurrentContext(saved);
+}
+
+TEST_CASE("UI.style.namedClassesResolveOnceAndRoundTrip") {
+    ui::clearStyleClasses();
+    CHECK_EQ(int(ui::defineStyleClass("panel")), int(ui::StyleClassStatus::Applied));
+    CHECK_EQ(int(ui::setStyleClassColor("panel", "background", 0.1f, 0.2f, 0.3f, 0.8f)),
+             int(ui::StyleClassStatus::Applied));
+    CHECK_EQ(int(ui::setStyleClassMetric("panel", "padding", 12.f, 7.f)),
+             int(ui::StyleClassStatus::Applied));
+    CHECK_EQ(int(ui::defineStyleClass("primary", "panel")), int(ui::StyleClassStatus::Applied));
+    CHECK_EQ(int(ui::setStyleClassColor("primary", "accent", 0.9f, 0.4f, 0.2f, 1.f)),
+             int(ui::StyleClassStatus::Applied));
+    CHECK_EQ(int(ui::defineStyleClass("bad", "missing")),
+             int(ui::StyleClassStatus::UnknownParent));
+    CHECK_EQ(int(ui::setStyleClassMetric("primary", "mystery", 1.f)),
+             int(ui::StyleClassStatus::UnknownProperty));
+    CHECK_EQ(int(ui::defineStyleClass("panel", "primary")),
+             int(ui::StyleClassStatus::InheritanceCycle));
+
+    ui::StyleClass resolved;
+    REQUIRE(ui::resolveStyleClass("primary", &resolved) == ui::StyleClassStatus::Applied);
+    CHECK(resolved.hasBackgroundColor);
+    CHECK(resolved.hasAccentColor);
+    CHECK(resolved.hasPadding);
+    CHECK(std::abs(resolved.paddingX - 12.f) < 1e-5f);
+
+    ui::UI *uimod = ui::UI::create();
+    uimod->beginBuild();
+    uimod->beginWindow("Styled", "styled-root");
+    uimod->setStyleScope("panel");
+    uimod->addButton("Save", "save");
+    uimod->setItemStyleClass("primary");
+    uimod->end();
+    REQUIRE(uimod->mountBuildAs("styles"));
+    ui::UINode *root = findNode(uimod->current(), "styled-root");
+    ui::UINode *save = findNode(uimod->current(), "save");
+    REQUIRE(root != nullptr);
+    REQUIRE(save != nullptr);
+    CHECK(root->hasResolvedStyle);
+    CHECK(save->hasResolvedStyle);
+    CHECK(save->resolvedStyle.hasBackgroundColor);
+    CHECK(save->resolvedStyle.hasAccentColor);
+
+    const std::string json = uimod->saveTreeJson();
+    CHECK(json.find("\"version\"") != std::string::npos);
+    CHECK(json.find("\"styleClass\"") != std::string::npos);
+    CHECK(json.find("primary") != std::string::npos);
+    REQUIRE(uimod->loadTreeJson(json));
+    save = findNode(uimod->current(), "save");
+    REQUIRE(save != nullptr);
+    CHECK(save->styleClass == "primary");
+    CHECK(save->hasResolvedStyle);
+    ui::clearStyleClasses();
 }
 
 TEST_CASE("UI.p0.imageAndImageButton") {
@@ -576,13 +740,36 @@ TEST_CASE("UI.p1.statsAfterHeadlessRender") {
 
     ui::UIHost *host = resolveHost(ui::UIHost::createHost("stats"));
     REQUIRE(host != nullptr);
-    host->setTree(ui::window("S", {ui::text("a", "a"), ui::button("b", "b")}, "root"));
+    host->setTree(ui::window(
+        "S",
+        {
+            ui::text("a", "a"),
+            ui::button("b", "b"),
+            ui::row({ui::button("one", "one").withFlexBasis(70.f).withFlexShrink(0.f),
+                     ui::button("two", "two").withFlexBasis(70.f).withFlexShrink(0.f)},
+                    "wrapped")
+                .withSize(100.f, 60.f)
+                .withFlexWrap(ui::FlexWrap::Wrap)
+                .withGaps(4.f, 6.f)
+                .withOverflow(ui::OverflowMode::Clip),
+            ui::grid(2,
+                     {ui::button("g1", "g1").withAspectRatio(2.f),
+                      ui::button("g2", "g2").withAspectRatio(2.f),
+                      ui::button("g3", "g3").withGridColumnSpan(2)},
+                     "grid")
+                .withSize(180.f, 30.f)
+                .withGaps(8.f, 5.f)
+                .withOverflow(ui::OverflowMode::Scroll),
+        },
+        "root"));
     ui::UISystem::render();
     const ui::UIStats &s = ui::UISystem::stats();
     CHECK_GE(s.hostCount, 1);
     CHECK_GE(s.nodeCount, 3);
     CHECK(s.measureMs >= 0.0);
     CHECK(s.walkMs >= 0.0);
+    CHECK(findNode(host, "wrapped")->layoutOverflowX >= 0.f);
+    CHECK(findNode(host, "grid")->layoutOverflowY > 0.f);
 
     ImGui::EndFrame();
     ImGui::DestroyContext(headless);
@@ -605,6 +792,8 @@ TEST_CASE("UI.p1.jsonRoundTripAndGamepadNav") {
                         "root")))
                 .has_value());
     const std::string json = uimod->saveTreeJson();
+    CHECK(json.find("eve.ui.tree") != std::string::npos);
+    CHECK(json.find("\"version\"") != std::string::npos);
     CHECK(json.find("\"hp\"") != std::string::npos);
     CHECK(json.find("wrapWidth") != std::string::npos);
 
@@ -619,6 +808,7 @@ TEST_CASE("UI.p1.jsonRoundTripAndGamepadNav") {
     CHECK(std::abs(findNode(uimod->current(), "avatar")->tintG - 0.3f) < 1e-5f);
     CHECK(std::abs(findNode(uimod->current(), "r")->gap - 8.f) < 1e-5f);
     CHECK(!uimod->loadTreeJson("{not json"));
+    CHECK(!uimod->loadTreeJson("{\"schema\":\"eve.ui.tree\",\"version\":999}"));
 
     uimod->setNavGamepad(true);
     CHECK(ui::globalTheme().navEnableGamepad);
@@ -641,6 +831,28 @@ TEST_CASE("UI.p1.hostPosTween") {
     uimod->animateHostPos(300.f, 200.f, 5000.f);
     CHECK(std::abs(current->meta()->posX - 120.f) < 1e-4f);
     CHECK(std::abs(current->meta()->posY - 60.f) < 1e-4f);
+}
+
+TEST_CASE("UI.polish.opacityDiagnosticsAndAccessibilitySnapshot") {
+    ui::UI *uimod = ui::UI::create();
+    uimod->beginBuild();
+    uimod->beginWindow("Diagnostics", "diag-root");
+    uimod->addButton("Save", "save");
+    uimod->setItemAccessibility("button", "Save project", "Writes current changes");
+    uimod->end();
+    REQUIRE(uimod->mountBuildAs("diagnostics"));
+
+    uimod->animateItemOpacity("save", 0.25f, 0.f);
+    ui::UINode *save = findNode(uimod->current(), "save");
+    REQUIRE(save != nullptr);
+    CHECK(std::abs(save->opacity - 0.25f) < 1e-5f);
+
+    const std::string layout = uimod->getLayoutDiagnostics();
+    CHECK(layout.find("\"host\":\"diagnostics\"") != std::string::npos);
+    CHECK(layout.find("\"overflowX\"") != std::string::npos);
+    const std::string accessibility = uimod->getAccessibilitySnapshot();
+    CHECK(accessibility.find("Save project") != std::string::npos);
+    CHECK(accessibility.find("Writes current changes") != std::string::npos);
 }
 
 TEST_CASE("UI.p1.scrollListNodeAndBuilder") {
