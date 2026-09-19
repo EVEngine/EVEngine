@@ -39,11 +39,12 @@
 #include "spatial/Octree.h"
 #include "window/Window.h"
 
-#include "common/ECS.h"
 #include "common/Capability.h"
+#include "common/ECS.h"
 #include "common/EntitySpatialResolver.h"
 #include "common/Module.h"
 #include "common/ProcgenSceneSink.h"
+#include "common/SquirrelBinding.h"
 
 #include <simplesquirrel/simplesquirrel.hpp>
 
@@ -1546,6 +1547,28 @@ function testSceneEntityIsTheFirstEcsName() {
     return eve.view(OnlyEntity).len() == 1
 }
 
+function testCallbackFailureIsReported() {
+    class Marker extends eve.Component { v = 1 }
+    class Unit extends eve.SceneEntity { mark = Marker }
+
+    local scene = eve.Scene()
+    scene.beginBuild()
+    scene.beginNode("root", "")
+    scene.addNode("a", "")
+    scene.end()
+    scene.mountBuildAs("failreport")
+    if (scene.attachEntity("a", Unit) == null) return false
+
+    // The callback runs and throws. `visited == 1` is what makes this a *throw* rather
+    // than a callback that never ran, so the failure the engine has to report is real.
+    local visited = 0
+    scene.forEachEntity("failreport", "a", function(entity, index) {
+        visited += 1
+        throw "callback exploded"
+    })
+    return visited == 1
+}
+
 )SQ";
 
 class SceneEcsBridgeFixture {
@@ -1593,6 +1616,15 @@ TEST_CASE_FIXTURE(SceneEcsBridgeFixture, "Scene.script.attachRejectsPlainEntity"
 
 TEST_CASE_FIXTURE(SceneEcsBridgeFixture, "Scene.script.entityIsTheFirstEcsName") {
     REQUIRE(vm.callFunc(vm.findFunc("testSceneEntityIsTheFirstEcsName"), vm).toBool());
+}
+
+TEST_CASE_FIXTURE(SceneEcsBridgeFixture, "Scene.script.callbackFailureIsNotSilent") {
+    // A callback that throws used to look exactly like an empty node: the failed sq_call
+    // was turned into a false return and the script error was dropped, so a broken
+    // handler produced no signal at all (plan doc 10.8).
+    eve::script::resetReportedScriptCallFailures();
+    REQUIRE(vm.callFunc(vm.findFunc("testCallbackFailureIsReported"), vm).toBool());
+    REQUIRE(eve::script::reportedScriptCallFailures() >= 1);
 }
 
 TEST_CASE_FIXTURE(SceneEcsBridgeFixture, "Scene.script.serializeAndPick") {

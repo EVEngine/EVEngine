@@ -98,6 +98,31 @@ void pushReceiver(HSQUIRRELVM vm, const Receiver& receiver) {
 }
 
 /**
+ * @brief Report a failed engine-to-script call, consuming the VM's script error.
+ *
+ * A callback that throws used to leave nothing behind: the caller either discarded
+ * `sq_call`'s failure or read it as a normal "no such entity", so a broken handler was
+ * indistinguishable from an empty result. This reads the error with
+ * `takeLastScriptError` and prints one line, remembering the last message so a callback
+ * that breaks every frame does not flood the log. Every failure still counts, so the
+ * condition stays observable even while the text is deduplicated.
+ *
+ * @param vm Active Squirrel VM whose pending script error should be consumed.
+ * @param what Short caller description used in the report.
+ * @note Ownership/lifetime: consumes the VM's error context; nothing is retained except
+ *       the last message text used for deduplication.
+ * @note Thread affinity: the owning VM's thread only.
+ * @note Reentrancy: not reentrant; takes an internal lock.
+ */
+EVENGINE_API void reportScriptCallFailure(HSQUIRRELVM vm, const char* what);
+
+/** @brief Count of engine-to-script call failures reported since the last reset. */
+[[nodiscard]] EVENGINE_API int reportedScriptCallFailures();
+
+/** @brief Clear the failure count and the deduplication memory (diagnostics and tests). */
+EVENGINE_API void resetReportedScriptCallFailures();
+
+/**
  * @brief Call a script function, deriving `sq_call`'s parameter count from the pushes.
  *
  * `sq_call(vm, params, ...)` takes the callee at `-(params)-1`, so `params` counts the
@@ -134,6 +159,7 @@ SQRESULT callFunction(HSQUIRRELVM vm, const HSQOBJECT& fn, const Receiver& recei
     // part of the count (sq_call takes the callee at -(params)-1).
     const SQInteger params = sq_gettop(vm) - top - 1;
     const SQRESULT  result = sq_call(vm, params, SQFalse, SQTrue);
+    if (SQ_FAILED(result)) reportScriptCallFailure(vm, "callFunction");
     sq_settop(vm, top);
     return result;
 }
@@ -161,7 +187,10 @@ SQRESULT callFunctionResult(HSQUIRRELVM vm, const HSQOBJECT& fn, const Receiver&
     // part of the count (sq_call takes the callee at -(params)-1).
     const SQInteger params = sq_gettop(vm) - top - 1;
     const SQRESULT  result = sq_call(vm, params, SQTrue, SQTrue);
-    if (SQ_FAILED(result)) sq_settop(vm, top);
+    if (SQ_FAILED(result)) {
+        reportScriptCallFailure(vm, "callFunctionResult");
+        sq_settop(vm, top);
+    }
     return result;
 }
 

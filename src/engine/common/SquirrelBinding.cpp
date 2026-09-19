@@ -1,17 +1,66 @@
 #include "common/SquirrelBinding.h"
 
 #include "common/Assert.h"
+#include "common/ScriptError.h"
 #include "common/ScriptProvider.h"
 
 #include <algorithm>
 #include <cctype>
 #include <cmath>
 #include <cstdint>
+#include <cstdio>
 #include <limits>
+#include <mutex>
 #include <string_view>
 #include <vector>
 
 namespace eve::script {
+
+/**
+ * @brief Failure bookkeeping for reportScriptCallFailure().
+ *
+ * `lastMessage` deduplicates the printed line: a callback that breaks every frame would
+ * otherwise flood stderr. `count` still increments for every failure, so a test or a
+ * diagnostic can observe the condition even while the text repeats.
+ */
+namespace {
+struct ScriptCallFailureLog {
+    std::mutex  mutex;
+    std::string lastMessage;
+    int         count = 0;
+};
+
+ScriptCallFailureLog& scriptCallFailureLog() {
+    static ScriptCallFailureLog log;
+    return log;
+}
+}  // namespace
+
+void reportScriptCallFailure(HSQUIRRELVM vm, const char* what) {
+    const ScriptErrorContext context = takeLastScriptError(vm);
+    const std::string        text = context.empty() ? std::string("unknown script error") : formatScriptError(context);
+
+    ScriptCallFailureLog&       log = scriptCallFailureLog();
+    std::lock_guard<std::mutex> lock(log.mutex);
+    ++log.count;
+    if (text == log.lastMessage) return;
+    log.lastMessage = text;
+    std::fprintf(stderr, "EVEngine: script call failed (%s): %s\n", what ? what : "?", text.c_str());
+}
+
+int reportedScriptCallFailures() {
+    ScriptCallFailureLog&       log = scriptCallFailureLog();
+    std::lock_guard<std::mutex> lock(log.mutex);
+    return log.count;
+}
+
+void resetReportedScriptCallFailures() {
+    ScriptCallFailureLog&       log = scriptCallFailureLog();
+    std::lock_guard<std::mutex> lock(log.mutex);
+    log.count = 0;
+    log.lastMessage.clear();
+}
+
 namespace {
 
 struct ConversionContext {
