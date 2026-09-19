@@ -340,12 +340,20 @@ function testViewCacheStableAndInvalidated() {
     local a = Node.create()
     local b = Sub.create()
 
-    // No changes between calls → same cached array identity (zero allocation
-    // per frame in System.entities()).
+    // No changes between calls → same *content*. The returned array is fresh every
+    // call on purpose: the cache stays internal, so a caller that sorts, pops or
+    // appends to its view cannot change what the next caller sees. (The view cache
+    // still saves the expensive part — walking every registered type.)
     local v1 = eve.view(Node)
     if (v1.len() != 2) return false
     local v2 = eve.view(Node)
-    if (v1 != v2) return false
+    if (v1 == v2) return false
+    if (v2.len() != 2) return false
+
+    // Mutating a view is local to the caller and must not leak into the cache.
+    v1.pop()
+    if (v1.len() != 1) return false
+    if (eve.view(Node).len() != 2) return false
 
     local sv1 = eve.view(Sub)
     if (sv1.len() != 1) return false
@@ -394,6 +402,33 @@ function testComponentDefaultsAndSlotsCached() {
 
     a.destroy()
     b.destroy()
+    return true
+}
+
+function testDestroyClearsComponentState() {
+    class Pos extends eve.Component { x = 0.0 }
+    class Node extends eve.Entity { pos = Pos }
+
+    local n = Node.create()
+    local pos = n.getComponent(Pos)
+    if (pos == null) return false
+    if (!n.hasComponent(Pos)) return false
+    if (n.pos != pos) return false
+    pos.x = 5.0
+
+    n.destroy()
+
+    // Destroyed means gone: unreachable through both the component lookup and the
+    // field, and no longer silently writable-but-ignored.
+    if (n.isAlive()) return false
+    if (n.getComponent(Pos) != null) return false
+    if (n.hasComponent(Pos)) return false
+    if (n.pos != null) return false
+    if (eve.view(Node).len() != 0) return false
+
+    // Destroying twice stays a no-op.
+    n.destroy()
+    if (n.getComponent(Pos) != null) return false
     return true
 }
 
@@ -463,6 +498,10 @@ TEST_CASE_FIXTURE(ScriptEcsTest, "ScriptECS.viewCacheBaseClassIncludesSubclasses
 
 TEST_CASE_FIXTURE(ScriptEcsTest, "ScriptECS.componentDefaultsAndSlotsCached") {
     CHECK(vm.callFunc(vm.findFunc("testComponentDefaultsAndSlotsCached"), vm).toBool());
+}
+
+TEST_CASE_FIXTURE(ScriptEcsTest, "ScriptECS.destroyClearsComponentState") {
+    CHECK(vm.callFunc(vm.findFunc("testDestroyClearsComponentState"), vm).toBool());
 }
 
 TEST_CASE_FIXTURE(ScriptEcsTest, "ScriptECS.gpuDrivenBindingSurface") {

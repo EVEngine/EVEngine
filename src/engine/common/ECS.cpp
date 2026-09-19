@@ -353,6 +353,13 @@ eve.Entity <- class {
         if (!_alive) return
         _alive = false
         if (_etype != null) eve._ecsUnregisterInstance(this, _etype)
+        // 组件状态一并释放。留着它的话，销毁后的实体仍然可读可写、却对任何 view 无效
+        // （静默 no-op），而且每个组件对象都被这个已销毁的实体继续引用着。
+        // `_slots` 只描述类结构、不含实例状态，保留。
+        if (_slots != null) {
+            foreach (name, compClass in _slots) this[name] = null
+        }
+        _comps = null
     }
 }
 
@@ -734,11 +741,24 @@ function eve::view(entityClass) {
     // C++ 桥接类的实体在脚本外增删（无法通知脚本），不缓存，每次新鲜收集
     local cppBacked = false
     if ("_cppHasView" in this) cppBacked = this._cppHasView(entityClass)
-    if (!cppBacked && (entityClass in this._ecsViewCache)) return this._ecsViewCache[entityClass]
+
+    // 每次调用都返回**新数组**：缓存只保存脚本侧收集结果（遍历 _ecsTypes 才是贵的
+    // 那一步），绝不外借。否则调用方 sort/pop/append 自己的视图就会污染其他使用者。
     local out = []
-    this._ecsCollectInstances(entityClass, out)
+    if (cppBacked) {
+        this._ecsCollectInstances(entityClass, out)
+    } else {
+        if (!(entityClass in this._ecsViewCache)) {
+            local collected = []
+            this._ecsCollectInstances(entityClass, collected)
+            this._ecsViewCache[entityClass] <- collected
+        }
+        local cached = this._ecsViewCache[entityClass]
+        local count = cached.len()
+        out.resize(count)
+        for (local i = 0; i < count; ++i) out[i] = cached[i]
+    }
     if ("_cppCollect" in this) this._cppCollect(entityClass, out)
-    if (!cppBacked) this._ecsViewCache[entityClass] <- out
     return out
 }
 

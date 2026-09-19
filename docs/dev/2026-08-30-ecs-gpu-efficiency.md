@@ -68,6 +68,8 @@ sys.requestReadback(0)
 
 - Entity 范围：传给构造函数的脚本 Entity 类型及其派生类型。
 - View：`eve.view(query)` 的稳定顺序快照；创建/销毁递增结构 revision 并触发重打包。
+  每次调用返回**新数组**（视图缓存只在内部复用"遍历注册表"这一步），因此调用方
+  sort/pop/append 自己的视图不会影响其他使用者。
 - 读取/写入：由 shader 与 `bindFields` 共同声明；引擎不从 GLSL 反射访问模式。
 - 结构变化：system 自身不创建、销毁或增删组件；外部结构变化在下一次 update 前失效驻留打包。
 - 事件：无。
