@@ -482,7 +482,19 @@ TEST_CASE("devtools.snapshot.v1Compat") {
     sq_settop(v, top);
 }
 
-TEST_CASE("devtools.snapshot.rejectsFunctionInRoot") {
+namespace {
+
+/** @brief The `skipped` list a capture recorded inside the state, if any. */
+std::vector<std::string> skippedEntries(const eve::StateValue& state) {
+    std::vector<std::string> entries;
+    const eve::StateValue*   list = state.find("skipped");
+    if (!list || !list->isArray()) return entries;
+    for (std::size_t i = 0; i < list->arraySize(); ++i) entries.push_back(list->at(i).asString());
+    return entries;
+}
+
+}  // namespace
+TEST_CASE("devtools.snapshot.skipsFunctionInsideRootAndNamesIt") {
     ssq::VM     vm(1024, ssq::Libs::ALL);
     HSQUIRRELVM v = vm.getHandle();
     ssq::Script s = vm.compileSource("gameState <- { level = 3 }; gameState.tick <- function() { return 1; };");
@@ -492,44 +504,147 @@ TEST_CASE("devtools.snapshot.rejectsFunctionInRoot") {
     snap.clearRoots();
     eve::StateValue out;
     std::string     err;
-    CHECK(!snap.captureState(v, out, &err));
-    CHECK(err.find("non-serializable") != std::string::npos);
-    CHECK(err.find("gameState") != std::string::npos);
+    // A closure is not state (the reloaded script recreates it), so it is left out and
+    // named -- the header always said "skipped", but the capture used to fail instead.
+    // This case and the next one used to contradict each other while both "passed": every
+    // assertion here was CHECK, which is warning-level.
+    REQUIRE(snap.captureState(v, out, &err));
+    REQUIRE(err.empty());
+
+    const eve::StateValue* roots = out.find("roots");
+    REQUIRE(roots != nullptr);
+    const eve::StateValue* state = roots->find("gameState");
+    REQUIRE(state != nullptr);
+    REQUIRE(state->find("level") != nullptr);
+    REQUIRE(state->find("tick") == nullptr);
+
+    const std::vector<std::string> skipped = skippedEntries(out);
+    REQUIRE(skipped.size() == 1);
+    REQUIRE(skipped[0].find("gameState.tick") != std::string::npos);
+    REQUIRE(skipped[0].find("function") != std::string::npos);
+
+    // The same list travels with the captured state so a tool (or the persisted
+    // eve_snapshot.json) can show what was not preserved.
+    const eve::StateValue* reported = out.find("skipped");
+    REQUIRE(reported != nullptr);
+    REQUIRE(reported->isArray());
 }
 
-TEST_CASE("devtools.snapshot.rejectsInstanceRoot") {
+TEST_CASE("devtools.snapshot.skipsInstanceInsideContainerAndNamesIt") {
     ssq::VM     vm(1024, ssq::Libs::ALL);
     HSQUIRRELVM v = vm.getHandle();
-    ssq::Script s = vm.compileSource("class Hero { level = 1; } gameState <- Hero();");
+    // No `gameState` / `state` / `eve_state` root, so the full root scan runs -- the prefix
+    // heuristic would otherwise capture that one conventional root and ignore the rest.
+    ssq::Script s = vm.compileSource(
+        "class Hero { level = 1; } squad <- [Hero(), Hero()]; progress <- { level = 3, leader = Hero() };");
     vm.run(s);
 
     Snapshot& snap = Snapshot::instance();
     snap.clearRoots();
     eve::StateValue out;
     std::string     err;
-    CHECK(!snap.captureState(v, out, &err));
-    CHECK(err.find("class instance") != std::string::npos);
+    // The motivating case: keeping entity instances in a container is what the script ECS
+    // encourages, and it used to refuse the entire capture (so: refuse the hot reload).
+    REQUIRE(snap.captureState(v, out, &err));
+    REQUIRE(err.empty());
+
+    const eve::StateValue* roots = out.find("roots");
+    REQUIRE(roots != nullptr);
+    const eve::StateValue* state = roots->find("progress");
+    REQUIRE(state != nullptr);
+    REQUIRE(state->find("level") != nullptr);
+    REQUIRE(state->find("leader") == nullptr);
+    REQUIRE(roots->find("squad") != nullptr);  // the array itself is captured, its items are not
+
+    // Both the table member and the array elements are reported, with their paths.
+    const std::vector<std::string> skipped = skippedEntries(out);
+    REQUIRE(skipped.size() == 3);
+    const bool namedLeader        = std::any_of(skipped.begin(), skipped.end(), [](const std::string& entry) {
+        return entry.find("progress.leader") != std::string::npos && entry.find("class instance") != std::string::npos;
+    });
+    const bool namedArrayElements = std::any_of(skipped.begin(), skipped.end(), [](const std::string& entry) {
+        return entry.find("squad[0]") != std::string::npos || entry.find("squad[1]") != std::string::npos;
+    });
+    REQUIRE(namedLeader);
+    REQUIRE(namedArrayElements);
+}
+
+TEST_CASE("devtools.snapshot.skipsMarkedInstanceRootAndNamesIt") {
+    ssq::VM     vm(1024, ssq::Libs::ALL);
+    HSQUIRRELVM v = vm.getHandle();
+    ssq::Script s = vm.compileSource("class Hero { level = 1; } hero <- Hero(); gameState <- { level = 3 };");
+    vm.run(s);
+
+    Snapshot& snap = Snapshot::instance();
+    snap.clearRoots();
+    snap.markRoot("hero");
+    snap.markRoot("gameState");
+
+    eve::StateValue out;
+    std::string     err;
+    // An explicitly marked root of an unserializable type is treated like a member: left
+    // out, named, capture continues. It used to fail the whole capture.
+    REQUIRE(snap.captureState(v, out, &err));
+    REQUIRE(err.empty());
+    const eve::StateValue* roots = out.find("roots");
+    REQUIRE(roots != nullptr);
+    REQUIRE(roots->find("gameState") != nullptr);
+    REQUIRE(roots->find("hero") == nullptr);
+    const std::vector<std::string> skipped = skippedEntries(out);
+    REQUIRE(skipped.size() == 1);
+    REQUIRE(skipped[0].find("hero") != std::string::npos);
+    snap.clearRoots();
 }
 
 TEST_CASE("devtools.snapshot.skipsInstanceRootInAutoScan") {
     ssq::VM     vm(1024, ssq::Libs::ALL);
     HSQUIRRELVM v = vm.getHandle();
-    ssq::Script s =
-        vm.compileSource("class Hero { level = 1; } hero <- Hero(); gameState <- { level = 3 };");
+    // Same reason as above: no conventional state root, so every root is examined.
+    ssq::Script s = vm.compileSource("class Hero { level = 1; } hero <- Hero(); level <- 3;");
     vm.run(s);
 
     Snapshot& snap = Snapshot::instance();
     snap.clearRoots();
     eve::StateValue out;
     std::string     err;
-    // Class instances at the root (module singletons, ECS worlds, ...) must not
-    // abort the automatic state scan; plain-data roots are still captured.
-    CHECK(snap.captureState(v, out, &err));
-    CHECK(err.empty());
+    // Class instances at the root (module singletons, ECS worlds, ...) must not abort the
+    // automatic state scan; plain-data roots are still captured -- and the skip is named.
+    REQUIRE(snap.captureState(v, out, &err));
+    REQUIRE(err.empty());
     const eve::StateValue* roots = out.find("roots");
     REQUIRE(roots != nullptr);
-    CHECK(roots->find("gameState") != nullptr);
-    CHECK(roots->find("hero") == nullptr);
+    REQUIRE(roots->find("level") != nullptr);
+    REQUIRE(roots->find("hero") == nullptr);
+    // `Hero` (the class definition) is a root too and is deliberately *not* named: every
+    // script class and function is a root, so naming those would drown the list.
+    const std::vector<std::string> skipped = skippedEntries(out);
+    REQUIRE(skipped.size() == 1);
+    REQUIRE(skipped[0].find("hero") != std::string::npos);
+}
+
+TEST_CASE("devtools.snapshot.conventionalRootCapturesOnlyItself") {
+    ssq::VM     vm(1024, ssq::Libs::ALL);
+    HSQUIRRELVM v = vm.getHandle();
+    ssq::Script s = vm.compileSource("gameState <- { level = 3 }; squad <- [1, 2];");
+    vm.run(s);
+
+    Snapshot& snap = Snapshot::instance();
+    snap.clearRoots();
+    eve::StateValue out;
+    std::string     err;
+    REQUIRE(snap.captureState(v, out, &err));
+
+    // Pinning the compatibility heuristic as it is: when a conventional state root exists,
+    // only that root is captured and the other globals are not part of the snapshot at
+    // all. This is why the two cases above must avoid the conventional names -- and it is
+    // the other half of "a global can silently miss the snapshot" that 2.5 complained
+    // about. Changing it (capture every data root) is a policy decision, not a bug fix.
+    const eve::StateValue* roots = out.find("roots");
+    REQUIRE(roots != nullptr);
+    REQUIRE(roots->find("gameState") != nullptr);
+    REQUIRE(roots->find("squad") == nullptr);
+    const std::vector<std::string> skipped = skippedEntries(out);
+    REQUIRE(skipped.empty());
 }
 
 TEST_CASE("devtools.debugger.normalizeSource") {
