@@ -306,6 +306,45 @@ one flat sky-blue disc - exactly the look the comment says the term exists to av
 winding corrected the ocean shades as deep water, lightens at the shore, and only mirrors the
 sky at the limb.
 
+## Open defect: the corner family has no single winding convention
+
+A rendered planet still shows a small dark triangle missing at **every** height step, and the
+mesh censuses above cannot see it. `analyseWeld` counts an edge as an *unordered* vertex pair, so
+a mesh whose two triangles disagree about which side is out still reports zero boundary edges and
+zero non-manifold edges - it is "closed" in the only sense that census tests. Winding only shows
+up in the **direction** of each shared edge: on a consistently oriented surface the two triangles
+sharing an edge traverse it in opposite directions. A directed-edge census added to
+`test/hexmap_sphere.cpp` measures **54 doubled directed edges** at subdivision 1, i.e. 54
+triangles whose neighbour disagrees with them and which are therefore culled.
+
+Measured, same map and `scatterElevation`, subdivision 1:
+
+| emission policy | doubled directed edges | radially inward |
+| --- | --- | --- |
+| no orientation decision (fixed emission order) | 102 | 2402 |
+| `facesInward` per face (current) | 54 | 5 |
+
+So the per-face decision helps but cannot finish the job, and the reason is not numerical - it is
+that the criterion is invalid on this geometry. A height step is locally a cone; writing `k` for
+the radial growth per unit height, the correct outward normal at a point on it satisfies
+`dot(normal, position) = |p| * (1 - k)` up to scale. Below 45 degrees (`k < 1`) the sign is
+positive and the test works; **above 45 degrees (`k > 1`) the correctly wound wall has a negative
+dot product, so `facesInward` inverts exactly the steepest walls** - which is why the missing
+triangles sit on the high steps and not on the gentle ones. For the same reason
+`countInwardFacingTriangles` is not a valid orientation oracle here, and its old
+`REQUIRE_EQ(..., 0)` was satisfied by a mesh that still has 54 culled faces.
+
+The root cause is structural: the corner family (`appendCornerTriangles` here, `appendCorner` on
+the planar side) **permutes its three points by elevation**, so the same junction is emitted in
+either cyclic order depending on which of the three cells emitted it. That destroys the module's
+single winding convention, and no local geometric test can recover it, because a near-vertical
+face gives no signal about which way round it was meant to be. The fix is to rebuild the corner
+family around one convention - keep the construction order and use the elevation comparison only
+to select which variant to emit, never to reorder the points - and then assert the directed-edge
+census is zero at subdivisions 1, 2 and 4. The census and its diagnostics are written and proved
+to catch the defect (they report the 54); they are deliberately not committed yet, because
+shipping them now would mean either a red suite or a frozen baseline.
+
 Still open, unchanged from the gap list above: bindable texture arrays and independent
 ORM maps (gaps 2-4), production hydrology (gap 6), and instanced vegetation independent of
 the terrain rebuild (gap 7). `HexMapModule` now has a test file
