@@ -152,6 +152,10 @@ void recordReload(const std::string& path, const std::string& result) {
 
 }  // namespace
 
+void EditorHost::recordHostResourceOutcome(const std::string& path, const std::string& result) {
+    recordReload(path, result);
+}
+
 std::string EditorHost::reloadResource(const std::string& input) {
     if (!running()) return "error: host not started";
     std::filesystem::path absolute;

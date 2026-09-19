@@ -177,3 +177,37 @@ TEST_CASE("devtools.mcp.hostScriptFailureCarriesTheReason") {
     host.stop();
     std::filesystem::remove_all(root2);
 }
+
+TEST_CASE("devtools.mcp.startupViewModelFailureIsVisible") {
+    auto& host = eve::ui::EditorHost::instance();
+    host.stop();
+
+    const auto root =
+        std::filesystem::temp_directory_path() /
+        ("eve_mcp_startup_" + std::to_string(std::chrono::steady_clock::now().time_since_epoch().count()));
+    std::filesystem::create_directories(root / "editors");
+    writeText(
+        root / "editors" / "broken.editor.json",
+        R"({"id":"broken","title":"Broken","vm":"BrokenVM","children":[{"type":"slider","id":"v","value":1,"bind":"vm.v"}]})");
+    // The manifest is fine; the ViewModel throws while it is loaded at startup.
+    writeText(root / "editors" / "broken.vm.nut", "::BrokenVM <- { v = 1 };\nthrow \"startup vm exploded\";\n");
+
+    ssq::VM vm(1024, ssq::Libs::ALL);
+    eve::script::installScriptErrorHook(vm.getHandle());
+    eve::script::resetReportedScriptCallFailures();
+    host.start(vm, root.string(), /*allowWindow=*/false);
+
+    // The editor itself still loads -- only its script failed -- and that failure must be
+    // visible through the status an MCP client reads. Before this, the result was
+    // discarded and hotReloadStatus() reported a healthy host.
+    REQUIRE(host.listEditors().find("broken") != std::string::npos);
+    const auto status = parseObject(host.hotReloadStatus());
+    REQUIRE(status);
+    REQUIRE(status->getValue<int>("failureCount") >= 1);
+    const std::string lastResult = status->getValue<std::string>("lastResult");
+    REQUIRE(lastResult.rfind("error:", 0) == 0);
+    REQUIRE(lastResult.find("startup vm exploded") != std::string::npos);
+
+    host.stop();
+    std::filesystem::remove_all(root);
+}

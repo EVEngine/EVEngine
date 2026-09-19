@@ -1378,6 +1378,12 @@ void EditorHost::loadEditorsFromDisk() {
         if (!json.empty()) pending.emplace_back(id, json);
     }
     for (const auto& [id, json] : pending) {
+        // Every outcome is recorded, not just the happy path: a ViewModel that fails to
+        // load at startup used to be invisible (the result was discarded and the parse
+        // exception swallowed), so an MCP client asking hotReloadStatus() saw a healthy
+        // host while the editor had no working script behind it.
+        const std::string resource = "editors/" + id + ".editor.json";
+        std::string       result;
         try {
             Object::Ptr root = parseObject(json);
             const std::string vmName = strOf(root, "vm");
@@ -1385,11 +1391,17 @@ void EditorHost::loadEditorsFromDisk() {
                 std::ifstream ifs2(dir / (id + ".vm.nut"));
                 std::string src((std::istreambuf_iterator<char>(ifs2)),
                                 std::istreambuf_iterator<char>());
-                if (!src.empty()) registerVM(vmName, src);
+                if (!src.empty()) result = registerVM(vmName, src);
             }
+        } catch (const std::exception& e) {
+            result = std::string("error: ") + e.what();
         } catch (...) {
+            result = "error: editor manifest load failed";
         }
-        applyEditor(json);
+        if (result.rfind("error:", 0) == 0) recordHostResourceOutcome(resource, result);
+
+        const std::string applied = applyEditor(json);
+        if (applied.rfind("error:", 0) == 0) recordHostResourceOutcome(resource, applied);
     }
 }
 
