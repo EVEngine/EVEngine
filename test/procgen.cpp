@@ -841,6 +841,26 @@ TEST_CASE("procgen.mesh.tree.renderDump") {
     win->close();
 }
 
+TEST_CASE("procgen.mesh.flower.reproducible") {
+    MeshRecipeRegistry::instance().registerBuiltins();
+    Params p;
+    p.setSeed(20260917u);
+    p.setFloat("height", 0.6f);
+    p.setInt("petals", 6);
+    MeshBuild a, b;
+    std::string err;
+    CHECK(MeshRecipeRegistry::instance().generate("mesh.flower", p, a, err));
+    CHECK(MeshRecipeRegistry::instance().generate("mesh.flower", p, b, err));
+    CHECK(a.getVertexCount() > 0);
+    CHECK(a.positions() == b.positions());
+    CHECK(a.indices() == b.indices());
+    CHECK(meshIndicesInRange(a));
+    CHECK(meshPositionsFinite(a));
+    CHECK(meshNormalsFiniteUnit(a));
+    CHECK_EQ(a.getMeta("recipe", ""), "mesh.flower");
+    CHECK_EQ(a.getMeta("petals", ""), "6");
+}
+
 TEST_CASE("procgen.mesh.bush.reproducibleAndStyles") {
     MeshRecipeRegistry::instance().registerBuiltins();
     Params p;
@@ -3159,11 +3179,145 @@ TEST_CASE("procgen.cloud.viaModule") {
 }
 
 
+
+
+TEST_CASE("procgen.mesh.bush.ovateLeafCards") {
+    MeshRecipeRegistry::instance().registerBuiltins();
+    Params p;
+    p.setSeed(42);
+    p.setString("style", "mound");
+    p.setString("leafMode", "cards");
+    p.setInt("blobs", 3);
+    p.setInt("twigs", 0);
+    p.setFloat("leafDensity", 1.f);
+    p.setFloat("leafSize", 0.25f);
+    p.setInt("rings", 3);
+    p.setInt("radialSegments", 6);
+    std::string err;
+    MeshBuild out;
+    REQUIRE(MeshRecipeRegistry::instance().generate("mesh.bush", p, out, err));
+    // Transparent leaf cards are double-sided quads sampling one of six panels.
+    CHECK(out.getVertexCount() >= 4);
+    CHECK(out.getVertexCount() % 4 == 0);
+    for (int leaf = 0; leaf < out.getVertexCount(); leaf += 4) {
+        float uMin = 1.f, uMax = 0.f, vMin = 1.f, vMax = 0.f;
+        for (int i = 0; i < 4; ++i) {
+            uMin = std::min(uMin, out.getUvU(leaf + i));
+            uMax = std::max(uMax, out.getUvU(leaf + i));
+            vMin = std::min(vMin, out.getUvV(leaf + i));
+            vMax = std::max(vMax, out.getUvV(leaf + i));
+        }
+        CHECK(uMin >= 0.52f - 1e-3f);
+        CHECK(uMax <= 1.f + 1e-3f);
+        // One 2×3 panel (not the full card half).
+        CHECK(uMax - uMin < 0.28f);
+        CHECK(vMax - vMin < 0.40f);
+    }
+}
+
+TEST_CASE("procgen.texture.foliage.sixLeafCardPanels") {
+    TextureRecipeRegistry::instance().registerBuiltins();
+    Params p;
+    p.setSeed(20260922);
+    p.setSize(256, 256);
+    p.setFloat("scale", 4.2f);
+    p.setInt("seamless", 1);
+    p.setInt("colors", 7);
+    std::string err;
+    auto img = TextureRecipeRegistry::instance().generate("tex.foliage", p, err);
+    REQUIRE(static_cast<bool>(img));
+    const int w = img->getWidth();
+    const int h = img->getHeight();
+    // Each of the 6 panels (2×3) should contain several opaque leaf texels.
+    for (int row = 0; row < 3; ++row) {
+        for (int col = 0; col < 2; ++col) {
+            int opaque = 0;
+            const int x0 = int((0.52f + float(col) * 0.24f) * float(w - 1));
+            const int x1 = int((0.52f + float(col + 1) * 0.24f) * float(w - 1));
+            const int y0 = int((float(row) / 3.f) * float(h - 1));
+            const int y1 = int((float(row + 1) / 3.f) * float(h - 1));
+            for (int y = y0; y < y1; y += 2) {
+                for (int x = x0; x < x1; x += 2) {
+                    if (img->getPixel(x, y).a > 0.9f) ++opaque;
+                }
+            }
+            CHECK(opaque >= 8);
+        }
+    }
+}
+
+TEST_CASE("procgen.texture.foliage.barkTwigStrip") {
+    TextureRecipeRegistry::instance().registerBuiltins();
+    Params p;
+    p.setSeed(11);
+    p.setSize(64, 64);
+    p.setFloat("scale", 4.f);
+    p.setInt("seamless", 1);
+    p.setInt("colors", 7);
+    std::string err;
+    auto img = TextureRecipeRegistry::instance().generate("tex.foliage", p, err);
+    REQUIRE(static_cast<bool>(img));
+    // Left bark strip should be opaque brown (R≈G≈B-ish warm, not leaf-green).
+    const auto c = img->getPixel(2, 32);
+    CHECK(c.a > 0.9f);
+    CHECK(c.r > c.b);
+    CHECK(c.g < c.r + 0.12f);
+}
+
+TEST_CASE("procgen.texture.foliage.leafCardAlpha") {
+    TextureRecipeRegistry::instance().registerBuiltins();
+    Params p;
+    p.setSeed(20260922);
+    p.setSize(128, 128);
+    p.setFloat("scale", 4.2f);
+    p.setInt("seamless", 1);
+    p.setInt("colors", 7);
+    std::string err;
+    auto img = TextureRecipeRegistry::instance().generate("tex.foliage", p, err);
+    REQUIRE(static_cast<bool>(img));
+    const int w = img->getWidth();
+    const int h = img->getHeight();
+    double rightA = 0.0;
+    int rightN = 0, rightZero = 0;
+    for (int y = 0; y < h; y += 2) {
+        for (int x = 0; x < w; x += 2) {
+            const auto c = img->getPixel(x, y);
+            const float u = float(x) / float(std::max(1, w - 1));
+            if (u <= 0.52f) continue;
+            rightA += c.a;
+            ++rightN;
+            if (c.a < 0.05f) ++rightZero;
+        }
+    }
+    REQUIRE(rightN > 0);
+    // Card half must stay mostly transparent so single-stamp leaf cards alpha-cut.
+    CHECK(rightA / double(rightN) < 0.55);
+    CHECK(double(rightZero) / double(rightN) > 0.20);
+    // Opaque leaf texels are flat solid colour (no internal texture noise).
+    double sumG = 0.0, sumG2 = 0.0;
+    int    solidN = 0;
+    for (int y = 0; y < h; y += 2) {
+        for (int x = 0; x < w; x += 2) {
+            const auto c = img->getPixel(x, y);
+            const float u = float(x) / float(std::max(1, w - 1));
+            if (u <= 0.52f || c.a < 0.9f) continue;
+            sumG += c.g;
+            sumG2 += double(c.g) * double(c.g);
+            ++solidN;
+        }
+    }
+    REQUIRE(solidN > 8);
+    const double mean = sumG / double(solidN);
+    const double var  = sumG2 / double(solidN) - mean * mean;
+    CHECK(var < 0.0025);
+}
+
 TEST_CASE("procgen.texture.builtinRecipes.expanded") {
     TextureRecipeRegistry::instance().registerBuiltins();
     const char *ids[] = {"tex.soil",    "tex.stone",   "tex.rock",   "tex.marble", "tex.water",
                          "tex.ripple",  "tex.sky_cloud", "tex.wood", "tex.cloth",  "tex.ornament",
-                         "tex.spot",    "tex.zebra",   "tex.wall",   "tex.cement", "tex.mud"};
+                         "tex.spot",    "tex.zebra",   "tex.wall",   "tex.cement", "tex.mud",
+                         "tex.bark",    "tex.foliage", "tex.moss",   "tex.tree_atlas", "tex.flower"};
     for (const char *id : ids) {
         Params p;
         p.setSeed(11);
