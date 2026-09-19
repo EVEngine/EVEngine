@@ -32,10 +32,17 @@ namespace eve {
  *
  * Writers and readers of the log share these constants so an external tool can
  * delimit sessions without duplicating a literal that could silently drift.
+ * @ownership The pointer is borrowed, not owned: it addresses a string literal
+ *            with static storage duration.
+ * @lifetime Static: valid for the whole process, never freed by the caller.
  */
 inline constexpr const char* kSessionStartMarker = "EVEngine session start";
 
-/** @brief Marker text that closes a session block (followed by the exit code). */
+/**
+ * @brief Marker text that closes a session block (followed by the exit code).
+ * @ownership Borrowed pointer to a static string literal; the caller owns nothing.
+ * @lifetime Static storage duration; valid for the whole process.
+ */
 inline constexpr const char* kSessionEndMarker = "session end (exit code";
 
 /**

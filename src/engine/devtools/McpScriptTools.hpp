@@ -9,13 +9,21 @@
  * (`eve_run_script`, `eve_host_script`), which an agent cannot discover from
  * `tools/list` and cannot call by name. This registry lets a project publish a
  * named, described, schema-carrying endpoint that the embedded server advertises
- * exactly like a built-in tool:
+ * exactly like a built-in tool.
+ *
+ * @ownership Registered handlers and schemas are borrowed Squirrel objects owned
+ *            by the host VM; the registry owns no closure and never frees one.
+ * @lifetime A registration stays valid until it is removed, replaced, shadowed by
+ *           a built-in name, or the owning VM detaches.
+ * @thread Game-loop thread only, like the MCP server poll that dispatches them.
+ *         Registration and dispatch are mutex-guarded so a handler may re-enter
+ *         the registry (for example to register another tool) without deadlocking.
  *
  * @code
  * eve.mcp.tool("game_npcs", {
  *     description = "List live NPCs",
  *     inputSchema = { type = "object", properties = { lane = { type = "string" } } },
- *     handler     = function(args) { return { count = 3 }; }
+ *     handler = function(args) { return { count = 3 }; }
  * });
  * @endcode
  *
@@ -24,11 +32,6 @@
  * (`editor.registerScriptCommand` + `eve_editor_execute`), which owns
  * transactions, validation and undo. Publishing a second write path for the same
  * document would break that authority.
- *
- * Thread affinity: registration and dispatch happen on the game-loop thread,
- * which is also where the MCP server polls. The registry is mutex-guarded so a
- * handler may re-enter it (for example to register another tool) without
- * deadlocking.
  */
 
 #include <Poco/JSON/Object.h>
