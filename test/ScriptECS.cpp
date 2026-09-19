@@ -516,6 +516,27 @@ function testGpuDrivenBindingSurface() {
            gpu.getGpuResidentOffsetAlignment() == 256
 }
 
+function testGpgpuSurfaceWithoutAGraphicsDevice() {
+    // 上面那条钉的是"模块面齐全"；这条钉的是**设备缺席**时的契约：本 fixture 有 gpgpu 模块类，
+    // 但从未调用 `openGfxWindow`，所以 `isAvailable()` 必须为 false，而
+    // `eve.ShaderSystem` 仍允许构造、`bindFields`/`update()` 是 no-op 且**不抛**
+    // （`EcsGpu.h` 与 `docs/dev/2026-08-30-ecs-gpu-efficiency.md` 的声明）。
+    // 实测（探针，跑完已撤）：`gpuNonnull=true isAvailable=false update=ok`。
+    // "设备存在"半边由 `GpuDriven.squirrelResidentInstanceSubmit` 在真机上覆盖。
+    local gpu = eve.Gpgpu()
+    if (gpu == null) return false
+    if (gpu.isAvailable()) return false
+
+    class Pos extends eve.Component { x = 0.0; y = 0.0 }
+    class Vel extends eve.Component { x = 1.0; y = 0.0 }
+    class Mover extends eve.Entity { pos = Pos; vel = Vel }
+    local sys = eve.ShaderSystem(Mover)
+    sys.bindFields(0, "pos", ["x", "y"])
+    sys.bindFields(1, "vel", ["x", "y"])
+    sys.update(0.016)
+    return true
+}
+
 // 视图顺序 = 实体 id 升序（= 创建顺序）。
 //
 // `_ecsUnregisterInstance` 用 swap-remove 保持 O(1) 销毁，数组本身在删除后会失序（实测
@@ -648,6 +669,10 @@ TEST_CASE_FIXTURE(ScriptEcsTest, "ScriptECS.registryOnlySlotHasNoField") {
 
 TEST_CASE_FIXTURE(ScriptEcsTest, "ScriptECS.gpuDrivenBindingSurface") {
     REQUIRE(callScript("testGpuDrivenBindingSurface"));
+}
+
+TEST_CASE_FIXTURE(ScriptEcsTest, "ScriptECS.gpgpuSurfaceWithoutAGraphicsDevice") {
+    REQUIRE(callScript("testGpgpuSurfaceWithoutAGraphicsDevice"));
 }
 
 TEST_CASE_FIXTURE(ScriptEcsTest, "ScriptECS.viewOrderIsEntityIdOrder") {

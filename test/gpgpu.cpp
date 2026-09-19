@@ -930,3 +930,56 @@ TEST_CASE_FIXTURE(EcsPackFixture, "gpgpu.ecsPack.errors") {
     ssq::Object scalar = vm.callFunc(vm.findFunc("getScalar"), vm);
     CHECK_EQ(packScriptEntityFloats(scalar, "Vec", fields, &buf), 0);
 }
+
+// ---------------------------------------------------------------------------
+// Script ECS components (eve.Entity / eve.Component), not plain Squirrel classes.
+// ---------------------------------------------------------------------------
+//
+// `EcsPackFixture` above declares `class Vec` / `class Entity` by hand, so it never touched
+// the script ECS the engine actually ships: the case below goes through
+// `eve.Entity.create()`, whose component instance lives in `_comps[name]` *and* in the
+// declared field slot (`e.pos`). That field slot is what `packScriptEntityFloats` reads, so
+// this pins the third interop bridge from plan doc 2.1 -- script component numbers entering
+// a GPU buffer -- for the real component objects.
+
+UnitSciptTest(EcsPackScriptEcsFixture, R"SQ(
+class Pos extends eve.Component { x = 1.0; y = 2.0 }
+class Node extends eve.Entity { pos = Pos }
+function makeNodes() {
+    local a = Node.create(); a.pos.x = 1.0; a.pos.y = 2.0
+    local b = Node.create(); b.pos.x = 3.0; b.pos.y = 4.0
+    return [a, b]
+}
+function getNodes() { return makeNodes() }
+function getView() { return eve.view(Node) }
+function getFields() { return ["x", "y"] }
+function readBack(ents) { return [ents[0].pos.x, ents[0].pos.y, ents[1].pos.x, ents[1].pos.y] }
+)SQ");
+
+TEST_CASE_FIXTURE(EcsPackScriptEcsFixture, "gpgpu.ecsPack.scriptEcsComponentsRoundTrip") {
+    ssq::Object ents   = vm.callFunc(vm.findFunc("getNodes"), vm);
+    ssq::Object view   = vm.callFunc(vm.findFunc("getView"), vm);
+    ssq::Object fields = vm.callFunc(vm.findFunc("getFields"), vm);
+    TestBuffer  buf(4 * int(sizeof(float)));
+
+    REQUIRE_EQ(packScriptEntityFloats(ents, "pos", fields, &buf), 2);
+    REQUIRE(std::fabs(buf.floats[0] - 1.f) < 1e-5f);
+    REQUIRE(std::fabs(buf.floats[1] - 2.f) < 1e-5f);
+    REQUIRE(std::fabs(buf.floats[2] - 3.f) < 1e-5f);
+    REQUIRE(std::fabs(buf.floats[3] - 4.f) < 1e-5f);
+
+    // The same components packed through eve.view() -- the array the GPU system actually
+    // packs -- and in entity-id order, which is what makes the row indices deterministic.
+    REQUIRE_EQ(packScriptEntityFloats(view, "pos", fields, &buf), 2);
+    REQUIRE(std::fabs(buf.floats[0] - 1.f) < 1e-5f);
+    REQUIRE(std::fabs(buf.floats[2] - 3.f) < 1e-5f);
+
+    // Read back into the component instances through the entity field slot.
+    buf.floats = {10.f, 20.f, 30.f, 40.f};
+    REQUIRE_EQ(unpackScriptEntityFloats(ents, "pos", fields, &buf, 2), 2);
+    ssq::Object back = vm.callFunc(vm.findFunc("readBack"), vm, ents);
+    REQUIRE(std::fabs(readArrayFloat(vm, back, 0) - 10.f) < 1e-5f);
+    REQUIRE(std::fabs(readArrayFloat(vm, back, 1) - 20.f) < 1e-5f);
+    REQUIRE(std::fabs(readArrayFloat(vm, back, 2) - 30.f) < 1e-5f);
+    REQUIRE(std::fabs(readArrayFloat(vm, back, 3) - 40.f) < 1e-5f);
+}
