@@ -145,6 +145,7 @@ GAME ?=
 	link-compile-commands download-classic-scenes download-skinned-character \
 	check/test-manifest check/module-layers check/bindings check/nodiscard check/quality-metadata \
 	check/profile-matrix check/architecture-contracts check/quality check/examples \
+	check/test-case-lines check/sq-call-sites check/test-assert-level \
 	profile profile/configure profile/build profile/smoke profile/dry-run \
 	ensure-built/win32 ensure-built/win32-debug ensure-built/linux ensure-built/linux-debug \
 	ensure-built/macosx ensure-built/macosx-debug \
@@ -208,6 +209,14 @@ check/test-case-lines:
 check/sq-call-sites:
 	python3 scripts/check_sq_call_sites.py
 
+# A test case whose assertions are all CHECK reports "PASSED / WARNING" and exits 0, so it
+# can never fail (zeroerr maps CHECK* to ZEROERR_WARN). Two cases asserting opposite
+# behaviour of the same code both reported green this way. Existing offenders are frozen in
+# scripts/test_assert_level_baseline.json; new ones must state the decisive assertion with
+# REQUIRE (or use an in-file helper that does).
+check/test-assert-level:
+	python3 scripts/check_test_assert_level.py
+
 # Compile-fail diagnostics for critical Result/ID/Subscription returns. This
 # is a source-only check and does not configure or build the engine.
 check/nodiscard:
@@ -243,7 +252,7 @@ check/profile-matrix:
 	python3 scripts/profile_matrix.py --check
 
 # Fast local quality gate for the profile and debt contracts.
-check/quality: check/quality-metadata check/profile-matrix check/nodiscard check/architecture-contracts check/test-case-lines check/sq-call-sites
+check/quality: check/quality-metadata check/profile-matrix check/nodiscard check/architecture-contracts check/test-case-lines check/sq-call-sites check/test-assert-level
 
 # Profile stages are separate so CI can report configure, build, and
 # independent capability smoke failures independently. The default build root
