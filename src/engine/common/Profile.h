@@ -69,7 +69,15 @@ public:
     /** @brief True when collection is active. */
     static bool enabled();
 
-    /** @brief Opens a scoped zone on the current thread. */
+    /**
+     * @brief Opens a scoped zone on the current thread.
+     * @param name Zone name, which must stay readable until frameMark().
+     * @param module Module label, same lifetime requirement.
+     * @note Ownership/lifetime: only the pointers are stored (`ZoneRecord::name`), and
+     *       `frameMark()` reads them a whole frame later, so both must be static storage
+     *       (string literals). Passing a pointer into a scope-local buffer is a dangling
+     *       read that no sanitizer in this build reports.
+     */
     static void zoneBegin(const char* name, const char* module = nullptr);
     /** @brief Closes the innermost open zone on the current thread. */
     static void zoneEnd();

@@ -376,6 +376,28 @@ TEST_CASE("devtools.renderflow.rtHelpersForward") {
     eve::debug::setRenderTracer(nullptr);
 }
 
+TEST_CASE("devtools.renderflow.passScopeForwardsTheCallersName") {
+    struct CapturingTracer : eve::debug::IRenderTracer {
+        std::vector<const char*> begins;
+        void                     passBegin(const char* name) override { begins.push_back(name); }
+    } tracer;
+
+    // The engine's own pass scopes pass literals; the profiler retains the pointer until
+    // frameMark(), so the scope must forward the caller's storage instead of handing out
+    // its own buffer. Address identity is the observable that can be asserted: the
+    // dangling read it prevents is non-deterministic (the freed bytes usually still hold
+    // the old text), so a string comparison would pass either way.
+    static const char* const kPassName = "RenderSystem2D";
+    eve::debug::setRenderTracer(&tracer);
+    {
+        eve::debug::RenderPassScope scope(kPassName);
+    }
+    eve::debug::setRenderTracer(nullptr);
+
+    REQUIRE(tracer.begins.size() == 1);
+    REQUIRE(tracer.begins[0] == kPassName);
+}
+
 TEST_CASE("devtools.renderflow.shadowThenMainPass") {
     RenderFlow flow;
     flow.frameBegin();
