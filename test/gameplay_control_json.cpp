@@ -1,5 +1,6 @@
 #include "common/Capability.h"
 #include "common/GameplayControlJson.h"
+#include "common/GameplayInstanceCatalog.h"
 #include "common/Module.h"
 #include "common/Runtime.h"
 #include "devtools/DevTool.hpp"
@@ -21,14 +22,20 @@ eve::LogicalId logical(const char* text) {
     return *id;
 }
 
-class JsonProvider final : public eve::IGameplayControlProvider {
+class JsonProvider final : public eve::IGameplayControlProvider, public eve::IGameplayInstanceCatalog {
 public:
     explicit JsonProvider(eve::SubjectRef instance) : instance_(instance) {
         eve::cap::addListener<eve::IGameplayControlProvider>(this);
+        eve::cap::addListener<eve::IGameplayInstanceCatalog>(this);
     }
-    ~JsonProvider() override { eve::cap::removeListener<eve::IGameplayControlProvider>(this); }
+    ~JsonProvider() override {
+        eve::cap::removeListener<eve::IGameplayInstanceCatalog>(this);
+        eve::cap::removeListener<eve::IGameplayControlProvider>(this);
+    }
 
     [[nodiscard]] std::string_view gameplayDomain() const noexcept override { return "json-fixture"; }
+    /** 目录：该 fixture 只服务构造时给它的那一个实例，路由器据此在同域多 provider 间分派。 */
+    [[nodiscard]] std::vector<eve::SubjectRef>          gameplayInstances() const override { return {instance_}; }
     [[nodiscard]] eve::Result<eve::GameplayObservation> observeGameplay(
         const eve::GameplaySession&, eve::SubjectRef instance) const override {
         if (instance != instance_)
@@ -124,6 +131,55 @@ TEST_CASE("gameplay.control.jsonFacadeRoutesObserveActionsSubmitAdvanceAndEvents
         envelope("events", instanceText, ",\"afterSequence\":0"));
     REQUIRE(events.ok());
     CHECK(events.value().find("\"events\":[]") != std::string::npos);
+}
+
+TEST_CASE("gameplay.control.routerDispatchesByInstanceAcrossSameDomainProviders") {
+    const auto   first  = subject("00000000-0000-7000-8000-000000000a11");
+    const auto   second = subject("00000000-0000-7000-8000-000000000a12");
+    JsonProvider one(first);
+    JsonProvider two(second);
+
+    std::string firstText  = first.format();
+    std::string secondText = second.format();
+
+    // 两个 provider 同域：各自认领自己的实例，路由器不再对整个域报冲突。
+    auto observedOne = eve::executeGameplayControlJson(envelope("observe", firstText));
+    REQUIRE(observedOne.ok());
+    CHECK(observedOne.value().find("\"revision\":1") != std::string::npos);
+    auto observedTwo = eve::executeGameplayControlJson(envelope("observe", secondText));
+    REQUIRE(observedTwo.ok());
+    CHECK(observedTwo.value().find("\"revision\":1") != std::string::npos);
+
+    // submit 只落到认领该实例的 provider：被路由到的那个前进，另一个不动。
+    const std::string command   = ",\"command\":{\"id\":\"routed-1\",\"action\":\"fixture:increment\",\"subject\":\"" +
+                                  secondText + "\",\"observedTick\":0,\"expectedRevision\":1,\"parameters\":{}}";
+    auto              submitted = eve::executeGameplayControlJson(envelope("submit", secondText, command));
+    REQUIRE(submitted.ok());
+    CHECK(submitted.value().find("routed-1") != std::string::npos);
+    CHECK(submitted.value().find("\"resultingRevision\":2") != std::string::npos);
+
+    auto firstStillIdle = eve::executeGameplayControlJson(envelope("observe", firstText));
+    REQUIRE(firstStillIdle.ok());
+    CHECK(firstStillIdle.value().find("\"revision\":1") != std::string::npos);
+}
+
+TEST_CASE("gameplay.control.routerRejectsAmbiguousOrUnownedInstances") {
+    const auto   first  = subject("00000000-0000-7000-8000-000000000a21");
+    const auto   second = subject("00000000-0000-7000-8000-000000000a22");
+    const auto   third  = subject("00000000-0000-7000-8000-000000000a23");
+    JsonProvider one(first);
+    JsonProvider two(second);
+    JsonProvider alsoFirst(first);
+
+    // 两个 provider 都认领同一实例：这是真正的歧义，不能猜。
+    auto ambiguous = eve::executeGameplayControlJson(envelope("observe", first.format()));
+    CHECK(!ambiguous.ok());
+    CHECK_EQ(ambiguous.code(), eve::StatusCode::Conflict);
+
+    // 谁都不认领：保持原来的"同域多 provider"冲突，而不是随便挑一个执行副作用。
+    auto unowned = eve::executeGameplayControlJson(envelope("observe", third.format()));
+    CHECK(!unowned.ok());
+    CHECK_EQ(unowned.code(), eve::StatusCode::Conflict);
 }
 
 TEST_CASE("gameplay.control.jsonFacadeRejectsUnknownSchemaFields") {

@@ -112,23 +112,45 @@ Result<GameplaySession> session(const Value::Object& root) {
     return Result<GameplaySession>::success(std::move(result));
 }
 
-Result<IGameplayControlProvider*> provider(std::string_view domain) {
-    IGameplayControlProvider* match = nullptr;
-    bool duplicate = false;
+/**
+ * @brief Resolve the provider that serves one domain instance.
+ *
+ * A domain normally publishes exactly one provider. Per-instance adapters (the
+ * weapon, climbing, rpg battle and rpg production controls) publish one provider
+ * each, so the router asks the catalogues which of them claims the requested
+ * instance: exactly one claimant routes the call, several claimants are a real
+ * ambiguity, and nobody claiming it leaves the duplicate-domain conflict intact —
+ * the router never guesses by calling providers to see which one works, because
+ * that would run unknown side effects to answer a routing question.
+ */
+Result<IGameplayControlProvider*> provider(std::string_view domain, SubjectRef instance) {
+    std::vector<IGameplayControlProvider*> matches;
     cap::forEach<IGameplayControlProvider>([&](auto* candidate) {
-        if (candidate && candidate->gameplayDomain() == domain) {
-            duplicate = match != nullptr;
-            match = candidate;
-        }
+        if (candidate && candidate->gameplayDomain() == domain) matches.push_back(candidate);
     });
-    if (duplicate)
-        return failure<IGameplayControlProvider*>(DiagnosticCode::Conflict,
-                                                  "multiple gameplay providers publish the same domain",
-                                                  "request.domain");
-    if (!match)
+    if (matches.empty())
         return failure<IGameplayControlProvider*>(DiagnosticCode::NotFound,
                                                   "gameplay provider domain was not found", "request.domain");
-    return Result<IGameplayControlProvider*>::success(match);
+    if (matches.size() == 1) return Result<IGameplayControlProvider*>::success(matches.front());
+
+    IGameplayControlProvider* claimant  = nullptr;
+    int                       claimants = 0;
+    for (auto* candidate : matches) {
+        auto* catalog = dynamic_cast<IGameplayInstanceCatalog*>(candidate);
+        if (catalog == nullptr) continue;
+        const auto instances = catalog->gameplayInstances();
+        if (std::find(instances.begin(), instances.end(), instance) == instances.end()) continue;
+        claimant = candidate;
+        ++claimants;
+    }
+    if (claimants == 1) return Result<IGameplayControlProvider*>::success(claimant);
+    if (claimants > 1)
+        return failure<IGameplayControlProvider*>(DiagnosticCode::Conflict,
+                                                  "several gameplay providers claim that instance", "request.instance");
+    return failure<IGameplayControlProvider*>(DiagnosticCode::Conflict,
+                                              "multiple gameplay providers publish the same domain and none "
+                                              "claims that instance",
+                                              "request.domain");
 }
 
 Value encodeObservation(GameplayObservation observation) {
@@ -269,11 +291,14 @@ Result<Value> executeGameplayControlRequest(const Value& request) {
     }
     auto domain = stringMember(*root.value(), "domain", "request");
     if (!domain) return Result<Value>::failure(domain.status());
-    auto target = provider(domain.value());
-    if (!target) return Result<Value>::failure(target.status());
     auto access = session(*root.value());
     if (!access) return Result<Value>::failure(access.status());
     auto instance = rootSubject(*root.value(), "instance");
+    if (!instance) return Result<Value>::failure(instance.status());
+    // Routing needs the instance, so it resolves after the instance is parsed: when
+    // several providers publish one domain, the owning catalogue decides.
+    auto target = provider(domain.value(), instance.value());
+    if (!target) return Result<Value>::failure(target.status());
     if (!instance) return Result<Value>::failure(instance.status());
 
     if (operation.value() == "observe") {
