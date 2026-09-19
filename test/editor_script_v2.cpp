@@ -2,10 +2,12 @@
 #include "zeroerr/unittest.h"
 
 #include "common/Module.h"
+#include "common/ScriptError.h"
 #include "common/SquirrelBinding.h"
 #include "editor/Editor.h"
 #include "editor/EditorProtocol.h"
 #include "editor/EditorValue.h"
+#include "editor/ScriptEditorTool.h"
 
 #include <simplesquirrel/simplesquirrel.hpp>
 
@@ -243,4 +245,35 @@ TEST_CASE("editor.v2.script_command_failure_is_not_silent") {
     REQUIRE(eve::script::reportedScriptCallFailures() >= 1);
 
     CHECK(editor->commandService().unregisterCommand(commandId, "script:test.script.exploding"));
+}
+
+TEST_CASE("editor.v2.script_tool_failure_is_not_silent") {
+    eve::script::resetReportedScriptCallFailures();
+    Editor* editor = Editor::create();
+
+    ssq::VM vm(1024, ssq::Libs::ALL);
+    eve::ModuleManager::expose(vm);
+    // This case makes script throw, so the VM needs the engine's error hook: a bare
+    // ssq::VM keeps simplesquirrel's defaultRuntimeErrorFunc, which dereferences the
+    // callback stack without checking it and crashes (see test/ScriptTest.h).
+    eve::script::installScriptErrorHook(vm.getHandle());
+    vm.run(vm.compileSource(R"(
+        exploder <- function(payload) { throw "tool callback exploded"; };
+    )"));
+
+    std::unique_ptr<ScriptEditorTool> tool = editor->newScriptTool("test.tool.exploding", "Explode");
+    tool->setActivateCallback(vm.find("exploder"));
+    tool->setUpdateCallback(vm.find("exploder"));
+    tool->setPointerCallback(vm.find("exploder"));
+
+    eve::editor::EditorContext context;
+    tool->activate(context);
+    tool->update(context, 0.016f);
+    const ToolResponse pointer = tool->pointerEvent(context, eve::editor::EditorPointerEvent{});
+
+    // Both templates dropped the information: `invoke()` discarded the call result and
+    // `invokeFlags()` read a throw as "the callback returned 0", so a broken tool callback
+    // looked exactly like a tool that handled nothing.
+    REQUIRE(eve::script::reportedScriptCallFailures() >= 3);
+    REQUIRE(!pointer.handled);
 }
