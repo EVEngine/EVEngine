@@ -733,8 +733,13 @@ std::string DialogueFlow::getText() {
     if (!node) return {};
     const std::string localized = localization_.resolveText(node->i18nKey, locale_, node->text);
     return textRenderer_.render(localized, runner_.bindings(), runner_.locals(), [this](const std::string& rule) {
-        const StateValue result = evaluate(rule, runner_.bindings(), runner_.locals());
-        return result.isBool() && result.asBool();
+        auto result = evaluate(rule, runner_.bindings(), runner_.locals());
+        if (!result) {
+            failureMessage_ = result.status().describe();
+            return false;
+        }
+        StateValue value = std::move(result).takeValue();
+        return value.isBool() && value.asBool();
     });
 }
 
@@ -780,9 +785,13 @@ void DialogueFlow::clearExpressionEvaluator() {
     hasEvaluator_ = false;
 }
 
-StateValue DialogueFlow::evaluate(const std::string& expression, const StateValue& bindings, const StateValue& locals) {
-    if (expression == "else") return StateValue::boolean(true);
-    if (!vm_ || !hasEvaluator_) return StateValue::boolean(false);
+eve::Result<StateValue> DialogueFlow::evaluate(const std::string& expression, const StateValue& bindings,
+                                               const StateValue& locals) {
+    if (expression == "else") return eve::Result<StateValue>::success(StateValue::boolean(true));
+    if (!vm_ || !hasEvaluator_)
+        return eve::Result<StateValue>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Unsupported, "dialogue expression evaluator is not configured", "expression", {},
+            "dialogue.expression"));
     const SQInteger top = sq_gettop(vm_);
     sq_pushobject(vm_, evaluator_);
     sq_newtable(vm_);
@@ -797,12 +806,19 @@ StateValue DialogueFlow::evaluate(const std::string& expression, const StateValu
     sq_newslot(vm_, -3, SQFalse);
     if (SQ_FAILED(sq_call(vm_, 1, SQTrue, SQTrue))) {
         sq_settop(vm_, top);
-        return StateValue::boolean(false);
+        return eve::Result<StateValue>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Failed, "dialogue expression evaluator raised an exception", "expression", {},
+            "dialogue.expression"));
     }
     StateValue result;
-    if (!squirrelToState(vm_, -1, result)) result = StateValue::boolean(false);
+    if (!squirrelToState(vm_, -1, result)) {
+        sq_settop(vm_, top);
+        return eve::Result<StateValue>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "dialogue expression returned an unsupported value", "expression",
+            {}, "dialogue.expression"));
+    }
     sq_settop(vm_, top);
-    return result;
+    return eve::Result<StateValue>::success(std::move(result));
 }
 
 bool DialogueFlow::restoreState(const StateValue& in, std::string* error) { return runner_.restoreState(in, error); }

@@ -39,9 +39,11 @@ TEST_CASE("dialogueConversation.parameterizedRunner") {
     ConversationRunner runner;
     runner.setExpressionEvaluator([](const std::string& expression, const StateValue& bindings,
                                      const StateValue&) {
-        if (expression != "speaker.mood == happy") return StateValue::boolean(false);
+        if (expression != "speaker.mood == happy")
+            return eve::Result<StateValue>::success(StateValue::boolean(false));
         const StateValue* mood = bindings.get("speaker.mood");
-        return StateValue::boolean(mood && mood->isString() && mood->asString() == "happy");
+        return eve::Result<StateValue>::success(
+            StateValue::boolean(mood && mood->isString() && mood->asString() == "happy"));
     });
     StateValue bindings = StateValue::object();
     CHECK(bindings.setPath("speaker.mood", StateValue::string("happy")));
@@ -79,6 +81,23 @@ TEST_CASE("dialogueConversation.validation") {
     std::string error;
     CHECK(!asset.validate(&error));
     CHECK(error.find("duplicate node id") != std::string::npos);
+}
+
+TEST_CASE("dialogueConversation.expressionFailureDoesNotSelectElse") {
+    ConversationAsset  asset = makeGreeting();
+    ConversationRunner runner;
+    runner.setExpressionEvaluator([](const std::string&, const StateValue&, const StateValue&) {
+        return eve::Result<StateValue>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Failed, "expression failed", "expression", {}, "dialogue.test"));
+    });
+    StateValue bindings = StateValue::object();
+    CHECK(bindings.set("speaker", StateValue::object()));
+    CHECK(bindings.set("listener", StateValue::object()));
+    CHECK(bindings.set("location", StateValue::string("village")));
+    std::string error;
+    CHECK(!runner.start(&asset, std::move(bindings), &error));
+    CHECK(error.find("expression failed") != std::string::npos);
+    CHECK(runner.currentNodeId() == "decide");
 }
 
 TEST_CASE("dialogueConversation.callStackStateRoundtrip") {

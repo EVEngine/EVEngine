@@ -165,7 +165,12 @@ std::string ConversationRunner::evaluateRoute(const ConversationAsset::Node& nod
             fail(error, "conversation: branch requires an expression evaluator");
             return {};
         }
-        const StateValue value = expressionEvaluator_(route.first, bindings_, locals_);
+        auto evaluated = expressionEvaluator_(route.first, bindings_, locals_);
+        if (!evaluated) {
+            fail(error, evaluated.status().describe());
+            return {};
+        }
+        const StateValue value = std::move(evaluated).takeValue();
         if (!value.isBool()) {
             fail(error, "conversation: expression '" + route.first + "' did not return bool");
             return {};

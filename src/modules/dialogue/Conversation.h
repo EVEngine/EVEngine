@@ -84,7 +84,7 @@ public:
 
     using AssetResolver = std::function<const ConversationAsset*(const std::string&)>;
     using ExpressionEvaluator =
-        std::function<StateValue(const std::string&, const StateValue&, const StateValue&)>;
+        std::function<eve::Result<StateValue>(const std::string&, const StateValue&, const StateValue&)>;
     struct CommandResult {
         enum class Status { Completed, Blocked, Failed };
         Status status = Status::Completed;

@@ -214,7 +214,8 @@ public:
 private:
     int                      mergeImported(std::vector<ConversationAsset> imported);
     const ConversationAsset* find(const std::string& id) const;
-    StateValue      evaluate(const std::string& expression, const StateValue& bindings, const StateValue& locals);
+    [[nodiscard]] eve::Result<StateValue> evaluate(const std::string& expression, const StateValue& bindings,
+                                                   const StateValue& locals);
     CommandResponse dispatchCommand(const CommandRequest& request);
     std::string     nextTransactionId(const char* purpose);
 
