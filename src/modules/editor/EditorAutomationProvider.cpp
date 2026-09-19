@@ -301,7 +301,7 @@ std::string EditorAutomationProvider::targetList() const {
     auto*       value    = response.getIf<EditorValue::Object>();
     if (!value) return errorJson(EditorStatus::Failed, "editor.automation.target-list", "Could not build response");
 
-    const TargetId bound = session_.boundTargetId();
+    const TargetId     bound = session_.boundTargetId();
     EditorValue::Array entries;
     for (const auto& summary : targets_->targets()) {
         EditorValue::Object item;

@@ -436,7 +436,7 @@ public:
     }
 
     /** @brief Invalidates all slots and releases every unique-owned object. */
-    void clear() {        // Reserve before mutating live slots so free-list bookkeeping cannot
+    void clear() {  // Reserve before mutating live slots so free-list bookkeeping cannot
         // fail after ownership has already been released.
         freeSlots_.reserve(slots_.size());
         freeSlots_.clear();

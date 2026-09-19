@@ -1,8 +1,8 @@
 ﻿#include "sensing/Sensing.h"
 #include "common/Identity.h"
+#include "common/SquirrelBinding.h"
 #include "sensing/TargetingPipeline.h"
 #include "spatial/SpatialHash2D.h"
-#include "common/SquirrelBinding.h"
 
 #include <algorithm>
 #include <cmath>

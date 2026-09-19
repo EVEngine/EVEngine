@@ -1,8 +1,8 @@
 #include "inventory/Inventory.h"
-#include "inventory/InventorySaveSession.h"
-#include "inventory/Item.h"
-#include "inventory/InventorySystem.h"
 #include "inventory/InventoryControl.h"
+#include "inventory/InventorySaveSession.h"
+#include "inventory/InventorySystem.h"
+#include "inventory/Item.h"
 
 #include "common/SubjectRef.h"
 

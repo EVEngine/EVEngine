@@ -2,18 +2,18 @@
 #include "devtools/Immortal.hpp"
 #include "devtools/StderrCapture.hpp"
 
-#include "common/ScriptError.h"
-#include "common/ScriptCompiler.h"
 #include "common/CrashLog.h"
+#include "common/ScriptCompiler.h"
+#include "common/ScriptError.h"
 
 #include <simplesquirrel/simplesquirrel.hpp>
 #include <squirrel.h>
 
+#include <algorithm>
+#include <chrono>
 #include <cstdarg>
 #include <cstdio>
-#include <chrono>
 #include <ctime>
-#include <algorithm>
 #include <sstream>
 #include <string>
 #include <utility>
@@ -317,8 +317,7 @@ void ConsolePanel::attach(HSQUIRRELVM vm) {
     // no `engine` lines has to know the coverage is missing rather than assume
     // the engine printed nothing.
     if (capture != StderrCaptureStatus::Active) {
-        addLog("warn",
-               "engine stderr capture unavailable; only script print/error reaches this console");
+        addLog("warn", "engine stderr capture unavailable; only script print/error reaches this console");
     }
 }
 

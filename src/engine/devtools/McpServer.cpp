@@ -5,19 +5,19 @@
 #include "common/ScriptError.h"
 #include "devtools/Immortal.hpp"
 
-#include "devtools/AiPanel.hpp"
 #include "devtools/AgentDevelopmentMcp.hpp"
+#include "devtools/AiPanel.hpp"
+#include "devtools/DebugAdapter.hpp"
+#include "devtools/Debugger.hpp"
+#include "devtools/DevTool.hpp"
 #include "devtools/McpArgs.hpp"
+#include "devtools/McpDevBridge.hpp"
 #include "devtools/McpDomainTools.hpp"
 #include "devtools/McpJson.hpp"
 #include "devtools/McpRuntimeTools.hpp"
 #include "devtools/McpScriptTools.hpp"
 #include "devtools/McpSquirrelJson.hpp"
 #include "devtools/PlayHost.h"
-#include "devtools/DebugAdapter.hpp"
-#include "devtools/Debugger.hpp"
-#include "devtools/DevTool.hpp"
-#include "devtools/McpDevBridge.hpp"
 #include "devtools/RenderVision.hpp"
 #include "devtools/SceneInspect.hpp"
 #include "devtools/Snapshot.hpp"
@@ -52,9 +52,9 @@
 #include <squirrel.h>
 #include <glm/glm.hpp>
 
+#include <cmath>
 #include <cstdio>
 #include <cstdlib>
-#include <cmath>
 #include <filesystem>
 #include <fstream>
 #include <sstream>
@@ -402,7 +402,7 @@ Poco::JSON::Object::Ptr runtimeObservation(Poco::JSON::Object::Ptr args, std::st
             if (error) *error = "graphics module not available";
             return nullptr;
         }
-        const int entityId = getArgInt(args, "entityId", -1);
+        const int entityId   = getArgInt(args, "entityId", -1);
         const int generation = getArgInt(args, "generation", -1);
         if (entityId < 0 || generation < 0) {
             if (error) *error = "entityId and generation are required";
@@ -793,7 +793,7 @@ std::string callTool(McpServer& mcp, const std::string& name, Poco::JSON::Object
     if (name == "eve_renderable3d_get") {
         auto* capture = mcpCapture();
         if (!capture) return "error: graphics module not available";
-        const int entityId = getArgInt(args, "entityId", -1);
+        const int entityId   = getArgInt(args, "entityId", -1);
         const int generation = getArgInt(args, "generation", -1);
         if (entityId < 0 || generation < 0) return "error: entityId and generation are required";
         return mcpStringify(Poco::Dynamic::Var(renderableObservation(*capture, entityId, generation)));
@@ -869,7 +869,8 @@ std::string callTool(McpServer& mcp, const std::string& name, Poco::JSON::Object
         if (id.empty()) return "error: node not found: " + id;
         bool changed = false;
         if (args && args->has("x") && args->has("y") && args->has("z")) {
-            changed = scene->setNodeTransform(id, getArgFloat(args, "x"), getArgFloat(args, "y"), getArgFloat(args, "z"));
+            changed =
+                scene->setNodeTransform(id, getArgFloat(args, "x"), getArgFloat(args, "y"), getArgFloat(args, "z"));
         }
         if (args && args->has("visible")) {
             changed = scene->setNodeVisible(id, getArgBool(args, "visible")) || changed;
@@ -970,8 +971,8 @@ std::string callTool(McpServer& mcp, const std::string& name, Poco::JSON::Object
         auto* ph = mcpPhysics();
         if (!ph) return "error: Physics module not available";
         eve::RayHitInfo h;
-        if (!ph->rayCast(getArgInt(args, "world", 0), getArgFloat(args, "x1"), getArgFloat(args, "y1"), getArgFloat(args, "x2"),
-                         getArgFloat(args, "y2"), &h))
+        if (!ph->rayCast(getArgInt(args, "world", 0), getArgFloat(args, "x1"), getArgFloat(args, "y1"),
+                         getArgFloat(args, "x2"), getArgFloat(args, "y2"), &h))
             return "error: unknown physics world id";
         Poco::JSON::Object::Ptr o = Poco::JSON::Object::Ptr(new Poco::JSON::Object());
         o->set("hit", h.hit);
@@ -1606,41 +1607,57 @@ std::string handleToolsList(const std::string& idJson) {
     static const char* const kToolsParts[] = {
         "{\"name\":\"eve_status\",\"description\":\"Runtime + debugger + MCP/DAP status JSON.\","
         "\"inputSchema\":{\"type\":\"object\",\"properties\":{}}},"
-        "{\"name\":\"eve_gameplay\",\"description\":\"Observe, discover, submit or advance player-equivalent gameplay through the versioned shared control protocol.\","
-        "\"inputSchema\":{\"type\":\"object\",\"properties\":{\"request\":{\"type\":\"object\"}},\"required\":[\"request\"]}},"
-        "{\"name\":\"eve_play\",\"description\":\"Unified Play Host: pause/play, step host frames, observe game.agent.json script roots, run mapped act, capture engine screenshots, checkpoint restore, and record/replay play traces without eve_eval.\","
-        "\"inputSchema\":{\"type\":\"object\",\"properties\":{\"request\":{\"type\":\"object\"}},\"required\":[\"request\"]}},"
+        "{\"name\":\"eve_gameplay\",\"description\":\"Observe, discover, submit or advance player-equivalent gameplay "
+        "through the versioned shared control protocol.\","
+        "\"inputSchema\":{\"type\":\"object\",\"properties\":{\"request\":{\"type\":\"object\"}},\"required\":["
+        "\"request\"]}},"
+        "{\"name\":\"eve_play\",\"description\":\"Unified Play Host: pause/play, step host frames, observe "
+        "game.agent.json script roots, run mapped act, capture engine screenshots, checkpoint restore, and "
+        "record/replay play traces without eve_eval.\","
+        "\"inputSchema\":{\"type\":\"object\",\"properties\":{\"request\":{\"type\":\"object\"}},\"required\":["
+        "\"request\"]}},"
         "{\"name\":\"eve_pixelworld_worlds\",\"description\":\"List live PixelWorld simulations and status.\","
         "\"inputSchema\":{\"type\":\"object\",\"properties\":{}}},"
-        "{\"name\":\"eve_pixelworld_catalog_builtin\",\"description\":\"Return the canonical versioned built-in material/reaction Catalog document.\","
+        "{\"name\":\"eve_pixelworld_catalog_builtin\",\"description\":\"Return the canonical versioned built-in "
+        "material/reaction Catalog document.\","
         "\"inputSchema\":{\"type\":\"object\",\"properties\":{}}},"
-        "{\"name\":\"eve_pixelworld_catalog_validate\",\"description\":\"Transactionally validate and canonicalize a material/reaction Catalog document.\","
+        "{\"name\":\"eve_pixelworld_catalog_validate\",\"description\":\"Transactionally validate and canonicalize a "
+        "material/reaction Catalog document.\","
         "\"inputSchema\":{\"type\":\"object\",\"properties\":{\"catalog\":{}},\"required\":[\"catalog\"]}},"
-        "{\"name\":\"eve_pixelworld_catalog_apply\",\"description\":\"Hot-reload a compatible Catalog into a paused world using optimistic fingerprint concurrency.\","
+        "{\"name\":\"eve_pixelworld_catalog_apply\",\"description\":\"Hot-reload a compatible Catalog into a paused "
+        "world using optimistic fingerprint concurrency.\","
         "\"inputSchema\":{\"type\":\"object\",\"properties\":{\"world\":{\"type\":\"integer\"},\"catalog\":{},"
         "\"expectedFingerprint\":{\"type\":\"string\"}},\"required\":[\"world\",\"catalog\",\"expectedFingerprint\"]}},"
         "{\"name\":\"eve_pixelworld_pause\",\"description\":\"Pause or resume one PixelWorld.\","
         "\"inputSchema\":{\"type\":\"object\",\"properties\":{\"world\":{\"type\":\"integer\"},"
         "\"paused\":{\"type\":\"boolean\"}},\"required\":[\"world\",\"paused\"]}},"
-        "{\"name\":\"eve_pixelworld_step\",\"description\":\"Explicitly advance one PixelWorld by 1-1024 ticks, including while paused.\","
+        "{\"name\":\"eve_pixelworld_step\",\"description\":\"Explicitly advance one PixelWorld by 1-1024 ticks, "
+        "including while paused.\","
         "\"inputSchema\":{\"type\":\"object\",\"properties\":{\"world\":{\"type\":\"integer\"},"
         "\"count\":{\"type\":\"integer\",\"minimum\":1,\"maximum\":1024}},\"required\":[\"world\"]}},"
-        "{\"name\":\"eve_pixelworld_edit\",\"description\":\"Apply a strictly sequenced paint, heat, or explosion edit.\","
+        "{\"name\":\"eve_pixelworld_edit\",\"description\":\"Apply a strictly sequenced paint, heat, or explosion "
+        "edit.\","
         "\"inputSchema\":{\"type\":\"object\",\"properties\":{\"world\":{\"type\":\"integer\"},"
-        "\"sequence\":{\"type\":\"integer\"},\"kind\":{\"type\":\"string\",\"enum\":[\"paint\",\"heat\",\"explosion\"]},"
+        "\"sequence\":{\"type\":\"integer\"},\"kind\":{\"type\":\"string\",\"enum\":[\"paint\",\"heat\",\"explosion\"]}"
+        ","
         "\"x\":{\"type\":\"integer\"},\"y\":{\"type\":\"integer\"},\"radius\":{\"type\":\"integer\"},"
         "\"material\":{\"type\":\"integer\"},\"strength\":{\"type\":\"integer\"},"
         "\"temperatureDelta\":{\"type\":\"integer\"}},\"required\":[\"world\",\"sequence\",\"kind\"]}},"
-        "{\"name\":\"eve_pixelworld_diagnostics\",\"description\":\"Inspect bounded per-Chunk activity, material and temperature diagnostics.\","
+        "{\"name\":\"eve_pixelworld_diagnostics\",\"description\":\"Inspect bounded per-Chunk activity, material and "
+        "temperature diagnostics.\","
         "\"inputSchema\":{\"type\":\"object\",\"properties\":{\"world\":{\"type\":\"integer\"},"
         "\"minX\":{\"type\":\"integer\"},\"minY\":{\"type\":\"integer\"},\"maxX\":{\"type\":\"integer\"},"
         "\"maxY\":{\"type\":\"integer\"}},\"required\":[\"world\"]}},"
-        "{\"name\":\"eve_pixelworld_samples\",\"description\":\"Read the latest bounded PixelWorld simulation performance samples.\","
+        "{\"name\":\"eve_pixelworld_samples\",\"description\":\"Read the latest bounded PixelWorld simulation "
+        "performance samples.\","
         "\"inputSchema\":{\"type\":\"object\",\"properties\":{\"world\":{\"type\":\"integer\"},"
         "\"limit\":{\"type\":\"integer\",\"minimum\":1,\"maximum\":256}},\"required\":[\"world\"]}},"
-        "{\"name\":\"eve_pixelworld_snapshot_capture\",\"description\":\"Capture a canonical PixelWorld snapshot as hex.\","
-        "\"inputSchema\":{\"type\":\"object\",\"properties\":{\"world\":{\"type\":\"integer\"}},\"required\":[\"world\"]}},"
-        "{\"name\":\"eve_pixelworld_snapshot_restore\",\"description\":\"Transactionally restore a canonical hex PixelWorld snapshot.\","
+        "{\"name\":\"eve_pixelworld_snapshot_capture\",\"description\":\"Capture a canonical PixelWorld snapshot as "
+        "hex.\","
+        "\"inputSchema\":{\"type\":\"object\",\"properties\":{\"world\":{\"type\":\"integer\"}},\"required\":["
+        "\"world\"]}},"
+        "{\"name\":\"eve_pixelworld_snapshot_restore\",\"description\":\"Transactionally restore a canonical hex "
+        "PixelWorld snapshot.\","
         "\"inputSchema\":{\"type\":\"object\",\"properties\":{\"world\":{\"type\":\"integer\"},"
         "\"snapshot\":{\"type\":\"string\"}},\"required\":[\"world\",\"snapshot\"]}},"
         "{\"name\":\"eve_ui_tree\",\"description\":\"Inspect retained game UI hosts and semantic widget trees (not "
@@ -1662,14 +1679,22 @@ std::string handleToolsList(const std::string& idJson) {
         "currently loaded adapters accept. Targets a project script created and bound (tile layer, height map, voxel "
         "world, ...) appear here, which is the only way to learn their id.\","
         "\"inputSchema\":{\"type\":\"object\",\"properties\":{}}},"
-        "{\"name\":\"eve_editor_target_create\",\"description\":\"Create an Editor-owned document target or bind a live "
+        "{\"name\":\"eve_editor_target_create\",\"description\":\"Create an Editor-owned document target or bind a "
+        "live "
         "SceneHost/Renderable3D for Agent workflows. Accepted type names are runtime-dependent: call "
         "eve_editor_target_list and read supportedTypes instead of assuming a fixed set.\","
-        "\"inputSchema\":{\"type\":\"object\",\"properties\":{\"target\":{\"type\":\"string\"},\"type\":{\"type\":\"string\"},\"host\":{\"type\":\"string\"},\"object\":{\"type\":\"string\"},\"entityId\":{\"type\":\"integer\",\"minimum\":0},\"generation\":{\"type\":\"integer\",\"minimum\":0}},\"required\":[\"target\",\"type\"]}},"
-        "{\"name\":\"eve_editor_target_close\",\"description\":\"Unregister and destroy an Editor-owned automation target.\","
-        "\"inputSchema\":{\"type\":\"object\",\"properties\":{\"target\":{\"type\":\"string\"}},\"required\":[\"target\"]}},"
-        "{\"name\":\"eve_editor_inspect\",\"description\":\"Inspect authoritative structured state for an editor target.\","
-        "\"inputSchema\":{\"type\":\"object\",\"properties\":{\"target\":{\"type\":\"string\"}},\"required\":[\"target\"]}},"
+        "\"inputSchema\":{\"type\":\"object\",\"properties\":{\"target\":{\"type\":\"string\"},\"type\":{\"type\":"
+        "\"string\"},\"host\":{\"type\":\"string\"},\"object\":{\"type\":\"string\"},\"entityId\":{\"type\":"
+        "\"integer\",\"minimum\":0},\"generation\":{\"type\":\"integer\",\"minimum\":0}},\"required\":[\"target\","
+        "\"type\"]}},"
+        "{\"name\":\"eve_editor_target_close\",\"description\":\"Unregister and destroy an Editor-owned automation "
+        "target.\","
+        "\"inputSchema\":{\"type\":\"object\",\"properties\":{\"target\":{\"type\":\"string\"}},\"required\":["
+        "\"target\"]}},"
+        "{\"name\":\"eve_editor_inspect\",\"description\":\"Inspect authoritative structured state for an editor "
+        "target.\","
+        "\"inputSchema\":{\"type\":\"object\",\"properties\":{\"target\":{\"type\":\"string\"}},\"required\":["
+        "\"target\"]}},"
         "{\"name\":\"eve_editor_plan\",\"description\":\"Validate and retain a side-effect-free editor command plan.\","
         "\"inputSchema\":{\"type\":\"object\",\"properties\":{\"command\":{\"type\":\"string\"},\"payload\":{},"
         "\"expectedRevision\":{\"type\":\"integer\"}},\"required\":[\"command\"]}},"
@@ -1680,15 +1705,32 @@ std::string handleToolsList(const std::string& idJson) {
         "transaction path as UI and scripts.\","
         "\"inputSchema\":{\"type\":\"object\",\"properties\":{\"command\":{\"type\":\"string\"},\"payload\":{}},"
         "\"required\":[\"command\"]}},"
-        "{\"name\":\"eve_editor_execute_observe\",\"description\":\"Execute one Editor transaction and return correlated before/after runtime observations plus the Editor target snapshot. An optional expect object declares the desired observed subset; tolerance controls numeric matching and the response reports converged, maxError, and mismatch paths. The observer is renderable3d by default; scene-node observes a node in an optional named host. Missing or stale subjects and invalid expectations are rejected before mutation.\","
-        "\"inputSchema\":{\"type\":\"object\",\"properties\":{\"target\":{\"type\":\"string\"},\"command\":{\"type\":\"string\"},\"payload\":{},\"observer\":{\"type\":\"string\",\"enum\":[\"renderable3d\",\"scene-node\"]},\"entityId\":{\"type\":\"integer\",\"minimum\":0},\"generation\":{\"type\":\"integer\",\"minimum\":0},\"host\":{\"type\":\"string\"},\"node\":{\"type\":\"string\"},\"expect\":{\"type\":\"object\"},\"tolerance\":{\"type\":\"number\",\"minimum\":0}},"
+        "{\"name\":\"eve_editor_execute_observe\",\"description\":\"Execute one Editor transaction and return "
+        "correlated before/after runtime observations plus the Editor target snapshot. An optional expect object "
+        "declares the desired observed subset; tolerance controls numeric matching and the response reports converged, "
+        "maxError, and mismatch paths. The observer is renderable3d by default; scene-node observes a node in an "
+        "optional named host. Missing or stale subjects and invalid expectations are rejected before mutation.\","
+        "\"inputSchema\":{\"type\":\"object\",\"properties\":{\"target\":{\"type\":\"string\"},\"command\":{\"type\":"
+        "\"string\"},\"payload\":{},\"observer\":{\"type\":\"string\",\"enum\":[\"renderable3d\",\"scene-node\"]},"
+        "\"entityId\":{\"type\":\"integer\",\"minimum\":0},\"generation\":{\"type\":\"integer\",\"minimum\":0},"
+        "\"host\":{\"type\":\"string\"},\"node\":{\"type\":\"string\"},\"expect\":{\"type\":\"object\"},\"tolerance\":{"
+        "\"type\":\"number\",\"minimum\":0}},"
         "\"required\":[\"target\",\"command\"]}},"
-        "{\"name\":\"eve_editor_observe_start\",\"description\":\"Start an RX-backed runtime observation session. The initial sample is validated immediately; consecutive duplicate samples are suppressed until the session is closed.\","
-        "\"inputSchema\":{\"type\":\"object\",\"properties\":{\"observer\":{\"type\":\"string\",\"enum\":[\"renderable3d\",\"scene-node\"]},\"entityId\":{\"type\":\"integer\",\"minimum\":0},\"generation\":{\"type\":\"integer\",\"minimum\":0},\"host\":{\"type\":\"string\"},\"node\":{\"type\":\"string\"},\"expect\":{\"type\":\"object\"},\"tolerance\":{\"type\":\"number\",\"minimum\":0}}}},"
-        "{\"name\":\"eve_editor_observe_poll\",\"description\":\"Sample and drain changed events from an RX-backed observation session.\","
-        "\"inputSchema\":{\"type\":\"object\",\"properties\":{\"sessionId\":{\"type\":\"string\"}},\"required\":[\"sessionId\"]}},"
-        "{\"name\":\"eve_editor_observe_close\",\"description\":\"Explicitly cancel and remove an RX-backed observation session.\","
-        "\"inputSchema\":{\"type\":\"object\",\"properties\":{\"sessionId\":{\"type\":\"string\"}},\"required\":[\"sessionId\"]}},"
+        "{\"name\":\"eve_editor_observe_start\",\"description\":\"Start an RX-backed runtime observation session. The "
+        "initial sample is validated immediately; consecutive duplicate samples are suppressed until the session is "
+        "closed.\","
+        "\"inputSchema\":{\"type\":\"object\",\"properties\":{\"observer\":{\"type\":\"string\",\"enum\":["
+        "\"renderable3d\",\"scene-node\"]},\"entityId\":{\"type\":\"integer\",\"minimum\":0},\"generation\":{\"type\":"
+        "\"integer\",\"minimum\":0},\"host\":{\"type\":\"string\"},\"node\":{\"type\":\"string\"},\"expect\":{\"type\":"
+        "\"object\"},\"tolerance\":{\"type\":\"number\",\"minimum\":0}}}},"
+        "{\"name\":\"eve_editor_observe_poll\",\"description\":\"Sample and drain changed events from an RX-backed "
+        "observation session.\","
+        "\"inputSchema\":{\"type\":\"object\",\"properties\":{\"sessionId\":{\"type\":\"string\"}},\"required\":["
+        "\"sessionId\"]}},"
+        "{\"name\":\"eve_editor_observe_close\",\"description\":\"Explicitly cancel and remove an RX-backed "
+        "observation session.\","
+        "\"inputSchema\":{\"type\":\"object\",\"properties\":{\"sessionId\":{\"type\":\"string\"}},\"required\":["
+        "\"sessionId\"]}},"
         "{\"name\":\"eve_editor_cancel\",\"description\":\"Discard a retained editor command plan without side "
         "effects.\","
         "\"inputSchema\":{\"type\":\"object\",\"properties\":{\"planId\":{\"type\":\"string\"}},\"required\":["
@@ -1700,13 +1742,17 @@ std::string handleToolsList(const std::string& idJson) {
         "{\"name\":\"eve_editor_diagnostics\",\"description\":\"Read structured diagnostics from the last editor "
         "automation operation.\","
         "\"inputSchema\":{\"type\":\"object\",\"properties\":{}}},"
-        "{\"name\":\"eve_renderable3d_get\",\"description\":\"Read generation-qualified live Renderable3D transform and field-backed material state for Agent verification.\","
-        "\"inputSchema\":{\"type\":\"object\",\"properties\":{\"entityId\":{\"type\":\"integer\",\"minimum\":0},\"generation\":{\"type\":\"integer\",\"minimum\":0}},\"required\":[\"entityId\",\"generation\"]}},"
+        "{\"name\":\"eve_renderable3d_get\",\"description\":\"Read generation-qualified live Renderable3D transform "
+        "and field-backed material state for Agent verification.\","
+        "\"inputSchema\":{\"type\":\"object\",\"properties\":{\"entityId\":{\"type\":\"integer\",\"minimum\":0},"
+        "\"generation\":{\"type\":\"integer\",\"minimum\":0}},\"required\":[\"entityId\",\"generation\"]}},"
         "{\"name\":\"eve_eval\",\"description\":\"Evaluate a Squirrel expression (local or roottable).\","
         "\"inputSchema\":{\"type\":\"object\",\"properties\":{\"expression\":{\"type\":\"string\"}},\"required\":["
         "\"expression\"]}},"
-        "{\"name\":\"eve_skeleton_inspect\",\"description\":\"Inspect a published runtime skeleton hierarchy and bind/current bone transforms. The game provides eve_mcp_skeleton_inspect.\","
-        "\"inputSchema\":{\"type\":\"object\",\"properties\":{\"actor\":{\"type\":\"string\"},\"bone\":{\"type\":\"string\"}},\"required\":[\"actor\"]}},"
+        "{\"name\":\"eve_skeleton_inspect\",\"description\":\"Inspect a published runtime skeleton hierarchy and "
+        "bind/current bone transforms. The game provides eve_mcp_skeleton_inspect.\","
+        "\"inputSchema\":{\"type\":\"object\",\"properties\":{\"actor\":{\"type\":\"string\"},\"bone\":{\"type\":"
+        "\"string\"}},\"required\":[\"actor\"]}},"
         "{\"name\":\"eve_pause\",\"description\":\"Pause the game / script.\","
         "\"inputSchema\":{\"type\":\"object\",\"properties\":{}}},"
         "{\"name\":\"eve_continue\",\"description\":\"Continue from pause.\","

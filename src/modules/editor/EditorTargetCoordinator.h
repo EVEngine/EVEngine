@@ -43,7 +43,7 @@ public:
     /** @brief Discovery metadata for one registered editable target. */
     struct TargetSummary {
         std::string   id;
-        std::string   type;      // IEditableTarget::describe().type, when the target reports one
+        std::string   type;  // IEditableTarget::describe().type, when the target reports one
         std::uint64_t revision   = 0;
         std::uint64_t generation = 0;
     };

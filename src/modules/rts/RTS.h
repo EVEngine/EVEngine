@@ -5,20 +5,20 @@
  * @brief RTS module owner and phase-one composition profile entry point.
  */
 
-#include "common/Module.h"
 #include "common/GameplayControl.h"
 #include "common/GameplayInstanceCatalog.h"
+#include "common/Module.h"
 #include "common/Snapshot.h"
-#include "rts/RTSAttributes.h"
 #include "rts/RTSArchetype.h"
+#include "rts/RTSAttributes.h"
 #include "rts/RTSContent.h"
-#include "rts/RTSTech.h"
-#include "rts/RTSMatch.h"
-#include "rts/RTSReplay.h"
 #include "rts/RTSEffects.h"
+#include "rts/RTSMatch.h"
 #include "rts/RTSProductionAction.h"
-#include "rts/RTSSystems.h"
+#include "rts/RTSReplay.h"
 #include "rts/RTSSnapshot.h"
+#include "rts/RTSSystems.h"
+#include "rts/RTSTech.h"
 
 #include <cstddef>
 #include <memory>

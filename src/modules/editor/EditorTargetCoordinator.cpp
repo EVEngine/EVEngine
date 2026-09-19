@@ -241,8 +241,8 @@ std::vector<EditorTargetCoordinator::TargetSummary> EditorTargetCoordinator::tar
             summary.generation = entry->generation;
             if (entry->target) {
                 const TargetDescriptor descriptor = entry->target->describe();
-                summary.type                       = descriptor.type;
-                summary.revision                   = static_cast<std::uint64_t>(descriptor.revision);
+                summary.type                      = descriptor.type;
+                summary.revision                  = static_cast<std::uint64_t>(descriptor.revision);
             }
         }
         summaries.push_back(std::move(summary));

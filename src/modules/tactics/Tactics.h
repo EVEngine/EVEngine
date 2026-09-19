@@ -2,9 +2,9 @@
 
 /** @file Tactics.h @brief Tactics domain composition profile facade. */
 
-#include "common/Module.h"
 #include "common/GameplayControl.h"
 #include "common/GameplayInstanceCatalog.h"
+#include "common/Module.h"
 #include "common/SquirrelOwnership.h"
 #include "tactics/TacticsBattle.h"
 #include "tactics/TacticsPersistence.h"
