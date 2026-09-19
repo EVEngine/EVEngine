@@ -381,6 +381,22 @@ function(check_third_party_project name repo)
             -DPATCH=${CMAKE_SOURCE_DIR}/cmake/patches/box3d-dynamic-crt.patch
             -DPATCH_DIR=${CMAKE_CURRENT_SOURCE_DIR}/${name}/box3d
             -P ${CMAKE_SOURCE_DIR}/cmake/patch_third_party.cmake)
+    # Twelfth patch: SDL2's static library carries a CRT-less
+    # _DllMainCRTStartup stub while HAVE_LIBC is undefined, which is SDL's
+    # default on MSVC. The linker then takes that stub as the entry point of any
+    # DLL linking the static library, so the CRT's startup object is never pulled
+    # and ucrt/vcruntime are never searched: every engine link group DLL failed
+    # with LNK2019 __acrt_initialize / __vcrt_initialize in
+    # MSVCRTD.lib(utility.obj). SDL ships the SDL_STATIC_LIB guard for the static
+    # build (bug 4034); upstream also made the static library use the system C
+    # library (commit 26a56a4). This pinned 2.0.16 predates that CMake change,
+    # and the narrow guard macro is verified to leave SDL's public headers
+    # byte-identical (HAVE_LIBC=1 there does not).
+    set(_eve_tp_patch_cmd ${_eve_tp_patch_cmd}
+        COMMAND ${CMAKE_COMMAND}
+            -DPATCH=${CMAKE_SOURCE_DIR}/cmake/patches/sdl2-static-library-crt-entry.patch
+            -DPATCH_DIR=${CMAKE_CURRENT_SOURCE_DIR}/${name}
+            -P ${CMAKE_SOURCE_DIR}/cmake/patch_third_party.cmake)
 
     # Stamp the git versions into the install tree after every install so
     # prebuilt-mode consumers (and eve's build info) can report exactly which

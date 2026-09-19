@@ -44,12 +44,15 @@ foreach(_eve_group IN LISTS EVE_LINK_GROUP_NAMES)
         endif()
     endforeach()
 
-    # The module OBJECT libraries are link inputs, not sources: passing them as
-    # $<TARGET_OBJECTS:...> sources bypasses CMake's normal link handling and the
-    # target then misses the MSVC CRT / VC runtime default libraries (the link
-    # fails on __acrt_initialize, __CxxFrameHandler4 and friends even though the
-    # module objects were compiled with /MDd). link_group.cpp exists only to give
-    # the target a source of its own.
+    # The module OBJECT libraries are link inputs, not sources, so each module's
+    # usage requirements (include directories, transitive link libraries) stay
+    # attached to the group. Objects and libraries alike only ever reach the link
+    # line as inputs, so this choice does not decide whether the MSVC CRT is
+    # resolved: a static third-party library defining the DLL entry symbol does.
+    # SDL2's CRT-less _DllMainCRTStartup stub did exactly that and made every
+    # group link fail on __acrt_initialize / __vcrt_initialize (see
+    # cmake/patches/sdl2-static-library-crt-entry.patch). link_group.cpp exists
+    # only to give the target a source of its own.
     add_library(${_eve_group} SHARED "${CMAKE_SOURCE_DIR}/cmake/link_group.cpp")
     target_link_libraries(${_eve_group} PRIVATE ${_eve_group_modules})
     target_link_libraries(${_eve_group} PRIVATE eve_engine_includes)

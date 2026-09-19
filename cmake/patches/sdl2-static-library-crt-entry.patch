@@ -1,0 +1,25 @@
+diff --git a/SDL2/CMakeLists.txt b/SDL2/CMakeLists.txt
+index 48f6499..b621289 100644
+--- a/SDL2/CMakeLists.txt
++++ b/SDL2/CMakeLists.txt
+@@ -2637,10 +2637,16 @@ if(SDL_STATIC)
+     # clobbered, when the suffix is realized via subsequent rename.
+   endif()
+   set_target_properties(SDL2-static PROPERTIES POSITION_INDEPENDENT_CODE ${SDL_STATIC_PIC})
+-  if(MSVC AND NOT LIBC)
+-    set_target_properties(SDL2-static PROPERTIES LINK_FLAGS_RELEASE "/NODEFAULTLIB")
+-    set_target_properties(SDL2-static PROPERTIES LINK_FLAGS_DEBUG "/NODEFAULTLIB")
+-    set_target_properties(SDL2-static PROPERTIES STATIC_LIBRARY_FLAGS "/NODEFAULTLIB")
++  if(WIN32)
++    # EVEngine: this static library is linked into DLLs we build ourselves.
++    # src/SDL.c defines a CRT-less _DllMainCRTStartup stub unless SDL_STATIC_LIB
++    # is set, and the linker then takes that stub as the entry point of our DLL
++    # instead of pulling the CRT's own startup object, so ucrt/vcruntime are
++    # never searched (every DLL link fails with LNK2019 __acrt_initialize in
++    # MSVCRTD.lib(utility.obj)). Upstream fixed the same configuration by
++    # dropping /NODEFAULTLIB here (SDL bug 4034, commit 26a56a4); this pinned
++    # 2.0.16 needs the guard macro too.
++    target_compile_definitions(SDL2-static PRIVATE SDL_STATIC_LIB)
+   endif()
+   # TODO: Win32 platforms keep the same suffix .lib for import and static
+   # libraries - do we need to consider this?

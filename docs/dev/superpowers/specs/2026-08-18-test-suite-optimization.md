@@ -262,3 +262,85 @@ ctest --test-dir build/linux-debug -L bundle -R '^bundle/particles'  # 只看某
 - 另需注意：CMake 的对象路径上限为 250 字符。把 worktree 放在深目录（如
   `...\EVEngine--worktrees\EVEngine--<长名>--worktree`）会让 `third-party` 的 mpg123 对象
   路径达到 260 字符而编译失败；worktree 与构建目录应使用短路径。
+
+## 7. layer 组 DLL：入口符号与导出面的实测（2026-09-19）
+
+§6 的分域拆分解决了「按域重建」的开销，但每个域的 `.pdb` 仍要复制一份引擎闭包的调试信息
+（1.2 GB/域）。按 layer 把模块聚合成少量 DLL 就是为了把这份调试信息收进少数几个 PDB：
+`EVE_LINK_GROUP_TABLE`（`cmake/module_manifest.cmake`）把启用的模块分成 7 组 ——
+`EVFoundation`(-1,0)、`EVPlatform`(1)、`EVBackends`(2,3)、`EVWorld`(4)、`EVDomains`(5)、
+`EVOrchestration`(6)、`EVEditors`(7)；模块本身仍是 OBJECT 库，DLL 只是链接聚合
+（`cmake/link_groups.cmake`）；导出面仍然只有 `EVENGINE_API`（`src/engine/common/Export.h`），
+不开 `WINDOWS_EXPORT_ALL_SYMBOLS`（实测 EVFoundation 全量导出 75,885 个符号，超过 MSVC 的
+65,535 上限，LNK1189）。
+
+### 7.1 组 DLL 链接失败的真实原因：静态库里定义了 DLL 入口符号
+
+**现象**：`EVFoundation.dll`（组内模块 OBJECT 库 + 55 个第三方/系统库）链接失败，202 个
+`LNK2019`，全部出自 `MSVCRTD.lib(utility.obj)` / `init.obj` / `error.obj` / `pdblkup.obj`，
+符号是 `__acrt_initialize`、`__vcrt_initialize`、`_CrtDbgReport`、`strcpy_s`、
+`__stdio_common_vsprintf_s`、`__vcrt_GetModuleFileNameW` 等 UCRT/VCRuntime 符号；
+`/VERBOSE:LIB` 显示 `ucrtd.lib` / `vcruntimed.lib` **从未被搜索**（对照：`cl /LD /MDd` 的
+空 DLL 会依次搜索 `MSVCRTD.lib` → `OLDNAMES.lib` → `vcruntimed.lib` → `ucrtd.lib`）。
+
+**排除（均为实测，非推断）**：
+- 不是 `/ENTRY:DllMain`：全树（含 `third-party/`、`external/`）的 CMake 与所有 `.obj`/`.lib`
+  都没有 `/ENTRY`，`build.ninja` 的 `LINK_FLAGS` 只有 `/machine:x64 /debug /INCREMENTAL`，
+  失败链接的输出里也没有任何 `DllMain` 相关条目。
+- 不是「对象当源码传入」：`link_group.cpp.obj` + 全部库能链通，再加上模块对象就失败；两种写法
+  都只是把 `.obj` 放到链接命令行上。
+- 不是 Box3D 的静态 CRT：该项已按上游改为动态 CRT（`cmake/patches/box3d-dynamic-crt.patch`），
+  改后失败点不变。
+- 最小复现：`cl /LD /MDd` 一个只调用 `SDL_Init` 的 DLL 并链接 `SDL2d.lib`，复现同一批错误；
+  进一步地，**手工写一个空的 `_DllMainCRTStartup`**（不引入任何第三方库）也能复现 ——
+  只要入口符号由别处提供，链接器就不再拉 CRT 的启动对象，而 `ucrtd.lib` / `vcruntimed.lib`
+  的 `/DEFAULTLIB` 请求正写在 CRT 启动对象里，于是整个 UCRT 未解析。
+
+**根因**：SDL2 静态库在 `HAVE_LIBC` 未定义时（MSVC 下 CMake 的 `LIBC` 默认 OFF）会在
+`src/SDL.c` 编出一个无 CRT 的 `_DllMainCRTStartup`（SDL bug 4034 为此提供了守卫宏
+`SDL_STATIC_LIB`）。命令行上的库先于默认库被搜索，链接器于是把它当成我们 DLL 的入口。
+
+**修法**：新增 `cmake/patches/sdl2-static-library-crt-entry.patch`（第 12 个 third-party 补丁，
+经 `cmake/third_party_build.cmake` 在构建期打入）：给 `SDL2-static` 定义 `SDL_STATIC_LIB`，
+并删掉那三行 `STATIC_LIBRARY_FLAGS /NODEFAULTLIB`（上游 commit 26a56a4 在同一处做的改动）。
+选用窄守卫宏而不是上游后来的 `PUBLIC HAVE_LIBC=1`，是因为引擎**直接链接 `SDL2d.lib`**、不走
+SDL 导出的 CMake target，`PUBLIC` 定义传不到我们的 TU，会让 SDL 自己的 TU 与引擎看到不同的
+SDL 头：实测 `#include <SDL.h>` 的预处理输出在 `-DHAVE_LIBC=1` 下多出 8,752 行差异
+（拉进 `sys/types.h`、`vadefs.h` 等），而 `-DSDL_STATIC_LIB` 的输出**逐行相同（0 行差异）**，
+且全树只有 `src/SDL.c` 引用它。
+
+**验证**：重建并安装 SDL2 后 `SDL2d.lib` 不再含 `_DllMainCRTStartup`（全量扫描：其余第三方库
+本来也没有）；`EVFoundation.dll` 链接通过（44.8 MB，PDB 231.3 MB），`dumpbin /dependents` 显示
+`ucrtbased.dll`、`VCRUNTIME140D.dll`、`MSVCP140D.dll`（CRT 初始化确实接上了），入口点是
+`_DllMainCRTStartup` —— 这次来自 CRT。
+
+### 7.2 下一个硬阻塞：跨组符号没有导出（未解决）
+
+`EVPlatform.dll` 链接失败：153 个未解析外部符号，全是**下组定义、但没有导出**的引擎符号，例如
+`eve::isValidUtf8(std::string_view, eve::Utf8NullPolicy)`、
+`eve::asset::SpriteAnimationClip::decode(eve::Value const&)`、
+`eve::platform_event::Message::~Message()`、
+`eve::data::ByteData::ByteData(void const*, unsigned long long)`。
+`dumpbin /exports EVFoundation.dll` = **2,041 个符号**，上述符号都不在其中。
+
+也就是说：N 组切分要求**每一处跨组的模块 API 都带 `EVENGINE_API`**。目前 `src/` 内 219 处标注
+基本只覆盖宿主/插件/测试面（这正是单体与 per-module OBJECT 库不需要更多标注的原因）。
+一个组就要 153 个符号，说明 7 组切分的标注量是数千级，并且会把大量内部 API 变成引擎的导出契约。
+三种切分的代价对比（**待定方向**）：
+
+| 切分 | 跨组需标注的符号 | 磁盘收益（引擎调试信息只存一份） | 代价 |
+| --- | --- | --- | --- |
+| 7 组（既定路线） | 数千（EVPlatform 一组 153） | 同下 | 标注量最大，导出面变契约面 |
+| 2~3 组 | 随切分数下降 | 相同 | 组内裁剪粒度变粗 |
+| 单个引擎 DLL | ≈ 宿主/测试面（基本已标注） | 相同 | 回到单体 DLL，失去分层裁剪 |
+
+### 7.3 运行时发现与待办
+
+组 DLL 输出到 `${CMAKE_BINARY_DIR}`（`cmake/link_groups.cmake`），而 `unit_test_<域>.exe` 在
+`${CMAKE_BINARY_DIR}/test/`、`eve.exe` 在 `${CMAKE_BINARY_DIR}/src/engine/`，CTest 的
+`WORKING_DIRECTORY` 是仓库根（`cmake/ZeroErrDiscoverTests.cmake`）——三者都不同目录，Windows 的
+DLL 搜索不会去找 `${CMAKE_BINARY_DIR}`，所以组 DLL 在**运行时**还找不到。这需要在「运行时产物放
+同一目录」与「给 `add_test` 的 `ENVIRONMENT` 加 PATH」之间定一个做法，然后才能真正跑起来。
+
+其余待办：EVThirdParty（把第三方库也收进一个共享库）；按域裁剪链接闭包（否则每个域仍要拉 7 个
+组 DLL 的全部导出）；`DEPS` 与真实调用对齐后重定 `LAYER`（`rpg` 可放宽到 [1..99]，`npc_ai` ≤1）。
