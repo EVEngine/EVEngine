@@ -202,6 +202,12 @@ check/quality-metadata:
 check/test-case-lines:
 	python3 scripts/check_test_case_lines.py
 
+# Keep hand-written sq_call sites at their reviewed baseline. sq_call's parameter
+# count includes the receiver slot; counting it by hand caused five silent defects.
+# New call sites go through eve::script::callFunction, which derives the count.
+check/sq-call-sites:
+	python3 scripts/check_sq_call_sites.py
+
 # Compile-fail diagnostics for critical Result/ID/Subscription returns. This
 # is a source-only check and does not configure or build the engine.
 check/nodiscard:
@@ -237,7 +243,7 @@ check/profile-matrix:
 	python3 scripts/profile_matrix.py --check
 
 # Fast local quality gate for the profile and debt contracts.
-check/quality: check/quality-metadata check/profile-matrix check/nodiscard check/architecture-contracts check/test-case-lines
+check/quality: check/quality-metadata check/profile-matrix check/nodiscard check/architecture-contracts check/test-case-lines check/sq-call-sites
 
 # Profile stages are separate so CI can report configure, build, and
 # independent capability smoke failures independently. The default build root

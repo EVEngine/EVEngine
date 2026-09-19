@@ -1189,21 +1189,10 @@ bool Scene::callMethod0(HSQOBJECT inst, const char *name) {
 
 bool Scene::callCallback(HSQOBJECT fn, HSQOBJECT inst, int index) {
     if (!vm_) return false;
-    const SQInteger top = sq_gettop(vm_);
-    // sq_call's parameter count includes the receiver slot, so the callback sees
-    // (entity, index) as ordinary parameters while `this` is bound to the entity.
-    // Pushing only the receiver + index made `e` arrive as an integer, which the
-    // script wrappers silently read as "no such entity" (`e instanceof cls` false).
-    sq_pushobject(vm_, fn);
-    sq_pushobject(vm_, inst);  // this
-    sq_pushobject(vm_, inst);  // entity
-    sq_pushinteger(vm_, SQInteger(index));
-    if (SQ_FAILED(sq_call(vm_, 3, SQFalse, SQTrue))) {
-        sq_settop(vm_, top);
-        return false;
-    }
-    sq_settop(vm_, top);
-    return true;
+    // The callback sees (entity, index) as ordinary parameters with `this` bound to the
+    // entity. Hand-writing sq_call's count here is what previously handed the callback
+    // the index in place of the entity (see script::callFunction: the count is derived).
+    return SQ_SUCCEEDED(script::callFunction(vm_, fn, inst, inst, index));
 }
 
 void Scene::expose(ssq::Table &table) {

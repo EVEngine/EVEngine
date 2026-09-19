@@ -20,6 +20,7 @@
 #include <cstddef>
 #include <functional>
 #include <string>
+#include <type_traits>
 #include <utility>
 
 namespace eve::script {
@@ -75,6 +76,94 @@ struct EVENGINE_API SquirrelValueOptions {
 
 /** @brief Project one Status using the common script table schema. */
 [[nodiscard]] EVENGINE_API ssq::Table projectStatus(HSQUIRRELVM vm, const Status& status);
+
+/**
+ * @brief Receiver marker for callFunction(): bind the VM's root table as `this`.
+ *
+ * A bare closure has no meaningful receiver, and the root table is the conventional
+ * stand-in. Naming it keeps `callFunction(vm, fn, rootTable, ...)` readable instead of
+ * spelling out a push/pop dance at every call site.
+ */
+struct RootTable {};
+inline constexpr RootTable rootTable{};
+
+/** @brief Push one callFunction() receiver (the root-table marker or a value). */
+template <typename Receiver>
+void pushReceiver(HSQUIRRELVM vm, const Receiver& receiver) {
+    if constexpr (std::is_same_v<std::decay_t<Receiver>, RootTable>) {
+        sq_pushroottable(vm);
+    } else {
+        ssq::detail::pushValue(vm, receiver);
+    }
+}
+
+/**
+ * @brief Call a script function, deriving `sq_call`'s parameter count from the pushes.
+ *
+ * `sq_call(vm, params, ...)` takes the callee at `-(params)-1`, so `params` counts the
+ * receiver slot plus the arguments. Writing that number by hand produced five separate
+ * defects in this repository -- a callback handed the payload as `this` and received an
+ * integer where it expected an entity, and three callbacks that never ran at all
+ * because the shortened count failed the VM's arity check. All five were silent: the
+ * caller either discarded the failed call's error or caught it as if it were a normal
+ * rejection.
+ *
+ * These helpers remove the number from the call site. `params` is computed from the
+ * stack, so it cannot disagree with what was pushed, and the receiver is passed
+ * positionally, which makes the convention explicit rather than implied.
+ *
+ * @param vm Active Squirrel VM.
+ * @param fn Closure or native closure to invoke.
+ * @param receiver Bound as `this`. Pass the root table when the callee has none.
+ * @param args Arguments, pushed in order through `ssq::detail::pushValue`, so any type
+ *             that helper supports (HSQOBJECT, ssq handles, scalars, strings) works.
+ * @return SQ_OK, or SQ_ERROR when the call failed; the VM keeps the error for
+ *         `takeLastScriptError`.
+ * @note Ownership/lifetime: nothing is retained; the pushed values belong to the VM.
+ * @note Thread affinity: the owning VM's thread only.
+ * @note Reentrancy: invoking a script may re-enter the engine, so do not hold a lock
+ *       across the call.
+ */
+template <typename Receiver, typename... Args>
+SQRESULT callFunction(HSQUIRRELVM vm, const HSQOBJECT& fn, const Receiver& receiver, Args&&... args) {
+    const SQInteger top = sq_gettop(vm);
+    sq_pushobject(vm, fn);
+    pushReceiver(vm, receiver);
+    (ssq::detail::pushValue(vm, args), ...);
+    // Everything above the callable: the receiver plus the arguments. The callable itself is not
+    // part of the count (sq_call takes the callee at -(params)-1).
+    const SQInteger params = sq_gettop(vm) - top - 1;
+    const SQRESULT  result = sq_call(vm, params, SQFalse, SQTrue);
+    sq_settop(vm, top);
+    return result;
+}
+
+/**
+ * @brief callFunction() that keeps the return value on top for the caller to read.
+ *
+ * The VM stack is *not* restored on success, so the caller must have recorded
+ * `sq_gettop(vm)` beforehand and restore it after reading the result.
+ *
+ * @param vm Active Squirrel VM.
+ * @param fn Closure or native closure to invoke.
+ * @param receiver Bound as `this`.
+ * @param args Arguments, pushed in order.
+ * @return SQ_OK with the return value on top, or SQ_ERROR with the stack restored
+ *         and the error left in the VM.
+ */
+template <typename Receiver, typename... Args>
+SQRESULT callFunctionResult(HSQUIRRELVM vm, const HSQOBJECT& fn, const Receiver& receiver, Args&&... args) {
+    const SQInteger top = sq_gettop(vm);
+    sq_pushobject(vm, fn);
+    pushReceiver(vm, receiver);
+    (ssq::detail::pushValue(vm, args), ...);
+    // Everything above the callable: the receiver plus the arguments. The callable itself is not
+    // part of the count (sq_call takes the callee at -(params)-1).
+    const SQInteger params = sq_gettop(vm) - top - 1;
+    const SQRESULT  result = sq_call(vm, params, SQTrue, SQTrue);
+    if (SQ_FAILED(result)) sq_settop(vm, top);
+    return result;
+}
 
 /**
  * @brief Project an already-consumed native status and optional Value payload.

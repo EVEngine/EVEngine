@@ -749,10 +749,11 @@ StateValue DialogueFlow::evaluate(const std::string& expression, const StateValu
     if (expression == "else") return StateValue::boolean(true);
     if (!vm_ || !hasEvaluator_) return StateValue::boolean(false);
     const SQInteger top = sq_gettop(vm_);
-    // fn + this + ctx: the receiver slot counts as a parameter, so calling this with
-    // 1 bound ctx as `this` and left the evaluator zero arguments, which failed the
-    // arity check and made every expression evaluate to false (plan doc 9.21). Adding
-    // the receiver below ctx keeps the relative sq_newslot indices below unchanged.
+    // fn + this + ctx. `ctx` is built in place on the VM stack, so script::callFunction's
+    // value-argument form does not fit here; the count is derived from the stack instead
+    // of written by hand, which is the same rule. Writing 1 previously bound ctx as
+    // `this`, leaving the evaluator zero arguments and failing the arity check, so every
+    // expression evaluated to false.
     sq_pushobject(vm_, evaluator_);
     sq_pushroottable(vm_);
     sq_newtable(vm_);
@@ -765,7 +766,8 @@ StateValue DialogueFlow::evaluate(const std::string& expression, const StateValu
     sq_pushstring(vm_, "locals", -1);
     pushState(vm_, locals);
     sq_newslot(vm_, -3, SQFalse);
-    if (SQ_FAILED(sq_call(vm_, 2, SQTrue, SQTrue))) {
+    const SQInteger params = sq_gettop(vm_) - top - 1;  // receiver + ctx, excluding fn
+    if (SQ_FAILED(sq_call(vm_, params, SQTrue, SQTrue))) {
         sq_settop(vm_, top);
         return StateValue::boolean(false);
     }

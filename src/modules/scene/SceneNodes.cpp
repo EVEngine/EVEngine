@@ -4,6 +4,7 @@
 // (Scene.cpp) and the node manipulation methods live in separate
 // translation units. Pure move: no behavior change.
 
+#include "common/SquirrelBinding.h"
 #include "scene/Scene.h"
 #include "scene/SceneBounds.h"
 #include "scene/SceneInternal.h"
@@ -416,22 +417,10 @@ void Scene::callEventCallback(const std::string &hostName, const std::string &ac
     if (!vm_) return;
     auto it = eventCbs_.find(hostName);
     if (it == eventCbs_.end()) return;
-    const SQInteger top = sq_gettop(vm_);
-    // sq_call's parameter count includes the receiver slot, so the handler must be
-    // pushed as fn + this + (action, nodeId, parentId) — the same shape UI's
-    // callScriptHandler() uses. Pushing only fn + three strings and calling with 3
-    // made the handler receive two arguments, so the call failed on arity and the
-    // handler never ran at all (plan doc 9.20).
-    sq_pushobject(vm_, it->second);
-    sq_pushroottable(vm_);                     // this
-    sq_pushstring(vm_, action.c_str(), -1);    // action
-    sq_pushstring(vm_, nodeId.c_str(), -1);    // nodeId
-    sq_pushstring(vm_, parentId.c_str(), -1);  // parentId
-    if (SQ_FAILED(sq_call(vm_, 4, SQFalse, SQTrue))) {
-        sq_settop(vm_, top);
-        return;
-    }
-    sq_settop(vm_, top);
+    // Handler shape is (action, nodeId, parentId) with the root table as receiver, the
+    // same shape UI's callScriptHandler() uses. The count is derived, so the earlier
+    // "handler received two arguments and never ran" defect cannot come back.
+    (void)script::callFunction(vm_, it->second, script::rootTable, action, nodeId, parentId);
 }
 
 // ---------------------------------------------------------------------------
