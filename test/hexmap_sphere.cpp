@@ -979,6 +979,41 @@ TEST_CASE("hexmap.sphereMesh.facesPointAwayFromTheCentre") {
     }
 }
 
+TEST_CASE("hexmap.sphereMesh.theShippedPlanetIsClosed") {
+    // `examples/hex-planet` renders subdivision 4 at radius 100 and fills the cells with
+    // `hexmap.generateSphere(gfx, seed, 45, 0)` at its default seed. Every other case in this file
+    // uses `scatterElevation`, which is a different elevation pattern, so the terrain the example
+    // actually draws had no coverage - and a defect that only appears on a real planet would have
+    // been invisible to the suite.
+    //
+    // The generator is a pure function of the topology, the radius and its settings, so this is
+    // that planet cell for cell.
+    constexpr std::uint32_t kExampleSeed = 20260918u;
+
+    HexSphereMap map = makeMap(4, 100.f, kExampleSeed);
+
+    HexSphereGeneratorSettings settings{};
+    settings.seed           = kExampleSeed;
+    settings.landPercentage = 45;
+    settings.waterLevel     = 0;
+    REQUIRE(generateSphereMap(map, settings).ok());
+
+    HexMeshData mesh;
+    buildSphereTerrainMesh(map, mesh);
+    REQUIRE(mesh.triangleCount() > 10000u);
+
+    const OrientationReport orientation = analyseOrientation(mesh);
+    const WeldReport        weld        = analyseWeld(mesh);
+    std::printf("[planet] triangles %zu doubled %zu boundary %zu | weld boundary %zu nonManifold %zu duplicate %zu\n",
+                orientation.triangles, orientation.doubledEdges, orientation.boundaryEdges, weld.boundaryEdges,
+                weld.nonManifold, weld.duplicateTriangles);
+    REQUIRE_EQ(orientation.doubledEdges, static_cast<std::size_t>(0));
+    REQUIRE_EQ(orientation.boundaryEdges, static_cast<std::size_t>(0));
+    REQUIRE_EQ(weld.boundaryEdges, static_cast<std::size_t>(0));
+    REQUIRE_EQ(weld.nonManifold, static_cast<std::size_t>(0));
+    REQUIRE_EQ(weld.duplicateTriangles, static_cast<std::size_t>(0));
+}
+
 TEST_CASE("hexmap.sphereMesh.waterCapsFaceOutwardAndCoverEveryFloodedCell") {
     HexSphereMap map = makeMap(2, 100.f, 5u);
     scatterElevation(map);
