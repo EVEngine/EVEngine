@@ -65,3 +65,6 @@ __pycache__/
 # Hot-reload snapshot written into the working directory (ReloadSession.cpp);
 # a runtime artifact that tests leave behind, never a source file.
 eve_snapshot.json
+# Scenario round-trip dump written into the working directory by
+# test/scenario_recorder.cpp; same category.
+scenario_roundtrip_test.json

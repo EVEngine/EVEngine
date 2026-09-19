@@ -1445,8 +1445,10 @@ function testSceneSerializeAndPick() {
     return true
 }
 function testAttachRejectsPlainEntity() {
-    // Touch an ECS class first: eve.SceneEntity is installed by a post-ECS hook, so a
-    // script whose very first ECS name is SceneEntity does not find it.
+    // This used to have to touch eve.Component first, because eve.SceneEntity is
+    // installed by a post-ECS hook and a script whose first ECS name was SceneEntity
+    // did not find it. The lazy resolver now injects the script ECS base itself, so
+    // the ordering no longer matters (see testSceneEntityIsTheFirstEcsName).
     class Marker extends eve.Component { v = 0 }
     class PlainEntity extends eve.Entity { mark = Marker }
 
@@ -1462,6 +1464,26 @@ function testAttachRejectsPlainEntity() {
     // members only eve.SceneEntity declares.
     if (scene.attachEntity("n", PlainEntity) != null) return false
     return scene.entitiesOf("n").len() == 0
+}
+
+function testSceneEntityIsTheFirstEcsName() {
+    // `class MyThing extends eve.SceneEntity` is the natural opening line of a user
+    // script, so SceneEntity being the *first* eve.* name touched has to work.
+    class OnlyEntity extends eve.SceneEntity { }
+
+    local scene = eve.Scene()
+    scene.beginBuild()
+    scene.beginNode("root", "")
+    scene.addNode("n", "")
+    scene.end()
+    scene.mountBuildAs("first")
+
+    local e = scene.attachEntity("n", OnlyEntity)
+    if (e == null) return false
+    if (!e.isAlive()) return false
+    if (!scene.hasEntity("n", OnlyEntity)) return false
+    if (!eve.isSubclass(OnlyEntity, eve.SceneEntity)) return false
+    return eve.view(OnlyEntity).len() == 1
 }
 
 )SQ";
@@ -1507,6 +1529,10 @@ TEST_CASE_FIXTURE(SceneEcsBridgeFixture, "Scene.script.errorSemantics") {
 
 TEST_CASE_FIXTURE(SceneEcsBridgeFixture, "Scene.script.attachRejectsPlainEntity") {
     REQUIRE(vm.callFunc(vm.findFunc("testAttachRejectsPlainEntity"), vm).toBool());
+}
+
+TEST_CASE_FIXTURE(SceneEcsBridgeFixture, "Scene.script.entityIsTheFirstEcsName") {
+    REQUIRE(vm.callFunc(vm.findFunc("testSceneEntityIsTheFirstEcsName"), vm).toBool());
 }
 
 TEST_CASE_FIXTURE(SceneEcsBridgeFixture, "Scene.script.serializeAndPick") {
