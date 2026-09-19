@@ -184,6 +184,40 @@ UuidBytes childUuidBytes(const UuidBytes& parent, std::string_view role) noexcep
     return result;
 }
 
+void UuidIdState::assign(std::string_view text) {
+    if (text.empty()) return;
+    if (const auto parsed = parseUuidText(text)) {
+        uuid      = *parsed;
+        spelling  = formatUuidBytes(*parsed);
+        canonical = true;
+        return;
+    }
+    spelling  = text;
+    uuid      = projectLegacy(text);
+    canonical = false;
+}
+
+UuidBytes UuidIdState::projectLegacy(std::string_view text) noexcept {
+    std::uint64_t first  = 14695981039346656037ull;
+    std::uint64_t second = 1099511628211ull;
+    for (const unsigned char byte : text) {
+        first ^= byte;
+        first *= 1099511628211ull;
+        second ^= static_cast<std::uint8_t>(byte + 0x9du);
+        second *= 14029467366897019727ull;
+    }
+
+    UuidBytes bytes{};
+    for (std::size_t i = 0; i < sizeof(first); ++i) {
+        bytes[i]     = static_cast<std::uint8_t>((first >> (i * 8u)) & 0xffu);
+        bytes[8 + i] = static_cast<std::uint8_t>((second >> (i * 8u)) & 0xffu);
+    }
+    // Mark the deterministic projection as UUIDv5-shaped and RFC variant.
+    bytes[6] = static_cast<std::uint8_t>((bytes[6] & 0x0fu) | 0x50u);
+    bytes[8] = static_cast<std::uint8_t>((bytes[8] & 0x3fu) | 0x80u);
+    return bytes;
+}
+
 }  // namespace detail
 
 }  // namespace eve

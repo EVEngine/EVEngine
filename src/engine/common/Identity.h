@@ -61,6 +61,41 @@ using UuidBytes = std::array<std::uint8_t, 16>;
 /** @brief Derives a deterministic child UUID from a parent and a role. */
 [[nodiscard]] EVENGINE_API UuidBytes childUuidBytes(const UuidBytes& parent, std::string_view role) noexcept;
 
+/**
+ * @brief Tag-free state of a compatibility-aware UUID identity adapter.
+ *
+ * Holds exactly what UuidIdAdapter<Tag> held before: the compatibility
+ * spelling, the 16-byte canonical projection, and whether the input was
+ * canonical UUID text. Keeping the state and its two algorithms here means one
+ * copy each instead of one per domain tag; the tagged adapter is a thin wrapper
+ * that only re-attaches the tag's UUID type to the accessors.
+ *
+ * @remarks The layout is unchanged, so the tagged adapter keeps its size and
+ *          its field order.
+ */
+class UuidIdState {
+public:
+    /**
+     * @brief Assigns from canonical UUID text or from a legacy spelling.
+     *
+     * Canonical text is parsed and remembered as canonical; any other non-empty
+     * input is retained verbatim and given a deterministic UUID projection.
+     * @param text Input from an editor or compatibility boundary.
+     */
+    EVENGINE_API void assign(std::string_view text);
+
+    /**
+     * @brief Builds the deterministic UUID projection of a legacy spelling.
+     * @param text Non-empty legacy spelling.
+     * @return A UUIDv5-shaped, RFC-variant projection of the text.
+     */
+    [[nodiscard]] EVENGINE_API static UuidBytes projectLegacy(std::string_view text) noexcept;
+
+    std::string spelling;
+    UuidBytes   uuid{};
+    bool        canonical = false;
+};
+
 template <typename Tag>
 class Id128 {
 public:
@@ -273,7 +308,7 @@ public:
     explicit UuidIdAdapter(std::string value) : UuidIdAdapter(std::string_view(value)) {}
 
     /** @brief Constructs from a legacy spelling or canonical UUID text. */
-    explicit UuidIdAdapter(std::string_view value) { assign(value); }
+    explicit UuidIdAdapter(std::string_view value) { state_.assign(value); }
 
     /**
      * @brief Parses canonical UUID text or a non-empty legacy spelling.
@@ -288,96 +323,62 @@ public:
     /** @brief Builds an adapter from an explicit canonical UUID. */
     [[nodiscard]] static UuidIdAdapter fromUuid(Uuid value) {
         UuidIdAdapter result;
-        result.uuid_      = value;
-        result.value_     = value.format();
-        result.canonical_ = true;
+        result.state_.uuid      = value.bytes();
+        result.state_.spelling  = value.format();
+        result.state_.canonical = true;
         return result;
     }
 
     /** @brief Builds an adapter while explicitly retaining a legacy spelling. */
     [[nodiscard]] static UuidIdAdapter fromLegacy(std::string value) {
         if (value.empty()) return {};
-        const Uuid projected = projectLegacy(value);
-        return UuidIdAdapter(std::move(value), projected, false);
+        UuidIdAdapter result;
+        result.state_.uuid      = detail::UuidIdState::projectLegacy(value);
+        result.state_.spelling  = std::move(value);
+        result.state_.canonical = false;
+        return result;
     }
 
     /** @brief Returns the exact legacy or canonical compatibility spelling. */
-    [[nodiscard]] const std::string& value() const noexcept { return value_; }
+    [[nodiscard]] const std::string& value() const noexcept { return state_.spelling; }
 
     /** @brief Returns the compatibility spelling; use canonicalFormat at persistence boundaries. */
-    [[nodiscard]] const std::string& format() const noexcept { return value_; }
+    [[nodiscard]] const std::string& format() const noexcept { return state_.spelling; }
 
     /** @brief Returns the canonical UUID projection. */
-    [[nodiscard]] Uuid uuid() const noexcept { return uuid_; }
+    [[nodiscard]] Uuid uuid() const noexcept { return Uuid(state_.uuid); }
 
     /** @brief Returns the canonical UUID projection as lower-case UUID text. */
-    [[nodiscard]] std::string canonicalFormat() const { return uuid_.format(); }
+    [[nodiscard]] std::string canonicalFormat() const { return detail::formatUuidBytes(state_.uuid); }
 
     /** @brief True when no compatibility spelling has been assigned. */
-    [[nodiscard]] bool empty() const noexcept { return value_.empty(); }
+    [[nodiscard]] bool empty() const noexcept { return state_.spelling.empty(); }
 
     /** @brief True when the value is an empty or UUID nil identity. */
-    [[nodiscard]] bool isNil() const noexcept { return value_.empty() || uuid_.isNil(); }
+    [[nodiscard]] bool isNil() const noexcept {
+        return state_.spelling.empty() || Uuid(state_.uuid).isNil();
+    }
 
     /** @brief True when the input was canonical UUID text rather than legacy text. */
-    [[nodiscard]] bool isCanonicalUuid() const noexcept { return canonical_; }
+    [[nodiscard]] bool isCanonicalUuid() const noexcept { return state_.canonical; }
 
     /** @brief Stable hash of the canonical UUID projection. */
-    [[nodiscard]] std::uint64_t hash() const noexcept { return uuid_.hash(); }
+    [[nodiscard]] std::uint64_t hash() const noexcept { return Uuid(state_.uuid).hash(); }
 
     /** @brief Explicit boolean check for a non-empty identifier. */
     explicit operator bool() const noexcept { return !empty(); }
 
     friend bool operator==(const UuidIdAdapter& lhs, const UuidIdAdapter& rhs) noexcept {
-        return lhs.uuid_ == rhs.uuid_;
+        return lhs.state_.uuid == rhs.state_.uuid;
     }
 
     /** @brief Orders adapter values by their canonical UUID projection. */
     friend auto operator<=>(const UuidIdAdapter& lhs, const UuidIdAdapter& rhs) noexcept {
-        return lhs.uuid_ <=> rhs.uuid_;
+        return lhs.state_.uuid <=> rhs.state_.uuid;
     }
 
 private:
-    UuidIdAdapter(std::string value, Uuid uuid, bool canonical)
-        : value_(std::move(value)), uuid_(uuid), canonical_(canonical) {}
-
-    void assign(std::string_view value) {
-        if (value.empty()) return;
-        if (const auto parsed = Uuid::parse(value)) {
-            uuid_      = *parsed;
-            value_     = parsed->format();
-            canonical_ = true;
-            return;
-        }
-        value_     = value;
-        uuid_      = projectLegacy(value);
-        canonical_ = false;
-    }
-
-    [[nodiscard]] static Uuid projectLegacy(std::string_view value) noexcept {
-        std::uint64_t first  = 14695981039346656037ull;
-        std::uint64_t second = 1099511628211ull;
-        for (const unsigned char byte : value) {
-            first ^= byte;
-            first *= 1099511628211ull;
-            second ^= static_cast<std::uint8_t>(byte + 0x9du);
-            second *= 14029467366897019727ull;
-        }
-
-        Bytes bytes{};
-        for (std::size_t i = 0; i < sizeof(first); ++i) {
-            bytes[i]     = static_cast<std::uint8_t>((first >> (i * 8u)) & 0xffu);
-            bytes[8 + i] = static_cast<std::uint8_t>((second >> (i * 8u)) & 0xffu);
-        }
-        // Mark the deterministic projection as UUIDv5-shaped and RFC variant.
-        bytes[6] = static_cast<std::uint8_t>((bytes[6] & 0x0fu) | 0x50u);
-        bytes[8] = static_cast<std::uint8_t>((bytes[8] & 0x3fu) | 0x80u);
-        return Uuid(bytes);
-    }
-
-    std::string value_;
-    Uuid        uuid_;
-    bool        canonical_ = false;
+    detail::UuidIdState state_;
 };
 
 /**
