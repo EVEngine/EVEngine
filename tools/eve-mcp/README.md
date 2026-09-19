@@ -6,8 +6,9 @@ stdio MCP bridge to a live EVEngine process.
 
 Cursor and Claude Desktop speak [MCP](https://modelcontextprotocol.io/) over **stdio**.
 EVEngine embeds the MCP server **inside the running game** (`--mcp-port`) so agents can
-pause, eval, snapshot, and slice errors against a live session. This Node script forwards
-stdio JSON-RPC lines to that TCP port (same newline-delimited framing).
+pause, eval, snapshot, and slice errors against a live session. Lookup EveScript
+APIs with `eve_api_search` / `eve_api_get` before writing `.nut`. This Node script
+forwards stdio JSON-RPC lines to that TCP port (same newline-delimited framing).
 
 ## Usage
 
