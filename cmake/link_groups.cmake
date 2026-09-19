@@ -2,17 +2,18 @@
 # cmake/module_manifest.cmake).
 #
 # Modules stay OBJECT libraries: the module manifest, the profiles, per-module
-# compile settings and the source scan are all untouched. A group DLL aggregates
-# the objects of its modules, and that aggregation is the entire point -- the
-# engine's debug information then lives in one PDB per group instead of being
-# merged into every consumer executable. A per-domain test PDB measured 1.2 GB
-# for a 0.18 GB executable, and only ~0.8 MB per test file of that was the test
-# code.
+# compile settings and the source scan are all untouched. A group DLL links the
+# objects of its modules, and that aggregation is the entire point -- the engine's
+# debug information then lives in one PDB per group instead of being merged into
+# every consumer executable. A per-domain test PDB measured 1.2 GB for a 0.18 GB
+# executable, and only ~0.8 MB per test file of that was the test code.
 #
-# A single whole-engine DLL is not an option: it needs
-# WINDOWS_EXPORT_ALL_SYMBOLS, which the engine already exceeds (MSVC LNK1189,
-# 65535 exports; see src/engine/CMakeLists.txt). One group is a fraction of that
-# surface, and the build reports LNK1189 if a group is still too large.
+# A single whole-engine DLL is not an option, and neither is
+# WINDOWS_EXPORT_ALL_SYMBOLS at any engine-wide granularity: measured on
+# EVFoundation (39 modules) it exports 75,885 symbols, over MSVC's 65535 limit
+# (LNK1189). The export surface is the EVENGINE_API-annotated API only -- see
+# src/engine/common/Export.h and the rule already stated in
+# src/engine/CMakeLists.txt.
 #
 # Included after add_subdirectory(src/modules) so every module target exists.
 # Consumers only ever see EVE_LINK_TARGETS (set by eve_resolve_modules) and never
@@ -28,23 +29,29 @@ endif()
 # checks EVENGINE_ENGINE_EXPORTS first, so the defining side still exports.
 target_compile_definitions(eve_engine_includes INTERFACE EVENGINE_MODULE_DLL)
 
-# The same external closure the host and the test runner link. ThirdParty is a
-# directory-scoped variable in src/engine and test/, so this file derives its own
-# copy from the manifest rather than reading theirs.
+# The same external closure the host and the test runner link. ThirdParty is
+# directory-scoped in src/engine and test/, so this file derives its own copy
+# from the manifest rather than reading theirs.
 eve_append_system_libraries(_eve_group_system_libs)
 eve_thirdparty_libs(_eve_group_tp_libs ${EVE_THIRDPARTY_GROUPS})
 
+set(_eve_lower_groups "")
 foreach(_eve_group IN LISTS EVE_LINK_GROUP_NAMES)
-    set(_eve_group_objects "")
     set(_eve_group_modules "")
     foreach(m IN LISTS EVE_ENABLED_MODULES)
         if(EVE_MODULE_${m}_LINK_GROUP STREQUAL _eve_group)
-            list(APPEND _eve_group_objects "$<TARGET_OBJECTS:${EVE_MODULE_${m}_LIB}>")
-            list(APPEND _eve_group_modules "${m}")
+            list(APPEND _eve_group_modules "${EVE_MODULE_${m}_LIB}")
         endif()
     endforeach()
 
-    add_library(${_eve_group} SHARED ${_eve_group_objects})
+    # The module OBJECT libraries are link inputs, not sources: passing them as
+    # $<TARGET_OBJECTS:...> sources bypasses CMake's normal link handling and the
+    # target then misses the MSVC CRT / VC runtime default libraries (the link
+    # fails on __acrt_initialize, __CxxFrameHandler4 and friends even though the
+    # module objects were compiled with /MDd). link_group.cpp exists only to give
+    # the target a source of its own.
+    add_library(${_eve_group} SHARED "${CMAKE_SOURCE_DIR}/cmake/link_group.cpp")
+    target_link_libraries(${_eve_group} PRIVATE ${_eve_group_modules})
     target_link_libraries(${_eve_group} PRIVATE eve_engine_includes)
     if(TARGET eve_imgui)
         target_link_libraries(${_eve_group} PRIVATE eve_imgui)
@@ -58,27 +65,11 @@ foreach(_eve_group IN LISTS EVE_LINK_GROUP_NAMES)
     target_link_libraries(${_eve_group} PRIVATE
         EVScripts zeroerr ${_eve_group_tp_libs} ${_eve_group_system_libs}
         ${EVENGINE_VULKAN_LIB} ${EVENGINE_WEBGPU_LIB})
-    if(MSVC)
-        # MSVC pulls the CRT from /DEFAULTLIB directives carried by the objects.
-        # A shared library whose sources are all $<TARGET_OBJECTS:...> does not
-        # reliably end up with the debug UCRT import library, and the static
-        # debug third-party archives reference the import thunks directly
-        # (__imp__calloc_dbg from Poco), so name it explicitly.
-        target_link_libraries(${_eve_group} PRIVATE
-            $<$<CONFIG:Debug>:ucrtd>
-            $<$<NOT:$<CONFIG:Debug>>:ucrt>)
-    endif()
     if(NOT EVENGINE_PROFILE_HOSTLESS)
         add_dependencies(${_eve_group} third-party)
     endif()
     list(APPEND _eve_lower_groups "${_eve_group}")
 
-    # The export surface is the EVENGINE_API-annotated API only (see
-    # src/engine/common/Export.h). WINDOWS_EXPORT_ALL_SYMBOLS is deliberately NOT
-    # enabled: it exports every symbol the objects define -- 75,885 for the
-    # 39-module EVFoundation group, measured from its generated .exports.def --
-    # which trips MSVC LNK1189's 65535 limit. The module objects already compile
-    # exactly the annotated declarations to dllexport.
     if(WIN32)
         set_target_properties(${_eve_group} PROPERTIES
             RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}")
