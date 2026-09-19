@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/Time.h"
 
@@ -27,7 +29,7 @@ public:
 };
 
 /** @brief Draws all visible ParticleEmitter entities via Graphics batch path. */
-class ParticleRenderSystem {
+class EVENGINE_API_DOMAINS ParticleRenderSystem {
 public:
     /**
      * @brief Draw exactly one emitter without traversing the global ECS registry.

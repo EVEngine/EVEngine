@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include <vector>
 
@@ -43,7 +45,7 @@ graphics::Renderable3D *buildRenderable(graphics::IResourceFactory &gfx, ModelDa
                                         const ModelRenderOptions &options = {});
 
 /** Build one Renderable3D per mesh referenced by the scene graph. */
-std::vector<graphics::Renderable3D *> buildRenderables(graphics::IResourceFactory &gfx, ModelData *model,
+EVENGINE_API_WORLD std::vector<graphics::Renderable3D *> buildRenderables(graphics::IResourceFactory &gfx, ModelData *model,
                                                        const ModelRenderOptions &options = {});
 
 }  // namespace eve::model3d

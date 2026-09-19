@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 // 方块类型注册表：定义有哪些 cube、各面材质、方向性与组合声明。
 // 注册表在创建 world 时传入；网格化阶段用 resolveFaceTex 把“类型 id”解析为
@@ -15,7 +17,7 @@
 
 namespace eve::voxel {
 
-class CubeTypeRegistry {
+class EVENGINE_API_DOMAINS CubeTypeRegistry {
 public:
     CubeTypeRegistry() = default;
 

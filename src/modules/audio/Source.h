@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/Object.h"
 
@@ -27,7 +29,7 @@ class Audio;
  * Not thread-safe for playback control except fillPendingFromDecoder(), which is
  * synchronized for the Audio worker thread.
  */
-class Source : public Object {
+class EVENGINE_API_BACKENDS Source : public Object {
 public:
     /** @brief Creates a static source from decoded audio (both arguments required). */
     Source(Audio *audio, sound::SoundData *data);

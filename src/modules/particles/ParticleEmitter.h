@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/ECS.h"
 #include "common/RenderTypes.h"
@@ -62,7 +64,7 @@ struct Particle {
  * @brief ECS emitter entity. Script configures components; ParticleSimSystem /
  * ParticleRenderSystem drive per-frame update & draw.
  */
-class ParticleEmitter : public ecs::Entity {
+class EVENGINE_API_DOMAINS ParticleEmitter : public ecs::Entity {
 public:
     ENTITY(ParticleEmitter, ecs::Entity)
 

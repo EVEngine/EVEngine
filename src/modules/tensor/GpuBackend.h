@@ -1,3 +1,5 @@
+
+#include "common/Export.h"
 #ifndef EVE_TENSOR_GPUBACKEND_H
 #define EVE_TENSOR_GPUBACKEND_H
 
@@ -23,7 +25,7 @@ struct OptimizedGraph;
  * available or a group cannot be lowered, in which case the caller falls back
  * to the CPU interpreter.
  */
-class GpuProgram {
+class EVENGINE_API_DOMAINS GpuProgram {
 public:
     ~GpuProgram();
 

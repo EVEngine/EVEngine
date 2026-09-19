@@ -1,3 +1,5 @@
+
+#include "common/Export.h"
 #ifndef EVE_TENSOR_TENSOR_H
 #define EVE_TENSOR_TENSOR_H
 
@@ -40,7 +42,7 @@ bool parseDType(const std::string &name, DType &out);
  * @brief float32 / int32 tensor (rank 1–6), row-major.
  * Eager: owns a buffer. Symbolic: node in a Func graph (no buffer until run).
  */
-class Tensor {
+class EVENGINE_API_DOMAINS Tensor {
 public:
     static constexpr int kMaxRank = 6;
 

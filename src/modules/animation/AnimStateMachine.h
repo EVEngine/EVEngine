@@ -103,7 +103,7 @@ private:
     enum class CondKind { Float, Bool, Trigger };
     enum class FloatOp { Gt, Ge, Lt, Le, Eq, Ne };
 
-    struct EVENGINE_API_WORLD Condition {
+    struct Condition {
         CondKind    kind = CondKind::Float;
         std::string param;
         FloatOp     op        = FloatOp::Gt;

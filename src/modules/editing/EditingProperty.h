@@ -137,8 +137,8 @@ public:
 };
 
 [[nodiscard]] EVENGINE_API_PLATFORM Result<void> validatePropertyValue(const PropertyDescriptor& descriptor, const Value& value);
-[[nodiscard]] property_access::PropertyDescriptor toPresentationDescriptor(const PropertyDescriptor& source);
-[[nodiscard]] eve::Value                          toPresentationValue(const Value& value);
-[[nodiscard]] Value                               toEditingValue(const eve::Value& value);
+[[nodiscard]] EVENGINE_API_PLATFORM property_access::PropertyDescriptor toPresentationDescriptor(const PropertyDescriptor& source);
+[[nodiscard]] EVENGINE_API_PLATFORM eve::Value                          toPresentationValue(const Value& value);
+[[nodiscard]] EVENGINE_API_PLATFORM Value                               toEditingValue(const eve::Value& value);
 
 }  // namespace eve::editing

@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/AttachmentPoint.h"
 #include "common/AnimationEventSource.h"
@@ -99,7 +101,7 @@ using Live2DBackendFactory = ILive2DBackend *(*)();
  * Script-facing API avoids overloads; kind-specific methods no-op / return false
  * when unsupported.
  */
-class AvatarInstance : public eve::IAttachmentPointSource, public eve::IAnimationEventSource {
+class EVENGINE_API_DOMAINS AvatarInstance : public eve::IAttachmentPointSource, public eve::IAnimationEventSource {
 public:
     /** @brief Callback fired exactly once, when the instance is destroyed. */
     using DestroyHook = std::function<void(AvatarInstance *)>;

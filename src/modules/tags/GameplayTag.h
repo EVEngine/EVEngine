@@ -45,7 +45,7 @@ struct GameplayTagDefinition {
  * The registry is owner-thread-only. Returned definitions and collections are
  * owning copies, so callers never retain pointers across mutations or reloads.
  */
-class GameplayTagRegistry {
+class EVENGINE_API_FOUNDATION GameplayTagRegistry {
 public:
     /** @brief Register a definition, returning NoOp for an identical definition. */
     [[nodiscard]] Result<GameplayTagId> registerTag(std::string name, std::string description = {});

@@ -89,7 +89,7 @@ public:
  * @brief RAII-style dispose handle for an active stream subscription.
  * Disposing unsubscribes from the source; move-only.
  */
-class EVENGINE_API_PLATFORM Subscription {
+class Subscription {
 public:
     Subscription() = default;
     /** @brief Wraps a dispose callback (usually unsubscribing from a Subject). */

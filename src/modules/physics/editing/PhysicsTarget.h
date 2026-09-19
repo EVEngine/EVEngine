@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "editing/EditingProperty.h"
 #include "editing/EditingTargetOperations.h"
@@ -45,7 +47,7 @@ using EditorDiagnostic = editing::Diagnostic;
 using IPhysicsColliderAssetResolver = eve::physics_editing::IPhysicsColliderAssetResolver;
 
 /** @brief Serializable, backend-neutral 2D/3D collider authoring target. */
-class PhysicsColliderTarget final : public virtual IEditableTarget,
+class EVENGINE_API_DOMAINS PhysicsColliderTarget final : public virtual IEditableTarget,
                                     public IDomainOperationTarget,
                                     public IDomainOperationTargetStaging,
                                     public IPropertyProvider {
@@ -124,7 +126,7 @@ private:
 };
 
 /** @brief Serializable joint authoring target using stable body references. */
-class PhysicsJointTarget final : public virtual IEditableTarget,
+class EVENGINE_API_DOMAINS PhysicsJointTarget final : public virtual IEditableTarget,
                                  public IDomainOperationTarget,
                                  public IDomainOperationTargetStaging,
                                  public IPropertyProvider {

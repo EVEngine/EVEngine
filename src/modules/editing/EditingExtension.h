@@ -65,7 +65,7 @@ private:
 };
 
 /** @brief Thread-safe generation-qualified registry for editing extension providers. */
-class ExtensionProviderRegistry {
+class EVENGINE_API_PLATFORM ExtensionProviderRegistry {
 public:
     ExtensionProviderRegistry();
     ~ExtensionProviderRegistry();

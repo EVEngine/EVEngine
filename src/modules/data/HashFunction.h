@@ -17,7 +17,7 @@ class EVENGINE_API_FOUNDATION HashFunction
 {
 public:
 
-	struct EVENGINE_API_FOUNDATION Value
+	struct Value
 	{
 		char data[64]; // Maximum possible size (SHA512).
 		size_t size;

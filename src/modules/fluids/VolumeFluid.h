@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/Result.h"
 #include "fluids/FluidSdf.h"
@@ -512,7 +514,7 @@ struct VolumeFluidSnapshot {
  * Liquid/gas sampling uses a half-spacing separation regularizer to resolve
  * coincident zero-gradient particles; granular contacts use full spacing.
  */
-class VolumeFluid final {
+class EVENGINE_API_DOMAINS VolumeFluid final {
 public:
     /** @brief Validates settings before allocating an owning solver; errors publish no state. */
     [[nodiscard]] static Result<std::unique_ptr<VolumeFluid>> create(const VolumeFluidSettings& settings);

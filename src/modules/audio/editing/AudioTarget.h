@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "audio/editing/AudioEditingTypes.h"
 
@@ -9,7 +11,7 @@
 namespace eve::audio_editing {
 
 /** @brief Serializable audio-source authoring target independent of OpenAL handles. */
-class AudioSourceTarget final : public virtual IEditableTarget,
+class EVENGINE_API_BACKENDS AudioSourceTarget final : public virtual IEditableTarget,
                                 public IDomainOperationTarget,
                                 public IDomainOperationTargetStaging,
                                 public IPropertyProvider,

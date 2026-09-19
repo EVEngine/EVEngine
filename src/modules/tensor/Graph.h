@@ -1,3 +1,5 @@
+
+#include "common/Export.h"
 #ifndef EVE_TENSOR_GRAPH_H
 #define EVE_TENSOR_GRAPH_H
 
@@ -103,7 +105,7 @@ struct GraphNode {
     int qGroup = 0;                  // elements per scale group
 };
 
-class Graph {
+class EVENGINE_API_DOMAINS Graph {
 public:
     int  addNode(GraphNode node);
     const GraphNode &node(int id) const { return nodes_[static_cast<size_t>(id)]; }

@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "procgen/AttributeTable.h"
 
@@ -54,7 +56,7 @@ struct ProcgenPoint {
  * mutating their input, so named intermediate values remain inspectable after
  * a hot reload and can safely be reused by more than one pipeline branch.
  */
-class PointSet {
+class EVENGINE_API_DOMAINS PointSet {
 public:
     int  getCount() const;
     bool empty() const;

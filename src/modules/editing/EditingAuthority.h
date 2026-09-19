@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "editing/EditingProtocol.h"
 #include "editing/EditingTargetOperations.h"
@@ -30,7 +32,7 @@ public:
  * The target is non-owning and must outlive the authority. Operations are
  * rolled back in reverse order if a later operation fails.
  */
-class LocalWorldAuthority final : public IEditAuthority {
+class EVENGINE_API_PLATFORM LocalWorldAuthority final : public IEditAuthority {
 public:
     /** @brief Bind a non-owning operation target. */
     explicit LocalWorldAuthority(IDomainOperationTarget* target) : target_(target) {}

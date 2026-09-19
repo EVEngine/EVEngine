@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/Result.h"
 #include "procgen/GtsMeshSimplifier.h"
@@ -10,6 +12,20 @@
 namespace eve::procgen {
 
 class PcgMeshCombinePlan;
+
+/**
+ * @brief Combine static meshes with Pcg material deduplication and root-relative transforms.
+ * @param output Replaced only after all streams, material groups and budgets validate.
+ * @param plan Immutable owning source plan; output cannot alias its copied meshes.
+ * @return Combined triangle count or a structured diagnostic without changing output.
+ * @thread Synchronous CPU operation; no callbacks or references are retained.
+ *
+ * Declared ahead of the classes that friend it: the first declaration in a
+ * translation unit must carry the link-group macro, otherwise the friend
+ * declarations inside PcgMeshTransform/PcgMeshCombinePlan fix a different
+ * linkage and this dllexport declaration would be C2375.
+ */
+[[nodiscard]] EVENGINE_API_DOMAINS Result<int> combinePcgStaticMeshesInto(MeshBuild& output, const PcgMeshCombinePlan& plan);
 
 /** @brief Pcg/Unity renderer policies retained per generated mesh LOD. */
 struct PcgMeshLodRendererState {
@@ -33,7 +49,7 @@ public:
     [[nodiscard]] float getElement(int row, int column) const noexcept;
 private:
     friend class PcgMeshCombinePlan;
-    friend Result<int> combinePcgStaticMeshesInto(MeshBuild&, const PcgMeshCombinePlan&);
+    friend EVENGINE_API_DOMAINS Result<int> combinePcgStaticMeshesInto(MeshBuild&, const PcgMeshCombinePlan&);
     std::array<float, 16> matrix_{};
 };
 
@@ -44,7 +60,7 @@ private:
  * `defaultMaterialId`; grouped meshes use group names as stable material identities.
  * No renderer, material object or callback is retained. Callers serialize mutation.
  */
-class PcgMeshCombinePlan {
+class EVENGINE_API_DOMAINS PcgMeshCombinePlan {
 public:
     /** @brief Copy one readable mesh and root-relative affine transform into the plan. */
     [[nodiscard]] Result<void> appendSource(const MeshBuild& mesh, const PcgMeshTransform& transform,
@@ -55,18 +71,9 @@ public:
     [[nodiscard]] int getSourceCount() const noexcept;
 private:
     struct Source { MeshBuild mesh; PcgMeshTransform transform; std::string defaultMaterialId; };
-    friend Result<int> combinePcgStaticMeshesInto(MeshBuild&, const PcgMeshCombinePlan&);
+    friend EVENGINE_API_DOMAINS Result<int> combinePcgStaticMeshesInto(MeshBuild&, const PcgMeshCombinePlan&);
     std::vector<Source> sources_;
 };
-
-/**
- * @brief Combine static meshes with Pcg material deduplication and root-relative transforms.
- * @param output Replaced only after all streams, material groups and budgets validate.
- * @param plan Immutable owning source plan; output cannot alias its copied meshes.
- * @return Combined triangle count or a structured diagnostic without changing output.
- * @thread Synchronous CPU operation; no callbacks or references are retained.
- */
-[[nodiscard]] Result<int> combinePcgStaticMeshesInto(MeshBuild& output, const PcgMeshCombinePlan& plan);
 
 /** @brief One UnityMeshSimplifierPcg LOD level translated to native mesh settings. */
 struct PcgMeshLodLevel {

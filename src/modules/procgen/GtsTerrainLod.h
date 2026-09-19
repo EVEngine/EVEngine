@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/Result.h"
 #include "procgen/GtsMeshSimplifier.h"
@@ -104,7 +106,7 @@ private:
 };
 
 /** @brief Owned result of the GTS split-and-sequential-simplify pipeline. */
-class GtsTerrainLodSet {
+class EVENGINE_API_DOMAINS GtsTerrainLodSet {
 public:
     /** @brief Return the number of tile columns. */
     [[nodiscard]] int getColumnCount() const { return columns_; }
@@ -200,7 +202,7 @@ private:
  * @param meshFolder Valid relative output folder, normally `Meshes`.
  * @return Row-major, then near-to-far export entries.
  */
-[[nodiscard]] Result<std::vector<GtsTerrainLodAssetEntry>> planGtsTerrainLodAssets(
+[[nodiscard]] EVENGINE_API_DOMAINS Result<std::vector<GtsTerrainLodAssetEntry>> planGtsTerrainLodAssets(
     const GtsTerrainLodSet& lods,const std::string& terrainName,const std::string& meshFolder="Meshes");
 /** @brief Atomically replace a script-friendly export plan. */
 [[nodiscard]] Result<void> planGtsTerrainLodAssetsInto(GtsTerrainLodAssetPlan& output,

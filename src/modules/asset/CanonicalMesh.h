@@ -31,7 +31,7 @@ struct CanonicalMeshLimits {
  * @return Complete binary blob, or a structured validation/budget failure.
  * @thread Worker-safe and reentrant; performs no IO or callbacks.
  */
-[[nodiscard]] Result<std::vector<std::uint8_t>> encodeCanonicalMesh(
+[[nodiscard]] EVENGINE_API_FOUNDATION Result<std::vector<std::uint8_t>> encodeCanonicalMesh(
     const CanonicalMeshData& mesh, const CanonicalMeshLimits& limits = {});
 /** @brief Decode canonical EVMESH binary v1, v2, or v3 into independently owned arrays.
  * @param bytes Borrowed immutable input valid for this synchronous call only.

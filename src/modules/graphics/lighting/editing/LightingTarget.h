@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "editing/EditableTarget.h"
 #include "editing/EditingAuthority.h"
@@ -49,7 +51,7 @@ using TargetId                 = editing::TargetId;
 using editing::validatePropertyValue;
 
 /** @brief Shared property-document implementation for light and environment targets. */
-class LightingPropertyTargetBase : public virtual IEditableTarget,
+class EVENGINE_API_DOMAINS LightingPropertyTargetBase : public virtual IEditableTarget,
                                    public IDomainOperationTarget,
                                    public IPropertyProvider {
 public:

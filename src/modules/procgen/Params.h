@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/Value.h"
 
@@ -22,7 +24,7 @@ namespace eve::procgen {
  * dimensions. This is required by existing mesh recipes which use `width` or
  * `height` as geometric floating-point parameters.
  */
-class Params {
+class EVENGINE_API_DOMAINS Params {
 public:
     /** @brief Set the deterministic seed used by generation. */
     void     setSeed(uint32_t seed);
