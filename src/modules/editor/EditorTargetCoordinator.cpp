@@ -229,4 +229,25 @@ EditorResult<TransactionReceipt> EditorTargetCoordinator::redo(const TargetId& t
     return selected->transactions.redo();
 }
 
+std::vector<EditorTargetCoordinator::TargetSummary> EditorTargetCoordinator::targets() const {
+    std::vector<TargetSummary> summaries;
+    summaries.reserve(impl_->targets.size());
+    // std::map keeps the ids ordered, so discovery is deterministic for a caller
+    // that diffs two lists.
+    for (const auto& [id, entry] : impl_->targets) {
+        TargetSummary summary;
+        summary.id = id.value();
+        if (entry) {
+            summary.generation = entry->generation;
+            if (entry->target) {
+                const TargetDescriptor descriptor = entry->target->describe();
+                summary.type                      = descriptor.type;
+                summary.revision                  = static_cast<std::uint64_t>(descriptor.revision);
+            }
+        }
+        summaries.push_back(std::move(summary));
+    }
+    return summaries;
+}
+
 }  // namespace eve::editor

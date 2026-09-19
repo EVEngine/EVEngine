@@ -1,8 +1,8 @@
-#include "sensing/Sensing.h"
+﻿#include "sensing/Sensing.h"
 #include "common/Identity.h"
+#include "common/SquirrelBinding.h"
 #include "sensing/TargetingPipeline.h"
 #include "spatial/SpatialHash2D.h"
-#include "common/SquirrelBinding.h"
 
 #include <algorithm>
 #include <cmath>
@@ -614,6 +614,27 @@ struct ScriptSensingWorld {
     ~ScriptSensingWorld() noexcept { Sensing::release(reference).ignore("script sensing world proxy destruction"); }
     SensingWorldHandleRef reference;
 };
+
+Sensing::Sensing() { eve::cap::provide<eve::ISensingQuery>(this); }
+
+Sensing::~Sensing() { eve::cap::revoke<eve::ISensingQuery>(this); }
+
+int Sensing::worldCount() const {
+    int count = 0;
+    worlds_.forEachLive([&](std::uint32_t, const SensingWorld&) { ++count; });
+    return count;
+}
+
+std::vector<eve::SensingWorldQuery> Sensing::lastQueries() const {
+    std::vector<eve::SensingWorldQuery> queries;
+    worlds_.forEachLive([&](std::uint32_t index, const SensingWorld& world) {
+        eve::SensingWorldQuery entry;
+        entry.index         = static_cast<int>(index);
+        entry.lastQueryJson = world.debugLastQueryJson();
+        queries.push_back(std::move(entry));
+    });
+    return queries;
+}
 
 Module_IMPL(Sensing, new Sensing());
 void Sensing::expose(ssq::Table& t) {

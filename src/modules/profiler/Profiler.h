@@ -124,4 +124,12 @@ private:
     HSQUIRRELVM vm_       = nullptr;
 };
 
+/**
+ * @brief Publish the read-only profiler capability (`eve::IProfilerQuery`).
+ *
+ * Called by the module constructor so devtools/MCP can read the last completed
+ * frame's zone tree without linking this module.
+ */
+void registerProfilerCapabilities();
+
 }  // namespace eve::profiler

@@ -28,6 +28,24 @@
 namespace eve {
 
 /**
+ * @brief Marker text that opens a session block in `eve.log`.
+ *
+ * Writers and readers of the log share these constants so an external tool can
+ * delimit sessions without duplicating a literal that could silently drift.
+ * @ownership The pointer is borrowed, not owned: it addresses a string literal
+ *            with static storage duration.
+ * @lifetime Static: valid for the whole process, never freed by the caller.
+ */
+inline constexpr const char* kSessionStartMarker = "EVEngine session start";
+
+/**
+ * @brief Marker text that closes a session block (followed by the exit code).
+ * @ownership Borrowed pointer to a static string literal; the caller owns nothing.
+ * @lifetime Static storage duration; valid for the whole process.
+ */
+inline constexpr const char* kSessionEndMarker = "session end (exit code";
+
+/**
  * @brief Opens (append) the crash/error log file and records a session marker.
  * @param logDir Directory for the `eve.log` file. Empty selects EVE_LOG_DIR or
  *               the current working directory.
@@ -56,6 +74,25 @@ EVENGINE_API void recordLogEvent(const std::string& level, const std::string& me
  * by the unhandled-exception filter, which also prints the same report to stderr.
  */
 EVENGINE_API void recordCrashEvent(const std::string& report);
+
+/**
+ * @brief Appends a session-start marker.
+ *
+ * `initSystemLogging()` writes one when it opens the log. A host that runs more
+ * than one game session inside one process (a launcher, a test harness) calls
+ * this to delimit them, so a reader can still tell which run a failure belongs
+ * to.
+ */
+EVENGINE_API void recordSessionStart();
+
+/**
+ * @brief Appends the session-end marker carrying the process exit code.
+ *
+ * A session block without this marker is how a reader recognises a run that did
+ * not finish (crash, kill, power loss).
+ * @param exitCode Process exit code that ended the session.
+ */
+EVENGINE_API void recordSessionEnd(int exitCode);
 
 /**
  * @brief Path of the open crash/error log file.

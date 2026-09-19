@@ -1,6 +1,7 @@
 #include "common/GameplayControlJson.h"
 
 #include "common/Capability.h"
+#include "common/GameplayInstanceCatalog.h"
 
 #include <algorithm>
 #include <limits>
@@ -111,23 +112,45 @@ Result<GameplaySession> session(const Value::Object& root) {
     return Result<GameplaySession>::success(std::move(result));
 }
 
-Result<IGameplayControlProvider*> provider(std::string_view domain) {
-    IGameplayControlProvider* match = nullptr;
-    bool duplicate = false;
+/**
+ * @brief Resolve the provider that serves one domain instance.
+ *
+ * A domain normally publishes exactly one provider. Per-instance adapters (the
+ * weapon, climbing, rpg battle and rpg production controls) publish one provider
+ * each, so the router asks the catalogues which of them claims the requested
+ * instance: exactly one claimant routes the call, several claimants are a real
+ * ambiguity, and nobody claiming it leaves the duplicate-domain conflict intact —
+ * the router never guesses by calling providers to see which one works, because
+ * that would run unknown side effects to answer a routing question.
+ */
+Result<IGameplayControlProvider*> provider(std::string_view domain, SubjectRef instance) {
+    std::vector<IGameplayControlProvider*> matches;
     cap::forEach<IGameplayControlProvider>([&](auto* candidate) {
-        if (candidate && candidate->gameplayDomain() == domain) {
-            duplicate = match != nullptr;
-            match = candidate;
-        }
+        if (candidate && candidate->gameplayDomain() == domain) matches.push_back(candidate);
     });
-    if (duplicate)
-        return failure<IGameplayControlProvider*>(DiagnosticCode::Conflict,
-                                                  "multiple gameplay providers publish the same domain",
-                                                  "request.domain");
-    if (!match)
+    if (matches.empty())
         return failure<IGameplayControlProvider*>(DiagnosticCode::NotFound,
                                                   "gameplay provider domain was not found", "request.domain");
-    return Result<IGameplayControlProvider*>::success(match);
+    if (matches.size() == 1) return Result<IGameplayControlProvider*>::success(matches.front());
+
+    IGameplayControlProvider* claimant  = nullptr;
+    int                       claimants = 0;
+    for (auto* candidate : matches) {
+        auto* catalog = dynamic_cast<IGameplayInstanceCatalog*>(candidate);
+        if (catalog == nullptr) continue;
+        const auto instances = catalog->gameplayInstances();
+        if (std::find(instances.begin(), instances.end(), instance) == instances.end()) continue;
+        claimant = candidate;
+        ++claimants;
+    }
+    if (claimants == 1) return Result<IGameplayControlProvider*>::success(claimant);
+    if (claimants > 1)
+        return failure<IGameplayControlProvider*>(DiagnosticCode::Conflict,
+                                                  "several gameplay providers claim that instance", "request.instance");
+    return failure<IGameplayControlProvider*>(DiagnosticCode::Conflict,
+                                              "multiple gameplay providers publish the same domain and none "
+                                              "claims that instance",
+                                              "request.domain");
 }
 
 Value encodeObservation(GameplayObservation observation) {
@@ -152,6 +175,13 @@ Value encodeReceipt(GameplayCommandReceipt receipt) {
                                {"details", std::move(receipt.details)},
                                {"executionId", Value(std::move(receipt.executionId))},
                                {"resultingRevision", Value(static_cast<std::int64_t>(receipt.resultingRevision))}});
+}
+
+Value encodeInstances(const IGameplayInstanceCatalog* catalog) {
+    Value::Array output;
+    if (catalog == nullptr) return Value(std::move(output));
+    for (const auto& instance : catalog->gameplayInstances()) output.emplace_back(instance.format());
+    return Value(std::move(output));
 }
 
 Value encodeEvents(std::vector<GameplayEvent> events) {
@@ -206,17 +236,69 @@ Result<Value> executeGameplayControlRequest(const Value& request) {
             if (candidate) domains.emplace_back(candidate->gameplayDomain());
         });
         std::sort(domains.begin(), domains.end());
+        // A per-instance adapter registers once per instance, so the same domain
+        // can appear several times; discovery lists it once while an operation on
+        // that domain still reports the duplicate-provider conflict.
+        domains.erase(std::unique(domains.begin(), domains.end()), domains.end());
         Value::Array output;
         for (auto& domain : domains) output.emplace_back(std::move(domain));
         return Result<Value>::success(Value(Value::Object{{"domains", Value(std::move(output))}}));
     }
+    if (operation.value() == "instances") {
+        // Discovery needs neither a session nor an authority check: it reports
+        // what exists, not what the caller may do with it.
+        const auto domainField = root.value()->find("domain");
+        if (domainField != root.value()->end()) {
+            if (!domainField->second.isString())
+                return failure<Value>(DiagnosticCode::ParseError, "domain must be a string", "request.domain");
+            const std::string         wanted = domainField->second.asString();
+            IGameplayInstanceCatalog* match  = nullptr;
+            cap::forEach<IGameplayInstanceCatalog>([&](auto* candidate) {
+                if (candidate && candidate->gameplayDomain() == wanted) match = candidate;
+            });
+            if (match == nullptr)
+                return failure<Value>(DiagnosticCode::Unsupported,
+                                      "that gameplay domain cannot enumerate its instances", "request.domain");
+            return Result<Value>::success(
+                Value(Value::Object{{"domain", Value(wanted)}, {"instances", encodeInstances(match)}}));
+        }
+        std::vector<std::pair<std::string, Value>> catalogs;
+        std::vector<std::string>                   catalogDomains;
+        cap::forEach<IGameplayInstanceCatalog>([&](auto* candidate) {
+            if (!candidate) return;
+            const std::string domain(candidate->gameplayDomain());
+            catalogDomains.push_back(domain);
+            catalogs.emplace_back(domain, encodeInstances(candidate));
+        });
+        std::sort(catalogs.begin(), catalogs.end(),
+                  [](const auto& left, const auto& right) { return left.first < right.first; });
+        Value::Array encoded;
+        for (auto& entry : catalogs)
+            encoded.emplace_back(
+                Value::Object{{"domain", Value(std::move(entry.first))}, {"instances", std::move(entry.second)}});
+        std::vector<std::string> unenumerable;
+        cap::forEach<IGameplayControlProvider>([&](auto* candidate) {
+            if (!candidate) return;
+            const std::string domain(candidate->gameplayDomain());
+            if (std::find(catalogDomains.begin(), catalogDomains.end(), domain) == catalogDomains.end())
+                unenumerable.push_back(domain);
+        });
+        std::sort(unenumerable.begin(), unenumerable.end());
+        Value::Array missing;
+        for (auto& domain : unenumerable) missing.emplace_back(std::move(domain));
+        return Result<Value>::success(
+            Value(Value::Object{{"catalogs", Value(std::move(encoded))}, {"unenumerable", Value(std::move(missing))}}));
+    }
     auto domain = stringMember(*root.value(), "domain", "request");
     if (!domain) return Result<Value>::failure(domain.status());
-    auto target = provider(domain.value());
-    if (!target) return Result<Value>::failure(target.status());
     auto access = session(*root.value());
     if (!access) return Result<Value>::failure(access.status());
     auto instance = rootSubject(*root.value(), "instance");
+    if (!instance) return Result<Value>::failure(instance.status());
+    // Routing needs the instance, so it resolves after the instance is parsed: when
+    // several providers publish one domain, the owning catalogue decides.
+    auto target = provider(domain.value(), instance.value());
+    if (!target) return Result<Value>::failure(target.status());
     if (!instance) return Result<Value>::failure(instance.status());
 
     if (operation.value() == "observe") {

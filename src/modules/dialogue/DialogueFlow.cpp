@@ -1,9 +1,11 @@
 #include "dialogue/DialogueFlow.h"
 
 #include "common/SquirrelBinding.h"
+#include "common/SubjectRef.h"
 #include "dialogue/ConversationAuthoring.h"
 #include "dialogue/ConversationImporter.h"
 #include "dialogue/ConversationToolchain.h"
+#include "dialogue/DialogueControl.h"
 #include "filesystem/Filesystem.h"
 #include "i18n/I18n.h"
 
@@ -179,8 +181,54 @@ DialogueFlow::DialogueFlow() {
 }
 
 DialogueFlow::~DialogueFlow() {
+    clearGameplayControls();
     clearIntegration();
     clearExpressionEvaluator();
+}
+
+eve::Result<void> DialogueFlow::startChecked(const std::string& id) {
+    if (vm_ == nullptr) return startChecked(id, ssq::Object());
+    ssq::Table bindings(vm_);
+    return startChecked(id, ssq::Object(bindings));
+}
+
+eve::Result<void> DialogueFlow::publishGameplay(const std::string& instanceId, const std::string& ownerId) {
+    if (instanceId.empty() || ownerId.empty())
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                 "publishGameplay needs an instance id and an owner id",
+                                                                 "instanceId"));
+    const auto instance = eve::PersistentId::parse(instanceId);
+    const auto owner    = eve::PersistentId::parse(ownerId);
+    if (!instance.has_value() || !owner.has_value())
+        return eve::Result<void>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                   "instance and owner ids must be canonical persistent ids", "instanceId"));
+    if (!gameplay_) gameplay_ = std::make_unique<DialogueControl>(*this);
+    return gameplay_->publish(eve::SubjectRef::fromPersistentId(*instance), eve::SubjectRef::fromPersistentId(*owner));
+}
+
+eve::Result<void> DialogueFlow::unpublishGameplay(const std::string& instanceId) {
+    if (!gameplay_)
+        return eve::Result<void>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::NotFound, "no dialogue instance is published", "instanceId"));
+    const auto instance = eve::PersistentId::parse(instanceId);
+    if (!instance.has_value())
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "the instance id must be a canonical persistent id", "instanceId"));
+    return gameplay_->unpublish(eve::SubjectRef::fromPersistentId(*instance));
+}
+
+void DialogueFlow::clearGameplayControls() {
+    if (gameplay_) gameplay_->clear();
+}
+
+int DialogueFlow::gameplayControlCount() const { return gameplay_ ? gameplay_->count() : 0; }
+
+std::vector<std::string> DialogueFlow::gameplayInstances() const {
+    std::vector<std::string> result;
+    if (!gameplay_) return result;
+    for (const auto& instance : gameplay_->instances()) result.push_back(instance.format());
+    return result;
 }
 
 void DialogueFlow::configureIntegration(IntegrationConfig config) {
@@ -927,6 +975,34 @@ void DialogueFlow::expose(ssq::Class& cls) {
     cls.addFunc("clearMigrations", &DialogueFlow::clearMigrations);
     cls.addFunc("addToneRule", &DialogueFlow::addToneRule);
     cls.addFunc("clearToneRules", &DialogueFlow::clearToneRules);
+
+    // 把对话运行器发布到共享玩法协议（`eve_gameplay` / MCP）。返回 {ok, message}：
+    // 失败原因（非规范持久 id、运行器已发布）不被丢弃。
+    cls.addFunc("publishGameplay",
+                [vm = cls.getHandle()](DialogueFlow* self, const std::string& instanceId, const std::string& ownerId) {
+                    ssq::Table result(vm);
+                    if (self == nullptr) {
+                        result.set("ok", false);
+                        result.set("message", std::string("dialogue flow unavailable"));
+                        return result;
+                    }
+                    const auto published = self->publishGameplay(instanceId, ownerId);
+                    result.set("ok", published.ok());
+                    result.set("message", published.ok() ? std::string("published") : published.status().describe());
+                    return result;
+                });
+    cls.addFunc("unpublishGameplay", [vm = cls.getHandle()](DialogueFlow* self, const std::string& instanceId) {
+        ssq::Table result(vm);
+        const auto unpublished = self == nullptr
+                                     ? eve::Result<void>::failure(eve::Diagnostic::error(
+                                           eve::DiagnosticCode::Failed, "dialogue flow unavailable", "self"))
+                                     : self->unpublishGameplay(instanceId);
+        result.set("ok", unpublished.ok());
+        result.set("message", unpublished.ok() ? std::string("unpublished") : unpublished.status().describe());
+        return result;
+    });
+    cls.addFunc("clearGameplayControls", &DialogueFlow::clearGameplayControls);
+    cls.addFunc("getGameplayControlCount", &DialogueFlow::gameplayControlCount);
 }
 
 }  // namespace eve::dialogue

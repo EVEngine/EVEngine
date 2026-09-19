@@ -58,11 +58,22 @@ WeaponControl::WeaponControl(SubjectRef instance, SubjectRef wielder, WeaponDefi
       account_(&account),
       effect_(&effect) {
     cap::addListener<IGameplayControlProvider>(this);
+    cap::addListener<IGameplayInstanceCatalog>(this);
 }
 
-WeaponControl::~WeaponControl() { cap::removeListener<IGameplayControlProvider>(this); }
+WeaponControl::~WeaponControl() {
+    cap::removeListener<IGameplayInstanceCatalog>(this);
+    cap::removeListener<IGameplayControlProvider>(this);
+}
 
 std::string_view WeaponControl::gameplayDomain() const noexcept { return "weapon"; }
+
+std::vector<SubjectRef> WeaponControl::gameplayInstances() const {
+    // This adapter serves exactly one instance: the identity it was constructed
+    // with is the only one it can answer for.
+    if (!instance_.isValid()) return {};
+    return {instance_};
+}
 
 bool WeaponControl::controls(const GameplaySession& session) const {
     return session.access != GameplayAccess::PlayerEquivalent ||

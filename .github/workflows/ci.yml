@@ -372,8 +372,12 @@ jobs:
         # A PR that changes the third-party patch/cache key must do a full cold
         # dependency plus engine/test build. Recent windows-2025 runners can
         # exceed 40 minutes without any compiler failure, so retain a bounded
-        # hang guard while allowing the cold build to finish.
-        timeout-minutes: 60
+        # hang guard while allowing the cold build to finish. Measured on
+        # 2026-09-19: a passing cold build took 51.6 min, while two dev pushes and
+        # this PR were killed by the former 60-minute guard standing at 98% of the
+        # compile steps — the win32 build genuinely needs ~62-66 min now — so the
+        # guard follows the same 40 -> 60 -> 80 pattern as the Dawn lane.
+        timeout-minutes: 80
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |

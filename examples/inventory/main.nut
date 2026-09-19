@@ -70,10 +70,27 @@ function resetRun() {
     lootLeft = 5;
     logLines = [];
     pushLog("冒险开始：背包里有 3 瓶药水。");
+    publishInventory();
 }
 
 function keyPressed(name) {
     return key_just_pressed(name);
+}
+
+// ---------------------------------------------------------------------------
+// 把玩家背包发布给共享玩法协议：`eve_gameplay`（MCP `eve_gameplay` 工具）即可
+// observe / submit 同一套动作词表（add/remove/move/equip/unequip）。
+// instance / owner 是规范持久 id；真实项目应从存档或实体身份派生，这里为了示例
+// 与无人值守调试固定下来。每次重建背包都要重新发布，否则适配器仍指向旧容器。
+// ---------------------------------------------------------------------------
+function publishInventory() {
+    inv.clearGameplayControls();
+    local published = inv.publishGameplay(
+        "00000000-0000-7000-8000-0000000a0001",
+        "00000000-0000-7000-8000-0000000a0002",
+        bag, eq);
+    if (!published.ok)
+        print("背包发布失败: " + published.message);
 }
 
 function refreshHud() {

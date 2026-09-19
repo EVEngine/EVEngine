@@ -1,7 +1,9 @@
 #include "economy/Economy.h"
 
 #include "common/Capability.h"
+#include "common/SubjectRef.h"
 #include "economy/Collector.h"
+#include "economy/EconomyControl.h"
 #include "economy/EconomySystem.h"
 #include "economy/GatherNode.h"
 #include "economy/ResourceType.h"
@@ -13,6 +15,8 @@ namespace eve::economy {
 Module_IMPL(Economy, new Economy());
 
 Economy::Economy() { eve::cap::provide<eve::economy::IEconomy>(this); }
+
+Economy::~Economy() { clearGameplayControls(); }
 
 int Economy::credit(int player, const std::string& type, int amount) {
     return EconomySystem::credit(player, type, amount);
@@ -67,6 +71,11 @@ bool Economy::hasType(const std::string& id) { return ResourceTypeRegistry::find
 int Economy::getStockMax(const std::string& id) {
     const auto* def = ResourceTypeRegistry::find(id);
     return def ? def->stockMax : 0;
+}
+
+std::string Economy::getTypeId(int index) {
+    const auto* def = ResourceTypeRegistry::typeAt(index);
+    return def ? def->id : std::string{};
 }
 
 void Economy::clearEvents() { EconomySystem::clearEvents(); }
@@ -154,6 +163,75 @@ void Economy::expose(ssq::Class& cls) {
     cls.addFunc("getEventPlayer", [](Economy*, int index) { return Economy::eventPlayer(index); });
     cls.addFunc("getEventType", [](Economy*, int index) { return Economy::eventType(index); });
     cls.addFunc("getEventAmount", [](Economy*, int index) { return Economy::eventAmount(index); });
+    cls.addFunc("getTypeId", &Economy::getTypeId);
+
+    // 把玩家账本发布到共享玩法协议（`eve_gameplay` / MCP）。返回 {ok, message}：
+    // 失败原因（非规范持久 id、重复实例）不被丢弃。
+    cls.addFunc("publishGameplay", [vm = cls.getHandle()](Economy* self, const std::string& instanceId,
+                                                          const std::string& ownerId, int player) {
+        ssq::Table result(vm);
+        if (self == nullptr) {
+            result.set("ok", false);
+            result.set("message", std::string("economy module unavailable"));
+            return result;
+        }
+        const auto published = self->publishGameplay(instanceId, ownerId, player);
+        result.set("ok", published.ok());
+        result.set("message", published.ok() ? std::string("published") : published.status().describe());
+        return result;
+    });
+    cls.addFunc("unpublishGameplay", [vm = cls.getHandle()](Economy* self, const std::string& instanceId) {
+        ssq::Table result(vm);
+        const auto unpublished = self == nullptr
+                                     ? eve::Result<void>::failure(eve::Diagnostic::error(
+                                           eve::DiagnosticCode::Failed, "economy module unavailable", "self"))
+                                     : self->unpublishGameplay(instanceId);
+        result.set("ok", unpublished.ok());
+        result.set("message", unpublished.ok() ? std::string("unpublished") : unpublished.status().describe());
+        return result;
+    });
+    cls.addFunc("clearGameplayControls", &Economy::clearGameplayControls);
+    cls.addFunc("getGameplayControlCount", &Economy::gameplayControlCount);
+}
+
+eve::Result<void> Economy::publishGameplay(const std::string& instanceId, const std::string& ownerId, int player) {
+    if (instanceId.empty() || ownerId.empty())
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                 "publishGameplay needs an instance id and an owner id",
+                                                                 "instanceId"));
+    const auto instance = eve::PersistentId::parse(instanceId);
+    const auto owner    = eve::PersistentId::parse(ownerId);
+    if (!instance.has_value() || !owner.has_value())
+        return eve::Result<void>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                   "instance and owner ids must be canonical persistent ids", "instanceId"));
+    if (!gameplay_) gameplay_ = std::make_unique<EconomyControl>();
+    return gameplay_->publish(eve::SubjectRef::fromPersistentId(*instance), eve::SubjectRef::fromPersistentId(*owner),
+                              player);
+}
+
+eve::Result<void> Economy::unpublishGameplay(const std::string& instanceId) {
+    if (!gameplay_)
+        return eve::Result<void>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::NotFound, "no economy instance is published", "instanceId"));
+    const auto instance = eve::PersistentId::parse(instanceId);
+    if (!instance.has_value())
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "the instance id must be a canonical persistent id", "instanceId"));
+    return gameplay_->unpublish(eve::SubjectRef::fromPersistentId(*instance));
+}
+
+void Economy::clearGameplayControls() {
+    if (gameplay_) gameplay_->clear();
+}
+
+int Economy::gameplayControlCount() const { return gameplay_ ? gameplay_->count() : 0; }
+
+std::vector<std::string> Economy::gameplayInstances() const {
+    std::vector<std::string> result;
+    if (!gameplay_) return result;
+    for (const auto& instance : gameplay_->instances()) result.push_back(instance.format());
+    return result;
 }
 
 }  // namespace eve::economy

@@ -7,7 +7,9 @@
 
 #include <simplesquirrel/simplesquirrel.hpp>
 
+#include <string_view>
 #include <utility>
+#include <vector>
 
 namespace eve::fluids_editor {
 namespace {
@@ -30,8 +32,8 @@ editor::EditorResult<editor::AutomationOwnedTarget> makeTarget(const editor::Tar
 
 }  // namespace
 
-bool FluidsAutomationTargetFactory::supports(std::string_view type) const {
-    return type == "fluid-simulation" || type == "surface-fluid" || type == "volume-fluid";
+std::vector<std::string_view> FluidsAutomationTargetFactory::types() const {
+    return {"fluid-simulation", "surface-fluid", "volume-fluid"};
 }
 
 editor::EditorResult<editor::AutomationOwnedTarget> FluidsAutomationTargetFactory::create(

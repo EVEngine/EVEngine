@@ -11,7 +11,9 @@
 
 #include <stdexcept>
 #include <string>
+#include <string_view>
 #include <utility>
+#include <vector>
 
 namespace eve::action_editor {
 namespace {
@@ -27,7 +29,7 @@ std::string stringField(const editor::EditorValue::Object& request, const char* 
 
 class ActionEditorModule::TargetFactory final : public editor::IEditorAutomationTargetFactory {
 public:
-    bool supports(std::string_view type) const override { return type == "action" || type == "action-timeline"; }
+    std::vector<std::string_view> types() const override { return {"action", "action-timeline"}; }
 
     editor::EditorResult<editor::AutomationOwnedTarget> create(
         const editor::TargetId& target, std::string_view type, const editor::EditorValue::Object& request) override {

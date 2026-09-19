@@ -310,9 +310,11 @@ struct RTS::GameplayRuntime {
 
 RTS::RTS() : gameplayRuntime_(std::make_unique<GameplayRuntime>()) {
     cap::addListener<IGameplayControlProvider>(this);
+    cap::addListener<IGameplayInstanceCatalog>(this);
 }
 
 RTS::~RTS() {
+    cap::removeListener<IGameplayInstanceCatalog>(this);
     cap::removeListener<IGameplayControlProvider>(this);
     FogOfWarSystem::clear(fogState_);
     setCrowdProvider(nullptr);
@@ -370,6 +372,19 @@ void RTS::setNavigationProvider(map::Pathfinder* pathfinder, NavigationGrid grid
 }
 
 std::string_view RTS::gameplayDomain() const noexcept { return "rts"; }
+
+std::vector<SubjectRef> RTS::gameplayInstances() const {
+    // One RTS instance is one player; the instance identity is that player's
+    // subject, which is also what `observeGameplay` resolves.
+    std::vector<SubjectRef> result;
+    for (const auto& handle : players_) {
+        auto* player = dynamic_cast<Player*>(ecs::try_get(handle));
+        if (player != nullptr && player->identity()->subject.isValid()) result.push_back(player->identity()->subject);
+    }
+    std::sort(result.begin(), result.end(),
+              [](const SubjectRef& left, const SubjectRef& right) { return left.format() < right.format(); });
+    return result;
+}
 
 Result<GameplayObservation> RTS::observeGameplay(const GameplaySession& session, SubjectRef instance) const {
     Player* player = resolvePlayer(instance);
