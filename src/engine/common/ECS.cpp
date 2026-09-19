@@ -317,6 +317,14 @@ eve.Entity <- class {
         foreach (name, compClass in e._slots) {
             local c = eve._ecsInstantiateComponent(compClass)
             e._comps[name] <- c
+            // 这一步**从来没有成功过**，而且失败被吞掉了。`e[name] = c` 的键是动态的，
+            // 因此编译成 new-slot 操作码，而 Squirrel 拒绝对 class 实例新建槽位
+            // （"class instances do not support the new slot operator"）。
+            // 结果是：组件实例只存在于 `_comps`，`e.pos` 读到的是**类默认值**——对
+            // `pos = Pos` 而言就是组件**类**本身，于是 `e.pos.x = 1` 写的是类级字段。
+            // 两个存储不只是可能分叉：字段那条路根本没接上。修复属于阶段 5 的 F4，
+            // 需要先定方案（给 Entity 加带 MT_NEWSLOT 的 delegate，还是让 `_comps`
+            // 成为唯一存储并改 GPU 打包侧的读取），不是一行改动。
             try { e[name] = c } catch (ex) {}
         }
         eve._ecsRegisterInstance(e, this)
@@ -355,10 +363,9 @@ eve.Entity <- class {
         if (_etype != null) eve._ecsUnregisterInstance(this, _etype)
         // 组件状态一并释放。留着它的话，销毁后的实体仍然可读可写、却对任何 view 无效
         // （静默 no-op），而且每个组件对象都被这个已销毁的实体继续引用着。
-        // `_slots` 只描述类结构、不含实例状态，保留。
-        if (_slots != null) {
-            foreach (name, compClass in _slots) this[name] = null
-        }
+        // 只能清 `_comps`：用 `this[name] = null` 清字段会抛
+        // "class instances do not support the new slot operator"（动态键赋值走 new-slot
+        // 操作码，Squirrel 拒绝给 class 实例新建槽位；见 create() 里的说明）。
         _comps = null
     }
 }
