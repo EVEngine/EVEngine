@@ -3,6 +3,9 @@
 
 #include "ui/EditorHost.h"
 
+#include "common/ScriptError.h"
+#include "common/SquirrelBinding.h"
+
 #include <Poco/JSON/Object.h>
 #include <Poco/JSON/Parser.h>
 
@@ -100,4 +103,77 @@ TEST_CASE("devtools.mcp.hostResourceHotReload") {
 
     host.stop();
     std::filesystem::remove_all(root);
+}
+
+TEST_CASE("devtools.mcp.hostScriptFailureCarriesTheReason") {
+    auto& host = eve::ui::EditorHost::instance();
+    host.stop();
+
+    const auto root =
+        std::filesystem::temp_directory_path() /
+        ("eve_mcp_host_text_" + std::to_string(std::chrono::steady_clock::now().time_since_epoch().count()));
+    const auto vmPath = root / "editors" / "terrain.vm.nut";
+    std::filesystem::create_directories(root / "editors");
+
+    writeText(vmPath, R"(::TerrainVM <- { version = 1 };)");
+    writeText(
+        root / "editors" / "terrain.editor.json",
+        R"({"id":"terrain","title":"Terrain","vm":"TerrainVM","children":[{"type":"slider","id":"brushSize","value":5,"bind":"vm.brushSize"}]})");
+
+    ssq::VM vm(1024, ssq::Libs::ALL);
+    eve::script::installScriptErrorHook(vm.getHandle());
+    host.start(vm, root.string(), /*allowWindow=*/false);
+    REQUIRE(host.listEditors().find("terrain") != std::string::npos);
+
+    // ViewModel 的编译失败必须带上出处与位置，而不是只回一个通用词。实测字符串形如
+    // "error: compile failed:  error at host_vm.nut:1 (<anonymous>): expression expected"。
+    writeText(vmPath, "::TerrainVM <- { broken = ; };");
+    const std::string compileError = host.reloadResource("editors/terrain.vm.nut");
+    REQUIRE(compileError.rfind("error:", 0) == 0);
+    REQUIRE(compileError.find("compile failed") != std::string::npos);
+    REQUIRE(compileError.find("host_vm.nut") != std::string::npos);
+
+    // 运行期抛出必须带上脚本错误原文与行号：
+    // "error: runtime failed: host_vm.nut:2 (main): vm chunk exploded"。
+    writeText(vmPath, "::TerrainVM <- { version = 2 };\nthrow \"vm chunk exploded\";\n");
+    const std::string runtimeError = host.reloadResource("editors/terrain.vm.nut");
+    REQUIRE(runtimeError.rfind("error:", 0) == 0);
+    REQUIRE(runtimeError.find("runtime failed") != std::string::npos);
+    REQUIRE(runtimeError.find("host_vm.nut:2") != std::string::npos);
+    REQUIRE(runtimeError.find("vm chunk exploded") != std::string::npos);
+
+    // 片段路径（mcp.nut）走的是同一个 runSquirrel。
+    writeText(root / "mcp.nut", "throw \"snippet exploded\";\n");
+    const std::string snippetError = host.reloadResource("mcp.nut");
+    REQUIRE(snippetError.find("runtime failed") != std::string::npos);
+    REQUIRE(snippetError.find("snippet exploded") != std::string::npos);
+
+    host.stop();
+    std::filesystem::remove_all(root);
+
+    // onChange 抛出：`setEditorValue` 仍然回 "ok"（绑定值已经写进 ViewModel），但失败必须
+    // 被计数上报——`callTableFunc` 过去把原因压成 "runtime failed: <name>" 并只在 stderr
+    // 打一行。用新的项目目录，避免上面那个会抛的 terrain VM 干扰计数。
+    const auto root2 =
+        std::filesystem::temp_directory_path() /
+        ("eve_mcp_onchange_" + std::to_string(std::chrono::steady_clock::now().time_since_epoch().count()));
+    std::filesystem::create_directories(root2 / "editors");
+    writeText(
+        root2 / "editors" / "err.editor.json",
+        R"({"id":"err","title":"Err","vm":"ErrVM","children":[{"type":"slider","id":"v","value":1,"bind":"vm.v","onChange":"vm.onChange"}]})");
+    writeText(root2 / "editors" / "err.vm.nut",
+              R"(::ErrVM <- { v = 1, onChange = function(widget, value) { throw "onChange exploded"; } };)");
+
+    ssq::VM vm2(1024, ssq::Libs::ALL);
+    eve::script::installScriptErrorHook(vm2.getHandle());
+    eve::script::resetReportedScriptCallFailures();
+    host.start(vm2, root2.string(), /*allowWindow=*/false);
+    REQUIRE(eve::script::reportedScriptCallFailures() == 0);
+
+    REQUIRE(host.setEditorValue("err", "v", "7") == "ok");
+    REQUIRE(eve::script::reportedScriptCallFailures() == 1);
+    REQUIRE(vm2.find("ErrVM").toTable().find("v").toFloat() == 7.0);
+
+    host.stop();
+    std::filesystem::remove_all(root2);
 }
