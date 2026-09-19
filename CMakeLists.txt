@@ -642,14 +642,26 @@ macro(create_module libname folder)
     # call site (the manifest passes ${_mod}, src/engine passes the module name),
     # so no call site has to change. PRIVATE: EVELIBS already links every enabled
     # module into every consumer, so nothing depends on this propagating.
-    if(EVENGINE_MODULE_LINKAGE STREQUAL "SHARED"
-       AND DEFINED EVE_MODULE_${folder}_DEPS)
-        foreach(_eve_dep IN LISTS EVE_MODULE_${folder}_DEPS
-                                EVE_MODULE_${folder}_OPTIONAL_DEPS)
-            if(TARGET "${EVE_MODULE_${_eve_dep}_LIB}")
-                target_link_libraries(${libname} PRIVATE "${EVE_MODULE_${_eve_dep}_LIB}")
-            endif()
-        endforeach()
+    if(EVENGINE_MODULE_LINKAGE STREQUAL "SHARED")
+        # LAYER -1 `common` is the base every module sits on: CORE, REQUIRED, and
+        # the only foundation module with no DEPS of its own (Exception, Result,
+        # Assert, Capability). Every module uses it, so it is a base edge rather
+        # than 200 identical manifest rows; EVE_MODULE_*_DEPS stays the place for
+        # real module-to-module dependencies. Skipped for common itself, which
+        # would otherwise be a self-cycle.
+        if(DEFINED EVE_MODULE_common_LIB
+           AND TARGET "${EVE_MODULE_common_LIB}"
+           AND NOT "${libname}" STREQUAL "${EVE_MODULE_common_LIB}")
+            target_link_libraries(${libname} PRIVATE "${EVE_MODULE_common_LIB}")
+        endif()
+        if(DEFINED EVE_MODULE_${folder}_DEPS)
+            foreach(_eve_dep IN LISTS EVE_MODULE_${folder}_DEPS
+                                    EVE_MODULE_${folder}_OPTIONAL_DEPS)
+                if(TARGET "${EVE_MODULE_${_eve_dep}_LIB}")
+                    target_link_libraries(${libname} PRIVATE "${EVE_MODULE_${_eve_dep}_LIB}")
+                endif()
+            endforeach()
+        endif()
     endif()
 
     if(NOT EVENGINE_PROFILE_HOSTLESS)
