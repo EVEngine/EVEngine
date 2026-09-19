@@ -62,3 +62,6 @@ external/pylibs/
 __pycache__/
 *.pyc
 *.log
+# Hot-reload snapshot written into the working directory (ReloadSession.cpp);
+# a runtime artifact that tests leave behind, never a source file.
+eve_snapshot.json
