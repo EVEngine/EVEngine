@@ -111,7 +111,24 @@ namespace {
 }
 
 /**
- * @brief Tangential-only perturbation, `闁告妲瀟rength` along two tangent axes.
+ * @brief Whether `EVP_NO_PERTURB` is set, read once and never in a release build.
+ *
+ * Turning the wobble off everywhere at once separates a property that only fails because a thin
+ * sliver was pushed through its neighbour from one that is wrong in the emitted connectivity, which
+ * is how the sphere test's folded-face bound was measured. Read once, not per vertex: this sits in
+ * the innermost emitter, and `getenv` walks the environment block on every call.
+ */
+[[nodiscard]] bool perturbationDisabled() noexcept {
+#ifndef NDEBUG
+    static const bool disabled = std::getenv("EVP_NO_PERTURB") != nullptr;
+    return disabled;
+#else
+    return false;
+#endif
+}
+
+/**
+ * @brief Tangential-only perturbation, `strength` along two tangent axes.
  *
  * The planar builder displaces XZ and leaves Y alone; on a sphere the corresponding
  * "do not move in or out" rule means displacing inside the tangent plane at the
@@ -124,10 +141,7 @@ namespace {
  * would lift and lower the relief independently of the cell's elevation.
  */
 [[nodiscard]] HexVec3 tangentPerturb(const HexNoise& noise, HexVec3 position, float strength) noexcept {
-    // TEMPORARY DIAGNOSTIC: `EVP_NO_PERTURB=1` removes the displacement everywhere at once, so a
-    // property that only fails because a thin sliver was pushed through its neighbour can be told
-    // apart from one that is wrong in the emitted connectivity.
-    if (std::getenv("EVP_NO_PERTURB") != nullptr) return position;
+    if (perturbationDisabled()) return position;
     const float radius = lengthOf(position);
     if (!(radius > 1e-6f)) return position;
     const HexVec3 up       = position * (1.f / radius);
@@ -212,12 +226,21 @@ struct CornerCells {
 class SphereMesher {
 public:
     /**
-     * @brief TEMPORARY DIAGNOSTIC: `EVP_PERTURB_SCALE` multiplies the wobble, so the strength at
-     * which thin slivers start folding through their neighbours can be found by measurement.
+     * @brief `EVP_PERTURB_SCALE`, read once, defaulting to the design amplitude.
+     *
+     * The sphere test's folded-face bound is derived from sweeping this, so it has to stay
+     * re-measurable; it does nothing in a release build, where the amplitude is always 1.
      */
     [[nodiscard]] static float perturbScaleFromEnvironment() noexcept {
-        if (const char* value = std::getenv("EVP_PERTURB_SCALE")) return static_cast<float>(std::strtod(value, nullptr));
+#ifndef NDEBUG
+        static const float scale = [] {
+            if (const char* value = std::getenv("EVP_PERTURB_SCALE")) return static_cast<float>(std::strtod(value, nullptr));
+            return 1.f;
+        }();
+        return scale;
+#else
         return 1.f;
+#endif
     }
 
     SphereMesher(const HexSphereMap& map, HexMeshData& out) noexcept

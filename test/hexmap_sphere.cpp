@@ -13,6 +13,7 @@
 #include <cstdint>
 #include <limits>
 #include <map>
+#include <unordered_map>
 #include <utility>
 #include <vector>
 
@@ -640,16 +641,18 @@ class PositionWelder {
 public:
     /** @brief Welds one position and returns its representative id. */
     std::uint32_t add(HexVec3 position) {
-        const std::array<std::int32_t, 3> cell{cellOf(position.x), cellOf(position.y), cellOf(position.z)};
+        const Cell cell{cellOf(position.x), cellOf(position.y), cellOf(position.z)};
+        // The owner cell first. A vertex is normally its own first representative, so the 26
+        // neighbours are only reached by a point that straddles a cell boundary - and scanning all
+        // 27 in one fixed order put the hit at position 14 of 27, which cost more than the rest of
+        // the census put together.
+        if (const std::uint32_t same = findIn(cell, position); same != 0u) return same - 1u;
         for (std::int32_t dx = -1; dx <= 1; ++dx) {
             for (std::int32_t dy = -1; dy <= 1; ++dy) {
                 for (std::int32_t dz = -1; dz <= 1; ++dz) {
-                    const auto found =
-                        grid_.find(std::array<std::int32_t, 3>{cell[0] + dx, cell[1] + dy, cell[2] + dz});
-                    if (found == grid_.end()) continue;
-                    for (const std::uint32_t id : found->second) {
-                        if (withinTolerance(representative_[id], position)) return id;
-                    }
+                    if (dx == 0 && dy == 0 && dz == 0) continue;
+                    const auto neighbour = Cell{cell[0] + dx, cell[1] + dy, cell[2] + dz};
+                    if (const std::uint32_t near = findIn(neighbour, position); near != 0u) return near - 1u;
                 }
             }
         }
@@ -663,7 +666,29 @@ public:
     [[nodiscard]] std::size_t size() const noexcept { return representative_.size(); }
 
 private:
+    using Cell = std::array<std::int32_t, 3>;
+
+    /** @brief Hash for the grid key; `std::array` has none, and the grid is the hot path here. */
+    struct CellHash {
+        [[nodiscard]] std::size_t operator()(const Cell& cell) const noexcept {
+            std::size_t hash = static_cast<std::size_t>(static_cast<std::uint32_t>(cell[0])) * 0x9E3779B1u;
+            hash ^= static_cast<std::size_t>(static_cast<std::uint32_t>(cell[1])) * 0x85EBCA77u;
+            hash ^= static_cast<std::size_t>(static_cast<std::uint32_t>(cell[2])) * 0xC2B2AE3Du;
+            return hash ^ (hash >> 15);
+        }
+    };
+
     static constexpr double kTolerance = 1e-2;
+
+    /** @brief One past the representative in `cell` within the tolerance of `position`, or zero. */
+    [[nodiscard]] std::uint32_t findIn(const Cell& cell, HexVec3 position) const {
+        const auto found = grid_.find(cell);
+        if (found == grid_.end()) return 0u;
+        for (const std::uint32_t id : found->second) {
+            if (withinTolerance(representative_[id], position)) return id + 1u;
+        }
+        return 0u;
+    }
 
     [[nodiscard]] static std::int32_t cellOf(float value) noexcept {
         return static_cast<std::int32_t>(std::floor(static_cast<double>(value) / kTolerance));
@@ -676,7 +701,7 @@ private:
         return dx * dx + dy * dy + dz * dz <= kTolerance * kTolerance;
     }
 
-    std::map<std::array<std::int32_t, 3>, std::vector<std::uint32_t>> grid_;
+    std::unordered_map<Cell, std::vector<std::uint32_t>, CellHash> grid_;
     std::vector<HexVec3>                                             representative_;
 };
 
