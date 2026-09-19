@@ -66,25 +66,24 @@ foreach(_eve_group IN LISTS EVE_LINK_GROUP_NAMES)
         EVScripts zeroerr ${_eve_group_tp_libs} ${_eve_group_system_libs}
         ${EVENGINE_VULKAN_LIB} ${EVENGINE_WEBGPU_LIB})
     if(MSVC)
-        # Two things are needed here, and both were established by measurement:
+        # MSVCRTD.lib's startup object (utility.obj) references __acrt_initialize
+        # and __vcrt_initialize. Those are NOT in the import libraries
+        # (ucrtd.lib / vcruntimed.lib): searching the installed libraries shows
+        # __acrt_initialize in libucrt(d).lib -- the static UCRT in the Windows
+        # SDK's ucrt/<arch> directory -- and __vcrt_initialize in
+        # libvcruntime(d).lib (the static VC runtime). A normal translation unit
+        # reaches them through /DEFAULTLIB chains; a target whose own sources do
+        # not include CRT headers never asks for them, and the shared library link
+        # then stops on 11 CRT startup internals. Naming the static partners fixes
+        # exactly those.
         #
-        # 1. The UCRT and VC runtime import libraries must be named. The module
-        #    objects request only MSVCRTD (verified with dumpbin /directives), so
-        #    without this the link stops on 241 bare CRT internals
-        #    (__acrt_initialize, __CxxFrameHandler4, __current_exception, ...).
-        #    Naming them takes that to 11.
-        # 2. box3dd.lib is the one third-party archive carrying
-        #    /DEFAULTLIB:LIBCMTD -- the STATIC debug CRT -- while every other
-        #    archive and every compile step uses the dynamic /MDd CRT. In an
-        #    executable that mix is only LNK4098; in a shared library it leaves
-        #    MSVCRTD.lib's startup object unable to resolve __acrt_initialize and
-        #    __vcrt_initialize. /NODEFAULTLIB is the documented LNK4098 remedy.
-        #
-        # The third-party half belongs upstream: Box3D should compile /MDd like
-        # its siblings, see cmake/third_party_build.cmake.
+        # box3dd.lib is also the one third-party archive carrying
+        # /DEFAULTLIB:LIBCMTD -- the static debug CRT -- while every other archive
+        # and every compile step uses the dynamic /MDd CRT; /NODEFAULTLIB is the
+        # documented LNK4098 remedy, and keeps a second static CRT out of the link.
         target_link_libraries(${_eve_group} PRIVATE
-            $<$<CONFIG:Debug>:ucrtd vcruntimed>
-            $<$<NOT:$<CONFIG:Debug>>:ucrt vcruntime>)
+            $<$<CONFIG:Debug>:libucrtd libvcruntimed>
+            $<$<NOT:$<CONFIG:Debug>>:libucrt libvcruntime>)
         target_link_options(${_eve_group} PRIVATE
             $<$<CONFIG:Debug>:/NODEFAULTLIB:LIBCMTD>
             $<$<NOT:$<CONFIG:Debug>>:/NODEFAULTLIB:LIBCMT>)
