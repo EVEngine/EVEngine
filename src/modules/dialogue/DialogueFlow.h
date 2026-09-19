@@ -164,6 +164,17 @@ public:
     /** @brief Compatibility-only bool projection of advanceChecked. */
     bool advance();
     /**
+     * @brief Resume the exact asynchronous command currently owned by the runner.
+     * @param requestId Stable id returned by getPendingCommandRequestId().
+     * @param value Owning command result converted synchronously into runner locals.
+     * @return Applied on success; stale, duplicate, or mismatched ids leave state unchanged.
+     * @thread Affine to the DialogueFlow owner thread.
+     * @reentrancy Does not invoke integration callbacks while mutating runner state.
+     */
+    [[nodiscard]] eve::Result<void> resumeCommandChecked(const std::string& requestId, eve::Value value);
+    /** @brief Return the current pending command id, or an empty string when none is pending. */
+    std::string getPendingCommandRequestId() const { return runner_.pendingCommandRequestId(); }
+    /**
      * @brief Select a route, atomically applying configured payment/state effects.
      * @return Applied on success, or the canonical dialogue/transaction diagnostic.
      * @thread Affine to the configured DialogueFlow thread.

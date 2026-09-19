@@ -179,7 +179,11 @@ TEST_CASE("dialogueConversation.asyncCommand") {
     std::string error;
     CHECK(runner.start(&asset, StateValue::object(), &error));
     CHECK(runner.isBlocked());
-    auto resumed = runner.resumeCommand(StateValue::string("finished"));
+    const std::string requestId = runner.pendingCommandRequestId();
+    CHECK(!requestId.empty());
+    auto stale = runner.resumeCommand("stale", StateValue::string("ignored"));
+    CHECK(!stale.ok());
+    auto resumed = runner.resumeCommand(requestId, StateValue::string("finished"));
     REQUIRE(resumed.ok());
     CHECK(!runner.isActive());
 }
@@ -209,7 +213,7 @@ TEST_CASE("dialogueConversation.mutationsExposeStableDiagnostics") {
     REQUIRE(selected.ok());
     CHECK(!runner.isActive());
 
-    auto notCommand = runner.resumeCommand(eve::Value("ignored"));
+    auto notCommand = runner.resumeCommand("missing", eve::Value("ignored"));
     REQUIRE(!notCommand.ok());
     CHECK_EQ(static_cast<int>(notCommand.error()->code()),
              static_cast<int>(eve::DiagnosticCode::DialogueNotWaitingForCommand));

@@ -569,6 +569,10 @@ eve::Result<void> DialogueFlow::advanceChecked() {
 
 bool DialogueFlow::advance() { return advanceChecked().ok(); }
 
+eve::Result<void> DialogueFlow::resumeCommandChecked(const std::string& requestId, eve::Value value) {
+    return runner_.resumeCommand(requestId, std::move(value));
+}
+
 eve::Result<void> DialogueFlow::select(const std::string& routeId) {
     const auto* node = runner_.currentNode();
     if (!node) return runner_.selectRouteForTransaction(routeId);
@@ -898,6 +902,18 @@ void DialogueFlow::expose(ssq::Class& cls) {
                                                                   "dialogue flow must not be null", "dialogue"));
         return eve::script::projectResult(vm, value->advanceChecked());
     });
+    cls.addFunc("resumeCommandChecked", [vm = cls.getHandle()](DialogueFlow* value,
+                                                               const std::string& requestId,
+                                                               ssq::Object result) {
+        if (!value)
+            return eve::script::projectResult(vm, dialogueFailure(eve::DiagnosticCode::InvalidArgument,
+                                                                  "dialogue flow must not be null", "dialogue"));
+        auto converted = eve::script::valueFromSquirrel(result, {.source = "dialogue.resumeCommand"});
+        if (!converted)
+            return eve::script::projectResult(vm, eve::Result<void>::failure(converted.status()));
+        return eve::script::projectResult(vm,
+                                          value->resumeCommandChecked(requestId, std::move(converted).takeValue()));
+    });
     cls.addFunc("select", [vm = cls.getHandle()](DialogueFlow* value, const std::string& routeId) {
         if (!value)
             return eve::script::projectResult(vm, dialogueFailure(eve::DiagnosticCode::InvalidArgument,
@@ -909,6 +925,7 @@ void DialogueFlow::expose(ssq::Class& cls) {
     cls.addFunc("getActiveConversationId",
                 static_cast<std::string (DialogueFlow::*)() const>(&DialogueFlow::getConversationId));
     cls.addFunc("getNodeId", &DialogueFlow::getNodeId);
+    cls.addFunc("getPendingCommandRequestId", &DialogueFlow::getPendingCommandRequestId);
     cls.addFunc("getNodeKind", &DialogueFlow::getNodeKind);
     cls.addFunc("getSpeaker", &DialogueFlow::getSpeaker);
     cls.addFunc("getText", &DialogueFlow::getText);

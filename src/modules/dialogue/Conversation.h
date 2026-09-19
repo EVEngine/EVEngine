@@ -5,6 +5,7 @@
 #include "dialogue/DialogueState.h"
 
 #include <functional>
+#include <cstdint>
 #include <string>
 #include <unordered_map>
 #include <utility>
@@ -123,14 +124,14 @@ public:
      * @return Applied on success, or a stable diagnostic while preserving the
      *         suspended runner state on failure.
      */
-    [[nodiscard]] eve::Result<void> resumeCommand(StateValue result);
+    [[nodiscard]] eve::Result<void> resumeCommand(const std::string& requestId, StateValue result);
     /**
      * @brief Resume an asynchronous request command with a canonical result.
      * @param result Owned canonical result value converted to dialogue state.
      * @return Applied on success, or a stable diagnostic while preserving the
      *         suspended runner state on failure.
      */
-    [[nodiscard]] eve::Result<void> resumeCommand(eve::Value result);
+    [[nodiscard]] eve::Result<void> resumeCommand(const std::string& requestId, eve::Value result);
     /** @brief Stop and clear the active instance. */
     void stop();
     /** @brief Capture the complete cursor, locals, bindings, and call stack. */
@@ -194,6 +195,8 @@ public:
      * @thread Affine to the runner's owner thread.
      */
     const CommandRequest* lastCommandRequest() const { return lastCommandRequest_ ? &*lastCommandRequest_ : nullptr; }
+    /** @brief Return the stable id of the currently suspended command, or an empty string. */
+    const std::string& pendingCommandRequestId() const noexcept { return pendingCommandRequestId_; }
 
 private:
     struct Frame {
@@ -223,6 +226,8 @@ private:
     CommandRequestDispatcher                               commandRequestDispatcher_;
     EventSink eventSink_;
     bool waitingCommand_ = false;
+    std::uint64_t commandSequence_ = 1;
+    std::string pendingCommandRequestId_;
     std::optional<eve::decision::ConditionResult>          lastConditionResult_;
     std::optional<CommandRequest>                          lastCommandRequest_;
 };

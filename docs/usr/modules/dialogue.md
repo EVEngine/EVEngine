@@ -209,6 +209,9 @@ endconversation
 - 执行：产品路径使用 `startChecked(id, bindings)`、`advanceChecked()` 和 `select(routeId)` 的
   结构化 Result；`start(id, bindings)` / `advance()` 仅作兼容投影；`isActive/isBlocked`、
   `getActiveConversationId/getNodeId/getNodeKind`。
+- 异步命令：command handler 返回 blocked 后，用 `getPendingCommandRequestId()` 保存当前稳定
+  request ID；完成时调用 `resumeCommandChecked(requestId, value)`。错误、过期或重复的 ID
+  会返回结构化冲突诊断且不移动游标；等待命令期间 `advanceChecked()` 不会越过该节点。
 - 当前节点：`getSpeaker/getText/getPool/getI18nKey/getVoice`、
   `getRouteCount/getRouteId`。
 - 复杂条件：`setExpressionEvaluator(fn)` 注册纯计算函数，fn 接收

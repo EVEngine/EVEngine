@@ -80,6 +80,7 @@ bool ConversationRunner::start(const ConversationAsset* asset, StateValue bindin
     callStack_.clear();
     blocked_ = false;
     waitingCommand_ = false;
+    pendingCommandRequestId_.clear();
     lastConditionResult_.reset();
     lastCommandRequest_.reset();
     emit(Event::Kind::Started);
@@ -94,6 +95,7 @@ void ConversationRunner::stop() {
     blocked_ = false;
     callStack_.clear();
     waitingCommand_ = false;
+    pendingCommandRequestId_.clear();
     lastConditionResult_.reset();
     lastCommandRequest_.reset();
 }
@@ -233,6 +235,7 @@ bool ConversationRunner::runUntilBlocked(std::string* error) {
                 emit(Event::Kind::Command, node, node->target);
                 if (requestIt != commandRequestHandlers_.end() || commandRequestDispatcher_) {
                     CommandRequest request;
+                    request.requestId      = asset_->id + ":" + node->id + ":" + std::to_string(commandSequence_++);
                     request.name           = node->target;
                     request.kind           = node->commandKind;
                     request.arguments      = toCanonicalValue(node->arguments);
@@ -249,6 +252,7 @@ bool ConversationRunner::runUntilBlocked(std::string* error) {
                     if (response.status == CommandResponse::Status::Blocked) {
                         blocked_        = true;
                         waitingCommand_ = true;
+                        pendingCommandRequestId_ = request.requestId;
                         return true;
                     }
                     if (!node->expression.empty()) locals_.set(node->expression, toDialogueStateValue(response.value));
@@ -259,6 +263,8 @@ bool ConversationRunner::runUntilBlocked(std::string* error) {
                     if (result.status == CommandResult::Status::Blocked) {
                         blocked_        = true;
                         waitingCommand_ = true;
+                        pendingCommandRequestId_ = asset_->id + ":" + node->id + ":" +
+                                                   std::to_string(commandSequence_++);
                         return true;
                     }
                     if (!node->expression.empty()) locals_.set(node->expression, std::move(result.value));
@@ -300,6 +306,8 @@ bool ConversationRunner::captureState(StateValue& out) const {
     out.set("current", captureFrame(asset_, nodeId_, bindings_, locals_));
     out.set("blocked", StateValue::boolean(blocked_));
     out.set("waitingCommand", StateValue::boolean(waitingCommand_));
+    out.set("pendingCommandRequestId", StateValue::string(pendingCommandRequestId_));
+    out.set("commandSequence", StateValue::integer(static_cast<std::int64_t>(commandSequence_)));
     StateValue stack = StateValue::array();
     for (const auto& frame : callStack_)
         stack.pushBack(captureFrame(frame.asset, frame.returnNode, frame.bindings, frame.locals));
@@ -360,22 +368,34 @@ bool ConversationRunner::restoreState(const StateValue& in, std::string* error) 
     const StateValue* waitingCommand = in.find("waitingCommand");
     if (waitingCommand && !waitingCommand->isBool())
         return fail(error, "conversation: waitingCommand is malformed");
+    const StateValue* pendingRequestId = in.find("pendingCommandRequestId");
+    const StateValue* commandSequence = in.find("commandSequence");
+    if (!pendingRequestId || !pendingRequestId->isString() || !commandSequence || !commandSequence->isInt() ||
+        commandSequence->asInt() < 1)
+        return fail(error, "conversation: pending command state is malformed");
+    if ((waitingCommand && waitingCommand->asBool()) != !pendingRequestId->asString().empty())
+        return fail(error, "conversation: pending command identity does not match waiting state");
     asset_ = restoredAsset;
     nodeId_ = std::move(nodeId);
     bindings_ = *savedBindings;
     locals_ = *savedLocals;
     blocked_ = blocked->asBool();
     waitingCommand_ = waitingCommand && waitingCommand->asBool();
+    pendingCommandRequestId_ = pendingRequestId->asString();
+    commandSequence_ = static_cast<std::uint64_t>(commandSequence->asInt());
     callStack_ = std::move(restoredStack);
     return true;
 }
 
-eve::Result<void> ConversationRunner::resumeCommand(StateValue result) {
+eve::Result<void> ConversationRunner::resumeCommand(const std::string& requestId, StateValue result) {
     const auto* node = currentNode();
     if (!node || !blocked_ || !waitingCommand_ ||
         node->kind != ConversationAsset::Node::Kind::Command)
         return runnerFailure(eve::DiagnosticCode::DialogueNotWaitingForCommand,
                              "conversation: runner is not waiting for a command", "command");
+    if (requestId.empty() || requestId != pendingCommandRequestId_)
+        return runnerFailure(eve::DiagnosticCode::Conflict,
+                             "conversation: command request id is stale or does not match", "command.requestId");
 
     StateValue before;
     if (!captureState(before))
@@ -391,13 +411,14 @@ eve::Result<void> ConversationRunner::resumeCommand(StateValue result) {
                          error.empty() ? "conversation: command resume failed" : std::move(error), "command");
 }
 
-eve::Result<void> ConversationRunner::resumeCommand(eve::Value result) {
-    return resumeCommand(toDialogueStateValue(result));
+eve::Result<void> ConversationRunner::resumeCommand(const std::string& requestId, eve::Value result) {
+    return resumeCommand(requestId, toDialogueStateValue(result));
 }
 
 bool ConversationRunner::advance(std::string* error) {
     const auto* node = currentNode();
     if (!node || !blocked_) return fail(error, "conversation: runner is not blocked");
+    if (waitingCommand_) return fail(error, "conversation: resume the pending command instead");
     if (node->kind == ConversationAsset::Node::Kind::Choice)
         return fail(error, "conversation: select a choice route instead");
     const std::string next = node->next;
