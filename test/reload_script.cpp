@@ -9,6 +9,7 @@
 #include "devtools/Snapshot.hpp"
 #include "scripts.h"
 
+#include <iostream>
 #include <simplesquirrel/simplesquirrel.hpp>
 
 namespace {
@@ -268,9 +269,12 @@ TEST_CASE("reloadScript.embeddedLoadScriptCompiles") {
     try {
         vm.compileSource(eve::load_content);
         compiled = true;
-    } catch (...) {
+    } catch (const std::exception& error) {
+        // A broken bootstrap has to say what broke; swallowing the text would leave a
+        // bare "compiled == false" with no way to tell which line failed.
+        std::cerr << "[reloadScript] embedded load_content does not compile: " << error.what() << std::endl;
     }
-    CHECK(compiled);
+    REQUIRE(compiled);
 }
 
 namespace {

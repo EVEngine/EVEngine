@@ -395,6 +395,21 @@ Result<ScriptProviderHandle> ScriptProviderRegistry::publishForCapability(std::s
     if (!published) return Result<ScriptProviderHandle>::failure(published.status());
     const ScriptProviderHandle handle = published.value();
 
+    // Record the seam on the entry *before* running the binder. A binder that fails
+    // halfway has usually already installed part of its adapter, and the rollback
+    // below removes it through this unbinder -- so the entry has to hold it by then
+    // (`publish` clears both fields). Measured before the fix: the rollback ran with
+    // an empty unbinder, so nothing was undone (plan doc §9.50).
+    {
+        auto pending = impl_->entries.find(handle.name);
+        if (pending == impl_->entries.end() || pending->second.generation != handle.generation) {
+            return Result<ScriptProviderHandle>::failure(providerDiagnostic(
+                DiagnosticCode::Failed, "the published provider vanished before its binder ran", handle.name));
+        }
+        pending->second.capability = std::string(capability);
+        pending->second.unbinder   = std::move(unbinder);
+    }
+
     auto bound = binder(handle);
     if (!bound) {
         // Roll back so a caller never observes a published provider that serves
@@ -405,14 +420,14 @@ Result<ScriptProviderHandle> ScriptProviderRegistry::publishForCapability(std::s
         return Result<ScriptProviderHandle>::failure(bound.status());
     }
 
+    // Re-lookup after the binder: it is user code and may have re-published this same
+    // name, which invalidates the iterator above.
     auto entry = impl_->entries.find(handle.name);
     if (entry == impl_->entries.end() || entry->second.generation != handle.generation) {
         // The binder re-published the same name; that generation owns its own bind.
         return Result<ScriptProviderHandle>::failure(providerDiagnostic(
             DiagnosticCode::Failed, "the capability binder replaced the provider it was binding", handle.name));
     }
-    entry->second.capability = std::string(capability);
-    entry->second.unbinder   = std::move(unbinder);
     return Result<ScriptProviderHandle>::success(handle);
 }
 

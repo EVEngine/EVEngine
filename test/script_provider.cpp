@@ -168,19 +168,19 @@ TEST_CASE_FIXTURE(ScriptProviderTest, "ScriptProvider.rejectsBadPublishArguments
     auto& registry = eve::ScriptProviderRegistry::instance();
 
     auto emptyName = registry.publish("", vm.find("provider"));
-    CHECK(!emptyName.ok());
-    CHECK_EQ(firstDiagnosticCode(emptyName.status()), eve::DiagnosticCode::InvalidArgument);
+    REQUIRE(!emptyName.ok());
+    REQUIRE_EQ(firstDiagnosticCode(emptyName.status()), eve::DiagnosticCode::InvalidArgument);
 
     ssq::Object unbound;
     auto        notAnInstance = registry.publish("test.none", unbound);
-    CHECK(!notAnInstance.ok());
-    CHECK_EQ(firstDiagnosticCode(notAnInstance.status()), eve::DiagnosticCode::InvalidArgument);
-    CHECK_EQ(registry.size(), std::size_t{0});
+    REQUIRE(!notAnInstance.ok());
+    REQUIRE_EQ(firstDiagnosticCode(notAnInstance.status()), eve::DiagnosticCode::InvalidArgument);
+    REQUIRE_EQ(registry.size(), std::size_t{0});
 
     // A handle for a name that was never published is stale, not a lookup failure.
     auto unknown = registry.call(eve::ScriptProviderHandle{"test.absent", 7}, "ping");
-    CHECK(!unknown.ok());
-    CHECK_EQ(firstDiagnosticCode(unknown.status()), eve::DiagnosticCode::StaleHandle);
+    REQUIRE(!unknown.ok());
+    REQUIRE_EQ(firstDiagnosticCode(unknown.status()), eve::DiagnosticCode::StaleHandle);
 }
 
 namespace {
@@ -287,14 +287,14 @@ TEST_CASE_FIXTURE(ScriptProviderTest, "ScriptProvider.failedBindIsRolledBack") {
         });
 
     auto failed = registry.publishForCapability(kSeamCapability, "test.seam", vm.find("provider"));
-    CHECK(!failed.ok());
-    CHECK_EQ(firstDiagnosticCode(failed.status()), eve::DiagnosticCode::Conflict);
+    REQUIRE(!failed.ok());
+    REQUIRE_EQ(firstDiagnosticCode(failed.status()), eve::DiagnosticCode::Conflict);
 
     // Atomic: no half-bound provider stays observable, and the rollback ran the
     // unbinder so a partially installed adapter cannot survive.
-    CHECK_EQ(unbinds, 1);
-    CHECK_EQ(registry.size(), std::size_t{0});
-    CHECK(!registry.contains("test.seam"));
+    REQUIRE_EQ(unbinds, 1);
+    REQUIRE_EQ(registry.size(), std::size_t{0});
+    REQUIRE(!registry.contains("test.seam"));
 }
 
 TEST_CASE_FIXTURE(ScriptProviderTest, "ScriptProvider.clearAllRunsUnbinders") {
@@ -310,10 +310,10 @@ TEST_CASE_FIXTURE(ScriptProviderTest, "ScriptProvider.clearAllRunsUnbinders") {
 
     REQUIRE(registry.publishForCapability(kSeamCapability, "test.seam", vm.find("provider")).ok());
     registry.clearAll();
-    CHECK_EQ(unbinds, 1);
-    CHECK_EQ(registry.size(), std::size_t{0});
+    REQUIRE_EQ(unbinds, 1);
+    REQUIRE_EQ(registry.size(), std::size_t{0});
     // Declared seams are composition-time declarations, not published state.
-    CHECK(registry.hasCapabilitySeam(kSeamCapability));
+    REQUIRE(registry.hasCapabilitySeam(kSeamCapability));
 }
 
 TEST_CASE_FIXTURE(ScriptProviderTest, "ScriptProvider.callsCarryScalarArguments") {

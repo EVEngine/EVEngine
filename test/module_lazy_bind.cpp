@@ -31,17 +31,17 @@ TEST_CASE("moduleExpose.defersNativeClassUntilFirstGet") {
     Runtime runtime(1024, ssq::Libs::ALL);
     ModuleManager::expose(runtime);
     HSQUIRRELVM vm = runtime.handle();
-    CHECK(!eveRawHas(vm, "Graphics"));
-    CHECK(!eveRawHas(vm, "Window"));
-    CHECK(!eveRawHas(vm, "WindowSettings"));
+    REQUIRE(!eveRawHas(vm, "Graphics"));
+    REQUIRE(!eveRawHas(vm, "Window"));
+    REQUIRE(!eveRawHas(vm, "WindowSettings"));
 
     runtime.runSource("g <- eve.Graphics\n", "lazy-graphics.nut");
-    CHECK(eveRawHas(vm, "Graphics"));
-    CHECK(!eveRawHas(vm, "Window"));
+    REQUIRE(eveRawHas(vm, "Graphics"));
+    REQUIRE(!eveRawHas(vm, "Window"));
 
     runtime.runSource("s <- eve.WindowSettings()\n", "lazy-window-settings.nut");
-    CHECK(eveRawHas(vm, "Window"));
-    CHECK(eveRawHas(vm, "WindowSettings"));
+    REQUIRE(eveRawHas(vm, "Window"));
+    REQUIRE(eveRawHas(vm, "WindowSettings"));
 }
 
 TEST_CASE("moduleExpose.eagerCompatibilityKeepsCanonicalSpriteBinding") {
@@ -50,8 +50,8 @@ TEST_CASE("moduleExpose.eagerCompatibilityKeepsCanonicalSpriteBinding") {
 
     runtime.runSource("if (eve._bindAllNativeClasses() < 0) throw \"native binding failed\"\n",
         "eager-native-binding-setup.nut");
-    CHECK(eveRawHas(runtime.handle(), "_ecsSlotsCache"));
-    CHECK(eveRawHas(runtime.handle(), "_ecsTypes"));
+    REQUIRE(eveRawHas(runtime.handle(), "_ecsSlotsCache"));
+    REQUIRE(eveRawHas(runtime.handle(), "_ecsTypes"));
 
     runtime.runSource(
         "sprite <- eve.Sprite2D()\n"

@@ -354,59 +354,59 @@ TEST_CASE_FIXTURE(VehicleScriptDamageTest, "vehicle.script.damageRule.present") 
     VehicleEntity* v = module.newVehicle("tank.fps", 0.f, 0.f);
     REQUIRE(v != nullptr);
 
-    CHECK(eve::ScriptProviderRegistry::instance().hasCapabilitySeam("IVehicleDamageModifier"));
-    CHECK_EQ(eve::cap::listenerCount<IVehicleDamageModifier>(), std::size_t{0});
+    REQUIRE(eve::ScriptProviderRegistry::instance().hasCapabilitySeam("IVehicleDamageModifier"));
+    REQUIRE_EQ(eve::cap::listenerCount<IVehicleDamageModifier>(), std::size_t{0});
 
     // The publish happens in script, through the same API a game would use.
     vm.run(
         vm.compileSource("published <- eve.provider.publishFor(\"IVehicleDamageModifier\","
                          " \"vehicle.half\", modifier)"));
     ssq::Object published = vm.find("published");
-    CHECK_EQ(published.getType(), ssq::Type::TABLE);
-    CHECK(published.find("ok").toBool());
-    CHECK_EQ(published.find("value").find("name").toString(), std::string("vehicle.half"));
-    CHECK_EQ(eve::cap::listenerCount<IVehicleDamageModifier>(), std::size_t{1});
-    CHECK_EQ(vm.find("seen").toString(), std::string(""));
+    REQUIRE_EQ(published.getType(), ssq::Type::TABLE);
+    REQUIRE(published.find("ok").toBool());
+    REQUIRE_EQ(published.find("value").find("name").toString(), std::string("vehicle.half"));
+    REQUIRE_EQ(eve::cap::listenerCount<IVehicleDamageModifier>(), std::size_t{1});
+    REQUIRE_EQ(vm.find("seen").toString(), std::string(""));
 
     // 100 * 0.5 * front(1.0) == 50, and the rule saw the marshalled arguments.
     module.applyDamage(v, 100.f, "front", 7);
-    CHECK_EQ(module.getHealth(v), 550.f);
+    REQUIRE_EQ(module.getHealth(v), 550.f);
     const std::string firstSeen = v->identity()->id + "|tank.fps|100|front|7";
-    CHECK_EQ(vm.find("seen").toString(), firstSeen);
+    REQUIRE_EQ(vm.find("seen").toString(), firstSeen);
 
     // The script rule is retired by name, and dispatch stops with it.
     vm.run(vm.compileSource("unloaded <- eve.provider.unload(\"vehicle.half\")"));
     ssq::Object unloaded = vm.find("unloaded");
-    CHECK_EQ(unloaded.getType(), ssq::Type::TABLE);
-    CHECK(unloaded.find("ok").toBool());
-    CHECK_EQ(eve::cap::listenerCount<IVehicleDamageModifier>(), std::size_t{0});
+    REQUIRE_EQ(unloaded.getType(), ssq::Type::TABLE);
+    REQUIRE(unloaded.find("ok").toBool());
+    REQUIRE_EQ(eve::cap::listenerCount<IVehicleDamageModifier>(), std::size_t{0});
 
     module.applyDamage(v, 40.f, "front", 7);
-    CHECK_EQ(module.getHealth(v), 510.f);
+    REQUIRE_EQ(module.getHealth(v), 510.f);
     // `seen` still holds the first call's text, so the retired rule was not invoked.
-    CHECK_EQ(vm.find("seen").toString(), firstSeen);
+    REQUIRE_EQ(vm.find("seen").toString(), firstSeen);
 }
 
 TEST_CASE_FIXTURE(VehicleScriptDamageTest, "vehicle.script.damageRule.absent") {
     // Provider-absent probe. No `Vehicle` instance exists, so the module never
     // declared the seam: the pipeline keeps its old behaviour and a publish attempt
     // is refused with `NotFound` instead of silently binding nothing.
-    CHECK(!eve::ScriptProviderRegistry::instance().hasCapabilitySeam("IVehicleDamageModifier"));
+    REQUIRE(!eve::ScriptProviderRegistry::instance().hasCapabilitySeam("IVehicleDamageModifier"));
 
     vm.run(
         vm.compileSource("refused <- eve.provider.publishFor(\"IVehicleDamageModifier\","
                          " \"vehicle.half\", modifier)"));
     ssq::Object refused = vm.find("refused");
-    CHECK_EQ(refused.getType(), ssq::Type::TABLE);
-    CHECK(!refused.find("ok").toBool());
-    CHECK_EQ(refused.find("code").toString(), std::string("not_found"));
-    CHECK_EQ(eve::cap::listenerCount<IVehicleDamageModifier>(), std::size_t{0});
+    REQUIRE_EQ(refused.getType(), ssq::Type::TABLE);
+    REQUIRE(!refused.find("ok").toBool());
+    REQUIRE_EQ(refused.find("code").toString(), std::string("not_found"));
+    REQUIRE_EQ(eve::cap::listenerCount<IVehicleDamageModifier>(), std::size_t{0});
 
     // The same absence through the plain publish path: published, but nothing is
     // dispatched, which is what "absent provider" has to mean.
     vm.run(vm.compileSource("plain <- eve.provider.publish(\"vehicle.orphan\", modifier)"));
-    CHECK(vm.find("plain").find("ok").toBool());
-    CHECK_EQ(eve::cap::listenerCount<IVehicleDamageModifier>(), std::size_t{0});
+    REQUIRE(vm.find("plain").find("ok").toBool());
+    REQUIRE_EQ(eve::cap::listenerCount<IVehicleDamageModifier>(), std::size_t{0});
 }
 
 TEST_CASE_FIXTURE(VehicleScriptDamageTest, "vehicle.script.damageRule.failureKeepsAmount") {
@@ -421,15 +421,15 @@ TEST_CASE_FIXTURE(VehicleScriptDamageTest, "vehicle.script.damageRule.failureKee
     vm.run(
         vm.compileSource("brokenPublish <- eve.provider.publishFor(\"IVehicleDamageModifier\","
                          " \"vehicle.broken\", broken)"));
-    CHECK(vm.find("brokenPublish").find("ok").toBool());
-    CHECK_EQ(eve::cap::listenerCount<IVehicleDamageModifier>(), std::size_t{1});
+    REQUIRE(vm.find("brokenPublish").find("ok").toBool());
+    REQUIRE_EQ(eve::cap::listenerCount<IVehicleDamageModifier>(), std::size_t{1});
 
     module.applyDamage(v, 100.f, "front", 7);
-    CHECK_EQ(module.getHealth(v), 500.f);
+    REQUIRE_EQ(module.getHealth(v), 500.f);
 
     // The provider survives its own failure: the raising call restored the VM stack.
     module.applyDamage(v, 100.f, "front", 7);
-    CHECK_EQ(module.getHealth(v), 400.f);
+    REQUIRE_EQ(module.getHealth(v), 400.f);
 }
 
 static const char* kRtsFlowScript = R"SQ(
