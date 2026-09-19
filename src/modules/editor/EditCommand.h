@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "editor/EditorTarget.h"
 
@@ -35,7 +37,7 @@ public:
 struct IntFieldChange { int x = 0, y = 0, before = 0, after = 0; };
 
 /** @brief Reversible edits to any target exposing IIntFieldTarget. */
-class IntFieldEditCommand final : public IEditCommand {
+class EVENGINE_API_ORCHESTRATION IntFieldEditCommand final : public IEditCommand {
 public:
     IntFieldEditCommand(std::string name, IEditableTarget *target);
     const std::string &name() const override { return name_; }

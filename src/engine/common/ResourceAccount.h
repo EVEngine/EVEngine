@@ -246,7 +246,7 @@ public:
 private:
     explicit constexpr AccountNonce(std::uint64_t value) noexcept : value_(value) {}
 
-    friend eve::Result<AccountNonce> allocateAccountNonce();
+    friend EVENGINE_API_FOUNDATION eve::Result<AccountNonce> allocateAccountNonce();
 
     std::uint64_t value_ = 0;
 };
@@ -260,7 +260,7 @@ using ReceiptId = eve::detail::StrongUint64<eve::detail::ResourceReceiptIdTag>;
  * @remarks The nonce is an opaque value and is not a pointer or persistent
  *          object identity. Each adapter instance must retain its own nonce.
  */
-[[nodiscard]] eve::Result<AccountNonce> allocateAccountNonce();
+[[nodiscard]] EVENGINE_API_FOUNDATION eve::Result<AccountNonce> allocateAccountNonce();
 
 /**
  * @brief Reservation credential returned by a successful reserve operation.

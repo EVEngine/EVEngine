@@ -93,7 +93,7 @@ public:
 };
 
 /** @brief Deterministic in-memory CAS store suitable for tests and transient tools. */
-class MemoryAtomicDocumentStore final : public IAtomicDocumentStore {
+class EVENGINE_API_ORCHESTRATION MemoryAtomicDocumentStore final : public IAtomicDocumentStore {
 public:
     EditorResult<StoredDocument> read(const std::string& resourceUri) const override;
     EditorResult<StoredDocument> compareAndSwap(const std::string& resourceUri, Revision expectedRevision,

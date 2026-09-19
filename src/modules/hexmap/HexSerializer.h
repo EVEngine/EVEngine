@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /** @file HexSerializer.h @brief Versioned payload codec for a hex map and its units. */
 
@@ -46,7 +48,7 @@ inline constexpr std::uint32_t kHexSaveVersion = 1;
  * @return Success, or InvalidArgument when the map holds no cells.
  * @cost Proportional to the cell count.
  */
-[[nodiscard]] Result<void> saveHexMap(const HexMap& map, const std::vector<HexUnitState>& units,
+[[nodiscard]] EVENGINE_API_WORLD Result<void> saveHexMap(const HexMap& map, const std::vector<HexUnitState>& units,
                                       std::vector<std::uint8_t>& out);
 
 /**
@@ -64,7 +66,7 @@ inline constexpr std::uint32_t kHexSaveVersion = 1;
  *         or out-of-range payload.
  * @cost Proportional to the cell count.
  */
-[[nodiscard]] Result<void> loadHexMap(const std::vector<std::uint8_t>& bytes, HexMap& map,
+[[nodiscard]] EVENGINE_API_WORLD Result<void> loadHexMap(const std::vector<std::uint8_t>& bytes, HexMap& map,
                                       std::vector<HexUnitState>& units);
 
 }  // namespace eve::hexmap

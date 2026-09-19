@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /** @file HexMapMesh.h @brief Per-chunk mesh generation for every hex map surface. */
 
@@ -65,7 +67,7 @@ struct HexTerrainWeights {
  * @param chunkIndex Chunk to build.
  * @param out Destination mesh; cleared and finalized by this call.
  */
-void buildTerrainMesh(const HexMap& map, std::int32_t chunkIndex, HexMeshData& out);
+EVENGINE_API_WORLD void buildTerrainMesh(const HexMap& map, std::int32_t chunkIndex, HexMeshData& out);
 
 /**
  * @brief Builds the water surface and shore band of one chunk.
@@ -73,7 +75,7 @@ void buildTerrainMesh(const HexMap& map, std::int32_t chunkIndex, HexMeshData& o
  * Only cells that are underwater contribute. `u` carries the shore parameter
  * (`0` for open water, `1` at the shoreline) and `v` is reserved.
  */
-void buildWaterMesh(const HexMap& map, std::int32_t chunkIndex, HexMeshData& out);
+EVENGINE_API_WORLD void buildWaterMesh(const HexMap& map, std::int32_t chunkIndex, HexMeshData& out);
 
 /**
  * @brief Builds the river channel surface of one chunk.
@@ -98,7 +100,7 @@ void buildRoadMesh(const HexMap& map, std::int32_t chunkIndex, HexMeshData& out)
  *                because it also needs the visibility state, use `buildFogMesh`.
  * @param out Destination mesh; cleared and finalized by this call.
  */
-void buildChunkSurfaceMesh(const HexMap& map, std::int32_t chunkIndex, HexSurface surface, HexMeshData& out);
+EVENGINE_API_WORLD void buildChunkSurfaceMesh(const HexMap& map, std::int32_t chunkIndex, HexSurface surface, HexMeshData& out);
 
 /**
  * @brief Builds the fog-of-war overlay of one chunk.
@@ -116,6 +118,6 @@ void buildChunkSurfaceMesh(const HexMap& map, std::int32_t chunkIndex, HexSurfac
  * @param chunkIndex Chunk to build.
  * @param out Destination mesh; cleared and finalized by this call.
  */
-void buildFogMesh(const HexMap& map, const HexVisibility& visibility, std::int32_t chunkIndex, HexMeshData& out);
+EVENGINE_API_WORLD void buildFogMesh(const HexMap& map, const HexVisibility& visibility, std::int32_t chunkIndex, HexMeshData& out);
 
 }  // namespace eve::hexmap

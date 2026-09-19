@@ -454,3 +454,15 @@ debug SDK（`make sdk/win32-debug`）**沿用开发配置，即动态**：它从
 1. **OBJECT 模式下类级标注的第二变体**：类里持有 `unique_ptr<前向声明类型>` 时，dllexport 会在每个 include 该头的 TU 里实例化析构 → `C2027/C2338 can't delete an incomplete type`（实测 `building/editing/BuildingTarget.h::BuildingPlacementTarget` 的 `unique_ptr<placement::PlacementWorld>`）。修法（语义不变）：头里声明析构与移动、删拷贝，在已 include 完整类型的 `.cpp` 里 `= default` 定义。
 2. **清理陈旧对象的脚本要同时覆盖两个对象根**：`src/engine/CMakeFiles/<LIB>.dir` 与 `src/modules/CMakeFiles/<LIB>.dir`（`b3_clean_modules.py` 只扫后者，`common/Container.h` 曾因此漏清、留下陈旧 `.obj`）。
 3. **`ctest -E '^bundle/'` 在 cmd 下单引号会静默失效**（bundle 被一起跑），必须写双引号 `-E "^bundle/"`。因此此前各批报告里"已排除 bundle"的口径要按此重读：本刀 dialogue 不排除是 55（含 16 个 bundle），building 是 107（6 失败 = 4 个用例 + 2 个 bundle 复跑）。
+### 7.11 SHARED 测试面标注：combat / map（2026-09-20）
+
+| 域 | LNK1120 前→后 | exe | ctest（`-E "^bundle/"`） |
+| --- | --- | --- | --- |
+| combat | 163 → 0 | 10.86 MiB | 150/151（1 失败，见下） |
+| map | 165 → 0 | 9.42 MiB | 109/109 通过 |
+
+327 个符号收敛到 77 个不同声明点 / 56 个文件：类/结构体组宏 52、自由函数 25、friend 补宏 1（`ResourceAccount.h` 的 `allocateAccountNonce`，否则 C2375）、四特殊成员 1（`ActionTimelineDocumentWorkspace`，`vector<Tab>` + `unique_ptr` → C2280）、`Export.h` include 53。口径修正：§7.6 表里 combat/map 的 171/192 是"29 个域一起链"的汇总口径，逐域实测为 163/165。
+
+**combat 的唯一失败与 §7.9/§7.10 同族**：`actionPrefabRuntime.spawnsRealRenderablePoolsAndAppliesThreeLifecycles` 断言 `renderableCount(true) == 1` 得到 0（Vulkan 初始化正常，不是 SDL 族）。`external/ECS.hpp:160` 的 `inline default_table()` 每 link unit 一份（SHARED 实测 **28 个 link unit / 198 个 .obj** 各持一份），而 `Renderable3D::create()` 定义在 EVGraphics（`Renderable3D.cpp.obj` plain=8、`__imp_`=0），测试 TU 读自己那份表 → 数不到实体。**决定性对照**：OBJECT 单链接单元 `unit_test_combat` **151/151 全通过**。引擎宏无解。
+
+**回归**：`ninja -C C:\evs eve` exit 0；OBJECT 的 `unit_test_combat` / `unit_test_map` 均链接成功且 map 109/109；已迁移域重链后复跑计数与 §7.7/§7.9/§7.10 记录逐项一致（platform 27/27、particles 25/34、scene 69/70、building 92/96）→ 无回归。`unit_test_rpg` 仍 481 未解析（该域未迁移，非回归）。

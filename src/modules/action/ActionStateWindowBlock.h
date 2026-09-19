@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /** @file ActionStateWindowBlock.h @brief Typed combat/input/collision action-state window contracts. */
 
@@ -13,7 +15,7 @@ namespace eve::action {
 enum class ActionStateWindowKind : std::uint8_t { Hitbox, Invulnerability, Combo, CollisionIgnore };
 
 /** @brief Owning validated state-window request authored on an action timeline. */
-struct ActionStateWindowBinding {
+struct EVENGINE_API_PLATFORM ActionStateWindowBinding {
     ActionStateWindowKind kind = ActionStateWindowKind::Hitbox;
     /** @brief Hitbox, input action, or collision channel identifier; empty for invulnerability. */
     std::string resource;

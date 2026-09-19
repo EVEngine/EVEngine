@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /** @file HexSearch.h @brief Cell-graph search used by pathfinding and visibility. */
 
@@ -63,7 +65,7 @@ enum class HexSearchPop : std::int32_t {
  * Thread affinity: no thread safety; a context must not be shared between
  * concurrent searches.
  */
-class HexSearchContext {
+class EVENGINE_API_WORLD HexSearchContext {
 public:
     HexSearchContext() = default;
 
@@ -151,7 +153,7 @@ using HexOccupancyQuery = std::function<bool(HexCoordinates)>;
  * @param occupied Occupancy predicate; may be empty.
  * @return True when the cell can hold an actor.
  */
-[[nodiscard]] bool isValidDestination(const HexMap& map, HexCoordinates coordinates,
+[[nodiscard]] EVENGINE_API_WORLD bool isValidDestination(const HexMap& map, HexCoordinates coordinates,
                                       const HexOccupancyQuery& occupied = {});
 
 /**
@@ -168,7 +170,7 @@ using HexOccupancyQuery = std::function<bool(HexCoordinates)>;
  * @param occupied Occupancy predicate; may be empty.
  * @return A positive cost, or a negative value when the move is blocked.
  */
-[[nodiscard]] std::int32_t moveCost(const HexMap& map, HexCoordinates from, HexCoordinates to, HexDirection direction,
+[[nodiscard]] EVENGINE_API_WORLD std::int32_t moveCost(const HexMap& map, HexCoordinates from, HexCoordinates to, HexDirection direction,
                                     const HexOccupancyQuery& occupied = {});
 
 /** @brief One found path: the cells from origin to goal, with the turn each one is reached on. */
@@ -201,7 +203,7 @@ struct HexPath {
  *         when an endpoint is outside the grid.
  * @cost Proportional to the number of cells expanded; bounded by `map.cellCount()`.
  */
-[[nodiscard]] Result<HexPath> findPath(const HexMap& map, HexSearchContext& scratch, HexCoordinates from,
+[[nodiscard]] EVENGINE_API_WORLD Result<HexPath> findPath(const HexMap& map, HexSearchContext& scratch, HexCoordinates from,
                                        HexCoordinates to, const HexMoveRules& rules,
                                        const HexOccupancyQuery& occupied = {});
 

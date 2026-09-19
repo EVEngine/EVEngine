@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @file Quest.h
@@ -37,7 +39,7 @@ struct QuestDefinition {
 };
 
 /** @brief 进程级任务定义注册表。 */
-class QuestRegistry {
+class EVENGINE_API_PLATFORM QuestRegistry {
 public:
     static void registerQuest(const QuestDefinition &def);
     /**

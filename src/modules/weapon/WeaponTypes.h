@@ -41,10 +41,10 @@ enum class WeaponKind : uint8_t { Melee, Ranged, Magic, Missile, Custom };
  * @thread Thread-safe because the characters are immutable.
  * @reentrancy Does not invoke callbacks.
  */
-const char* weaponKindName(WeaponKind kind);
+EVENGINE_API_WORLD const char* weaponKindName(WeaponKind kind);
 
 /** @brief 从字符串解析武器形态；未知名字回退 Ranged。 */
-WeaponKind weaponKindFromName(const std::string& name);
+EVENGINE_API_WORLD WeaponKind weaponKindFromName(const std::string& name);
 
 /** @brief 触发资源的类型。 */
 enum class ResourceKind : uint8_t { None, Ammo, Mana, Charges, Stamina };

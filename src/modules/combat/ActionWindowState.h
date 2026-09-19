@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /** @file ActionWindowState.h @brief Combat-owned active hitbox and invulnerability projections. */
 
@@ -26,7 +28,7 @@ using ActionWindowSubjectResolver = std::function<Result<SubjectRef>(ecs::Entity
  * compose without a lossy boolean. Exit uses the retained owning SubjectRef and is
  * safe when the ECS entity was destroyed after enter. This object is owner-thread-only.
  */
-class CombatActionWindowState final : public action::IActionStateWindowSink {
+class EVENGINE_API_BACKENDS CombatActionWindowState final : public action::IActionStateWindowSink {
 public:
     /** @brief Construct with a synchronous resolver copied into the state owner. */
     explicit CombatActionWindowState(ActionWindowSubjectResolver resolver);

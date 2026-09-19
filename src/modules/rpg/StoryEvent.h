@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /** @file StoryEvent.h @brief Versioned, resumable presentation-event sequencing for RPG games. */
 
@@ -32,7 +34,7 @@ struct StoryEventDefinition {
 };
 
 /** @brief Strict process-local catalogue for versioned story-event content. */
-class StoryEventCatalogue {
+class EVENGINE_API_PLATFORM StoryEventCatalogue {
 public:
     /**
      * @brief Validate and atomically replace every story-event definition.

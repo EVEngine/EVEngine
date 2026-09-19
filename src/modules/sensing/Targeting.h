@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @file Targeting.h
@@ -110,7 +112,7 @@ private:
  * Grid coordinates use GridPoint and cannot be passed as a WorldPoint. The
  * constructors validate finite values and preserve the dimension tag.
  */
-class WorldPoint {
+class EVENGINE_API_PLATFORM WorldPoint {
 public:
     /** @brief Constructs an invalid default point; use world2D/world3D for values. */
     WorldPoint() = default;
@@ -201,7 +203,7 @@ using TargetLocation = std::variant<WorldPoint, GridPoint>;
  * from the wrong coordinate space, so a 2D area cannot accidentally consume a
  * 3D point or a grid point.
  */
-class WorldArea {
+class EVENGINE_API_PLATFORM WorldArea {
 public:
     enum class Shape : std::uint8_t { Circle2D, Box2D, Sphere3D, Box3D, Cone2D };
 

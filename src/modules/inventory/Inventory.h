@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @brief 背包模块入口：物品定义 / 容器 / 装备栏 / 变更事件的脚本绑定点。
@@ -14,7 +16,7 @@
 namespace eve::inventory {
 
 /** @brief 背包模块（eve.Inventory）。 */
-class Inventory : public Module {
+class EVENGINE_API_FOUNDATION Inventory : public Module {
 public:
     Module_REG(Inventory);
     Inventory() = default;

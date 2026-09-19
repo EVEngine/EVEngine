@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/Result.h"
 #include "map/MapObject.h"
@@ -57,7 +59,7 @@ std::vector<TileLayer *> loadMapFile(const std::string &path, std::vector<MapObj
                                      std::string *error = nullptr);
 
 /** @brief Parse map JSON text (no filesystem). Same semantics as loadMapFile. */
-std::vector<TileLayer *> loadMapText(const std::string &json, std::vector<MapObject> *objects,
+EVENGINE_API_WORLD std::vector<TileLayer *> loadMapText(const std::string &json, std::vector<MapObject> *objects,
                                      std::string *error = nullptr);
 
 /**
