@@ -44,7 +44,7 @@ function basic() {
     // 2D rigid-body collision binding.
     local w = p.newWorld(0.0, 0.0, true);
     local ground = w.newBody("static", 400.0, 390.0);
-    ground.newRectangleFixture(800.0, 20.0);
+    ground.newRectangleFixture(800.0, 20.0, 1.0, 0.2, 0.0);
     c.setCollideWorld(w);
     check(c.getCollideWorld() != null, "2d collide world set");
     c.update(1.0 / 60.0);
@@ -110,7 +110,7 @@ function basic() {
     // 3D rigid-body collision binding.
     local w3 = p.newWorld3D(0.0, -9.8, 0.0, true);
     local g3 = w3.newBody("static", 0.0, -0.5, 0.0);
-    g3.newBoxShape(8.0, 1.0, 8.0);
+    g3.newBoxShape(8.0, 1.0, 8.0, 1.0, 0.2, 0.0);
     c3.setCollideWorld(w3);
     check(c3.getCollideWorld() != null, "3d collide world set");
     c3.update(1.0 / 60.0);

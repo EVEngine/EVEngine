@@ -235,7 +235,14 @@ function testStaticComponentsTable() {
 }
 
 function testShaderSystemClassExists() {
-    if (!("ShaderSystem" in eve)) return false
+    // Feature-detect by touching the name, not with `"ShaderSystem" in eve`: the `in`
+    // operator is _OP_EXISTS, which SQVM::Get evaluates with GET_FLAG_RAW, so it never
+    // runs the engine's lazy _get binder and is false for every name that has not been
+    // resolved yet (eve.moduleList is only visible to `in` because Run.cpp sets it
+    // eagerly). Accessing a name that resolves to nothing raises, hence the try/catch.
+    local shaderSystem = null
+    try { shaderSystem = eve.ShaderSystem } catch (e) { return false }
+    if (shaderSystem == null) return false
     // Construction without GPU is allowed; update() no-ops until setGpgpu.
     class Pos extends eve.Component { x = 0.0; y = 0.0 }
     class Vel extends eve.Component { x = 1.0; y = 0.0 }
@@ -444,7 +451,9 @@ function testGpuDrivenBindingSurface() {
                       "getGpuResidentOffsetAlignment", "writeGpuDrivenInstance",
                       "submitResidentInstances"]
     foreach (name in required) if (!(name in gpu)) return false
-    return gpu.getGpuDrivenInstanceStride() == 80 &&
+    // 160, not the old 80: GpuInstance grew reflection-probe fields, and
+    // GpuDrivenTypes.h pins the new size with static_assert(sizeof(GpuInstance) == 160).
+    return gpu.getGpuDrivenInstanceStride() == 160 &&
            gpu.getGpuResidentOffsetAlignment() == 256
 }
 )SQ";
@@ -478,15 +487,7 @@ TEST_CASE_FIXTURE(ScriptEcsTest, "ScriptECS.staticComponentsTable") {
 }
 
 TEST_CASE_FIXTURE(ScriptEcsTest, "ScriptECS.shaderSystemClassExists") {
-    // CHECK, not REQUIRE, on purpose: this script returns false in this fixture because
-    // the gpgpu module is never instantiated, so `eve.ShaderSystem` is not reachable.
-    // It has therefore been reporting a warning all along. See the plan doc 9.14.1.
-    // CHECK, not REQUIRE, on purpose: this script returns false in this fixture because
-    // the gpgpu module is never instantiated, so `eve.ShaderSystem` is not reachable.
-    // It has therefore been reporting a warning all along. See the plan doc 9.14.1.
-    // CHECK, not REQUIRE, on purpose: returns false because this fixture never
-    // instantiates the gpgpu module, so `eve.ShaderSystem` is unreachable.
-    CHECK(callScript("testShaderSystemClassExists"));
+    REQUIRE(callScript("testShaderSystemClassExists"));
 }
 
 TEST_CASE_FIXTURE(ScriptEcsTest, "ScriptECS.shaderSystemGpuResidentTransfers") {
@@ -510,10 +511,5 @@ TEST_CASE_FIXTURE(ScriptEcsTest, "ScriptECS.destroyClearsComponentState") {
 }
 
 TEST_CASE_FIXTURE(ScriptEcsTest, "ScriptECS.gpuDrivenBindingSurface") {
-    // CHECK, not REQUIRE, for the same reason as shaderSystemClassExists above:
-    // `eve.Gpgpu()` is unavailable in this fixture, so the script returns false.
-    // CHECK, not REQUIRE, for the same reason as shaderSystemClassExists above:
-    // `eve.Gpgpu()` is unavailable in this fixture, so the script returns false.
-    // CHECK, not REQUIRE, for the same reason: `eve.Gpgpu()` is unavailable here.
-    CHECK(callScript("testGpuDrivenBindingSurface"));
+    REQUIRE(callScript("testGpuDrivenBindingSurface"));
 }
