@@ -453,12 +453,35 @@ private:
 
     // --- vertex and triangle primitives -------------------------------------
 
+    /**
+     * @brief Emits one vertex at a position that has already been perturbed.
+     *
+     * `emitCornerTriangle` decides its winding on the displaced corners, and those same corners are
+     * what gets stored; perturbing again inside `vertex` cost one extra noise sample per vertex on
+     * that path.
+     */
+    void vertexAt(HexVec3 perturbed, const HexTerrainWeights& weights, const HexCellData* t0,
+                  const HexCellData* t1, const HexCellData* t2) {
+        const float u = HexTerrainVertexCode::encodeIndices(terrainOf(t0), terrainOf(t1), terrainOf(t2));
+        const float v = HexTerrainVertexCode::encodeWeights(weights.b, weights.c);
+        out_.addVertex(perturbed, u, v);
+    }
+
     /** @brief Emits one vertex; the single perturbation point of this file. */
     void vertex(HexVec3 position, const HexTerrainWeights& weights, const HexCellData* t0, const HexCellData* t1,
                 const HexCellData* t2) {
-        const float u = HexTerrainVertexCode::encodeIndices(terrainOf(t0), terrainOf(t1), terrainOf(t2));
-        const float v = HexTerrainVertexCode::encodeWeights(weights.b, weights.c);
-        out_.addVertex(horizontalPerturb(map_.noise(), position), u, v);
+        vertexAt(horizontalPerturb(map_.noise(), position), weights, t0, t1, t2);
+    }
+
+    /** @brief Emits a triangle from three already perturbed corners. */
+    void emitPerturbedTriangle(HexVec3 a0, HexVec3 a1, HexVec3 a2, const HexTerrainWeights& w0,
+                               const HexTerrainWeights& w1, const HexTerrainWeights& w2, const HexCellData* t0,
+                               const HexCellData* t1, const HexCellData* t2) {
+        const std::uint32_t i0 = static_cast<std::uint32_t>(out_.vertexCount());
+        vertexAt(a0, w0, t0, t1, t2);
+        vertexAt(a1, w1, t0, t1, t2);
+        vertexAt(a2, w2, t0, t1, t2);
+        out_.addTriangle(i0, i0 + 1u, i0 + 2u);
     }
 
     /** @brief Emits a triangle whose three vertices share one weight set and one cell triple. */
@@ -553,20 +576,25 @@ private:
      * cell emitted it.
      *
      * The test is taken on the positions that will actually be stored, not on the unperturbed
-     * ones. `vertex()` displaces every sample independently, so a face that is exactly vertical
-     * before perturbation has a horizontal normal afterwards and its sign is whatever the noise
-     * made it - measuring the unperturbed triangle therefore picks a winding at random for it.
-     * The same reasoning is what makes `hexmap.mesh.terrainIsWeldClosedAndFreeOfDuplicateCorners`
-     * see downward faces that the emitter never intended.
+     * ones. `vertexAt` writes exactly what it is given, so a face that is exactly vertical before
+     * perturbation had a horizontal normal afterwards and its sign was whatever the noise made it -
+     * measuring the unperturbed triangle therefore picked a winding at random for it. The same
+     * reasoning is what made `hexmap.mesh.terrainIsWeldClosedAndFreeOfDuplicateCorners` see
+     * downward faces that the emitter never intended.
+     *
+     * The displaced corners are computed once and then both tested and stored, rather than being
+     * displaced a second time on the way out.
      */
     void emitCornerTriangle(const HexVec3& p0, const HexVec3& p1, const HexVec3& p2, const HexTerrainWeights& w0,
                             const HexTerrainWeights& w1, const HexTerrainWeights& w2, const HexCellData* t0,
                             const HexCellData* t1, const HexCellData* t2) {
-        if (facesDown(horizontalPerturb(map_.noise(), p0), horizontalPerturb(map_.noise(), p1),
-                      horizontalPerturb(map_.noise(), p2)))
-            emitTriangle(p0, p2, p1, w0, w2, w1, t0, t1, t2);
+        const HexVec3 a0 = horizontalPerturb(map_.noise(), p0);
+        const HexVec3 a1 = horizontalPerturb(map_.noise(), p1);
+        const HexVec3 a2 = horizontalPerturb(map_.noise(), p2);
+        if (facesDown(a0, a1, a2))
+            emitPerturbedTriangle(a0, a2, a1, w0, w2, w1, t0, t1, t2);
         else
-            emitTriangle(p0, p1, p2, w0, w1, w2, t0, t1, t2);
+            emitPerturbedTriangle(a0, a1, a2, w0, w1, w2, t0, t1, t2);
     }
 
     /** @brief `emitTriangleFrom` with the winding chosen so the face points upwards. */

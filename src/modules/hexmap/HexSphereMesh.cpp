@@ -21,8 +21,9 @@ namespace {
 /**
  * @brief Perturbation contract of this translation unit.
  *
- * `SphereMesher::vertex` is the single place a position is displaced, so no position
- * is displaced twice. Unlike the planar mesher, whose vertical noise term is folded
+ * `SphereMesher::perturbedPosition` is the single place a position is displaced, so no position
+ * is displaced twice - the emitters take the displaced corners once, decide on them, and store
+ * those same values. Unlike the planar mesher, whose vertical noise term is folded
  * into `HexMap::cellPosition`, every position here is built from a topological
  * direction and a radius only, and the perturbation is purely tangential. It is a
  * pure function of the unperturbed position, which is what keeps the shared corners
@@ -662,15 +663,21 @@ private:
 
     // --- vertex and triangle primitives -------------------------------------
 
-    /** @brief Emits one vertex; the single perturbation point of this file. */
-    void vertex(HexVec3 position, const HexTerrainWeights& weights, const HexCellData* t0, const HexCellData* t1,
-                const HexCellData* t2) {
+    /**
+     * @brief Emits one vertex at a position that has already been perturbed.
+     *
+     * The emitters below decide on the perturbed positions - a degenerate guard and the sphere's
+     * winding both read them - and those same positions are what gets stored. Perturbing a second
+     * time inside `vertex` cost one extra noise sample per vertex in the innermost emitter.
+     */
+    void vertexAt(HexVec3 perturbed, const HexTerrainWeights& weights, const HexCellData* t0, const HexCellData* t1,
+                  const HexCellData* t2) {
         const float u = HexTerrainVertexCode::encodeIndices(terrainOf(t0), terrainOf(t1), terrainOf(t2));
         const float v = HexTerrainVertexCode::encodeWeights(weights.b, weights.c);
-        out_.addVertex(tangentPerturb(map_.noise(), position, perturbStrength_), u, v);
+        out_.addVertex(perturbed, u, v);
     }
 
-    /** @brief The position `vertex` will actually emit for `position`. */
+    /** @brief The position that will actually be emitted for `position`. */
     [[nodiscard]] HexVec3 perturbedPosition(HexVec3 position) const noexcept {
         return tangentPerturb(map_.noise(), position, perturbStrength_);
     }
@@ -697,13 +704,15 @@ private:
         // A triangle whose corners weld together covers no area, but its edges are real directed
         // edges: leaving it in splits one vertex into two and reports a boundary loop that is not
         // a hole. Dropping it cannot open one, because it covers nothing.
-        if (degenerate(perturbedPosition(p0), perturbedPosition(p1), perturbedPosition(p2))) return;
-        const std::uint32_t i0 = static_cast<std::uint32_t>(out_.vertexCount());
-        const bool          reverse =
-            reverseWinding();
-        vertex(p0, w, t0, t1, t2);
-        vertex(p1, w, t0, t1, t2);
-        vertex(p2, w, t0, t1, t2);
+        const HexVec3 a0 = perturbedPosition(p0);
+        const HexVec3 a1 = perturbedPosition(p1);
+        const HexVec3 a2 = perturbedPosition(p2);
+        if (degenerate(a0, a1, a2)) return;
+        const std::uint32_t i0      = static_cast<std::uint32_t>(out_.vertexCount());
+        const bool          reverse = reverseWinding();
+        vertexAt(a0, w, t0, t1, t2);
+        vertexAt(a1, w, t0, t1, t2);
+        vertexAt(a2, w, t0, t1, t2);
         if (reverse)
             out_.addTriangle(i0, i0 + 2u, i0 + 1u);
         else
@@ -714,13 +723,15 @@ private:
     void emitTriangle(const HexVec3& p0, const HexVec3& p1, const HexVec3& p2, const HexTerrainWeights& w0,
                       const HexTerrainWeights& w1, const HexTerrainWeights& w2, const HexCellData* t0,
                       const HexCellData* t1, const HexCellData* t2) {
-        if (degenerate(perturbedPosition(p0), perturbedPosition(p1), perturbedPosition(p2))) return;
-        const std::uint32_t i0 = static_cast<std::uint32_t>(out_.vertexCount());
-        const bool          reverse =
-            reverseWinding();
-        vertex(p0, w0, t0, t1, t2);
-        vertex(p1, w1, t0, t1, t2);
-        vertex(p2, w2, t0, t1, t2);
+        const HexVec3 a0 = perturbedPosition(p0);
+        const HexVec3 a1 = perturbedPosition(p1);
+        const HexVec3 a2 = perturbedPosition(p2);
+        if (degenerate(a0, a1, a2)) return;
+        const std::uint32_t i0      = static_cast<std::uint32_t>(out_.vertexCount());
+        const bool          reverse = reverseWinding();
+        vertexAt(a0, w0, t0, t1, t2);
+        vertexAt(a1, w1, t0, t1, t2);
+        vertexAt(a2, w2, t0, t1, t2);
         if (reverse)
             out_.addTriangle(i0, i0 + 2u, i0 + 1u);
         else
@@ -748,10 +759,10 @@ private:
         const bool firstOk  = !degenerate(a0, a2, a1);
         const bool secondOk = !degenerate(a1, a2, a3);
         if (!firstOk && !secondOk) return;
-        vertex(p0, w0, t0, t1, t2);
-        vertex(p1, w1, t0, t1, t2);
-        vertex(p2, w2, t0, t1, t2);
-        vertex(p3, w3, t0, t1, t2);
+        vertexAt(a0, w0, t0, t1, t2);
+        vertexAt(a1, w1, t0, t1, t2);
+        vertexAt(a2, w2, t0, t1, t2);
+        vertexAt(a3, w3, t0, t1, t2);
         // Oriented as a unit: deciding each half on its own leaves the shared diagonal traversed
         // the same way twice whenever the two halves disagree, and one of them is then culled.
         const bool reverse = reverseWinding();
