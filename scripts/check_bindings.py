@@ -19,6 +19,30 @@ name missing from its doc chapter fails **unless** it is listed there, so the
 debt stays visible as warnings while new drift blocks CI. --modules limits the
 check to the given CMake module names.
 
+Reverse direction, and what it cost to make it readable. "Documented but not
+bound" started at 221 names whose actionable yield was one, because it compared
+doc mentions against a partial view of the script surface. Four scans had to be
+added before the list was worth reading, taking it 221 -> 114 -> 19 -> 12 -> 10:
+
+  * script-side definitions (SCRIPT_DEF_RES): most of the surface is Squirrel --
+    bootstrap chunks in C++ raw strings and src/scripts/*.nut;
+  * engine-core chunks (ENGINE_CORE): the ECS bootstrap in common/ECS.cpp defines
+    eve.ShaderSystem.bindFields and friends, which module chapters document;
+  * nested satellite dirs, for the reverse direction only: a host chapter may
+    document its satellite (physics.md documents the cloth API);
+  * raw native closures (RAW_CLOSURE_RE): voxel pushes its member names with
+    sq_pushstring before sq_newclosure.
+
+What counts as a promise was tightened the same way: a member call inside a
+Squirrel fence (DOC_MEMBER_CALL_RE), not every inline `` `name()` `` mention.
+Chapters use that inline form for prose about C++-only APIs (ui.md's
+screenshotSize() is a PcgPhotoModePhotoAuthority method) and for helpers a sample
+defines for itself (editor.md's previewRoad()), and both were noise. Measured
+composition of the original 221: 21 bound by another module, 111 prose-only, and
+one genuine gap (procgen.newShapeGrammar, a documented factory that was never
+bound). The scan is deliberately *not* a gate: what remains is a triage list, and
+the drift that actually blocks CI is the forward direction above.
+
 Usage:
     python3 scripts/check_bindings.py                 # report all gaps (exit 0)
     python3 scripts/check_bindings.py --strict        # fail on any gap
@@ -44,6 +68,10 @@ DOCS = ROOT / "docs" / "usr" / "modules"
 GAPS_FILE = Path(__file__).resolve().parent / "check_bindings_gaps.txt"
 # Scripts the engine ships to every game; their members are user-facing too.
 SHIPPED_SCRIPTS = ROOT / "src" / "scripts"
+# The engine core injects script chunks that belong to no module (the ECS bootstrap in
+# common/ECS.cpp defines eve.ShaderSystem.bindFields/requestUpload/...), and those are
+# documented in module chapters, so the surface scan has to include it.
+ENGINE_CORE = ROOT / "src" / "engine"
 
 # CMake module NAME -> user-doc chapter (doc filename without .md).
 DOC_ALIASES = {
@@ -54,6 +82,15 @@ DOC_ALIASES = {
 }
 
 ADDFUNC_RE = re.compile(r'\badd(?:Func|Var)\(\s*"([^"]+)"')
+# Raw-closure bindings push the member name and then install a native closure:
+#     sq_pushstring(vm, "streamAround", -1); sq_newclosure(vm, fn, 0);
+# (voxel's setVoxelByName/streamAround, Module.cpp's `eve` delegate `_get`). Requiring the
+# file to create closures keeps this from collecting unrelated sq_pushstring uses; measured
+# against the repository it matches exactly those three names.
+RAW_CLOSURE_RE = re.compile(
+    r'sq_pushstring\(\s*vm\s*,\s*(?:_SC\()?"([A-Za-z_][A-Za-z0-9_]*)"\)?\s*,\s*-?\d+\s*\)\s*;'
+    r"(?:\s*//[^\n]*)?\s*\n\s*sq_newclosure\(",
+)
 
 # Script-side members are part of the same script surface, and the engine defines
 # much of it with Squirrel syntax rather than `addFunc`: bootstrap chunks live in
@@ -71,6 +108,29 @@ SCRIPT_DEF_RES = (
     re.compile(r"\b([A-Za-z_][A-Za-z0-9_]*)\s*<-\s*(?:function|class)\b"),
     re.compile(r'\[\s*"([A-Za-z_][A-Za-z0-9_]*)"\s*\]\s*<-'),
     re.compile(r'\baddClass(?:\s*<[^>]*>)?\(\s*"([^"]+)"'),
+)
+
+# Where the *reverse* check looks. A promise about the script surface is a member call
+# inside a Squirrel code fence. The chapters use the same `` `name()` `` inline syntax
+# for prose mentions of C++-only APIs (ui.md's `screenshotSize()` is a
+# PcgPhotoModePhotoAuthority method) and for helpers a sample defines for itself
+# (editor.md's `previewRoad()` is the tool script's own function), so counting every
+# inline mention produced 221 names whose actionable yield was one. Counting member
+# calls in runnable samples keeps the real case this check ever found
+# (`procgen.newShapeGrammar`) and leaves a list short enough to read.
+SQUIRREL_FENCE_RE = re.compile(r"```(?:nut|squirrel|sq)?\n(.*?)```", re.DOTALL)
+# An instance method call: a lowercase receiver that is not the `eve` root table (whose
+# members are classes and module factories, registered as `addClass`, not as methods).
+DOC_MEMBER_CALL_RE = re.compile(r"\b([a-z][A-Za-z0-9_]*)\.([A-Za-z_][A-Za-z0-9_]*)\s*\(")
+# Squirrel's own methods are not engine API, however they are spelled in a sample.
+SQUIRREL_BUILTINS = frozenset(
+    {
+        "tostring", "tointeger", "tofloat", "tostring", "len", "type", "constructor",
+        "bindenv", "getroottable", "setroottable", "rawget", "rawset", "newslot",
+        "setdelegate", "getdelegate", "getclass", "typeof", "weakref", "clone",
+        "clear", "append", "extend", "push", "pop", "top", "sort", "reverse", "map",
+        "apply", "filter", "reduce", "find", "slice", "print", "assert",
+    }
 )
 
 
@@ -154,6 +214,8 @@ def bound_names(module_dir: Path, skip_heads: set[str]) -> set[str]:
     for cpp in iter_module_cpp(module_dir, skip_heads):
         text = cpp.read_text(encoding="utf-8", errors="replace")
         names.update(ADDFUNC_RE.findall(text))
+        if "sq_newclosure" in text:
+            names.update(RAW_CLOSURE_RE.findall(text))
     return names
 
 
@@ -172,11 +234,14 @@ def module_sources(module_dir: Path, skip_heads: set[str]) -> list[Path]:
 
 
 def script_defined_names(module_dir: Path, skip_heads: set[str]) -> set[str]:
-    """Names the engine defines in Squirrel: module chunks plus the shipped scripts."""
+    """Names the engine defines in Squirrel: module chunks, core chunks, shipped scripts."""
     names: set[str] = set()
     paths = module_sources(module_dir, skip_heads)
     if SHIPPED_SCRIPTS.is_dir():
         paths.extend(sorted(SHIPPED_SCRIPTS.rglob("*.nut")))
+    if ENGINE_CORE.is_dir():
+        for suffix in ("*.cpp", "*.h", "*.hpp"):
+            paths.extend(sorted(ENGINE_CORE.rglob(suffix)))
     for path in paths:
         text = path.read_text(encoding="utf-8", errors="replace")
         for pattern in SCRIPT_DEF_RES:
@@ -188,6 +253,51 @@ def doc_for(module: str) -> Path | None:
     doc = DOC_ALIASES.get(module, module)
     p = DOCS / f"{doc}.md"
     return p if p.is_file() else None
+
+
+def squirrel_fences(text: str) -> str:
+    """Only the Squirrel code blocks of a doc chapter: its runnable samples."""
+    return "\n".join(match.group(1) for match in SQUIRREL_FENCE_RE.finditer(text))
+
+
+def declared_dirs() -> list[Path]:
+    """Every declared module directory, core satellites included.
+
+    The forward check skips core declarations (they have no chapter of their own), but
+    the reverse check must know that a name exists *somewhere*: `editor.md` shows
+    `actionEditor.hasPreviewHost()`, bound in the core-declared animation editing
+    satellite, and reporting that as drift would be wrong.
+    """
+    out: list[Path] = []
+    for declaration in check_module_manifest.parse_manifest():
+        if not declaration.dir:
+            continue
+        path = MODULES.joinpath(*declaration.dir.split("/"))
+        if path.is_dir():
+            out.append(path)
+    return out
+
+
+def doc_only_names() -> list[tuple[str, str]]:
+    """(module, name) pairs the docs promise as script API but nothing defines."""
+    surface: set[str] = set()
+    for directory in declared_dirs():
+        surface |= bound_names(directory, set())
+        surface |= script_defined_names(directory, set())
+
+    found: list[tuple[str, str]] = []
+    for module, directory, _ in iter_modules():
+        doc = doc_for(module)
+        if doc is None:
+            continue
+        text = doc_text(doc)
+        promised = set(ADDFUNC_RE.findall(text))
+        for receiver, name in DOC_MEMBER_CALL_RE.findall(squirrel_fences(text)):
+            if receiver != "eve" and name not in SQUIRREL_BUILTINS:
+                promised.add(name)
+        for name in sorted(promised - surface):
+            found.append((module, name))
+    return found
 
 
 def doc_text(doc: Path) -> str:
@@ -246,22 +356,10 @@ def main() -> int:
             if not args.quiet:
                 print(f"ok  {module}: {len(names)} bindings documented")
 
-    # Doc-only names: the script surface shrank but the doc still lists old methods.
-    # Script-side definitions count as existing (see SCRIPT_DEF_RES). Unlike the
-    # forward check, this one scans *nested* satellite dirs too (`skip_heads` empty):
-    # a host chapter may legitimately document its satellite (physics.md documents the
-    # cloth API, which is bound under physics/cloth), and those names do exist.
-    for module, d, skip in modules:
-        doc = doc_for(module)
-        if doc is None:
-            continue
-        names = bound_names(d, set()) | script_defined_names(d, set())
-        text = doc_text(doc)
-        doc_names = set(ADDFUNC_RE.findall(text)) | {
-            m for m in re.findall(r"`([a-zA-Z][a-zA-Z0-9_]*)\(\)", text)
-        }
-        for name in sorted(doc_names - names):
-            warnings.append(f"{module} ({doc.name}): documented but not bound: {name}")
+    # Doc-only names: the doc promises a script member that nothing defines. See
+    # doc_only_names() for what counts as a promise and why the rest does not.
+    for module, name in doc_only_names():
+        warnings.append(f"{module}: documented but not bound: {name}")
 
     for w in warnings:
         print(f"WARN {w}")

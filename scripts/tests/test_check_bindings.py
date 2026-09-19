@@ -86,5 +86,50 @@ class ScriptDefinedNamesTests(unittest.TestCase):
         self.assertLess(doc_only, 200)
 
 
+class ReverseDirectionTests(unittest.TestCase):
+    """The reverse check only counts member calls in Squirrel fences as promises.
+
+    Chapters use `` `name()` `` inline code for prose mentions of C++-only APIs and for
+    helpers a sample defines for itself, so counting every mention produced 221 names
+    with one actionable item; these tests pin what is counted instead.
+    """
+
+    def test_squirrel_fences_exclude_other_languages(self):
+        text = "prose `foo()`\n```nut\nx.bar()\n```\n```cpp\ny.baz()\n```\n"
+        code = checker.squirrel_fences(text)
+        self.assertIn("bar", code)
+        self.assertNotIn("baz", code)
+
+    def test_only_lowercase_instance_receivers_are_promises(self):
+        matches = checker.DOC_MEMBER_CALL_RE.findall("a.method()\nEve.Other()\n")
+        # `Eve.Other()` is a class/factory access, not an instance method call.
+        self.assertEqual(matches, [("a", "method")])
+        # ...and the caller drops the `eve` root table plus Squirrel's own methods.
+        self.assertIn("tostring", checker.SQUIRREL_BUILTINS)
+
+    def test_raw_closure_binding_is_recognised(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "Bindings.cpp"
+            path.write_text(
+                'sq_pushstring(vm, "streamAround", -1);\nsq_newclosure(vm, streamAround, 0);\n',
+                encoding="utf-8",
+            )
+            self.assertIn("streamAround", checker.bound_names(Path(directory), set()))
+
+    def test_pushstring_without_a_closure_is_not_a_binding(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "Bindings.cpp"
+            path.write_text(
+                'sq_pushstring(vm, "notAMember", -1);\nsq_throwerror(vm, "boom");\n',
+                encoding="utf-8",
+            )
+            self.assertNotIn("notAMember", checker.bound_names(Path(directory), set()))
+
+    def test_repository_reverse_list_is_short_enough_to_read(self):
+        # 221 -> 10 after the script-definition, nested-dir, engine-core and raw-closure
+        # scans. The remainder is a named list a maintainer can triage by hand.
+        self.assertLessEqual(len(checker.doc_only_names()), 20)
+
+
 if __name__ == "__main__":
     unittest.main()
