@@ -114,7 +114,13 @@ foreach(_eve_group IN LISTS EVE_LINK_GROUP_NAMES)
         # zeroerr discovery step fail. Binding each group's references to its own
         # definitions keeps the per-link-unit copies independent, exactly as the
         # Windows build already behaves.
-        target_link_options(${_eve_group} PRIVATE "LINKER:-Bsymbolic")
+        #
+        # ELF only: -Bsymbolic is a GNU ld option, and Mach-O already binds each
+        # dylib's references through the two-level namespace, so ld64 rejects it
+        # with "unknown options: -Bsymbolic".
+        if(NOT APPLE)
+            target_link_options(${_eve_group} PRIVATE "LINKER:-Bsymbolic")
+        endif()
     endif()
 
     # A SHARED build produces a dynamic SDK: the host binary needs its group
