@@ -710,3 +710,15 @@ ELF 不允许把非 PIC 的目标文件链进共享对象；OBJECT（release/SDK
 **顺带确认的两条**：(a) 仅靠 `LD_LIBRARY_PATH` 就够，CMake 没有为组库写 rpath（`build/linux-debug` 的 `make run` 现在也由 `eve-dll-path-so` 前缀同一条路径）；(b) `ctest` 在 Linux 上不需要额外 PATH 处理，`ZeroErrDiscoverTestsImpl.cmake` 的平台分支选对了变量。
 
 **仍未验证**：Linux 上的 `graphics` / `ui` 这类需要 Vulkan 与窗口的域（WSL 无显示与 GPU，属于环境限制，不是路线问题）；macOS（没有机器）。Windows 侧的整套读数是 §7.20 的那张表（5274 用例 / 129 失败，全部属于已记录的跨链接单元状态族）。
+
+### 7.24 合并 dev 之后：为新增测试面补标注 + 新错误类 C2487（2026-09-20）
+
+把 `dev` 合进本分支时，它已经在 56 个提交 / 436 个文件 / 207 个新文件上走远了，而那些代码是在"默认仍是 OBJECT"的时期写的。翻转默认值之后，dev 新增的**测试/宿主面**立刻变成硬错误：SHARED 全量构建有 **127 个未解析符号 / 7 个测试 exe**（ui 7、editor 5、tactics_rts 27、asset 49、core 1、npc_ai 4、graphics 40），而 7 个组 DLL 已经全部链通。补标注：**71 个规划站点 / 32 个文件 + 4 条手工行**（`asset/import/VegetationPreset.h` 的两个重载集）= **75 行带宏**；直方图 `WORLD 22 / ORCHESTRATION 14 / PLATFORM 14 / DOMAINS 13 / BACKENDS 10 / FOUNDATION 2`；`Export.h` +1；`_INLINE` 0；数据符号 0；friend/兄弟声明 0；C2280/C2027/C2036 0。
+
+**新错误类 `C2487`（应并入 §7.5 的类级 dllexport 陷阱清单）**：**dll-interface 类的成员不得重复该类的 `EVENGINE_API_*`**。它有两个容易误判的特点：(1) 报错发生在**每个包含该头的 TU**，看起来像"某个 cpp 的问题"；(2) **OBJECT 模式同样报**，所以"静态路上也炸"不代表标注本身错。实践规则：**类级宏必须"取代"而不是"叠加"先前给单个成员加的宏**——给成员加宏是权宜（当时类还没标注），一旦类也标注了，成员那一份就要删掉（类级宏导出/导入的是同一批成员，语义不变）。本轮实测 3 处：`sensing/LineOfSightRouter.h:53 addProvider`、`graphics/VegetationField.h:95 snapshotElements`、`:107 replace`。新增树级预扫 `C:\evb2\b16_membermacro.py`：修完仍有 **26 处**"成员与类同名宏"的形状，全部**合法**——嵌套类自带自己的宏、以及规范明确要求的 `friend` 自由函数声明——**不要顺手"修掉"它们**。
+
+**合并后的失败口径（新的权威读数）**：`ctest -E "^bundle/" --timeout 120 -j 4` → **5531 用例 / 131 失败 / 0 超时**，三次运行**用例名集合逐字节一致**。族别：SDL video `_this` **113**、ECS `default_table()` 6、ImGui `GImGui` 6、box3d `b3_worlds` 5、box2d `s_initialized` 1。**没有新族**：§7.20 的 SDL 111 一个不少，多出的 2 个是 dev 新增的窗口用例（`graphics.vegetation.render_mesh_update_and_season`、`asset.procgen.terrainDetailSidecarPublishesDecodableRuntimeResource`，来自 dev `7088c1dd8`），命中的仍是同一个 SDL 族。探针复核：ECS 表 27 targets / 197 objs、`GImGui` 4 个二进制、SDL 静态状态在 7 个组 DLL + 30 个 exe、box3d 2 份 PE 副本、box2d `s_initialized` 只在 EVBackends 与 EVWorld。
+
+**其余验证**：SHARED 全量构建 EXIT 0（0 FAILED / 0 `error C` / 0 `warning C` / 0 未解析），EOL 归一之后**强制全量重编**（清 13 个模块对象、567 步）仍 EXIT 0、ctest 失败名集合不变；静态 `ninja -C C:\evs eve` EXIT 0（`eve.exe` 239,112,704 B）；`check/architecture-contracts --base 6a49a982` → OK；脚本测试 **178 OK**；EOL 收敛（41 → 0，无整文件 diff）。2 条基线遗留的 `C4273`（`SoftBody3DWorldBridge.cpp:56,62`）保持不动。
+
+**Linux 侧合并后的复测**：merge 之后在 WSL 里重建并跑通 `platform` 27/27、`rpg` 301/301、`core` 515/515（插件的 1 个失败是"我只构建了指定目标、没构建 `native_test_plugin`"，补建后即通过）、`ui` 106/112（6 个挂起族）、`asset` 210/211（唯一失败 `asset.procgen.terrainDetailSidecar...` 在 Windows 上同样失败，属同一 SDL 族，不是 Linux 特有）。
