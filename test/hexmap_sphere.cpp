@@ -792,8 +792,6 @@ struct OrientationReport {
     OrientationReport report;
     report.triangles = mesh.triangleCount();
 
-    const auto& positions = mesh.positions();
-    const std::size_t count = positions.size() / 3u;
     auto [ids, vertexCount] = weldVertices(mesh);
     (void)vertexCount;
 
