@@ -589,3 +589,22 @@ debug SDK（`make sdk/win32-debug`）**沿用开发配置，即动态**：它从
 `eol_restore.py` 本轮再次证明幂等：第一遍 `eol-churned=53`，修掉冗余 include 后再跑 `eol-churned=0`（收敛）。验收口径：这 53 个文件相对 merge-base 合计 **189 insertions**，**无任何整文件 diff**（最大 `game_event/GameEvent.h` 13/2）。
 
 进度：30 个域中 **24 个已链通**（21 个全绿——rpg 全绿）；余 `procgen` / `graphics`。
+
+### 7.18 SHARED 测试面标注：procgen（2026-09-20）
+
+| 域 | LNK1120 前→后 | exe | ctest（`-E "^bundle/" --timeout 120 -j 4`） |
+| --- | --- | --- | --- |
+| procgen | 868 → 0 | 30.07 MiB（OBJECT 同源码 247.05 MiB，8.2×） | **729/738 通过**（9 失败 0 超时，全部 SDL video `_this` 族；OBJECT 单链接单元对照 **738/738**） |
+
+基线 `LNK1120 = 868`（`LNK2019 862 + LNK2001 173 = 1035 行`，`error C` 0，7 个组 DLL 全链通）——§7.6 记的 "procgen 925" 同样是 29 域汇总口径，逐域实测 868。静态 `ninja -C C:\evs eve` exit 0（`eve.exe` 233,654,784 B）。标注 **301 个唯一站点 / 129 个文件**（类 92 + 自由函数 209）；**本批新增带宏行 319**（类 92 + 自由函数 215 + friend 12）/ 133 个文件，组宏直方图 `DOMAINS 284 / ORCHESTRATION 15 / BACKENDS 8 / WORLD 5 / EDITORS 4 / PLATFORM 3`，`Export.h` 新增 41 处（133 个文件全部可见宏：48 处字面 include + 85 处经自身 include 闭包），`_INLINE` 0，C2280/C2027 0；清两个对象根各 10 模块 / 375 个对象（共 750）。exe 8.2×（这个域 SHARED 收益最小，因为它本来就几乎全在一个组里）。
+
+**新坑：friend/同名声明有两种，`b2_dup_decls.py` 只覆盖同文件那种。**
+第一轮重链暴露 **`error C2375`（redefinition; different linkage）7 个 `EVProcgen` 对象失败**：`TerrainMultiTile.h:89` 的 friend 声明带宏、而**另一个头文件**里的同名命名空间级声明（`TerrainDetailLayer.h:75`）不带 → `.cpp` 里连带 `C3861` 找不到标识符。修法是给跨文件的每条同实体声明也补宏。本批同文件 11 条 + 跨文件 1 条 = 12 条。**新增工具 `b11_xdecl.py`（跨文件同实体声明扫描）应并入 §7.5 流水线**——`b2_dup_decls.py` 只看单个文件，`b3_free_fn_defs.py` 只看定义侧，跨文件声明是第三条路径。
+
+**测试侧跨 link unit 符号（§7.8 家族的第三次出现）**：未解析集里有 3 个符号任何引擎宏都无效——`auditImage`（声明 `test/RenderImageAudit.h:73`，定义 `test/RenderImageAudit.cpp:463`）、`createStylizedWaterScene`（`test/water_scene_fixture.h:26` / `.cpp:40`）、`WaterSceneFixture::update`。它们必须走 `scripts/test_domains.py` 的 `SHARED_SOURCES` 机制（把定义 TU 编进每个需要的域），不能靠标注。**注意牵连面**：`procgen` 这一批把 `test/RenderImageAudit.cpp` 拉进了自己的链接单元，所以 `graphics` 域批要检查同一组 fixture 是否也落在它的未解析集里。
+
+**EOL 归一**：第一遍 `eol-churned=133`，第二遍 `eol-churned=0`（收敛）；工具内建校验从未触发 `FAIL`。5 个 `SKIP … not in base revision`（本 PR 新增文件）改用手工取证：`RenderImageAuditIo.cpp` / `SceneCameraProjection.h` 全 LF、`test_domains.py` / `RenderImageAudit.cpp` 全 CRLF，各自内部一致、无混行尾。验收：**无任何整文件 diff**（最大真实比例 `TerrainDerivedMap.h` 26/26，256 行里 26 个站点；`test/RenderImageAudit.cpp` 是 9/570 的纯移动）。
+
+**9 个失败用例全部出自同一个 TU `test/procgen.cpp`**，断言都是 `SDL_Vulkan_GetInstanceExtensions failed: Video subsystem has not been initialized`——窗口初始化在 EVPlatform 组、Vulkan 入口在 EVBackends 组各自的 SDL 副本里：`procgen.render.{hexplanetPng,cloudShadowsDarkenGround,skyscraperPng,castlePng}`、`graphics.waterfall.{paramsRoundTrip,render.flowAndFoam}`、`graphics.water.{paramsRoundTrip,render.dynamicRipplesAndReflection}`、`graphics.render3d.toCanvas`。探针：该域 link unit 里 ECS 表 **0 份**、ImGui 0、box3d 0，SDL 副本 8 份（7 个组 DLL + exe）→ 只有 SDL 族被触发。
+
+进度：30 个域中 **25 个已链通**（21 个全绿）；余 `graphics`。
