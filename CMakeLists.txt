@@ -160,6 +160,19 @@ if(NOT EVENGINE_MODULE_LINKAGE MATCHES "^(OBJECT|SHARED)$")
     message(FATAL_ERROR
         "EVENGINE_MODULE_LINKAGE must be OBJECT or SHARED (got: ${EVENGINE_MODULE_LINKAGE})")
 endif()
+
+# In the dynamic configuration the executables link with -z nocopyreloc
+# (cmake/link_groups.cmake) so that external data references stay GOT-based and read
+# the live value in the library that owns it. That requires every object to be
+# *-fPIC*, not merely *-fPIE*: with -fPIE the compiler still emits PC32 relocations
+# for data it expects the linker to copy into the executable, and once the linker is
+# told not to copy, the ELF loader rejects those relocations at startup ("Symbol
+# '_ZSt4cerr' causes overflow in R_X86_64_PC32 relocation"). The group libraries
+# already set POSITION_INDEPENDENT_CODE; this covers the executables and the
+# in-tree archives they link. MSVC ignores the flag.
+if(EVENGINE_MODULE_LINKAGE STREQUAL "SHARED" AND NOT MSVC)
+    add_compile_options(-fPIC)
+endif()
 set(EVENGINE_THIRD_PARTY_BINARY_DIR "" CACHE PATH
     "Use a prebuilt third-party install tree (include/lib/bin) without rebuilding or modifying it")
 set(EVENGINE_PREBUILT_THIRD_PARTY "" CACHE PATH
