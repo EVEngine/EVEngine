@@ -695,3 +695,18 @@ ELF 不允许把非 PIC 的目标文件链进共享对象；OBJECT（release/SDK
 `CMAKE_POSITION_INDEPENDENT_CODE` 那条全局参数因此被撤掉（聚合已经强制它），只保留 SDL 的开关——第三方 configure 参数越少越好，每个参数变化都会让整棵第三方树重编。
 
 **Linux 侧现状**：这两处修好后需要在 WSL 里强制重编第三方（ExternalProject 的 stamp 不认为参数变了，必须删 `third-party-prefix` 与第三方安装树）才能验证；`libEV*.so` 是否真正产出、`LD_LIBRARY_PATH` 运行期发现是否成立，以那次冷构建的实测为准（本节的结论只覆盖到"可以开始链接组库"）。
+
+### 7.23 Linux SHARED 路线实测通过（2026-09-20）
+
+§7.21/§7.22 的三处修复之后，WSL（Ubuntu 2、16 核、cmake 4.2.3、g++ 15.2、全新 clone 的 `codex/test-domain-split`）里**跑通**了整条 ELF 动态路线：
+
+1. **不传任何 linkage 参数** configure → `EVENGINE_MODULE_LINKAGE:STRING=SHARED`、7 行 `Link group ... -> one shared library`；
+2. `deps` → 7 个组库全部产出：`libEVFoundation.so`、`libEVPlatform.so`、`libEVBackends.so`、`libEVWorld.so`、`libEVDomains.so`、`libEVOrchestration.so`、`libEVEditors.so`；
+3. `unit_test_platform` 链接成功，`ldd` 显示 7 个组库全部由 `LD_LIBRARY_PATH` 解析到；
+4. `env -u LD_LIBRARY_PATH ctest -L unit_test_platform -E "^bundle/" --timeout 120 -j 4` → **100% tests passed, 0 tests failed out of 27**（0.4 s）。**环境变量被清空仍然全绿**，说明 §7.20 那条平台感知的 `ENVIRONMENT "LD_LIBRARY_PATH=..."`（CMake 生成期写入）确实生效——这正是翻转默认值在 Linux CI 上能否成立的关键。
+
+**过程中又抓到第三个 ELF 专属问题（已修）：`-Bsymbolic`。** 组库与可执行文件都链了同一批第三方**静态归档**（Poco/SDL2/box3d/…）。ELF 会把符号解析成进程内唯一的一份（首个定义胜出），但**每个归档副本仍然注册自己的静态析构器**，于是 `Poco::DateTimeFormat::SORTABLE_FORMAT`（Poco 头里的全局 `std::string`）被析构两次：可执行文件在 `main` 之前就 `double free or corruption (!prev)` 中止（gdb 栈：`__cxa_finalize → __do_global_dtors_aux@libEVDomains.so → ~basic_string`），zeroerr 的 discovery 步骤因此报 `list-test-cases failed (Subprocess aborted)`。修法是在**非 Windows** 的组库上加 `-Wl,-Bsymbolic`：每个组库把自己内部的引用绑定到自己的定义，per-link-unit 副本互不干扰——这正是 Windows 构建本来就有的行为（也正是 §7.3 那些"每个链接单元一份状态"族在 Linux 上的等价物）。
+
+**顺带确认的两条**：(a) 仅靠 `LD_LIBRARY_PATH` 就够，CMake 没有为组库写 rpath（`build/linux-debug` 的 `make run` 现在也由 `eve-dll-path-so` 前缀同一条路径）；(b) `ctest` 在 Linux 上不需要额外 PATH 处理，`ZeroErrDiscoverTestsImpl.cmake` 的平台分支选对了变量。
+
+**仍未验证**：Linux 上的 `graphics` / `ui` 这类需要 Vulkan 与窗口的域（WSL 无显示与 GPU，属于环境限制，不是路线问题）；macOS（没有机器）。Windows 侧的整套读数是 §7.20 的那张表（5274 用例 / 129 失败，全部属于已记录的跨链接单元状态族）。
