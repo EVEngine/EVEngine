@@ -2,6 +2,7 @@
 #include "math/Vec2.h"
 #include "math/Vec3.h"
 #include "math/Mat4.h"
+#include "math/Steering.h"
 
 #include "common/Exception.h"
 
@@ -15,7 +16,9 @@
 #include <chrono>
 #include <cmath>
 #include <cstdint>
+#include <sstream>
 #include <string>
+#include <vector>
 
 #ifndef M_PI
 #define M_PI 3.14159265358979323846
@@ -50,6 +53,43 @@ float hash31(float x, float y, float z) {
     glm::vec3 p3 = glm::fract(glm::vec3(x, y, z) * 0.1031f);
     p3 += glm::dot(p3, glm::vec3(p3.y + 33.33f, p3.z + 33.33f, p3.x + 33.33f));
     return glm::fract((p3.x + p3.y) * p3.z);
+}
+
+std::vector<steering::Vector2> parseSteeringPoints2(const std::string &text) {
+    std::vector<steering::Vector2> result;
+    std::stringstream              input(text);
+    std::string                    point;
+    while (std::getline(input, point, ',')) {
+        const auto separator = point.find(':');
+        if (separator == std::string::npos) continue;
+        try {
+            const steering::Vector2 value{std::stof(point.substr(0, separator)),
+                                          std::stof(point.substr(separator + 1))};
+            if (std::isfinite(value.x) && std::isfinite(value.y)) result.push_back(value);
+        } catch (...) {
+        }
+    }
+    return result;
+}
+
+std::vector<steering::Vector3> parseSteeringPoints3(const std::string &text) {
+    std::vector<steering::Vector3> result;
+    std::stringstream              input(text);
+    std::string                    point;
+    while (std::getline(input, point, ',')) {
+        const auto first  = point.find(':');
+        const auto second = first == std::string::npos ? first : point.find(':', first + 1);
+        if (first == std::string::npos || second == std::string::npos) continue;
+        try {
+            const steering::Vector3 value{std::stof(point.substr(0, first)),
+                                          std::stof(point.substr(first + 1, second - first - 1)),
+                                          std::stof(point.substr(second + 1))};
+            if (std::isfinite(value.x) && std::isfinite(value.y) && std::isfinite(value.z))
+                result.push_back(value);
+        } catch (...) {
+        }
+    }
+    return result;
 }
 
 glm::vec2 voronoiPoint(int ix, int iy) {
@@ -155,6 +195,91 @@ float Math::pingPong(float t, float length) const {
     if (length <= 0.f) return 0.f;
     t = wrap(t, 0.f, length * 2.f);
     return length - std::fabs(t - length);
+}
+
+Vec2 *Math::steeringSeek2(float x, float y, float targetX, float targetY, float maxSpeed) const {
+    const auto value = steering::seek(steering::Vector2{x, y},
+                                      steering::Vector2{targetX, targetY}, maxSpeed);
+    return new Vec2(value.x, value.y);
+}
+
+Vec3 *Math::steeringSeek3(float x, float y, float z, float targetX, float targetY, float targetZ,
+                          float maxSpeed) const {
+    const auto value = steering::seek({x, y, z}, {targetX, targetY, targetZ}, maxSpeed);
+    return new Vec3(value.x, value.y, value.z);
+}
+
+Vec2 *Math::steeringFlee2(float x, float y, float targetX, float targetY, float maxSpeed) const {
+    const auto value = steering::flee(steering::Vector2{x, y},
+                                      steering::Vector2{targetX, targetY}, maxSpeed);
+    return new Vec2(value.x, value.y);
+}
+
+Vec3 *Math::steeringFlee3(float x, float y, float z, float targetX, float targetY, float targetZ,
+                          float maxSpeed) const {
+    const auto value = steering::flee({x, y, z}, {targetX, targetY, targetZ}, maxSpeed);
+    return new Vec3(value.x, value.y, value.z);
+}
+
+Vec2 *Math::steeringArrive2(float x, float y, float targetX, float targetY, float maxSpeed,
+                            float slowRadius, float stopRadius) const {
+    const auto value =
+        steering::arrive(steering::Vector2{x, y}, steering::Vector2{targetX, targetY}, maxSpeed,
+                         slowRadius, stopRadius);
+    return new Vec2(value.x, value.y);
+}
+
+Vec3 *Math::steeringArrive3(float x, float y, float z, float targetX, float targetY, float targetZ,
+                            float maxSpeed, float slowRadius, float stopRadius) const {
+    const auto value = steering::arrive({x, y, z}, {targetX, targetY, targetZ}, maxSpeed,
+                                        slowRadius, stopRadius);
+    return new Vec3(value.x, value.y, value.z);
+}
+
+Vec2 *Math::steeringSeparation2(float x, float y, const std::string &neighbors, float radius,
+                                float maxAcceleration) const {
+    const auto parsed = parseSteeringPoints2(neighbors);
+    const auto value =
+        steering::separation(steering::Vector2{x, y}, parsed, radius, maxAcceleration);
+    return new Vec2(value.x, value.y);
+}
+
+Vec3 *Math::steeringSeparation3(float x, float y, float z, const std::string &neighbors,
+                                float radius, float maxAcceleration) const {
+    const auto parsed = parseSteeringPoints3(neighbors);
+    const auto value  = steering::separation({x, y, z}, parsed, radius, maxAcceleration);
+    return new Vec3(value.x, value.y, value.z);
+}
+
+int Math::steeringPathTarget2(float x, float y, const std::string &points, int current,
+                              float tolerance) const {
+    const auto parsed = parseSteeringPoints2(points);
+    return steering::pathTarget(steering::Vector2{x, y}, parsed, current, tolerance);
+}
+
+int Math::steeringPathTarget3(float x, float y, float z, const std::string &points, int current,
+                              float tolerance) const {
+    const auto parsed = parseSteeringPoints3(points);
+    return steering::pathTarget({x, y, z}, parsed, current, tolerance);
+}
+
+Vec2 *Math::steeringAvoid2(float x, float y, float velocityX, float velocityY, float obstacleX,
+                           float obstacleY, float obstacleRadius, float lookAhead,
+                           float maxAcceleration) const {
+    const auto value =
+        steering::avoid(steering::Vector2{x, y}, steering::Vector2{velocityX, velocityY},
+                        steering::Vector2{obstacleX, obstacleY}, obstacleRadius, lookAhead,
+                        maxAcceleration);
+    return new Vec2(value.x, value.y);
+}
+
+Vec3 *Math::steeringAvoid3(float x, float y, float z, float velocityX, float velocityY,
+                           float velocityZ, float obstacleX, float obstacleY, float obstacleZ,
+                           float obstacleRadius, float lookAhead, float maxAcceleration) const {
+    const auto value = steering::avoid({x, y, z}, {velocityX, velocityY, velocityZ},
+                                       {obstacleX, obstacleY, obstacleZ}, obstacleRadius, lookAhead,
+                                       maxAcceleration);
+    return new Vec3(value.x, value.y, value.z);
 }
 
 float Math::inverseLerp(float a, float b, float x) const {
@@ -788,6 +913,18 @@ void Math::expose(ssq::Class &cls) {
     cls.addFunc("normalize3X", &Math::normalize3X);
     cls.addFunc("normalize3Y", &Math::normalize3Y);
     cls.addFunc("normalize3Z", &Math::normalize3Z);
+    cls.addFunc("steeringSeek2", &Math::steeringSeek2);
+    cls.addFunc("steeringSeek3", &Math::steeringSeek3);
+    cls.addFunc("steeringFlee2", &Math::steeringFlee2);
+    cls.addFunc("steeringFlee3", &Math::steeringFlee3);
+    cls.addFunc("steeringArrive2", &Math::steeringArrive2);
+    cls.addFunc("steeringArrive3", &Math::steeringArrive3);
+    cls.addFunc("steeringSeparation2", &Math::steeringSeparation2);
+    cls.addFunc("steeringSeparation3", &Math::steeringSeparation3);
+    cls.addFunc("steeringPathTarget2", &Math::steeringPathTarget2);
+    cls.addFunc("steeringPathTarget3", &Math::steeringPathTarget3);
+    cls.addFunc("steeringAvoid2", &Math::steeringAvoid2);
+    cls.addFunc("steeringAvoid3", &Math::steeringAvoid3);
     cls.addFunc("rotate2X", &Math::rotate2X);
     cls.addFunc("rotate2Y", &Math::rotate2Y);
     cls.addFunc("polarX", &Math::polarX);

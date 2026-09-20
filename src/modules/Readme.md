@@ -176,8 +176,8 @@
 42. 群体 — `crowd`（`eve.Crowd`）
     连续流场寻路 + 海量单位转向；Boids；与渲染解耦
 
-43. 转向 — `steering`（`eve.Steering`）
-    独立转向力 / 行为，给单位移动用
+43. 转向数学 — `math/Steering`（`eve.Math().steering*2/steering*3`）
+    无状态 2D/3D seek、flee、arrive、separation、path target 与 avoidance 计算
 
 ### 玩法框架
 

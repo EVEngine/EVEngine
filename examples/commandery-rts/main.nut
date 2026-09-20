@@ -14,7 +14,7 @@ orders <- eve.Orders();
 production <- eve.Production();
 sensing <- eve.Sensing();
 decision <- eve.Decision();
-steering <- eve.Steering();
+math <- eve.Math();
 effects <- eve.Effects();
 events <- eve.GameEvent();
 
@@ -310,7 +310,7 @@ function moveUnit(u, dt) {
         return;
     }
     requireResult(u.queue.update(dt), "advance order queue");
-    steering.arrive(u.x,u.y,u.tx,u.ty,u.speed,70.0,2.0); // reusable engine primitive
+    math.steeringArrive2(u.x,u.y,u.tx,u.ty,u.speed,70.0,2.0); // reusable math primitive
     local step = d < u.speed*dt ? d : u.speed*dt;
     u.x += (u.tx-u.x)/d*step;
     u.y += (u.ty-u.y)/d*step;
