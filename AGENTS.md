@@ -110,6 +110,9 @@ checkout is on that commit.
   `make build/win32-debug`. This matches the CI windows debug job, including
   `-DEVENGINE_ENABLE_STRICT_WARNINGS=ON` (MSVC `/W4 /WX`). Opt out with
   `CMAKE_EXTRA_ARGS=-DEVENGINE_ENABLE_STRICT_WARNINGS=OFF`.
+- Before opening a PR, run the same source-only job CI runs:
+  `make check` (needs `python3`, `ruff`, `pillow`, clang-format 18 / `git clang-format`).
+  Then `make test/win32-debug` (or `FILTER=<prefix>`) for the host test lane.
 - Release (Visual Studio generator):
   `make build/win32`
 - Do not invoke `cl.exe` manually outside a Developer prompt; the `cmake\with-msvc.cmd`
@@ -269,10 +272,10 @@ model behind them.
   single-agent-at-a-time file. Split it along existing section comments into
   multiple TUs (pure moves, no behavior change) instead of appending more
   methods.
-- **Formatting is enforced on changed lines of existing files.** CI runs
-  `.github/scripts/check-format.sh` (clang-format-18, `.clang-format`) with
-  `git clang-format`; pre-existing debt in untouched regions does not block a
-  PR, and brand-new files are skipped with a warning. Before committing, run
+- **Formatting is enforced on changed lines of existing files.** `make check`
+  (and CI) run `.github/scripts/check-format.sh` (clang-format-18, `.clang-format`)
+  with `git clang-format`; pre-existing debt in untouched regions does not block
+  a PR, and brand-new files are skipped with a warning. Before committing, run
   `git clang-format` (formats only your changed lines) and format new files by
   hand; never reformat whole files unrelated to your change.
 - **Tests stay per-module.** New tests go into their own file under `test/`
@@ -306,7 +309,9 @@ model behind them.
     -p "test_*.py"` is the local equivalent.
 - **PR granularity.** An interface change ships as one PR that updates the
   interface, every backend and every consumer — no intermediate commits that
-  break CI. Use `codex/` branch prefixes for agent work.
+  break CI. Use `codex/` branch prefixes for agent work. Run `make check`
+  before pushing; it is the Source quality job. Host compile/test (`make
+  build/<plat>-debug` and `make test`) is the other half of a typical PR.
 
 ## Mandatory architecture rules for refactoring agents
 
@@ -370,15 +375,17 @@ must not silently waive these requirements.
 
 ### Mandatory top-level architecture gate
 
-Before handing off a refactor, run the source-only contract gate and its fixtures:
+Before handing off a refactor, run the source-only gate CI uses:
 
 ```sh
-ARCHITECTURE_BASE=HEAD make check/architecture-contracts
+make check
 ```
 
-CI supplies the pull-request base SHA. `scripts/architecture_contracts.json` is the
-single catalogue for contract evidence; do not silence a finding with a new baseline,
-allowlist, or broad scope. A compatibility facade may retain a legacy shape only when
-the public documentation states that it is compatibility-only and the canonical
+That includes architecture contracts against `CI_BASE` (default `origin/dev`).
+Override with `make check CI_BASE=<sha>` — CI passes the pull-request base SHA.
+`scripts/architecture_contracts.json` is the single catalogue for contract
+evidence; do not silence a finding with a new baseline, allowlist, or broad
+scope. A compatibility facade may retain a legacy shape only when the public
+documentation states that it is compatibility-only and the canonical
 Result/status API is the inward implementation. New debt markers still require the
 owner/issue/reason/expiry/removal metadata enforced by `check/quality-metadata`.

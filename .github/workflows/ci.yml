@@ -93,8 +93,7 @@ jobs:
             python3 scripts/ci_change_scope.py --all --github-output "$GITHUB_OUTPUT"
           fi
 
-  # Fast source-only gate for formatting, module boundaries, architecture
-  # contracts and the Python scripts that make later CI results trustworthy.
+  # Fast source-only gate. Local equivalent: `make check` (scripts/check_source_quality.sh).
   source-quality:
     name: Source quality
     runs-on: ubuntu-24.04
@@ -123,69 +122,16 @@ jobs:
           sudo ln -sf /usr/bin/clang-format-18 /usr/local/bin/clang-format
           python3 -m pip install --user --quiet pillow ruff
 
-      - name: Check changed lines are clang-format clean
-        run: bash .github/scripts/check-format.sh "${{ github.event.pull_request.base.sha || 'origin/dev' }}"
-
-      - name: Check module dependency layering
-        timeout-minutes: 5
-        run: python3 scripts/module_depgraph.py --check
-
-      - name: Check script bindings are documented (all modules)
-        timeout-minutes: 5
-        run: python3 scripts/check_bindings.py --strict
-
-      - name: Check binding gap ownership and budget metadata
-        timeout-minutes: 5
-        run: python3 scripts/check_binding_gap_metadata.py
-
-      - name: Check declared module layers vs includes
-        timeout-minutes: 5
-        run: python3 scripts/module_depgraph.py --check-layers
+      - name: Run source-quality gate
+        # Same entry point as local `make check`. Groups inside
+        # scripts/check_source_quality.sh show up in the job log.
+        timeout-minutes: 15
+        run: make check CI_BASE="${{ github.event.pull_request.base.sha || 'origin/dev' }}"
 
       - name: Report dependency graph
         timeout-minutes: 5
         if: always()
         run: python3 scripts/module_depgraph.py
-
-      - name: Check test source manifest
-        timeout-minutes: 5
-        run: python3 scripts/check_test_manifest.py
-
-      - name: Check examples layout and overview registration
-        # Every examples/<name>/ is either a runnable example (main.nut +
-        # config.nut) or explicitly exempted with a reason, owns a README.md and
-        # is listed in examples/README.md.  A new example therefore cannot dodge
-        # the runtime smoke test in the Linux lane by simply not being runnable.
-        timeout-minutes: 5
-        run: python3 scripts/check_examples.py
-
-      - name: Check critical return-value diagnostics
-        timeout-minutes: 5
-        run: python3 scripts/check_nodiscard.py
-
-      - name: Check release version consistency
-        timeout-minutes: 5
-        run: python3 scripts/release.py check-versions
-
-      - name: Check bounded quality debt and profile matrix
-        timeout-minutes: 5
-        run: make check/quality
-
-      - name: Audit top-level architecture contracts and changed API shapes
-        timeout-minutes: 5
-        run: |
-          python3 scripts/check_architecture_contracts.py \
-            --base "${{ github.event.pull_request.base.sha || github.event.before || 'HEAD^' }}"
-      - name: Ruff lint CI and repository scripts
-        timeout-minutes: 5
-        run: python3 -m ruff check scripts
-
-      - name: Test CI and repository scripts
-        timeout-minutes: 10
-        # -X utf8 so the runner's own output never follows the host ANSI code
-        # page; on Linux CI this is already the default. Test modules are
-        # imported by the runner, so they cannot guard their own stdio.
-        run: python3 -X utf8 -m unittest discover -s scripts/tests -p "test_*.py" -v
 
   profile-matrix:
     name: Profile ${{ matrix.profile }}

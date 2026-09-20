@@ -369,6 +369,25 @@ make build/win32-debug \
 See [module trimming](docs/usr/TRIMMING.md) for the `minimal`, `2d`, `3d`,
 `full`, and per-module options.
 
+### Match CI locally
+
+CI's **Source quality** job is `make check` (no compiler, a few minutes). It
+needs `python3`, `ruff`, `pillow`, and clang-format 18 plus `git clang-format`:
+
+```sh
+python3 -m pip install ruff pillow
+make check                 # vs origin/dev
+make check CI_BASE=<sha>   # vs a specific PR base
+```
+
+The Windows/Linux debug compile lane also treats warnings as errors. After
+`make check`:
+
+```sh
+make build/win32-debug     # /W4 /WX, same as CI windows debug
+make test/win32-debug FILTER=<prefix>
+```
+
 Inspect object-file growth and expensive public-header fanout after a local
 build with:
 

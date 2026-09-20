@@ -144,12 +144,19 @@ GAME ?=
 	reinstall/third-party/ios reinstall/third-party/ios-debug \
 	link-compile-commands download-classic-scenes download-skinned-character \
 	check/test-manifest check/module-layers check/bindings check/nodiscard check/quality-metadata \
-	check/profile-matrix check/architecture-contracts check/quality check/examples \
+	check/profile-matrix check/architecture-contracts check/quality check/examples check \
+	check/format check/depgraph check/binding-gaps check/versions check/scripts check/scripts-test \
 	profile profile/configure profile/build profile/smoke profile/dry-run \
 	ensure-built/win32 ensure-built/win32-debug ensure-built/linux ensure-built/linux-debug \
 	ensure-built/macosx ensure-built/macosx-debug \
 	init/submodules \
 	docs
+
+# Local source-quality checks compare the worktree against this git base.
+# CI passes the pull-request base SHA; locally this is origin/dev so a branch
+# is linted the same way the PR will be.
+CI_BASE ?= origin/dev
+ARCHITECTURE_BASE ?= $(CI_BASE)
 
 # Default: every debug target this machine can build (host + optional ios/android/wsl).
 all: $(ALL_DEBUG_TARGETS)
@@ -166,6 +173,7 @@ show-targets:
 	@echo "release -> build/$(PLATFORM)"
 	@echo "sdk -> sdk/$(PLATFORM) (Release) or sdk/$(PLATFORM)-debug"
 	@echo "run -> run/$(PLATFORM)-debug (GAME=$(GAME), empty = embedded demo)"
+	@echo "check -> source-quality gate (same commands as CI; CI_BASE=$(CI_BASE))"
 	@echo "profile -> PROFILE=$(PROFILE) in $(PROFILE_BUILD_ROOT)"
 	@echo "profile stages -> profile/configure profile/build profile/smoke"
 
@@ -232,6 +240,30 @@ check/profile-matrix:
 
 # Fast local quality gate for the profile and debt contracts.
 check/quality: check/quality-metadata check/profile-matrix check/nodiscard check/architecture-contracts
+
+# Individual source-quality pieces that CI also runs (see scripts/check_source_quality.sh).
+check/format:
+	bash .github/scripts/check-format.sh "$(CI_BASE)"
+
+check/depgraph:
+	python3 scripts/module_depgraph.py --check
+
+check/binding-gaps:
+	python3 scripts/check_binding_gap_metadata.py
+
+check/versions:
+	python3 scripts/release.py check-versions
+
+check/scripts:
+	python3 -m ruff check scripts
+
+check/scripts-test:
+	python3 -X utf8 -m unittest discover -s scripts/tests -p "test_*.py" -v
+
+# Source-only gate matching CI job `source-quality`. Does not build the engine.
+# Host compile/test is a separate lane: make build/$(PLATFORM)-debug && make test
+check:
+	bash scripts/check_source_quality.sh "$(CI_BASE)"
 
 # Profile stages are separate so CI can report configure, build, and
 # independent capability smoke failures independently. The default build root
@@ -317,9 +349,6 @@ PROFILE_MATRIX_ARGS = --profile "$(PROFILE)" \
 	--jobs "$(PROFILE_JOBS)" \
 	$(if $(PROFILE_PLATFORM),--platform "$(PROFILE_PLATFORM)") \
 	--cmake-command "$(PROFILE_CMAKE_COMMAND)"
-
-# Local checks inspect the current worktree diff; CI supplies the PR base SHA.
-ARCHITECTURE_BASE ?= HEAD
 
 # Reusable configure command lines: used both by the first-configure rules and
 # by the on-change reconfigure inside the build recipes below.
