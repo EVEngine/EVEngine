@@ -12,35 +12,38 @@ bool finite(Vector3 value) {
     return std::isfinite(value.x) && std::isfinite(value.y) && std::isfinite(value.z);
 }
 
-float length(Vector2 value) { return std::hypot(value.x, value.y); }
-float length(Vector3 value) { return std::hypot(value.x, value.y, value.z); }
-
-Vector2 subtract(Vector2 lhs, Vector2 rhs) { return {lhs.x - rhs.x, lhs.y - rhs.y}; }
-Vector3 subtract(Vector3 lhs, Vector3 rhs) {
-    return {lhs.x - rhs.x, lhs.y - rhs.y, lhs.z - rhs.z};
+template <typename Vector>
+double distance(Vector lhs, Vector rhs) {
+    const double dx = static_cast<double>(lhs.x) - static_cast<double>(rhs.x);
+    const double dy = static_cast<double>(lhs.y) - static_cast<double>(rhs.y);
+    if constexpr (requires { lhs.z; }) {
+        const double dz = static_cast<double>(lhs.z) - static_cast<double>(rhs.z);
+        return std::hypot(dx, dy, dz);
+    }
+    return std::hypot(dx, dy);
 }
 
-Vector2 scaled(Vector2 value, float magnitude) {
-    const float valueLength = length(value);
-    if (!(valueLength > 0.f) || !std::isfinite(valueLength) || !(magnitude > 0.f) ||
-        !std::isfinite(magnitude))
+template <typename Vector>
+Vector scaledDirection(Vector from, Vector to, float magnitude) {
+    if (!finite(from) || !finite(to) || !(magnitude > 0.f) || !std::isfinite(magnitude))
         return {};
-    return {value.x / valueLength * magnitude, value.y / valueLength * magnitude};
-}
-
-Vector3 scaled(Vector3 value, float magnitude) {
-    const float valueLength = length(value);
-    if (!(valueLength > 0.f) || !std::isfinite(valueLength) || !(magnitude > 0.f) ||
-        !std::isfinite(magnitude))
-        return {};
-    return {value.x / valueLength * magnitude, value.y / valueLength * magnitude,
-            value.z / valueLength * magnitude};
+    const double dx     = static_cast<double>(to.x) - static_cast<double>(from.x);
+    const double dy     = static_cast<double>(to.y) - static_cast<double>(from.y);
+    const double length = distance(from, to);
+    if (!(length > 0.0) || !std::isfinite(length)) return {};
+    if constexpr (requires { from.z; }) {
+        const double dz = static_cast<double>(to.z) - static_cast<double>(from.z);
+        return {static_cast<float>(dx / length * magnitude),
+                static_cast<float>(dy / length * magnitude),
+                static_cast<float>(dz / length * magnitude)};
+    }
+    return {static_cast<float>(dx / length * magnitude),
+            static_cast<float>(dy / length * magnitude)};
 }
 
 template <typename Vector>
 Vector seekImpl(Vector position, Vector target, float maxSpeed) {
-    if (!finite(position) || !finite(target)) return {};
-    return scaled(subtract(target, position), maxSpeed);
+    return scaledDirection(position, target, maxSpeed);
 }
 
 template <typename Vector>
@@ -49,12 +52,12 @@ Vector arriveImpl(Vector position, Vector target, float maxSpeed, float slowRadi
     if (!finite(position) || !finite(target) || !std::isfinite(slowRadius) ||
         !std::isfinite(stopRadius) || slowRadius <= stopRadius || stopRadius < 0.f)
         return {};
-    const Vector delta    = subtract(target, position);
-    const float  distance = length(delta);
-    if (distance <= stopRadius) return {};
-    const float speed = maxSpeed * std::min(1.f, (distance - stopRadius) /
-                                                    (slowRadius - stopRadius));
-    return scaled(delta, speed);
+    const double targetDistance = distance(position, target);
+    if (targetDistance <= stopRadius) return {};
+    const double speed = static_cast<double>(maxSpeed) *
+                         std::min(1.0, (targetDistance - stopRadius) /
+                                           (static_cast<double>(slowRadius) - stopRadius));
+    return scaledDirection(position, target, static_cast<float>(speed));
 }
 
 template <typename Vector>
@@ -63,30 +66,38 @@ Vector separationImpl(Vector position, std::span<const Vector> neighbors, float 
     if (!finite(position) || !std::isfinite(radius) || !std::isfinite(maxAcceleration) ||
         radius <= 0.f || maxAcceleration <= 0.f)
         return {};
-    Vector sum{};
+    double sumX = 0.0;
+    double sumY = 0.0;
+    double sumZ = 0.0;
     for (const Vector neighbor : neighbors) {
         if (!finite(neighbor)) continue;
-        const Vector delta    = subtract(position, neighbor);
-        const float  distance = length(delta);
-        if (distance > 0.f && distance < radius) {
-            const float weight = (radius - distance) / (radius * distance);
-            sum.x += delta.x * weight;
-            sum.y += delta.y * weight;
-            if constexpr (requires { sum.z; }) sum.z += delta.z * weight;
+        const double neighborDistance = distance(position, neighbor);
+        if (neighborDistance > 0.0 && neighborDistance < radius) {
+            const double weight = (radius - neighborDistance) / (radius * neighborDistance);
+            sumX += (static_cast<double>(position.x) - neighbor.x) * weight;
+            sumY += (static_cast<double>(position.y) - neighbor.y) * weight;
+            if constexpr (requires { position.z; })
+                sumZ += (static_cast<double>(position.z) - neighbor.z) * weight;
         }
     }
-    return length(sum) > maxAcceleration ? scaled(sum, maxAcceleration) : sum;
+    const double sumLength = std::hypot(sumX, sumY, sumZ);
+    const double scale = sumLength > maxAcceleration ? maxAcceleration / sumLength : 1.0;
+    if constexpr (requires { position.z; })
+        return {static_cast<float>(sumX * scale), static_cast<float>(sumY * scale),
+                static_cast<float>(sumZ * scale)};
+    return {static_cast<float>(sumX * scale), static_cast<float>(sumY * scale)};
 }
 
 template <typename Vector>
 int pathTargetImpl(Vector position, std::span<const Vector> points, int current,
                    float tolerance) {
     if (!finite(position) || points.empty()) return -1;
+    if (std::ranges::any_of(points, [](Vector point) { return !finite(point); })) return -1;
     current = std::clamp(current, 0, static_cast<int>(points.size() - 1));
     const float acceptedTolerance =
         std::isfinite(tolerance) ? std::max(0.f, tolerance) : 0.f;
-    while (current + 1 < static_cast<int>(points.size()) && finite(points[current]) &&
-           length(subtract(points[current], position)) <= acceptedTolerance)
+    while (current + 1 < static_cast<int>(points.size()) &&
+           distance(points[current], position) <= acceptedTolerance)
         ++current;
     return current;
 }
@@ -99,13 +110,38 @@ Vector avoidImpl(Vector position, Vector velocity, Vector obstacle, float obstac
         !std::isfinite(maxAcceleration) || obstacleRadius <= 0.f || lookAhead < 0.f ||
         maxAcceleration <= 0.f)
         return {};
-    const Vector offset    = scaled(velocity, lookAhead);
-    Vector       predicted = position;
-    predicted.x += offset.x;
-    predicted.y += offset.y;
-    if constexpr (requires { predicted.z; }) predicted.z += offset.z;
-    if (length(subtract(predicted, obstacle)) > obstacleRadius) return {};
-    return scaled(subtract(predicted, obstacle), maxAcceleration);
+    const Vector offset = scaledDirection(Vector{}, velocity, lookAhead);
+    const double predictedX = static_cast<double>(position.x) + offset.x;
+    const double predictedY = static_cast<double>(position.y) + offset.y;
+    const double predictedZ = [&] {
+        if constexpr (requires { position.z; }) return static_cast<double>(position.z) + offset.z;
+        return 0.0;
+    }();
+    const double overlapX = predictedX - obstacle.x;
+    const double overlapY = predictedY - obstacle.y;
+    const double overlapZ = [&] {
+        if constexpr (requires { obstacle.z; }) return predictedZ - obstacle.z;
+        return 0.0;
+    }();
+    const double overlapLength = std::hypot(overlapX, overlapY, overlapZ);
+    if (overlapLength > obstacleRadius) return {};
+    if (overlapLength > 0.0) {
+        if constexpr (requires { position.z; })
+            return {static_cast<float>(overlapX / overlapLength * maxAcceleration),
+                    static_cast<float>(overlapY / overlapLength * maxAcceleration),
+                    static_cast<float>(overlapZ / overlapLength * maxAcceleration)};
+        return {static_cast<float>(overlapX / overlapLength * maxAcceleration),
+                static_cast<float>(overlapY / overlapLength * maxAcceleration)};
+    }
+    const Vector oppositeVelocity = [&] {
+        if constexpr (requires { velocity.z; })
+            return Vector{-velocity.x, -velocity.y, -velocity.z};
+        return Vector{-velocity.x, -velocity.y};
+    }();
+    const Vector fallback = scaledDirection(Vector{}, oppositeVelocity, maxAcceleration);
+    if (distance(Vector{}, fallback) > 0.0) return fallback;
+    if constexpr (requires { position.z; }) return Vector{maxAcceleration, 0.f, 0.f};
+    return Vector{maxAcceleration, 0.f};
 }
 
 }  // namespace

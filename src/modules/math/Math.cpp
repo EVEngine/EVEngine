@@ -13,11 +13,13 @@
 #include <glm/gtc/noise.hpp>
 
 #include <algorithm>
+#include <cctype>
 #include <chrono>
 #include <cmath>
 #include <cstdint>
 #include <sstream>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #ifndef M_PI
@@ -55,19 +57,32 @@ float hash31(float x, float y, float z) {
     return glm::fract((p3.x + p3.y) * p3.z);
 }
 
+bool parseSteeringCoordinate(std::string_view field, float &value) {
+    std::string input(field);
+    std::size_t consumed = 0;
+    try {
+        value = std::stof(input, &consumed);
+    } catch (...) {
+        return false;
+    }
+    while (consumed < input.size() &&
+           std::isspace(static_cast<unsigned char>(input[consumed])) != 0)
+        ++consumed;
+    return consumed == input.size() && std::isfinite(value);
+}
+
 std::vector<steering::Vector2> parseSteeringPoints2(const std::string &text) {
     std::vector<steering::Vector2> result;
     std::stringstream              input(text);
     std::string                    point;
     while (std::getline(input, point, ',')) {
         const auto separator = point.find(':');
-        if (separator == std::string::npos) continue;
-        try {
-            const steering::Vector2 value{std::stof(point.substr(0, separator)),
-                                          std::stof(point.substr(separator + 1))};
-            if (std::isfinite(value.x) && std::isfinite(value.y)) result.push_back(value);
-        } catch (...) {
-        }
+        if (separator == std::string::npos || point.find(':', separator + 1) != std::string::npos)
+            continue;
+        steering::Vector2 value;
+        if (parseSteeringCoordinate(std::string_view(point).substr(0, separator), value.x) &&
+            parseSteeringCoordinate(std::string_view(point).substr(separator + 1), value.y))
+            result.push_back(value);
     }
     return result;
 }
@@ -79,15 +94,15 @@ std::vector<steering::Vector3> parseSteeringPoints3(const std::string &text) {
     while (std::getline(input, point, ',')) {
         const auto first  = point.find(':');
         const auto second = first == std::string::npos ? first : point.find(':', first + 1);
-        if (first == std::string::npos || second == std::string::npos) continue;
-        try {
-            const steering::Vector3 value{std::stof(point.substr(0, first)),
-                                          std::stof(point.substr(first + 1, second - first - 1)),
-                                          std::stof(point.substr(second + 1))};
-            if (std::isfinite(value.x) && std::isfinite(value.y) && std::isfinite(value.z))
-                result.push_back(value);
-        } catch (...) {
-        }
+        if (first == std::string::npos || second == std::string::npos ||
+            point.find(':', second + 1) != std::string::npos)
+            continue;
+        steering::Vector3 value;
+        if (parseSteeringCoordinate(std::string_view(point).substr(0, first), value.x) &&
+            parseSteeringCoordinate(
+                std::string_view(point).substr(first + 1, second - first - 1), value.y) &&
+            parseSteeringCoordinate(std::string_view(point).substr(second + 1), value.z))
+            result.push_back(value);
     }
     return result;
 }

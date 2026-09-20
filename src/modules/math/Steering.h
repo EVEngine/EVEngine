@@ -58,14 +58,14 @@ Vector3 separation(Vector3 position, std::span<const Vector3> neighbors, float r
 
 /**
  * @brief Selects the current path point, advancing across points within tolerance.
- * @return A valid point index, or -1 when points is empty.
+ * @return A valid point index, or -1 when points is empty or contains a non-finite point.
  * @cost Linear in the number of points advanced during this call.
  */
 int pathTarget(Vector2 position, std::span<const Vector2> points, int current,
                float tolerance);
 /**
  * @brief Selects the current path point, advancing across points within tolerance.
- * @return A valid point index, or -1 when points is empty.
+ * @return A valid point index, or -1 when points is empty or contains a non-finite point.
  * @cost Linear in the number of points advanced during this call.
  */
 int pathTarget(Vector3 position, std::span<const Vector3> points, int current,
