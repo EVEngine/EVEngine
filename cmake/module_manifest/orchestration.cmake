@@ -250,6 +250,14 @@ eve_declare_module(NAME procgen_animation DIR procgen/animation LAYER 6
 eve_declare_module(NAME weather LAYER 6 SCRIPT Weather Snow SLOT weather snow
                    DEPS graphics procgen
                    GROUP 3d web)
+if(CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
+    # Browser weather keeps the pre-merge surface. Interactive snow has always
+    # been a native 3D feature and would otherwise pull procgen -> map -> Poco
+    # into the WASM closure, where Poco is intentionally unavailable.
+    set(EVE_MODULE_weather_SCRIPT Weather CACHE INTERNAL "" FORCE)
+    set(EVE_MODULE_weather_SLOT weather CACHE INTERNAL "" FORCE)
+    set(EVE_MODULE_weather_DEPS graphics CACHE INTERNAL "" FORCE)
+endif()
 eve_declare_module(NAME sceneloader LIB EVSceneLoader LAYER 6 SCRIPT SceneLoader
                    DEPS action animation data filesystem graphics image model3d scene thread
                    THIRDPARTY assimp
