@@ -122,15 +122,13 @@ option(EVENGINE_VULKAN_USE_VMA
 # Policy: development builds take the dynamic route (SHARED) so that iterating on
 # a domain test relinks a test executable instead of the whole engine; release and
 # SDK builds pass OBJECT explicitly (Makefile WIN32_CMAKE_ARGS) so the shipped
-# artifact is one exe with no engine DLLs beside it. The default below stays
-# OBJECT until the link groups actually link: every consumer still depends on
-# EVE_LINK_TARGETS, and the cross-group EVENGINE_API annotations are what make the
-# group DLLs linkable (see
-# docs/dev/superpowers/specs/2026-08-18-test-suite-optimization.md section 7.2).
-# Development already opts in with
-# CMAKE_EXTRA_ARGS="-DEVENGINE_MODULE_LINKAGE=SHARED".
-set(EVENGINE_MODULE_LINKAGE "OBJECT" CACHE STRING
-    "How each manifest module is built: OBJECT (default; release/SDK) or SHARED (dev link groups)")
+# artifact is one exe with no engine DLLs beside it. All 30 test domains link and
+# run under SHARED (see
+# docs/dev/superpowers/specs/2026-08-18-test-suite-optimization.md sections
+# 7.7-7.19), so SHARED is the default here and OBJECT is the opt-in: anything that
+# ships an artifact must pass -DEVENGINE_MODULE_LINKAGE=OBJECT.
+set(EVENGINE_MODULE_LINKAGE "SHARED" CACHE STRING
+    "How each manifest module is built: SHARED (default; one DLL per link group) or OBJECT (release/SDK: one self-contained exe)")
 set_property(CACHE EVENGINE_MODULE_LINKAGE PROPERTY STRINGS OBJECT SHARED)
 if(NOT EVENGINE_MODULE_LINKAGE MATCHES "^(OBJECT|SHARED)$")
     message(FATAL_ERROR

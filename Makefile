@@ -1143,9 +1143,13 @@ run: run/$(PLATFORM)-debug
 # bash, which does not accept a "C:/..." element inside PATH (MSYS then rewrites
 # it relative to its own root and the DLL directory is silently lost); pwd
 # yields the "/c/evt/..." form the loader conversion understands.
-# PATH is the Win32 loader's search path; the ELF/Mach-O equivalent would be
-# rpath/LD_LIBRARY_PATH, which these recipes do not set today.
+# PATH is the Win32 loader's search path. The ELF/Mach-O equivalent is
+# LD_LIBRARY_PATH / DYLD_LIBRARY_PATH, which eve-dll-path-so prefixes for the
+# linux/macosx recipes below; both macros probe the build tree, so a
+# static/one-exe build (release passes -DEVENGINE_MODULE_LINKAGE=OBJECT) yields
+# an empty prefix and the recipe is byte-for-byte what it was before.
 eve-dll-path = $(if $(wildcard $(CURDIR)/$(1)/EVFoundation.dll),$$(cd '$(CURDIR)/$(1)' && pwd):,)
+eve-dll-path-so = $(if $(wildcard $(CURDIR)/$(1)/libEVFoundation.so $(CURDIR)/$(1)/libEVFoundation.dylib),$(CURDIR)/$(1):,)
 
 # Desktop: run built eve. With GAME unset, run with no args from the repo
 # root so eve finds no main.nut and falls back to the embedded release demo.
@@ -1162,36 +1166,36 @@ run/win32-debug: ensure-built/win32-debug
 	else PATH="$(call eve-dll-path,build/win32-debug)$$PATH" build/win32-debug/src/engine/eve.exe $(RUN_ARGS); fi
 
 run/linux-debug: ensure-built/linux-debug
-	@if [ -n "$(GAME)" ]; then cd $(GAME) && "$(CURDIR)/build/linux-debug/src/engine/eve" run $(RUN_ARGS); \
-	else build/linux-debug/src/engine/eve $(RUN_ARGS); fi
+	@if [ -n "$(GAME)" ]; then cd $(GAME) && LD_LIBRARY_PATH="$(call eve-dll-path-so,build/linux-debug)$$LD_LIBRARY_PATH" "$(CURDIR)/build/linux-debug/src/engine/eve" run $(RUN_ARGS); \
+	else LD_LIBRARY_PATH="$(call eve-dll-path-so,build/linux-debug)$$LD_LIBRARY_PATH" build/linux-debug/src/engine/eve $(RUN_ARGS); fi
 
 run/macosx-debug: ensure-built/macosx-debug
-	@if [ -n "$(GAME)" ]; then cd $(GAME) && "$(CURDIR)/build/macosx-debug/src/engine/eve" run $(RUN_ARGS); \
-	else build/macosx-debug/src/engine/eve $(RUN_ARGS); fi
+	@if [ -n "$(GAME)" ]; then cd $(GAME) && DYLD_LIBRARY_PATH="$(call eve-dll-path-so,build/macosx-debug)$$DYLD_LIBRARY_PATH" "$(CURDIR)/build/macosx-debug/src/engine/eve" run $(RUN_ARGS); \
+	else DYLD_LIBRARY_PATH="$(call eve-dll-path-so,build/macosx-debug)$$DYLD_LIBRARY_PATH" build/macosx-debug/src/engine/eve $(RUN_ARGS); fi
 
 run/win32: ensure-built/win32
 	@if [ -n "$(GAME)" ]; then cd $(GAME) && PATH="$(call eve-dll-path,build/win32)$$PATH" "$(CURDIR)/build/win32/src/engine/eve.exe" run $(RUN_ARGS); \
 	else PATH="$(call eve-dll-path,build/win32)$$PATH" build/win32/src/engine/eve.exe $(RUN_ARGS); fi
 
 run/linux: ensure-built/linux
-	@if [ -n "$(GAME)" ]; then cd $(GAME) && "$(CURDIR)/build/linux/src/engine/eve" run $(RUN_ARGS); \
-	else build/linux/src/engine/eve $(RUN_ARGS); fi
+	@if [ -n "$(GAME)" ]; then cd $(GAME) && LD_LIBRARY_PATH="$(call eve-dll-path-so,build/linux)$$LD_LIBRARY_PATH" "$(CURDIR)/build/linux/src/engine/eve" run $(RUN_ARGS); \
+	else LD_LIBRARY_PATH="$(call eve-dll-path-so,build/linux)$$LD_LIBRARY_PATH" build/linux/src/engine/eve $(RUN_ARGS); fi
 
 run/macosx: ensure-built/macosx
-	@if [ -n "$(GAME)" ]; then cd $(GAME) && "$(CURDIR)/build/macosx/src/engine/eve" run $(RUN_ARGS); \
-	else build/macosx/src/engine/eve $(RUN_ARGS); fi
+	@if [ -n "$(GAME)" ]; then cd $(GAME) && DYLD_LIBRARY_PATH="$(call eve-dll-path-so,build/macosx)$$DYLD_LIBRARY_PATH" "$(CURDIR)/build/macosx/src/engine/eve" run $(RUN_ARGS); \
+	else DYLD_LIBRARY_PATH="$(call eve-dll-path-so,build/macosx)$$DYLD_LIBRARY_PATH" build/macosx/src/engine/eve $(RUN_ARGS); fi
 
 debug/win32:
 	@if [ -n "$(GAME)" ]; then cd $(GAME) && PATH="$(call eve-dll-path,build/win32-debug)$$PATH" "$(CURDIR)/build/win32-debug/src/engine/eve.exe" run $(RUN_ARGS); \
 	else PATH="$(call eve-dll-path,build/win32-debug)$$PATH" build/win32-debug/src/engine/eve.exe $(RUN_ARGS); fi
 
 debug/linux:
-	@if [ -n "$(GAME)" ]; then cd $(GAME) && "$(CURDIR)/build/linux-debug/src/engine/eve" run $(RUN_ARGS); \
-	else build/linux-debug/src/engine/eve $(RUN_ARGS); fi
+	@if [ -n "$(GAME)" ]; then cd $(GAME) && LD_LIBRARY_PATH="$(call eve-dll-path-so,build/linux-debug)$$LD_LIBRARY_PATH" "$(CURDIR)/build/linux-debug/src/engine/eve" run $(RUN_ARGS); \
+	else LD_LIBRARY_PATH="$(call eve-dll-path-so,build/linux-debug)$$LD_LIBRARY_PATH" build/linux-debug/src/engine/eve $(RUN_ARGS); fi
 
 debug/macosx:
-	@if [ -n "$(GAME)" ]; then cd $(GAME) && "$(CURDIR)/build/macosx-debug/src/engine/eve" run $(RUN_ARGS); \
-	else build/macosx-debug/src/engine/eve $(RUN_ARGS); fi
+	@if [ -n "$(GAME)" ]; then cd $(GAME) && DYLD_LIBRARY_PATH="$(call eve-dll-path-so,build/macosx-debug)$$DYLD_LIBRARY_PATH" "$(CURDIR)/build/macosx-debug/src/engine/eve" run $(RUN_ARGS); \
+	else DYLD_LIBRARY_PATH="$(call eve-dll-path-so,build/macosx-debug)$$DYLD_LIBRARY_PATH" build/macosx-debug/src/engine/eve $(RUN_ARGS); fi
 
 tools/debug:
 	cd tools/vscode-eve-debug && npx @vscode/vsce package 

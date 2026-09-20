@@ -9,12 +9,18 @@ if(NOT DEFINED ZEROERR_LABEL OR ZEROERR_LABEL STREQUAL "")
   set(ZEROERR_LABEL "zeroerr")
 endif()
 
-# Runtime DLL discovery for SHARED module-linkage builds: the link-group DLLs are
-# written to CMAKE_BINARY_DIR (cmake/link_groups.cmake), the test executable lives
-# in <binary dir>/test and CTest's WORKING_DIRECTORY is the repository root, so
-# Windows' loader finds nothing without help. ZEROERR_DLL_DIR is the directory
-# passed by ZeroErrDiscoverTests.cmake (empty for OBJECT/static builds, where the
-# engine is linked into the executable and no PATH entry is emitted at all).
+# Runtime library discovery for SHARED module-linkage builds: the link-group
+# libraries are written to CMAKE_BINARY_DIR (cmake/link_groups.cmake), the test
+# executable lives in <binary dir>/test and CTest's WORKING_DIRECTORY is the
+# repository root, so the loader finds nothing without help. ZEROERR_DLL_DIR is
+# the directory passed by ZeroErrDiscoverTests.cmake (empty for OBJECT/static
+# builds, where the engine is linked into the executable and no loader entry is
+# emitted at all).
+#
+# The variable that names the loader search path is platform-specific, and so is
+# its separator: Win32 loads DLLs from PATH and separates entries with ";" (which
+# is also CTest's list separator), ELF loads from LD_LIBRARY_PATH and Mach-O from
+# DYLD_LIBRARY_PATH, both separated by ":".
 #
 # The value is expanded here, at generate time, and escaped for the *second*
 # parse it goes through: the generated file is CMake code again, so
@@ -22,22 +28,35 @@ endif()
 #      "\U" an invalid escape sequence and abort CTest's include of the file),
 #   2. ";" -> "\;"  (ENVIRONMENT is a ;-separated list, so unescaped separators
 #      would split one PATH value into many bogus entries).
-# The inherited PATH is expanded at generate time for the same reason: a value
-# CTest itself expanded later would already have been split on its semicolons.
+# The inherited value is read at generate time for the same reason: a value CTest
+# itself expanded later would already have been split on its semicolons.
 set(_eve_test_env_property "")
 if(DEFINED ZEROERR_DLL_DIR AND NOT ZEROERR_DLL_DIR STREQUAL "")
+  if(WIN32)
+    set(_eve_dll_var "PATH")
+    set(_eve_dll_sep ";")
+    set(_eve_dll_inherited "$ENV{PATH}")
+  elseif(APPLE)
+    set(_eve_dll_var "DYLD_LIBRARY_PATH")
+    set(_eve_dll_sep ":")
+    set(_eve_dll_inherited "$ENV{DYLD_LIBRARY_PATH}")
+  else()
+    set(_eve_dll_var "LD_LIBRARY_PATH")
+    set(_eve_dll_sep ":")
+    set(_eve_dll_inherited "$ENV{LD_LIBRARY_PATH}")
+  endif()
   set(_eve_test_path "${ZEROERR_DLL_DIR}")
-  if(DEFINED ENV{PATH} AND NOT "$ENV{PATH}" STREQUAL "")
-    set(_eve_test_path "${ZEROERR_DLL_DIR};$ENV{PATH}")
+  if(NOT _eve_dll_inherited STREQUAL "")
+    set(_eve_test_path "${ZEROERR_DLL_DIR}${_eve_dll_sep}${_eve_dll_inherited}")
   endif()
   string(REPLACE "\\" "\\\\" _eve_test_path "${_eve_test_path}")
   string(REPLACE ";" "\\;" _eve_test_path "${_eve_test_path}")
-  set(_eve_test_env_property " ENVIRONMENT \"PATH=${_eve_test_path}\"")
+  set(_eve_test_env_property " ENVIRONMENT \"${_eve_dll_var}=${_eve_test_path}\"")
 
   # The listing step below *runs* the freshly linked executable, so this script's
-  # own environment needs the same PATH. Setting it here also covers the
+  # own environment needs the same entry. Setting it here also covers the
   # execute_process children and needs no CMake list escaping.
-  set(ENV{PATH} "${ZEROERR_DLL_DIR};$ENV{PATH}")
+  set(ENV{${_eve_dll_var}} "${ZEROERR_DLL_DIR}${_eve_dll_sep}${_eve_dll_inherited}")
 endif()
 
 # 1) Collect test cases.
