@@ -675,6 +675,14 @@ if(_has_ui)
         ${CMAKE_SOURCE_DIR}/third-party/imgui/imgui_impl_vulkan.cpp)
     endif()
     add_library(eve_imgui STATIC ${_eve_imgui_sources})
+    # SHARED module linkage links this archive into every link-group shared
+    # object (cmake/link_groups.cmake), and ELF refuses a non-PIC object there
+    # (`relocation R_X86_64_PC32 against symbol GImGui can not be used when
+    # making a shared object`). MSVC ignores the property; the archive-only
+    # OBJECT route does not need it.
+    if(EVENGINE_MODULE_LINKAGE STREQUAL "SHARED")
+        set_target_properties(eve_imgui PROPERTIES POSITION_INDEPENDENT_CODE ON)
+    endif()
     # Vendored third-party imgui mixes public/private enums (input-text/tree
     # flags); GCC 15's -Wdeprecated-enum-enum-conversion is noise for this
     # bundled library. Engine call sites that mix enums are fixed at the
