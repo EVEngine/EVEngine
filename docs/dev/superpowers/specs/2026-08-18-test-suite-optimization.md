@@ -633,4 +633,32 @@ debug SDK（`make sdk/win32-debug`）**沿用开发配置，即动态**：它从
 
 **新增第四/第五族**：`graphics` 触发了 1 个 `box2d` 的 `s_initialized`（box2d 也是**第三方静态库**，与 §7.16 的 box3d `b3_worlds` 同源）——第三方静态库的文件作用域状态现在是 `box3d`、`box2d` 两个实例，任何 obj 级探针都看不见它们。
 
-进度：30 个域中 **30 个已链通**（21 个全绿；余下 9 个域共 130+ 个失败用例，全部属于 §7.3 的五族跨 DLL 静态状态，其中 `graphics` 一个域就占 93 个）。
+进度：30 个域中 **30 个已链通**（21 个全绿；余下 9 个域共 130 个失败用例，全部属于跨 DLL 静态状态族，其中 `graphics` 一个域就占 93 个）。
+
+### 7.20 SHARED 成为开发默认值 + 130 个已知失败的分族清单（2026-09-20）
+
+30/30 链通后（§7.19），`EVENGINE_MODULE_LINKAGE` 的默认值由 `OBJECT` 翻成 **`SHARED`**（`CMakeLists.txt`）。翻转的判据与配套改动：
+
+1. **谁必须显式传 OBJECT**：`Makefile` 的 release 配置（`WIN32_CMAKE_ARGS`）本来就钉了 `OBJECT`，`make build/win32`、`make sdk/win32` 因此不变——发布仍是"单个 exe、旁边没有引擎 DLL"。`CMakeLists.txt` 的注释把这条写成硬要求：**任何要出产物的配置都必须显式传 `-DEVENGINE_MODULE_LINKAGE=OBJECT`**。
+2. **非 Windows 的运行时发现必须跟着改**：`cmake/ZeroErrDiscoverTestsImpl.cmake` 原来只写 `ENVIRONMENT "PATH=..."`（Win32 专用）。现在按平台选变量与分隔符——Win32 `PATH`（分隔 `;`，且在生成文本里必须转义成 `\;`）、ELF `LD_LIBRARY_PATH`、Mach-O `DYLD_LIBRARY_PATH`（都按 `:` 分隔），继承值在**生成期**展开。构建期的 listing 步骤同样设置该变量。`Makefile` 的 `run|debug/{linux,macosx}*` 六个目标用新的 `eve-dll-path-so`（探测 `libEVFoundation.so`/`.dylib`）前缀 `LD_LIBRARY_PATH`/`DYLD_LIBRARY_PATH`；静态配置下探测为空、命令与翻转前逐字节一致。
+3. **验证**：(a) 不传任何 linkage 参数 configure 一个干净目录 → `EVENGINE_MODULE_LINKAGE:STRING=SHARED`、7 行 `Link group ... -> one shared library`、`ninja -n EVFoundation` 的末步是 `Linking CXX shared library EVFoundation.dll`；(b) 用**真的** `ZeroErrDiscoverTestsImpl.cmake` 生成一次注册表：Windows 得到 `ENVIRONMENT "PATH=C:/…\;C:\\…"`，WSL 里的 Linux cmake 得到 `ENVIRONMENT "LD_LIBRARY_PATH=/build/…:/pre/existing"`（继承值保留、分隔符正确）。
+4. `AGENTS.md` 的 "Module linkage policy" 段同步改写：默认 SHARED、出产物必须显式 OBJECT、并指向本节的分族清单。
+5. **文档同步的方向坑（本轮踩到）**：交付 worktree 与 `C:\evt` 是两份内容相同的检出。我在交付 worktree 里写完本节后，又用 `C:\evt → 交付 worktree` 的批量复制覆盖了它（本节第一次因此丢失，只能重写）。**规则：在交付 worktree 里编辑过的文件，必须立刻反向复制回 `C:\evt`；批量同步只能是 `C:\evt → 交付 worktree`，并且要排除刚在交付侧编辑过的文件。**
+
+**整套 SHARED 测试的权威读数**（`ctest -E "^bundle/" --timeout 120 -j 4`，一次跑全部 30 个域）：
+
+| 项 | 数 |
+| --- | --- |
+| 用例总数 / 失败 / 超时 | **5274 / 130 / 0**（98% 通过，436.6 s） |
+| 分族 | SDL video `_this` **111**、ECS `default_table()` **6**、ImGui `GImGui` **6（挂起→超时）**、box3d `b3_worlds` **5**、box2d `s_initialized` **1**、插件夹具 **1** |
+| 分域 | particles 9、procgen 9、graphics 93（92 SDL + 1 box2d）、physics 6（5 box3d + 1 SDL）、ui 6、building 4、scene 1、combat 1、core 1；**其余 21 个域 0 失败** |
+
+**交叉核对**：9+9+93+6+6+4+1+1+1 = **130**，与整套跑出来的失败数逐一吻合，说明整套跑没有暴露任何逐域没记录过的新失败。分族明细与每族取证方式见 §7.3；这里补充两条**新族**：`box2d` 的 `s_initialized`（与 §7.16 的 box3d `b3_worlds` 同源：第三方静态库的文件作用域状态，`EVBackends.dll` 与 `EVWorld.dll` 各一份、`unit_test_graphics.exe` 里 0 份）与 `graphics` 域特有的 92 个 SDL 用例（窗口初始化在 EVPlatform 组、Vulkan 入口在 EVBackends 组各自的 SDL 副本里）。
+
+**这 130 个是"记录"而不是"待修"**（项目所有者 2026-09-20 决策）：本仓库内只能修其中 7 个（ImGui 6 个 → 把 ImGui 编成 SHARED 目标；插件夹具 1 个 → 让插件改链组 DLL 的导入库），其余需要把 SDL2/box2d/box3d 改成动态库（新增一份第三方动态预编译树 + 部署/打包改动），ECS 的 6 个还需要改 `external/ECS.hpp` **子模块**（另一个仓库）。全部保留为已知失败并在此存档。
+
+**运维陷阱（本轮踩到）**：`ctest` 的 `Test #NNN` 编号在本树上**不稳定**——同一个二进制两次全量跑之间，`graphics.imageAudit.pipelineConfigs` 从 #658 变 #748、`window.zeroSizeUsesDesktopDimensions` 从 #1686 变 #1914。因此 **`ctest --rerun-failed` 会跑错用例**（它一度声称"93 个里只有 7 个失败"，那 7 个其实是别的用例）。所有 ctest 结论都必须按**用例名集合**而不是编号。
+
+**未验证项（如实记录）**：
+- 本机没有 Linux 构建树，翻转后的 Linux SHARED 路线只做到"生成文本正确"这一层（上面 3(b) 与 WSL 里的脚本级验证）。在 WSL 里尝试过完整 Linux 构建，卡在**共享** `third-party/` 检出上：该检出已被 Windows git 打过补丁（工作树 CRLF），而 `cmake/patch_third_party.cmake` 故意不做空白松弛，于是 Linux `git apply --check` 报 `SDL2/CMakeLists.txt: patch does not apply`。这是**两台机器共用一份检出的产物**，不是 CI 的问题（CI 在 Linux 上全新 clone 后按顺序打补丁）。
+- `check-format.sh`（CI 用 clang-format-18）本机没有该二进制，无法本地实证；`.clang-format` 是 `MaxEmptyLinesToKeep: 2` + `IncludeBlocks: Preserve`，"include + 两空行 + 原 include 块"符合规则，但这是规则推断而非实测。
