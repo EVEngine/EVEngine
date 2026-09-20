@@ -33,6 +33,30 @@ if(TARGET zeroerr)
     set_target_properties(zeroerr PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
 
+# The third-party libraries that are dynamic in this configuration (SDL, so that
+# the video subsystem has a single owner instead of one copy per link unit) must
+# be findable beside the executables: CTest's PATH and the Makefile's run targets
+# both start at the binary directory. Their location comes from the link
+# directories the engine already uses, so a prebuilt third-party tree works too,
+# and the copy is a target rather than a POST_BUILD step because the group
+# libraries may already be up to date when only third-party changed.
+if(WIN32)
+    get_target_property(_eve_tp_link_dirs eve_engine_includes INTERFACE_LINK_DIRECTORIES)
+    set(_eve_tp_runtime_dlls "")
+    foreach(_eve_tp_link_dir IN LISTS _eve_tp_link_dirs)
+        get_filename_component(_eve_tp_bin_dir "${_eve_tp_link_dir}/../bin" ABSOLUTE)
+        file(GLOB _eve_tp_found_dlls "${_eve_tp_bin_dir}/SDL2*.dll")
+        list(APPEND _eve_tp_runtime_dlls ${_eve_tp_found_dlls})
+    endforeach()
+    if(_eve_tp_runtime_dlls)
+        add_custom_target(eve_third_party_runtime ALL
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                ${_eve_tp_runtime_dlls} "${CMAKE_BINARY_DIR}/"
+            DEPENDS third-party
+            COMMENT "Placing the shared third-party runtime libraries beside the executables")
+    endif()
+endif()
+
 # The host, the tests, the benchmarks and the plugins all consume the annotated
 # engine surface from these DLLs, so their view of EVENGINE_API is dllimport.
 # Modules get this too (eve_engine_includes is what they link), but Export.h

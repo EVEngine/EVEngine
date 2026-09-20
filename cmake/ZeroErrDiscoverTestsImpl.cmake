@@ -12,10 +12,11 @@ endif()
 # Runtime library discovery for SHARED module-linkage builds: the link-group
 # libraries are written to CMAKE_BINARY_DIR (cmake/link_groups.cmake), the test
 # executable lives in <binary dir>/test and CTest's WORKING_DIRECTORY is the
-# repository root, so the loader finds nothing without help. ZEROERR_DLL_DIR is
-# the directory passed by ZeroErrDiscoverTests.cmake (empty for OBJECT/static
-# builds, where the engine is linked into the executable and no loader entry is
-# emitted at all).
+# repository root, so the loader finds nothing without help. ZEROERR_DLL_DIR is a
+# *list* of directories passed by ZeroErrDiscoverTests.cmake (empty for
+# OBJECT/static builds, where the engine is linked into the executable and no
+# loader entry is emitted at all); on ELF it also carries the third-party install
+# directory, whose shared libraries (SDL) live outside the binary dir.
 #
 # The variable that names the loader search path is platform-specific, and so is
 # its separator: Win32 loads DLLs from PATH and separates entries with ";" (which
@@ -45,18 +46,31 @@ if(DEFINED ZEROERR_DLL_DIR AND NOT ZEROERR_DLL_DIR STREQUAL "")
     set(_eve_dll_sep ":")
     set(_eve_dll_inherited "$ENV{LD_LIBRARY_PATH}")
   endif()
-  set(_eve_test_path "${ZEROERR_DLL_DIR}")
+  set(_eve_test_path "")
+  foreach(_eve_dir IN LISTS ZEROERR_DLL_DIR)
+    if(_eve_dir STREQUAL "")
+      continue()
+    endif()
+    if(_eve_test_path STREQUAL "")
+      set(_eve_test_path "${_eve_dir}")
+    else()
+      set(_eve_test_path "${_eve_test_path}${_eve_dll_sep}${_eve_dir}")
+    endif()
+  endforeach()
   if(NOT _eve_dll_inherited STREQUAL "")
-    set(_eve_test_path "${ZEROERR_DLL_DIR}${_eve_dll_sep}${_eve_dll_inherited}")
+    set(_eve_test_path "${_eve_test_path}${_eve_dll_sep}${_eve_dll_inherited}")
   endif()
   string(REPLACE "\\" "\\\\" _eve_test_path "${_eve_test_path}")
   string(REPLACE ";" "\\;" _eve_test_path "${_eve_test_path}")
   set(_eve_test_env_property " ENVIRONMENT \"${_eve_dll_var}=${_eve_test_path}\"")
 
   # The listing step below *runs* the freshly linked executable, so this script's
-  # own environment needs the same entry. Setting it here also covers the
+  # own environment needs the same entries. Setting it here also covers the
   # execute_process children and needs no CMake list escaping.
-  set(ENV{${_eve_dll_var}} "${ZEROERR_DLL_DIR}${_eve_dll_sep}${_eve_dll_inherited}")
+  set(_eve_test_path_raw "${_eve_test_path}")
+  string(REPLACE "\\;" ";" _eve_test_path_raw "${_eve_test_path_raw}")
+  string(REPLACE "\\\\" "\\" _eve_test_path_raw "${_eve_test_path_raw}")
+  set(ENV{${_eve_dll_var}} "${_eve_test_path_raw}")
 endif()
 
 # 1) Collect test cases.

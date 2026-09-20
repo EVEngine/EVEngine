@@ -213,16 +213,20 @@ function(check_third_party_project name repo)
             -DCMAKE_RELWITHDEBINFO_POSTFIX=md
         )
     endif()
-    # SHARED module linkage links this whole closure into per-link-group shared
-    # objects, and ELF refuses a non-PIC object there (`relocation R_X86_64_PC32
-    # against symbol stderr@@GLIBC_2.2.5 can not be used when making a shared
-    # object; recompile with -fPIC`). The aggregate's own CMakeLists already
-    # forces CMAKE_POSITION_INDEPENDENT_CODE for its subprojects, but SDL2
-    # overrides it per target from its SDL_STATIC_PIC option, which defaults to
-    # OFF -- so that one has to be turned on explicitly. MSVC ignores both, and
-    # the archive-only OBJECT route (release/SDK) never needs them.
-    if(EVENGINE_MODULE_LINKAGE STREQUAL "SHARED")
-        list(APPEND _eve_tp_cmake_args -DSDL_STATIC_PIC=ON)
+    # SDL keeps the video subsystem's state in the library itself. The engine
+    # links SDL from several link groups, so with the archive alone every group
+    # and every test executable owns a copy and a window the test created is
+    # invisible to the engine's modules (the particles/graphics/procgen failures
+    # in spec section 7.3). Building SDL shared *as well as* static gives the
+    # dynamic route a single instance, while the archive-only OBJECT route
+    # (release/SDK) keeps linking the static library. SDL_STATIC_PIC is needed
+    # because that archive also ends up inside the group shared objects on ELF.
+    if(NOT ANDROID AND NOT IOS AND NOT CMAKE_SYSTEM_NAME STREQUAL "iOS"
+       AND NOT EMSCRIPTEN AND NOT BUILD_PLATFORM STREQUAL "webgpu")
+        list(APPEND _eve_tp_cmake_args
+            -DSDL_SHARED=ON
+            -DSDL_STATIC=ON
+            -DSDL_STATIC_PIC=ON)
     endif()
     if(ANDROID OR (CMAKE_SYSTEM_NAME STREQUAL "Android"))
         list(APPEND _eve_tp_cmake_args
@@ -392,17 +396,18 @@ function(check_third_party_project name repo)
             -DPATCH=${CMAKE_SOURCE_DIR}/cmake/patches/box3d-dynamic-crt.patch
             -DPATCH_DIR=${CMAKE_CURRENT_SOURCE_DIR}/${name}/box3d
             -P ${CMAKE_SOURCE_DIR}/cmake/patch_third_party.cmake)
-    # Twelfth patch: SDL2's static library carries a CRT-less
-    # _DllMainCRTStartup stub while HAVE_LIBC is undefined, which is SDL's
-    # default on MSVC. The linker then takes that stub as the entry point of any
-    # DLL linking the static library, so the CRT's startup object is never pulled
-    # and ucrt/vcruntime are never searched: every engine link group DLL failed
-    # with LNK2019 __acrt_initialize / __vcrt_initialize in
-    # MSVCRTD.lib(utility.obj). SDL ships the SDL_STATIC_LIB guard for the static
-    # build (bug 4034); upstream also made the static library use the system C
-    # library (commit 26a56a4). This pinned 2.0.16 predates that CMake change,
-    # and the narrow guard macro is verified to leave SDL's public headers
-    # byte-identical (HAVE_LIBC=1 there does not).
+    # Twelfth patch: SDL2's library carries a CRT-less _DllMainCRTStartup stub
+    # while HAVE_LIBC is undefined, which is SDL's default on MSVC. The linker
+    # then takes that stub as the entry point of any DLL linking the library, so
+    # the CRT's startup object is never pulled and ucrt/vcruntime are never
+    # searched: every engine link group DLL failed with LNK2019
+    # __acrt_initialize / __vcrt_initialize in MSVCRTD.lib(utility.obj). SDL
+    # ships the SDL_STATIC_LIB guard (bug 4034) for the static build; upstream
+    # also made the static library use the system C library (commit 26a56a4).
+    # This pinned 2.0.16 predates that CMake change, and the narrow guard macro is
+    # verified to leave SDL's public headers byte-identical (HAVE_LIBC=1 there
+    # does not). The same patch drops /NODEFAULTLIB from the *shared* target, so
+    # SDL2.dll is CRT-backed like its consumers.
     set(_eve_tp_patch_cmd ${_eve_tp_patch_cmd}
         COMMAND ${CMAKE_COMMAND}
             -DPATCH=${CMAKE_SOURCE_DIR}/cmake/patches/sdl2-static-library-crt-entry.patch

@@ -11,13 +11,24 @@ function(zeroerr_discover_tests TARGET)
   # lives in <binary dir>/test and CTest runs it with WORKING_DIRECTORY = the
   # repository root. Neither directory holds them, so each generated test entry
   # must carry that directory on the platform's loader search path (PATH on
-  # Win32, LD_LIBRARY_PATH on ELF, DYLD_LIBRARY_PATH on Mach-O). Static/one-exe
+  # Win32, LD_LIBRARY_PATH on ELF, DYLD_LIBRARY_PATH on Mach-O). On ELF the
+  # third-party libraries that are shared in this configuration (SDL) stay in
+  # their own install tree, so that directory is added too; on Windows they are
+  # copied next to the executables by cmake/link_groups.cmake. Static/one-exe
   # builds (EVENGINE_MODULE_LINKAGE=OBJECT, what release/SDK passes) have no
   # group libraries and emit no loader property. Passed as an extra -D so the
   # generated text stays on one code path.
-  set(_eve_zeroerr_dll_dir "")
+  set(_eve_zeroerr_dll_dirs "")
   if(EVENGINE_MODULE_LINKAGE STREQUAL "SHARED")
-    set(_eve_zeroerr_dll_dir "${CMAKE_BINARY_DIR}")
+    list(APPEND _eve_zeroerr_dll_dirs "${CMAKE_BINARY_DIR}")
+    if(NOT WIN32 AND NOT APPLE)
+      get_target_property(_eve_zeroerr_link_dirs eve_engine_includes INTERFACE_LINK_DIRECTORIES)
+      foreach(_eve_zeroerr_link_dir IN LISTS _eve_zeroerr_link_dirs)
+        if(EXISTS "${_eve_zeroerr_link_dir}")
+          list(APPEND _eve_zeroerr_dll_dirs "${_eve_zeroerr_link_dir}")
+        endif()
+      endforeach()
+    endif()
   endif()
   add_custom_command(TARGET ${TARGET} POST_BUILD
     COMMAND ${CMAKE_COMMAND}
@@ -25,7 +36,7 @@ function(zeroerr_discover_tests TARGET)
       -DCTEST_FILE=${ctest_file}
       -DZEROERR_WORKING_DIRECTORY=${CMAKE_SOURCE_DIR}
       -DZEROERR_LABEL=${_eve_zeroerr_LABEL}
-      -DZEROERR_DLL_DIR=${_eve_zeroerr_dll_dir}
+      -DZEROERR_DLL_DIR=${_eve_zeroerr_dll_dirs}
       -P ${CMAKE_CURRENT_FUNCTION_LIST_DIR}/ZeroErrDiscoverTestsImpl.cmake
     BYPRODUCTS ${ctest_file}
     COMMENT "Discovering zeroerr tests for ${TARGET}"

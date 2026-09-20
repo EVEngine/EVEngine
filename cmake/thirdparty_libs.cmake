@@ -52,12 +52,27 @@ function(eve_thirdparty_libs out_var)
 
         elseif(g STREQUAL "sdl2")
             # Emscripten links SDL2 through -sUSE_SDL=2, set in the root CMakeLists.
+            # SDL is built shared as well as static (third_party_build.cmake): the
+            # dynamic route links the import library so the whole process shares
+            # one SDL state, and the archive route keeps the static library. With
+            # SDL_SHARED=ON, SDL gives the static target its own name on Windows
+            # to keep it apart from the import library.
             if(_emscripten)
             elseif(_win_debug)
-                list(APPEND _libs SDL2d SDL2maind)
+                if(EVENGINE_MODULE_LINKAGE STREQUAL "SHARED")
+                    list(APPEND _libs SDL2d SDL2maind)
+                else()
+                    list(APPEND _libs SDL2-staticd SDL2maind)
+                endif()
             elseif(WIN32)
-                list(APPEND _libs SDL2md SDL2mainmd)
+                if(EVENGINE_MODULE_LINKAGE STREQUAL "SHARED")
+                    list(APPEND _libs SDL2md SDL2mainmd)
+                else()
+                    list(APPEND _libs SDL2-staticmd SDL2mainmd)
+                endif()
             else()
+                # ELF/Mach-O: libSDL2.so is preferred over libSDL2.a when both are
+                # installed, so every route links the shared library here.
                 list(APPEND _libs SDL2 SDL2main)
             endif()
 
