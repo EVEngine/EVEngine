@@ -1,4 +1,5 @@
 #include "common/ECS.h"
+#include "common/ScriptComponentStore.h"
 #include "common/ScriptError.h"
 #include "common/SquirrelBinding.h"
 
@@ -183,6 +184,66 @@ ssq::Table inspectClassFields(ssq::Object clsObj) {
     collectClassFields(vm, clsObj.getRaw(), out.getRaw());
     return out;
 }
+
+/** 读类里某个字段的默认值（声明时写的那个值就是 schema 默认值）。 */
+Result<Value> classFieldDefault(HSQUIRRELVM vm, HSQOBJECT clsObj, const std::string& field) {
+    const SQInteger top = sq_gettop(vm);
+    sq_pushobject(vm, clsObj);
+    sq_pushstring(vm, field.c_str(), static_cast<SQInteger>(field.size()));
+    if (SQ_FAILED(sq_get(vm, -2))) {
+        sq_settop(vm, top);
+        return Result<Value>::failure(Diagnostic::error(
+            DiagnosticCode::NotFound, "component field default is not readable", field, {}, "ecs.component"));
+    }
+    const SQInteger valueIndex = sq_gettop(vm);
+    Result<Value>   value      = script::valueFromSquirrel(vm, valueIndex);
+    sq_settop(vm, top);
+    return value;
+}
+
+/**
+ * @brief 已登记组件在注册表里的身份（名字 + 版本）。
+ * @return 找到则为 true；类对象没登记过则为 false（该组件保持今天的槽位语义）。
+ */
+bool registeredIdentityOfClass(const ssq::Object& cls, ScriptComponentRecord* out) {
+    const SQClass* klass = _class(cls.getRaw());
+    if (klass == nullptr) return false;
+    for (const auto& [key, entry] : currentScriptComponents()) {
+        if (_class(entry.cls) != klass) continue;
+        if (out != nullptr) {
+            out->name       = key.first;
+            out->version    = SchemaVersion(key.second);
+            out->generation = entry.generation;
+            out->retired    = false;
+            out->fields     = entry.fields;
+        }
+        return true;
+    }
+    return false;
+}
+
+/**
+ * @brief 为"已登记组件"在引擎侧建一份字段数据（默认值取自类声明）。
+ *
+ * 只对登记过的组件生效：没登记的组件保持纯槽位语义（最快，但原生侧读不到），这是
+ * §9.62.1 按成本实测定下的策略，由脚本作者按组件选择。
+ */
+bool initializeScriptComponentValues(std::uint64_t entityId, ssq::Object cls) {
+    ScriptComponentRecord identity;
+    if (cls.getType() != ssq::Type::CLASS || !registeredIdentityOfClass(cls, &identity)) return false;
+
+    Value::Object values;
+    for (const std::string& field : identity.fields) {
+        Result<Value> value = classFieldDefault(cls.getHandle(), cls.getRaw(), field);
+        values.emplace(field, value.ok() ? std::move(value).takeValue() : Value::null());
+    }
+    const ScriptComponentStoreKey key{entityId, identity.name, identity.version};
+    setScriptComponentValues(key, Value::object(std::move(values)))
+        .ignore("a component whose values cannot be stored would silently lose its data if this succeeded");
+    return true;
+}
+
+bool dropScriptComponentValues(std::uint64_t entityId) { return removeScriptComponentValues(entityId) > 0; }
 
 bool scriptIsSubclass(ssq::Object child, ssq::Object base) {
     if (child.getType() != ssq::Type::CLASS || base.getType() != ssq::Type::CLASS)
@@ -412,6 +473,9 @@ eve.Entity <- class {
         foreach (name, compClass in e._slots) {
             local c = eve._ecsInstantiateComponent(compClass)
             e._comps[name] <- c
+            // 已登记组件（`eve.component`）在引擎侧另存一份字段数据，那是**权威**存储：原生侧
+            // （打包 / 存档 / 编辑器）从它读。没登记的组件不建这份数据，保持纯槽位语义。
+            eve._ecsInitComponentValues(e._eid, compClass)
             // 已声明的槽位（`pos = Pos`）同时写进实体字段，于是 `e.pos` 与
             // `e.getComponent(Pos)` 是**同一个对象**，两条路径读写一致（实测，见 §9.38）。
             // 只登记在 `static components` 表里、没有同名字段的槽位没有字段可写，它只
@@ -466,6 +530,8 @@ eve.Entity <- class {
             }
         }
         _comps = null
+        // 引擎侧的组件数据也要清：它是权威存储，留着就是"销毁后仍可读"的孤儿数据。
+        eve._ecsDropComponentValues(_eid)
     }
 }
 
@@ -1048,6 +1114,13 @@ void exposeECS(ssq::Table& table) {
             vm, registerScriptComponent(name, SchemaVersion(static_cast<std::uint64_t>(version)), cls));
     });
     table.addFunc("_cppCollect", std::function<void(ssq::Class, ssq::Array)>(cppCollect));
+    // 已登记组件在引擎侧的数据：创建实体时按 schema 默认值建一份，销毁实体时一并清掉。
+    // 返回 false 表示"这个组件没登记过"，脚本侧据此什么都不做（保持纯槽位语义）。
+    table.addFunc("_ecsInitComponentValues", [](std::uint64_t entityId, ssq::Object cls) {
+        return initializeScriptComponentValues(entityId, cls);
+    });
+    table.addFunc("_ecsDropComponentValues",
+                  [](std::uint64_t entityId) { return dropScriptComponentValues(entityId); });
 
     injectEcsScript(table);
 
@@ -1069,6 +1142,8 @@ void prepareEcsScriptInjection() {
     // VM's script, so a new VM starts with no identity history.
     currentScriptComponents().clear();
     retiredScriptComponents().clear();
+    // 引擎侧组件数据同样属于"一个 VM 的脚本世界"：新 VM 从空开始。
+    clearScriptComponentStore();
     ecsScriptInjected()  = false;
     postEcsHooksFlushed() = 0;
 }

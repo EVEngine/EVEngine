@@ -1,6 +1,7 @@
 #include "ScriptTest.h"
 
 #include "common/ECS.h"
+#include "common/ScriptComponentStore.h"
 
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
@@ -894,4 +895,85 @@ TEST_CASE("ScriptECS.componentRegistryIsPerVm") {
     // 不是 2：新 VM 没有上一代的记录；也不是两条：旧 VM 的登记没有残留。
     REQUIRE_EQ(found->generation.value(), std::uint64_t(1));
     REQUIRE_EQ(eve::scriptComponentRecords().size(), std::size_t(1));
+}
+
+// ---------------------------------------------------------------------------
+// 引擎侧组件数据：登记过的组件在创建实体时按 schema 建一份，销毁时清掉。
+// ---------------------------------------------------------------------------
+
+static const char* kComponentStoreScript = R"SQ(
+class Position extends eve.Component { x = 1.5; y = 2.5 }
+// 没登记过的组件：保持纯槽位语义，不建引擎侧数据。
+class Loose extends eve.Component { v = 7 }
+
+class Probe extends eve.Entity {
+    pos = Position
+    loose = Loose
+}
+
+function makeProbe() {
+    local registered = eve.component("Position", 1, Position).ok
+    local e = Probe.create()
+    probeId <- e.getId()
+    return registered
+}
+
+function destroyProbe() {
+    local e = Probe.create()
+    e.destroy()
+    destroyedId <- e.getId()
+    return true
+}
+
+function fieldSyntaxStillWorks() {
+    local e = Probe.create()
+    e.pos.x = 11.0
+    return e.pos.x == 11.0 && e.pos.y == 2.5
+}
+)SQ";
+
+UnitSciptTest(ComponentStoreTest, kComponentStoreScript);
+
+TEST_CASE_FIXTURE(ComponentStoreTest, "ScriptECS.registeredComponentValuesLiveInTheEngineStore") {
+    REQUIRE(callScript("makeProbe"));
+
+    const auto                         entityId = static_cast<std::uint64_t>(vm.find("probeId").toInt());
+    const eve::ScriptComponentStoreKey key{entityId, "Position", eve::SchemaVersion(1)};
+
+    // 登记过的组件：字段默认值已经按 schema 落在引擎侧，原生侧读得到。
+    const eve::Value* values = eve::findScriptComponentValues(key);
+    REQUIRE(values != nullptr);
+    REQUIRE(values->find("x") != nullptr);
+    REQUIRE(values->find("y") != nullptr);
+    REQUIRE_EQ(values->find("x")->asDouble(), 1.5);
+    REQUIRE_EQ(values->find("y")->asDouble(), 2.5);
+
+    // 没登记过的组件不建这份数据（它保持纯槽位语义）。
+    const eve::ScriptComponentStoreKey looseKey{entityId, "Loose", eve::SchemaVersion(1)};
+    REQUIRE(eve::findScriptComponentValues(looseKey) == nullptr);
+
+    // 字段写入/读取：这正是脚本 `_set` 与原生侧共用的那条路。
+    REQUIRE(eve::setScriptComponentField(key, "x", eve::Value::number(9.0)).ok());
+    const auto readBack = eve::scriptComponentField(key, "x");
+    REQUIRE(readBack.ok());
+    REQUIRE_EQ(readBack.value().asDouble(), 9.0);
+
+    // schema 之外的字段名必须被拒绝，否则序列化/编辑器会看到没有声明的数据。
+    REQUIRE(!eve::setScriptComponentField(key, "notDeclared", eve::Value::number(1.0)).ok());
+}
+
+TEST_CASE_FIXTURE(ComponentStoreTest, "ScriptECS.destroyDropsEngineSideComponentValues") {
+    REQUIRE(callScript("destroyProbe"));
+
+    const auto                         destroyedId = static_cast<std::uint64_t>(vm.find("destroyedId").toInt());
+    const eve::ScriptComponentStoreKey key{destroyedId, "Position", eve::SchemaVersion(1)};
+
+    // 销毁后不许留下"仍可读"的孤儿数据。
+    REQUIRE(eve::findScriptComponentValues(key) == nullptr);
+    REQUIRE(!eve::scriptComponentField(key, "x").ok());
+}
+
+TEST_CASE_FIXTURE(ComponentStoreTest, "ScriptECS.unregisteredComponentsKeepSlotSyntax") {
+    // 未登记组件这条路上什么都不该变：写法照旧、值照旧。
+    REQUIRE(callScript("fieldSyntaxStillWorks"));
 }
