@@ -321,6 +321,7 @@ eve_init = function() {
 };
 
 eve_update = function(dt) {
+    if (tankSys == null || shellSys == null || buildingSys == null) return;
     battleClock+=dt;updateInput();tankSys.update(dt);shellSys.update(dt);buildingSys.update(dt);
     for(local i=vfxBursts.len()-1;i>=0;--i){vfxBursts[i].life-=dt;if(vfxBursts[i].life<=0){vfxBursts[i].emitter.stop();vfxBursts.remove(i);}}
     particleSystem.update(dt);updateHud();
@@ -332,3 +333,27 @@ eve_render = function() {
     particleSystem.render(gfx);
     ui.beginFrameAndRender();
 };
+
+eve_before_reload <- function() {
+    foreach (u in eve.view(Tank)) {
+        if (u.parts != null) foreach (e in u.parts) e.setVisible(false);
+        if (u.gun != null) u.gun.setVisible(false);
+    }
+    foreach (s in eve.view(Shell)) if (s.ent != null) s.ent.setVisible(false);
+    foreach (b in eve.view(CommandPost)) {
+        if (b.pieces != null) foreach (p in b.pieces) p.ent.setVisible(false);
+    }
+    foreach (e in scenery) e.setVisible(false);
+    destroyEcs(Tank);
+    destroyEcs(Shell);
+    destroyEcs(CommandPost);
+    blueTanks = [];
+    scenery = [];
+    sceneryMaterials = [];
+    tankSys = null;
+    shellSys = null;
+    buildingSys = null;
+};
+
+eve_reload <- function() { eve_init(); };
+

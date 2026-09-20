@@ -774,6 +774,7 @@ function simulateStep(dt) {
 }
 
 eve_update = function(dt) {
+    if (game == null) return;
     if (game.hitStop > 0.0) { game.hitStop -= clampf(dt, 0.0, 0.05); return; }
     game.accumulator += clampf(dt, 0.0, 0.05);
     local steps = 0;
@@ -857,3 +858,12 @@ eve_quit = function() {
     destroyEcs(Actor);
     if (game != null && game.world != null) game.world.destroy();
 };
+
+eve_before_reload <- function() {
+    destroyEcs(Actor);
+    if (game != null && game.world != null) game.world.destroy();
+    game = null;
+};
+
+eve_reload <- function() { eve_init(); };
+

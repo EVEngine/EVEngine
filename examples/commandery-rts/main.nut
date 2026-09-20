@@ -42,7 +42,14 @@ function requireResult(result, context) {
     return result.value;
 }
 
-function isHospital(p) { return p != null && p.kind == "hospital"; }
+function isHospital(p) { return p != null && ("kind" in p) && p.kind == "hospital"; }
+
+function hospitalPoint() {
+    if (game == null || !("points" in game)) return null;
+    if ("hospital" in game && game.hospital != null) return game.hospital;
+    foreach (p in game.points) if (isHospital(p)) return p;
+    return null;
+}
 
 function livingCount(faction) {
     local n = 0;
@@ -86,6 +93,12 @@ function resetGame() {
     generalStats.setBase("ambition", 82.0);
     local baseStats = attributes.newSet("base.north");
     baseStats.setBase("production_speed", 1.0);
+    local points = [
+        { id="mine.north" kind="mine" x=300.0 y=210.0 owner="faction.crown" governor="general.arden" capture=0.0 capturing="" contested=false },
+        { id="mine.center" kind="mine" x=525.0 y=365.0 owner="faction.crown" governor="" capture=0.0 capturing="" contested=false },
+        { id="mine.east" kind="mine" x=760.0 y=205.0 owner="faction.frontier" governor="" capture=0.0 capturing="" contested=false },
+        { id="hospital.south" kind="hospital" x=95.0 y=620.0 owner="" governor="" capture=0.0 capturing="" contested=false regenPerSecond=12.0 }
+    ];
 
     game = {
         crown="faction.crown" frontier="faction.frontier"
@@ -99,14 +112,8 @@ function resetGame() {
         message="北方军区已就绪。占领左下角医院可为步兵回血。" time=0.0 productionTick=0
         combatSys=CombatSystem() hospitalSys=HospitalRegenSystem()
         repairSys=RepairSystem() shellSys=ShellSystem()
-        points=[
-            { id="mine.north" kind="mine" x=300.0 y=210.0 owner="faction.crown" governor="general.arden" capture=0.0 capturing="" contested=false },
-            { id="mine.center" kind="mine" x=525.0 y=365.0 owner="faction.crown" governor="" capture=0.0 capturing="" contested=false },
-            { id="mine.east" kind="mine" x=760.0 y=205.0 owner="faction.frontier" governor="" capture=0.0 capturing="" contested=false },
-            { id="hospital.south" kind="hospital" x=95.0 y=620.0 owner="" governor="" capture=0.0 capturing="" contested=false regenPerSecond=12.0 }
-        ]
+        points=points hospital=points[3]
     };
-    game.hospital = game.points[3];
 
     social.setOwner(game.baseId, game.crown);
     social.setOwner(game.enemyBase, game.frontier);
@@ -597,8 +604,8 @@ function updateRepair(dt) {
 }
 
 function updateHospitalRegen(dt) {
-    if (game.outcome != "") return;
-    local h = game.hospital;
+    if (game == null || game.outcome != "") return;
+    local h = hospitalPoint();
     if (h == null || h.owner == "" || h.contested) return;
     foreach (u in eve.view(Unit)) {
         if (!u.alive || u.kind != "infantry" || u.faction != h.owner) continue;
@@ -683,7 +690,7 @@ function refreshPanel() {
     ui.setText("mine_north",pointIntel("North Mine",game.points[0]));
     ui.setText("mine_center",pointIntel("Bridge Mine",game.points[1]));
     ui.setText("mine_east",pointIntel("East Mine",game.points[2]));
-    ui.setText("hospital",pointIntel("South Hospital",game.hospital));
+    ui.setText("hospital",pointIntel("South Hospital",hospitalPoint()));
     local mx=mouse.getX(),my=mouse.getY(),hover="Hover a base, mine, or hospital for details";
     foreach(p in game.points){
         if(distance(mx,my,p.x,p.y)<34.0) {
@@ -710,14 +717,23 @@ function handlePanel() {
 
 function eve_init() { gfx.setBackgroundColor(0.035,0.055,0.07,1.0); buildPanel(); resetGame(); }
 
+eve_before_reload <- function() {
+    destroyEcs(Unit);
+    destroyEcs(Shell);
+    game = null;
+}
+
+eve_reload <- function() { resetGame(); }
+
 function eve_update(dt) {
+    if (game == null) return;
     game.time+=dt; handlePanel();
     if(keyPressed("1"))queueUnit("infantry"); if(keyPressed("2"))queueUnit("tank");
-    if(keyPressed("g")||keyPressed("G"))toggleGovernor();
-    if(keyPressed("p")||keyPressed("P"))paySalary();
-    if(keyPressed("u")||keyPressed("U"))withholdSalary();
-    if(keyPressed("e")||keyPressed("E"))toggleRepair();
-    if(keyPressed("r")||keyPressed("R"))resetGame();
+    if(keyPressed("G"))toggleGovernor();
+    if(keyPressed("P"))paySalary();
+    if(keyPressed("U"))withholdSalary();
+    if(keyPressed("E"))toggleRepair();
+    if(keyPressed("R"))resetGame();
     handleBattlefieldInput();
     updateProduction(dt); updateEnemyAI(dt); game.combatSys.update(dt);updateCapture(dt);
     game.hospitalSys.update(dt); game.repairSys.update(dt);

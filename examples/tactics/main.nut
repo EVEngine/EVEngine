@@ -615,7 +615,7 @@ eve_init = function() {
 
 eve_update = function(dt) {
     elapsed += dt;
-    if (key_just_pressed("r") || key_just_pressed("R")) { resetDemo(); return; }
+    if (key_just_pressed("R")) { resetDemo(); return; }
     if (key_just_pressed("space")) paused=!paused;
     if (animSys == null) animSys = ActorAnimSystem();
     animSys.update(dt); updateVfx(dt); refreshBattleOutcome(); handlePlayerTurn(); updateHighlights();
@@ -650,3 +650,37 @@ eve_render = function() {
 };
 
 eve_quit = function() { if (battle != null && !battle.isStale()) battle.release(); };
+
+eve_before_reload <- function() {
+    if (battle != null && !battle.isStale()) battle.release();
+    foreach (actor in eve.view(Combatant)) {
+        if (actor.renderables != null)
+            foreach (r in actor.renderables) r.setVisible(false);
+    }
+    foreach (tile in tiles) tile.renderable.setVisible(false);
+    if (vfxSprite != null) vfxSprite.setVisible(false);
+    if (camera != null) camera.setActive(false);
+    destroyEcs(Combatant);
+    battle = null;
+    actorById = {};
+    tiles = [];
+    animSys = null;
+};
+
+eve_reload <- function() {
+    failed = "";
+    banner = "The battle begins";
+    selectedSkill = 0;
+    mouseWasDown = false;
+    hoverX = -1;
+    hoverZ = -1;
+    gameOver = false;
+    paused = false;
+    elapsed = 0.0;
+    battleTick = 0;
+    actionDelay = 0.7;
+    floaters = [];
+    vfxTime = -1.0;
+    eve_init();
+};
+
