@@ -23,7 +23,7 @@ void exposeClimbingMotionBindings(ssq::Class& runtime, HSQUIRRELVM vm) {
                                                                                  "runtime", {}, "climbing.binding")),
                     projectClimbingAdvance);
             auto duration = eve::Duration::fromSeconds(deltaSeconds);
-            if (!duration) return eve::script::projectStatusResult(vm, duration.status(), false, false);
+            if (!duration) return eve::script::projectStatusResult(vm, duration.status());
             return eve::script::projectResult(
                 vm,
                 resolved->advance(
@@ -48,7 +48,7 @@ void exposeClimbingMotionBindings(ssq::Class& runtime, HSQUIRRELVM vm) {
                                                   "runtime", {}, "climbing.binding")),
                                               projectClimbingAdvance);
         auto duration = eve::Duration::fromSeconds(dt);
-        if (!duration) return eve::script::projectStatusResult(vm, duration.status(), false, false);
+        if (!duration) return eve::script::projectStatusResult(vm, duration.status());
         ClimbingMotionInput motion;
         motion.rootTranslation  = {dx, dy, dz};
         motion.facing           = {fx, 0.f, fz};

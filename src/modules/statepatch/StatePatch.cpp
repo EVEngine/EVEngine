@@ -35,17 +35,17 @@ struct ScriptStateBatch {
 
 template <class Ref, class Proxy, class Release>
 ssq::Table makeOwnedProxy(HSQUIRRELVM vm, eve::Result<Ref>&& reference, Release&& release) {
-    if (!reference) return eve::script::projectStatusResult(vm, reference.status(), false, false);
+    if (!reference) return eve::script::projectStatusResult(vm, reference.status());
     const Ref ref    = std::move(reference).takeValue();
     auto      object = eve::script::makeOwnedSquirrelInstance<Proxy>(vm, std::make_unique<Proxy>(ref));
     if (!object) {
         const eve::Status status = object.status();
         object.ignore("failed to create owned state-patch proxy");
         std::invoke(std::forward<Release>(release), ref).ignore("rollback failed owned state-patch allocation");
-        return eve::script::projectStatusResult(vm, status, false, false);
+        return eve::script::projectStatusResult(vm, status);
     }
     ssq::Object owned = std::move(object).takeValue();
-    auto result = eve::script::projectStatusResult(vm, eve::Status::success(eve::StatusCode::Applied), true, false);
+    auto        result = eve::script::projectStatusResult(vm, eve::Status::success(eve::StatusCode::Applied));
     result.set("value", owned);
     result.set("ownership", std::string("owned"));
     result.set("ownerEpoch", static_cast<std::int64_t>(ref.ownerEpoch));
@@ -943,23 +943,19 @@ void StatePatch::expose(ssq::Table& table) {
     ownedStore.addFunc("newBatch", [vm](ScriptStateStore* value) -> ssq::Table {
         if (!value)
             return eve::script::projectStatusResult(
-                vm,
-                eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
-                                                                  "owned state store proxy must not be null", "store",
-                                                                  {}, "statepatch.squirrel"))
-                    .status(),
-                false, false);
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                      "owned state store proxy must not be null",
+                                                                      "store", {}, "statepatch.squirrel"))
+                        .status());
         auto store = StatePatch::resolve(value->reference);
         if (!store.isBound())
             return eve::script::projectStatusResult(
-                vm,
-                eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle,
-                                                                  "owned state-patch store handle is stale", "store",
-                                                                  {}, "statepatch.squirrel"))
-                    .status(),
-                false, false);
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle,
+                                                                      "owned state-patch store handle is stale",
+                                                                      "store", {}, "statepatch.squirrel"))
+                        .status());
         auto batch = store->newBatch();
-        if (!batch) return eve::script::projectStatusResult(vm, batch.status(), false, false);
+        if (!batch) return eve::script::projectStatusResult(vm, batch.status());
         const auto          batchRef = std::move(batch).takeValue();
         StateBatchHandleRef reference{value->reference, batchRef, batchRef.ownerEpoch};
         return makeOwnedProxy<StateBatchHandleRef, ScriptStateBatch>(

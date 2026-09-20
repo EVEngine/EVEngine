@@ -374,17 +374,17 @@ std::optional<ClimbingCancelReason> parseCancelReason(std::string_view value) {
 
 template <class Ref, class Proxy, class Release>
 ssq::Table makeOwnedProxy(HSQUIRRELVM vm, eve::Result<Ref>&& reference, Release&& release) {
-    if (!reference) return eve::script::projectStatusResult(vm, reference.status(), false, false);
+    if (!reference) return eve::script::projectStatusResult(vm, reference.status());
     const Ref ref    = std::move(reference).takeValue();
     auto      object = eve::script::makeOwnedSquirrelInstance<Proxy>(vm, std::make_unique<Proxy>(ref));
     if (!object) {
         const eve::Status status = object.status();
         object.ignore("failed to create owned climbing proxy");
         std::invoke(std::forward<Release>(release), ref).ignore("rollback failed climbing allocation");
-        return eve::script::projectStatusResult(vm, status, false, false);
+        return eve::script::projectStatusResult(vm, status);
     }
     ssq::Object owned = std::move(object).takeValue();
-    auto result = eve::script::projectStatusResult(vm, eve::Status::success(eve::StatusCode::Applied), true, false);
+    auto        result = eve::script::projectStatusResult(vm, eve::Status::success(eve::StatusCode::Applied));
     result.set("value", owned);
     result.set("ownership", std::string("owned"));
     result.set("ownerEpoch", static_cast<std::int64_t>(ref.ownerEpoch));
@@ -593,7 +593,7 @@ void Climbing::expose(ssq::Table& table) {
                                                                       "climbing runtime handle is stale", "runtime", {},
                                                                       "climbing.binding")));
         auto duration = eve::Duration::fromSeconds(durationSeconds);
-        if (!duration) return eve::script::projectStatusResult(vm, duration.status(), false, false);
+        if (!duration) return eve::script::projectStatusResult(vm, duration.status());
         return eve::script::projectResult(
             vm, resolved->upsertAction({id, minHeight, maxHeight, minSpeed, std::move(duration).takeValue(),
                                         landingForward, apexHeight, selectionBias}));
@@ -620,7 +620,7 @@ void Climbing::expose(ssq::Table& table) {
                                                       eve::DiagnosticCode::InvalidArgument,
                                                       "unknown climbing action kind", "kind", {}, "climbing.binding")));
         auto duration = eve::Duration::fromSeconds(durationSeconds);
-        if (!duration) return eve::script::projectStatusResult(vm, duration.status(), false, false);
+        if (!duration) return eve::script::projectStatusResult(vm, duration.status());
         ClimbingActionDefinition action{
             id,         minHeight,    maxHeight, minSpeed, std::move(duration).takeValue(), landingForward,
             apexHeight, selectionBias};

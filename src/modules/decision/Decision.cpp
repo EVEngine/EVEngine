@@ -41,7 +41,7 @@ eve::Result<void> snapshotFailure(std::string path, std::string message) {
 template <class Ref, class Proxy, class Release>
 ssq::Table makeOwnedProxy(HSQUIRRELVM vm, eve::Result<Ref>&& reference, Release&& release) {
     if (!reference) {
-        return eve::script::projectStatusResult(vm, reference.status(), false, false);
+        return eve::script::projectStatusResult(vm, reference.status());
     }
 
     const Ref ref    = std::move(reference).takeValue();
@@ -50,10 +50,10 @@ ssq::Table makeOwnedProxy(HSQUIRRELVM vm, eve::Result<Ref>&& reference, Release&
         const eve::Status status = object.status();
         object.ignore("failed to create owned decision proxy");
         std::invoke(std::forward<Release>(release), ref).ignore("rollback failed owned decision allocation");
-        return eve::script::projectStatusResult(vm, status, false, false);
+        return eve::script::projectStatusResult(vm, status);
     }
     ssq::Object owned = std::move(object).takeValue();
-    auto result = eve::script::projectStatusResult(vm, eve::Status::success(eve::StatusCode::Applied), true, false);
+    auto        result = eve::script::projectStatusResult(vm, eve::Status::success(eve::StatusCode::Applied));
     result.set("value", owned);
     result.set("ownership", std::string("owned"));
     result.set("ownerEpoch", static_cast<std::int64_t>(ref.ownerEpoch));

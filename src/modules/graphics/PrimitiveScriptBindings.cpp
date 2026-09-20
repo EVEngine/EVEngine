@@ -55,7 +55,7 @@ eve::Result<PrimitiveUpdateStatus> mutatePrimitive(ScriptPrimitive3D* value, Mut
 
 ssq::Table makePrimitiveProxy(HSQUIRRELVM vm, const std::shared_ptr<PrimitiveScene>& scene,
                               eve::Result<PrimitiveHandle>&& result) {
-    if (!result) return eve::script::projectStatusResult(vm, result.status(), false, false);
+    if (!result) return eve::script::projectStatusResult(vm, result.status());
     const PrimitiveHandle handle = std::move(result).takeValue();
     auto                  object = eve::script::makeOwnedSquirrelInstance<ScriptPrimitive3D>(
         vm, std::make_unique<ScriptPrimitive3D>(scene, handle));
@@ -63,9 +63,9 @@ ssq::Table makePrimitiveProxy(HSQUIRRELVM vm, const std::shared_ptr<PrimitiveSce
         const eve::Status status = object.status();
         object.ignore("failed to create owned primitive proxy");
         scene->remove(handle).ignore("rollback failed primitive proxy allocation");
-        return eve::script::projectStatusResult(vm, status, false, false);
+        return eve::script::projectStatusResult(vm, status);
     }
-    auto projected = eve::script::projectStatusResult(vm, eve::Status::success(eve::StatusCode::Applied), true, false);
+    auto projected = eve::script::projectStatusResult(vm, eve::Status::success(eve::StatusCode::Applied));
     projected.set("value", std::move(object).takeValue());
     projected.set("ownership", std::string("owned"));
     projected.set("owner", static_cast<std::int64_t>(handle.owner()));
@@ -106,16 +106,14 @@ void exposePrimitiveScriptBindings(ssq::Table& table, ssq::Class& cls) {
     cls.addFunc("newPrimitiveGrid3D", [vm](Graphics* self, ssq::Array xyz, int cellsU, int cellsV,
             float r, float g, float b, float a, float width) {
         auto parsed = scriptPoints(xyz, 3, 3);
-        if (!parsed) return eve::script::projectStatusResult(vm, parsed.status(), false, false);
+        if (!parsed) return eve::script::projectStatusResult(vm, parsed.status());
         auto points = std::move(parsed).takeValue();
         if (cellsU <= 0 || cellsV <= 0 || cellsU > 4096 || cellsV > 4096)
             return eve::script::projectStatusResult(
-                vm,
-                eve::Result<PrimitiveHandle>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
-                                                                             "grid cells must be in [1,4096]", "cells",
-                                                                             {}, "graphics.primitive.binding"))
-                    .status(),
-                false, false);
+                vm, eve::Result<PrimitiveHandle>::failure(
+                        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "grid cells must be in [1,4096]",
+                                               "cells", {}, "graphics.primitive.binding"))
+                        .status());
         auto scene = self->getPrimitiveScene();
         PrimitiveDescriptor3D descriptor;
         descriptor.geometry = PrimitiveGrid3D{points[0],points[1],points[2],
@@ -126,7 +124,7 @@ void exposePrimitiveScriptBindings(ssq::Table& table, ssq::Class& cls) {
     cls.addFunc("newPrimitiveArc3D", [vm](Graphics* self, ssq::Array xyz, float radius, float start, float sweep,
             float r, float g, float b, float a, float width) {
         auto parsed = scriptPoints(xyz, 3, 3);
-        if (!parsed) return eve::script::projectStatusResult(vm, parsed.status(), false, false);
+        if (!parsed) return eve::script::projectStatusResult(vm, parsed.status());
         auto points = std::move(parsed).takeValue();
         auto scene = self->getPrimitiveScene();
         PrimitiveDescriptor3D descriptor;
@@ -137,7 +135,7 @@ void exposePrimitiveScriptBindings(ssq::Table& table, ssq::Class& cls) {
     cls.addFunc("newPrimitivePolyline3D", [vm](Graphics* self, ssq::Array xyz, bool closed,
             float r, float g, float b, float a, float width) {
         auto parsed = scriptPoints(xyz, closed ? 3 : 2, 65536);
-        if (!parsed) return eve::script::projectStatusResult(vm, parsed.status(), false, false);
+        if (!parsed) return eve::script::projectStatusResult(vm, parsed.status());
         auto points = std::move(parsed).takeValue();
         auto scene = self->getPrimitiveScene();
         PrimitiveDescriptor3D descriptor;
@@ -148,7 +146,7 @@ void exposePrimitiveScriptBindings(ssq::Table& table, ssq::Class& cls) {
     cls.addFunc("newPrimitiveObb3D", [vm](Graphics* self, ssq::Array xyz,
             float r, float g, float b, float a, float width) {
         auto parsed = scriptPoints(xyz, 4, 4);
-        if (!parsed) return eve::script::projectStatusResult(vm, parsed.status(), false, false);
+        if (!parsed) return eve::script::projectStatusResult(vm, parsed.status());
         auto points = std::move(parsed).takeValue();
         auto scene = self->getPrimitiveScene();
         PrimitiveDescriptor3D descriptor;
@@ -159,7 +157,7 @@ void exposePrimitiveScriptBindings(ssq::Table& table, ssq::Class& cls) {
     cls.addFunc("newPrimitiveFrustum3D", [vm](Graphics* self, ssq::Array xyz,
             float r, float g, float b, float a, float width) {
         auto parsed = scriptPoints(xyz, 8, 8);
-        if (!parsed) return eve::script::projectStatusResult(vm, parsed.status(), false, false);
+        if (!parsed) return eve::script::projectStatusResult(vm, parsed.status());
         auto points = std::move(parsed).takeValue();
         auto scene = self->getPrimitiveScene();
         PrimitiveDescriptor3D descriptor;
@@ -214,12 +212,10 @@ void exposePrimitiveScriptBindings(ssq::Table& table, ssq::Class& cls) {
         "setPrimitiveTransforms3D", [vm, primitiveTag](Graphics* self, ssq::Array proxies, ssq::Array matrices) {
             auto failure = [vm](const std::string& message) {
                 return eve::script::projectStatusResult(
-                    vm,
-                    eve::Result<std::size_t>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
-                                                                             message, "transforms", {},
-                                                                             "graphics.primitive.binding"))
-                        .status(),
-                    false, false);
+                    vm, eve::Result<std::size_t>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                                 message, "transforms", {},
+                                                                                 "graphics.primitive.binding"))
+                            .status());
             };
             if (!self || proxies.size() > 65536 || matrices.size() != proxies.size() * 16)
                 return failure("expected one column-major matrix per primitive, at most 65536 primitives");
@@ -233,7 +229,7 @@ void exposePrimitiveScriptBindings(ssq::Table& table, ssq::Class& cls) {
                         return failure("batch entries must be Primitive3D proxies");
                     auto* proxy      = object.toPtrUnsafe<ScriptPrimitive3D*>();
                     auto  descriptor = primitiveDescriptor(proxy);
-                    if (!descriptor) return eve::script::projectStatusResult(vm, descriptor.status(), false, false);
+                    if (!descriptor) return eve::script::projectStatusResult(vm, descriptor.status());
                     auto copy = std::move(descriptor).takeValue();
                     for (int column = 0; column < 4; ++column)
                         for (int row = 0; row < 4; ++row)
@@ -245,52 +241,48 @@ void exposePrimitiveScriptBindings(ssq::Table& table, ssq::Class& cls) {
             }
             auto       result = scene->updateMany(updates);
             const auto status = result.status();
-            if (!result) return eve::script::projectStatusResult(vm, status, false, false);
+            if (!result) return eve::script::projectStatusResult(vm, status);
             const auto count     = std::move(result).takeValue();
-            auto       projected = eve::script::projectStatusResult(vm, status, true, false);
+            auto       projected = eve::script::projectStatusResult(vm, status);
             projected.set("count", static_cast<std::int64_t>(count));
             return projected;
         });
     primitive.addFunc("ownership", [](ScriptPrimitive3D*) { return std::string("owned"); });
     primitive.addFunc("setPolyline", [vm](ScriptPrimitive3D* value, ssq::Array xyz, bool closed) {
         auto parsed = scriptPoints(xyz, closed ? 3 : 2, 65536);
-        if (!parsed) return eve::script::projectStatusResult(vm, parsed.status(), false, false);
+        if (!parsed) return eve::script::projectStatusResult(vm, parsed.status());
         auto points = std::move(parsed).takeValue();
         auto result = mutatePrimitive(value, [&](PrimitiveDescriptor3D& descriptor) {
             descriptor.geometry = PrimitivePolyline3D{std::move(points), closed};
         });
         const auto status = result.status();
-        if (!result) return eve::script::projectStatusResult(vm, status, false, false);
+        if (!result) return eve::script::projectStatusResult(vm, status);
         std::move(result).takeValue();
-        return eve::script::projectStatusResult(vm, status, true, false);
+        return eve::script::projectStatusResult(vm, status);
     });
     primitive.addFunc("setLayer", [vm](ScriptPrimitive3D* value, std::int64_t layer) {
         if (layer < 0 || layer > 0xffffffffLL)
             return eve::script::projectStatusResult(
-                vm,
-                eve::Result<PrimitiveUpdateStatus>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
-                                                                                   "layer must fit uint32", "layer", {},
-                                                                                   "graphics.primitive.binding"))
-                    .status(),
-                false, false);
+                vm, eve::Result<PrimitiveUpdateStatus>::failure(
+                        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "layer must fit uint32", "layer",
+                                               {}, "graphics.primitive.binding"))
+                        .status());
         auto result = mutatePrimitive(value, [layer](PrimitiveDescriptor3D& descriptor) {
             descriptor.paint.layer = static_cast<std::uint32_t>(layer);
         });
         const auto status = result.status();
-        if (!result) return eve::script::projectStatusResult(vm, status, false, false);
+        if (!result) return eve::script::projectStatusResult(vm, status);
         std::move(result).takeValue();
-        return eve::script::projectStatusResult(vm, status, true, false);
+        return eve::script::projectStatusResult(vm, status);
     });
     primitive.addFunc("setTransform", [vm](ScriptPrimitive3D* value, ssq::Array elements) {
         if (elements.size() != 16)
             return eve::script::projectStatusResult(
-                vm,
-                eve::Result<PrimitiveUpdateStatus>::failure(
-                    eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
-                                           "transform requires 16 column-major floats", "transform", {},
-                                           "graphics.primitive.binding"))
-                    .status(),
-                false, false);
+                vm, eve::Result<PrimitiveUpdateStatus>::failure(
+                        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                               "transform requires 16 column-major floats", "transform", {},
+                                               "graphics.primitive.binding"))
+                        .status());
         glm::mat4 transform(1.f);
         try {
             for (int column = 0; column < 4; ++column)
@@ -298,20 +290,18 @@ void exposePrimitiveScriptBindings(ssq::Table& table, ssq::Class& cls) {
                     transform[column][row] = elements.get<float>(column * 4 + row);
         } catch (const std::exception& error) {
             return eve::script::projectStatusResult(
-                vm,
-                eve::Result<PrimitiveUpdateStatus>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
-                                                                                   error.what(), "transform", {},
-                                                                                   "graphics.primitive.binding"))
-                    .status(),
-                false, false);
+                vm, eve::Result<PrimitiveUpdateStatus>::failure(
+                        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, error.what(), "transform", {},
+                                               "graphics.primitive.binding"))
+                        .status());
         }
         auto result = mutatePrimitive(value, [&](PrimitiveDescriptor3D& descriptor) {
             descriptor.transform = transform;
         });
         const auto status = result.status();
-        if (!result) return eve::script::projectStatusResult(vm, status, false, false);
+        if (!result) return eve::script::projectStatusResult(vm, status);
         std::move(result).takeValue();
-        return eve::script::projectStatusResult(vm, status, true, false);
+        return eve::script::projectStatusResult(vm, status);
     });
     primitive.addFunc("setWidthSpace", [vm](ScriptPrimitive3D* value, const std::string& mode) {
         std::optional<WidthSpace> parsed;
@@ -319,19 +309,17 @@ void exposePrimitiveScriptBindings(ssq::Table& table, ssq::Class& cls) {
         if (mode == "world") parsed = WidthSpace::WorldUnits;
         if (!parsed)
             return eve::script::projectStatusResult(
-                vm,
-                eve::Result<PrimitiveUpdateStatus>::failure(
-                    eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "unsupported setWidthSpace value",
-                                           "setWidthSpace", {}, "graphics.primitive.binding"))
-                    .status(),
-                false, false);
+                vm, eve::Result<PrimitiveUpdateStatus>::failure(
+                        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "unsupported setWidthSpace value",
+                                               "setWidthSpace", {}, "graphics.primitive.binding"))
+                        .status());
         auto result = mutatePrimitive(value, [mode = *parsed](PrimitiveDescriptor3D& descriptor) {
             descriptor.paint.stroke.widthSpace = mode;
         });
         const auto status = result.status();
-        if (!result) return eve::script::projectStatusResult(vm, status, false, false);
+        if (!result) return eve::script::projectStatusResult(vm, status);
         std::move(result).takeValue();
-        return eve::script::projectStatusResult(vm, status, true, false);
+        return eve::script::projectStatusResult(vm, status);
     });
     primitive.addFunc("setPaintMode", [vm](ScriptPrimitive3D* value, const std::string& mode) {
         std::optional<PaintMode> parsed;
@@ -340,19 +328,17 @@ void exposePrimitiveScriptBindings(ssq::Table& table, ssq::Class& cls) {
         if (mode == "fill-stroke") parsed = PaintMode::FillAndStroke;
         if (!parsed)
             return eve::script::projectStatusResult(
-                vm,
-                eve::Result<PrimitiveUpdateStatus>::failure(
-                    eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "unsupported setPaintMode value",
-                                           "setPaintMode", {}, "graphics.primitive.binding"))
-                    .status(),
-                false, false);
+                vm, eve::Result<PrimitiveUpdateStatus>::failure(
+                        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "unsupported setPaintMode value",
+                                               "setPaintMode", {}, "graphics.primitive.binding"))
+                        .status());
         auto result = mutatePrimitive(value, [mode = *parsed](PrimitiveDescriptor3D& descriptor) {
             descriptor.paint.mode = mode;
         });
         const auto status = result.status();
-        if (!result) return eve::script::projectStatusResult(vm, status, false, false);
+        if (!result) return eve::script::projectStatusResult(vm, status);
         std::move(result).takeValue();
-        return eve::script::projectStatusResult(vm, status, true, false);
+        return eve::script::projectStatusResult(vm, status);
     });
     primitive.addFunc("setLineCap", [vm](ScriptPrimitive3D* value, const std::string& mode) {
         std::optional<LineCap> parsed;
@@ -361,19 +347,17 @@ void exposePrimitiveScriptBindings(ssq::Table& table, ssq::Class& cls) {
         if (mode == "round") parsed = LineCap::Round;
         if (!parsed)
             return eve::script::projectStatusResult(
-                vm,
-                eve::Result<PrimitiveUpdateStatus>::failure(
-                    eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "unsupported setLineCap value",
-                                           "setLineCap", {}, "graphics.primitive.binding"))
-                    .status(),
-                false, false);
+                vm, eve::Result<PrimitiveUpdateStatus>::failure(
+                        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "unsupported setLineCap value",
+                                               "setLineCap", {}, "graphics.primitive.binding"))
+                        .status());
         auto result = mutatePrimitive(value, [mode = *parsed](PrimitiveDescriptor3D& descriptor) {
             descriptor.paint.stroke.cap = mode;
         });
         const auto status = result.status();
-        if (!result) return eve::script::projectStatusResult(vm, status, false, false);
+        if (!result) return eve::script::projectStatusResult(vm, status);
         std::move(result).takeValue();
-        return eve::script::projectStatusResult(vm, status, true, false);
+        return eve::script::projectStatusResult(vm, status);
     });
     primitive.addFunc("setLineJoin", [vm](ScriptPrimitive3D* value, const std::string& mode) {
         std::optional<LineJoin> parsed;
@@ -382,19 +366,17 @@ void exposePrimitiveScriptBindings(ssq::Table& table, ssq::Class& cls) {
         if (mode == "round") parsed = LineJoin::Round;
         if (!parsed)
             return eve::script::projectStatusResult(
-                vm,
-                eve::Result<PrimitiveUpdateStatus>::failure(
-                    eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "unsupported setLineJoin value",
-                                           "setLineJoin", {}, "graphics.primitive.binding"))
-                    .status(),
-                false, false);
+                vm, eve::Result<PrimitiveUpdateStatus>::failure(
+                        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "unsupported setLineJoin value",
+                                               "setLineJoin", {}, "graphics.primitive.binding"))
+                        .status());
         auto result = mutatePrimitive(value, [mode = *parsed](PrimitiveDescriptor3D& descriptor) {
             descriptor.paint.stroke.join = mode;
         });
         const auto status = result.status();
-        if (!result) return eve::script::projectStatusResult(vm, status, false, false);
+        if (!result) return eve::script::projectStatusResult(vm, status);
         std::move(result).takeValue();
-        return eve::script::projectStatusResult(vm, status, true, false);
+        return eve::script::projectStatusResult(vm, status);
     });
     primitive.addFunc("setCullMode", [vm](ScriptPrimitive3D* value, const std::string& mode) {
         std::optional<PrimitiveCullMode> parsed;
@@ -403,19 +385,17 @@ void exposePrimitiveScriptBindings(ssq::Table& table, ssq::Class& cls) {
         if (mode == "front") parsed = PrimitiveCullMode::Front;
         if (!parsed)
             return eve::script::projectStatusResult(
-                vm,
-                eve::Result<PrimitiveUpdateStatus>::failure(
-                    eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "unsupported setCullMode value",
-                                           "setCullMode", {}, "graphics.primitive.binding"))
-                    .status(),
-                false, false);
+                vm, eve::Result<PrimitiveUpdateStatus>::failure(
+                        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "unsupported setCullMode value",
+                                               "setCullMode", {}, "graphics.primitive.binding"))
+                        .status());
         auto result = mutatePrimitive(value, [mode = *parsed](PrimitiveDescriptor3D& descriptor) {
             descriptor.paint.cull = mode;
         });
         const auto status = result.status();
-        if (!result) return eve::script::projectStatusResult(vm, status, false, false);
+        if (!result) return eve::script::projectStatusResult(vm, status);
         std::move(result).takeValue();
-        return eve::script::projectStatusResult(vm, status, true, false);
+        return eve::script::projectStatusResult(vm, status);
     });
     primitive.addFunc("setBlendMode", [vm](ScriptPrimitive3D* value, const std::string& mode) {
         std::optional<BlendMode> parsed;
@@ -426,19 +406,17 @@ void exposePrimitiveScriptBindings(ssq::Table& table, ssq::Class& cls) {
         if (mode == "multiply") parsed = BlendMode::Multiply;
         if (!parsed)
             return eve::script::projectStatusResult(
-                vm,
-                eve::Result<PrimitiveUpdateStatus>::failure(
-                    eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "unsupported setBlendMode value",
-                                           "setBlendMode", {}, "graphics.primitive.binding"))
-                    .status(),
-                false, false);
+                vm, eve::Result<PrimitiveUpdateStatus>::failure(
+                        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "unsupported setBlendMode value",
+                                               "setBlendMode", {}, "graphics.primitive.binding"))
+                        .status());
         auto result = mutatePrimitive(value, [mode = *parsed](PrimitiveDescriptor3D& descriptor) {
             descriptor.paint.blend = mode;
         });
         const auto status = result.status();
-        if (!result) return eve::script::projectStatusResult(vm, status, false, false);
+        if (!result) return eve::script::projectStatusResult(vm, status);
         std::move(result).takeValue();
-        return eve::script::projectStatusResult(vm, status, true, false);
+        return eve::script::projectStatusResult(vm, status);
     });
     primitive.addFunc("isStale", [](ScriptPrimitive3D* value) {
         if (!value) return true;
@@ -448,12 +426,10 @@ void exposePrimitiveScriptBindings(ssq::Table& table, ssq::Class& cls) {
     primitive.addFunc("remove", [vm](ScriptPrimitive3D* value) {
         if (!value)
             return eve::script::projectStatusResult(
-                vm,
-                eve::Result<PrimitiveRemoveStatus>::failure(
-                    eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "primitive proxy must not be null",
-                                           "primitive", {}, "graphics.primitive.binding"))
-                    .status(),
-                false, false);
+                vm, eve::Result<PrimitiveRemoveStatus>::failure(
+                        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "primitive proxy must not be null",
+                                               "primitive", {}, "graphics.primitive.binding"))
+                        .status());
         auto scene = value->scene.lock();
         if (!scene)
             return eve::script::projectStatusResult(
@@ -461,38 +437,37 @@ void exposePrimitiveScriptBindings(ssq::Table& table, ssq::Class& cls) {
                 eve::Result<PrimitiveRemoveStatus>::failure(
                     eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle, "primitive scene owner no longer exists",
                                            "primitive", {}, "graphics.primitive.binding"))
-                    .status(),
-                false, false);
+                    .status());
         auto              result = scene->remove(value->handle);
         const eve::Status status = result.status();
-        if (!result) return eve::script::projectStatusResult(vm, status, false, false);
+        if (!result) return eve::script::projectStatusResult(vm, status);
         std::move(result).takeValue();
         value->handle = {};
-        return eve::script::projectStatusResult(vm, status, true, false);
+        return eve::script::projectStatusResult(vm, status);
     });
     primitive.addFunc("setVisible", [vm](ScriptPrimitive3D* value, bool visible) {
         auto result =
             mutatePrimitive(value, [visible](PrimitiveDescriptor3D& descriptor) { descriptor.visible = visible; });
         const eve::Status status = result.status();
-        if (!result) return eve::script::projectStatusResult(vm, status, false, false);
+        if (!result) return eve::script::projectStatusResult(vm, status);
         std::move(result).takeValue();
-        return eve::script::projectStatusResult(vm, status, true, false);
+        return eve::script::projectStatusResult(vm, status);
     });
     primitive.addFunc("setColor", [vm](ScriptPrimitive3D* value, float r, float g, float b, float a) {
         auto result = mutatePrimitive(
             value, [=](PrimitiveDescriptor3D& descriptor) { descriptor.paint.color = Color(r, g, b, a); });
         const eve::Status status = result.status();
-        if (!result) return eve::script::projectStatusResult(vm, status, false, false);
+        if (!result) return eve::script::projectStatusResult(vm, status);
         std::move(result).takeValue();
-        return eve::script::projectStatusResult(vm, status, true, false);
+        return eve::script::projectStatusResult(vm, status);
     });
     primitive.addFunc("setLineWidth", [vm](ScriptPrimitive3D* value, float width) {
         auto result = mutatePrimitive(
             value, [width](PrimitiveDescriptor3D& descriptor) { descriptor.paint.stroke.width = width; });
         const eve::Status status = result.status();
-        if (!result) return eve::script::projectStatusResult(vm, status, false, false);
+        if (!result) return eve::script::projectStatusResult(vm, status);
         std::move(result).takeValue();
-        return eve::script::projectStatusResult(vm, status, true, false);
+        return eve::script::projectStatusResult(vm, status);
     });
     primitive.addFunc("setDash", [vm](ScriptPrimitive3D* value, float drawLength, float gapLength, float phase,
                                       const std::string& space) {
@@ -502,8 +477,7 @@ void exposePrimitiveScriptBindings(ssq::Table& table, ssq::Class& cls) {
                 eve::Result<PrimitiveUpdateStatus>::failure(
                     eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "dash space must be screen or world",
                                            "dashSpace", {}, "graphics.primitive.binding"))
-                    .status(),
-                false, false);
+                    .status());
         auto              result = mutatePrimitive(value, [=](PrimitiveDescriptor3D& descriptor) {
             DashPattern dash;
             dash.intervals = {drawLength, gapLength};
@@ -512,17 +486,17 @@ void exposePrimitiveScriptBindings(ssq::Table& table, ssq::Class& cls) {
             descriptor.paint.stroke.dash = std::move(dash);
         });
         const eve::Status status = result.status();
-        if (!result) return eve::script::projectStatusResult(vm, status, false, false);
+        if (!result) return eve::script::projectStatusResult(vm, status);
         std::move(result).takeValue();
-        return eve::script::projectStatusResult(vm, status, true, false);
+        return eve::script::projectStatusResult(vm, status);
     });
     primitive.addFunc("clearDash", [vm](ScriptPrimitive3D* value) {
         auto result =
             mutatePrimitive(value, [](PrimitiveDescriptor3D& descriptor) { descriptor.paint.stroke.dash.reset(); });
         const eve::Status status = result.status();
-        if (!result) return eve::script::projectStatusResult(vm, status, false, false);
+        if (!result) return eve::script::projectStatusResult(vm, status);
         std::move(result).takeValue();
-        return eve::script::projectStatusResult(vm, status, true, false);
+        return eve::script::projectStatusResult(vm, status);
     });
     primitive.addFunc("setDepthMode", [vm](ScriptPrimitive3D* value, const std::string& mode) {
         std::optional<PrimitiveDepthMode> parsed;
@@ -534,36 +508,32 @@ void exposePrimitiveScriptBindings(ssq::Table& table, ssq::Class& cls) {
             parsed = PrimitiveDepthMode::Ignore;
         if (!parsed)
             return eve::script::projectStatusResult(
-                vm,
-                eve::Result<PrimitiveUpdateStatus>::failure(
-                    eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
-                                           "depth mode must be test-write, test, or ignore", "depthMode", {},
-                                           "graphics.primitive.binding"))
-                    .status(),
-                false, false);
+                vm, eve::Result<PrimitiveUpdateStatus>::failure(
+                        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                               "depth mode must be test-write, test, or ignore", "depthMode", {},
+                                               "graphics.primitive.binding"))
+                        .status());
         auto result = mutatePrimitive(
             value, [mode = *parsed](PrimitiveDescriptor3D& descriptor) { descriptor.paint.depth = mode; });
         const eve::Status status = result.status();
-        if (!result) return eve::script::projectStatusResult(vm, status, false, false);
+        if (!result) return eve::script::projectStatusResult(vm, status);
         std::move(result).takeValue();
-        return eve::script::projectStatusResult(vm, status, true, false);
+        return eve::script::projectStatusResult(vm, status);
     });
     primitive.addFunc("setObjectId", [vm](ScriptPrimitive3D* value, std::int64_t objectId) {
         if (objectId < 0)
             return eve::script::projectStatusResult(
-                vm,
-                eve::Result<PrimitiveUpdateStatus>::failure(
-                    eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "object id must be non-negative",
-                                           "objectId", {}, "graphics.primitive.binding"))
-                    .status(),
-                false, false);
+                vm, eve::Result<PrimitiveUpdateStatus>::failure(
+                        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "object id must be non-negative",
+                                               "objectId", {}, "graphics.primitive.binding"))
+                        .status());
         auto              result = mutatePrimitive(value, [objectId](PrimitiveDescriptor3D& descriptor) {
             descriptor.paint.objectId = static_cast<std::uint64_t>(objectId);
         });
         const eve::Status status = result.status();
-        if (!result) return eve::script::projectStatusResult(vm, status, false, false);
+        if (!result) return eve::script::projectStatusResult(vm, status);
         std::move(result).takeValue();
-        return eve::script::projectStatusResult(vm, status, true, false);
+        return eve::script::projectStatusResult(vm, status);
     });
 
     cls.addFunc("newPrimitiveLine3D", [vm](Graphics* self, float ax, float ay, float az, float bx, float by, float bz,

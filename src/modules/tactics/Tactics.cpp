@@ -1023,8 +1023,7 @@ void Tactics::expose(ssq::Class& cls) {
     cls.addFunc("sideCount", [](Tactics* self) { return self->sideCount(); });
     cls.addFunc("newBattle", [vm = cls.getHandle()](Tactics*, const std::string& subject, std::int64_t seed) {
         auto parsed = bindingSubject(subject, "subject");
-        if (!parsed)
-            return script::projectStatusResult(vm, parsed.status(), false, false);
+        if (!parsed) return script::projectStatusResult(vm, parsed.status());
         if (seed < 0)
             return script::projectResult(
                 vm,
@@ -1032,7 +1031,7 @@ void Tactics::expose(ssq::Class& cls) {
                     Diagnostic::error(DiagnosticCode::InvalidArgument, "battle seed must be non-negative", "seed")),
                 [](TacticsBattleSessionRef) { return Value(); });
         auto reference = Tactics::newSession(parsed.value(), static_cast<std::uint64_t>(seed));
-        if (!reference) return script::projectStatusResult(vm, reference.status(), false, false);
+        if (!reference) return script::projectStatusResult(vm, reference.status());
         const auto ref = std::move(reference).takeValue();
         auto object = script::makeOwnedSquirrelInstance<ScriptTacticsBattle>(
             vm, std::make_unique<ScriptTacticsBattle>(ref));
@@ -1040,10 +1039,10 @@ void Tactics::expose(ssq::Class& cls) {
             const Status status = object.status();
             object.ignore("failed to create owned tactics battle proxy");
             Tactics::release(ref).ignore("rollback failed owned tactics battle allocation");
-            return script::projectStatusResult(vm, status, false, false);
+            return script::projectStatusResult(vm, status);
         }
         ssq::Object owned = std::move(object).takeValue();
-        auto result = script::projectStatusResult(vm, Status::success(StatusCode::Applied), true, false);
+        auto        result = script::projectStatusResult(vm, Status::success(StatusCode::Applied));
         result.set("value", owned);
         result.set("ownership", std::string("owned"));
         result.set("ownerEpoch", static_cast<std::int64_t>(ref.ownerEpoch));

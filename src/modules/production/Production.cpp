@@ -39,17 +39,17 @@ struct ScriptWorkEvent {
 
 template <class Ref, class Proxy, class Release>
 ssq::Table makeOwnedProxy(HSQUIRRELVM vm, eve::Result<Ref>&& reference, Release&& release, const char* errorPath) {
-    if (!reference) return eve::script::projectStatusResult(vm, reference.status(), false, false);
+    if (!reference) return eve::script::projectStatusResult(vm, reference.status());
     const Ref ref    = std::move(reference).takeValue();
     auto      object = eve::script::makeOwnedSquirrelInstance<Proxy>(vm, std::make_unique<Proxy>(ref));
     if (!object) {
         const eve::Status status = object.status();
         object.ignore("failed to create owned production proxy");
         std::invoke(std::forward<Release>(release), ref).ignore("rollback failed owned production allocation");
-        return eve::script::projectStatusResult(vm, status, false, false);
+        return eve::script::projectStatusResult(vm, status);
     }
     ssq::Object owned = std::move(object).takeValue();
-    auto result = eve::script::projectStatusResult(vm, eve::Status::success(eve::StatusCode::Applied), true, false);
+    auto        result = eve::script::projectStatusResult(vm, eve::Status::success(eve::StatusCode::Applied));
     result.set("value", owned);
     result.set("ownership", std::string("owned"));
     result.set("ownerEpoch", static_cast<std::int64_t>(ref.ownerEpoch));
@@ -860,16 +860,14 @@ void Production::expose(ssq::Table& table) {
                                   int priority) {
         if (!value)
             return eve::script::projectStatusResult(
-                vm,
-                eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
-                                                                  "work queue proxy must not be null", "queue", {},
-                                                                  "production.squirrel"))
-                    .status(),
-                false, false);
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                      "work queue proxy must not be null", "queue", {},
+                                                                      "production.squirrel"))
+                        .status());
         auto payload = eve::Value::fromJson(contextJson);
-        if (!payload.ok()) return eve::script::projectStatusResult(vm, payload.status(), false, false);
+        if (!payload.ok()) return eve::script::projectStatusResult(vm, payload.status());
         auto queueView = Production::resolve(value->reference);
-        if (!queueView.ok()) return eve::script::projectStatusResult(vm, queueView.status(), false, false);
+        if (!queueView.ok()) return eve::script::projectStatusResult(vm, queueView.status());
         return eve::script::projectResult(
             vm,
             queueView.value().get().enqueue(owner, kind, product, std::move(payload).takeValue(), duration, priority),
@@ -882,7 +880,7 @@ void Production::expose(ssq::Table& table) {
                                                                       "work queue proxy must not be null", "queue", {},
                                                                       "production.squirrel")));
         auto queueView = Production::resolve(value->reference);
-        if (!queueView.ok()) return eve::script::projectStatusResult(vm, queueView.status(), false, false);
+        if (!queueView.ok()) return eve::script::projectStatusResult(vm, queueView.status());
         return eve::script::projectResult(vm, queueView.value().get().pause(id));
     });
     queue.addFunc("resume", [vm](ScriptWorkQueue* value, const std::string& id) {
@@ -892,7 +890,7 @@ void Production::expose(ssq::Table& table) {
                                                                       "work queue proxy must not be null", "queue", {},
                                                                       "production.squirrel")));
         auto queueView = Production::resolve(value->reference);
-        if (!queueView.ok()) return eve::script::projectStatusResult(vm, queueView.status(), false, false);
+        if (!queueView.ok()) return eve::script::projectStatusResult(vm, queueView.status());
         return eve::script::projectResult(vm, queueView.value().get().resume(id));
     });
     queue.addFunc("cancel", [vm](ScriptWorkQueue* value, const std::string& id, const std::string& reason) {
@@ -902,7 +900,7 @@ void Production::expose(ssq::Table& table) {
                                                                       "work queue proxy must not be null", "queue", {},
                                                                       "production.squirrel")));
         auto queueView = Production::resolve(value->reference);
-        if (!queueView.ok()) return eve::script::projectStatusResult(vm, queueView.status(), false, false);
+        if (!queueView.ok()) return eve::script::projectStatusResult(vm, queueView.status());
         return eve::script::projectResult(vm, queueView.value().get().cancel(id, reason));
     });
     queue.addFunc("fail", [vm](ScriptWorkQueue* value, const std::string& id, const std::string& reason) {
@@ -912,7 +910,7 @@ void Production::expose(ssq::Table& table) {
                                                                       "work queue proxy must not be null", "queue", {},
                                                                       "production.squirrel")));
         auto queueView = Production::resolve(value->reference);
-        if (!queueView.ok()) return eve::script::projectStatusResult(vm, queueView.status(), false, false);
+        if (!queueView.ok()) return eve::script::projectStatusResult(vm, queueView.status());
         return eve::script::projectResult(vm, queueView.value().get().fail(id, reason));
     });
     queue.addFunc("advance", [vm](ScriptWorkQueue* value, std::int64_t tick, float seconds) {
@@ -922,9 +920,9 @@ void Production::expose(ssq::Table& table) {
                                                                       "work queue proxy must not be null", "queue", {},
                                                                       "production.squirrel")));
         auto delta = eve::Duration::fromSeconds(seconds);
-        if (!delta.ok()) return eve::script::projectStatusResult(vm, delta.status(), false, false);
+        if (!delta.ok()) return eve::script::projectStatusResult(vm, delta.status());
         auto queueView = Production::resolve(value->reference);
-        if (!queueView.ok()) return eve::script::projectStatusResult(vm, queueView.status(), false, false);
+        if (!queueView.ok()) return eve::script::projectStatusResult(vm, queueView.status());
         return eve::script::projectResult(
             vm, queueView.value().get().advance(
                     {eve::SimulationTick(static_cast<std::uint64_t>(tick)), std::move(delta).takeValue()}));
@@ -936,7 +934,7 @@ void Production::expose(ssq::Table& table) {
                                                                       "work queue proxy must not be null", "queue", {},
                                                                       "production.squirrel")));
         auto queueView = Production::resolve(value->reference);
-        if (!queueView.ok()) return eve::script::projectStatusResult(vm, queueView.status(), false, false);
+        if (!queueView.ok()) return eve::script::projectStatusResult(vm, queueView.status());
         return eve::script::projectResult(vm, queueView.value().get().setSlotCount(owner, slots));
     });
     queue.addFunc("slotCount", [](ScriptWorkQueue* value, const std::string& owner) {
@@ -1059,7 +1057,7 @@ void Production::expose(ssq::Table& table) {
                                                                       "work queue proxy must not be null", "queue", {},
                                                                       "production.squirrel")));
         auto queueView = Production::resolve(value->reference);
-        if (!queueView.ok()) return eve::script::projectStatusResult(vm, queueView.status(), false, false);
+        if (!queueView.ok()) return eve::script::projectStatusResult(vm, queueView.status());
         queueView.value().get().clearEvents();
         return eve::script::projectResult(vm, eve::Result<void>::success());
     });
@@ -1090,7 +1088,7 @@ void Production::expose(ssq::Table& table) {
                                                                       "work queue proxy must not be null", "queue", {},
                                                                       "production.squirrel")));
         auto queueView = Production::resolve(value->reference);
-        if (!queueView.ok()) return eve::script::projectStatusResult(vm, queueView.status(), false, false);
+        if (!queueView.ok()) return eve::script::projectStatusResult(vm, queueView.status());
         return eve::script::projectResult(vm, queueView.value().get().restore(json));
     });
     queue.addFunc("clear", [vm](ScriptWorkQueue* value) {
@@ -1100,7 +1098,7 @@ void Production::expose(ssq::Table& table) {
                                                                       "work queue proxy must not be null", "queue", {},
                                                                       "production.squirrel")));
         auto queueView = Production::resolve(value->reference);
-        if (!queueView.ok()) return eve::script::projectStatusResult(vm, queueView.status(), false, false);
+        if (!queueView.ok()) return eve::script::projectStatusResult(vm, queueView.status());
         queueView.value().get().clear();
         return eve::script::projectResult(vm, eve::Result<void>::success());
     });

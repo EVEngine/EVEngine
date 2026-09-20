@@ -964,7 +964,7 @@ void Orders::expose(ssq::Class& cls) {
     cls.addFunc("newQueueOwned", [vm = cls.getHandle()](Orders*) -> ssq::Table {
         auto reference = Orders::newQueueHandle();
         if (!reference) {
-            return eve::script::projectStatusResult(vm, reference.status(), false, false);
+            return eve::script::projectStatusResult(vm, reference.status());
         }
         const auto ref = std::move(reference).takeValue();
         auto       object =
@@ -972,10 +972,10 @@ void Orders::expose(ssq::Class& cls) {
         if (!object) {
             object.ignore("failed to create owned order queue proxy");
             Orders::release(ref).ignore("rollback failed owned order queue allocation");
-            return eve::script::projectStatusResult(vm, object.status(), false, false);
+            return eve::script::projectStatusResult(vm, object.status());
         }
         ssq::Object owned = std::move(object).takeValue();
-        auto result = eve::script::projectStatusResult(vm, eve::Status::success(eve::StatusCode::Applied), true, false);
+        auto        result = eve::script::projectStatusResult(vm, eve::Status::success(eve::StatusCode::Applied));
         result.set("value", owned);
         return result;
     });

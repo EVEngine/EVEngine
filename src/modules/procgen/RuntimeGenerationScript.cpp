@@ -94,16 +94,14 @@ void exposeRuntimeGeneration(ssq::Table& table) {
     runtimeGeneration.addFunc("nextGenerationJob", [vm = runtimeGeneration.getHandle()](RuntimeGeneration* self) {
         auto object =
             eve::script::makeOwnedSquirrelInstance<ProcgenGenerationJob>(vm, std::make_unique<ProcgenGenerationJob>());
-        if (!object.ok()) return eve::script::projectStatusResult(vm, object.status(), false, false);
+        if (!object.ok()) return eve::script::projectStatusResult(vm, object.status());
         auto result = self->nextGenerationJob();
-        if (!result.ok()) return eve::script::projectStatusResult(vm, result.status(), false, false);
-        auto value     = std::move(result).takeValue();
-        auto projected = eve::script::projectStatusResult(vm, Status::success(), true, true);
-        if (!value) return projected;
+        if (!result.ok()) return eve::script::projectStatusResult(vm, result.status());
+        auto value = std::move(result).takeValue();
+        if (!value) return eve::script::projectStatusResult(vm, Status::success());
         auto owned                         = std::move(object).takeValue();
         *owned.to<ProcgenGenerationJob*>() = *value;
-        projected.set("value", owned);
-        return projected;
+        return eve::script::projectStatusResult(vm, Status::success(), owned);
     });
     runtimeGeneration.addFunc(
         "completeGenerationJob",
@@ -127,16 +125,14 @@ void exposeRuntimeGeneration(ssq::Table& table) {
         // Allocate the registered script wrapper before consuming a queue entry.
         auto object =
             eve::script::makeOwnedSquirrelInstance<ProcgenCellRequest>(vm, std::make_unique<ProcgenCellRequest>());
-        if (!object.ok()) return eve::script::projectStatusResult(vm, object.status(), false, false);
+        if (!object.ok()) return eve::script::projectStatusResult(vm, object.status());
         auto result = self->nextCleanupRequest();
-        if (!result.ok()) return eve::script::projectStatusResult(vm, result.status(), false, false);
-        auto value     = std::move(result).takeValue();
-        auto projected = eve::script::projectStatusResult(vm, Status::success(), true, true);
-        if (!value) return projected;
+        if (!result.ok()) return eve::script::projectStatusResult(vm, result.status());
+        auto value = std::move(result).takeValue();
+        if (!value) return eve::script::projectStatusResult(vm, Status::success());
         auto owned                       = std::move(object).takeValue();
         *owned.to<ProcgenCellRequest*>() = *value;
-        projected.set("value", owned);
-        return projected;
+        return eve::script::projectStatusResult(vm, Status::success(), owned);
     });
     runtimeGeneration.addFunc("completeCleanupRequest", [vm = runtimeGeneration.getHandle()](
                                                             RuntimeGeneration* self, ProcgenCellRequest* request) {

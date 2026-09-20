@@ -26,17 +26,17 @@ struct ScriptAuthorityStore {
 
 template <class Ref, class Proxy, class Release>
 ssq::Table makeOwnedProxy(HSQUIRRELVM vm, eve::Result<Ref>&& reference, Release&& release) {
-    if (!reference) return eve::script::projectStatusResult(vm, reference.status(), false, false);
+    if (!reference) return eve::script::projectStatusResult(vm, reference.status());
     const Ref ref    = std::move(reference).takeValue();
     auto      object = eve::script::makeOwnedSquirrelInstance<Proxy>(vm, std::make_unique<Proxy>(ref));
     if (!object) {
         const eve::Status status = object.status();
         object.ignore("failed to create owned authority proxy");
         std::invoke(std::forward<Release>(release), ref).ignore("rollback failed owned authority allocation");
-        return eve::script::projectStatusResult(vm, status, false, false);
+        return eve::script::projectStatusResult(vm, status);
     }
     ssq::Object owned = std::move(object).takeValue();
-    auto result = eve::script::projectStatusResult(vm, eve::Status::success(eve::StatusCode::Applied), true, false);
+    auto        result = eve::script::projectStatusResult(vm, eve::Status::success(eve::StatusCode::Applied));
     result.set("value", owned);
     result.set("ownership", std::string("owned"));
     result.set("ownerEpoch", static_cast<std::int64_t>(ref.ownerEpoch));
@@ -512,50 +512,45 @@ void Authority::expose(ssq::Table& table) {
                     eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
                                                                       "owned authority store proxy must not be null",
                                                                       "store", {}, "authority.squirrel"))
-                        .status(),
-                    false, false);
+                        .status());
             auto view = Authority::resolve(value->reference);
             if (!view.isBound())
                 return eve::script::projectStatusResult(
-                    vm,
-                    eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle,
-                                                                      "owned authority store handle is stale", "store",
-                                                                      {}, "authority.squirrel"))
-                        .status(),
-                    false, false);
+                    vm, eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle,
+                                                                          "owned authority store handle is stale",
+                                                                          "store", {}, "authority.squirrel"))
+                            .status());
             const std::string id     = view->grant(actor, scope, capability, source, priority, duration);
             const auto        status = id.empty() ? eve::Status::failure(eve::Diagnostic::error(
                                                  eve::DiagnosticCode::InvalidArgument, "authority rule was rejected",
                                                  "store", {}, "authority.squirrel"))
                                                   : eve::Status::success(eve::StatusCode::Applied);
-            return eve::script::projectStatusResult(vm, status, !id.empty(), !id.empty(), eve::Value(id));
+            return id.empty() ? eve::script::projectStatusResult(vm, status)
+                              : eve::script::projectStatusResult(vm, status, eve::Value(id));
         });
     ownedStore.addFunc(
         "deny", [vm](ScriptAuthorityStore* value, const std::string& actor, const std::string& scope,
                      const std::string& capability, const std::string& source, int priority, float duration) {
             if (!value)
                 return eve::script::projectStatusResult(
-                    vm,
-                    eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
-                                                                      "authority store proxy must not be null", "store",
-                                                                      {}, "authority.squirrel"))
-                        .status(),
-                    false, false);
+                    vm, eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                          "authority store proxy must not be null",
+                                                                          "store", {}, "authority.squirrel"))
+                            .status());
             auto view = Authority::resolve(value->reference);
             if (!view.isBound())
                 return eve::script::projectStatusResult(
-                    vm,
-                    eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle,
-                                                                      "authority store handle is stale", "store", {},
-                                                                      "authority.squirrel"))
-                        .status(),
-                    false, false);
+                    vm, eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle,
+                                                                          "authority store handle is stale", "store",
+                                                                          {}, "authority.squirrel"))
+                            .status());
             const std::string id     = view->deny(actor, scope, capability, source, priority, duration);
             const auto        status = id.empty() ? eve::Status::failure(eve::Diagnostic::error(
                                                  eve::DiagnosticCode::InvalidArgument, "authority rule was rejected",
                                                  "store", {}, "authority.squirrel"))
                                                   : eve::Status::success(eve::StatusCode::Applied);
-            return eve::script::projectStatusResult(vm, status, !id.empty(), !id.empty(), eve::Value(id));
+            return id.empty() ? eve::script::projectStatusResult(vm, status)
+                              : eve::script::projectStatusResult(vm, status, eve::Value(id));
         });
     ownedStore.addFunc("revoke", [](ScriptAuthorityStore* value, const std::string& id, const std::string& reason) {
         auto view = value ? Authority::resolve(value->reference) : eve::script::Borrowed<Store>();

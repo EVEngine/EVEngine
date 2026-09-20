@@ -3669,18 +3669,18 @@ void RTS::expose(ssq::Class& cls) {
     const auto vm = cls.getHandle();
     cls.addFunc("removeSubject", [vm](RTS* self, const std::string& subjectText) -> ssq::Table {
         auto subject = parseScriptSubject(subjectText, "subject");
-        if (!subject) return script::projectStatusResult(vm, subject.status(), false, false);
+        if (!subject) return script::projectStatusResult(vm, subject.status());
         return script::projectResult(vm, self->remove(std::move(subject).takeValue()));
     });
     cls.addFunc("newFaction", [vm](RTS* self, const std::string& subjectText) -> ssq::Table {
         auto subject = parseScriptSubject(subjectText, "subject");
-        if (!subject) return script::projectStatusResult(vm, subject.status(), false, false);
+        if (!subject) return script::projectStatusResult(vm, subject.status());
         return script::projectResult(vm, self->newFaction(std::move(subject).takeValue()),
             [](Faction* faction) { return Value(faction->identity()->subject.format()); });
     });
     cls.addFunc("newMatch", [vm](RTS* self, const std::string& subjectText) -> ssq::Table {
         auto subjectValue = parseScriptSubject(subjectText, "subject");
-        if (!subjectValue) return script::projectStatusResult(vm, subjectValue.status(), false, false);
+        if (!subjectValue) return script::projectStatusResult(vm, subjectValue.status());
         return script::projectResult(vm, self->newMatch(std::move(subjectValue).takeValue()),
             [](Match* match) { return Value(match->identity()->subject.format()); });
     });
@@ -3688,132 +3688,133 @@ void RTS::expose(ssq::Class& cls) {
                                         const std::string& ruleText, const std::string& archetype,
                                         float targetValue) -> ssq::Table {
         auto matchSubject = parseScriptSubject(matchText, "match");
-        if (!matchSubject) return script::projectStatusResult(vm, matchSubject.status(), false, false);
+        if (!matchSubject) return script::projectStatusResult(vm, matchSubject.status());
         Match* match = self->findMatch(matchSubject.value());
         if (match == nullptr)
-            return script::projectStatusResult(vm, Status::failure(Diagnostic::error(
-                DiagnosticCode::NotFound, "RTS match identity was not found", "match")), false, false);
+            return script::projectStatusResult(
+                vm, Status::failure(
+                        Diagnostic::error(DiagnosticCode::NotFound, "RTS match identity was not found", "match")));
         VictoryRule rule;
         if (ruleText == "annihilation") rule = VictoryRule::Annihilation;
         else if (ruleText == "headquarters") rule = VictoryRule::DestroyHeadquarters;
         else if (ruleText == "resource") rule = VictoryRule::ResourceTarget;
-        else return script::projectStatusResult(vm, Status::failure(Diagnostic::error(
-            DiagnosticCode::InvalidArgument, "RTS victory rule is invalid", "rule")), false, false);
+        else
+            return script::projectStatusResult(
+                vm, Status::failure(
+                        Diagnostic::error(DiagnosticCode::InvalidArgument, "RTS victory rule is invalid", "rule")));
         return script::projectResult(
             vm, self->configureMatch(*match, rule, archetype, static_cast<double>(targetValue)));
     });
     cls.addFunc("addMatchParticipant", [vm](RTS* self, const std::string& matchText,
                                              const std::string& factionText, int team) -> ssq::Table {
         auto matchSubject = parseScriptSubject(matchText, "match");
-        if (!matchSubject) return script::projectStatusResult(vm, matchSubject.status(), false, false);
+        if (!matchSubject) return script::projectStatusResult(vm, matchSubject.status());
         auto factionSubject = parseScriptSubject(factionText, "faction");
-        if (!factionSubject) return script::projectStatusResult(vm, factionSubject.status(), false, false);
+        if (!factionSubject) return script::projectStatusResult(vm, factionSubject.status());
         Match* match = self->findMatch(matchSubject.value());
         Faction* faction = self->findFaction(factionSubject.value());
         if (match == nullptr || faction == nullptr)
-            return script::projectStatusResult(vm, Status::failure(Diagnostic::error(
-                DiagnosticCode::NotFound, "RTS match participant identity was not found", "participant")),
-                false, false);
+            return script::projectStatusResult(
+                vm, Status::failure(Diagnostic::error(DiagnosticCode::NotFound,
+                                                      "RTS match participant identity was not found", "participant")));
         return script::projectResult(vm, self->addMatchParticipant(*match, *faction, team));
     });
     cls.addFunc("startMatch", [vm](RTS* self, const std::string& matchText) -> ssq::Table {
         auto matchSubject = parseScriptSubject(matchText, "match");
-        if (!matchSubject) return script::projectStatusResult(vm, matchSubject.status(), false, false);
+        if (!matchSubject) return script::projectStatusResult(vm, matchSubject.status());
         Match* match = self->findMatch(matchSubject.value());
         if (match == nullptr)
-            return script::projectStatusResult(vm, Status::failure(Diagnostic::error(
-                DiagnosticCode::NotFound, "RTS match identity was not found", "match")), false, false);
+            return script::projectStatusResult(
+                vm, Status::failure(
+                        Diagnostic::error(DiagnosticCode::NotFound, "RTS match identity was not found", "match")));
         return script::projectResult(vm, self->startMatch(*match));
     });
     cls.addFunc("surrenderMatch", [vm](RTS* self, const std::string& matchText,
                                         const std::string& factionText) -> ssq::Table {
         auto matchSubject = parseScriptSubject(matchText, "match");
-        if (!matchSubject) return script::projectStatusResult(vm, matchSubject.status(), false, false);
+        if (!matchSubject) return script::projectStatusResult(vm, matchSubject.status());
         auto factionSubject = parseScriptSubject(factionText, "faction");
-        if (!factionSubject) return script::projectStatusResult(vm, factionSubject.status(), false, false);
+        if (!factionSubject) return script::projectStatusResult(vm, factionSubject.status());
         Match* match = self->findMatch(matchSubject.value());
         Faction* faction = self->findFaction(factionSubject.value());
         if (match == nullptr || faction == nullptr)
-            return script::projectStatusResult(vm, Status::failure(Diagnostic::error(
-                DiagnosticCode::NotFound, "RTS match participant identity was not found", "participant")),
-                false, false);
+            return script::projectStatusResult(
+                vm, Status::failure(Diagnostic::error(DiagnosticCode::NotFound,
+                                                      "RTS match participant identity was not found", "participant")));
         return script::projectResult(vm, self->surrenderMatch(*match, *faction));
     });
     cls.addFunc("inspectMatch", [vm](RTS* self, const std::string& matchText) -> ssq::Table {
         auto matchSubject = parseScriptSubject(matchText, "match");
-        if (!matchSubject) return script::projectStatusResult(vm, matchSubject.status(), false, false);
+        if (!matchSubject) return script::projectStatusResult(vm, matchSubject.status());
         Match* match = self->findMatch(matchSubject.value());
         if (match == nullptr)
-            return script::projectStatusResult(vm, Status::failure(Diagnostic::error(
-                DiagnosticCode::NotFound, "RTS match identity was not found", "match")), false, false);
+            return script::projectStatusResult(
+                vm, Status::failure(
+                        Diagnostic::error(DiagnosticCode::NotFound, "RTS match identity was not found", "match")));
         return script::projectResult(vm, self->inspectMatch(*match), [](Value value) { return value; });
     });
     cls.addFunc("newUnit", [vm](RTS* self, const std::string& subjectText, const std::string& definitionText,
                                 const std::string& factionText, float x, float y) -> ssq::Table {
         auto subject = parseScriptSubject(subjectText, "subject");
-        if (!subject) return script::projectStatusResult(vm, subject.status(), false, false);
+        if (!subject) return script::projectStatusResult(vm, subject.status());
         auto definition = parseScriptDefinition(definitionText);
-        if (!definition) return script::projectStatusResult(vm, definition.status(), false, false);
+        if (!definition) return script::projectStatusResult(vm, definition.status());
         auto factionSubject = parseScriptSubject(factionText, "faction");
-        if (!factionSubject) return script::projectStatusResult(vm, factionSubject.status(), false, false);
+        if (!factionSubject) return script::projectStatusResult(vm, factionSubject.status());
         Faction* faction = self->findFaction(std::move(factionSubject).takeValue());
         if (faction == nullptr)
-            return script::projectStatusResult(vm,
-                Status::failure(Diagnostic::error(DiagnosticCode::NotFound,
-                                                  "RTS script faction was not found", "faction")),
-                false, false);
+            return script::projectStatusResult(
+                vm, Status::failure(
+                        Diagnostic::error(DiagnosticCode::NotFound, "RTS script faction was not found", "faction")));
         auto created = self->newFactionUnit(*faction, std::move(subject).takeValue(),
                                             std::move(definition).takeValue());
-        if (!created) return script::projectStatusResult(vm, created.status(), false, false);
+        if (!created) return script::projectStatusResult(vm, created.status());
         Unit* unit = std::move(created).takeValue();
         unit->motion()->x = x;
         unit->motion()->y = y;
-        return script::projectStatusResult(vm, Status::success(StatusCode::Applied), true, true,
+        return script::projectStatusResult(vm, Status::success(StatusCode::Applied),
                                            Value(unit->identity()->subject.format()));
     });
     cls.addFunc("newBuilding", [vm](RTS* self, const std::string& subjectText, const std::string& definitionText,
                                     const std::string& factionText, float x, float y) -> ssq::Table {
         auto subject = parseScriptSubject(subjectText, "subject");
-        if (!subject) return script::projectStatusResult(vm, subject.status(), false, false);
+        if (!subject) return script::projectStatusResult(vm, subject.status());
         auto definition = parseScriptDefinition(definitionText);
-        if (!definition) return script::projectStatusResult(vm, definition.status(), false, false);
+        if (!definition) return script::projectStatusResult(vm, definition.status());
         auto factionSubject = parseScriptSubject(factionText, "faction");
-        if (!factionSubject) return script::projectStatusResult(vm, factionSubject.status(), false, false);
+        if (!factionSubject) return script::projectStatusResult(vm, factionSubject.status());
         Faction* faction = self->findFaction(std::move(factionSubject).takeValue());
         if (faction == nullptr)
-            return script::projectStatusResult(vm,
-                Status::failure(Diagnostic::error(DiagnosticCode::NotFound,
-                                                  "RTS script faction was not found", "faction")),
-                false, false);
+            return script::projectStatusResult(
+                vm, Status::failure(
+                        Diagnostic::error(DiagnosticCode::NotFound, "RTS script faction was not found", "faction")));
         auto created = self->newFactionBuilding(*faction, std::move(subject).takeValue(),
                                                 std::move(definition).takeValue());
-        if (!created) return script::projectStatusResult(vm, created.status(), false, false);
+        if (!created) return script::projectStatusResult(vm, created.status());
         Building* building = std::move(created).takeValue();
         building->placement()->worldX = x;
         building->placement()->worldY = y;
-        return script::projectStatusResult(vm, Status::success(StatusCode::Applied), true, true,
+        return script::projectStatusResult(vm, Status::success(StatusCode::Applied),
                                            Value(building->identity()->subject.format()));
     });
     cls.addFunc("newResourceNode", [vm](RTS* self, const std::string& subjectText, const std::string& resource,
                                         float amount, float x, float y, int capacity) -> ssq::Table {
         auto subject = parseScriptSubject(subjectText, "subject");
-        if (!subject) return script::projectStatusResult(vm, subject.status(), false, false);
+        if (!subject) return script::projectStatusResult(vm, subject.status());
         if (capacity <= 0)
-            return script::projectStatusResult(vm,
-                Status::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
-                                                  "RTS script resource capacity must be positive", "capacity")),
-                false, false);
+            return script::projectStatusResult(
+                vm, Status::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                      "RTS script resource capacity must be positive", "capacity")));
         return script::projectResult(vm,
             self->newResourceNode(std::move(subject).takeValue(), resource, amount, {x, y},
                                   static_cast<std::size_t>(capacity)),
             [](ResourceNode* node) { return Value(node->identity()->subject.format()); });
     });
     cls.addFunc("inspectState", [vm](RTS* self) -> ssq::Table {
-        return script::projectStatusResult(vm, Status::success(), true, true, self->inspectState());
+        return script::projectStatusResult(vm, Status::success(), self->inspectState());
     });
     cls.addFunc("inspectFrameEvents", [vm](RTS* self) -> ssq::Table {
-        return script::projectStatusResult(vm, Status::success(), true, true,
-                                           self->inspectFrameEvents());
+        return script::projectStatusResult(vm, Status::success(), self->inspectFrameEvents());
     });
     cls.addFunc("stepScript", [vm](RTS* self, float seconds) -> ssq::Table {
         return script::projectResult(vm, self->stepScript(static_cast<double>(seconds)),
@@ -3854,58 +3855,61 @@ void RTS::expose(ssq::Class& cls) {
     cls.addFunc("scriptCellVisible", [vm](RTS* self, const std::string& factionText,
                                            int x, int y) -> ssq::Table {
         auto subjectValue = parseScriptSubject(factionText, "faction");
-        if (!subjectValue) return script::projectStatusResult(vm, subjectValue.status(), false, false);
+        if (!subjectValue) return script::projectStatusResult(vm, subjectValue.status());
         Faction* faction = self->findFaction(subjectValue.value());
         if (faction == nullptr)
-            return script::projectStatusResult(vm, Status::failure(Diagnostic::error(
-                DiagnosticCode::NotFound, "RTS fog faction identity was not found", "faction")), false, false);
+            return script::projectStatusResult(
+                vm, Status::failure(Diagnostic::error(DiagnosticCode::NotFound,
+                                                      "RTS fog faction identity was not found", "faction")));
         return script::projectResult(vm, self->scriptCellVisible(*faction, x, y),
             [](bool visible) { return Value(visible); });
     });
     cls.addFunc("scriptCellExplored", [vm](RTS* self, const std::string& factionText,
                                             int x, int y) -> ssq::Table {
         auto subjectValue = parseScriptSubject(factionText, "faction");
-        if (!subjectValue) return script::projectStatusResult(vm, subjectValue.status(), false, false);
+        if (!subjectValue) return script::projectStatusResult(vm, subjectValue.status());
         Faction* faction = self->findFaction(subjectValue.value());
         if (faction == nullptr)
-            return script::projectStatusResult(vm, Status::failure(Diagnostic::error(
-                DiagnosticCode::NotFound, "RTS fog faction identity was not found", "faction")), false, false);
+            return script::projectStatusResult(
+                vm, Status::failure(Diagnostic::error(DiagnosticCode::NotFound,
+                                                      "RTS fog faction identity was not found", "faction")));
         return script::projectResult(vm, self->scriptCellExplored(*faction, x, y),
             [](bool explored) { return Value(explored); });
     });
     cls.addFunc("scriptContact", [vm](RTS* self, const std::string& factionText,
                                        const std::string& targetText) -> ssq::Table {
         auto factionSubject = parseScriptSubject(factionText, "faction");
-        if (!factionSubject) return script::projectStatusResult(vm, factionSubject.status(), false, false);
+        if (!factionSubject) return script::projectStatusResult(vm, factionSubject.status());
         auto targetSubject = parseScriptSubject(targetText, "target");
-        if (!targetSubject) return script::projectStatusResult(vm, targetSubject.status(), false, false);
+        if (!targetSubject) return script::projectStatusResult(vm, targetSubject.status());
         Faction* faction = self->findFaction(factionSubject.value());
         if (faction == nullptr)
-            return script::projectStatusResult(vm, Status::failure(Diagnostic::error(
-                DiagnosticCode::NotFound, "RTS fog faction identity was not found", "faction")), false, false);
+            return script::projectStatusResult(
+                vm, Status::failure(Diagnostic::error(DiagnosticCode::NotFound,
+                                                      "RTS fog faction identity was not found", "faction")));
         return script::projectResult(vm, self->scriptContact(*faction, targetSubject.value()),
             [](Value value) { return value; });
     });
     cls.addFunc("addScriptResource", [vm](RTS* self, const std::string& factionText,
                                           const std::string& resource, std::int64_t amount) -> ssq::Table {
         auto factionSubject = parseScriptSubject(factionText, "faction");
-        if (!factionSubject) return script::projectStatusResult(vm, factionSubject.status(), false, false);
+        if (!factionSubject) return script::projectStatusResult(vm, factionSubject.status());
         Faction* faction = self->findFaction(std::move(factionSubject).takeValue());
         if (faction == nullptr)
-            return script::projectStatusResult(vm,
-                Status::failure(Diagnostic::error(DiagnosticCode::NotFound,
-                                                  "RTS script faction was not found", "faction")), false, false);
+            return script::projectStatusResult(
+                vm, Status::failure(
+                        Diagnostic::error(DiagnosticCode::NotFound, "RTS script faction was not found", "faction")));
         return script::projectResult(vm, self->addScriptResource(*faction, resource, amount));
     });
     cls.addFunc("scriptResource", [vm](RTS* self, const std::string& factionText,
                                        const std::string& resource) -> ssq::Table {
         auto factionSubject = parseScriptSubject(factionText, "faction");
-        if (!factionSubject) return script::projectStatusResult(vm, factionSubject.status(), false, false);
+        if (!factionSubject) return script::projectStatusResult(vm, factionSubject.status());
         Faction* faction = self->findFaction(std::move(factionSubject).takeValue());
         if (faction == nullptr)
-            return script::projectStatusResult(vm,
-                Status::failure(Diagnostic::error(DiagnosticCode::NotFound,
-                                                  "RTS script faction was not found", "faction")), false, false);
+            return script::projectStatusResult(
+                vm, Status::failure(
+                        Diagnostic::error(DiagnosticCode::NotFound, "RTS script faction was not found", "faction")));
         return script::projectResult(vm, self->scriptResource(*faction, resource),
                                      [](std::int64_t amount) { return Value(amount); });
     });
@@ -3917,14 +3921,15 @@ void RTS::expose(ssq::Class& cls) {
         auto worker = parseScriptDefinition(workerText);
         auto army = parseScriptDefinition(armyText);
         auto target = parseScriptDefinition(targetBuildingText);
-        if (!factionSubject) return script::projectStatusResult(vm, factionSubject.status(), false, false);
-        if (!worker) return script::projectStatusResult(vm, worker.status(), false, false);
-        if (!army) return script::projectStatusResult(vm, army.status(), false, false);
-        if (!target) return script::projectStatusResult(vm, target.status(), false, false);
+        if (!factionSubject) return script::projectStatusResult(vm, factionSubject.status());
+        if (!worker) return script::projectStatusResult(vm, worker.status());
+        if (!army) return script::projectStatusResult(vm, army.status());
+        if (!target) return script::projectStatusResult(vm, target.status());
         Faction* faction = self->findFaction(factionSubject.value());
         if (faction == nullptr)
-            return script::projectStatusResult(vm, Status::failure(Diagnostic::error(
-                DiagnosticCode::NotFound, "RTS script AI faction was not found", "faction")), false, false);
+            return script::projectStatusResult(
+                vm, Status::failure(
+                        Diagnostic::error(DiagnosticCode::NotFound, "RTS script AI faction was not found", "faction")));
         return script::projectResult(vm, self->configureScriptAI(*faction, worker.value(), army.value(),
             target.value(), desiredWorkers, attackThreshold, thinkInterval, formationSpacing, enabled));
     });
@@ -3932,16 +3937,16 @@ void RTS::expose(ssq::Class& cls) {
                                          const std::string& unitSubjectText,
                                          const std::string& definitionText, int priority) -> ssq::Table {
         auto producerSubject = parseScriptSubject(producerText, "producer");
-        if (!producerSubject) return script::projectStatusResult(vm, producerSubject.status(), false, false);
+        if (!producerSubject) return script::projectStatusResult(vm, producerSubject.status());
         Building* producer = self->findBuilding(producerSubject.value());
         if (producer == nullptr)
-            return script::projectStatusResult(vm,
-                Status::failure(Diagnostic::error(DiagnosticCode::NotFound,
-                                                  "RTS script producer was not found", "producer")), false, false);
+            return script::projectStatusResult(
+                vm, Status::failure(
+                        Diagnostic::error(DiagnosticCode::NotFound, "RTS script producer was not found", "producer")));
         auto unitSubject = parseScriptSubject(unitSubjectText, "unitSubject");
-        if (!unitSubject) return script::projectStatusResult(vm, unitSubject.status(), false, false);
+        if (!unitSubject) return script::projectStatusResult(vm, unitSubject.status());
         auto definition = parseScriptDefinition(definitionText);
-        if (!definition) return script::projectStatusResult(vm, definition.status(), false, false);
+        if (!definition) return script::projectStatusResult(vm, definition.status());
         return script::projectResult(vm,
             self->queueScriptUnit(*producer, unitSubject.value(), definition.value(), priority),
             [](RTSBuildReceipt receipt) {
@@ -3955,14 +3960,14 @@ void RTS::expose(ssq::Class& cls) {
         auto producerSubject = parseScriptSubject(producerText, "producer");
         auto unitSubject = parseScriptSubject(unitSubjectText, "unitSubject");
         auto definition = parseScriptDefinition(definitionText);
-        if (!producerSubject) return script::projectStatusResult(vm, producerSubject.status(), false, false);
-        if (!unitSubject) return script::projectStatusResult(vm, unitSubject.status(), false, false);
-        if (!definition) return script::projectStatusResult(vm, definition.status(), false, false);
+        if (!producerSubject) return script::projectStatusResult(vm, producerSubject.status());
+        if (!unitSubject) return script::projectStatusResult(vm, unitSubject.status());
+        if (!definition) return script::projectStatusResult(vm, definition.status());
         Building* producer = self->findBuilding(producerSubject.value());
         if (producer == nullptr)
-            return script::projectStatusResult(vm, Status::failure(Diagnostic::error(
-                DiagnosticCode::NotFound, "RTS script reinforcement producer was not found", "producer")),
-                false, false);
+            return script::projectStatusResult(
+                vm, Status::failure(Diagnostic::error(DiagnosticCode::NotFound,
+                                                      "RTS script reinforcement producer was not found", "producer")));
         return script::projectResult(vm,
             self->queueScriptReinforcement(*producer, unitSubject.value(), definition.value(), priority),
             [](ReinforcementRequestReceipt receipt) {
@@ -3979,17 +3984,17 @@ void RTS::expose(ssq::Class& cls) {
         auto buildingSubject = parseScriptSubject(buildingSubjectText, "buildingSubject");
         auto definition = parseScriptDefinition(definitionText);
         auto builderSubject = parseScriptSubject(builderText, "builder");
-        if (!factionSubject) return script::projectStatusResult(vm, factionSubject.status(), false, false);
-        if (!buildingSubject) return script::projectStatusResult(vm, buildingSubject.status(), false, false);
-        if (!definition) return script::projectStatusResult(vm, definition.status(), false, false);
-        if (!builderSubject) return script::projectStatusResult(vm, builderSubject.status(), false, false);
+        if (!factionSubject) return script::projectStatusResult(vm, factionSubject.status());
+        if (!buildingSubject) return script::projectStatusResult(vm, buildingSubject.status());
+        if (!definition) return script::projectStatusResult(vm, definition.status());
+        if (!builderSubject) return script::projectStatusResult(vm, builderSubject.status());
         Faction* faction = self->findFaction(factionSubject.value());
         Unit* builder = self->findUnit(builderSubject.value());
         if (faction == nullptr || builder == nullptr)
-            return script::projectStatusResult(vm,
-                Status::failure(Diagnostic::error(DiagnosticCode::NotFound,
-                                                  "RTS script construction faction or builder was not found",
-                                                  "construction")), false, false);
+            return script::projectStatusResult(
+                vm, Status::failure(Diagnostic::error(DiagnosticCode::NotFound,
+                                                      "RTS script construction faction or builder was not found",
+                                                      "construction")));
         return script::projectResult(vm,
             self->startScriptConstruction(*faction, buildingSubject.value(), definition.value(), {x, y}, *builder),
             [](Building* building) { return Value(building->identity()->subject.format()); });
@@ -3997,11 +4002,12 @@ void RTS::expose(ssq::Class& cls) {
     const auto buildingLifecycle = [vm](RTS* self, const std::string& buildingText,
                                         bool sell) -> ssq::Table {
         auto subjectValue = parseScriptSubject(buildingText, "building");
-        if (!subjectValue) return script::projectStatusResult(vm, subjectValue.status(), false, false);
+        if (!subjectValue) return script::projectStatusResult(vm, subjectValue.status());
         Building* building = self->findBuilding(subjectValue.value());
         if (building == nullptr)
-            return script::projectStatusResult(vm, Status::failure(Diagnostic::error(
-                DiagnosticCode::NotFound, "RTS script building was not found", "building")), false, false);
+            return script::projectStatusResult(
+                vm, Status::failure(
+                        Diagnostic::error(DiagnosticCode::NotFound, "RTS script building was not found", "building")));
         auto result = sell ? self->sellScriptBuilding(*building)
                            : self->cancelScriptConstruction(*building);
         return script::projectResult(vm, std::move(result), [](resource::Receipt) { return Value(true); });
@@ -4017,13 +4023,12 @@ void RTS::expose(ssq::Class& cls) {
     cls.addFunc("queueScriptResearch", [vm](RTS* self, const std::string& producerText,
                                              const std::string& upgrade, int priority) -> ssq::Table {
         auto producerSubject = parseScriptSubject(producerText, "producer");
-        if (!producerSubject) return script::projectStatusResult(vm, producerSubject.status(), false, false);
+        if (!producerSubject) return script::projectStatusResult(vm, producerSubject.status());
         Building* producer = self->findBuilding(producerSubject.value());
         if (producer == nullptr)
-            return script::projectStatusResult(vm,
-                Status::failure(Diagnostic::error(DiagnosticCode::NotFound,
-                                                  "RTS script research producer was not found", "producer")),
-                false, false);
+            return script::projectStatusResult(
+                vm, Status::failure(Diagnostic::error(DiagnosticCode::NotFound,
+                                                      "RTS script research producer was not found", "producer")));
         return script::projectResult(vm, self->queueScriptResearch(*producer, upgrade, priority),
             [](RTSBuildReceipt receipt) {
                 return Value(Value::Object{{"productionTaskId", std::move(receipt.productionTaskId)},
@@ -4033,11 +4038,12 @@ void RTS::expose(ssq::Class& cls) {
     cls.addFunc("cancelScriptProduction", [vm](RTS* self, const std::string& producerText,
         int queueIndex) -> ssq::Table {
         auto producerSubject = parseScriptSubject(producerText, "producer");
-        if (!producerSubject) return script::projectStatusResult(vm, producerSubject.status(), false, false);
+        if (!producerSubject) return script::projectStatusResult(vm, producerSubject.status());
         Building* producer = self->findBuilding(producerSubject.value());
         if (producer == nullptr)
-            return script::projectStatusResult(vm, Status::failure(Diagnostic::error(
-                DiagnosticCode::NotFound, "RTS script producer was not found", "producer")), false, false);
+            return script::projectStatusResult(
+                vm, Status::failure(
+                        Diagnostic::error(DiagnosticCode::NotFound, "RTS script producer was not found", "producer")));
         return script::projectResult(vm, self->cancelScriptProduction(*producer, queueIndex),
             [](RTSCancelProductionReceipt receipt) {
                 return Value(Value::Object{{"productionTaskId", std::move(receipt.productionTaskId)},
@@ -4048,38 +4054,39 @@ void RTS::expose(ssq::Class& cls) {
                                            const std::string& ability, const std::string& targetText,
                                            float x, float y) -> ssq::Table {
         auto casterSubject = parseScriptSubject(casterText, "caster");
-        if (!casterSubject) return script::projectStatusResult(vm, casterSubject.status(), false, false);
+        if (!casterSubject) return script::projectStatusResult(vm, casterSubject.status());
         Unit* caster = self->findUnit(casterSubject.value());
         if (caster == nullptr)
-            return script::projectStatusResult(vm,
-                Status::failure(Diagnostic::error(DiagnosticCode::NotFound,
-                                                  "RTS script ability caster was not found", "caster")),
-                false, false);
+            return script::projectStatusResult(
+                vm, Status::failure(Diagnostic::error(DiagnosticCode::NotFound,
+                                                      "RTS script ability caster was not found", "caster")));
         SubjectRef target;
         if (!targetText.empty()) {
             auto parsed = parseScriptSubject(targetText, "target");
-            if (!parsed) return script::projectStatusResult(vm, parsed.status(), false, false);
+            if (!parsed) return script::projectStatusResult(vm, parsed.status());
             target = parsed.value();
         }
         return script::projectResult(vm, self->castScriptAbility(*caster, ability, target, {x, y}));
     });
     cls.addFunc("cancelScriptAbility", [vm](RTS* self, const std::string& casterText) -> ssq::Table {
         auto casterSubject = parseScriptSubject(casterText, "caster");
-        if (!casterSubject) return script::projectStatusResult(vm, casterSubject.status(), false, false);
+        if (!casterSubject) return script::projectStatusResult(vm, casterSubject.status());
         Unit* caster = self->findUnit(casterSubject.value());
         if (caster == nullptr)
-            return script::projectStatusResult(vm, Status::failure(Diagnostic::error(
-                DiagnosticCode::NotFound, "RTS script ability caster was not found", "caster")), false, false);
+            return script::projectStatusResult(
+                vm, Status::failure(Diagnostic::error(DiagnosticCode::NotFound,
+                                                      "RTS script ability caster was not found", "caster")));
         return script::projectResult(vm, self->cancelScriptAbility(*caster));
     });
     cls.addFunc("setBuildingRally", [vm](RTS* self, const std::string& producerText,
         float x, float y, bool attackMove, bool groupedReinforcements) -> ssq::Table {
         auto producerSubject = parseScriptSubject(producerText, "producer");
-        if (!producerSubject) return script::projectStatusResult(vm, producerSubject.status(), false, false);
+        if (!producerSubject) return script::projectStatusResult(vm, producerSubject.status());
         Building* producer = self->findBuilding(producerSubject.value());
         if (producer == nullptr)
-            return script::projectStatusResult(vm, Status::failure(Diagnostic::error(
-                DiagnosticCode::NotFound, "RTS rally producer was not found", "producer")), false, false);
+            return script::projectStatusResult(
+                vm, Status::failure(
+                        Diagnostic::error(DiagnosticCode::NotFound, "RTS rally producer was not found", "producer")));
         CommandSpec command;
         command.kind = attackMove ? OrderKind::AttackMove : OrderKind::Move;
         command.target = {x, y};
@@ -4089,106 +4096,114 @@ void RTS::expose(ssq::Class& cls) {
         const std::string& sourceText) -> ssq::Table {
         auto producerSubject = parseScriptSubject(producerText, "producer");
         auto sourceSubject = parseScriptSubject(sourceText, "source");
-        if (!producerSubject) return script::projectStatusResult(vm, producerSubject.status(), false, false);
-        if (!sourceSubject) return script::projectStatusResult(vm, sourceSubject.status(), false, false);
+        if (!producerSubject) return script::projectStatusResult(vm, producerSubject.status());
+        if (!sourceSubject) return script::projectStatusResult(vm, sourceSubject.status());
         Building* producer = self->findBuilding(producerSubject.value());
         Building* source = self->findBuilding(sourceSubject.value());
         if (producer == nullptr || source == nullptr)
-            return script::projectStatusResult(vm, Status::failure(Diagnostic::error(
-                DiagnosticCode::NotFound, "RTS rally producer or source was not found", "building")), false, false);
+            return script::projectStatusResult(
+                vm, Status::failure(Diagnostic::error(DiagnosticCode::NotFound,
+                                                      "RTS rally producer or source was not found", "building")));
         return script::projectResult(vm, self->linkBuildingRally(*producer, *source));
     });
     cls.addFunc("clearBuildingRally", [vm](RTS* self, const std::string& producerText) -> ssq::Table {
         auto producerSubject = parseScriptSubject(producerText, "producer");
-        if (!producerSubject) return script::projectStatusResult(vm, producerSubject.status(), false, false);
+        if (!producerSubject) return script::projectStatusResult(vm, producerSubject.status());
         Building* producer = self->findBuilding(producerSubject.value());
         if (producer == nullptr)
-            return script::projectStatusResult(vm, Status::failure(Diagnostic::error(
-                DiagnosticCode::NotFound, "RTS rally producer was not found", "producer")), false, false);
+            return script::projectStatusResult(
+                vm, Status::failure(
+                        Diagnostic::error(DiagnosticCode::NotFound, "RTS rally producer was not found", "producer")));
         return script::projectResult(vm, self->clearBuildingRally(*producer));
     });
     cls.addFunc("setReinforcementLimit", [vm](RTS* self, const std::string& producerText,
         std::int64_t maximum) -> ssq::Table {
         if (maximum < 0)
-            return script::projectStatusResult(vm, Status::failure(Diagnostic::error(
-                DiagnosticCode::InvalidArgument, "RTS reinforcement limit must be non-negative", "maximum")),
-                false, false);
+            return script::projectStatusResult(
+                vm, Status::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                      "RTS reinforcement limit must be non-negative", "maximum")));
         auto producerSubject = parseScriptSubject(producerText, "producer");
-        if (!producerSubject) return script::projectStatusResult(vm, producerSubject.status(), false, false);
+        if (!producerSubject) return script::projectStatusResult(vm, producerSubject.status());
         Building* producer = self->findBuilding(producerSubject.value());
         if (producer == nullptr)
-            return script::projectStatusResult(vm, Status::failure(Diagnostic::error(
-                DiagnosticCode::NotFound, "RTS reinforcement producer was not found", "producer")), false, false);
+            return script::projectStatusResult(
+                vm, Status::failure(Diagnostic::error(DiagnosticCode::NotFound,
+                                                      "RTS reinforcement producer was not found", "producer")));
         return script::projectResult(vm,
             self->setReinforcementLimit(*producer, static_cast<std::size_t>(maximum)));
     });
     cls.addFunc("setReinforcementTypeLimit", [vm](RTS* self, const std::string& producerText,
         const std::string& unitType, std::int64_t maximum) -> ssq::Table {
         if (maximum < 0)
-            return script::projectStatusResult(vm, Status::failure(Diagnostic::error(
-                DiagnosticCode::InvalidArgument, "RTS reinforcement type limit must be non-negative", "maximum")),
-                false, false);
+            return script::projectStatusResult(
+                vm, Status::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                      "RTS reinforcement type limit must be non-negative", "maximum")));
         auto producerSubject = parseScriptSubject(producerText, "producer");
-        if (!producerSubject) return script::projectStatusResult(vm, producerSubject.status(), false, false);
+        if (!producerSubject) return script::projectStatusResult(vm, producerSubject.status());
         Building* producer = self->findBuilding(producerSubject.value());
         if (producer == nullptr)
-            return script::projectStatusResult(vm, Status::failure(Diagnostic::error(
-                DiagnosticCode::NotFound, "RTS reinforcement producer was not found", "producer")), false, false);
+            return script::projectStatusResult(
+                vm, Status::failure(Diagnostic::error(DiagnosticCode::NotFound,
+                                                      "RTS reinforcement producer was not found", "producer")));
         return script::projectResult(vm,
             self->setReinforcementTypeLimit(*producer, unitType, static_cast<std::size_t>(maximum)));
     });
     cls.addFunc("setReinforcementTypePriority", [vm](RTS* self, const std::string& producerText,
         const std::string& unitType, int priority) -> ssq::Table {
         auto producerSubject = parseScriptSubject(producerText, "producer");
-        if (!producerSubject) return script::projectStatusResult(vm, producerSubject.status(), false, false);
+        if (!producerSubject) return script::projectStatusResult(vm, producerSubject.status());
         Building* producer = self->findBuilding(producerSubject.value());
         if (producer == nullptr)
-            return script::projectStatusResult(vm, Status::failure(Diagnostic::error(
-                DiagnosticCode::NotFound, "RTS reinforcement producer was not found", "producer")), false, false);
+            return script::projectStatusResult(
+                vm, Status::failure(Diagnostic::error(DiagnosticCode::NotFound,
+                                                      "RTS reinforcement producer was not found", "producer")));
         return script::projectResult(vm, self->setReinforcementTypePriority(*producer, unitType, priority));
     });
     cls.addFunc("setReinforcementFallback", [vm](RTS* self, const std::string& producerText,
         const std::string& preferred, const std::string& fallback) -> ssq::Table {
         auto producerSubject = parseScriptSubject(producerText, "producer");
-        if (!producerSubject) return script::projectStatusResult(vm, producerSubject.status(), false, false);
+        if (!producerSubject) return script::projectStatusResult(vm, producerSubject.status());
         Building* producer = self->findBuilding(producerSubject.value());
         if (producer == nullptr)
-            return script::projectStatusResult(vm, Status::failure(Diagnostic::error(
-                DiagnosticCode::NotFound, "RTS reinforcement producer was not found", "producer")), false, false);
+            return script::projectStatusResult(
+                vm, Status::failure(Diagnostic::error(DiagnosticCode::NotFound,
+                                                      "RTS reinforcement producer was not found", "producer")));
         return script::projectResult(vm, self->setReinforcementFallback(*producer, preferred, fallback));
     });
     cls.addFunc("setReinforcementAutoCancel", [vm](RTS* self, const std::string& producerText,
         float seconds) -> ssq::Table {
         auto producerSubject = parseScriptSubject(producerText, "producer");
-        if (!producerSubject) return script::projectStatusResult(vm, producerSubject.status(), false, false);
+        if (!producerSubject) return script::projectStatusResult(vm, producerSubject.status());
         Building* producer = self->findBuilding(producerSubject.value());
         if (producer == nullptr)
-            return script::projectStatusResult(vm, Status::failure(Diagnostic::error(
-                DiagnosticCode::NotFound, "RTS reinforcement producer was not found", "producer")), false, false);
+            return script::projectStatusResult(
+                vm, Status::failure(Diagnostic::error(DiagnosticCode::NotFound,
+                                                      "RTS reinforcement producer was not found", "producer")));
         return script::projectResult(vm, self->setReinforcementAutoCancel(*producer, seconds));
     });
     cls.addFunc("setReinforcementTransport", [vm](RTS* self, const std::string& producerText,
         const std::string& transportText, std::int64_t minimumLoad) -> ssq::Table {
         if (minimumLoad < 0)
-            return script::projectStatusResult(vm, Status::failure(Diagnostic::error(
-                DiagnosticCode::InvalidArgument, "RTS reinforcement minimum load must be non-negative",
-                "minimumLoad")), false, false);
+            return script::projectStatusResult(
+                vm, Status::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                      "RTS reinforcement minimum load must be non-negative",
+                                                      "minimumLoad")));
         auto producerSubject = parseScriptSubject(producerText, "producer");
-        if (!producerSubject) return script::projectStatusResult(vm, producerSubject.status(), false, false);
+        if (!producerSubject) return script::projectStatusResult(vm, producerSubject.status());
         Building* producer = self->findBuilding(producerSubject.value());
         if (producer == nullptr)
-            return script::projectStatusResult(vm, Status::failure(Diagnostic::error(
-                DiagnosticCode::NotFound, "RTS reinforcement producer was not found", "producer")), false, false);
+            return script::projectStatusResult(
+                vm, Status::failure(Diagnostic::error(DiagnosticCode::NotFound,
+                                                      "RTS reinforcement producer was not found", "producer")));
         Unit* transport = nullptr;
         if (!transportText.empty()) {
             auto transportSubject = parseScriptSubject(transportText, "transport");
-            if (!transportSubject)
-                return script::projectStatusResult(vm, transportSubject.status(), false, false);
+            if (!transportSubject) return script::projectStatusResult(vm, transportSubject.status());
             transport = self->findUnit(transportSubject.value());
             if (transport == nullptr)
-                return script::projectStatusResult(vm, Status::failure(Diagnostic::error(
-                    DiagnosticCode::NotFound, "RTS reinforcement transport was not found", "transport")),
-                    false, false);
+                return script::projectStatusResult(
+                    vm, Status::failure(Diagnostic::error(DiagnosticCode::NotFound,
+                                                          "RTS reinforcement transport was not found", "transport")));
         }
         return script::projectResult(vm, self->setReinforcementTransport(
             *producer, transport, static_cast<std::size_t>(minimumLoad)));
@@ -4206,16 +4221,17 @@ void RTS::expose(ssq::Class& cls) {
         const std::string& buildingSubjectText, const std::string& definitionText,
         float x, float y) -> ssq::Table {
         if (tick < 0)
-            return script::projectStatusResult(vm, Status::failure(Diagnostic::error(
-                DiagnosticCode::InvalidArgument, "RTS replay tick must be non-negative", "tick")), false, false);
+            return script::projectStatusResult(
+                vm, Status::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                      "RTS replay tick must be non-negative", "tick")));
         auto faction = parseScriptSubject(factionText, "faction");
         auto builder = parseScriptSubject(builderText, "builder");
         auto result = parseScriptSubject(buildingSubjectText, "buildingSubject");
         auto definition = parseScriptDefinition(definitionText);
-        if (!faction) return script::projectStatusResult(vm, faction.status(), false, false);
-        if (!builder) return script::projectStatusResult(vm, builder.status(), false, false);
-        if (!result) return script::projectStatusResult(vm, result.status(), false, false);
-        if (!definition) return script::projectStatusResult(vm, definition.status(), false, false);
+        if (!faction) return script::projectStatusResult(vm, faction.status());
+        if (!builder) return script::projectStatusResult(vm, builder.status());
+        if (!result) return script::projectStatusResult(vm, result.status());
+        if (!definition) return script::projectStatusResult(vm, definition.status());
         RTSReplayCommand replay;
         replay.tick = SimulationTick{static_cast<std::uint64_t>(tick)};
         replay.operation = RTSReplayOperation::Construction;
@@ -4230,14 +4246,15 @@ void RTS::expose(ssq::Class& cls) {
         const std::string& producerText, const std::string& unitSubjectText,
         const std::string& definitionText, int priority) -> ssq::Table {
         if (tick < 0)
-            return script::projectStatusResult(vm, Status::failure(Diagnostic::error(
-                DiagnosticCode::InvalidArgument, "RTS replay tick must be non-negative", "tick")), false, false);
+            return script::projectStatusResult(
+                vm, Status::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                      "RTS replay tick must be non-negative", "tick")));
         auto producer = parseScriptSubject(producerText, "producer");
         auto result = parseScriptSubject(unitSubjectText, "unitSubject");
         auto definition = parseScriptDefinition(definitionText);
-        if (!producer) return script::projectStatusResult(vm, producer.status(), false, false);
-        if (!result) return script::projectStatusResult(vm, result.status(), false, false);
-        if (!definition) return script::projectStatusResult(vm, definition.status(), false, false);
+        if (!producer) return script::projectStatusResult(vm, producer.status());
+        if (!result) return script::projectStatusResult(vm, result.status());
+        if (!definition) return script::projectStatusResult(vm, definition.status());
         RTSReplayCommand replay;
         replay.tick = SimulationTick{static_cast<std::uint64_t>(tick)};
         replay.operation = RTSReplayOperation::Production;
@@ -4251,14 +4268,15 @@ void RTS::expose(ssq::Class& cls) {
         const std::string& producerText, const std::string& unitSubjectText,
         const std::string& definitionText, int priority) -> ssq::Table {
         if (tick < 0)
-            return script::projectStatusResult(vm, Status::failure(Diagnostic::error(
-                DiagnosticCode::InvalidArgument, "RTS replay tick must be non-negative", "tick")), false, false);
+            return script::projectStatusResult(
+                vm, Status::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                      "RTS replay tick must be non-negative", "tick")));
         auto producer = parseScriptSubject(producerText, "producer");
         auto result = parseScriptSubject(unitSubjectText, "unitSubject");
         auto definition = parseScriptDefinition(definitionText);
-        if (!producer) return script::projectStatusResult(vm, producer.status(), false, false);
-        if (!result) return script::projectStatusResult(vm, result.status(), false, false);
-        if (!definition) return script::projectStatusResult(vm, definition.status(), false, false);
+        if (!producer) return script::projectStatusResult(vm, producer.status());
+        if (!result) return script::projectStatusResult(vm, result.status());
+        if (!definition) return script::projectStatusResult(vm, definition.status());
         RTSReplayCommand replay;
         replay.tick = SimulationTick{static_cast<std::uint64_t>(tick)};
         replay.operation = RTSReplayOperation::ReinforcementProduction;
@@ -4271,10 +4289,11 @@ void RTS::expose(ssq::Class& cls) {
     cls.addFunc("queueScriptResearchCommand", [vm](RTS* self, std::int64_t tick,
         const std::string& producerText, const std::string& upgrade, int priority) -> ssq::Table {
         if (tick < 0)
-            return script::projectStatusResult(vm, Status::failure(Diagnostic::error(
-                DiagnosticCode::InvalidArgument, "RTS replay tick must be non-negative", "tick")), false, false);
+            return script::projectStatusResult(
+                vm, Status::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                      "RTS replay tick must be non-negative", "tick")));
         auto producer = parseScriptSubject(producerText, "producer");
-        if (!producer) return script::projectStatusResult(vm, producer.status(), false, false);
+        if (!producer) return script::projectStatusResult(vm, producer.status());
         RTSReplayCommand replay;
         replay.tick = SimulationTick{static_cast<std::uint64_t>(tick)};
         replay.operation = RTSReplayOperation::Research;
@@ -4287,14 +4306,15 @@ void RTS::expose(ssq::Class& cls) {
         const std::string& casterText, const std::string& ability,
         const std::string& targetText, float x, float y) -> ssq::Table {
         if (tick < 0)
-            return script::projectStatusResult(vm, Status::failure(Diagnostic::error(
-                DiagnosticCode::InvalidArgument, "RTS replay tick must be non-negative", "tick")), false, false);
+            return script::projectStatusResult(
+                vm, Status::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                      "RTS replay tick must be non-negative", "tick")));
         auto caster = parseScriptSubject(casterText, "caster");
-        if (!caster) return script::projectStatusResult(vm, caster.status(), false, false);
+        if (!caster) return script::projectStatusResult(vm, caster.status());
         SubjectRef target;
         if (!targetText.empty()) {
             auto parsed = parseScriptSubject(targetText, "target");
-            if (!parsed) return script::projectStatusResult(vm, parsed.status(), false, false);
+            if (!parsed) return script::projectStatusResult(vm, parsed.status());
             target = parsed.value();
         }
         RTSReplayCommand replay;
@@ -4309,10 +4329,11 @@ void RTS::expose(ssq::Class& cls) {
     cls.addFunc("queueScriptCancelProductionCommand", [vm](RTS* self, std::int64_t tick,
         const std::string& producerText, int queueIndex) -> ssq::Table {
         if (tick < 0)
-            return script::projectStatusResult(vm, Status::failure(Diagnostic::error(
-                DiagnosticCode::InvalidArgument, "RTS replay tick must be non-negative", "tick")), false, false);
+            return script::projectStatusResult(
+                vm, Status::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                      "RTS replay tick must be non-negative", "tick")));
         auto producer = parseScriptSubject(producerText, "producer");
-        if (!producer) return script::projectStatusResult(vm, producer.status(), false, false);
+        if (!producer) return script::projectStatusResult(vm, producer.status());
         RTSReplayCommand replay;
         replay.tick = SimulationTick{static_cast<std::uint64_t>(tick)};
         replay.operation = RTSReplayOperation::CancelProduction;
@@ -4323,10 +4344,11 @@ void RTS::expose(ssq::Class& cls) {
     cls.addFunc("queueScriptCancelAbilityCommand", [vm](RTS* self, std::int64_t tick,
         const std::vector<std::string>& subjectTexts) -> ssq::Table {
         if (tick < 0)
-            return script::projectStatusResult(vm, Status::failure(Diagnostic::error(
-                DiagnosticCode::InvalidArgument, "RTS replay tick must be non-negative", "tick")), false, false);
+            return script::projectStatusResult(
+                vm, Status::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                      "RTS replay tick must be non-negative", "tick")));
         auto subjects = parseScriptSubjects(subjectTexts);
-        if (!subjects) return script::projectStatusResult(vm, subjects.status(), false, false);
+        if (!subjects) return script::projectStatusResult(vm, subjects.status());
         RTSReplayCommand replay;
         replay.tick = SimulationTick{static_cast<std::uint64_t>(tick)};
         replay.operation = RTSReplayOperation::CancelAbility;
@@ -4337,12 +4359,12 @@ void RTS::expose(ssq::Class& cls) {
         const std::string& requesterText, float x, float y, float radius,
         int shotsPerResponder, int maxResponders) -> ssq::Table {
         if (tick < 0 || maxResponders < 0)
-            return script::projectStatusResult(vm, Status::failure(Diagnostic::error(
-                DiagnosticCode::InvalidArgument,
-                "RTS fire-support tick and responder limit must be non-negative", "fireSupport")),
-                false, false);
+            return script::projectStatusResult(
+                vm, Status::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                      "RTS fire-support tick and responder limit must be non-negative",
+                                                      "fireSupport")));
         auto requester = parseScriptSubject(requesterText, "requester");
-        if (!requester) return script::projectStatusResult(vm, requester.status(), false, false);
+        if (!requester) return script::projectStatusResult(vm, requester.status());
         RTSReplayCommand replay;
         replay.tick = SimulationTick{static_cast<std::uint64_t>(tick)};
         replay.operation = RTSReplayOperation::RequestFireSupport;
@@ -4356,10 +4378,11 @@ void RTS::expose(ssq::Class& cls) {
     cls.addFunc("queueScriptCancelFireSupportCommand", [vm](RTS* self, std::int64_t tick,
         const std::string& requesterText) -> ssq::Table {
         if (tick < 0)
-            return script::projectStatusResult(vm, Status::failure(Diagnostic::error(
-                DiagnosticCode::InvalidArgument, "RTS replay tick must be non-negative", "tick")), false, false);
+            return script::projectStatusResult(
+                vm, Status::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                      "RTS replay tick must be non-negative", "tick")));
         auto requester = parseScriptSubject(requesterText, "requester");
-        if (!requester) return script::projectStatusResult(vm, requester.status(), false, false);
+        if (!requester) return script::projectStatusResult(vm, requester.status());
         RTSReplayCommand replay;
         replay.tick = SimulationTick{static_cast<std::uint64_t>(tick)};
         replay.operation = RTSReplayOperation::CancelFireSupport;
@@ -4369,10 +4392,11 @@ void RTS::expose(ssq::Class& cls) {
     const auto queueBuildingLifecycle = [vm](RTS* self, std::int64_t tick,
         const std::string& buildingText, RTSReplayOperation operation) -> ssq::Table {
         if (tick < 0)
-            return script::projectStatusResult(vm, Status::failure(Diagnostic::error(
-                DiagnosticCode::InvalidArgument, "RTS replay tick must be non-negative", "tick")), false, false);
+            return script::projectStatusResult(
+                vm, Status::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                      "RTS replay tick must be non-negative", "tick")));
         auto building = parseScriptSubject(buildingText, "building");
-        if (!building) return script::projectStatusResult(vm, building.status(), false, false);
+        if (!building) return script::projectStatusResult(vm, building.status());
         RTSReplayCommand replay;
         replay.tick = SimulationTick{static_cast<std::uint64_t>(tick)};
         replay.operation = operation;
@@ -4391,10 +4415,11 @@ void RTS::expose(ssq::Class& cls) {
                                          const std::vector<std::string>& subjectTexts,
                                          float x, float y) -> ssq::Table {
         if (tick < 0)
-            return script::projectStatusResult(vm, Status::failure(Diagnostic::error(
-                DiagnosticCode::InvalidArgument, "RTS replay tick must be non-negative", "tick")), false, false);
+            return script::projectStatusResult(
+                vm, Status::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                      "RTS replay tick must be non-negative", "tick")));
         auto subjects = parseScriptSubjects(subjectTexts);
-        if (!subjects) return script::projectStatusResult(vm, subjects.status(), false, false);
+        if (!subjects) return script::projectStatusResult(vm, subjects.status());
         RTSReplayCommand replay;
         replay.tick = SimulationTick{static_cast<std::uint64_t>(tick)};
         replay.units = std::move(subjects).takeValue();
@@ -4408,10 +4433,11 @@ void RTS::expose(ssq::Class& cls) {
                                                const std::vector<std::string>& subjectTexts,
                                                float x, float y) -> ssq::Table {
         if (tick < 0)
-            return script::projectStatusResult(vm, Status::failure(Diagnostic::error(
-                DiagnosticCode::InvalidArgument, "RTS replay tick must be non-negative", "tick")), false, false);
+            return script::projectStatusResult(
+                vm, Status::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                      "RTS replay tick must be non-negative", "tick")));
         auto subjects = parseScriptSubjects(subjectTexts);
-        if (!subjects) return script::projectStatusResult(vm, subjects.status(), false, false);
+        if (!subjects) return script::projectStatusResult(vm, subjects.status());
         RTSReplayCommand replay;
         replay.tick = SimulationTick{static_cast<std::uint64_t>(tick)};
         replay.units = std::move(subjects).takeValue();
@@ -4425,17 +4451,19 @@ void RTS::expose(ssq::Class& cls) {
                                            const std::vector<std::string>& subjectTexts,
                                            const std::string& targetText) -> ssq::Table {
         if (tick < 0)
-            return script::projectStatusResult(vm, Status::failure(Diagnostic::error(
-                DiagnosticCode::InvalidArgument, "RTS replay tick must be non-negative", "tick")), false, false);
+            return script::projectStatusResult(
+                vm, Status::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                      "RTS replay tick must be non-negative", "tick")));
         auto subjects = parseScriptSubjects(subjectTexts);
-        if (!subjects) return script::projectStatusResult(vm, subjects.status(), false, false);
+        if (!subjects) return script::projectStatusResult(vm, subjects.status());
         auto targetSubject = parseScriptSubject(targetText, "target");
-        if (!targetSubject) return script::projectStatusResult(vm, targetSubject.status(), false, false);
+        if (!targetSubject) return script::projectStatusResult(vm, targetSubject.status());
         ecs::Entity* target = self->findUnit(targetSubject.value());
         if (target == nullptr) target = self->findBuilding(targetSubject.value());
         if (target == nullptr)
-            return script::projectStatusResult(vm, Status::failure(Diagnostic::error(
-                DiagnosticCode::NotFound, "RTS replay target identity was not found", "target")), false, false);
+            return script::projectStatusResult(
+                vm, Status::failure(Diagnostic::error(DiagnosticCode::NotFound,
+                                                      "RTS replay target identity was not found", "target")));
         RTSReplayCommand replay;
         replay.tick = SimulationTick{static_cast<std::uint64_t>(tick)};
         replay.units = std::move(subjects).takeValue();
@@ -4448,10 +4476,11 @@ void RTS::expose(ssq::Class& cls) {
         const std::vector<std::string>& subjectTexts, float startX, float startY,
         float endX, float endY, float width, int shotsPerUnit) -> ssq::Table {
         if (tick < 0)
-            return script::projectStatusResult(vm, Status::failure(Diagnostic::error(
-                DiagnosticCode::InvalidArgument, "RTS replay tick must be non-negative", "tick")), false, false);
+            return script::projectStatusResult(
+                vm, Status::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                      "RTS replay tick must be non-negative", "tick")));
         auto subjects = parseScriptSubjects(subjectTexts);
-        if (!subjects) return script::projectStatusResult(vm, subjects.status(), false, false);
+        if (!subjects) return script::projectStatusResult(vm, subjects.status());
         RTSReplayCommand replay;
         replay.tick = SimulationTick{static_cast<std::uint64_t>(tick)};
         replay.operation = RTSReplayOperation::SuppressArea;
@@ -4467,12 +4496,13 @@ void RTS::expose(ssq::Class& cls) {
         const std::vector<std::string>& subjectTexts, const std::string& targetText,
         float guardRadius, float spacing) -> ssq::Table {
         if (tick < 0)
-            return script::projectStatusResult(vm, Status::failure(Diagnostic::error(
-                DiagnosticCode::InvalidArgument, "RTS replay tick must be non-negative", "tick")), false, false);
+            return script::projectStatusResult(
+                vm, Status::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                      "RTS replay tick must be non-negative", "tick")));
         auto subjects = parseScriptSubjects(subjectTexts);
-        if (!subjects) return script::projectStatusResult(vm, subjects.status(), false, false);
+        if (!subjects) return script::projectStatusResult(vm, subjects.status());
         auto target = parseScriptSubject(targetText, "target");
-        if (!target) return script::projectStatusResult(vm, target.status(), false, false);
+        if (!target) return script::projectStatusResult(vm, target.status());
         RTSReplayCommand replay;
         replay.tick = SimulationTick{static_cast<std::uint64_t>(tick)};
         replay.operation = RTSReplayOperation::Escort;
@@ -4488,14 +4518,15 @@ void RTS::expose(ssq::Class& cls) {
         WorldPosition point, SubjectRef target, bool append,
         float formationSpacing) -> ssq::Table {
         if (tick < 0)
-            return script::projectStatusResult(vm, Status::failure(Diagnostic::error(
-                DiagnosticCode::InvalidArgument, "RTS replay tick must be non-negative", "tick")), false, false);
+            return script::projectStatusResult(
+                vm, Status::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                      "RTS replay tick must be non-negative", "tick")));
         if (formationSpacing == 0.0f || !std::isfinite(formationSpacing))
-            return script::projectStatusResult(vm, Status::failure(Diagnostic::error(
-                DiagnosticCode::InvalidArgument, "RTS replay formation spacing must be positive", "spacing")),
-                false, false);
+            return script::projectStatusResult(
+                vm, Status::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                      "RTS replay formation spacing must be positive", "spacing")));
         auto subjects = parseScriptSubjects(subjectTexts);
-        if (!subjects) return script::projectStatusResult(vm, subjects.status(), false, false);
+        if (!subjects) return script::projectStatusResult(vm, subjects.status());
         RTSReplayCommand replay;
         replay.tick = SimulationTick{static_cast<std::uint64_t>(tick)};
         replay.units = std::move(subjects).takeValue();
@@ -4528,24 +4559,24 @@ void RTS::expose(ssq::Class& cls) {
     cls.addFunc("queueScriptAppendMoveCommand", [vm, queueUnitOrder](RTS* self, std::int64_t tick,
         const std::vector<std::string>& subjects, float x, float y, float spacing) -> ssq::Table {
         if (!std::isfinite(spacing) || spacing <= 0.0f)
-            return script::projectStatusResult(vm, Status::failure(Diagnostic::error(
-                DiagnosticCode::InvalidArgument, "RTS replay formation spacing must be positive", "spacing")),
-                false, false);
+            return script::projectStatusResult(
+                vm, Status::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                      "RTS replay formation spacing must be positive", "spacing")));
         return queueUnitOrder(self, tick, subjects, OrderKind::Move, {x, y}, {}, true, spacing);
     });
     cls.addFunc("queueScriptAppendAttackMoveCommand", [vm, queueUnitOrder](RTS* self, std::int64_t tick,
         const std::vector<std::string>& subjects, float x, float y, float spacing) -> ssq::Table {
         if (!std::isfinite(spacing) || spacing <= 0.0f)
-            return script::projectStatusResult(vm, Status::failure(Diagnostic::error(
-                DiagnosticCode::InvalidArgument, "RTS replay formation spacing must be positive", "spacing")),
-                false, false);
+            return script::projectStatusResult(
+                vm, Status::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                      "RTS replay formation spacing must be positive", "spacing")));
         return queueUnitOrder(self, tick, subjects, OrderKind::AttackMove, {x, y}, {}, true, spacing);
     });
     const auto queueEntityOrder = [vm, queueUnitOrder](RTS* self, std::int64_t tick,
         const std::vector<std::string>& subjects, const std::string& targetText,
         OrderKind kind) -> ssq::Table {
         auto target = parseScriptSubject(targetText, "target");
-        if (!target) return script::projectStatusResult(vm, target.status(), false, false);
+        if (!target) return script::projectStatusResult(vm, target.status());
         return queueUnitOrder(self, tick, subjects, kind, {}, target.value(), false, -1.0f);
     };
     cls.addFunc("queueScriptRepairCommand", [queueEntityOrder](RTS* self, std::int64_t tick,
@@ -4567,7 +4598,7 @@ void RTS::expose(ssq::Class& cls) {
     cls.addFunc("moveUnits", [vm](RTS* self, const std::vector<std::string>& subjectTexts,
                                   float x, float y, bool append, float spacing) -> ssq::Table {
         auto subjects = parseScriptSubjects(subjectTexts);
-        if (!subjects) return script::projectStatusResult(vm, subjects.status(), false, false);
+        if (!subjects) return script::projectStatusResult(vm, subjects.status());
         CommandSpec command;
         command.kind = OrderKind::Move;
         command.target = {x, y};
@@ -4581,7 +4612,7 @@ void RTS::expose(ssq::Class& cls) {
     cls.addFunc("attackMoveUnits", [vm](RTS* self, const std::vector<std::string>& subjectTexts,
                                         float x, float y, bool append, float spacing) -> ssq::Table {
         auto subjects = parseScriptSubjects(subjectTexts);
-        if (!subjects) return script::projectStatusResult(vm, subjects.status(), false, false);
+        if (!subjects) return script::projectStatusResult(vm, subjects.status());
         CommandSpec command;
         command.kind = OrderKind::AttackMove;
         command.target = {x, y};
@@ -4595,16 +4626,15 @@ void RTS::expose(ssq::Class& cls) {
     cls.addFunc("attackUnits", [vm](RTS* self, const std::vector<std::string>& subjectTexts,
                                     const std::string& targetText, bool append) -> ssq::Table {
         auto subjects = parseScriptSubjects(subjectTexts);
-        if (!subjects) return script::projectStatusResult(vm, subjects.status(), false, false);
+        if (!subjects) return script::projectStatusResult(vm, subjects.status());
         auto targetSubject = parseScriptSubject(targetText, "target");
-        if (!targetSubject) return script::projectStatusResult(vm, targetSubject.status(), false, false);
+        if (!targetSubject) return script::projectStatusResult(vm, targetSubject.status());
         ecs::Entity* target = self->findUnit(targetSubject.value());
         if (target == nullptr) target = self->findBuilding(targetSubject.value());
         if (target == nullptr)
-            return script::projectStatusResult(vm,
-                Status::failure(Diagnostic::error(DiagnosticCode::NotFound,
-                                                  "RTS attack target identity was not found", "target")),
-                false, false);
+            return script::projectStatusResult(
+                vm, Status::failure(Diagnostic::error(DiagnosticCode::NotFound,
+                                                      "RTS attack target identity was not found", "target")));
         CommandSpec command;
         command.kind = OrderKind::Attack;
         command.targetEntity = ecs::handle_of(target);
@@ -4615,7 +4645,7 @@ void RTS::expose(ssq::Class& cls) {
     cls.addFunc("attackGroundUnits", [vm](RTS* self, const std::vector<std::string>& subjectTexts,
                                            float x, float y, bool append) -> ssq::Table {
         auto subjects = parseScriptSubjects(subjectTexts);
-        if (!subjects) return script::projectStatusResult(vm, subjects.status(), false, false);
+        if (!subjects) return script::projectStatusResult(vm, subjects.status());
         CommandSpec command;
         command.kind = OrderKind::AttackGround;
         command.target = {x, y};
@@ -4627,7 +4657,7 @@ void RTS::expose(ssq::Class& cls) {
         float startX, float startY, float endX, float endY, float width,
         int shotsPerUnit) -> ssq::Table {
         auto subjects = parseScriptSubjects(subjectTexts);
-        if (!subjects) return script::projectStatusResult(vm, subjects.status(), false, false);
+        if (!subjects) return script::projectStatusResult(vm, subjects.status());
         return script::projectResult(vm, self->suppressArea(
             std::move(subjects).takeValue(), {startX, startY}, {endX, endY}, width, shotsPerUnit),
             fanOutValue);
@@ -4635,25 +4665,25 @@ void RTS::expose(ssq::Class& cls) {
     cls.addFunc("escortUnits", [vm](RTS* self, const std::vector<std::string>& subjectTexts,
         const std::string& targetText, float guardRadius, float spacing) -> ssq::Table {
         auto subjects = parseScriptSubjects(subjectTexts);
-        if (!subjects) return script::projectStatusResult(vm, subjects.status(), false, false);
+        if (!subjects) return script::projectStatusResult(vm, subjects.status());
         auto target = parseScriptSubject(targetText, "target");
-        if (!target) return script::projectStatusResult(vm, target.status(), false, false);
+        if (!target) return script::projectStatusResult(vm, target.status());
         return script::projectResult(vm, self->escortUnits(
             std::move(subjects).takeValue(), target.value(), guardRadius, spacing), fanOutValue);
     });
     cls.addFunc("setUnitStance", [vm](RTS* self, const std::vector<std::string>& subjectTexts,
                                        const std::string& stanceText, float leashRange) -> ssq::Table {
         auto subjects = parseScriptSubjects(subjectTexts);
-        if (!subjects) return script::projectStatusResult(vm, subjects.status(), false, false);
+        if (!subjects) return script::projectStatusResult(vm, subjects.status());
         auto stance = parseCombatStance(stanceText);
-        if (!stance) return script::projectStatusResult(vm, stance.status(), false, false);
+        if (!stance) return script::projectStatusResult(vm, stance.status());
         return script::projectResult(vm, self->setUnitStance(
             std::move(subjects).takeValue(), stance.value(), leashRange));
     });
     cls.addFunc("setUnitMovementPriority", [vm](RTS* self,
         const std::vector<std::string>& subjectTexts, int priority) -> ssq::Table {
         auto subjects = parseScriptSubjects(subjectTexts);
-        if (!subjects) return script::projectStatusResult(vm, subjects.status(), false, false);
+        if (!subjects) return script::projectStatusResult(vm, subjects.status());
         return script::projectResult(vm, self->setUnitMovementPriority(
             std::move(subjects).takeValue(), priority));
     });
@@ -4661,38 +4691,36 @@ void RTS::expose(ssq::Class& cls) {
                                       const std::string& nodeText,
                                       const std::string& dropoffText) -> ssq::Table {
         auto workerSubject = parseScriptSubject(workerText, "worker");
-        if (!workerSubject)
-            return script::projectStatusResult(vm, workerSubject.status(), false, false);
+        if (!workerSubject) return script::projectStatusResult(vm, workerSubject.status());
         auto nodeSubject = parseScriptSubject(nodeText, "node");
-        if (!nodeSubject)
-            return script::projectStatusResult(vm, nodeSubject.status(), false, false);
+        if (!nodeSubject) return script::projectStatusResult(vm, nodeSubject.status());
         auto dropoffSubject = parseScriptSubject(dropoffText, "dropoff");
-        if (!dropoffSubject)
-            return script::projectStatusResult(vm, dropoffSubject.status(), false, false);
+        if (!dropoffSubject) return script::projectStatusResult(vm, dropoffSubject.status());
         auto* worker = self->findUnit(workerSubject.value());
         auto* node = self->findResourceNode(nodeSubject.value());
         auto* dropoff = self->findBuilding(dropoffSubject.value());
         if (worker == nullptr || node == nullptr || dropoff == nullptr)
-            return script::projectStatusResult(vm, Status::failure(Diagnostic::error(
-                DiagnosticCode::NotFound, "RTS worker assignment root was not found", "assignment")),
-                false, false);
+            return script::projectStatusResult(
+                vm, Status::failure(Diagnostic::error(DiagnosticCode::NotFound,
+                                                      "RTS worker assignment root was not found", "assignment")));
         return script::projectResult(vm, self->assignWorker(*worker, *node, *dropoff));
     });
     cls.addFunc("setWorkerAutoAssignment", [vm](RTS* self,
         const std::vector<std::string>& subjectTexts, bool enabled) -> ssq::Table {
         auto subjects = parseScriptSubjects(subjectTexts);
-        if (!subjects) return script::projectStatusResult(vm, subjects.status(), false, false);
+        if (!subjects) return script::projectStatusResult(vm, subjects.status());
         return script::projectResult(vm, self->setWorkerAutoAssignment(
             std::move(subjects).takeValue(), enabled));
     });
     cls.addFunc("configureAutoConstruction", [vm](RTS* self, const std::string& factionText,
         bool enabled, int maxBuildersPerSite, int reserveWorkers) -> ssq::Table {
         auto subject = parseScriptSubject(factionText, "faction");
-        if (!subject) return script::projectStatusResult(vm, subject.status(), false, false);
+        if (!subject) return script::projectStatusResult(vm, subject.status());
         auto* faction = self->findFaction(subject.value());
         if (faction == nullptr)
-            return script::projectStatusResult(vm, Status::failure(Diagnostic::error(
-                DiagnosticCode::NotFound, "RTS workforce faction was not found", "faction")), false, false);
+            return script::projectStatusResult(
+                vm, Status::failure(
+                        Diagnostic::error(DiagnosticCode::NotFound, "RTS workforce faction was not found", "faction")));
         const auto workforce = faction->workforce();
         return script::projectResult(vm, self->configureWorkforce(*faction, enabled,
             maxBuildersPerSite, workforce->autoRepair,
@@ -4701,11 +4729,12 @@ void RTS::expose(ssq::Class& cls) {
     cls.addFunc("configureAutoRepair", [vm](RTS* self, const std::string& factionText,
         bool enabled, int maxRepairersPerBuilding, int reserveWorkers) -> ssq::Table {
         auto subject = parseScriptSubject(factionText, "faction");
-        if (!subject) return script::projectStatusResult(vm, subject.status(), false, false);
+        if (!subject) return script::projectStatusResult(vm, subject.status());
         auto* faction = self->findFaction(subject.value());
         if (faction == nullptr)
-            return script::projectStatusResult(vm, Status::failure(Diagnostic::error(
-                DiagnosticCode::NotFound, "RTS workforce faction was not found", "faction")), false, false);
+            return script::projectStatusResult(
+                vm, Status::failure(
+                        Diagnostic::error(DiagnosticCode::NotFound, "RTS workforce faction was not found", "faction")));
         const auto workforce = faction->workforce();
         return script::projectResult(vm, self->configureWorkforce(*faction,
             workforce->autoConstruction, static_cast<int>(workforce->maxBuildersPerSite),
@@ -4714,69 +4743,71 @@ void RTS::expose(ssq::Class& cls) {
     cls.addFunc("assignBuilder", [vm](RTS* self, const std::string& workerText,
                                         const std::string& buildingText) -> ssq::Table {
         auto workerSubject = parseScriptSubject(workerText, "worker");
-        if (!workerSubject)
-            return script::projectStatusResult(vm, workerSubject.status(), false, false);
+        if (!workerSubject) return script::projectStatusResult(vm, workerSubject.status());
         auto buildingSubject = parseScriptSubject(buildingText, "building");
-        if (!buildingSubject)
-            return script::projectStatusResult(vm, buildingSubject.status(), false, false);
+        if (!buildingSubject) return script::projectStatusResult(vm, buildingSubject.status());
         auto* worker = self->findUnit(workerSubject.value());
         auto* building = self->findBuilding(buildingSubject.value());
         if (worker == nullptr || building == nullptr)
-            return script::projectStatusResult(vm, Status::failure(Diagnostic::error(
-                DiagnosticCode::NotFound, "RTS builder assignment root was not found", "assignment")),
-                false, false);
+            return script::projectStatusResult(
+                vm, Status::failure(Diagnostic::error(DiagnosticCode::NotFound,
+                                                      "RTS builder assignment root was not found", "assignment")));
         return script::projectResult(vm, self->assignBuilder(*worker, *building),
                                      [](std::string id) { return Value(std::move(id)); });
     });
     cls.addFunc("addUnitReserveAmmo", [vm](RTS* self, const std::string& subjectText,
                                              int rounds) -> ssq::Table {
         auto subject = parseScriptSubject(subjectText, "unit");
-        if (!subject) return script::projectStatusResult(vm, subject.status(), false, false);
+        if (!subject) return script::projectStatusResult(vm, subject.status());
         auto* unit = self->findUnit(subject.value());
         if (unit == nullptr)
-            return script::projectStatusResult(vm, Status::failure(Diagnostic::error(
-                DiagnosticCode::NotFound, "RTS reserve-ammunition unit was not found", "unit")), false, false);
+            return script::projectStatusResult(
+                vm, Status::failure(Diagnostic::error(DiagnosticCode::NotFound,
+                                                      "RTS reserve-ammunition unit was not found", "unit")));
         return script::projectResult(vm, self->addUnitReserveAmmo(*unit, rounds),
                                      [](int value) { return Value(static_cast<std::int64_t>(value)); });
     });
     cls.addFunc("addUnitAmmoSupply", [vm](RTS* self, const std::string& subjectText,
                                             float rounds) -> ssq::Table {
         auto subject = parseScriptSubject(subjectText, "unit");
-        if (!subject) return script::projectStatusResult(vm, subject.status(), false, false);
+        if (!subject) return script::projectStatusResult(vm, subject.status());
         auto* unit = self->findUnit(subject.value());
         if (unit == nullptr)
-            return script::projectStatusResult(vm, Status::failure(Diagnostic::error(
-                DiagnosticCode::NotFound, "RTS ammunition-supply unit was not found", "unit")), false, false);
+            return script::projectStatusResult(
+                vm, Status::failure(Diagnostic::error(DiagnosticCode::NotFound,
+                                                      "RTS ammunition-supply unit was not found", "unit")));
         return script::projectResult(vm, self->addUnitAmmoSupply(*unit, rounds),
                                      [](float value) { return Value(static_cast<double>(value)); });
     });
     cls.addFunc("addBuildingAmmoSupply", [vm](RTS* self, const std::string& subjectText,
                                                 float rounds) -> ssq::Table {
         auto subject = parseScriptSubject(subjectText, "building");
-        if (!subject) return script::projectStatusResult(vm, subject.status(), false, false);
+        if (!subject) return script::projectStatusResult(vm, subject.status());
         auto* building = self->findBuilding(subject.value());
         if (building == nullptr)
-            return script::projectStatusResult(vm, Status::failure(Diagnostic::error(
-                DiagnosticCode::NotFound, "RTS ammunition-supply building was not found", "building")), false, false);
+            return script::projectStatusResult(
+                vm, Status::failure(Diagnostic::error(DiagnosticCode::NotFound,
+                                                      "RTS ammunition-supply building was not found", "building")));
         return script::projectResult(vm, self->addBuildingAmmoSupply(*building, rounds),
                                      [](float value) { return Value(static_cast<double>(value)); });
     });
     cls.addFunc("setUnitAutoResupply", [vm](RTS* self, const std::string& subjectText,
                                               bool enabled) -> ssq::Table {
         auto subject = parseScriptSubject(subjectText, "unit");
-        if (!subject) return script::projectStatusResult(vm, subject.status(), false, false);
+        if (!subject) return script::projectStatusResult(vm, subject.status());
         auto* unit = self->findUnit(subject.value());
         if (unit == nullptr)
-            return script::projectStatusResult(vm, Status::failure(Diagnostic::error(
-                DiagnosticCode::NotFound, "RTS automatic-resupply unit was not found", "unit")), false, false);
+            return script::projectStatusResult(
+                vm, Status::failure(Diagnostic::error(DiagnosticCode::NotFound,
+                                                      "RTS automatic-resupply unit was not found", "unit")));
         return script::projectResult(vm, self->setUnitAutoResupply(*unit, enabled));
     });
     cls.addFunc("heal", [vm](RTS* self, const std::string& sourceText,
                                const std::string& targetText, float amount) -> ssq::Table {
         auto source = parseScriptSubject(sourceText, "source");
-        if (!source) return script::projectStatusResult(vm, source.status(), false, false);
+        if (!source) return script::projectStatusResult(vm, source.status());
         auto target = parseScriptSubject(targetText, "target");
-        if (!target) return script::projectStatusResult(vm, target.status(), false, false);
+        if (!target) return script::projectStatusResult(vm, target.status());
         return script::projectResult(vm, self->heal(
                                          source.value(), target.value(), static_cast<double>(amount)),
                                      [](double applied) { return Value(applied); });
@@ -4784,9 +4815,9 @@ void RTS::expose(ssq::Class& cls) {
     cls.addFunc("applyStatusEffect", [vm](RTS* self, const std::string& sourceText,
         const std::string& targetText, const std::string& effect, float durationOverride) -> ssq::Table {
         auto source = parseScriptSubject(sourceText, "source");
-        if (!source) return script::projectStatusResult(vm, source.status(), false, false);
+        if (!source) return script::projectStatusResult(vm, source.status());
         auto target = parseScriptSubject(targetText, "target");
-        if (!target) return script::projectStatusResult(vm, target.status(), false, false);
+        if (!target) return script::projectStatusResult(vm, target.status());
         return script::projectResult(vm,
             self->applyStatusEffect(source.value(), target.value(), effect,
                                     static_cast<double>(durationOverride)),
@@ -4798,16 +4829,17 @@ void RTS::expose(ssq::Class& cls) {
     cls.addFunc("requestFireSupport", [vm](RTS* self, const std::string& requesterText,
         float x, float y, float radius, int shotsPerResponder, int maxResponders) -> ssq::Table {
         if (maxResponders < 0)
-            return script::projectStatusResult(vm, Status::failure(Diagnostic::error(
-                DiagnosticCode::InvalidArgument,
-                "RTS fire-support responder limit must be non-negative", "maxResponders")), false, false);
+            return script::projectStatusResult(
+                vm, Status::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                      "RTS fire-support responder limit must be non-negative",
+                                                      "maxResponders")));
         auto requesterSubject = parseScriptSubject(requesterText, "requester");
-        if (!requesterSubject)
-            return script::projectStatusResult(vm, requesterSubject.status(), false, false);
+        if (!requesterSubject) return script::projectStatusResult(vm, requesterSubject.status());
         auto* requester = self->findUnit(requesterSubject.value());
         if (requester == nullptr)
-            return script::projectStatusResult(vm, Status::failure(Diagnostic::error(
-                DiagnosticCode::NotFound, "RTS fire-support requester was not found", "requester")), false, false);
+            return script::projectStatusResult(
+                vm, Status::failure(Diagnostic::error(DiagnosticCode::NotFound,
+                                                      "RTS fire-support requester was not found", "requester")));
         return script::projectResult(vm, self->requestFireSupport(
             *requester, {x, y}, radius, shotsPerResponder, static_cast<std::size_t>(maxResponders)),
             [](std::size_t count) { return Value(static_cast<std::int64_t>(count)); });
@@ -4815,19 +4847,19 @@ void RTS::expose(ssq::Class& cls) {
     cls.addFunc("cancelFireSupport", [vm](RTS* self,
         const std::string& requesterText) -> ssq::Table {
         auto requesterSubject = parseScriptSubject(requesterText, "requester");
-        if (!requesterSubject)
-            return script::projectStatusResult(vm, requesterSubject.status(), false, false);
+        if (!requesterSubject) return script::projectStatusResult(vm, requesterSubject.status());
         auto* requester = self->findUnit(requesterSubject.value());
         if (requester == nullptr)
-            return script::projectStatusResult(vm, Status::failure(Diagnostic::error(
-                DiagnosticCode::NotFound, "RTS fire-support requester was not found", "requester")), false, false);
+            return script::projectStatusResult(
+                vm, Status::failure(Diagnostic::error(DiagnosticCode::NotFound,
+                                                      "RTS fire-support requester was not found", "requester")));
         return script::projectResult(vm, self->cancelFireSupport(*requester),
             [](std::size_t count) { return Value(static_cast<std::int64_t>(count)); });
     });
     cls.addFunc("patrolUnits", [vm](RTS* self, const std::vector<std::string>& subjectTexts,
                                      float x, float y, float spacing) -> ssq::Table {
         auto subjects = parseScriptSubjects(subjectTexts);
-        if (!subjects) return script::projectStatusResult(vm, subjects.status(), false, false);
+        if (!subjects) return script::projectStatusResult(vm, subjects.status());
         CommandSpec command;
         command.kind = OrderKind::Patrol;
         command.target = {x, y};
@@ -4840,13 +4872,14 @@ void RTS::expose(ssq::Class& cls) {
     cls.addFunc("repairUnits", [vm](RTS* self, const std::vector<std::string>& subjectTexts,
                                      const std::string& buildingText, bool append) -> ssq::Table {
         auto subjects = parseScriptSubjects(subjectTexts);
-        if (!subjects) return script::projectStatusResult(vm, subjects.status(), false, false);
+        if (!subjects) return script::projectStatusResult(vm, subjects.status());
         auto targetSubject = parseScriptSubject(buildingText, "building");
-        if (!targetSubject) return script::projectStatusResult(vm, targetSubject.status(), false, false);
+        if (!targetSubject) return script::projectStatusResult(vm, targetSubject.status());
         Building* building = self->findBuilding(targetSubject.value());
         if (building == nullptr)
-            return script::projectStatusResult(vm, Status::failure(Diagnostic::error(
-                DiagnosticCode::NotFound, "RTS repair building identity was not found", "building")), false, false);
+            return script::projectStatusResult(
+                vm, Status::failure(Diagnostic::error(DiagnosticCode::NotFound,
+                                                      "RTS repair building identity was not found", "building")));
         CommandSpec command;
         command.kind = OrderKind::Repair;
         command.targetEntity = ecs::handle_of(building);
@@ -4858,13 +4891,14 @@ void RTS::expose(ssq::Class& cls) {
     cls.addFunc("captureUnits", [vm](RTS* self, const std::vector<std::string>& subjectTexts,
                                       const std::string& buildingText, bool append) -> ssq::Table {
         auto subjects = parseScriptSubjects(subjectTexts);
-        if (!subjects) return script::projectStatusResult(vm, subjects.status(), false, false);
+        if (!subjects) return script::projectStatusResult(vm, subjects.status());
         auto targetSubject = parseScriptSubject(buildingText, "building");
-        if (!targetSubject) return script::projectStatusResult(vm, targetSubject.status(), false, false);
+        if (!targetSubject) return script::projectStatusResult(vm, targetSubject.status());
         Building* building = self->findBuilding(targetSubject.value());
         if (building == nullptr)
-            return script::projectStatusResult(vm, Status::failure(Diagnostic::error(
-                DiagnosticCode::NotFound, "RTS capture building identity was not found", "building")), false, false);
+            return script::projectStatusResult(
+                vm, Status::failure(Diagnostic::error(DiagnosticCode::NotFound,
+                                                      "RTS capture building identity was not found", "building")));
         CommandSpec command;
         command.kind = OrderKind::Capture;
         command.targetEntity = ecs::handle_of(building);
@@ -4876,13 +4910,14 @@ void RTS::expose(ssq::Class& cls) {
     cls.addFunc("garrisonUnits", [vm](RTS* self, const std::vector<std::string>& subjectTexts,
                                        const std::string& buildingText, bool append) -> ssq::Table {
         auto subjects = parseScriptSubjects(subjectTexts);
-        if (!subjects) return script::projectStatusResult(vm, subjects.status(), false, false);
+        if (!subjects) return script::projectStatusResult(vm, subjects.status());
         auto targetSubject = parseScriptSubject(buildingText, "building");
-        if (!targetSubject) return script::projectStatusResult(vm, targetSubject.status(), false, false);
+        if (!targetSubject) return script::projectStatusResult(vm, targetSubject.status());
         Building* building = self->findBuilding(targetSubject.value());
         if (building == nullptr)
-            return script::projectStatusResult(vm, Status::failure(Diagnostic::error(
-                DiagnosticCode::NotFound, "RTS garrison building identity was not found", "building")), false, false);
+            return script::projectStatusResult(
+                vm, Status::failure(Diagnostic::error(DiagnosticCode::NotFound,
+                                                      "RTS garrison building identity was not found", "building")));
         CommandSpec command;
         command.kind = OrderKind::Garrison;
         command.targetEntity = ecs::handle_of(building);
@@ -4894,13 +4929,14 @@ void RTS::expose(ssq::Class& cls) {
     cls.addFunc("boardTransportUnits", [vm](RTS* self, const std::vector<std::string>& subjectTexts,
                                              const std::string& transportText, bool append) -> ssq::Table {
         auto subjects = parseScriptSubjects(subjectTexts);
-        if (!subjects) return script::projectStatusResult(vm, subjects.status(), false, false);
+        if (!subjects) return script::projectStatusResult(vm, subjects.status());
         auto targetSubject = parseScriptSubject(transportText, "transport");
-        if (!targetSubject) return script::projectStatusResult(vm, targetSubject.status(), false, false);
+        if (!targetSubject) return script::projectStatusResult(vm, targetSubject.status());
         Unit* transport = self->findUnit(targetSubject.value());
         if (transport == nullptr)
-            return script::projectStatusResult(vm, Status::failure(Diagnostic::error(
-                DiagnosticCode::NotFound, "RTS transport identity was not found", "transport")), false, false);
+            return script::projectStatusResult(
+                vm, Status::failure(Diagnostic::error(DiagnosticCode::NotFound, "RTS transport identity was not found",
+                                                      "transport")));
         CommandSpec command;
         command.kind = OrderKind::BoardTransport;
         command.targetEntity = ecs::handle_of(transport);
@@ -4912,37 +4948,40 @@ void RTS::expose(ssq::Class& cls) {
     cls.addFunc("unloadTransport", [vm](RTS* self, const std::string& transportText,
                                          float x, float y) -> ssq::Table {
         auto subjectValue = parseScriptSubject(transportText, "transport");
-        if (!subjectValue) return script::projectStatusResult(vm, subjectValue.status(), false, false);
+        if (!subjectValue) return script::projectStatusResult(vm, subjectValue.status());
         Unit* transport = self->findUnit(subjectValue.value());
         if (transport == nullptr)
-            return script::projectStatusResult(vm, Status::failure(Diagnostic::error(
-                DiagnosticCode::NotFound, "RTS transport identity was not found", "transport")), false, false);
+            return script::projectStatusResult(
+                vm, Status::failure(Diagnostic::error(DiagnosticCode::NotFound, "RTS transport identity was not found",
+                                                      "transport")));
         return script::projectResult(vm, self->unloadTransport(*transport, {x, y}),
             [](std::size_t released) { return Value(static_cast<std::int64_t>(released)); });
     });
     cls.addFunc("evacuateBuilding", [vm](RTS* self, const std::string& buildingText,
                                           float x, float y) -> ssq::Table {
         auto subjectValue = parseScriptSubject(buildingText, "building");
-        if (!subjectValue) return script::projectStatusResult(vm, subjectValue.status(), false, false);
+        if (!subjectValue) return script::projectStatusResult(vm, subjectValue.status());
         Building* building = self->findBuilding(subjectValue.value());
         if (building == nullptr)
-            return script::projectStatusResult(vm, Status::failure(Diagnostic::error(
-                DiagnosticCode::NotFound, "RTS building identity was not found", "building")), false, false);
+            return script::projectStatusResult(
+                vm, Status::failure(Diagnostic::error(DiagnosticCode::NotFound, "RTS building identity was not found",
+                                                      "building")));
         return script::projectResult(vm, self->evacuateBuilding(*building, {x, y}),
             [](std::size_t released) { return Value(static_cast<std::int64_t>(released)); });
     });
     cls.addFunc("setUnitCloaked", [vm](RTS* self, const std::string& unitText, bool cloaked) -> ssq::Table {
         auto subjectValue = parseScriptSubject(unitText, "unit");
-        if (!subjectValue) return script::projectStatusResult(vm, subjectValue.status(), false, false);
+        if (!subjectValue) return script::projectStatusResult(vm, subjectValue.status());
         Unit* unit = self->findUnit(subjectValue.value());
         if (unit == nullptr)
-            return script::projectStatusResult(vm, Status::failure(Diagnostic::error(
-                DiagnosticCode::NotFound, "RTS unit identity was not found", "unit")), false, false);
+            return script::projectStatusResult(
+                vm, Status::failure(
+                        Diagnostic::error(DiagnosticCode::NotFound, "RTS unit identity was not found", "unit")));
         return script::projectResult(vm, self->setUnitCloaked(*unit, cloaked));
     });
     cls.addFunc("stopUnits", [vm](RTS* self, const std::vector<std::string>& subjectTexts) -> ssq::Table {
         auto subjects = parseScriptSubjects(subjectTexts);
-        if (!subjects) return script::projectStatusResult(vm, subjects.status(), false, false);
+        if (!subjects) return script::projectStatusResult(vm, subjects.status());
         CommandSpec command;
         command.kind = OrderKind::Stop;
         return script::projectResult(vm,
@@ -4950,7 +4989,7 @@ void RTS::expose(ssq::Class& cls) {
     });
     cls.addFunc("holdUnits", [vm](RTS* self, const std::vector<std::string>& subjectTexts) -> ssq::Table {
         auto subjects = parseScriptSubjects(subjectTexts);
-        if (!subjects) return script::projectStatusResult(vm, subjects.status(), false, false);
+        if (!subjects) return script::projectStatusResult(vm, subjects.status());
         CommandSpec command;
         command.kind = OrderKind::HoldPosition;
         return script::projectResult(vm,

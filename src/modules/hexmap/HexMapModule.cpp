@@ -600,8 +600,7 @@ void HexMapModule::expose(ssq::Class& cls) {
         auto                      saved = saveHexMap(self->map(), self->units().snapshot(), bytes);
         if (!saved) return script::projectResult(vm, std::move(saved));
         return script::projectStatusResult(
-            vm, saved.status(), true, true,
-            Value::string(std::string(reinterpret_cast<const char*>(bytes.data()), bytes.size())));
+            vm, saved.status(), Value::string(std::string(reinterpret_cast<const char*>(bytes.data()), bytes.size())));
     });
     cls.addFunc("loadMap", [vm](HexMapModule* self, graphics::Graphics* gfx, std::string blob) {
         if (!self || !gfx) return script::projectResult(vm, invalidArgument("hex map module is not available"));

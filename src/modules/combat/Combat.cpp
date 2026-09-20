@@ -451,10 +451,10 @@ ssq::Table project(HSQUIRRELVM vm, Result<Value>&& result) {
 ssq::Table newRuntime(HSQUIRRELVM vm) {
     auto runtime = std::make_unique<ScriptCombatRuntime>();
     auto initialized = runtime->initializeAbilities();
-    if (!initialized) return script::projectStatusResult(vm, initialized.status(), false, false);
+    if (!initialized) return script::projectStatusResult(vm, initialized.status());
     auto object = script::makeOwnedSquirrelInstance<ScriptCombatRuntime>(vm, std::move(runtime));
-    if (!object) return script::projectStatusResult(vm, object.status(), false, false);
-    auto result = script::projectStatusResult(vm, Status::success(StatusCode::Applied), true, false);
+    if (!object) return script::projectStatusResult(vm, object.status());
+    auto result = script::projectStatusResult(vm, Status::success(StatusCode::Applied));
     result.set("value", std::move(object).takeValue());
     result.set("ownership", std::string("owned"));
     return result;

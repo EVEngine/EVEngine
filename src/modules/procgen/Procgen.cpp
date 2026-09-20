@@ -123,19 +123,17 @@ SQInteger releaseNativeProxy(SQUserPointer pointer, SQInteger) {
 
 template <class T, class Ref, class Resolve, class Release>
 ssq::Table makeOwnedNativeProxy(HSQUIRRELVM vm, eve::Result<Ref>&& reference, Resolve&& resolve, Release&& release) {
-    if (!reference) return eve::script::projectStatusResult(vm, reference.status(), false, false);
+    if (!reference) return eve::script::projectStatusResult(vm, reference.status());
 
     const auto ref  = std::move(reference).takeValue();
     const auto view = std::invoke(std::forward<Resolve>(resolve), ref);
     if (!view.isBound()) {
         std::invoke(release, ref).ignore("rollback unbound Squirrel procgen proxy");
         return eve::script::projectStatusResult(
-            vm,
-            eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle,
-                                                              "procgen proxy could not resolve its owned object",
-                                                              "procgen", {}, "procgen.squirrel"))
-                .status(),
-            false, false);
+            vm, eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle,
+                                                                  "procgen proxy could not resolve its owned object",
+                                                                  "procgen", {}, "procgen.squirrel"))
+                    .status());
     }
 
     const SQInteger top      = sq_gettop(vm);
@@ -145,12 +143,10 @@ ssq::Table makeOwnedNativeProxy(HSQUIRRELVM vm, eve::Result<Ref>&& reference, Re
         sq_settop(vm, top);
         std::invoke(release, ref).ignore("rollback failed Squirrel procgen instance");
         return eve::script::projectStatusResult(
-            vm,
-            eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::Failed,
-                                                              "failed to create Squirrel procgen proxy", "procgen", {},
-                                                              "procgen.squirrel"))
-                .status(),
-            false, false);
+            vm, eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::Failed,
+                                                                  "failed to create Squirrel procgen proxy", "procgen",
+                                                                  {}, "procgen.squirrel"))
+                    .status());
     }
     sq_remove(vm, -2);
     auto* native = view.get();
@@ -170,7 +166,7 @@ ssq::Table makeOwnedNativeProxy(HSQUIRRELVM vm, eve::Result<Ref>&& reference, Re
     sq_addref(vm, &value.getRaw());
     sq_settop(vm, top);
 
-    auto result = eve::script::projectStatusResult(vm, eve::Status::success(eve::StatusCode::Applied), true, false);
+    auto result = eve::script::projectStatusResult(vm, eve::Status::success(eve::StatusCode::Applied));
     result.set("value", value);
     result.set("ownership", std::string("owned"));
     result.set("ownerEpoch", static_cast<std::int64_t>(ref.ownerEpoch));
@@ -182,13 +178,11 @@ template <class T>
 ssq::Table projectBorrowedResult(HSQUIRRELVM vm, eve::script::Borrowed<T> borrowed, const char* objectName) {
     if (!borrowed.isBound())
         return eve::script::projectStatusResult(
-            vm,
-            eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::Failed,
-                                                              std::string(objectName) + " could not be produced",
-                                                              objectName, {}, "procgen.squirrel"))
-                .status(),
-            false, false);
-    auto result = eve::script::projectStatusResult(vm, eve::Status::success(eve::StatusCode::Applied), true, false);
+            vm, eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::Failed,
+                                                                  std::string(objectName) + " could not be produced",
+                                                                  objectName, {}, "procgen.squirrel"))
+                    .status());
+    auto result = eve::script::projectStatusResult(vm, eve::Status::success(eve::StatusCode::Applied));
     result.set("value", borrowed.get());
     result.set("ownership", std::string("borrowed"));
     return result;
@@ -279,17 +273,17 @@ eve::Value publishReceiptProjection(ArtifactPublishReceipt&& receipt) {
 
 template <class Ref, class Proxy, class Release>
 ssq::Table makeOwnedProxy(HSQUIRRELVM vm, eve::Result<Ref>&& reference, Release&& release) {
-    if (!reference) return eve::script::projectStatusResult(vm, reference.status(), false, false);
+    if (!reference) return eve::script::projectStatusResult(vm, reference.status());
     const Ref ref    = std::move(reference).takeValue();
     auto      object = eve::script::makeOwnedSquirrelInstance<Proxy>(vm, std::make_unique<Proxy>(ref));
     if (!object) {
         const eve::Status status = object.status();
         object.ignore("failed to create owned procgen proxy");
         std::invoke(std::forward<Release>(release), ref).ignore("rollback failed owned procgen allocation");
-        return eve::script::projectStatusResult(vm, status, false, false);
+        return eve::script::projectStatusResult(vm, status);
     }
     ssq::Object owned = std::move(object).takeValue();
-    auto result = eve::script::projectStatusResult(vm, eve::Status::success(eve::StatusCode::Applied), true, false);
+    auto        result = eve::script::projectStatusResult(vm, eve::Status::success(eve::StatusCode::Applied));
     result.set("value", owned);
     result.set("ownership", std::string("owned"));
     result.set("ownerEpoch", static_cast<std::int64_t>(ref.ownerEpoch));
@@ -305,7 +299,7 @@ ssq::Table makeOwnedProxy(HSQUIRRELVM vm, eve::Result<Ref>&& reference, Release&
  * metres-per-cell and leaves that to the level that references it.
  */
 ssq::Table projectDecodedTerrainResult(HSQUIRRELVM vm, eve::Result<DecodedTerrainFile>&& decoded) {
-    if (!decoded) return eve::script::projectStatusResult(vm, decoded.status(), false, false);
+    if (!decoded) return eve::script::projectStatusResult(vm, decoded.status());
     DecodedTerrainFile terrain = std::move(decoded).takeValue();
     const std::int64_t width   = terrain.heightmap.getWidth();
     const std::int64_t height  = terrain.heightmap.getHeight();
@@ -340,7 +334,7 @@ ssq::Table projectDecodedTerrainResult(HSQUIRRELVM vm, eve::Result<DecodedTerrai
 ssq::Table projectRecipeDescriptorResult(HSQUIRRELVM vm, eve::Result<RecipeDescriptor>&& result) {
     const bool        ok     = result.ok();
     const eve::Status status = result.status();
-    if (!ok) return eve::script::projectStatusResult(vm, status, false, false);
+    if (!ok) return eve::script::projectStatusResult(vm, status);
 
     auto descriptor = std::move(result).takeValue();
     auto object     = eve::script::makeOwnedSquirrelInstance<RecipeDescriptor>(
@@ -348,12 +342,10 @@ ssq::Table projectRecipeDescriptorResult(HSQUIRRELVM vm, eve::Result<RecipeDescr
     if (!object) {
         const eve::Status failure = object.status();
         object.ignore("failed to create owned Procgen recipe schema");
-        return eve::script::projectStatusResult(vm, failure, false, false);
+        return eve::script::projectStatusResult(vm, failure);
     }
 
-    auto projected = eve::script::projectStatusResult(vm, status, true, true);
-    projected.set("value", std::move(object).takeValue());
-    return projected;
+    return eve::script::projectStatusResult(vm, status, std::move(object).takeValue());
 }
 
 template <class T, class Tag>
@@ -4605,13 +4597,11 @@ void Procgen::expose(ssq::Class& cls) {
             auto* module = Procgen::create();
             if (!params)
                 return eve::script::projectStatusResult(
-                    vm,
-                    eve::Result<ProcgenGridHandleRef>::failure(
-                        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
-                                               "generate params proxy must not be null", "params", {},
-                                               "procgen.squirrel"))
-                        .status(),
-                    false, false);
+                    vm, eve::Result<ProcgenGridHandleRef>::failure(
+                            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                   "generate params proxy must not be null", "params", {},
+                                                   "procgen.squirrel"))
+                            .status());
             return makeOwnedGridProxy(vm, module->generateHandle(algorithm, params->reference));
         });
     cls.addFunc(
@@ -4620,13 +4610,11 @@ void Procgen::expose(ssq::Class& cls) {
             auto* module = Procgen::create();
             if (!params)
                 return eve::script::projectStatusResult(
-                    vm,
-                    eve::Result<ProcgenImageHandleRef>::failure(
-                        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
-                                               "generateImage params proxy must not be null", "params", {},
-                                               "procgen.squirrel"))
-                        .status(),
-                    false, false);
+                    vm, eve::Result<ProcgenImageHandleRef>::failure(
+                            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                   "generateImage params proxy must not be null", "params", {},
+                                                   "procgen.squirrel"))
+                            .status());
             return makeOwnedNativeProxy<image::ImageData>(
                 vm, module->generateImageHandle(recipe, params->reference),
                 [](ProcgenImageHandleRef ref) { return Procgen::resolve(ref); },
@@ -4637,13 +4625,11 @@ void Procgen::expose(ssq::Class& cls) {
                     auto* module = Procgen::create();
                     if (!params)
                         return eve::script::projectStatusResult(
-                            vm,
-                            eve::Result<ProcgenNormalImageHandleRef>::failure(
-                                eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
-                                                       "generateNormalImage params proxy must not be null", "params",
-                                                       {}, "procgen.squirrel"))
-                                .status(),
-                            false, false);
+                            vm, eve::Result<ProcgenNormalImageHandleRef>::failure(
+                                    eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                           "generateNormalImage params proxy must not be null",
+                                                           "params", {}, "procgen.squirrel"))
+                                    .status());
                     return makeOwnedNativeProxy<image::ImageData>(
                         vm, module->generateNormalImageHandle(recipe, params->reference),
                         [](ProcgenNormalImageHandleRef ref) { return Procgen::resolve(ref); },
@@ -4654,13 +4640,11 @@ void Procgen::expose(ssq::Class& cls) {
                     auto* module = Procgen::create();
                     if (!params)
                         return eve::script::projectStatusResult(
-                            vm,
-                            eve::Result<ProcgenPbrMaterialHandleRef>::failure(
-                                eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
-                                                       "generatePbrMaterial params proxy must not be null", "params",
-                                                       {}, "procgen.squirrel"))
-                                .status(),
-                            false, false);
+                            vm, eve::Result<ProcgenPbrMaterialHandleRef>::failure(
+                                    eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                           "generatePbrMaterial params proxy must not be null",
+                                                           "params", {}, "procgen.squirrel"))
+                                    .status());
                     return makeOwnedNativeProxy<PbrTextureSet>(
                         vm, module->generatePbrMaterialHandle(recipe, params->reference),
                         [module](ProcgenPbrMaterialHandleRef ref) { return module->resolvePbrMaterial(ref); },
@@ -4677,13 +4661,11 @@ void Procgen::expose(ssq::Class& cls) {
                     auto* module = Procgen::create();
                     if (!params)
                         return eve::script::projectStatusResult(
-                            vm,
-                            eve::Result<ProcgenMeshBuildHandleRef>::failure(
-                                eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
-                                                       "buildMesh params proxy must not be null", "params", {},
-                                                       "procgen.squirrel"))
-                                .status(),
-                            false, false);
+                            vm, eve::Result<ProcgenMeshBuildHandleRef>::failure(
+                                    eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                           "buildMesh params proxy must not be null", "params", {},
+                                                           "procgen.squirrel"))
+                                    .status());
                     return makeOwnedNativeProxy<MeshBuild>(
                         vm, module->buildMeshHandle(recipe, params->reference),
                         [module](ProcgenMeshBuildHandleRef ref) { return module->resolveMeshBuild(ref); },
@@ -4699,13 +4681,11 @@ void Procgen::expose(ssq::Class& cls) {
         auto* module = Procgen::create();
         if (!params)
             return eve::script::projectStatusResult(
-                vm,
-                eve::Result<ProcgenHeightmapHandleRef>::failure(
-                    eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
-                                           "generateHeightmap params proxy must not be null", "params", {},
-                                           "procgen.squirrel"))
-                    .status(),
-                false, false);
+                vm, eve::Result<ProcgenHeightmapHandleRef>::failure(
+                        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                               "generateHeightmap params proxy must not be null", "params", {},
+                                               "procgen.squirrel"))
+                        .status());
         return makeOwnedNativeProxy<Heightmap>(
             vm, module->generateHeightmapHandle(params->reference),
             [module](ProcgenHeightmapHandleRef ref) { return module->resolveHeightmap(ref); },
@@ -4720,12 +4700,10 @@ void Procgen::expose(ssq::Class& cls) {
     cls.addFunc("newRuntimeGeneration", [vm = cls.getHandle()](Procgen* value, uint32_t worldSeed) -> ssq::Table {
         if (!value)
             return eve::script::projectStatusResult(
-                vm,
-                eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
-                                                                  "runtime generation requires a Procgen module",
-                                                                  "procgen", {}, "procgen.squirrel"))
-                    .status(),
-                false, false);
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                      "runtime generation requires a Procgen module",
+                                                                      "procgen", {}, "procgen.squirrel"))
+                        .status());
         return makeOwnedNativeProxy<RuntimeGeneration>(
             vm, value->newRuntimeGenerationHandle(worldSeed),
             [value](ProcgenRuntimeGenerationHandleRef ref) { return value->resolveRuntimeGeneration(ref); },
@@ -4740,12 +4718,10 @@ void Procgen::expose(ssq::Class& cls) {
     cls.addFunc("newPointGraph", [vm = cls.getHandle()](Procgen* value) -> ssq::Table {
         if (!value)
             return eve::script::projectStatusResult(
-                vm,
-                eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
-                                                                  "Procgen module must not be null", "procgen", {},
-                                                                  "procgen.squirrel"))
-                    .status(),
-                false, false);
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                      "Procgen module must not be null", "procgen", {},
+                                                                      "procgen.squirrel"))
+                        .status());
         return makeOwnedNativeProxy<PointGraph>(
             vm, value->newPointGraphHandle(),
             [value](ProcgenPointGraphHandleRef ref) { return value->resolvePointGraph(ref); },
@@ -4760,12 +4736,10 @@ void Procgen::expose(ssq::Class& cls) {
     cls.addFunc("newMeshModifierGraph", [vm = cls.getHandle()](Procgen* value) -> ssq::Table {
         if (!value)
             return eve::script::projectStatusResult(
-                vm,
-                eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
-                                                                  "Procgen module must not be null", "procgen", {},
-                                                                  "procgen.squirrel"))
-                    .status(),
-                false, false);
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                      "Procgen module must not be null", "procgen", {},
+                                                                      "procgen.squirrel"))
+                        .status());
         return makeOwnedNativeProxy<MeshModifierGraph>(
             vm, value->newMeshModifierGraphHandle(),
             [value](ProcgenMeshModifierGraphHandleRef ref) { return value->resolveMeshModifierGraph(ref); },
@@ -4780,12 +4754,10 @@ void Procgen::expose(ssq::Class& cls) {
     cls.addFunc("newSplinePath", [vm = cls.getHandle()](Procgen* value) -> ssq::Table {
         if (!value)
             return eve::script::projectStatusResult(
-                vm,
-                eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
-                                                                  "Procgen module must not be null", "procgen", {},
-                                                                  "procgen.squirrel"))
-                    .status(),
-                false, false);
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                      "Procgen module must not be null", "procgen", {},
+                                                                      "procgen.squirrel"))
+                        .status());
         return makeOwnedNativeProxy<SplinePath>(
             vm, value->newSplinePathHandle(),
             [value](ProcgenSplinePathHandleRef ref) { return value->resolveSplinePath(ref); },
@@ -4800,12 +4772,10 @@ void Procgen::expose(ssq::Class& cls) {
     cls.addFunc("newMeshDeformationSession", [vm = cls.getHandle()](Procgen* value) -> ssq::Table {
         if (!value)
             return eve::script::projectStatusResult(
-                vm,
-                eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
-                                                                  "Procgen module must not be null", "procgen", {},
-                                                                  "procgen.squirrel"))
-                    .status(),
-                false, false);
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                      "Procgen module must not be null", "procgen", {},
+                                                                      "procgen.squirrel"))
+                        .status());
         return makeOwnedNativeProxy<MeshDeformationSession>(
             vm, value->newMeshDeformationSessionHandle(),
             [value](ProcgenMeshDeformationSessionHandleRef ref) {
@@ -4822,12 +4792,10 @@ void Procgen::expose(ssq::Class& cls) {
     cls.addFunc("newDynamicMeshUvPaintSession", [vm = cls.getHandle()](Procgen* value) -> ssq::Table {
         if (!value)
             return eve::script::projectStatusResult(
-                vm,
-                eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
-                                                                  "Procgen module must not be null", "procgen", {},
-                                                                  "procgen.squirrel"))
-                    .status(),
-                false, false);
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                      "Procgen module must not be null", "procgen", {},
+                                                                      "procgen.squirrel"))
+                        .status());
         return makeOwnedNativeProxy<DynamicMeshUvPaintSession>(
             vm, value->newDynamicMeshUvPaintSessionHandle(),
             [value](ProcgenDynamicMeshUvPaintSessionHandleRef ref) {
@@ -4844,12 +4812,10 @@ void Procgen::expose(ssq::Class& cls) {
     cls.addFunc("newGridGraph", [vm = cls.getHandle()](Procgen* value) -> ssq::Table {
         if (!value)
             return eve::script::projectStatusResult(
-                vm,
-                eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
-                                                                  "Procgen module must not be null", "procgen", {},
-                                                                  "procgen.squirrel"))
-                    .status(),
-                false, false);
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                      "Procgen module must not be null", "procgen", {},
+                                                                      "procgen.squirrel"))
+                        .status());
         return makeOwnedNativeProxy<GridGraph>(
             vm, value->newGridGraphHandle(),
             [value](ProcgenGridGraphHandleRef ref) { return value->resolveGridGraph(ref); },
@@ -4864,12 +4830,10 @@ void Procgen::expose(ssq::Class& cls) {
     cls.addFunc("newMeshGraph", [vm = cls.getHandle()](Procgen* value) -> ssq::Table {
         if (!value)
             return eve::script::projectStatusResult(
-                vm,
-                eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
-                                                                  "Procgen module must not be null", "procgen", {},
-                                                                  "procgen.squirrel"))
-                    .status(),
-                false, false);
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                      "Procgen module must not be null", "procgen", {},
+                                                                      "procgen.squirrel"))
+                        .status());
         return makeOwnedNativeProxy<MeshGraph>(
             vm, value->newMeshGraphHandle(),
             [value](ProcgenMeshGraphHandleRef ref) { return value->resolveMeshGraph(ref); },
@@ -4884,12 +4848,10 @@ void Procgen::expose(ssq::Class& cls) {
     cls.addFunc("newBiomeRules", [vm = cls.getHandle()](Procgen* value) -> ssq::Table {
         if (!value)
             return eve::script::projectStatusResult(
-                vm,
-                eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
-                                                                  "Procgen module must not be null", "procgen", {},
-                                                                  "procgen.squirrel"))
-                    .status(),
-                false, false);
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                      "Procgen module must not be null", "procgen", {},
+                                                                      "procgen.squirrel"))
+                        .status());
         return makeOwnedNativeProxy<BiomeRules>(
             vm, value->newBiomeRulesHandle(),
             [value](ProcgenBiomeRulesHandleRef ref) { return value->resolveBiomeRules(ref); },
@@ -4906,12 +4868,10 @@ void Procgen::expose(ssq::Class& cls) {
                                        float maxZ) -> ssq::Table {
                     if (!value)
                         return eve::script::projectStatusResult(
-                            vm,
-                            eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
-                                                                              "Procgen module must not be null",
-                                                                              "procgen", {}, "procgen.squirrel"))
-                                .status(),
-                            false, false);
+                            vm, eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                                  "Procgen module must not be null",
+                                                                                  "procgen", {}, "procgen.squirrel"))
+                                    .status());
                     return makeOwnedSpatialProxy(vm, value->boxVolumeHandle(minX, minY, minZ, maxX, maxY, maxZ));
                 });
     cls.addFunc("sphereVolume", [vm = cls.getHandle()](Procgen* value, float x, float y, float z, float radius) {
@@ -5035,12 +4995,10 @@ void Procgen::expose(ssq::Class& cls) {
         const auto reference = nativeProxyReference<ProcgenPointSetHandleRef>(points);
         if (!value || !reference)
             return eve::script::projectStatusResult(
-                vm,
-                eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
-                                                                  "splineData requires an owned point set", "points",
-                                                                  {}, "procgen.squirrel"))
-                    .status(),
-                false, false);
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                      "splineData requires an owned point set",
+                                                                      "points", {}, "procgen.squirrel"))
+                        .status());
         return makeOwnedSpatialProxy(vm, value->splineDataHandle(*reference, radius));
     });
     cls.addFunc("sampleSpline",
@@ -5049,13 +5007,11 @@ void Procgen::expose(ssq::Class& cls) {
                     const auto reference = nativeProxyReference<ProcgenPointSetHandleRef>(points);
                     if (!value || !reference)
                         return eve::script::projectStatusResult(
-                            vm,
-                            eve::Result<void>::failure(
-                                eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
-                                                       "sampleSpline requires an owned point set", "points", {},
-                                                       "procgen.squirrel"))
-                                .status(),
-                            false, false);
+                            vm, eve::Result<void>::failure(
+                                    eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                           "sampleSpline requires an owned point set", "points", {},
+                                                           "procgen.squirrel"))
+                                    .status());
                     return makeOwnedPointSetProxy(vm, value->sampleSplineHandle(*reference, spacing, seed, jitter));
                 });
     cls.addFunc("filterSplineDistance",
@@ -5065,13 +5021,11 @@ void Procgen::expose(ssq::Class& cls) {
                     const auto splineRef = nativeProxyReference<ProcgenPointSetHandleRef>(spline);
                     if (!value || !inputRef || !splineRef)
                         return eve::script::projectStatusResult(
-                            vm,
-                            eve::Result<void>::failure(
-                                eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
-                                                       "filterSplineDistance requires owned point sets", "points", {},
-                                                       "procgen.squirrel"))
-                                .status(),
-                            false, false);
+                            vm, eve::Result<void>::failure(
+                                    eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                           "filterSplineDistance requires owned point sets", "points",
+                                                           {}, "procgen.squirrel"))
+                                    .status());
                     return makeOwnedPointSetProxy(
                         vm, value->filterSplineDistanceHandle(*inputRef, *splineRef, minDistance, maxDistance));
                 });
@@ -5079,12 +5033,10 @@ void Procgen::expose(ssq::Class& cls) {
         const auto inputRef = nativeProxyReference<ProcgenPointSetHandleRef>(input);
         if (!value || !inputRef)
             return eve::script::projectStatusResult(
-                vm,
-                eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
-                                                                  "selfPrune requires owned points", "points", {},
-                                                                  "procgen.squirrel"))
-                    .status(),
-                false, false);
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                      "selfPrune requires owned points", "points", {},
+                                                                      "procgen.squirrel"))
+                        .status());
         return makeOwnedPointSetProxy(vm, value->selfPruneHandle(*inputRef, radius));
     });
     cls.addFunc(
@@ -5239,8 +5191,7 @@ void Procgen::expose(ssq::Class& cls) {
                     eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
                                                                       "generateTexture requires params and Graphics",
                                                                       "generateTexture", {}, "procgen.squirrel"))
-                        .status(),
-                    false, false);
+                        .status());
             return projectBorrowedResult(vm, value->generateTextureBorrowed(recipe, params->reference, gfx), "texture");
         });
     cls.addFunc("generateMesh",
@@ -5248,13 +5199,11 @@ void Procgen::expose(ssq::Class& cls) {
                                        graphics::Graphics* gfx) -> ssq::Table {
                     if (!value || !params || !gfx)
                         return eve::script::projectStatusResult(
-                            vm,
-                            eve::Result<void>::failure(
-                                eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
-                                                       "generateMesh requires params and Graphics", "generateMesh", {},
-                                                       "procgen.squirrel"))
-                                .status(),
-                            false, false);
+                            vm, eve::Result<void>::failure(
+                                    eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                           "generateMesh requires params and Graphics", "generateMesh",
+                                                           {}, "procgen.squirrel"))
+                                    .status());
                     return projectBorrowedResult(vm, value->generateMeshBorrowed(recipe, params->reference, gfx),
                                                  "mesh");
                 });
@@ -5266,8 +5215,7 @@ void Procgen::expose(ssq::Class& cls) {
                             eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
                                                                               "uploadMesh requires a mesh and Graphics",
                                                                               "uploadMesh", {}, "procgen.squirrel"))
-                                .status(),
-                            false, false);
+                                .status());
                     return projectBorrowedResult(vm, value->uploadMeshBorrowed(*mesh, *gfx), "mesh");
                 });
     cls.addFunc("configureGtsTerrainTileLods",
@@ -5366,13 +5314,11 @@ void Procgen::expose(ssq::Class& cls) {
     cls.addFunc("getAlgorithmSchema", [vm = cls.getHandle()](Procgen* value, const std::string& algorithm) {
         if (!value)
             return eve::script::projectStatusResult(
-                vm,
-                eve::Result<RecipeDescriptor>::failure(
-                    eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
-                                           "algorithm schema requires a Procgen module", "procgen", {},
-                                           "procgen.squirrel"))
-                    .status(),
-                false, false);
+                vm, eve::Result<RecipeDescriptor>::failure(
+                        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                               "algorithm schema requires a Procgen module", "procgen", {},
+                                               "procgen.squirrel"))
+                        .status());
         return projectRecipeDescriptorResult(vm, value->getAlgorithmSchema(algorithm));
     });
     cls.addFunc("getAlgorithmDisplayName", &Procgen::getAlgorithmDisplayName);
@@ -5439,13 +5385,11 @@ void Procgen::expose(ssq::Class& cls) {
     cls.addFunc("getTextureRecipeSchema", [vm = cls.getHandle()](Procgen* value, const std::string& recipe) {
         if (!value)
             return eve::script::projectStatusResult(
-                vm,
-                eve::Result<RecipeDescriptor>::failure(
-                    eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
-                                           "texture schema requires a Procgen module", "procgen", {},
-                                           "procgen.squirrel"))
-                    .status(),
-                false, false);
+                vm, eve::Result<RecipeDescriptor>::failure(
+                        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                               "texture schema requires a Procgen module", "procgen", {},
+                                               "procgen.squirrel"))
+                        .status());
         return projectRecipeDescriptorResult(vm, value->getTextureRecipeSchema(recipe));
     });
     cls.addFunc("applyTextureRecipeDefaults",
@@ -5467,8 +5411,7 @@ void Procgen::expose(ssq::Class& cls) {
                 eve::Result<RecipeDescriptor>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
                                                                               "PBR schema requires a Procgen module",
                                                                               "procgen", {}, "procgen.squirrel"))
-                    .status(),
-                false, false);
+                    .status());
         return projectRecipeDescriptorResult(vm, value->getPbrRecipeSchema(recipe));
     });
     cls.addFunc("applyPbrRecipeDefaults",
@@ -5576,8 +5519,7 @@ void Procgen::expose(ssq::Class& cls) {
                 eve::Result<RecipeDescriptor>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
                                                                               "mesh schema requires a Procgen module",
                                                                               "procgen", {}, "procgen.squirrel"))
-                    .status(),
-                false, false);
+                    .status());
         return projectRecipeDescriptorResult(vm, value->getMeshRecipeSchema(recipe));
     });
     cls.addFunc("applyMeshRecipeDefaults",
