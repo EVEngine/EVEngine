@@ -1242,6 +1242,79 @@ bool cppHasView(ssq::Object cls) {
 
 }  // namespace
 
+Result<Value> readScriptComponentField(const ssq::Object& instance, const std::string& field) {
+    if (instance.getType() != ssq::Type::INSTANCE)
+        return Result<Value>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                        "component field access needs a component instance", field, {},
+                                                        "ecs.component"));
+    HSQUIRRELVM vm = instance.getHandle();
+    if (vm == nullptr)
+        return Result<Value>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                        "component field access needs a live script VM", field, {},
+                                                        "ecs.component"));
+
+    const SQInteger top = sq_gettop(vm);
+    sq_pushobject(vm, instance.getRaw());
+
+    ScriptComponentStoreKey key;
+    if (instanceIdentity(vm, -1, &key)) {  // 登记过：字段在引擎侧存储里
+        Result<Value> stored = scriptComponentField(key, field);
+        sq_settop(vm, top);
+        return stored;
+    }
+
+    // 没登记（或登记了但没绑定实体）：槽位语义，直接读实例成员。这里的 `sq_get` 对实例其实也会
+    // 兜底跑 `_get`（`FallBackGet` 的 OT_INSTANCE 分支），但未登记组件的类上根本没装那个元方法；
+    // 直读槽位既是最便宜的，也不依赖"谁装了什么"。
+    sq_pushstring(vm, field.c_str(), static_cast<SQInteger>(field.size()));
+    if (SQ_FAILED(sq_get(vm, -2))) {
+        sq_settop(vm, top);
+        return Result<Value>::failure(Diagnostic::error(
+            DiagnosticCode::NotFound, "script component instance has no such field", field, {}, "ecs.component"));
+    }
+    Result<Value> slot = script::valueFromSquirrel(vm, -1);
+    sq_settop(vm, top);
+    return slot;
+}
+
+Result<void> writeScriptComponentField(const ssq::Object& instance, const std::string& field, const Value& value) {
+    if (instance.getType() != ssq::Type::INSTANCE)
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                       "component field access needs a component instance", field, {},
+                                                       "ecs.component"));
+    HSQUIRRELVM vm = instance.getHandle();
+    if (vm == nullptr)
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                       "component field access needs a live script VM", field, {},
+                                                       "ecs.component"));
+
+    const SQInteger top = sq_gettop(vm);
+    sq_pushobject(vm, instance.getRaw());
+
+    ScriptComponentStoreKey key;
+    if (instanceIdentity(vm, -1, &key)) {  // 登记过：写引擎侧存储（脚本侧下一次读就看见）
+        Result<void> written = setScriptComponentField(key, field, value);
+        sq_settop(vm, top);
+        return written;
+    }
+
+    sq_pushstring(vm, field.c_str(), static_cast<SQInteger>(field.size()));
+    Result<void> pushed = script::pushValue(vm, value);
+    if (!pushed.ok()) {
+        sq_settop(vm, top);
+        return pushed;
+    }
+    // `sq_set`（而非 `sq_rawset`）：失败时只返回 SQ_ERROR，不会顺手把 VM 的 last-error 也设上，
+    // 调用方拿到的是一条干净的 `NotFound`。
+    if (SQ_FAILED(sq_set(vm, -3))) {
+        sq_settop(vm, top);
+        return Result<void>::failure(Diagnostic::error(
+            DiagnosticCode::NotFound, "script component instance has no such field", field, {}, "ecs.component"));
+    }
+    sq_settop(vm, top);
+    return Result<void>::success(Status::success(StatusCode::Applied));
+}
+
 Result<void> registerScriptComponent(const std::string& name, SchemaVersion version, const ssq::Object& cls) {
     if (name.empty())
         return Result<void>::failure(Diagnostic::error(

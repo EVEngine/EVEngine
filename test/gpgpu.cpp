@@ -4,6 +4,7 @@
 #include "ScriptTest.h"
 #include "common/ECS.h"
 #include "common/Exception.h"
+#include "common/ScriptComponentStore.h"
 #include "gpgpu/ComputeShader.h"
 #include "gpgpu/EcsGpu.h"
 #include "gpgpu/EcsScriptPack.h"
@@ -982,4 +983,62 @@ TEST_CASE_FIXTURE(EcsPackScriptEcsFixture, "gpgpu.ecsPack.scriptEcsComponentsRou
     REQUIRE(std::fabs(readArrayFloat(vm, back, 1) - 20.f) < 1e-5f);
     REQUIRE(std::fabs(readArrayFloat(vm, back, 2) - 30.f) < 1e-5f);
     REQUIRE(std::fabs(readArrayFloat(vm, back, 3) - 40.f) < 1e-5f);
+}
+
+// ---------------------------------------------------------------------------
+// 登记过的脚本组件：字段槽位在登记时就被摘掉、数据搬进引擎侧存储（方案文档 §9.64），
+// 所以打包这条路必须走 ECS 的归属查询，而不是自己去 `sq_get` 实例槽位——后者对这些组件
+// 会一律失败（`sq_get` 用 DONT_FALL_BACK，连 `_get` 都不会兜底）。
+// ---------------------------------------------------------------------------
+
+UnitSciptTest(EcsPackRegisteredScriptEcsFixture, R"SQ(
+class RPos extends eve.Component { x = 1.0; y = 2.0 }
+class RNode extends eve.Entity { rpos = RPos }
+function makeRegistered() {
+    registeredOk <- eve.component("RPos", 1, RPos).ok
+    local a = RNode.create(); a.rpos.x = 5.0; a.rpos.y = 6.0
+    local b = RNode.create(); b.rpos.x = 7.0; b.rpos.y = 8.0
+    idA <- a.getId()
+    idB <- b.getId()
+    return [a, b]
+}
+function getRegisteredFields() { return ["x", "y"] }
+function readBackRegistered(ents) { return [ents[0].rpos.x, ents[0].rpos.y, ents[1].rpos.x, ents[1].rpos.y] }
+)SQ");
+
+TEST_CASE_FIXTURE(EcsPackRegisteredScriptEcsFixture, "gpgpu.ecsPack.registeredScriptEcsComponentsRoundTrip") {
+    ssq::Object ents = vm.callFunc(vm.findFunc("makeRegistered"), vm);
+    REQUIRE(vm.find("registeredOk").toBool());
+
+    // 登记过的组件：脚本写 `a.rpos.x = 5.0` 落进的是**引擎侧存储**（不是实例槽位），
+    // 打包读的也是同一份数据——这条路就是 `readScriptComponentField` 的意义所在。
+    const auto                         idA = static_cast<std::uint64_t>(vm.find("idA").toInt());
+    const eve::ScriptComponentStoreKey keyA{idA, "RPos", eve::SchemaVersion(1)};
+    const eve::Value*                  stored = eve::findScriptComponentValues(keyA);
+    REQUIRE(stored != nullptr);
+    REQUIRE_EQ(stored->find("x")->asDouble(), 5.0);
+
+    ssq::Object fields = vm.callFunc(vm.findFunc("getRegisteredFields"), vm);
+    TestBuffer  buf(4 * int(sizeof(float)));
+
+    REQUIRE_EQ(packScriptEntityFloats(ents, "rpos", fields, &buf), 2);
+    REQUIRE(std::fabs(buf.floats[0] - 5.f) < 1e-5f);
+    REQUIRE(std::fabs(buf.floats[1] - 6.f) < 1e-5f);
+    REQUIRE(std::fabs(buf.floats[2] - 7.f) < 1e-5f);
+    REQUIRE(std::fabs(buf.floats[3] - 8.f) < 1e-5f);
+
+    // 解包写回引擎侧存储，脚本侧从 `_get` 读到的就是新值。
+    buf.floats = {50.f, 60.f, 70.f, 80.f};
+    REQUIRE_EQ(unpackScriptEntityFloats(ents, "rpos", fields, &buf, 2), 2);
+    ssq::Object back = vm.callFunc(vm.findFunc("readBackRegistered"), vm, ents);
+    REQUIRE(std::fabs(readArrayFloat(vm, back, 0) - 50.f) < 1e-5f);
+    REQUIRE(std::fabs(readArrayFloat(vm, back, 1) - 60.f) < 1e-5f);
+    REQUIRE(std::fabs(readArrayFloat(vm, back, 2) - 70.f) < 1e-5f);
+    REQUIRE(std::fabs(readArrayFloat(vm, back, 3) - 80.f) < 1e-5f);
+
+    // 解包的结果确实落在引擎侧存储里（原生侧直接读得到，不必问脚本）。
+    const eve::Value* afterUnpack = eve::findScriptComponentValues(keyA);
+    REQUIRE(afterUnpack != nullptr);
+    REQUIRE_EQ(afterUnpack->find("x")->asDouble(), 50.0);
+    REQUIRE_EQ(afterUnpack->find("y")->asDouble(), 60.0);
 }

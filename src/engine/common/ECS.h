@@ -14,6 +14,7 @@
 #include "common/Generation.h"
 #include "common/Result.h"
 #include "common/SchemaVersion.h"
+#include "common/Value.h"
 
 namespace ssq {
 class Table;
@@ -85,6 +86,36 @@ struct ScriptComponentRecord {
  * @cost 一次拷贝；仅供编辑器/诊断/测试等非热路径使用。
  */
 [[nodiscard]] std::vector<ScriptComponentRecord> scriptComponentRecords();
+
+/**
+ * @brief 读一个脚本组件实例的字段，**不关心这个字段存在哪**。
+ *
+ * 登记过的组件（`eve.component(name, version, cls)`）的字段在引擎侧存储里，没登记的在实例
+ * 自己的槽位里。原生消费者（GPU 打包、存档、编辑器）不该自己判断这件事——那是 ECS 的归属
+ * 约定（登记时摘槽位、装上 `_get`/`_set`），在别处再写一份必然漂移。所以这里由 ECS 统一回答。
+ *
+ * @param instance 组件**实例**（`eve.Component` 子类的实例），不是类。
+ * @param field 字段名；登记组件必须是 schema 里声明过的，未登记组件必须是实例上真实存在的槽位。
+ * @return 字段值；`NotFound` 表示没有这个字段，`InvalidArgument` 表示传进来的不是实例。
+ * @remarks 返回的是**拷贝**，不引用脚本对象，可以跨帧保存。
+ * @cost 登记组件一次存储查找（键含字段名）；未登记组件一次 Squirrel 槽位查找。
+ *        热路径请按 `(实体, 组件名, 版本)` 直接用 `common/ScriptComponentStore.h`，不要按名字反复问。
+ */
+[[nodiscard]] EVENGINE_API Result<Value> readScriptComponentField(const ssq::Object& instance,
+                                                                  const std::string& field);
+
+/**
+ * @brief 写一个脚本组件实例的字段，归属规则见 `readScriptComponentField`。
+ *
+ * @param instance 组件实例。
+ * @param field 字段名。
+ * @param value 新值（按 `Value` 的通用类型转成 Squirrel 值）。
+ * @return 成功，或 `NotFound`（没有这个字段）/ `InvalidArgument`（不是实例）。
+ * @remarks 未登记组件写的是实例槽位；登记组件写的是引擎侧存储——脚本侧下一次读就看见新值。
+ * @cost 同 `readScriptComponentField`。
+ */
+[[nodiscard]] EVENGINE_API Result<void> writeScriptComponentField(const ssq::Object& instance, const std::string& field,
+                                                                  const Value& value);
 
 /** @brief Resets per-VM script injection bookkeeping before a new VM is exposed. */
 void prepareEcsScriptInjection();
