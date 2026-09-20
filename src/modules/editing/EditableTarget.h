@@ -96,8 +96,8 @@ public:
 /**
  * @brief Dirty region and revision shared by every editable document target.
  *
- * Inherit this instead of hand-writing dirtyRegion(), clearDirtyRegion(),
- * revision() and their two members in each target. Identity (targetId) and the
+ * Inherit this instead of hand-writing the dirty-region accessors, the revision
+ * accessor and their two members in each target. Identity (targetId) and the
  * descriptor's type and capability list stay per-target; only the state is
  * common. Mutation goes through the helpers below rather than through the
  * members, so a target cannot advance its revision without recording what
@@ -105,6 +105,14 @@ public:
  * legitimately differ: some start at the first revision, some at "not yet
  * revised".
  *
+ * @ownership Non-owning shared state: a derived target owns this subobject and
+ *            the state owns only its dirty region and revision values.
+ * @lifetime The subobject lives exactly as long as the derived target; the
+ *           accessors return by value, so no reference escapes.
+ * @thread Editing/protocol thread of the owning target; no synchronization is
+ *         provided here.
+ * @reentrancy Side-effect free accessors; the protected mutators touch only
+ *             this subobject and never invoke callbacks.
  * @remarks Revision here is editing::Revision, the protocol's plain 64-bit
  *          revision, not the eve::Revision strong type used by property
  *          providers. Keeping the protocol boundary on the plain integer is
