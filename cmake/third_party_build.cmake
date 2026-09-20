@@ -523,6 +523,12 @@ function(check_third_party_project name repo)
         ${CMAKE_CURRENT_SOURCE_DIR}/build/${name}-binary/${TP_BUILD_PATH}/include)
     target_link_directories(eve_engine_includes INTERFACE
         ${CMAKE_CURRENT_SOURCE_DIR}/build/${name}-binary/${TP_BUILD_PATH}/lib)
+    # Recorded for cmake/thirdparty_libs.cmake: on ELF/Mach-O the archive route has
+    # to select a third-party archive by path, because the linker prefers the
+    # same-named shared library that also lives in this directory.
+    set(EVENGINE_TP_LIB_DIR
+        "${CMAKE_CURRENT_SOURCE_DIR}/build/${name}-binary/${TP_BUILD_PATH}/lib"
+        CACHE INTERNAL "Third-party install lib directory")
 endfunction()
 
 # Load third party project from github
@@ -565,6 +571,8 @@ function(load_third_party)
         target_include_directories(eve_engine_includes INTERFACE "${_eve_prebuilt_tp}/include")
         eve_external_include("${_eve_prebuilt_tp}/include")
         target_link_directories(eve_engine_includes INTERFACE "${_eve_prebuilt_tp}/lib")
+        set(EVENGINE_TP_LIB_DIR "${_eve_prebuilt_tp}/lib" CACHE INTERNAL
+            "Third-party install lib directory")
         set(EVENGINE_THIRD_PARTY_BINARY_ONLY ON CACHE INTERNAL
             "Use installed third-party prefix" FORCE)
         # Read the install tree's version stamp (written by

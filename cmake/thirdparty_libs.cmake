@@ -53,27 +53,34 @@ function(eve_thirdparty_libs out_var)
         elseif(g STREQUAL "sdl2")
             # Emscripten links SDL2 through -sUSE_SDL=2, set in the root CMakeLists.
             # SDL is built shared as well as static (third_party_build.cmake): the
-            # dynamic route links the import library so the whole process shares
-            # one SDL state, and the archive route keeps the static library. With
-            # SDL_SHARED=ON, SDL gives the static target its own name on Windows
-            # to keep it apart from the import library.
+            # dynamic route links the shared library so the whole process shares one
+            # SDL state, and the archive route must stay one self-contained
+            # artifact. On ELF/Mach-O the linker prefers libSDL2.so/.dylib by name
+            # (SDL gives its static target the same output name), so the archive
+            # route selects the archive by path; Windows already gives the two
+            # forms distinct names.
             if(_emscripten)
-            elseif(_win_debug)
-                if(EVENGINE_MODULE_LINKAGE STREQUAL "SHARED")
+            elseif(EVENGINE_MODULE_LINKAGE STREQUAL "SHARED")
+                if(_win_debug)
                     list(APPEND _libs SDL2d SDL2maind)
-                else()
-                    list(APPEND _libs SDL2-staticd SDL2maind)
-                endif()
-            elseif(WIN32)
-                if(EVENGINE_MODULE_LINKAGE STREQUAL "SHARED")
+                elseif(WIN32)
                     list(APPEND _libs SDL2md SDL2mainmd)
                 else()
-                    list(APPEND _libs SDL2-staticmd SDL2mainmd)
+                    list(APPEND _libs SDL2 SDL2main)
                 endif()
             else()
-                # ELF/Mach-O: libSDL2.so is preferred over libSDL2.a when both are
-                # installed, so every route links the shared library here.
-                list(APPEND _libs SDL2 SDL2main)
+                if(_win_debug)
+                    list(APPEND _libs SDL2-staticd SDL2maind)
+                elseif(WIN32)
+                    list(APPEND _libs SDL2-staticmd SDL2mainmd)
+                else()
+                    if(NOT DEFINED EVENGINE_TP_LIB_DIR)
+                        message(FATAL_ERROR
+                            "The archive route needs EVENGINE_TP_LIB_DIR to select "
+                            "libSDL2.a; it is set by load_third_party()")
+                    endif()
+                    list(APPEND _libs "${EVENGINE_TP_LIB_DIR}/libSDL2.a" SDL2main)
+                endif()
             endif()
 
         elseif(g STREQUAL "medialoader_image")
