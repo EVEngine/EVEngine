@@ -11,6 +11,13 @@
 # fails loudly instead of silently compiling different third-party code.
 # In particular, do not relax whitespace matching here: that can turn a real
 # source drift into an apparently successful but different third-party build.
+#
+# Line endings: a patch file is stored with LF, but a vendored checkout is not
+# line-ending uniform (external/ECS.hpp commits CRLF). git apply bridges that
+# difference only when core.autocrlf matches the host that generated the patch,
+# so the same patch applies on Windows and fails on Linux. Normalize the files
+# this patch touches to LF first (below), which keeps context matching exact --
+# unlike --ignore-whitespace, drift still fails loudly.
 
 if(NOT DEFINED PATCH OR NOT DEFINED PATCH_DIR)
     message(FATAL_ERROR "patch_third_party.cmake requires -DPATCH=... and -DPATCH_DIR=...")
@@ -41,6 +48,24 @@ if(NOT _eve_patch_repo_result EQUAL 0)
         "Third-party patch target is not a git checkout: ${PATCH_DIR_ABS}\n"
         "${_eve_patch_repo_error}")
 endif()
+
+# Normalize the line endings of every file this patch touches before looking at
+# whether it is already applied, so the LF patch matches a CRLF vendor file.
+file(READ "${PATCH_ABS}" _eve_patch_text)
+string(REPLACE "\n" ";" _eve_patch_lines "${_eve_patch_text}")
+foreach(_eve_patch_line IN LISTS _eve_patch_lines)
+    if(_eve_patch_line MATCHES "^--- a/([^\t]+)")
+        set(_eve_patch_target "${PATCH_DIR_ABS}/${CMAKE_MATCH_1}")
+        if(EXISTS "${_eve_patch_target}" AND NOT IS_DIRECTORY "${_eve_patch_target}")
+            file(READ "${_eve_patch_target}" _eve_target_text)
+            string(REPLACE "\r\n" "\n" _eve_target_lf "${_eve_target_text}")
+            if(NOT _eve_target_lf STREQUAL _eve_target_text)
+                file(WRITE "${_eve_patch_target}" "${_eve_target_lf}")
+                message(STATUS "Normalized line endings to LF: ${_eve_patch_target}")
+            endif()
+        endif()
+    endif()
+endforeach()
 
 # Already applied? `git apply --reverse --check` succeeds only then.
 execute_process(
