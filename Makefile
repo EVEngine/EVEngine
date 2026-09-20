@@ -328,7 +328,9 @@ CMAKE_EXTRA_ARGS ?=
 # -DEVENGINE_ENABLE_STRICT_WARNINGS=ON → MSVC /W4 /WX, GCC/Clang -Wall -Wextra -Werror.
 # CMAKE_EXTRA_ARGS is appended after this, so an explicit
 #   CMAKE_EXTRA_ARGS=-DEVENGINE_ENABLE_STRICT_WARNINGS=OFF
-# still wins. Release / SDK / mobile targets stay off, same as CI.
+# still wins. Release, macOS debug, Android, and iOS stay off, matching CI.
+# `sdk/win32-debug` / `sdk/linux-debug` package the same debug trees, so they
+# inherit the gate; `sdk/win32` / `sdk/linux` (Release) do not.
 DEBUG_STRICT_WARNINGS_FLAG = -DEVENGINE_ENABLE_STRICT_WARNINGS=ON
 JOBS ?= 32
 ANDROID_JOBS ?= 8
@@ -364,12 +366,15 @@ LINUX_DEBUG_CONFIG_STAMP = $(strip $(DEBUG_STRICT_WARNINGS_FLAG) $(CMAKE_EXTRA_A
 
 # $(call reconfigure-if-args-changed,<build-dir>,<cmake-command>[,<stamp>])
 # Re-runs cmake when the recorded stamp differs from the current make-level
-# value. The optional third argument defaults to CMAKE_EXTRA_ARGS. build/<plat>
-# targets are phony, so this check runs on every invocation but costs only one
-# cat when nothing changed.
+# value. A missing stamp is recorded without a second configure: the generated-
+# file prerequisite has just configured. The optional third argument defaults
+# to CMAKE_EXTRA_ARGS. build/<plat> targets are phony, so this check runs on
+# every invocation but costs only one cat when nothing changed.
 define reconfigure-if-args-changed
 	@stamp="$(if $(3),$(3),$(CMAKE_EXTRA_ARGS))"; \
-	if [ ! -f $(1)/.eve-config-args ] || [ "$$(cat $(1)/.eve-config-args)" != "$$stamp" ]; then \
+	if [ ! -f $(1)/.eve-config-args ]; then \
+	  printf '%s\n' "$$stamp" > $(1)/.eve-config-args; \
+	elif [ "$$(cat $(1)/.eve-config-args)" != "$$stamp" ]; then \
 	  echo "cmake config args changed; reconfiguring $(1)"; \
 	  $(2); \
 	  printf '%s\n' "$$stamp" > $(1)/.eve-config-args; \
@@ -1191,6 +1196,7 @@ tools/debug:
 # Target-platform SDK install (independent prefix per plat; for publishing games TO that plat).
 # Release: make sdk/macosx  → builds build/macosx then dist/eve-sdk/macosx
 # Debug:   make sdk/macosx-debug
+# win32/linux debug SDK trees reuse build/*-debug, including the CI warning gate.
 sdk/win32: build/win32
 sdk/linux: build/linux
 sdk/macosx: build/macosx

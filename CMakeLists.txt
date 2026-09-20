@@ -150,7 +150,8 @@ option(EVENGINE_ENABLE_STRICT_WARNINGS
      MSVC: /W4 /WX.
      Third-party targets are not affected.
      Default OFF in CMake; the Makefile turns it ON for win32-debug and
-     linux-debug so local builds match CI. Release/SDK/mobile stay OFF."
+     linux-debug so local builds match CI (debug SDK aliases reuse those
+     trees). Release, macOS debug, Android, and iOS stay OFF."
     OFF)
 message("Build UnitTest: " ${BUILD_TESTING})
 message("Build native host: " ${EVENGINE_BUILD_HOST})
