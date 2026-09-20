@@ -51,7 +51,7 @@ TEST_CASE("dialogueAuthoring.scriptComposesInspectorAndAppliesDocument") {
             fieldKinds.append(doc.getFieldKind("line", i));
         }
         valid <- doc.validate();
-        applied <- flow.applyDocument(doc);
+        applied <- flow.applyDocumentChecked(doc).ok;
         copy <- flow.getDocument("quest.editor");
         copiedText <- copy.getField("line", "text");
     )"));

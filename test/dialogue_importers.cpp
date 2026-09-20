@@ -14,9 +14,10 @@ title: Next
 ---
 Guide: Let us begin.
 ===)";
-    std::vector<ConversationAsset>      assets;
     std::vector<ConversationDiagnostic> diagnostics;
-    CHECK(importYarnConversation(source, "intro.yarn", assets, diagnostics));
+    auto imported = importYarnConversation(source, "intro.yarn", diagnostics);
+    REQUIRE(imported.ok());
+    auto assets = std::move(imported).takeValue();
     CHECK(assets.size() == 1);
     CHECK(assets[0].id == "intro");
     CHECK(assets[0].findNode("Start")->speaker == "Guide");
@@ -34,9 +35,10 @@ Narrator: Choose a destination.
 Merchant: Fresh fruit!
 :: Harbor
 Sailor: Fair winds.)";
-    std::vector<ConversationAsset>      assets;
     std::vector<ConversationDiagnostic> diagnostics;
-    CHECK(importTweeConversation(source, "travel.twee", assets, diagnostics));
+    auto imported = importTweeConversation(source, "travel.twee", diagnostics);
+    REQUIRE(imported.ok());
+    auto assets = std::move(imported).takeValue();
     CHECK(assets.size() == 1);
     CHECK(assets[0].findNode("Start.1")->routes.size() == 2);
     CHECK(assets[0].findNode("Market")->text == "Fresh fruit!");
@@ -55,9 +57,10 @@ title: Next
 ---
 <<stop>>
 ===)";
-    std::vector<ConversationAsset>      assets;
     std::vector<ConversationDiagnostic> diagnostics;
-    CHECK(importYarnConversation(source, "intro.yarn", assets, diagnostics));
+    auto imported = importYarnConversation(source, "intro.yarn", diagnostics);
+    REQUIRE(imported.ok());
+    auto assets = std::move(imported).takeValue();
     CHECK(assets[0].findNode("Start")->i18nKey == "intro.welcome");
     CHECK(assets[0].findNode("Start")->voice == "intro_001");
     CHECK(assets[0].findNode("Start.1")->target == "set");

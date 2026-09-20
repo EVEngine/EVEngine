@@ -115,7 +115,7 @@ make run/win32-debug GAME=examples/rpg-classic
 
 任务内容启动时必须通过严格目录验证；热重载中的非法策略、重复 ID、坏目标、缺失前置或依赖环会被拒绝，
 上一份已验证目录继续服务当前会话，避免部分新任务污染运行时。对话 `.dnut` 同样先完整编译并执行
-`lintAll()`，失败时不切换到新会话定义。启动准入还会遍历村庄和雾林的对象层：每个 `quest_npc`
+`lintAllChecked()`，失败时不切换到新会话定义。启动准入还会遍历村庄和雾林的对象层：每个 `quest_npc`
 必须引用真实任务及 `offer/active/turnin/completed` 四种完整会话，每个任务门控 loot 必须引用真实任务，
 每个 portal 必须指向已登记地图。组合引用失败时游戏不会进入探索态。
 

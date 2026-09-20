@@ -36,6 +36,8 @@ enum class CommandRequestKind : std::uint8_t {
  * operation/action in their own module.
  */
 struct CommandRequest {
+    /** @brief Stable identifier for this exact suspended command execution. */
+    std::string        requestId;
     std::string        name;
     CommandRequestKind kind      = CommandRequestKind::Operation;
     eve::Value         arguments = eve::Value::Object{};

@@ -4,13 +4,16 @@
 #include "procgen/texture/ColorRamp.h"
 #include "procgen/texture/CloudField.h"
 #include "procgen/texture/CloudShadow.h"
+#include "procgen/PointSet.h"
 #include "procgen/road/RoadRecipes.h"
 
 #include "image/ImageData.h"
 
 #include <algorithm>
 #include <cmath>
+#include <cstdint>
 #include <functional>
+#include <random>
 #include <utility>
 #include <vector>
 
@@ -114,22 +117,26 @@ std::vector<TextureRecipeDef> buildDefs() {
             pbr));
     }
 
-    // --- tex.rock: warm boulder, larger-scale ridged ---
+    // --- tex.rock: warm boulder with deep crevices (darker, more contrast) ---
     {
         ColorRamp ramp;
-        ramp.add(0.00f, 60, 54, 46);
-        ramp.add(0.35f, 96, 88, 76);
-        ramp.add(0.65f, 132, 122, 104);
-        ramp.add(1.00f, 168, 158, 140);
+        ramp.add(0.00f, 28, 24, 20);
+        ramp.add(0.28f, 58, 52, 44);
+        ramp.add(0.55f, 92, 84, 70);
+        ramp.add(0.80f, 122, 112, 96);
+        ramp.add(1.00f, 148, 138, 120);
         PbrParams pbr;
-        pbr.roughnessLow = 0.6f;
-        pbr.roughnessHigh = 0.95f;
-        pbr.aoStrength = 1.3f;
+        pbr.roughnessLow = 0.62f;
+        pbr.roughnessHigh = 0.98f;
+        pbr.aoStrength = 1.7f;
+        pbr.normalStrength = 3.0f;
         defs.push_back(makeDef(
             "tex.rock", std::move(ramp),
             [](float u, float v, const NoiseField &n) {
-                float h = n.ridged(u * 0.8f, v * 0.8f, 4);
-                h       = h * 0.75f + 0.25f * n.fbm(u * 2.5f, v * 2.5f, 2);
+                float h = n.ridged(u * 0.9f, v * 0.9f, 5);
+                const float crack =
+                    std::pow(std::fabs(n.valueNoise(u * 2.2f, v * 2.2f) - 0.5f) * 2.f, 1.6f);
+                h = h * 0.62f + 0.22f * n.fbm(u * 2.8f, v * 2.8f, 3) + (1.f - crack) * 0.16f;
                 return h;
             },
             pbr));
@@ -405,6 +412,59 @@ std::vector<TextureRecipeDef> buildDefs() {
             pbr));
     }
 
+    // --- tex.bark: vertical fissured trunk bark (TreeMesh atlas left half) ---
+    {
+        ColorRamp ramp;
+        ramp.add(0.00f, 28, 18, 12);
+        ramp.add(0.22f, 58, 38, 24);
+        ramp.add(0.48f, 98, 68, 42);
+        ramp.add(0.72f, 138, 102, 64);
+        ramp.add(1.00f, 72, 48, 30);
+        PbrParams pbr;
+        pbr.roughnessLow = 0.58f;
+        pbr.roughnessHigh = 0.98f;
+        pbr.aoStrength = 1.85f;
+        pbr.normalStrength = 3.6f;
+        defs.push_back(makeDef(
+            "tex.bark", std::move(ramp),
+            [](float u, float v, const NoiseField &n) {
+                const float warp = n.warp(u, v, 2.1f, 3);
+                const float grain =
+                    0.5f + 0.5f * std::sin((u * 9.f + warp * 6.f) * 6.28318f);
+                const float ridge = n.ridged(u * 1.6f, v * 0.28f, 5);
+                const float crack =
+                    std::pow(std::fabs(n.valueNoise(u * 1.4f, v * 4.2f) - 0.5f) * 2.f, 1.55f);
+                const float flake = n.fbm(u * 3.2f + 1.7f, v * 0.9f, 3);
+                return grain * 0.28f + ridge * 0.38f + (1.f - crack) * 0.22f + flake * 0.12f;
+            },
+            pbr));
+    }
+
+    // --- tex.moss: cool green-gray rock weathering with vivid moss patches ---
+    {
+        ColorRamp ramp;
+        ramp.add(0.00f, 36, 40, 32);
+        ramp.add(0.30f, 62, 72, 48);
+        ramp.add(0.52f, 78, 108, 52);
+        ramp.add(0.72f, 96, 132, 58);
+        ramp.add(1.00f, 148, 156, 138);
+        PbrParams pbr;
+        pbr.roughnessLow = 0.72f;
+        pbr.roughnessHigh = 1.f;
+        pbr.aoStrength = 1.7f;
+        pbr.normalStrength = 3.1f;
+        defs.push_back(makeDef(
+            "tex.moss", std::move(ramp),
+            [](float u, float v, const NoiseField &n) {
+                float rock = n.ridged(u * 0.95f, v * 0.95f, 5);
+                float moss = smoothstep(0.32f, 0.78f, n.fbm(u * 1.8f + 2.f, v * 1.8f, 4));
+                const float crack =
+                    std::pow(std::fabs(n.valueNoise(u * 2.4f, v * 2.4f) - 0.5f) * 2.f, 1.5f);
+                return rock * (1.f - moss * 0.55f) + moss * 0.62f + (1.f - crack) * 0.08f;
+            },
+            pbr));
+    }
+
     return defs;
 }
 
@@ -477,6 +537,375 @@ std::unique_ptr<image::ImageData> genCloudShadow(const Params &params, std::stri
     return img;
 }
 
+/**
+ * @brief Ovate leaf stamps on a transparent leaf-card panel.
+ *
+ * Each of 6 atlas panels holds 8–16 solid ovate leaves placed with blue-noise
+ * spacing and random rotation. Quad leaf cards UV-map to one random panel.
+ */
+struct LeafStamp {
+    float cx = 0.5f, cy = 0.5f;
+    float halfW = 0.12f, halfH = 0.18f;
+    float ang = 0.f;
+};
+
+constexpr int kLeafCardPanels = 6;
+constexpr int kLeafCardCols   = 2;
+constexpr int kLeafCardRows   = 3;
+
+/**
+ * @brief Blue-noise ovate stamps inside one unit panel (8–16 leaves).
+ */
+void buildBlueNoiseCardStamps(std::uint32_t seed, int count, std::vector<LeafStamp> &stamps) {
+    stamps.clear();
+    count = std::clamp(count, 8, 16);
+    // Bridson on a fine grid, then normalize to the unit square with a margin.
+    const float minDist01 = std::sqrt(0.42f / float(count));
+    constexpr int kSide   = 64;
+    const float   radius  = std::max(1.5f, minDist01 * float(kSide));
+    const PointSet pts    = poissonDiskPoints(kSide, kSide, radius, seed, count + 12);
+    std::mt19937 rng(seed ^ 0x9e3779b9u);
+    std::uniform_real_distribution<float> unit(0.f, 1.f);
+    constexpr float kMargin = 0.07f;
+    int placed = 0;
+    for (const ProcgenPoint &p : pts.points()) {
+        if (placed >= count) break;
+        LeafStamp s;
+        s.cx    = kMargin + (1.f - 2.f * kMargin) * (p.x / float(kSide));
+        s.cy    = kMargin + (1.f - 2.f * kMargin) * (p.z / float(kSide));
+        s.ang   = unit(rng) * 6.28318530718f;
+        s.halfW = 0.050f + 0.028f * unit(rng);
+        s.halfH = 0.070f + 0.036f * unit(rng);
+        stamps.push_back(s);
+        ++placed;
+    }
+    // Top up with dart throws if Bridson under-filled (small textures / tight radius).
+    int guard = 0;
+    while (placed < count && guard++ < count * 100) {
+        LeafStamp s;
+        s.cx    = kMargin + (1.f - 2.f * kMargin) * unit(rng);
+        s.cy    = kMargin + (1.f - 2.f * kMargin) * unit(rng);
+        bool ok = true;
+        for (const LeafStamp &o : stamps) {
+            const float dx = s.cx - o.cx, dy = s.cy - o.cy;
+            if (dx * dx + dy * dy < minDist01 * minDist01) {
+                ok = false;
+                break;
+            }
+        }
+        if (!ok) continue;
+        s.ang   = unit(rng) * 6.28318530718f;
+        s.halfW = 0.050f + 0.028f * unit(rng);
+        s.halfH = 0.070f + 0.036f * unit(rng);
+        stamps.push_back(s);
+        ++placed;
+    }
+}
+
+void sampleOvateLeafCard(const NoiseField &noise, float u, float v, const std::vector<LeafStamp> &stamps,
+                         float &cover, float &shade) {
+    cover = 0.f;
+    shade = 0.f;
+    for (const LeafStamp &s : stamps) {
+        float dx = u - s.cx;
+        float dy = v - s.cy;
+        const float ca = std::cos(s.ang), sa = std::sin(s.ang);
+        const float rx = dx * ca - dy * sa;
+        const float ry = dx * sa + dy * ca;
+        // Ovate / lanceolate: pointed tip along +Y, wider shoulders below centre.
+        const float halfW = s.halfW * (1.f - 0.42f * std::max(0.f, ry / std::max(1e-4f, s.halfH)));
+        const float d = (rx * rx) / std::max(1e-5f, halfW * halfW) +
+                        (ry * ry) / std::max(1e-5f, s.halfH * s.halfH);
+        const float mask = 1.f - smoothstep(0.78f, 1.02f, d);
+        if (mask <= cover) continue;
+        cover = mask;
+        // Flat fill — no veins/mottle; slight per-stamp tone so leaves are not identical.
+        shade = 0.48f + 0.12f * noise.hash01(int(s.cx * 97.f), int(s.cy * 53.f));
+    }
+}
+
+/**
+ * @brief Build six blue-noise leaf-card panels (shared by foliage / tree atlases).
+ */
+void buildSixLeafCardPanels(std::uint32_t seed, const NoiseField &noise,
+                            std::vector<std::vector<LeafStamp>> &panels) {
+    panels.clear();
+    panels.resize(size_t(kLeafCardPanels));
+    for (int i = 0; i < kLeafCardPanels; ++i) {
+        const std::uint32_t panelSeed = seed ^ (std::uint32_t(i + 1) * 2654435761u);
+        const int count = 8 + int(noise.hash01(i * 3 + 1, i * 7 + 2) * 8.999f);  // 8..16
+        buildBlueNoiseCardStamps(panelSeed, count, panels[size_t(i)]);
+    }
+}
+
+/**
+ * @brief Sample one of six leaf-card panels from card-half UV fu,v ∈ [0,1].
+ */
+void sampleLeafCardAtlas(const NoiseField &noise, float fu, float v,
+                         const std::vector<std::vector<LeafStamp>> &panels, float &cover, float &shade) {
+    const int col = std::clamp(int(fu * float(kLeafCardCols)), 0, kLeafCardCols - 1);
+    const int row = std::clamp(int(v * float(kLeafCardRows)), 0, kLeafCardRows - 1);
+    const float localU = fu * float(kLeafCardCols) - float(col);
+    const float localV = v * float(kLeafCardRows) - float(row);
+    const int   panel  = row * kLeafCardCols + col;
+    sampleOvateLeafCard(noise, localU, localV, panels[size_t(panel)], cover, shade);
+}
+
+/**
+ * @brief Dense leafy fill for bush/canopy blobs (mostly opaque).
+ */
+void sampleFoliageFill(const NoiseField &noise, float u, float v, float scale, float &cover, float &shade) {
+    cover = 0.f;
+    shade = 0.f;
+    const float su = u * scale;
+    const float sv = v * scale;
+    for (int oy = -1; oy <= 1; ++oy) {
+        for (int ox = -1; ox <= 1; ++ox) {
+            const int cx = int(std::floor(su * 2.2f)) + ox;
+            const int cy = int(std::floor(sv * 2.2f)) + oy;
+            const float px = float(cx) + noise.hash01(cx, cy);
+            const float py = float(cy) + noise.hash01(cx * 7 + 3, cy * 13 + 5);
+            float dx = su * 2.2f - px;
+            float dy = sv * 2.2f - py;
+            const float ang = (noise.hash01(cx * 3 + 1, cy * 5 + 2) - 0.5f) * 1.4f;
+            const float ca = std::cos(ang), sa = std::sin(ang);
+            const float rx = dx * ca - dy * sa;
+            const float ry = dx * sa + dy * ca;
+            const float halfW = 0.48f * (1.f - 0.4f * std::max(0.f, ry));
+            const float d = (rx * rx) / std::max(1e-4f, halfW * halfW) + (ry * ry) / 0.58f;
+            const float mask = 1.f - smoothstep(0.55f, 1.05f, d);
+            if (mask <= cover) continue;
+            cover = mask;
+            const float vein = std::pow(
+                std::fabs(std::sin(ry * 8.f + noise.valueNoise(px * 0.35f, py * 0.35f) * 2.5f)), 3.f);
+            const float mott = noise.fbm(px * 0.28f + u * 1.6f, py * 0.28f + v * 1.6f, 3);
+            shade = std::clamp(0.30f + mott * 0.42f + (1.f - vein) * 0.28f, 0.f, 1.f);
+        }
+    }
+    // Keep blob fill nearly opaque so ellipsoid lobes do not go hollow.
+    cover = std::clamp(cover * 0.55f + 0.45f, 0.f, 1.f);
+}
+
+/**
+ * @brief Sample brown bark colour (shared by tex.tree_atlas / tex.foliage twigs).
+ */
+Rgba8 sampleBarkColor(const NoiseField &noise, float bu, float v, float scale, int colors) {
+    ColorRamp barkRamp;
+    barkRamp.add(0.00f, 28, 18, 12);
+    barkRamp.add(0.22f, 58, 38, 24);
+    barkRamp.add(0.48f, 102, 72, 44);
+    barkRamp.add(0.72f, 148, 110, 70);
+    barkRamp.add(1.00f, 68, 46, 28);
+    const float warp = noise.warp(bu * scale, v * scale, 2.1f, 3);
+    const float grain = 0.5f + 0.5f * std::sin((bu * 9.f + warp * 6.f) * 6.28318f);
+    const float ridge = noise.ridged(bu * 1.6f * scale, v * 0.28f * scale, 5);
+    const float crack =
+        std::pow(std::fabs(noise.valueNoise(bu * 1.4f * scale, v * 4.2f * scale) - 0.5f) * 2.f, 1.55f);
+    const float flake = noise.fbm(bu * 3.2f * scale + 1.7f, v * 0.9f * scale, 3);
+    const float h =
+        std::clamp(grain * 0.28f + ridge * 0.38f + (1.f - crack) * 0.22f + flake * 0.12f, 0.f, 1.f);
+    return barkRamp.sampleBanded(h, colors);
+}
+
+/**
+ * tex.tree_atlas — split atlas matching mesh.tree UV layout:
+ *   u in [0, 0.45] bark on the left, u in [0.55, 1] foliage on the right.
+ */
+std::unique_ptr<image::ImageData> genTreeAtlas(const Params &params, std::string &error) {
+    const auto ctx = TextureGenContext::fromParams(params);
+    if (ctx.width > 4096 || ctx.height > 4096) {
+        error = "texture size too large (max 4096)";
+        return nullptr;
+    }
+    auto img = std::make_unique<image::ImageData>(ctx.width, ctx.height, "RGBA8");
+    NoiseField noise;
+    noise.seed = ctx.seed;
+    if (ctx.seamless) {
+        noise.periodX = std::max(1, int(ctx.scale));
+        noise.periodY = noise.periodX;
+    }
+
+    ColorRamp leafRamp;
+    leafRamp.add(0.00f, 14, 36, 10);
+    leafRamp.add(0.28f, 32, 78, 22);
+    leafRamp.add(0.52f, 52, 118, 34);
+    leafRamp.add(0.78f, 88, 148, 46);
+    leafRamp.add(1.00f, 24, 54, 16);
+
+    std::vector<std::vector<LeafStamp>> leafPanels;
+    buildSixLeafCardPanels(std::uint32_t(ctx.seed), noise, leafPanels);
+
+    const float invW = 1.f / float(std::max(1, ctx.width - 1));
+    const float invH = 1.f / float(std::max(1, ctx.height - 1));
+    for (int y = 0; y < ctx.height; ++y) {
+        for (int x = 0; x < ctx.width; ++x) {
+            const float u = float(x) * invW;
+            const float v = float(y) * invH;
+            Rgba8 color;
+            if (u < 0.48f) {
+                color = sampleBarkColor(noise, u / 0.48f, v, ctx.scale, ctx.colors);
+            } else if (u > 0.52f) {
+                const float fu = (u - 0.52f) / 0.48f;
+                float cover = 0.f, shade = 0.f;
+                sampleLeafCardAtlas(noise, fu, v, leafPanels, cover, shade);
+                if (cover < 0.5f) {
+                    color = {0, 0, 0, 0};
+                } else {
+                    color   = leafRamp.sample(shade);
+                    color.a = 255;
+                }
+            } else {
+                color = {72, 86, 48, 255};
+            }
+            img->setPixel(x, y,
+                          image::ImageData::Colorf{color.r / 255.f, color.g / 255.f, color.b / 255.f,
+                                                   color.a / 255.f});
+        }
+    }
+    return img;
+}
+
+/**
+ * tex.foliage — bush atlas:
+ *   u in [0, 0.22] brown bark for twigs,
+ *   u in [0.24, 0.50] opaque leafy fill for ellipsoid blobs,
+ *   u in [0.52, 1] 3×3 transparent ovate leaf stamps for leaf cards.
+ */
+std::unique_ptr<image::ImageData> genFoliage(const Params &params, std::string &error) {
+    const auto ctx = TextureGenContext::fromParams(params);
+    if (ctx.width > 4096 || ctx.height > 4096) {
+        error = "texture size too large (max 4096)";
+        return nullptr;
+    }
+    auto img = std::make_unique<image::ImageData>(ctx.width, ctx.height, "RGBA8");
+    NoiseField noise;
+    noise.seed = ctx.seed;
+    if (ctx.seamless) {
+        noise.periodX = std::max(1, int(ctx.scale));
+        noise.periodY = noise.periodX;
+    }
+
+    // Cooler forest green for bushes — less lime/yellow than the tree-atlas canopy.
+    ColorRamp leafRamp;
+    leafRamp.add(0.00f, 12, 32, 16);
+    leafRamp.add(0.28f, 28, 68, 34);
+    leafRamp.add(0.52f, 42, 96, 48);
+    leafRamp.add(0.78f, 62, 122, 58);
+    leafRamp.add(1.00f, 22, 48, 28);
+
+    std::vector<std::vector<LeafStamp>> leafPanels;
+    buildSixLeafCardPanels(std::uint32_t(ctx.seed), noise, leafPanels);
+
+    const float invW = 1.f / float(std::max(1, ctx.width - 1));
+    const float invH = 1.f / float(std::max(1, ctx.height - 1));
+    for (int y = 0; y < ctx.height; ++y) {
+        for (int x = 0; x < ctx.width; ++x) {
+            const float u = float(x) * invW;
+            const float v = float(y) * invH;
+            float cover = 0.f, shade = 0.f;
+            Rgba8 color;
+            if (u < 0.22f) {
+                color = sampleBarkColor(noise, u / 0.22f, v, ctx.scale, ctx.colors);
+                color.a = 255;
+            } else if (u < 0.24f) {
+                color = {72, 64, 42, 255};  // bark → fill blend
+            } else if (u <= 0.50f) {
+                const float fu = (u - 0.24f) / 0.26f;
+                sampleFoliageFill(noise, fu, v, ctx.scale, cover, shade);
+                color = leafRamp.sampleBanded(shade, ctx.colors);
+                color.a = 255;
+            } else if (u < 0.52f) {
+                color = {40, 78, 36, 255};
+            } else {
+                const float fu = (u - 0.52f) / 0.48f;
+                sampleLeafCardAtlas(noise, fu, v, leafPanels, cover, shade);
+                if (cover < 0.5f) {
+                    color = {0, 0, 0, 0};
+                } else {
+                    color   = leafRamp.sample(shade);
+                    color.a = 255;
+                }
+            }
+            img->setPixel(x, y,
+                          image::ImageData::Colorf{color.r / 255.f, color.g / 255.f, color.b / 255.f,
+                                                   color.a / 255.f});
+        }
+    }
+    return img;
+}
+
+/**
+ * tex.flower — stem green on the left, soft cream petal + warm centre on the right.
+ * Tint in examples for red / blue / white / yellow Flower01-03 accents.
+ */
+std::unique_ptr<image::ImageData> genFlower(const Params &params, std::string &error) {
+    const auto ctx = TextureGenContext::fromParams(params);
+    if (ctx.width > 4096 || ctx.height > 4096) {
+        error = "texture size too large (max 4096)";
+        return nullptr;
+    }
+    auto img = std::make_unique<image::ImageData>(ctx.width, ctx.height, "RGBA8");
+    NoiseField noise;
+    noise.seed = ctx.seed;
+    if (ctx.seamless) {
+        noise.periodX = std::max(1, int(ctx.scale));
+        noise.periodY = noise.periodX;
+    }
+
+    ColorRamp stemRamp;
+    stemRamp.add(0.00f, 28, 72, 28);
+    stemRamp.add(0.55f, 48, 110, 42);
+    stemRamp.add(1.00f, 34, 86, 32);
+
+    ColorRamp petalRamp;
+    petalRamp.add(0.00f, 210, 200, 205);
+    petalRamp.add(0.40f, 245, 236, 240);
+    petalRamp.add(0.70f, 255, 250, 252);
+    petalRamp.add(1.00f, 255, 236, 180);  // warm centre
+
+    const float invW = 1.f / float(std::max(1, ctx.width - 1));
+    const float invH = 1.f / float(std::max(1, ctx.height - 1));
+    for (int y = 0; y < ctx.height; ++y) {
+        for (int x = 0; x < ctx.width; ++x) {
+            const float u = float(x) * invW;
+            const float v = float(y) * invH;
+            Rgba8 color;
+            if (u < 0.32f) {
+                const float su = u / 0.32f;
+                const float h =
+                    std::clamp(0.45f + 0.35f * noise.fbm(su * 2.f, v * 4.f, 3) +
+                                   0.2f * std::sin(v * 18.f),
+                               0.f, 1.f);
+                color   = stemRamp.sampleBanded(h, ctx.colors);
+                color.a = 255;
+            } else {
+                // Petal local coords: elliptical falloff with soft tip.
+                const float pu = (u - 0.36f) / 0.62f;
+                const float pv = v;
+                const float dx = (pu - 0.5f) * 2.f;
+                const float dy = (pv - 0.5f) * 2.f;
+                const float halfW = 0.72f * (1.f - 0.35f * std::max(0.f, dy));
+                const float d =
+                    (dx * dx) / std::max(1e-4f, halfW * halfW) + (dy * dy) / 0.95f;
+                const float cover = 1.f - smoothstep(0.72f, 1.05f, d);
+                const float vein = std::pow(
+                    std::fabs(std::sin(dy * 6.f + noise.valueNoise(pu * 2.f, pv * 2.f) * 2.f)),
+                    3.f);
+                const float centre = 1.f - smoothstep(0.05f, 0.42f, std::sqrt(dx * dx + dy * dy));
+                const float h = std::clamp(0.35f + (1.f - vein) * 0.25f + centre * 0.45f +
+                                               noise.fbm(pu * 3.f, pv * 3.f, 2) * 0.1f,
+                                           0.f, 1.f);
+                color   = petalRamp.sampleBanded(h, ctx.colors);
+                color.a = static_cast<uint8_t>(std::clamp(cover, 0.f, 1.f) * 255.f);
+            }
+            img->setPixel(x, y,
+                          image::ImageData::Colorf{color.r / 255.f, color.g / 255.f, color.b / 255.f,
+                                                   color.a / 255.f});
+        }
+    }
+    return img;
+}
+
 }  // namespace
 
 const std::vector<TextureRecipeDef> &builtinTextureDefs() {
@@ -507,6 +936,27 @@ void TextureRecipeRegistry::registerBuiltins() {
     };
     registerRecipe(cloudDescriptor("tex.cloud", "Cloud", false), genCloud);
     registerRecipe(cloudDescriptor("tex.cloud_shadow", "Cloud Shadow", true), genCloudShadow);
+    {
+        RecipeDescriptor atlas = RecipeDescriptor::grid("tex.tree_atlas", "Tree Atlas", "Nature", 1, 1);
+        atlas.params.push_back(ParamDescriptor::floating("scale", "Scale", 4.f, 0.1f, 64.f, 0.1f));
+        atlas.params.push_back(ParamDescriptor::integer("colors", "Color Bands", 6, 2, 32));
+        atlas.params.push_back(ParamDescriptor::boolean("seamless", "Seamless", true));
+        registerRecipe(std::move(atlas), genTreeAtlas);
+    }
+    {
+        RecipeDescriptor foliage = RecipeDescriptor::grid("tex.foliage", "Foliage", "Nature", 1, 1);
+        foliage.params.push_back(ParamDescriptor::floating("scale", "Scale", 4.f, 0.1f, 64.f, 0.1f));
+        foliage.params.push_back(ParamDescriptor::integer("colors", "Color Bands", 6, 2, 32));
+        foliage.params.push_back(ParamDescriptor::boolean("seamless", "Seamless", true));
+        registerRecipe(std::move(foliage), genFoliage);
+    }
+    {
+        RecipeDescriptor flower = RecipeDescriptor::grid("tex.flower", "Flower", "Nature", 1, 1);
+        flower.params.push_back(ParamDescriptor::floating("scale", "Scale", 4.f, 0.1f, 64.f, 0.1f));
+        flower.params.push_back(ParamDescriptor::integer("colors", "Color Bands", 6, 2, 32));
+        flower.params.push_back(ParamDescriptor::boolean("seamless", "Seamless", true));
+        registerRecipe(std::move(flower), genFlower);
+    }
     for (const TextureRecipeDef &def : builtinTextureDefs()) {
         registerRecipe(makeTextureRecipeDescriptor(def), [def](const Params &params, std::string &error) {
             return makeFromHeightFn(params, error, def);

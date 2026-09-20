@@ -1,13 +1,14 @@
 #pragma once
 #include "common/Export.h"
 
-
 #include "common/Result.h"
 #include "common/StateValue.h"
 #include "dialogue/DialogueState.h"
 
 #include <functional>
+#include <cstdint>
 #include <string>
+#include <string_view>
 #include <unordered_map>
 #include <utility>
 #include <vector>
@@ -22,6 +23,16 @@ namespace eve::dialogue {
  * it is not interpreted by a dialogue-local condition language.
  */
 struct ConversationRoute {
+    int sourceLine = 0;
+    int sourceColumn = 0;
+    /** @brief Stable route identifier, independent from presentation text. */
+    std::string id;
+    /** @brief Source-language display text. */
+    std::string text;
+    /** @brief Optional localization key for display text. */
+    std::string i18nKey;
+    /** @brief Optional legacy expression evaluated as a checked boolean. */
+    std::string expression;
     std::string first;
     std::string second;
     eve::Value  condition;
@@ -32,7 +43,7 @@ struct ConversationRoute {
 
     /** @brief Construct an unconditional or legacy-expression route. */
     ConversationRoute(std::string label = {}, std::string target = {}, eve::Value routeCondition = {})
-        : first(std::move(label)), second(std::move(target)), condition(std::move(routeCondition)) {}
+        : id(label), first(std::move(label)), second(std::move(target)), condition(std::move(routeCondition)) {}
 };
 
 /** @brief Short spelling used by authoring and gameplay integration code. */
@@ -40,6 +51,18 @@ using Route = ConversationRoute;
 
 /** @brief Immutable, parameterized conversation definition. */
 struct EVENGINE_API_ORCHESTRATION ConversationAsset {
+    /** @brief Typed invocation parameter declared by the content schema. */
+    struct Parameter {
+        enum class Type { Any, String, Int, Float, Bool };
+        std::string name;
+        Type type = Type::Any;
+        bool required = true;
+        StateValue defaultValue = StateValue::null();
+        int sourceLine = 0;
+        int sourceColumn = 0;
+        Parameter() = default;
+        Parameter(std::string parameterName) : name(std::move(parameterName)) {}
+    };
     /** @brief A serializable step in a conversation. */
     struct Node {
         enum class Kind { Line, Branch, Choice, Call, Command, Wait, End };
@@ -62,26 +85,33 @@ struct EVENGINE_API_ORCHESTRATION ConversationAsset {
         PaymentSpec payment;
         /** @brief Optional authoritative mutations committed with a command. */
         std::vector<eve::StateMutation> stateMutations;
+        int sourceLine = 0;
+        int sourceColumn = 0;
     };
 
     std::string id;
     int version = 1;
     std::string entry;
-    std::vector<std::string> parameters;
+    std::vector<Parameter> parameters;
     std::vector<Node> nodes;
+    int sourceLine = 0;
+    int sourceColumn = 0;
 
     /** @brief Find a node by its stable identifier. */
     const Node* findNode(const std::string& nodeId) const;
     /** @brief Validate stable IDs, entry point, and node references. */
-    bool validate(std::string* error = nullptr) const;
+    [[nodiscard]] eve::Result<void> validate() const;
 };
 
 /** @brief Explicit conversation executor whose suspension points are node IDs. */
 class EVENGINE_API_ORCHESTRATION ConversationRunner {
 public:
+    static constexpr std::string_view SaveSchema  = "eve.dialogue.runner";
+    static constexpr std::int64_t     SaveVersion = 2;
+
     using AssetResolver = std::function<const ConversationAsset*(const std::string&)>;
     using ExpressionEvaluator =
-        std::function<StateValue(const std::string&, const StateValue&, const StateValue&)>;
+        std::function<eve::Result<StateValue>(const std::string&, const StateValue&, const StateValue&)>;
     struct CommandResult {
         enum class Status { Completed, Blocked, Failed };
         Status status = Status::Completed;
@@ -101,14 +131,14 @@ public:
     using CommandRequestDispatcher = std::function<CommandResponse(const CommandRequest&)>;
     using EventSink = std::function<void(const Event&)>;
 
-    /** @brief Start an asset with serializable parameter bindings. */
-    bool start(const ConversationAsset* asset, StateValue bindings, std::string* error = nullptr);
+    /** @brief Start an asset with validated serializable parameter bindings. */
+    [[nodiscard]] eve::Result<void> startChecked(const ConversationAsset* asset, StateValue bindings);
     /** @brief Execute non-blocking nodes until a line, choice, wait, or end is reached. */
-    bool runUntilBlocked(std::string* error = nullptr);
+    [[nodiscard]] eve::Result<void> runUntilBlockedChecked();
     /** @brief Continue from the current blocking node. */
-    bool advance(std::string* error = nullptr);
+    [[nodiscard]] eve::Result<void> advanceChecked();
     /** @brief Select a route on the current choice node. */
-    bool select(const std::string& routeId, std::string* error = nullptr);
+    [[nodiscard]] eve::Result<void> selectChecked(const std::string& routeId);
     /**
      * @brief Select a route from an already prepared Dialogue transaction.
      * @param routeId Stable route identifier on the current choice node.
@@ -125,20 +155,20 @@ public:
      * @return Applied on success, or a stable diagnostic while preserving the
      *         suspended runner state on failure.
      */
-    [[nodiscard]] eve::Result<void> resumeCommand(StateValue result);
+    [[nodiscard]] eve::Result<void> resumeCommand(const std::string& requestId, StateValue result);
     /**
      * @brief Resume an asynchronous request command with a canonical result.
      * @param result Owned canonical result value converted to dialogue state.
      * @return Applied on success, or a stable diagnostic while preserving the
      *         suspended runner state on failure.
      */
-    [[nodiscard]] eve::Result<void> resumeCommand(eve::Value result);
+    [[nodiscard]] eve::Result<void> resumeCommand(const std::string& requestId, eve::Value result);
     /** @brief Stop and clear the active instance. */
     void stop();
-    /** @brief Capture the complete cursor, locals, bindings, and call stack. */
-    bool captureState(StateValue& out) const;
+    /** @brief Capture the complete cursor, locals, bindings, pending command and call stack. */
+    [[nodiscard]] eve::Result<StateValue> captureStateChecked() const;
     /** @brief Restore a captured runner using the configured asset resolver. */
-    bool restoreState(const StateValue& in, std::string* error = nullptr);
+    [[nodiscard]] eve::Result<void> restoreStateChecked(const StateValue& in);
 
     void setAssetResolver(AssetResolver resolver) { assetResolver_ = std::move(resolver); }
     void setExpressionEvaluator(ExpressionEvaluator evaluator) {
@@ -196,6 +226,8 @@ public:
      * @thread Affine to the runner's owner thread.
      */
     const CommandRequest* lastCommandRequest() const { return lastCommandRequest_ ? &*lastCommandRequest_ : nullptr; }
+    /** @brief Return the stable id of the currently suspended command, or an empty string. */
+    const std::string& pendingCommandRequestId() const noexcept { return pendingCommandRequestId_; }
 
 private:
     struct Frame {
@@ -206,6 +238,12 @@ private:
     };
 
     bool fail(std::string* error, const std::string& message) const;
+    bool startImpl(const ConversationAsset* asset, StateValue bindings, std::string* error);
+    bool runUntilBlockedImpl(std::string* error);
+    bool advanceImpl(std::string* error);
+    bool selectImpl(const std::string& routeId, std::string* error);
+    bool captureStateImpl(StateValue& out) const;
+    bool restoreStateImpl(const StateValue& in, std::string* error);
     bool enter(const std::string& nodeId, std::string* error);
     std::string evaluateRoute(const ConversationAsset::Node& node, std::string* error);
     void emit(Event::Kind kind, const ConversationAsset::Node* node = nullptr,
@@ -225,6 +263,8 @@ private:
     CommandRequestDispatcher                               commandRequestDispatcher_;
     EventSink eventSink_;
     bool waitingCommand_ = false;
+    std::uint64_t commandSequence_ = 1;
+    std::string pendingCommandRequestId_;
     std::optional<eve::decision::ConditionResult>          lastConditionResult_;
     std::optional<CommandRequest>                          lastCommandRequest_;
 };
