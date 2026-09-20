@@ -49,7 +49,7 @@ enum class VehicleOrderType : uint8_t { Move, AttackMove, Attack, Stop, Hold };
  * @thread Thread-safe because the characters are immutable.
  * @reentrancy Does not invoke callbacks.
  */
-const char* vehicleOrderTypeName(VehicleOrderType type);
+EVENGINE_API_DOMAINS const char* vehicleOrderTypeName(VehicleOrderType type);
 
 /** @brief Writes the stable vehicle-order protocol name. */
 inline std::ostream& operator<<(std::ostream& stream, VehicleOrderType type) {
@@ -250,7 +250,7 @@ public:
      * `current` remain as a compatibility projection for existing consumers;
      * VehicleSystem is the only writer and callers must not mutate them.
      */
-    struct Orders {
+    struct EVENGINE_API_DOMAINS Orders {
         std::vector<VehicleOrder> queue;
         int                       current = -1;
 

@@ -194,7 +194,7 @@ public:
 };
 
 /** @brief Candidate-first Shape3D replacement sink for one borrowed live body. */
-class PhysicsCollider3DRuntimeSink final : public IPhysicsColliderRuntimeSink {
+class EVENGINE_API_DOMAINS PhysicsCollider3DRuntimeSink final : public IPhysicsColliderRuntimeSink {
 public:
     /**
      * @brief Bind a body, optional current shape, and optional complex-asset resolver.
@@ -216,7 +216,7 @@ private:
 };
 
 /** @brief Candidate-first Fixture replacement sink for one borrowed live 2D body. */
-class PhysicsCollider2DRuntimeSink final : public IPhysicsColliderRuntimeSink {
+class EVENGINE_API_DOMAINS PhysicsCollider2DRuntimeSink final : public IPhysicsColliderRuntimeSink {
 public:
     /** @brief Bind a body, optional current fixture, and optional polygon/chain resolver. */
     PhysicsCollider2DRuntimeSink(physics::Body* body, physics::Fixture* current = nullptr,

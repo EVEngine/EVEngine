@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "physics/PhysicsHandles.h"
 
@@ -12,7 +14,7 @@ class Body3D;
 class World3D;
 
 /** @brief Script-facing Box3D joint owned by a World3D. */
-class Joint3D {
+class EVENGINE_API_WORLD Joint3D {
 public:
     /** @brief Supported joint geometry. */
     enum class Kind { Distance, Revolute, Prismatic, Spherical, Wheel };

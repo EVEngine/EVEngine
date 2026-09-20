@@ -244,7 +244,7 @@ public:
  * The legacy single-provider `eve::cap::provide<IAcceleratorBackendProvider>()` entry remains
  * supported and is considered after independently registered providers.
  */
-class AcceleratorBackendProviderRegistration {
+class EVENGINE_API_BACKENDS AcceleratorBackendProviderRegistration {
 public:
     /**
      * @brief Registers an externally owned provider for multi-provider selection.
@@ -361,7 +361,7 @@ EVENGINE_API_BACKENDS std::unique_ptr<ISimulationBackend> makeCallbackSimulation
  * @return A backend with observable tick/progress but no solver dependency.
  */
 [[nodiscard("retain the mock backend for contract execution")]]
-std::unique_ptr<ISimulationBackend> makeMockAcceleratorBackend();
+EVENGINE_API_BACKENDS std::unique_ptr<ISimulationBackend> makeMockAcceleratorBackend();
 
 /**
  * @brief Selects an optional accelerator and reports a structured CPU alternate path.

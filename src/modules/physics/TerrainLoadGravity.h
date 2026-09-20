@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/Result.h"
 
@@ -18,8 +20,8 @@ public:
     float getDelayElapsed() const { return delayElapsed_; }
 
 private:
-    friend Result<void> beginTerrainLoadGravity(TerrainLoadGravityState*, Body3D*, bool);
-    friend Result<bool> advanceTerrainLoadGravity(TerrainLoadGravityState*, Body3D*, bool, float,
+    friend EVENGINE_API_WORLD Result<void> beginTerrainLoadGravity(TerrainLoadGravityState*, Body3D*, bool);
+    friend EVENGINE_API_WORLD Result<bool> advanceTerrainLoadGravity(TerrainLoadGravityState*, Body3D*, bool, float,
                                                    float);
     bool monitoring_ = false;
     bool activationScheduled_ = false;
@@ -37,7 +39,7 @@ private:
  * @ownership State and body remain caller-owned and are not retained.
  * @thread Physics simulation owner thread only.
  */
-[[nodiscard]] Result<void> beginTerrainLoadGravity(TerrainLoadGravityState* state, Body3D* body,
+[[nodiscard]] EVENGINE_API_WORLD Result<void> beginTerrainLoadGravity(TerrainLoadGravityState* state, Body3D* body,
                                                     bool terrainFound);
 
 /**
@@ -51,7 +53,7 @@ private:
  * @ownership State and body remain caller-owned and are not retained.
  * @thread Physics simulation owner thread only; no callbacks are invoked.
  */
-[[nodiscard]] Result<bool> advanceTerrainLoadGravity(TerrainLoadGravityState* state, Body3D* body,
+[[nodiscard]] EVENGINE_API_WORLD Result<bool> advanceTerrainLoadGravity(TerrainLoadGravityState* state, Body3D* body,
                                                       bool terrainLoaded, float deltaSeconds,
                                                       float activationDelay);
 }

@@ -529,3 +529,39 @@ debug SDK（`make sdk/win32-debug`）**沿用开发配置，即动态**：它从
 
 **存活判断经验（本轮踩过）**：不要只凭"进程表无 cl/ninja"或"日志几分钟没动"就判定代理卡死——这类单域批次是"长构建 → 长分析 → 一次性写标注"，`git diff` 会长时间为 0 然后突然跳变；判活应看**该代理自己的进度日志是否跨轮次增长**。`animation` 那轮就因此被我误判为停滞并被中断过一次（后被续跑代理完成，269→0、301/301）。
 **§7.5 补充规则（2026-09-20，反例驱动的教训）**：任何批量标注器——包括临时自造的小工具——**必须把类/结构体的查找范围限定在"该符号的定义模块"内**，并输出每个命中的"定义模块 vs 引用模块"供人工核对；把模块集合传空（或在整棵树里取第一个同名类）会命中**同名类**，把宏标到错误组的类上。实测反例：给 `physics` 域批量插宏时未限定模块，`eve::orders::Orders` 被误标，导致 EVBackends 的 `QueueInspector.cpp.obj` 变成对裸数据符号的引用，`EVBackends.dll` 直接 `LNK1120: 1 个无法解析的外部命令`（`?name@Orders@orders@eve@@2PEBDEB`）。该批 26 个文件已全部回退。既有工具里 `b2_dup_decls.py`（同名/同实体重复声明）与 `b3_free_fn_defs.py`（自由函数的定义 TU 是否看得见声明头）正是这个核对步骤，不要跳过。
+
+### 7.16 SHARED 测试面标注：physics（2026-09-20）
+
+| 域 | LNK1120 前→后 | exe | ctest（`-E "^bundle/" --timeout 120 -j 4`） |
+| --- | --- | --- | --- |
+| physics | 256 → 0 | 16.26 MiB | **271/277 通过**（6 失败 0 超时；OBJECT 单链接单元对照 277/277） |
+
+静态 `ninja -C C:\evs eve` exit 0（`eve.exe` 232,814,592 B）。标注 **254 个点 / 56 个唯一站点**（36 个类 + 20 个自由函数；`_INLINE` 0），30 个头文件、`Export.h` include 22 处、组宏 62 行（DOMAINS 41 / WORLD 8 / PLATFORM 8 / BACKENDS 3 / EDITORS 1 / ORCHESTRATION 1）；清**两个**对象根各 20 模块 / 311 个对象（共 622）。exe 从同源 OBJECT 的 230.4 MiB 降到 16.26 MiB（14.2×），`dumpbin /dependents` 直接导入全部 7 个组 DLL。
+
+本轮 6 个失败**全部由 DLL 拆分造成**，分两族：box3d 的 `b3_worlds` 新子族 5 个 + SDL video `_this` 已知族 1 个（`softbody.volume.renderPreview`）。ECS `default_table()` / ImGui `GImGui` 本域未触发。
+
+**新坑 1（并入 §7.5）：批量标注器要按"定义模块 + 作用域链"消歧，不能按文件名 glob 找类。**
+`??0/?1Cloth@physics@eve@@…` 的正主是 `src/modules/physics/cloth/Cloth.h:27` 的 `eve::physics::Cloth`（5 参构造在 :36），**不是** `cloth/ClothModule.h:17` 的 `eve::cloth::Cloth`（Module 工厂，没有 5 参构造）。两者同属模块 `physics_cloth`（→ `EVDomains` → `EVENGINE_API_DOMAINS`），所以"谁定义"只能由**反修饰限定名与站点外层作用域链逐段比对**得出。只在 `src/modules/physics/*.h` 里找 `class Cloth` 的工具**永远找不到**正主——它在 `cloth/` 子目录下——会把该符号报成 AMBIGUOUS-SITE 并整体跳过，于是链到最后只剩这 2 个（256 → 2 → 0 的最后一跳）。`b6e_place.py` 已按作用域链实现。
+
+**新坑 2：`b2_dup_decls.py` 只扫缩进行 → 顶格声明是盲区。**
+`procgen/GtsTerrainLod.h:104` 的 friend 带了宏，同一实体的命名空间级声明 `:208`（顶格）没有 → 2 条 `warning C4273`；规则仍是 §7.8 的"同一实体的每条声明都要带宏"，但工具必须**同时扫顶格与缩进行**。
+
+**新坑 3（影响整个 PR 的可评审性与 CI 门禁）：标注器会把整文件行尾改写成 CRLF，制造全文件 diff，并把"旧债"变成"新违规"。**
+`b1_place.py` / `b1_includes.py` 用 `Path.write_text()` 回写，在 Windows 上把每个 `\n` 变成 `\r\n`。对本来就是 LF（或 LF 混少量 CRLF）的文件，`git diff <base>` 会把**每一行**都算成改动：
+- PR 变大：`src/modules/network/Network.h` 真实改动 3 行，diff 却报 138/136；
+- `check/architecture-contracts` 的口径是 **changed-line**，于是它去 lint 那些从未被改过的行，把该文件既有的 raw-pointer / `bool` 返回 / Link 目录缺失等**旧债报成新违规**（Network.h 一处 14 条），门禁直接失败。
+
+两个必须做对的细节：
+1. `git show <rev>:<path>` / `git cat-file -p` **会走 checkout 的 eol 转换**（本机 `core.autocrlf=true`），拿它当"原始字节"读基线会把基线也读成 CRLF，从而把要修的东西又写回去；读原始字节要用 `git cat-file blob <rev>:<path>`。
+2. 门禁的 base 必须是**该 PR 的 merge-base**（本轮 `4b3cef55c`），不是构建 worktree 里停在陈旧提交上的 `HEAD`——`C:\evt` 的 `HEAD` 是 `3b9b24c4d`，拿它当 base 会把整段历史差异都算成 changed-line。
+
+修法（`C:\evb2\eol_restore.py`，幂等）：以基线字节为底，用 difflib 把目标文本（工作树或某个 rev）的语义差量重放上去——未改动的行保留**基线原本的行尾**，插入行沿用前一行的行尾，写入前校验"去掉 CR 后与目标逐字相等"。本轮对 physics 批 30 个文件 + `Network.h`/`Thread.h` 共 32 个文件归一化后：`Network.h` 的 PR diff 从 138/136 回到 **3/1**，`check/architecture-contracts --base 4b3cef55c` 恢复 **OK**，重链仍 0 unresolved、ctest 仍是 271/277。
+
+**跨 DLL 静态状态：新子族 `b3_worlds`（第三方静态库里的文件作用域状态）。**
+4 个 `box3d.*` 用例以 `0x80000003` 断点停在 `third-party/box3d/src/body.c`（`B3_ASSERT(b3Body_IsValid(bodyId))`，body.c:30），另 1 个 `physics.core.world3dFailedStepPreservesPreviousContactEvents` 段错误（`World3D.cpp:743` → box3d）。根因是 box3d 以**静态库** `box3dd.lib` 链进每个链接单元，而 `b3_worlds`（`physics_world.c:36` 的文件作用域全局）因此每个链接单元一份。探针 `C:\evb2\b6e_box3d_state.py`（走 `B3_ASSERT` 的 `#condition`/`__FILE__` 字面量）实测：`EVWorld.dll` 与 `unit_test_physics.exe` **恰好各一份**，其余 6 个组 DLL 与 29 个测试 exe 全 0。注意 `b3_worlds` **不在**构建树的 2438 个 `.obj` 里（它来自预编译静态库），所以 §7.14 那种 obj 级探针对它无效——**第三方静态库里的文件作用域状态是 §7.3 清单之外的第四族**。
+
+**并发教训**：physics 一度有 3 个代理在同一棵树、同一个构建目录上跑同一个任务。症状：`EVBackends.dll` 因陈旧对象报 `LNK2001 ?name@Orders@orders@eve@@2PEBDEB`（Ninja unscanned 规则在源码回退后不重编），以及 `b4a_clean --apply` 撞 `PermissionError [WinError 32]`（对象正被另一个构建占用）。仲裁为单一执行者后数字才自洽。**同一域一次只允许一个写者**，清对象前先确认没有并发的 cl/ninja/link。
+
+**刻意例外**：`SoftBody3DWorldBridge.cpp:56,62` 的 2 条 `warning C4273` 未修——`softbody/SoftBody3D.h` 相对基线未改动且已写 `class EVENGINE_API_BACKENDS SoftBody3D`，而这两个成员的定义落在 `EVPhysics`（EVWorld 组），即"类归 BACKENDS、成员定义在 WORLD"的跨组错配，属**基线遗留**；两个符号都不在这 256 个未解析集里、无人导入，OBJECT 模式 0 条。归 §7.3 范畴。
+
+进度：30 个域中 **23 个已链通**（20 个全绿）；余 `procgen` / `rpg` / `graphics`（各自需重新取权威基线，`procgen` 的旧日志 899 已过期）。§7.15 记的 256 个残余已在本节清零。

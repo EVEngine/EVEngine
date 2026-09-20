@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/Result.h"
 #include "physics/PhysicsLink.h"
@@ -78,7 +80,7 @@ struct PixelTerrainContact {
  * @remarks Solid occupancy is sampled through PixelWorld, including the one-cell neighbor halo,
  * so shared Chunk borders do not emit internal collision edges. Output is deterministic and owning.
  */
-[[nodiscard]] eve::Result<std::vector<TerrainCollisionContour>> extractTerrainContours(
+[[nodiscard]] EVENGINE_API_DOMAINS eve::Result<std::vector<TerrainCollisionContour>> extractTerrainContours(
     const eve::pixelworld::PixelWorld& pixelWorld, int chunkX, int chunkY,
     std::uint32_t maximumVertices = 4096);
 
@@ -86,7 +88,7 @@ struct PixelTerrainContact {
  * @brief Probe a circular character contact directly against authoritative solid material cells.
  * @param maximumCells Positive upper bound on candidate cells inspected.
  */
-[[nodiscard]] eve::Result<PixelTerrainContact> probeTerrainCircle(
+[[nodiscard]] EVENGINE_API_DOMAINS eve::Result<PixelTerrainContact> probeTerrainCircle(
     const eve::pixelworld::PixelWorld& pixelWorld, float centerX, float centerY, float radius,
     std::uint32_t maximumCells = 4096);
 
@@ -94,7 +96,7 @@ struct PixelTerrainContact {
  * @brief Sweep a circular character shape continuously through authoritative solid material cells.
  * @remarks Uses an exact segment-vs-expanded-cell slab test and deterministic fraction/cell tie-breaks.
  */
-[[nodiscard]] eve::Result<PixelTerrainContact> sweepTerrainCircle(
+[[nodiscard]] EVENGINE_API_DOMAINS eve::Result<PixelTerrainContact> sweepTerrainCircle(
     const eve::pixelworld::PixelWorld& pixelWorld, float startX, float startY, float endX,
     float endY, float radius, std::uint32_t maximumCells = 16384);
 
@@ -106,7 +108,7 @@ struct PixelTerrainContact {
  * pointer across calls; every operation resolves `PhysicsLink` against a caller-borrowed
  * world on the owning simulation thread. No method invokes scripts or unknown callbacks.
  */
-class PixelFragmentBody {
+class EVENGINE_API_DOMAINS PixelFragmentBody {
 public:
     ~PixelFragmentBody() = default;
     PixelFragmentBody(PixelFragmentBody&&) noexcept = default;
@@ -166,7 +168,7 @@ private:
  * owns all bodies/fixtures and PixelWorld owns all material cells. Sync is owner-thread
  * affine, invokes no callbacks, and stages every replacement body before committing.
  */
-class PixelTerrainCollisionCache {
+class EVENGINE_API_DOMAINS PixelTerrainCollisionCache {
 public:
     PixelTerrainCollisionCache();
     ~PixelTerrainCollisionCache();

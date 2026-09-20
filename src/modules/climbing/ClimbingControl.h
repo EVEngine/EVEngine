@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @file ClimbingControl.h
@@ -17,7 +19,7 @@ namespace eve::climbing {
  * They must outlive this owner-thread-affine adapter. Commands carry only
  * player semantics; begin always re-probes the borrowed authoritative world.
  */
-class ClimbingControl final : public IGameplayControlProvider {
+class EVENGINE_API_DOMAINS ClimbingControl final : public IGameplayControlProvider {
 public:
     /**
      * @brief Construct an adapter over one runtime, world and authoritative character pose.

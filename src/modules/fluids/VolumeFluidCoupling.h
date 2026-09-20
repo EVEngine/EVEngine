@@ -1,4 +1,6 @@
 #pragma once
+
+#include "common/Export.h"
 #include <memory>
 #include <span>
 #include "common/Result.h"
@@ -20,7 +22,7 @@ struct VolumeFluidThermalRule;
  * After restore/hot reload, reconstruct links from application persistent identity.
  * This bridge has no serialized runtime handles and invokes no world.step callbacks.
  */
-class VolumeFluidCoupling final {
+class EVENGINE_API_DOMAINS VolumeFluidCoupling final {
 public:
     VolumeFluidCoupling();
     ~VolumeFluidCoupling();

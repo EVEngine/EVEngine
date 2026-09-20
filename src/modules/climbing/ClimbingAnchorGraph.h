@@ -91,7 +91,7 @@ struct ClimbingAnchorGraphDefinition {
 /** @brief Encodes a validated graph to its canonical owning Value representation. */
 [[nodiscard]] EVENGINE_API_DOMAINS eve::Result<eve::Value> encodeClimbingAnchorGraphDefinition(const ClimbingAnchorGraphDefinition& graph);
 /** @brief Decodes and validates a complete owning graph candidate transactionally. */
-[[nodiscard]] eve::Result<ClimbingAnchorGraphDefinition> decodeClimbingAnchorGraphDefinition(const eve::Value& value);
+[[nodiscard]] EVENGINE_API_DOMAINS eve::Result<ClimbingAnchorGraphDefinition> decodeClimbingAnchorGraphDefinition(const eve::Value& value);
 
 namespace detail {
 struct ClimbingAnchorReservationIdTag {};
@@ -189,7 +189,7 @@ struct ClimbingAnchorGraphReload {
  * The instance owns topology and reservations, but stores only generation-checked Physics handles.
  * It never retains World3D or Body3D pointers across calls.
  */
-class ClimbingAnchorGraphInstance {
+class EVENGINE_API_DOMAINS ClimbingAnchorGraphInstance {
 public:
     /**
      * @brief Validates and binds a graph snapshot to an existing Physics body.
