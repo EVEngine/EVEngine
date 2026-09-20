@@ -226,6 +226,16 @@ else()
   # link unit any other way.
   set(EVE_TEST_TARGETS "")
   set(_eve_test_runner "${CMAKE_CURRENT_SOURCE_DIR}/main.cpp")
+  # Compile the generated script fixtures once, in their own target, and link that
+  # archive into every domain executable. Listing nut_scripts.cpp as a source of
+  # each domain target instead would make the Unix Makefiles generator emit one
+  # rule for that output per target; those rules are not deduplicated, so under
+  # `make -j` one target regenerates (and briefly deletes) nut_scripts.cpp while
+  # another is compiling it -- CI's Linux job failed with
+  # "integrate.cmake:8 (configure_file): No such file or directory" and
+  # "*** Deleting file 'test/nut_scripts.cpp'". Ninja deduplicates, which is why
+  # local Ninja builds never showed it.
+  add_library(eve_nut_fixtures STATIC ${CMAKE_CURRENT_BINARY_DIR}/nut_scripts.cpp)
   foreach(_eve_domain IN LISTS EVE_TEST_DOMAINS)
     if(NOT DEFINED EVE_TEST_DOMAIN_${_eve_domain}_SOURCES)
       # Every test of this domain was filtered out by the profile.
@@ -236,9 +246,8 @@ else()
       ${EVE_TEST_DOMAIN_${_eve_domain}_SOURCES}
       ${EVE_TEST_DOMAIN_${_eve_domain}_SHARED_SOURCES}
       ${_eve_test_runner}
-      ${CMAKE_CURRENT_BINARY_DIR}/nut_scripts.cpp
     )
-    target_link_libraries(${_eve_test_target} eve_engine_includes)
+    target_link_libraries(${_eve_test_target} eve_engine_includes eve_nut_fixtures)
     # CTest includes <target>_zeroerr_tests.cmake, which that target's POST_BUILD
     # discovery step writes. Seed an empty stub at configure time when it is
     # absent: otherwise ctest refuses to run at all ("include" error) until every

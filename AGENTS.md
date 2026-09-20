@@ -111,18 +111,22 @@ checkout is on that commit.
 - Release (Ninja + MSVC `cl`):
   `make build/win32`
 - **Module linkage policy**: `EVENGINE_MODULE_LINKAGE=SHARED` (one DLL per link
-  group) is the default, and all 30 test domains build and run under it, so
-  iterating on a domain test relinks a test executable instead of the whole
-  engine. Anything that ships an artifact must pass `OBJECT` explicitly (the
-  release Makefile config `WIN32_CMAKE_ARGS` pins it, so `make build/win32` and
-  `make sdk/win32`), because the shipped artifact must be a single exe with no
-  engine DLLs beside it; the debug SDK intentionally follows the development
-  configuration and therefore ships the link-group DLLs. Under SHARED, the test
-  executables are thin consumers of the seven group libraries, and a handful of
-  cases fail because third-party static-library state (SDL video, box2d/box3d,
-  the header-only ECS table, ImGui's context) exists once per link unit — the
-  full, per-family inventory is
-  `docs/dev/superpowers/specs/2026-08-18-test-suite-optimization.md` §7.3.
+  group) is the default, and the full suite is green under it on Windows and
+  Linux (5546 cases on Windows), so iterating on a domain test relinks a test
+  executable instead of the whole engine. Anything that ships an artifact must
+  pass `OBJECT` explicitly (the release Makefile config `WIN32_CMAKE_ARGS` pins
+  it, so `make build/win32` and `make sdk/win32`), because the shipped artifact
+  must be a single exe with no engine DLLs beside it; the debug SDK intentionally
+  follows the development configuration and therefore ships the link-group DLLs.
+  macOS, iOS, Android and WebAssembly keep the archive route: a mobile app bundle
+  cannot be told where to find seven group libraries, and macOS additionally needs
+  its platform support library (`EVPlatformMacOSX`) linked into the group that
+  calls it before the dynamic route can work there. Every piece of process-level
+  state that used to be duplicated per link unit (SDL video, box2d/box3d world
+  registries, ImGui's context, the header-only ECS default table) now has exactly
+  one owner; the per-family inventory, the third-party/submodule patches and the
+  traps are in
+  `docs/dev/superpowers/specs/2026-08-18-test-suite-optimization.md` §7.25.
 - Do not invoke `cl.exe` manually outside a Developer prompt; the `cmake\with-msvc.cmd`
   wrapper calls vcvars64 before CMake so the MSVC compiler and STL are found.
 - First build compiles third-party through the `deps` target — slow once, cached

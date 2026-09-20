@@ -133,10 +133,21 @@ option(EVENGINE_VULKAN_USE_VMA
 # whole engine. Mobile and WebAssembly artifacts ship as a single module or app
 # bundle and cannot be told where to find seven group libraries, so those
 # platforms keep the archive-only route whatever the default is.
+#
+# macOS is in that list for a concrete reason, not by policy: its platform support
+# library (platform/macosx -> EVPlatformMacOSX) is linked into the host only, so
+# libEVFoundation.dylib cannot resolve eve::macosx::getExecutablePath(), which
+# eve::filesystem::Filesystem::getExecutablePath() calls. The dynamic route there
+# needs that library linked into the group that consumes it (or the symbol moved
+# behind an interface); until then macOS builds the archive route and is
+# unaffected by the desktop default. Windows and Linux are the verified dynamic
+# platforms (see the spec section 7.25 readings).
 if(ANDROID OR IOS OR EMSCRIPTEN
    OR CMAKE_SYSTEM_NAME STREQUAL "iOS"
+   OR CMAKE_SYSTEM_NAME STREQUAL "Darwin"
    OR BUILD_PLATFORM STREQUAL "android"
    OR BUILD_PLATFORM STREQUAL "ios"
+   OR BUILD_PLATFORM STREQUAL "macosx"
    OR BUILD_PLATFORM STREQUAL "webgpu")
     set(_eve_module_linkage_default "OBJECT")
 else()
