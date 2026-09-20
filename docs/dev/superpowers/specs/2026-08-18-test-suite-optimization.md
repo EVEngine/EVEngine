@@ -516,3 +516,15 @@ debug SDK（`make sdk/win32-debug`）**沿用开发配置，即动态**：它从
 **跨 DLL 静态状态取证**（新脚本 `C:\evb2\b6c_dll_state.py`，扫 2438 个 `.obj` / 260 个 link unit）：ECS `external/ECS.hpp` 的 `default_table()` 27 unit / 173 obj 各一份；ImGui `GImGui` 2 unit / 4 obj；SDL video 静态状态 7 个组 DLL + 若干测试 exe 各一份。animation 的 301 个用例不建 `SDL_WINDOW_VULKAN`、不建 ImGui context，且它唯一持 ECS 表的 link unit 就是测试 exe 本身（EVWorld.dll 为 0）→ 三族**潜伏未触发**：该域 0 失败 0 挂起，且没有任何"既不属于三族"的遗留失败。
 
 进度：30 个域中 **22 个已链通**（20 个全绿）；`physics` 仍有 256 个未解析（本轮顺带减掉 31 个 animation 侧符号）。
+### 7.15 进行中状态：physics（2026-09-20，交接记录）
+
+`physics` 域（SHARED）基线 **LNK1120 = 287**（从 `C:\evt\b6a-animation-link-base.log` 按 `Linking CXX executable unit_test_physics.exe` 切片，工具 `C:\evb2\b6c_harvest.py`），animation 那批标注已顺带消掉 31 个，**实时残余约 256**。符号清单已落盘 `C:\evt\b6d-physics-syms.txt`；该批次的进度日志 `C:\evt\b6d-progress.log` 停在 `[step1b]`（用 `with-msvc.cmd` 跑权威基线重链）。**未产生任何标注、未提交。**
+
+接手时的固定流程（§7.5-§7.14 的规则全部适用，另有两条本轮新增的存活判断经验）：
+1. 逐域建基线链接（必须 `C:\evt\cmake\with-msvc.cmd cmd /c "ninja.exe -C C:\evt\build\win32-debug -k 0 unit_test_<域>"`，裸 `ninja.exe` 会因找不到 `cl.exe` 失败）→ 按 exe 目标切片未解析符号；
+2. 标注（组宏按定义模块的 `-DEVENGINE_EXPORTS_<GROUP>`；重载/friend 全声明带宏；`Export.h` 覆盖 `.h/.hpp/.inl/.ipp`；raw string 禁标；数据符号归拥有者组；C2280 四件套**仅在成员可移动时**适用，否则只删拷贝；头内 `ClassName() = default;` 遇前向声明容器会触发 C2027 → 头里声明、`.cpp` 里 `= default`）；
+3. 清**两个**对象根（`src/engine/CMakeFiles/<LIB>.dir`、`src/modules/CMakeFiles/<LIB>.dir`）后重链；
+4. `ctest --test-dir C:\evt\build\win32-debug -L unit_test_<域> -E "^bundle/" --timeout 120 --output-on-failure -j 4`（双引号 + 超时都不可省）；
+5. 静态回归 `ninja -C C:\evs eve` 必须 exit 0；失败按"跨 DLL 静态状态复制（SDL/Vulkan/ImGui/ECS `default_table()`）或插件契约"分类，并用 OBJECT 单链接单元对照定性。
+
+**存活判断经验（本轮踩过）**：不要只凭"进程表无 cl/ninja"或"日志几分钟没动"就判定代理卡死——这类单域批次是"长构建 → 长分析 → 一次性写标注"，`git diff` 会长时间为 0 然后突然跳变；判活应看**该代理自己的进度日志是否跨轮次增长**。`animation` 那轮就因此被我误判为停滞并被中断过一次（后被续跑代理完成，269→0、301/301）。
