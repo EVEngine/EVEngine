@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <cctype>
+#include <cstdio>
 #include <fstream>
 #include <iomanip>
 #include <iterator>
@@ -240,6 +241,129 @@ std::string BindingContract::key() const {
     return result;
 }
 
+namespace {
+
+std::string jsonEscape(std::string_view text) {
+    std::string out;
+    out.reserve(text.size() + 8);
+    for (unsigned char c : text) {
+        switch (c) {
+            case '"': out += "\\\""; break;
+            case '\\': out += "\\\\"; break;
+            case '\n': out += "\\n"; break;
+            case '\r': out += "\\r"; break;
+            case '\t': out += "\\t"; break;
+            default:
+                if (c < 0x20) {
+                    char buf[8];
+                    std::snprintf(buf, sizeof(buf), "\\u%04x", c);
+                    out += buf;
+                } else {
+                    out.push_back(static_cast<char>(c));
+                }
+                break;
+        }
+    }
+    return out;
+}
+
+const char* scriptUnitName(ScriptUnit unit) {
+    switch (unit) {
+        case ScriptUnit::Seconds: return "Seconds";
+        case ScriptUnit::Milliseconds: return "Milliseconds";
+        case ScriptUnit::Radians: return "Radians";
+        case ScriptUnit::Degrees: return "Degrees";
+        case ScriptUnit::Pixels: return "Pixels";
+        case ScriptUnit::Meters: return "Meters";
+        case ScriptUnit::None: break;
+    }
+    return "None";
+}
+
+std::string asciiLower(std::string_view text) {
+    std::string out(text);
+    for (char& c : out) c = static_cast<char>(std::tolower(static_cast<unsigned char>(c)));
+    return out;
+}
+
+std::vector<std::string> splitTokens(const std::string& query) {
+    std::vector<std::string> tokens;
+    std::string              current;
+    for (char c : query) {
+        if (std::isspace(static_cast<unsigned char>(c))) {
+            if (!current.empty()) {
+                tokens.push_back(current);
+                current.clear();
+            }
+        } else {
+            current.push_back(c);
+        }
+    }
+    if (!current.empty()) tokens.push_back(current);
+    return tokens;
+}
+
+int scoreContract(const BindingContract& contract, const std::string& queryLower,
+                  const std::vector<std::string>& tokens) {
+    const std::string key    = asciiLower(contract.key());
+    const std::string method = asciiLower(contract.method);
+    const std::string cls    = asciiLower(contract.scriptClass);
+    const std::string module = asciiLower(contract.module);
+    const std::string docs   = asciiLower(contract.documentationId);
+    const std::string hay    = key + " " + module + " " + cls + " " + method + " " + docs;
+    if (queryLower.empty()) return 1;
+    for (const std::string& token : tokens) {
+        if (hay.find(token) == std::string::npos) return 0;
+    }
+    if (key == queryLower) return 200;
+    if (cls + "." + method == queryLower) return 180;
+    if (method == queryLower) return 150;
+    if (method.rfind(queryLower, 0) == 0) return 120;
+    if (method.find(queryLower) != std::string::npos) return 90;
+    if (cls.find(queryLower) != std::string::npos) return 75;
+    if (key.find(queryLower) != std::string::npos) return 70;
+    if (docs.find(queryLower) != std::string::npos) return 50;
+    return 40;
+}
+
+}  // namespace
+
+std::string BindingContract::toJson() const {
+    std::ostringstream json;
+    json << "{\"key\":\"" << jsonEscape(key()) << "\",\"module\":\"" << jsonEscape(module) << "\",\"scriptClass\":\""
+         << jsonEscape(scriptClass) << "\",\"method\":\"" << jsonEscape(method) << "\",\"parameters\":[";
+    for (size_t i = 0; i < parameters.size(); ++i) {
+        const BindingParameterContract& parameter = parameters[i];
+        if (i != 0) json << ',';
+        json << "{\"name\":\"" << jsonEscape(parameter.name) << "\",\"type\":\"" << jsonEscape(parameter.type)
+             << "\",\"nullable\":" << (parameter.nullable ? "true" : "false");
+        if (parameter.scriptDefault) {
+            json << ",\"default\":\"" << jsonEscape(*parameter.scriptDefault) << '"';
+        }
+        if (parameter.unit != ScriptUnit::None) {
+            json << ",\"unit\":\"" << scriptUnitName(parameter.unit) << '"';
+        }
+        if (!parameter.choices.empty()) {
+            json << ",\"choices\":[";
+            for (size_t c = 0; c < parameter.choices.size(); ++c) {
+                if (c != 0) json << ',';
+                json << '"' << jsonEscape(parameter.choices[c]) << '"';
+            }
+            json << ']';
+        }
+        json << '}';
+    }
+    json << "],\"returnType\":\"" << jsonEscape(returnType)
+         << "\",\"returnNullable\":" << (returnNullable ? "true" : "false") << ",\"ownership\":\""
+         << jsonEscape(ownership) << "\",\"threadAffinity\":\"" << jsonEscape(threadAffinity) << "\",\"platforms\":[";
+    for (size_t i = 0; i < platforms.size(); ++i) {
+        if (i != 0) json << ',';
+        json << '"' << jsonEscape(platforms[i]) << '"';
+    }
+    json << "],\"documentationId\":\"" << jsonEscape(documentationId) << "\"}";
+    return json.str();
+}
+
 void BindingContractRegistry::registerContract(BindingContract contract) {
     ensureUnique();
     storage_->contracts[contract.key()] = std::move(contract);
@@ -292,11 +416,34 @@ std::vector<BindingContract> BindingContractRegistry::snapshot() const {
     return result;
 }
 
+std::vector<BindingSearchHit> BindingContractRegistry::search(std::string_view query, std::string_view moduleFilter,
+                                                              std::string_view classFilter, size_t limit) const {
+    if (limit == 0) limit = 20;
+    if (limit > 64) limit = 64;
+    const std::string             queryLower  = asciiLower(query);
+    const std::string             moduleLower = asciiLower(moduleFilter);
+    const std::string             classLower  = asciiLower(classFilter);
+    const auto                    tokens      = splitTokens(queryLower);
+    std::vector<BindingSearchHit> hits;
+    for (const auto& [_, contract] : storage_->contracts) {
+        if (!moduleLower.empty() && asciiLower(contract.module) != moduleLower) continue;
+        if (!classLower.empty() && asciiLower(contract.scriptClass) != classLower) continue;
+        const int score = scoreContract(contract, queryLower, tokens);
+        if (score <= 0) continue;
+        hits.push_back({contract, score});
+    }
+    std::sort(hits.begin(), hits.end(), [](const BindingSearchHit& a, const BindingSearchHit& b) {
+        if (a.score != b.score) return a.score > b.score;
+        return a.contract.key() < b.contract.key();
+    });
+    if (hits.size() > limit) hits.resize(limit);
+    return hits;
+}
+
 void BindingContractRegistry::ensureUnique() {
     if (storage_.use_count() != 1) storage_ = std::make_shared<Storage>(*storage_);
 }
 
-namespace {
 const BindingContractRegistry& generatedBindingContracts() {
     static const BindingContractRegistry contracts = [] {
         BindingContractRegistry result;
@@ -305,7 +452,6 @@ const BindingContractRegistry& generatedBindingContracts() {
     }();
     return contracts;
 }
-}  // namespace
 
 ScriptCompiler::ScriptCompiler(ssq::VM& vm, ScriptModuleResolver& modules) : vm_(&vm), modules_(&modules) {
     bindings_           = generatedBindingContracts();

@@ -9,7 +9,9 @@ EveScript 是 EVEngine 的游戏脚本语言。它以 Squirrel 为基础，保�
 没有使用扩展语法的标准 Squirrel 文件可以直接运行。
 
 本教程面向使用 SDK 制作游戏的开发者。模块 API（图形、物理、UI、ECS 等）请配合
-[模块使用手册](MODULES.md)查阅。
+[模块使用手册](MODULES.md)查阅。给 AI Agent 的短上下文见
+[`.cursor/skills/evescript/SKILL.md`](../../.cursor/skills/evescript/SKILL.md)
+与 [AI 知识补偿](../dev/AI知识补偿.md)；运行时请先 `eve_api_search`，不要从 Unity C# 臆造 API。
 
 ## 1. 第一个 EveScript 游戏
 
