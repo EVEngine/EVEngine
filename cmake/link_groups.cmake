@@ -23,6 +23,16 @@ if(NOT EVENGINE_MODULE_LINKAGE STREQUAL "SHARED")
     return()
 endif()
 
+# The group shared objects link the zeroerr test framework as well, and ELF
+# refuses a non-PIC object there (`relocation R_X86_64_PC32 against symbol
+# zeroerr::Reset can not be used when making a shared object`). zeroerr comes
+# from a submodule that does not enable position independent code itself, so it
+# is set from this side; it is a no-op on Windows. The third-party closure gets
+# the same flag from cmake/third_party_build.cmake.
+if(TARGET zeroerr)
+    set_target_properties(zeroerr PROPERTIES POSITION_INDEPENDENT_CODE ON)
+endif()
+
 # The host, the tests, the benchmarks and the plugins all consume the annotated
 # engine surface from these DLLs, so their view of EVENGINE_API is dllimport.
 # Modules get this too (eve_engine_includes is what they link), but Export.h
