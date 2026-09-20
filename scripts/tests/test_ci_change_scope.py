@@ -1,8 +1,11 @@
 """Tests for conservative CI change-scope classification."""
 
 import sys
+import subprocess
+import tempfile
 import unittest
 from pathlib import Path
+from unittest import mock
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "scripts"))
@@ -74,6 +77,73 @@ class CiChangeScopeTests(unittest.TestCase):
         mode, label = ci_change_scope.classify_tests(["test/not_present.cpp"])
         self.assertEqual("full", mode)
         self.assertEqual("", label)
+
+    def test_mixed_deleted_and_modified_test_sources_run_full_suite(self):
+        mode, label = ci_change_scope.classify_tests(
+            ["test/not_present.cpp", "test/math.cpp"]
+        )
+        self.assertEqual("full", mode)
+        self.assertEqual("", label)
+
+    def test_fixture_only_source_uses_fast_lane_label(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            source = root / "test" / "fixture_only.cpp"
+            source.parent.mkdir()
+            source.write_text(
+                'TEST_CASE_FIXTURE(Fixture, "fixture.case") {}\n',
+                encoding="utf-8",
+            )
+            with mock.patch.object(ci_change_scope, "ROOT", root):
+                mode, label = ci_change_scope.classify_tests(
+                    ["test/fixture_only.cpp"]
+                )
+        self.assertEqual("selected", mode)
+        self.assertEqual(r"^source:(fixture_only[.]cpp)$", label)
+
+    def test_direct_diff_reports_changes_when_new_head_is_ancestor(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            repo = Path(temp_dir)
+            subprocess.run(["git", "init", "-q"], cwd=repo, check=True)
+            subprocess.run(
+                ["git", "config", "user.email", "ci@example.invalid"],
+                cwd=repo,
+                check=True,
+            )
+            subprocess.run(
+                ["git", "config", "user.name", "CI Test"], cwd=repo, check=True
+            )
+            tracked = repo / "platform" / "android" / "setting.txt"
+            tracked.parent.mkdir(parents=True)
+            tracked.write_text("before\n", encoding="utf-8")
+            subprocess.run(["git", "add", "."], cwd=repo, check=True)
+            subprocess.run(["git", "commit", "-qm", "before"], cwd=repo, check=True)
+            older = subprocess.run(
+                ["git", "rev-parse", "HEAD"],
+                cwd=repo,
+                check=True,
+                capture_output=True,
+                text=True,
+                encoding="utf-8",
+            ).stdout.strip()
+            tracked.write_text("after\n", encoding="utf-8")
+            subprocess.run(["git", "commit", "-qam", "after"], cwd=repo, check=True)
+            newer = subprocess.run(
+                ["git", "rev-parse", "HEAD"],
+                cwd=repo,
+                check=True,
+                capture_output=True,
+                text=True,
+                encoding="utf-8",
+            ).stdout.strip()
+
+            merge_base_paths = ci_change_scope.changed_paths(newer, older, cwd=repo)
+            direct_paths = ci_change_scope.changed_paths(
+                newer, older, diff_mode="direct", cwd=repo
+            )
+
+        self.assertEqual([], merge_base_paths)
+        self.assertEqual(["platform/android/setting.txt"], direct_paths)
 
     def test_docs_only_change_has_no_native_tests(self):
         mode, label = ci_change_scope.classify_tests(["docs/usr/guide.md"])

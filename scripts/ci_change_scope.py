@@ -13,7 +13,7 @@ ROOT = Path(__file__).resolve().parent.parent
 BUILD_SCOPES = ("windows", "android", "macos", "ios", "linux", "asan", "fuzz", "webgpu")
 SCOPES = (*BUILD_SCOPES, "tools")
 ALL = frozenset(SCOPES)
-TEST_CASE_RE = re.compile(r"\bTEST_CASE\s*\(")
+TEST_CASE_RE = re.compile(r"\bTEST_CASE(?:_FIXTURE)?\s*\(")
 
 
 def classify_path(path: str) -> set[str]:
@@ -69,19 +69,16 @@ def classify_tests(paths: list[str], force_all: bool = False) -> tuple[str, str]
         if not (path.startswith("test/") and path.endswith(".cpp")):
             return "full", ""
         source = ROOT / path
-        # Deletions have no remaining cases to execute. New/modified helper
-        # translation units without TEST_CASE definitions can affect arbitrary
-        # tests, so they conservatively select the full suite.
+        # A deletion can change shared registrations or fixtures in ways the
+        # remaining source labels cannot represent. Fail closed even when the
+        # same diff also modifies surviving test sources.
         if not source.exists():
-            continue
+            return "full", ""
+        # New/modified helper translation units without zeroerr declarations
+        # can affect arbitrary tests, so they also select the full suite.
         if not TEST_CASE_RE.search(source.read_text(encoding="utf-8")):
             return "full", ""
         test_sources.append(source.name)
-
-    if not test_sources:
-        # A deleted-only test diff cannot produce a useful source label. Keep
-        # the job meaningful by running the full remaining suite.
-        return "full", ""
 
     alternatives = "|".join(
         re.escape(name).replace(r"\.", "[.]") for name in sorted(set(test_sources))
@@ -89,12 +86,21 @@ def classify_tests(paths: list[str], force_all: bool = False) -> tuple[str, str]
     return "selected", rf"^source:({alternatives})$"
 
 
-def changed_paths(base: str, head: str) -> list[str]:
+def changed_paths(
+    base: str,
+    head: str,
+    diff_mode: str = "merge-base",
+    cwd: Path | None = None,
+) -> list[str]:
+    """Return changed paths using PR merge-base or direct endpoint semantics."""
+
+    comparison = f"{base}...{head}" if diff_mode == "merge-base" else f"{base}..{head}"
     result = subprocess.run(
-        ["git", "diff", "--name-only", f"{base}...{head}"],
+        ["git", "diff", "--name-only", comparison],
         check=True,
         capture_output=True,
         text=True,
+        cwd=cwd,
         # git writes UTF-8; the locale default (cp936 on a Chinese Windows)
         # would mangle or reject a non-ASCII path instead.
         encoding="utf-8",
@@ -107,13 +113,23 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--base")
     parser.add_argument("--head", default="HEAD")
+    parser.add_argument(
+        "--diff-mode",
+        choices=("merge-base", "direct"),
+        default="merge-base",
+        help="merge-base for pull requests; direct for push before/after SHAs",
+    )
     parser.add_argument("--all", action="store_true", dest="force_all")
     parser.add_argument("--github-output", type=Path)
     args = parser.parse_args()
     if not args.force_all and not args.base:
         parser.error("--base is required unless --all is used")
 
-    paths = [] if args.force_all else changed_paths(args.base, args.head)
+    paths = (
+        []
+        if args.force_all
+        else changed_paths(args.base, args.head, diff_mode=args.diff_mode)
+    )
     scopes = classify(paths, force_all=args.force_all)
     test_mode, test_label_regex = classify_tests(paths, force_all=args.force_all)
     lines = [f"{scope}={'true' if enabled else 'false'}" for scope, enabled in scopes.items()]

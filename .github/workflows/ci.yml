@@ -95,7 +95,8 @@ jobs:
           elif [ "$EVENT_NAME" = "push" ] && [ -n "$BEFORE_SHA" ] && \
                [ "$BEFORE_SHA" != "0000000000000000000000000000000000000000" ]; then
             python3 scripts/ci_change_scope.py \
-              --base "$BEFORE_SHA" --head "$HEAD_SHA" --github-output "$GITHUB_OUTPUT"
+              --base "$BEFORE_SHA" --head "$HEAD_SHA" --diff-mode direct \
+              --github-output "$GITHUB_OUTPUT"
           else
             python3 scripts/ci_change_scope.py --all --github-output "$GITHUB_OUTPUT"
           fi
