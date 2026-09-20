@@ -15,6 +15,8 @@
 #include <array>
 #include <cmath>
 #include <cstdint>
+#include <map>
+#include <utility>
 #include <vector>
 
 using namespace eve::hexmap;
@@ -33,6 +35,160 @@ void revealAll(HexMap& map) {
     for (std::int32_t index = 0; index < map.cellCount(); ++index) {
         CHECK(map.setExplored(map.coordinatesAt(index), true).ok());
     }
+}
+
+/** @brief Coincident-geometry census over a set of chunk meshes welded by position. */
+struct MeshWeldReport {
+    std::size_t boundaryEdges      = 0;  ///< Edges used by exactly one triangle (an open seam).
+    std::size_t nonManifoldEdges   = 0;  ///< Edges used by three or more triangles.
+    std::size_t duplicateTriangles = 0;  ///< Triangles repeating an earlier triangle's welded corners.
+    /**
+     * @brief Triangles whose geometric normal points downwards.
+     *
+     * A terrain patch never overhangs, so a downward face is a winding mistake. This is the
+     * oracle for geometry edits: the welded census is position based and cannot see a face
+     * that was emitted in the wrong order.
+     */
+    std::size_t downwardTriangles = 0;
+    /**
+     * @brief The open borders themselves, as their two welded endpoints.
+     *
+     * `boundaryEdges` alone says how many seams there are, not where; this is what turns a failure
+     * into a location on the map. Capped, so a flat patch's own perimeter cannot flood the log.
+     */
+    std::vector<std::array<std::array<std::int64_t, 3>, 2>> openBorders;
+};
+
+/** @brief Builds the terrain mesh of every chunk of `map`. */
+[[nodiscard]] std::vector<HexMeshData> collectTerrainChunks(const HexMap& map) {
+    std::vector<HexMeshData> chunks;
+    chunks.reserve(static_cast<std::size_t>(map.chunkCount()));
+    for (std::int32_t chunk = 0; chunk < map.chunkCount(); ++chunk) {
+        HexMeshData terrain;
+        buildTerrainMesh(map, chunk, terrain);
+        chunks.push_back(std::move(terrain));
+    }
+    return chunks;
+}
+
+/**
+ * @brief Whether the triangle `a`,`b`,`c` faces downwards, from its emitted winding.
+ *
+ * Only the Y component of `(b - a) x (c - a)` is needed, so vertical faces (which have no
+ * Y difference) are reported as neither up nor down.
+ */
+[[nodiscard]] bool pointsDown(const std::vector<std::array<std::int64_t, 3>>& positions, std::uint32_t a,
+                              std::uint32_t b, std::uint32_t c) {
+    const auto&        pa  = positions[a];
+    const auto&        pb  = positions[b];
+    const auto&        pc  = positions[c];
+    const std::int64_t abx = pb[0] - pa[0];
+    const std::int64_t abz = pb[2] - pa[2];
+    const std::int64_t acx = pc[0] - pa[0];
+    const std::int64_t acz = pc[2] - pa[2];
+    return (abz * acx - abx * acz) < 0;
+}
+
+/**
+ * @brief Welds `chunks` by quantised position and reports coincident geometry.
+ *
+ * The terrain builders reach the same world point from different cells, so a mesh that
+ * emits a junction twice produces exactly coincident triangles. Welding by position is
+ * what makes those visible: an unwelded vertex count cannot see them, and neither can a
+ * triangle count that is compared against an expectation derived from the same gate the
+ * emitter uses.
+ */
+[[nodiscard]] MeshWeldReport analyseMeshWeld(const std::vector<HexMeshData>& chunks) {
+    using Key      = std::array<std::int64_t, 3>;
+    using EdgeKey  = std::pair<std::uint32_t, std::uint32_t>;
+    using Triangle = std::array<std::uint32_t, 3>;
+
+    // 1e-3 world units: identical corners agree far inside this, distinct ones are
+    // separated by whole world units.
+    const auto quantise = [](float x) { return static_cast<std::int64_t>(std::llround(x * 1000.f)); };
+
+    std::size_t                     downward = 0;
+    std::map<Key, std::uint32_t>    welded;
+    std::vector<Key>                weldedPosition;  // index = welded id
+    std::map<EdgeKey, std::size_t>  edgeUse;
+    std::map<Triangle, std::size_t> triangleUse;
+
+    for (const HexMeshData& chunk : chunks) {
+        const std::vector<float>&         positions = chunk.positions();
+        const std::vector<std::uint32_t>& indices   = chunk.indices();
+        std::vector<std::uint32_t>        vertexId(positions.size() / 3u, 0u);
+        for (std::size_t vertex = 0; vertex < vertexId.size(); ++vertex) {
+            const Key  key{quantise(positions[vertex * 3u]), quantise(positions[vertex * 3u + 1u]),
+                           quantise(positions[vertex * 3u + 2u])};
+            const auto inserted = welded.emplace(key, static_cast<std::uint32_t>(welded.size()));
+            if (inserted.second) weldedPosition.push_back(key);
+            vertexId[vertex] = inserted.first->second;
+        }
+        // Winding is measured on the emitted order, before the triangle is canonicalised
+        // for the duplicate/edge maps.
+        for (std::size_t index = 0; index + 2u < indices.size(); index += 3u) {
+            const std::uint32_t a = vertexId[indices[index]];
+            const std::uint32_t b = vertexId[indices[index + 1u]];
+            const std::uint32_t c = vertexId[indices[index + 2u]];
+            if (pointsDown(weldedPosition, a, b, c)) {
+                ++downward;
+            }
+            Triangle triangle{a, b, c};
+            std::sort(triangle.begin(), triangle.end());
+            ++triangleUse[triangle];
+            for (std::size_t edge = 0; edge < 3u; ++edge) {
+                const std::uint32_t p = triangle[edge];
+                const std::uint32_t q = triangle[(edge + 1u) % 3u];
+                ++edgeUse[{std::min(p, q), std::max(p, q)}];
+            }
+        }
+    }
+
+    MeshWeldReport report;
+    report.downwardTriangles = downward;
+    for (const auto& [edge, uses] : edgeUse) {
+        if (uses == 1u) {
+            ++report.boundaryEdges;
+            report.openBorders.push_back({weldedPosition[edge.first], weldedPosition[edge.second]});
+        }
+        if (uses > 2u) ++report.nonManifoldEdges;
+    }
+    for (const auto& [triangle, uses] : triangleUse) {
+        (void)triangle;
+        if (uses > 1u) report.duplicateTriangles += uses - 1u;
+    }
+    return report;
+}
+
+/**
+ * @brief Asserts one terrain patch is closed, manifold, wound upwards and duplicate free.
+ *
+ * `expectedBoundary` is the flat patch's own count: a patch is open along its outer
+ * perimeter and nowhere else, so any configuration of elevations must reproduce it.
+ */
+[[nodiscard]] bool checkClosedPatch(const HexMap& map, std::size_t expectedBoundary) {
+    const MeshWeldReport report = analyseMeshWeld(collectTerrainChunks(map));
+    // Returned, not asserted: zeroerr's REQUIRE inside a helper that takes no TestContext is
+    // logged without reaching the process exit status, which is the only thing CTest checks for a
+    // test outside `resourceFormats.` - asserting here made every one of the five call sites a
+    // false pass while the sphere counterpart was reporting 298 missing faces.
+    if (report.duplicateTriangles != 0u || report.downwardTriangles != 0u || report.nonManifoldEdges != 0u ||
+        report.boundaryEdges != expectedBoundary) {
+        std::printf("[patch] duplicate %zu downward %zu nonManifold %zu boundary %zu (expected %zu)\n",
+                    report.duplicateTriangles, report.downwardTriangles, report.nonManifoldEdges, report.boundaryEdges,
+                    expectedBoundary);
+        std::size_t printed = 0;
+        for (const auto& border : report.openBorders) {
+            if (printed++ >= 16u) break;
+            std::printf("[open] (%.3f %.3f %.3f) -> (%.3f %.3f %.3f)\n", static_cast<double>(border[0][0]) / 1000.0,
+                        static_cast<double>(border[0][1]) / 1000.0, static_cast<double>(border[0][2]) / 1000.0,
+                        static_cast<double>(border[1][0]) / 1000.0, static_cast<double>(border[1][1]) / 1000.0,
+                        static_cast<double>(border[1][2]) / 1000.0);
+        }
+        std::fflush(stdout);
+        return false;
+    }
+    return true;
 }
 
 }  // namespace
@@ -478,14 +634,14 @@ TEST_CASE("hexmap.visibility.respectsViewElevationAndUnexplorableCells") {
     // from the sweep above have to be dropped first: visibility is reference counted
     // and a later increase never takes a viewer away.
     const HexCoordinates near = HexCoordinates::fromOffset(5, 4);
-    visibility.clear();
+    visibility.clear(map);
     REQUIRE(map.setExplorable(near, false).ok());
     REQUIRE(visibility.increase(map, ctx, viewer, 2).ok());
     REQUIRE(!visibility.isVisible(map.indexOf(near)));
     REQUIRE(visibility.visibleCellCount() > 0);
 
     // `clear` drops the counters but keeps the explored latch of the map.
-    visibility.clear();
+    visibility.clear(map);
     CHECK_EQ(visibility.visibleCellCount(), 0);
     CHECK(map.isExplored(viewer));
 }
@@ -826,7 +982,7 @@ TEST_CASE("hexmap.mesh.fogOverlayCoversOnlyUnseenCells") {
     for (std::int32_t index = 0; index < map.cellCount(); ++index) {
         CHECK(map.setExplored(map.coordinatesAt(index), true).ok());
     }
-    visibility.clear();
+    visibility.clear(map);
     buildFogMesh(map, visibility, 0, firstChunk);
     REQUIRE(!firstChunk.empty());
     for (std::size_t i = 0; i < firstChunk.uvs().size(); i += 2) {
@@ -848,11 +1004,12 @@ TEST_CASE("hexmap.mesh.terrainTriangulatesEachOwnedBoundaryOnce") {
     // is exactly countable.
     HexMap map = makeMap(20, 15, 23u);
 
-    // Independently derived expectation: six solid fans per cell (four triangles each),
-    // and for every NE/E/SE edge the owning chunk is responsible for, one blend strip
-    // (four quads) plus the closing corner triangle when the next cell exists. If a
-    // boundary were also triangulated from the far side - the defect this guards - the
-    // strip term would double and the count would no longer match.
+    // Independent expectation, derived from how many cells share each feature rather
+    // than from the emitter's own gate: six solid fans per cell (four triangles each);
+    // an edge is shared by two cells, so exactly half of the six directions may emit it
+    // (NE/E/SE), one blend strip of four quads; a corner is shared by *three* cells, so
+    // only a third may emit it (NE/E), one closing triangle. Gating the corner on the
+    // edge rule - which this test previously encoded - emits 3/2 corners per junction.
     std::size_t expected = 0;
     for (std::int32_t index = 0; index < map.cellCount(); ++index) {
         const HexCoordinates coordinates = map.coordinatesAt(index);
@@ -862,19 +1019,110 @@ TEST_CASE("hexmap.mesh.terrainTriangulatesEachOwnedBoundaryOnce") {
             HexCoordinates neighbour{};
             if (!map.getNeighbor(coordinates, direction, neighbour)) continue;
             expected += 4u * 2u;
+            if (i > static_cast<std::int32_t>(HexDirection::E)) continue;
             HexCoordinates nextNeighbour{};
             if (map.getNeighbor(coordinates, next(direction), nextNeighbour)) expected += 1u;
         }
     }
 
-    std::size_t actual = 0;
-    for (std::int32_t chunk = 0; chunk < map.chunkCount(); ++chunk) {
-        HexMeshData terrain;
-        buildTerrainMesh(map, chunk, terrain);
-        actual += terrain.triangleCount();
-    }
+    std::vector<HexMeshData> chunks = collectTerrainChunks(map);
+    std::size_t              actual = 0;
+    for (const HexMeshData& chunk : chunks) actual += chunk.triangleCount();
     REQUIRE(actual > 0u);
     REQUIRE_EQ(actual, expected);
+}
+
+TEST_CASE("hexmap.mesh.terrainIsWeldClosedAndFreeOfDuplicateCorners") {
+    // A flat map puts all three cells of every junction at the same height, so a junction
+    // emitted twice produces exactly coincident triangles. Welding by position is what
+    // exposes that: an unwelded vertex count cannot see them, and neither can a triangle
+    // count compared against an expectation derived from the emitter's own gate.
+    HexMap               flat       = makeMap(20, 15, 23u);
+    const MeshWeldReport flatReport = analyseMeshWeld(collectTerrainChunks(flat));
+    REQUIRE(flatReport.nonManifoldEdges == 0u);
+    REQUIRE_EQ(flatReport.duplicateTriangles, 0u);
+    REQUIRE_EQ(flatReport.downwardTriangles, 0u);
+    // The patch is open at its own outer perimeter, so the control value is not zero.
+    REQUIRE(flatReport.boundaryEdges > 0u);
+
+    // A cliff closes the height step with a steep wall, and the wall has to follow the fan's
+    // four-segment border rather than span it with a single `v1 -> v5` chord: the samples are
+    // collinear before perturbation, but `vertex()` displaces each of them independently, so a
+    // chord leaves a seam along the wall's foot.
+    HexMap cliffMap = makeMap(20, 15, 23u);
+    REQUIRE(cliffMap.setElevation(HexCoordinates::fromOffset(7, 7), 3).ok());
+    REQUIRE(checkClosedPatch(cliffMap, flatReport.boundaryEdges));
+
+    // A one-step *slope* runs a terrace ladder along both the edges and the corners instead.
+    // Every ladder is parameterized from the lower cell so it meets its neighbours, and every
+    // corner fan takes its winding from its own points, so this case exercises the whole
+    // convention.
+    HexMap slopeMap = makeMap(20, 15, 23u);
+    REQUIRE(slopeMap.setElevation(HexCoordinates::fromOffset(7, 7), 1).ok());
+    REQUIRE(checkClosedPatch(slopeMap, flatReport.boundaryEdges));
+
+    // A two-cell plateau is what reaches the corner branch where *both* sides of the lowest
+    // cell are slopes, which a single raised cell never does.
+    HexMap plateau = makeMap(20, 15, 23u);
+    REQUIRE(plateau.setElevation(HexCoordinates::fromOffset(7, 7), 1).ok());
+    REQUIRE(plateau.setElevation(HexCoordinates::fromOffset(8, 7), 1).ok());
+    REQUIRE(checkClosedPatch(plateau, flatReport.boundaryEdges));
+
+    // A pit surrounded by raised cells is the cliff corner case: both edges out of the lowest
+    // cell rise by more than one step, so the corner takes the plain "flat" branch with three
+    // points at very different heights.
+    HexMap ring = makeMap(20, 15, 23u);
+    for (std::int32_t i = 0; i < 6; ++i) {
+        HexCoordinates neighbour{};
+        if (ring.getNeighbor(HexCoordinates::fromOffset(7, 7), static_cast<HexDirection>(i), neighbour)) {
+            REQUIRE(ring.setElevation(neighbour, 3).ok());
+        }
+    }
+    REQUIRE(checkClosedPatch(ring, flatReport.boundaryEdges));
+
+    // Scattered heights reach every corner branch at once, which is the point: the elevation
+    // sort permutes each of them differently.
+    HexMap             scattered = makeMap(20, 15, 23u);
+    const std::int32_t heights[] = {1, 2, 0, 3, 1, 0, 2, 1, 0, 3};
+    for (std::int32_t i = 0; i < 10; ++i) {
+        REQUIRE(scattered.setElevation(HexCoordinates::fromOffset(4 + i, 6 + (i % 3)), heights[i]).ok());
+    }
+    REQUIRE(checkClosedPatch(scattered, flatReport.boundaryEdges));
+
+    // A one-step terrace beside a multi-step cliff is the `(Slope, Cliff)` arm of the corner
+    // dispatch, and it was the one arm none of the patterns above reached: a single raised cell
+    // only ever produces `(Flat, Cliff)`, and a two-cell plateau only `(Slope, Slope)`. On the
+    // plane this arm tears - `boundary 738` against the flat 700 - and emits four to eight
+    // downward-facing triangles, which is the same defect the spherical census attributes 84 of
+    // its 114 missing faces to. The plane is where it is cheapest to fix, since its "up" is Y.
+    struct SlopeCliff {
+        const char*  name;
+        std::int32_t ax;
+        std::int32_t az;
+        std::int32_t bx;
+        std::int32_t bz;
+        std::int32_t a;
+        std::int32_t b;
+    };
+    const SlopeCliff patterns[] = {
+        {"one step beside a cliff", 7, 7, 8, 7, 1, 3},
+        {"a cliff beside one step", 7, 7, 8, 7, 3, 1},
+        {"diagonally", 7, 7, 8, 8, 1, 3},
+        {"one step beside a two-step rise", 7, 7, 8, 7, 1, 2},
+        // Both edges out of the lowest cell rise by more than one step, so the corner takes the
+        // plain fan branch, and all three cells sit at different heights. The `ring` pattern above
+        // is the only other one that reaches that branch and it puts two of them level, which the
+        // single fan happens to cover; three different heights is the case it has to earn.
+        {"a two-step rise beside a cliff", 7, 7, 8, 7, 2, 3},
+        {"a cliff beside a two-step rise", 7, 7, 8, 7, 3, 2},
+    };
+    for (const SlopeCliff& pattern : patterns) {
+        HexMap map = makeMap(20, 15, 23u);
+        REQUIRE(map.setElevation(HexCoordinates::fromOffset(pattern.ax, pattern.az), pattern.a).ok());
+        REQUIRE(map.setElevation(HexCoordinates::fromOffset(pattern.bx, pattern.bz), pattern.b).ok());
+        std::printf("[pattern] %s\n", pattern.name);
+        REQUIRE(checkClosedPatch(map, flatReport.boundaryEdges));
+    }
 }
 
 // --- water mesh -------------------------------------------------------------

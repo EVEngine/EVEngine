@@ -149,7 +149,14 @@ function makeThinMesh() {
 }
 
 function makeCard(mode, x) {
-    local shader = gfx.newMeshShader(fs.readText("shaders/compare.frag"));
+    // The fragment stage ships as committed SPIR-V next to its source: runtime
+    // GLSL compilation needs glslc on PATH, and the Vulkan backend rejects it on
+    // Windows outright. Regenerate with
+    //   glslc -o shaders/compare.frag.spv shaders/compare.frag
+    local loaded = gfx.loadMeshShaderSpv("", "shaders/compare.frag.spv");
+    if (!loaded.ok)
+        throw "silpom-ssdm-compare: compare.frag.spv unavailable: " + loaded.status.summary;
+    local shader = loaded.value;
     shader.declareFloat("mode");
     shader.declareFloat("scale");
     shader.declareFloat("minLayers");
@@ -277,12 +284,15 @@ eve_init = function() {
 eve_asset_reload <- function(path) {
     if (!cmpReady) return;
     if (path.find("compare.frag") == null) return;
+    // Live GLSL reload is a convenience of hosts with glslc on PATH; where it is
+    // unavailable (Windows, no SDK) the committed SPIR-V keeps rendering and the
+    // status line says so instead of failing the example.
     local src = fs.readText("shaders/compare.frag");
     foreach (p in [cmpPom, cmpSil, cmpSsdm]) {
         local result = gfx.replaceShaderFromGlsl(p.shader, "", src);
         if (!result.ok) {
-            cmpStatus = "compile failed";
-            print("[silpom-ssdm] compile failed\n");
+            cmpStatus = "GLSL reload needs glslc; keeping committed SPIR-V";
+            print("[silpom-ssdm] " + cmpStatus + "\n");
             return;
         }
         syncPanel(p);

@@ -37,6 +37,15 @@ enum class HexSurface : std::int32_t {
 /** @brief Number of chunk surface streams. */
 inline constexpr std::int32_t kHexSurfaceCount = 7;
 
+/**
+ * @brief Largest grid edge, in cells, any entry point may request.
+ *
+ * Both the script bindings and the save format check against this before allocating,
+ * so the limit has exactly one definition. 512 x 512 cells is the largest map the
+ * chunked mesh path is validated for.
+ */
+inline constexpr std::int32_t kMaxHexGridDimension = 512;
+
 /** @brief Stable identifier of one chunk surface stream. */
 struct HexSurfaceId {
     std::int32_t chunkIndex = 0;

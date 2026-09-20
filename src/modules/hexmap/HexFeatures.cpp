@@ -213,7 +213,11 @@ private:
 
             HexVec3 left = near.v5 + HexMetrics::bridge(next(direction));
             left.y       = map_.cellPosition(nextCoordinates).y;
-            addWallCorner(near.v5, cellData, left, neighbourData, far.v5, nextCell);
+            // `left` takes its height from the next cell and `far.v5` is the neighbour's
+            // own corner, so each point has to be passed with the cell it belongs to:
+            // `addWallCorner` picks the pivot/left/right wedge from those cells' flags
+            // and elevations.
+            addWallCorner(near.v5, cellData, left, nextCell, far.v5, neighbourData);
         }
     }
 
