@@ -722,3 +722,39 @@ ELF 不允许把非 PIC 的目标文件链进共享对象；OBJECT（release/SDK
 **其余验证**：SHARED 全量构建 EXIT 0（0 FAILED / 0 `error C` / 0 `warning C` / 0 未解析），EOL 归一之后**强制全量重编**（清 13 个模块对象、567 步）仍 EXIT 0、ctest 失败名集合不变；静态 `ninja -C C:\evs eve` EXIT 0（`eve.exe` 239,112,704 B）；`check/architecture-contracts --base 6a49a982` → OK；脚本测试 **178 OK**；EOL 收敛（41 → 0，无整文件 diff）。2 条基线遗留的 `C4273`（`SoftBody3DWorldBridge.cpp:56,62`）保持不动。
 
 **Linux 侧合并后的复测**：merge 之后在 WSL 里重建并跑通 `platform` 27/27、`rpg` 301/301、`core` 515/515（插件的 1 个失败是"我只构建了指定目标、没构建 `native_test_plugin`"，补建后即通过）、`ui` 106/112（6 个挂起族）、`asset` 210/211（唯一失败 `asset.procgen.terrainDetailSidecar...` 在 Windows 上同样失败，属同一 SDL 族，不是 Linux 特有）。
+
+### 7.25 五个跨链接单元状态族清零：SHARED 路线首次全绿（2026-09-20）
+
+§7.24 记录的 131 个失败（SDL 113 / ECS 6 / ImGui 6 / box3d 5 / box2d 1）**全部**属于"进程级状态被每个链接单元复制一份"这一族——没有一个是新缺陷。本节记录逐族修法、过程中新抓到的四类陷阱，以及"两条路线共用一棵第三方安装树"的设计。
+
+**各族的所有者与修法**
+
+| 族 | 之前失败 | 进程内唯一所有者 | 修法 |
+| --- | --- | --- | --- |
+| SDL video `_this` | 113 | `SDL2d.dll` | 第三方聚合加 `-DSDL_SHARED=ON -DSDL_STATIC=ON`（§7.20 落地）；动态路线链导入库，归档路线链 `SDL2-staticd` |
+| ImGui `GImGui` | 6 | `eve_imgui.dll` | imgui 源码编成一个独立 DLL（`IMGUI_API` 经 `SHELL:/D"…"` 传入、`/WX-` 例外，并用 `eve_append_system_libraries` 链上 SDL 与 Win32 系统库） |
+| box3d `b3_worlds` | 5 | `box3d-dynamic.dll` | 第 13 个补丁 `cmake/patches/box3d-shared-library.patch` |
+| box2d `s_initialized` | 2 | `Box2D-dynamic.dll` | 第 14 个补丁 `cmake/patches/box2d-shared-library.patch` |
+| ECS `default_table()` | 6 | `EVFoundation.dll` | `external/ECS.hpp` 子模块补丁 + `src/engine/common/EcsDefaultTable.cpp` |
+
+**ECS 那 6 个失败的表象值得单记**：用例名是 scene 1（`editor.automation_publishes_material_transactions_to_live_renderable`）、building 4（`buildingfx.*`）、combat 1（`actionPrefabRuntime.spawnsRealRenderablePoolsAndAppliesThreeLifecycles`），另有 1 个看起来与 ECS 毫无关系的 `RenderScenes.mesh.assimpNodeTransformBaked`——它比较"烘焙了节点变换"与"未烘焙"两帧的中心亮度，实体表分裂时前一阶段的场景残留到控制组，亮度比较就反了。**判据**：`default_table()` 修好之后这 7 个用例同时变绿，单跑各自通过。
+
+**设计要点：双形态（归档 + dynamic twin），而不是"库类型随开关变化"。** 最初按 `EVE_BOX3D_SHARED` / `EVE_BOX2D_SHARED` 让库类型跟随 linkage，构建通过、测试全绿，但有一个只在**切换配置**时才现形的洞：第三方安装树只有一份（`build/third-party-binary/<platform>[-debug]`），内容却取决于最后一次配置的是哪条路线；先跑 SHARED 再跑 OBJECT（`make build/win32` / `make sdk/win32`）时，OBJECT 会链到导入库，产物悄悄带上 `Box2D-dynamic.dll`，**"单个 exe"的 release 保证就没了，而且不报错**。改成：**canonical target 永远是归档**（`Box2Dmdd.lib` / `box3dd.lib`，名字与今天逐字节一致），补丁再加一个 `Box2D_dynamic` / `box3d_dynamic` 共享 twin（`OUTPUT_NAME Box2D-dynamic` / `box3d-dynamic`，清空四种配置 postfix），`thirdparty_libs.cmake` 按 linkage 选名字。两条路线于是共用一棵安装树、互不污染、与先后顺序无关；SDL 本来就是双形态（`SDL_SHARED` + `SDL_STATIC`），box3d/Box2D 现在与它同构。
+
+twin 的两个 CMake 细节：(a) `DEFINE_SYMBOL box3d_EXPORTS` / `Box2D_EXPORTS` —— box3d 的 `B3_API` 与 Box2D 的数据符号宏都按 `<target>_EXPORTS` 判断"我是导出侧"，换个 target 名就会丢掉这个宏；(b) 清空 `DEBUG/RELEASE/MINSIZEREL/RELWITHDEBINFO_POSTFIX`，让导入库只有一个可预测的名字。twin 只在桌面平台构建（与 `SDL_SHARED` 同一守卫）：Emscripten 没有共享库概念，移动端不需要它。
+
+**陷阱 1：MSVC 不允许"先普通声明、再 dllexport 定义"（C2375）。** Box2D 的公共数据符号 `b2Vec2_zero`（`test/physics_core_boundary.cpp` 的 `b2World rawWorld(b2Vec2_zero)`）在 DLL 化之后 LNK2001：`WINDOWS_EXPORT_ALL_SYMBOLS` 只导出**函数**，数据必须显式标注。头文件写 `extern B2_DATA_API const b2Vec2 b2Vec2_zero;`、`.cpp` 写 `B2_DATA_API const b2Vec2 b2Vec2_zero(...)` —— **两处都必须带宏**：最小复现 `inline int &f();` + `__declspec(dllexport) int &f() { … }` → C2375"重定义；不同的链接"（§7.24 的 C2375 是同一错误码的另一种成因：跨文件 friend 声明缺符号）。`B2_DATA_API` 的判据与 box3d 对齐：`Box2D_EXPORTS`（twin 自带）→ dllexport，引擎消费侧 `BOX2D_DLL`（`link_groups.cmake` 中与 `BOX3D_DLL` 并列）→ dllimport，两者都没有时展开为空（归档路线不受影响）。
+
+**陷阱 2：`file(GLOB)` 在 configure 期求值，冷构建会漏。** `eve_third_party_runtime`（把 `SDL2*.dll` / `box3d*.dll` 拷到 exe 旁）原来在 configure 期 glob：冷构建时 ninja 先跑 `deps`，此刻第三方安装树还是空的 → 列表为空 → `box3dd.dll` 从未被拷贝 → **30 个测试 exe 的 zeroerr discovery 步骤全部失败**，而 `extract_unresolved.py` 报 0 个未解析符号，极易误判成链接问题。修法：`cmake/copy_third_party_runtime.cmake` 用 `cmake -P` 在**构建期** glob（该目标 `DEPENDS third-party`，执行时安装树已经是新的），对时序免疫。
+
+**陷阱 3：ExternalProject 的 stamp 不跟踪补丁文件内容。** 只改 `cmake/patches/*.patch` 的内容（命令行不变）不会重跑 patch/configure/build/install，改装过的 Box2D 头不会被重新安装，消费方仍看到旧声明（表现为"明明改了却还是同一个 LNK2001"）。配方：删 `build/<tree>/third-party-prefix/src/third-party-stamp/third-party-{build,install,done}` 再 `ninja`。CI 不受影响：第三方缓存的 key 里包含 `cmake/patches/**`。
+
+**陷阱 4：改广泛包含的头之后必须清对象重编。** ECS.hpp 的内联函数改了语义，但 ninja 的 unscanned 依赖不追头文件；只重编"看着相关"的那批 TU 会得到"6 个失败修好 3 个"的假象。本轮做法：清空 `build/<tree>/**/*.obj` 后全量重编（2794 个对象）。
+
+**陷阱 5：为 SHARED 加的标注会在 OBJECT 模式变成 dllexport，从而强制实例化成员。** `src/modules/network/NetRpc.h` 里 `class EVENGINE_API_PLATFORM NetRpc` 有一个 `std::map<uint16_t, ssq::Object>` 成员，而该头只前置声明了 `ssq::Object`。SHARED 下消费方看到的是 dllimport，不强制实例化，测试 TU 编译得过；OBJECT 下 `EVENGINE_API_PLATFORM` 退化为 `EVENGINE_API` = **dllexport**，MSVC 于是实例化该类的成员 → `test/network.cpp` 报 C2079（`std::pair<…,ssq::Object>::second` 使用未定义的 class），而同一次 `ninja -C C:\evs eve` 不会碰到（不编测试）。修法是让头文件**包含它按值持有的类型**（`#include <simplesquirrel/object.hpp>`）——这也是"类级 dllexport 会让成员实例化"这条（§7.5 的 C2280/C2027 家族）第一次落在**测试面**上：只构建 `eve` 的静态路线验收会漏掉它，必须真的编一次 OBJECT 测试。
+
+**OBJECT 侧验证口径（磁盘）**：OBJECT 路由每个域测试 exe 带完整调试信息约 2 GB、增量链接状态 `.ilk` 各约 2.5 GB；30 个一起链接会把 80 GB 空闲空间吃光（`LNK1116 无法增大 ilk 文件` / `LNK1180 没有足够的磁盘空间完成链接`）。做法：删掉 `build/<tree>/**/*.ilk`，再用 `-j 1` 串行链接要验收的目标（`eve.exe` 本身只有 228 MB）。**取证**：`dumpbin /dependents C:\evs\src\engine\eve.exe` → 只有系统 DLL（vulkan-1 / MSVCP140D / ucrtbased / …），**没有** `Box2D-dynamic.dll`、`box3d-dynamic.dll`、`SDL2d.dll`，也没有任何 `EV*.dll` —— 双形态设计下 OBJECT 路线仍然只链归档，单文件产物成立。
+
+**子模块补丁的落点**：`external/ECS.hpp` 的 `default_table()` 是"内联函数 + 函数局部静态"，MSVC 与 ELF 都不跨 image 合并，于是宿主与 7 个组各持一张表（§7.24 探针：27 targets / 197 objs）。补丁把它转发给 `ecs::engine_default_table()`，实现在 FOUNDATION 组（`src/engine/common/EcsDefaultTable.cpp`），**进程内唯一所有者**——与"每个可变事实只有一个权威所有者"这条架构规范同向。补丁在 **configure 期**用现成的 `cmake/patch_third_party.cmake` 应用（模块 TU 直接编译该头，没有任何 per-module 依赖能排在它们之前），子模块缺失时静默跳过；OBJECT 路线的预处理输出不变（整块包在 `#if defined(EVENGINE_MODULE_DLL)` 里）。`scripts/tests/test_patch_third_party.py` 增加了幂等覆盖：box3d / box2d / ECS 三个补丁各连打两次。
+
+**读数**：Windows SHARED `ctest -E "^bundle/" --timeout 120 -j 16` → **5546 用例 / 0 失败 / 0 超时**（连续两次构建口径一致：先按"库类型随开关"实现时全绿，改成双形态之后重编重跑仍全绿）；其中 `unit_test_physics` 277/277、`box2d.*` 14/14，`unit_test_ui` 112/112、`unit_test_procgen` 643/643 为逐域复核。静态 OBJECT 路线 → `eve.exe` 链接成功（单文件，依赖表见上）+ `unit_test_{physics,scene,network,building,combat}` **608/608**。源码门禁 `make check/quality check/module-layers check/bindings check/examples check/test-manifest` 全绿；`scripts/tests/test_patch_third_party.py` 覆盖三个新补丁的幂等性。
