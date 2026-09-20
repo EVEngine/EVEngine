@@ -2043,6 +2043,55 @@ TEST_CASE("procgen.terrain.materialShaderRendersPortableSixteenLayerContract") {
     REQUIRE(eve::asset_procgen::releasePackedTerrainMaterialAtlases(*gfx, packedGpu.value()).ok());
 }
 
+TEST_CASE("procgen.terrain.waterShaderShipsEmbeddedSpirv") {
+    // Regression guard for the portability break this stage used to cause: it was
+    // compiled by glslc at runtime, which the Vulkan backend refuses on Windows
+    // outright ("GLSL compile via glslc is not supported on Windows") and which
+    // needs glslc on PATH elsewhere. It is embedded SPIR-V now, so creating and
+    // drawing it must succeed with no external compiler involved.
+    auto *gfx = eve::graphics::Graphics::create();
+    if (!gfx->isHeadless()) gfx->initHeadless(64, 64);
+    Procgen procgen;
+    auto   *shader = procgen.createTerrainWaterShader(gfx);
+    REQUIRE(shader != nullptr);
+    CHECK(shader->getKind() == eve::graphics::Shader::Kind::eMesh3D);
+    CHECK_EQ(shader->usedFloats(), 0);
+    CHECK(!shader->fragmentSpirv().empty());
+    CHECK_EQ(shader->fragmentSpirv().front(), 0x07230203u);
+    CHECK(!shader->vertexSpirv().empty());
+
+    const float    positions[] = {-1.f, -1.f, 0.5f, 1.f, -1.f, 0.5f, 1.f, 1.f, 0.5f, -1.f, 1.f, 0.5f};
+    const float    normals[]   = {0.f, 0.f, 1.f, 0.f, 0.f, 1.f, 0.f, 0.f, 1.f, 0.f, 0.f, 1.f};
+    const float    uvs[]       = {0.f, 0.f, 1.f, 0.f, 1.f, 1.f, 0.f, 1.f};
+    const uint32_t indices[]   = {0, 2, 1, 2, 0, 3};
+    auto          *mesh        = gfx->newMeshFromArrays(positions, normals, uvs, 4, indices, 6);
+    REQUIRE(mesh != nullptr);
+    const uint8_t white[4] = {255, 255, 255, 255};
+    auto         *control  = gfx->newTexture(1, 1, white);
+    REQUIRE(control != nullptr);
+
+    eve::graphics::Lighting3DPack lighting{};
+    lighting.count               = 1;
+    lighting.ambient             = glm::vec4(0.35f, 0.45f, 0.55f, 0.f);
+    lighting.lights[0].posRadius = glm::vec4(0.f, 1.f, 0.f, 0.f);
+    lighting.lights[0].color     = glm::vec4(1.f, 1.f, 1.f, 0.f);
+    gfx->setMesh3DLighting(lighting);
+    gfx->setMesh3DViewProj(glm::mat4(1.f));
+    gfx->setMesh3DView(glm::mat4(1.f));
+    gfx->setMesh3DCameraPos(glm::vec3(0.f, 0.f, 3.f));
+    auto *canvas = gfx->newCanvas(64, 64);
+    REQUIRE(canvas != nullptr);
+    gfx->begin3DFrameToCanvas(canvas);
+    gfx->drawMeshShader(mesh, glm::mat4(1.f), control, glm::vec4(1.f), shader);
+    gfx->end3DFrameToCanvas();
+    std::unique_ptr<eve::image::ImageData> pixels(canvas->newImageData());
+    REQUIRE(pixels != nullptr);
+    const auto *rgba = static_cast<const uint8_t *>(pixels->getData()) + (32 * 64 + 32) * 4;
+    // Shallow-water tint: blue/green dominant, red far behind.
+    CHECK(rgba[2] > rgba[0]);
+    CHECK(rgba[1] > rgba[0]);
+}
+
 TEST_CASE("procgen.wfc.simple.reproducible") {
     GeneratorRegistry::instance().registerBuiltins();
     Params p;
