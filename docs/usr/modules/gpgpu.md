@@ -137,7 +137,10 @@ seq.recordDispatch(shaderA, groupsA);                    // 录制时 shader 的
 seq.recordDispatch(shaderB, groupsB);                    // binding 已生效
 seq.recordDownload(outputBuffer, stagingBuffer, nbytes); // staging 需 "staging" 用途
 seq.submit();                                            // 一次提交，内部等待完成
-local out = stagingBuffer.readFloat32s(count);
+// staging 已映射，直接按下标逐元素读；批量回读只有 C++ 侧有
+// （`GpuBuffer::readFloat32s(float* out, count, startIndex)`）。
+local out = [];
+for (local i = 0; i < count; ++i) out.append(stagingBuffer.readFloat32(i));
 ```
 
 要点：
@@ -147,6 +150,7 @@ local out = stagingBuffer.readFloat32s(count);
 - 同一 Sequence 可循环复用：`submit()` 后再 `begin()`。
 - Sequence 内部自动插入内存屏障，保证拷贝/计算/回读之间可见（单次提交没有 fence 兜底，这是与每次 dispatch 各提交一次的关键区别）。
 - 录制期间 shader 的 descriptor set 会被延迟释放，`submit()` 完成后才回收，避免多 dispatch 引用被覆盖的 set。
+- 脚本面的逐元素读写是 `readFloat32(index)` / `writeFloat32(index, value)`；**批量**的 `readFloat32s(count, startIndex)` 是 C++ 接口（要传 `float*`），脚本侧请循环调用逐元素版本，或把回读留在 C++ 里做。
 
 引擎内部的 tensor 模块（`CompiledFunction` 的 GPU 执行）已经用 Sequence 实现整图单次提交：placeholder 上传 → 所有融合 kernel dispatch → 输出回读，一次 `submit()` 完成。
 
