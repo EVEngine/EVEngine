@@ -13,6 +13,7 @@
 
 #include "common/BorrowedRef.h"
 #include "common/EventSequence.h"
+#include "common/Export.h"
 #include "common/Generation.h"
 #include "common/SchemaVersion.h"
 #include "common/Subscription.h"
@@ -32,6 +33,43 @@
 #include <vector>
 
 namespace eve {
+namespace detail {
+
+/**
+ * @brief Validates the next-event-sequence floor of a restored registry image.
+ *
+ * The versioning rules below hold for every `VersionedRegistry<Key, Value, ...>`
+ * instantiation, so they are defined once in `VersionedRegistry.cpp` instead of
+ * being emitted per key/value pair.
+ */
+[[nodiscard]] EVENGINE_API eve::Result<void> validateRegistryNextSequence(EventSequence nextEventSequence);
+
+/** @brief Next generation of one slot; `present` false means the slot is new. */
+[[nodiscard]] EVENGINE_API eve::Result<Generation> nextRegistryGeneration(Generation current, bool present);
+
+/** @brief Next event sequence, or a Failed diagnostic when it is exhausted. */
+[[nodiscard]] EVENGINE_API eve::Result<EventSequence> nextRegistryEventSequence(EventSequence current);
+
+/**
+ * @brief Incremental validator for the retained event log of a registry image.
+ *
+ * Rules: strictly increasing positive sequences, positive generations, and a
+ * tombstone exactly when the event removes a key.
+ */
+class EVENGINE_API EventLogValidator {
+public:
+    /** @brief Accept one event header; the first failure describes the whole log. */
+    [[nodiscard]] eve::Result<void> accept(EventSequence sequence, Generation generation, bool remove, bool tombstone);
+
+    /** @brief Validate the boundary between the retained log and the next sequence. */
+    [[nodiscard]] eve::Result<void> finish(EventSequence nextEventSequence) const;
+
+private:
+    EventSequence previous_{};
+};
+
+}  // namespace detail
+
 
 /** @brief Canonical mutation kind emitted by a VersionedRegistry. */
 enum class RegistryOperation : std::uint8_t {
@@ -381,11 +419,9 @@ public:
      *          is returned as a Failed diagnostic.
      */
     [[nodiscard]] Result<void> restoreState(State candidate) {
-        if (candidate.nextEventSequence.isZero())
-            return Result<void>::failure(
-                Diagnostic::error(DiagnosticCode::ParseError, "registry next event sequence must be positive"));
+        auto sequenceOk = detail::validateRegistryNextSequence(candidate.nextEventSequence);
+        if (!sequenceOk) return sequenceOk;
 
-        EventSequence previous{};
         try {
             for (auto& [key, entry] : candidate.entries) {
                 if (entry.generation.isZero())
@@ -400,24 +436,14 @@ public:
             return Result<void>::failure(
                 Diagnostic::error(DiagnosticCode::Failed, "registry generation projection failed"));
         }
+        detail::EventLogValidator validator;
         for (const auto& event : candidate.events) {
-            if (event.sequence.isZero() || (!previous.isZero() && event.sequence <= previous))
-                return Result<void>::failure(
-                    Diagnostic::error(DiagnosticCode::ParseError, "registry event sequence is not increasing"));
-            if (event.generation.isZero())
-                return Result<void>::failure(
-                    Diagnostic::error(DiagnosticCode::ParseError, "registry event generation must be positive"));
-            if (event.operation == RegistryOperation::Remove && !event.tombstone)
-                return Result<void>::failure(
-                    Diagnostic::error(DiagnosticCode::ParseError, "remove event must describe a tombstone"));
-            if (event.operation != RegistryOperation::Remove && event.tombstone)
-                return Result<void>::failure(
-                    Diagnostic::error(DiagnosticCode::ParseError, "only remove events may describe tombstones"));
-            previous = event.sequence;
+            auto accepted = validator.accept(event.sequence, event.generation,
+                                             event.operation == RegistryOperation::Remove, event.tombstone);
+            if (!accepted) return accepted;
         }
-        if (!previous.isZero() && candidate.nextEventSequence <= previous)
-            return Result<void>::failure(
-                Diagnostic::error(DiagnosticCode::ParseError, "next event sequence must exceed retained events"));
+        auto boundary = validator.finish(candidate.nextEventSequence);
+        if (!boundary) return boundary;
 
         state_.swap(candidate);
         return Result<void>::success();
@@ -438,15 +464,6 @@ private:
 
     void generationProject(Value& value, Generation generation) const {
         if (generationProjector_) generationProjector_(value, generation);
-    }
-
-    [[nodiscard]] Result<Generation> nextGeneration(const Entry* entry) const {
-        if (!entry) return Result<Generation>::success(Generation(1));
-        const auto next = entry->generation.incremented();
-        if (!next || next->isZero())
-            return Result<Generation>::failure(
-                Diagnostic::error(DiagnosticCode::Failed, "registry generation exhausted"));
-        return Result<Generation>::success(*next);
     }
 
     [[nodiscard]] Result<Handle> mutate(RegistryOperation operation, Key key, std::optional<Value> value,
@@ -471,12 +488,11 @@ private:
                     Diagnostic::error(DiagnosticCode::InvariantViolation, "live registry mutation has no value"));
 
             const auto current = it == candidate.entries.end() ? nullptr : &it->second;
-            auto       next    = nextGeneration(current);
+            auto       next =
+                detail::nextRegistryGeneration(current ? current->generation : Generation{}, current != nullptr);
             if (!next.ok()) return Result<Handle>::failure(next.status());
-            const auto nextSequence = candidate.nextEventSequence.incremented();
-            if (!nextSequence)
-                return Result<Handle>::failure(
-                    Diagnostic::error(DiagnosticCode::Failed, "registry event sequence exhausted"));
+            const auto nextSequence = detail::nextRegistryEventSequence(candidate.nextEventSequence);
+            if (!nextSequence.ok()) return Result<Handle>::failure(nextSequence.status());
 
             if (operation != RegistryOperation::Remove) generationProject(*value, next.value());
 
@@ -503,7 +519,7 @@ private:
             }
 
             candidate.events.push_back(std::move(event));
-            candidate.nextEventSequence = *nextSequence;
+            candidate.nextEventSequence = nextSequence.value();
             // Keep the notification independent of state_.events. Observer
             // dispatch is reentrant; a nested mutation is allowed to swap or
             // reallocate the canonical event vector while callbacks run.
