@@ -288,9 +288,9 @@ jobs:
     if: ${{ needs.source-quality.result == 'success' && needs.change-scope.outputs.windows == 'true' && (github.event_name != 'workflow_call' || inputs.build_type == 'debug' || inputs.build_type == 'both') }}
     runs-on: windows-latest
     # This lane builds and tests both Vulkan and native Dawn configurations.
-    # A cold Windows runner needs more than 90 minutes for the two independent
-    # unit_test builds; keep the per-step limits below as the hang guards.
-    timeout-minutes: 180
+    # Release run 35436382201 exhausted the former 180-minute job budget while
+    # the bounded native Dawn build step was still making progress.
+    timeout-minutes: 300
     env:
       SCCACHE_GHA_ENABLED: "true"
       SCCACHE_GHA_VERSION: evengine-cpp-v1-windows-x64
@@ -530,7 +530,7 @@ jobs:
     # A cold Release build took 55 minutes and the process-isolated 3510-case
     # suite reached 3060/3510 at the former 30-minute test guard. Preserve
     # bounded hang detection while budgeting setup, build, and the full suite.
-    timeout-minutes: 180
+    timeout-minutes: 240
     env:
       SCCACHE_GHA_ENABLED: "true"
       SCCACHE_GHA_VERSION: evengine-cpp-v1-windows-x64-release
@@ -576,9 +576,9 @@ jobs:
         run: bash .github/scripts/setup-software-vulkan.sh
 
       - name: Build win32 release
-        # A cold release build reached the former 90-minute guard without a
-        # compiler failure in release run 35419568563.
-        timeout-minutes: 120
+        # Cold release builds reached the former 90- and 120-minute guards
+        # without a compiler failure in runs 35419568563 and 35436382201.
+        timeout-minutes: 160
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: >-
@@ -601,10 +601,9 @@ jobs:
     needs: [source-quality, change-scope]
     if: ${{ needs.source-quality.result == 'success' && needs.change-scope.outputs.android == 'true' && (github.event_name != 'workflow_call' || inputs.build_type == 'debug' || inputs.build_type == 'both') }}
     runs-on: windows-latest
-    # A cold NDK build can consume almost the entire 45-minute build-step budget
-    # before Gradle packages the finished native library. Keep the step timeout
-    # below as the hang guard while leaving enough job budget for setup/cleanup.
-    timeout-minutes: 90
+    # Release run 35436382201 reached 1363/1408 with no compiler failures at
+    # the former 60-minute build guard. Leave setup/cleanup headroom as well.
+    timeout-minutes: 120
     env:
       SCCACHE_GHA_ENABLED: "true"
       SCCACHE_GHA_VERSION: evengine-cpp-v1-android-arm64-debug
@@ -666,7 +665,7 @@ jobs:
           test -f "$ANDROID_NDK/build/cmake/android.toolchain.cmake"
 
       - name: Build android debug
-        timeout-minutes: 60
+        timeout-minutes: 85
         run: |
           test -f "$ANDROID_NDK/build/cmake/android.toolchain.cmake"
           make build/android-debug \
@@ -768,7 +767,7 @@ jobs:
     needs: [source-quality, change-scope]
     if: ${{ needs.source-quality.result == 'success' && needs.change-scope.outputs.macos == 'true' && (github.event_name != 'workflow_call' || inputs.build_type == 'debug' || inputs.build_type == 'both') }}
     runs-on: macos-latest
-    timeout-minutes: 120
+    timeout-minutes: 180
     env:
       SCCACHE_GHA_ENABLED: "true"
       SCCACHE_GHA_VERSION: evengine-cpp-v1-macos-arm64-debug
@@ -875,7 +874,9 @@ jobs:
           fi
 
       - name: Build native Dawn Metal lane
-        timeout-minutes: 40
+        # A cold Dawn/Tint build was still progressing with zero compiler
+        # failures at the former 40-minute guard in release run 35436382201.
+        timeout-minutes: 75
         run: cmake --build build/webgpu-macos --target unit_test -j "$(sysctl -n hw.ncpu)"
 
       - name: Report C/C++ compilation cache
@@ -1475,7 +1476,9 @@ jobs:
     needs: [source-quality]
     if: ${{ needs.source-quality.result == 'success' && (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') }}
     runs-on: ubuntu-24.04
-    timeout-minutes: 90
+    # The build plus half of the coverage test suite consumed the former
+    # 90-minute job budget in release run 35436382201.
+    timeout-minutes: 150
     env:
       SCCACHE_GHA_ENABLED: "true"
       SCCACHE_GHA_VERSION: evengine-cpp-v1-linux-x64-coverage

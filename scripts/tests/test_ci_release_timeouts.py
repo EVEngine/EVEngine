@@ -37,7 +37,7 @@ class ReleaseJobTimeoutTests(unittest.TestCase):
 
     def test_release_job_budgets_cover_cold_builds_and_tests(self) -> None:
         minimums = {
-            "windows-release": 180,
+            "windows-release": 240,
             "android-release": 150,
             "macos-release": 150,
             "linux-release": 150,
@@ -52,12 +52,28 @@ class ReleaseJobTimeoutTests(unittest.TestCase):
     def test_cold_native_build_steps_have_observed_headroom(self) -> None:
         minimums = {
             ("windows", "Build win32 debug"): 100,
-            ("windows-release", "Build win32 release"): 120,
+            ("windows-release", "Build win32 release"): 160,
+            ("android", "Build android debug"): 85,
             ("macos", "Build macosx debug"): 75,
+            ("macos", "Build native Dawn Metal lane"): 75,
         }
         for (job, step), minimum in minimums.items():
             with self.subTest(job=job, step=step):
                 self.assertGreaterEqual(step_timeout(job, step, self.workflow), minimum)
+
+    def test_multi_phase_job_budgets_cover_observed_cold_runs(self) -> None:
+        minimums = {
+            "windows": 300,
+            "android": 120,
+            "macos": 180,
+            "linux-coverage": 150,
+        }
+        for job, minimum in minimums.items():
+            with self.subTest(job=job):
+                block = job_block(self.workflow, job)
+                match = re.search(r"^    timeout-minutes: (\d+)$", block, re.MULTILINE)
+                self.assertIsNotNone(match)
+                self.assertGreaterEqual(int(match.group(1)), minimum)
 
     def test_android_jobs_start_sccache_before_the_build(self) -> None:
         for job in ("android", "android-release"):
