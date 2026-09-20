@@ -19,6 +19,9 @@ int appendNode(UIHost::Tree &tree, WidgetDesc &&desc, int parent = -1) {
     node.focusMode = desc.focusMode;
     node.mouseFilter = desc.mouseFilter;
     node.themePreset = desc.themePreset;
+    node.styleClass = std::move(desc.styleClass);
+    node.hasResolvedStyle =
+        resolveStyleClass(node.styleClass, &node.resolvedStyle) == StyleClassStatus::Applied;
     node.tabIndex = desc.tabIndex;
     node.focusNext = std::move(desc.focusNext);
     node.focusPrevious = std::move(desc.focusPrevious);
@@ -53,6 +56,7 @@ int appendNode(UIHost::Tree &tree, WidgetDesc &&desc, int parent = -1) {
     node.maxSizeY = desc.maxSizeY;
     node.percentW = desc.percentW;
     node.percentH = desc.percentH;
+    node.aspectRatio = desc.aspectRatio;
     node.anchorX = desc.anchorX;
     node.anchorY = desc.anchorY;
     node.posX = desc.posX;
@@ -79,6 +83,15 @@ int appendNode(UIHost::Tree &tree, WidgetDesc &&desc, int parent = -1) {
     node.justifyContent = desc.justifyContent;
     node.gap = desc.gap;
     node.flexGrow = desc.flexGrow;
+    node.flexShrink = desc.flexShrink;
+    node.flexBasis = desc.flexBasis;
+    node.alignSelf = desc.alignSelf;
+    node.columnGap = desc.columnGap;
+    node.rowGap = desc.rowGap;
+    node.flexWrap = desc.flexWrap;
+    node.overflow = desc.overflow;
+    node.gridColumns = desc.gridColumns;
+    node.gridColumnSpan = desc.gridColumnSpan;
     node.parent = parent;
     node.firstChild = -1;
     node.nextSibling = -1;
@@ -159,6 +172,9 @@ void patchProps(UIHost::Tree &tree, int nodeIndex, WidgetDesc &&desc) {
     n.focusMode = desc.focusMode;
     n.mouseFilter = desc.mouseFilter;
     n.themePreset = desc.themePreset;
+    n.styleClass = std::move(desc.styleClass);
+    n.hasResolvedStyle =
+        resolveStyleClass(n.styleClass, &n.resolvedStyle) == StyleClassStatus::Applied;
     n.tabIndex = desc.tabIndex;
     n.focusNext = std::move(desc.focusNext);
     n.focusPrevious = std::move(desc.focusPrevious);
@@ -193,6 +209,7 @@ void patchProps(UIHost::Tree &tree, int nodeIndex, WidgetDesc &&desc) {
     n.maxSizeY = desc.maxSizeY;
     n.percentW = desc.percentW;
     n.percentH = desc.percentH;
+    n.aspectRatio = desc.aspectRatio;
     n.anchorX = desc.anchorX;
     n.anchorY = desc.anchorY;
     n.posX = desc.posX;
@@ -219,6 +236,15 @@ void patchProps(UIHost::Tree &tree, int nodeIndex, WidgetDesc &&desc) {
     n.justifyContent = desc.justifyContent;
     n.gap = desc.gap;
     n.flexGrow = desc.flexGrow;
+    n.flexShrink = desc.flexShrink;
+    n.flexBasis = desc.flexBasis;
+    n.alignSelf = desc.alignSelf;
+    n.columnGap = desc.columnGap;
+    n.rowGap = desc.rowGap;
+    n.flexWrap = desc.flexWrap;
+    n.overflow = desc.overflow;
+    n.gridColumns = desc.gridColumns;
+    n.gridColumnSpan = desc.gridColumnSpan;
     if (!desc.id.empty()) n.id = desc.id;
 
     if (desc.onClick) {
@@ -656,6 +682,16 @@ WidgetDesc row(std::vector<WidgetDesc> children, std::string id) {
 
 WidgetDesc column(std::vector<WidgetDesc> children, std::string id) {
     return flex(FlexDirection::Column, std::move(children), std::move(id));
+}
+
+WidgetDesc grid(int columns, std::vector<WidgetDesc> children, std::string id) {
+    WidgetDesc d;
+    d.type = NodeType::Grid;
+    d.id = std::move(id);
+    d.key = d.id;
+    d.gridColumns = std::max(1, columns);
+    d.children = std::move(children);
+    return d;
 }
 
 WidgetDesc spacer(std::string id, float grow) {
