@@ -1,5 +1,6 @@
 #include "dialogue/Dialogue.h"
 #include "dialogue/DnutParser.h"
+#include "dialogue/StateAccessScriptSeam.h"
 
 #include "avatar/AvatarInstance.h"
 #include "common/Capability.h"
@@ -159,9 +160,15 @@ struct Register {
 
 }  // namespace
 
-Dialogue::Dialogue() { liveDialogues().push_back(this); }
+Dialogue::Dialogue() {
+    liveDialogues().push_back(this);
+    declareScriptStateQuerySeam();
+    declareScriptStateMutationSeam();
+}
 
 Dialogue::~Dialogue() {
+    withdrawScriptStateQuerySeam();
+    withdrawScriptStateMutationSeam();
     liveDialogues().erase(std::remove(liveDialogues().begin(), liveDialogues().end(), this), liveDialogues().end());
     if (vm_) {
         for (auto &kv : predicates_) sq_release(vm_, &kv.second);
