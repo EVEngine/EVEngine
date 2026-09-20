@@ -2,6 +2,7 @@
 
 #include "common/Export.h"
 #include "common/Result.h"
+#include "common/Value.h"
 
 #include <cstdint>
 #include <functional>
@@ -30,27 +31,36 @@ struct ScriptProviderHandle {
 };
 
 /**
- * @brief One scalar or text argument passed to a script provider method.
+ * @brief One argument passed to a script provider method.
  *
- * The bridge carries values, not native structs: a module that serves a capability
- * from script decides which of its fields cross the boundary, in what order. A
- * dynamic `eve::Value` tree is deliberately not used here -- that is the
- * data-interop path, not the call path.
+ * The bridge marshals **values**: the four scalar kinds plus an owning object (`Table`) for
+ * capabilities whose payload is a record rather than a number. A module that serves a
+ * capability from script decides which of its fields cross the boundary, in what order.
+ *
+ * @remarks 用户 2026-09-20 的决定③（"全面加对象/表参数 + 结构化返回"）把这条边界从"只有标量"
+ *          放宽到"标量 + 对象"。代价是这里多一层编组语义，所以 `call`/`callNumber` 的 `@cost` 要
+ *          按"构造一个表"而不是"几个标量压栈"来读（见下）；`Table` 载荷仍走
+ *          `common/SquirrelBinding.h` 那一套权威转换（递归/元素数上限、环检测、非有限数拒绝），
+ *          桥本身不新增第二套递归转换。
  */
 struct ScriptArg {
     /** @brief Active argument kind. */
-    enum class Kind : std::uint8_t { Integer, Number, Boolean, Text };
+    enum class Kind : std::uint8_t { Integer, Number, Boolean, Text, Table };
 
     Kind         kind    = Kind::Number;
     std::int64_t integer = 0;
     double       number  = 0.0;
     bool         boolean = false;
     std::string  text;
+    /** @brief Object payload for `Kind::Table`; keys are the script side's field names. */
+    Value::Object table;
 
     static ScriptArg fromInteger(std::int64_t value);
     static ScriptArg fromNumber(double value);
     static ScriptArg fromBoolean(bool value);
     static ScriptArg fromText(std::string value);
+    /** @brief One object argument (a table on the script side). @cost One Value tree copy. */
+    static ScriptArg fromTable(Value::Object fields);
 };
 
 class ScriptProviderRegistry;
@@ -178,13 +188,15 @@ public:
     [[nodiscard]] Result<void> call(const ScriptProviderHandle& handle, std::string_view method, double dt) const;
 
     /**
-     * @brief Call `method(...)` with explicit scalar arguments.
+     * @brief Call `method(...)` with explicit arguments.
      * @param args Positional arguments in call order; may be empty.
      * @return As the zero-argument overload, plus `InvalidArgument` when the script
      *         method rejects an argument (wrong arity or type).
-     * @cost One script call, plus one VM push per argument. Marshalling is the
-     *       caller's: this is for capability seams that genuinely need several
-     *       values, not a general-purpose reflection bridge.
+     * @cost One script call, plus one VM push per argument: a scalar argument is one push, a
+     *       `Table` argument is one `eve::Value` tree projection (depth and element-count
+     *       bounded by `common/SquirrelBinding.h`). Marshalling is the caller's: this is for
+     *       capability seams that genuinely need several values or one record, not a
+     *       general-purpose reflection bridge.
      * @remarks Overload resolution is unambiguous in practice because a braced
      *          argument list of one or more elements cannot initialize the `double`
      *          overload. Spell an intentionally empty list as the zero-argument
@@ -229,6 +241,31 @@ public:
      */
     [[nodiscard]] Result<std::vector<double>> callNumbers(const ScriptProviderHandle& handle, std::string_view method,
                                                           std::span<const ScriptArg> args) const;
+
+    /**
+     * @brief Call `method(...)` and read the script result as an owning `eve::Value`.
+     *
+     * 决定③（2026-09-20）的"结构化返回"这一半：插座可以拿到一个**对象/数组**而不是一个数。
+     * 典型用途是 `ISensingCandidateProvider` / `IStateQuery` 这类"问一次、答一组"的接口。
+     *
+     * @param handle Published provider handle.
+     * @param method Method name on the provider object.
+     * @param args Positional arguments in call order; may be empty.
+     * @return The result as an owning `Value` tree: `Null`/`Bool`/`Int64`/`Double`/`String`/
+     *         `Array`/`Object`，或与 `call` 相同的失败（`Unsupported`/`StaleHandle`/`Failed`），
+     *         外加转换失败时的 `InvalidArgument`。
+     * @cost One script call plus one whole-tree projection. The result is **copied**, not viewed:
+     *       per-frame callers should keep asking for scalars (`callNumber`) and only reach for a
+     *       structured return when the payload genuinely is a record.
+     * @remarks 载荷边界由 `common/SquirrelBinding.h` 的权威转换负责（默认深度 64、元素 100000，
+     *          拒绝环与非有限数）。需要更紧的上限就用 `callNumbers`（64 个元素）那条路。
+     * @lifetime 返回值拥有自己的存储，脚本 VM 销毁后依然可用。
+     */
+    [[nodiscard]] Result<Value> callValue(const ScriptProviderHandle& handle, std::string_view method,
+                                          std::span<const ScriptArg> args) const;
+
+    /** @brief No-argument overload of the structured call. @return As `callValue`. */
+    [[nodiscard]] Result<Value> callValue(const ScriptProviderHandle& handle, std::string_view method) const;
 
     /**
      * @brief Declare that one native capability may be served by a script provider.

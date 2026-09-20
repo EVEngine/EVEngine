@@ -3,6 +3,7 @@
 #include "common/Assert.h"
 #include "common/Diagnostic.h"
 #include "common/ScriptError.h"
+#include "common/SquirrelBinding.h"
 #include "common/SquirrelOwnership.h"
 
 #include <simplesquirrel/simplesquirrel.hpp>
@@ -97,14 +98,27 @@ Result<void> pushProviderMethod(HSQUIRRELVM vm, HSQOBJECT instance, const std::s
     return Result<void>::success();
 }
 
-/** @brief Push one marshalled argument; the inverse of the `ScriptArg` factories. */
-void pushScriptArg(HSQUIRRELVM vm, const ScriptArg& arg) {
+/**
+ * @brief Push one marshalled argument; the inverse of the `ScriptArg` factories.
+ *
+ * A scalar is one VM push; `Table` goes through the shared `Value` projection
+ * (`common/SquirrelBinding.h`), which is the only recursive Squirrel converter in the repo.
+ * It can fail (unsupported kind, depth/element bound), so the failure is reported rather than
+ * pushed as a broken argument.
+ */
+Result<void> pushScriptArg(HSQUIRRELVM vm, const ScriptArg& arg) {
     switch (arg.kind) {
         case ScriptArg::Kind::Integer: sq_pushinteger(vm, SQInteger(arg.integer)); break;
         case ScriptArg::Kind::Number: sq_pushfloat(vm, SQFloat(arg.number)); break;
         case ScriptArg::Kind::Boolean: sq_pushbool(vm, arg.boolean ? SQTrue : SQFalse); break;
         case ScriptArg::Kind::Text: sq_pushstring(vm, arg.text.c_str(), SQInteger(arg.text.size())); break;
+        case ScriptArg::Kind::Table: {
+            auto pushed = script::pushValue(vm, Value::object(arg.table));
+            if (!pushed.ok()) return pushed;
+            break;
+        }
     }
+    return Result<void>::success();
 }
 
 /** @brief Read a numeric script value; the method name makes the failure actionable. */
@@ -187,6 +201,24 @@ Result<std::vector<double>> readNumericArray(HSQUIRRELVM vm, const std::string& 
 Result<double> ignoreResult(HSQUIRRELVM, const std::string&) { return Result<double>::success(0.0); }
 
 /**
+ * @brief Read the top of the stack as a whole owning `Value` tree.
+ *
+ * The conversion is the shared, bounded one (`common/SquirrelBinding.h`): depth and element
+ * limits, cycle detection, non-finite rejection. Nothing is coerced — a table stays a table.
+ */
+Result<Value> readValueResult(HSQUIRRELVM vm, const std::string& methodName) {
+    auto converted =
+        script::valueFromSquirrel(vm, -1, script::SquirrelValueOptions{64, 100000, "script.provider." + methodName});
+    if (!converted.ok())
+        return Result<Value>::failure(
+            providerDiagnostic(DiagnosticCode::InvalidArgument,
+                               "script provider method '" + methodName +
+                                   "' returned a value that cannot be converted: " + converted.status().describe(),
+                               methodName));
+    return converted;
+}
+
+/**
  * @brief Invoke one provider method with `args`, letting `readResult` collect the value.
  *
  * The whole call discipline lives here: a missing or non-method member is
@@ -217,7 +249,13 @@ auto invokeProvider(const ssq::Object& instance, std::string_view method, std::s
 
     const SQInteger top = sq_gettop(vm);
     sq_pushobject(vm, raw);  // `this`
-    for (const ScriptArg& arg : args) pushScriptArg(vm, arg);
+    for (const ScriptArg& arg : args) {
+        auto pushed = pushScriptArg(vm, arg);
+        if (!pushed) {
+            sq_settop(vm, top);
+            return Outcome::failure(pushed.status());
+        }
+    }
 
     const SQInteger argCount = SQInteger(args.size()) + 1;
     if (SQ_FAILED(sq_call(vm, argCount, SQTrue, SQFalse))) {
@@ -264,6 +302,13 @@ ScriptArg ScriptArg::fromText(std::string value) {
     ScriptArg arg;
     arg.kind = Kind::Text;
     arg.text = std::move(value);
+    return arg;
+}
+
+ScriptArg ScriptArg::fromTable(Value::Object fields) {
+    ScriptArg arg;
+    arg.kind  = Kind::Table;
+    arg.table = std::move(fields);
     return arg;
 }
 
@@ -525,6 +570,17 @@ Result<std::vector<double>> ScriptProviderRegistry::callNumbers(const ScriptProv
     auto instance = resolve(handle);
     if (!instance) return Result<std::vector<double>>::failure(instance.status());
     return invokeProvider(*instance.value(), method, args, readNumericArray);
+}
+
+Result<Value> ScriptProviderRegistry::callValue(const ScriptProviderHandle& handle, std::string_view method,
+                                                std::span<const ScriptArg> args) const {
+    auto instance = resolve(handle);
+    if (!instance) return Result<Value>::failure(instance.status());
+    return invokeProvider(*instance.value(), method, args, readValueResult);
+}
+
+Result<Value> ScriptProviderRegistry::callValue(const ScriptProviderHandle& handle, std::string_view method) const {
+    return callValue(handle, method, {});
 }
 
 }  // namespace eve

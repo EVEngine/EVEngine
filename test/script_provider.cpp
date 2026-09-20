@@ -20,6 +20,13 @@ class Counter {
     function label(dt) { return "not a number" }
     function boom(dt) { throw "deliberate provider failure" }
     function scaleDamage(vehicleId, defId, amount, zone, sourceId) { return amount * 0.5 }
+
+    // 决定③（对象/表参数 + 结构化返回）：插座可以收一个表、也可以答一个表。
+    function describe(request) { return request.kind + ":" + request.count }
+    function summarize(request) {
+        return { kind = request.kind, count = request.count * 2.0, tags = ["near", "armed"], ok = true }
+    }
+    function returnsClosure() { return function() { return 1 } }
 }
 provider <- Counter()
 )SQ";
@@ -362,4 +369,67 @@ TEST_CASE_FIXTURE(ScriptProviderTest, "ScriptProvider.callSetupErrorsStayReporte
     auto recovered = registry.callNumber(published.value(), "onTick", 3.0);
     REQUIRE(recovered.ok());
     REQUIRE(std::abs(recovered.value() - 3.0) < 1e-6);
+}
+
+// ---------------------------------------------------------------------------
+// 决定③（2026-09-20）：桥支持"对象/表参数 + 结构化返回"。
+//
+// 原来的契约写的是"carries values, not native structs / 不是通用反射桥"。这条决定把它放宽到
+// "标量 + 一个对象，返回也可以是一个对象/数组"，代价是编组语义（所以 ScriptArg 的 Table 与
+// callValue 的 @cost 都按"构造一个表/投影整棵树"来读）。这一片只做桥本身；把被卡的插座
+// （ISensingCandidateProvider 等）逐个接上属于后续工作。
+// ---------------------------------------------------------------------------
+
+TEST_CASE_FIXTURE(ScriptProviderTest, "ScriptProvider.callsCarryTableArguments") {
+    auto& registry  = eve::ScriptProviderRegistry::instance();
+    auto  published = registry.publish("test.counter", vm.find("provider"));
+    REQUIRE(published.ok());
+
+    auto request =
+        eve::ScriptArg::fromTable({{"kind", eve::Value::string("sensor")}, {"count", eve::Value::number(3.0)}});
+    const eve::ScriptArg args[] = {request};
+
+    // 脚本侧真的收到了一个表（字段名与值都对），而不是被打平成一串标量。
+    auto described = registry.callValue(published.value(), "describe", args);
+    REQUIRE(described.ok());
+    REQUIRE(described.value().isString());
+    REQUIRE_EQ(described.value().asString(), std::string("sensor:3"));
+}
+
+TEST_CASE_FIXTURE(ScriptProviderTest, "ScriptProvider.structuredReturnsComeBackAsValues") {
+    auto& registry  = eve::ScriptProviderRegistry::instance();
+    auto  published = registry.publish("test.counter", vm.find("provider"));
+    REQUIRE(published.ok());
+
+    auto request =
+        eve::ScriptArg::fromTable({{"kind", eve::Value::string("sensor")}, {"count", eve::Value::number(2.5)}});
+    const eve::ScriptArg args[]     = {request};
+    auto                 summarised = registry.callValue(published.value(), "summarize", args);
+    REQUIRE(summarised.ok());
+
+    const eve::Value& payload = summarised.value();
+    REQUIRE(payload.isObject());
+    REQUIRE_EQ(payload.find("kind")->asString(), std::string("sensor"));
+    REQUIRE_EQ(payload.find("count")->asDouble(), 5.0);
+    REQUIRE(payload.find("ok")->asBool());
+    const eve::Value* tags = payload.find("tags");
+    REQUIRE(tags != nullptr);
+    REQUIRE(tags->isArray());
+    REQUIRE_EQ(tags->arraySize(), std::size_t{2});
+    REQUIRE_EQ(tags->at(0).asString(), std::string("near"));
+
+    // 无参数重载与有参数重载走同一条路：`onTick` 返回一个数，`callValue` 照样给一棵 Value 树。
+    const eve::ScriptArg dt[]  = {eve::ScriptArg::fromNumber(4.0)};
+    auto                 total = registry.callValue(published.value(), "onTick", dt);
+    REQUIRE(total.ok());
+    REQUIRE(total.value().isDouble());
+    REQUIRE(std::abs(total.value().asDouble() - 4.0) < 1e-6);
+
+    // 转换不了的结果是**上报失败**，不是硬塞一个值：闭包不是 Value 能表达的东西。
+    auto unconvertible = registry.callValue(published.value(), "returnsClosure");
+    REQUIRE(!unconvertible.ok());
+    REQUIRE_EQ(firstDiagnosticCode(unconvertible.status()), eve::DiagnosticCode::InvalidArgument);
+
+    // 失败之后 provider 仍然可用（调用纪律没被破坏）。
+    REQUIRE(registry.call(published.value(), "ping").ok());
 }
