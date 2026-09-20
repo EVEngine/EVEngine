@@ -105,6 +105,16 @@ foreach(_eve_group IN LISTS EVE_LINK_GROUP_NAMES)
             CXX_VISIBILITY_PRESET default
             VISIBILITY_INLINES_HIDDEN OFF
             LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}")
+        # The third-party closure is a set of static archives linked into every
+        # group library. ELF interposes the first definition of a symbol across
+        # shared objects, but each archive copy still registers its own static
+        # destructors, so Poco's global SORTABLE_FORMAT string was destroyed by
+        # both libEVDomains.so and the executable and the process died with
+        # "double free or corruption (!prev)" before main -- which made the
+        # zeroerr discovery step fail. Binding each group's references to its own
+        # definitions keeps the per-link-unit copies independent, exactly as the
+        # Windows build already behaves.
+        target_link_options(${_eve_group} PRIVATE "LINKER:-Bsymbolic")
     endif()
 
     # A SHARED build produces a dynamic SDK: the host binary needs its group
