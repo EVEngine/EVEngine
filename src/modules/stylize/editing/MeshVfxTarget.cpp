@@ -41,7 +41,7 @@ MeshVfxAssetTarget::MeshVfxAssetTarget(std::string id) : id_(std::move(id)) {
 MeshVfxAssetTarget::~MeshVfxAssetTarget() = default;
 
 MeshVfxAssetTarget::MeshVfxAssetTarget(const MeshVfxAssetTarget& other)
-    : id_(other.id_), EditableTargetState(other), asset_(std::make_unique<stylize::MeshVfxAsset>(*other.asset_)) {}
+    : EditableTargetState(other), id_(other.id_), asset_(std::make_unique<stylize::MeshVfxAsset>(*other.asset_)) {}
 
 MeshVfxAssetTarget& MeshVfxAssetTarget::operator=(const MeshVfxAssetTarget& other) {
     if (this == &other) return *this;
