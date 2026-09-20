@@ -704,6 +704,14 @@ if(_has_ui)
     target_link_libraries(eve_imgui PRIVATE
       ${_eve_imgui_third_party} ${_eve_imgui_system_libs} ${EVENGINE_VULKAN_LIB})
     target_link_libraries(eve_imgui PUBLIC eve_engine_includes)
+    # The SDL import library this target links comes from the third-party install
+    # tree, and nothing else in its dependency graph waits for that install: on a
+    # cold build (no third-party cache) ninja may reach this link first and fail
+    # with LNK1104 "cannot open file 'SDL2d.lib'". create_module() adds the same
+    # dependency for every module target.
+    if(NOT EVENGINE_PROFILE_HOSTLESS)
+      add_dependencies(eve_imgui third-party)
+    endif()
     # The host, the tests and the group libraries all load this library, so the
     # dynamic SDK has to ship it beside them, exactly like the link groups.
     install(TARGETS eve_imgui
