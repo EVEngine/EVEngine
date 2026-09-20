@@ -14,7 +14,7 @@ struct ConversationLocalizationEntry {
     double      duration = 0.0;
 };
 
-/** @brief CSV-backed translation and voice recording catalog with locale fallback. */
+/** @brief CSV-backed translation and voice recording catalog with default-locale resolution. */
 class ConversationLocalizationCatalog {
 public:
     int         importCsv(const std::string& csv, const std::string& defaultLocale,

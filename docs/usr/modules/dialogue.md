@@ -238,7 +238,7 @@ node end end
   `clearMigrations()` 清除规则。
 - 参数化文本：本地化回退完成后，`getText()` 会以 locals 优先、bindings 次之的顺序
   渲染 `{speaker.name}` 等路径；支持 `{path??fallback}`，以及 `|upper`、`|lower`、
-  `|capitalize` 修饰。找不到且没有 fallback 的占位符会原样保留，便于内容 QA 发现缺参。
+  `|capitalize` 修饰。找不到且没有默认文本的占位符会原样保留，便于内容 QA 发现缺参。
 - 人物语气：`addToneRule(expression, prefix, suffix, find, replacement)` 添加有序规则；
   expression 复用 `setExpressionEvaluatorChecked`，因此可以读取人物性格、关系、疲劳或剧情状态，
   对渲染后的文本加前后缀或做词语替换。多个命中规则依次叠加，
