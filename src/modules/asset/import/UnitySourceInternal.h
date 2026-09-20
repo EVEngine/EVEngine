@@ -51,7 +51,7 @@ struct UnityExpandedPrefab {
 [[nodiscard]] Result<PreparedAssetImport> prepareUnityVegetationMaterial(const UnityProjectImportRequest& request,
                                                                          const UnitySourceAsset&          source);
 /** @brief Parse one TVE conversion preset into a bounded versioned command tree. */
-[[nodiscard]] Result<PreparedAssetImport> prepareUnityVegetationPreset(const UnityProjectImportRequest& request,
+[[nodiscard]] EVENGINE_API_PLATFORM Result<PreparedAssetImport> prepareUnityVegetationPreset(const UnityProjectImportRequest& request,
                                                                        const UnitySourceAsset&          source);
 /** @brief Convert a complete TVE manager component set from one Unity scene. */
 [[nodiscard]] Result<PreparedAssetImport> prepareUnityVegetationScene(const UnityProjectImportRequest& request,

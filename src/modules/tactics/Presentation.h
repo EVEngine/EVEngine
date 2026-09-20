@@ -71,9 +71,9 @@ enum class PresentationRevertTrigger : std::uint8_t {
 };
 
 /** @brief Human-readable stable spelling of a visual state (protocol text). */
-[[nodiscard]] std::string_view unitVisualStateName(UnitVisualState state) noexcept;
+[[nodiscard]] EVENGINE_API_DOMAINS std::string_view unitVisualStateName(UnitVisualState state) noexcept;
 /** @brief Human-readable stable spelling of a revert trigger (protocol text). */
-[[nodiscard]] std::string_view presentationRevertTriggerName(PresentationRevertTrigger trigger) noexcept;
+[[nodiscard]] EVENGINE_API_DOMAINS std::string_view presentationRevertTriggerName(PresentationRevertTrigger trigger) noexcept;
 
 /**
  * @brief One presentation instruction: what to show, where, and until when.
@@ -159,7 +159,7 @@ struct PresentationFrame {
  * @thread Stateless apart from its configuration; it holds no battle reference and can be
  *         shared or copied freely.
  */
-class PresentationProjector final {
+class EVENGINE_API_DOMAINS PresentationProjector final {
 public:
     /** @brief Configure the projector; the default lifetime is used unless overridden. */
     explicit PresentationProjector(std::uint64_t transientTicks = 20) : transientTicks_(transientTicks) {}

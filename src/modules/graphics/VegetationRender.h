@@ -1,4 +1,5 @@
 #pragma once
+#include "common/Export.h"
 #include <array>
 #include <cstdint>
 #include <span>
@@ -42,7 +43,7 @@ struct VegetationSurface {
  * Updated positions and bounds are shared by color, depth and shadow passes.
  * @return Validation failure before upload; Unsupported if backend cannot update geometry.
  */
-[[nodiscard]] Result<void> updateVegetationMesh(Graphics& graphics, Mesh& mesh, const VegetationField& field,
+[[nodiscard]] EVENGINE_API_BACKENDS Result<void> updateVegetationMesh(Graphics& graphics, Mesh& mesh, const VegetationField& field,
                                                 std::span<const VegetationVertex> vertices,
                                                 const VegetationMotion& motion, std::span<const float> texcoords,
                                                 std::span<const uint32_t> indices);
@@ -53,6 +54,6 @@ struct VegetationSurface {
      * @return InvalidArgument before mutation; otherwise applies tint, wetness, overlay,
  * emission and alpha atomically with respect to validation. No texture creation occurs.
  */
-[[nodiscard]] Result<void> applyVegetationSurface(Material& material, const VegetationSample& sample,
+[[nodiscard]] EVENGINE_API_BACKENDS Result<void> applyVegetationSurface(Material& material, const VegetationSample& sample,
                                                   const VegetationSurface& surface);
 }  // namespace eve::graphics

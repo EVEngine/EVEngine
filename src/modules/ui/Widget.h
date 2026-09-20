@@ -478,7 +478,7 @@ EVENGINE_API_WORLD WidgetDesc row(std::vector<WidgetDesc> children = {}, std::st
 /** @brief Vertical elastic layout column. */
 EVENGINE_API_WORLD WidgetDesc column(std::vector<WidgetDesc> children = {}, std::string id = "");
 /** @brief Fixed-column grid; children are placed in source order. */
-WidgetDesc grid(int columns, std::vector<WidgetDesc> children = {}, std::string id = "");
+EVENGINE_API_WORLD WidgetDesc grid(int columns, std::vector<WidgetDesc> children = {}, std::string id = "");
 /** @brief Flexible empty space; default flexGrow=1 so it absorbs free space in a Flex parent. */
 EVENGINE_API_WORLD WidgetDesc spacer(std::string id = "", float grow = 1.f);
 

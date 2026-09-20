@@ -69,7 +69,7 @@ private:
 };
 
 /** @brief The process-wide adapter instance the capability answers with. */
-[[nodiscard]] TacticsLineOfSightAdapter& tacticsLineOfSightAdapter();
+[[nodiscard]] EVENGINE_API_DOMAINS TacticsLineOfSightAdapter& tacticsLineOfSightAdapter();
 
 /**
  * @brief Claim the grid coordinate spaces for the tactics adapter.

@@ -1,4 +1,5 @@
 #pragma once
+#include "common/Export.h"
 #include <cstdint>
 #include <span>
 #include <vector>
@@ -11,7 +12,7 @@ namespace eve::asset::detail {
  * @param maximumBytes Limit for scanline storage and encoded output.
  * @return Owning PNG source or checked diagnostic. Reentrant, no callbacks or external mutation.
  */
-[[nodiscard]] Result<std::vector<std::uint8_t>> encodeSourcePng(std::uint32_t width, std::uint32_t height,
+[[nodiscard]] EVENGINE_API_FOUNDATION Result<std::vector<std::uint8_t>> encodeSourcePng(std::uint32_t width, std::uint32_t height,
                                                                 std::span<const std::uint8_t> pixels,
                                                                 std::uint64_t                 maximumBytes);
 }  // namespace eve::asset::detail

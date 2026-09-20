@@ -93,7 +93,7 @@ struct GridResult {
 };
 
 /** @brief Places source-ordered items into equal-width fixed columns. */
-GridResult gridArrange(int columns, float columnGap, float rowGap, float availWidth,
+EVENGINE_API_WORLD GridResult gridArrange(int columns, float columnGap, float rowGap, float availWidth,
                        const std::vector<GridItemSpec> &items);
 
 /** Measure one node (recursively) and fill UINode::measuredW/H. */

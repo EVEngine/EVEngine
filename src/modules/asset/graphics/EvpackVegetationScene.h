@@ -120,7 +120,7 @@ struct VegetationSceneProjection {
 };
 
 /** @brief Strict capability-aware decoder for `eve.vegetation-scene/1`. */
-class EvpackVegetationSceneLoader {
+class EVENGINE_API_WORLD EvpackVegetationSceneLoader {
 public:
     /** @brief Bind a borrowed immutable reader which must outlive this loader. */
     explicit EvpackVegetationSceneLoader(const asset::EvpackResourceReader& reader) noexcept : reader_(reader) {}
@@ -146,7 +146,7 @@ private:
  * @return Detached complete candidate; inputs remain unchanged on failure.
  * @thread Worker-safe; no clocks, GPU calls, callbacks or global shader state.
  */
-[[nodiscard]] Result<VegetationSceneProjection> projectVegetationScene(
+[[nodiscard]] EVENGINE_API_WORLD Result<VegetationSceneProjection> projectVegetationScene(
     const graphics::PbrSurface& baseSurface, const graphics::VegetationMotion& baseMotion,
     const LoadedVegetationScene& scene);
 
@@ -160,7 +160,7 @@ private:
  * @thread Worker-safe when the reader is safe for concurrent reads.
  * @reentrancy Performs no callbacks, GPU calls, global mutation, clocks or filesystem access.
  */
-[[nodiscard]] Result<std::map<std::string, graphics::VegetationMask>> loadVegetationSceneElementMasks(
+[[nodiscard]] EVENGINE_API_WORLD Result<std::map<std::string, graphics::VegetationMask>> loadVegetationSceneElementMasks(
     const asset::EvpackResourceReader& reader, const LoadedVegetationScene& scene,
     const asset::EvpackCapabilities& capabilities, std::uint64_t maximumDecodedBytes = 256 * 1024 * 1024);
 
@@ -171,11 +171,11 @@ private:
  * @return Owning source pixel plus exact independent RGB/alpha blend modes and color mask.
  * @thread Worker-safe; no texture reads, callbacks, clocks, global state or GPU work.
  */
-[[nodiscard]] Result<VegetationSceneElementPixel> evaluateVegetationSceneElementPixel(
+[[nodiscard]] EVENGINE_API_WORLD Result<VegetationSceneElementPixel> evaluateVegetationSceneElementPixel(
     const VegetationSceneElement& element, const VegetationSceneElementPixelInput& input);
 
 /** @brief Apply one evaluated source pixel to a destination with TVE's separate blend factors and ColorMask. */
-[[nodiscard]] glm::vec4 composeVegetationSceneElementPixel(glm::vec4 destination,
+[[nodiscard]] EVENGINE_API_WORLD glm::vec4 composeVegetationSceneElementPixel(glm::vec4 destination,
                                                             const VegetationSceneElementPixel& source) noexcept;
 
 /**
@@ -190,7 +190,7 @@ private:
  * @return Fully composed owning atlas; any invalid input or evaluation failure leaves base unchanged.
  * @thread Worker-safe; no callbacks, clocks, GPU work, global mutation or retained borrows.
  */
-[[nodiscard]] Result<graphics::VegetationAtlas> bakeVegetationSceneElements(
+[[nodiscard]] EVENGINE_API_WORLD Result<graphics::VegetationAtlas> bakeVegetationSceneElements(
     const LoadedVegetationScene& scene, const std::map<std::string, graphics::VegetationMask>& masks,
     const graphics::VegetationAtlas& base, std::array<std::uint8_t, 4> layers = {},
     std::span<const glm::vec3> worldNormals = {}, std::span<const float> terrainHeights = {},
@@ -213,7 +213,7 @@ private:
  * @return Detached atlas whose Motion RG stores signed world X/Z; other TVE channels stay unchanged.
  * @thread Worker-safe; no callbacks, clocks, GPU work, global mutation or retained borrows.
  */
-[[nodiscard]] Result<graphics::VegetationAtlas> convertVegetationSceneAtlasToNative(
+[[nodiscard]] EVENGINE_API_WORLD Result<graphics::VegetationAtlas> convertVegetationSceneAtlasToNative(
     const graphics::VegetationAtlas& tveAtlas);
 
 /** @brief Convert one fully composed TVE channel atlas to EVEngine conventions. */
@@ -246,7 +246,7 @@ struct VegetationSceneGpuPublication {
  * The resource factory, mask map and scene are borrowed only while create executes. The returned runtime owns the
  * field textures and projected material snapshot. It must outlive every draw borrowing surface().
  */
-class VegetationSceneGpuRuntime final {
+class EVENGINE_API_WORLD VegetationSceneGpuRuntime final {
 public:
     /**
      * @brief Bake, convert, upload and bind all field layers as one atomic candidate.

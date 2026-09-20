@@ -14,7 +14,7 @@ namespace eve::graphics_editing {
  * Element IDs remain stable while priority changes reorder the runtime projection.
  * The live field is borrowed and must outlive this main-thread-affine target. No callbacks are invoked.
  */
-class VegetationFieldTarget final : public virtual editing::IEditableTarget,
+class EVENGINE_API_WORLD VegetationFieldTarget final : public virtual editing::IEditableTarget,
                                     public editing::IDomainOperationTarget,
                                     public editing::IDomainOperationTargetStaging,
                                     public editing::IPropertyProvider {

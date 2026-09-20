@@ -162,20 +162,20 @@ enum class StyleClassStatus : uint8_t {
  * @thread UI thread only.
  * @reentrancy Does not invoke callbacks.
  */
-[[nodiscard]] StyleClassStatus defineStyleClass(const std::string &name,
+[[nodiscard]] EVENGINE_API_WORLD StyleClassStatus defineStyleClass(const std::string &name,
                                                 const std::string &parent = "");
 /** @brief Sets text/background/border/accent RGBA on an existing style class. */
-[[nodiscard]] StyleClassStatus setStyleClassColor(const std::string &name,
+[[nodiscard]] EVENGINE_API_WORLD StyleClassStatus setStyleClassColor(const std::string &name,
                                                  const std::string &property, float r, float g,
                                                  float b, float a);
 /** @brief Sets padding, rounding, or alpha on an existing style class. */
-[[nodiscard]] StyleClassStatus setStyleClassMetric(const std::string &name,
+[[nodiscard]] EVENGINE_API_WORLD StyleClassStatus setStyleClassMetric(const std::string &name,
                                                   const std::string &property, float x,
                                                   float y = 0.f);
 /** @brief Resolves inheritance into a sparse class and reports an explicit lookup status. */
-[[nodiscard]] StyleClassStatus resolveStyleClass(const std::string &name, StyleClass *out);
+[[nodiscard]] EVENGINE_API_WORLD StyleClassStatus resolveStyleClass(const std::string &name, StyleClass *out);
 /** @brief Clears user-defined style classes. Intended for runtime/test teardown. */
-void clearStyleClasses();
+EVENGINE_API_WORLD void clearStyleClasses();
 /** @brief Stable script-facing spelling of a mutation status. */
 const char *styleClassStatusName(StyleClassStatus status);
 

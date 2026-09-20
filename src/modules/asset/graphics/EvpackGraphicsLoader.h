@@ -39,7 +39,7 @@ struct GraphicsAssetLoadLimits {
 };
 
 /** @brief Result-based adapter over the engine's established graphics resource factory. */
-class GraphicsMeshFactoryAdapter final : public graphics::IMeshResourceFactory {
+class EVENGINE_API_WORLD GraphicsMeshFactoryAdapter final : public graphics::IMeshResourceFactory {
 public:
     /** @brief Bind a borrowed graphics factory that must outlive this adapter. */
     explicit GraphicsMeshFactoryAdapter(graphics::IResourceFactory& factory) noexcept

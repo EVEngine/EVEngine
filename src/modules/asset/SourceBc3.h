@@ -1,4 +1,5 @@
 #pragma once
+#include "common/Export.h"
 #include <cstdint>
 #include <span>
 #include <vector>
@@ -13,6 +14,6 @@ namespace eve::asset::detail {
  * @return Owning pixels or checked diagnostic. Reentrant; no callbacks or retained pointers.
  * @remarks No transfer conversion or vertical flip; the source importer owns these semantics.
  */
-[[nodiscard]] Result<std::vector<std::uint8_t>> decodeBc3Rgba8(std::span<const std::uint8_t> bytes, std::uint32_t width,
+[[nodiscard]] EVENGINE_API_FOUNDATION Result<std::vector<std::uint8_t>> decodeBc3Rgba8(std::span<const std::uint8_t> bytes, std::uint32_t width,
                                                                std::uint32_t height, std::uint64_t maximumDecodedBytes);
 }  // namespace eve::asset::detail

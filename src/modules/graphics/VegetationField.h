@@ -1,4 +1,5 @@
 #pragma once
+#include "common/Export.h"
 
 #include <array>
 #include <cstdint>
@@ -82,7 +83,7 @@ struct VegetationChannelAtlas {
  * No callbacks, external resources, global singleton, ECS mutation or wall clock.
  * Returned samples/atlases are owning projections, never additional mutable authority.
  */
-class VegetationField {
+class EVENGINE_API_BACKENDS VegetationField {
 public:
     /** @brief Return detached global defaults; concurrent reads require no writer. No callbacks. */
     VegetationGlobals globalValues() const { return globals_; }

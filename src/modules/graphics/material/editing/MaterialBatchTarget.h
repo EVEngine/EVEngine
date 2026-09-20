@@ -21,7 +21,7 @@ public:
 /** @brief One editor transaction target for mixed-value, multi-material property editing.
  * Owns all authoring documents and publishes a complete candidate set through one atomic sink call.
  */
-class MaterialBatchTarget final : public virtual IEditableTarget,
+class EVENGINE_API_BACKENDS MaterialBatchTarget final : public virtual IEditableTarget,
                                   public IDomainOperationTarget,
                                   public IDomainOperationTargetStaging,
                                   public IPropertyProvider,

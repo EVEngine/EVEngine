@@ -77,7 +77,7 @@ struct TerrainVegetationWeightDomain {
  * @thread Worker-safe across distinct graph objects. Does not perform GPU calls or callbacks.
  * @reentrancy Not reentrant for the same graph object.
  */
-[[nodiscard]] Result<TerrainVegetationRealization> realizeTerrainVegetation(LoadedPointGraph*        graph,
+[[nodiscard]] EVENGINE_API_ORCHESTRATION Result<TerrainVegetationRealization> realizeTerrainVegetation(LoadedPointGraph*        graph,
                                                                             const LoadedInstanceSet* explicitInstances,
                                                                             const TerrainVegetationLimits& limits = {});
 
@@ -90,7 +90,7 @@ struct TerrainVegetationWeightDomain {
  * @return Detached, re-bucketed realization; invalid maps or unknown layers fail atomically.
  * @thread Worker-safe while all inputs remain immutable.
  */
-[[nodiscard]] Result<TerrainVegetationRealization> filterTerrainVegetationByLayerWeights(
+[[nodiscard]] EVENGINE_API_ORCHESTRATION Result<TerrainVegetationRealization> filterTerrainVegetationByLayerWeights(
     const TerrainVegetationRealization& realization, const LoadedTerrainMaterial& material,
     const TerrainMaterialAtlases& atlases, const TerrainVegetationWeightDomain& domain);
 

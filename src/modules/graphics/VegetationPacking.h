@@ -1,4 +1,5 @@
 #pragma once
+#include "common/Export.h"
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp>
 #include <span>
@@ -21,6 +22,6 @@ struct TvePackedVertex {
  * Encoded pairs must be exact unsigned 22-bit integers. Mask channels must be [0,1].
  * @return Owning vertices or InvalidArgument/Failed; failure publishes no partial stream.
  */
-[[nodiscard]] Result<std::vector<VegetationVertex>> decodeTveVegetationVertices(
+[[nodiscard]] EVENGINE_API_BACKENDS Result<std::vector<VegetationVertex>> decodeTveVegetationVertices(
     std::span<const TvePackedVertex> vertices);
 }  // namespace eve::graphics

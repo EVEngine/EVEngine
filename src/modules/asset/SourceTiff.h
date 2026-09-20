@@ -1,4 +1,5 @@
 #pragma once
+#include "common/Export.h"
 #include <cstdint>
 #include <span>
 #include <vector>
@@ -16,6 +17,6 @@ struct TiffPixels {
  * @return Owning pixels or checked malformed/unsupported diagnostic. No partial publication.
  * @thread Reentrant, no callbacks or global state.
  */
-[[nodiscard]] Result<TiffPixels> decodeTiffRgba8(std::span<const std::uint8_t> bytes,
+[[nodiscard]] EVENGINE_API_FOUNDATION Result<TiffPixels> decodeTiffRgba8(std::span<const std::uint8_t> bytes,
                                                  std::uint64_t                 maximumDecodedBytes);
 }  // namespace eve::asset::detail

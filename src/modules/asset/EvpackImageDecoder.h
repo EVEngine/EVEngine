@@ -1,4 +1,5 @@
 #pragma once
+#include "common/Export.h"
 
 /** @file EvpackImageDecoder.h @brief Backend-neutral canonical EVIMG decoding. */
 
@@ -31,7 +32,7 @@ struct DecodedEvpackImage {
  * @return Detached owning RGBA8 mip data; failure publishes no partial bytes.
  * @thread Worker-safe when reader is read concurrently; performs no GPU calls or callbacks.
  */
-[[nodiscard]] Result<DecodedEvpackImage> decodeEvpackImage(const EvpackResourceReader& reader, const AssetRef& image,
+[[nodiscard]] EVENGINE_API_FOUNDATION Result<DecodedEvpackImage> decodeEvpackImage(const EvpackResourceReader& reader, const AssetRef& image,
                                                            const EvpackCapabilities&      capabilities,
                                                            const EvpackImageDecodeLimits& limits = {});
 

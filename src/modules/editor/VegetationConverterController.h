@@ -57,7 +57,7 @@ public:
  * @thread Owner thread only. Calls are synchronous and no controller lock is held across either boundary.
  * @reentrancy Preparer and publisher implementations must not call this controller recursively.
  */
-class VegetationConverterController {
+class EVENGINE_API_ORCHESTRATION VegetationConverterController {
 public:
     VegetationConverterController(const IVegetationConversionPreparer& preparer,
                                   IVegetationConversionPublisher&      publisher);

@@ -2,6 +2,7 @@
 #include <cstdint>
 #include <span>
 #include <vector>
+#include "common/Export.h"
 #include "common/Result.h"
 
 namespace eve::asset::detail {
@@ -16,5 +17,5 @@ struct TgaPixels {
  * @return Owning candidate or checked failure; no external mutation.
  * @thread Reentrant and callback-free. Source transfer is applied by the cooker.
  */
-[[nodiscard]] Result<TgaPixels> decodeTgaRgba8(std::span<const std::uint8_t> bytes, std::uint64_t maximumDecodedBytes);
+[[nodiscard]] EVENGINE_API_FOUNDATION Result<TgaPixels> decodeTgaRgba8(std::span<const std::uint8_t> bytes, std::uint64_t maximumDecodedBytes);
 }  // namespace eve::asset::detail
