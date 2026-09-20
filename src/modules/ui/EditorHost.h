@@ -49,7 +49,7 @@ public:
     // ---- OS window -------------------------------------------------------
     std::string openWindow(const std::string& title, int width, int height);
     std::string closeWindow();
-    bool        windowOpen() const;
+    bool        isWindowOpen() const;
     std::string windowState() const;
 
     // ---- editors (View) --------------------------------------------------
@@ -72,8 +72,12 @@ public:
     std::string widgetRect(const std::string& editorId, const std::string& widgetId) const;
 
     // ---- ViewModel (Squirrel tables) --------------------------------------
-    /** @brief Compile Squirrel source in the host VM, then register table `name`. */
-    std::string registerVM(const std::string& name, const std::string& source);
+    /**
+     * @brief Compile Squirrel source in the host VM, then register table `name`.
+     * @param sourceName Canonical script URI for `import` resolution. Empty uses `host_vm.nut`.
+     */
+    std::string registerVM(const std::string& name, const std::string& source,
+                           const std::string& sourceName = {});
     std::string unregisterVM(const std::string& name);
 
     // ---- persistence -------------------------------------------------------
@@ -85,7 +89,11 @@ public:
     void loadEditorsFromDisk();
 
     // ---- misc --------------------------------------------------------------
-    std::string runScript(const std::string& source);
+    /**
+     * @brief Compile and run Squirrel source in the host VM.
+     * @param sourceName Canonical script URI for `import` resolution. Empty uses `host_snippet.nut`.
+     */
+    std::string runScript(const std::string& source, const std::string& sourceName = {});
     std::string capture(const std::string& path);
     /** @brief Reload mcp.nut, scripts under mcp, or editor VM and manifest files. */
     std::string reloadResource(const std::string& path);

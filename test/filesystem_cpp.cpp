@@ -563,3 +563,12 @@ TEST_CASE("filesystem.watch.dotResolvesToCwd") {
     std::remove((cwd + "/" + name).c_str());
 }
 
+TEST_CASE("filesystem.watch.parentDotDotResolves") {
+    auto *f = fs();
+    f->unwatchAll();
+    REQUIRE(f->watch(".."));
+    CHECK_GE(f->getWatchCount(), 1);
+    CHECK(f->unwatch(".."));
+    CHECK_EQ(f->getWatchCount(), 0);
+}
+
