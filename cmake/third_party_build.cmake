@@ -458,6 +458,20 @@ function(check_third_party_project name repo)
             -DPATCH_DIR=${CMAKE_CURRENT_SOURCE_DIR}/${name}
             -P ${CMAKE_SOURCE_DIR}/cmake/patch_third_party.cmake)
 
+    # Fifteenth patch: the same pinned SDL 2.0.16 loads Wayland dynamically, so it
+    # never links libwayland-client. With Wayland headers from 1.20 on,
+    # wl_proxy_marshal() routes through wl_proxy_marshal_flags(), which leaves
+    # direct references behind in the objects SDL compiles; the static archive
+    # never notices (the engine links the Wayland libraries itself, see
+    # cmake/system_libraries.cmake) but building SDL *shared* fails with
+    # "undefined reference to wl_proxy_marshal_flags" on current Linux images.
+    # Paths are relative to the third-party aggregate root.
+    set(_eve_tp_patch_cmd ${_eve_tp_patch_cmd}
+        COMMAND ${CMAKE_COMMAND}
+            -DPATCH=${CMAKE_SOURCE_DIR}/cmake/patches/sdl2-shared-wayland-link.patch
+            -DPATCH_DIR=${CMAKE_CURRENT_SOURCE_DIR}/${name}
+            -P ${CMAKE_SOURCE_DIR}/cmake/patch_third_party.cmake)
+
     # Stamp the git versions into the install tree after every install so
     # prebuilt-mode consumers (and eve's build info) can report exactly which
     # third-party commit the libraries were built from.

@@ -1,0 +1,23 @@
+diff --git a/SDL2/CMakeLists.txt b/SDL2/CMakeLists.txt
+index 48f6499..cbdeb25 100644
+--- a/SDL2/CMakeLists.txt
++++ b/SDL2/CMakeLists.txt
+@@ -2738,6 +2738,18 @@ if(NOT (WINDOWS OR CYGWIN OR MINGW))
+   install(FILES "${SDL2_SOURCE_DIR}/sdl2.m4" DESTINATION "${CMAKE_INSTALL_FULL_DATAROOTDIR}/aclocal")
+ endif()
+ 
++# EVEngine: this pinned SDL 2.0.16 loads Wayland dynamically (WAYLAND_SHARED is
++# ON by default), so it never links libwayland-client. Wayland headers from 1.20
++# on route wl_proxy_marshal() through wl_proxy_marshal_flags(), which leaves
++# direct references in the objects SDL compiles, and building SDL *shared* then
++# fails with "undefined reference to wl_proxy_marshal_flags" (the static archive
++# never hits it, because the engine links the Wayland libraries itself -- see
++# cmake/system_libraries.cmake). Linking the library here is harmless while the
++# dynamic loading path stays in use.
++if(VIDEO_WAYLAND AND WAYLAND_SHARED AND UNIX AND NOT APPLE AND NOT EMSCRIPTEN)
++  target_link_libraries(SDL2 PRIVATE wayland-client)
++endif()
++
+ ##### Uninstall target #####
+ 
+ if(NOT TARGET uninstall)
