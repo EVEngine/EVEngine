@@ -951,6 +951,19 @@ function unknownFieldIsRejected() {
     return false
 }
 
+// `_get` 对非字段名是**抛错**的，而 `SQVM::Get` 只在元方法"干净地找不到"时才去问实例默认委托——
+// 所以接缝会把委托里的六个方法（getclass/rawget/rawset/rawin/weakref/tostring）一起遮住。
+// 引擎把委托原样装成类成员，这里钉住它。
+function delegateMethodsSurviveTheSeam() {
+    local c = probe.pos
+    if (c.getclass() != Position) return false
+    if (typeof c.tostring() != "string") return false
+    // `rawin` 走的是类成员表：登记的组件字段槽位**确实**被摘掉了，所以这里是 false，
+    // 而它本身能被查到（没被 `_get` 遮住）。
+    if (c.rawin("x")) return false
+    return true
+}
+
 // 用户类自己写了 `_get`/`_set`：引擎既不覆盖也不摘槽位，登记失败，槽位语义照旧。
 class OwnSeam extends eve.Component {
     x = 1.0
@@ -1057,6 +1070,13 @@ TEST_CASE_FIXTURE(ComponentStoreTest, "ScriptECS.unknownComponentFieldIsRejected
     REQUIRE(callScript("unknownFieldIsRejected"));
 }
 
+TEST_CASE_FIXTURE(ComponentStoreTest, "ScriptECS.registeredComponentKeepsInstanceDelegateMethods") {
+    // 反向取证：这条用例在装 `installInstanceDelegateMembers` 之前会抛
+    // "'getclass' is not a declared field of component 'Position'"。
+    REQUIRE(callScript("makeProbe"));
+    REQUIRE(callScript("delegateMethodsSurviveTheSeam"));
+}
+
 TEST_CASE_FIXTURE(ComponentStoreTest, "ScriptECS.componentDefiningItsOwnFieldSeamIsRefused") {
     // 用户类自己定义了 `_get`/`_set`：登记失败，且引擎**不做任何改动**（槽位语义照旧）。
     REQUIRE(!callScript("registerOwnSeam"));
@@ -1074,4 +1094,163 @@ TEST_CASE_FIXTURE(ComponentStoreTest, "ScriptECS.registeredComponentResolvesType
     REQUIRE_EQ(values->find("n")->asDouble(), 0.0);
     REQUIRE(!values->find("b")->asBool());
     REQUIRE_EQ(values->find("k")->asDouble(), 3.5);
+}
+
+// ---------------------------------------------------------------------------
+// 热重载迁移（方案文档实施顺序第 3 步）：同名同版本重新登记 = 换了一代，已存在的字段数据
+// 必须按新 schema 对齐。字段数据按 (实体, 名字, 版本) 寻址，所以换代时能就地迁移。
+// ---------------------------------------------------------------------------
+
+static const char* kComponentMigrationScript = R"SQ(
+class MigPos extends eve.Component { x = 1.0 }
+class MigNode extends eve.Entity { mp = MigPos }
+
+function makeMig() {
+    migOk <- eve.component("MigPos", 1, MigPos).ok
+    local a = MigNode.create()
+    a.mp.x = 42.0
+    migId <- a.getId()
+    migComp <- a.mp
+    return true
+}
+
+// 热重载重定义了组件类：新增一个字段。
+function redefineWithNewField() {
+    class MigPos2 extends eve.Component { x = 1.0; y = 7.5 }
+    return eve.component("MigPos", 1, MigPos2).ok
+}
+
+// 再换一代：这次删掉一个字段。
+function redefineDroppingField() {
+    class MigPos3 extends eve.Component { y = 0.0 }
+    return eve.component("MigPos", 1, MigPos3).ok
+}
+
+// 迁移之后，老实体的组件实例（还是旧类的）读到的仍是引擎侧那份数据。
+function readMigratedFields() {
+    migX <- migComp.x
+    migY <- migComp.y
+    return migX == 42.0 && migY == 7.5
+}
+)SQ";
+
+UnitSciptTest(ComponentMigrationTest, kComponentMigrationScript);
+
+TEST_CASE_FIXTURE(ComponentMigrationTest, "ScriptECS.reRegistrationMigratesStoredValuesToTheNewSchema") {
+    REQUIRE(callScript("makeMig"));
+
+    const auto                         entityId = static_cast<std::uint64_t>(vm.find("migId").toInt());
+    const eve::ScriptComponentStoreKey key{entityId, "MigPos", eve::SchemaVersion(1)};
+    REQUIRE_EQ(eve::scriptComponentField(key, "x").value().asDouble(), 42.0);
+
+    // 新代加了字段：老值保留，新字段取**新代声明的默认值**（不是 null，也不是旧代的形状）。
+    REQUIRE(callScript("redefineWithNewField"));
+    REQUIRE_EQ(eve::scriptComponentField(key, "x").value().asDouble(), 42.0);
+    REQUIRE_EQ(eve::scriptComponentField(key, "y").value().asDouble(), 7.5);
+    REQUIRE(callScript("readMigratedFields"));
+
+    // 新代删了字段：存储里不许留下没人声明的数据（否则序列化/编辑器会看到它）。
+    REQUIRE(callScript("redefineDroppingField"));
+    REQUIRE(!eve::scriptComponentField(key, "x").ok());
+    REQUIRE_EQ(eve::scriptComponentField(key, "y").value().asDouble(), 7.5);
+}
+
+// ---------------------------------------------------------------------------
+// 热重载迁移（实施顺序第 3 步）：重定义同名类 = 同一类型的新代。老实体必须被新类接管，
+// 不许变成"既不在新类视图里、也没销毁、也不报错"的孤儿——这正是 §9.42.5 量到的现场
+// （`newClassView=0 oldClassView=2 oldStillAlive=true`）。
+//
+// 真实重载由 `load.nut` 驱动：阶段③重新执行编译好的 chunk（同名类因此换成新类对象）、
+// 阶段⑤a 调 `eve._ecsMigrateAfterReload(重载前的根表快照)`。这里用同一套判据和同一个入口，
+// 只把"重新执行 chunk"换成本地从 C++ 跑第二段脚本。
+// ---------------------------------------------------------------------------
+
+static const char* kHotReloadBeforeScript = R"SQ(
+class HotPos extends eve.Component { x = 1.0 }
+class HotNode extends eve.Entity { hp = HotPos }
+
+function makeHot() {
+    local ok = eve.component("HotPos", 1, HotPos).ok
+    local a = HotNode.create(); a.hp.x = 5.0
+    local b = HotNode.create(); b.hp.x = 6.0
+    hotId0 <- a.getId()
+    hotId1 <- b.getId()
+    return ok
+}
+
+// 重载前抓根表快照：真实路径里这是 load.nut 的 capture_reload_bindings()。
+function captureHotBindings() {
+    hotSnapshot <- {}
+    foreach (k, v in getroottable()) hotSnapshot[k] <- v
+    return true
+}
+
+// §9.42.5 的两个计数：老类视图 / 新类视图。
+function viewHotCounts() {
+    hotOldView <- eve.view(hotSnapshot.HotNode).len()
+    hotNewView <- eve.view(HotNode).len()
+    return true
+}
+
+function migrateHot() {
+    local migration = eve._ecsMigrateAfterReload(hotSnapshot, getroottable())
+    hotMigrated <- migration.components
+    hotUnresolved <- migration.unresolved
+    hotTypes <- 0
+    foreach (k, v in eve._ecsTypes) hotTypes += 1
+    return true
+}
+
+// 迁移后：新类视图里的实体都拿得到**新组件类**的实例，且数据没丢（按 id 顺序 = 5.0/6.0）。
+function readHotAfterMigration() {
+    local list = eve.view(HotNode)
+    if (list.len() != 2) return false
+    local c0 = list[0].getComponent(HotPos)
+    local c1 = list[1].getComponent(HotPos)
+    if (c0 == null || c1 == null) return false
+    return c0.x == 5.0 && c1.x == 6.0
+}
+)SQ";
+
+// 等价于 load.nut 阶段③：重跑 chunk。同名类变成新类对象，同时这一代多了一个字段 y
+// （也就是同一名字+版本的第 2 代，登记时字段数据会被对齐到新 schema）。
+static const char* kHotReloadAfterScript = R"SQ(
+class HotPos extends eve.Component { x = 1.0; y = 2.0 }
+class HotNode extends eve.Entity { hp = HotPos }
+eve.component("HotPos", 1, HotPos)
+)SQ";
+
+UnitSciptTest(HotReloadEcsTest, kHotReloadBeforeScript);
+
+TEST_CASE_FIXTURE(HotReloadEcsTest, "ScriptECS.hotReloadMigrationHandsTheNewClassTheOldEntities") {
+    REQUIRE(callScript("makeHot"));
+    REQUIRE(callScript("captureHotBindings"));
+
+    // 重跑 chunk：这两个全局绑定换成新类对象，老类对象只剩快照里那一个引用。
+    vm.run(vm.compileSource(kHotReloadAfterScript));
+
+    // 迁移前就是 §9.42.5 的现场：老实体只挂在老类名下，对新类视图完全不可见。
+    REQUIRE(callScript("viewHotCounts"));
+    REQUIRE_EQ(vm.find("hotOldView").toInt(), 2);
+    REQUIRE_EQ(vm.find("hotNewView").toInt(), 0);
+
+    REQUIRE(callScript("migrateHot"));
+    REQUIRE_EQ(vm.find("hotUnresolved").toInt(), 0);
+    REQUIRE_EQ(vm.find("hotMigrated").toInt(), 2);
+    REQUIRE_EQ(vm.find("hotTypes").toInt(), 1);  // 旧类那一组被搬走，不留每重载一次多一组的孤儿项
+
+    // 验收方式（实施顺序第 3 步）：迁移后新类视图里能看到迁移前的实体数。
+    REQUIRE(callScript("viewHotCounts"));
+    REQUIRE_EQ(vm.find("hotNewView").toInt(), 2);
+    REQUIRE_EQ(vm.find("hotOldView").toInt(), 0);
+    REQUIRE(callScript("readHotAfterMigration"));
+
+    // 引擎侧数据同样被接管：两个实体的 x 保留旧值，新字段 y 取新代声明的默认值。
+    const auto                         id0 = static_cast<std::uint64_t>(vm.find("hotId0").toInt());
+    const auto                         id1 = static_cast<std::uint64_t>(vm.find("hotId1").toInt());
+    const eve::ScriptComponentStoreKey key0{id0, "HotPos", eve::SchemaVersion(1)};
+    const eve::ScriptComponentStoreKey key1{id1, "HotPos", eve::SchemaVersion(1)};
+    REQUIRE_EQ(eve::scriptComponentField(key0, "x").value().asDouble(), 5.0);
+    REQUIRE_EQ(eve::scriptComponentField(key1, "x").value().asDouble(), 6.0);
+    REQUIRE_EQ(eve::scriptComponentField(key0, "y").value().asDouble(), 2.0);
 }

@@ -513,6 +513,25 @@ function soft_reload_scripts() {
         }
     }
     // Stage ⑤: post-commit hooks rebuild instances derived from restored data.
+    //
+    // ⑤a 先跑脚本 ECS 的迁移：重定义同名类不许把已存在的实体变成孤儿（方案文档决定①）。
+    // 判据是"同一个全局名字前后都是类"，也就是上面那份 `oldBindings` 快照——重载前抓的类对象
+    // 与重载后的同名绑定指向同一个定义的两代。迁移不了时把条数报出来，不静默吞掉。
+    if ("_ecsMigrateAfterReload" in eve) {
+        try {
+            local migration = eve._ecsMigrateAfterReload(oldBindings, getroottable());
+            if (migration.components > 0)
+                print("hot-reload ECS migration: " + migration.entities + " entities, "
+                      + migration.components + " component instance(s)\n");
+            if (migration.unresolved > 0)
+                report_reload_failure(
+                    "hot-reload ECS migration left " + migration.unresolved
+                    + " component slot(s) on a replaced class; the entity class declaring them was not "
+                    + "redefined in this reload (rename or drop those entities explicitly)");
+        } catch (e) {
+            report_reload_failure("hot-reload ECS migration failed: " + format_script_error(e));
+        }
+    }
     if ("eve_after_reload" in getroottable()) {
         try {
             eve_after_reload();

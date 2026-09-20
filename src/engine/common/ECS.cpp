@@ -16,6 +16,7 @@
 #include "sqstring.h"
 #include "sqtable.h"
 #include "sqclass.h"
+#include "sqvm.h"  // `_ss(vm)->_instance_default_delegate`（把默认委托装成类成员，见下）
 // clang-format on
 
 #include <algorithm>
@@ -347,6 +348,9 @@ bool classDefinesFieldSeam(HSQOBJECT clsObj) {
     return sq_type(klass->_metamethods[MT_GET]) != OT_NULL || sq_type(klass->_metamethods[MT_SET]) != OT_NULL;
 }
 
+/** 见定义处：把实例默认委托的方法装成类成员，免得 `_get` 把它们遮住。 */
+void installInstanceDelegateMembers(HSQUIRRELVM vm, HSQOBJECT clsObj);
+
 /**
  * @brief 装上 `_get`/`_set` 并摘掉声明的字段槽位——这一步让引擎成为字段的**唯一权威**。
  *
@@ -376,8 +380,37 @@ Result<void> installComponentFieldSeam(HSQUIRRELVM vm, HSQOBJECT clsObj, const s
     if (_class(clsObj) != nullptr) {
         for (const DeclaredField& field : fields) _class(clsObj)->_members->Remove(field.key);
     }
+    installInstanceDelegateMembers(vm, clsObj);
     sq_settop(vm, top);
     return Result<void>::success(Status::success(StatusCode::Applied));
+}
+
+/**
+ * @brief 把实例**默认委托**里的方法原样装成类的成员。
+ *
+ * 为什么非做不可：`SQVM::Get` 只在元方法**干净地找不到**时才去问默认委托，而我们的 `_get` 对
+ * 非字段名是**抛错**的（元方法回了错误而不是"没这一项"）——于是实例默认委托里的六个方法全被
+ * 遮住（`sqbaselib.cpp:1354` 的 `_instance_default_delegate_funcz`：`getclass` / `rawget` /
+ * `rawset` / `rawin` / `weakref` / `tostring`）。实测症状：`load.nut` 的 `migrate_instance`
+ * 在登记过的组件实例上直接抛 `'getclass' is not a declared field of component 'HotPos'`。
+ * 装成**成员**之后实例查找先命中成员，委托不再被遮住；语义与委托里那一份完全相同（同一批
+ * 原生闭包）。非字段成员不会被 `collectClassFields`/`declaredFields` 当成字段（§9.64.2）。
+ */
+void installInstanceDelegateMembers(HSQUIRRELVM vm, HSQOBJECT clsObj) {
+    SQClass* klass = _class(clsObj);
+    if (klass == nullptr) return;
+    SQTable* delegates = _table(_ss(vm)->_instance_default_delegate);
+    if (delegates == nullptr) return;
+
+    SQObjectPtr key;
+    SQObjectPtr value;
+    SQObjectPtr refpos;
+    SQInteger   index = 0;
+    while ((index = delegates->Next(false, refpos, key, value)) != -1) {
+        refpos = SQObjectPtr(index);
+        if (sq_type(key) != OT_STRING || sq_type(value) != OT_NATIVECLOSURE) continue;
+        klass->NewSlot(_ss(vm), key, value, false);
+    }
 }
 
 /**
@@ -498,36 +531,44 @@ function eve::_ecsIsComponentClass(obj) {
     return this.isSubclass(obj, this.Component)
 }
 
+// 解析"类型标记"（`x = eve.Number` → `0.0`）：只处理**当前值本身是标记**的字段，其它字段
+// 一律不碰，所以这个函数可以重复跑（实例化、热重载迁移都调它），不会覆盖已有数据。
+//
+// `declared` 是引擎侧给的字段名数组（登记组件）或 null（未登记组件）。登记组件的声明默认值
+// 已经按 schema 落在引擎侧存储里，`c[name]` 走 `_get` 读到的就是它；未登记组件从类声明读。
+// 两种组件因此共用同一段解析，标记规则仍然只有这一处实现（§9.64.4）。
+function eve::_ecsResolveComponentMarkers(compClass, c, declared) {
+    local fields = {}
+    if (declared != null) {
+        foreach (name in declared) fields[name] <- true
+    } else {
+        fields = this.inspectClassFields(compClass)
+    }
+    local resolved = {}
+    foreach (name, val in fields) {
+        local cur = null
+        try { cur = c[name] } catch (e) { cur = null }
+        if (cur == this.Number || cur == this.Boolean || cur == this.String
+            || cur == "number" || cur == "boolean" || cur == "string") {
+            c[name] = this._ecsResolveMarker(cur)
+            resolved[name] <- c[name]
+        }
+    }
+    return resolved
+}
+
 function eve::_ecsInstantiateComponent(compClass, ownerEid = 0) {
     local c = compClass()
     // 先盖归属、按 schema 建引擎侧数据条目，**再**写默认值：已登记组件的字段槽位在登记时就被摘掉、
     // `_set` 已装好，所以下面那些 `c[name] = val` 实际上是**写进引擎存储**，必须有个已绑定的条目
     // 接着（顺序反了就会报 "not bound to an entity"）。
     // 返回值是这一代的字段名（声明顺序）：槽位摘掉之后 `inspectClassFields` 什么也看不到，
-    // 而"类型标记"（`x = eve.Number` → `0.0`）还得按声明顺序解析。未登记组件返回 null。
+    // 而"类型标记"还得按声明顺序解析。未登记组件返回 null。
     local declared = eve._ecsBindComponentValues(ownerEid, c)
     if (compClass in this._ecsCompDefaults) {
         foreach (name, val in this._ecsCompDefaults[compClass]) c[name] = val
     } else {
-        local fields = {}
-        if (declared != null) {
-            // 声明默认值已经按 schema 落在引擎侧存储里，`c[name]` 走 `_get` 读到的就是它；
-            // 这里只是照 `inspectClassFields` 的形状取一份，好让标记解析那条路两种组件共用。
-            foreach (name in declared) fields[name] <- c[name]
-        } else {
-            fields = this.inspectClassFields(compClass)
-        }
-        local resolved = {}
-        foreach (name, val in fields) {
-            local cur = null
-            try { cur = c[name] } catch (e) { cur = null }
-            if (cur == this.Number || cur == this.Boolean || cur == this.String
-                || cur == "number" || cur == "boolean" || cur == "string") {
-                c[name] = this._ecsResolveMarker(cur)
-                resolved[name] <- c[name]
-            }
-        }
-        this._ecsCompDefaults[compClass] <- resolved
+        this._ecsCompDefaults[compClass] <- this._ecsResolveComponentMarkers(compClass, c, declared)
     }
     return c
 }
@@ -651,6 +692,124 @@ function eve::_ecsCollectInstances(cls, out) {
     // 成立的全序；`_ecsTypes` 的散列遍历顺序因此不再影响结果。排序只发生在缓存重建时
     // （结构性变更后第一次取视图），每帧取视图仍然是 O(n) 拷贝。
     out.sort(function(a, b) { return a._eid - b._eid })
+}
+
+// ---------------------------------------------------------------------------
+// 热重载迁移（方案文档实施顺序第 3 步）
+// ---------------------------------------------------------------------------
+
+// 未登记组件的字段只存在实例槽位里，换实例就会丢：把旧实例**声明过的**字段值搬到新实例上。
+// 枚举类而不是实例——实例不可枚举（`foreach (k, v in instance)` 抛 "_nexti failed"），类可枚举；
+// 而 `fresh[name] = old[name]` 对新类声明过的成员成功、对没声明的抛错，正是这里要的过滤
+// （与 `load.nut` 的 `migrate_instance` 同一套理由）。
+//
+// 已登记组件的字段槽位在登记时就被摘掉了，所以 `inspectClassFields(旧类)` 是空表、这里什么也
+// 不搬——那些数据本来就在引擎侧存储里，按 (实体, 名字, 版本) 寻址，换代时由 C++ 侧对齐 schema。
+function eve::_ecsCopyDeclaredFields(old, fresh) {
+    if (typeof old != "instance") return 0
+    local declared = null
+    try { declared = this.inspectClassFields(old.getclass()) } catch (e) { return 0 }
+    local copied = 0
+    foreach (name, value in declared) {
+        try { fresh[name] = old[name]; copied += 1 } catch (e) { }
+    }
+    return copied
+}
+
+// 把一个实体的一个组件槽位换到**新代类**的实例上。返回 false 表示换不了（调用方据此报出来）。
+function eve::_ecsRepointComponent(e, slotName, oldComp, compClass, fieldSlots) {
+    local fresh = compClass()
+    local declared = eve._ecsBindComponentValues(e._eid, fresh)
+    if (declared == null && typeof oldComp == "instance" && oldComp._componentName != "") {
+        // 旧实例是**已登记**组件的实例，而新类不是同一身份的登记（登记没跟着换代）：
+        // 接管过去只会得到一个读不了字段的实例，宁可留着旧的并报出来。
+        return false
+    }
+    if (!(compClass in this._ecsCompDefaults)) {
+        this._ecsCompDefaults[compClass] <- this._ecsResolveComponentMarkers(compClass, fresh, declared)
+    } else if (declared != null) {
+        // 已登记组件：默认值在引擎侧存储里，这里**不能**把缓存默认值写回去——那会把迁移
+        // 保留下来的旧值冲掉。只补新字段的类型标记。
+        this._ecsResolveComponentMarkers(compClass, fresh, declared)
+    } else {
+        foreach (name, val in this._ecsCompDefaults[compClass]) fresh[name] = val
+    }
+    if (declared == null) this._ecsCopyDeclaredFields(oldComp, fresh)
+    e._comps[slotName] = fresh
+    if (slotName in fieldSlots) e[slotName] = fresh
+    return true
+}
+
+/**
+ * 热重载之后把脚本 ECS 迁移到重定义后的类上（决定①：同名重定义 = 同一类型的新代）。
+ *
+ * `oldBindings` 是重载**之前**抓的根表快照、`rootTable` 是重载之后的根表（`load.nut` 的
+ * `capture_reload_bindings()` 与 `getroottable()`）：同一个全局名字前后都是类 = 同一个定义被
+ * 重写，这就是"同名"的判据，不需要新机制。两张根表都由调用方传进来——注入的 ECS chunk 以 `eve`
+ * 为 `this`，在里面取不到 `getroottable()`（实测报 "the index 'getroottable' does not exist"）。
+ *
+ * 三件事：
+ *   1. 把以**类对象**为键的表（`_ecsTypes`、视图/槽位/字段槽位缓存）从旧类搬到新类名下。
+ *      §9.42.5 实测旧项不会被回收，每重载一次就多一组孤儿（`oldClassView=2, newClassView=0`）。
+ *   2. 每个活实体的组件实例换成新代类的实例，于是 `getComponent(新类)` 拿得到东西。
+ *   3. 返回计数：`unresolved > 0` 表示有槽位迁移不了（典型是"实体类没被重写、还指向旧组件类"
+ *      ——脚本侧给 class 赋值会抛错，只有原生 `sq_rawset` 能改类的字段默认值），调用方必须
+ *      **报出来**，不许静默留孤儿。
+ */
+function eve::_ecsMigrateAfterReload(oldBindings, rootTable) {
+    local replacements = {};
+    if (rootTable == null) return { entities = 0, components = 0, unresolved = 0 };
+    foreach (name, oldClass in oldBindings) {
+        if (typeof oldClass != "class" || !(name in rootTable)) continue;
+        local newClass = rootTable[name];
+        if (typeof newClass != "class" || newClass == oldClass) continue;
+        if (!this.isSubclass(newClass, this.Component) && !this.isSubclass(newClass, this.Entity)) continue;
+        replacements[oldClass] <- newClass;
+    }
+
+    // 第 1 步：换键。旧项一律删掉，否则热重载每来一次就多一组看不见的实例（§9.42.5 第 5 点）。
+    foreach (oldClass, newClass in replacements) {
+        if (oldClass in this._ecsTypes) {
+            this._ecsTypes[newClass] <- this._ecsTypes[oldClass];
+            this._ecsTypes[newClass].cls = newClass;
+            delete this._ecsTypes[oldClass];
+        }
+        if (oldClass in this._ecsViewCache) delete this._ecsViewCache[oldClass];
+        if (oldClass in this._ecsSlotsCache) delete this._ecsSlotsCache[oldClass];
+        if (oldClass in this._ecsFieldSlotsCache) delete this._ecsFieldSlotsCache[oldClass];
+        if (oldClass in this._ecsCompDefaults) delete this._ecsCompDefaults[oldClass];
+    }
+
+    // 第 2 步：接实例。
+    local entities = 0;
+    local components = 0;
+    local unresolved = 0;
+    foreach (etype, info in this._ecsTypes) {
+        local slots = this._ecsCollectSlots(etype);  // 按新类重算：它引用的是新组件类
+        local fieldSlots = this._ecsCollectFieldSlots(etype);
+        foreach (e in info.instances) {
+            if (e == null || !e.isAlive()) continue;
+            e._etype = etype;
+            e._slots = slots;
+            foreach (slotName, compClass in slots) {
+                if (!(slotName in e._comps)) continue;
+                local old = e._comps[slotName];
+                if (old == null) continue;
+                if (compClass in replacements) {
+                    // 实体类没被重写：槽位还指向**旧**组件类，引擎改不了类的字段默认值。
+                    unresolved += 1;
+                    continue;
+                }
+                if (typeof old == "instance" && old.getclass() == compClass) continue;
+                if (this._ecsRepointComponent(e, slotName, old, compClass, fieldSlots)) components += 1;
+                else unresolved += 1;
+            }
+            entities += 1;
+        }
+        this._ecsInvalidateViews(etype);
+    }
+    if (entities > 0) this._ecsRevision += 1;
+    return { entities = entities, components = components, unresolved = unresolved };
 }
 
 eve.Component <- class {
@@ -1373,6 +1532,12 @@ Result<void> registerScriptComponent(const std::string& name, SchemaVersion vers
         return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvariantViolation,
                                                        "script component generation counter is exhausted", name, {},
                                                        "ecs.component"));
+    // 同名同版本再登记 = 热重载换了一代：已存在的字段数据要按**新 schema** 对齐——两代都有的
+    // 字段保留旧值、新代新增的字段补声明默认值、旧代删掉的字段丢弃。少了这一步，脚本改一次
+    // 类定义就会出现两种静默错误：新加的字段永远读不到（存储里没有它），被删掉的字段一直留着
+    // 并被序列化/编辑器看见。字段数据按 (实体, 名字, 版本) 寻址，所以换代时能就地迁移。
+    reconcileScriptComponentValues(name, version, names, defaults);
+
     // Only release a reference belonging to *this* VM: a stale entry from another VM must
     // not be released, because that VM may already be destroyed and sq_release() would
     // dereference its freed RefTable (measured access violation, plan doc §9.49).

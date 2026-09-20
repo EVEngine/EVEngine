@@ -61,6 +61,26 @@ Result<void> setScriptComponentField(const ScriptComponentStoreKey& key, const s
     return Result<void>::success(Status::success(StatusCode::Applied));
 }
 
+void reconcileScriptComponentValues(const std::string& name, SchemaVersion version,
+                                    const std::vector<std::string>& fields, const std::vector<Value>& defaults) {
+    Store& store = scriptComponentStore();
+    for (auto& [key, values] : store) {
+        if (key.name != name || key.version != version) continue;
+        // 逐字段重建：旧的留着、新的取默认值、不再声明的丢掉。原地改 value 而不是插删键，
+        // 迭代器因此不会失效。
+        Value::Object rebuilt;
+        for (std::size_t index = 0; index < fields.size(); ++index) {
+            const Value* existing = values.isObject() ? values.find(fields[index]) : nullptr;
+            if (existing != nullptr) {
+                rebuilt.emplace(fields[index], *existing);
+            } else {
+                rebuilt.emplace(fields[index], index < defaults.size() ? defaults[index] : Value::null());
+            }
+        }
+        values = Value::object(std::move(rebuilt));
+    }
+}
+
 std::size_t removeScriptComponentValues(std::uint64_t entityId) {
     Store&      store = scriptComponentStore();
     std::size_t removed = 0;

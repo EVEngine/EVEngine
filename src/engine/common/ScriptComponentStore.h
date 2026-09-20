@@ -9,6 +9,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <string>
+#include <vector>
 
 namespace eve {
 
@@ -66,6 +67,22 @@ struct ScriptComponentStoreKey {
  */
 [[nodiscard]] Result<void> setScriptComponentField(const ScriptComponentStoreKey& key, const std::string& field,
                                                    Value value);
+
+/**
+ * @brief 把某个组件（名字 + 版本）在**所有实体**上的数据重建到新 schema 上（热重载换代）。
+ *
+ * 两代都有的字段**保留旧值**；新代新增的字段取 `defaults` 里对应的声明默认值；旧代被删掉的
+ * 字段丢弃——存储里不留没人声明的字段（否则序列化/编辑器会看到它）。
+ *
+ * @param name 组件名；@param version 组件版本。
+ * @param fields 新 schema 的字段名，声明顺序。
+ * @param defaults 与 `fields` 一一对应的声明默认值；缺项按 `null` 处理。
+ * @remarks 这是热重载迁移里**唯一需要 C++ 做**的部分：字段数据按版本寻址，所以换代时
+ *          必须显式对齐 schema。实例的重接由脚本侧 ECS 负责（它才知道哪些实体活着）。
+ * @cost 与"该组件已存在的实体数"成正比；只应在脚本重载时调用，不在任何热路径上。
+ */
+void reconcileScriptComponentValues(const std::string& name, SchemaVersion version,
+                                    const std::vector<std::string>& fields, const std::vector<Value>& defaults);
 
 /**
  * @brief 实体销毁时清掉它的全部组件数据。
