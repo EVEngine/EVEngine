@@ -278,4 +278,36 @@ Result<std::vector<ScriptComponentInstanceState>> scriptComponentInstancesOf(con
     return Result<std::vector<ScriptComponentInstanceState>>::success(std::move(out));
 }
 
+Result<std::string> scriptComponentStatesJson() {
+    // 存储本身就是按 (实体, 名字, 版本) 排序的 `std::map`，所以按实体分组只需要顺序扫一遍。
+    Value::Array  entities;
+    Value::Array  components;
+    std::uint64_t currentId = 0;
+    bool          open      = false;
+    const auto    flush     = [&]() {
+        if (!open) return;
+        entities.push_back(Value::object(
+            {{"id", Value::string(entityIdText(currentId))}, {"components", Value::array(std::move(components))}}));
+        components = Value::Array{};
+        open       = false;
+    };
+    for (const ScriptComponentStoreEntry& entry : scriptComponentStoreEntries()) {
+        if (!open || entry.key.entityId != currentId) {
+            flush();
+            currentId = entry.key.entityId;
+            open      = true;
+        }
+        const ScriptComponentRecord* record = findScriptComponent(entry.key.name, entry.key.version);
+        components.push_back(Value::object(
+            {{"name", Value::string(entry.key.name)},
+             {"version", Value::integer(static_cast<std::int64_t>(entry.key.version.value()))},
+             {"generation",
+              Value::integer(static_cast<std::int64_t>(record != nullptr ? record->generation.value() : 0))},
+             {"fields", entry.values}}));
+    }
+    flush();
+
+    return Value::object({{"entities", Value::array(std::move(entities))}}).toJson();
+}
+
 }  // namespace eve

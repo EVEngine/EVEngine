@@ -62,6 +62,7 @@ MCP listening on 127.0.0.1:7529 (newline JSON-RPC; use tools/eve-mcp for Cursor 
 | 名称 | 用途 |
 |------|------|
 | `eve_status` | 附着 / 暂停 / 端口 / callgraph 摘要 |
+| `eve_script_components` | 引擎侧**脚本组件数据**的 JSON 视图：每个实体的已登记组件及其当前字段值（权威存储，不是脚本槽位）。未登记组件不出现；没有数据时是空列表 |
 | `eve_ui_tree` / `eve_ui_get` / `eve_ui_click` | 普通游戏 retained UI 的语义树查询、控件状态读取和按 ID 点击；与 `eve_host_*` 编辑器宿主互补 |
 | `eve_eval` | 求值表达式 |
 | `eve_pause` / `eve_continue` / `eve_step_*` | 运行控制 |

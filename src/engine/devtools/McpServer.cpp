@@ -28,6 +28,7 @@
 #include "common/ProcgenQuery.h"
 #include "common/RenderCapture.h"
 #include "common/SceneQuery.h"
+#include "common/ScriptComponentSnapshot.h"
 #include "common/ScriptError.h"
 #include "common/UIAutomation.h"
 
@@ -700,6 +701,12 @@ std::string callTool(McpServer& mcp, const std::string& name, Poco::JSON::Object
     auto& dap = DebugAdapter::instance();
 
     if (name == "eve_status") return engineStatusJson(mcp);
+
+    // 引擎侧脚本组件数据的工具视图（J-3 的"引擎工具读得到"）。没有脚本 VM 时是空列表，不是错误。
+    if (name == "eve_script_components") {
+        auto payload = eve::scriptComponentStatesJson();
+        return payload ? std::move(payload).takeValue() : std::string("error: ") + payload.status().describe();
+    }
 
     if (name == "eve_gameplay") {
         if (!args || !args->has("request")) return "error: missing request";
@@ -1674,6 +1681,10 @@ std::string handleToolsList(const std::string& idJson) {
     static const char* const kToolsParts[] = {
         "{\"tools\":["
         "{\"name\":\"eve_status\",\"description\":\"Runtime + debugger + MCP/DAP status JSON.\","
+        "\"inputSchema\":{\"type\":\"object\",\"properties\":{}}},"
+        "{\"name\":\"eve_script_components\","
+        "\"description\":\"Engine-side script component data: every entity's registered components and their "
+        "current field values (the authoritative store, not script slots).\","
         "\"inputSchema\":{\"type\":\"object\",\"properties\":{}}},"
         "{\"name\":\"eve_gameplay\",\"description\":\"Observe, discover, submit or advance player-equivalent gameplay through the versioned shared control protocol.\","
         "\"inputSchema\":{\"type\":\"object\",\"properties\":{\"request\":{\"type\":\"object\"}},\"required\":[\"request\"]}},"

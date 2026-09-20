@@ -1371,3 +1371,30 @@ TEST_CASE_FIXTURE(ComponentStoreTest, "ScriptECS.snapshotRejectsUnknownComponent
     REQUIRE(eve::restoreScriptComponents(accepted, hash).ok());
     REQUIRE_EQ(eve::scriptComponentField(key, "x").value().asDouble(), 9.0);
 }
+
+// 工具面（MCP 工具 `eve_script_components` 的内容）：引擎侧脚本组件数据的确定性 JSON 视图。
+TEST_CASE_FIXTURE(ComponentStoreTest, "ScriptECS.toolJsonReportsEngineSideComponentData") {
+    REQUIRE(callScript("makeProbe"));
+    REQUIRE(callScript("writeProbeX"));
+
+    const auto entityId = static_cast<std::uint64_t>(vm.find("probeId").toInt());
+
+    auto json = eve::scriptComponentStatesJson();
+    REQUIRE(json.ok());
+    const std::string& text = json.value();
+    // 实体 id 是十进制字符串；组件带名字/版本/代际与字段值（脚本写进存储的 42/43）。
+    CHECK(text.find("\"entities\"") != std::string::npos);
+    CHECK(text.find("\"" + std::to_string(entityId) + "\"") != std::string::npos);
+    CHECK(text.find("\"Position\"") != std::string::npos);
+    CHECK(text.find("\"version\":1") != std::string::npos);
+    CHECK(text.find("\"x\":42") != std::string::npos);
+    CHECK(text.find("\"y\":43") != std::string::npos);
+    // 未登记的组件（Loose）不在工具视图里——它没有名字与版本，工具无从寻址。
+    CHECK(text.find("\"Loose\"") == std::string::npos);
+
+    // 没有数据时也是合法 JSON 的空列表：工具不该因为"还没登记组件"就报错。
+    eve::clearScriptComponentStore();
+    auto empty = eve::scriptComponentStatesJson();
+    REQUIRE(empty.ok());
+    CHECK(empty.value().find("\"entities\":[]") != std::string::npos);
+}

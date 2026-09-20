@@ -108,4 +108,20 @@ struct ScriptComponentInstanceState {
 [[nodiscard]] EVENGINE_API Result<void> restoreScriptComponentSnapshotJson(std::string_view            json,
                                                                            const SnapshotHashProvider& hashProvider);
 
+/**
+ * @brief 引擎侧脚本组件数据的**工具视图**（MCP `eve_script_components` 与诊断用）。
+ *
+ * @return 确定性 JSON：
+ * ```json
+ * {"entities":[{"id":"7","components":[{"name":"Position","version":1,"generation":1,"fields":{"x":1.5}}]}]}
+ * ```
+ *         条目按 `(实体, 组件名, 版本)` 升序，字段是字典序（`Value::Object` 是 `std::map`）。
+ *         实体 id 是**十进制字符串**（`u64` 装不进 JSON 数字，与快照同一约定）。
+ * @remarks 这是"引擎工具读得到脚本组件状态"的工具面：只报引擎侧那一个权威存储里的数据
+ *          （未登记组件不出现）；与**场景节点**的对应关系在场景模块那一侧（§9.72 的原生读路径 +
+ *          编辑器 payload provider）。
+ * @cost 与存储里的条目数成正比（一次拷贝 + 一次序列化）；工具/诊断用，不在逐帧路径上。
+ */
+[[nodiscard]] EVENGINE_API Result<std::string> scriptComponentStatesJson();
+
 }  // namespace eve
