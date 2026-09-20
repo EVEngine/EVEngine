@@ -175,12 +175,15 @@ for name in "${EXAMPLES[@]}"; do
   if [[ -n "$reason" ]]; then
     echo "FAIL  $name  (${reason})"
     if [[ -n "$hit" ]]; then
-      grep -nF "$hit" "$log" 2>/dev/null | head -3 | sed 's/^/       /'
+      # Print the marker WITH context: a marker line alone hides the rest of a
+      # multi-line message (e.g. a compiler diagnostic on the following line),
+      # which is exactly what a CI reader needs to debug the failure.
+      grep -n -A 8 -F "$hit" "$log" 2>/dev/null | head -24 | sed 's/^/       /'
     fi
     echo "       --- key output (non-frame-error lines, head 30) ---"
     grep -vF "frame error" "$log" 2>/dev/null | head -n 30 | sed 's/^/       | /'
-    echo "       --- example output (last 10 lines) ---"
-    tail -n 10 "$log" | sed 's/^/       | /'
+    echo "       --- example output (last 30 lines) ---"
+    tail -n 30 "$log" | sed 's/^/       | /'
     FAILED=$((FAILED + 1))
     FAILED_NAMES+=("$name")
   else

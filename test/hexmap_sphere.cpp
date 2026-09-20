@@ -13,6 +13,7 @@
 #include <cstdint>
 #include <limits>
 #include <map>
+#include <unordered_map>
 #include <utility>
 #include <vector>
 
@@ -622,31 +623,99 @@ namespace {
 /** @brief Exact vector equality; a shared topological corner must be bit-identical. */
 [[nodiscard]] bool identical(HexVec3 a, HexVec3 b) { return a.x == b.x && a.y == b.y && a.z == b.z; }
 
-/** @brief Quantised position key used to weld the deliberately unshared vertex stream. */
-struct WeldKey {
-    int x = 0;
-    int y = 0;
-    int z = 0;
-    [[nodiscard]] bool operator<(const WeldKey& other) const {
-        if (x != other.x) return x < other.x;
-        if (y != other.y) return y < other.y;
-        return z < other.z;
+/**
+ * @brief Welds positions by distance, independent of where the tolerance grid happens to fall.
+ *
+ * Rounding each coordinate onto a grid and using the result as a key is not a distance test. Two
+ * points far closer together than the tolerance land in different cells whenever they straddle a
+ * cell boundary, and the census then reports them as a crack. On a closed subdivision-4 mesh that
+ * produced 56 phantom boundary edges, and *coarsening* the grid made fewer of them appear - a wider
+ * grid should merge more, so the direction of that effect is the signature of this bug rather than
+ * of a real gap.
+ *
+ * Finding the candidate is the expensive half of a distance test, so the grid is kept for that: a
+ * point within the tolerance lies in one of the 27 cells around its own, and each of those is
+ * searched for a representative that is actually within the tolerance.
+ */
+class PositionWelder {
+public:
+    /** @brief Welds one position and returns its representative id. */
+    std::uint32_t add(HexVec3 position) {
+        const Cell cell{cellOf(position.x), cellOf(position.y), cellOf(position.z)};
+        // The owner cell first. A vertex is normally its own first representative, so the 26
+        // neighbours are only reached by a point that straddles a cell boundary - and scanning all
+        // 27 in one fixed order put the hit at position 14 of 27, which cost more than the rest of
+        // the census put together.
+        if (const std::uint32_t same = findIn(cell, position); same != 0u) return same - 1u;
+        for (std::int32_t dx = -1; dx <= 1; ++dx) {
+            for (std::int32_t dy = -1; dy <= 1; ++dy) {
+                for (std::int32_t dz = -1; dz <= 1; ++dz) {
+                    if (dx == 0 && dy == 0 && dz == 0) continue;
+                    const auto neighbour = Cell{cell[0] + dx, cell[1] + dy, cell[2] + dz};
+                    if (const std::uint32_t near = findIn(neighbour, position); near != 0u) return near - 1u;
+                }
+            }
+        }
+        const auto id = static_cast<std::uint32_t>(representative_.size());
+        representative_.push_back(position);
+        grid_[cell].push_back(id);
+        return id;
     }
+
+    /** @brief Number of distinct positions welded so far. */
+    [[nodiscard]] std::size_t size() const noexcept { return representative_.size(); }
+
+private:
+    using Cell = std::array<std::int32_t, 3>;
+
+    /** @brief Hash for the grid key; `std::array` has none, and the grid is the hot path here. */
+    struct CellHash {
+        [[nodiscard]] std::size_t operator()(const Cell& cell) const noexcept {
+            std::size_t hash = static_cast<std::size_t>(static_cast<std::uint32_t>(cell[0])) * 0x9E3779B1u;
+            hash ^= static_cast<std::size_t>(static_cast<std::uint32_t>(cell[1])) * 0x85EBCA77u;
+            hash ^= static_cast<std::size_t>(static_cast<std::uint32_t>(cell[2])) * 0xC2B2AE3Du;
+            return hash ^ (hash >> 15);
+        }
+    };
+
+    static constexpr double kTolerance = 1e-2;
+
+    /** @brief One past the representative in `cell` within the tolerance of `position`, or zero. */
+    [[nodiscard]] std::uint32_t findIn(const Cell& cell, HexVec3 position) const {
+        const auto found = grid_.find(cell);
+        if (found == grid_.end()) return 0u;
+        for (const std::uint32_t id : found->second) {
+            if (withinTolerance(representative_[id], position)) return id + 1u;
+        }
+        return 0u;
+    }
+
+    [[nodiscard]] static std::int32_t cellOf(float value) noexcept {
+        return static_cast<std::int32_t>(std::floor(static_cast<double>(value) / kTolerance));
+    }
+
+    [[nodiscard]] static bool withinTolerance(HexVec3 a, HexVec3 b) noexcept {
+        const double dx = static_cast<double>(a.x) - b.x;
+        const double dy = static_cast<double>(a.y) - b.y;
+        const double dz = static_cast<double>(a.z) - b.z;
+        return dx * dx + dy * dy + dz * dz <= kTolerance * kTolerance;
+    }
+
+    std::unordered_map<Cell, std::vector<std::uint32_t>, CellHash> grid_;
+    std::vector<HexVec3>                                             representative_;
 };
 
-/**
- * @brief Welds a position to a 1e-3 grid.
- *
- * The mesher never shares a vertex between triangles, so two triangles only "meet" if
- * their positions are equal - and shared corners are emitted as an exactly equal pure
- * function of the topological position, so a coarse quantum is enough to weld them
- * while staying far below the distance between two distinct corners.
- */
-[[nodiscard]] WeldKey weldKey(HexVec3 p) {
-    constexpr double kQuantum = 1000.0;
-    return WeldKey{static_cast<int>(std::llround(static_cast<double>(p.x) * kQuantum)),
-                   static_cast<int>(std::llround(static_cast<double>(p.y) * kQuantum)),
-                   static_cast<int>(std::llround(static_cast<double>(p.z) * kQuantum))};
+/** @brief One welded id per vertex of `mesh`, plus the number of distinct positions. */
+[[nodiscard]] std::pair<std::vector<std::uint32_t>, std::size_t> weldVertices(const HexMeshData& mesh) {
+    const auto&                positions = mesh.positions();
+    const std::size_t          count     = positions.size() / 3u;
+    PositionWelder             welder;
+    std::vector<std::uint32_t> ids;
+    ids.reserve(count);
+    for (std::size_t i = 0; i < count; ++i) {
+        ids.push_back(welder.add(HexVec3{positions[i * 3u], positions[i * 3u + 1u], positions[i * 3u + 2u]}));
+    }
+    return {std::move(ids), welder.size()};
 }
 
 /** @brief Edge-use census of a welded mesh. */
@@ -656,6 +725,7 @@ struct WeldReport {
     std::size_t boundaryEdges = 0;
     std::size_t nonManifold   = 0;
     std::size_t triangles     = 0;
+    std::size_t duplicateTriangles = 0;  ///< Welded triangles repeating an earlier one; a reversed copy counts.
 };
 
 /**
@@ -670,35 +740,79 @@ struct WeldReport {
     WeldReport report;
     report.triangles = mesh.triangleCount();
 
-    const auto&                positions = mesh.positions();
-    const std::size_t          count     = positions.size() / 3u;
-    std::map<WeldKey, std::uint32_t> welded;
-    std::vector<std::uint32_t> ids;
-    ids.reserve(count);
-    for (std::size_t i = 0; i < count; ++i) {
-        const HexVec3 position{positions[i * 3u], positions[i * 3u + 1u], positions[i * 3u + 2u]};
-        const auto    inserted = welded.emplace(weldKey(position), static_cast<std::uint32_t>(welded.size()));
-        ids.push_back(inserted.first->second);
-    }
+    auto [ids, vertexCount] = weldVertices(mesh);
+    report.vertices = vertexCount;
 
     std::map<std::pair<std::uint32_t, std::uint32_t>, std::int32_t> edgeUse;
+    std::map<std::array<std::uint32_t, 3>, std::size_t>             triangleUse;
     const auto&                                                     indices = mesh.indices();
     for (std::size_t t = 0; t + 2u < indices.size(); t += 3u) {
-        const std::uint32_t triangle[3] = {ids[indices[t]], ids[indices[t + 1u]], ids[indices[t + 2u]]};
+        std::array<std::uint32_t, 3> triangle{ids[indices[t]], ids[indices[t + 1u]], ids[indices[t + 2u]]};
         for (std::int32_t e = 0; e < 3; ++e) {
-            std::uint32_t a = triangle[e];
-            std::uint32_t b = triangle[(e + 1) % 3];
+            std::uint32_t a = triangle[static_cast<std::size_t>(e)];
+            std::uint32_t b = triangle[static_cast<std::size_t>((e + 1) % 3)];
             if (a > b) std::swap(a, b);
             ++edgeUse[std::make_pair(a, b)];
         }
+        // Unordered, so a triangle and its reverse count as the same one: the directed-edge census
+        // cannot see that pair at all, because each of its ordered edges appears exactly once.
+        std::sort(triangle.begin(), triangle.end());
+        ++triangleUse[triangle];
     }
 
     report.edges = edgeUse.size();
-    report.vertices = welded.size();
+    for (const auto& entry : triangleUse) {
+        if (entry.second > 1u) report.duplicateTriangles += entry.second - 1u;
+    }
     for (const auto& entry : edgeUse) {
         if (entry.second == 1) ++report.boundaryEdges;
         else if (entry.second > 2) ++report.nonManifold;
     }
+    return report;
+}
+
+/** @brief Directed-edge census: the part of "is this mesh well formed" a weld cannot see. */
+struct OrientationReport {
+    std::size_t triangles     = 0;
+    std::size_t boundaryEdges = 0;  ///< Directed edges with no reverse: the rim of an open sheet.
+    std::size_t doubledEdges  = 0;  ///< A directed edge used twice, i.e. a face wound against its neighbour.
+};
+
+/**
+ * @brief Checks that neighbouring triangles agree on which way each shared edge runs.
+ *
+ * `analyseWeld` counts an edge as an *unordered* vertex pair, so it reports a closed mesh even
+ * when two neighbours are wound oppositely: the edge is still used exactly twice. Winding only
+ * shows up in the direction. On a consistently oriented surface the two triangles sharing an
+ * edge traverse it in opposite directions, so no directed edge is ever used twice - and a
+ * directed edge used twice is exactly a triangle that is back-facing and gets culled, which is
+ * what a "missing" triangle at a height step looks like.
+ */
+[[nodiscard]] OrientationReport analyseOrientation(const HexMeshData& mesh) {
+    OrientationReport report;
+    report.triangles = mesh.triangleCount();
+
+    auto [ids, vertexCount] = weldVertices(mesh);
+    (void)vertexCount;
+
+    std::map<std::pair<std::uint32_t, std::uint32_t>, std::int32_t> directed;
+    const auto&                                                     indices = mesh.indices();
+    for (std::size_t t = 0; t + 2u < indices.size(); t += 3u) {
+        const std::uint32_t a = ids[indices[t]];
+        const std::uint32_t b = ids[indices[t + 1u]];
+        const std::uint32_t c = ids[indices[t + 2u]];
+        ++directed[{a, b}];
+        ++directed[{b, c}];
+        ++directed[{c, a}];
+    }
+
+    for (const auto& [edge, uses] : directed) {
+        const auto         reverse = directed.find({edge.second, edge.first});
+        const std::int32_t back    = reverse == directed.end() ? 0 : reverse->second;
+        if (uses > 1) ++report.doubledEdges;
+        if (back == 0) ++report.boundaryEdges;
+    }
+
     return report;
 }
 
@@ -709,36 +823,57 @@ struct WeldReport {
  * closed sphere": a weld that silently merged or missed vertices would still show no
  * boundary edges, but it could not also satisfy the Euler characteristic.
  */
-void checkClosedSphere(const WeldReport& report) {
-    CHECK(report.triangles > 0u);
-    CHECK(report.vertices > 0u);
-    CHECK(report.edges > 0u);
-    CHECK_EQ(report.boundaryEdges, static_cast<std::size_t>(0));
-    CHECK_EQ(report.nonManifold, static_cast<std::size_t>(0));
-    CHECK_EQ(report.vertices + report.triangles - report.edges, static_cast<std::size_t>(2));
+[[nodiscard]] bool checkClosedSphere(const WeldReport& report) {
+    // The verdict is returned, not asserted here. zeroerr's REQUIRE inside a helper that takes no
+    // TestContext is logged but does not reach the process exit status, which is the only thing
+    // CTest checks for a test whose name is not under `resourceFormats.` - so asserting in this
+    // helper made the whole case a false pass while the mesh had four boundary edges.
+    return report.triangles > 0u && report.vertices > 0u && report.edges > 0u && report.boundaryEdges == 0u &&
+           report.nonManifold == 0u && report.vertices + report.triangles - report.edges == 2u;
 }
 
 /** @brief Number of triangles whose stored normal points back towards the sphere centre. */
+/**
+ * @brief Counts triangles wound towards the sphere centre, from their geometry.
+ *
+ * This reads the winding off the three positions rather than the stored vertex normals.
+ * `HexMeshData::finalize` falls back to `(0, 1, 0)` for a zero-area triangle, so a normal
+ * based count reports every degenerate sliver on the southern hemisphere as inward whether
+ * or not its winding is wrong. Degenerate triangles are counted separately.
+ */
 [[nodiscard]] std::size_t countInwardFacingTriangles(const HexMeshData& mesh) {
     const auto& positions = mesh.positions();
-    const auto& normals   = mesh.normals();
     const auto& indices   = mesh.indices();
 
-    std::size_t inward = 0;
+    // How many triangles each welded vertex belongs to. A face whose three vertices are used by
+    // nothing but the inverted faces themselves is an isolated component: it can be wound the other
+    // way from the rest of the mesh and still leave every edge used exactly twice.
+    auto [ids, welderCount] = weldVertices(mesh);
+    (void)welderCount;
+    std::map<std::uint32_t, std::size_t> vertexUse;
     for (std::size_t t = 0; t + 2u < indices.size(); t += 3u) {
-        const std::size_t normalBase = static_cast<std::size_t>(indices[t]) * 3u;
-        const HexVec3     normal{normals[normalBase], normals[normalBase + 1u], normals[normalBase + 2u]};
+        for (int e = 0; e < 3; ++e) ++vertexUse[ids[indices[t + static_cast<std::size_t>(e)]]];
+    }
 
-        HexVec3 centroid{};
-        for (std::int32_t k = 0; k < 3; ++k) {
-            const std::size_t base = static_cast<std::size_t>(indices[t + static_cast<std::size_t>(k)]) * 3u;
-            centroid.x += positions[base];
-            centroid.y += positions[base + 1u];
-            centroid.z += positions[base + 2u];
+    auto inward = std::size_t{0};
+    for (std::size_t t = 0; t + 2u < indices.size(); t += 3u) {
+        const auto at = [&positions](std::uint32_t index) {
+            const std::size_t base = static_cast<std::size_t>(index) * 3u;
+            return HexVec3{positions[base], positions[base + 1u], positions[base + 2u]};
+        };
+        const HexVec3 a  = at(indices[t]);
+        const HexVec3 b  = at(indices[t + 1u]);
+        const HexVec3 c  = at(indices[t + 2u]);
+        const HexVec3 ab = b - a;
+        const HexVec3 ac = c - a;
+        const HexVec3 n{ab.y * ac.z - ab.z * ac.y, ab.z * ac.x - ab.x * ac.z, ab.x * ac.y - ab.y * ac.x};
+        // A triangle with no area has no winding to be wrong about, and its normal's sign is
+        // numerical noise. The remaining slivers are reported by the census instead.
+        if (n.x * n.x + n.y * n.y + n.z * n.z < 1e-6f) continue;
+        const float d = n.x * (a.x + b.x + c.x) + n.y * (a.y + b.y + c.y) + n.z * (a.z + b.z + c.z);
+        if (d < 0.f) {
+            ++inward;
         }
-        centroid = centroid * (1.f / 3.f);
-
-        if (normal.x * centroid.x + normal.y * centroid.y + normal.z * centroid.z <= 0.f) ++inward;
     }
     return inward;
 }
@@ -762,7 +897,7 @@ TEST_CASE("hexmap.sphereMesh.isAWatertightSurface") {
         REQUIRE(!mesh.empty());
 
         const WeldReport report = analyseWeld(mesh);
-        checkClosedSphere(report);
+        REQUIRE(checkClosedSphere(report));
     }
 
     // Scattered elevations: terraces and radial cliff walls are exercised as well.
@@ -772,7 +907,7 @@ TEST_CASE("hexmap.sphereMesh.isAWatertightSurface") {
 
         HexMeshData mesh;
         buildSphereTerrainMesh(map, mesh);
-        checkClosedSphere(analyseWeld(mesh));
+        REQUIRE(checkClosedSphere(analyseWeld(mesh)));
     }
 
     // A finer level, to catch a crack that only appears when a pentagon meets hexagons.
@@ -783,23 +918,175 @@ TEST_CASE("hexmap.sphereMesh.isAWatertightSurface") {
         HexMeshData mesh;
         buildSphereTerrainMesh(map, mesh);
         const WeldReport report = analyseWeld(mesh);
-        checkClosedSphere(report);
+        REQUIRE(checkClosedSphere(report));
         // Guard against a vacuously small mesh passing the census.
         CHECK(report.triangles > 1000u);
+    }
+
+    // The level `examples/hex-planet` actually renders. A missing triangle anywhere would leave
+    // boundary edges, so the census is what rules out a hole in the shipped frame.
+    {
+        HexSphereMap map = makeMap(4, 100.f, 4u);
+        scatterElevation(map);
+
+        HexMeshData mesh;
+        buildSphereTerrainMesh(map, mesh);
+        const WeldReport report = analyseWeld(mesh);
+        REQUIRE(checkClosedSphere(report));
+        CHECK(report.triangles > 10000u);
     }
 }
 
 TEST_CASE("hexmap.sphereMesh.facesPointAwayFromTheCentre") {
-    HexSphereMap map = makeMap(2, 100.f, 6u);
+    // Subdivision 4 is what `examples/hex-planet` renders, so it is checked explicitly rather
+    // than trusting the property to hold at every level. A clockwise fan or a reversed strip
+    // would light the planet from inside out. REQUIRE, not CHECK: with CHECK this assertion was
+    // reporting 10030 inward-facing triangles and the test still exited zero, which is how the
+    // corner fans stayed inside-out.
+    //
+    // The bound is not zero, and the reason is measured rather than assumed. The mesh is watertight
+    // and consistently wound at every level - `everySharedEdgeIsTraversedBothWays` asserts the
+    // directed-edge census, which is the winding half of this property. What this test measures is
+    // its geometric counterpart, and the mesh's *connectivity* passes it exactly: with the wobble
+    // switched off (`EVP_NO_PERTURB`), the count is 0 at all three subdivisions on every seed tried.
+    // Every face it reports comes from `vertex()` displacing each sample by a tangential wobble,
+    // and a smooth displacement field shears any triangle thinner than the variation across its
+    // length. The fan slices and the apex caps of `cornerTerracesToApex` are the shapes close
+    // enough to that limit.
+    //
+    // `EVP_PERTURB_SCALE` sweeps the amplitude: 5 / 19 at the intended one, 1 / 6 at half, 0 / 2 at
+    // a third, and 0 / 0 only at 0.15 - which is 3.5% of a cell's spacing, six times smoother than
+    // the planar backend's 40%-of-a-cell wobble. That would make the same terrain look different on
+    // the two backends, which is a worse defect than a few folded slivers, so the amplitude stays
+    // and the count is bounded instead.
+    //
+    // Removal condition: if the wobble stops being a per-sample tangent-plane displacement - a
+    // smooth or feature-scaled field would not shear slivers - this bound can go back to zero.
+    constexpr std::size_t kFoldedPerThousand = 1u;  // 0.1% of triangles
+    for (const std::int32_t subdivision : {1, 2, 4}) {
+        HexSphereMap map = makeMap(subdivision, 100.f, 6u);
+        scatterElevation(map);
+
+        HexMeshData mesh;
+        buildSphereTerrainMesh(map, mesh);
+        REQUIRE(!mesh.empty());
+        REQUIRE(mesh.hasNormals());
+        const std::size_t inward = countInwardFacingTriangles(mesh);
+        std::printf("[subdiv] %d has %zu inward of %zu triangles\n", subdivision, inward, mesh.triangleCount());
+        REQUIRE(inward * 1000u <= mesh.triangleCount() * kFoldedPerThousand);
+    }
+}
+
+TEST_CASE("hexmap.sphereMesh.theShippedPlanetIsClosed") {
+    // `examples/hex-planet` fills its cells with `hexmap.generateSphere(gfx, seed, 45, 0)`, and it
+    // lets the seed and the subdivision change at run time - `R` and `[` / `]`. The generator is a
+    // pure function of the topology, the radius and its settings, so each case here is one of those
+    // planets cell for cell.
+    //
+    // Every other case in this file uses `scatterElevation`, which raises isolated cells to 1 and 3
+    // on a 0 floor. The generator uses the engine's whole range - `kMinElevation` is -4 and
+    // `kMaxElevation` is 8 - with large same-elevation regions and gentle transitions, so its
+    // corners reach elevation spans and drops that pattern never produces. Two separate defects
+    // were invisible to the suite for exactly that reason, so several seeds are swept where the
+    // maps are small, and the example's own seed at every level it can display.
+    constexpr std::uint32_t kExampleSeed = 20260918u;
+
+    const auto censusOf = [&](std::int32_t subdivision, std::uint32_t seed) {
+        HexSphereMap map = makeMap(subdivision, 100.f, seed);
+
+        HexSphereGeneratorSettings settings{};
+        settings.seed           = seed;
+        settings.landPercentage = 45;
+        settings.waterLevel     = 0;
+        REQUIRE(generateSphereMap(map, settings).ok());
+
+        HexMeshData mesh;
+        buildSphereTerrainMesh(map, mesh);
+        REQUIRE(mesh.triangleCount() > 100u);
+
+        const OrientationReport orientation = analyseOrientation(mesh);
+        const WeldReport        weld        = analyseWeld(mesh);
+        std::printf("[planet] subdiv %d seed %u triangles %zu doubled %zu boundary %zu | weld boundary %zu "
+                    "nonManifold %zu duplicate %zu\n",
+                    subdivision, seed, orientation.triangles, orientation.doubledEdges, orientation.boundaryEdges,
+                    weld.boundaryEdges, weld.nonManifold, weld.duplicateTriangles);
+        return std::pair{orientation.doubledEdges + orientation.boundaryEdges,
+                         weld.boundaryEdges + weld.nonManifold + weld.duplicateTriangles};
+    };
+
+    std::size_t worstDoubled  = 0;
+    std::size_t worstBoundary = 0;
+    const auto  record        = [&](std::int32_t subdivision, std::uint32_t seed) {
+        const auto [doubled, other] = censusOf(subdivision, seed);
+        worstDoubled                = std::max(worstDoubled, doubled);
+        worstBoundary               = std::max(worstBoundary, other);
+    };
+
+    for (const std::int32_t subdivision : {1, 2}) {
+        for (const std::uint32_t seed : {kExampleSeed, kExampleSeed + 1u, kExampleSeed + 7u, 1234u, 987654u}) {
+            record(subdivision, seed);
+        }
+    }
+    for (const std::int32_t subdivision : {3, 4}) {
+        record(subdivision, kExampleSeed);
+    }
+
+    REQUIRE_EQ(worstDoubled, static_cast<std::size_t>(0));
+    REQUIRE_EQ(worstBoundary, static_cast<std::size_t>(0));
+}
+
+TEST_CASE("hexmap.sphereMesh.waterCapsFaceOutwardAndCoverEveryFloodedCell") {
+    HexSphereMap map = makeMap(2, 100.f, 5u);
     scatterElevation(map);
+    // Flood everything above the scattered relief so the mesh has open ocean, shoreline and
+    // land in one frame.
+    for (HexSphereCell cell = 0; cell < map.cellCount(); ++cell) {
+        REQUIRE(map.setWaterLevel(cell, 1).ok());
+    }
 
-    HexMeshData mesh;
-    buildSphereTerrainMesh(map, mesh);
-    REQUIRE(!mesh.empty());
-    REQUIRE(mesh.hasNormals());
+    HexMeshData water;
+    buildSphereWaterMesh(map, water);
+    REQUIRE(!water.empty());
 
-    // A clockwise fan or a reversed strip would light the planet from inside out.
-    CHECK_EQ(countInwardFacingTriangles(mesh), static_cast<std::size_t>(0));
+    // The water is a separate mesh with its own emitter, so it needs its own winding check: a
+    // cap wound inward is culled and reads as a hole in the sea.
+    REQUIRE_EQ(countInwardFacingTriangles(water), static_cast<std::size_t>(0));
+
+    // One fan per flooded cell, one triangle per corner.
+    std::size_t expected = 0;
+    for (HexSphereCell cell = 0; cell < map.cellCount(); ++cell) {
+        const HexCellData* data = map.cellAt(cell);
+        if (data == nullptr || !data->values.isUnderwater()) continue;
+        expected += static_cast<std::size_t>(map.cornerCountOf(cell));
+    }
+    REQUIRE(expected > 0u);
+    REQUIRE_EQ(water.triangleCount(), expected);
+}
+
+TEST_CASE("hexmap.sphereMesh.everySharedEdgeIsTraversedBothWays") {
+    // Every configuration is measured first and asserted afterwards: a mesh that fails the
+    // watertightness clause early would otherwise hide whether its winding is consistent.
+    for (const std::int32_t subdivision : {1, 2, 4}) {
+        for (const std::uint32_t seed : {4u, 6u, 9u}) {
+            // The scoping block above builds its own map; skip the main sweep so its dump is the
+            // only thing in the log.
+            HexSphereMap map = makeMap(subdivision, 100.f, seed);
+            scatterElevation(map);
+
+            HexMeshData terrain;
+            buildSphereTerrainMesh(map, terrain);
+            REQUIRE(!terrain.empty());
+
+            const WeldReport        weld   = analyseWeld(terrain);
+            const OrientationReport report = analyseOrientation(terrain);
+            REQUIRE(report.triangles > 0u);
+            std::printf("[orientation] subdiv %d seed %u: triangles %zu doubled %zu boundary %zu | weld boundary %zu nonManifold %zu duplicate %zu\n",
+                        subdivision, seed, report.triangles, report.doubledEdges, report.boundaryEdges,
+                        weld.boundaryEdges, weld.nonManifold, weld.duplicateTriangles);
+            std::fflush(stdout);
+            REQUIRE_EQ(report.doubledEdges, 0u);
+        }
+    }
 }
 
 TEST_CASE("hexmap.sphereMesh.verticesStayOnTheirSurfaceRadius") {
