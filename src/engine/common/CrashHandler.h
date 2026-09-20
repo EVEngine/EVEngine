@@ -17,6 +17,7 @@
 #include "common/CrashLog.h"
 
 #include <cstdio>
+#include <cstdlib>
 #include <iomanip>
 #include <sstream>
 
@@ -63,8 +64,19 @@ inline LONG WINAPI crashHandler(EXCEPTION_POINTERS *ep) {
     return EXCEPTION_CONTINUE_SEARCH;
 }
 
-/** @brief Install the crash backtrace filter for this process. */
+/**
+ * @brief Install the crash backtrace filter and suppress Windows crash UI.
+ *
+ * Unattended `eve` / `unit_test` runs otherwise stall behind a modal
+ * "has stopped working" (or abort) dialog for every access violation.
+ */
 inline void installCrashHandler() {
+    SetErrorMode(SEM_FAILCRITICALERRORS | SEM_NOGPFAULTERRORBOX |
+                 SEM_NOOPENFILEERRORBOX);
+#if defined(_MSC_VER)
+    _set_error_mode(_OUT_TO_STDERR);
+    _set_abort_behavior(0, _WRITE_ABORT_MSG | _CALL_REPORTFAULT);
+#endif
     SetUnhandledExceptionFilter(&crashHandler);
 }
 
