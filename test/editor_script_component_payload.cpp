@@ -1,6 +1,10 @@
 #include "ScriptTest.h"
 
+#include "common/Capability.h"
 #include "common/ScriptComponentStore.h"
+#include "editor/Editor.h"
+#include "editor/EditorAutomationTargetFactory.h"
+#include "scene/editor/SceneEditorModule.h"
 #include "scene/editor/ScriptComponentPayloadProvider.h"
 
 #include "zeroerr/assert.h"
@@ -117,4 +121,66 @@ TEST_CASE_FIXTURE(ScriptComponentPayloadTest, "editor.scene.script_component_pay
     auto stale = registry.validatePayload(reference);
     CHECK(!stale.ok());
     CHECK_EQ(static_cast<int>(stale.code()), static_cast<int>(EditorStatus::Conflict));
+}
+
+/**
+ * 生产接线：自动化创建的编辑器目标 id 是**调用方选的**（不等于宿主名），所以"目标 id → 宿主名"
+ * 的映射由创建目标的模块（`SceneEditorModule`）注入。这条用例走的就是那条路：
+ * `SceneEditorModule` 创建 `scene-host` 目标 → 目标上查组件 payload 能力 → 注册表里的脚本组件
+ * 提供方按映射（`scene-live` → 宿主 `editorprobe`）列出组件并读到值。
+ */
+TEST_CASE_FIXTURE(ScriptComponentPayloadTest, "editor.scene.script_component_payload_is_wired_by_the_editor_module") {
+    REQUIRE(callScript("buildInspectorScene"));
+
+    // 场景编辑模块的构造要求命令注册表已经在位（它把自己的编辑命令注册进去）。
+    eve::editor::Editor editor;
+
+    auto* module = eve::scene_editor::SceneEditorModule::create();
+    REQUIRE(module != nullptr);
+
+    eve::editor::IEditorAutomationTargetFactory* factory = nullptr;
+    const bool handled = eve::cap::forEachUntil<eve::editor::IEditorAutomationTargetFactory>(
+        [&](eve::editor::IEditorAutomationTargetFactory* candidate) {
+            if (!candidate->supports("scene-host")) return false;
+            factory = candidate;
+            return true;
+        });
+    REQUIRE(handled);
+    REQUIRE(factory != nullptr);
+
+    eve::editor::EditorValue::Object request;
+    request.emplace("host", eve::editor::EditorValue(std::string("editorprobe")));
+    auto created = factory->create(eve::editing::TargetId("scene-live"), "scene-host", request);
+    REQUIRE(created.ok());
+    REQUIRE(created.value().target != nullptr);
+
+    auto* payloads = static_cast<ISceneComponentPayloadTarget*>(
+        created.value().target->queryCapability(ISceneComponentPayloadTarget::editorCapabilityId()));
+    REQUIRE(payloads != nullptr);
+
+    // 目标 id 是 `scene-live`，宿主是 `editorprobe`：只有注入的映射能把它们连起来。
+    auto references =
+        payloads->componentPayloads(eve::editing::TargetId("scene-live"), eve::editing::ObjectId("probe"));
+    REQUIRE(references.ok());
+    REQUIRE_EQ(references.value().size(), std::size_t{1});
+    CHECK_EQ(references.value().front().component.value(), std::string("probe|InspectProbe@1"));
+
+    auto selection = makeSceneComponentSelection("inspector", references.value(), 7);
+    REQUIRE(selection.ok());
+    auto properties = payloads->propertyProvider(selection.value());
+    REQUIRE(properties.ok());
+    const PropertyReadResult x = properties.value()->read(selection.value(), PropertyPath("x"));
+    REQUIRE(x.value.getIf<double>() != nullptr);
+    CHECK_EQ(*x.value.getIf<double>(), 42.0);
+
+    // 文档目标（`scene`）没有活宿主：同一个提供方给空表，而不是报错或串到别的宿主。
+    auto documentTarget = factory->create(eve::editing::TargetId("scene-doc"), "scene", {});
+    REQUIRE(documentTarget.ok());
+    auto* documentPayloads = static_cast<ISceneComponentPayloadTarget*>(
+        documentTarget.value().target->queryCapability(ISceneComponentPayloadTarget::editorCapabilityId()));
+    REQUIRE(documentPayloads != nullptr);
+    auto none =
+        documentPayloads->componentPayloads(eve::editing::TargetId("scene-doc"), eve::editing::ObjectId("probe"));
+    REQUIRE(none.ok());
+    CHECK(none.value().empty());
 }

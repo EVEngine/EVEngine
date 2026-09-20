@@ -8,6 +8,7 @@
 #include "common/ScriptComponentSnapshot.h"
 #include "scene/editing/SceneComponentPayload.h"
 
+#include <functional>
 #include <string>
 #include <vector>
 
@@ -34,6 +35,22 @@ namespace eve::scene_editor {
  */
 class ScriptComponentPayloadProvider final : public scene_editing::ISceneComponentPayloadProvider {
 public:
+    /**
+     * @brief 编辑器目标 id → 场景**宿主名**。
+     *
+     * 自动化创建的编辑器目标 id 是**调用方选的**（`eve_editor_target_create` 的 `target` 字段），不
+     * 等于宿主名；宿主名是创建那个目标时才知道的事实（`scene-host` 目标的 `host` 请求字段）。
+     * 所以这条映射由创建目标的模块注入（`SceneEditorModule`），提供方不猜。
+     */
+    using HostResolver = std::function<std::string(const scene_editing::TargetId&)>;
+
+    /**
+     * @brief 构造。
+     * @param resolver 目标 id → 宿主名；**空**表示"目标 id 本身就是宿主名"（测试与简单嵌入用）。
+     * @ownership 回调归调用方所有，必须在提供方存活期间保持可调用（不捕获即将销毁的对象）。
+     */
+    explicit ScriptComponentPayloadProvider(HostResolver resolver = {});
+
     /** @brief 稳定组件类型槽：所有脚本组件共用。 */
     static const std::string& payloadType();
 
@@ -75,6 +92,11 @@ private:
     /** 选中项解析成一个组件实例的状态；解析不出来时返回失败（编辑器据此显示"引用过期"）。 */
     [[nodiscard]] eve::Result<std::vector<eve::ScriptComponentInstanceState>> resolve(
         const scene_editing::SelectionSnapshot& selection) const;
+
+    /** 目标 id → 宿主名（空 resolver 时就是目标 id 本身）。 */
+    [[nodiscard]] std::string hostNameOf(const scene_editing::TargetId& target) const;
+
+    HostResolver resolver_;
 };
 
 }  // namespace eve::scene_editor

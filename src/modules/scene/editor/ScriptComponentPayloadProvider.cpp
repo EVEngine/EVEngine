@@ -97,6 +97,17 @@ const std::string& ScriptComponentPayloadProvider::payloadType() {
     return type;
 }
 
+ScriptComponentPayloadProvider::ScriptComponentPayloadProvider(HostResolver resolver)
+    : resolver_(std::move(resolver)) {}
+
+std::string ScriptComponentPayloadProvider::hostNameOf(const scene_editing::TargetId& target) const {
+    if (resolver_) {
+        std::string resolved = resolver_(target);
+        if (!resolved.empty()) return resolved;
+    }
+    return target.value();
+}
+
 const std::string& ScriptComponentPayloadProvider::componentType() const { return payloadType(); }
 
 std::vector<SceneComponentPayloadRef> ScriptComponentPayloadProvider::components(const TargetId& scene,
@@ -106,7 +117,8 @@ std::vector<SceneComponentPayloadRef> ScriptComponentPayloadProvider::components
     scene::Scene* sceneModule = scene::Scene::create();
     if (sceneModule == nullptr) return out;
 
-    for (const ssq::Object& instance : sceneModule->scriptEntitiesAt(scene.value(), object.value())) {
+    const std::string host = hostNameOf(scene);
+    for (const ssq::Object& instance : sceneModule->scriptEntitiesAt(host, object.value())) {
         auto states = scriptComponentInstancesOf(instance);
         if (!states.ok()) continue;
         for (const ScriptComponentInstanceState& state : states.value()) {
@@ -146,7 +158,7 @@ std::vector<scene_editing::EditorDiagnostic> ScriptComponentPayloadProvider::val
                                              RuleId("editor.scene.script-component.no-scene"),
                                              DiagnosticSeverity::Error, "Scene module is not available")};
 
-    for (const ssq::Object& instance : sceneModule->scriptEntitiesAt(component.target.value(), nodeId)) {
+    for (const ssq::Object& instance : sceneModule->scriptEntitiesAt(hostNameOf(component.target), nodeId)) {
         auto states = scriptComponentInstancesOf(instance);
         if (!states.ok()) continue;
         for (const ScriptComponentInstanceState& state : states.value()) {
@@ -232,7 +244,7 @@ Result<std::vector<ScriptComponentInstanceState>> ScriptComponentPayloadProvider
     if (sceneModule == nullptr)
         return resolutionFailure(eve::DiagnosticCode::Failed, "scene module is not available", item.target.value());
 
-    for (const ssq::Object& instance : sceneModule->scriptEntitiesAt(item.target.value(), nodeId)) {
+    for (const ssq::Object& instance : sceneModule->scriptEntitiesAt(hostNameOf(item.target), nodeId)) {
         auto states = scriptComponentInstancesOf(instance);
         if (!states.ok()) continue;
         for (const ScriptComponentInstanceState& state : states.value()) {
