@@ -4,10 +4,25 @@
 
 #include <simplesquirrel/simplesquirrel.hpp>
 
+// clang-format off
+// Squirrel internals: recovering a component schema's *declaration order* needs the class
+// member table and the field-index encoding (`_isfield` / `_member_idx`), which the public
+// API cannot express (it only exposes the hash-ordered member iteration of §10.17).
+// The order is load-bearing -- `sqpcheader.h` must come first and clang-format would sort
+// `sqclass.h` ahead of it -- and these have to follow `<simplesquirrel/simplesquirrel.hpp>`,
+// which brings in the public Squirrel types.
+#include "sqpcheader.h"
+#include "sqstring.h"
+#include "sqtable.h"
+#include "sqclass.h"
+// clang-format on
+
+#include <algorithm>
 #include <cstdio>
 #include <cstring>
 #include <string>
 #include <unordered_map>
+#include <utility>
 #include <vector>
 
 namespace eve {
@@ -21,8 +36,11 @@ struct ScriptComponentEntry {
     HSQUIRRELVM vm = nullptr;
     HSQOBJECT   cls;
     Generation  generation;
+    /** 声明顺序的字段名：schema，也是第 2 步摘字段槽位时的清单。 */
+    std::vector<std::string> fields;
     ScriptComponentEntry() { sq_resetobject(&cls); }
-    ScriptComponentEntry(HSQUIRRELVM v, HSQOBJECT o, Generation g) : vm(v), cls(o), generation(g) {}
+    ScriptComponentEntry(HSQUIRRELVM v, HSQOBJECT o, Generation g, std::vector<std::string> f)
+        : vm(v), cls(o), generation(g), fields(std::move(f)) {}
 };
 
 /** Keyed by (name, version) rather than by class object: hot reload replaces the class
@@ -120,6 +138,42 @@ void collectClassFields(HSQUIRRELVM vm, HSQOBJECT clsObj, HSQOBJECT outTable) {
         sq_pop(vm, 2);  // key, value
     }
     sq_settop(vm, top);
+}
+
+/**
+ * @brief 类声明的**实例字段**名，按声明顺序。
+ *
+ * 不用 `sq_next` 遍历取值：那是成员表的哈希顺序，增删一个字段就会让无关字段换位置（§10.17）。
+ * Squirrel 内部把字段序号编进 `_members` 的值（`_isfield` / `_member_idx`），而 `_defaultvalues`
+ * 是按声明顺序追加的，因此"按字段序号排序"就还原了声明顺序。方法成员带的是方法序号，被
+ * `_isfield` 过滤掉；`_` 前缀的成员（`_get`/`_set`/构造器等）不算字段。
+ *
+ * @remarks **不需要**沿基类链递归：Squirrel 建立派生类时会把基类的成员一并放进派生类自己的
+ *          `_members`（实测 `class EnemyStats extends BaseStats` 会同时列出 `hp` 与 `speed`），
+ *          递归反而会把基类字段重复计一次。
+ */
+std::vector<std::string> declaredInstanceFields(HSQOBJECT clsObj) {
+    std::vector<std::pair<SQInteger, std::string>> ordered;
+    SQClass*                                       klass = _class(clsObj);
+    if (klass == nullptr || klass->_members == nullptr) return {};
+
+    SQObjectPtr key;
+    SQObjectPtr value;
+    SQObjectPtr refpos;  // `Next` 的游标是它自己返回的整数下标，不是 key（传 key 会命中 TranslateIndex 的断言）
+    SQInteger   index = 0;
+    while ((index = klass->_members->Next(false, refpos, key, value)) != -1) {
+        refpos = SQObjectPtr(index);
+        if (sq_type(key) != OT_STRING || !_isfield(value)) continue;
+        const SQChar* name = _stringval(key);
+        if (name == nullptr || name[0] == '_') continue;
+        ordered.emplace_back(static_cast<SQInteger>(_member_idx(value)), std::string(name));
+    }
+    std::sort(ordered.begin(), ordered.end(), [](const auto& a, const auto& b) { return a.first < b.first; });
+
+    std::vector<std::string> out;
+    out.reserve(ordered.size());
+    for (auto& entry : ordered) out.push_back(std::move(entry.second));
+    return out;
 }
 
 ssq::Table inspectClassFields(ssq::Object clsObj) {
@@ -920,19 +974,24 @@ Result<void> registerScriptComponent(const std::string& name, SchemaVersion vers
     HSQOBJECT   o  = cls.getRaw();
     sq_addref(vm, &o);
 
+    // 登记时读出这一代声明的字段（按声明顺序）：它既是组件的 schema，也是第 2 步"取走字段槽位、
+    // 让引擎成为权威存储"要用的清单——必须先读出来，才能安全地摘掉。
+    const std::vector<std::string> fields = declaredInstanceFields(o);
+
     auto&      current = currentScriptComponents();
     const auto key     = ScriptComponentKey{name, version.value()};
     auto       found   = current.find(key);
     if (found == current.end()) {
-        current.emplace(key, ScriptComponentEntry(vm, o, Generation(1)));
+        current.emplace(key, ScriptComponentEntry(vm, o, Generation(1), fields));
         return Result<void>::success(Status::success(StatusCode::Applied));
     }
 
     // Same name and version again: hot reload redefined the class. Record the retired
     // generation (metadata only) and advance the counter, so a caller can tell that the
-    // identity it holds refers to an older generation of the same component.
+    // identity it holds refers to an older generation of the same component. The retired
+    // row keeps the *previous* field list: migration needs to know which fields it moves.
     const Generation previous = found->second.generation;
-    retiredScriptComponents().push_back(ScriptComponentRecord{name, version, previous, true});
+    retiredScriptComponents().push_back(ScriptComponentRecord{name, version, previous, true, found->second.fields});
     const auto next = previous.incremented();
     if (!next)
         return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvariantViolation,
@@ -942,7 +1001,7 @@ Result<void> registerScriptComponent(const std::string& name, SchemaVersion vers
     // not be released, because that VM may already be destroyed and sq_release() would
     // dereference its freed RefTable (measured access violation, plan doc §9.49).
     if (found->second.vm == vm) sq_release(found->second.vm, &found->second.cls);
-    found->second = ScriptComponentEntry(vm, o, *next);
+    found->second = ScriptComponentEntry(vm, o, *next, fields);
     return Result<void>::success(Status::success(StatusCode::Applied));
 }
 
@@ -951,7 +1010,7 @@ const ScriptComponentRecord* findScriptComponent(const std::string& name, Schema
     const auto&                  current = currentScriptComponents();
     const auto                   found   = current.find(ScriptComponentKey{name, version.value()});
     if (found == current.end()) return nullptr;
-    scratch = ScriptComponentRecord{found->first.first, version, found->second.generation, false};
+    scratch = ScriptComponentRecord{found->first.first, version, found->second.generation, false, found->second.fields};
     return &scratch;
 }
 
@@ -959,7 +1018,8 @@ std::vector<ScriptComponentRecord> scriptComponentRecords() {
     std::vector<ScriptComponentRecord> out;
     out.reserve(currentScriptComponents().size() + retiredScriptComponents().size());
     for (const auto& [key, entry] : currentScriptComponents())
-        out.push_back(ScriptComponentRecord{key.first, SchemaVersion(key.second), entry.generation, false});
+        out.push_back(
+            ScriptComponentRecord{key.first, SchemaVersion(key.second), entry.generation, false, entry.fields});
     for (const ScriptComponentRecord& retired : retiredScriptComponents()) out.push_back(retired);
     std::sort(out.begin(), out.end(), [](const ScriptComponentRecord& a, const ScriptComponentRecord& b) {
         if (a.name != b.name) return a.name < b.name;

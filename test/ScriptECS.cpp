@@ -749,6 +749,34 @@ function registerWithBadArguments() {
     local notAClass = eve.component("NotAClass", 1, 42)
     return emptyName.ok || zeroVersion.ok || notAClass.ok
 }
+
+// 声明顺序 ≠ 成员表遍历顺序（§10.17 实测是哈希顺序），所以这条用例用一组刻意乱序的字段名。
+class Inventory extends eve.Component {
+    zeta = 1.0
+    alpha = 2.0
+    mid = 3.0
+    beta = 4.0
+    omega = 5.0
+}
+
+// 继承：基类字段在前。
+class BaseStats extends eve.Component { hp = 0.0 }
+class EnemyStats extends BaseStats { speed = 0.0 }
+
+function registerSchemaCases() {
+    local ordered = eve.component("Inventory", 1, Inventory).ok
+    local derived = eve.component("EnemyStats", 1, EnemyStats).ok
+    return ordered && derived
+}
+
+// 同名同版本换了一代，且字段集变了：墓碑要留住旧代的字段列表，迁移才知道搬什么。
+function registerReshapedGeneration() {
+    class Reshaped extends eve.Component { x = 0.0 }
+    local first = eve.component("Reshaped", 1, Reshaped).ok
+    class Reshaped2 extends eve.Component { x = 0.0; y = 0.0 }
+    local second = eve.component("Reshaped", 1, Reshaped2).ok
+    return first && second
+}
 )SQ";
 
 UnitSciptTest(ComponentIdentityTest, kComponentIdentityScript);
@@ -815,6 +843,38 @@ TEST_CASE_FIXTURE(ComponentIdentityTest, "ScriptECS.componentRegistrationReports
     REQUIRE(eve::findScriptComponent("Zero", eve::SchemaVersion(0)) == nullptr);
     REQUIRE(eve::findScriptComponent("NotAClass", eve::SchemaVersion(1)) == nullptr);
     REQUIRE(eve::scriptComponentRecords().empty());
+}
+
+TEST_CASE_FIXTURE(ComponentIdentityTest, "ScriptECS.componentSchemaKeepsDeclarationOrder") {
+    REQUIRE(callScript("registerSchemaCases"));
+
+    // 声明是 zeta, alpha, mid, beta, omega；成员表遍历是哈希顺序（§10.17），两者不同。
+    const auto* inventory = eve::findScriptComponent("Inventory", eve::SchemaVersion(1));
+    REQUIRE(inventory != nullptr);
+    const std::vector<std::string> expected{"zeta", "alpha", "mid", "beta", "omega"};
+    REQUIRE_EQ(inventory->fields, expected);
+
+    // 基类字段在前，自身字段在后。
+    const auto* enemy = eve::findScriptComponent("EnemyStats", eve::SchemaVersion(1));
+    REQUIRE(enemy != nullptr);
+    const std::vector<std::string> expectedDerived{"hp", "speed"};
+    REQUIRE_EQ(enemy->fields, expectedDerived);
+}
+
+TEST_CASE_FIXTURE(ComponentIdentityTest, "ScriptECS.componentRetiredGenerationKeepsItsOwnFields") {
+    REQUIRE(callScript("registerReshapedGeneration"));
+
+    // 当前代是 {x, y}，墓碑代是 {x}：迁移要按这两组字段对照着搬。
+    const auto* current = eve::findScriptComponent("Reshaped", eve::SchemaVersion(1));
+    REQUIRE(current != nullptr);
+    const std::vector<std::string> expectedCurrent{"x", "y"};
+    REQUIRE_EQ(current->fields, expectedCurrent);
+
+    const auto all = eve::scriptComponentRecords();
+    REQUIRE_EQ(all.size(), std::size_t(2));
+    REQUIRE(all[0].retired);
+    const std::vector<std::string> expectedRetired{"x"};
+    REQUIRE_EQ(all[0].fields, expectedRetired);
 }
 
 TEST_CASE("ScriptECS.componentRegistryIsPerVm") {

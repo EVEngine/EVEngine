@@ -46,6 +46,16 @@ struct ScriptComponentRecord {
     Generation generation;
     /** @brief 该代已被同名同版本的新代替换（墓碑），只留作可观测与迁移用。 */
     bool retired = false;
+    /**
+     * @brief 该代声明的字段名，**按声明顺序**（基类字段在前）。
+     *
+     * 顺序是声明顺序而不是成员表的遍历顺序：`_members` 给的是槽位号、`_defaultvalues` 按声明
+     * 追加，所以两者合起来能还原声明顺序（见 §10.17）。schema 相关消费者需要它稳定——增删
+     * 字段不该让无关字段换位置。
+     *
+     * @remarks 墓碑记录保留**旧代**的字段列表，迁移要知道"从哪一组字段搬到哪一组"。
+     */
+    std::vector<std::string> fields;
 };
 
 /**
