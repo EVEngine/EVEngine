@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include <string>
 #include <glm/mat4x4.hpp>
@@ -24,7 +26,7 @@ class Texture;
  * Pipeline: compute(depth) → optional blur(ao) → applyOverlay(ao) over scene.
  * Depth input matches Volumetric::newLinearDepthTexture (R = linear 0..1).
  */
-class AmbientOcclusion {
+class EVENGINE_API_BACKENDS AmbientOcclusion {
 public:
     explicit AmbientOcclusion(Graphics *gfx);
     ~AmbientOcclusion();

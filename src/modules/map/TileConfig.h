@@ -31,7 +31,7 @@ struct RpgMakerImportReceipt {
 bool applyConfigDocument(TileLayer *layer, data::JsonDocument *doc);
 
 /** @brief Parse JSON text and apply onto one layer. */
-bool applyConfigText(TileLayer *layer, const std::string &json, std::string *error = nullptr);
+EVENGINE_API_WORLD bool applyConfigText(TileLayer *layer, const std::string &json, std::string *error = nullptr);
 
 /**
  * @brief Read path via Filesystem, apply onto layer, bind Resource.path + modtime for hot reload.
@@ -54,8 +54,8 @@ bool loadTilesetManifestFile(TileLayer *layer, const std::string &path,
  * Optionally fills `objects` from objectgroup layers.
  * Returns created layers (empty on failure). All share the same Resource.path for reload.
  */
-std::vector<TileLayer *> loadMapFile(const std::string &path, std::string *error = nullptr);
-std::vector<TileLayer *> loadMapFile(const std::string &path, std::vector<MapObject> *objects,
+EVENGINE_API_WORLD std::vector<TileLayer *> loadMapFile(const std::string &path, std::string *error = nullptr);
+EVENGINE_API_WORLD std::vector<TileLayer *> loadMapFile(const std::string &path, std::vector<MapObject> *objects,
                                      std::string *error = nullptr);
 
 /** @brief Parse map JSON text (no filesystem). Same semantics as loadMapFile. */
@@ -67,11 +67,11 @@ EVENGINE_API_WORLD std::vector<TileLayer *> loadMapText(const std::string &json,
  * @ownership Returned layer entities are owned by the ECS world, as with loadMapFile.
  * @thread Main-thread affine and non-reentrant.
  */
-[[nodiscard]] eve::Result<RpgMakerImportReceipt> importRpgMakerMap(const std::string &mapPath,
+[[nodiscard]] EVENGINE_API_WORLD eve::Result<RpgMakerImportReceipt> importRpgMakerMap(const std::string &mapPath,
                                                                    const std::string &tilesetsPath,
                                                                    const std::string &sourceEngine = "RPG Maker MV/MZ");
 
 /** @brief Decodes one MV/MZ tile id into normal or quarter-tile atlas projections. */
-[[nodiscard]] TileLayer::Tileset::Visual decodeRpgMakerTileVisual(int tileId);
+[[nodiscard]] EVENGINE_API_WORLD TileLayer::Tileset::Visual decodeRpgMakerTileVisual(int tileId);
 
 }  // namespace eve::map

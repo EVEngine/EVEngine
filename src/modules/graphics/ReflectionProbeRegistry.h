@@ -11,7 +11,7 @@ class Camera3D;
 class ReflectionProbeCapture;
 
 /** @brief Scene-level stable selection of published reflection probes for a camera. */
-class ReflectionProbeRegistry {
+class EVENGINE_API_BACKENDS ReflectionProbeRegistry {
 public:
     /** @brief Detach all probes before script-owned destruction. */
     ~ReflectionProbeRegistry();

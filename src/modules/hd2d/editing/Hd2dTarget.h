@@ -56,7 +56,7 @@ struct Hd2dAssetValue {
     std::array<float, 4> wallUv{0, 0, .05f, .05f};
 };
 /** @brief Revisioned HD-2D sprite/tilemap presentation asset. */
-class Hd2dDocumentTarget final : public virtual IEditableTarget,
+class EVENGINE_API_ORCHESTRATION Hd2dDocumentTarget final : public virtual IEditableTarget,
                                  public IDomainOperationTarget,
                                  public IDomainOperationTargetStaging,
                                  public IPropertyProvider {
@@ -102,7 +102,7 @@ struct Hd2dFramePreview {
     std::array<float, 4> uv{0, 0, 1, 1};
 };
 /** @brief Pure sprite animation scrub evaluator. */
-class Hd2dFramePreviewService {
+class EVENGINE_API_ORCHESTRATION Hd2dFramePreviewService {
 public:
     EditorResult<Hd2dFramePreview> evaluate(const Hd2dDocumentTarget&, float time) const;
 };
@@ -113,7 +113,7 @@ public:
     virtual EditorResult<graphics::Texture*> texture(const std::string&) const = 0;
 };
 /** @brief Candidate-first live Sprite3D/TileMap3D preset publication. */
-class Hd2dDocumentRuntime {
+class EVENGINE_API_ORCHESTRATION Hd2dDocumentRuntime {
 public:
     Hd2dDocumentRuntime();
     ~Hd2dDocumentRuntime();

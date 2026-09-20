@@ -26,7 +26,7 @@ using EditorStatus=editing::Status; using EditorValue=editing::Value; using Edit
 using EditorGizmoSnapshot=editing::GizmoSnapshot; using EditorGizmoPrimitive=editing::GizmoPrimitive;
 
 /** @brief Stable, serializable authoring document for one projected decal. */
-class DecalDocumentTarget final : public virtual IEditableTarget,
+class EVENGINE_API_DOMAINS DecalDocumentTarget final : public virtual IEditableTarget,
                                   public IDomainOperationTarget,
                                   public IDomainOperationTargetStaging,
                                   public IPropertyProvider {
@@ -82,7 +82,7 @@ public:
 };
 
 /** @brief Candidate-first binding from one stable decal document to DecalManager. */
-class DecalRuntimeBinding final : public IDecalRuntimeSink {
+class EVENGINE_API_DOMAINS DecalRuntimeBinding final : public IDecalRuntimeSink {
 public:
     DecalRuntimeBinding(decal::DecalManager* manager, const IDecalRuntimeAssetResolver* assets)
         : manager_(manager), assets_(assets) {}
@@ -98,7 +98,7 @@ private:
 };
 
 /** @brief Candidate-first operation target synchronizing author state and a live decal. */
-class DecalPublishingTarget final : public IDomainOperationTarget,
+class EVENGINE_API_DOMAINS DecalPublishingTarget final : public IDomainOperationTarget,
                                     public IDomainOperationTargetStaging {
 public:
     DecalPublishingTarget(std::string id, IDecalRuntimeSink* sink)
@@ -119,7 +119,7 @@ private:
 };
 
 /** @brief Builds projection-box and normal overlays for decal placement tools. */
-class DecalGizmoPreviewService {
+class EVENGINE_API_DOMAINS DecalGizmoPreviewService {
 public:
     /** @brief Create a revision-bound projection volume and direction arrow. */
     EditorGizmoSnapshot build(const DecalDocumentTarget& document) const;

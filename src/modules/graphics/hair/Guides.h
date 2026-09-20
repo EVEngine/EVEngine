@@ -42,7 +42,7 @@ struct StrandGuideWeights {
  *
  * @ownership Returned datas uniquely owned by the caller.
  */
-[[nodiscard]] Result<StrandsDatas> extractGuides(const StrandsDatas &strands, float guideFraction);
+[[nodiscard]] EVENGINE_API_BACKENDS Result<StrandsDatas> extractGuides(const StrandsDatas &strands, float guideFraction);
 
 /**
  * @brief Build k-nearest guide weights for every render strand (by root distance).
@@ -53,7 +53,7 @@ struct StrandGuideWeights {
  * @param maxInfluences Clamped to [1, StrandGuideWeights::kMaxInfluences].
  */
 [[nodiscard]] Result<std::vector<StrandGuideWeights>>
-buildGuideWeights(const StrandsDatas &strands, const StrandsDatas &guides, int maxInfluences = 3,
+EVENGINE_API_BACKENDS buildGuideWeights(const StrandsDatas &strands, const StrandsDatas &guides, int maxInfluences = 3,
                   InterpolationMode mode = InterpolationMode::Offset);
 
 /**
@@ -61,7 +61,7 @@ buildGuideWeights(const StrandsDatas &strands, const StrandsDatas &guides, int m
  * @ownership Returned datas uniquely owned by the caller; inputs unchanged.
  */
 [[nodiscard]] Result<StrandsDatas>
-interpolateStrands(const StrandsDatas &strandsRest, const StrandsDatas &guidesRest,
+EVENGINE_API_BACKENDS interpolateStrands(const StrandsDatas &strandsRest, const StrandsDatas &guidesRest,
                    const StrandsDatas &guidesDeformed,
                    const std::vector<StrandGuideWeights> &weights, InterpolationMode mode);
 

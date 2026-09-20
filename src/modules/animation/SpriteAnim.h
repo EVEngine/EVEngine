@@ -23,7 +23,7 @@ class SpriteSheet;
  * sheet cell. Register with Animation for module-level `anim.advance(step)`.
  * Script type: `SpriteAnim`.
  */
-class SpriteAnim {
+class EVENGINE_API_WORLD SpriteAnim {
 public:
     SpriteAnim();
     ~SpriteAnim();

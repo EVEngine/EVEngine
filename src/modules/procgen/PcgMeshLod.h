@@ -93,7 +93,7 @@ struct PcgMeshLodLevel {
  * affinity and callers must serialize mutation. Level transitions must be strictly
  * descending when compiled.
  */
-class PcgMeshLodProfile {
+class EVENGINE_API_DOMAINS PcgMeshLodProfile {
 public:
     /** @brief Append one level after validating its scalar ranges. */
     [[nodiscard]] Result<void> appendLevel(float transitionHeight, float fadeWidth, float quality,
@@ -140,7 +140,7 @@ private:
  * `LODGenerator.CreateLevelRenderer`; levels are not simplified sequentially. The set
  * owns all CPU meshes and values and is safe to move. Callers serialize access.
  */
-class PcgMeshLodSet {
+class EVENGINE_API_DOMAINS PcgMeshLodSet {
 public:
     /** @brief Return the number of complete generated levels. */
     [[nodiscard]] int getLevelCount() const noexcept { return static_cast<int>(meshes_.size()); }
@@ -167,7 +167,7 @@ public:
     /** @brief Return injected-time transition duration. */
     [[nodiscard]] float getCrossFadeAnimationDuration() const noexcept { return crossFadeAnimationDuration_; }
 private:
-    friend Result<void> buildPcgMeshLodsInto(PcgMeshLodSet&, const MeshBuild&, const PcgMeshLodProfile&);
+    friend EVENGINE_API_DOMAINS Result<void> buildPcgMeshLodsInto(PcgMeshLodSet&, const MeshBuild&, const PcgMeshLodProfile&);
     std::vector<PcgMeshLodLevel> levels_;
     std::vector<MeshBuild> meshes_;
     int fadeMode_ = 0;
@@ -183,7 +183,7 @@ private:
  * @return Success or a structured diagnostic without changing output.
  * @thread Synchronous CPU operation; no callbacks or borrowed references are retained.
  */
-[[nodiscard]] Result<void> buildPcgMeshLodsInto(PcgMeshLodSet& output, const MeshBuild& source,
+[[nodiscard]] EVENGINE_API_DOMAINS Result<void> buildPcgMeshLodsInto(PcgMeshLodSet& output, const MeshBuild& source,
                                                  const PcgMeshLodProfile& profile);
 
 /**
@@ -194,7 +194,7 @@ private:
  * @return Success or a structured diagnostic without changing output.
  * @thread Synchronous CPU operation; no callbacks or borrowed references are retained.
  */
-[[nodiscard]] Result<void> buildPcgCombinedMeshLodsInto(PcgMeshLodSet& output,
+[[nodiscard]] EVENGINE_API_DOMAINS Result<void> buildPcgCombinedMeshLodsInto(PcgMeshLodSet& output,
                                                          const PcgMeshCombinePlan& plan,
                                                          const PcgMeshLodProfile& profile);
 

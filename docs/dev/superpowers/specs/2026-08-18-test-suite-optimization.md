@@ -608,3 +608,29 @@ debug SDK（`make sdk/win32-debug`）**沿用开发配置，即动态**：它从
 **9 个失败用例全部出自同一个 TU `test/procgen.cpp`**，断言都是 `SDL_Vulkan_GetInstanceExtensions failed: Video subsystem has not been initialized`——窗口初始化在 EVPlatform 组、Vulkan 入口在 EVBackends 组各自的 SDL 副本里：`procgen.render.{hexplanetPng,cloudShadowsDarkenGround,skyscraperPng,castlePng}`、`graphics.waterfall.{paramsRoundTrip,render.flowAndFoam}`、`graphics.water.{paramsRoundTrip,render.dynamicRipplesAndReflection}`、`graphics.render3d.toCanvas`。探针：该域 link unit 里 ECS 表 **0 份**、ImGui 0、box3d 0，SDL 副本 8 份（7 个组 DLL + exe）→ 只有 SDL 族被触发。
 
 进度：30 个域中 **25 个已链通**（21 个全绿）；余 `graphics`。
+
+### 7.19 SHARED 测试面标注：graphics（2026-09-20）—— 30/30 全部链通
+
+| 域 | LNK1120 前→后 | exe | ctest（`-E "^bundle/" --timeout 120 -j 4`） |
+| --- | --- | --- | --- |
+| graphics | 675 → 0 | 51.56 MiB（OBJECT 同源码 250.01 MiB，4.85×） | **1023/1116 通过**（93 失败 0 超时：92 个 SDL video `_this` 族 + 1 个**新族** box2d `s_initialized`；OBJECT 单链接单元对照 **1116/1116**） |
+
+基线 `LNK1120 = 675`（`LNK2019 669 + LNK2001 107 = 776 行`，`error C` 0，7 个组 DLL 全链通）——§7.6 记的 "graphics 1138" 同样是 29 域汇总口径，逐域实测 675。静态 `ninja -C C:\evs eve` exit 0（`eve.exe` 234,105,344 B）；脚本测试 170 OK。标注 **210 个唯一站点 / 129 个文件**（类 107 + 自由函数 103）；**本批新增带宏行 217**（210 站点 + 6 手工行 + 1 friend）/ 130 个文件，组宏 `BACKENDS 97 / WORLD 51 / DOMAINS 39 / ORCHESTRATION 8 / FOUNDATION 7 / PLATFORM 4 / EDITORS 4`，`Export.h` 新增 42 处（130 个文件里 129 个可见宏），`_INLINE` 0；清两个对象根各 35 模块 / 615 个对象（共 1230，另加 C2036 修复后各 17 个 EVStylize 对象）。
+
+**到本批为止：30 个测试域在 `EVENGINE_MODULE_LINKAGE=SHARED` 下全部链通**（7 个组 DLL + 30 个薄 exe；最后一个域的 `LNK1120` 从 675 清零）。失败用例不再是"链接问题"，而是下文与 §7.3 列出的**跨 DLL 静态状态族**。
+
+**新坑 1：类级 dllexport 还会触发 `C2036: unknown size`（C2280/C2027 家族的新子类）。**
+`MeshParticleEmitter` 持 `std::vector<Particle>`，而 `Particle` 只在**该类内部**前向声明（`struct Particle;` 是它的私有嵌套声明）→ 类级 dllexport 强制实例化隐式拷贝构造，编译器要算 `vector<Particle>` 的元素大小 → `error C2036`，4 个 EVStylize 对象失败。修法与 C2280 相同：**只删拷贝**（`MeshParticleEmitter(const MeshParticleEmitter&) = delete;` 等），不声明移动。判别口径也要更新：`b6c_member_scan.py` 现在把"成员容器元素类型在该类内才前向声明"也算命中——**只看"是否 unique_ptr"是不够的**。
+
+**新坑 2：规划器的解析器缺陷会伪装成 AMBIGUOUS/MANUAL。** 本批先修工具、不手工特判（`C:\evb2\b12_names.py`）：
+1. `ns_chain` 用 `re.match` 一行只见第一个作用域开启 —— `camera/PcgFreeCamera.h:3` 一行塞了三个 `namespace` 声明，于是 `class PcgFreeCamera{` 被算成 `ssq::PcgFreeCamera`，规划器对三个成员报**假 NS-MISMATCH** 并跳过。改为整行从左到右按深度入栈后自动恢复（新旧计划 668 行映射逐字节相同，只多这 3 行）。
+2. `head.split()[-1]` 在调用约定（`__cdecl`）之后退化成裸名 → `jobSystemPassExecutor` 报 NO-QUALIFIED-NAME。新增 `qualified_name_from_demangle()` 回退路径。
+3. `insert_class_macro` 锚定 `^\s*(?:class|struct)\s+`，漏掉**同行 doc 注释开头的类声明**（`/** @brief … */ class PcgFreeCamera{`）→ 规划说"可标注"、`re.sub` 实际不匹配。
+
+**手工 3 个实体（6 行，全部 `map` → `EVENGINE_API_WORLD`）**：`loadMapFile`（`map/TileConfig.h:57,58` 重载集）、`resolveDualGrid`（`map/DualGrid.h:167,171` 重载集）、`importRpgMakerMap`（`map/TileConfig.h:70` 头声明 + `map/RpgMakerTileImporter.inl:116` 定义 —— **`.inl` 也算声明点**）。反证：`dumpbin /exports EVWorld.dll` 里两个 `loadMapFile`、两个 `resolveDualGrid`、`importRpgMakerMap`、`applyConfigText` 全部在导出表内。
+
+**数据符号判据的坑**：675 个符号按 MSVC kind 编码分类是 **函数 675 / 数据 0**。不要用"出现 `@@2`/`@@3` 即数据"来扫——模板实参里也有 `@23@`、`@@@3@`，那样会误判 57 个。正确做法是解析第一个 `@@` 之后的调用约定/kind 字母。
+
+**新增第四/第五族**：`graphics` 触发了 1 个 `box2d` 的 `s_initialized`（box2d 也是**第三方静态库**，与 §7.16 的 box3d `b3_worlds` 同源）——第三方静态库的文件作用域状态现在是 `box3d`、`box2d` 两个实例，任何 obj 级探针都看不见它们。
+
+进度：30 个域中 **30 个已链通**（21 个全绿；余下 9 个域共 130+ 个失败用例，全部属于 §7.3 的五族跨 DLL 静态状态，其中 `graphics` 一个域就占 93 个）。

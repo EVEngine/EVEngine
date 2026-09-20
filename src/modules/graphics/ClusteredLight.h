@@ -54,7 +54,7 @@ struct ClusteredLightingUpload {
  * @param points  world-space point lights (posRadius.w = radius > 0)
  * @param dirs    world-space directional lights (optional; first becomes primary)
  */
-ClusteredLightingUpload buildClusteredLighting(const std::vector<ClusteredLightGpu> &points,
+EVENGINE_API_BACKENDS ClusteredLightingUpload buildClusteredLighting(const std::vector<ClusteredLightGpu> &points,
                                                const std::vector<ClusteredLightGpu> &dirs,
                                                const glm::mat4 &view, float nearZ, float farZ,
                                                int screenW, int screenH, float fovYRad,

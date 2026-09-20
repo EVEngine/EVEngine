@@ -8,7 +8,7 @@
 namespace eve::editor {
 
 /** @brief Material renderer adapter backed by the shared bound offscreen Canvas service. */
-class OffscreenMaterialPreviewRenderer final : public IMaterialPreviewRenderer {
+class EVENGINE_API_EDITORS OffscreenMaterialPreviewRenderer final : public IMaterialPreviewRenderer {
 public:
     using DrawCallback = std::function<EditorResult<void>(const MaterialPreviewRenderRequest&,
                                                            graphics::Graphics*, graphics::Canvas*)>;

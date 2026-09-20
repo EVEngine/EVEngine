@@ -45,7 +45,7 @@ public:
 };
 
 /** @brief Revision-safe material preview request and publication service. */
-class MaterialPreviewService {
+class EVENGINE_API_EDITORS MaterialPreviewService {
 public:
     /** @brief Validate and render a material snapshot in a unique isolated scene. */
     EditorResult<TaskId> render(const DocumentId& document, const MaterialDocumentTarget& material,

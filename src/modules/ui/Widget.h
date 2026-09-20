@@ -356,7 +356,7 @@ WidgetDesc ninePatchPanel(std::vector<WidgetDesc> children = {}, std::string id 
 /** Clickable image (renders via ImGui ImageButton). */
 EVENGINE_API_WORLD WidgetDesc imageButton(std::string id, float width, float height, std::function<void()> onClick = {});
 /** Embedded render target widget: shows an offscreen Canvas, routes input. */
-WidgetDesc viewport(std::string id = "", float width = 0.f, float height = 0.f);
+EVENGINE_API_WORLD WidgetDesc viewport(std::string id = "", float width = 0.f, float height = 0.f);
 /** @brief Editable text field; fires onTextChange. */
 EVENGINE_API_WORLD WidgetDesc inputText(std::string label, std::string value, std::string id = "",
                      std::function<void(const std::string &)> onChange = {});

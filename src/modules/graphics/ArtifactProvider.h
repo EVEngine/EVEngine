@@ -68,7 +68,7 @@ struct GraphicsArtifactResource {
  * This adapter intentionally consumes only the common publication view. It is
  * used for Vulkan/WebGPU parity tests and does not include either backend SDK.
  */
-class WebGpuArtifactDescriptorAdapter final {
+class EVENGINE_API_BACKENDS WebGpuArtifactDescriptorAdapter final {
 public:
     /** @brief Describe the selected mesh part, or return empty for invalid input. */
     [[nodiscard]] static std::optional<GraphicsArtifactDescriptor> describe(

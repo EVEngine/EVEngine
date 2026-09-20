@@ -58,7 +58,7 @@ struct VirtualGeometryImportValue {
 };
 
 /** @brief Revisioned VirtualGeometry importer preset. */
-class VirtualGeometryDocumentTarget final : public virtual IEditableTarget,
+class EVENGINE_API_ORCHESTRATION VirtualGeometryDocumentTarget final : public virtual IEditableTarget,
                                             public IDomainOperationTarget,
                                             public IDomainOperationTargetStaging,
                                             public IPropertyProvider {
@@ -131,7 +131,7 @@ struct VirtualGeometryBuildArtifact {
 };
 
 /** @brief Candidate-first CPU cluster-DAG builder and LOD preview service. */
-class VirtualGeometryBuildRuntime {
+class EVENGINE_API_ORCHESTRATION VirtualGeometryBuildRuntime {
 public:
     VirtualGeometryBuildRuntime();
     ~VirtualGeometryBuildRuntime();

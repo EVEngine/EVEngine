@@ -32,7 +32,7 @@ struct PcgCarCameraProfile {
 };
 
 /** @brief Caller-owned Pcg vehicle orbit-camera setup and input adapter. */
-class PcgCarCameraSetup {
+class EVENGINE_API_WORLD PcgCarCameraSetup {
 public:
     /** @brief Validate and copy a complete profile without partial mutation. */
     [[nodiscard]] Result<void> configure(const PcgCarCameraProfile& profile);

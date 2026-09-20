@@ -18,7 +18,7 @@ class BSPTree3D;
  * Provides 2D/3D QuadTree, Octree, SpatialHash, and BSP (kd-style) factories.
  * No overloads: use distinct *2D / *3D type names.
  */
-class Spatial : public Module {
+class EVENGINE_API_FOUNDATION Spatial : public Module {
 public:
     Module_REG(Spatial);
     Spatial() = default;

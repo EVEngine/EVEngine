@@ -48,7 +48,7 @@ private:
  * op: 0 = sum, 1 = min, 2 = max. Returns false (caller should fall back to CPU)
  * when Vulkan/gpgpu isn't available.
  */
-bool gpuReduce(const float *data, int size, int op, float &outResult);
+EVENGINE_API_DOMAINS bool gpuReduce(const float *data, int size, int op, float &outResult);
 
 }  // namespace eve::tensor
 

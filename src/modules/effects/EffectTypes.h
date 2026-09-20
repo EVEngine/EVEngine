@@ -223,7 +223,7 @@ std::string policyName(StackPolicy policy);
 /** @brief Parses a lowercase legacy stack policy name. */
 bool parsePolicy(const std::string& name, StackPolicy& policy);
 /** @brief Returns the stable lowercase name of an event kind. */
-std::string eventKindName(EffectEventKind kind);
+EVENGINE_API_FOUNDATION std::string eventKindName(EffectEventKind kind);
 
 /** @brief Writes the stable lifecycle-event spelling to a stream. */
 inline std::ostream& operator<<(std::ostream& stream, EffectEventKind kind) { return stream << eventKindName(kind); }

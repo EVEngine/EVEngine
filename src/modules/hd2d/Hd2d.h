@@ -269,7 +269,7 @@ private:
  * filtering on sprite/terrain atlases. Depth-of-field needs Sprite3D masked
  * cutout / DopFix depth writes so the focus plane can resolve.
  */
-class Hd2dLook {
+class EVENGINE_API_DOMAINS Hd2dLook {
 public:
     Hd2dLook() = default;
 

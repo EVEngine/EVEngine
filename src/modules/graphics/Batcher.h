@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "graphics/Canvas.h"
 #include <vector>
@@ -19,7 +21,7 @@ struct BatchVertex {
  * @brief Accumulates solid / textured quads in logical (Y-down) coordinates.
  * Used by RenderSystem; not a public script API.
  */
-class Batcher {
+class EVENGINE_API_BACKENDS Batcher {
 public:
     void clear();
     void addRect(float x, float y, float w, float h, const Color &color);

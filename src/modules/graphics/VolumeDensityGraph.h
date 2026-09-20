@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include <cstdint>
 #include <vector>
@@ -9,7 +11,7 @@
 namespace eve::graphics {
 
 /** @brief Compact acyclic program that evaluates procedural volume density. */
-class VolumeDensityGraph {
+class EVENGINE_API_BACKENDS VolumeDensityGraph {
 public:
     enum class Op { constant, height, sphere, box, noise, add, multiply, subtract, clamp };
 

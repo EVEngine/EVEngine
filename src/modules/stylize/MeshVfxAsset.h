@@ -25,7 +25,7 @@ struct MeshVfxFloatKey {
 };
 
 /** @brief Piecewise-linear parameter animation evaluated over one playback cycle. */
-struct MeshVfxFloatCurve {
+struct EVENGINE_API_WORLD MeshVfxFloatCurve {
     std::vector<MeshVfxFloatKey> keys;
 
     /** @brief Evaluate the curve at normalized time, clamped to its first and last keys. */
@@ -163,7 +163,7 @@ private:
  * A failed reload preserves both the previous asset and revision. Filesystem watching belongs to the caller.
  * @thread Affine to the owning asset/editor thread; no internal synchronization.
  */
-class MeshVfxAssetSlot {
+class EVENGINE_API_WORLD MeshVfxAssetSlot {
 public:
     /** @brief Construct a slot from an already validated asset. */
     explicit MeshVfxAssetSlot(MeshVfxAsset asset);

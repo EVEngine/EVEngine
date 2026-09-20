@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "stylize/TrailEffect.h"
 
@@ -38,7 +40,7 @@ struct AreaIndicatorBuildResult {
  * @thread Thread-safe CPU-only operation.
  * @reentrancy Does not invoke callbacks or retain config.
  */
-[[nodiscard]] AreaIndicatorBuildResult buildAreaIndicator(
+[[nodiscard]] EVENGINE_API_WORLD AreaIndicatorBuildResult buildAreaIndicator(
     const AreaIndicatorConfig& config = {});
 
 }  // namespace eve::stylize

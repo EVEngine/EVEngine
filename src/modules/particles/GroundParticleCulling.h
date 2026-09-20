@@ -17,6 +17,6 @@ class ParticleEmitter;
  * @thread Simulation owner thread only; callbacks are not invoked.
  * A matching enter starts the emitter and a matching exit stops it. Unrelated visitors are ignored.
  */
-[[nodiscard]] Result<void> applyGroundParticleCulling(ParticleEmitter* emitter, int playerTag,
+[[nodiscard]] EVENGINE_API_DOMAINS Result<void> applyGroundParticleCulling(ParticleEmitter* emitter, int playerTag,
                                                        int visitorTag, bool entered, bool exited);
 }

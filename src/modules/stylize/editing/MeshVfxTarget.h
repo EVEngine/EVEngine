@@ -40,7 +40,7 @@ using EditorResult = editing::Result<T>;
  * @thread Editor-thread affine and not internally synchronized.
  * @reentrancy Does not invoke callbacks.
  */
-class MeshVfxAssetTarget final : public virtual IEditableTarget,
+class EVENGINE_API_DOMAINS MeshVfxAssetTarget final : public virtual IEditableTarget,
                                  public IDomainOperationTarget,
                                  public IDomainOperationTargetStaging,
                                  public IPropertyProvider {
@@ -89,7 +89,7 @@ private:
  * @brief Candidate-first live preview generation for a MeshVfxAssetTarget.
  * A rejected publication preserves the previous instance and revision.
  */
-class MeshVfxPreviewRuntime {
+class EVENGINE_API_DOMAINS MeshVfxPreviewRuntime {
 public:
     MeshVfxPreviewRuntime();
     ~MeshVfxPreviewRuntime();

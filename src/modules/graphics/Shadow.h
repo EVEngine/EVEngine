@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include <glm/glm.hpp>
 
@@ -36,7 +38,7 @@ struct ShadowUpload {
  * with the same metric (max(-viewPos.z, 0)), not euclidean eye-to-point length.
  * Camera far is clamped to kMaxDistance so large scenes keep usable texel density.
  */
-ShadowUpload buildDirectionalCSM(const glm::vec3 &lightDirTowardSurface, const glm::vec3 &eye,
+EVENGINE_API_BACKENDS ShadowUpload buildDirectionalCSM(const glm::vec3 &lightDirTowardSurface, const glm::vec3 &eye,
                                  const glm::vec3 &target, const glm::vec3 &up, float fovYRad,
                                  float aspect, float nearZ, float farZ, float bias, float strength);
 

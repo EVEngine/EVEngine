@@ -17,7 +17,7 @@ class ParticleEmitter;
  * @ownership Emitters remain caller-owned and are never retained.
  * @thread Simulation owner thread only; callbacks are not invoked.
  */
-[[nodiscard]] Result<void> applyUnderwaterParticles(ParticleEmitter* ambience,
+[[nodiscard]] EVENGINE_API_DOMAINS Result<void> applyUnderwaterParticles(ParticleEmitter* ambience,
                                                      ParticleEmitter* transition, bool active,
                                                      bool transitionFx, bool entered, bool exited);
 
@@ -29,5 +29,5 @@ class ParticleEmitter;
  * @ownership The emitter remains caller-owned and is never retained.
  * @thread Simulation owner thread only; callbacks are not invoked.
  */
-[[nodiscard]] Result<void> applyUnderwaterSurfaceVfx(ParticleEmitter* surfaceVfx, bool active);
+[[nodiscard]] EVENGINE_API_DOMAINS Result<void> applyUnderwaterSurfaceVfx(ParticleEmitter* surfaceVfx, bool active);
 }

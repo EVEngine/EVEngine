@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "graphics/BlendMode.h"
 #include "graphics/Color.h"
@@ -39,10 +41,10 @@ struct RadialTessellation {
 };
 
 /** @brief Resolves a radial tessellation policy to a validated segment count. */
-[[nodiscard]] std::uint32_t resolveRadialSegments(const RadialTessellation& tessellation, float projectedRadiusPixels);
+[[nodiscard]] EVENGINE_API_BACKENDS std::uint32_t resolveRadialSegments(const RadialTessellation& tessellation, float projectedRadiusPixels);
 
 /** @brief Owning alternating draw/gap pattern for stroked primitives. */
-struct DashPattern {
+struct EVENGINE_API_BACKENDS DashPattern {
     std::vector<float> intervals;
     float              phase = 0.f;
     DashSpace          space = DashSpace::ScreenPixels;

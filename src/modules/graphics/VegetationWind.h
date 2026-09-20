@@ -36,7 +36,7 @@ struct VegetationWindAudioState {
  * Lerp clamps dt/transitionTime. Increasing volume snaps within 0.05 below target; the source's asymmetric
  * decreasing comparison is retained and generally approaches zero without snapping.
  */
-[[nodiscard]] Result<void> advanceVegetationWindAudio(VegetationWindAudioState& state, float windStrength,
+[[nodiscard]] EVENGINE_API_BACKENDS Result<void> advanceVegetationWindAudio(VegetationWindAudioState& state, float windStrength,
                                                        float transitionTime, float dt, bool enabled,
                                                        bool clipAvailable);
 /** @brief Caller-owned material wind controls; billboard suppresses source branch and leaf motion.
@@ -57,7 +57,7 @@ struct VegetationWindProfile {
  * Layout is direction, strength, phase, signed distance, flex, frequency and two time sines.
  * Zero distance disables wind. Negative distance selects billboard motion. No alphaTest zeros leaf flex.
  */
-[[nodiscard]] Result<std::array<float, 14>> packVegetationWind(const VegetationWindState&   state,
+[[nodiscard]] EVENGINE_API_BACKENDS Result<std::array<float, 14>> packVegetationWind(const VegetationWindState&   state,
                                                                const VegetationWindProfile& profile, double seconds);
 /** @brief Explicit source PW_GeneralWind inputs in object/world coordinates. */
 struct VegetationWindInput {
@@ -83,7 +83,7 @@ struct VegetationWindInput {
  * @ownership Retains no references
  * and invokes no callbacks. Caller serializes its owner-thread state.
  */
-[[nodiscard]] Result<void> initializeVegetationWind(VegetationWindState& state, glm::vec3 forward, float strength);
+[[nodiscard]] EVENGINE_API_BACKENDS Result<void> initializeVegetationWind(VegetationWindState& state, glm::vec3 forward, float strength);
 /** @brief Advance source WindManager smoothing and phase using explicit nonnegative dt.
  * Direction Y follows
  * -max(forward.y, length(forward.xz)*0.5); strength clamps to [0,1.2]. Lerp factor clamps dt*0.25; phase uses the
@@ -91,7 +91,7 @@ struct VegetationWindInput {
  * @return Success or InvalidArgument; invalid/nonrepresentable input preserves state atomically.
  * Caller serializes state on its owner thread. No borrowed pointer, callback, wall clock or RNG.
  */
-[[nodiscard]] Result<void> advanceVegetationWind(VegetationWindState& state, glm::vec3 forward, float strength,
+[[nodiscard]] EVENGINE_API_BACKENDS Result<void> advanceVegetationWind(VegetationWindState& state, glm::vec3 forward, float strength,
                                                  float dt);
 /** @brief Evaluate the source main/branch/leaf deformation for one vertex without mutation.
  * Requires finite inputs, invertible object transform, positive dimensions/distance, unit sine inputs
@@ -100,6 +100,6 @@ struct VegetationWindInput {
  * @return Deformed object-space vertex or InvalidArgument. Double intermediates, float output; numerical
  * tolerance rather than GPU bit parity. Caller provides an immutable snapshot on its owning thread.
  */
-[[nodiscard]] Result<glm::vec3> evaluateVegetationWind(const VegetationWindInput& input,
+[[nodiscard]] EVENGINE_API_BACKENDS Result<glm::vec3> evaluateVegetationWind(const VegetationWindInput& input,
                                                        const VegetationWindState& state);
 }  // namespace eve::graphics

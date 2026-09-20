@@ -9,7 +9,7 @@ namespace eve::graphics { class ISolidRectRenderer; }
 namespace eve::editor {
 
 /** @brief Concrete UI box-model preview renderer using the shared offscreen Canvas. */
-class UiOffscreenPreviewRenderer {
+class EVENGINE_API_EDITORS UiOffscreenPreviewRenderer {
 public:
     UiOffscreenPreviewRenderer(GraphicsOffscreenPreviewService* previews,
                                graphics::ISolidRectRenderer* rectangles,

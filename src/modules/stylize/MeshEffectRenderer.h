@@ -86,7 +86,7 @@ struct MeshParticleRenderInputs {
  * @param priority Budget priority copied into generated candidates.
  * @return Owning vectors with matching stable IDs and no retained snapshot references.
  */
-[[nodiscard]] MeshParticleRenderInputs buildMeshParticleRenderInputs(
+[[nodiscard]] EVENGINE_API_WORLD MeshParticleRenderInputs buildMeshParticleRenderInputs(
     std::span<const MeshParticleInstance> instances, MeshEffectInstance* effect,
     graphics::Mesh* mesh, graphics::Texture* albedo, const MeshVfxBatchKey& key,
     std::uint64_t emitterStableId, const glm::vec3& cameraPosition,
@@ -99,7 +99,7 @@ struct MeshParticleRenderInputs {
  * @thread Thread-safe; performs CPU work only.
  * @reentrancy Does not invoke callbacks.
  */
-[[nodiscard]] eve::Result<TrailUploadData> prepareTrailUpload(const TrailMeshSnapshot& snapshot);
+[[nodiscard]] EVENGINE_API_WORLD eve::Result<TrailUploadData> prepareTrailUpload(const TrailMeshSnapshot& snapshot);
 
 /**
  * @brief Render-thread adapter from stylize runtime state to Graphics mesh draws.
@@ -110,7 +110,7 @@ struct MeshParticleRenderInputs {
  * does not perform fallible GPU work; resources remain owned by Graphics and
  * are reclaimed at Graphics shutdown.
  */
-class MeshEffectRenderer final : public IMeshVfxBatchSink {
+class EVENGINE_API_WORLD MeshEffectRenderer final : public IMeshVfxBatchSink {
 public:
     /** @brief Bind this adapter to one Graphics owner for its entire lifetime. */
     explicit MeshEffectRenderer(graphics::Graphics& graphics) noexcept;

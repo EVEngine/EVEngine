@@ -102,7 +102,7 @@ public:
 };
 
 /** @brief Serializable shared environment target for static, DayNight and Weather modes. */
-class EnvironmentDocumentTarget final : public LightingPropertyTargetBase {
+class EVENGINE_API_DOMAINS EnvironmentDocumentTarget final : public LightingPropertyTargetBase {
 public:
     explicit EnvironmentDocumentTarget(std::string id);
     /** @brief Validate mode-dependent atmosphere and weather settings. */
@@ -110,13 +110,13 @@ public:
 };
 
 /** @brief Optional bridge applying a light document to graphics::Light3D. */
-class Light3DRuntimeApplier {
+class EVENGINE_API_DOMAINS Light3DRuntimeApplier {
 public:
     EditorResult<void> apply(const Light3DDocumentTarget& document, graphics::Light3D* light) const;
 };
 
 /** @brief Optional bridge applying environment properties to DayNight or Weather. */
-class EnvironmentRuntimeApplier {
+class EVENGINE_API_DOMAINS EnvironmentRuntimeApplier {
 public:
     EditorResult<void> applyDayNight(const EnvironmentDocumentTarget& document, daynight::DayNight* environment) const;
     EditorResult<void> applyWeather(const EnvironmentDocumentTarget& document, weather::Weather* environment) const;

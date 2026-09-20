@@ -41,7 +41,7 @@ struct StrandCurve {
  * @thread Affine to the owning asset/instance; no internal synchronization.
  * @reentrancy Does not invoke callbacks.
  */
-class StrandsDatas {
+class EVENGINE_API_BACKENDS StrandsDatas {
 public:
     void setPoints(std::vector<StrandPoint> points);
     void setCurves(std::vector<StrandCurve> curves);

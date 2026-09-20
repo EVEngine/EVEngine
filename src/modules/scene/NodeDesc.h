@@ -123,10 +123,10 @@ struct NodeDesc {
 };
 
 EVENGINE_API_PLATFORM NodeDesc node(std::string id, std::vector<NodeDesc> children = {}, std::string name = "");
-NodeDesc group(std::vector<NodeDesc> children = {}, std::string id = "");
+EVENGINE_API_PLATFORM NodeDesc group(std::vector<NodeDesc> children = {}, std::string id = "");
 /** @brief Conditional: include `child` only when `cond` is true (empty group otherwise). */
-NodeDesc when(bool cond, NodeDesc child);
-NodeDesc whenElse(bool cond, NodeDesc ifTrue, NodeDesc ifFalse);
+EVENGINE_API_PLATFORM NodeDesc when(bool cond, NodeDesc child);
+EVENGINE_API_PLATFORM NodeDesc whenElse(bool cond, NodeDesc ifTrue, NodeDesc ifFalse);
 
 void applyTree(SceneHost *host, NodeDesc root);
 /** @brief Key-aware patch when structure matches; else full replace. Returns true if full rebuild. */

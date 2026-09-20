@@ -33,7 +33,7 @@ Shader* createTreeWindShader(Graphics* graphics);
  * @return Success or InvalidArgument. Failure preserves all shader parameter bytes.
  * @ownership Retains no references and invokes no callbacks. Call on the shader owner thread.
  */
-[[nodiscard]] Result<void> applyTreeWind(Shader& shader, const VegetationWindState& state,
+[[nodiscard]] EVENGINE_API_BACKENDS Result<void> applyTreeWind(Shader& shader, const VegetationWindState& state,
                                          const VegetationWindProfile& vegetation,
                                          const TreeWindProfile& tree, double seconds);
 }  // namespace eve::graphics

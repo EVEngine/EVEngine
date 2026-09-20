@@ -40,7 +40,7 @@ public:
 };
 
 /** @brief Syncs pooled Light2D entities with alive particles (emitters with lights.enabled). */
-class ParticleLightSystem {
+class EVENGINE_API_DOMAINS ParticleLightSystem {
 public:
     static void update();
 };
@@ -49,7 +49,7 @@ public:
  * @brief Polls bound config files (Resource.path) and hot-reloads when modtime changes.
  * Returns number of emitters reloaded.
  */
-class ParticleConfigSystem {
+class EVENGINE_API_DOMAINS ParticleConfigSystem {
 public:
     static int poll();
 };

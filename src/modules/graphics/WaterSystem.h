@@ -57,7 +57,7 @@ struct WaterSystemState {
  * @return Success or InvalidArgument; failure preserves state.
  * @thread Synchronous caller-owned access. Retains no pointer and invokes no callback.
  */
-[[nodiscard]] Result<void> initializeWaterSystem(WaterSystemState& state, const WaterSystemSettings& settings,
+[[nodiscard]] EVENGINE_API_BACKENDS Result<void> initializeWaterSystem(WaterSystemState& state, const WaterSystemSettings& settings,
                                                  const WaterSceneConditions& scene, int initialSceneCheckFrames);
 
 /**
@@ -72,7 +72,7 @@ struct WaterSystemState {
  * @return Whether this step requests reflection regeneration. Failure preserves state.
  * @thread Synchronous caller-owned access. Deterministic for the supplied inputs and injected delay.
  */
-[[nodiscard]] Result<bool> advanceWaterSystem(WaterSystemState& state, const WaterSystemSettings& settings,
+[[nodiscard]] EVENGINE_API_BACKENDS Result<bool> advanceWaterSystem(WaterSystemState& state, const WaterSystemSettings& settings,
                                                const WaterSceneConditions& scene, float playerX, float playerZ,
                                                float dt, int nextSceneCheckFrames);
 
@@ -83,7 +83,7 @@ struct WaterSystemState {
  * @param regenerateReflections Whether a changed level increments refreshRevision.
  * @return Whether the sea level changed. Failure preserves state.
  */
-[[nodiscard]] Result<bool> updateWaterSeaLevel(WaterSystemState& state, float seaLevel,
+[[nodiscard]] EVENGINE_API_BACKENDS Result<bool> updateWaterSeaLevel(WaterSystemState& state, float seaLevel,
                                                bool regenerateReflections);
 
 /** @brief Register water-system value types and checked operations with the VM owner thread. */

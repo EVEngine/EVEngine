@@ -76,7 +76,7 @@ public:
 };
 
 /** @brief Builds and rasterizes surface-fluid scrub frames through shared Canvas readback. */
-class SurfaceFluidOffscreenPreviewService {
+class EVENGINE_API_EDITORS SurfaceFluidOffscreenPreviewService {
 public:
     SurfaceFluidOffscreenPreviewService(GraphicsOffscreenPreviewService* previews,
                                         ISurfaceFluidPreviewRenderer*    renderer)
