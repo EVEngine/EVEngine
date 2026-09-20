@@ -33,7 +33,7 @@ namespace eve::procgen_editor {
  * @threadaffinity Owner thread only.
  * @reentrancy Does not invoke script generate callbacks.
  */
-class ProcgenScriptEditor {
+class EVENGINE_API_EDITORS ProcgenScriptEditor {
 public:
     /** @brief Construct an empty generator host. */
     explicit ProcgenScriptEditor(std::string targetId);

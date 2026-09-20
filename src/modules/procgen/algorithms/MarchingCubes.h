@@ -18,11 +18,11 @@ namespace eve::procgen {
  * `density` is row-major: index = x + y * nx + z * nx * ny, size nx*ny*nz.
  * Cell (x,y,z) spans corners [x..x+1]×[y..y+1]×[z..z+1] (so loops are nx-1 etc.).
  */
-bool marchingCubes(const float *density, int nx, int ny, int nz, float isolevel, MeshBuild &out,
+EVENGINE_API_DOMAINS bool marchingCubes(const float *density, int nx, int ny, int nz, float isolevel, MeshBuild &out,
                    std::string *error = nullptr);
 
 /** @brief Fill a density volume from a named field recipe (sphere / noise / terrain / torus). */
-bool fillDensityField(const Params &params, std::vector<float> &density, int &nx, int &ny, int &nz,
+EVENGINE_API_DOMAINS bool fillDensityField(const Params &params, std::vector<float> &density, int &nx, int &ny, int &nz,
                       std::string &error);
 
 /** @brief Build mesh from Params (field + resolution + isolevel). */
@@ -37,7 +37,7 @@ bool generateHexPlanetMesh(const Params &params, MeshBuild &out, std::string &er
 
 using MeshRecipeFn = std::function<bool(const Params &params, MeshBuild &out, std::string &error)>;
 
-class MeshRecipeRegistry {
+class EVENGINE_API_DOMAINS MeshRecipeRegistry {
 public:
     /** @brief Access the process-wide mesh recipe registry. @return Registry instance. */
     static MeshRecipeRegistry &instance();

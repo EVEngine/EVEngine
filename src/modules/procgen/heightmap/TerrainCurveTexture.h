@@ -22,8 +22,8 @@ struct TerrainCurveTextureReceipt {
  * @thread Caller serializes access to output and curve.
  * @reentrancy Does not invoke callbacks or retain references.
  */
-[[nodiscard]] Result<TerrainCurveTextureReceipt> bakeTerrainCurveTexture(image::ImageData& output,
+[[nodiscard]] EVENGINE_API_DOMAINS Result<TerrainCurveTextureReceipt> bakeTerrainCurveTexture(image::ImageData& output,
                                                                          const Heightmap& curve);
 /** @brief Register the Pcg terrain curve texture adapter; VM-thread only. */
-void exposeTerrainCurveTexture(ssq::Table& table);
+EVENGINE_API_DOMAINS void exposeTerrainCurveTexture(ssq::Table& table);
 }  // namespace eve::procgen

@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include <vector>
 
@@ -25,7 +27,7 @@ struct CaveSurfaceReactivityResult {
  * @param iterations Number of geometry-feedback iterations.
  * @return Deterministic retreat and local roughness diagnostics.
  */
-[[nodiscard]] CaveSurfaceReactivityResult evolveCaveSurfaceByReactivity(std::vector<float>&       density,
+[[nodiscard]] EVENGINE_API_DOMAINS CaveSurfaceReactivityResult evolveCaveSurfaceByReactivity(std::vector<float>&       density,
                                                                         const std::vector<float>& rateField, int nx,
                                                                         int ny, int nz, float strength,
                                                                         int iterations = 2);

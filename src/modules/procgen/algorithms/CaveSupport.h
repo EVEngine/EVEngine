@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include <vector>
 
@@ -9,7 +11,7 @@ struct CaveDetachmentResult {
     int detachedVoxels    = 0;
 };
 
-CaveDetachmentResult detachUnsupportedCaveFragments(std::vector<float>& density, int nx, int ny, int nz,
+EVENGINE_API_DOMAINS CaveDetachmentResult detachUnsupportedCaveFragments(std::vector<float>& density, int nx, int ny, int nz,
                                                     float strength);
 
 }  // namespace eve::procgen

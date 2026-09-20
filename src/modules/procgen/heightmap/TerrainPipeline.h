@@ -50,7 +50,7 @@ struct ClimateMap {
 };
 
 /** @brief Per-cell diagnostic outputs produced by an erosion stage. */
-struct TerrainErosionMap {
+struct EVENGINE_API_DOMAINS TerrainErosionMap {
     int width = 0, height = 0;
     std::vector<float> wear;       ///< Gross material removed, in heightmap units.
     std::vector<float> deposition; ///< Material deposited after transport, in heightmap units.
@@ -68,7 +68,7 @@ struct TerrainErosionMap {
 };
 
 /** @brief Script-friendly ownership wrapper for baked hydrology and climate layers. */
-class TerrainLayers {
+class EVENGINE_API_DOMAINS TerrainLayers {
 public:
     TerrainLayers() = default;
     TerrainLayers(HydrologyMap hydrology, ClimateMap climate);

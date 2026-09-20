@@ -27,7 +27,7 @@ enum class GtsTerrainSaveResolution : int { Full=0,Half=1,Quarter=2,Eighth=3,Six
  * @param sizeZ World depth of the complete terrain.
  * @return Applied result or a structured error without modifying output.
  */
-[[nodiscard]] Result<void> buildGtsTerrainBaseMesh(MeshBuild& output,const Heightmap& heightmap,
+[[nodiscard]] EVENGINE_API_DOMAINS Result<void> buildGtsTerrainBaseMesh(MeshBuild& output,const Heightmap& heightmap,
     GtsTerrainSaveResolution resolution,float sizeX,float sizeY,float sizeZ);
 
 /** @brief Configuration for one sequential GTS terrain mesh LOD. */
@@ -38,7 +38,7 @@ struct GtsTerrainLodLevelSettings {
 };
 
 /** @brief Schema-versioned native counterpart of GTSMeshSettings. */
-class GtsTerrainMeshSettings {
+class EVENGINE_API_DOMAINS GtsTerrainMeshSettings {
 public:
     /** @brief Return the SaveResolution enum value in the range 0 through 4. */
     [[nodiscard]] int getSaveResolution() const noexcept { return saveResolution_; }
@@ -86,7 +86,7 @@ struct GtsTerrainLodAssetEntry {
 };
 
 /** @brief Owned script-friendly GTS terrain LOD export manifest. */
-class GtsTerrainLodAssetPlan {
+class EVENGINE_API_DOMAINS GtsTerrainLodAssetPlan {
 public:
     /** @brief Return the number of export entries. */
     [[nodiscard]] int getEntryCount() const;
@@ -183,12 +183,12 @@ private:
     GtsMeshPivot pivot,const std::vector<GtsTerrainLodLevelSettings>& levels);
 
 /** @brief Atomically replace output with the complete default four-level GTS terrain conversion. */
-[[nodiscard]] Result<void> buildDefaultGtsTerrainLodsFromHeightmapInto(GtsTerrainLodSet& output,
+[[nodiscard]] EVENGINE_API_DOMAINS Result<void> buildDefaultGtsTerrainLodsFromHeightmapInto(GtsTerrainLodSet& output,
     const Heightmap& heightmap,GtsTerrainSaveResolution resolution,float sizeX,float sizeY,float sizeZ,
     int subTileSplits,GtsMeshPivot pivot=GtsMeshPivot::None);
 
 /** @brief Atomically build a complete heightmap conversion using persisted GTS mesh settings. */
-[[nodiscard]] Result<void> buildGtsTerrainLodsFromHeightmapInto(GtsTerrainLodSet& output,
+[[nodiscard]] EVENGINE_API_DOMAINS Result<void> buildGtsTerrainLodsFromHeightmapInto(GtsTerrainLodSet& output,
     const Heightmap& heightmap,const GtsTerrainMeshSettings& settings,float sizeX,float sizeY,float sizeZ,
     GtsMeshPivot pivot=GtsMeshPivot::None);
 

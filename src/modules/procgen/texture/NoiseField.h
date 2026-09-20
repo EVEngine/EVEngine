@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include <cstdint>
 
@@ -8,7 +10,7 @@ namespace eve::procgen {
  * @brief Deterministic value-noise helpers for pixel textures.
  * When periodX/periodY > 0, lattice wraps for seamless tiling.
  */
-struct NoiseField {
+struct EVENGINE_API_DOMAINS NoiseField {
     uint32_t seed     = 1;
     int      periodX  = 0;  // 0 = non-tiling
     int      periodY  = 0;

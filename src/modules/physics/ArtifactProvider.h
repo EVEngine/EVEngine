@@ -160,6 +160,6 @@ private:
 /** @brief Return the process-owned physics artifact provider singleton. */
 [[nodiscard]] EVENGINE_API_WORLD PhysicsArtifactProvider& physicsArtifactProvider() noexcept;
 /** @brief Register the physics provider in the common capability registry. */
-void registerPhysicsArtifactProvider();
+EVENGINE_API_WORLD void registerPhysicsArtifactProvider();
 
 }  // namespace eve::physics

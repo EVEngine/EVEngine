@@ -25,7 +25,7 @@ struct PrototypeTextureDescriptor {
  * @thread Safe for concurrent reads.
  * @reentrancy Does not invoke callbacks.
  */
-std::span<const PrototypeTextureDescriptor> prototypeTextureDescriptors() noexcept;
+EVENGINE_API_DOMAINS std::span<const PrototypeTextureDescriptor> prototypeTextureDescriptors() noexcept;
 
 /**
  * @brief Generate a parameterized RGBA8 prototype texture without loading an image asset.
@@ -43,7 +43,7 @@ std::span<const PrototypeTextureDescriptor> prototypeTextureDescriptors() noexce
  * @thread Safe; no shared state is mutated.
  * @reentrancy Does not invoke external callbacks.
  */
-[[nodiscard]] eve::Result<std::unique_ptr<image::ImageData>> generatePrototypeTexture(std::string_view patternId,
+[[nodiscard]] EVENGINE_API_DOMAINS eve::Result<std::unique_ptr<image::ImageData>> generatePrototypeTexture(std::string_view patternId,
                                                                                       const Params&    params);
 
 /**

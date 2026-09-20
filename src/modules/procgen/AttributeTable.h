@@ -30,7 +30,7 @@ enum class ProcgenAttributeType : std::uint8_t { Float, Int, Bool, Vector, Strin
  * The table is an owning value, is not thread-safe for mutation, and invalidates borrowed
  * column storage after any schema or row-count mutation.
  */
-class AttributeTable {
+class EVENGINE_API_DOMAINS AttributeTable {
 public:
     /** @brief Return the number of aligned point rows. */
     [[nodiscard]] std::size_t rowCount() const noexcept;

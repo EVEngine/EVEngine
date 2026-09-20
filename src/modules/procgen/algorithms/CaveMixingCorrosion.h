@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "procgen/algorithms/CaveHydrology.h"
 
@@ -30,7 +32,7 @@ struct CaveMixingCorrosionSample {
  * @param seed Deterministic chemistry-contrast seed.
  * @return One bounded mixing site per valid branch junction.
  */
-[[nodiscard]] std::vector<CaveMixingSite> createCaveMixingSites(const std::vector<CaveHydrologyPoint>&  trunk,
+[[nodiscard]] EVENGINE_API_DOMAINS std::vector<CaveMixingSite> createCaveMixingSites(const std::vector<CaveHydrologyPoint>&  trunk,
                                                                 const std::vector<CaveHydrologyBranch>& branches,
                                                                 uint32_t                                seed);
 
@@ -40,7 +42,7 @@ struct CaveMixingCorrosionSample {
  * @param sites Sites derived by createCaveMixingSites.
  * @return Maximum local mixing-corrosion response and contributing site.
  */
-[[nodiscard]] CaveMixingCorrosionSample sampleCaveMixingCorrosion(CaveHydrologyVec3                  point,
+[[nodiscard]] EVENGINE_API_DOMAINS CaveMixingCorrosionSample sampleCaveMixingCorrosion(CaveHydrologyVec3                  point,
                                                                   const std::vector<CaveMixingSite>& sites);
 
 }  // namespace eve::procgen

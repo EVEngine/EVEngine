@@ -39,7 +39,7 @@ struct PcgMeshLodRendererState {
 };
 
 /** @brief Row-major affine matrix used by Pcg's root-relative static mesh combination. */
-class PcgMeshTransform {
+class EVENGINE_API_DOMAINS PcgMeshTransform {
 public:
     /** @brief Construct an identity transform. */
     PcgMeshTransform() noexcept;

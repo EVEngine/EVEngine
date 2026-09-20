@@ -31,7 +31,7 @@ struct MeshModifierGraphPreviewResult {
  * GraphDocument owns authoring state. Preview compiles an isolated runtime graph,
  * binds a copied input mesh, and publishes an owning output only after success.
  */
-class MeshModifierGraphDomain final : public IGraphDomainProvider {
+class EVENGINE_API_ORCHESTRATION MeshModifierGraphDomain final : public IGraphDomainProvider {
 public:
     /** @brief Stable graph document domain id. */
     [[nodiscard]] std::string domain() const override { return "procgen.meshModifier"; }

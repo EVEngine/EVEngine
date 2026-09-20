@@ -56,14 +56,14 @@ struct GtsDetailNormalSettings {
     float nearTiling = 100, nearStrength = 0.6F, farTiling = 1000, farStrength = 0.8F;
 };
 /** @brief Ordered linear RGBA colors used to visualize terrain splat layers. */
-class TerrainSplatPalette {
+class EVENGINE_API_DOMAINS TerrainSplatPalette {
 public:
     /** @brief Append one finite normalized layer color and return the palette size. */
     [[nodiscard]] Result<int> addColor(float red, float green, float blue, float alpha = 1);
     /** @brief Return the number of layer colors. */
     [[nodiscard]] int getColorCount() const noexcept { return static_cast<int>(colors_.size()); }
 private:
-    friend Result<int> bakeTerrainSplatAlbedo(image::ImageData&, const TerrainSplatmap&,
+    friend EVENGINE_API_DOMAINS Result<int> bakeTerrainSplatAlbedo(image::ImageData&, const TerrainSplatmap&,
                                               const TerrainSplatPalette&);
     std::vector<std::array<float, 4>> colors_;
 };
@@ -80,7 +80,7 @@ struct GtsPackedLayerSettings {
     float tessellationAmount = 25;
 };
 /** @brief Owning ordered GTS packed albedo/height and normal/AO/smoothness texture layers. */
-class GtsPackedLayerSet {
+class EVENGINE_API_DOMAINS GtsPackedLayerSet {
 public:
     GtsPackedLayerSet();
     ~GtsPackedLayerSet();
@@ -97,10 +97,10 @@ public:
 private:
     struct Impl;
     std::unique_ptr<Impl> impl_;
-    friend Result<int> bakeGtsPackedLayers(image::ImageData&, image::ImageData&, Heightmap&, Heightmap&,
+    friend EVENGINE_API_DOMAINS Result<int> bakeGtsPackedLayers(image::ImageData&, image::ImageData&, Heightmap&, Heightmap&,
                                            const Heightmap&, const TerrainSplatmap&, const GtsPackedLayerSet&,
                                            double, double, double, double, double);
-    friend Result<int> bakeGtsPackedLayerDisplacement(Heightmap&, Heightmap&, const Heightmap&,
+    friend EVENGINE_API_DOMAINS Result<int> bakeGtsPackedLayerDisplacement(Heightmap&, Heightmap&, const Heightmap&,
                                                        const TerrainSplatmap&, const GtsPackedLayerSet&,
                                                        double, double, double, double, double, double,
                                                        double, double, double);
@@ -122,7 +122,7 @@ private:
  * @return Total changed samples or InvalidArgument; all four outputs remain unchanged on failure.
  * @thread Synchronous exclusive output access; no borrow survives the call.
  */
-[[nodiscard]] Result<int> bakeGtsPackedLayers(image::ImageData& albedo,
+[[nodiscard]] EVENGINE_API_DOMAINS Result<int> bakeGtsPackedLayers(image::ImageData& albedo,
                                               image::ImageData& packedNormal,
                                               Heightmap& geoStrength,
                                               Heightmap& detailStrength,
@@ -150,7 +150,7 @@ private:
  * @return Total changed samples or InvalidArgument; both outputs remain unchanged on failure.
  * @thread Synchronous exclusive output access; inputs are borrowed only for the call.
  */
-[[nodiscard]] Result<int> bakeGtsPackedLayerDisplacement(
+[[nodiscard]] EVENGINE_API_DOMAINS Result<int> bakeGtsPackedLayerDisplacement(
     Heightmap& displacement, Heightmap& tessellation, const Heightmap& heights,
     const TerrainSplatmap& splatmap, const GtsPackedLayerSet& layers,
     double cameraX, double cameraY, double cameraZ, double tessellationMultiplier = 1,
@@ -179,7 +179,7 @@ private:
  * @return Written pixel count or InvalidArgument; output is unchanged on failure.
  * @ownership No image, splatmap or palette storage is retained. Caller serializes mutable output access.
  */
-[[nodiscard]] Result<int> bakeTerrainSplatAlbedo(image::ImageData& output, const TerrainSplatmap& splatmap,
+[[nodiscard]] EVENGINE_API_DOMAINS Result<int> bakeTerrainSplatAlbedo(image::ImageData& output, const TerrainSplatmap& splatmap,
                                                  const TerrainSplatPalette& palette);
 /**
  * @brief Generate GTS camera-distance near/far blend values for a terrain raster.
@@ -198,7 +198,7 @@ private:
  * @return Changed sample count or InvalidArgument; failure leaves output unchanged.
  * @thread Synchronous; no reference survives the call.
  */
-[[nodiscard]] Result<int> generateGtsGlobalBlendDistance(Heightmap& output, const Heightmap& heights,
+[[nodiscard]] EVENGINE_API_DOMAINS Result<int> generateGtsGlobalBlendDistance(Heightmap& output, const Heightmap& heights,
                                                           double cameraX, double cameraY, double cameraZ,
                                                           double blendDistance, double blendRange,
                                                           double originX = 0, double originY = 0,
@@ -213,7 +213,7 @@ private:
  * @return Changed pixel count or InvalidArgument; failure leaves output unchanged.
  * @thread Synchronous; no reference or pointer survives the call.
  */
-[[nodiscard]] Result<int> bakeGtsColorMapAlbedo(image::ImageData& output, const image::ImageData& colorMap,
+[[nodiscard]] EVENGINE_API_DOMAINS Result<int> bakeGtsColorMapAlbedo(image::ImageData& output, const image::ImageData& colorMap,
                                                 const Heightmap& globalBlendDistance,
                                                 const GtsColorMapSettings& settings);
 /**
@@ -228,7 +228,7 @@ private:
  * @return Changed pixel count or InvalidArgument; failure leaves output unchanged.
  * @thread Synchronous; no reference or pointer survives the call.
  */
-[[nodiscard]] Result<int> bakeGtsMacroVariationAlbedo(image::ImageData& output,
+[[nodiscard]] EVENGINE_API_DOMAINS Result<int> bakeGtsMacroVariationAlbedo(image::ImageData& output,
                                                        const image::ImageData& variationMap,
                                                        const GtsMacroVariationSettings& settings,
                                                        double originX = 0, double originZ = 0,
@@ -247,7 +247,7 @@ private:
  * @return Total changed output samples or InvalidArgument; both outputs remain unchanged on failure.
  * @thread Synchronous exclusive output access; no input is retained.
  */
-[[nodiscard]] Result<int> bakeGtsGeologicalSurface(image::ImageData& albedo,
+[[nodiscard]] EVENGINE_API_DOMAINS Result<int> bakeGtsGeologicalSurface(image::ImageData& albedo,
                                                     image::ImageData& packedNormal,
                                                     const Heightmap& heights,
                                                     const Heightmap& layerStrength,
@@ -272,7 +272,7 @@ private:
  * @return Total changed samples or InvalidArgument; all three outputs remain unchanged on failure.
  * @thread Synchronous exclusive output access; no input is retained.
  */
-[[nodiscard]] Result<int> bakeGtsDetailSurface(image::ImageData& albedo,
+[[nodiscard]] EVENGINE_API_DOMAINS Result<int> bakeGtsDetailSurface(image::ImageData& albedo,
                                                image::ImageData& packedNormal,
                                                Heightmap& detailGreyscale,
                                                const Heightmap& layerStrength,
@@ -296,7 +296,7 @@ private:
  * @return Changed pixel count or InvalidArgument; failure leaves output unchanged.
  * @thread Synchronous exclusive output access; all other inputs are immutable and no borrow survives the call.
  */
-[[nodiscard]] Result<int> bakeGtsWeatherAlbedo(image::ImageData& output, const Heightmap& heights,
+[[nodiscard]] EVENGINE_API_DOMAINS Result<int> bakeGtsWeatherAlbedo(image::ImageData& output, const Heightmap& heights,
                                                const image::ImageData& snowAlbedo,
                                                const image::ImageData& snowMask,
                                                const GtsSnowSurfaceSettings& snow,
@@ -324,7 +324,7 @@ private:
  * @return Total changed output samples or InvalidArgument; all four outputs remain unchanged on failure.
  * @thread Synchronous exclusive access to outputs; no input or pointer is retained.
  */
-[[nodiscard]] Result<int> bakeGtsWeatherPbr(image::ImageData& normalOutput, image::ImageData& maskOutput,
+[[nodiscard]] EVENGINE_API_DOMAINS Result<int> bakeGtsWeatherPbr(image::ImageData& normalOutput, image::ImageData& maskOutput,
                                             Heightmap& displacement, Heightmap& tessellation,
                                             const Heightmap& heights, const image::ImageData& snowNormal,
                                             const image::ImageData& snowMask, const image::ImageData& rainData,
@@ -343,7 +343,7 @@ private:
  * @return Changed pixel count or InvalidArgument; failure leaves output unchanged.
  * @thread Synchronous exclusive output access; input storage is not retained and no callbacks run.
  */
-[[nodiscard]] Result<int> combinePcgMaskMapChannels(
+[[nodiscard]] EVENGINE_API_DOMAINS Result<int> combinePcgMaskMapChannels(
     image::ImageData& output, const image::ImageData& red, const image::ImageData& green,
     const image::ImageData& blue, const image::ImageData& alpha, std::uint32_t activeChannels = 15);
 
@@ -358,10 +358,10 @@ private:
  * @return Changed atlas pixel count or InvalidArgument; failure leaves output unchanged.
  * @thread Synchronous exclusive output access; tile storage is not retained and no callbacks run.
  */
-[[nodiscard]] Result<int> placePcgMaskMapTileInto(
+[[nodiscard]] EVENGINE_API_DOMAINS Result<int> placePcgMaskMapTileInto(
     image::ImageData& output, const image::ImageData& tile, int destinationX, int destinationY,
     int destinationWidth, int destinationHeight);
 
 /** @brief Register the full-host ImageData adapter; VM-thread only, no retained table reference. */
-void exposeTerrainImageAdapter(ssq::Table& table);
+EVENGINE_API_DOMAINS void exposeTerrainImageAdapter(ssq::Table& table);
 }  // namespace eve::procgen

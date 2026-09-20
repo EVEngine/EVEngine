@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "procgen/algorithms/CaveScallops.h"
 
@@ -24,6 +26,6 @@ struct CaveScallopHistorySample {
  * @param input Original scallop inputs plus normalized younger-stage strength.
  * @return Cumulative retreat and diagnostics for younger coverage, scale, and reversal.
  */
-[[nodiscard]] CaveScallopHistorySample sampleCaveScallopHistory(const CaveScallopHistoryInput& input);
+[[nodiscard]] EVENGINE_API_DOMAINS CaveScallopHistorySample sampleCaveScallopHistory(const CaveScallopHistoryInput& input);
 
 }  // namespace eve::procgen

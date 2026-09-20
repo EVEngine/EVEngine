@@ -36,7 +36,7 @@ struct TerrainProbePlacementSettings {
  * @throws std::bad_alloc Output remains unchanged.
  * @thread Synchronous exclusive output access; no scene object, callback, clock or RNG state is retained.
  */
-[[nodiscard]] Result<int> exportTerrainProbePoints(PointSet& output, const Heightmap& fitness,
+[[nodiscard]] EVENGINE_API_DOMAINS Result<int> exportTerrainProbePoints(PointSet& output, const Heightmap& fitness,
                                                    const Heightmap& heights,
                                                    const TerrainProbePlacementSettings& settings);
 
@@ -56,7 +56,7 @@ struct TerrainProbeTile {
  * @ownership Tile outputs must be distinct. No pointer, raster, callback or RNG state is retained.
  * One seed drives a single stream in mapping order; Replace/Remove match the stable probe resource name.
  */
-[[nodiscard]] Result<TerrainMultiTileReport> applyTerrainProbesMultiTile(
+[[nodiscard]] EVENGINE_API_DOMAINS Result<TerrainMultiTileReport> applyTerrainProbesMultiTile(
     const std::vector<TerrainProbeTile>& tiles, const Heightmap& operationFitness,
     const TerrainProbePlacementSettings& settings, const TerrainStampSettings& operationSettings,
     TerrainProbeOperationMode mode, bool worldMapOperation = false,

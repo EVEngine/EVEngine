@@ -42,7 +42,7 @@ struct SplineFrameSample {
 };
 
 /** @brief Owning uniformly distributed spline samples for instancing. */
-class SplineDistribution {
+class EVENGINE_API_DOMAINS SplineDistribution {
 public:
     /** @brief Construct an owning distribution from validated samples. */
     explicit SplineDistribution(std::vector<SplineFrameSample> frames = {}) : frames_(std::move(frames)) {}

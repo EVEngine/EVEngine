@@ -15,7 +15,7 @@ namespace eve::procgen::road {
  * Mutations are synchronous and owner-thread only. Revision bumps on every
  * successful structural change. Handles/ids are stable until erase.
  */
-class RoadNetwork {
+class EVENGINE_API_DOMAINS RoadNetwork {
 public:
     /** @brief Insert a junction node after validating finite coordinates. */
     [[nodiscard]] Result<std::uint32_t> addNode(float x, float y, float z, float junctionRadius = 6.f);

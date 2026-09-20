@@ -32,7 +32,7 @@ struct TerrainImageMaskSettings {
  * the source sRGB-to-Lab/CIE76 equations and strict threshold; accuracy=1 rejects even exact matches.
  * No implicit strength or inversion is applied. Image decoding and GPU resources remain caller-owned.
  */
-[[nodiscard]] Result<int> generateTerrainImageMask(Heightmap& target, const Heightmap& input, const Heightmap& red,
+[[nodiscard]] EVENGINE_API_DOMAINS Result<int> generateTerrainImageMask(Heightmap& target, const Heightmap& input, const Heightmap& red,
                                                    const Heightmap& green, const Heightmap& blue,
                                                    const Heightmap& alpha, const Heightmap& curve,
                                                    const TerrainImageMaskSettings& settings, TerrainMaskBlend mode);
@@ -49,7 +49,7 @@ struct TerrainImageMaskSettings {
  * @throws std::bad_alloc Target remains unchanged.
  * @thread Synchronous exclusive target access; no retained resources, callbacks, time, or RNG.
  */
-[[nodiscard]] Result<int> applyTerrainGlobalSpawnerMask(Heightmap& target, const Heightmap& input,
+[[nodiscard]] EVENGINE_API_DOMAINS Result<int> applyTerrainGlobalSpawnerMask(Heightmap& target, const Heightmap& input,
                                                         const Heightmap& source, const Heightmap& curve,
                                                         const TerrainImageMaskSettings& settings,
                                                         TerrainMaskBlend mode);

@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include <cstdint>
 #include <vector>
@@ -38,16 +40,16 @@ struct CaveBreakdownSet {
  * @param seed Deterministic generator seed.
  * @return Events and approximate detached/deposited volume statistics.
  */
-CaveBreakdownSet createCaveBreakdown(const std::vector<CaveBreakdownChamber>& chambers, int eventCount, float strength,
+EVENGINE_API_DOMAINS CaveBreakdownSet createCaveBreakdown(const std::vector<CaveBreakdownChamber>& chambers, int eventCount, float strength,
                                      uint32_t seed);
 
 /** @brief Carve the event's shallow ceiling detachment scars from a cave SDF. */
-float carveCaveBreakdownScars(float x, float y, float z, float current, const CaveBreakdownSet& breakdown);
+EVENGINE_API_DOMAINS float carveCaveBreakdownScars(float x, float y, float z, float current, const CaveBreakdownSet& breakdown);
 
 /** @brief Union the event's landed breakdown blocks into a cave SDF. */
-float addCaveBreakdownBlocks(float x, float y, float z, float current, const CaveBreakdownSet& breakdown);
+EVENGINE_API_DOMAINS float addCaveBreakdownBlocks(float x, float y, float z, float current, const CaveBreakdownSet& breakdown);
 
 /** @brief Test whether a point lies on a generated breakdown block surface. */
-bool isCaveBreakdownBlockSurface(float x, float y, float z, float tolerance, const CaveBreakdownSet& breakdown);
+EVENGINE_API_DOMAINS bool isCaveBreakdownBlockSurface(float x, float y, float z, float tolerance, const CaveBreakdownSet& breakdown);
 
 }  // namespace eve::procgen

@@ -52,7 +52,7 @@ struct DecodedTerrainFile {
  *             `TerrainFileFormat::Auto`.
  * @return The parsed selector.
  */
-[[nodiscard]] TerrainFileFormat parseTerrainFileFormat(std::string_view name) noexcept;
+[[nodiscard]] EVENGINE_API_DOMAINS TerrainFileFormat parseTerrainFileFormat(std::string_view name) noexcept;
 
 /**
  * @brief Decode a terrain height field from in-memory file bytes.
@@ -61,7 +61,7 @@ struct DecodedTerrainFile {
  * @param format Encoding selector, or `Auto` to detect from the magic.
  * @return The decoded height field, or a failure diagnostic naming the reason.
  */
-[[nodiscard]] eve::Result<DecodedTerrainFile> decodeTerrainFile(std::span<const std::uint8_t> bytes,
+[[nodiscard]] EVENGINE_API_DOMAINS eve::Result<DecodedTerrainFile> decodeTerrainFile(std::span<const std::uint8_t> bytes,
                                                                 TerrainFileFormat format);
 
 /**

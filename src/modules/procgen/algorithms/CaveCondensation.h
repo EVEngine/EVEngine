@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include <cstdint>
 #include <vector>
@@ -22,7 +24,7 @@ struct CaveCondensationResult {
  * @param seed Deterministic microclimate and pitting seed.
  * @return Affected voxel count and bounded retreat statistics in normalized cave space.
  */
-CaveCondensationResult erodeCaveByCondensation(std::vector<float>& density, const std::vector<float>& hydraulicExposure,
+EVENGINE_API_DOMAINS CaveCondensationResult erodeCaveByCondensation(std::vector<float>& density, const std::vector<float>& hydraulicExposure,
                                                int nx, int ny, int nz, float strength, uint32_t seed);
 
 }  // namespace eve::procgen

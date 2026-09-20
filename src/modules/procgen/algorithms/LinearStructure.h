@@ -25,7 +25,7 @@ class MeshRecipeRegistry;
  *   - uvRepeat:   float, texture repeats per world unit so grain/brick tiling
  *                 stays continuous across unit seams (default 2.0)
  */
-bool generateLinearStructure(const std::string &kind, const Params &params, MeshBuild &out,
+EVENGINE_API_DOMAINS bool generateLinearStructure(const std::string &kind, const Params &params, MeshBuild &out,
                              std::string &error);
 
 /** @brief Register all built-in linear structure mesh recipes into a registry. */

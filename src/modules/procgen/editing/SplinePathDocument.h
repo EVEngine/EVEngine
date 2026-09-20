@@ -83,7 +83,7 @@ public:
  *
  * Unknown snapshot fields are ignored. Known fields are validated into an isolated candidate before commit.
  */
-class SplinePathDocument final : public virtual IEditableTarget,
+class EVENGINE_API_ORCHESTRATION SplinePathDocument final : public virtual IEditableTarget,
                                  public IDomainOperationTarget,
                                  public IDomainOperationTargetStaging,
                                  public ISplinePathDocumentEditTarget {

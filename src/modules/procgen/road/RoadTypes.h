@@ -112,13 +112,13 @@ struct RoadProfile {
  * @param lanesBackward Optional opposite lanes (>= 0).
  * @return Owning profile, or a structured validation diagnostic.
  */
-[[nodiscard]] Result<RoadProfile> makeRoadProfile(const RoadStyle& style, int lanesForward, int lanesBackward);
+[[nodiscard]] EVENGINE_API_DOMAINS Result<RoadProfile> makeRoadProfile(const RoadStyle& style, int lanesForward, int lanesBackward);
 
 /**
  * @brief Map a material tag to the MeshBuild group name used by the baker.
  * @ownership borrowed — returns a pointer to a static string literal; callers must not free it.
  * @lifetime Program lifetime; the pointer remains valid for the process.
  */
-[[nodiscard]] const char* roadMaterialGroup(RoadMaterial material) noexcept;
+[[nodiscard]] EVENGINE_API_DOMAINS const char* roadMaterialGroup(RoadMaterial material) noexcept;
 
 }  // namespace eve::procgen::road

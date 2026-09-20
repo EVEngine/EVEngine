@@ -50,6 +50,12 @@ SHARED_SOURCES: dict[str, tuple[str, ...]] = {
     # procgen_*), by procgen.cpp, and by the voxel render tests through
     # VoxelRenderFixtures.h.
     "RenderImageAuditIo": ("graphics", "procgen", "voxel"),
+    # createStylizedWaterScene / WaterSceneFixture::update: declared in
+    # water_scene_fixture.h and called by procgen.cpp, while the defining TU has no
+    # TEST_CASE and was partitioned into graphics. Same shape as RenderImageAuditIo
+    # (spec 7.8/7.9): a `unit_test_<domain>` executable is its own link unit, so the
+    # helper has to be compiled into every consumer domain.
+    "water_scene_fixture": ("graphics", "procgen"),
 }
 
 
@@ -276,12 +282,17 @@ def emit_cmake(
             continue
         sources = "".join(f'  "{member.as_posix()}"\n' for member in members)
         lines.append(f"set(EVE_TEST_DOMAIN_{domain}_SOURCES\n{sources})\n")
-    for stem, consumers in SHARED_SOURCES.items():
-        for domain in consumers:
-            path = (test_dir / f"{stem}.cpp").resolve().as_posix()
-            lines.append(
-                f"set(EVE_TEST_DOMAIN_{domain}_SHARED_SOURCES\n  \"{path}\"\n)\n"
-            )
+    # One `set()` per domain, accumulating every shared helper it consumes. Emitting
+    # one `set()` per (helper, domain) pair silently dropped all but the last helper:
+    # a second `set()` on the same variable replaces the first.
+    for domain in buckets:
+        helpers = [stem for stem, consumers in SHARED_SOURCES.items() if domain in consumers]
+        if not helpers:
+            continue
+        sources = "".join(
+            f'  "{(test_dir / f"{stem}.cpp").resolve().as_posix()}"\n' for stem in helpers
+        )
+        lines.append(f"set(EVE_TEST_DOMAIN_{domain}_SHARED_SOURCES\n{sources})\n")
     out_path.write_text("\n".join(lines), encoding="utf-8")
 
 

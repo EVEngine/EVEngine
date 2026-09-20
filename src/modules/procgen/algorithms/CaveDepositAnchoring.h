@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "procgen/algorithms/CaveFieldSampling.h"
 
@@ -28,7 +30,7 @@ struct CaveVerticalSpan {
  * @param preferredY Preferred point inside the requested air interval.
  * @return Floor and ceiling zero crossings, or no value when no reliable air interval exists.
  */
-std::optional<CaveVerticalSpan> findCaveVerticalSpan(const std::vector<float>& density, int nx, int ny, int nz, float x,
+EVENGINE_API_DOMAINS std::optional<CaveVerticalSpan> findCaveVerticalSpan(const std::vector<float>& density, int nx, int ny, int nz, float x,
                                                      float z, float preferredY);
 
 /**
@@ -41,7 +43,7 @@ std::optional<CaveVerticalSpan> findCaveVerticalSpan(const std::vector<float>& d
  * @param maximumDistance Maximum accepted displacement from point.
  * @return Surface position and normal pointing into rock, or no value when projection is unreliable.
  */
-std::optional<CaveSurfaceAnchor> projectToFinalCaveSurface(const std::vector<float>& density, int nx, int ny, int nz,
+EVENGINE_API_DOMAINS std::optional<CaveSurfaceAnchor> projectToFinalCaveSurface(const std::vector<float>& density, int nx, int ny, int nz,
                                                            CaveFieldPoint point, float maximumDistance);
 
 }  // namespace eve::procgen

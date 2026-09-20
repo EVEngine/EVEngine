@@ -15,7 +15,7 @@ namespace eve::asset_procgen {
  * @return Owned import candidate ready for `buildEvaArchive`, or a structured failure with no partial result.
  * @thread Worker-safe; performs no filesystem, graphics, script or callback operation.
  */
-[[nodiscard]] Result<asset_import::PreparedAssetImport> prepareGtsTerrainLodPackage(
+[[nodiscard]] EVENGINE_API_ORCHESTRATION Result<asset_import::PreparedAssetImport> prepareGtsTerrainLodPackage(
     const asset_import::ImportPackageIdentity& package, const procgen::GtsTerrainLodSet& lods,
     const std::string& terrainName, const asset_import::AssetImportLimits& limits = {});
 }

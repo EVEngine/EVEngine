@@ -51,7 +51,7 @@ struct TerrainDetailPlacementSettings {
  * Caller serializes output and input access on its owner thread; no callbacks,
  * retained references or hidden time.
  */
-[[nodiscard]] Result<int> exportTerrainDetailPoints(PointSet& output, const TerrainDetailLayer& layer,
+[[nodiscard]] EVENGINE_API_DOMAINS Result<int> exportTerrainDetailPoints(PointSet& output, const TerrainDetailLayer& layer,
                                                     const Heightmap&                      heights,
                                                     const TerrainDetailPlacementSettings& settings);
 }  // namespace eve::procgen

@@ -65,7 +65,7 @@ struct WaterDepthGradient {
  * Water::bindDefaults for the layout. Caller owns Water*; its Mesh / Shader are
  * owned by Graphics.
  */
-class Water {
+class EVENGINE_API_BACKENDS Water {
 public:
     explicit Water(Graphics *gfx);
     ~Water();

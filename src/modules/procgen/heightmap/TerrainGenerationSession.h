@@ -29,7 +29,7 @@ enum class TerrainSessionRunStatus { Idle, Pending, Completed, Cancelled, Failed
  * Versioned snapshots retain the baseline, every owned command, enabled flags, cursor and access policy.
  * Asynchronous worker tickets and a generic gameplay object model are not introduced.
  */
-class TerrainGenerationSession {
+class EVENGINE_API_DOMAINS TerrainGenerationSession {
 public:
     /** @brief Construct an empty editable session. */
     TerrainGenerationSession();

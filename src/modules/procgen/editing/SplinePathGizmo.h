@@ -27,7 +27,7 @@ struct SplinePathDragPreview {
 };
 
 /** @brief Builds sampled path, anchor and Bezier handle overlay primitives. */
-class SplinePathGizmoBuilder {
+class EVENGINE_API_ORCHESTRATION SplinePathGizmoBuilder {
 public:
     /** @brief Build an immutable overlay with bounded path sampling. */
     [[nodiscard]] editing::GizmoSnapshot build(const SplinePathDocument& document, int sampleCount = 64,
@@ -39,7 +39,7 @@ public:
  * @ownership Borrows the document; the caller must finish or cancel before destroying it.
  * @thread Viewport/editor thread only; no callbacks are retained or invoked.
  */
-class SplinePathDragSession {
+class EVENGINE_API_ORCHESTRATION SplinePathDragSession {
 public:
     /** @brief Create an idle session borrowing an authoritative spline document. */
     explicit SplinePathDragSession(SplinePathDocument* document, int sampleCount = 64);

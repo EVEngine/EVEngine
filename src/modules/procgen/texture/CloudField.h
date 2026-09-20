@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include <cstdint>
 
@@ -14,7 +16,7 @@ namespace eve::procgen {
  * time. When `seamless` is enabled the field tiles over a `worldScale`-wide
  * grid so it can be repeated across an arbitrarily large ground plane.
  */
-class CloudField {
+class EVENGINE_API_DOMAINS CloudField {
 public:
     struct Params {
         uint32_t seed        = 1337;

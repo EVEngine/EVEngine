@@ -13,7 +13,7 @@ using EditorStatus = eve::editing::Status;
 using EditorDiagnostic = eve::editing::Diagnostic;
 template<class T> using EditorResult = eve::editing::Result<T>;
 /** @brief Revisioned, schema-driven procedural texture recipe asset. */
-class TextureRecipeTarget final : public virtual IEditableTarget, public IDomainOperationTarget,
+class EVENGINE_API_ORCHESTRATION TextureRecipeTarget final : public virtual IEditableTarget, public IDomainOperationTarget,
                                   public IDomainOperationTargetStaging, public IPropertyProvider {
 public:
     /** @brief Construct a registered procedural texture recipe target. @throws std::invalid_argument When recipe is not registered. */
@@ -50,7 +50,7 @@ private:
 };
 struct TextureRecipePreviewArtifact { editing::Revision sourceRevision=0; int width=0,height=0; std::uint64_t checksum=0; };
 /** @brief Generates a candidate image and publishes it only after complete success. */
-class TextureRecipePreviewRuntime {
+class EVENGINE_API_ORCHESTRATION TextureRecipePreviewRuntime {
 public:
     TextureRecipePreviewRuntime();
     ~TextureRecipePreviewRuntime();

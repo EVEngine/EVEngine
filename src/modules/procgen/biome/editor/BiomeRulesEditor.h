@@ -29,7 +29,7 @@ namespace eve::biome_editor {
  * @threadaffinity Owner thread only.
  * @reentrancy No unknown callbacks.
  */
-class BiomeRulesEditor {
+class EVENGINE_API_EDITORS BiomeRulesEditor {
 public:
     /** @brief Construct a seeded forest layer with one weighted asset. */
     explicit BiomeRulesEditor(std::string targetId);

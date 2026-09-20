@@ -16,7 +16,7 @@ namespace eve::procgen {
  * Owns a current mesh snapshot and delegates all pixel history to image::UvPaintSession;
  * it does not implement a second raster painter. Updating a deformed mesh preserves paint.
  */
-class DynamicMeshUvPaintSession {
+class EVENGINE_API_DOMAINS DynamicMeshUvPaintSession {
 public:
     /** @brief Initialize owning mesh and RGBA8 image snapshots atomically. */
     [[nodiscard]] Result<void> initializeResult(const MeshBuild& mesh, const image::ImageData& image);

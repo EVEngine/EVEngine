@@ -16,6 +16,6 @@ struct GtsMeshSimplificationOptions {
  * @param quality Target triangle ratio in [0,1], rounded like GTS.
  * @param options Validated GTS simplification controls.
  */
-[[nodiscard]] Result<int> simplifyGtsMesh(MeshBuild& output,const MeshBuild& source,float quality,
+[[nodiscard]] EVENGINE_API_DOMAINS Result<int> simplifyGtsMesh(MeshBuild& output,const MeshBuild& source,float quality,
                                           const GtsMeshSimplificationOptions& options={});
 }
