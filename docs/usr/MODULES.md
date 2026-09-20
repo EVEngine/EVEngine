@@ -55,6 +55,7 @@
 - [程序化房屋](modules/housegen.md)：数据驱动的房屋生成（组件库 + 请求 → 布局 JSON）。
 - [建筑空间 ArchSpace](modules/archspace.md)：Pascal 风格的楼层/墙/房间/开口文档编辑（与 building 放置域分离）。
 - [程序化生成](modules/procgen.md)：按算法名和 Params 生成网格、地图层、图像、法线图或 GPU 纹理。
+- [六边形地图](modules/hexmap.md)：可编辑的尖顶六边形格网（平面与球面两种后端），按 5×5 分块生成地形/水面/河流/道路/城墙/地物与迷雾网格，附寻路、单位移动和存档。
 - [武器系统](modules/weapon.md)：数据驱动的武器、弹药池、挂点、瞄准、开火、装填与事件查询。
 - [载具系统](modules/vehicle.md)：载具定义、移动命令、座位和炮塔、伤害以及 2D/3D 物理接入。
 - [通用效果](modules/effects.md)：按主体管理可堆叠、可过期的效果及其结构化载荷与事件。

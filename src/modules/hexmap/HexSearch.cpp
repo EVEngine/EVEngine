@@ -162,7 +162,18 @@ Result<HexPath> findPath(const HexMap& map, HexSearchContext& scratch, HexCoordi
     const HexCoordinates goalCoord = to;
     const std::int32_t phase       = scratch.beginPhase();
 
-    scratch.data(start).searchPhase = phase;
+    // The origin has to be written completely, not just tagged with the new phase.
+    // `beginPhase` only bumps the phase and clears the buckets, so a reused context
+    // (the module owns exactly one `scratch_`) still holds the previous search's
+    // `distance`, `heuristic` and `pathFrom` here. `enqueue` derives the bucket from
+    // `priority()`, and the first relaxation reads `data(start).distance`, so a stale
+    // origin shifted every turn number and could pick a different route. The start
+    // cell is never relaxed as a neighbour, so nothing else can fix it up.
+    HexSearchData& startData = scratch.data(start);
+    startData.searchPhase    = phase;
+    startData.distance       = 0;
+    startData.pathFrom       = -1;
+    startData.heuristic      = from.distanceTo(goalCoord);
     scratch.enqueue(start);
 
     bool found = false;

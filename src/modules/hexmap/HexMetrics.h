@@ -100,8 +100,8 @@ enum class HexEdgeType : std::int32_t { Flat = 0, Slope = 1, Cliff = 2 };
  *
  * The layout matches the Catlike Coding "Hex Map" reference project: pointy-top
  * hexes on the XZ plane, +X east, +Z north, odd rows shifted half a cell to the
- * right, Y up. All radii are expressed in world units; `outerRadius` is settable
- * so a caller can rescale the whole map without touching the derived ratios.
+ * right, Y up. All radii are expressed in world units and are compile-time
+ * constants, so a different scale needs a different build rather than a setter.
  */
 class HexMetrics {
 public:
