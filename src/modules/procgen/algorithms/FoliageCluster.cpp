@@ -93,23 +93,21 @@ std::vector<V2> samplePlaneCentres(std::uint32_t seed, float radius, float minDi
  */
 template <typename NormalAt>
 void addPetal(MeshBuild &out, V3 center, V3 right, V3 forward, float size, float roll, float u0, float u1,
-              bool doubleSided, const NormalAt &normalAt) {
+              float v0, float v1, bool doubleSided, const NormalAt &normalAt) {
     const float c = std::cos(roll), s = std::sin(roll);
     const V3    axisX = add(mul(right, c), mul(forward, s));
     const V3    axisY = add(mul(right, -s), mul(forward, c));
 
-    // Lanceolate outline: pointed base, widest just above the middle, single
-    // tip. Six points read as a leaf only when the shoulders sit low and the
-    // taper towards the tip stays long; a symmetric hexagon reads as a pebble.
-    constexpr float kOutlineX[6] = {0.f, -0.42f, -0.50f, 0.f, 0.50f, 0.42f};
-    constexpr float kOutlineY[6] = {-0.50f, -0.24f, 0.06f, 0.50f, 0.06f, -0.24f};
+    // Ovate outline: rounded body, soft tip — matches bush/tree leaf cards.
+    constexpr float kOutlineX[6] = {0.f, -0.40f, -0.46f, 0.f, 0.46f, 0.40f};
+    constexpr float kOutlineY[6] = {-0.48f, -0.18f, 0.16f, 0.50f, 0.16f, -0.18f};
 
     const uint32_t base = uint32_t(out.getVertexCount());
     for (int i = 0; i < 6; ++i) {
         const V3    p = add(center, add(mul(axisX, kOutlineX[i] * size), mul(axisY, kOutlineY[i] * size)));
         const V3    n = normalAt(p);
         const float u = u0 + (0.5f + kOutlineX[i]) * (u1 - u0);
-        const float v = 0.5f + kOutlineY[i];
+        const float v = v0 + (0.5f + kOutlineY[i]) * (v1 - v0);
         out.addVertex(p.x, p.y, p.z, n.x, n.y, n.z, u, v);
     }
     for (int i = 1; i < 5; ++i) {
@@ -206,11 +204,21 @@ int addFoliageCluster(MeshBuild &out, const FoliageClusterDesc &desc) {
                        randomRange(rng, -0.85f, 0.85f);
             }
 
-            const float size         = leafSize * (1.f + randomRange(rng, -sizeVar, sizeVar));
-            const float u0           = uvMin + randomRange(rng, 0.f, 0.35f) * (uvMax - uvMin);
-            const float u1           = std::min(uvMax, u0 + 0.65f * (uvMax - uvMin));
-            const auto  shadedNormal = [&](V3 p) { return normalAt(p, planeNormal); };
-            addPetal(out, position, right, forward, size, roll, u0, u1, desc.doubleSided, shadedNormal);
+            const float size = leafSize * (1.f + randomRange(rng, -sizeVar, sizeVar));
+            // One of six shared leaf-card panels (tex.tree_atlas / tex.foliage).
+            constexpr int kCols = 2;
+            constexpr int kRows = 3;
+            const int     col   = int(randomRange(rng, 0.f, float(kCols))) % kCols;
+            const int     row   = int(randomRange(rng, 0.f, float(kRows))) % kRows;
+            const float   inset = 0.04f;
+            const float   spanU = (uvMax - uvMin) / float(kCols);
+            const float   spanV = 1.f / float(kRows);
+            const float   u0    = uvMin + (float(col) + inset) * spanU;
+            const float   u1    = uvMin + (float(col) + 1.f - inset) * spanU;
+            const float   v0    = (float(row) + inset) * spanV;
+            const float   v1    = (float(row) + 1.f - inset) * spanV;
+            const auto    shadedNormal = [&](V3 p) { return normalAt(p, planeNormal); };
+            addPetal(out, position, right, forward, size, roll, u0, u1, v0, v1, desc.doubleSided, shadedNormal);
             ++leaves;
         }
     }

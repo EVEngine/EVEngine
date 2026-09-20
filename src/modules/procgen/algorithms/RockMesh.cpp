@@ -98,9 +98,11 @@ bool resolveShape(const std::string &requested, uint32_t seed, ShapeProfile &sha
         {"slab", 1.28f, 0.62f, 1.02f, 0.74f, 0.08f, -0.03f, 5, 0.18f},
         {"block", 1.04f, 0.90f, 0.96f, 0.46f, 0.03f, 0.02f, 6, 0.20f},
         {"shard", 0.70f, 1.34f, 0.56f, 0.62f, 0.22f, -0.12f, 7, 0.24f},
+        // Tall fractured outcrop for cliff / ridge props (ARPG top-down sets).
+        {"cliff", 1.18f, 1.72f, 0.78f, 0.48f, 0.06f, -0.10f, 9, 0.30f},
     };
     std::string name = requested;
-    if (name == "mixed") name = profiles[seed % 4u].name;
+    if (name == "mixed") name = profiles[seed % 5u].name;
     for (const ShapeProfile &candidate : profiles) {
         if (name == candidate.name) {
             shape = candidate;
@@ -169,19 +171,23 @@ bool generateRockMesh(const Params &params, MeshBuild &out, std::string &error) 
         return false;
     }
     const float radius = std::max(0.05f, params.getFloat("radius", 0.72f));
-    const float flattening = std::clamp(params.getFloat("flattening", 0.22f), 0.f, 0.7f);
-    const float angularity = std::clamp(params.getFloat("angularity", 0.38f), 0.f, 1.f);
-    const float erosion = std::clamp(params.getFloat("erosion", 0.16f), 0.f, 0.45f);
-    const float scale = std::max(0.25f, params.getFloat("scale", 2.4f));
-    const int octaves = std::clamp(params.getInt("octaves", 4), 1, 8);
     const uint32_t seed = params.getSeed();
     const std::string requestedShape = params.getString("baseShape", "mixed");
     ShapeProfile shape{};
     if (!resolveShape(requestedShape, seed, shape)) {
         error = "mesh.rock: unknown baseShape '" + requestedShape +
-                "' (use mixed|boulder|slab|block|shard)";
+                "' (use mixed|boulder|slab|block|shard|cliff)";
         return false;
     }
+    const bool cliffShape = requestedShape == "cliff" || std::string(shape.name) == "cliff";
+    const float flattening =
+        std::clamp(params.getFloat("flattening", cliffShape ? 0.08f : 0.22f), 0.f, 0.7f);
+    const float angularity =
+        std::clamp(params.getFloat("angularity", cliffShape ? 0.72f : 0.38f), 0.f, 1.f);
+    const float erosion =
+        std::clamp(params.getFloat("erosion", cliffShape ? 0.22f : 0.16f), 0.f, 0.45f);
+    const float scale = std::max(0.25f, params.getFloat("scale", cliffShape ? 3.1f : 2.4f));
+    const int octaves = std::clamp(params.getInt("octaves", cliffShape ? 5 : 4), 1, 8);
 
     uint32_t randomState = seed ^ 0x9e3779b9u;
     const float variation = std::clamp(params.getFloat("variation", 0.42f), 0.f, 1.f);
@@ -235,7 +241,11 @@ bool generateRockMesh(const Params &params, MeshBuild &out, std::string &error) 
     for (int cut = 0; cut < cutCount; ++cut) {
         Vec3 plane = normalize({randomSigned(randomState), randomSigned(randomState),
                                 randomSigned(randomState)});
-        if (cut == 0) plane = normalize({0.2f, -1.f, 0.1f});  // stable resting face
+        if (cut == 0) {
+            // Cliffs keep a steep face toward +X; other shapes keep a stable base.
+            plane = cliffShape ? normalize({1.f, -0.15f, 0.08f})
+                               : normalize({0.2f, -1.f, 0.1f});
+        }
         const float support = radius * std::sqrt(
             plane.x * plane.x * shape.axisX * shape.axisX +
             plane.y * plane.y * shape.axisY * shape.axisY * (1.f - flattening) *
@@ -269,7 +279,23 @@ bool generateRockMesh(const Params &params, MeshBuild &out, std::string &error) 
     out.reserve(int(positions.size()), int(triangles.size() * 3));
     for (size_t i = 0; i < positions.size(); ++i) {
         const Vec3 &p = positions[i], &n = normals[i];
-        out.addVertex(p.x, p.y, p.z, n.x, n.y, n.z, p.x + 0.5f, p.y + 0.5f);
+        // Dominant-axis planar UVs reduce stretching vs world-XY projection and
+        // let procedural rock/moss albedos read as surface detail instead of
+        // smeared bands across facets.
+        const float ax = std::fabs(n.x), ay = std::fabs(n.y), az = std::fabs(n.z);
+        float u = 0.f, v = 0.f;
+        if (ax >= ay && ax >= az) {
+            u = p.z;
+            v = p.y;
+        } else if (ay >= az) {
+            u = p.x;
+            v = p.z;
+        } else {
+            u = p.x;
+            v = p.y;
+        }
+        const float uvScale = 0.55f / std::max(0.05f, radius);
+        out.addVertex(p.x, p.y, p.z, n.x, n.y, n.z, u * uvScale + 0.5f, v * uvScale + 0.5f);
     }
     for (const Tri &t : triangles) out.addTriangle(t.a, t.b, t.c);
     out.setMeta("algorithm", "mesh.rock");
