@@ -51,6 +51,40 @@ class CiChangeScopeTests(unittest.TestCase):
         scopes = ci_change_scope.classify([], force_all=True)
         self.assertTrue(all(scopes.values()))
 
+    def test_changed_zeroerr_sources_select_their_source_labels(self):
+        mode, label = ci_change_scope.classify_tests(
+            ["test/math.cpp", "test/procgen.cpp"]
+        )
+        self.assertEqual("selected", mode)
+        self.assertEqual(r"^source:(math[.]cpp|procgen[.]cpp)$", label)
+
+    def test_production_change_runs_full_test_suite(self):
+        mode, label = ci_change_scope.classify_tests(
+            ["src/modules/scene/Scene.cpp"]
+        )
+        self.assertEqual("full", mode)
+        self.assertEqual("", label)
+
+    def test_test_infrastructure_change_runs_full_test_suite(self):
+        mode, label = ci_change_scope.classify_tests(["test/CMakeLists.txt"])
+        self.assertEqual("full", mode)
+        self.assertEqual("", label)
+
+    def test_deleted_test_source_runs_full_remaining_suite(self):
+        mode, label = ci_change_scope.classify_tests(["test/not_present.cpp"])
+        self.assertEqual("full", mode)
+        self.assertEqual("", label)
+
+    def test_docs_only_change_has_no_native_tests(self):
+        mode, label = ci_change_scope.classify_tests(["docs/usr/guide.md"])
+        self.assertEqual("none", mode)
+        self.assertEqual("", label)
+
+    def test_forced_run_uses_full_test_suite(self):
+        mode, label = ci_change_scope.classify_tests([], force_all=True)
+        self.assertEqual("full", mode)
+        self.assertEqual("", label)
+
 
 if __name__ == "__main__":
     unittest.main()

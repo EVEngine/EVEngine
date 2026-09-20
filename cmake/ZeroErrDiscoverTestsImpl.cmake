@@ -109,10 +109,14 @@ foreach(_basename IN LISTS _bundle_files)
     list(GET _parts 0 _name)
     list(GET _parts 1 _file)
     if(_file STREQUAL _basename)
+      # Keep source ownership on every per-case entry.  CI can then select the
+      # cases from changed test translation units without relying on naming
+      # conventions inside TEST_CASE strings.
+      set(_source_label "source:${_basename}")
       # CTest include files use classic add_test(name exe [args...]), not NAME/COMMAND keywords.
       string(APPEND _content
         "add_test(\"${_name}\" \"${ZEROERR_EXE}\" \"--testcase=^${_name}$\")\n"
-        "set_tests_properties(\"${_name}\" PROPERTIES WORKING_DIRECTORY \"${ZEROERR_WORKING_DIRECTORY}\")\n")
+        "set_tests_properties(\"${_name}\" PROPERTIES LABELS \"${_source_label}\" WORKING_DIRECTORY \"${ZEROERR_WORKING_DIRECTORY}\")\n")
       if(_name MATCHES "^ClassicScenes[.]")
         # These asset-dependent cases already return early with these diagnostics.
         # Expose that outcome as skipped rather than a zero-assertion pass.
@@ -121,7 +125,7 @@ foreach(_basename IN LISTS _bundle_files)
       endif()
       if(_name STREQUAL "ClassicScenes.perf.maxFps")
         string(APPEND _content
-          "set_tests_properties(\"${_name}\" PROPERTIES LABELS \"benchmark\")\n")
+          "set_property(TEST \"${_name}\" APPEND PROPERTY LABELS \"benchmark\")\n")
       endif()
       if(_name MATCHES "^resourceFormats\\.")
         # Helpers must receive TestContext, but fail closed if a future helper
