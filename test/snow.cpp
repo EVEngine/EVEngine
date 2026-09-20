@@ -4,10 +4,10 @@
 #include <cmath>
 
 #include "procgen/heightmap/Heightmap.h"
-#include "snow/Snow.h"
-#include "snow/SnowField.h"
+#include "weather/Snow.h"
+#include "weather/SnowField.h"
 
-using eve::snow::SnowField;
+using eve::weather::SnowField;
 
 TEST_CASE("SnowField.basicGrid") {
     SnowField f(8, 6);
@@ -179,16 +179,16 @@ TEST_CASE("SnowField.applyToHeightmapAddsSnow") {
     SnowField f(8, 8);
     f.fill(0.5f);
     eve::procgen::Heightmap out;
-    eve::snow::applySnowToHeightmap(f, terrain, out, 0.2f);
+    eve::weather::applySnowToHeightmap(f, terrain, out, 0.2f);
     CHECK_EQ(out.getWidth(), 8);
     CHECK(std::fabs(out.height(3, 3) - 0.6f) < 1e-5f);  // 0.5 + 0.5 * 0.2
 
     f.setHeight(2, 2, 0.f);
-    eve::snow::applySnowToHeightmap(f, terrain, out, 0.2f);
+    eve::weather::applySnowToHeightmap(f, terrain, out, 0.2f);
     CHECK(std::fabs(out.height(2, 2) - 0.5f) < 1e-5f);  // bare ground
 
     SnowField small(4, 4);
     small.fill(1.f);
-    eve::snow::applySnowToHeightmap(small, terrain, out, 0.2f);
+    eve::weather::applySnowToHeightmap(small, terrain, out, 0.2f);
     CHECK(std::fabs(out.height(6, 6) - 0.5f) < 1e-5f);  // outside field: terrain only
 }
