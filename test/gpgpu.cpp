@@ -846,6 +846,73 @@ float readArrayFloat(ssq::VM &vm, ssq::Object arr, int idx) {
 
 }  // namespace
 
+// ---------------------------------------------------------------------------
+// 脚本面的批量回读（方案 §10.21 决定：给脚本面加"返回数组"的绑定）。
+//
+// 不用 GPU：把一个 CPU-only 的 `TestBuffer` 当 `GpuBuffer*` 交给脚本，走的就是绑定生成的
+// 那条路（`readFloat32s(count, startIndex) -> array`），而裁剪/越界边界可以逐个钉死。
+// ---------------------------------------------------------------------------
+
+TEST_CASE("gpgpu.buffer.readFloat32sCopyClipsToCapacity") {
+    TestBuffer buffer(4 * int(sizeof(float)));
+    for (int i = 0; i < 4; ++i) buffer.writeFloat32(i, float(i + 1));
+
+    const std::vector<float> firstTwo = buffer.readFloat32sCopy(2, 0);
+    REQUIRE_EQ(firstTwo.size(), std::size_t{2});
+    CHECK_EQ(firstTwo[0], 1.f);
+    CHECK_EQ(firstTwo[1], 2.f);
+
+    // 起始下标之后只剩一个：只返回剩下的那一个，不越界。
+    const std::vector<float> tail = buffer.readFloat32sCopy(4, 3);
+    REQUIRE_EQ(tail.size(), std::size_t{1});
+    CHECK_EQ(tail[0], 4.f);
+
+    // 多要、起点越界、非正个数、负起点：都是空数组，而不是异常或越界读。
+    CHECK(buffer.readFloat32sCopy(0).empty());
+    CHECK(buffer.readFloat32sCopy(4, 4).empty());
+    CHECK(buffer.readFloat32sCopy(4, 99).empty());
+    CHECK(buffer.readFloat32sCopy(-1).empty());
+    CHECK(buffer.readFloat32sCopy(4, -1).empty());
+
+    // 读整段就是整段。
+    REQUIRE_EQ(buffer.readFloat32sCopy(4, 0).size(), std::size_t{4});
+}
+
+UnitSciptTest(GpuBufferBulkReadFixture, R"SQ(
+// 模块绑定是**惰性**的：不碰 `eve.Gpgpu` 就不会注册 `GpuBuffer` 类，而原生指针要交给脚本
+// 就必须先有这个类（否则 simplesquirrel 退化成裸 userpointer，脚本侧一调方法就报错）。
+// 这一行就是"先让 exposer 跑一遍"，不需要真的设备。
+gpgpuBindingPoked <- (eve.Gpgpu != null)
+
+values <- null
+count <- -1
+function readRange(buf, count_, startIndex) {
+    values = buf.readFloat32s(count_, startIndex)
+    count = values.len()
+    return true
+}
+)SQ");
+
+TEST_CASE_FIXTURE(GpuBufferBulkReadFixture, "gpgpu.buffer.readFloat32sReturnsAnArrayToScript") {
+    TestBuffer buffer(4 * int(sizeof(float)));
+    for (int i = 0; i < 4; ++i) buffer.writeFloat32(i, float(i + 1));
+
+    // 脚本拿到的是一个真数组：能 .len()，也能按下标取值。
+    REQUIRE(vm.callFunc(vm.findFunc("readRange"), vm, static_cast<eve::gpgpu::GpuBuffer*>(&buffer), 4, 0).toBool());
+    REQUIRE_EQ(vm.find("count").toInt(), 4);
+    CHECK(std::fabs(readArrayFloat(vm, vm.find("values"), 0) - 1.f) < 1e-5f);
+    CHECK(std::fabs(readArrayFloat(vm, vm.find("values"), 3) - 4.f) < 1e-5f);
+
+    // 多要 -> 裁剪（脚本侧看得见拿到几个，而不是抛错）。
+    REQUIRE(vm.callFunc(vm.findFunc("readRange"), vm, static_cast<eve::gpgpu::GpuBuffer*>(&buffer), 100, 2).toBool());
+    REQUIRE_EQ(vm.find("count").toInt(), 2);
+    CHECK(std::fabs(readArrayFloat(vm, vm.find("values"), 0) - 3.f) < 1e-5f);
+
+    // 起点在容量之后 -> 空数组。
+    REQUIRE(vm.callFunc(vm.findFunc("readRange"), vm, static_cast<eve::gpgpu::GpuBuffer*>(&buffer), 4, 9).toBool());
+    REQUIRE_EQ(vm.find("count").toInt(), 0);
+}
+
 UnitSciptTest(EcsPackFixture, R"SQ(
 class Vec { x = null; y = null }
 class Entity { Vec = null }
