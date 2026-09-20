@@ -282,6 +282,28 @@ public:
     [[nodiscard]] EVENGINE_API bool isStale(std::uint32_t index, std::uint32_t generation,
                                             std::uint64_t ownerEpoch) const noexcept;
 
+    /**
+     * @brief Keeps one live slot's object alive across erase() and clear().
+     * @param index Slot index taken from the reference.
+     * @param generation Slot generation taken from the reference.
+     * @param ownerEpoch Owner epoch taken from the reference.
+     * @return The live object, or a stale-handle failure.
+     * @ownership The object stays store-owned; the pin only postpones destruction.
+     * @remarks Every successful pin must be matched by exactly one unpin().
+     */
+    [[nodiscard]] EVENGINE_API Result<void*> pin(std::uint32_t index, std::uint32_t generation,
+                                                 std::uint64_t ownerEpoch);
+
+    /**
+     * @brief Releases one pin, destroying the object when it was the last one on
+     *        an erased slot.
+     * @param index Slot index taken from the reference.
+     * @param ownerEpoch Owner epoch taken from the reference.
+     * @remarks Safe to call on a stale slot or an already released pin: unpinning
+     *          more often than pinning is a no-op, never a destruction.
+     */
+    EVENGINE_API void unpin(std::uint32_t index, std::uint64_t ownerEpoch) noexcept;
+
     /** @brief Destroys every live object and invalidates every prior handle. */
     EVENGINE_API void clear();
 
@@ -292,6 +314,10 @@ private:
     struct Slot {
         std::uint32_t generation = 1;
         bool          retired    = false;
+        /** @brief Erased while pinned: the object outlives its handle. */
+        bool orphaned = false;
+        /** @brief Outstanding keep-alive pins. */
+        std::uint32_t pins       = 0;
         void*         object     = nullptr;
     };
 
@@ -312,6 +338,88 @@ private:
 };
 
 }  // namespace detail
+
+template <class T, class Tag>
+class RuntimeObjectRegistry;
+
+/**
+ * @brief RAII keep-alive for one `RuntimeObjectRegistry` entry.
+ *
+ * `Borrowed<T>` deliberately does not extend an object's lifetime; a `RuntimePin`
+ * does. The payload survives `erase()` and `clear()` for as long as one pin holds
+ * it, while the handle itself becomes stale immediately. The pin must not outlive
+ * the registry that produced it.
+ *
+ * @tparam T Object type stored by the producing registry.
+ * @tparam Tag Owner-specific tag of the producing registry.
+ */
+template <class T, class Tag>
+class RuntimePin {
+public:
+    using Ref = RuntimeHandleRef<Tag>;
+
+    /** @brief Constructs an unbound pin. */
+    RuntimePin()                             = default;
+    RuntimePin(const RuntimePin&)            = delete;
+    RuntimePin& operator=(const RuntimePin&) = delete;
+
+    /** @brief Moves the keep-alive to a new pin; the source becomes unbound. */
+    RuntimePin(RuntimePin&& other) noexcept
+        : store_(other.store_), reference_(other.reference_), object_(other.object_) {
+        other.store_  = nullptr;
+        other.object_ = nullptr;
+    }
+
+    /** @brief Move-assigns, releasing any keep-alive this pin already held. */
+    RuntimePin& operator=(RuntimePin&& other) noexcept {
+        if (this != &other) {
+            release();
+            store_        = other.store_;
+            reference_    = other.reference_;
+            object_       = other.object_;
+            other.store_  = nullptr;
+            other.object_ = nullptr;
+        }
+        return *this;
+    }
+
+    /** @brief Releases the keep-alive; an erased object is destroyed here. */
+    ~RuntimePin() { release(); }
+
+    /** @brief Whether this pin still keeps an object alive. */
+    [[nodiscard]] bool isBound() const noexcept { return store_ != nullptr && object_ != nullptr; }
+
+    /** @brief The reference this pin was created from. */
+    [[nodiscard]] const Ref& reference() const noexcept { return reference_; }
+
+    /** @brief Borrows the pinned object; valid until the pin is released. */
+    [[nodiscard]] T* get() const noexcept { return static_cast<T*>(object_); }
+
+    /** @brief Borrows the pinned object together with its owner epoch. */
+    [[nodiscard]] Borrowed<T> borrow() const noexcept { return Borrowed<T>(get(), reference_.ownerEpoch); }
+
+    /** @brief Pointer-like access to the pinned object. */
+    [[nodiscard]] T* operator->() const noexcept { return get(); }
+
+    /** @brief Dereferences the pinned object. */
+    [[nodiscard]] T& operator*() const noexcept { return *get(); }
+
+private:
+    friend class RuntimeObjectRegistry<T, Tag>;
+
+    RuntimePin(detail::RuntimeSlotStore* store, Ref reference, void* object) noexcept
+        : store_(store), reference_(reference), object_(object) {}
+
+    void release() noexcept {
+        if (store_ != nullptr) store_->unpin(reference_.handle.index(), reference_.ownerEpoch);
+        store_  = nullptr;
+        object_ = nullptr;
+    }
+
+    detail::RuntimeSlotStore* store_ = nullptr;
+    Ref                       reference_{};
+    void*                     object_ = nullptr;
+};
 
 /**
  * @brief Slot/generation registry whose objects are exclusively unique-owned.
@@ -382,9 +490,26 @@ public:
     /**
      * @brief Destroys the object identified by a live handle.
      * @return Applied, or StaleHandle/InvalidArgument/Failed.
+     * @remarks When a pin still holds the object, the handle becomes stale at once
+     *          but the object is destroyed only when the last pin is released.
      */
     [[nodiscard]] eve::Result<void> erase(Ref ref) {
         return store_.erase(ref.handle.index(), ref.handle.generation(), ref.ownerEpoch);
+    }
+
+    /**
+     * @brief Keeps one entry alive until the returned pin is released.
+     * @param ref Reference returned by emplace().
+     * @return A move-only keep-alive pin, or a stale-handle failure.
+     * @ownership The registry keeps owning the object; the pin postpones its
+     *            destruction across erase()/clear().
+     * @lifetime The pin must not outlive this registry.
+     * @thread Owner-thread-affine; no synchronization is provided.
+     */
+    [[nodiscard]] eve::Result<RuntimePin<T, Tag>> pin(Ref ref) {
+        auto object = store_.pin(ref.handle.index(), ref.handle.generation(), ref.ownerEpoch);
+        if (!object.ok()) return eve::Result<RuntimePin<T, Tag>>::failure(object.status());
+        return eve::Result<RuntimePin<T, Tag>>::success(RuntimePin<T, Tag>(&store_, ref, object.value()));
     }
 
     /** @brief Reports whether a non-invalid handle can no longer resolve. */

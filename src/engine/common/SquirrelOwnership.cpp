@@ -156,6 +156,40 @@ void* RuntimeSlotStore::resolve(std::uint32_t index, std::uint32_t generation,
     return (slot.object != nullptr && slot.generation == generation) ? slot.object : nullptr;
 }
 
+Result<void*> RuntimeSlotStore::pin(std::uint32_t index, std::uint32_t generation, std::uint64_t ownerEpoch) {
+    if (!coordinatesValid(index, generation)) {
+        return Result<void*>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "cannot pin an invalid runtime handle", {}, {}, "runtime.registry"));
+    }
+    if (ownerEpoch != ownerEpoch_) return registryStale<void*>();
+    const auto slotIndex = findSlot(index, generation, ownerEpoch);
+    if (!slotIndex) return registryStale<void*>();
+    Slot& slot = slots_[*slotIndex];
+    if (slot.object == nullptr || slot.generation != generation || slot.orphaned) return registryStale<void*>();
+    if (slot.pins == std::numeric_limits<std::uint32_t>::max())
+        return registryFailure<void*>(DiagnosticCode::InvariantViolation, "runtime registry pin count exhausted");
+    ++slot.pins;
+    return Result<void*>::success(slot.object);
+}
+
+void RuntimeSlotStore::unpin(std::uint32_t index, std::uint64_t ownerEpoch) noexcept {
+    if (ownerEpoch != ownerEpoch_ || index >= slots_.size()) return;
+    Slot& slot = slots_[index];
+    if (slot.pins == 0) return;
+    --slot.pins;
+    if (slot.pins != 0 || !slot.orphaned) return;
+    destroySlot(slot);
+    slot.orphaned = false;
+    if (!slot.retired) {
+        try {
+            freeSlots_.push_back(index);
+        } catch (...) {
+            // The object is already destroyed. Losing the free-list entry only
+            // wastes one slot index; it can never alias a live object.
+        }
+    }
+}
+
 Result<void> RuntimeSlotStore::erase(std::uint32_t index, std::uint32_t generation, std::uint64_t ownerEpoch) {
     if (!coordinatesValid(index, generation)) {
         return Result<void>::failure(Diagnostic::error(
@@ -168,6 +202,16 @@ Result<void> RuntimeSlotStore::erase(std::uint32_t index, std::uint32_t generati
     if (slot.object == nullptr || slot.generation != generation) return registryStale<void>();
 
     const auto next = nextGeneration(slot.generation);
+    if (slot.pins != 0) {
+        // Outstanding pins keep the object alive, so the slot must not be handed
+        // out again; the handle itself is stale as soon as the generation moves.
+        slot.orphaned = true;
+        if (next)
+            slot.generation = *next;
+        else
+            slot.retired = true;
+        return Result<void>::success(Status::success(StatusCode::Applied));
+    }
     if (next) {
         try {
             freeSlots_.push_back(index);
@@ -201,9 +245,19 @@ void RuntimeSlotStore::clear() {
     freeSlots_.reserve(slots_.size());
     freeSlots_.clear();
     for (std::uint32_t index = 0; index < slots_.size(); ++index) {
-        Slot& slot = slots_[index];
-        destroySlot(slot);
+        Slot&      slot = slots_[index];
         const auto next = nextGeneration(slot.generation);
+        if (slot.pins != 0) {
+            // Objects kept alive by a pin survive the clear; their slots stay out
+            // of the free list until unpin() destroys them.
+            slot.orphaned = true;
+            if (next)
+                slot.generation = *next;
+            else
+                slot.retired = true;
+            continue;
+        }
+        destroySlot(slot);
         if (next) {
             slot.generation = *next;
             freeSlots_.push_back(index);
