@@ -6,19 +6,60 @@
  */
 
 #include "common/Export.h"
+#include "common/Generation.h"
 #include "common/Identity.h"
 #include "common/Result.h"
 #include "common/Revision.h"
+#include "common/SchemaVersion.h"
 #include "common/Snapshot.h"
 #include "common/Time.h"
+#include "common/Value.h"
 
 #include <string>
 #include <string_view>
+#include <vector>
+
+namespace ssq {
+class Object;
+}
 
 namespace eve {
 
 /** @brief 脚本组件快照的稳定类型（`SnapshotEnvelope::type`）。 */
 inline constexpr const char* kScriptComponentSnapshotType = "eve.script-components";
+
+/**
+ * @brief 一个脚本实体实例上某个组件的**当前状态**（供引擎工具读取）。
+ *
+ * @remarks 这是 J-3「编辑器/工具读到脚本组件」的读侧原语：字段来自引擎侧那一个权威存储，
+ *          不是脚本实例的槽位。**未登记**的组件（纯槽位语义）不出现在这里——它们没有名字与
+ *          版本，引擎工具无从寻址（§9.62.1 的成本策略）。
+ */
+struct ScriptComponentInstanceState {
+    /** @brief 组件名（脚本登记时给的）。 */
+    std::string name;
+    /** @brief 组件版本。 */
+    SchemaVersion version;
+    /** @brief 注册表里的代际（同名同版本每次重新登记 +1）。 */
+    Generation generation;
+    /** @brief 字段名 → 当前值，按注册表记录的**声明顺序**收集（ inspector 需要稳定顺序）。 */
+    Value::Object fields;
+};
+
+/**
+ * @brief 读一个脚本实体实例上挂着的全部**已登记**组件的状态。
+ *
+ * @param entityInstance `eve.Entity` 子类的实例（例如从 `Scene::scriptEntitiesAt` 拿到的）。
+ * @return 按 (名字, 版本) 升序的状态数组；实例没有组件时返回空数组。
+ *         `InvalidArgument` 表示传进来的不是实例。
+ * @remarks 组件的身份来自实例上的控制槽位（`_componentName`/`_componentVersion`，§9.64），
+ *          值来自引擎侧存储；两者对不上（例如类登记过但数据条目已被清掉）时仍会列出该组件、
+ *          字段值为 `null`——工具应当看得见"有组件但没有数据"，而不是被静默跳过。
+ * @lifetime 返回值拥有自己的存储，脚本 VM 销毁后依然可用。
+ * @cost 与"实例上的组件数 × 字段数"成正比；供编辑器/工具按需调用，不在逐帧路径上。
+ */
+[[nodiscard]] EVENGINE_API Result<std::vector<ScriptComponentInstanceState>> scriptComponentInstancesOf(
+    const ssq::Object& entityInstance);
 
 /** @brief 脚本组件快照的 payload schema：`eve:script-components` 版本 1。 */
 [[nodiscard]] EVENGINE_API LogicalId scriptComponentSnapshotSchema();

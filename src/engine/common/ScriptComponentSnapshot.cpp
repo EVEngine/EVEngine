@@ -5,6 +5,10 @@
 #include "common/ScriptComponentStore.h"
 #include "common/Value.h"
 
+#include <squirrel.h>
+#include <simplesquirrel/simplesquirrel.hpp>
+
+#include <algorithm>
 #include <cstdint>
 #include <map>
 #include <string>
@@ -180,6 +184,98 @@ Result<void> restoreScriptComponentSnapshotJson(std::string_view            json
     auto parsed = parseSnapshotEnvelope(json, hashProvider);
     if (!parsed.ok()) return Result<void>::failure(parsed.status());
     return restoreScriptComponents(parsed.value(), hashProvider);
+}
+
+Result<std::vector<ScriptComponentInstanceState>> scriptComponentInstancesOf(const ssq::Object& entityInstance) {
+    if (entityInstance.getType() != ssq::Type::INSTANCE)
+        return Result<std::vector<ScriptComponentInstanceState>>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "script component inspection needs an entity instance",
+                              {}, {}, "ecs.snapshot"));
+    HSQUIRRELVM vm = entityInstance.getHandle();
+    if (vm == nullptr)
+        return Result<std::vector<ScriptComponentInstanceState>>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "script component inspection needs a live script VM", {},
+                              {}, "ecs.snapshot"));
+
+    // 实例上的 `_eid` 是实体身份，`_comps`（都是 `eve.Entity` 的声明槽位）是"这个实体有哪些
+    // 组件"的事实来源；每个组件实例上的 `_componentName`/`_componentVersion` 是它登记时的身份
+    // （§9.64 的控制槽位）。两步都用公开 sq API 读取，不碰 Squirrel 内部结构。
+    std::vector<std::pair<std::string, SchemaVersion>> identities;
+    std::uint64_t                                      entityId = 0;
+    const SQInteger                                    top      = sq_gettop(vm);
+    sq_pushobject(vm, entityInstance.getRaw());
+
+    sq_pushstring(vm, "_eid", -1);
+    if (SQ_SUCCEEDED(sq_get(vm, -2))) {
+        SQInteger raw = 0;
+        if (SQ_SUCCEEDED(sq_getinteger(vm, -1, &raw)) && raw > 0) entityId = static_cast<std::uint64_t>(raw);
+    }
+    sq_settop(vm, top);
+
+    sq_pushobject(vm, entityInstance.getRaw());
+    sq_pushstring(vm, "_comps", -1);
+    if (SQ_FAILED(sq_get(vm, -2)) || sq_gettype(vm, -1) != OT_TABLE) {
+        sq_settop(vm, top);
+        return Result<std::vector<ScriptComponentInstanceState>>::success({});
+    }
+    sq_pushnull(vm);  // 迭代游标
+    while (SQ_SUCCEEDED(sq_next(vm, -2))) {
+        // 栈：instance, comps, cursor, key, value
+        if (sq_gettype(vm, -1) == OT_INSTANCE) {
+            std::string  name;
+            std::int64_t version           = 0;
+            const auto   readComponentSlot = [&](const char* slot, bool asText) -> bool {
+                const SQInteger inner = sq_gettop(vm);
+                sq_push(vm, -1);  // 组件实例
+                sq_pushstring(vm, slot, -1);
+                const bool found = SQ_SUCCEEDED(sq_get(vm, -2));
+                bool       ok    = false;
+                if (found && asText) {
+                    const SQChar* raw = nullptr;
+                    ok                = SQ_SUCCEEDED(sq_getstring(vm, -1, &raw)) && raw != nullptr;
+                    if (ok) name = raw;
+                } else if (found) {
+                    SQInteger raw = 0;
+                    ok            = SQ_SUCCEEDED(sq_getinteger(vm, -1, &raw));
+                    if (ok) version = static_cast<std::int64_t>(raw);
+                }
+                sq_settop(vm, inner);
+                return ok;
+            };
+            if (readComponentSlot("_componentName", true) && !name.empty() &&
+                readComponentSlot("_componentVersion", false) && version > 0)
+                identities.emplace_back(name, SchemaVersion(static_cast<std::uint64_t>(version)));
+        }
+        sq_pop(vm, 2);  // key, value
+    }
+    sq_settop(vm, top);
+
+    std::sort(identities.begin(), identities.end());
+    identities.erase(std::unique(identities.begin(), identities.end()), identities.end());
+
+    std::vector<ScriptComponentInstanceState> out;
+    out.reserve(identities.size());
+    for (const auto& [name, version] : identities) {
+        ScriptComponentInstanceState state;
+        state.name                          = name;
+        state.version                       = version;
+        const ScriptComponentRecord* record = findScriptComponent(name, version);
+        state.generation                    = record != nullptr ? record->generation : Generation(0);
+
+        const Value* stored = findScriptComponentValues(ScriptComponentStoreKey{entityId, name, version});
+        // 按声明的顺序收集（inspector 需要稳定顺序）；存储里缺的字段给 null，让"有组件但缺数据"
+        // 在工具里可见。
+        const std::vector<std::string> fields = record != nullptr ? record->fields : std::vector<std::string>{};
+        for (const std::string& field : fields) {
+            const Value* value = stored != nullptr ? stored->find(field) : nullptr;
+            state.fields.emplace(field, value != nullptr ? *value : Value::null());
+        }
+        if (record == nullptr && stored != nullptr) {
+            if (const auto* object = stored->getIf<Value::Object>()) state.fields = *object;
+        }
+        out.push_back(std::move(state));
+    }
+    return Result<std::vector<ScriptComponentInstanceState>>::success(std::move(out));
 }
 
 }  // namespace eve

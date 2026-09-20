@@ -327,10 +327,33 @@ public:
     /** @brief Call cb(instance, index) for every rooted instance; returns count. */
     int forEachEntity(const std::string &hostName, const std::string &nodeId,
                       ssq::Object cb);
+
+    /**
+     * @brief 取某个节点上挂着的脚本实体实例（`eve.SceneEntity` 子类实例）的**原生**快照。
+     *
+     * `forEachEntity` 要一个脚本闭包，原生工具（编辑器 inspector、MCP、诊断）拿不到实例；这条
+     * 是同一份数据（`SceneObject::ScriptBindings::instances`）的原生只读入口，用于把"场景对象
+     * ↔ 脚本实体 ↔ 引擎侧组件数据"这三段接起来（方案文档 §9.72）。
+     *
+     * @param hostName 宿主名；空串表示当前选中的宿主。
+     * @param nodeId 节点在该宿主内的稳定 id。
+     * @return 实例数组；宿主/节点不存在或没有挂脚本时返回**空数组**（不是错误——节点本来就可以
+     *         没有脚本）。
+     * @ownership 返回的每个 `ssq::Object` 各自持有一次引用（`sq_addref`），调用方可以跨栈使用，
+     *            析构时自动释放。
+     * @lifetime 实例本身由场景的 rooting 保活，直到 `unrootEntityAt` 或节点/宿主销毁；这里的
+     *           返回值只保证那之后不再可用。
+     * @thread 场景/主线程。
+     * @cost 与节点上挂的脚本实体数成正比（一次拷贝 + 每个一次 addref）；供工具与诊断使用，不在
+     *       逐帧路径上。
+     */
+    [[nodiscard]] std::vector<ssq::Object> scriptEntitiesAt(const std::string& hostName,
+                                                            const std::string& nodeId) const;
+
     /** @brief updateTransformsAll() + call update(dt) on every rooted instance. */
     void updateScripts(float dt);
 
-    std::string currentHostName() const;
+    std::string                 currentHostName() const;
     [[nodiscard]] SceneNodeRef *getNodeRefAt(const std::string &hostName, const std::string &nodeId) const;
     [[nodiscard]] SceneNodeRef *getNodeRefByPathAt(const std::string &hostName, const std::string &path) const;
 

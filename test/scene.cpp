@@ -44,6 +44,7 @@
 #include "common/EntitySpatialResolver.h"
 #include "common/Module.h"
 #include "common/ProcgenSceneSink.h"
+#include "common/ScriptComponentSnapshot.h"
 #include "common/SquirrelBinding.h"
 
 #include <simplesquirrel/simplesquirrel.hpp>
@@ -1588,6 +1589,39 @@ function testUpdateFailureIsReported() {
     return true
 }
 
+// 原生工具（编辑器 inspector / MCP / 诊断）要怎么读到"这个节点上的脚本组件状态"：
+// `Scene::scriptEntitiesAt` 给实例，`scriptComponentInstancesOf` 给已登记组件的字段。
+function buildSceneWithRegisteredComponent() {
+    class ToolProbe extends eve.Component { x = 1.5; y = 2.5 }
+    class ToolEntity extends eve.SceneEntity { probe = ToolProbe }
+
+    local registered = eve.component("ToolProbe", 1, ToolProbe).ok
+    local scene = eve.Scene()
+    scene.beginBuild()
+    scene.beginNode("root", "")
+    scene.addNode("probe", "")
+    scene.end()
+    scene.mountBuildAs("tools")
+    local e = scene.attachEntity("probe", ToolEntity)
+    if (e == null) return false
+    e.probe.x = 42.0
+    return registered
+}
+
+// 未登记组件（纯槽位语义）的对照片：引擎工具**不该**看到它——它没有名字与版本，无从寻址。
+function buildSceneWithUnregisteredComponent() {
+    class LooseProbe extends eve.Component { v = 7.0 }
+    class LooseEntity extends eve.SceneEntity { loose = LooseProbe }
+
+    local scene = eve.Scene()
+    scene.beginBuild()
+    scene.beginNode("root", "")
+    scene.addNode("loose", "")
+    scene.end()
+    scene.mountBuildAs("loosehost")
+    return scene.attachEntity("loose", LooseEntity) != null
+}
+
 )SQ";
 
 class SceneEcsBridgeFixture {
@@ -1603,6 +1637,50 @@ public:
 
 TEST_CASE_FIXTURE(SceneEcsBridgeFixture, "Scene.script.entityLifecycle") {
     REQUIRE(vm.callFunc(vm.findFunc("testSceneEntityLifecycle"), vm).toBool());
+}
+
+// J-3 的"引擎工具读到脚本组件"读侧：节点 → 脚本实体（原生访问）→ 已登记组件 → 字段值。
+// 这是编辑器 inspector / MCP 那一格的地基，所以在这里钉住它（不依赖编辑器 UI）。
+TEST_CASE_FIXTURE(SceneEcsBridgeFixture, "Scene.script.nativeAccessReadsRegisteredComponentState") {
+    REQUIRE(vm.callFunc(vm.findFunc("buildSceneWithRegisteredComponent"), vm).toBool());
+
+    auto* scene = eve::scene::Scene::create();
+    REQUIRE(scene != nullptr);
+
+    const auto entities = scene->scriptEntitiesAt("tools", "probe");
+    REQUIRE_EQ(entities.size(), std::size_t{1});
+
+    auto states = eve::scriptComponentInstancesOf(entities.front());
+    REQUIRE(states.ok());
+    REQUIRE_EQ(states.value().size(), std::size_t{1});
+    CHECK_EQ(states.value().front().name, std::string("ToolProbe"));
+    CHECK_EQ(states.value().front().version.value(), std::uint64_t{1});
+    CHECK(states.value().front().generation.value() >= 1);
+    // 字段按声明顺序收集，值来自引擎侧那一个权威存储（脚本写 42.0 的那次也是写它）。
+    const auto& fields = states.value().front().fields;
+    const auto  x      = fields.find("x");
+    const auto  y      = fields.find("y");
+    REQUIRE(x != fields.end());
+    REQUIRE(y != fields.end());
+    CHECK_EQ(x->second.asDouble(), 42.0);
+    CHECK_EQ(y->second.asDouble(), 2.5);
+
+    // 负例：没有挂脚本的节点、未知宿主/节点都返回空数组（不是错误），调用方据此报"这里没有脚本"。
+    CHECK(scene->scriptEntitiesAt("tools", "root").empty());
+    CHECK(scene->scriptEntitiesAt("nope", "probe").empty());
+}
+
+// 未登记的组件（纯槽位语义）**不该**出现在原生工具里：它没有名字与版本，引擎无从寻址。
+TEST_CASE_FIXTURE(SceneEcsBridgeFixture, "Scene.script.nativeAccessSkipsUnregisteredComponents") {
+    REQUIRE(vm.callFunc(vm.findFunc("buildSceneWithUnregisteredComponent"), vm).toBool());
+
+    auto*      scene    = eve::scene::Scene::create();
+    const auto entities = scene->scriptEntitiesAt("loosehost", "loose");
+    REQUIRE_EQ(entities.size(), std::size_t{1});
+
+    auto states = eve::scriptComponentInstancesOf(entities.front());
+    REQUIRE(states.ok());
+    CHECK(states.value().empty());
 }
 
 TEST_CASE_FIXTURE(SceneEcsBridgeFixture, "Scene.script.entityViewCacheAfterDetach") {

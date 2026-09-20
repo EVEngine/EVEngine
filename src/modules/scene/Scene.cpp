@@ -1006,8 +1006,31 @@ int Scene::forEachEntity(const std::string &hostName, const std::string &nodeId,
         if (callCallback(fn, vec[i], int(i))) ++count;
     }
     sq_release(vm_, &fn);
-    for (auto &b : vec) sq_release(vm_, &b);
+    for (auto& b : vec) sq_release(vm_, &b);
     return count;
+}
+
+std::vector<ssq::Object> Scene::scriptEntitiesAt(const std::string& hostName, const std::string& nodeId) const {
+    std::vector<ssq::Object> out;
+    if (!vm_) return out;
+    SceneHost* h = resolveHost(hostName);
+    if (!h) return out;
+    SceneNode* n = borrowSceneResult(h->findById(nodeId));
+    if (!n) return out;
+    SceneObject* obj = n->objectId != kNoSceneObject ? findSceneObjectById(n->objectId) : nullptr;
+    if (!obj) return out;
+
+    // 与 `forEachEntity` 同样的"拷贝 + addref"：交给调用方的每个 `ssq::Object` 都持有一次引用。
+    // 这里不用防回调改表（原生调用方不重入脚本），但 addref 是必须的——`instances` 里那一份引用
+    // 归场景所有，直接借出去会在 `ssq::Object` 析构时多释放一次（方案文档 §9.64.3 的坑）。
+    for (const auto& bound : obj->scriptBindings()->instances) {
+        HSQOBJECT handle = bound;
+        sq_addref(vm_, &handle);
+        ssq::Object instance(vm_);
+        instance.getRaw() = handle;
+        out.push_back(std::move(instance));
+    }
+    return out;
 }
 
 void Scene::updateScripts(float dt) {
