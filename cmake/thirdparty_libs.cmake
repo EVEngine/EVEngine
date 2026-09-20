@@ -145,7 +145,15 @@ function(eve_thirdparty_libs out_var)
             endif()
 
         elseif(g STREQUAL "box2d")
-            if(_win_debug)
+            # The dynamic route links the shared twin (one contact registry per
+            # process); the archive is the canonical target for the OBJECT /
+            # release SDK route, which must stay a single self-contained
+            # executable. Both exist in one install tree, so no build order can
+            # change which one the route gets. See
+            # cmake/patches/box2d-shared-library.patch.
+            if(EVENGINE_MODULE_LINKAGE STREQUAL "SHARED")
+                list(APPEND _libs Box2D-dynamic)
+            elseif(_win_debug)
                 list(APPEND _libs Box2Dmdd)
             elseif(WIN32)
                 list(APPEND _libs Box2Dmd)
@@ -154,7 +162,11 @@ function(eve_thirdparty_libs out_var)
             endif()
 
         elseif(g STREQUAL "box3d")
-            if(_win_debug)
+            # Same reasoning as box2d: box3d keeps its world registry in file
+            # scope, so the dynamic route needs the shared twin.
+            if(EVENGINE_MODULE_LINKAGE STREQUAL "SHARED")
+                list(APPEND _libs box3d-dynamic)
+            elseif(_win_debug)
                 list(APPEND _libs box3dd)
             elseif(WIN32)
                 list(APPEND _libs box3dmd)

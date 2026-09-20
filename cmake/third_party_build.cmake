@@ -227,6 +227,15 @@ function(check_third_party_project name repo)
             -DSDL_SHARED=ON
             -DSDL_STATIC=ON
             -DSDL_STATIC_PIC=ON)
+        # box3d keeps its world registry in file scope and Box2D registers contact
+        # types in file scope. The engine reaches both from more than one link
+        # group, so the dynamic route needs one shared copy of each; the patch
+        # files build a dynamic twin next to the canonical archive (see
+        # cmake/patches/box3d-shared-library.patch and box2d-shared-library.patch)
+        # rather than switching the library type, so the archive route keeps
+        # linking a static library and the release artifact stays one
+        # self-contained executable. No flag is passed here: the twin is always
+        # built, which also keeps this install tree usable by both routes.
     endif()
     if(ANDROID OR (CMAKE_SYSTEM_NAME STREQUAL "Android"))
         list(APPEND _eve_tp_cmake_args
@@ -395,6 +404,41 @@ function(check_third_party_project name repo)
         COMMAND ${CMAKE_COMMAND}
             -DPATCH=${CMAKE_SOURCE_DIR}/cmake/patches/box3d-dynamic-crt.patch
             -DPATCH_DIR=${CMAKE_CURRENT_SOURCE_DIR}/${name}/box3d
+            -P ${CMAKE_SOURCE_DIR}/cmake/patch_third_party.cmake)
+    # Thirteenth patch: box3d keeps its world registry (b3_worlds) in file scope,
+    # so a statically linked copy per link group means every group owns different
+    # worlds and a world the test code created is unknown to the engine's modules.
+    # The patch adds a dynamic twin (box3d-dynamic) next to the canonical archive
+    # and installs it in bin/; thirdparty_libs.cmake picks the twin for the shared
+    # route and the archive for the OBJECT / release SDK route, which stays one
+    # self-contained executable. Building both forms removes any dependence on
+    # which configuration built this install tree. Paths are relative to the box3d
+    # submodule root.
+    set(_eve_tp_patch_cmd ${_eve_tp_patch_cmd}
+        COMMAND ${CMAKE_COMMAND}
+            -DPATCH=${CMAKE_SOURCE_DIR}/cmake/patches/box3d-shared-library.patch
+            -DPATCH_DIR=${CMAKE_CURRENT_SOURCE_DIR}/${name}/box3d
+            -P ${CMAKE_SOURCE_DIR}/cmake/patch_third_party.cmake)
+    # Fourteenth patch: Box2D keeps its contact-type registry (b2Contact's
+    # s_registers / s_initialized) in file scope, and the engine wraps rigid
+    # bodies from two different link groups (EVWorld's physics module and the
+    # EVDomains physics satellites). Two archive copies therefore disagree about
+    # which contacts exist, which surfaces as "Box2D assertion failed:
+    # s_initialized == true" when one group destroys a contact the other created
+    # (spec section 7.25). Same shape as the box3d patch: a dynamic twin next to
+    # the canonical archive, its runtime image installed in bin/ next to the other
+    # shared dependencies, plus explicit data-symbol exports (MSVC's all-symbols
+    # .def generation covers functions only). Paths are relative to the
+    # third-party aggregate root.
+    set(_eve_tp_patch_cmd ${_eve_tp_patch_cmd}
+        COMMAND ${CMAKE_COMMAND}
+            -DPATCH=${CMAKE_SOURCE_DIR}/cmake/patches/box2d-shared-library.patch
+            -DPATCH_DIR=${CMAKE_CURRENT_SOURCE_DIR}/${name}
+            -P ${CMAKE_SOURCE_DIR}/cmake/patch_third_party.cmake)
+    set(_eve_tp_patch_cmd ${_eve_tp_patch_cmd}
+        COMMAND ${CMAKE_COMMAND}
+            -DPATCH=${CMAKE_SOURCE_DIR}/cmake/patches/box2d-shared-library.patch
+            -DPATCH_DIR=${CMAKE_CURRENT_SOURCE_DIR}/${name}
             -P ${CMAKE_SOURCE_DIR}/cmake/patch_third_party.cmake)
     # Twelfth patch: SDL2's library carries a CRT-less _DllMainCRTStartup stub
     # while HAVE_LIBC is undefined, which is SDL's default on MSVC. The linker

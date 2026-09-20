@@ -18,6 +18,7 @@ PATCH_SCRIPT = ROOT / "cmake" / "patch_third_party.cmake"
 PATCHES = ROOT / "cmake" / "patches"
 THIRD_PARTY = ROOT / "third-party"
 MEDIALOADER = THIRD_PARTY / "medialoader"
+ECS_SUBMODULE = ROOT / "external" / "ECS.hpp"
 
 
 def run(command: list[str], *, check: bool = True) -> subprocess.CompletedProcess[str]:
@@ -100,6 +101,20 @@ def main() -> int:
         checkout_patch_inputs(MEDIALOADER, clean_medialoader, medialoader_patches)
         for patch in medialoader_patches:
             apply_twice(patch, clean_medialoader)
+
+        # The library-type patches for the dynamic engine configuration apply to
+        # the aggregate and to one of its submodules; both must be idempotent so a
+        # rebuild does not fail on an already-patched checkout.
+        clean_box2d = temporary / "box2d-clean"
+        checkout_patch_inputs(THIRD_PARTY, clean_box2d,
+                              [PATCHES / "box2d-shared-library.patch"])
+        apply_twice(PATCHES / "box2d-shared-library.patch", clean_box2d)
+
+        # external/ECS.hpp uses the same script from the engine's configure step.
+        clean_ecs = temporary / "ecs-clean"
+        checkout_patch_inputs(ECS_SUBMODULE, clean_ecs,
+                              [PATCHES / "ecs-shared-default-table.patch"])
+        apply_twice(PATCHES / "ecs-shared-default-table.patch", clean_ecs)
 
         # A genuine target drift must fail and expose git's diagnostic; it may
         # not be mistaken for an already-applied patch or silently skipped.

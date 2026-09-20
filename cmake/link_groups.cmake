@@ -39,22 +39,23 @@ endif()
 # both start at the binary directory. Their location comes from the link
 # directories the engine already uses, so a prebuilt third-party tree works too,
 # and the copy is a target rather than a POST_BUILD step because the group
-# libraries may already be up to date when only third-party changed.
+# libraries may already be up to date when only third-party changed. The glob
+# itself runs inside the script, at build time — the install tree is empty until
+# the third-party dependency of this target has run.
 if(WIN32)
     get_target_property(_eve_tp_link_dirs eve_engine_includes INTERFACE_LINK_DIRECTORIES)
-    set(_eve_tp_runtime_dlls "")
+    set(_eve_tp_bin_dirs "")
     foreach(_eve_tp_link_dir IN LISTS _eve_tp_link_dirs)
         get_filename_component(_eve_tp_bin_dir "${_eve_tp_link_dir}/../bin" ABSOLUTE)
-        file(GLOB _eve_tp_found_dlls "${_eve_tp_bin_dir}/SDL2*.dll")
-        list(APPEND _eve_tp_runtime_dlls ${_eve_tp_found_dlls})
+        list(APPEND _eve_tp_bin_dirs "${_eve_tp_bin_dir}")
     endforeach()
-    if(_eve_tp_runtime_dlls)
-        add_custom_target(eve_third_party_runtime ALL
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different
-                ${_eve_tp_runtime_dlls} "${CMAKE_BINARY_DIR}/"
-            DEPENDS third-party
-            COMMENT "Placing the shared third-party runtime libraries beside the executables")
-    endif()
+    add_custom_target(eve_third_party_runtime ALL
+        COMMAND ${CMAKE_COMMAND}
+            "-DSRC_DIRS=${_eve_tp_bin_dirs}"
+            "-DDST=${CMAKE_BINARY_DIR}"
+            -P "${CMAKE_CURRENT_SOURCE_DIR}/cmake/copy_third_party_runtime.cmake"
+        DEPENDS third-party
+        COMMENT "Placing the shared third-party runtime libraries beside the executables")
 endif()
 
 # The host, the tests, the benchmarks and the plugins all consume the annotated
@@ -62,6 +63,18 @@ endif()
 # Modules get this too (eve_engine_includes is what they link), but Export.h
 # checks EVENGINE_ENGINE_EXPORTS first, so the defining side still exports.
 target_compile_definitions(eve_engine_includes INTERFACE EVENGINE_MODULE_DLL)
+
+# The shared route links the dynamic twins of box3d and Box2D (one world / contact
+# registry per process, see third_party_build.cmake), and their headers only mark
+# the imports when these are defined. Functions would resolve through the import
+# library anyway; the macros keep the declarations honest.
+if(WIN32)
+    target_compile_definitions(eve_engine_includes INTERFACE BOX3D_DLL)
+    # Box2D's data symbols are the load-bearing part here: MSVC's all-symbols .def
+    # generation covers functions only, so b2Vec2_zero and b2_version are
+    # annotated explicitly (cmake/patches/box2d-shared-library.patch).
+    target_compile_definitions(eve_engine_includes INTERFACE BOX2D_DLL)
+endif()
 
 # vulkan-hpp's default dispatcher is a *data* symbol that must be imported, not
 # re-declared, across a module-DLL boundary (MSVC only provides __imp_<symbol>
