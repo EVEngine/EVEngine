@@ -505,6 +505,34 @@ function(main)
     if(NOT EVENGINE_TP_DESC)
         set(EVENGINE_TP_DESC "unknown")
     endif()
+
+    # external/ECS.hpp is patched the same way third-party is, and for the same
+    # reason: `ecs::default_table()` is an inline function whose function-local
+    # static is duplicated by every image once the engine is split into link-group
+    # DLLs, so a domain module and its caller would address different default
+    # Tables. The patch forwards to an exported owner compiled into the foundation
+    # link unit (src/engine/common/EcsDefaultTable.cpp); the OBJECT / static route
+    # and the release SDK are unaffected.
+    #
+    # It runs at configure time because the header is compiled by module
+    # translation units and nothing orders a patch step in front of them. Skipped
+    # when the submodule is absent (profiles and tools that do not use ECS), and
+    # skipped without touching anything when the checkout already carries it.
+    if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/external/ECS.hpp/src/ECS.hpp")
+        execute_process(
+            COMMAND ${CMAKE_COMMAND}
+                -DPATCH=${CMAKE_CURRENT_SOURCE_DIR}/cmake/patches/ecs-shared-default-table.patch
+                -DPATCH_DIR=${CMAKE_CURRENT_SOURCE_DIR}/external/ECS.hpp
+                -P ${CMAKE_CURRENT_SOURCE_DIR}/cmake/patch_third_party.cmake
+            RESULT_VARIABLE _eve_ecs_patch_result)
+        if(NOT _eve_ecs_patch_result EQUAL 0)
+            message(FATAL_ERROR
+                "Patching external/ECS.hpp failed (exit ${_eve_ecs_patch_result}). "
+                "The vendored submodule moved away from the pinned commit; "
+                "update cmake/patches/ecs-shared-default-table.patch.")
+        endif()
+    endif()
+
     add_subdirectory(src/engine)
     add_subdirectory(src/modules)
 
