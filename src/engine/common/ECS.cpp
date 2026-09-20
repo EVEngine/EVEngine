@@ -1,5 +1,6 @@
 #include "common/ECS.h"
 #include "common/ScriptError.h"
+#include "common/SquirrelBinding.h"
 
 #include <simplesquirrel/simplesquirrel.hpp>
 
@@ -13,19 +14,33 @@ namespace eve {
 namespace {
 
 // ---------------------------------------------------------------------------
-// Script component registry (name → Squirrel class)
+// Script component registry (name + version → Squirrel class, with generations)
 // ---------------------------------------------------------------------------
 
-struct ScriptComponentReg {
+struct ScriptComponentEntry {
     HSQUIRRELVM vm = nullptr;
     HSQOBJECT   cls;
-    ScriptComponentReg() { sq_resetobject(&cls); }
-    ScriptComponentReg(HSQUIRRELVM v, HSQOBJECT o) : vm(v), cls(o) {}
+    Generation  generation;
+    ScriptComponentEntry() { sq_resetobject(&cls); }
+    ScriptComponentEntry(HSQUIRRELVM v, HSQOBJECT o, Generation g) : vm(v), cls(o), generation(g) {}
 };
 
-std::unordered_map<std::string, ScriptComponentReg>& scriptComponents() {
-    static std::unordered_map<std::string, ScriptComponentReg> m;
+/** Keyed by (name, version) rather than by class object: hot reload replaces the class
+ *  but keeps the identity, and identity is what migration and the engine-side store
+ *  address. Ordered so enumeration is deterministic. */
+using ScriptComponentKey = std::pair<std::string, std::uint64_t>;
+using ScriptComponentMap = std::map<ScriptComponentKey, ScriptComponentEntry>;
+
+ScriptComponentMap& currentScriptComponents() {
+    static ScriptComponentMap m;
     return m;
+}
+
+/** Retired generations, metadata only: the replaced class object is kept alive by the
+ *  instances that still reference it, so the registry does not hold a second reference. */
+std::vector<ScriptComponentRecord>& retiredScriptComponents() {
+    static std::vector<ScriptComponentRecord> v;
+    return v;
 }
 
 int& nextEntityId() {
@@ -135,26 +150,6 @@ ssq::Object getClassBase(ssq::Object cls) {
     sq_addref(vm, &ret.getRaw());
     sq_settop(vm, top);
     return ret;
-}
-
-void registerScriptComponent(const std::string& name, ssq::Object cls) {
-    if (cls.getType() != ssq::Type::CLASS) return;
-    HSQUIRRELVM vm = cls.getHandle();
-    HSQOBJECT o = cls.getRaw();
-    sq_addref(vm, &o);
-    auto& m = scriptComponents();
-    auto it = m.find(name);
-    if (it != m.end()) {
-        // Only release a reference that belongs to *this* VM. A stale entry from
-        // another VM must not be released: that VM may already be destroyed, and
-        // sq_release() would dereference its freed RefTable (measured access
-        // violation, see the plan doc §9.49). Stale entries are normally dropped
-        // by prepareEcsScriptInjection(); this guard covers two live VMs.
-        if (it->second.vm == vm) sq_release(it->second.vm, &it->second.cls);
-        it->second = ScriptComponentReg(vm, o);
-    } else {
-        m.emplace(name, ScriptComponentReg(vm, o));
-    }
 }
 
 // ---------------------------------------------------------------------------
@@ -908,6 +903,72 @@ bool cppHasView(ssq::Object cls) {
 
 }  // namespace
 
+Result<void> registerScriptComponent(const std::string& name, SchemaVersion version, const ssq::Object& cls) {
+    if (name.empty())
+        return Result<void>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "script component name must not be empty", {}, {}, "ecs.component"));
+    if (version.isZero())
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                       "script component version must be a positive integer", name, {},
+                                                       "ecs.component"));
+    if (cls.getType() != ssq::Type::CLASS)
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                       "eve.component needs a class, not a value or instance", name, {},
+                                                       "ecs.component"));
+
+    HSQUIRRELVM vm = cls.getHandle();
+    HSQOBJECT   o  = cls.getRaw();
+    sq_addref(vm, &o);
+
+    auto&      current = currentScriptComponents();
+    const auto key     = ScriptComponentKey{name, version.value()};
+    auto       found   = current.find(key);
+    if (found == current.end()) {
+        current.emplace(key, ScriptComponentEntry(vm, o, Generation(1)));
+        return Result<void>::success(Status::success(StatusCode::Applied));
+    }
+
+    // Same name and version again: hot reload redefined the class. Record the retired
+    // generation (metadata only) and advance the counter, so a caller can tell that the
+    // identity it holds refers to an older generation of the same component.
+    const Generation previous = found->second.generation;
+    retiredScriptComponents().push_back(ScriptComponentRecord{name, version, previous, true});
+    const auto next = previous.incremented();
+    if (!next)
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvariantViolation,
+                                                       "script component generation counter is exhausted", name, {},
+                                                       "ecs.component"));
+    // Only release a reference belonging to *this* VM: a stale entry from another VM must
+    // not be released, because that VM may already be destroyed and sq_release() would
+    // dereference its freed RefTable (measured access violation, plan doc §9.49).
+    if (found->second.vm == vm) sq_release(found->second.vm, &found->second.cls);
+    found->second = ScriptComponentEntry(vm, o, *next);
+    return Result<void>::success(Status::success(StatusCode::Applied));
+}
+
+const ScriptComponentRecord* findScriptComponent(const std::string& name, SchemaVersion version) {
+    static ScriptComponentRecord scratch;
+    const auto&                  current = currentScriptComponents();
+    const auto                   found   = current.find(ScriptComponentKey{name, version.value()});
+    if (found == current.end()) return nullptr;
+    scratch = ScriptComponentRecord{found->first.first, version, found->second.generation, false};
+    return &scratch;
+}
+
+std::vector<ScriptComponentRecord> scriptComponentRecords() {
+    std::vector<ScriptComponentRecord> out;
+    out.reserve(currentScriptComponents().size() + retiredScriptComponents().size());
+    for (const auto& [key, entry] : currentScriptComponents())
+        out.push_back(ScriptComponentRecord{key.first, SchemaVersion(key.second), entry.generation, false});
+    for (const ScriptComponentRecord& retired : retiredScriptComponents()) out.push_back(retired);
+    std::sort(out.begin(), out.end(), [](const ScriptComponentRecord& a, const ScriptComponentRecord& b) {
+        if (a.name != b.name) return a.name < b.name;
+        if (a.version != b.version) return a.version < b.version;
+        return a.generation < b.generation;
+    });
+    return out;
+}
+
 void exposeECS(ssq::Table& table) {
     table.set("Number", std::string("number"));
     table.set("Boolean", std::string("boolean"));
@@ -919,8 +980,12 @@ void exposeECS(ssq::Table& table) {
     table.addFunc("getClassBase", getClassBase);
     table.addFunc("allocEntityId", allocEntityId);
     table.addFunc("_cppHasView", cppHasView);
-    table.addFunc("component", [](std::string name, ssq::Object cls) {
-        registerScriptComponent(name, cls);
+    // `eve.component(name, version, cls)` registers the component's *identity*. It is
+    // optional today (classes keep working unregistered), but it is what lets a hot
+    // reload match a redefined class to the instances created by the previous one.
+    table.addFunc("component", [vm = table.getHandle()](std::string name, int version, ssq::Object cls) {
+        return script::projectResult(
+            vm, registerScriptComponent(name, SchemaVersion(static_cast<std::uint64_t>(version)), cls));
     });
     table.addFunc("_cppCollect", std::function<void(ssq::Class, ssq::Array)>(cppCollect));
 
@@ -940,7 +1005,10 @@ void prepareEcsScriptInjection() {
     // into the VM that made them. By the time the next table is prepared that VM
     // is already destroyed, so the entries must be dropped **without** releasing:
     // sq_release() on a destroyed VM is a use-after-free (see the plan doc §9.49).
-    scriptComponents().clear();
+    // The retired-generation history is per VM too: generations count reloads of one
+    // VM's script, so a new VM starts with no identity history.
+    currentScriptComponents().clear();
+    retiredScriptComponents().clear();
     ecsScriptInjected()  = false;
     postEcsHooksFlushed() = 0;
 }

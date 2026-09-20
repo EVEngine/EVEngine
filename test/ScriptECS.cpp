@@ -1,5 +1,7 @@
 #include "ScriptTest.h"
 
+#include "common/ECS.h"
+
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
@@ -686,16 +688,14 @@ TEST_CASE_FIXTURE(ScriptEcsTest, "ScriptECS.viewOrderSpansSubclassesByCreation")
 static const char* kComponentRegistryScript = R"SQ(
 function registerProbeComponent() {
     class Probe extends eve.Component { v = 0 }
-    eve.component("Probe", Probe)
-    return true
+    return eve.component("Probe", 1, Probe).ok
 }
 
-// 同一个 VM 内用同名再注册一次：走"替换旧条目"分支，此时旧引用属于**当前** VM，
+// 同一个 VM 内用同名同版本再注册一次：走"换一代"分支，此时旧引用属于**当前** VM，
 // 必须照常释放——跨 VM 的修复不能把这条正常路径也一起关掉。
 function registerProbeComponentAgain() {
     class Probe extends eve.Component { v = 1 }
-    eve.component("Probe", Probe)
-    return true
+    return eve.component("Probe", 1, Probe).ok
 }
 )SQ";
 
@@ -719,4 +719,119 @@ TEST_CASE("ScriptECS.componentRegistrationCrossesVmsSafely") {
     ComponentRegistryTwiceTest second;
     REQUIRE(second.registerProbeComponent());
     REQUIRE(second.registerProbeComponentAgain());
+}
+
+// ---------------------------------------------------------------------------
+// 组件注册表：名字 + 版本 + 代际（热重载迁移与引擎侧存储的共同前置）
+// ---------------------------------------------------------------------------
+
+static const char* kComponentIdentityScript = R"SQ(
+class Position extends eve.Component { x = 0.0 }
+class PositionV2 extends eve.Component { x = 0.0; y = 0.0 }
+
+function registerOne() {
+    return eve.component("Position", 1, Position).ok
+}
+
+function registerSecondVersion() {
+    return eve.component("Position", 2, PositionV2).ok
+}
+
+// 同名同版本再登记：热重载换了一代。
+function registerSameVersionAgain() {
+    class Position extends eve.Component { x = 1.0 }
+    return eve.component("Position", 1, Position).ok
+}
+
+function registerWithBadArguments() {
+    local emptyName = eve.component("", 1, Position)
+    local zeroVersion = eve.component("Zero", 0, Position)
+    local notAClass = eve.component("NotAClass", 1, 42)
+    return emptyName.ok || zeroVersion.ok || notAClass.ok
+}
+)SQ";
+
+UnitSciptTest(ComponentIdentityTest, kComponentIdentityScript);
+
+// `callScript` 是 protected，而"注册表按 VM 隔离"这条要在同一个 TEST_CASE 里先后建两个 VM。
+class ComponentIdentityTwiceTest : public ScriptTest {
+public:
+    ComponentIdentityTwiceTest() : ScriptTest(kComponentIdentityScript) {}
+    bool registerOne() { return callScript("registerOne"); }
+};
+
+TEST_CASE_FIXTURE(ComponentIdentityTest, "ScriptECS.componentRegistrationIsReadableFromCpp") {
+    REQUIRE(callScript("registerOne"));
+
+    const eve::ScriptComponentRecord* found = eve::findScriptComponent("Position", eve::SchemaVersion(1));
+    REQUIRE(found != nullptr);
+    REQUIRE_EQ(found->generation.value(), std::uint64_t(1));
+    REQUIRE(!found->retired);
+
+    const auto all = eve::scriptComponentRecords();
+    REQUIRE_EQ(all.size(), std::size_t(1));
+    REQUIRE_EQ(all[0].name, std::string("Position"));
+    REQUIRE_EQ(all[0].version.value(), std::uint64_t(1));
+    REQUIRE(!all[0].retired);
+}
+
+TEST_CASE_FIXTURE(ComponentIdentityTest, "ScriptECS.componentVersionSeparatesIdentities") {
+    REQUIRE(callScript("registerOne"));
+    REQUIRE(callScript("registerSecondVersion"));
+
+    // 同一名字的两个版本是两条独立身份，各自可查。
+    const auto* v1 = eve::findScriptComponent("Position", eve::SchemaVersion(1));
+    const auto* v2 = eve::findScriptComponent("Position", eve::SchemaVersion(2));
+    REQUIRE(v1 != nullptr);
+    REQUIRE(v2 != nullptr);
+    REQUIRE_EQ(v1->generation.value(), std::uint64_t(1));
+    REQUIRE_EQ(v2->generation.value(), std::uint64_t(1));
+    REQUIRE(eve::findScriptComponent("Position", eve::SchemaVersion(3)) == nullptr);
+    REQUIRE_EQ(eve::scriptComponentRecords().size(), std::size_t(2));
+}
+
+TEST_CASE_FIXTURE(ComponentIdentityTest, "ScriptECS.componentReRegistrationAdvancesTheGeneration") {
+    REQUIRE(callScript("registerOne"));
+    REQUIRE(callScript("registerSameVersionAgain"));
+
+    // 当前那条是新代，旧代以墓碑形式留痕——热重载迁移要靠这条链判断"从哪一代搬到哪一代"。
+    const auto* current = eve::findScriptComponent("Position", eve::SchemaVersion(1));
+    REQUIRE(current != nullptr);
+    REQUIRE_EQ(current->generation.value(), std::uint64_t(2));
+    REQUIRE(!current->retired);
+
+    const auto all = eve::scriptComponentRecords();
+    REQUIRE_EQ(all.size(), std::size_t(2));
+    REQUIRE_EQ(all[0].generation.value(), std::uint64_t(1));
+    REQUIRE(all[0].retired);
+    REQUIRE_EQ(all[1].generation.value(), std::uint64_t(2));
+    REQUIRE(!all[1].retired);
+}
+
+TEST_CASE_FIXTURE(ComponentIdentityTest, "ScriptECS.componentRegistrationReportsBadArguments") {
+    // 参数非法时必须让脚本看得见（返回结果表的 ok=false），而不是静默什么都没发生。
+    REQUIRE(!callScript("registerWithBadArguments"));
+    REQUIRE(eve::findScriptComponent("", eve::SchemaVersion(1)) == nullptr);
+    REQUIRE(eve::findScriptComponent("Zero", eve::SchemaVersion(0)) == nullptr);
+    REQUIRE(eve::findScriptComponent("NotAClass", eve::SchemaVersion(1)) == nullptr);
+    REQUIRE(eve::scriptComponentRecords().empty());
+}
+
+TEST_CASE("ScriptECS.componentRegistryIsPerVm") {
+    // 代际数的是"同一个 VM 内重载了几次"，所以新 VM 必须从空开始。清理时机沿用既有约定
+    // （与 cppEntityViews 同因）：**为新 VM 准备时**清空，而不是上一个 VM 析构时——所以
+    // 这里不断言"第一个 VM 一销毁就为空"，而是断言第二个 VM 注册后**没有历史残留**。
+    {
+        ComponentIdentityTwiceTest first;
+        REQUIRE(first.registerOne());
+        REQUIRE(eve::findScriptComponent("Position", eve::SchemaVersion(1)) != nullptr);
+    }
+
+    ComponentIdentityTwiceTest second;
+    REQUIRE(second.registerOne());
+    const eve::ScriptComponentRecord* found = eve::findScriptComponent("Position", eve::SchemaVersion(1));
+    REQUIRE(found != nullptr);
+    // 不是 2：新 VM 没有上一代的记录；也不是两条：旧 VM 的登记没有残留。
+    REQUIRE_EQ(found->generation.value(), std::uint64_t(1));
+    REQUIRE_EQ(eve::scriptComponentRecords().size(), std::size_t(1));
 }
