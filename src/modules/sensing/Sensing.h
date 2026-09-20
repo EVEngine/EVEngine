@@ -267,6 +267,15 @@ using SensingWorldHandleRef = eve::script::RuntimeHandleRef<SensingWorldHandleTa
 class Sensing : public Module {
 public:
     Module_REG(Sensing);
+
+    /**
+     * @brief 构造：声明"`ISensingCandidateProvider` 可以由脚本提供"这条接缝。
+     * @remarks 接缝的归属是模块生命周期（与 `Vehicle`/`Climbing`/`UI`/`Map` 同一条纪律）：
+     *          模块在，脚本才能把自己发布成候选提供方；模块没了，接缝与适配器一起撤。
+     */
+    Sensing();
+    /** @brief 析构：撤回接缝与仍然在位的脚本适配器。 */
+    ~Sensing() override;
     /**
      * @brief Script factory for independent sensing worlds.
      * @return A generation-qualified reference to a module-owned world.

@@ -238,6 +238,13 @@ public:
     [[nodiscard]] WorldPoint second() const noexcept { return second_; }
     /** @brief Return circle/sphere radius; zero for boxes. */
     [[nodiscard]] float radius() const noexcept { return radius_; }
+    /**
+     * @brief Return the cone half-angle in radians; zero for every non-cone shape.
+     *
+     * @remarks 锥形区域的方向存在 `second()` 里、范围存在 `radius()` 里，只有半角原先没有出口；
+     *          脚本侧的 provider 要复现同一个区域就缺这一项（§9.79），所以补上。
+     */
+    [[nodiscard]] float halfAngle() const noexcept { return halfAngle_; }
     /** @brief Tests a world point without converting coordinate spaces. */
     [[nodiscard]] bool contains(WorldPoint point) const noexcept;
 

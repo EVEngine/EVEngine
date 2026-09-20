@@ -1,8 +1,9 @@
 #include "sensing/Sensing.h"
 #include "common/Identity.h"
+#include "common/SquirrelBinding.h"
+#include "sensing/SensingScriptCandidateSeam.h"
 #include "sensing/TargetingPipeline.h"
 #include "spatial/SpatialHash2D.h"
-#include "common/SquirrelBinding.h"
 
 #include <algorithm>
 #include <cmath>
@@ -616,6 +617,11 @@ struct ScriptSensingWorld {
 };
 
 Module_IMPL(Sensing, new Sensing());
+
+Sensing::Sensing() { declareScriptSensingCandidateSeam(); }
+
+Sensing::~Sensing() { withdrawScriptSensingCandidateSeam(); }
+
 void Sensing::expose(ssq::Table& t) {
     auto c = t.addClass<Candidate>("SensingCandidate", std::function<Candidate*()>([]() { return nullptr; }), false);
     c.addFunc("getId", [](Candidate* v) { return v ? v->id : std::string{}; });

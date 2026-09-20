@@ -765,6 +765,39 @@
       }
     },
     {
+      "id": "sensing-module-interface",
+      "rule": "module-interface",
+      "scope": "src/modules/sensing/SensingScriptCandidateSeam.cpp",
+      "owner": "sensing",
+      "issue": "EVENGINE-ARCH-MODULE-INTERFACE",
+      "reason": "TargetingResolver consumes ISensingCandidateProvider through cap::query and the new script seam answers it through cap::provide, so the same capability appears on both faces; recording them makes the next provider declare itself instead of silently displacing the single-provider slot. The scope is this one file, not src/modules/sensing/**: the fact mirror, the ranking pipeline and the script world bindings expose different faces.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/sensing/SensingScriptCandidateSeam.cpp",
+        "src/modules/sensing/Targeting.h"
+      ],
+      "tests": [
+        "test/sensing_script_provider.cpp",
+        "test/targeting.cpp",
+        "scripts/tests/test_architecture_contracts.py"
+      ],
+      "provides": [
+        "ISensingCandidateProvider"
+      ],
+      "requires": [
+        "ISensingCandidateProvider"
+      ],
+      "emits": [],
+      "observes": [],
+      "binds": [
+        "eve.provider.publishFor('eve.sensing.ISensingCandidateProvider', name, instance) -> queryCandidates({ origin, space, originLocation, domain, minRange, maxRange, requiredTags, excludedTags, zone, area }) returning an array of { subject, location = { space, x, y, z }, domain, tags, zones }"
+      ],
+      "trim": {
+        "absent_profile": "not yet recorded; this entry is filled in on first touch (spec 8.3)",
+        "layer": "L3 runtime"
+      }
+    },
+    {
       "id": "ui-photo-mode-apply-module-interface",
       "rule": "module-interface",
       "scope": "src/modules/ui/PcgPhotoModeApplySeam.cpp",
