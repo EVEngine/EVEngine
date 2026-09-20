@@ -55,6 +55,6 @@ EVENGINE_API_WORLD void buildSphereTerrainMesh(const HexSphereMap& map, HexMeshD
  *            empty mesh.
  * @param out Destination mesh; cleared and finalized by this call.
  */
-void buildSphereWaterMesh(const HexSphereMap& map, HexMeshData& out);
+EVENGINE_API_WORLD void buildSphereWaterMesh(const HexSphereMap& map, HexMeshData& out);
 
 }  // namespace eve::hexmap

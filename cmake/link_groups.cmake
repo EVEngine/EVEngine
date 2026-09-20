@@ -87,6 +87,23 @@ endif()
 # EVBackends defines.
 target_compile_definitions(eve_engine_includes INTERFACE VULKAN_HPP_STORAGE_SHARED)
 
+# ELF gives an executable that references a data symbol from a shared library a
+# *copy relocation*: space is reserved in the executable and filled from the
+# library at load time, and every module then resolves the symbol through the
+# executable's copy. That is fine for data that is initialized at load time, but
+# vulkan-hpp's default dispatcher is zero until the engine creates its device and
+# assigns it through VULKAN_HPP_DEFAULT_DISPATCHER_ASSIGNMENT. The executable's
+# copy therefore stays null while the owning group's live one is never consulted:
+# the first vulkan-hpp call from any image (measured: vkbuilder's
+# Device::getQueue in the gpgpu cases) jumps through a null function pointer and
+# the 42 GPU cases in unit_test_graphics segfaulted on the CI Linux runner, which
+# has a software Vulkan device. -z nocopyreloc sends data references through the
+# GOT, so the definition in its owning group is used. Windows has no equivalent
+# problem: its import library redirects every access to the DLL's variable.
+if(UNIX AND NOT APPLE)
+    target_link_options(eve_engine_includes INTERFACE "LINKER:-z,nocopyreloc")
+endif()
+
 # The same external closure the host and the test runner link. ThirdParty is
 # directory-scoped in src/engine and test/, so this file derives its own copy
 # from the manifest rather than reading theirs.

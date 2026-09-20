@@ -32,7 +32,15 @@ def run(command: list[str], *, check: bool = True) -> subprocess.CompletedProces
 
 
 def checkout_patch_inputs(source: Path, destination: Path, patches: list[Path]) -> None:
-    """Materialize real upstream inputs without copying unrelated files or history."""
+    """Materialize real upstream inputs without copying unrelated files or history.
+
+    Both the inputs and the patch copy used below are written with LF endings.
+    git apply compares bytes, and a patch file's checkout form depends on
+    .gitattributes and core.autocrlf (cmake/patches/ecs-shared-default-table.patch
+    is pinned to CRLF because external/ECS.hpp commits CRLF), so exercising that
+    pairing is the real patch step's job -- this test covers idempotence and drift
+    detection, which must hold on every host.
+    """
     paths = {"CMakeLists.txt"}
     for patch in patches:
         for line in patch.read_text(encoding="utf-8").splitlines():
@@ -46,9 +54,7 @@ def checkout_patch_inputs(source: Path, destination: Path, patches: list[Path]) 
         ).stdout
         target = destination / relative
         target.parent.mkdir(parents=True, exist_ok=True)
-        # Match the platform-native checkout used by the patch file itself.
-        # In particular, Git for Windows materializes both as CRLF.
-        target.write_text(blob, encoding="utf-8")
+        target.write_text(blob.replace("\r\n", "\n"), encoding="utf-8", newline="\n")
     run(["git", "-C", str(destination), "init", "--quiet"])
     run(["git", "-C", str(destination), "add", "."])
     run(["git", "-C", str(destination), "-c", "user.name=Fixture",
@@ -58,9 +64,13 @@ def checkout_patch_inputs(source: Path, destination: Path, patches: list[Path]) 
 
 
 def apply_twice(patch: Path, patch_dir: Path) -> None:
+    # Apply the same patch content with LF endings, matching the inputs above.
+    staged = patch_dir.parent / f"{patch.name}.lf"
+    staged.write_text(patch.read_text(encoding="utf-8").replace("\r\n", "\n"),
+                      encoding="utf-8", newline="\n")
     command = [
         "cmake",
-        f"-DPATCH={patch}",
+        f"-DPATCH={staged}",
         f"-DPATCH_DIR={patch_dir}",
         "-P",
         str(PATCH_SCRIPT),
