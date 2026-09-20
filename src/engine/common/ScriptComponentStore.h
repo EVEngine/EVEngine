@@ -121,4 +121,15 @@ void clearScriptComponentStore();
 /** @brief 当前数据条数（诊断与测试用）。 */
 [[nodiscard]] std::size_t scriptComponentStoreSize();
 
+/**
+ * @brief 存储的单调版本号：任何一次写（含恢复、换代对齐、实体销毁）都会 +1。
+ *
+ * 编辑器/工具用它判断"我手里的引用是否过期"：`IPropertyProvider::currentRevision` 要一个非零
+ * 且会变的版本，而脚本组件的字段值不在场景文档里，文档版本号对它没有意义。
+ *
+ * @return 当前版本号；进程内从 1 开始单调递增，**不会**因为清空而回退。
+ * @cost O(1)。
+ */
+[[nodiscard]] std::uint64_t scriptComponentStoreRevision();
+
 }  // namespace eve

@@ -15,6 +15,14 @@ Store& scriptComponentStore() {
     return store;
 }
 
+/** 存储的单调写版本号；每一次写（含恢复/换代/销毁）都 +1，供编辑器判断引用是否过期。 */
+std::uint64_t& scriptComponentRevisionCounter() {
+    static std::uint64_t revision = 1;
+    return revision;
+}
+
+void bumpScriptComponentRevision() { ++scriptComponentRevisionCounter(); }
+
 Diagnostic storeDiagnostic(DiagnosticCode code, std::string message, const std::string& path) {
     return Diagnostic::error(code, std::move(message), path, {}, "ecs.component.store");
 }
@@ -27,6 +35,7 @@ Result<void> setScriptComponentValues(const ScriptComponentStoreKey& key, Value 
             storeDiagnostic(DiagnosticCode::InvalidArgument, "script component values must be an object",
                             key.name));
     scriptComponentStore()[key] = std::move(values);
+    bumpScriptComponentRevision();
     return Result<void>::success(Status::success(StatusCode::Applied));
 }
 
@@ -58,6 +67,7 @@ Result<void> setScriptComponentField(const ScriptComponentStoreKey& key, const s
         return Result<void>::failure(
             storeDiagnostic(DiagnosticCode::NotFound, "field is not part of the component schema", field));
     *found->second.find(field) = std::move(value);
+    bumpScriptComponentRevision();
     return Result<void>::success(Status::success(StatusCode::Applied));
 }
 
@@ -73,11 +83,13 @@ void replaceScriptComponentValues(std::vector<ScriptComponentStoreEntry> entries
     Store replacement;
     for (auto& entry : entries) replacement[entry.key] = std::move(entry.values);
     scriptComponentStore() = std::move(replacement);
+    bumpScriptComponentRevision();
 }
 
 void reconcileScriptComponentValues(const std::string& name, SchemaVersion version,
                                     const std::vector<std::string>& fields, const std::vector<Value>& defaults) {
-    Store& store = scriptComponentStore();
+    Store& store   = scriptComponentStore();
+    bool   touched = false;
     for (auto& [key, values] : store) {
         if (key.name != name || key.version != version) continue;
         // 逐字段重建：旧的留着、新的取默认值、不再声明的丢掉。原地改 value 而不是插删键，
@@ -92,7 +104,9 @@ void reconcileScriptComponentValues(const std::string& name, SchemaVersion versi
             }
         }
         values = Value::object(std::move(rebuilt));
+        touched = true;
     }
+    if (touched) bumpScriptComponentRevision();
 }
 
 std::size_t removeScriptComponentValues(std::uint64_t entityId) {
@@ -106,11 +120,17 @@ std::size_t removeScriptComponentValues(std::uint64_t entityId) {
             ++it;
         }
     }
+    if (removed > 0) bumpScriptComponentRevision();
     return removed;
 }
 
-void clearScriptComponentStore() { scriptComponentStore().clear(); }
+void clearScriptComponentStore() {
+    if (!scriptComponentStore().empty()) bumpScriptComponentRevision();
+    scriptComponentStore().clear();
+}
 
 std::size_t scriptComponentStoreSize() { return scriptComponentStore().size(); }
+
+std::uint64_t scriptComponentStoreRevision() { return scriptComponentRevisionCounter(); }
 
 }  // namespace eve
