@@ -127,8 +127,23 @@ option(EVENGINE_VULKAN_USE_VMA
 # docs/dev/superpowers/specs/2026-08-18-test-suite-optimization.md sections
 # 7.7-7.19), so SHARED is the default here and OBJECT is the opt-in: anything that
 # ships an artifact must pass -DEVENGINE_MODULE_LINKAGE=OBJECT.
-set(EVENGINE_MODULE_LINKAGE "SHARED" CACHE STRING
-    "How each manifest module is built: SHARED (default; one DLL per link group) or OBJECT (release/SDK: one self-contained exe)")
+#
+# The dynamic route is a desktop development convenience -- one library per link
+# group so iterating on a domain test relinks a test executable instead of the
+# whole engine. Mobile and WebAssembly artifacts ship as a single module or app
+# bundle and cannot be told where to find seven group libraries, so those
+# platforms keep the archive-only route whatever the default is.
+if(ANDROID OR IOS OR EMSCRIPTEN
+   OR CMAKE_SYSTEM_NAME STREQUAL "iOS"
+   OR BUILD_PLATFORM STREQUAL "android"
+   OR BUILD_PLATFORM STREQUAL "ios"
+   OR BUILD_PLATFORM STREQUAL "webgpu")
+    set(_eve_module_linkage_default "OBJECT")
+else()
+    set(_eve_module_linkage_default "SHARED")
+endif()
+set(EVENGINE_MODULE_LINKAGE "${_eve_module_linkage_default}" CACHE STRING
+    "How each manifest module is built: SHARED (desktop default; one library per link group) or OBJECT (release/SDK/mobile/WASM: one self-contained artifact)")
 set_property(CACHE EVENGINE_MODULE_LINKAGE PROPERTY STRINGS OBJECT SHARED)
 if(NOT EVENGINE_MODULE_LINKAGE MATCHES "^(OBJECT|SHARED)$")
     message(FATAL_ERROR
