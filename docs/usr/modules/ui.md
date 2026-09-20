@@ -22,9 +22,37 @@ ui.mountBuildAs("hud");
 ## 自定义组件
 
 脚本组件拥有实例级 `props` 与 `state` 表；`setProps(table)` / `setState(table)` 会合并
-变更并标记脏状态，`updateIfDirty()` 通过稳定 ID 协调旧树。持久化的子组件实例可用
-`renderChild(child, props)` 嵌入，子组件 `markDirty()` 会自动向父组件传播。首次挂载和后续
-重建分别调用 `onMount()`、`onUpdated()`。
+变更并标记脏状态。已挂载的根组件会进入帧调度队列，在下一次渲染前通过稳定 ID
+自动协调旧树；同一帧的多次变更只重建一次，通常不需要手动调用 `updateIfDirty()`。
+持久化的子组件实例可用 `renderChild(child, props)` 嵌入，子组件 `markDirty()` 会自动向
+父组件传播。首次挂载和后续重建分别调用 `onMount()`、`onUpdated()`；显式 `unmount()`
+会递归卸载子组件并调用 `onUnmount()`，同时隐藏对应 Host。
+
+`renderChild(child, props, replaceProps=false)` 默认与 `setProps()` 一样合并属性；第三个
+参数为 `true` 时先清空旧属性表再应用新属性。`updateIfDirty()` 仍可用于测试或确实需要
+同步刷新的工具代码。
+
+组件可用 `bindClick(id, fn)` / `bindChange(id, fn)` 声明事件处理器；同一组件内相同
+类型与 ID 的绑定会被替换而不是累加，组件卸载时自动注销。动态列表使用
+`renderKeyed(key, factory, props)`：稳定 key 会复用原组件实例，移除 key 会触发子组件
+`onUnmount()` 并释放其事件处理器。
+
+`componentOnClick`、`componentOnChange` 与 `componentClearHandlers` 是
+`UIComponent` 实现事件所有权的内部桥接函数；游戏脚本应使用上述 `bindClick` /
+`bindChange`，不要直接调用这些桥接函数。
+
+## 布局
+
+`beginRow()` / `beginColumn()` 支持 `setItemFlexGrow()`、`setItemFlexShrink()`、
+`setItemFlexBasis()`、`setItemAlignSelf()` 与 `setFlexWrap()`。独立的横纵间距使用
+`setLayoutGaps(columnGap, rowGap)`；`setLayoutOverflow("visible" | "clip" | "scroll")`
+控制超出内容的显示方式。`beginGrid(columns, id, columnGap, rowGap)` 创建等宽列网格，
+`setItemGridColumnSpan()` 设置最后一个子项的跨列数，`setItemAspectRatio()` 可让 Flex
+或 Grid 根据宽高比推导另一轴尺寸。
+
+`saveTreeJson()` 写出 `schema: "eve.ui.tree"` 与当前 `version: 4`。加载器把无版本文档
+视为版本 1，接受版本 1–4，拒绝未知 schema 和未来版本；未知字段会被忽略，新增字段
+均有向后兼容默认值。
 
 ```squirrel
 class Label extends eve.UIComponent {
@@ -227,6 +255,24 @@ ui.setItemAccessibility("button", "Save scene", "");
 对于刚通过 `beginWindow`、`beginCard`、`beginGroup` 等打开且仍在构建的当前容器，使用
 `setThemeScope()`；这样根 Window 也能拥有独立于全局预设的主题。
 
+可复用的局部视觉样式使用命名 StyleClass。先用 `defineStyleClass(name, parent)` 声明类，
+再用 `setStyleClassColor(name, "text"|"background"|"border"|"accent", r, g, b, a)` 和
+`setStyleClassMetric(name, "padding"|"rounding"|"alpha", x, y)` 配置稀疏 token。三个修改
+接口返回稳定状态字符串（如 `applied`、`unknown-parent`、`inheritance-cycle`），不会静默
+接受无效定义。`setItemStyleClass()` 设置最近控件，`setStyleScope()` 设置当前容器并通过
+ImGui 样式栈自然作用于子树；子节点只覆盖自己声明的 token。命名继承在建树或 patch 时
+解析为节点快照，因此逐帧渲染不做字符串注册表查询。类名随 version 4 JSON 保存；注册表
+由应用启动脚本重新声明，加载旧版资产时缺失字段按无样式处理，未知字段仍忽略。
+
+保留树和 MCP `EditorHost` 的 Button、Checkbox、单值 Slider、Combo 与文本输入共享同一组
+原生控件原语，因此尺寸、禁用态和编辑结果语义一致。文本输入持有 UTF-8 `std::string` 并在
+ImGui 请求扩容时增长，不再使用 1 KiB/512 字节固定缓冲；SDL/ImGui 后端继续负责平台 IME。
+
+轻量动效可用 `animateItemOpacity(id, target, durationMs)`；它只改节点瞬态 opacity，不污染
+JSON 资产或 StyleClass 注册表。`getLayoutDiagnostics()` 输出各节点测量尺寸和横纵溢出，
+`getAccessibilitySnapshot()` 输出语义节点的 role/name/description、enabled 与 focused 状态，
+供调试器和自动化读取而不触碰 ImGui 内部对象。
+
 ## 常见问题
 
 - 每帧重新 mount，丢失输入焦点与控件状态。
@@ -238,13 +284,13 @@ ui.setItemAccessibility("button", "Save scene", "");
 下列方法名来自当前 Squirrel 绑定；同一模块创建的辅助对象（例如 `World`、`Body`、`Source`）的方法也列在这里。
 
 - `beginBuild()`、`beginCard()`、`beginChild()`、`beginCollapsing()`、`beginColumn()`、`beginFlex()`、`beginFrameAndRender()`、`beginGroup()`、`beginList()`、`beginMenu()`、`beginMenuBar()`、`beginNinePatch()`、`beginRow()`、`beginSidebar()`、`beginSplitPane()`、`beginStatusBar()`、`beginScrollList()`、`beginToolbar()`、`beginToolbox()`、`beginWindow()`、`bindOwner()`
-- `animateHostPos()`、`badge()`、`button()`、`checkbox()`、`colorPalette()`、`combo()`、`consumeChange()`、`consumeClick()`、`consumeDrop()`、`dispatchEvents()`、`dragDropSupport()`、`end()`、`getChecked()`、`getColorA()`、`getColorB()`、`getColorG()`、`getColorR()`、`getDropOrigin()`、`getDropSource()`、`getDropText()`、`getDropType()`、`getName()`
+- `animateHostPos()`、`animateItemOpacity()`、`badge()`、`button()`、`checkbox()`、`colorPalette()`、`combo()`、`consumeChange()`、`consumeClick()`、`consumeDrop()`、`dispatchEvents()`、`dragDropSupport()`、`end()`、`getChecked()`、`getColorA()`、`getColorB()`、`getColorG()`、`getColorR()`、`getDropOrigin()`、`getDropSource()`、`getDropText()`、`getDropType()`、`getName()`
 - `getFocusedId()`、`getScale()`、`getTheme()`、`getValue()`、`getValueText()`、`icon()`、`iconButton()`、`initBackend()`、`inputText()`、`isBackendReady()`、`listItem()`、`mountBuild()`、`moveFocus()`
 - `menuItem()`、`mountBuildAs()`、`mountSimple()`、`progress()`、`remountBuildAs()`、`sameLine()`、`searchField()`、`sectionHeader()`、`select()`、`separator()`、`setChecked()`
-- `requestFocus()`、`setEnabled()`、`setFlexAlign()`、`setFlexJustify()`、`setHostAnchor()`、`setHostLayer()`、`setHostModal()`、`setHostMovable()`、`setHostOverlay()`、`setHostOverlayAlpha()`、`setHostPercent()`、`setHostPos()`、`setHostResizable()`、`setHostSize()`、`setHostVisible()`、`setHostWorldAnchor()`、`clearHostWorldAnchor()`、`setHostWorldEdgePolicy()`、`setHostWorldDistanceScale()`、`setHostWorldOverlap()`、`getHostWorldState()`、`getHostWorldScreenX()`、`getHostWorldScreenY()`、`setImageCornerRadius()`、`setImageNinePatch()`、`setImageTint()`、`setImageUv()`、`setItemAbsolute()`、`setItemAccessibility()`、`setItemDragSource()`、`setItemDropTarget()`、`setItemEnabled()`、`setItemSelected()`、`setItemFlexGrow()`、`setItemFocusMode()`、`setItemFocusNeighbors()`、`setItemFocusOrder()`、`setItemMargin()`、`setItemMaxSize()`、`setItemMinSize()`、`setItemMouseFilter()`、`setItemPadding()`、`setItemPercent()`、`setItemSize()`、`setItemTabIndex()`、`setItemTheme()`、`setItemTooltip()`、`setNavGamepad()`、`setNavKeyboard()`、`setScale()`、`setText()`
-- `setTextWrap()`、`setTheme()`、`setThemeDark()`、`setThemeLight()`、`setThemeScope()`、`setColor()`、`setValue()`、`setValueText()`、`setVisible()`、`slider()`、`spacer()`、`switch()`、`text()`、`textWrapped()`、`wantCaptureKeyboard()`
+- `requestFocus()`、`setEnabled()`、`setFlexAlign()`、`setFlexJustify()`、`setHostAnchor()`、`setHostLayer()`、`setHostModal()`、`setHostMovable()`、`setHostOverlay()`、`setHostOverlayAlpha()`、`setHostPercent()`、`setHostPos()`、`setHostResizable()`、`setHostSize()`、`setHostVisible()`、`setHostWorldAnchor()`、`clearHostWorldAnchor()`、`setHostWorldEdgePolicy()`、`setHostWorldDistanceScale()`、`setHostWorldOverlap()`、`getHostWorldState()`、`getHostWorldScreenX()`、`getHostWorldScreenY()`、`setImageCornerRadius()`、`setImageNinePatch()`、`setImageTint()`、`setImageUv()`、`setItemAbsolute()`、`setItemAccessibility()`、`setItemAlignSelf()`、`setItemDragSource()`、`setItemDropTarget()`、`setItemEnabled()`、`setItemSelected()`、`setItemFlexBasis()`、`setItemFlexGrow()`、`setItemFlexShrink()`、`setItemFocusMode()`、`setItemFocusNeighbors()`、`setItemFocusOrder()`、`setItemMargin()`、`setItemMaxSize()`、`setItemMinSize()`、`setItemMouseFilter()`、`setItemPadding()`、`setItemPercent()`、`setItemSize()`、`setItemTabIndex()`、`setItemTheme()`、`setItemTooltip()`、`setNavGamepad()`、`setNavKeyboard()`、`setScale()`、`setText()`
+- `setTextWrap()`、`setTheme()`、`setThemeDark()`、`setThemeLight()`、`setThemeScope()`、`defineStyleClass()`、`setStyleClassColor()`、`setStyleClassMetric()`、`clearStyleClasses()`、`setItemStyleClass()`、`setStyleScope()`、`setColor()`、`setValue()`、`setValueText()`、`setVisible()`、`slider()`、`spacer()`、`switch()`、`text()`、`textWrapped()`、`wantCaptureKeyboard()`
 - `wantCaptureMouse()`、`registerTexture()`、`unregisterTexture()`、`setImageTextureId()`、`setImageNinePatchFile()`
-- `image()`、`imageButton()`、`ninePatch()`、`onClick()`、`onChange()`、`saveTreeJson()`、`loadTreeJson()`、`getStats()`
+- `image()`、`imageButton()`、`ninePatch()`、`onClick()`、`onChange()`、`saveTreeJson()`、`loadTreeJson()`、`getStats()`、`getLayoutDiagnostics()`、`getAccessibilitySnapshot()`
 - `viewport()`、`viewportCanvas()`、`viewportHovered()`、`viewportActive()`、`viewportMouseX()`、`viewportMouseY()`、`viewportDragDX()`、`viewportDragDY()`、`viewportWheel()`
 
 ## 引擎纹理控件

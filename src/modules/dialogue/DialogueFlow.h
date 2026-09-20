@@ -67,6 +67,12 @@ public:
                 const CommandRequest&)>;
         /** @brief Optional factory used to stage an atomic operation or Action. */
         CommandParticipantFactory commandParticipantFactory;
+        /**
+         * @brief Injected UTF-8 content reader used by loadDnutFileChecked.
+         * @remarks The callback runs synchronously on the owner thread and must
+         *          not re-enter DialogueFlow. Dialogue has no filesystem-module dependency.
+         */
+        std::function<eve::Result<std::string>(const std::string&)> contentReader;
     };
 
     Module_REG(DialogueFlow);
@@ -97,22 +103,28 @@ public:
     [[nodiscard]] eve::Result<eve::MutationReceipt> applyStateMutations(std::span<const eve::StateMutation> mutations,
                                                                         const eve::MutationContext& context) const;
 
-    int         loadFromDnut(const std::string& source, const std::string& path);
-    int         reloadFromDnut(const std::string& source, const std::string& path);
-    int         loadFromDnutFile(const std::string& path);
-    int         importYarn(const std::string& source, const std::string& path);
-    int         importTwee(const std::string& source, const std::string& path);
-    bool        removeSource(const std::string& path);
-    bool        lintAll();
-    bool        renameConversation(const std::string& oldId, const std::string& newId);
-    bool        renameNode(const std::string& conversationId, const std::string& oldId, const std::string& newId);
+    /** @brief Compile, validate, and atomically commit one versioned dnut document. */
+    [[nodiscard]] eve::Result<int> loadDnutChecked(const std::string& source, const std::string& sourceId);
+    /** @brief Transactionally replace one source while preserving a migratable active runner. */
+    [[nodiscard]] eve::Result<int> reloadDnutChecked(const std::string& source, const std::string& sourceId);
+    /** @brief Read through the injected filesystem capability and call loadDnutChecked. */
+    [[nodiscard]] eve::Result<int> loadDnutFileChecked(const std::string& path);
+    [[nodiscard]] eve::Result<int> importYarnChecked(const std::string& source, const std::string& path);
+    [[nodiscard]] eve::Result<int> importTweeChecked(const std::string& source, const std::string& path);
+    [[nodiscard]] eve::Result<void> removeSourceChecked(const std::string& path);
+    [[nodiscard]] eve::Result<void> lintAllChecked();
+    [[nodiscard]] eve::Result<void> renameConversationChecked(const std::string& oldId, const std::string& newId);
+    [[nodiscard]] eve::Result<void> renameNodeChecked(const std::string& conversationId, const std::string& oldId,
+                                                      const std::string& newId);
     bool        getLastLoadChanged() const { return lastLoadChanged_; }
     void        clear();
     int         getConversationCount() const;
     std::string getConversationId(int index) const;
     bool        hasConversation(const std::string& id) const;
     std::string exportLocalizationCsv() const;
-    int         importLocalizationCsv(const std::string& csv, const std::string& defaultLocale);
+    /** @brief Import localized strings transactionally and return the imported row count. */
+    [[nodiscard]] eve::Result<int> importLocalizationCsvChecked(const std::string& csv,
+                                                                const std::string& defaultLocale);
     std::string exportMissingLocalizationCsv(const std::string& locale) const;
     std::string exportVoiceRecordingCsv(const std::string& locale) const;
     /**
@@ -135,13 +147,19 @@ public:
     std::string                    getDiagnosticSeverity(int index) const;
     std::string                    getDiagnosticPath(int index) const;
     int                            getDiagnosticLine(int index) const;
+    /** @brief Return the one-based source column for a diagnostic, or zero when unavailable. */
+    int                            getDiagnosticColumn(int index) const;
+    /** @brief Return the stable machine-readable diagnostic code. */
+    std::string                    getDiagnosticCode(int index) const;
+    /** @brief Return the stable asset/node/route path associated with a diagnostic. */
+    std::string                    getDiagnosticAssetPath(int index) const;
     std::string                    getDiagnosticMessage(int index) const;
     /** @brief Create an empty UI-neutral conversation document. */
     ConversationDocument* newDocument(const std::string& id) const;
     /** @brief Create an editable copy of a registered conversation. */
     ConversationDocument* getDocument(const std::string& id) const;
     /** @brief Validate and transactionally insert or replace an authored document. */
-    bool applyDocument(ConversationDocument* document);
+    [[nodiscard]] eve::Result<void> applyDocumentChecked(ConversationDocument* document);
 
     /**
      * @brief Start a conversation after validating script bindings.
@@ -151,8 +169,6 @@ public:
      * Does not invoke integration callbacks.
      */
     [[nodiscard]] eve::Result<void> startChecked(const std::string& id, ssq::Object bindings);
-    /** @brief Compatibility-only bool projection of startChecked. */
-    bool start(const std::string& id, ssq::Object bindings);
     /**
      * @brief Advance the active conversation with a structured runner diagnostic.
      * @return Applied on
@@ -161,8 +177,17 @@ public:
      * @reentrancy May synchronously invoke configured command handlers.
      */
     [[nodiscard]] eve::Result<void> advanceChecked();
-    /** @brief Compatibility-only bool projection of advanceChecked. */
-    bool advance();
+    /**
+     * @brief Resume the exact asynchronous command currently owned by the runner.
+     * @param requestId Stable id returned by getPendingCommandRequestId().
+     * @param value Owning command result converted synchronously into runner locals.
+     * @return Applied on success; stale, duplicate, or mismatched ids leave state unchanged.
+     * @thread Affine to the DialogueFlow owner thread.
+     * @reentrancy Does not invoke integration callbacks while mutating runner state.
+     */
+    [[nodiscard]] eve::Result<void> resumeCommandChecked(const std::string& requestId, eve::Value value);
+    /** @brief Return the current pending command id, or an empty string when none is pending. */
+    std::string getPendingCommandRequestId() const { return runner_.pendingCommandRequestId(); }
     /**
      * @brief Select a route, atomically applying configured payment/state effects.
      * @return Applied on success, or the canonical dialogue/transaction diagnostic.
@@ -184,26 +209,36 @@ public:
     float                           getVoiceDuration() const;
     int                             getRouteCount() const;
     std::string                     getRouteId(int index) const;
+    /** @brief Return localized presentation text independently from the stable route id. */
+    std::string                     getRouteText(int index) const;
+    /** @brief Suspend handler-less commands until resumeCommandChecked is called. */
+    void                            setManualCommandMode(bool enabled);
 
     /** @brief Register one pure Squirrel evaluator receiving {expression,bindings,locals}. */
-    bool setExpressionEvaluator(ssq::Object fn);
+    /** @brief Install the checked pure-expression callback used by branch evaluation. */
+    [[nodiscard]] eve::Result<void> setExpressionEvaluatorChecked(ssq::Object fn);
     void clearExpressionEvaluator();
 
-    bool        captureState(StateValue& out) const { return runner_.captureState(out); }
-    bool        restoreState(const StateValue& in, std::string* error = nullptr);
-    std::string captureStateJson() const;
-    bool        restoreStateJson(const std::string& json);
-    bool        registerMigration(const std::string& assetId, int fromVersion, const std::string& currentAssetId,
-                                  const std::string& nodeMap);
+    [[nodiscard]] eve::Result<StateValue> captureStateChecked() const { return runner_.captureStateChecked(); }
+    [[nodiscard]] eve::Result<void> restoreStateChecked(const StateValue& in);
+    [[nodiscard]] eve::Result<std::string> captureStateJsonChecked() const;
+    [[nodiscard]] eve::Result<void> restoreStateJsonChecked(const std::string& json);
+    [[nodiscard]] eve::Result<void> registerMigrationChecked(const std::string& assetId, int fromVersion,
+                                                             const std::string& currentAssetId,
+                                                             const std::string& nodeMap);
     void        clearMigrations() { migrations_.clear(); }
     void        addToneRule(const std::string& expression, const std::string& prefix, const std::string& suffix,
                             const std::string& find, const std::string& replacement);
     void        clearToneRules() { textRenderer_.clearToneRules(); }
 
 private:
-    int                      mergeImported(std::vector<ConversationAsset> imported);
+    int loadDnutImpl(const std::string& source, const std::string& sourceId);
+    int reloadDnutImpl(const std::string& source, const std::string& sourceId);
+    int loadDnutFileImpl(const std::string& path);
+    [[nodiscard]] eve::Result<int> mergeImported(std::vector<ConversationAsset> imported);
     const ConversationAsset* find(const std::string& id) const;
-    StateValue      evaluate(const std::string& expression, const StateValue& bindings, const StateValue& locals);
+    [[nodiscard]] eve::Result<StateValue> evaluate(const std::string& expression, const StateValue& bindings,
+                                                   const StateValue& locals);
     CommandResponse dispatchCommand(const CommandRequest& request);
     std::string     nextTransactionId(const char* purpose);
 
@@ -215,6 +250,7 @@ private:
     CommandRequestHandler                                     operationRequestHandler_;
     CommandRequestHandler                                     gameplayActionHandler_;
     IntegrationConfig::CommandParticipantFactory              commandParticipantFactory_;
+    std::function<eve::Result<std::string>(const std::string&)> contentReader_;
     eve::IStateMutation*                                      stateMutationProvider_ = nullptr;
     DialoguePaymentAdapter                                    paymentAdapter_;
     std::uint64_t                                             transactionSequence_ = 1;
@@ -222,8 +258,11 @@ private:
     HSQUIRRELVM                                               vm_ = nullptr;
     HSQOBJECT                                                 evaluator_{};
     bool                                                      hasEvaluator_ = false;
-    std::unordered_map<std::string, size_t>                   sourceHashes_;
+    bool                                                      manualCommandMode_ = false;
+    std::unordered_map<std::string, std::string>              sourceTexts_;
     std::unordered_map<std::string, std::vector<std::string>> sourceAssets_;
+    std::unordered_map<std::string, std::string>              assetSources_;
+    std::unordered_map<std::string, DataValue>                sourcePools_;
     bool                                                      lastLoadChanged_ = false;
     ConversationLocalizationCatalog                           localization_;
     std::string                                               locale_;

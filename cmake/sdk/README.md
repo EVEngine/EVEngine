@@ -17,6 +17,8 @@ phone or as a universal multi-platform kit.
 - `cmake/` — `find_package(EVEngine)` + `add_eve_plugin()` (not needed for script-only games)
 - `platform/` — **this target only** packaging template (e.g. the Android APK project)
 - `share/eve/` — `VERSION`, `TARGET_PLATFORM`, runnable `examples/basic`, `licenses/`
+- `share/eve/ai/` — Binding Contract catalog (`eve-api.json`), agent skill, MCP stdio bridge
+- `llms.txt` / `.cursor/skills/evescript/SKILL.md` — entry files so an unzipped SDK is agent-readable
 
 `share/eve/TARGET_PLATFORM` must match the SDK directory name.
 

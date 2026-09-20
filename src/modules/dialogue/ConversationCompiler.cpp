@@ -1,4 +1,5 @@
 #include "dialogue/ConversationCompiler.h"
+#include "dialogue/DnutParser.h"
 
 #include <algorithm>
 #include <cctype>
@@ -11,66 +12,6 @@
 namespace eve::dialogue {
 namespace {
 
-std::string trim(std::string value) {
-    const auto first = std::find_if_not(value.begin(), value.end(), [](unsigned char c) {
-        return std::isspace(c) != 0;
-    });
-    const auto last = std::find_if_not(value.rbegin(), value.rend(), [](unsigned char c) {
-                          return std::isspace(c) != 0;
-                      }).base();
-    return first < last ? std::string(first, last) : std::string{};
-}
-
-std::vector<std::string> words(const std::string& line) {
-    std::vector<std::string> out;
-    std::string word;
-    bool quoted = false;
-    bool escaped = false;
-    for (char c : line) {
-        if (escaped) {
-            word.push_back(c);
-            escaped = false;
-        } else if (c == '\\' && quoted) {
-            escaped = true;
-        } else if (c == '"') {
-            quoted = !quoted;
-        } else if (std::isspace(static_cast<unsigned char>(c)) && !quoted) {
-            if (!word.empty()) {
-                out.push_back(std::move(word));
-                word.clear();
-            }
-        } else {
-            word.push_back(c);
-        }
-    }
-    if (!word.empty()) out.push_back(std::move(word));
-    return out;
-}
-
-std::unordered_map<std::string, std::string> attributes(const std::vector<std::string>& tokens,
-                                                        size_t begin) {
-    std::unordered_map<std::string, std::string> out;
-    for (size_t i = begin; i < tokens.size(); ++i) {
-        const size_t equal = tokens[i].find('=');
-        if (equal != std::string::npos)
-            out[tokens[i].substr(0, equal)] = tokens[i].substr(equal + 1);
-    }
-    return out;
-}
-
-ConversationAsset::Node::Kind nodeKind(const std::string& kind, bool& ok) {
-    ok = true;
-    if (kind == "line") return ConversationAsset::Node::Kind::Line;
-    if (kind == "branch") return ConversationAsset::Node::Kind::Branch;
-    if (kind == "choice") return ConversationAsset::Node::Kind::Choice;
-    if (kind == "call") return ConversationAsset::Node::Kind::Call;
-    if (kind == "command") return ConversationAsset::Node::Kind::Command;
-    if (kind == "wait") return ConversationAsset::Node::Kind::Wait;
-    if (kind == "end") return ConversationAsset::Node::Kind::End;
-    ok = false;
-    return ConversationAsset::Node::Kind::End;
-}
-
 std::string csv(std::string value) {
     size_t pos = 0;
     while ((pos = value.find('"', pos)) != std::string::npos) {
@@ -82,113 +23,43 @@ std::string csv(std::string value) {
 
 }  // namespace
 
-bool compileDnutConversations(const std::string& source, const std::string& path,
-                              std::vector<ConversationAsset>& assets,
-                              std::vector<ConversationDiagnostic>& diagnostics) {
-    assets.clear();
-    ConversationAsset* asset = nullptr;
-    ConversationAsset::Node* node = nullptr;
-    std::istringstream input(source);
-    std::string raw;
-    int lineNumber = 0;
-    const auto error = [&](const std::string& message) {
-        diagnostics.push_back(
-            {ConversationDiagnostic::Severity::Error, path, lineNumber, message});
-    };
-    while (std::getline(input, raw)) {
-        ++lineNumber;
-        const size_t comment = raw.find("//");
-        const std::string line = trim(raw.substr(0, comment));
-        if (line.empty()) continue;
-        const auto tokens = words(line);
-        if (tokens.empty()) continue;
-        if (tokens[0] == "conversation") {
-            if (tokens.size() < 2) {
-                error("conversation requires an id");
-                continue;
-            }
-            assets.push_back({});
-            asset = &assets.back();
-            asset->id = tokens[1];
-            const auto attrs = attributes(tokens, 2);
-            if (const auto it = attrs.find("entry"); it != attrs.end()) asset->entry = it->second;
-            if (const auto it = attrs.find("version"); it != attrs.end()) {
-                int version = 0;
-                std::from_chars(it->second.data(), it->second.data() + it->second.size(), version);
-                asset->version = version;
-            }
-            if (const auto it = attrs.find("params"); it != attrs.end()) {
-                std::istringstream params(it->second);
-                std::string parameter;
-                while (std::getline(params, parameter, ',')) asset->parameters.push_back(parameter);
-            }
-            node = nullptr;
-        } else if (tokens[0] == "endconversation") {
-            asset = nullptr;
-            node = nullptr;
-        } else if (!asset) {
-            // Pool syntax is compiled by DnutParser; conversation blocks may coexist in one file.
-            continue;
-        } else if (tokens[0] == "node") {
-            if (!asset || tokens.size() < 3) {
-                error("node requires an active conversation, id, and kind");
-                continue;
-            }
-            bool validKind = false;
-            asset->nodes.push_back({});
-            node = &asset->nodes.back();
-            node->id = tokens[1];
-            node->kind = nodeKind(tokens[2], validKind);
-            if (!validKind) error("unknown node kind '" + tokens[2] + "'");
-            const auto attrs = attributes(tokens, 3);
-            const auto set = [&](const char* name, std::string& value) {
-                if (const auto it = attrs.find(name); it != attrs.end()) value = it->second;
-            };
-            set("next", node->next);
-            set("speaker", node->speaker);
-            set("text", node->text);
-            set("pool", node->pool);
-            set("i18n", node->i18nKey);
-            set("voice", node->voice);
-            set("target", node->target);
-            set("return", node->returnNode);
-            set("result", node->expression);
-        } else if (tokens[0] == "when" || tokens[0] == "else" || tokens[0] == "option") {
-            if (!node) {
-                error("route requires a preceding node");
-                continue;
-            }
-            const size_t arrow = line.rfind("->");
-            if (arrow == std::string::npos) {
-                error("route requires '-> target'");
-                continue;
-            }
-            const std::string target = trim(line.substr(arrow + 2));
-            std::string expression;
-            if (tokens[0] == "else") expression = "else";
-            else expression = trim(line.substr(tokens[0].size(), arrow - tokens[0].size()));
-            node->routes.emplace_back(std::move(expression), target);
-        } else {
-            error("unexpected conversation statement '" + tokens[0] + "'");
-        }
-    }
-    if (asset) error("conversation is missing endconversation");
-    return lintConversations(assets, path, diagnostics);
+eve::Result<std::vector<ConversationAsset>> compileDnutConversations(
+    const std::string& source, const std::string& path, std::vector<ConversationDiagnostic>& diagnostics) {
+    auto compiled = compileDnutDocument(source, path, diagnostics);
+    if (!compiled) return eve::Result<std::vector<ConversationAsset>>::failure(compiled.status());
+    DnutDocument document = std::move(compiled).takeValue();
+    return eve::Result<std::vector<ConversationAsset>>::success(std::move(document.conversations));
 }
 
-bool lintConversations(const std::vector<ConversationAsset>& assets, const std::string& path,
-                       std::vector<ConversationDiagnostic>& diagnostics) {
+eve::Result<DnutDocument> compileDnutDocument(const std::string& source, const std::string& path,
+                                              std::vector<ConversationDiagnostic>& diagnostics) {
+    auto parsed = parseDnutDocument(source, path, diagnostics);
+    if (!parsed) {
+        return eve::Result<DnutDocument>::failure(parsed.status());
+    }
+    DnutDocument document = std::move(parsed).takeValue();
+    auto linted = lintConversations(document.conversations, path, diagnostics);
+    if (!linted) return eve::Result<DnutDocument>::failure(linted.status());
+    return eve::Result<DnutDocument>::success(std::move(document));
+}
+
+eve::Result<void> lintConversations(const std::vector<ConversationAsset>& assets, const std::string& path,
+                                    std::vector<ConversationDiagnostic>& diagnostics) {
     bool valid = true;
     std::unordered_set<std::string> assetIds;
     for (const auto& asset : assets) {
         if (!assetIds.insert(asset.id).second) {
-            diagnostics.push_back({ConversationDiagnostic::Severity::Error, path, 0,
-                                   "duplicate conversation id '" + asset.id + "'"});
+            diagnostics.push_back({ConversationDiagnostic::Severity::Error, path, asset.sourceLine,
+                                   "duplicate conversation id '" + asset.id + "'", "DuplicateAssetId",
+                                   asset.sourceColumn,
+                                   asset.id});
             valid = false;
         }
-        std::string error;
-        if (!asset.validate(&error)) {
-            diagnostics.push_back({ConversationDiagnostic::Severity::Error, path, 0, error});
+        auto validated = asset.validate();
+        if (!validated) {
+            diagnostics.push_back(
+                {ConversationDiagnostic::Severity::Error, path, asset.sourceLine, validated.status().describe(),
+                 "InvalidConversation", asset.sourceColumn, asset.id});
             valid = false;
             continue;
         }
@@ -206,14 +77,50 @@ bool lintConversations(const std::vector<ConversationAsset>& assets, const std::
         }
         for (const auto& node : asset.nodes) {
             if (reached.find(node.id) == reached.end())
-                diagnostics.push_back({ConversationDiagnostic::Severity::Warning, path, 0,
+                diagnostics.push_back({ConversationDiagnostic::Severity::Warning, path, node.sourceLine,
                                        "conversation '" + asset.id + "': unreachable node '" +
-                                           node.id + "'"});
+                                           node.id + "'",
+                                       "UnreachableNode", node.sourceColumn, asset.id + "/" + node.id});
+        }
+
+        std::unordered_set<std::string> canExit;
+        for (const auto& node : asset.nodes)
+            if (node.kind == ConversationAsset::Node::Kind::End) canExit.insert(node.id);
+        bool changed = true;
+        while (changed) {
+            changed = false;
+            for (const auto& node : asset.nodes) {
+                if (canExit.contains(node.id)) continue;
+                bool exits = (!node.next.empty() && canExit.contains(node.next)) ||
+                             (!node.returnNode.empty() && canExit.contains(node.returnNode));
+                for (const auto& route : node.routes) exits = exits || canExit.contains(route.second);
+                if (exits) changed = canExit.insert(node.id).second;
+            }
+        }
+        bool allReachableHaveOutgoing = true;
+        for (const auto& node : asset.nodes) {
+            if (!reached.contains(node.id) || canExit.contains(node.id)) continue;
+            if (node.next.empty() && node.returnNode.empty() && node.routes.empty()) {
+                allReachableHaveOutgoing = false;
+                break;
+            }
+        }
+        if (!canExit.contains(asset.entry) && allReachableHaveOutgoing) {
+            diagnostics.push_back({ConversationDiagnostic::Severity::Error, path, asset.sourceLine,
+                                   "conversation '" + asset.id + "' contains a reachable loop with no exit",
+                                   "NoExitLoop", asset.sourceColumn, asset.id});
+            valid = false;
         }
     }
-    return valid && std::none_of(diagnostics.begin(), diagnostics.end(), [](const auto& item) {
-               return item.severity == ConversationDiagnostic::Severity::Error;
-           });
+    valid = valid && std::none_of(diagnostics.begin(), diagnostics.end(), [](const auto& item) {
+        return item.severity == ConversationDiagnostic::Severity::Error;
+    });
+    if (!valid) {
+        const std::string message = diagnostics.empty() ? "conversation lint failed" : diagnostics.front().message;
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, message, path, {}, "dialogue.lint"));
+    }
+    return eve::Result<void>::success();
 }
 
 std::string exportConversationLocalizationCsv(const std::vector<ConversationAsset>& assets) {

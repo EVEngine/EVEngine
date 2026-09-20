@@ -26,6 +26,7 @@ struct WidgetDesc {
     FocusMode focusMode = FocusMode::All;
     MouseFilter mouseFilter = MouseFilter::Stop;
     ThemePreset themePreset = ThemePreset::Inherit;
+    std::string styleClass;
     int tabIndex = 0;
     std::string focusNext;
     std::string focusPrevious;
@@ -61,6 +62,7 @@ struct WidgetDesc {
     float maxSizeY = 0.f;
     float percentW = 0.f;
     float percentH = 0.f;
+    float aspectRatio = 0.f;
     float anchorX = 0.f;
     float anchorY = 0.f;
     float posX = 0.f;
@@ -88,6 +90,15 @@ struct WidgetDesc {
     FlexJustify justifyContent = FlexJustify::Start;
     float gap = -1.f;
     float flexGrow = 0.f;
+    float flexShrink = 1.f;
+    float flexBasis = -1.f;
+    int alignSelf = -1;
+    float columnGap = -1.f;
+    float rowGap = -1.f;
+    FlexWrap flexWrap = FlexWrap::NoWrap;
+    OverflowMode overflow = OverflowMode::Visible;
+    int gridColumns = 1;
+    int gridColumnSpan = 1;
     std::function<void()> onClick;
     std::function<void(bool)> onToggle;
     std::function<void(float)> onValue;
@@ -230,6 +241,15 @@ struct WidgetDesc {
         percentH = h;
         return *this;
     }
+    /** @brief Applies a named sparse style class resolved when the tree is built. */
+    WidgetDesc &withStyleClass(std::string v) {
+        styleClass = std::move(v);
+        return *this;
+    }
+    WidgetDesc &withAspectRatio(float ratio) {
+        aspectRatio = ratio;
+        return *this;
+    }
     /** Place absolutely inside a Flex parent: (ax,ay) anchor in parent, (x,y) offset. */
     WidgetDesc &withAbsolute(float ax, float ay, float x = 0.f, float y = 0.f) {
         absolute = true;
@@ -277,6 +297,23 @@ struct WidgetDesc {
         gap = g;
         return *this;
     }
+    WidgetDesc &withGaps(float columns, float rows) {
+        columnGap = columns;
+        rowGap = rows;
+        return *this;
+    }
+    WidgetDesc &withFlexWrap(FlexWrap wrap) {
+        flexWrap = wrap;
+        return *this;
+    }
+    WidgetDesc &withOverflow(OverflowMode mode) {
+        overflow = mode;
+        return *this;
+    }
+    WidgetDesc &withGridColumnSpan(int span) {
+        gridColumnSpan = span;
+        return *this;
+    }
     WidgetDesc &withFlexDirection(FlexDirection d) {
         flexDirection = d;
         return *this;
@@ -291,6 +328,18 @@ struct WidgetDesc {
     }
     WidgetDesc &withFlexGrow(float g) {
         flexGrow = g;
+        return *this;
+    }
+    WidgetDesc &withFlexShrink(float shrink) {
+        flexShrink = shrink;
+        return *this;
+    }
+    WidgetDesc &withFlexBasis(float basis) {
+        flexBasis = basis;
+        return *this;
+    }
+    WidgetDesc &withAlignSelf(FlexAlign align) {
+        alignSelf = int(align);
         return *this;
     }
     WidgetDesc &withClick(std::function<void()> fn) {
@@ -427,6 +476,8 @@ WidgetDesc flex(FlexDirection direction, std::vector<WidgetDesc> children = {},
 WidgetDesc row(std::vector<WidgetDesc> children = {}, std::string id = "");
 /** @brief Vertical elastic layout column. */
 WidgetDesc column(std::vector<WidgetDesc> children = {}, std::string id = "");
+/** @brief Fixed-column grid; children are placed in source order. */
+WidgetDesc grid(int columns, std::vector<WidgetDesc> children = {}, std::string id = "");
 /** @brief Flexible empty space; default flexGrow=1 so it absorbs free space in a Flex parent. */
 WidgetDesc spacer(std::string id = "", float grow = 1.f);
 

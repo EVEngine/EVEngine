@@ -10,8 +10,10 @@
 #include "procgen/ProcgenCapabilities.h"
 #include "procgen/RuntimeGenerationScript.h"
 #include "procgen/ShapeGrammarScript.h"
-#include "procgen/mesh/MeshModifierGraphScript.h"
+#include "procgen/ProcgenScriptObjects.h"
+#include "procgen/ScriptGeneratorHost.h"
 #include "procgen/mesh/DynamicMeshUvPaintSession.h"
+#include "procgen/mesh/MeshModifierGraphScript.h"
 
 #include "image/ImageData.h"
 
@@ -62,24 +64,6 @@
 namespace eve::procgen {
 
 namespace {
-
-/** @brief Script-owned proxy; the procedural object remains module-owned. */
-struct ScriptProcgenParams {
-    explicit ScriptProcgenParams(ProcgenParamsHandleRef value) : reference(value) {}
-    ProcgenParamsHandleRef reference;
-};
-
-/** @brief Script-owned proxy; the procedural grid remains module-owned. */
-struct ScriptProcgenGrid {
-    explicit ScriptProcgenGrid(ProcgenGridHandleRef value) : reference(value) {}
-    ProcgenGridHandleRef reference;
-};
-
-/** @brief Script-owned proxy; the rebuild context remains module-owned. */
-struct ScriptProcgenContext {
-    explicit ScriptProcgenContext(ProcgenContextHandleRef value) : reference(value) {}
-    ProcgenContextHandleRef reference;
-};
 
 template <class T>
 eve::Result<T> procgenBindingFailure(eve::DiagnosticCode code, std::string message, std::string path = {});
@@ -4265,6 +4249,7 @@ void Procgen::expose(ssq::Table& table) {
 
 void Procgen::expose(ssq::Class& cls) {
     cls.addFunc("getName", &Procgen::getName);
+    exposeScriptGeneratorHost(cls);
     cls.addFunc("newParams", [vm = cls.getHandle()](Procgen*) -> ssq::Table {
         return makeOwnedProxy<ProcgenParamsHandleRef, ScriptProcgenParams>(
             vm, Procgen::newParamsHandle(), [](ProcgenParamsHandleRef ref) { return Procgen::release(ref); });
@@ -5219,10 +5204,10 @@ void Procgen::expose(ssq::Class& cls) {
                     return projectBorrowedResult(vm, value->uploadMeshBorrowed(*mesh, *gfx), "mesh");
                 });
     cls.addFunc("configureGtsTerrainTileLods",
-                [vm = cls.getHandle()](Procgen* value,const GtsTerrainLodSet* lods,int tileIndex,
-                                       graphics::Renderable3D* renderable,graphics::Graphics* gfx,
-                                       float worldDiameter,float verticalFovDegrees,float originX,float originY,float originZ){
-                    if(!value||!lods||!renderable||!gfx)
+                [vm = cls.getHandle()](Procgen* value, const GtsTerrainLodSet* lods, int tileIndex,
+                                       graphics::Renderable3D* renderable, graphics::Graphics* gfx, float worldDiameter,
+                                       float verticalFovDegrees, float originX, float originY, float originZ) {
+                    if (!value || !lods || !renderable || !gfx)
                         return eve::script::projectResult(
                             vm, eve::Result<void>::failure(eve::Diagnostic::error(
                                     eve::DiagnosticCode::InvalidArgument,

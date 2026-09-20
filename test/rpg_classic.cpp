@@ -245,9 +245,10 @@ TEST_CASE("rpg.classic.elderDialogueHasOfferReminderTurnInAndCompletionRoutes") 
     std::ostringstream source;
     source << input.rdbuf();
 
-    std::vector<eve::dialogue::ConversationAsset>      assets;
     std::vector<eve::dialogue::ConversationDiagnostic> diagnostics;
-    CHECK(eve::dialogue::compileDnutConversations(source.str(), dialoguePath.string(), assets, diagnostics));
+    auto compiled = eve::dialogue::compileDnutConversations(source.str(), dialoguePath.string(), diagnostics);
+    REQUIRE(compiled.ok());
+    auto assets = std::move(compiled).takeValue();
     CHECK_EQ(assets.size(), std::size_t(9));
     CHECK(diagnostics.empty());
 
@@ -279,13 +280,13 @@ TEST_CASE("rpg.classic.elderDialogueHasOfferReminderTurnInAndCompletionRoutes") 
 
     eve::dialogue::ConversationRunner runner;
     std::string                       error;
-    CHECK(runner.start(offer, eve::StateValue::object(), &error));
+    CHECK(runner.startChecked(offer, eve::StateValue::object()).ok());
     CHECK_EQ(runner.currentNodeId(), std::string("intro"));
-    CHECK(runner.advance(&error));
+    CHECK(runner.advanceChecked().ok());
     CHECK_EQ(runner.currentNodeId(), std::string("decision"));
-    CHECK(runner.select("accept", &error));
+    CHECK(runner.selectChecked("accept").ok());
     CHECK_EQ(runner.currentNodeId(), std::string("accepted"));
-    CHECK(runner.advance(&error));
+    CHECK(runner.advanceChecked().ok());
     CHECK(!runner.isActive());
 }
 
@@ -341,10 +342,11 @@ TEST_CASE("rpg.classic.mapsQuestsAndDialogueComposeWithoutDanglingReferences") {
     auto storyEvents = eve::rpg::StoryEventCatalogue::replaceFromJsonStrict(readFile(root / "story-events.json"));
     REQUIRE(storyEvents.ok());
 
-    std::vector<eve::dialogue::ConversationAsset>      assets;
     std::vector<eve::dialogue::ConversationDiagnostic> diagnostics;
-    REQUIRE(eve::dialogue::compileDnutConversations(readFile(root / "village-dialogue.dnut"), "village-dialogue.dnut",
-                                                    assets, diagnostics));
+    auto compiled = eve::dialogue::compileDnutConversations(
+        readFile(root / "village-dialogue.dnut"), "village-dialogue.dnut", diagnostics);
+    REQUIRE(compiled.ok());
+    auto assets = std::move(compiled).takeValue();
     REQUIRE(diagnostics.empty());
     auto* localization = eve::i18n::I18n::create();
     REQUIRE(localization != nullptr);

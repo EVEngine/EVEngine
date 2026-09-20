@@ -290,7 +290,7 @@ for (local i = 0; i < count; ++i) {
 - `getTilesetTexture()`、`getX()`、`getY()`、`isVisible()`、`loadConfig()`、`loadFromFile()`、`newLayer()`、`newLayerFromFile()`
 - `newPathfinder()`、`newPathfinderSize()`、`newFov()`、`newFovSize()`、`newFovVolume()`
 - `pollConfigs()`、`reloadConfig()`、`render()`、`resize()`、`resolveDualGrid()`、`resolveDualGridFilled()`、`setAutoReload()`、`setCamera()`、`setCanvas()`、`setLayer()`
-- `setOrigin()`、`setTile()`、`setTileSize()`、`setTileset()`、`setTilesetTileSize()`、`setTileVisual()`、`setTileMetadata()`、`clearTileVisuals()`、`getTileVisualCount()`、`loadTilesetManifest()`、`setTint()`、`setVisible()`、`tileToWorldX()`
+- `setOrigin()`、`setTile()`、`setTileSize()`、`setTileset()`、`setTilesetTileSize()`、`setTileVisual()`、`setVisualScale()`、`getVisualScaleX()`、`getVisualScaleY()`、`setTileMetadata()`、`clearTileVisuals()`、`getTileVisualCount()`、`loadTilesetManifest()`、`setTint()`、`setVisible()`、`tileToWorldX()`
 - `tileToWorldY()`、`update()`、`worldToTileX()`、`worldToTileY()`、`dualGridFrame()`、`dualGridMaskAt()`、`dualGridOffsetX()`、`dualGridOffsetY()`、`lastDualGridError()`
 
 Pathfinder：`setTopology`、`getTopology`、`setDiagonal`、`blockGid`、`unblockGid`、`clearBlockedGids`、`setBlockEmpty`、`setBlocked`、`isWalkable`、`setCellCost`、`getCellCost`、`syncFromLayer`、`findPath`、`buildFlowField`、`followFlow`、`findGroupPath`、`invalidateCache`
