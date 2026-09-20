@@ -325,7 +325,7 @@ make release
 
 # Windows only
 make build/win32
-make build/win32-debug
+make build/win32-debug   # same warning-as-error gate as CI windows debug
 
 # Linux only
 make build/linux

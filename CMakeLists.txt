@@ -148,7 +148,9 @@ option(EVENGINE_ENABLE_STRICT_WARNINGS
      missing-field-initializers are suppressed until the legacy callback API
      and Vulkan aggregate-init debt are cleaned up).
      MSVC: /W4 /WX.
-     Third-party targets are not affected."
+     Third-party targets are not affected.
+     Default OFF in CMake; the Makefile turns it ON for win32-debug and
+     linux-debug so local builds match CI. Release/SDK/mobile stay OFF."
     OFF)
 message("Build UnitTest: " ${BUILD_TESTING})
 message("Build native host: " ${EVENGINE_BUILD_HOST})
@@ -255,8 +257,9 @@ function(main)
     # Strict-warnings gate. Applied through the shared INTERFACE target so every
     # engine module, platform library and test runner inherits it while
     # third-party (ExternalProject / add_subdirectory deps) stays untouched.
-    # Enabled by CI via -DEVENGINE_ENABLE_STRICT_WARNINGS=ON; local opt-in:
-    #   make build/win32-debug CMAKE_EXTRA_ARGS=-DEVENGINE_ENABLE_STRICT_WARNINGS=ON
+    # Enabled by CI and by local `make build/win32-debug` / `make build/linux-debug`
+    # (see DEBUG_STRICT_WARNINGS_FLAG in the root Makefile). Opt out with:
+    #   make build/win32-debug CMAKE_EXTRA_ARGS=-DEVENGINE_ENABLE_STRICT_WARNINGS=OFF
     if(EVENGINE_ENABLE_STRICT_WARNINGS)
         target_compile_options(eve_engine_includes INTERFACE
             $<$<CXX_COMPILER_ID:MSVC>:/W4>

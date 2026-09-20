@@ -107,7 +107,9 @@ checkout is on that commit.
 
 ### Building
 - Debug (Ninja + MSVC `cl`, fastest local iteration):
-  `make build/win32-debug`
+  `make build/win32-debug`. This matches the CI windows debug job, including
+  `-DEVENGINE_ENABLE_STRICT_WARNINGS=ON` (MSVC `/W4 /WX`). Opt out with
+  `CMAKE_EXTRA_ARGS=-DEVENGINE_ENABLE_STRICT_WARNINGS=OFF`.
 - Release (Visual Studio generator):
   `make build/win32`
 - Do not invoke `cl.exe` manually outside a Developer prompt; the `cmake\with-msvc.cmd`

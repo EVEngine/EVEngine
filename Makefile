@@ -292,6 +292,12 @@ WITH_MSVC = : && cmake/with-msvc.cmd
 VS_GENERATOR ?= Visual Studio 18 2026
 # Extra cmake -D... flags (CI: CMAKE_EXTRA_ARGS=-DBUILD_TESTING=OFF)
 CMAKE_EXTRA_ARGS ?=
+# Match CI debug jobs in .github/workflows/ci.yml (windows + linux):
+# -DEVENGINE_ENABLE_STRICT_WARNINGS=ON → MSVC /W4 /WX, GCC/Clang -Wall -Wextra -Werror.
+# CMAKE_EXTRA_ARGS is appended after this, so an explicit
+#   CMAKE_EXTRA_ARGS=-DEVENGINE_ENABLE_STRICT_WARNINGS=OFF
+# still wins. Release / SDK / mobile targets stay off, same as CI.
+DEBUG_STRICT_WARNINGS_FLAG = -DEVENGINE_ENABLE_STRICT_WARNINGS=ON
 JOBS ?= 32
 ANDROID_JOBS ?= 8
 CTEST_JOBS ?= 4
@@ -319,23 +325,25 @@ ARCHITECTURE_BASE ?= HEAD
 # by the on-change reconfigure inside the build recipes below.
 MSVC_COMPILER_WRAPPER   := $(abspath cmake/msvc-cl.cmd)
 WIN32_CMAKE_ARGS        = -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=$(MSVC_COMPILER_WRAPPER) -DCMAKE_CXX_COMPILER=$(MSVC_COMPILER_WRAPPER) $(CMAKE_EXTRA_ARGS) -B build/win32 -S .
-WIN32_DEBUG_CMAKE_ARGS  = -G Ninja -DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_COMPILER=$(MSVC_COMPILER_WRAPPER) -DCMAKE_CXX_COMPILER=$(MSVC_COMPILER_WRAPPER) $(CMAKE_EXTRA_ARGS) -B build/win32-debug -S .
+WIN32_DEBUG_CMAKE_ARGS  = -G Ninja -DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_COMPILER=$(MSVC_COMPILER_WRAPPER) -DCMAKE_CXX_COMPILER=$(MSVC_COMPILER_WRAPPER) $(DEBUG_STRICT_WARNINGS_FLAG) $(CMAKE_EXTRA_ARGS) -B build/win32-debug -S .
 LINUX_CMAKE_ARGS        = -G 'Unix Makefiles' -DCMAKE_BUILD_TYPE=Release -DBUILD_PLATFORM=linux $(CMAKE_EXTRA_ARGS) -B build/linux -S .
-LINUX_DEBUG_CMAKE_ARGS  = -G 'Unix Makefiles' -DCMAKE_BUILD_TYPE=Debug -DBUILD_PLATFORM=linux $(CMAKE_EXTRA_ARGS) -B build/linux-debug -S .
+LINUX_DEBUG_CMAKE_ARGS  = -G 'Unix Makefiles' -DCMAKE_BUILD_TYPE=Debug -DBUILD_PLATFORM=linux $(DEBUG_STRICT_WARNINGS_FLAG) $(CMAKE_EXTRA_ARGS) -B build/linux-debug -S .
 MACOSX_CMAKE_ARGS       = -G 'Unix Makefiles' -DCMAKE_BUILD_TYPE=Release -DBUILD_PLATFORM=macosx $(CMAKE_EXTRA_ARGS) -B build/macosx -S .
 MACOSX_DEBUG_CMAKE_ARGS = -G 'Unix Makefiles' -DCMAKE_BUILD_TYPE=Debug -DBUILD_PLATFORM=macosx $(CMAKE_EXTRA_ARGS) -B build/macosx-debug -S .
+WIN32_DEBUG_CONFIG_STAMP = $(strip $(DEBUG_STRICT_WARNINGS_FLAG) $(CMAKE_EXTRA_ARGS))
+LINUX_DEBUG_CONFIG_STAMP = $(strip $(DEBUG_STRICT_WARNINGS_FLAG) $(CMAKE_EXTRA_ARGS))
 
-# $(call reconfigure-if-args-changed,<build-dir>,<cmake-command>)
-# Re-runs cmake when the recorded CMAKE_EXTRA_ARGS stamp differs from the
-# current make-level value. build/<plat> targets are phony, so this check runs
-# on every invocation but costs only one cat when nothing changed.
+# $(call reconfigure-if-args-changed,<build-dir>,<cmake-command>[,<stamp>])
+# Re-runs cmake when the recorded stamp differs from the current make-level
+# value. The optional third argument defaults to CMAKE_EXTRA_ARGS. build/<plat>
+# targets are phony, so this check runs on every invocation but costs only one
+# cat when nothing changed.
 define reconfigure-if-args-changed
-	@if [ ! -f $(1)/.eve-config-args ]; then \
-	  printf '%s\n' "$(CMAKE_EXTRA_ARGS)" > $(1)/.eve-config-args; \
-	elif [ "$$(cat $(1)/.eve-config-args)" != "$(CMAKE_EXTRA_ARGS)" ]; then \
-	  echo "CMAKE_EXTRA_ARGS changed; reconfiguring $(1)"; \
+	@stamp="$(if $(3),$(3),$(CMAKE_EXTRA_ARGS))"; \
+	if [ ! -f $(1)/.eve-config-args ] || [ "$$(cat $(1)/.eve-config-args)" != "$$stamp" ]; then \
+	  echo "cmake config args changed; reconfiguring $(1)"; \
 	  $(2); \
-	  printf '%s\n' "$(CMAKE_EXTRA_ARGS)" > $(1)/.eve-config-args; \
+	  printf '%s\n' "$$stamp" > $(1)/.eve-config-args; \
 	fi
 endef
 
@@ -433,7 +441,7 @@ build/android/build.ninja:
 		-B build/android -S .
 
 build/win32-debug: build/win32-debug/build.ninja
-	$(call reconfigure-if-args-changed,build/win32-debug,$(WITH_MSVC) cmake.exe $(WIN32_DEBUG_CMAKE_ARGS))
+	$(call reconfigure-if-args-changed,build/win32-debug,$(WITH_MSVC) cmake.exe $(WIN32_DEBUG_CMAKE_ARGS),$(WIN32_DEBUG_CONFIG_STAMP))
 	$(WITH_MSVC) cmake.exe --build $@ -j $(JOBS)
 
 build/win32-debug/build.ninja:
@@ -464,7 +472,7 @@ ensure-built/win32-debug:
 	  $(WITH_MSVC) cmake.exe $(WIN32_DEBUG_CMAKE_ARGS); \
 	fi; \
 	if [ -f build/win32-debug/build.ninja ] \
-	   && [ "$$(cat build/win32-debug/.eve-config-args 2>/dev/null)" = "$(CMAKE_EXTRA_ARGS)" ] \
+	   && [ "$$(cat build/win32-debug/.eve-config-args 2>/dev/null)" = "$(WIN32_DEBUG_CONFIG_STAMP)" ] \
 	   && [ "$$stale" = 0 ] \
 	   && ! ninja -C build/win32-debug -n 2>&1 \
 	        | grep -v 'Entering directory' \
@@ -477,7 +485,7 @@ ensure-built/win32-debug:
 	fi
 
 build/linux-debug: build/linux-debug/Makefile
-	$(call reconfigure-if-args-changed,build/linux-debug,cmake $(LINUX_DEBUG_CMAKE_ARGS))
+	$(call reconfigure-if-args-changed,build/linux-debug,cmake $(LINUX_DEBUG_CMAKE_ARGS),$(LINUX_DEBUG_CONFIG_STAMP))
 	cmake --build $@ --target deps -j $(JOBS)
 	cmake --build $@ -j $(JOBS)
 
