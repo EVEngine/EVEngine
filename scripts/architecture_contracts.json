@@ -608,6 +608,40 @@
       }
     },
     {
+      "id": "map-module-interface",
+      "rule": "module-interface",
+      "scope": "src/modules/map/TileCollisionScriptSink.cpp",
+      "owner": "map",
+      "issue": "EVENGINE-ARCH-MODULE-INTERFACE",
+      "reason": "Map::publishCollision consumes the multi-listener ITileCollisionSink socket through cap::forEach and the new script seam answers it through cap::addListener, so the same capability appears on both faces; recording them makes the next provider or consumer declare itself. The scope is this one file, not src/modules/map/**: the editing and level satellites are separately built modules whose faces must not be attributed to this entry.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/map/TileCollisionScriptSink.cpp",
+        "src/modules/map/TileCollision.h",
+        "src/modules/map/Map.cpp"
+      ],
+      "tests": [
+        "test/map_tile_collision_sink.cpp",
+        "test/map.cpp",
+        "scripts/tests/test_architecture_contracts.py"
+      ],
+      "provides": [
+        "ITileCollisionSink"
+      ],
+      "requires": [
+        "ITileCollisionSink"
+      ],
+      "emits": [],
+      "observes": [],
+      "binds": [
+        "eve.provider.publishFor('ITileCollisionSink', name, instance) -> replaceTileCollision({ layer = { id, generation }, rects = [{ x, y, width, height }] }); eve.TileLayer.getEntityId()/getEntityGeneration()"
+      ],
+      "trim": {
+        "absent_profile": "not yet recorded; this entry is filled in on first touch (spec 8.3)",
+        "layer": "L3 runtime"
+      }
+    },
+    {
       "id": "module-interface-policy",
       "rule": "module-interface",
       "scope": "src/**",

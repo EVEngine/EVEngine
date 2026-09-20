@@ -29,7 +29,7 @@ class Map : public Module {
 public:
     Module_REG(Map);
     Map();
-    ~Map() override = default;
+    ~Map() override;
 
     TileLayer *newLayer(int mapW, int mapH, float tileW = 32.f, float tileH = 32.f);
 
