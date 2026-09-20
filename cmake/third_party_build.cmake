@@ -215,12 +215,14 @@ function(check_third_party_project name repo)
     endif()
     # SHARED module linkage links this whole closure into per-link-group shared
     # objects, and ELF refuses a non-PIC object there (`relocation R_X86_64_PC32
-    # against symbol ... can not be used when making a shared object; recompile
-    # with -fPIC`). The archive-only route (OBJECT, what release/SDK passes)
-    # never needs it, and MSVC ignores the flag, so it is set unconditionally
-    # under SHARED instead of per platform.
+    # against symbol stderr@@GLIBC_2.2.5 can not be used when making a shared
+    # object; recompile with -fPIC`). The aggregate's own CMakeLists already
+    # forces CMAKE_POSITION_INDEPENDENT_CODE for its subprojects, but SDL2
+    # overrides it per target from its SDL_STATIC_PIC option, which defaults to
+    # OFF -- so that one has to be turned on explicitly. MSVC ignores both, and
+    # the archive-only OBJECT route (release/SDK) never needs them.
     if(EVENGINE_MODULE_LINKAGE STREQUAL "SHARED")
-        list(APPEND _eve_tp_cmake_args -DCMAKE_POSITION_INDEPENDENT_CODE=ON)
+        list(APPEND _eve_tp_cmake_args -DSDL_STATIC_PIC=ON)
     endif()
     if(ANDROID OR (CMAKE_SYSTEM_NAME STREQUAL "Android"))
         list(APPEND _eve_tp_cmake_args
