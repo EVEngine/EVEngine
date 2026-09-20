@@ -1053,6 +1053,9 @@ CTEST_FILTER = $(if $(FILTER),-R '^$(subst .,\.,$(FILTER))')
 # Each domain executable labels its own cases with its target name, so this is a
 # plain ctest -L; the alternative (test/<domain> targets) would shadow the
 # test/<name-prefix> pattern rule below.
+# Only meaningful when the suite is split (EVENGINE_TEST_DOMAIN_SPLIT, on by
+# default for the SHARED route and off for the archive route, where the suite is
+# one monolithic unit_test to keep its debug info small).
 CTEST_DOMAIN_SEL = $(if $(DOMAIN),-L '^unit_test_$(DOMAIN)$$',)
 
 # Default: run tests per case (process-isolated; this is the fast path on CI —
@@ -1112,9 +1115,10 @@ test/macosx-debug: ensure-built/macosx-debug
 test/%: ensure-built/$(PLATFORM)-debug
 	$(CTEST_ENV) ctest --test-dir build/$(PLATFORM)-debug --output-on-failure -j $(CTEST_JOBS) -R '^$(subst .,\.,$*)' $(CTEST_REPEAT)
 
-# Build only one domain link unit. The suite is one executable per domain (see
-# test/test_domains.cmake), so an agent working on a single module compiles and
-# links only that unit instead of every test translation unit at once.
+# Build only one domain link unit. With EVENGINE_TEST_DOMAIN_SPLIT (on by
+# default for the SHARED route; the archive route builds one monolithic unit_test
+# instead, see test/CMakeLists.txt), an agent working on a single module compiles
+# and links only that unit instead of every test translation unit at once.
 # The build directory must already be configured (any earlier `make build/<platform>`
 # or `make test/<platform>`):
 #   make unit-test/win32-debug DOMAIN=physics
@@ -1125,6 +1129,11 @@ unit-test/%:
 	  echo "domains are declared in test/test_domains.cmake"; exit 2; }
 	@if [ ! -f build/$*/build.ninja ] && [ ! -f build/$*/Makefile ]; then \
 	  echo "build/$* is not configured; run: make build/$*"; exit 2; fi
+	@if ! ctest --test-dir build/$* -N -L '^unit_test_$(DOMAIN)$$' 2>/dev/null | grep -q 'Total Tests: [1-9]'; then \
+	  echo "build/$* has no unit_test_$(DOMAIN): the suite is monolithic there"; \
+	  echo "(EVENGINE_TEST_DOMAIN_SPLIT=OFF). Reconfigure with"; \
+	  echo "-DEVENGINE_TEST_DOMAIN_SPLIT=ON for per-domain units, or build the whole"; \
+	  echo "suite with: cmake --build build/$* --target unit_test"; exit 2; fi
 	$(if $(findstring win32,$*),$(WITH_MSVC) cmake.exe,cmake) --build build/$* --target unit_test_$(DOMAIN) -j $(JOBS)
 
 # Host platform debug shortcut (same as run/$(PLATFORM)-debug).

@@ -127,6 +127,15 @@ checkout is on that commit.
   one owner; the per-family inventory, the third-party/submodule patches and the
   traps are in
   `docs/dev/superpowers/specs/2026-08-18-test-suite-optimization.md` §7.25.
+- **Test suite shape**: `EVENGINE_TEST_DOMAIN_SPLIT` decides whether the suite is
+  one executable per domain (`unit_test_<domain>`, ctest label of the same name)
+  or a single `unit_test`. It defaults to the linkage: `ON` for SHARED, where each
+  executable is a thin consumer of the group libraries, and `OFF` for OBJECT,
+  where every executable would statically contain the whole engine -- 30 of those
+  plus their incremental-link state measured 93 GB on Windows, against 0.4 GB exe
+  + 0.4 GB pdb for the monolithic binary. Pass the option explicitly to force
+  either shape; `make test/<platform> DOMAIN=<domain>` and
+  `make unit-test/<platform> DOMAIN=<domain>` only apply to the split shape.
 - Do not invoke `cl.exe` manually outside a Developer prompt; the `cmake\with-msvc.cmd`
   wrapper calls vcvars64 before CMake so the MSVC compiler and STL are found.
 - First build compiles third-party through the `deps` target — slow once, cached

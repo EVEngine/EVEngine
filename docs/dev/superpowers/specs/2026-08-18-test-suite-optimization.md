@@ -767,6 +767,23 @@ twin 的两个 CMake 细节：(a) `DEFINE_SYMBOL box3d_EXPORTS` / `Box2D_EXPORTS
 
 **陷阱 11：把第三方做成"双形态"之后，`-lSDL2` 在 ELF/Mach-O 上会被共享库抢走。** 为让 SHARED 路线共用一份 SDL 状态，第三方聚合加了 `SDL_SHARED=ON`（同时保留 `SDL_STATIC=ON`），安装树里于是同时有 `libSDL2.a` 与 `libSDL2.so`（SDL 给自己的静态目标也起名 `SDL2`）。Windows 两种形态名字天然不同（`SDL2d` vs `SDL2-staticd`），但 ELF/Mach-O 上 `-lSDL2` 一定解析到 `.so` —— **归档路线（OBJECT/release）因此被悄悄变成动态依赖**：WSL 里 `ldd build-object/test/unit_test_platform | grep -i sdl` 出现 `libSDL2-2.0.so.0`，"单个产物"在 Linux 上就破了。修法：归档路线按绝对路径取归档（`third_party_build.cmake` 把安装 lib 目录记入 `EVENGINE_TP_LIB_DIR`，built 与 prebuilt 两个注册点都设置；`thirdparty_libs.cmake` 非 SHARED 时链 `${EVENGINE_TP_LIB_DIR}/libSDL2.a`）。复测：OBJECT 路线 `ldd` 不再有 `libEV*`/`box*`/`SDL*`，SHARED 路线仍链 `libSDL2-2.0.so.0` + 7 个组库 + `libeve_imgui.so`，两条路线的 `unit_test_platform` 都是 27/27。**判据**：第三方拆成双形态后，必须在**两条路线、每个平台**上各自 `ldd`/`dumpbin` 取证——只在 Windows 上验证会漏掉 ELF 的 `-l` 解析规则。
 
+### 7.26 分域拆分改为可选，默认跟随 linkage（2026-09-20）
+
+§7.7 起把 `unit_test` 拆成"每域一个可执行文件"。这个拆分是**动态路线的开发便利**：SHARED 下每个测试 exe 只是 7 个组库的薄消费者，改一个域只重链一个小二进制。但把它无条件带进**归档路线**是错的——OBJECT 下每个 exe 都要**静态**装进整个引擎：实测 30 个域 exe 各约 0.3–0.5 GB，加上每个约 2.5 GB 的增量链接状态 `.ilk`，整棵树 93 GB（§7.25 的 OBJECT 验证口径就是在跟它搏斗：`LNK1116 无法增大 ilk 文件`、串行链接、删 `.ilk`）。
+
+现在由 `EVENGINE_TEST_DOMAIN_SPLIT`（`test/CMakeLists.txt`）决定形状，**默认跟随 linkage**：SHARED → `ON`（30 个域 exe），OBJECT → `OFF`（单个 `unit_test`）。想强制另一种形状就显式传参。
+
+| | 拆分（SHARED 默认） | 单体（OBJECT 默认） |
+| --- | --- | --- |
+| 目标 | `unit_test_<domain>` × 30 | `unit_test` |
+| ctest 标签 | `unit_test_<domain>` | `unit_test` |
+| Windows 实测体积 | 30 × (exe 0.3–0.5 GB + `.ilk` ~2.5 GB) ≈ 93 GB 树 | **exe 0.37 GB + pdb 0.43 GB + `.ilk` 3.16 GB** |
+| 全量用例 | 5546 / 0 失败 | 5544 / 0 失败（`-L unit_test`，与 SHARED 的差异来自 profile 过滤） |
+
+配套改动：生成脚本 fixture 的 `eve_nut_fixtures` 两种形状共用（§7.25 陷阱 9）；`native_test_plugin` 的宿主在拆分时是 `unit_test_core`（`plugins.cpp` 所在域），单体时是 `unit_test` 本身，`ENABLE_EXPORTS` / `--export-dynamic` 跟着宿主走；资源预取钩子（经典场景、Spine、蒙皮角色）挂在"消费该资源的 exe"上——拆分时是 `unit_test_graphics`，单体时是 `unit_test`。`Makefile` 的 `DOMAIN=` 与 `unit-test/<plat>` 只对拆分形状有意义，现在会先探测标签是否存在并给出可执行的提示，而不是让 cmake 报 "unknown target"。
+
+**验证（单体形状）**：Windows OBJECT `ninja -C C:\evs unit_test` + `ctest -L unit_test -E "^bundle/" -j 16` → **5544 / 0 失败**；Linux OBJECT（WSL，默认即单体）`test/unit_test` 1.65 GB、无 `libEV*.so`、`ldd` 无引擎/box/SDL 共享依赖，`rpg.*` 143/143、`box2d.*` 14/14。**踩到的坑**：只 `--target unit_test` 构建时 `native_test_plugin` 不会被重链，它仍从旧的 `unit_test_core.exe` 导入引擎符号，插件用例于是 `LoadLibrary ... err=126`（`dumpbin /dependents` 一眼看出宿主名不对）——切形状后要么构建 `all`，要么单独重链该插件。
+
 **Linux 侧复核**（WSL、16 核、全新 clone 的 `codex/test-domain-split`）：不传任何 linkage 参数 configure → `EVENGINE_MODULE_LINKAGE:STRING=SHARED` + 7 行 link group；第三方同时产出 `libBox2D.a` / `libBox2D-dynamic.so` 与 `libbox3d.a` / `libbox3d-dynamic.so`（双形态在 ELF 上同样成立，动态路线链 `-lBox2D-dynamic` / `-lbox3d-dynamic`）；`env -u LD_LIBRARY_PATH ctest -E "^bundle/" --timeout 120` → **platform 27/27、physics 277/277、scene 58/58、building 96/96、combat 151/151、rpg 301/301**（含全部 ECS 族与 box2d 用例）。ECS 补丁在 configure 期落地的直接证据：`external/ECS.hpp:178,184` 出现 `EVE_ECS_DEFAULT_TABLE_API Table &engine_default_table();` 与 `return engine_default_table();`。
 
 **OBJECT 侧验证口径（磁盘）**：OBJECT 路由每个域测试 exe 带完整调试信息约 2 GB、增量链接状态 `.ilk` 各约 2.5 GB；30 个一起链接会把 80 GB 空闲空间吃光（`LNK1116 无法增大 ilk 文件` / `LNK1180 没有足够的磁盘空间完成链接`）。做法：删掉 `build/<tree>/**/*.ilk`，再用 `-j 1` 串行链接要验收的目标（`eve.exe` 本身只有 228 MB）。**取证**：`dumpbin /dependents C:\evs\src\engine\eve.exe` → 只有系统 DLL（vulkan-1 / MSVCP140D / ucrtbased / …），**没有** `Box2D-dynamic.dll`、`box3d-dynamic.dll`、`SDL2d.dll`，也没有任何 `EV*.dll` —— 双形态设计下 OBJECT 路线仍然只链归档，单文件产物成立。Linux 侧的 OBJECT 复测（WSL，`-DEVENGINE_MODULE_LINKAGE=OBJECT`）：不产出任何 `libEV*.so`，`unit_test_platform` 27/27，`ldd` 里没有 `libEV*` / `box*` / `SDL*`（陷阱 11 修好之前这里会漏出 `libSDL2-2.0.so.0`）。

@@ -216,57 +216,87 @@ elseif(EVENGINE_IOS_TEST_APP)
   set_source_files_properties(ios_test.mm PROPERTIES LANGUAGE OBJCXX)
   target_link_libraries(eve eve_engine_includes)
 else()
-  # Desktop: one executable per domain, so an agent links only the domain it is
-  # testing and no single link unit carries all 700+ test translation units. The
-  # shared runner (main.cpp) and the generated script fixtures are compiled into
-  # each target exactly as the monolithic unit_test did, and so are the shared
-  # helper translation units the partition marks for this domain
-  # (EVE_TEST_DOMAIN_<domain>_SHARED_SOURCES, see SHARED_SOURCES in
-  # scripts/test_domains.py): a test helper another domain defines cannot cross a
-  # link unit any other way.
+  # Desktop. The suite has two shapes, chosen by EVENGINE_TEST_DOMAIN_SPLIT:
+  #
+  # * split (default on the dynamic route): one executable per domain, so an
+  #   agent links only the domain it is testing and no single link unit carries
+  #   all 700+ test translation units. Each executable is a thin consumer of the
+  #   link-group libraries, so the split costs almost nothing in disk.
+  # * monolithic (default on the archive route): the whole suite in one
+  #   executable, as it was before the partition. In the archive route every
+  #   executable statically contains the whole engine, and 30 of them plus their
+  #   debug info measured 93 GB on Windows, needed serial linking to avoid
+  #   exhausting the disk, and still took longer than one binary holding the same
+  #   code once.
+  #
+  # Either way the runner (main.cpp) and the shared helper translation units a
+  # domain needs (EVE_TEST_DOMAIN_<domain>_SHARED_SOURCES, see SHARED_SOURCES in
+  # scripts/test_domains.py) are compiled into the executable that links them:
+  # a test helper another domain defines cannot cross a link unit any other way.
   set(EVE_TEST_TARGETS "")
   set(_eve_test_runner "${CMAKE_CURRENT_SOURCE_DIR}/main.cpp")
   # Compile the generated script fixtures once, in their own target, and link that
-  # archive into every domain executable. Listing nut_scripts.cpp as a source of
-  # each domain target instead would make the Unix Makefiles generator emit one
-  # rule for that output per target; those rules are not deduplicated, so under
-  # `make -j` one target regenerates (and briefly deletes) nut_scripts.cpp while
-  # another is compiling it -- CI's Linux job failed with
+  # archive into every test executable. Listing nut_scripts.cpp as a source of
+  # each target instead would make the Unix Makefiles generator emit one rule for
+  # that output per target; those rules are not deduplicated, so under `make -j`
+  # one target regenerates (and briefly deletes) nut_scripts.cpp while another is
+  # compiling it -- CI's Linux job failed with
   # "integrate.cmake:8 (configure_file): No such file or directory" and
   # "*** Deleting file 'test/nut_scripts.cpp'". Ninja deduplicates, which is why
   # local Ninja builds never showed it.
   add_library(eve_nut_fixtures STATIC ${CMAKE_CURRENT_BINARY_DIR}/nut_scripts.cpp)
-  foreach(_eve_domain IN LISTS EVE_TEST_DOMAINS)
-    if(NOT DEFINED EVE_TEST_DOMAIN_${_eve_domain}_SOURCES)
-      # Every test of this domain was filtered out by the profile.
-      continue()
+
+  set(_eve_test_split_default OFF)
+  if(EVENGINE_MODULE_LINKAGE STREQUAL "SHARED")
+    set(_eve_test_split_default ON)
+  endif()
+  set(EVENGINE_TEST_DOMAIN_SPLIT "${_eve_test_split_default}" CACHE BOOL
+      "Build one test executable per domain instead of a single unit_test (default: on for SHARED, off for OBJECT)")
+
+  if(EVENGINE_TEST_DOMAIN_SPLIT)
+    foreach(_eve_domain IN LISTS EVE_TEST_DOMAINS)
+      if(NOT DEFINED EVE_TEST_DOMAIN_${_eve_domain}_SOURCES)
+        # Every test of this domain was filtered out by the profile.
+        continue()
+      endif()
+      set(_eve_test_target "unit_test_${_eve_domain}")
+      add_executable(${_eve_test_target}
+        ${EVE_TEST_DOMAIN_${_eve_domain}_SOURCES}
+        ${EVE_TEST_DOMAIN_${_eve_domain}_SHARED_SOURCES}
+        ${_eve_test_runner}
+      )
+      target_link_libraries(${_eve_test_target} eve_engine_includes eve_nut_fixtures)
+      # CTest includes <target>_zeroerr_tests.cmake, which that target's POST_BUILD
+      # discovery step writes. Seed an empty stub at configure time when it is
+      # absent: otherwise ctest refuses to run at all ("include" error) until every
+      # domain has been built once, which defeats building and running a single
+      # domain. The real file replaces the stub as soon as the target is linked.
+      set(_eve_test_discovery
+        "${CMAKE_CURRENT_BINARY_DIR}/${_eve_test_target}_zeroerr_tests.cmake")
+      if(NOT EXISTS "${_eve_test_discovery}")
+        file(WRITE "${_eve_test_discovery}"
+          "# populated when ${_eve_test_target} is built\n")
+      endif()
+      list(APPEND EVE_TEST_TARGETS ${_eve_test_target})
+    endforeach()
+    list(LENGTH EVE_TEST_TARGETS _eve_test_target_count)
+    if(_eve_test_target_count EQUAL 0)
+      message(FATAL_ERROR
+        "no test domain produced a target; check test/test_domains.cmake")
     endif()
-    set(_eve_test_target "unit_test_${_eve_domain}")
-    add_executable(${_eve_test_target}
-      ${EVE_TEST_DOMAIN_${_eve_domain}_SOURCES}
-      ${EVE_TEST_DOMAIN_${_eve_domain}_SHARED_SOURCES}
-      ${_eve_test_runner}
-    )
-    target_link_libraries(${_eve_test_target} eve_engine_includes eve_nut_fixtures)
-    # CTest includes <target>_zeroerr_tests.cmake, which that target's POST_BUILD
-    # discovery step writes. Seed an empty stub at configure time when it is
-    # absent: otherwise ctest refuses to run at all ("include" error) until every
-    # domain has been built once, which defeats building and running a single
-    # domain. The real file replaces the stub as soon as the target is linked.
+    message(STATUS "Test units: ${_eve_test_target_count} domain executables")
+  else()
+    add_executable(unit_test ${all_test_cpp})
+    target_link_libraries(unit_test eve_engine_includes eve_nut_fixtures)
     set(_eve_test_discovery
-      "${CMAKE_CURRENT_BINARY_DIR}/${_eve_test_target}_zeroerr_tests.cmake")
+      "${CMAKE_CURRENT_BINARY_DIR}/unit_test_zeroerr_tests.cmake")
     if(NOT EXISTS "${_eve_test_discovery}")
       file(WRITE "${_eve_test_discovery}"
-        "# populated when ${_eve_test_target} is built\n")
+        "# populated when unit_test is built\n")
     endif()
-    list(APPEND EVE_TEST_TARGETS ${_eve_test_target})
-  endforeach()
-  list(LENGTH EVE_TEST_TARGETS _eve_test_target_count)
-  if(_eve_test_target_count EQUAL 0)
-    message(FATAL_ERROR
-      "no test domain produced a target; check test/test_domains.cmake")
+    list(APPEND EVE_TEST_TARGETS unit_test)
+    message(STATUS "Test units: 1 monolithic executable (EVENGINE_TEST_DOMAIN_SPLIT=OFF)")
   endif()
-  message(STATUS "Test units: ${_eve_test_target_count} domain executables")
 endif()
 
 # zeroerr's REQUIRE/CHECK/ASSERT are compiled out under ZEROERR_NO_ASSERT
@@ -422,13 +452,18 @@ else()
   set_target_properties(native_test_plugin PROPERTIES PREFIX "")
   # test/plugins.cpp links this shared library against the running test host, so
   # that host must export engine symbols. With one executable per domain the host
-  # is whichever domain owns plugins.cpp (`core`); fail loudly if the partition
-  # ever moves it rather than silently dropping plugin-export coverage.
-  set(_eve_plugin_host "unit_test_core")
-  if(NOT TARGET ${_eve_plugin_host})
-    message(FATAL_ERROR
-      "test/plugins.cpp must be classified into ${_eve_plugin_host} so "
-      "native_test_plugin can resolve engine symbols from the test host")
+  # is whichever domain owns plugins.cpp (`core`); when the suite is monolithic
+  # the host is unit_test itself. Fail loudly if the partition ever moves
+  # plugins.cpp rather than silently dropping plugin-export coverage.
+  if(EVENGINE_TEST_DOMAIN_SPLIT)
+    set(_eve_plugin_host "unit_test_core")
+    if(NOT TARGET ${_eve_plugin_host})
+      message(FATAL_ERROR
+        "test/plugins.cpp must be classified into ${_eve_plugin_host} so "
+        "native_test_plugin can resolve engine symbols from the test host")
+    endif()
+  else()
+    set(_eve_plugin_host "unit_test")
   endif()
   if(EVENGINE_MODULE_LINKAGE STREQUAL "SHARED")
     # SHARED module linkage: the host executable has no export table at all (it
@@ -468,6 +503,14 @@ function(eve_test_prefetch_asset target)
   endif()
 endfunction()
 
+# Prefetch hooks hang off the executable that consumes the asset: the domain
+# executable that owns the tests with the split, the single unit_test without it.
+if(EVENGINE_TEST_DOMAIN_SPLIT)
+  set(_eve_asset_host "unit_test_graphics")
+else()
+  set(_eve_asset_host "unit_test")
+endif()
+
 if(NOT EVENGINE_ANDROID_TEST_APP AND NOT EVENGINE_IOS_TEST_APP)
 option(EVENGINE_DOWNLOAD_CLASSIC_SCENES
   "Download large classic render test scenes (Sponza, DamagedHelmet)" OFF)
@@ -481,7 +524,7 @@ add_custom_target(download_classic_scenes
   COMMENT "Downloading classic graphics test scenes (Sponza, DamagedHelmet)"
   VERBATIM)
 if(EVENGINE_DOWNLOAD_CLASSIC_SCENES)
-  eve_test_prefetch_asset(unit_test_graphics
+  eve_test_prefetch_asset(${_eve_asset_host}
     COMMAND ${CMAKE_COMMAND} -E env
             "EVENGINE_CLASSIC_SCENES_DIR=${CMAKE_SOURCE_DIR}/test/assets/classic"
             bash "${_eve_classic_scenes_script}"
@@ -509,7 +552,7 @@ add_custom_target(download_spine_models
   COMMENT "Downloading Spine demo models (spineboy, hero, dragon)"
   VERBATIM)
 if(EVENGINE_DOWNLOAD_SPINE_MODELS)
-  eve_test_prefetch_asset(unit_test_graphics
+  eve_test_prefetch_asset(${_eve_asset_host}
     COMMAND ${CMAKE_COMMAND} -E env
             "EVENGINE_SPINE_DIR=${CMAKE_SOURCE_DIR}/test/assets/spine"
             "${EVENGINE_PYTHON}" "${_eve_spine_script}"
@@ -545,7 +588,7 @@ add_custom_target(download_skinned_character
   COMMENT "Downloading skinned character (CesiumMan) for animation tests"
   VERBATIM)
 if(EVENGINE_DOWNLOAD_SKINNED_CHARACTER)
-  eve_test_prefetch_asset(unit_test_graphics
+  eve_test_prefetch_asset(${_eve_asset_host}
     COMMAND ${CMAKE_COMMAND} -E env
             "EVENGINE_SKINNED_DIR=${CMAKE_SOURCE_DIR}/test/assets/skinned"
             "${_eve_skinned_shell}" -lc "${_eve_skinned_script}"
