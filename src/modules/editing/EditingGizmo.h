@@ -20,6 +20,7 @@ struct GizmoPrimitive {
     double                length = 0.0;
     bool                  dashed = false;
     std::string           text;
+    double                yaw = 0.0;
 };
 
 /** @brief Immutable revision-tagged overlay snapshot consumed by any viewport renderer. */

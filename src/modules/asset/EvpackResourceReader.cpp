@@ -1,6 +1,7 @@
 #include "asset/EvpackResourceReader.h"
 
 #include <algorithm>
+#include <new>
 #include <tuple>
 
 namespace eve::asset {
@@ -59,5 +60,37 @@ Result<RuntimeAssetPayload> EvpackResourceReader::read(
         return fail<RuntimeAssetPayload>(DiagnosticCode::InvariantViolation,
                                         "asset has no definition chunk", asset.format());
     return Result<RuntimeAssetPayload>::success(std::move(result));
+}
+
+Result<std::vector<AssetRef>> EvpackResourceReader::listAssets(
+    std::string_view expectedType, const EvpackCapabilities& capabilities, std::uint32_t maximumAssets) const {
+    if (!pack_ || expectedType.empty() || maximumAssets == 0)
+        return fail<std::vector<AssetRef>>(DiagnosticCode::InvalidArgument,
+                                          "pack, expected type and asset budget are required");
+    auto selected = selectEvpackVariant(*pack_, capabilities);
+    if (!selected) return Result<std::vector<AssetRef>>::failure(selected.status());
+    try {
+        std::vector<PersistentId> identities;
+        for (const auto& chunk : pack_->chunks()) {
+            const std::string actualType = chunk.type + "/" + std::to_string(chunk.schemaVersion.value());
+            if (chunk.variantIndex != selected.value().index || actualType != expectedType) continue;
+            identities.push_back(chunk.assetId);
+        }
+        std::sort(identities.begin(), identities.end());
+        identities.erase(std::unique(identities.begin(), identities.end()), identities.end());
+        if (identities.size() > maximumAssets)
+            return fail<std::vector<AssetRef>>(DiagnosticCode::InvalidArgument,
+                                               "asset listing exceeds result budget");
+        std::vector<AssetRef> result;
+        result.reserve(identities.size());
+        for (const auto& identity : identities) {
+            auto reference = AssetRef::fromId(identity);
+            if (!reference) return Result<std::vector<AssetRef>>::failure(reference.status());
+            result.push_back(std::move(reference).takeValue());
+        }
+        return Result<std::vector<AssetRef>>::success(std::move(result));
+    } catch (const std::bad_alloc&) {
+        return fail<std::vector<AssetRef>>(DiagnosticCode::Failed, "asset listing allocation failed");
+    }
 }
 }  // namespace eve::asset

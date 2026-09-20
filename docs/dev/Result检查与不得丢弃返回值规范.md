@@ -122,6 +122,32 @@ Result(Result&& other) noexcept {
 
 移动赋值前必须处理目标对象尚未消费的责任；Debug 下若目标 `mustObserve_ && !observed_`，应立即断言，不能用另一个 Result 覆盖并静默丢失。
 
+## 多个 Result 的组合条件（短路陷阱）
+
+把多个 Result 写进同一个 `||` 条件里会**漏掉检查**，因为 `||` 在第一个为真的操作数处停止求值：
+
+```cpp
+// 反例：a 失败时 b、c 从未被观察
+if (!a || !b || !c) return fail<T>(DiagnosticCode::ParseError, "invalid fields", path);
+```
+
+未观察的 Result 在析构时会断言；如果一次作用域退出里有**两个**未观察的 Result，第二个析构断言发生在第一个异常的栈展开过程中，于是 `std::terminate` → `abort`（Windows 退出码 3），**既没有断言输出也没有诊断**，看上去像无解释崩溃。只有一个时也会把本应返回的结构化失败变成一个内部断言。
+
+正确写法是**先观察全部，再决定返回哪个**：
+
+```cpp
+// 正例 A：引擎提供的折叠，观察所有实参且不短路
+if (!eve::everyResultValid(a, b, c)) return fail<T>(DiagnosticCode::ParseError, "invalid fields", path);
+
+// 正例 B：需要保留"第一个失败者的 status"时，逐个观察再逐个返回
+const bool aOk = a.ok();
+const bool bOk = b.ok();
+if (!aOk) return Result<T>::failure(a.status());
+if (!bOk) return Result<T>::failure(b.status());
+```
+
+原始指针/`std::optional`/`size()` 等非 Result 操作数可以继续留在 `||` 链里，但**不能**与未观察的 Result 混在同一个短路链中。
+
 ## API 返回值分级
 
 ### A：强制检查 Result
@@ -270,6 +296,7 @@ stage/create API。Procgen 不再提供 `buildArtifactChecked`、
 - [ ] 从函数多层返回/转发后最终消费者承担责任。
 - [ ] Release 构建不包含 observation 字段和分支。
 - [ ] 绑定层投影后 C++ Result 不产生未检查断言。
+- [ ] 组合条件用 `everyResultValid` 或逐个观察，不用 `!a || !b` 短路链（见“多个 Result 的组合条件”）。
 
 ## 迁移顺序
 

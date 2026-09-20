@@ -103,6 +103,97 @@ public:
 
     /** @brief Retain imported UV/color/tangent streams for custom pipelines and baking. */
     void captureImportedAttributes(const ::aiMesh &mesh);
+    /** @brief Atomically copy authored tangent and bitangent XYZ streams, or clear both with empty spans.
+     *
+     * @return Checked invalid-input/allocation failure leaves both streams unchanged.
+     * @remarks Render-thread
+     * only, no callbacks. Inputs are borrowed during the call;
+     * mesh owns the copies until replacement or
+     * destruction. Both streams must match vertex count
+     * and contain finite, nonzero, nonparallel vectors. No
+     * normalization or coordinate conversion.
+     */
+    [[nodiscard]] Result<void> setTangentFrame(std::span<const float> tangents, std::span<const float> bitangents);
+    /** @brief Validate a frame against current vertex count without mutation or allocation on success.
+     * @remarks
+     * Render-thread only, synchronous borrowed spans, no callbacks.
+     * @return Checked validity, including the
+     * empty-frame clear operation.
+     */
+    [[nodiscard]] Result<void> validateTangentFrame(std::span<const float> tangents,
+                                                    std::span<const float> bitangents) const;
+    /** @brief Validate then take owning frame buffers without allocating on success.
+     * @remarks Render-thread
+     * only, no callbacks. Failure does not consume inputs or change mesh state.
+     * Success transfers ownership;
+     * previous buffers are returned in the moved-from input vectors.
+     * @return Checked validity. Useful after
+     * prevalidation for coupled geometry updates.
+     */
+    [[nodiscard]] Result<void> adoptTangentFrame(std::vector<float> &&tangents, std::vector<float> &&bitangents);
+    /** @brief Validate an optional per-vertex motion-highlight stream without mutation.
+     * @remarks Render-thread
+     * only; synchronous borrowed input, no callbacks or retained references.
+     * Empty clears the stream; otherwise
+     * one finite nonnegative scalar is required per vertex.
+     * @return Checked validity; no allocation on success.
+
+     */
+    [[nodiscard]] Result<void> validateMotionHighlights(std::span<const float> values) const;
+    /** @brief Validate and transfer an owning motion-highlight stream without allocating on success.
+     * @remarks
+     * Render-thread only, no callbacks. Failure preserves both mesh and input;
+     * success swaps old storage into
+     * input. Data lives until replacement or mesh destruction.
+     * @return Checked validity, including empty-stream
+     * clearing.
+     */
+    [[nodiscard]] Result<void> adoptMotionHighlights(std::vector<float> &&values);
+    /** @brief Borrow motion-highlight scalars until replacement or mesh destruction.
+     * @remarks Render-thread
+     * only, no callbacks; never retain the view across mesh mutation.
+     * @return Read-only scalar view, empty when
+     * absent.
+     */
+    [[nodiscard]] std::span<const float> motionHighlights() const { return motionHighlights_; }
+    /** @brief Validate optional interleaved vegetation variation/occlusion pairs without mutation.
+     * @remarks
+     * Render-thread only; values are borrowed for this call. Empty clears the stream;
+     * otherwise two finite unit
+     * values are required per vertex.
+     * @return Checked validity; no allocation or callbacks.
+     */
+    [[nodiscard]] Result<void> validateVegetationFactors(std::span<const float> values) const;
+    /** @brief Validate and take ownership of interleaved vegetation variation/occlusion pairs.
+     * @remarks
+     * Render-thread only, no callbacks. Failure preserves mesh and input. Success swaps
+     * previous storage into
+     * the moved-from vector, so the operation cannot allocate after validation.
+     * @return Checked validity,
+     * including the empty-stream clear operation.
+     */
+    [[nodiscard]] Result<void> adoptVegetationFactors(std::vector<float> &&values);
+    /** @brief Borrow interleaved variation/occlusion pairs until mesh mutation or destruction. */
+    [[nodiscard]] std::span<const float> vegetationFactors() const { return vegetationFactors_; }
+    /** @brief Validate optional TVE rest-deformation data without mutation.
+     * Nine floats per vertex are pivot
+     * XYZ, bending, branch, flutter,
+     * variation, bounds height, and bounds radius. Masks are unit values and
+
+     * * bounds are finite nonnegative world units. Empty clears the stream.
+     * @remarks Render-thread only; the
+     * input is borrowed synchronously and no callbacks run.
+     */
+    [[nodiscard]] Result<void> validateVegetationDeformationFactors(std::span<const float> values) const;
+    /** @brief Validate and atomically take ownership of a TVE rest-deformation stream.
+     * Failure preserves the
+     * mesh and input. Success swaps prior storage into
+     * the moved-from vector without allocating after
+     * validation.
+     */
+    [[nodiscard]] Result<void> adoptVegetationDeformationFactors(std::vector<float> &&values);
+    /** @brief Borrow TVE rest-deformation data until mesh mutation or destruction. */
+    [[nodiscard]] std::span<const float> vegetationDeformationFactors() const { return vegetationDeformationFactors_; }
     int getUvChannelCount() const { return static_cast<int>(importedUvs_.size()); }
     int getColorChannelCount() const { return static_cast<int>(importedColors_.size()); }
     bool hasImportedTangents() const { return !importedTangents_.empty(); }
@@ -130,6 +221,9 @@ private:
     std::vector<std::vector<float>> importedColors_;  // rgba packed per channel
     std::vector<float> importedTangents_;             // xyz packed
     std::vector<float> importedBitangents_;            // xyz packed
+    std::vector<float>                     motionHighlights_;
+    std::vector<float>                     vegetationFactors_;
+    std::vector<float>                     vegetationDeformationFactors_;
     bool gpuSkinned_ = false;
     std::vector<float> skinPalette_;
 };

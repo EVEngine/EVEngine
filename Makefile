@@ -1239,6 +1239,19 @@ building:
 ecs:
 	@$(MAKE) run/$(PLATFORM)-debug GAME=examples/ecs
 
+rpg-classic:
+	@echo rpg-classic is a standalone game: https://github.com/EVEngine/rpg-classic
+	@echo Clone it next to EVEngine, then: eve run .   or   make run/$(PLATFORM)-debug GAME=../rpg-classic
+
+rpg-classic/tilemap:
+	@echo Use the rpg-classic repo: eve run apps/tilemap
+
+rpg-classic/event:
+	@echo Use the rpg-classic repo: eve run apps/event
+
+rpg-classic/skill:
+	@echo Use the rpg-classic repo: eve run apps/skill
+
 # make: build/.build-docker
 # 	$(DOCKER) /bin/bash -c "cmake -H./src -B./src/build && cmake --build src/build --parallel 8"
 

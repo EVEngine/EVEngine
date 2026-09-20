@@ -436,6 +436,14 @@ float TileLayer::getRenderSpacingY() {
     return config()->tileH != 0.f ? 1.f + config()->cellGapY / config()->tileH : 1.f;
 }
 
+void TileLayer::setVisualScale(float scaleX, float scaleY) {
+    draw()->visualScaleX = scaleX > 0.f ? scaleX : 1.f;
+    draw()->visualScaleY = scaleY > 0.f ? scaleY : 1.f;
+}
+
+float TileLayer::getVisualScaleX() { return draw()->visualScaleX; }
+float TileLayer::getVisualScaleY() { return draw()->visualScaleY; }
+
 void TileLayer::setTileVisual(int gid, int x, int y, int width, int height, float pivotX,
                               float pivotY, float sortBias) {
     if (gid <= 0 || width <= 0 || height <= 0) return;

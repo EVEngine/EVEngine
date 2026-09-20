@@ -1,7 +1,6 @@
 #pragma once
 #include "common/Export.h"
 
-
 /** @file EvpackSceneTemplateLoader.h @brief Runtime decoding of canonical scene templates. */
 
 #include "asset/EvpackResourceReader.h"
@@ -22,17 +21,20 @@ struct SceneMeshBinding {
     AssetRef      mesh;
     AssetRef      material;
     bool          enabled = true;
+    bool          castShadows = true;
+    bool          receiveShadows = true;
 };
 
 /** @brief Owning declarative scene tree and render bindings; neither mutates a Scene or retains GPU objects. */
 struct LoadedSceneTemplate {
     AssetRef                      asset;
+    std::string                   sourceGuid;
     scene::NodeDesc               root;
     asset::EvpackVariantSelection variant;
     std::vector<SceneMeshBinding> renderers;
 };
 
-/** @brief Capability-aware scene-template/2 decoder with explicit N-1 hierarchy-only compatibility. */
+/** @brief Capability-aware scene-template/3 decoder with explicit scene-template/2 compatibility. */
 class EVENGINE_API_BACKENDS EvpackSceneTemplateLoader {
 public:
     /** @brief Bind a borrowed immutable reader that must outlive this loader. */

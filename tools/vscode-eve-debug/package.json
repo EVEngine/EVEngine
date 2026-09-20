@@ -32,7 +32,7 @@
         "eve.executable": {
           "type": "string",
           "default": "eve",
-          "description": "Path to the eve executable. Empty or `eve` auto-detects common build/ trees."
+          "description": "Path to the eve executable. Empty or `eve` uses the `eve` on PATH (does not lock a workspace build/ binary)."
         },
         "eve.languageServer.enabled": {
           "type": "boolean",
@@ -247,7 +247,7 @@
               },
               "evePath": {
                 "type": "string",
-                "description": "Path to the eve executable. Empty/`eve` auto-detects common build/ trees.",
+                "description": "Path to the eve executable. Empty/`eve` uses the `eve` on PATH.",
                 "default": "eve"
               },
               "cwd": {

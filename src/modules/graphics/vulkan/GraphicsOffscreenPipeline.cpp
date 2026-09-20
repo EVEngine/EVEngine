@@ -31,6 +31,7 @@ vk::Pipeline createSolidColorPipeline(vkb::Device &device, const vkb::BuiltRende
             .setDynamicStatesViewportScissor()
             .setRasterizer(vk::PolygonMode::eFill, false, false, 1.0f,
                            vk::CullModeFlagBits::eNone, vk::FrontFace::eCounterClockwise)
+            .setDepthStencil(false, false)
             .setColorBlending(cbs)
             .build(renderPass);
     }
@@ -44,6 +45,7 @@ vk::Pipeline createSolidColorPipeline(vkb::Device &device, const vkb::BuiltRende
             .setDynamicStatesViewportScissor()
             .setRasterizer(vk::PolygonMode::eFill, false, false, 1.0f,
                            vk::CullModeFlagBits::eNone, vk::FrontFace::eCounterClockwise)
+            .setDepthStencil(false, false)
             .setAlphaBlending(1)
             .build(renderPass);
     }
@@ -57,6 +59,7 @@ vk::Pipeline createSolidColorPipeline(vkb::Device &device, const vkb::BuiltRende
         .setDynamicStatesViewportScissor()
         .setRasterizer(vk::PolygonMode::eFill, false, false, 1.0f, vk::CullModeFlagBits::eNone,
                        vk::FrontFace::eCounterClockwise)
+        .setDepthStencil(false, false)
         .build(renderPass);
 }
 

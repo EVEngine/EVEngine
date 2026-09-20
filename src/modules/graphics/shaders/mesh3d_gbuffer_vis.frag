@@ -12,6 +12,7 @@ layout(location = 3) in vec3 vBary;
 layout(location = 4) in vec3 vWorldPos;
 layout(location = 5) in flat uint vInstanceId;
 layout(location = 6) in flat uint vTriBase;
+layout(location = 7) in vec4 vInstanceTint;
 
 struct Light3D {
     vec4 posRadius;
@@ -78,13 +79,14 @@ void main() {
     GpuInstance gi = instances[inst];
     GpuMeshRecord mesh = meshes[gi.meshId];
     GpuMaterialRecord m = materials[gi.materialId];
+    m.tint *= vInstanceTint;
 
     vec3 N = normalize(vWorldNormal);
     vec3 V = normalize(ubo.cameraPos.xyz - vWorldPos);
     if (dot(N, V) < 0.0)
         N = -N;
     vec4 base = fetchAlbedo(m, N, V, vWorldPos, vUV);
-    if (base.a < 0.5)
+    if (m.surface.y == 1.0 && base.a < m.surface.x)
         discard;
 
     uint rough3 = uint(round(clamp(ubo.cameraPos.w, 0.0, 1.0) * 7.0));

@@ -5,6 +5,7 @@
 
 #include <algorithm>
 #include <array>
+#include <cctype>
 #include <cmath>
 #include <functional>
 #include <limits>
@@ -35,6 +36,12 @@ bool number(const Value& value, float& result) {
     return true;
 }
 
+bool validGuid(std::string_view value) {
+    return value.size() == 32 && std::all_of(value.begin(), value.end(), [](unsigned char character) {
+               return std::isxdigit(character) != 0;
+           });
+}
+
 template <std::size_t N>
 bool vector(const Value* value, std::array<float, N>& result) {
     const auto* values = value ? value->getIf<Value::Array>() : nullptr;
@@ -55,10 +62,10 @@ struct FlatNode {
 Result<LoadedSceneTemplate> EvpackSceneTemplateLoader::load(
     const AssetRef& sceneTemplate, const asset::EvpackCapabilities& capabilities,
     const SceneTemplateLoadLimits& limits) const {
-    auto payload = reader_.read(sceneTemplate, "eve.scene-template/2", capabilities, limits.maximumDecodedBytes);
-    // N-1 packs remain readable as hierarchy-only templates; version 1 cannot contain renderer fields.
+    auto payload = reader_.read(sceneTemplate, "eve.scene-template/3", capabilities, limits.maximumDecodedBytes);
+    // N-1 packs remain readable with legacy all-on shadow defaults.
     if (!payload && payload.error()->code() == DiagnosticCode::TypeMismatch)
-        payload = reader_.read(sceneTemplate, "eve.scene-template/1", capabilities, limits.maximumDecodedBytes);
+        payload = reader_.read(sceneTemplate, "eve.scene-template/2", capabilities, limits.maximumDecodedBytes);
     if (!payload) return Result<LoadedSceneTemplate>::failure(payload.status());
     const asset::RuntimeAssetChunk* definition = nullptr;
     for (const auto& chunk : payload.value().chunks) {
@@ -78,11 +85,13 @@ Result<LoadedSceneTemplate> EvpackSceneTemplateLoader::load(
     const auto* root = metadata.value().getIf<Value::Object>();
     const Value* schema = root ? field(*root, "schema") : nullptr;
     const Value* version = root ? field(*root, "schemaVersion") : nullptr;
+    const Value* sourceGuid = root ? field(*root, "sourceGuid") : nullptr;
     const Value* coordinate = root ? field(*root, "coordinateSystem") : nullptr;
     const Value* nodesValue = root ? field(*root, "nodes") : nullptr;
     const auto* nodes = nodesValue ? nodesValue->getIf<Value::Array>() : nullptr;
     if (!schema || !schema->isString() || schema->asString() != "eve.scene-template" || !version ||
-        !version->isInt64() || version->asInt() != std::int64_t(payload.value().schemaVersion.value()) || !coordinate ||
+        !version->isInt64() || version->asInt() != std::int64_t(payload.value().schemaVersion.value()) ||
+        (sourceGuid && (!sourceGuid->isString() || !validGuid(sourceGuid->asString()))) || !coordinate ||
         !coordinate->isString() || coordinate->asString() != "right-handed-x-right-y-up-minus-z-forward" || !nodes ||
         nodes->empty() || nodes->size() > limits.maximumNodes)
         return failure<LoadedSceneTemplate>(DiagnosticCode::ParseError,
@@ -184,9 +193,7 @@ Result<LoadedSceneTemplate> EvpackSceneTemplateLoader::load(
                                             "scene hierarchy has no valid root");
     std::vector<SceneMeshBinding> bindings;
     const Value*                  renderersValue = field(*root, "renderers");
-    if (version->asInt() == 1 && renderersValue)
-        return failure<LoadedSceneTemplate>(DiagnosticCode::ParseError, "version 1 cannot carry renderer bindings");
-    if (version->asInt() == 2) {
+    if (version->asInt() == 2 || version->asInt() == 3) {
         const auto* renderers = renderersValue ? renderersValue->getIf<Value::Array>() : nullptr;
         if (!renderers || renderers->size() > limits.maximumNodes)
             return failure<LoadedSceneTemplate>(DiagnosticCode::ParseError, "invalid renderer bindings");
@@ -197,8 +204,12 @@ Result<LoadedSceneTemplate> EvpackSceneTemplateLoader::load(
             const auto* mesh     = binding ? field(*binding, "mesh") : nullptr;
             const auto* material = binding ? field(*binding, "material") : nullptr;
             const auto* enabled  = binding ? field(*binding, "enabled") : nullptr;
+            const auto* castShadows = binding ? field(*binding, "castShadows") : nullptr;
+            const auto* receiveShadows = binding ? field(*binding, "receiveShadows") : nullptr;
             if (!id || !id->isString() || !mesh || !mesh->isString() || !material || !material->isString() ||
-                !enabled || !enabled->isBool())
+                !enabled || !enabled->isBool() ||
+                (version->asInt() == 3 && (!castShadows || !castShadows->isBool() ||
+                                           !receiveShadows || !receiveShadows->isBool())))
                 return failure<LoadedSceneTemplate>(DiagnosticCode::ParseError, "malformed renderer binding");
             auto       object        = SceneObjectId::parse(id->asString());
             auto       meshRef       = AssetRef::parse(mesh->asString());
@@ -210,11 +221,15 @@ Result<LoadedSceneTemplate> EvpackSceneTemplateLoader::load(
                 return failure<LoadedSceneTemplate>(DiagnosticCode::ParseError,
                                                     "renderer identity or reference is invalid");
             bindings.push_back(
-                {*object, std::move(meshRef).takeValue(), std::move(materialRef).takeValue(), enabled->asBool()});
+                {*object, std::move(meshRef).takeValue(), std::move(materialRef).takeValue(), enabled->asBool(),
+                 version->asInt() == 2 || castShadows->asBool(),
+                 version->asInt() == 2 || receiveShadows->asBool()});
         }
     }
     return Result<LoadedSceneTemplate>::success(
-        {sceneTemplate, std::move(resultRoot), std::move(payload).takeValue().variant, std::move(bindings)});
+        {sceneTemplate, sourceGuid ? sourceGuid->asString() : std::string{}, std::move(resultRoot),
+         std::move(payload).takeValue().variant,
+         std::move(bindings)});
 }
 
 }  // namespace eve::asset_scene

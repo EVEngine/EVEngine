@@ -6,6 +6,7 @@
 #include "graphics/Graphics.h"
 #include "graphics/Light.h"
 #include "graphics/Mesh.h"
+#include "graphics/PbrSurface.h"
 #include "graphics/PrimitiveTypes.h"
 #include "graphics/Shader.h"
 #include "graphics/Shadow.h"
@@ -37,6 +38,7 @@
 namespace eve::graphics::webgpu {
 
 class OffscreenCanvas;
+struct PbrVariantSources;
 
 /**
  * @brief Frame UBO for the mesh3d pipeline. Mirrors the std140 layout of the WGSL
@@ -134,6 +136,8 @@ struct GpuTexture {
     // height at 6). Rebuilt when the mesh3d pipeline re-creates its layout.
     wgpu::BindGroup meshGroup;
     bool isCube = false;
+    bool isArray = false;
+    bool isVolume = false;
     bool isHDR = false;
     int width = 0;
     int height = 0;
@@ -231,6 +235,13 @@ public:
     uint32_t debugGpuDrivenVgIndirectDrawCount() const { return gpuDrivenVgLastIndirectDrawCount_; }
     /** @brief Read back the last VG indirect instance total (native tests). */
     uint32_t debugGpuDrivenVgGpuVisibleCount();
+    [[nodiscard]] Result<void> gpuDrivenReleaseMaterialRecord(Material *material) override;
+    /** @brief Compile the generated full PBR WGSL stages under a validation scope. */
+    [[nodiscard]] Result<void> debugValidatePbrVariantBaseSources();
+    /** @brief Compile caller-provided PBR WGSL stages under a validation scope. */
+    [[nodiscard]] Result<void> debugValidatePbrVariantSources(const PbrVariantSources &sources);
+    /** @brief Compile and link a specialized PBR pair through a real Dawn render pipeline. */
+    [[nodiscard]] Result<void> debugValidatePbrVariantPipeline(const PbrVariantSources &sources);
 
     void initHeadless(int width, int height) override;
     void initWithWindow(void *nativeWindow) override;
@@ -253,6 +264,20 @@ public:
                         bool repeatV = false) override;
     Texture *newTexture(int width, int height, const uint8_t *rgba,
                         const TextureCreateInfo &info) override;
+#if !defined(__EMSCRIPTEN__)
+    /** @copydoc IResourceFactory::newTextureMipChain */
+    [[nodiscard]] Result<Texture *> newTextureMipChain(uint32_t width, uint32_t height,
+                                                       uint32_t levels,
+                                                       std::span<const uint8_t> rgba) override;
+    /** @copydoc IResourceFactory::newTextureArrayRgba16f */
+    [[nodiscard]] Result<Texture *> newTextureArrayRgba16f(
+        uint32_t width, uint32_t height, uint32_t layers,
+        std::span<const uint16_t> rgbaHalf) override;
+    /** @copydoc IResourceFactory::newTexture3DRgba8 */
+    [[nodiscard]] Result<Texture *> newTexture3DRgba8(uint32_t width, uint32_t height,
+                                                      uint32_t depth,
+                                                      std::span<const uint8_t> rgba) override;
+#endif
     Texture *newCubemap(int faceSize, const uint8_t *rgbaFaces) override;
     Texture *newCubemap(int faceSize, const uint8_t *rgbaFaces,
                         const TextureCreateInfo &info) override;
@@ -396,6 +421,7 @@ public:
     void     setMesh3DSceneColor(Texture *color) override;
     [[nodiscard]] Mesh3DSceneColorCaptureStatus captureMesh3DSceneColor() override;
     void     setMesh3DMaterial(float metallic, float roughness) override;
+    [[nodiscard]] Result<void> setMesh3DPbrSurface(const PbrSurface *surface) override;
     void     setMesh3DSurface(SurfaceMode mode, BlendMode blend, bool depthWrite,
                               bool doubleSided, float alphaCutoff,
                               const std::string &alphaTechnique = "cutoff") override;
@@ -572,10 +598,20 @@ private:
         bool depthWrite = false;
         bool doubleSided = false;
         bool shadowReceive = true;
+        float metallic = 0.f;
+        float roughness = 1.f;
+        glm::mat4 viewProj{1.f};
+        glm::mat4 view{1.f};
+        glm::vec3 cameraPos{};
+        Lighting3DPack lighting{};
+        ShadowUpload shadows{};
+        Texture *environment = nullptr;
+        float environmentIntensity = 0.f;
         int skinInfluenceLimit = 4;
         float alphaCutoff = 0.5f;
         std::string alphaTechnique = "cutoff";
         glm::vec4 lodFade{1.f, 0.f, 0.f, 0.f};
+        std::optional<PbrSurface> pbrSurface;
         wgpu::Buffer skinBuffer;
         uint32_t frameUboOffset = 0;
         uint32_t pushUboOffset = 0;
@@ -643,7 +679,8 @@ private:
     void createVoxelPipelines();
     void ensureGpuDrivenResources(uint32_t instanceCount, uint32_t bucketCount);
     void recordGpuDrivenCompute(wgpu::CommandEncoder encoder);
-    void flushGpuDrivenDraws(wgpu::RenderPassEncoder pass, bool canvasTarget);
+    void flushGpuDrivenDraws(wgpu::RenderPassEncoder pass, bool canvasTarget,
+                             bool hdrCanvas = false);
     void ensureGpuDrivenVisibilityResources();
     void recordGpuDrivenVisibility(wgpu::CommandEncoder encoder);
     void flushGpuDrivenResolve(wgpu::RenderPassEncoder pass);
@@ -703,6 +740,8 @@ private:
                       WGPUTextureFormat format);
     void flushMesh3D(wgpu::RenderPassEncoder pass, WGPUTextureFormat format,
                      bool canvasTarget = false);
+    bool drawPbrMesh(wgpu::RenderPassEncoder pass, WGPUTextureFormat format,
+                     bool canvasTarget, Mesh3dDraw &draw, GpuMesh &mesh);
     void                 flushPrimitive3D(wgpu::RenderPassEncoder pass, WGPUTextureFormat format, uint32_t sampleCount);
     wgpu::RenderPipeline getPrimitive3DPipeline(PrimitiveDepthMode depth, BlendMode blend, PrimitiveCullMode cull,
                                                 WGPUTextureFormat format, uint32_t sampleCount);
@@ -1004,6 +1043,11 @@ private:
     glm::vec3 mesh3dCameraPos{0.f, 0.f, 3.f};
     bool frameHad3DThisFrame = false;
     std::vector<Mesh3dDraw> mesh3dDraws;
+    std::optional<PbrSurface> mesh3dPbrSurface;
+    struct PbrResources;
+    static void deletePbrResources(PbrResources *resources);
+    std::unique_ptr<PbrResources, void (*)(PbrResources *)> pbrResources_{
+        nullptr, &deletePbrResources};
     Color clearColor{0.1f, 0.1f, 0.12f, 1.f};
     bool hasPendingClear = true;
 
@@ -1115,6 +1159,7 @@ private:
     bool gpuDrivenEnabled_ = false;
     std::vector<Mesh *> gpuDrivenMeshes_;
     std::vector<Material *> gpuDrivenMaterials_;
+    std::vector<uint32_t> gpuDrivenMaterialFree_;
     std::unordered_map<Mesh *, uint32_t> gpuDrivenMeshIds_;
     std::unordered_map<Material *, uint32_t> gpuDrivenMaterialIds_;
     std::vector<GpuInstance> gpuDrivenPending_;
@@ -1144,8 +1189,10 @@ private:
     uint64_t gpuDrivenHzbCapacity_ = 0;
     wgpu::RenderPipeline gpuDrivenRenderPipeline_;
     wgpu::RenderPipeline gpuDrivenCanvasPipeline_;
+    wgpu::RenderPipeline gpuDrivenHdrCanvasPipeline_;
     wgpu::RenderPipeline         gpuDrivenResidentRenderPipeline_;
     wgpu::RenderPipeline         gpuDrivenResidentCanvasPipeline_;
+    wgpu::RenderPipeline         gpuDrivenResidentHdrCanvasPipeline_;
     wgpu::Buffer gpuDrivenParamsBuffer_;
     wgpu::Buffer gpuDrivenInputBuffer_;
     wgpu::Buffer gpuDrivenVisibleBuffer_;

@@ -173,6 +173,9 @@ public:
         int layer = 0;
         bool visible = true;
         Color tint{1.f, 1.f, 1.f, 1.f};
+        /** @brief World-size multiplier for atlas-pixel visuals (UV unchanged). */
+        float visualScaleX = 1.f;
+        float visualScaleY = 1.f;
     };
 
     struct Resource {
@@ -216,6 +219,17 @@ public:
     /** @brief Horizontal and vertical projected pitch multipliers. */
     float getRenderSpacingX();
     float getRenderSpacingY();
+    /**
+     * @brief Scales atlas-pixel tile visuals into world units when drawing.
+     * @param scaleX Horizontal multiplier. Values <= 0 are treated as 1.
+     * @param scaleY Vertical multiplier. Values <= 0 are treated as 1.
+     * @cost Cheap. Applied while collecting draw items; does not rebuild the atlas.
+     */
+    void setVisualScale(float scaleX, float scaleY);
+    /** @brief Current horizontal visual-to-world scale. */
+    float getVisualScaleX();
+    /** @brief Current vertical visual-to-world scale. */
+    float getVisualScaleY();
 
     /** @brief Resizes the tile grid (existing GIDs preserved where possible). */
     void resize(int mapW, int mapH);

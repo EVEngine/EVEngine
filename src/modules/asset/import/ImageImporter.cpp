@@ -1,6 +1,8 @@
 #include "asset/import/AssetImporter.h"
 
 #include "asset/CanonicalImageCook.h"
+#include "asset/SourceTga.h"
+#include "asset/SourceTiff.h"
 #include "asset/import/ImportCommon.h"
 
 namespace eve::asset_import {
@@ -17,7 +19,18 @@ std::uint32_t big32(const std::uint8_t* bytes) {
            (std::uint32_t(bytes[2]) << 8) | bytes[3];
 }
 
-Result<ImageInfo> inspectImage(std::span<const std::uint8_t> bytes) {
+Result<ImageInfo> inspectImage(std::span<const std::uint8_t> bytes, std::uint64_t maximumDecodedBytes) {
+    if (bytes.size() >= 18 && bytes[1] == 0 && (bytes[2] == 2 || bytes[2] == 10) &&
+        (bytes[16] == 24 || bytes[16] == 32)) {
+        auto decoded = asset::detail::decodeTgaRgba8(bytes, maximumDecodedBytes);
+        if (!decoded) return Result<ImageInfo>::failure(decoded.status());
+        return Result<ImageInfo>::success({"tga", decoded.value().width, decoded.value().height});
+    }
+    if (bytes.size() >= 4 && ((bytes[0] == 'I' && bytes[1] == 'I') || (bytes[0] == 'M' && bytes[1] == 'M'))) {
+        auto decoded = asset::detail::decodeTiffRgba8(bytes, maximumDecodedBytes);
+        if (!decoded) return Result<ImageInfo>::failure(decoded.status());
+        return Result<ImageInfo>::success({"tiff", decoded.value().width, decoded.value().height});
+    }
     static constexpr std::uint8_t png[] = {0x89, 'P', 'N', 'G', 0x0d, 0x0a, 0x1a, 0x0a};
     if (bytes.size() >= 24 && std::equal(std::begin(png), std::end(png), bytes.begin()) &&
         std::string_view(reinterpret_cast<const char*>(bytes.data() + 12), 4) == "IHDR") {
@@ -55,7 +68,7 @@ Result<ImageInfo> inspectImage(std::span<const std::uint8_t> bytes) {
         return detail::failure<ImageInfo>(DiagnosticCode::ParseError, "JPEG dimensions are missing or malformed");
     }
     return detail::failure<ImageInfo>(DiagnosticCode::Unsupported,
-                                      "image importer v1 supports PNG and JPEG encoded sources");
+                                      "image importer supports PNG, JPEG and admitted TIFF/TGA encoded sources");
 }
 
 }  // namespace
@@ -69,7 +82,7 @@ Result<PreparedAssetImport> prepareImageImport(const ImageImportRequest& request
         request.usage.size() > request.limits.maximumStringBytes)
         return detail::failure<PreparedAssetImport>(DiagnosticCode::InvalidArgument,
                                                     "image import budget is exceeded");
-    auto info = inspectImage(request.encodedBytes);
+    auto info = inspectImage(request.encodedBytes, request.limits.maximumDecodedBytes);
     if (!info) return Result<PreparedAssetImport>::failure(info.status());
     const std::uint64_t pixels = std::uint64_t(info.value().width) * info.value().height;
     if (pixels > request.limits.maximumDecodedBytes / 4)
@@ -85,7 +98,8 @@ Result<PreparedAssetImport> prepareImageImport(const ImageImportRequest& request
     const std::string blobPath = root + "source." + info.value().encoding;
     Value::Object definition;
     definition["schema"] = Value("eve.image");
-    definition["schemaVersion"] = Value(std::int64_t(2));
+    definition["schemaVersion"]  = Value(std::int64_t(3));
+    definition["mipCount"]       = Value(std::int64_t(1));
     definition["width"] = Value(static_cast<std::int64_t>(info.value().width));
     definition["height"] = Value(static_cast<std::int64_t>(info.value().height));
     definition["encoding"] = Value(info.value().encoding);
@@ -108,10 +122,14 @@ Result<PreparedAssetImport> prepareImageImport(const ImageImportRequest& request
         if (!verified) return Result<PreparedAssetImport>::failure(verified.status());
     }
     const std::string definitionPath = root + "asset.json";
-    manifest.assets.push_back({std::move(reference).takeValue(), "eve.image", SchemaVersion(2), definitionPath,
-                               detail::sha256(std::span<const std::uint8_t>(
-                                   reinterpret_cast<const std::uint8_t*>(definitionText.data()),
-                                   definitionText.size())), {"image", "usage:" + request.usage}});
+    manifest.assets.push_back(
+        {std::move(reference).takeValue(),
+         "eve.image",
+         SchemaVersion(3),
+         definitionPath,
+         detail::sha256(std::span<const std::uint8_t>(reinterpret_cast<const std::uint8_t*>(definitionText.data()),
+                                                      definitionText.size())),
+         {"image", "usage:" + request.usage}});
     auto entryRef = detail::assetRef(id);
     if (!entryRef) return Result<PreparedAssetImport>::failure(entryRef.status());
     manifest.entrypoints.emplace("default", std::move(entryRef).takeValue());

@@ -105,6 +105,14 @@ public:
     MaterialDocumentTarget& authoringTarget() { return document_; }
     /** @brief Immutable authoring document used by validators and previews. */
     const MaterialDocumentTarget& authoringTarget() const { return document_; }
+    /** @brief Atomically parse and publish a persisted material snapshot.
+     * @param snapshot Detached persisted value borrowed for this call.
+     * @return Applied only after validation and runtime publication both succeed; failure preserves authoring and
+     * runtime state.
+     * @remarks Render/editor thread only, synchronous, and may call the configured runtime sink without holding a
+     * lock.
+     */
+    [[nodiscard]] EditorResult<void> reloadSnapshot(const EditorValue& snapshot);
 
 private:
     MaterialDocumentTarget document_;

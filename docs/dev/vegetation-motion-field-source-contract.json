@@ -1,0 +1,52 @@
+{
+  "schema": "evengine.source-contract",
+  "schemaVersion": 1,
+  "feature": "tve-12.6-plant-standard-gpu-motion",
+  "source": {
+    "package": "The Vegetation Engine 12.6.0",
+    "shader": "Assets/BOXOPHOBIC/The Vegetation Engine/Core/Shaders/Geometry/Plant Standard Lit.shader",
+    "materialRegistry": "Assets/BOXOPHOBIC/The Vegetation Engine/Core/Editor/TVEMaterialManager.cs"
+  },
+  "preserved": {
+    "materialProperties": [
+      "_VertexDynamicMode",
+      "_MotionPosition_10",
+      "_MotionFacingValue",
+      "_MotionAmplitude_10",
+      "_MotionSpeed_10",
+      "_MotionScale_10",
+      "_MotionVariation_10",
+      "_MotionAmplitude_20",
+      "_MotionAmplitude_22",
+      "_MotionSpeed_20",
+      "_MotionScale_20",
+      "_MotionVariation_20",
+      "_MotionAmplitude_32",
+      "_MotionSpeed_32",
+      "_MotionScale_32",
+      "_MotionVariation_32",
+      "_InteractionAmplitude",
+      "_InteractionMaskValue",
+      "_PerspectivePushValue",
+      "_PerspectiveNoiseValue",
+      "_PerspectiveAngleValue"
+    ],
+    "runtimeInputs": [
+      "nine-layer Motion field",
+      "repeat noise texture",
+      "explicit time",
+      "world origin",
+      "global wind direction"
+    ]
+  },
+  "nativeOwnership": {
+    "materialLocal": "eve.material/11 vegetationMotion",
+    "globalAndFieldState": "runtime PbrVegetationMotion binding",
+    "activation": "explicit PbrVegetationMotionMode::Object"
+  },
+  "verification": [
+    "strict Unity property import and cook/runtime decode",
+    "atomic v10 to v11 migration",
+    "Vulkan validation-layer Canvas silhouette displacement at explicit time"
+  ]
+}

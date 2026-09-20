@@ -1,7 +1,7 @@
 #pragma once
 #include "common/Export.h"
 
-
+#include <cstdint>
 #include <string>
 
 namespace eve::ui {
@@ -125,6 +125,59 @@ struct EVENGINE_API_WORLD Theme {
     static Theme dark();
     static Theme light();
 };
+
+/** @brief Sparse reusable widget style resolved once while a retained tree is built. */
+struct StyleClass {
+    std::string name;
+    std::string parent;
+    bool hasTextColor = false;
+    bool hasBackgroundColor = false;
+    bool hasBorderColor = false;
+    bool hasAccentColor = false;
+    float textColor[4] = {0.f, 0.f, 0.f, 0.f};
+    float backgroundColor[4] = {0.f, 0.f, 0.f, 0.f};
+    float borderColor[4] = {0.f, 0.f, 0.f, 0.f};
+    float accentColor[4] = {0.f, 0.f, 0.f, 0.f};
+    bool hasPadding = false;
+    float paddingX = 0.f;
+    float paddingY = 0.f;
+    bool hasRounding = false;
+    float rounding = 0.f;
+    bool hasAlpha = false;
+    float alpha = 1.f;
+};
+
+/** @brief Explicit result of a style-registry mutation. */
+enum class StyleClassStatus : uint8_t {
+    Applied = 0,
+    InvalidName,
+    UnknownParent,
+    UnknownClass,
+    UnknownProperty,
+    InheritanceCycle,
+};
+
+/**
+ * @brief Declares or replaces one sparse style class.
+ * @thread UI thread only.
+ * @reentrancy Does not invoke callbacks.
+ */
+[[nodiscard]] StyleClassStatus defineStyleClass(const std::string &name,
+                                                const std::string &parent = "");
+/** @brief Sets text/background/border/accent RGBA on an existing style class. */
+[[nodiscard]] StyleClassStatus setStyleClassColor(const std::string &name,
+                                                 const std::string &property, float r, float g,
+                                                 float b, float a);
+/** @brief Sets padding, rounding, or alpha on an existing style class. */
+[[nodiscard]] StyleClassStatus setStyleClassMetric(const std::string &name,
+                                                  const std::string &property, float x,
+                                                  float y = 0.f);
+/** @brief Resolves inheritance into a sparse class and reports an explicit lookup status. */
+[[nodiscard]] StyleClassStatus resolveStyleClass(const std::string &name, StyleClass *out);
+/** @brief Clears user-defined style classes. Intended for runtime/test teardown. */
+void clearStyleClasses();
+/** @brief Stable script-facing spelling of a mutation status. */
+const char *styleClassStatusName(StyleClassStatus status);
 
 EVENGINE_API_WORLD Theme &globalTheme();
 /** @brief Current preset name: "dark", "light", or "custom". */

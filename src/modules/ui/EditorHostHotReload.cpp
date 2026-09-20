@@ -20,6 +20,10 @@ void EditorHost::setHotReloadWatchCount(int) {}
 
 #else
 
+#include "common/Module.h"
+#include "common/Runtime.h"
+#include "common/ScriptModule.h"
+
 #include <Poco/Dynamic/Var.h>
 #include <Poco/JSON/Array.h>
 #include <Poco/JSON/Object.h>
@@ -28,6 +32,7 @@ void EditorHost::setHotReloadWatchCount(int) {}
 
 #include <algorithm>
 #include <cctype>
+#include <exception>
 #include <filesystem>
 #include <fstream>
 #include <map>
@@ -192,11 +197,22 @@ std::string EditorHost::reloadResource(const std::string& input) {
             result = "error: editor ViewModel not found for: " + vmEditorId;
         } else {
             const auto values = editorValues(*this, vmEditorId);
-            result            = registerVM(vmName, source);
+            result            = registerVM(vmName, source, "game:/" + path);
             if (result.rfind("error:", 0) != 0) restoreEditorValues(*this, vmEditorId, values);
         }
     } else if (path == "mcp.nut" || (path.rfind("mcp/", 0) == 0 && endsWith(path, ".nut"))) {
-        result = runScript(source);
+        const std::string uri = "game:/" + path;
+        if (Runtime* rt = ModuleManager::runtime()) {
+            try {
+                for (const auto& dep : rt->scriptModules().dependencies(uri))
+                    rt->scriptModules().reloadAffected(dep);
+            } catch (const std::exception& error) {
+                result = std::string("error: ") + error.what();
+                recordReload(path, result);
+                return result;
+            }
+        }
+        result = runScript(source, uri);
     } else {
         result = "error: unsupported MCP host resource: " + path;
     }

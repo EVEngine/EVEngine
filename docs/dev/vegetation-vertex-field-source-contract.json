@@ -1,0 +1,38 @@
+{
+  "sourcePackage": "The Vegetation Engine 12.6.0",
+  "feature": "global vertex field object size",
+  "authoritativeSource": [
+    "Core/Runtime/TVEGlobalVolume.cs",
+    "Core/Shaders/Geometry/Plant Standard Lit.shader:1026-1067"
+  ],
+  "storage": {
+    "format": "RGBAHalf",
+    "dimension": "2D array",
+    "layers": 9,
+    "wrap": "clamp",
+    "channels": {
+      "rgb": "retained global vertex data; unused by Plant Standard 12.6 geometry deformation",
+      "a": "object size multiplier"
+    }
+  },
+  "sampling": {
+    "plane": "object pivot XZ",
+    "uv": "TVE_VertexCoords.zw + TVE_VertexCoords.xy * objectPivot.xz",
+    "slice": "_LayerVertexValue",
+    "disabledLayer": "TVE_VertexParams",
+    "usageThreshold": 0.5,
+    "lod": 0
+  },
+  "deformation": {
+    "size": "lerp(1, saturate(vertex.a), _GlobalSize)",
+    "distanceFade": "saturate((distance(camera, objectPivot) / TVE_DistanceFadeBias - _SizeFadeEndValue) / (_SizeFadeStartValue - _SizeFadeEndValue + 0.0001))",
+    "scope": "unskinned object mode around an authored per-vertex pivot, or local origin when absent; batching uses CPU deformation",
+    "singleOwner": "RestMesh, CpuDeformed, or GpuFields"
+  },
+  "nativeOwnership": {
+    "authority": "VegetationField globals and elements",
+    "gpuAtlas": "derived immutable revisioned render snapshot",
+    "materialState": "layer and static size/fade controls",
+    "publication": "explicit atlas attachment followed by GpuFields selection"
+  }
+}

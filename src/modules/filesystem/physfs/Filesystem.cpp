@@ -11,6 +11,7 @@
 #include "common/b64.h"
 #include "common/utf8.h"
 #include "common/Exception.h"
+#include "common/Diagnostic.h"
 #include "cmdline/cmdline.h"
 
 // PhysFS
@@ -32,6 +33,7 @@
 #include "webgpu/webplatform.h"
 #endif
 
+#include <filesystem>
 #include <string>
 
 #ifdef EVENGINE_ANDROID
@@ -682,6 +684,23 @@ std::string baseName(const std::string &path) {
     return path.substr(pos + 1);
 }
 
+bool hasParentSegment(const std::string &path) {
+    if (path == "..") return true;
+    if (path.size() >= 3 && (path.compare(0, 3, "../") == 0 || path.compare(0, 3, "..\\") == 0))
+        return true;
+    return path.find("/..") != std::string::npos || path.find("\\..") != std::string::npos;
+}
+
+std::filesystem::path pathFromUtf8(const std::string &text) {
+    const auto *data = reinterpret_cast<const char8_t *>(text.data());
+    return std::filesystem::path(std::u8string_view(data, text.size()));
+}
+
+std::string pathToUtf8(const std::filesystem::path &p) {
+    auto u8 = p.u8string();
+    return std::string(reinterpret_cast<const char *>(u8.data()), u8.size());
+}
+
 }  // namespace
 
 FileWatch &Filesystem::watchers() {
@@ -712,6 +731,25 @@ bool Filesystem::resolveWatchTarget(const std::string &path, std::string &realDi
         realDir = parentDir(path);
         filterName = baseName(path);
         return isRealDirectory(realDir);
+    }
+
+    // PhysFS rejects `..`. Resolve parent-relative paths against the real cwd
+    // so `fs.watch("..")` / `hot.watchTree("..")` can see a parent workflow.
+    if (hasParentSegment(path)) {
+        std::error_code ec;
+        auto candidate = std::filesystem::weakly_canonical(
+            pathFromUtf8(getWorkingDirectory()) / pathFromUtf8(path), ec);
+        if (!ec) {
+            const std::string full = pathToUtf8(candidate);
+            if (isRealDirectory(full)) {
+                realDir = full;
+                filterName.clear();
+                return true;
+            }
+            realDir = parentDir(full);
+            filterName = baseName(full);
+            return isRealDirectory(realDir);
+        }
     }
 
     Info info{};
@@ -775,6 +813,23 @@ bool Filesystem::watch(std::string path) {
     std::string realDir, filter, report;
     if (!resolveWatchTarget(path, realDir, filter, report)) return false;
     return watchers().add(realDir, filter, report, 1);
+}
+
+eve::Result<void> Filesystem::watchRealDirectory(std::string realDir, std::string reportPath) {
+    if (realDir.empty() || reportPath.empty()) {
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument,
+            "watchRealDirectory requires a real directory and a report path"));
+    }
+    if (!isRealDirectory(realDir)) {
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::NotFound, "watchRealDirectory path is not a directory", realDir));
+    }
+    if (!watchers().add(std::move(realDir), "", std::move(reportPath), 1)) {
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Failed, "watchRealDirectory could not add an OS watcher"));
+    }
+    return eve::Result<void>::success();
 }
 
 bool Filesystem::unwatch(std::string path) { return watchers().remove(path); }

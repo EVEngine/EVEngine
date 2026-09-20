@@ -69,8 +69,17 @@ TEST_CASE_FIXTURE(Fixture, "gameplay.control.tacticsPublishesDiscoverablePlayerE
     auto available = tactics.availableGameplayActions(player, battleSubject, unitSubject);
     REQUIRE(available.ok());
     const auto descriptors = std::move(available).takeValue();
-    REQUIRE_EQ(descriptors.size(), std::size_t{4});
+    // move / face / wait / end-turn / use-ability: the controller face exposes the
+    // generic action protocol too, not just movement.
+    REQUIRE_EQ(descriptors.size(), std::size_t{5});
     CHECK_EQ(descriptors.front().id.format(), std::string("tactics:move"));
+    CHECK_EQ(descriptors.back().id.format(), std::string("tactics:use-ability"));
+    // An ability declaration needs the action id, both targets and the opaque payload.
+    const auto* abilitySchema = descriptors.back().parameterSchema.getIf<eve::Value::Object>();
+    REQUIRE(abilitySchema != nullptr);
+    CHECK(abilitySchema->contains("action"));
+    CHECK(abilitySchema->contains("payload"));
+    CHECK(abilitySchema->contains("targetUnit"));
 
     eve::GameplaySession automation{"automation", eve::GameplayAccess::TestDriver, {unitSubject}};
     auto automationAvailable =
@@ -100,6 +109,47 @@ TEST_CASE_FIXTURE(Fixture, "gameplay.control.tacticsPublishesDiscoverablePlayerE
     auto events = tactics.gameplayEvents(player, battleSubject, 0);
     REQUIRE(events.ok());
     CHECK(!std::move(events).takeValue().empty());
+
+    // The controller face can declare an ability declaration too, carrying both targets
+    // and the caller-owned payload through the same validator the script face uses.
+    auto afterMove = tactics.observeGameplay(player, battleSubject);
+    REQUIRE(afterMove.ok());
+    const auto moved = std::move(afterMove).takeValue();
+    eve::GameplayCommand ability;
+    ability.id = "player-command-2";
+    ability.action = action("tactics:use-ability");
+    ability.subject = unitSubject;
+    ability.observedTick = moved.tick;
+    ability.expectedRevision = moved.revision;
+    ability.parameters = eve::Value(eve::Value::Object{
+        {"action", eve::Value(std::string("unit:test"))},
+        {"layer", eve::Value(0)},
+        {"payload", eve::Value(std::string("{\"power\":2}"))},
+        {"targetUnit", eve::Value(unitSubject.format())},
+        {"x", eve::Value(2)},
+        {"y", eve::Value(0)}});
+    auto declared = tactics.submitGameplay(player, battleSubject, ability);
+    REQUIRE(declared.ok());
+    const auto abilityReceipt = std::move(declared).takeValue();
+    CHECK_EQ(abilityReceipt.commandId, ability.id);
+    const auto* details = abilityReceipt.details.getIf<eve::Value::Object>();
+    REQUIRE(details != nullptr);
+    // One action point was spent, and the declaration names the ability and the target.
+    CHECK_EQ(details->at("action").asString(), std::string("unit:test"));
+    CHECK_EQ(details->at("target").asString(), unitSubject.format());
+    CHECK_EQ(details->at("remainingActionPoints").asInt(), std::int64_t{0});
+
+    // The same command is rejected once the point is gone: the face reports the refusal
+    // instead of silently accepting a declaration that could not be paid for.
+    auto again = tactics.observeGameplay(player, battleSubject);
+    REQUIRE(again.ok());
+    const auto afterAbility = std::move(again).takeValue();
+    ability.id = "player-command-3";
+    ability.observedTick = afterAbility.tick;
+    ability.expectedRevision = afterAbility.revision;
+    auto refused = tactics.submitGameplay(player, battleSubject, ability);
+    CHECK(!refused.ok());
+    CHECK_EQ(refused.code(), eve::StatusCode::Rejected);
 }
 
 TEST_CASE_FIXTURE(Fixture, "gameplay.control.tacticsRejectsUnauthorizedAndStaleCommandsWithoutMutation") {
