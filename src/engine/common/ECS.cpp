@@ -39,9 +39,16 @@ struct ScriptComponentEntry {
     Generation  generation;
     /** 声明顺序的字段名：schema，也是第 2 步摘字段槽位时的清单。 */
     std::vector<std::string> fields;
+    /**
+     * 声明顺序的**字段默认值**，与 `fields` 一一对应。
+     *
+     * 必须在摘槽位**之前**抄下来：槽位一摘，类和实例上都再也读不到声明值，而"每个字段的默认值"
+     * 是 schema 的一部分（建引擎侧数据、热重载迁移换代时都要用）。
+     */
+    std::vector<Value> defaults;
     ScriptComponentEntry() { sq_resetobject(&cls); }
-    ScriptComponentEntry(HSQUIRRELVM v, HSQOBJECT o, Generation g, std::vector<std::string> f)
-        : vm(v), cls(o), generation(g), fields(std::move(f)) {}
+    ScriptComponentEntry(HSQUIRRELVM v, HSQOBJECT o, Generation g, std::vector<std::string> f, std::vector<Value> d)
+        : vm(v), cls(o), generation(g), fields(std::move(f)), defaults(std::move(d)) {}
 };
 
 /** Keyed by (name, version) rather than by class object: hot reload replaces the class
@@ -141,8 +148,14 @@ void collectClassFields(HSQUIRRELVM vm, HSQOBJECT clsObj, HSQOBJECT outTable) {
     sq_settop(vm, top);
 }
 
+/** 一个声明字段：名字 + 类成员表里的**键对象**（后者用于精确摘除槽位）。 */
+struct DeclaredField {
+    std::string name;
+    SQObjectPtr key;
+};
+
 /**
- * @brief 类声明的**实例字段**名，按声明顺序。
+ * @brief 类声明的**实例字段**，按声明顺序。
  *
  * 不用 `sq_next` 遍历取值：那是成员表的哈希顺序，增删一个字段就会让无关字段换位置（§10.17）。
  * Squirrel 内部把字段序号编进 `_members` 的值（`_isfield` / `_member_idx`），而 `_defaultvalues`
@@ -153,9 +166,9 @@ void collectClassFields(HSQUIRRELVM vm, HSQOBJECT clsObj, HSQOBJECT outTable) {
  *          `_members`（实测 `class EnemyStats extends BaseStats` 会同时列出 `hp` 与 `speed`），
  *          递归反而会把基类字段重复计一次。
  */
-std::vector<std::string> declaredInstanceFields(HSQOBJECT clsObj) {
-    std::vector<std::pair<SQInteger, std::string>> ordered;
-    SQClass*                                       klass = _class(clsObj);
+std::vector<DeclaredField> declaredFields(HSQOBJECT clsObj) {
+    std::vector<std::pair<SQInteger, DeclaredField>> ordered;
+    SQClass*                                         klass = _class(clsObj);
     if (klass == nullptr || klass->_members == nullptr) return {};
 
     SQObjectPtr key;
@@ -167,14 +180,22 @@ std::vector<std::string> declaredInstanceFields(HSQOBJECT clsObj) {
         if (sq_type(key) != OT_STRING || !_isfield(value)) continue;
         const SQChar* name = _stringval(key);
         if (name == nullptr || name[0] == '_') continue;
-        ordered.emplace_back(static_cast<SQInteger>(_member_idx(value)), std::string(name));
+        ordered.emplace_back(static_cast<SQInteger>(_member_idx(value)), DeclaredField{name, key});
     }
     std::sort(ordered.begin(), ordered.end(), [](const auto& a, const auto& b) { return a.first < b.first; });
 
-    std::vector<std::string> out;
+    std::vector<DeclaredField> out;
     out.reserve(ordered.size());
     for (auto& entry : ordered) out.push_back(std::move(entry.second));
     return out;
+}
+
+/** 字段名列表（schema 用）。 */
+std::vector<std::string> fieldNames(const std::vector<DeclaredField>& fields) {
+    std::vector<std::string> names;
+    names.reserve(fields.size());
+    for (const DeclaredField& field : fields) names.push_back(field.name);
+    return names;
 }
 
 ssq::Table inspectClassFields(ssq::Object clsObj) {
@@ -201,53 +222,229 @@ Result<Value> classFieldDefault(HSQUIRRELVM vm, HSQOBJECT clsObj, const std::str
     return value;
 }
 
+/** 一个已登记组件的 schema：公开身份记录 + 就是建数据条目要用的**声明默认值**。 */
+struct ScriptComponentSchema {
+    ScriptComponentRecord record;
+    /** 与 `record.fields` 同序、同长。 */
+    const std::vector<Value>* defaults = nullptr;
+};
+
 /**
- * @brief 已登记组件在注册表里的身份（名字 + 版本）。
+ * @brief 类对应的组件 schema（名字 + 版本 + 代 + 字段 + 声明默认值）。
  * @return 找到则为 true；类对象没登记过则为 false（该组件保持今天的槽位语义）。
+ * @remarks 类对象按**裸句柄**传入而不是 `ssq::Object`：调用方是从栈上借用的，
+ *          而 `ssq::Object` 的析构会 `sq_release`，包一层很容易变成双重释放
+ *          （实测会触发 Squirrel `RefTable::Release` 的 `assert(0)`，见 §9.64）。
  */
-bool registeredIdentityOfClass(const ssq::Object& cls, ScriptComponentRecord* out) {
-    const SQClass* klass = _class(cls.getRaw());
+bool schemaOfComponentClass(HSQOBJECT cls, ScriptComponentSchema* out) {
+    const SQClass* klass = _class(cls);
     if (klass == nullptr) return false;
     for (const auto& [key, entry] : currentScriptComponents()) {
         if (_class(entry.cls) != klass) continue;
         if (out != nullptr) {
-            out->name       = key.first;
-            out->version    = SchemaVersion(key.second);
-            out->generation = entry.generation;
-            out->retired    = false;
-            out->fields     = entry.fields;
+            out->record.name       = key.first;
+            out->record.version    = SchemaVersion(key.second);
+            out->record.generation = entry.generation;
+            out->record.retired    = false;
+            out->record.fields     = entry.fields;
+            out->defaults          = &entry.defaults;
         }
         return true;
     }
     return false;
 }
 
-/**
- * @brief 为"已登记组件"在引擎侧建一份字段数据（默认值取自类声明）。
- *
- * 只对登记过的组件生效：没登记的组件保持纯槽位语义（最快，但原生侧读不到），这是
- * §9.62.1 按成本实测定下的策略，由脚本作者按组件选择。
- */
-bool initializeScriptComponentValues(std::uint64_t entityId, ssq::Object cls) {
-    ScriptComponentRecord identity;
-    if (cls.getType() != ssq::Type::CLASS || !registeredIdentityOfClass(cls, &identity)) return false;
+bool dropScriptComponentValues(std::uint64_t entityId) { return removeScriptComponentValues(entityId) > 0; }
 
-    Value::Object values;
-    for (const std::string& field : identity.fields) {
-        Result<Value> value = classFieldDefault(cls.getHandle(), cls.getRaw(), field);
-        values.emplace(field, value.ok() ? std::move(value).takeValue() : Value::null());
+// ---------------------------------------------------------------------------
+// 已登记组件的字段接缝：`_get` / `_set` 把脚本字段读写接到引擎侧存储
+// ---------------------------------------------------------------------------
+
+/** 读实例上某个**已声明**槽位（`sq_get` 对已声明成员不会走 `_get`）。 */
+bool instanceSlot(HSQUIRRELVM vm, SQInteger index, const char* name, HSQOBJECT* out) {
+    const SQInteger top  = sq_gettop(vm);
+    const SQInteger self = index < 0 ? top + index + 1 : index;
+    sq_pushstring(vm, name, -1);
+    if (SQ_FAILED(sq_get(vm, self))) {
+        sq_settop(vm, top);
+        return false;
     }
-    const ScriptComponentStoreKey key{entityId, identity.name, identity.version};
-    setScriptComponentValues(key, Value::object(std::move(values)))
-        .ignore("a component whose values cannot be stored would silently lose its data if this succeeded");
+    if (out != nullptr) sq_getstackobj(vm, -1, out);
+    sq_settop(vm, top);
     return true;
 }
 
-bool dropScriptComponentValues(std::uint64_t entityId) { return removeScriptComponentValues(entityId) > 0; }
+/** 组件实例的归属身份 `(实体, 组件名, 版本)`；未绑定时返回 false。 */
+bool instanceIdentity(HSQUIRRELVM vm, SQInteger index, ScriptComponentStoreKey* out) {
+    HSQOBJECT eid{};
+    HSQOBJECT name{};
+    HSQOBJECT version{};
+    if (!instanceSlot(vm, index, "_ownerEid", &eid) || sq_type(eid) != OT_INTEGER) return false;
+    if (!instanceSlot(vm, index, "_componentName", &name) || sq_type(name) != OT_STRING) return false;
+    if (!instanceSlot(vm, index, "_componentVersion", &version) || sq_type(version) != OT_INTEGER) return false;
+    if (_integer(eid) <= 0 || _stringval(name)[0] == '\0') return false;
+    out->entityId = static_cast<std::uint64_t>(_integer(eid));
+    out->name     = _stringval(name);
+    out->version  = SchemaVersion(static_cast<std::uint64_t>(_integer(version)));
+    return true;
+}
+
+/** 取栈上某个位置的字段名（必须是字符串；调用方已判类型）。 */
+std::string stackFieldName(HSQUIRRELVM vm, SQInteger index) {
+    const SQChar* text = nullptr;
+    if (SQ_FAILED(sq_getstring(vm, index, &text)) || text == nullptr) return {};
+    return text;
+}
+
+/** `_get(key)`：从引擎侧存储读字段。 */
+SQInteger scriptComponentFieldGet(HSQUIRRELVM vm) {
+    const SQInteger         top = sq_gettop(vm);
+    ScriptComponentStoreKey key;
+    if (!instanceIdentity(vm, 1, &key)) return sq_throwerror(vm, _SC("component instance is not bound to an entity"));
+    if (sq_gettype(vm, 2) != OT_STRING) return sq_throwerror(vm, _SC("component field name must be a string"));
+
+    const std::string field = stackFieldName(vm, 2);
+    Result<Value>     value = scriptComponentField(key, field);
+    if (!value.ok()) {
+        sq_settop(vm, top);
+        return sq_throwerror(vm, ("'" + field + "' is not a declared field of component '" + key.name + "'").c_str());
+    }
+    Result<void> pushed = script::pushValue(vm, value.value());
+    if (!pushed.ok()) {
+        sq_settop(vm, top);
+        return sq_throwerror(vm, pushed.status().describe().c_str());
+    }
+    return 1;
+}
+
+/** `_set(key, value)`：写进引擎侧存储；schema 之外的字段名直接报错（不静默收下）。 */
+SQInteger scriptComponentFieldSet(HSQUIRRELVM vm) {
+    const SQInteger         top = sq_gettop(vm);
+    ScriptComponentStoreKey key;
+    if (!instanceIdentity(vm, 1, &key)) return sq_throwerror(vm, _SC("component instance is not bound to an entity"));
+    if (sq_gettype(vm, 2) != OT_STRING) return sq_throwerror(vm, _SC("component field name must be a string"));
+
+    const std::string field = stackFieldName(vm, 2);
+    Result<Value>     value = script::valueFromSquirrel(vm, 3);
+    if (!value.ok()) {
+        sq_settop(vm, top);
+        return sq_throwerror(vm, value.status().describe().c_str());
+    }
+    Result<void> written = setScriptComponentField(key, field, std::move(value).takeValue());
+    if (!written.ok()) {
+        sq_settop(vm, top);
+        return sq_throwerror(vm, ("'" + field + "' is not a declared field of component '" + key.name + "'").c_str());
+    }
+    sq_settop(vm, top);
+    sq_push(vm, 3);
+    return 1;
+}
+
+/** 类上是否已装 `_get`/`_set`（用户自己写了就不许我们覆盖）。 */
+bool classDefinesFieldSeam(HSQOBJECT clsObj) {
+    SQClass* klass = _class(clsObj);
+    if (klass == nullptr) return false;
+    return sq_type(klass->_metamethods[MT_GET]) != OT_NULL || sq_type(klass->_metamethods[MT_SET]) != OT_NULL;
+}
+
+/**
+ * @brief 装上 `_get`/`_set` 并摘掉声明的字段槽位——这一步让引擎成为字段的**唯一权威**。
+ *
+ * 摘槽位是必需的：声明过的成员会**遮蔽**元方法（实测 §9.61.1），不摘就永远还是脚本实例自己的
+ * 槽位在存数据。摘掉之后同名成员的读写都落到元方法上，于是 `e.pos.x = 1` 的写法不变，
+ * 数据却进了引擎侧存储。
+ *
+ * @return 成功；用户类自己定义了 `_get`/`_set` 时返回 `AlreadyExists`（不覆盖、也不摘槽位）。
+ */
+Result<void> installComponentFieldSeam(HSQUIRRELVM vm, HSQOBJECT clsObj, const std::vector<DeclaredField>& fields) {
+    if (classDefinesFieldSeam(clsObj))
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::AlreadyExists,
+                              "component class defines _get/_set itself; the engine field seam needs those two names",
+                              {}, {}, "ecs.component"));
+
+    const SQInteger top = sq_gettop(vm);
+    sq_pushobject(vm, clsObj);
+    const auto install = [&](const char* name, SQFUNCTION fn) {
+        sq_pushstring(vm, name, -1);
+        sq_newclosure(vm, fn, 0);
+        sq_newslot(vm, -3, SQFalse);
+    };
+    install("_get", scriptComponentFieldGet);
+    install("_set", scriptComponentFieldSet);
+
+    if (_class(clsObj) != nullptr) {
+        for (const DeclaredField& field : fields) _class(clsObj)->_members->Remove(field.key);
+    }
+    sq_settop(vm, top);
+    return Result<void>::success(Status::success(StatusCode::Applied));
+}
+
+/**
+ * @brief 给组件实例盖归属、按 schema 建引擎侧数据条目，并把这一代的字段名还给脚本。
+ *
+ * 两件事都必须发生在脚本写默认值**之前**：槽位已摘、`_set` 已装，所以那些写入本身就进存储，
+ * 没有已绑定的条目就会报错。
+ *
+ * 为什么要把字段名**还回去**：槽位摘掉之后脚本侧 `inspectClassFields(compClass)` 什么都看不到，
+ * 而脚本还要按声明顺序把"类型标记"（`x = eve.Number` → `0.0`）解析成真值。字段名由注册表给，
+ * 声明默认值已经按 schema 落在存储里，脚本侧 `c[name]` 读到的就是它——标记规则因此仍然只有
+ * 脚本里那一处（§9.64）。
+ *
+ * @return 这一代的字段名数组（声明顺序）；组件没登记过时返回一个空对象（`null`），
+ *         调用方据此保持纯槽位语义。
+ */
+ssq::Object bindComponentValues(std::uint64_t entityId, ssq::Object instance) {
+    HSQUIRRELVM vm = instance.getHandle();
+    ssq::Object none(vm);
+    if (instance.getType() != ssq::Type::INSTANCE) return none;
+
+    // 类对象只**借用**：实例自己持有类引用（`SQInstance::SQInstance` 里 `__ObjAddRef(_class)`），
+    // 所以查完注册表、把类弹出栈之后，注册表里那份引用仍然有效。
+    const SQInteger top = sq_gettop(vm);
+    sq_pushobject(vm, instance.getRaw());
+    HSQOBJECT cls{};
+    if (SQ_FAILED(sq_getclass(vm, -1))) {
+        sq_settop(vm, top);
+        return none;
+    }
+    sq_getstackobj(vm, -1, &cls);
+
+    ScriptComponentSchema schema;
+    const bool            known = schemaOfComponentClass(cls, &schema);
+    sq_settop(vm, top);
+    if (!known) return none;
+
+    const ScriptComponentStoreKey key{entityId, schema.record.name, schema.record.version};
+    const auto                    stamp = [&](const char* name, const auto& push) {
+        const SQInteger inner = sq_gettop(vm);
+        sq_pushobject(vm, instance.getRaw());
+        sq_pushstring(vm, name, -1);
+        push();
+        sq_rawset(vm, -3);  // raw：`_set` 是字段接缝，控制槽位不能从那里走
+        sq_settop(vm, inner);
+    };
+    stamp("_ownerEid", [&] { sq_pushinteger(vm, static_cast<SQInteger>(entityId)); });
+    stamp("_componentName", [&] { sq_pushstring(vm, schema.record.name.c_str(), -1); });
+    stamp("_componentVersion", [&] { sq_pushinteger(vm, static_cast<SQInteger>(schema.record.version.value())); });
+
+    if (findScriptComponentValues(key) == nullptr) {
+        Value::Object                   values;
+        const std::vector<Value>&       declared = *schema.defaults;
+        const std::vector<std::string>& fields   = schema.record.fields;
+        for (std::size_t i = 0; i < fields.size(); ++i)
+            values.emplace(fields[i], i < declared.size() ? declared[i] : Value::null());
+        setScriptComponentValues(key, Value::object(std::move(values)))
+            .ignore("a component whose values cannot be stored would silently lose its data if this succeeded");
+    }
+
+    ssq::Array names(vm);
+    for (const std::string& field : schema.record.fields) names.push(field);
+    return names;
+}
 
 bool scriptIsSubclass(ssq::Object child, ssq::Object base) {
-    if (child.getType() != ssq::Type::CLASS || base.getType() != ssq::Type::CLASS)
-        return false;
+    if (child.getType() != ssq::Type::CLASS || base.getType() != ssq::Type::CLASS) return false;
     return isSubclassOf(child.getHandle(), child.getRaw(), base.getRaw());
 }
 
@@ -301,12 +498,25 @@ function eve::_ecsIsComponentClass(obj) {
     return this.isSubclass(obj, this.Component)
 }
 
-function eve::_ecsInstantiateComponent(compClass) {
+function eve::_ecsInstantiateComponent(compClass, ownerEid = 0) {
     local c = compClass()
+    // 先盖归属、按 schema 建引擎侧数据条目，**再**写默认值：已登记组件的字段槽位在登记时就被摘掉、
+    // `_set` 已装好，所以下面那些 `c[name] = val` 实际上是**写进引擎存储**，必须有个已绑定的条目
+    // 接着（顺序反了就会报 "not bound to an entity"）。
+    // 返回值是这一代的字段名（声明顺序）：槽位摘掉之后 `inspectClassFields` 什么也看不到，
+    // 而"类型标记"（`x = eve.Number` → `0.0`）还得按声明顺序解析。未登记组件返回 null。
+    local declared = eve._ecsBindComponentValues(ownerEid, c)
     if (compClass in this._ecsCompDefaults) {
         foreach (name, val in this._ecsCompDefaults[compClass]) c[name] = val
     } else {
-        local fields = this.inspectClassFields(compClass)
+        local fields = {}
+        if (declared != null) {
+            // 声明默认值已经按 schema 落在引擎侧存储里，`c[name]` 走 `_get` 读到的就是它；
+            // 这里只是照 `inspectClassFields` 的形状取一份，好让标记解析那条路两种组件共用。
+            foreach (name in declared) fields[name] <- c[name]
+        } else {
+            fields = this.inspectClassFields(compClass)
+        }
         local resolved = {}
         foreach (name, val in fields) {
             local cur = null
@@ -444,7 +654,18 @@ function eve::_ecsCollectInstances(cls, out) {
 }
 
 eve.Component <- class {
-    constructor() {}
+    // 引擎侧数据条目的归属。必须是**已声明**成员：Squirrel 的实例只能写已声明槽位，而
+    // `_get`/`_set` 要靠它们找到"这份数据属于哪个实体的哪个组件"。`_` 前缀保证它们
+    // 不会被当成组件字段收进 schema（见 declaredInstanceFields 的过滤）。
+    _ownerEid = 0
+    _componentName = ""
+    _componentVersion = 0
+
+    constructor() {
+        _ownerEid = 0
+        _componentName = ""
+        _componentVersion = 0
+    }
 }
 
 eve.Entity <- class {
@@ -471,11 +692,9 @@ eve.Entity <- class {
         e._comps = {}
         local fieldSlots = eve._ecsCollectFieldSlots(this)
         foreach (name, compClass in e._slots) {
-            local c = eve._ecsInstantiateComponent(compClass)
+            // 传实体 id：已登记组件据此盖归属、建引擎侧数据条目（见 `_ecsInstantiateComponent`）。
+            local c = eve._ecsInstantiateComponent(compClass, e._eid)
             e._comps[name] <- c
-            // 已登记组件（`eve.component`）在引擎侧另存一份字段数据，那是**权威**存储：原生侧
-            // （打包 / 存档 / 编辑器）从它读。没登记的组件不建这份数据，保持纯槽位语义。
-            eve._ecsInitComponentValues(e._eid, compClass)
             // 已声明的槽位（`pos = Pos`）同时写进实体字段，于是 `e.pos` 与
             // `e.getComponent(Pos)` 是**同一个对象**，两条路径读写一致（实测，见 §9.38）。
             // 只登记在 `static components` 表里、没有同名字段的槽位没有字段可写，它只
@@ -1040,15 +1259,33 @@ Result<void> registerScriptComponent(const std::string& name, SchemaVersion vers
     HSQOBJECT   o  = cls.getRaw();
     sq_addref(vm, &o);
 
-    // 登记时读出这一代声明的字段（按声明顺序）：它既是组件的 schema，也是第 2 步"取走字段槽位、
+    // 登记时读出这一代声明的字段（按声明顺序）：它既是组件的 schema，也是"取走字段槽位、
     // 让引擎成为权威存储"要用的清单——必须先读出来，才能安全地摘掉。
-    const std::vector<std::string> fields = declaredInstanceFields(o);
+    const std::vector<DeclaredField> fields = declaredFields(o);
+    const std::vector<std::string>   names  = fieldNames(fields);
+
+    // 声明默认值也是 schema 的一部分，而且**只能在摘槽位之前**读：摘掉之后类和实例上都没有它了，
+    // 而建引擎侧数据条目、以及将来热重载迁移换代都要按这个默认值来。
+    std::vector<Value> defaults;
+    defaults.reserve(names.size());
+    for (const std::string& field : names) {
+        Result<Value> value = classFieldDefault(vm, o, field);
+        defaults.push_back(value.ok() ? std::move(value).takeValue() : Value::null());
+    }
+
+    // 摘槽位 + 装 `_get`/`_set`：从这一刻起这个组件的字段读写都进引擎侧存储。用户类自己
+    // 定义了 `_get`/`_set` 时这里返回 AlreadyExists，且**不做任何改动**（不覆盖、不摘槽位）。
+    Result<void> seam = installComponentFieldSeam(vm, o, fields);
+    if (!seam.ok()) {
+        sq_release(vm, &o);
+        return seam;
+    }
 
     auto&      current = currentScriptComponents();
     const auto key     = ScriptComponentKey{name, version.value()};
     auto       found   = current.find(key);
     if (found == current.end()) {
-        current.emplace(key, ScriptComponentEntry(vm, o, Generation(1), fields));
+        current.emplace(key, ScriptComponentEntry(vm, o, Generation(1), names, std::move(defaults)));
         return Result<void>::success(Status::success(StatusCode::Applied));
     }
 
@@ -1067,7 +1304,7 @@ Result<void> registerScriptComponent(const std::string& name, SchemaVersion vers
     // not be released, because that VM may already be destroyed and sq_release() would
     // dereference its freed RefTable (measured access violation, plan doc §9.49).
     if (found->second.vm == vm) sq_release(found->second.vm, &found->second.cls);
-    found->second = ScriptComponentEntry(vm, o, *next, fields);
+    found->second = ScriptComponentEntry(vm, o, *next, names, std::move(defaults));
     return Result<void>::success(Status::success(StatusCode::Applied));
 }
 
@@ -1114,11 +1351,11 @@ void exposeECS(ssq::Table& table) {
             vm, registerScriptComponent(name, SchemaVersion(static_cast<std::uint64_t>(version)), cls));
     });
     table.addFunc("_cppCollect", std::function<void(ssq::Class, ssq::Array)>(cppCollect));
-    // 已登记组件在引擎侧的数据：创建实体时按 schema 默认值建一份，销毁实体时一并清掉。
-    // 返回 false 表示"这个组件没登记过"，脚本侧据此什么都不做（保持纯槽位语义）。
-    table.addFunc("_ecsInitComponentValues", [](std::uint64_t entityId, ssq::Object cls) {
-        return initializeScriptComponentValues(entityId, cls);
-    });
+    // 已登记组件在引擎侧的数据：实例化时盖归属、按 schema 建条目（`_ecsBindComponentValues`），
+    // 销毁实体时一并清掉。返回这一代的**字段名数组**，未登记时返回 null——脚本侧据此保持
+    // 纯槽位语义，并在槽位已被摘掉的情况下仍能按声明顺序解析类型标记。
+    table.addFunc("_ecsBindComponentValues",
+                  [](std::uint64_t entityId, ssq::Object instance) { return bindComponentValues(entityId, instance); });
     table.addFunc("_ecsDropComponentValues",
                   [](std::uint64_t entityId) { return dropScriptComponentValues(entityId); });
 

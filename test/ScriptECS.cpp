@@ -915,6 +915,7 @@ function makeProbe() {
     local registered = eve.component("Position", 1, Position).ok
     local e = Probe.create()
     probeId <- e.getId()
+    probe <- e
     return registered
 }
 
@@ -929,6 +930,60 @@ function fieldSyntaxStillWorks() {
     local e = Probe.create()
     e.pos.x = 11.0
     return e.pos.x == 11.0 && e.pos.y == 2.5
+}
+
+// 脚本侧写 → 引擎侧读：`e.pos.x = v` 走 `_set`，落进引擎侧存储（不是实例槽位）。
+function writeProbeX() {
+    probe.pos.x = 42.0
+    probe.pos.y = 43.0
+    return true
+}
+
+// 引擎侧写 → 脚本侧读：两边是同一份数据，脚本下一次读就看到新值。
+function readProbeX() {
+    probeX <- probe.pos.x
+    return true
+}
+
+// schema 之外的字段名必须报错，而不是静默长出一个没人声明的字段。
+function unknownFieldIsRejected() {
+    try { probe.pos.notDeclared = 1.0 } catch (err) { return true }
+    return false
+}
+
+// 用户类自己写了 `_get`/`_set`：引擎既不覆盖也不摘槽位，登记失败，槽位语义照旧。
+class OwnSeam extends eve.Component {
+    x = 1.0
+    function _get(k) { return 0.0 }
+    function _set(k, v) {}
+}
+
+function registerOwnSeam() {
+    return eve.component("OwnSeam", 1, OwnSeam).ok
+}
+
+function ownSeamStillWorks() {
+    local c = OwnSeam()
+    return c.x == 1.0
+}
+
+// 登记过的组件槽位被摘掉了，但声明里的"类型标记"照旧要解析成真值（`eve.Number` → `0.0`）。
+class Marked extends eve.Component {
+    n = eve.Number
+    b = eve.Boolean
+    s = eve.String
+    k = 3.5
+}
+
+class MarkedHolder extends eve.Entity {
+    m = Marked
+}
+
+function registerMarked() {
+    local registered = eve.component("Marked", 1, Marked).ok
+    local e = MarkedHolder.create()
+    markedId <- e.getId()
+    return registered && e.m.n == 0.0 && e.m.b == false && e.m.s == "" && e.m.k == 3.5
 }
 )SQ";
 
@@ -976,4 +1031,47 @@ TEST_CASE_FIXTURE(ComponentStoreTest, "ScriptECS.destroyDropsEngineSideComponent
 TEST_CASE_FIXTURE(ComponentStoreTest, "ScriptECS.unregisteredComponentsKeepSlotSyntax") {
     // 未登记组件这条路上什么都不该变：写法照旧、值照旧。
     REQUIRE(callScript("fieldSyntaxStillWorks"));
+}
+
+TEST_CASE_FIXTURE(ComponentStoreTest, "ScriptECS.registeredComponentFieldsRoundTripBothWays") {
+    REQUIRE(callScript("makeProbe"));
+
+    const auto                         entityId = static_cast<std::uint64_t>(vm.find("probeId").toInt());
+    const eve::ScriptComponentStoreKey key{entityId, "Position", eve::SchemaVersion(1)};
+
+    // 脚本侧写 → 引擎侧读。
+    REQUIRE(callScript("writeProbeX"));
+    const auto written = eve::scriptComponentField(key, "x");
+    REQUIRE(written.ok());
+    REQUIRE_EQ(written.value().asDouble(), 42.0);
+
+    // 引擎侧写 → 脚本侧读：同一份数据，脚本下一次读就看到新值。
+    REQUIRE(eve::setScriptComponentField(key, "x", eve::Value::number(7.0)).ok());
+    REQUIRE(callScript("readProbeX"));
+    REQUIRE_EQ(vm.find("probeX").toFloat(), 7.0);
+}
+
+TEST_CASE_FIXTURE(ComponentStoreTest, "ScriptECS.unknownComponentFieldIsRejectedByTheSeam") {
+    REQUIRE(callScript("makeProbe"));
+    // 字段接缝不接受 schema 之外的字段名：凭空加字段会让存档/编辑器看到没声明的数据。
+    REQUIRE(callScript("unknownFieldIsRejected"));
+}
+
+TEST_CASE_FIXTURE(ComponentStoreTest, "ScriptECS.componentDefiningItsOwnFieldSeamIsRefused") {
+    // 用户类自己定义了 `_get`/`_set`：登记失败，且引擎**不做任何改动**（槽位语义照旧）。
+    REQUIRE(!callScript("registerOwnSeam"));
+    REQUIRE(callScript("ownSeamStillWorks"));
+}
+
+TEST_CASE_FIXTURE(ComponentStoreTest, "ScriptECS.registeredComponentResolvesTypeMarkers") {
+    // 槽位摘掉之后声明值只在引擎侧；"类型标记"仍要解析成真值，这靠引擎把字段名还给脚本。
+    REQUIRE(callScript("registerMarked"));
+
+    const auto                         entityId = static_cast<std::uint64_t>(vm.find("markedId").toInt());
+    const eve::ScriptComponentStoreKey key{entityId, "Marked", eve::SchemaVersion(1)};
+    const eve::Value*                  values = eve::findScriptComponentValues(key);
+    REQUIRE(values != nullptr);
+    REQUIRE_EQ(values->find("n")->asDouble(), 0.0);
+    REQUIRE(!values->find("b")->asBool());
+    REQUIRE_EQ(values->find("k")->asDouble(), 3.5);
 }
