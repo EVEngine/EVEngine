@@ -207,7 +207,7 @@ set(EVE_TEST_PACKAGE_OVERRIDE
     "agent/tensor;tensor"
     CACHE INTERNAL "Two-segment module package path -> domain")
 
-# Fallback for tests whose includes name no module package root: script-binding
+# Default when a test's includes name no module package root: script-binding
 # harnesses, fixture-driven suites, and core utility tests. Rows are
 # "<prefix>;<domain>" for a basename prefix match, or "=<name>;<domain>" for an
 # exact basename match (needed where one name is a prefix of another rule's name,
