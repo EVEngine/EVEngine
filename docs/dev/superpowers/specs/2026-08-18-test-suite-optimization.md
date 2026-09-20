@@ -664,3 +664,13 @@ debug SDK（`make sdk/win32-debug`）**沿用开发配置，即动态**：它从
 **未验证项（如实记录）**：
 - 本机没有 Linux 构建树，翻转后的 Linux SHARED 路线只做到"生成文本正确"这一层（上面 3(b) 与 WSL 里的脚本级验证）。在 WSL 里尝试过完整 Linux 构建，卡在**共享** `third-party/` 检出上：该检出已被 Windows git 打过补丁（工作树 CRLF），而 `cmake/patch_third_party.cmake` 故意不做空白松弛，于是 Linux `git apply --check` 报 `SDL2/CMakeLists.txt: patch does not apply`。这是**两台机器共用一份检出的产物**，不是 CI 的问题（CI 在 Linux 上全新 clone 后按顺序打补丁）。
 - `check-format.sh`（CI 用 clang-format-18）本机没有该二进制，无法本地实证；`.clang-format` 是 `MaxEmptyLinesToKeep: 2` + `IncludeBlocks: Preserve`，"include + 两空行 + 原 include 块"符合规则，但这是规则推断而非实测。
+
+### 7.21 全新（Linux）构建暴露的两处"只在冷构建里出现"的回归（2026-09-20）
+
+上面那次 WSL 全新构建虽然没走到最后，却抓到了两处**在 Windows 增量构建里被隐藏**的回归——这是本轮最有价值的一次发现，值得单列：
+
+**回归 1（CI 会红）：严格 EveScript 绑定契约生成失败。** 该目标由 `scripts/generate_binding_contracts.py` 驱动，它的 `class_blocks()` 用 `\b(?:class|struct)\s+([A-Za-z_]\w*)[^;{]*\{` 取类名。标注批次给类声明加了组宏之后，**类名被解析成了宏名**（`class EVENGINE_API_DOMAINS Widget` → 类名 `EVENGINE_API_DOMAINS`），于是这些类的成员绑定全部变成"未解析"：实测分支 `10313 contracts / 297 unresolved / 22 placeholder`（exit 1），而 `dev` 基线是 `10621 / 0 / 0`（exit 0）。Windows 侧之所以没暴露，是因为 `BindingContracts.generated.cpp` 是**陈旧产物**（2026-09-19 生成，早于本次改动），ninja 的 CUSTOM_COMMAND 依赖里没有模块源码，所以从不重跑；**任何冷构建（CI、新 build 目录）都会撞上**。修法：模式允许类键与类名之间出现 `EVENGINE_API\w*`；修后 `10610 / 0 / 0`（与 dev 的 10621 差额是分支基线较早，属正常）。新增两条回归测试（`class_blocks` 与 `SignatureIndex.member` 都要能穿过宏）。
+
+**回归 2（诊断过程中发现的门禁盲区）：`check/architecture-contracts` 的 Link/System 规则被宏"遮蔽"。** 同理，`\b(?:class|struct)\s+[A-Za-z_]\w*Link\b` 之类在宏前缀下**静默失配**——任何新加的 `class EVENGINE_API_X FooSystem` 都不再被门禁看见（覆盖率损失）。修法是让模式穿过宏；但只改模式会立刻在**既有**声明上报 6 条 `missing-contract-entry`（`network/UdpLink.h`、`particles/ParticleSystem.h`、`procgen/algorithms/LSystem.h`、`scene/TransformSystem.h`、`ui/UISystem.h`、`weapon/WeaponSystem.h`）——这些类型本来就在，只是"行被我们改过"。所以同时把规则**按它自己的描述实现成"只针对新声明"**：`lint_contract_coverage` 新增 `base` 参数，若该类型名在 base 版本的同一文件里已存在，则不算新面。修后门禁 **OK**、契约测试 **10/10**，并且新增一条测试（既有 `TransformSystem` 不报、base 里没有的 `BrandNewSystem` 照报）。
+
+**教训**：`ninja` 增量构建 + 陈旧生成物会把"冷构建才跑"的检查藏起来。**验收一条与生成物相关的改动，必须至少跑一次冷构建（或强制重跑该生成目标）**；本轮的判据是"Linux 全新 clone 的构建"。
