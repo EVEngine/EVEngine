@@ -4,14 +4,12 @@
 
 #include "network/UdpLink.h"
 
+#include <simplesquirrel/object.hpp>
+
 #include <cstdint>
 #include <functional>
 #include <map>
 #include <string>
-
-namespace ssq {
-class Object;
-}
 
 namespace eve::network {
 
