@@ -221,7 +221,14 @@ def parse_parameters(text: str) -> list[Parameter]:
 def class_blocks(source: str) -> dict[str, list[str]]:
     result: dict[str, list[str]] = {}
     masked = mask_comments(source)
-    pattern = re.compile(r"\b(?:class|struct)\s+([A-Za-z_]\w*)[^;{]*\{")
+    # The engine's per-link-group export macro (src/engine/common/Export.h) sits
+    # between the class key and the class name -- `class EVENGINE_API_DOMAINS
+    # Widget {` -- so the token after `class`/`struct` is not always the name.
+    # Without this the class is registered under the macro's name and every
+    # member binding of it is reported as unresolved.
+    pattern = re.compile(
+        r"\b(?:class|struct)\s+(?:EVENGINE_API\w*\s+)?([A-Za-z_]\w*)[^;{]*\{"
+    )
     for match in pattern.finditer(masked):
         opening = masked.find("{", match.start())
         closing = matching(masked, opening, "{", "}")

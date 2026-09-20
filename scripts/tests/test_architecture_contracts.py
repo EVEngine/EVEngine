@@ -96,6 +96,31 @@ class ArchitectureContractTests(unittest.TestCase):
         lines = [contracts.SourceLine("src/modules/test/Link.h", 3, "struct TestLink {};" )]
         self.assertEqual([], contracts.lint_contract_coverage(lines, metadata))
 
+    def test_annotated_established_system_is_not_new_surface(self):
+        # `class EVENGINE_API_WORLD TransformSystem` is an established type whose
+        # line only gained the export macro, so it must not demand a catalogue
+        # entry; a type that does not exist in the base revision still must.
+        metadata = {"entries": []}
+        lines = [
+            contracts.SourceLine(
+                "src/modules/scene/TransformSystem.h", 13, "class EVENGINE_API_WORLD TransformSystem {"
+            ),
+            contracts.SourceLine(
+                "src/modules/scene/BrandNewSystem.h", 13, "class EVENGINE_API_WORLD BrandNewSystem {"
+            ),
+        ]
+        original = contracts._base_source
+        contracts._base_source = lambda base, path: (
+            "class TransformSystem {\n" if path.endswith("TransformSystem.h") else ""
+        )
+        try:
+            findings = contracts.lint_contract_coverage(lines, metadata, "base")
+        finally:
+            contracts._base_source = original
+
+        self.assertEqual(["ecs-system"], [finding.rule for finding in findings])
+        self.assertEqual("src/modules/scene/BrandNewSystem.h", findings[0].path)
+
 
 if __name__ == "__main__":
     unittest.main()
