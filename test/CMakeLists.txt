@@ -421,7 +421,16 @@ else()
       "test/plugins.cpp must be classified into ${_eve_plugin_host} so "
       "native_test_plugin can resolve engine symbols from the test host")
   endif()
-  if(WIN32)
+  if(EVENGINE_MODULE_LINKAGE STREQUAL "SHARED")
+    # SHARED module linkage: the host executable has no export table at all (it
+    # is a thin consumer of the link-group libraries and there is no
+    # unit_test_core.lib), so a plugin cannot resolve engine symbols from it --
+    # the link fails with LNK1104 and the default build breaks. The shipped
+    # model is the same one a real plugin follows: link the engine's import
+    # libraries, here the per-link-group DLLs, and let the loader resolve them
+    # from the group libraries installed beside the host.
+    target_link_libraries(native_test_plugin PRIVATE ${EVE_LINK_TARGETS})
+  elseif(WIN32)
     set_target_properties(${_eve_plugin_host} PROPERTIES ENABLE_EXPORTS ON)
     target_link_libraries(native_test_plugin PRIVATE "$<TARGET_LINKER_FILE:${_eve_plugin_host}>")
   elseif(APPLE)
