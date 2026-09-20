@@ -26,7 +26,7 @@ Windows 上引擎可执行文件为 `build/win32-debug/src/engine/eve.exe`。
 - 模型设置：`setMesh`、`setShader`、`setPosition`、`setScale`、`setTint`、`setRoughness`、
   `setCastShadow`、`setReceiveShadow`。
 - 自定义着色器：`gfx.loadMeshShaderSpv("", "shaders/preview.frag.spv")`（顶点源码留空），
-  片元阶段以**提交的 SPIR-V** 加载——运行期 GLSL 编译需要 `glslc`，Windows 上不可用；
+  片元阶段以**提交的 SPIR-V** 加载——不需要运行期编译器，各平台结果一致；
   改完 `shaders/preview.frag` 用 `glslc -o shaders/preview.frag.spv shaders/preview.frag` 重新生成。
   随后 `declareFloat("time")` 声明推送常量，`eve_update` 中每帧 `sendFloat("time", previewTime)`。
 - 片元入口 `main()`：读取 `Frame` UBO 的 `lightDirIntensity` 与 `ambient`，以推送常量 `pc.data[0]`
@@ -44,8 +44,8 @@ Windows 上引擎可执行文件为 `build/win32-debug/src/engine/eve.exe`。
 （空顶点源码表示使用该着色器类型的后端默认顶点着色器）。
 编译成功打印 `[shader-preview] reload applied`；失败打印 `[shader-preview] <诊断信息>`，
 保留上一份可用管线，并把状态写入 `reloadMessage`。
-实时编译需要 `glslc`；没有它（Windows、未装 Vulkan SDK）时热重载会回退到已提交的
-`shaders/preview.frag.spv`，示例照常运行，只是保存 `.frag` 不会立刻生效。
+实时编译由引擎自带编译器完成（Windows 构建链接 shaderc）；编译器缺失或失败时热重载会回退到
+已提交的 `shaders/preview.frag.spv`，示例照常运行，只是保存 `.frag` 不会立刻生效。
 直接编辑 `main()` 中的配色、`bands` 频率或 `grid` 阈值即可立刻看到差别。
 
 ## 操作
