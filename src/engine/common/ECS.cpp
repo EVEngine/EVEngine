@@ -1570,6 +1570,22 @@ std::vector<ScriptComponentRecord> scriptComponentRecords() {
     return out;
 }
 
+Result<ScriptComponentDeclaredSchema> scriptComponentDeclaredSchema(const std::string& name, SchemaVersion version) {
+    const auto& current = currentScriptComponents();
+    const auto  found   = current.find(ScriptComponentKey{name, version.value()});
+    if (found == current.end())
+        return Result<ScriptComponentDeclaredSchema>::failure(Diagnostic::error(
+            DiagnosticCode::NotFound, "script component is not registered in this VM", name, {}, "ecs.component"));
+
+    ScriptComponentDeclaredSchema out;
+    out.name       = found->first.first;
+    out.version    = version;
+    out.generation = found->second.generation;
+    out.fields     = found->second.fields;
+    out.defaults   = found->second.defaults;
+    return Result<ScriptComponentDeclaredSchema>::success(std::move(out));
+}
+
 void exposeECS(ssq::Table& table) {
     table.set("Number", std::string("number"));
     table.set("Boolean", std::string("boolean"));

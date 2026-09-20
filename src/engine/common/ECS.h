@@ -88,6 +88,40 @@ struct ScriptComponentRecord {
 [[nodiscard]] std::vector<ScriptComponentRecord> scriptComponentRecords();
 
 /**
+ * @brief 一条已登记组件的**声明 schema**：字段名与它们的声明默认值。
+ *
+ * 与 `ScriptComponentRecord` 的区别是"带值"：记录只有字段名（供身份与迁移用），而想按 schema
+ * 读回默认值的消费者（编辑器的"重置为默认"、工具的字段类型推断）需要声明时写下的那个值。
+ *
+ * @remarks 按值返回而不是指向注册表内部的指针：注册表会在登记/热重载时被改写，而这份拷贝
+ *          可以安全地跨调用保留（`findScriptComponent` 的返回指针只在下一次调用前有效）。
+ */
+struct ScriptComponentDeclaredSchema {
+    /** @brief 组件名。 */
+    std::string name;
+    /** @brief 组件版本。 */
+    SchemaVersion version;
+    /** @brief 注册表里的代际（同名同版本每次重新登记 +1）。 */
+    Generation generation;
+    /** @brief 声明顺序的字段名（基类字段在前）。 */
+    std::vector<std::string> fields;
+    /** @brief 与 `fields` 同序、同长的声明默认值（字段被摘槽位之前抄下来的那份）。 */
+    std::vector<Value> defaults;
+};
+
+/**
+ * @brief 读一条已登记组件的声明 schema（字段名 + 声明默认值）。
+ *
+ * @param name 组件名；@param version 组件版本。
+ * @return 该代的声明 schema，或 `NotFound`（这个 VM 里没有登记过这个名字+版本，或该代已退役）。
+ * @remarks 这是"默认值属于 schema"的唯一出口：字段槽位在登记时已被摘掉，类对象上再也读不回
+ *          声明值，所以默认值只能从这里取。**不**读实例、不读引擎侧存储。
+ * @cost 一次 map 查找 + 一次字段/默认值拷贝；给编辑器与工具用，不在逐帧路径上。
+ */
+[[nodiscard]] EVENGINE_API Result<ScriptComponentDeclaredSchema> scriptComponentDeclaredSchema(const std::string& name,
+                                                                                               SchemaVersion version);
+
+/**
  * @brief 读一个脚本组件实例的字段，**不关心这个字段存在哪**。
  *
  * 登记过的组件（`eve.component(name, version, cls)`）的字段在引擎侧存储里，没登记的在实例

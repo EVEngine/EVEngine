@@ -257,6 +257,7 @@ Result<std::vector<ScriptComponentInstanceState>> scriptComponentInstancesOf(con
     out.reserve(identities.size());
     for (const auto& [name, version] : identities) {
         ScriptComponentInstanceState state;
+        state.entityId                      = entityId;
         state.name                          = name;
         state.version                       = version;
         const ScriptComponentRecord* record = findScriptComponent(name, version);

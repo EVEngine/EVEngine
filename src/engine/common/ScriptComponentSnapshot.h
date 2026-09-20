@@ -36,6 +36,13 @@ inline constexpr const char* kScriptComponentSnapshotType = "eve.script-componen
  *          版本，引擎工具无从寻址（§9.62.1 的成本策略）。
  */
 struct ScriptComponentInstanceState {
+    /**
+     * @brief 脚本 VM 内的实体 id（实例上的 `_eid`）。
+     *
+     * 这是引擎侧存储的键的第一段，因此也是"按状态找到那份数据"的唯一途径：编辑器要写回字段
+     * 必须先有它（`ScriptComponentStoreKey` 就是 (实体, 组件名, 版本)）。
+     */
+    std::uint64_t entityId = 0;
     /** @brief 组件名（脚本登记时给的）。 */
     std::string name;
     /** @brief 组件版本。 */
