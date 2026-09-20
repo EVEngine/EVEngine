@@ -69,6 +69,31 @@ struct ScriptComponentStoreKey {
                                                    Value value);
 
 /**
+ * @brief 存储里的一条数据：键 + 一份字段对象。
+ * @remarks 存在的意义是**快照/诊断**要能整体枚举存储；日常读写请用下面按键的函数。
+ */
+struct ScriptComponentStoreEntry {
+    ScriptComponentStoreKey key;
+    /** @brief 字段名 → 值（必须是 Object）。 */
+    Value values;
+};
+
+/**
+ * @brief 列出存储里的全部条目，按 (实体, 组件名, 版本) 升序。
+ * @return 条目的拷贝；顺序由 `ScriptComponentStoreKey::operator<` 决定，因此跨进程稳定。
+ * @cost 一次全量深拷贝；只给快照/编辑器/诊断用，不在热路径上。
+ */
+[[nodiscard]] std::vector<ScriptComponentStoreEntry> scriptComponentStoreEntries();
+
+/**
+ * @brief 用给定条目**整体替换**存储（恢复快照用）。
+ *
+ * @param entries 新内容；调用方负责先校验完（未知组件/未知字段/重复键），因为本函数只做替换。
+ * @remarks 全有或全无：先把条目插进一张临时表，再一次性换掉，恢复失败不会留下半套数据。
+ */
+void replaceScriptComponentValues(std::vector<ScriptComponentStoreEntry> entries);
+
+/**
  * @brief 把某个组件（名字 + 版本）在**所有实体**上的数据重建到新 schema 上（热重载换代）。
  *
  * 两代都有的字段**保留旧值**；新代新增的字段取 `defaults` 里对应的声明默认值；旧代被删掉的

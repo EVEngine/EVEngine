@@ -1,10 +1,14 @@
 #include "ScriptTest.h"
 
 #include "common/ECS.h"
+#include "common/ScriptComponentSnapshot.h"
 #include "common/ScriptComponentStore.h"
 
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
+
+#include <cstdint>
+#include <string_view>
 
 static const char* kScriptEcsContent = R"SQ(
 function testEcsReady() {
@@ -1253,4 +1257,117 @@ TEST_CASE_FIXTURE(HotReloadEcsTest, "ScriptECS.hotReloadMigrationHandsTheNewClas
     REQUIRE_EQ(eve::scriptComponentField(key0, "x").value().asDouble(), 5.0);
     REQUIRE_EQ(eve::scriptComponentField(key1, "x").value().asDouble(), 6.0);
     REQUIRE_EQ(eve::scriptComponentField(key0, "y").value().asDouble(), 2.0);
+}
+
+// ---------------------------------------------------------------------------
+// 脚本组件数据的持久化（实施顺序第 4 步 / J-3 的存档通路）
+// ---------------------------------------------------------------------------
+
+namespace {
+
+eve::PersistentId scriptSnapshotId() {
+    const auto parsed = eve::PersistentId::parse("22222222-2222-7222-8222-222222222222");
+    return parsed ? *parsed : eve::PersistentId();
+}
+
+/** 测试用的注入式摘要：只要求确定性，不声称任何强度（与其它快照用例同一套写法）。 */
+eve::SnapshotHashProvider scriptSnapshotHash() {
+    return [](std::string_view input) -> eve::Result<eve::ContentId> {
+        eve::ContentId::Bytes bytes{};
+        std::uint8_t          value = 17;
+        for (std::size_t index = 0; index < bytes.size(); ++index) {
+            for (const unsigned char byte : input) value = static_cast<std::uint8_t>(value * 31u + byte);
+            bytes[index] = static_cast<std::uint8_t>(value + index);
+        }
+        return eve::Result<eve::ContentId>::success(eve::ContentId(bytes));
+    };
+}
+
+/** 手搓一条 payload 条目（拒绝类用例要构造出"不该被接受"的载荷）。 */
+eve::Value snapshotEntry(std::string entity, std::string name, std::int64_t version, eve::Value::Object fields) {
+    return eve::Value::object({{"entity", eve::Value::string(std::move(entity))},
+                               {"name", eve::Value::string(std::move(name))},
+                               {"version", eve::Value::integer(version)},
+                               {"fields", eve::Value::object(std::move(fields))}});
+}
+
+eve::Value snapshotPayload(eve::Value entry) {
+    return eve::Value::object({{"components", eve::Value::array({std::move(entry)})}});
+}
+
+}  // namespace
+
+TEST_CASE_FIXTURE(ComponentStoreTest, "ScriptECS.snapshotRoundTripsEngineSideComponentValues") {
+    REQUIRE(callScript("makeProbe"));
+    REQUIRE(callScript("writeProbeX"));
+
+    const auto                         entityId = static_cast<std::uint64_t>(vm.find("probeId").toInt());
+    const eve::ScriptComponentStoreKey key{entityId, "Position", eve::SchemaVersion(1)};
+
+    const auto hash  = scriptSnapshotHash();
+    const auto id    = scriptSnapshotId();
+    auto       first = eve::serializeScriptComponentSnapshot(id, eve::Revision(3), eve::SimulationTick(5), hash);
+    REQUIRE(first.ok());
+
+    // 清空再恢复：数据必须原样回来——这就是"存档/重放读得到脚本组件"。
+    eve::clearScriptComponentStore();
+    REQUIRE(eve::findScriptComponentValues(key) == nullptr);
+
+    REQUIRE(eve::restoreScriptComponentSnapshotJson(first.value(), hash).ok());
+    REQUIRE_EQ(eve::scriptComponentField(key, "x").value().asDouble(), 42.0);
+    REQUIRE_EQ(eve::scriptComponentField(key, "y").value().asDouble(), 43.0);
+    // 脚本侧读到的也是恢复后的值：两边是同一份数据，不需要额外同步。
+    REQUIRE(callScript("readProbeX"));
+    REQUIRE_EQ(vm.find("probeX").toFloat(), 42.0);
+
+    // 确定性：同一份状态再采一次，序列化逐字节相同（哈希输入不含墙钟，条目按 (实体, 名字, 版本) 升序）。
+    auto second = eve::serializeScriptComponentSnapshot(id, eve::Revision(3), eve::SimulationTick(5), hash);
+    REQUIRE(second.ok());
+    REQUIRE_EQ(second.value(), first.value());
+}
+
+TEST_CASE_FIXTURE(ComponentStoreTest, "ScriptECS.snapshotRejectsUnknownComponentsFieldsAndTamperedPayloads") {
+    REQUIRE(callScript("makeProbe"));
+
+    const auto                         entityId = static_cast<std::uint64_t>(vm.find("probeId").toInt());
+    const eve::ScriptComponentStoreKey key{entityId, "Position", eve::SchemaVersion(1)};
+    REQUIRE_EQ(eve::scriptComponentField(key, "x").value().asDouble(), 1.5);
+
+    const auto hash = scriptSnapshotHash();
+    const auto id   = scriptSnapshotId();
+    const auto seal = [&](eve::Value payload) {
+        auto envelope = eve::makeSnapshotEnvelope(eve::kScriptComponentSnapshotType,
+                                                  eve::scriptComponentSnapshotSchema(), eve::SchemaVersion(1), id,
+                                                  eve::Revision(1), eve::SimulationTick(1), std::move(payload), hash);
+        REQUIRE(envelope.ok());
+        return std::move(envelope).takeValue();
+    };
+    const auto stillOriginal = [&]() { return eve::scriptComponentField(key, "x").value().asDouble() == 1.5; };
+
+    // 1) 未知组件：这份数据描述的东西这个版本读不出来 → 明确拒绝（不是静默收下）。
+    auto unknownComponent = seal(snapshotPayload(
+        snapshotEntry(std::to_string(entityId), "NoSuchComponent", 1, {{"x", eve::Value::number(9.0)}})));
+    REQUIRE(!eve::restoreScriptComponents(unknownComponent, hash).ok());
+    REQUIRE(stillOriginal());
+
+    // 2) schema 之外的字段：同样拒绝——否则存储里会出现没人声明的字段，序列化/编辑器都会看到它。
+    auto unknownField = seal(
+        snapshotPayload(snapshotEntry(std::to_string(entityId), "Position", 1,
+                                      {{"x", eve::Value::number(9.0)}, {"notDeclared", eve::Value::number(1.0)}})));
+    REQUIRE(!eve::restoreScriptComponents(unknownField, hash).ok());
+    REQUIRE(stillOriginal());
+
+    // 3) 被改过的载荷：哈希对不上，拒绝且不改动现有数据。
+    auto tampered    = seal(snapshotPayload(snapshotEntry(
+        std::to_string(entityId), "Position", 1, {{"x", eve::Value::number(9.0)}, {"y", eve::Value::number(9.0)}})));
+    tampered.payload = snapshotPayload(snapshotEntry(
+        std::to_string(entityId), "Position", 1, {{"x", eve::Value::number(123.0)}, {"y", eve::Value::number(9.0)}}));
+    REQUIRE(!eve::restoreScriptComponents(tampered, hash).ok());
+    REQUIRE(stillOriginal());
+
+    // 4) 正例对照：同一套构造、没被改过、字段合法 → 收下。
+    auto accepted = seal(snapshotPayload(snapshotEntry(
+        std::to_string(entityId), "Position", 1, {{"x", eve::Value::number(9.0)}, {"y", eve::Value::number(9.0)}})));
+    REQUIRE(eve::restoreScriptComponents(accepted, hash).ok());
+    REQUIRE_EQ(eve::scriptComponentField(key, "x").value().asDouble(), 9.0);
 }

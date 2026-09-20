@@ -61,6 +61,20 @@ Result<void> setScriptComponentField(const ScriptComponentStoreKey& key, const s
     return Result<void>::success(Status::success(StatusCode::Applied));
 }
 
+std::vector<ScriptComponentStoreEntry> scriptComponentStoreEntries() {
+    const Store&                           store = scriptComponentStore();
+    std::vector<ScriptComponentStoreEntry> out;
+    out.reserve(store.size());
+    for (const auto& [key, values] : store) out.push_back(ScriptComponentStoreEntry{key, values});
+    return out;
+}
+
+void replaceScriptComponentValues(std::vector<ScriptComponentStoreEntry> entries) {
+    Store replacement;
+    for (auto& entry : entries) replacement[entry.key] = std::move(entry.values);
+    scriptComponentStore() = std::move(replacement);
+}
+
 void reconcileScriptComponentValues(const std::string& name, SchemaVersion version,
                                     const std::vector<std::string>& fields, const std::vector<Value>& defaults) {
     Store& store = scriptComponentStore();
