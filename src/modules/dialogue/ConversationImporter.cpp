@@ -216,13 +216,13 @@ bool buildAsset(const std::vector<Passage>& passages, const std::string& path, s
         }))
         return false;
     assets.push_back(std::move(asset));
-    return lintConversations(assets, path, diagnostics);
+    return lintConversations(assets, path, diagnostics).ok();
 }
 
 }  // namespace
 
-bool importYarnConversation(const std::string& source, const std::string& path, std::vector<ConversationAsset>& assets,
-                            std::vector<ConversationDiagnostic>& diagnostics) {
+eve::Result<std::vector<ConversationAsset>> importYarnConversation(
+    const std::string& source, const std::string& path, std::vector<ConversationDiagnostic>& diagnostics) {
     std::vector<Passage> passages;
     Passage              current;
     bool                 inBody = false;
@@ -244,11 +244,17 @@ bool importYarnConversation(const std::string& source, const std::string& path, 
             current.body.emplace_back(number, raw);
     }
     if (!current.title.empty()) passages.push_back(std::move(current));
-    return buildAsset(passages, path, assets, diagnostics);
+    std::vector<ConversationAsset> assets;
+    if (!buildAsset(passages, path, assets, diagnostics)) {
+        const std::string message = diagnostics.empty() ? "Yarn import failed" : diagnostics.front().message;
+        return eve::Result<std::vector<ConversationAsset>>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::ParseError, message, path, {}, "dialogue.import.yarn"));
+    }
+    return eve::Result<std::vector<ConversationAsset>>::success(std::move(assets));
 }
 
-bool importTweeConversation(const std::string& source, const std::string& path, std::vector<ConversationAsset>& assets,
-                            std::vector<ConversationDiagnostic>& diagnostics) {
+eve::Result<std::vector<ConversationAsset>> importTweeConversation(
+    const std::string& source, const std::string& path, std::vector<ConversationDiagnostic>& diagnostics) {
     std::vector<Passage> passages;
     Passage              current;
     for (const auto& [number, raw] : splitLines(source)) {
@@ -269,7 +275,13 @@ bool importTweeConversation(const std::string& source, const std::string& path, 
                                       return passage.title == "StoryTitle" || passage.title == "StoryData";
                                   }),
                    passages.end());
-    return buildAsset(passages, path, assets, diagnostics);
+    std::vector<ConversationAsset> assets;
+    if (!buildAsset(passages, path, assets, diagnostics)) {
+        const std::string message = diagnostics.empty() ? "Twee import failed" : diagnostics.front().message;
+        return eve::Result<std::vector<ConversationAsset>>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::ParseError, message, path, {}, "dialogue.import.twee"));
+    }
+    return eve::Result<std::vector<ConversationAsset>>::success(std::move(assets));
 }
 
 }  // namespace eve::dialogue

@@ -577,7 +577,11 @@ bool Dialogue::parseLineData(const std::string &poolId, const DataValue &v, int 
     return true;
 }
 
-int Dialogue::loadPoolsFromData(const DataValue &root) {
+int Dialogue::loadPoolsFromData(const DataValue &root) { return applyPoolsFromData(root, false); }
+
+int Dialogue::replacePoolsFromData(const DataValue& root) { return applyPoolsFromData(root, true); }
+
+int Dialogue::applyPoolsFromData(const DataValue &root, bool replace) {
     lastPoolsError_.clear();
     if (root.kind() != DataValue::Kind::Object) {
         lastPoolsError_ = "pools root must be an object";
@@ -590,13 +594,14 @@ int Dialogue::loadPoolsFromData(const DataValue &root) {
     }
 
     int registered = 0;
+    std::vector<Pool> candidate = replace ? std::vector<Pool>{} : pools_;
     const auto *poolFields = pools->getIf<DataValue::Object>();
     for (const auto &kv : *poolFields) {
         Pool pool;
         pool.id = kv.first;
         if (kv.second.kind() != DataValue::Kind::Object) {
             lastPoolsError_ = "pool '" + kv.first + "': expected object";
-            continue;
+            return 0;
         }
         if (const DataValue *nr = kv.second.find("noRepeat")) {
             if (nr->kind() == DataValue::Kind::Int)
@@ -608,7 +613,7 @@ int Dialogue::loadPoolsFromData(const DataValue &root) {
         const DataValue *lines = kv.second.find("lines");
         if (!lines || lines->kind() != DataValue::Kind::Array) {
             lastPoolsError_ = "pool '" + kv.first + "': missing lines array";
-            continue;
+            return 0;
         }
         int lineIndex = 1;
         for (size_t i = 0; i < lines->arraySize(); ++i) {
@@ -616,48 +621,20 @@ int Dialogue::loadPoolsFromData(const DataValue &root) {
             Line line;
             std::string error;
             if (!parseLineData(pool.id, lv, lineIndex, line, error)) {
-                if (lastPoolsError_.empty()) lastPoolsError_ = error;
-                continue;
+                lastPoolsError_ = error;
+                return 0;
             }
             pool.lines.push_back(std::move(line));
             ++lineIndex;
         }
-        if (Pool *existing = findPool(pool.id)) *existing = std::move(pool);
-        else pools_.push_back(std::move(pool));
+        auto existing = std::find_if(candidate.begin(), candidate.end(),
+                                     [&](const Pool& item) { return item.id == pool.id; });
+        if (existing != candidate.end()) *existing = std::move(pool);
+        else candidate.push_back(std::move(pool));
         ++registered;
     }
+    pools_ = std::move(candidate);
     return registered;
-}
-
-int Dialogue::loadPoolsFromDnut(const std::string &source, const std::string &path) {
-    DataValue root;
-    std::string error;
-    if (!parseDnut(source, path.empty() ? "<dnut>" : path, root, error)) {
-        lastPoolsError_ = error;
-        return 0;
-    }
-    return loadPoolsFromData(root);
-}
-
-int Dialogue::loadPoolsFromDnutFile(const std::string &path) {
-    auto *fs = eve::ModuleManager::getInstance<eve::filesystem::Filesystem>("Filesystem");
-    if (!fs) fs = eve::filesystem::Filesystem::create();
-    eve::filesystem::FileData *fd = nullptr;
-    try {
-        fd = fs->read(path);
-    } catch (...) {
-        delete fd;
-        lastPoolsError_ = path + ": 读取失败";
-        return 0;
-    }
-    if (fd == nullptr || fd->getData() == nullptr || fd->getSize() == 0) {
-        delete fd;
-        lastPoolsError_ = path + ": 读取失败";
-        return 0;
-    }
-    const std::string text(static_cast<const char *>(fd->getData()), fd->getSize());
-    delete fd;
-    return loadPoolsFromDnut(text, path);
 }
 
 void Dialogue::clearPools() { pools_.clear(); }
@@ -1425,9 +1402,6 @@ void Dialogue::expose(ssq::Class &cls) {
     cls.addFunc("unregisterCondition", &Dialogue::unregisterCondition);
     cls.addFunc("evalCondition", &Dialogue::evalCondition);
 
-    cls.addFunc("loadPoolsFromTable", &Dialogue::loadPoolsFromTable);
-    cls.addFunc("loadPoolsFromDnut", &Dialogue::loadPoolsFromDnut);
-    cls.addFunc("loadPoolsFromDnutFile", &Dialogue::loadPoolsFromDnutFile);
     cls.addFunc("clearPools", &Dialogue::clearPools);
     cls.addFunc("getPoolCount", &Dialogue::getPoolCount);
     cls.addFunc("getPoolId", &Dialogue::getPoolId);
