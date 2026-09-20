@@ -980,25 +980,24 @@ TEST_CASE("hexmap.sphereMesh.facesPointAwayFromTheCentre") {
 }
 
 TEST_CASE("hexmap.sphereMesh.theShippedPlanetIsClosed") {
-    // `examples/hex-planet` fills its cells with `hexmap.generateSphere(gfx, seed, 45, 0)` at its
-    // default seed, and `[` / `]` walk the subdivision at runtime, so every level it can show is
-    // checked here. The generator is a pure function of the topology, the radius and its settings,
-    // so this is that planet cell for cell.
+    // `examples/hex-planet` fills its cells with `hexmap.generateSphere(gfx, seed, 45, 0)`, and it
+    // lets the seed and the subdivision change at run time - `R` and `[` / `]`. The generator is a
+    // pure function of the topology, the radius and its settings, so each case here is one of those
+    // planets cell for cell.
     //
-    // Every other case in this file uses `scatterElevation`, which raises isolated cells to 1 and
-    // 3 on a 0 floor. The generator produces the engine's whole range - `kMinElevation` is -4 and
+    // Every other case in this file uses `scatterElevation`, which raises isolated cells to 1 and 3
+    // on a 0 floor. The generator uses the engine's whole range - `kMinElevation` is -4 and
     // `kMaxElevation` is 8 - with large same-elevation regions and gentle transitions, so its
-    // corners reach elevation spans and drops that pattern never produces. A defect that only
-    // appears on a real planet was invisible to the suite for exactly that reason.
+    // corners reach elevation spans and drops that pattern never produces. Two separate defects
+    // were invisible to the suite for exactly that reason, so several seeds are swept where the
+    // maps are small, and the example's own seed at every level it can display.
     constexpr std::uint32_t kExampleSeed = 20260918u;
 
-    std::size_t worstDoubled  = 0;
-    std::size_t worstBoundary = 0;
-    for (const std::int32_t subdivision : {1, 2, 3, 4}) {
-        HexSphereMap map = makeMap(subdivision, 100.f, kExampleSeed);
+    const auto censusOf = [&](std::int32_t subdivision, std::uint32_t seed) {
+        HexSphereMap map = makeMap(subdivision, 100.f, seed);
 
         HexSphereGeneratorSettings settings{};
-        settings.seed           = kExampleSeed;
+        settings.seed           = seed;
         settings.landPercentage = 45;
         settings.waterLevel     = 0;
         REQUIRE(generateSphereMap(map, settings).ok());
@@ -1009,14 +1008,31 @@ TEST_CASE("hexmap.sphereMesh.theShippedPlanetIsClosed") {
 
         const OrientationReport orientation = analyseOrientation(mesh);
         const WeldReport        weld        = analyseWeld(mesh);
-        std::printf("[planet] subdiv %d triangles %zu doubled %zu boundary %zu | weld boundary %zu nonManifold %zu "
-                    "duplicate %zu\n",
-                    subdivision, orientation.triangles, orientation.doubledEdges, orientation.boundaryEdges,
+        std::printf("[planet] subdiv %d seed %u triangles %zu doubled %zu boundary %zu | weld boundary %zu "
+                    "nonManifold %zu duplicate %zu\n",
+                    subdivision, seed, orientation.triangles, orientation.doubledEdges, orientation.boundaryEdges,
                     weld.boundaryEdges, weld.nonManifold, weld.duplicateTriangles);
-        worstDoubled  = std::max(worstDoubled, orientation.doubledEdges + orientation.boundaryEdges);
-        worstBoundary = std::max(worstBoundary, weld.boundaryEdges + weld.nonManifold + weld.duplicateTriangles);
+        return std::pair{orientation.doubledEdges + orientation.boundaryEdges,
+                         weld.boundaryEdges + weld.nonManifold + weld.duplicateTriangles};
+    };
 
+    std::size_t worstDoubled  = 0;
+    std::size_t worstBoundary = 0;
+    const auto  record        = [&](std::int32_t subdivision, std::uint32_t seed) {
+        const auto [doubled, other] = censusOf(subdivision, seed);
+        worstDoubled                = std::max(worstDoubled, doubled);
+        worstBoundary               = std::max(worstBoundary, other);
+    };
+
+    for (const std::int32_t subdivision : {1, 2}) {
+        for (const std::uint32_t seed : {kExampleSeed, kExampleSeed + 1u, kExampleSeed + 7u, 1234u, 987654u}) {
+            record(subdivision, seed);
+        }
     }
+    for (const std::int32_t subdivision : {3, 4}) {
+        record(subdivision, kExampleSeed);
+    }
+
     REQUIRE_EQ(worstDoubled, static_cast<std::size_t>(0));
     REQUIRE_EQ(worstBoundary, static_cast<std::size_t>(0));
 }
