@@ -698,6 +698,38 @@
       }
     },
     {
+      "id": "ui-photo-mode-apply-module-interface",
+      "rule": "module-interface",
+      "scope": "src/modules/ui/PcgPhotoModeApplySeam.cpp",
+      "owner": "ui",
+      "issue": "EVENGINE-ARCH-MODULE-INTERFACE",
+      "reason": "The photo-mode apply plan consumes IPhotoModeApplySink through cap::query and the new script seam answers it through cap::provide, so the same capability appears on both faces; recording them makes the next provider or consumer declare itself instead of silently displacing the single-provider slot. The scope is this one file, not src/modules/ui/**: the panel, session and value files expose different faces.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/ui/PcgPhotoModeApplyPlan.cpp",
+        "src/modules/ui/PcgPhotoModeApplySeam.cpp"
+      ],
+      "tests": [
+        "test/pcg_photo_mode_apply.cpp",
+        "scripts/tests/test_architecture_contracts.py"
+      ],
+      "provides": [
+        "IPhotoModeApplySink"
+      ],
+      "requires": [
+        "IPhotoModeApplySink"
+      ],
+      "emits": [],
+      "observes": [],
+      "binds": [
+        "eve.provider.publishFor('eve.photo-mode.apply', name, instance) -> applyPhotoModeAssignment({ field, domain, value })"
+      ],
+      "trim": {
+        "absent_profile": "not yet recorded; this entry is filled in on first touch (spec 8.3)",
+        "layer": "L3 runtime"
+      }
+    },
+    {
       "id": "vehicle-module-interface",
       "rule": "module-interface",
       "scope": "src/modules/vehicle/**",

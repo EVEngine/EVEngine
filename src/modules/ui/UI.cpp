@@ -1,28 +1,29 @@
 #include "ui/UI.h"
 #include "ui/DatabasePanel.h"
+#include "ui/EditorHostCapabilities.h"
 #include "ui/EditorShell.h"
 #include "ui/PcgColorPreviewSync.h"
 #include "ui/PcgControllerSelection.h"
 #include "ui/PcgDraggableWindow.h"
-#include "ui/PcgPhotoModeApplyPlan.h"
-#include "ui/PcgPhotoModePanels.h"
-#include "ui/PcgPhotoModeRuntimeUI.h"
-#include "ui/PcgPhotoModeValues.h"
-#include "ui/PcgPhotoModeSession.h"
-#include "ui/PcgPhotoModeRanges.h"
-#include "ui/PcgPhotoModeColorPicker.h"
-#include "ui/PcgScreenshotSavedNotice.h"
 #include "ui/PcgLoadingScreen.h"
+#include "ui/PcgPhotoModeApplyPlan.h"
+#include "ui/PcgPhotoModeApplySeam.h"
+#include "ui/PcgPhotoModeColorPicker.h"
+#include "ui/PcgPhotoModePanels.h"
+#include "ui/PcgPhotoModeRanges.h"
+#include "ui/PcgPhotoModeRuntimeUI.h"
+#include "ui/PcgPhotoModeSession.h"
+#include "ui/PcgPhotoModeValues.h"
+#include "ui/PcgScreenshotSavedNotice.h"
 #include "ui/PcgTooltip.h"
-#include "ui/EditorHostCapabilities.h"
 #include "ui/UIAutomationCapabilities.h"
 
 #include "ui/Inspector.h"
+#include "ui/ParentScaler.h"
 #include "ui/ScenePanel.h"
 #include "ui/Theme.h"
 #include "ui/UISystem.h"
 #include "ui/Widget.h"
-#include "ui/ParentScaler.h"
 
 #include "common/Module.h"
 #include "common/SquirrelBinding.h"
@@ -205,8 +206,12 @@ Module_IMPL(UI, new UI());
 UI::UI() : backend_(createImGuiBackend()) {
     registerEditorHostCapabilities();
     registerUIAutomationCapabilities();
+    declareScriptPhotoModeApplySeam();
 }
-UI::~UI() { shutdownBackend(); }
+UI::~UI() {
+    withdrawScriptPhotoModeApplySeam();
+    shutdownBackend();
+}
 
 bool UI::isBackendReady() const { return backend_ && backend_->isInitialized(); }
 
