@@ -1,6 +1,7 @@
 // KayKit interactive tactics showcase. Tactics owns turn order and board
 // occupancy; this example owns player input, presentation, hit points, skills
-// and lightweight enemy AI.
+// and lightweight enemy AI as script ECS combatants.
+dofile("ecs.nut");
 
 const BOARD_W = 12;
 const BOARD_H = 5;
@@ -11,9 +12,9 @@ const HERO_SIDE = "00000000-0000-0000-0000-000000002001";
 const ENEMY_SIDE = "00000000-0000-0000-0000-000000002002";
 
 persist battle = null;
-persist actors = [];
 persist actorById = {};
 persist tiles = [];
+persist animSys = null;
 persist camera = null;
 persist model3d = null;
 persist modelCache = {};
@@ -186,7 +187,7 @@ function boneJson(actor,pose,bone) {
 // skeleton/pose pointers across calls. Empty bone selects the full hierarchy.
 eve_mcp_skeleton_inspect <- function(actorName,boneName) {
     local found=null;
-    foreach (actor in actors) if (actor.name == actorName) { found=actor; break; }
+    foreach (actor in eve.view(Combatant)) if (actor.name == actorName) { found=actor; break; }
     if (found == null) return "{\"error\":\"actor not found\"}";
     local pose=found.player.getPose(); pose.computeWorld(found.skeleton);
     local out="{\"actor\":\""+found.name+"\",\"boneCount\":"+found.skeleton.getBoneCount()+",\"bones\":[";
@@ -272,17 +273,18 @@ function makeVisual(spec, hero) {
 
 function addActor(spec, hero) {
     local visual = makeVisual(spec, hero);
-    local actor = { id=spec.id, name=spec.name, role=spec.role, hero=hero, hp=spec.hp, maxHp=spec.hp,
-                    x=spec.x, z=spec.z, renderables=visual.renderables, skins=visual.skins,
-                    bindPose=visual.bindPose, attachments=visual.attachments, skeleton=visual.skeleton, player=visual.player,
-                    clips=visual.clips, state="idle", oneShot=0.0,
-                    visualWorldX=worldX(spec.x), visualWorldZ=worldZ(spec.z),
-                    moving=false, fromX=spec.x, fromZ=spec.z, toX=spec.x, toZ=spec.z, moveTime=0.0,
-                    movePath=null, moveIndex=0,
-                    skillCursor=0, attacks=hero ? spec.attacks : null,
-                    damage=hero ? 0 : spec.damage, range=hero ? 0 : spec.range, row=hero ? 0 : spec.row };
+    local actor = hero ? Hero.create() : Foe.create();
+    actor.id=spec.id; actor.name=spec.name; actor.role=spec.role; actor.hero=hero;
+    actor.hp=spec.hp; actor.maxHp=spec.hp; actor.x=spec.x; actor.z=spec.z;
+    actor.renderables=visual.renderables; actor.skins=visual.skins;
+    actor.bindPose=visual.bindPose; actor.attachments=visual.attachments;
+    actor.skeleton=visual.skeleton; actor.player=visual.player; actor.clips=visual.clips;
+    actor.visualWorldX=worldX(spec.x); actor.visualWorldZ=worldZ(spec.z);
+    actor.fromX=spec.x; actor.fromZ=spec.z; actor.toX=spec.x; actor.toZ=spec.z;
+    actor.attacks=hero ? spec.attacks : null;
+    actor.damage=hero ? 0 : spec.damage; actor.range=hero ? 0 : spec.range; actor.row=hero ? 0 : spec.row;
     setActorPosition(actor, spec.x, spec.z);
-    actors.push(actor); actorById[actor.id] <- actor;
+    actorById[actor.id] <- actor;
     checked(battle.addUnit(actor.id, hero ? HERO_SIDE : ENEMY_SIDE, "tactics:unit", actor.x, actor.z, 0,
                            1, hero ? HERO_MOVE_TILES*100 : 110, 1, hero ? 20 : 12), "add " + actor.name);
 }
@@ -301,7 +303,7 @@ function playState(actor, state, attackClip) {
 
 function aliveEnemies(actor) {
     local result = [];
-    foreach (other in actors) if (other.hp > 0 && other.hero != actor.hero) result.push(other);
+    foreach (other in eve.view(Combatant)) if (other.hp > 0 && other.hero != actor.hero) result.push(other);
     return result;
 }
 
@@ -314,12 +316,12 @@ function nearestEnemy(actor) {
 }
 
 function occupied(x, z) {
-    foreach (actor in actors) if (actor.hp > 0 && actor.x == x && actor.z == z) return true;
+    foreach (actor in eve.view(Combatant)) if (actor.hp > 0 && actor.x == x && actor.z == z) return true;
     return false;
 }
 
 function actorAt(x, z) {
-    foreach (actor in actors) if (actor.hp > 0 && actor.x == x && actor.z == z) return actor;
+    foreach (actor in eve.view(Combatant)) if (actor.hp > 0 && actor.x == x && actor.z == z) return actor;
     return null;
 }
 
@@ -425,7 +427,7 @@ function refreshBattleOutcome() {
     local status=battle.status();
     if (!status.ok || status.value != "ended") return;
     local heroesAlive=0, enemiesAlive=0;
-    foreach (actor in actors) if (actor.hp > 0) {
+    foreach (actor in eve.view(Combatant)) if (actor.hp > 0) {
         if (actor.hero) heroesAlive+=1; else enemiesAlive+=1;
     }
     gameOver=true;
@@ -436,11 +438,12 @@ function refreshBattleOutcome() {
 
 function resetDemo() {
     if (battle != null && !battle.isStale()) battle.release();
-    foreach (actor in actors) foreach (r in actor.renderables) r.setVisible(false);
+    foreach (actor in eve.view(Combatant)) foreach (r in actor.renderables) r.setVisible(false);
     foreach (tile in tiles) tile.renderable.setVisible(false);
     if (vfxSprite != null) vfxSprite.setVisible(false);
     if (camera != null) camera.setActive(false);
-    battle=null; actors=[]; actorById={}; tiles=[]; camera=null; anim=null;
+    destroyEcs(Combatant);
+    battle=null; actorById={}; tiles=[]; camera=null; anim=null;
     damageFont=null; vfxTexture=null; vfxQuad=null; vfxSprite=null;
     vfxTime=-1.0; floaters=[]; elapsed=0.0; battleTick=0; actionDelay=0.7;
     paused=false; failed=""; banner="The battle begins"; selectedSkill=0;
@@ -522,7 +525,7 @@ function updateHighlights() {
 }
 
 function updateActors(dt) {
-    foreach (actor in actors) {
+    foreach (actor in eve.view(Combatant)) {
         if (actor.moving) {
             actor.moveTime += dt;
             local segmentDuration=actor.movePath == null ? 0.52 : 0.22;
@@ -606,6 +609,7 @@ eve_init = function() {
     checked(battle.addEliminateObjective("kaykit:defeat-skeletons", HERO_SIDE, ENEMY_SIDE, true), "hero objective");
     checked(battle.addEliminateObjective("kaykit:defeat-adventurers", ENEMY_SIDE, HERO_SIDE, true), "enemy objective");
     checked(battle.start("initiative"), "start"); setupUi();
+    if (animSys == null) animSys = ActorAnimSystem();
     print("tactics: 4 heroes, 6 enemy roles, 12x5 board; Space pauses\n");
 };
 
@@ -613,7 +617,8 @@ eve_update = function(dt) {
     elapsed += dt;
     if (key_just_pressed("r") || key_just_pressed("R")) { resetDemo(); return; }
     if (key_just_pressed("space")) paused=!paused;
-    updateActors(dt); updateVfx(dt); refreshBattleOutcome(); handlePlayerTurn(); updateHighlights();
+    if (animSys == null) animSys = ActorAnimSystem();
+    animSys.update(dt); updateVfx(dt); refreshBattleOutcome(); handlePlayerTurn(); updateHighlights();
     if (!paused && failed == "") { actionDelay -= dt; if (actionDelay <= 0.0) { performTurn(); actionDelay=0.72; } }
 };
 
@@ -626,7 +631,7 @@ eve_render = function() {
     gfx.print("KAYKIT TACTICS  |  " + banner, 36.0, 31.0, 0.93, 0.9, 0.72, 1.0, 0.62);
     gfx.print(paused ? "PAUSED — SPACE TO RESUME" : "HERO: CLICK GREEN TO MOVE / RED TO ATTACK — 1 2 3 SKILLS", 36.0, 59.0, 0.55, 0.78, 0.96, 1.0, 0.42);
     local hy=105.0; local ey=105.0;
-    foreach (actor in actors) {
+    foreach (actor in eve.view(Combatant)) {
         local line=actor.name + " [" + actor.role + "]  " + actor.hp + "/" + actor.maxHp;
         if (actor.hero) { gfx.print(line, 26.0, hy, 0.55, 0.82, 1.0, 1.0, 0.42); hy+=23.0; }
         else { gfx.print(line, 1010.0, ey, 1.0, 0.62, 0.48, 1.0, 0.36); ey+=21.0; }

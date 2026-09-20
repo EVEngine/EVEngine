@@ -8,6 +8,8 @@
   forward axis is normalized to the demo's `+X` movement/aiming convention.
 - Six autonomous units, selection/move orders, synchronized volleys, animated
   recoil, 3D shells, muzzle/impact/smoke particles, damage tint and wreck fall.
+  Tanks, shells, and command posts are script ECS entities (`Tank` / `Shell` /
+  `CommandPost`) updated by `eve.System` in `ecs.nut`.
 - A 68 x 48 battlefield (twice the original width and length), half-scale
   vehicles, and brighter ambient/directional lighting for RTS readability.
 - Kenney modular command posts with piece-wise animated collapse.

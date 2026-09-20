@@ -76,8 +76,8 @@ Windows 本地直接跑同样的命令即可：脚本自身按 UTF-8 写 stdout/
 | [iso-grid-walk](iso-grid-walk/README.md) | 独立 2.5D PNG 经可插拔 pipeline 生成 TileSet，方格移动与 A* |
 | [hd2d-riverside](hd2d-riverside/README.md) | HD2D 河畔验收：真实像素素材、正交地图与 16 种地面图块 |
 | [dynamic-water-grid](dynamic-water-grid/README.md) | 双网格岸线、逐格守恒水量、等距连续水面 Shader 与素材替换契约 |
-| [metroidvania](metroidvania/README.md) | 物理驱动的横版动作游戏：连击、蹬墙跳、空中冲刺、Boss |
-| [commandery-rts](commandery-rts/README.md) | 将领行政 RTS：框选/编队移动、占领经济点、生产、军饷与叛乱 |
+| [metroidvania](metroidvania/README.md) | 物理驱动的横版动作游戏：连击、蹬墙跳、空中冲刺、Boss；脚本 ECS 实体 + System |
+| [commandery-rts](commandery-rts/README.md) | 将领行政 RTS：框选/编队移动、占领经济点、生产、军饷与叛乱；单位/炮弹为脚本 ECS |
 | [rts-sandbox](rts-sandbox/README.md) | RTS 端到端 Squirrel 组合剖面：命令、生产、编队与结算 |
 | [hex-levels](hex-levels/README.md) | 六边形引擎功能测试关卡：寻路 / FOV / 光照 / 掉落 / WFC（31 关） |
 | [map-fog](map-fog/README.md) | 大地图迷雾：`MapFog` 双层云 + mask（解锁 / 选中 / 溶解） |
@@ -105,8 +105,8 @@ Windows 本地直接跑同样的命令即可：脚本自身按 UTF-8 写 stdout/
 | [softbody3d](softbody3d/README.md) | 3D 软体：Verlet 布料 + 体积体与静态 Box3D 碰撞 |
 | [lattice-deform](lattice-deform/README.md) | 3D 晶格缩放变形：squash & stretch、局部鼓起、波浪 |
 | [sprite-stack](sprite-stack/README.md) | 伪 3D：把 3D 模型切成多层 RGBA 叠片渲染 |
-| [armored-command-3d](armored-command-3d/README.md) | 3D RTS 展示：骨骼坦克、编队命令、齐射与指挥所坍塌 |
-| [tactics](tactics/README.md) | 固定镜头 3D 战棋：4 名冒险者对战 6 种骷髅敌人（12×5 方格） |
+| [armored-command-3d](armored-command-3d/README.md) | 3D RTS 展示：骨骼坦克、编队命令、齐射与指挥所坍塌；Tank/Shell ECS |
+| [tactics](tactics/README.md) | 固定镜头 3D 战棋：4 名冒险者对战 6 种骷髅敌人（12×5 方格）；Hero/Foe ECS |
 | [venom-transform](venom-transform/README.md) | 毒液变装效果近似：形变与材质过渡 |
 | [anime-character-lab](anime-character-lab/README.md) | anime 风格化着色检查：`stylize.newMeshShader(gfx, "anime")` |
 | [avatar-document-editor](avatar-document-editor/README.md) | Azure / Avatar 工作区：可编辑分层母稿 + 真实 `eve.Avatar` 图层渲染 |

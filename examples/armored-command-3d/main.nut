@@ -1,15 +1,17 @@
 // Armored Command 3D: imported skeletal vehicles + combat/destruction/VFX.
+dofile("ecs.nut");
 local models = null;
 local animation = null;
 local particleSystem = null;
 local cam = null;
 local assets = [];
-local units = [];
-local shells = [];
+local blueTanks = [];
 local vfxBursts = [];
-local buildings = [];
 local scenery = [];
 local sceneryMaterials = [];
+local tankSys = null;
+local shellSys = null;
+local buildingSys = null;
 persist selected = 0
 persist prevRight = false
 persist hudBuilt = false
@@ -95,10 +97,11 @@ function createTank(type, team, x, z, yaw) {
 
     local player = animation.newPlayer(a.skeleton);
     player.play(a.clips[1]); player.setLoop(true);
-    return { type=type, team=team, x=x, z=z, yaw=yaw, tx=x, tz=z,
-             hp=100.0, dead=false, selected=false, death=0.0,
-             recoil=0.0, hit=0.0, cooldown=0.5 + type * 0.2, clip=1,
-             parts=renderables, skins=skins, gun=gun, player=player };
+    local u = Tank.create();
+    u.type=type; u.team=team; u.x=x; u.z=z; u.yaw=yaw; u.tx=x; u.tz=z;
+    u.cooldown=0.5 + type * 0.2;
+    u.parts=renderables; u.skins=skins; u.gun=gun; u.player=player;
+    return u;
 }
 
 function playTankClip(u, index) {
@@ -154,29 +157,31 @@ function burst(x, z, smoke=false) {
     vfxBursts.push({ emitter=e, life=smoke ? 2.0 : 0.65 });
 }
 
-function nearestEnemy(index) {
-    local u = units[index]; local best = -1; local bestD = 999999.0;
-    for (local i = 0; i < units.len(); ++i) {
-        local v = units[i]; if (v.team == u.team || v.dead) continue;
+function nearestEnemy(u) {
+    local best = null; local bestD = 999999.0;
+    foreach (v in eve.view(Tank)) {
+        if (v.team == u.team || v.dead) continue;
         local dx=v.x-u.x, dz=v.z-u.z, d=dx*dx+dz*dz;
-        if (d < bestD) { bestD=d; best=i; }
+        if (d < bestD) { bestD=d; best=v; }
     }
     return best;
 }
 
 function fireShell(u, target) {
-    local v=units[target], dx=v.x-u.x, dz=v.z-u.z, d=len2(dx,dz);
+    if (target == null) return;
+    local dx=target.x-u.x, dz=target.z-u.z, d=len2(dx,dz);
     if (d < 0.01) return;
     dx/=d; dz/=d;
     local e=eve.Renderable3D(); e.setMesh(gfx.newMeshSphere(10,6));
     e.setTint(1.0,0.78,0.15,1.0); e.setScale(0.06,0.06,0.2);
     local x=u.x+dx*1.1, z=u.z+dz*1.1; e.setPosition(x,0.56,z);
-    shells.push({ ent=e,x=x,z=z,dx=dx,dz=dz,target=target,life=d/34.0 });
+    local s=Shell.create();
+    s.ent=e; s.x=x; s.z=z; s.dx=dx; s.dz=dz; s.target=target; s.life=d/34.0;
     u.recoil=0.18; burst(x,z,false);
 }
 
-function damageUnit(index, amount) {
-    local u=units[index]; if (u.dead) return;
+function damageUnit(u, amount) {
+    if (u == null || u.dead) return;
     u.hp-=amount; u.hit=0.22; burst(u.x,u.z,false);
     if (u.hp<=0.0) {
         u.hp=0.0; u.dead=true; u.death=0.0; burst(u.x,u.z,false); burst(u.x,u.z,true);
@@ -185,23 +190,21 @@ function damageUnit(index, amount) {
 }
 
 function updateUnits(dt) {
-    for (local i=0;i<units.len();++i) {
-        local u=units[i];
+    foreach (u in eve.view(Tank)) {
         if (u.recoil>0) u.recoil-=dt; if (u.hit>0) u.hit-=dt;
         if (u.dead) { u.death+=dt; updateTankMesh(u,dt); continue; }
-        local target=nearestEnemy(i); if (target<0) { updateTankMesh(u,dt); continue; }
-        local v=units[target];
+        local target=nearestEnemy(u); if (target==null) { updateTankMesh(u,dt); continue; }
         local useOrder=u.team==0 && u.selected && len2(u.tx-u.x,u.tz-u.z)>0.7;
-        local gx=useOrder?u.tx:v.x, gz=useOrder?u.tz:v.z;
+        local gx=useOrder?u.tx:target.x, gz=useOrder?u.tz:target.z;
         local desired=atan2(gz-u.z,gx-u.x), delta=wrapAngle(desired-u.yaw);
         u.yaw+=clampf(delta,-1.35*dt,1.35*dt);
-        local range=len2(v.x-u.x,v.z-u.z);
+        local range=len2(target.x-u.x,target.z-u.z);
         if (useOrder || range>21.0) {
             local speed=u.team==0?1.44:1.28; u.x+=cos(u.yaw)*speed*dt; u.z+=sin(u.yaw)*speed*dt;
         }
         playTankClip(u,abs(delta)>0.42?(delta<0?2:3):1);
         u.cooldown-=dt;
-        local aim=abs(wrapAngle(atan2(v.z-u.z,v.x-u.x)-u.yaw));
+        local aim=abs(wrapAngle(atan2(target.z-u.z,target.x-u.x)-u.yaw));
         if (range<34.0 && aim<0.2 && u.cooldown<=0) {
             fireShell(u,target); u.cooldown=2.3+u.type*0.16;
         }
@@ -210,10 +213,11 @@ function updateUnits(dt) {
 }
 
 function updateShells(dt) {
-    for (local i=shells.len()-1;i>=0;--i) {
-        local s=shells[i]; s.life-=dt; s.x+=s.dx*34.0*dt; s.z+=s.dz*34.0*dt;
+    local snap=[]; foreach(s in eve.view(Shell)) snap.push(s);
+    foreach (s in snap) {
+        s.life-=dt; s.x+=s.dx*34.0*dt; s.z+=s.dz*34.0*dt;
         s.ent.setPosition(s.x,0.56+sin(s.life*22.0)*0.02,s.z);
-        if (s.life<=0) { s.ent.setVisible(false); damageUnit(s.target,10+(rand()%5)); shells.remove(i); }
+        if (s.life<=0) { s.ent.setVisible(false); damageUnit(s.target,10+(rand()%5)); s.destroy(); }
     }
 }
 
@@ -228,13 +232,15 @@ function createBuilding(x,z,team) {
         e.setScale(1.15,1.15,1.15); e.setTint(team==0?0.58:0.8,team==0?0.76:0.44,team==0?0.9:0.32,1.0);
         pieces.push({ent=e,ox=off[i][0],oy=off[i][1],oz=off[i][2],vx=(i-1.5)*0.7,vy=1.6+i*0.3,vz=(i%2==0?0.6:-0.6)});
     }
-    return {x=x,z=z,team=team,hp=160.0,dead=false,time=0.0,pieces=pieces};
+    local post = CommandPost.create();
+    post.x=x; post.z=z; post.team=team; post.pieces=pieces;
+    return post;
 }
 
 function updateBuildings(dt) {
-    foreach(b in buildings) {
+    foreach(b in eve.view(CommandPost)) {
         if (!b.dead) {
-            foreach(u in units) if(u.team!=b.team && !u.dead && len2(u.x-b.x,u.z-b.z)<12.0) b.hp-=10.0*dt;
+            foreach(u in eve.view(Tank)) if(u.team!=b.team && !u.dead && len2(u.x-b.x,u.z-b.z)<12.0) b.hp-=10.0*dt;
             if(b.hp<=0) { b.dead=true; burst(b.x,b.z,false); burst(b.x,b.z,true); logLine((b.team==0?"BLUE":"RED")+" command post collapsed"); }
             continue;
         }
@@ -255,32 +261,34 @@ function rayGround(out) {
 }
 
 function updateInput() {
+    if (blueTanks.len() == 0) return;
+    local current = blueTanks[selected];
     local right=mouse.isDown(2);
-    if(right && !prevRight) { local hit=[0.0,0.0]; if(rayGround(hit)){units[selected].tx=hit[0];units[selected].tz=hit[1];logLine("Move order accepted");} }
+    if(right && !prevRight) { local hit=[0.0,0.0]; if(rayGround(hit)){current.tx=hit[0];current.tz=hit[1];logLine("Move order accepted");} }
     prevRight=right;
-    if(key_just_pressed("Tab")){units[selected].selected=false;selected=(selected+1)%3;units[selected].selected=true;}
-    if(key_just_pressed("Space")){for(local i=0;i<3;++i){local t=nearestEnemy(i);if(t>=0&&!units[i].dead)fireShell(units[i],t);}logLine("BLUE synchronized volley");}
+    if(key_just_pressed("Tab")){current.selected=false;selected=(selected+1)%blueTanks.len();blueTanks[selected].selected=true;}
+    if(key_just_pressed("Space")){
+        foreach (u in blueTanks) { local t=nearestEnemy(u); if(t!=null&&!u.dead)fireShell(u,t); }
+        logLine("BLUE synchronized volley");
+    }
 }
 
 function setupScene() {
     cube(0,-0.18,0,68,0.25,48,0.14,0.2,0.14); cube(0,-0.02,0,13,0.04,48,0.25,0.24,0.2);
     for(local z=-20;z<=20;z+=8){cube(-17,0.35,z,0.9,0.7,0.9,0.34,0.3,0.22);cube(17,0.35,z+2,1.1,0.7,0.8,0.3,0.28,0.22);}
-    buildings.push(createBuilding(-24,-14,0)); buildings.push(createBuilding(24,14,1));
+    createBuilding(-24,-14,0); createBuilding(24,14,1);
 }
 
 function updateHud() {
     local blue = 0;
     local red = 0;
-    foreach (u in units) {
+    foreach (u in eve.view(Tank)) {
         if (!u.dead) {
-            if (u.team == 0) {
-                blue += 1;
-            } else {
-                red += 1;
-            }
+            if (u.team == 0) blue += 1;
+            else red += 1;
         }
     }
-    ui.setText("status", "BLUE " + blue + "   RED " + red + "   shells " + shells.len() +
+    ui.setText("status", "BLUE " + blue + "   RED " + red + "   shells " + eve.view(Shell).len() +
                "   particles " + particleSystem.getLastParticleCount());
     local text = "";
     foreach (s in combatLog) text += s + "\n";
@@ -295,17 +303,25 @@ eve_init = function() {
     cam=eve.Camera3D();cam.setEye(36.0,30.0,40.0);cam.setTarget(0.0,0.0,0.0);cam.setUp(0.0,1.0,0.0);cam.setFov(46.0);cam.setAmbient(1.08,1.1,1.14);cam.setActive(true);
     gfx.setDirectionalLight(0.48,1.0,0.32,2.15,2.02,1.82);
     if(assets.len()==0){assetReport.clear();foreach(path in tankPaths)assets.push(loadTank(path));}
-    if(units.len()==0){
-        units.push(createTank(0,0,-26,-6,0));units.push(createTank(1,0,-28,2,0));units.push(createTank(2,0,-24,10,0));
-        units.push(createTank(1,1,26,-8,PI));units.push(createTank(2,1,28,0,PI));units.push(createTank(3,1,24,8,PI));
-        units[0].selected=true;setupScene();
+    if(tankSys==null){tankSys=TankSystem();shellSys=ShellSystem();buildingSys=BuildingSystem();}
+    if(eve.view(Tank).len()==0){
+        createTank(0,0,-26,-6,0);createTank(1,0,-28,2,0);createTank(2,0,-24,10,0);
+        createTank(1,1,26,-8,PI);createTank(2,1,28,0,PI);createTank(3,1,24,8,PI);
+        setupScene();
+    }
+    blueTanks=[];
+    foreach (u in eve.view(Tank)) if (u.team==0) blueTanks.push(u);
+    if(blueTanks.len()>0){
+        if(selected<0||selected>=blueTanks.len())selected=0;
+        foreach (u in blueTanks) u.selected=false;
+        blueTanks[selected].selected=true;
     }
     if(!hudBuilt){ui.setTheme("dark");ui.beginBuild();ui.beginWindow("ARMORED COMMAND 3D","root");ui.text("New API end-to-end quality demo","sub");ui.text("","status");ui.text("TAB select | RMB move | SPACE volley","help");ui.separator("sep");ui.text("","log");ui.end();ui.mountBuildAs("rts-hud");ui.select("rts-hud");ui.setHostOverlay(true);ui.setHostPos(14.0,12.0,0.0,0.0);hudBuilt=true;}
     logLine("4 CC0 animated tank variants loaded");logLine("45-bone track rigs + 4 clips verified");
 };
 
 eve_update = function(dt) {
-    battleClock+=dt;updateInput();updateUnits(dt);updateShells(dt);updateBuildings(dt);
+    battleClock+=dt;updateInput();tankSys.update(dt);shellSys.update(dt);buildingSys.update(dt);
     for(local i=vfxBursts.len()-1;i>=0;--i){vfxBursts[i].life-=dt;if(vfxBursts[i].life<=0){vfxBursts[i].emitter.stop();vfxBursts.remove(i);}}
     particleSystem.update(dt);updateHud();
 };
