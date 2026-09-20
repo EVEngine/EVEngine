@@ -118,6 +118,18 @@ public:
  *          providers. Keeping the protocol boundary on the plain integer is
  *          deliberate: ExpectedRevision/BaseRevision are plain integers too.
  */
+#if defined(_MSC_VER)
+// A target that inherits this base together with another editing interface that
+// also derives from IEditableTarget (IDomainOperationTarget, for example) receives
+// the three members below through dominance instead of declaring them itself, and
+// MSVC reports C4250 for each such member. That resolution is well-defined and is
+// the intent: these overrides are the final overriders, so every call through
+// IEditableTarget dispatches here. MSVC documents C4250 as informational, and it is
+// disabled at the single class that creates the pattern because MSVC reports it at
+// each derived class -- which lives in a header that includes this one, after this
+// point, so the suppression below covers them.
+#pragma warning(disable : 4250)
+#endif
 class EditableTargetState : public virtual IEditableTarget {
 public:
     /** @brief Constructs the shared state with an explicit initial revision. */
