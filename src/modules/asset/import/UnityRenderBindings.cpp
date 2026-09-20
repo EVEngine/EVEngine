@@ -49,8 +49,7 @@ Result<PreparedAssetImport> prepareUnityMaterial(const UnityProjectImportRequest
     const auto&       bytes = request.files.at(source.path);
     const std::string text(bytes.begin(), bytes.end());
     if (!match(text, R"(m_Shader: *\{fileID: *(46), guid: *0000000000000000f000000000000000, type: *0\})"))
-        return detail::failure<PreparedAssetImport>(DiagnosticCode::Unsupported,
-                                                    "only built-in Standard shader is converted", source.path);
+        return prepareUnityVegetationMaterial(request, source);
     auto metallic = property(text, "_Metallic", 0);
     if (!metallic) return Result<PreparedAssetImport>::failure(metallic.status());
     auto smoothness = property(text, "_Glossiness", 0.5);
@@ -86,7 +85,8 @@ Result<PreparedAssetImport> prepareUnityMaterial(const UnityProjectImportRequest
     auto       ref = detail::assetRef(id);
     if (!ref) return Result<PreparedAssetImport>::failure(ref.status());
     Value::Object definition{{"schema", Value("eve.material")},
-                             {"schemaVersion", Value(std::int64_t(1))},
+                             {"schemaVersion", Value(std::int64_t(15))},
+                             {"alphaToCoverage", Value(false)},
                              {"shadingModel", Value("pbr")},
                              {"surfaceMode", Value(mode.value() == 0 ? "opaque" : "transparent")},
                              {"baseColor", Value(std::move(color))},
@@ -112,7 +112,7 @@ Result<PreparedAssetImport> prepareUnityMaterial(const UnityProjectImportRequest
                                                  asset::EvaDependencyKind::RuntimeRequired,
                                                  "baseColorTexture",
                                                  {},
-                                                 "eve.image/2",
+                                                 "eve.image/3",
                                                  {}});
         }
     }
@@ -121,7 +121,7 @@ Result<PreparedAssetImport> prepareUnityMaterial(const UnityProjectImportRequest
     if (!json) return Result<PreparedAssetImport>::failure(json.status());
     std::vector<std::uint8_t> encoded(json.value().begin(), json.value().end());
     out.manifest.assets.push_back(
-        {ref.value(), "eve.material", SchemaVersion(1), path, detail::sha256(encoded), {"material", "source:unity"}});
+        {ref.value(), "eve.material", SchemaVersion(15), path, detail::sha256(encoded), {"material", "source:unity"}});
     out.entries.push_back({path, std::move(encoded)});
     out.manifest.entrypoints.emplace("default", ref.value());
     out.sourceMappings.push_back({"2100000", ref.value()});
@@ -192,7 +192,10 @@ Result<void> bindUnityRenderers(const UnityProjectImportRequest& request, const 
             if (!meshGuid || !meshId) continue;
             const auto key    = refKey(*meshGuid, *meshId);
             const bool native = nativeSlots.contains(unity_detail::foldAscii(*meshGuid));
-            if (!native && !mappings.contains(key)) continue;
+            std::size_t importedSlots = 0;
+            while (mappings.contains(key + "/submesh/" + std::to_string(importedSlots))) ++importedSlots;
+            const bool split = native || importedSlots > 0;
+            if (!split && !mappings.contains(key)) continue;
             const auto list = match(doc.body, R"(m_Materials:([^\n]*\n(?:  - [^\n]*(?:\n|$))*))");
             if (!list) continue;
             std::vector<std::string> materials;
@@ -202,7 +205,10 @@ Result<void> bindUnityRenderers(const UnityProjectImportRequest& request, const 
                 materials.push_back(guid.value_or(""));
             }
             std::size_t count = 1;
-            if (native) count = nativeSlots.at(unity_detail::foldAscii(*meshGuid));
+            if (native)
+                count = nativeSlots.at(unity_detail::foldAscii(*meshGuid));
+            else if (importedSlots > 0)
+                count = importedSlots;
             if (materials.size() != count) {
                 out.findings.push_back({source.path, "Prefab.materialSlots", ImportDisposition::Unsupported,
                                         "material slot count does not match mesh submeshes"});
@@ -210,12 +216,20 @@ Result<void> bindUnityRenderers(const UnityProjectImportRequest& request, const 
             }
             for (std::size_t slot = 0; slot < count; ++slot) {
                 if (!mappings.contains(refKey(materials[slot], "2100000")) ||
-                    (native && !mappings.contains(key + "/submesh/" + std::to_string(slot))))
+                    (split && !mappings.contains(key + "/submesh/" + std::to_string(slot))))
                     continue;
-                const auto meshRef     = mappings.at(native ? key + "/submesh/" + std::to_string(slot) : key);
+                const auto meshRef = mappings.at(split ? key + "/submesh/" + std::to_string(slot) : key);
                 const auto materialRef = mappings.at(refKey(materials[slot], "2100000"));
+                const auto materialAsset =
+                    std::find_if(out.manifest.assets.begin(), out.manifest.assets.end(), [&](const auto& candidate) {
+                        return candidate.asset == materialRef && candidate.type == "eve.material";
+                    });
+                if (materialAsset == out.manifest.assets.end())
+                    return detail::failure<void>(DiagnosticCode::TypeMismatch, "renderer material definition is absent",
+                                                 source.path);
+                const auto materialType = "eve.material/" + std::to_string(materialAsset->schemaVersion.value());
                 auto objectId = request.package.packageId.child("unity:" + source.guid + ":" + transforms.at(*game).id);
-                if (native) {
+                if (split) {
                     if (nextNode == std::numeric_limits<std::int64_t>::max() ||
                         nodes->size() >= request.limits.maximumAssets)
                         return detail::failure<void>(DiagnosticCode::InvalidArgument, "submesh node budget exceeded",
@@ -236,7 +250,11 @@ Result<void> bindUnityRenderers(const UnityProjectImportRequest& request, const 
                     Value::Object{{"objectId", Value(objectId.format())},
                                   {"mesh", Value(meshRef.format())},
                                   {"material", Value(materialRef.format())},
-                                  {"enabled", Value(!match(doc.body, R"(m_Enabled: *(0)(?:\s|$))").has_value())}});
+                                  {"enabled", Value(!match(doc.body, R"(m_Enabled: *(0)(?:\s|$))").has_value())},
+                                  {"castShadows",
+                                   Value(!match(doc.body, R"(m_CastShadows: *(0)(?:\s|$))").has_value())},
+                                  {"receiveShadows",
+                                   Value(!match(doc.body, R"(m_ReceiveShadows: *(0)(?:\s|$))").has_value())}});
                 const auto prefix = "renderers[" + std::to_string(renderers.size() - 1) + "]";
                 out.manifest.dependencies.push_back({sceneId.value(),
                                                      meshRef,
@@ -250,28 +268,27 @@ Result<void> bindUnityRenderers(const UnityProjectImportRequest& request, const 
                                                      asset::EvaDependencyKind::RuntimeRequired,
                                                      prefix + ".material",
                                                      {},
-                                                     "eve.material/1",
+                                                     materialType,
                                                      {}});
             }
             resolvedComponents.insert("Prefab.component:23:" + doc.id);
             resolvedComponents.insert("Prefab.component:33:" + filter.id);
         }
         if (renderers.empty()) continue;
-        (*object)["schemaVersion"] = Value(std::int64_t(2));
+        (*object)["schemaVersion"] = Value(std::int64_t(3));
         (*object)["renderers"]     = Value(std::move(renderers));
         auto encoded               = definition.value().toJson();
         if (!encoded) return Result<void>::failure(encoded.status());
         entry->bytes.assign(encoded.value().begin(), encoded.value().end());
-        asset->schemaVersion = SchemaVersion(2);
+        asset->schemaVersion = SchemaVersion(3);
         asset->contentHash   = detail::sha256(entry->bytes);
         std::erase_if(out.findings, [&](const auto& finding) {
             return finding.sourcePath == source.path && resolvedComponents.contains(finding.feature);
         });
         out.findings.push_back({source.path, "Prefab.renderBindings", ImportDisposition::Translated,
                                 "resolved mesh and material by GUID/fileID"});
-        out.findings.push_back({source.path, "Prefab.shadowPass", ImportDisposition::Unsupported,
-                                "static draw loader does not submit shadow-caster passes; original renderer shadow "
-                                "settings are preserved as source"});
+        out.findings.push_back({source.path, "Prefab.shadowState", ImportDisposition::Translated,
+                                "renderer cast and receive shadow switches retained for runtime passes"});
     }
     return Result<void>::success();
 }

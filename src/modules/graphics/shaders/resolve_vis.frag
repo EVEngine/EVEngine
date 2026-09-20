@@ -2,6 +2,7 @@
 
 #extension GL_GOOGLE_include_directive : enable
 #include "gpudriven_tables.glsl"
+#include "terrain_detail_wave.glsl"
 #include "tex_cell_bomb.glsl"
 #include "parallax_map.glsl"
 
@@ -116,6 +117,9 @@ void main() {
     shadingInstance.reflectionProbeCenter[1] = vec4(0.0);
     shadingInstance.reflectionProbeExtent[0] = vec4(0.0);
     shadingInstance.reflectionProbeExtent[1] = vec4(0.0);
+    shadingInstance.color = vec4(1.0);
+    shadingInstance.terrainWave = vec4(0.0);
+    shadingInstance.terrainWaveTint = vec4(1.0);
     vec3 viewPos;
     if ((vis.x & 0x80000000u) != 0u) {
         // Virtual-geometry cluster: flat shading from the cluster stream.
@@ -149,16 +153,25 @@ void main() {
         uint i0 = indices[tri + 0u];
         uint i1 = indices[tri + 1u];
         uint i2 = indices[tri + 2u];
-        vec3 objPos = positions[mesh.vertexOffset + i0].xyz * bary.x +
-                      positions[mesh.vertexOffset + i1].xyz * bary.y +
-                      positions[mesh.vertexOffset + i2].xyz * bary.z;
+        vec3 p0 = positions[mesh.vertexOffset + i0].xyz;
+        vec3 p1 = positions[mesh.vertexOffset + i1].xyz;
+        vec3 p2 = positions[mesh.vertexOffset + i2].xyz;
         vec3 objNrm = normals[mesh.vertexOffset + i0].xyz * bary.x +
                       normals[mesh.vertexOffset + i1].xyz * bary.y +
                       normals[mesh.vertexOffset + i2].xyz * bary.z;
-        uv = uvs[mesh.vertexOffset + i0].xy * bary.x +
-             uvs[mesh.vertexOffset + i1].xy * bary.y +
-             uvs[mesh.vertexOffset + i2].xy * bary.z;
-        world = gi.model * vec4(objPos, 1.0);
+        vec2 uv0 = uvs[mesh.vertexOffset + i0].xy;
+        vec2 uv1 = uvs[mesh.vertexOffset + i1].xy;
+        vec2 uv2 = uvs[mesh.vertexOffset + i2].xy;
+        uv = uv0 * bary.x + uv1 * bary.y + uv2 * bary.z;
+        vec3 w0 = (gi.model * vec4(p0, 1.0)).xyz;
+        vec3 w1 = (gi.model * vec4(p1, 1.0)).xyz;
+        vec3 w2 = (gi.model * vec4(p2, 1.0)).xyz;
+        vec3 tint0 = terrainDetailWave(w0, uv0.y, gi);
+        vec3 tint1 = terrainDetailWave(w1, uv1.y, gi);
+        vec3 tint2 = terrainDetailWave(w2, uv2.y, gi);
+        vec3 waveTint = tint0 * bary.x + tint1 * bary.y + tint2 * bary.z;
+        world = vec4(w0 * bary.x + w1 * bary.y + w2 * bary.z, 1.0);
+        m.tint *= vec4(gi.color.rgb * waveTint, gi.color.a);
         mat3 normalMat = transpose(inverse(mat3(gi.model)));
         worldN = normalize(normalMat * objNrm);
         viewPos = (ubo.view * world).xyz;

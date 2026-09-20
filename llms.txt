@@ -1,0 +1,25 @@
+# EVEngine
+
+> C++20 Vulkan game engine. Games are EveScript (`.nut`, Squirrel-compatible). Agents must not invent Unity/Godot APIs.
+
+## For coding agents
+
+- [.cursor/skills/evescript/SKILL.md](.cursor/skills/evescript/SKILL.md): short EveScript + conventions + concept map
+- [docs/dev/AI知识补偿.md](docs/dev/AI知识补偿.md): why pretrained knowledge is missing and how to compensate
+- [docs/usr/EVESCRIPT.md](docs/usr/EVESCRIPT.md): full language tutorial (humans)
+- [docs/dev/API-CONVENTIONS.md](docs/dev/API-CONVENTIONS.md): `eve.X()`, errors, ownership
+- Binding catalog: `python3 scripts/generate_binding_contracts.py --json-output eve-api.json`
+- SDK zip (no git tree): `share/eve/ai/eve-api.json` + `share/eve/ai/SKILL.md` + root `llms.txt`
+
+## For runtime agents
+
+- [docs/dev/AI与MCP支持.md](docs/dev/AI与MCP支持.md)
+- [docs/dev/Agent游戏开发范式.md](docs/dev/Agent游戏开发范式.md)
+- MCP: `eve_api_search` / `eve_api_get` (lookup), `eve_play` (observe/act), `eve_screenshot` (engine PNG)
+- Do not use `eve_eval` as the official gameplay path
+
+## Gold scripts
+
+- [examples/basic/main.nut](examples/basic/main.nut)
+- [examples/ecs/main.nut](examples/ecs/main.nut)
+- [examples/primitive-drawing/main.nut](examples/primitive-drawing/main.nut)

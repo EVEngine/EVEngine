@@ -207,6 +207,26 @@ if (!("hotReload" in config)) {
     config.hotReload <- !("hostDrivesFrames" in eve && eve.hostDrivesFrames);
 }
 
+function hot_reload_watch_roots() {
+    if (!("hotReloadWatch" in config) || config.hotReloadWatch == null)
+        return ["."];
+    local w = config.hotReloadWatch;
+    if (typeof w == "string") {
+        if (w == "") return ["."];
+        return [w];
+    }
+    if (typeof w != "array")
+        throw "config.hotReloadWatch must be a string or an array of strings";
+    local out = [];
+    foreach (item in w) {
+        if (typeof item != "string")
+            throw "config.hotReloadWatch entries must be strings";
+        if (item != "") out.append(item);
+    }
+    if (out.len() == 0) return ["."];
+    return out;
+}
+
 // `eve run --dev-server <url>` overrides config.devServer (useful on mobile
 // builds where config.nut is baked into a read-only bundle).
 if ("devServerArg" in eve && eve.devServerArg != null && eve.devServerArg != "")
@@ -267,20 +287,35 @@ if (!has_module("win") || !has_module("gfx")) {
     print("engine build is missing the window or graphics module\n");
     return;
 }
-local s = eve.WindowSettings();
-s.width = config.width;
-s.height = config.height;
-s.centered = true;
-if (!win.setWindowSettings(s)) {
-    print("setWindowSettings failed\n");
-    return;
+
+local editor_host = ("editorHost" in config) && config.editorHost;
+
+function boot_create_window() {
+    local s = eve.WindowSettings();
+    s.width = config.width;
+    s.height = config.height;
+    s.centered = true;
+    if (!win.setWindowSettings(s)) {
+        print("setWindowSettings failed\n");
+        return false;
+    }
+    // Keep script layout in sync with the real window (mobile may ignore 800x600).
+    config.width = win.getWidth();
+    config.height = win.getHeight();
+    _startup_ms("window created + vulkan initialized");
+    _log("boot: window + vulkan initialized (" + config.width + "x" + config.height + ")");
+    return true;
 }
 
-// Keep script layout in sync with the real window (mobile may ignore 800x600).
-config.width = win.getWidth();
-config.height = win.getHeight();
-_startup_ms("window created + vulkan initialized");
-_log("boot: window + vulkan initialized (" + config.width + "x" + config.height + ")");
+// Editor apps: do not CreateWindow here. EditorHost::openWindow used to call
+// setWindowSettings() which always close()+SDL_CreateWindow, so the user saw
+// the OS window flash twice. Defer creation until the host is started.
+if (!editor_host) {
+    if (!boot_create_window()) return;
+} else {
+    _startup_ms("window deferred to editor host");
+    _log("boot: editorHost=true, OS window deferred to EditorHost");
+}
 
 // Node-style async (Promise / nextTick / setTimeout). Embedded via eve.asyncScript.
 if ("asyncScript" in eve && eve.asyncScript != null && eve.asyncScript != "") {
@@ -630,7 +665,9 @@ if (config.hotReload && has_module("fs") && has_module("hot")) {
     try {
         // Ensure VFS source is set when Run did not mount (e.g. custom root).
         try { fs.setSource("."); } catch (e) {}
-        local n = hot.watchTree(".");
+        local n = 0;
+        foreach (root in hot_reload_watch_roots())
+            n += hot.watchTree(root);
         // Explicit file watch as a second registration (same OS dir, basename filter).
         if (file_exists("main.nut"))
             fs.watch("main.nut");
@@ -641,6 +678,24 @@ if (config.hotReload && has_module("fs") && has_module("hot")) {
     }
 }
 _startup_ms("hot reload watch registered");
+
+if (editor_host) {
+    if (!("startEditorHost" in eve))
+        throw "config.editorHost requires eve.startEditorHost";
+    local started = eve.startEditorHost();
+    if (started != "ok")
+        throw "startEditorHost failed: " + started;
+    if (!("host" in eve) || eve.host == null)
+        throw "startEditorHost did not expose eve.host";
+    local title = ("title" in config) ? config.title : "EVEngine";
+    local opened = eve.host.openWindow(title, config.width, config.height);
+    if (opened != "ok")
+        throw "editor host openWindow failed: " + opened;
+    config.width = win.getWidth();
+    config.height = win.getHeight();
+    _startup_ms("window created + vulkan initialized");
+    _log("boot: window + vulkan initialized (" + config.width + "x" + config.height + ")");
+}
 
 _startup_ms("eve_init start");
 try {
@@ -818,6 +873,11 @@ eve_frame <- function() {
             }
             dev_notify_frame_done();
         }
+        // Coalesce dirty declarative UI components after game logic and before
+        // rendering. State changes made by dispatched UI events are therefore
+        // applied at the start of the following frame.
+        if ("eve_ui_flush_components" in getroottable())
+            eve_ui_flush_components();
         eve_render();
         // ImGui AI/MCP panel (requires ui.beginFrameAndRender in eve_render).
         dev_draw_ai();
@@ -852,8 +912,11 @@ eve_frame <- function() {
 // The browser build has no blocking loop: C++ picks eve_frame up from the root
 // table and hands it to emscripten_set_main_loop.
 if (!("hostDrivesFrames" in eve) || !eve.hostDrivesFrames) {
-    while (eve_frame()) {
+    local editorHost = ("editorHost" in config) && config.editorHost;
+    if (!editorHost) {
+        while (eve_frame()) {
+        }
+        eve_quit();
+        win.close();
     }
-    eve_quit();
-    win.close();
 }

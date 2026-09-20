@@ -18,11 +18,17 @@ struct CookedCanonicalImage {
 };
 
 /**
- * @brief Validate `eve.image/2` JSON and decode its PNG source into bounded EVIMG RGBA8.
- * @param definition Canonical source definition bytes.
- * @param encodedSource PNG bytes referenced by the definition.
- * @param maximumDecodedBytes Upper bound including the EVIMG header and pixels.
+ * @brief Decode image/2 base images or image/3 explicit linear RGBA8 mip chains into bounded EVIMG.
+ * @param
+ * definition Canonical source definition bytes.
+ * @param encodedSource Encoded image bytes referenced by the definition.
+ * @param maximumDecodedBytes Upper bound
+ * including the EVIMG header and pixels.
  * @return Owning runtime candidate; JPEG and unsupported PNG modes fail explicitly.
+ * @details Image/3 requires
+ * mipCount; rgba8-mips is top-down level-major RGBA8, with a base-only
+ * or complete halving chain. Image/2 retains
+ * EVIMG v1; image/3 emits EVIMG v2 with mip count.
  * @thread Worker-safe; uses no global decoder state.
  */
 [[nodiscard]] Result<CookedCanonicalImage> cookCanonicalImageRgba8(

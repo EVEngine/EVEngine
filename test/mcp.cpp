@@ -358,6 +358,8 @@ TEST_CASE("devtools.mcp.initializeToolsStatus") {
     bool foundPixelCatalog    = false;
     bool foundPixelValidate   = false;
     bool foundPixelApply      = false;
+    bool foundApiSearch       = false;
+    bool foundApiGet          = false;
     for (size_t i = 0; i < tools->size(); ++i) {
         auto              t    = tools->getObject(static_cast<unsigned>(i));
         const std::string name = t->getValue<std::string>("name");
@@ -401,6 +403,8 @@ TEST_CASE("devtools.mcp.initializeToolsStatus") {
         if (name == "eve_pixelworld_catalog_builtin") foundPixelCatalog = true;
         if (name == "eve_pixelworld_catalog_validate") foundPixelValidate = true;
         if (name == "eve_pixelworld_catalog_apply") foundPixelApply = true;
+        if (name == "eve_api_search") foundApiSearch = true;
+        if (name == "eve_api_get") foundApiGet = true;
     }
     CHECK(foundStatus);
     CHECK(foundGameplay);
@@ -442,6 +446,8 @@ TEST_CASE("devtools.mcp.initializeToolsStatus") {
     CHECK(foundPixelCatalog);
     CHECK(foundPixelValidate);
     CHECK(foundPixelApply);
+    CHECK(foundApiSearch);
+    CHECK(foundApiGet);
 
     client.sendRequest(3, "tools/call", "{\"name\":\"eve_status\",\"arguments\":{}}");
     auto statusMsg = client.expectResult(3);
@@ -452,6 +458,15 @@ TEST_CASE("devtools.mcp.initializeToolsStatus") {
     const std::string text = content->getObject(0)->getValue<std::string>("text");
     CHECK(text.find("\"attached\":true") != std::string::npos);
     CHECK(text.find("\"mcpPort\":") != std::string::npos);
+
+    client.sendRequest(41, "tools/call",
+                       "{\"name\":\"eve_api_search\",\"arguments\":{\"query\":\"newWorld\",\"limit\":8}}");
+    auto apiSearchMsg = client.expectResult(41);
+    REQUIRE(apiSearchMsg);
+    const std::string apiSearchText =
+        apiSearchMsg->getObject("result")->getArray("content")->getObject(0)->getValue<std::string>("text");
+    CHECK(apiSearchText.find("\"ok\":true") != std::string::npos);
+    CHECK(apiSearchText.find("\"method\":\"newWorld\"") != std::string::npos);
 
     client.sendRequest(
         40, "tools/call",

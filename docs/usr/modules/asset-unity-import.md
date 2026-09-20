@@ -28,9 +28,21 @@ eve asset cook MyAssets.eva --target windows-x86_64-vulkan --out MyAssets.evpack
 源文件移动/重命名时必须一起保留 `.meta`，这样导入产生的 AssetRef 保持稳定。
 命令行扫描完整 Unity 项目时只读取其 `Assets/` 子树，不扫描 `Library/`、`Temp/` 等缓存。
 目录输入必须保留原始路径结构和 `.meta`；丢失依赖时扫描会列出对应 GUID/fileID。
+Collection 导入中，单个 Material 引用未随包提供的外部资源时会保留源文件、记录
+`resource.dependency` 并继续转换其他独立资源；显式单项转换和结构损坏仍严格失败。
 
 已有的 `--prefab relative/path.prefab` 与 `--terrain relative/path.asset` 显式选择入口继续可用。
 指定选择器时保持原有单项转换语义；只有不指定两者时执行 collection 导入。
+
+Terrain Detail 通过 Unity 公共 API 导出的 schema-3 sidecar 导入。使用仓库中的
+`tools/unity-terrain-details-export` 导出器并保留默认邻接文件名
+`<TerrainData path>.eve-details.json` 时，`--terrain` 会自动发现它；自定义位置使用
+`--terrain-details relative/path.eve-details.json`。该 sidecar 保存 Unity 已计算的逐实例
+变换、原型外观和全局草风参数，避免从版本相关的 TerrainData 内部密度序列化猜测散布结果。
+Cook 后可通过 `TerrainDetailRuntime::load` 直接加载生成的 `eve.instance-set`。该运行时负责
+确定性实例 realization、首帧按需加载草贴图或 Prefab、接入 GPU-driven 裁剪/绘制与后续帧的
+级联阴影、更新草风时间，以及卸载时按顺序注销渲染和释放 GPU 资源。首帧 shadow pass 不在
+活动 render pass 内上传资源；资源由同帧 GPU collector 准备后，从下一帧开始投影。
 
 ## 当前转换边界
 
@@ -38,14 +50,30 @@ eve asset cook MyAssets.eva --target windows-x86_64-vulkan --out MyAssets.evpack
   支持常规文件、文件夹元数据以及 `./` 前缀，不写临时解包目录。
 - 分类索引：Prefab、Scene、模型、材质、图像、Animation/Controller、音频、字体、
   Shader、脚本和数据资源。fileID 使用有符号 64 位值；内置 Unity GUID 不当作丢失文件。
-- PNG/JPEG：复用现有 `eve.image/2` 导入。读取 `sRGBTexture`，normal map 按 linear
+- PNG/JPEG：复用现有 `eve.image/3` 导入。读取 `sRGBTexture`，normal map 按 linear
   标记。现有 PNG Cook 链路可用；JPEG 是否可 Cook 仍受已有 image Cook 编码支持限制。
 - glTF/GLB：复用当前三角网格导入器，依赖文件从所在目录的相对路径解析。
-- FBX：桌面 Assimp 解码静态三角网格，按 Unity `fileIdsGeneration: 2` 的节点名称
-  哈希恢复子资源 fileID。当前要求节点名称唯一、每节点一个 mesh、导入原始 normals/UV0、
-  正数 globalScale 和 file scale。轴向转换为 `(-x,y,-z)`，UV 转为 `(u,1-v)`，
-  单位比例为 `UnitScaleFactor * 0.01 * globalScale`。旧 fileID、蒙皮和动画明确不支持。
-  Web 没有 Assimp provider 时明确报告 Unsupported。额外顶点流不被伪装成已转换。
+- FBX：桌面 Assimp 解码静态三角网格。Unity `fileIdsGeneration: 2` 通过节点名称哈希恢复
+  子资源 fileID；generation 1（以及省略该字段的旧导入器）通过 Prefab 中唯一的显式 Mesh
+  引用或 Unity 的 `4300000 + 2 * meshIndex` 规则恢复。多个材质子网格保留为同一 Unity Mesh
+  fileID 下的独立 canonical mesh，并按 Prefab 材质槽重新绑定。当前要求 mesh-bearing 节点名称
+  唯一、导入原始 normals/UV0、正数 globalScale 和 file scale；无法消歧的多节点旧式非索引
+  fileID 会明确拒绝。轴向转换为 `(-x,y,-z)`，UV 转为 `(u,1-v)`，单位比例为
+  `UnitScaleFactor * 0.01 * globalScale`。蒙皮、morph 和动画明确不支持。所有 UV、顶点颜色和
+  float4 tangent 流进入 canonical mesh；缺少 tangent 时从法线和 UV0 生成。Web 没有 Assimp
+  provider 时明确报告 Unsupported。
+- TVE preset：`.tvepreset` 转成 `eve.vegetation-conversion-preset/1`，有序保留命令、
+  Include、嵌套/取反条件和参数。执行 API 会检查 Include 缺失/循环，并根据输出选项、
+  shader、材质属性、纹理、关键字与管线事实生成确定命令序列；对网格、材质、纹理的
+  类型检查和原子批处理应用仍是独立执行阶段。
+- TVE 场景：含完整 `TVEGlobalControl`、`TVEGlobalDetails`、`TVEGlobalMotion` 和
+  `TVEGlobalVolume` 组件集的 `.unity` 场景转成 `eve.vegetation-scene/1`。场景级季节、颜色、
+  alpha、overlay、湿润、发光、次表面、尺寸、风力、Transform 层级计算后的世界风向、运动、淡出、
+  体积可见性，以及 Colors/Extras/Motion/Vertex 四通道的渲染模式与纹理尺寸，连同所引用的
+  overlay/noise GUID 作为一个原子版本化状态保存。旧场景的单整数通道分辨率会迁移为同宽高的
+  Global Volume 通道；缺少任一管理组件会拒绝不完整发布。
+  Cook 后由 `EvpackVegetationSceneLoader::load` 严格恢复，`projectVegetationScene` 将其与每个材质和
+  对象的基础 PBR/运动快照组合，调用者随后一次性发布结果。
 - 原生 Mesh：文本 `.asset` Mesh version 9，未压缩、单 stream float32 position/normal/UV0、
   16/32 位三角索引。反射 Z、反转绕序、翻转 UV 的 V；非空子网格分别生成规范网格，
   空子网格保留材质槽编号。骨骼、blend shape、外部流不支持；额外顶点通道保留并报告。
@@ -111,14 +139,18 @@ prepare 不修改项目/数据库；成功候选仍由现有 AtomicAssetPackageS
 `eve.material/1` 定义 `shadingModel=pbr`、`surfaceMode=opaque|transparent`、四分量 baseColor、
 归一化 metallic/roughness 和可选 baseColorTexture。透明模式要求 `blendMode=alpha|premultiplied`；
 未知字段忽略，未知版本和不支持的模式拒绝。此 schema 在本 PR 引入，没有旧版迁移。
-子网格使用现有 scene-template/2 子节点，不新增容器或运行时 mesh schema。
+子网格使用 scene-template/3 子节点，不新增容器或运行时 mesh schema。每个 renderer binding
+保留 Unity 的 `m_CastShadows` 与 `m_ReceiveShadows`；scene-template/2 读取时采用两者均开启的
+兼容默认值，并可迁移到 v3。
 
 `EvpackStaticPrefab::load` 消费 scene-template、mesh、material、image 并返回独占 owning
 候选；`draw` 显式接收 instance transform 和 camera view，先画不透明，再按节点原点深度
 排列本 Prefab 内透明绘制；多个 Prefab 间由调用方排序。创建/绘制/释放/析构均在 graphics
 线程，mesh/image factory 必须活到候选释放之后。失败清理本次已上传资源，不修改旧候选；
-重导入先 load 新候选再交换。`release` 可以重试失败释放，析构报告未释放错误。
-该入口不创建 ECS/Scene Link，也不自动提交 shadow-caster pass，未支持项会记录在报告中。
+重导入先 load 新候选再交换。`drawShadow` 在已打开的级联阴影 pass 中提交启用投影的 opaque
+与 masked 子网格，transparent 子网格不写阴影；普通 `draw` 按导入值控制阴影接收。
+`release` 可以重试失败释放，析构报告未释放错误。该入口不创建 ECS/Scene Link；阴影 pass
+的调度仍由场景或实例运行时负责。
 
 包读取校验 gzip 完整性、tar checksum/边界/结束块、解压预算、路径和源数量。
 重复条目、重复 GUID、ASCII 大小写路径冲突、绝对/越界路径、链接和不支持的 tar
@@ -159,7 +191,8 @@ Windows 通过 `cmake/with-msvc.cmd` 执行 CMake，并指定 Ninja、Debug 和
 输出的全部 150 个 canonical 文件与原始 unitypackage 转换结果逐字节一致。
 原生 Vulkan 离屏验收实际绘制了全部 92 个 Prefab，并由引擎 Canvas 回读 PNG；
 启用 Khronos 验证层后没有 validation error，仍有未使用顶点属性的 performance warning。
-碰撞/阴影投射、原始 Unity 场景布局和动画仍未支持。
+Prefab renderer 的投射/接收阴影开关现已保留，并可由静态 Prefab 与 Terrain Detail 运行时
+提交到级联阴影 pass；碰撞、原始 Unity 场景布局和动画仍未支持。
 购买素材仅放在本机忽略的 build 目录；回归测试使用合成数据。
 
 可复现的手工图形验收入口（需要完整引擎依赖和 Vulkan）：
@@ -174,11 +207,26 @@ Windows 构建命令同样通过 `cmake/with-msvc.cmd` 执行；环境变量
 `EVENGINE_VULKAN_VALIDATION=1` 开启验证层。探针最多排列 96 个静态 Prefab，
 显示转换在 GPU 上完成，PNG 来自引擎离屏画面；它不是原始 Unity demo 场景的复刻。
 
+Unity 文本 `Texture3D` 目前支持嵌入式、线性、单 mip 的 R8 体纹理。导入器保留
+X-fastest 的原始标量体素；Cook 为 Vulkan/WebGPU 公共 RGBA8 资源族展开为
+`(r,r,r,255)`，运行时创建线性过滤、U/V/W Repeat 的 3D texture。未知格式、流式
+数据、多 mip、非线性色彩空间、尺寸乘法溢出和预算超限均显式拒绝。真实资源可用：
+
+```powershell
+cmake\with-msvc.cmd cmake.exe --build build/win32-debug --target eve_unity_volume_graphics_probe
+$env:EVENGINE_VULKAN_VALIDATION='1'
+build\win32-debug\eve_unity_volume_graphics_probe.exe package.evpack asset://<volume-id>
+```
+
+该探针读取并验证完整 EVPACK，再通过生产 `EvpackVolumeTextureLoader` 上传目标资源；
+它报告实际后端、16x16x16 尺寸和三轴采样状态。体纹理仍由图形 factory 所有，调用方
+必须通过同一 factory 释放。
+
 兼容该样本的 pathname 精确 `\n00` 尾标记、包级 `.icon.png` 缩略图，以及
 `packagemanagermanifest` 中的 `Packages/manifest.json`。依赖清单只保留为源数据，
 不安装或执行其中的依赖；普通 GUID 资产的路径仍限制在 Assets 下。
 负数的非层级组件 ID 保留在未支持报告中，不再阻断层级导入；负数的
-GameObject/Transform ID 仍明确报告不支持 scene-template/1 转换。
+GameObject/Transform ID 仍明确报告不支持 scene-template 转换。
 
 ### Snaps Prototype 实测
 

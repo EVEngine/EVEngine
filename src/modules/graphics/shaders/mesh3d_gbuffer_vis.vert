@@ -2,6 +2,7 @@
 
 #extension GL_GOOGLE_include_directive : enable
 #include "gpudriven_tables.glsl"
+#include "terrain_detail_wave.glsl"
 
 // Stage-3 visibility pass vertex shader. No vertex input binding: the mesh is
 // fetched from the pooled vertex/index buffers (set 1) using gl_VertexIndex,
@@ -36,6 +37,9 @@ layout(set = 0, binding = 0, std140) uniform Frame {
 layout(set = 1, binding = 2, std430) readonly buffer Meshes {
     GpuMeshRecord meshes[];
 };
+layout(set = 1, binding = 3, std430) readonly buffer Materials {
+    GpuMaterialRecord materials[];
+};
 layout(set = 1, binding = 4, std430) readonly buffer Instances {
     GpuInstance instances[];
 };
@@ -59,6 +63,7 @@ layout(location = 3) out vec3 vBary;
 layout(location = 4) out vec3 vWorldPos;
 layout(location = 5) out flat uint vInstanceId;
 layout(location = 6) out flat uint vTriBase;
+layout(location = 7) out vec4 vInstanceTint;
 
 void main() {
     // gl_InstanceIndex already includes VkDrawIndirectCommand.firstInstance and
@@ -66,6 +71,7 @@ void main() {
     uint inst = gl_InstanceIndex;
     GpuInstance gi = instances[inst];
     GpuMeshRecord mesh = meshes[gi.meshId];
+    GpuMaterialRecord material = materials[gi.materialId];
     vInstanceId = inst;
     // Triangle base as a pooled index offset. Passed flat from the vertex
     // stage so the fragment does not need gl_PrimitiveID (which would pull in
@@ -77,12 +83,32 @@ void main() {
     vec3 nrm = normals[mesh.vertexOffset + vi].xyz;
     vec2 uv = uvs[mesh.vertexOffset + vi].xy;
 
-    vec4 world = gi.model * vec4(pos, 1.0);
+    vec4 world;
+    if ((material.flags & 4u) != 0u) {
+        vec3 origin = gi.model[3].xyz;
+        vec3 toCamera = ubo.cameraPos.xyz - origin;
+        toCamera.y = 0.0;
+        toCamera = length(toCamera) > 1e-6 ? normalize(toCamera) : vec3(0, 0, 1);
+        vec3 right = vec3(toCamera.z, 0, -toCamera.x);
+        vec3 scale = vec3(length(gi.model[0].xyz), length(gi.model[1].xyz), length(gi.model[2].xyz));
+        world = vec4(origin + right * pos.x * scale.x + vec3(0, 1, 0) * pos.y * scale.y +
+                     toCamera * pos.z * scale.z, 1.0);
+    } else {
+        world = gi.model * vec4(pos, 1.0);
+    }
+    vec3 waveTint = terrainDetailWave(world.xyz, uv.y, gi);
+    vInstanceTint = vec4(gi.color.rgb * waveTint, gi.color.a);
     vWorldPos = world.xyz;
     gl_Position = ubo.mvp * world;
     // Full inverse-transpose per vertex; matches the forward shader exactly.
-    mat3 normalMat = transpose(inverse(mat3(gi.model)));
-    vWorldNormal = normalize(normalMat * nrm);
+    if ((material.flags & 4u) != 0u) {
+        vec3 facing = ubo.cameraPos.xyz - gi.model[3].xyz;
+        facing.y = 0.0;
+        vWorldNormal = length(facing) > 1e-6 ? normalize(facing) : vec3(0, 0, 1);
+    } else {
+        mat3 normalMat = transpose(inverse(mat3(gi.model)));
+        vWorldNormal = normalize(normalMat * nrm);
+    }
     vNdcZ = gl_Position.z / max(gl_Position.w, 1e-6);
     vUV = uv;
 

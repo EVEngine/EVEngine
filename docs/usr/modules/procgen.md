@@ -22,6 +22,29 @@ C++ render bridge 的 borrowed 边界，不是 Squirrel 的第二套生成入口
 Procgen 不提供 `lastError()`、`*Owned` 或 `*Checked` 的兼容命名。Result 的 `value`
 可以是由 generation handle 支持的 owned proxy，释放和 stale 检查遵循该 proxy 的
 公共方法。
+
+## 脚本生成器宿主
+
+项目脚本可以把参数 schema 与 `generate(params, ctx)` 封装成生成器 table，再交给
+`runScriptGenerator(generator, params, systemName, seed)` 同步执行。宿主在当前 Squirrel
+VM 的 owning thread 上创建临时事务 context；成功后原子提交并返回 system、seed、revision
+及 output 名称，脚本抛错、标记 context 失败或遗留未闭合 trace 时返回结构化失败并保留上一
+次成功快照。同一 system 不允许递归重入。宿主不会保存 generator closure、VM 栈或 Params；
+context proxy 只在本次调用中有效，返回后其 handle 会变为 stale。
+
+```squirrel
+local forest = {
+    generate = function(params, ctx) {
+        local points = procgen.sampleGrid(16, 12, 8.0, ctx.seedFor("trees"), 0.2).value;
+        if (!ctx.publish("trees", points)) throw ctx.getError();
+    }
+};
+local run = procgen.runScriptGenerator(forest, params, "forest", params.getSeed());
+if (!run.ok) throw run.status.summary;
+```
+
+生成器文件仍由项目通过 `dofile`/模块加载器载入；宿主负责的是校验 `generate` 入口、事务、
+结构化错误和提交生命周期，不把任意 Squirrel closure 注册为后台线程或 PointGraph operation。
 ## UE PCG 对标范围
 
 本模块对标的是 UE PCG 的核心工作流，而不是复制 UE 类型或资产格式：统一 Spatial Data、

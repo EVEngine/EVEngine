@@ -55,4 +55,12 @@ EditorResult<void> MaterialPublishingTarget::commitDomainState(
     return eve::editing::applied<void>();
 }
 
+EditorResult<void> MaterialPublishingTarget::reloadSnapshot(const EditorValue& snapshot) {
+    auto candidate = std::make_unique<MaterialPublishingTarget>(*this);
+    candidate->staging_ = true;
+    auto loaded = candidate->document_.loadSnapshot(snapshot);
+    if (!loaded.ok()) return loaded;
+    return commitDomainState(std::move(candidate));
+}
+
 }  // namespace eve::material_editing

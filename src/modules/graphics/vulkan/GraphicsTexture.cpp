@@ -35,35 +35,35 @@
 namespace eve::graphics::vulkan {
 
 template <class TextureImage>
-void recordTextureCopies(vk::CommandBuffer cb, TextureImage &image, vkb::GenericBuffer &staging,
-                         uint32_t width, uint32_t height, uint32_t mipLevels, uint32_t layers) {
+void recordTextureCopies(vk::CommandBuffer cb, TextureImage &image, vkb::GenericBuffer &staging, uint32_t width,
+                         uint32_t height, uint32_t depth, uint32_t mipLevels, uint32_t layers,
+                         uint32_t bytesPerPixel = 4) {
     vk::DeviceSize offset = 0;
     for (uint32_t mip = 0; mip < mipLevels; ++mip) {
         const uint32_t mipWidth = std::max(width >> mip, 1u);
         const uint32_t mipHeight = std::max(height >> mip, 1u);
+        const uint32_t mipDepth  = std::max(depth >> mip, 1u);
         for (uint32_t layer = 0; layer < layers; ++layer) {
-            image.copy(cb, staging.buffer, mip, layer, mipWidth, mipHeight, 1, uint32_t(offset));
-            offset += vk::DeviceSize(mipWidth) * mipHeight * 4u;
+            image.copy(cb, staging.buffer, mip, layer, mipWidth, mipHeight, mipDepth, uint32_t(offset));
+            offset += vk::DeviceSize(mipWidth) * mipHeight * mipDepth * bytesPerPixel;
         }
     }
     image.setLayout(cb, vk::ImageLayout::eShaderReadOnlyOptimal);
 }
 
 template <class TextureImage>
-void uploadTextureForAllShaderStages(vkb::Device &device, vk::CommandPool commandPool,
-                                     vk::Queue graphicsQueue, TextureImage &image,
-                                     uint32_t width, uint32_t height, uint32_t mipLevels,
-                                     uint32_t layers, const std::vector<uint8_t> &bytes) {
+void uploadTextureForAllShaderStages(vkb::Device &device, vk::CommandPool commandPool, vk::Queue graphicsQueue,
+                                     TextureImage &image, uint32_t width, uint32_t height, uint32_t mipLevels,
+                                     uint32_t layers, const std::vector<uint8_t> &bytes, uint32_t bytesPerPixel = 4,
+                                     uint32_t depth = 1) {
     vkb::GenericBuffer staging(
         device, vk::BufferUsageFlagBits::eTransferSrc, vk::DeviceSize(bytes.size()),
         vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent);
     staging.updateLocal(vkb::FrameSlot::gpuIdle(), bytes.data(), vk::DeviceSize(bytes.size()));
 
-    vkb::executeImmediately(device.instance, commandPool, graphicsQueue,
-                            [&](vk::CommandBuffer cb) {
-                                recordTextureCopies(cb, image, staging, width, height, mipLevels,
-                                                    layers);
-                            });
+    vkb::executeImmediately(device.instance, commandPool, graphicsQueue, [&](vk::CommandBuffer cb) {
+        recordTextureCopies(cb, image, staging, width, height, depth, mipLevels, layers, bytesPerPixel);
+    });
     staging.release();
 }
 
@@ -137,6 +137,174 @@ Texture *Graphics::newTexture(int w, int h, const uint8_t *rgba, const TextureCr
     ownedTextures.push_back(std::move(tex));
     ownedGpuTextures.push_back(std::move(gpu));
     return raw;
+}
+
+Result<Texture *> Graphics::newTextureMipChain(uint32_t width, uint32_t height, uint32_t levels,
+                                               std::span<const uint8_t> rgba) {
+    auto fail = [](DiagnosticCode code, std::string message) {
+        return Result<Texture *>::failure(Diagnostic::error(code, std::move(message), {}, {}, "graphics.texture.mips"));
+    };
+    if (!initialized) return fail(DiagnosticCode::Failed, "graphics is not initialized");
+    const auto maximum = device.physical_device.properties.limits.maxImageDimension2D;
+    if (!width || !height || width > maximum || height > maximum)
+        return fail(DiagnosticCode::InvalidArgument, "mip dimensions exceed device limits");
+    uint64_t expected = 0;
+    uint32_t count = 0, w = width, h = height;
+    for (;;) {
+        expected += uint64_t(w) * h * 4;
+        ++count;
+        if (w == 1 && h == 1) break;
+        w = std::max(w / 2, 1u);
+        h = std::max(h / 2, 1u);
+    }
+    if (levels != count || expected != rgba.size() || expected > UINT32_MAX)
+        return fail(DiagnosticCode::InvalidArgument, "mip count, packed bytes or staging offset budget invalid");
+    std::unique_ptr<GpuTexture> gpu;
+    try {
+        // Reserve both registries before allocating GPU state; publication then cannot allocate.
+        ownedTextures.reserve(ownedTextures.size() + 1);
+        ownedGpuTextures.reserve(ownedGpuTextures.size() + 1);
+        auto                 tex = std::make_unique<Texture>();
+        std::vector<uint8_t> bytes(rgba.begin(), rgba.end());
+        gpu               = std::make_unique<GpuTexture>();
+        gpu->width        = int(width);
+        gpu->height       = int(height);
+        gpu->mipLevels    = levels;
+        gpu->samplerState = TextureSampler::linearMipmap();
+        gpu->image        = vkb::TextureImage2D(device, width, height, levels);
+        uploadTextureForAllShaderStages(device, uploadPool, device.getQueue(vkb::QueueType::graphics), gpu->image,
+                                        width, height, levels, 1, bytes);
+        gpu->sampler       = createVkSampler(gpu->samplerState, levels);
+        auto sets          = vkb::DescriptorSetBuilder().layout(texSetLayout).build(device.instance, descriptorPool);
+        gpu->descriptorSet = vkb::BoundSet{sets[0]};
+        writeCombinedImageDescriptor(gpu.get());
+        tex->width = tex->pixelWidth = int(width);
+        tex->height = tex->pixelHeight = int(height);
+        tex->mipmapCount               = int(levels);
+        tex->sampler                   = gpu->samplerState;
+        tex->gpuHandle                 = gpu.get();
+        registerBindlessTexture2D(gpu.get());
+        auto *result = tex.get();
+        ownedTextures.push_back(std::move(tex));
+        ownedGpuTextures.push_back(std::move(gpu));
+        return Result<Texture *>::success(result);
+    } catch (const std::exception &error) {
+        if (gpu) {
+            unregisterBindlessTexture(gpu.get());
+            if (gpu->descriptorSet) device->freeDescriptorSets(descriptorPool, {gpu->descriptorSet.handle});
+            if (gpu->sampler) device->destroySampler(gpu->sampler);
+        }
+        return fail(DiagnosticCode::Failed, error.what());
+    }
+}
+
+Result<Texture *> Graphics::newTextureArrayRgba16f(uint32_t width, uint32_t height, uint32_t layers,
+                                                   std::span<const uint16_t> rgbaHalf) {
+    auto fail = [](DiagnosticCode code, std::string message) {
+        return Result<Texture *>::failure(
+            Diagnostic::error(code, std::move(message), {}, {}, "graphics.texture.array"));
+    };
+    if (!initialized) return fail(DiagnosticCode::Failed, "graphics is not initialized");
+    const auto    &limits = device.physical_device.properties.limits;
+    const uint64_t texels = uint64_t(width) * height * layers;
+    if (!width || !height || !layers || width > limits.maxImageDimension2D || height > limits.maxImageDimension2D ||
+        layers > limits.maxImageArrayLayers || texels > SIZE_MAX / 4 || rgbaHalf.size() != texels * 4)
+        return fail(DiagnosticCode::InvalidArgument, "array dimensions or packed RGBA16F size are invalid");
+    std::unique_ptr<GpuTexture> gpu;
+    try {
+        ownedTextures.reserve(ownedTextures.size() + 1);
+        ownedGpuTextures.reserve(ownedGpuTextures.size() + 1);
+        auto tex = std::make_unique<Texture>();
+        gpu      = std::make_unique<GpuTexture>();
+        vk::ImageCreateInfo imageInfo{{},
+                                      vk::ImageType::e2D,
+                                      vk::Format::eR16G16B16A16Sfloat,
+                                      {width, height, 1},
+                                      1,
+                                      layers,
+                                      vk::SampleCountFlagBits::e1,
+                                      vk::ImageTiling::eOptimal,
+                                      vk::ImageUsageFlagBits::eSampled | vk::ImageUsageFlagBits::eTransferDst,
+                                      vk::SharingMode::eExclusive};
+        gpu->arrayImage =
+            vkb::GenericImage(device, imageInfo, vk::ImageViewType::e2DArray, vk::ImageAspectFlagBits::eColor, false);
+        gpu->isArray      = true;
+        gpu->width        = int(width);
+        gpu->height       = int(height);
+        gpu->samplerState = TextureSampler::linear();
+        std::vector<uint8_t> bytes(rgbaHalf.size_bytes());
+        std::memcpy(bytes.data(), rgbaHalf.data(), bytes.size());
+        uploadTextureForAllShaderStages(device, uploadPool, device.getQueue(vkb::QueueType::graphics), gpu->arrayImage,
+                                        width, height, 1, layers, bytes, 8);
+        gpu->sampler = createVkSampler(gpu->samplerState, 1);
+        tex->width = tex->pixelWidth = int(width);
+        tex->height = tex->pixelHeight = int(height);
+        tex->layers                    = int(layers);
+        tex->sampler                   = gpu->samplerState;
+        tex->gpuHandle                 = gpu.get();
+        auto *result                   = tex.get();
+        ownedTextures.push_back(std::move(tex));
+        ownedGpuTextures.push_back(std::move(gpu));
+        return Result<Texture *>::success(result);
+    } catch (const std::exception &error) {
+        if (gpu && gpu->sampler) device->destroySampler(gpu->sampler);
+        return fail(DiagnosticCode::Failed, error.what());
+    }
+}
+
+Result<Texture *> Graphics::newTexture3DRgba8(uint32_t width, uint32_t height, uint32_t depth,
+                                              std::span<const uint8_t> rgba) {
+    auto fail = [](DiagnosticCode code, std::string message) {
+        return Result<Texture *>::failure(
+            Diagnostic::error(code, std::move(message), {}, {}, "graphics.texture.volume"));
+    };
+    if (!initialized) return fail(DiagnosticCode::Failed, "graphics is not initialized");
+    const auto    &limits = device.physical_device.properties.limits;
+    const uint64_t texels = uint64_t(width) * height * depth;
+    if (!width || !height || !depth || width > limits.maxImageDimension3D || height > limits.maxImageDimension3D ||
+        depth > limits.maxImageDimension3D || texels > SIZE_MAX / 4 || rgba.size() != texels * 4)
+        return fail(DiagnosticCode::InvalidArgument, "volume dimensions or packed RGBA8 size are invalid");
+    std::unique_ptr<GpuTexture> gpu;
+    try {
+        ownedTextures.reserve(ownedTextures.size() + 1);
+        ownedGpuTextures.reserve(ownedGpuTextures.size() + 1);
+        auto tex = std::make_unique<Texture>();
+        gpu      = std::make_unique<GpuTexture>();
+        vk::ImageCreateInfo imageInfo{{},
+                                      vk::ImageType::e3D,
+                                      vk::Format::eR8G8B8A8Unorm,
+                                      {width, height, depth},
+                                      1,
+                                      1,
+                                      vk::SampleCountFlagBits::e1,
+                                      vk::ImageTiling::eOptimal,
+                                      vk::ImageUsageFlagBits::eSampled | vk::ImageUsageFlagBits::eTransferDst,
+                                      vk::SharingMode::eExclusive};
+        gpu->arrayImage =
+            vkb::GenericImage(device, imageInfo, vk::ImageViewType::e3D, vk::ImageAspectFlagBits::eColor, false);
+        gpu->isArray              = true;
+        gpu->isVolume             = true;
+        gpu->width                = int(width);
+        gpu->height               = int(height);
+        gpu->samplerState         = TextureSampler::linear();
+        gpu->samplerState.repeatU = gpu->samplerState.repeatV = gpu->samplerState.repeatW = true;
+        std::vector<uint8_t> bytes(rgba.begin(), rgba.end());
+        uploadTextureForAllShaderStages(device, uploadPool, device.getQueue(vkb::QueueType::graphics), gpu->arrayImage,
+                                        width, height, 1, 1, bytes, 4, depth);
+        gpu->sampler = createVkSampler(gpu->samplerState, 1);
+        tex->width = tex->pixelWidth = int(width);
+        tex->height = tex->pixelHeight = int(height);
+        tex->depth                     = int(depth);
+        tex->sampler                   = gpu->samplerState;
+        tex->gpuHandle                 = gpu.get();
+        auto *result                   = tex.get();
+        ownedTextures.push_back(std::move(tex));
+        ownedGpuTextures.push_back(std::move(gpu));
+        return Result<Texture *>::success(result);
+    } catch (const std::exception &error) {
+        if (gpu && gpu->sampler) device->destroySampler(gpu->sampler);
+        return fail(DiagnosticCode::Failed, error.what());
+    }
 }
 
 Texture *Graphics::newCubemap(int faceSize, const uint8_t *rgbaFaces) {
@@ -634,8 +802,9 @@ bool Graphics::releaseTexture(Texture *texture) {
         return true;
     }
     // Renderer-owned fallback textures must never be released by callers.
-    if (texture == whiteTexture || texture == flatNormalTexture ||
-        texture == flatNormalTexture3D || texture == defaultEnvCubemap)
+    if (texture == whiteTexture || texture == flatNormalTexture || texture == flatNormalTexture3D ||
+        texture == defaultEnvCubemap || texture == defaultExtrasArray || texture == defaultColorsArray ||
+        texture == defaultVertexArray || texture == defaultMotionArray || texture == defaultVegetationFadeNoise)
         return false;
 
     auto *gpu = static_cast<GpuTexture *>(texture->gpuHandle);

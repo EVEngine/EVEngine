@@ -17,7 +17,7 @@ EditorHost::EditorHost() = default;
 EditorHost::~EditorHost() = default;
 void        EditorHost::start(ssq::VM&, const std::string&, bool) {}
 void        EditorHost::stop() {}
-bool        EditorHost::windowOpen() const { return false; }
+bool        EditorHost::isWindowOpen() const { return false; }
 std::string EditorHost::openWindow(const std::string&, int, int) {
     return "error: editor host unavailable on this platform";
 }
@@ -39,7 +39,7 @@ std::string EditorHost::consumeEvents(const std::string&) { return "[]"; }
 std::string EditorHost::widgetRect(const std::string&, const std::string&) const {
     return "{\"x\":0,\"y\":0,\"width\":0,\"height\":0}";
 }
-std::string EditorHost::registerVM(const std::string&, const std::string&) {
+std::string EditorHost::registerVM(const std::string&, const std::string&, const std::string&) {
     return "error: editor host unavailable on this platform";
 }
 std::string EditorHost::unregisterVM(const std::string&) {
@@ -52,7 +52,7 @@ std::string EditorHost::unloadEditor(const std::string&) {
     return "error: editor host unavailable on this platform";
 }
 void        EditorHost::loadEditorsFromDisk() {}
-std::string EditorHost::runScript(const std::string&) {
+std::string EditorHost::runScript(const std::string&, const std::string&) {
     return "error: editor host unavailable on this platform";
 }
 std::string EditorHost::capture(const std::string&) {
@@ -69,12 +69,17 @@ void EditorHost::exposeScriptApi(ssq::VM&) {}
 #else  // full implementation
 
 #include "common/Module.h"
+#include "common/Runtime.h"
+#include "common/ScriptCompiler.h"
+#include "common/ScriptError.h"
+#include "common/ScriptModule.h"
 #include "filesystem/FileData.h"
 #include "graphics/Graphics.h"
 #include "image/ImageData.h"
 #include "platform_event/PlatformEvent.h"
 #include "timer/Timer.h"
 #include "ui/UI.h"
+#include "ui/ControlPrimitives.h"
 #include "window/Window.h"
 
 #include <Poco/Dynamic/Var.h>
@@ -85,6 +90,7 @@ void EditorHost::exposeScriptApi(ssq::VM&) {}
 #include <Poco/JSON/Stringifier.h>
 
 #include <imgui.h>
+#include <imgui_internal.h>
 #include <simplesquirrel/simplesquirrel.hpp>
 #include <squirrel.h>
 
@@ -314,15 +320,40 @@ void pushVar(HSQUIRRELVM vm, const Var& v) {
 /** Run Squirrel source against the root table; returns "" on success. */
 std::string runSquirrel(HSQUIRRELVM vm, const std::string& source, const char* name) {
     const SQInteger top = sq_gettop(vm);
-    if (SQ_FAILED(sq_compilebuffer(vm, source.c_str(), static_cast<SQInteger>(source.size()),
-                                   name, SQTrue))) {
+    // ScriptCompiler::compileBuffer records `import` edges and compiles those
+    // modules. A raw sq_compilebuffer leaves them Compiled-but-not-Ready, so
+    // the import opcode then fails with "module was not instantiated".
+    if (SQ_FAILED(eve::script::ScriptCompiler::compileBuffer(vm, source.c_str(),
+                                                             static_cast<SQInteger>(source.size()),
+                                                             name, SQTrue))) {
+        std::string text = eve::script::formatLastScriptError(vm);
         sq_settop(vm, top);
-        return "compile failed";
+        return text.empty() ? "compile failed" : ("compile failed: " + text);
+    }
+    if (Runtime* rt = ModuleManager::runtime()) {
+        try {
+            rt->scriptModules().instantiateDependencies(name);
+        } catch (const std::exception& error) {
+            sq_settop(vm, top);
+            return error.what();
+        }
     }
     sq_pushroottable(vm);
     if (SQ_FAILED(sq_call(vm, 1, SQFalse, SQTrue))) {
+        std::string text = eve::script::formatLastScriptError(vm);
+        if (text.empty()) {
+            const SQChar* msg = nullptr;
+            if (sq_gettype(vm, -1) == OT_STRING) sq_getstring(vm, -1, &msg);
+            text = msg ? std::string(msg) : std::string{};
+        }
+        if (text.empty()) {
+            if (Runtime* rt = ModuleManager::runtime()) {
+                if (auto failure = rt->scriptModules().takeCompilationFailure()) text = *failure;
+            }
+        }
+        if (text.empty()) text = "unknown";
         sq_settop(vm, top);
-        return "runtime failed";
+        return "runtime failed: " + text;
     }
     sq_settop(vm, top);
     return {};
@@ -575,16 +606,27 @@ std::string EditorHost::openWindow(const std::string& title, int width, int heig
     try {
         if (!I.win) I.win = ModuleManager::requireInstance<eve::window::Window>("Window");
         if (!I.gfx) I.gfx = ModuleManager::requireInstance<eve::graphics::Graphics>("Graphics");
-        eve::window::WindowSettings s;
-        s.width    = static_cast<uint16_t>(width > 0 ? width : 1280);
-        s.height   = static_cast<uint16_t>(height > 0 ? height : 800);
-        s.centered = true;
-        s.resizable = true;
-        if (!I.win->setWindowSettings(s)) return "error: setWindowSettings failed";
-        I.win->setWindowTitle(title.empty() ? "EVEngine AI Host" : title);
+        // setWindowSettings() always close()+SDL_CreateWindow. Reuse any live
+        // OS window (load.nut, a previous openWindow, or MCP attaching later).
+        const bool alreadyOpen = I.win->isOpen() || I.win->getHandle() != nullptr;
+        if (alreadyOpen) {
+            std::fprintf(stderr, "[editor-host] reuse existing window %dx%d\n",
+                         I.win->getWidth(), I.win->getHeight());
+            if (!title.empty()) I.win->setWindowTitle(title);
+        } else {
+            eve::window::WindowSettings s;
+            s.width     = static_cast<uint16_t>(width > 0 ? width : 1280);
+            s.height    = static_cast<uint16_t>(height > 0 ? height : 800);
+            s.centered  = true;
+            s.resizable = true;
+            std::fprintf(stderr, "[editor-host] create window %dx%d\n",
+                         static_cast<int>(s.width), static_cast<int>(s.height));
+            if (!I.win->setWindowSettings(s)) return "error: setWindowSettings failed";
+            I.win->setWindowTitle(title.empty() ? "EVEngine AI Host" : title);
+        }
         if (!I.ui) I.ui = ModuleManager::requireInstance<eve::ui::UI>("UI");
         I.windowOpen  = true;
-        I.windowTitle = title;
+        I.windowTitle = title.empty() ? I.win->getWindowTitle() : title;
         // Keep screen readback on while the host window is open: the AI's whole
         // feedback loop is "render -> capture", so every presented frame should
         // be available to eve_host_capture immediately (the Vulkan backend
@@ -610,7 +652,7 @@ std::string EditorHost::closeWindow() {
     return "ok";
 }
 
-bool EditorHost::windowOpen() const {
+bool EditorHost::isWindowOpen() const {
     return impl_ && impl_->windowOpen;
 }
 
@@ -653,7 +695,19 @@ std::string EditorHost::applyEditor(const std::string& json) {
         });
         I.editors[id] = std::move(ed);
         if (!I.windowOpen && I.allowWindow) {
-            std::string err = openWindow(ed.title + " - EVEngine AI Host", 1280, 800);
+            // Prefer the live window size (config.nut) over the 1280x800
+            // fallback so applyEditor cannot close()+recreate a different size.
+            int w = 1280;
+            int h = 800;
+            try {
+                if (!I.win) I.win = ModuleManager::requireInstance<eve::window::Window>("Window");
+                if (I.win->isOpen() || I.win->getHandle() != nullptr) {
+                    w = I.win->getWidth();
+                    h = I.win->getHeight();
+                }
+            } catch (...) {
+            }
+            std::string err = openWindow(ed.title + " - EVEngine AI Host", w, h);
             if (err.rfind("error:", 0) == 0) return err;
         }
         return editorState(id);
@@ -822,6 +876,7 @@ void renderWidget(EditorHost::Impl& I, Editor& ed, Object::Ptr w) {
     const bool enabled = boolOf(w, "enabled", true);
     if (!enabled) {
         ImGui::PushStyleVar(ImGuiStyleVar_Alpha, ImGui::GetStyle().Alpha * 0.5f);
+        ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
     }
 
     const auto cur = [&](const char* key, const Var& def) -> Var {
@@ -859,17 +914,12 @@ void renderWidget(EditorHost::Impl& I, Editor& ed, Object::Ptr w) {
     } else if (type == "input") {
         std::string buf = varString(cur("value", strOf(w, "value")));
         const bool multi = boolOf(w, "multiline", false);
-        bool changed = false;
-        if (multi) {
-            changed = ImGui::InputTextMultiline(widgetIdLabel(w).c_str(), buf.data(),
-                                                buf.size() + 64,
-                                                ImVec2(floatOf(w, "width", 0.f), floatOf(w, "height", 96.f)));
-        } else {
-            buf.resize(512);
-            changed = ImGui::InputText(widgetIdLabel(w).c_str(), buf.data(), buf.size());
-        }
+        const bool changed =
+            controls::inputText(widgetIdLabel(w).c_str(), buf, multi,
+                                ImVec2(floatOf(w, "width", 0.f),
+                                       floatOf(w, "height", 96.f))) ==
+            controls::ControlEdit::Changed;
         if (enabled && changed && !id.empty()) {
-            buf.resize(strlen(buf.c_str()));
             setWidgetValue(I, ed, id, Var(buf));
         }
         recordRect(ed, id);
@@ -881,7 +931,9 @@ void renderWidget(EditorHost::Impl& I, Editor& ed, Object::Ptr w) {
         const float lo = floatOf(w, "min", 0.f), hi = floatOf(w, "max", 1.f);
         const std::string fmt = strOf(w, "format", "%.2f");
         bool changed = false;
-        if (n == 1) changed = ImGui::SliderFloat(widgetIdLabel(w).c_str(), &v[0], lo, hi, fmt.c_str());
+        if (n == 1)
+            changed = controls::slider(widgetIdLabel(w).c_str(), v[0], lo, hi, fmt.c_str()) ==
+                      controls::ControlEdit::Changed;
         else if (n == 2) changed = ImGui::SliderFloat2(widgetIdLabel(w).c_str(), v, lo, hi, fmt.c_str());
         else changed = ImGui::SliderFloat3(widgetIdLabel(w).c_str(), v, lo, hi, fmt.c_str());
         if (enabled && changed && !id.empty()) {
@@ -906,7 +958,9 @@ void renderWidget(EditorHost::Impl& I, Editor& ed, Object::Ptr w) {
         recordRect(ed, id);
     } else if (type == "checkbox") {
         bool b = varBool(cur("value", false), boolOf(w, "value", false));
-        if (enabled && ImGui::Checkbox(widgetIdLabel(w).c_str(), &b) && !id.empty())
+        if (enabled &&
+            controls::checkbox(widgetIdLabel(w).c_str(), b) == controls::ControlEdit::Changed &&
+            !id.empty())
             setWidgetValue(I, ed, id, Var(b));
         recordRect(ed, id);
     } else if (type == "dropdown" || type == "listbox") {
@@ -919,8 +973,8 @@ void renderWidget(EditorHost::Impl& I, Editor& ed, Object::Ptr w) {
             if (opts[i] == sel) idx = static_cast<int>(i);
         bool changed = false;
         if (type == "dropdown")
-            changed = !opts.empty() && ImGui::Combo(widgetIdLabel(w).c_str(), &idx, items.data(),
-                                                    static_cast<int>(items.size()));
+            changed = controls::combo(widgetIdLabel(w).c_str(), idx, items) ==
+                      controls::ControlEdit::Changed;
         else
             changed = !opts.empty() && ImGui::ListBox(widgetIdLabel(w).c_str(), &idx, items.data(),
                                                       static_cast<int>(items.size()),
@@ -929,7 +983,9 @@ void renderWidget(EditorHost::Impl& I, Editor& ed, Object::Ptr w) {
             setWidgetValue(I, ed, id, Var(opts[static_cast<size_t>(idx)]));
         recordRect(ed, id);
     } else if (type == "button") {
-        if (enabled && ImGui::Button(widgetIdLabel(w).c_str(), ImVec2(floatOf(w, "width", 0.f), 0.f))) {
+        if (enabled &&
+            controls::button(widgetIdLabel(w).c_str(), floatOf(w, "width", 0.f)) ==
+                controls::ControlEdit::Changed) {
             emitEvent(ed, "click", id, Var());
             const std::string cmd = strOf(w, "command", strOf(w, "action"));
             if (!cmd.empty() && !ed.vmName.empty() && I.vm) {
@@ -1041,6 +1097,7 @@ void renderWidget(EditorHost::Impl& I, Editor& ed, Object::Ptr w) {
     const std::string tip = strOf(w, "tooltip");
     if (!tip.empty() && ImGui::IsItemHovered()) ImGui::SetTooltip("%s", tip.c_str());
     if (!enabled) {
+        ImGui::PopItemFlag();
         ImGui::PopStyleVar();
     }
 }
@@ -1270,10 +1327,12 @@ std::string EditorHost::widgetRect(const std::string& editorId, const std::strin
     return jsonStringify(Var(o));
 }
 
-std::string EditorHost::registerVM(const std::string& name, const std::string& source) {
+std::string EditorHost::registerVM(const std::string& name, const std::string& source,
+                                   const std::string& sourceName) {
     if (!impl_ || !impl_->vm) return "error: host not started";
     if (name.empty()) return "error: missing name";
-    const std::string err = runSquirrel(impl_->vm->getHandle(), source, "host_vm.nut");
+    const std::string uri = sourceName.empty() ? std::string("host_vm.nut") : sourceName;
+    const std::string err = runSquirrel(impl_->vm->getHandle(), source, uri.c_str());
     if (!err.empty()) return "error: " + err;
     try {
         ssq::Table tbl = impl_->vm->find(name.c_str()).toTable();
@@ -1366,7 +1425,7 @@ void EditorHost::loadEditorsFromDisk() {
                 std::ifstream ifs2(dir / (id + ".vm.nut"));
                 std::string src((std::istreambuf_iterator<char>(ifs2)),
                                 std::istreambuf_iterator<char>());
-                if (!src.empty()) registerVM(vmName, src);
+                if (!src.empty()) registerVM(vmName, src, "game:/editors/" + id + ".vm.nut");
             }
         } catch (...) {
         }
@@ -1374,10 +1433,11 @@ void EditorHost::loadEditorsFromDisk() {
     }
 }
 
-std::string EditorHost::runScript(const std::string& source) {
+std::string EditorHost::runScript(const std::string& source, const std::string& sourceName) {
     if (!impl_ || !impl_->vm) return "error: host not started";
     if (source.empty()) return "error: missing source";
-    const std::string err = runSquirrel(impl_->vm->getHandle(), source, "host_snippet.nut");
+    const std::string uri = sourceName.empty() ? std::string("host_snippet.nut") : sourceName;
+    const std::string err = runSquirrel(impl_->vm->getHandle(), source, uri.c_str());
     return err.empty() ? "ok" : ("error: " + err);
 }
 
@@ -1470,8 +1530,8 @@ void EditorHost::exposeScriptApi(ssq::VM& vm) {
         host.addFunc("events", [](std::string editor) {
             return EditorHost::instance().consumeEvents(editor);
         });
-        host.addFunc("registerVM", [](std::string name, std::string source) {
-            return EditorHost::instance().registerVM(name, source);
+        host.addFunc("registerVM", [](std::string name, std::string source, std::string uri) {
+            return EditorHost::instance().registerVM(name, source, uri);
         });
         host.addFunc("unregisterVM", [](std::string name) {
             return EditorHost::instance().unregisterVM(name);
@@ -1485,8 +1545,8 @@ void EditorHost::exposeScriptApi(ssq::VM& vm) {
         host.addFunc("save", [](std::string id) {
             return EditorHost::instance().saveEditor(id);
         });
-        host.addFunc("runScript", [](std::string source) {
-            return EditorHost::instance().runScript(source);
+        host.addFunc("runScript", [](std::string source, std::string uri) {
+            return EditorHost::instance().runScript(source, uri);
         });
         host.addFunc("reloadResource", [](std::string path) {
             return EditorHost::instance().reloadResource(path);
