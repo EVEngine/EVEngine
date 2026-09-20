@@ -60,20 +60,168 @@ private:
 };
 
 /**
- * @brief 模块级持有脚本 motion sink 适配器。
- *
- * 为什么必须有主人：`MotionRuntime` 的槽位**借用** sink 指针，所以适配器要活到 motion 结束
- * （`advance()` 随时可能用到它）。这里按"一次 `to()` 一个适配器"登记，模块析构时整体撤回；
- * 正常用法是绑一次跑一个动画，不是每帧重绑（每帧重绑会让这个列表一直长）。
+ * @brief 从脚本表里读一个数值字段。
+ * @remarks 不是表、缺字段、不是数都**抛**：脚本作者要看到明确原因，而不是收到一个全零的 motion。
  */
-struct ScriptMotionSinkEntry {
-    std::string                            providerName;
-    std::unique_ptr<ScriptMotionFloatSink> adapter;
+double readMotionNumber(const ssq::Object& table, const char* field, const char* what) {
+    if (table.getType() != ssq::Type::TABLE) throw Exception("%s must be a table (x/y/z or r/g/b/a)", what);
+    const ssq::Object value = table.find(field);
+    const ssq::Type   type  = value.getType();
+    if (type != ssq::Type::FLOAT && type != ssq::Type::INTEGER)
+        throw Exception("%s requires a numeric '%s'", what, field);
+    return value.toFloat();
+}
+
+/**
+ * @brief 一种 motion 形状的脚本侧特征：值类型、描述类型、sink 接口、编组与生成。
+ *
+ * 四种非 float 形状（vec2/vec3/color/quat）共用下面那套模板：它们的差别只有"值怎么编组"
+ * "怎么进描述""怎么 spawn"，写四遍必然漂移。float 那一套保留原样（它多了 style 之外的
+ * 历史行为，不动它更安全）。
+ */
+struct MotionVec2Traits {
+    using Value = MotionVec2;
+    using Desc  = MotionRuntime::Vec2Desc;
+    using Sink  = IMotionVec2Sink;
+
+    static constexpr bool        kHasStyle = true;
+    static constexpr const char* kType     = "MotionVec2";
+
+    static Value read(const ssq::Object& table, const char* what) {
+        return MotionVec2{float(readMotionNumber(table, "x", what)), float(readMotionNumber(table, "y", what))};
+    }
+    static std::vector<eve::ScriptArg> scriptArgs(const Value& value) {
+        return {eve::ScriptArg::fromNumber(double(value.x)), eve::ScriptArg::fromNumber(double(value.y))};
+    }
+    static void configure(Desc& desc, Value from, Value to, float duration) {
+        desc.from     = from;
+        desc.to       = to;
+        desc.duration = duration;
+    }
+    static eve::Result<MotionHandle> spawn(MotionRuntime& runtime, const Desc& desc) { return runtime.spawnVec2(desc); }
 };
 
-std::vector<ScriptMotionSinkEntry>& scriptMotionSinkEntries() {
-    static std::vector<ScriptMotionSinkEntry> entries;
-    return entries;
+struct MotionVec3Traits {
+    using Value = MotionVec3;
+    using Desc  = MotionRuntime::Vec3Desc;
+    using Sink  = IMotionVec3Sink;
+
+    static constexpr bool        kHasStyle = true;
+    static constexpr const char* kType     = "MotionVec3";
+
+    static Value read(const ssq::Object& table, const char* what) {
+        return MotionVec3{float(readMotionNumber(table, "x", what)), float(readMotionNumber(table, "y", what)),
+                          float(readMotionNumber(table, "z", what))};
+    }
+    static std::vector<eve::ScriptArg> scriptArgs(const Value& value) {
+        return {eve::ScriptArg::fromNumber(double(value.x)), eve::ScriptArg::fromNumber(double(value.y)),
+                eve::ScriptArg::fromNumber(double(value.z))};
+    }
+    static void configure(Desc& desc, Value from, Value to, float duration) {
+        desc.from     = from;
+        desc.to       = to;
+        desc.duration = duration;
+    }
+    static eve::Result<MotionHandle> spawn(MotionRuntime& runtime, const Desc& desc) { return runtime.spawnVec3(desc); }
+};
+
+struct MotionColorTraits {
+    using Value = MotionColor;
+    using Desc  = MotionRuntime::ColorDesc;
+    using Sink  = IMotionColorSink;
+
+    static constexpr bool        kHasStyle = false;
+    static constexpr const char* kType     = "MotionColor";
+
+    static Value read(const ssq::Object& table, const char* what) {
+        return MotionColor{float(readMotionNumber(table, "r", what)), float(readMotionNumber(table, "g", what)),
+                           float(readMotionNumber(table, "b", what)), float(readMotionNumber(table, "a", what))};
+    }
+    static std::vector<eve::ScriptArg> scriptArgs(const Value& value) {
+        return {eve::ScriptArg::fromNumber(double(value.r)), eve::ScriptArg::fromNumber(double(value.g)),
+                eve::ScriptArg::fromNumber(double(value.b)), eve::ScriptArg::fromNumber(double(value.a))};
+    }
+    static void configure(Desc& desc, Value from, Value to, float duration) {
+        desc.from     = from;
+        desc.to       = to;
+        desc.duration = duration;
+    }
+    static eve::Result<MotionHandle> spawn(MotionRuntime& runtime, const Desc& desc) {
+        return runtime.spawnColor(desc);
+    }
+};
+
+struct MotionQuatTraits {
+    using Value = MotionQuat;
+    using Desc  = MotionRuntime::QuatDesc;
+    using Sink  = IMotionQuatSink;
+
+    static constexpr bool        kHasStyle = false;
+    static constexpr const char* kType     = "MotionQuat";
+
+    static Value read(const ssq::Object& table, const char* what) {
+        return MotionQuat{float(readMotionNumber(table, "x", what)), float(readMotionNumber(table, "y", what)),
+                          float(readMotionNumber(table, "z", what)), float(readMotionNumber(table, "w", what))};
+    }
+    static std::vector<eve::ScriptArg> scriptArgs(const Value& value) {
+        return {eve::ScriptArg::fromNumber(double(value.x)), eve::ScriptArg::fromNumber(double(value.y)),
+                eve::ScriptArg::fromNumber(double(value.z)), eve::ScriptArg::fromNumber(double(value.w))};
+    }
+    static void configure(Desc& desc, Value from, Value to, float duration) {
+        desc.from     = from;
+        desc.to       = to;
+        desc.duration = duration;
+    }
+    static eve::Result<MotionHandle> spawn(MotionRuntime& runtime, const Desc& desc) { return runtime.spawnQuat(desc); }
+};
+
+/**
+ * @brief 脚本对象实现的某一种 motion sink（vec2/vec3/color/quat）。
+ *
+ * 每次求值把值按**位置参数**推给脚本的 `write(...)`（vec2 两个数、vec3 三个、color 四个 r/g/b/a、
+ * quat 四个 x/y/z/w）：这是逐帧路径，不为了好看给每帧造一张表。失败原样返回给 runtime。
+ */
+template <class Traits>
+class ScriptMotionSink final : public Traits::Sink {
+public:
+    explicit ScriptMotionSink(ScriptProviderHandle handle) : handle_(std::move(handle)) {}
+
+    /** @brief 本适配器所服务的那一代脚本对象。 */
+    [[nodiscard]] const ScriptProviderHandle& handle() const noexcept { return handle_; }
+
+    [[nodiscard]] eve::Result<void> write(typename Traits::Value value) override {
+        const std::vector<eve::ScriptArg> args = Traits::scriptArgs(value);
+        return eve::ScriptProviderRegistry::instance().call(handle_, "write", args);
+    }
+
+private:
+    ScriptProviderHandle handle_;
+};
+
+/**
+ * @brief 模块级持有脚本 motion sink 适配器（每种形状一份）。
+ *
+ * 为什么必须有主人：`MotionRuntime` 的槽位**借用** sink 指针，所以适配器要活到 motion 结束
+ * （`advance()` 随时可能用到它）。这里按"一次 `to()`/`bind()` 一个适配器"登记，模块析构时整体撤回；
+ * 正常用法是绑一次跑一个动画，不是每帧重绑（每帧重绑会让这张表一直长）。
+ */
+template <class Adapter>
+struct ScriptMotionSinkStore {
+    std::vector<std::string>              providerNames;
+    std::vector<std::unique_ptr<Adapter>> adapters;
+};
+
+struct ScriptMotionSinkStores {
+    ScriptMotionSinkStore<ScriptMotionFloatSink>               floats;
+    ScriptMotionSinkStore<ScriptMotionSink<MotionVec2Traits>>  vec2s;
+    ScriptMotionSinkStore<ScriptMotionSink<MotionVec3Traits>>  vec3s;
+    ScriptMotionSinkStore<ScriptMotionSink<MotionColorTraits>> colors;
+    ScriptMotionSinkStore<ScriptMotionSink<MotionQuatTraits>>  quats;
+};
+
+ScriptMotionSinkStores& scriptMotionSinkStores() {
+    static ScriptMotionSinkStores stores;
+    return stores;
 }
 
 std::uint64_t& scriptMotionSinkSequence() {
@@ -81,16 +229,43 @@ std::uint64_t& scriptMotionSinkSequence() {
     return sequence;
 }
 
+/**
+ * @brief 发布脚本对象并把它交给模块持有。
+ * @return 借用指针，供 motion 描述使用；适配器活到模块析构。
+ */
+template <class Adapter>
+Adapter* adoptScriptMotionSink(ScriptMotionSinkStore<Adapter>& store, const ssq::Object& sink) {
+    const std::string name      = "animation.motion-sink." + std::to_string(++scriptMotionSinkSequence());
+    auto              published = eve::ScriptProviderRegistry::instance().publish(name, sink);
+    if (!published.ok()) throwMotionError(published.error());
+    auto     adapter = std::make_unique<Adapter>(published.value());
+    Adapter* raw     = adapter.get();
+    store.providerNames.push_back(name);
+    store.adapters.push_back(std::move(adapter));
+    return raw;
+}
+
+/** @brief 清空一种形状的适配器与它们的 provider 登记。 */
+template <class Adapter>
+void clearScriptMotionSinkStore(ScriptMotionSinkStore<Adapter>& store) {
+    eve::ScriptProviderRegistry& registry = eve::ScriptProviderRegistry::instance();
+    for (const std::string& name : store.providerNames) {
+        registry.unload(eve::ScriptProviderHandle{name, registry.generationOf(name)})
+            .ignore("module teardown may already have dropped this motion sink provider");
+    }
+    store.providerNames.clear();
+    store.adapters.clear();
+}
+
 }  // namespace
 
 void clearScriptMotionSinkAdapters() {
-    auto& entries = scriptMotionSinkEntries();
-    for (ScriptMotionSinkEntry& entry : entries) {
-        eve::ScriptProviderRegistry& registry = eve::ScriptProviderRegistry::instance();
-        registry.unload(eve::ScriptProviderHandle{entry.providerName, registry.generationOf(entry.providerName)})
-            .ignore("module teardown may already have dropped this motion sink provider");
-    }
-    entries.clear();
+    ScriptMotionSinkStores& stores = scriptMotionSinkStores();
+    clearScriptMotionSinkStore(stores.floats);
+    clearScriptMotionSinkStore(stores.vec2s);
+    clearScriptMotionSinkStore(stores.vec3s);
+    clearScriptMotionSinkStore(stores.colors);
+    clearScriptMotionSinkStore(stores.quats);
 }
 
 namespace {
@@ -160,12 +335,7 @@ public:
         ensureLive();
         if (sink.getType() != ssq::Type::INSTANCE)
             throw Exception("MotionBuilder.to: sink must be an instance implementing write(value)");
-        const std::string name      = "animation.motion-sink." + std::to_string(++scriptMotionSinkSequence());
-        auto              published = eve::ScriptProviderRegistry::instance().publish(name, sink);
-        if (!published.ok()) throwMotionError(published.error());
-        auto adapter = std::make_unique<ScriptMotionFloatSink>(published.value());
-        desc_.sink   = adapter.get();
-        scriptMotionSinkEntries().push_back(ScriptMotionSinkEntry{name, std::move(adapter)});
+        desc_.sink = adoptScriptMotionSink(scriptMotionSinkStores().floats, sink);
     }
 
     /** @brief 绑上脚本 sink 并立刻开跑（对应 C++ 的 `MotionBuilder::bind`）。 */
@@ -289,6 +459,173 @@ private:
     MotionSequence sequence_;
 };
 
+/**
+ * @brief vec2/vec3/color/quat 共用的脚本 builder。
+ *
+ * 与 float 的 `ScriptMotionBuilder` 同名同义：`to(脚本对象)` 只绑不跑（给 sequence 用），
+ * `bind(脚本对象)` 绑上并开跑，`run()` 不带 sink 跑。差别只在值怎么读/怎么编组（`Traits`）。
+ * @remarks color/quat 的描述里没有 style/frequency/dampingRatio/seed，所以那四个方法对这两种形状
+ *          **不注册**（脚本调用会明确报"没有这个方法"），而不是注册了再静默忽略。
+ */
+template <class Traits>
+class ScriptMotionBuilderT {
+public:
+    using Desc  = typename Traits::Desc;
+    using Value = typename Traits::Value;
+
+    ScriptMotionBuilderT(Animation* animation, Value from, Value to, float duration) : animation_(animation) {
+        if (!animation_) throw Exception("%s: Animation is null", Traits::kType);
+        Traits::configure(desc_, from, to, duration);
+    }
+
+    void ease(std::string kind) { desc_.ease = std::move(kind); }
+    void delay(float seconds) { desc_.delay = seconds; }
+    void loops(int count, std::string mode = "restart") {
+        desc_.loops    = count;
+        desc_.loopMode = parseLoopMode(mode);
+    }
+    void cancelOnError(bool enabled) { desc_.cancelOnError = enabled; }
+    void frequency(int count) {
+        if constexpr (Traits::kHasStyle) desc_.frequency = count;
+    }
+    void dampingRatio(float ratio) {
+        if constexpr (Traits::kHasStyle) desc_.dampingRatio = ratio;
+    }
+    void seed(int value) {
+        if constexpr (Traits::kHasStyle) desc_.seed = static_cast<std::uint32_t>(value);
+    }
+    void stylePunch() {
+        if constexpr (Traits::kHasStyle) desc_.style = MotionStyle::Punch;
+    }
+    void styleShake() {
+        if constexpr (Traits::kHasStyle) desc_.style = MotionStyle::Shake;
+    }
+
+    void to(const ssq::Object& sink) {
+        ensureLive();
+        if (sink.getType() != ssq::Type::INSTANCE)
+            throw Exception("%s.to: sink must be an instance implementing write(...)", Traits::kType);
+        desc_.sink = adoptTraitsSink(sink);
+    }
+
+    ScriptMotionHandle* bind(const ssq::Object& sink) {
+        to(sink);
+        return run();
+    }
+
+    ScriptMotionHandle* run() {
+        ensureLive();
+        consumed_    = true;
+        auto spawned = Traits::spawn(animation_->motions(), desc_);
+        if (!spawned.ok()) throwMotionError(spawned.error());
+        return new ScriptMotionHandle(&animation_->motions(), spawned.value());
+    }
+
+    [[nodiscard]] eve::Result<Desc> takeDesc() {
+        ensureLive();
+        consumed_ = true;
+        return eve::Result<Desc>::success(std::move(desc_));
+    }
+
+private:
+    using Adapter = ScriptMotionSink<Traits>;
+
+    /** 按形状挑对应的模块级 store（保证适配器活到模块析构）。 */
+    static ScriptMotionSinkStore<Adapter>& store() {
+        if constexpr (std::is_same_v<Traits, MotionVec2Traits>) {
+            return scriptMotionSinkStores().vec2s;
+        } else if constexpr (std::is_same_v<Traits, MotionVec3Traits>) {
+            return scriptMotionSinkStores().vec3s;
+        } else if constexpr (std::is_same_v<Traits, MotionColorTraits>) {
+            return scriptMotionSinkStores().colors;
+        } else {
+            return scriptMotionSinkStores().quats;
+        }
+    }
+
+    static typename Traits::Sink* adoptTraitsSink(const ssq::Object& sink) {
+        return adoptScriptMotionSink(store(), sink);
+    }
+
+    void ensureLive() {
+        if (!animation_) throw Exception("%s: Animation is null", Traits::kType);
+        if (consumed_) throw Exception("%s: builder already consumed (run/bind)", Traits::kType);
+    }
+
+    Animation* animation_ = nullptr;
+    Desc       desc_{};
+    bool       consumed_ = false;
+};
+
+/** @brief 注册一种非 float 形状的 builder 类（方法集按 `kHasStyle` 取舍）。 */
+template <class Traits>
+void exposeMotionTraitsBuilder(ssq::Table& table, const char* className) {
+    using Builder = ScriptMotionBuilderT<Traits>;
+    auto builder =
+        table.addClass<Builder>(className, std::function<Builder*()>([]() -> Builder* { return nullptr; }), true);
+    builder.addFunc("ease", &Builder::ease);
+    builder.addFunc("delay", &Builder::delay);
+    builder.addFunc("loops", &Builder::loops);
+    builder.addFunc("cancelOnError", &Builder::cancelOnError);
+    if constexpr (Traits::kHasStyle) {
+        builder.addFunc("stylePunch", &Builder::stylePunch);
+        builder.addFunc("styleShake", &Builder::styleShake);
+        builder.addFunc("frequency", &Builder::frequency);
+        builder.addFunc("dampingRatio", &Builder::dampingRatio);
+        builder.addFunc("seed", &Builder::seed);
+    }
+    builder.addFunc("to", [](Builder* self, const ssq::Object& sink) {
+        if (!self) throw Exception("%s.to: builder is null", Traits::kType);
+        self->to(sink);
+    });
+    builder.addFunc("bind", [](Builder* self, const ssq::Object& sink) -> ScriptMotionHandle* {
+        if (!self) throw Exception("%s.bind: builder is null", Traits::kType);
+        return self->bind(sink);
+    });
+    builder.addFunc("run", &Builder::run);
+}
+
+/** @brief 注册 vec2/vec3/color/quat 四套 builder 与它们的 Animation 工厂。 */
+void exposeNonFloatMotionBuilders(ssq::Table& table, ssq::Class& animationClass) {
+    exposeMotionTraitsBuilder<MotionVec2Traits>(table, "MotionVec2Builder");
+    exposeMotionTraitsBuilder<MotionVec3Traits>(table, "MotionVec3Builder");
+    exposeMotionTraitsBuilder<MotionColorTraits>(table, "MotionColorBuilder");
+    exposeMotionTraitsBuilder<MotionQuatTraits>(table, "MotionQuatBuilder");
+
+    animationClass.addFunc("newMotionVec2",
+                           [](Animation* self, const ssq::Object& from, const ssq::Object& to,
+                              float duration) -> ScriptMotionBuilderT<MotionVec2Traits>* {
+                               if (!self) throw Exception("newMotionVec2: Animation is null");
+                               return new ScriptMotionBuilderT<MotionVec2Traits>(
+                                   self, MotionVec2Traits::read(from, "newMotionVec2 'from'"),
+                                   MotionVec2Traits::read(to, "newMotionVec2 'to'"), duration);
+                           });
+    animationClass.addFunc("newMotionVec3",
+                           [](Animation* self, const ssq::Object& from, const ssq::Object& to,
+                              float duration) -> ScriptMotionBuilderT<MotionVec3Traits>* {
+                               if (!self) throw Exception("newMotionVec3: Animation is null");
+                               return new ScriptMotionBuilderT<MotionVec3Traits>(
+                                   self, MotionVec3Traits::read(from, "newMotionVec3 'from'"),
+                                   MotionVec3Traits::read(to, "newMotionVec3 'to'"), duration);
+                           });
+    animationClass.addFunc("newMotionColor",
+                           [](Animation* self, const ssq::Object& from, const ssq::Object& to,
+                              float duration) -> ScriptMotionBuilderT<MotionColorTraits>* {
+                               if (!self) throw Exception("newMotionColor: Animation is null");
+                               return new ScriptMotionBuilderT<MotionColorTraits>(
+                                   self, MotionColorTraits::read(from, "newMotionColor 'from'"),
+                                   MotionColorTraits::read(to, "newMotionColor 'to'"), duration);
+                           });
+    animationClass.addFunc("newMotionQuat",
+                           [](Animation* self, const ssq::Object& from, const ssq::Object& to,
+                              float duration) -> ScriptMotionBuilderT<MotionQuatTraits>* {
+                               if (!self) throw Exception("newMotionQuat: Animation is null");
+                               return new ScriptMotionBuilderT<MotionQuatTraits>(
+                                   self, MotionQuatTraits::read(from, "newMotionQuat 'from'"),
+                                   MotionQuatTraits::read(to, "newMotionQuat 'to'"), duration);
+                           });
+}
+
 }  // namespace
 
 void exposeMotionScriptBindings(ssq::Table &table, ssq::Class &animationClass) {
@@ -389,6 +726,9 @@ void exposeMotionScriptBindings(ssq::Table &table, ssq::Class &animationClass) {
                 if (!self) throw Exception("getMotionFloatFreeCount: Animation is null");
                 return static_cast<int>(self->getMotionFloatFreeCount());
             }));
+
+    // 非 float 形状（vec2/vec3/color/quat）：builder + 脚本 sink，与 float 那套同形。
+    exposeNonFloatMotionBuilders(table, animationClass);
 }
 
 }  // namespace eve::animation

@@ -87,6 +87,51 @@ function startMotionWithoutSink() {
     local motion = anim.newMotion(0.0, 10.0, 1.0).run()
     return motion != null
 }
+
+// ---- 非 float 形状：vec2 / vec3 / color / quat 的脚本 builder + 脚本 sink ----
+
+vec2Sum <- -1.0
+vec3Sum <- -1.0
+colorSum <- -1.0
+colorLastA <- -1.0
+quatSum <- -1.0
+
+class Vec2Sink { function write(x, y) { vec2Sum = x + y } }
+class Vec3Sink { function write(x, y, z) { vec3Sum = x + y + z } }
+class ColorSink { function write(r, g, b, a) { colorSum = r + g + b; colorLastA = a } }
+class QuatSink { function write(x, y, z, w) { quatSum = x + y + z + w } }
+
+vec2Sink <- Vec2Sink()
+vec3Sink <- Vec3Sink()
+colorSink <- ColorSink()
+quatSink <- QuatSink()
+
+// 四种形状各起一条，全部绑脚本 sink：这就是"最后四个 IMotion*Sink 也接上了"。
+function startNonFloatMotions() {
+    local anim = eve.Animation()
+    local two = anim.newMotionVec2({ x = 0.0, y = 0.0 }, { x = 2.0, y = 4.0 }, 1.0).bind(vec2Sink)
+    local three = anim.newMotionVec3({ x = 0.0, y = 0.0, z = 0.0 },
+                                     { x = 1.0, y = 2.0, z = 3.0 }, 1.0).bind(vec3Sink)
+    local color = anim.newMotionColor({ r = 0.0, g = 0.0, b = 0.0, a = 0.5 },
+                                      { r = 1.0, g = 2.0, b = 3.0, a = 1.0 }, 1.0).bind(colorSink)
+    // 四元数走 slerp：端点必须是**单位**四元数，否则它插到的位置不是你以为的那个（见用例断言）。
+    local quat = anim.newMotionQuat({ x = 0.0, y = 0.0, z = 0.0, w = 1.0 },
+                                    { x = 0.0, y = 0.0, z = 0.70710678, w = 0.70710678 }, 1.0).bind(quatSink)
+    return two != null && three != null && color != null && quat != null
+}
+
+// 形状不对的表：要抛，而不是悄悄按全零跑一条动画。
+function startMotionWithBadTable() {
+    local anim = eve.Animation()
+    try {
+        local m = anim.newMotionVec3({ x = 0.0, y = 0.0 }, { x = 1.0, y = 1.0, z = 1.0 }, 1.0)
+        return m != null
+    } catch (e) {
+        tableError = e
+        return false
+    }
+}
+tableError <- ""
 )SQ";
 
 class MotionScriptSinkTest : public ScriptTest {
@@ -146,6 +191,39 @@ TEST_CASE_FIXTURE(MotionScriptSinkTest, "animation.motion.sinkIsOptionalAndOnlyB
     advanceAnimation(*module, 0.5, 1);
     REQUIRE_EQ(vm.find("writeCount").toInt(), 0);
     REQUIRE_EQ(ScriptProviderRegistry::instance().size(), std::size_t{0});
+}
+
+TEST_CASE_FIXTURE(MotionScriptSinkTest, "animation.motion.nonFloatShapesReachScriptSinksToo") {
+    REQUIRE(callScript("startNonFloatMotions"));
+    eve::animation::Animation* module = eve::animation::Animation::create();
+    REQUIRE(module != nullptr);
+    REQUIRE_EQ(module->motions().activeCount(), 4);
+
+    // 四条一起跑：每次 advance 每个 sink 都收到自己那几维的值（位置参数编组）。
+    advanceAnimation(*module, 0.25, 1);
+    REQUIRE(vm.find("vec2Sum").toFloat() > 0.0);
+    REQUIRE(vm.find("vec3Sum").toFloat() > 0.0);
+    REQUIRE(vm.find("colorSum").toFloat() > 0.0);
+    REQUIRE(vm.find("colorLastA").toFloat() > 0.0);
+    REQUIRE(vm.find("quatSum").toFloat() > 0.0);
+
+    // 跑到 1 秒结束：终点值就是 to 那一端（vec2 6、vec3 6、color 6/1、单位四元数 z+w≈1.414）。
+    advanceAnimation(*module, 1.0, 2);
+    REQUIRE_EQ(module->motions().activeCount(), 0);
+    REQUIRE(std::fabs(vm.find("vec2Sum").toFloat() - 6.0) < 1e-3);
+    REQUIRE(std::fabs(vm.find("vec3Sum").toFloat() - 6.0) < 1e-3);
+    REQUIRE(std::fabs(vm.find("colorSum").toFloat() - 6.0) < 1e-3);
+    REQUIRE(std::fabs(vm.find("colorLastA").toFloat() - 1.0) < 1e-3);
+    REQUIRE(std::fabs(vm.find("quatSum").toFloat() - 1.41421356) < 1e-3);
+}
+
+TEST_CASE_FIXTURE(MotionScriptSinkTest, "animation.motion.badValueTablesAreRejectedNotZeroFilled") {
+    // 缺字段的表要明确抛错：静默按 0 跑一条动画会让"我传错了"变成"动画看起来没生效"。
+    REQUIRE(!callScript("startMotionWithBadTable"));
+    REQUIRE(!vm.find("tableError").toString().empty());
+    eve::animation::Animation* module = eve::animation::Animation::create();
+    REQUIRE(module != nullptr);
+    REQUIRE_EQ(module->motions().activeCount(), 0);
 }
 
 TEST_CASE_FIXTURE(MotionScriptSinkTest, "animation.motion.scriptSinkFailureCancelsInsteadOfBeingSwallowed") {
