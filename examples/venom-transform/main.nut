@@ -175,7 +175,12 @@ function requestShot(name) {
 eve_init = function() {
     gfx.setBackgroundColor(0.62, 0.18, 0.28, 1.0);
     if (venomShader == null) {
-        venomShader = gfx.newMeshShader(fs.readText("shaders/venom.frag"));
+        // The fragment stage ships as committed SPIR-V: runtime GLSL compilation
+        // needs glslc on PATH and is unavailable on Windows. Regenerate with
+        //   glslc -o shaders/venom.frag.spv shaders/venom.frag
+        local loaded = gfx.loadMeshShaderSpv("", "shaders/venom.frag.spv");
+        if (!loaded.ok) throw "venom-transform: shader unavailable: " + loaded.status.summary;
+        venomShader = loaded.value;
         local names = ["coverage", "edgeWidth", "noiseScale", "time",
                        "gooR", "gooG", "gooB", "edgeR", "edgeG", "edgeB",
                        "edgeGlow", "gloss"];
