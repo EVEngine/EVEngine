@@ -878,6 +878,10 @@ using ClimbingRuntimeHandleRef = eve::script::RuntimeHandleRef<ClimbingRuntimeHa
 class Climbing : public Module {
 public:
     Module_REG(Climbing);
+    /** @brief 构造时声明脚本接缝（`IClimbingEventSink` 可由脚本提供）。 */
+    Climbing();
+    /** @brief 析构时撤回接缝与仍在位的脚本适配器。 */
+    ~Climbing() override;
     /** @brief Creates a module-owned runtime and returns its generation-qualified reference. */
     [[nodiscard]] static eve::Result<ClimbingRuntimeHandleRef> newRuntime();
     /** @brief Resolves a live runtime as a non-owning observation. */

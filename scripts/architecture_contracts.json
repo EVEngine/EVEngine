@@ -575,6 +575,39 @@
       "failure_injection": "prepare, commit, rollback, restore and capability-loss failures are injected and assert no partial publication."
     },
     {
+      "id": "climbing-event-sink-module-interface",
+      "rule": "module-interface",
+      "scope": "src/modules/climbing/ClimbingServices.cpp",
+      "owner": "climbing",
+      "issue": "EVENGINE-ARCH-MODULE-INTERFACE",
+      "reason": "dispatchClimbingEvents consumes IClimbingEventSink through cap::query and the new script seam answers it through cap::provide, so the same capability appears on both faces; recording them makes the next provider or consumer declare itself instead of silently displacing the single-provider slot. The scope is this one file: the rest of src/modules/climbing/** holds the runtime, anchor graph, codec and bindings, whose faces are recorded separately when touched.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/climbing/ClimbingServices.cpp",
+        "src/modules/climbing/ClimbingEventValue.cpp"
+      ],
+      "tests": [
+        "test/climbing_services.cpp",
+        "test/climbing_events.cpp",
+        "scripts/tests/test_architecture_contracts.py"
+      ],
+      "provides": [
+        "IClimbingEventSink"
+      ],
+      "requires": [
+        "IClimbingEventSink"
+      ],
+      "emits": [],
+      "observes": [],
+      "binds": [
+        "eve.provider.publishFor('eve.climbing.event-sink.v1', name, instance) -> publishClimbingEvents({ subject, events })"
+      ],
+      "trim": {
+        "absent_profile": "not yet recorded; this entry is filled in on first touch (spec 8.3)",
+        "layer": "L3 runtime"
+      }
+    },
+    {
       "id": "module-interface-policy",
       "rule": "module-interface",
       "scope": "src/**",

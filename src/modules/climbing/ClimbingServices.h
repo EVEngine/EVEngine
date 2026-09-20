@@ -80,6 +80,23 @@ public:
                                                      std::span<const ClimbingEvent> events) = 0;
 };
 
+/**
+ * @brief 声明"`IClimbingEventSink` 可以由脚本提供"这条接缝。
+ *
+ * 脚本提供方发布一个对象，实现 `publishClimbingEvents(payload)`：`payload` 是一张表
+ * `{ subject = <整数>, events = [ {kind, actionId, tick, executionId, metadata}, … ] }`。
+ * 事件的字段形状就是 `climbingEventValue`（绑定与快照用的同一份），`kind` 是 `climbingEventKindName`
+ * 给的名字。脚本**报错会被原样上报**——`dispatchClimbingEvents` 靠返回值判断是否成功。
+ *
+ * @remarks 幂等：重复调用替换上一对回调（与 `declareScriptProjectileSeam`、
+ *          `declareScriptPhotoModeApplySeam` 同一条纪律）。由 `Climbing` 模块构造时调用。
+ * @cost 一次 map 插入；只在模块构造时调用。
+ */
+void declareScriptClimbingEventSeam();
+
+/** @brief 撤回接缝与仍然在位的脚本适配器（由 `Climbing` 模块析构时调用）。 */
+void withdrawScriptClimbingEventSeam();
+
 /** @brief Optional post-physics Animation/IK adapter consuming derived pose constraints only. */
 class IClimbingPoseAdapter {
 public:
