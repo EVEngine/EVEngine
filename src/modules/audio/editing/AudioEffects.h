@@ -25,7 +25,7 @@ class AudioEffectChainTarget final : public ::eve::editing::EditableTargetState,
                                      public IDomainOperationTargetStaging {
 public:
     explicit AudioEffectChainTarget(std::string id);
-    TargetId targetId() const override { return TargetId(id_); }
+    TargetId         targetId() const override { return TargetId(id_); }
     TargetDescriptor describe() const override;
     /** @brief Query an optional target capability. @return Borrowed pointer owned by this target, or null. @lifetime Valid until this target is destroyed or mutated. */
     void* queryCapability(const CapabilityId& capability) override;

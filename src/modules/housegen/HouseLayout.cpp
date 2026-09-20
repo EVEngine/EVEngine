@@ -110,7 +110,7 @@ eve::ref<model3d::ModelData> loadModel(model3d::Model3D *models, const std::stri
     data::ByteData source(bytes.data(), bytes.size());
     return models->newModelData(&source, std::filesystem::path(path).extension().string());
 }
-}
+}  // namespace
 
 void HouseLayout::clear() { instances.clear(); rooms.clear(); diagnostics.clear(); seed = 1; moduleSize = 1.f; floorHeight = 3.f; footprintStyle = "rectangle"; roofStyle = "gable"; entranceSide = "north"; }
 

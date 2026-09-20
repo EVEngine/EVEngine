@@ -2,8 +2,7 @@
 #include "common/SquirrelBinding.h"
 #include "physics/World3D.h"
 namespace eve::climbing {
-namespace {
-}  // namespace
+namespace {}  // namespace
 void exposeClimbingMotionBindings(ssq::Class& runtime, HSQUIRRELVM vm) {
     runtime.addFunc(
         "advance", [vm](ScriptClimbingRuntime* value, physics::World3D* world, std::int64_t tick, float deltaSeconds) {

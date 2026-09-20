@@ -21,7 +21,7 @@ class TextureRecipeTarget final : public ::eve::editing::EditableTargetState,
 public:
     /** @brief Construct a registered procedural texture recipe target. @throws std::invalid_argument When recipe is not registered. */
     TextureRecipeTarget(std::string id, std::string recipe);
-    TargetId targetId() const override { return TargetId(id_); }
+    TargetId         targetId() const override { return TargetId(id_); }
     TargetDescriptor describe() const override;
     /** @brief Query an optional target capability. @return Borrowed pointer owned by this target, or null. @lifetime Valid until this target is destroyed or mutated. */
     void* queryCapability(const CapabilityId&) override;
@@ -43,7 +43,7 @@ private:
     bool matches(const SelectionSnapshot&) const;
     EditorResult<void> initializeDefaults();
     EditorValue contentValue() const;
-    std::string id_, recipe_;
+    std::string         id_, recipe_;
     EditorValue::Object values_;
 };
 struct TextureRecipePreviewArtifact { editing::Revision sourceRevision=0; int width=0,height=0; std::uint64_t checksum=0; };

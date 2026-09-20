@@ -84,7 +84,7 @@ public:
     SceneTargetBase(std::string id, std::string type);
     ~SceneTargetBase() override = default;
 
-    TargetId targetId() const override { return TargetId(id_); }
+    TargetId           targetId() const override { return TargetId(id_); }
     TargetDescriptor   describe() const override;
     /** @return Borrowed non-owning capability pointer, or null. @lifetime Valid until this target is mutated or destroyed. */
     void*              queryCapability(const CapabilityId& capability) override;

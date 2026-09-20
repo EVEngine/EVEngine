@@ -138,7 +138,7 @@ public:
 
     static CapabilityId propertyCapabilityId() { return CapabilityId("eve.editor.target.voxel-catalog-properties"); }
 
-    TargetId      targetId() const override { return TargetId(id_); }
+    TargetId         targetId() const override { return TargetId(id_); }
     TargetDescriptor describe() const override;
 
     /**

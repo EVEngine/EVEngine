@@ -461,7 +461,6 @@ public:
     }
 
 private:
-
     void generationProject(Value& value, Generation generation) const {
         if (generationProjector_) generationProjector_(value, generation);
     }

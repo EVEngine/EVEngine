@@ -66,7 +66,7 @@ private:
 
     std::string                         id_;
     std::vector<MaterialDocumentTarget> materials_;
-    IMaterialBatchRuntimeSink*          sink_     = nullptr;
+    IMaterialBatchRuntimeSink*          sink_ = nullptr;
 };
 
 }  // namespace eve::material_editing

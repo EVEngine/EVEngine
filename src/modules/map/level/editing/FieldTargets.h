@@ -22,7 +22,7 @@ class TileBufferTarget final : public ::eve::editing::EditableTargetState,
 public:
     /** @brief Adapt a borrowed buffer that must outlive this target. @thread Owner-thread only. */
     TileBufferTarget(std::string id, TileBuffer *buffer);
-    TargetId targetId() const override { return TargetId(id_); }
+    TargetId         targetId() const override { return TargetId(id_); }
     int width() const override;
     int height() const override;
     bool containsCell(int x, int y) const override;

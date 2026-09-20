@@ -52,7 +52,7 @@ public:
     MeshVfxAssetTarget(const MeshVfxAssetTarget& other);
     MeshVfxAssetTarget& operator=(const MeshVfxAssetTarget& other);
 
-    TargetId targetId() const override { return TargetId(id_); }
+    TargetId                                targetId() const override { return TargetId(id_); }
     TargetDescriptor describe() const override;
     void* queryCapability(const CapabilityId& capability) override;
     EditorResult<void> applyDomainOperation(const DomainOperation& operation) override;
@@ -77,7 +77,7 @@ private:
     bool matches(const SelectionSnapshot& selection) const;
     std::string canonicalJson() const;
 
-    std::string id_;
+    std::string                            id_;
     std::unique_ptr<stylize::MeshVfxAsset> asset_;
 };
 

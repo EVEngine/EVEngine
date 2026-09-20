@@ -40,7 +40,7 @@ public:
 
     /** @brief Construct an empty JSON-object definition with stable identity. */
     DefinitionDocument(std::string type, std::string id, int version = 1);
-    TargetId targetId() const override { return TargetId(targetId_); }
+    TargetId         targetId() const override { return TargetId(targetId_); }
     TargetDescriptor describe() const override;
     /** @brief Query an optional target capability. @return Borrowed pointer owned by this target, or null. @lifetime Valid until this target is destroyed or mutated. */
     void* queryCapability(const CapabilityId&) override { return nullptr; }

@@ -103,7 +103,7 @@ class AnimationClipDocumentTarget final : public ::eve::editing::EditableTargetS
                                           public IAnimationClipEditTarget {
 public:
     explicit AnimationClipDocumentTarget(std::string id);
-    TargetId targetId() const override { return TargetId(id_); }
+    TargetId         targetId() const override { return TargetId(id_); }
     TargetDescriptor describe() const override;
     /** @brief Query an optional target capability. @return Borrowed pointer owned by this target, or null. @lifetime Valid until this target is destroyed or mutated. */
     void* queryCapability(const CapabilityId& capability) override;
@@ -140,7 +140,7 @@ public:
     EditorResult<void> loadSnapshot(const EditorValue& snapshot);
 
 private:
-    std::string id_;
+    std::string                              id_;
     double duration_ = 1.0;
     double sampleRate_ = 30.0;
     bool loop_ = true;

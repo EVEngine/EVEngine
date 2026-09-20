@@ -7,7 +7,7 @@
 namespace eve::procgen {
 namespace {
 constexpr std::size_t kMaximumPresetJsonBytes = 256U * 1024U * 1024U;
-constexpr std::size_t kMaximumSpawnerEntries = 4096;
+constexpr std::size_t kMaximumSpawnerEntries  = 4096;
 }  // namespace
 
 Result<std::string> TerrainBiomePreset::snapshotJson() const {

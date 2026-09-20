@@ -31,7 +31,7 @@ class MaterialDocumentTarget final : public ::eve::editing::EditableTargetState,
 public:
     explicit MaterialDocumentTarget(std::string id);
 
-    TargetId targetId() const override { return TargetId(id_); }
+    TargetId         targetId() const override { return TargetId(id_); }
     TargetDescriptor describe() const override;
     /** @brief Query an optional target capability. @return Borrowed pointer owned by this target, or null. @lifetime Valid until this target is destroyed or mutated. */
     void* queryCapability(const CapabilityId& capability) override;
@@ -62,7 +62,7 @@ private:
                                                  const EditorValue& value);
     bool selectionMatches(const SelectionSnapshot& selection) const;
 
-    std::string id_;
+    std::string                        id_;
     std::map<std::string, EditorValue> values_;
 };
 

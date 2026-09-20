@@ -67,7 +67,7 @@ public:
     /** @brief Inspector capability published by describe(). */
     static CapabilityId propertyCapabilityId() { return CapabilityId("eve.editor.target.ui-theme-properties"); }
 
-    TargetId      targetId() const override { return TargetId(id_); }
+    TargetId         targetId() const override { return TargetId(id_); }
     TargetDescriptor describe() const override;
     /**
      * @brief Query Inspector and snapshot capabilities.
