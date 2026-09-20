@@ -218,7 +218,7 @@ struct TypedEventEnvelope {
 class GameEventLog;
 
 /** @brief Independent sequence cursor used to consume an GameEventLog in batches. */
-class EventConsumer {
+class EVENGINE_API_FOUNDATION EventConsumer {
 public:
     /** @brief Reads at most maxCount events and advances past the returned batch. */
     int read(int maxCount);

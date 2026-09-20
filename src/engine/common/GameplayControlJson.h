@@ -25,6 +25,6 @@ namespace eve {
  * @param requestJson Strict UTF-8 JSON request.
  * @return Deterministic compact response JSON or structured diagnostics.
  */
-[[nodiscard]] Result<std::string> executeGameplayControlJson(std::string_view requestJson);
+[[nodiscard]] EVENGINE_API_FOUNDATION Result<std::string> executeGameplayControlJson(std::string_view requestJson);
 
 }  // namespace eve

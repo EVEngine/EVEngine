@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/Time.h"
 
@@ -104,7 +106,7 @@ struct RTSCancelProductionReceipt {
  * cannot leave a charged, partially published build. This is the preferred
  * RTS build entry point; callers do not manually combine payment and execution.
  */
-class RTSProductionActionAdapter final {
+class EVENGINE_API_DOMAINS RTSProductionActionAdapter final {
 public:
     /**
      * @brief Run the canonical build transaction against a live RTS Building.

@@ -65,7 +65,7 @@ public:
  * @remarks GameState remains the sole owner of persistent cursor/completion facts. The session owns
  * its definition copy so catalogue hot replacement cannot invalidate an active event.
  */
-class StoryEventSession {
+class EVENGINE_API_PLATFORM StoryEventSession {
 public:
     /**
      * @brief Begin or resume an event from its authoritative GameState cursor.

@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "editing/EditableTarget.h"
 #include "editing/EditingAuthority.h"
@@ -49,7 +51,7 @@ struct SocialEdgeRecord {
 };
 
 /** @brief UI-neutral revisioned social graph authoring document. */
-class SocialDocumentTarget final : public virtual IEditableTarget,
+class EVENGINE_API_BACKENDS SocialDocumentTarget final : public virtual IEditableTarget,
                                    public IDomainOperationTarget,
                                    public IDomainOperationTargetStaging {
 public:
@@ -94,7 +96,7 @@ private:
 };
 
 /** @brief Publishes a complete validated social document to a runtime SocialGraph. */
-class SocialRuntimeApplier {
+class EVENGINE_API_BACKENDS SocialRuntimeApplier {
 public:
     EditorResult<void> apply(const SocialDocumentTarget& document, social::SocialGraph* runtime) const;
 };

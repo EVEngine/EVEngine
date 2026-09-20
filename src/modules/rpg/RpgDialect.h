@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @file RpgDialect.h
@@ -235,7 +237,7 @@ struct RpgStoryBinding {
  *
  * @thread Owner thread only; no synchronization is performed.
  */
-class RpgStoryCatalogue {
+class EVENGINE_API_PLATFORM RpgStoryCatalogue {
 public:
     /**
      * @brief Compile and atomically publish every `story` block of one document.
@@ -267,7 +269,7 @@ public:
  *
  * @thread Owner thread only. @reentrancy No callbacks into the session.
  */
-class RpgStorySession {
+class EVENGINE_API_PLATFORM RpgStorySession {
 public:
     RpgStorySession();
     ~RpgStorySession();

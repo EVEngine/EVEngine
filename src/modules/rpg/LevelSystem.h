@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @file LevelSystem.h
@@ -48,7 +50,7 @@ struct LevelUpEvent {
  * @brief 成长系统：读写 RPGActor::Progression 并驱动升级事件。
  * @thread 调用线程应与 RPGActor 的 ECS 线程一致。
  */
-class LevelSystem {
+class EVENGINE_API_PLATFORM LevelSystem {
 public:
     /** @brief 当前等级（无 progression 时返回 1）。 */
     static int getLevel(RPGActor *actor);

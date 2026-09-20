@@ -565,3 +565,27 @@ debug SDK（`make sdk/win32-debug`）**沿用开发配置，即动态**：它从
 **刻意例外**：`SoftBody3DWorldBridge.cpp:56,62` 的 2 条 `warning C4273` 未修——`softbody/SoftBody3D.h` 相对基线未改动且已写 `class EVENGINE_API_BACKENDS SoftBody3D`，而这两个成员的定义落在 `EVPhysics`（EVWorld 组），即"类归 BACKENDS、成员定义在 WORLD"的跨组错配，属**基线遗留**；两个符号都不在这 256 个未解析集里、无人导入，OBJECT 模式 0 条。归 §7.3 范畴。
 
 进度：30 个域中 **23 个已链通**（20 个全绿）；余 `procgen` / `rpg` / `graphics`（各自需重新取权威基线，`procgen` 的旧日志 899 已过期）。§7.15 记的 256 个残余已在本节清零。
+
+### 7.17 SHARED 测试面标注：rpg（2026-09-20）
+
+| 域 | LNK1120 前→后 | exe | ctest（`-E "^bundle/" --timeout 120 -j 4`） |
+| --- | --- | --- | --- |
+| rpg | 461 → 0 | 14.69 MiB（OBJECT 同源码 231.8 MiB，15.8×） | **301/301 通过**（label 360，59 个 bundle 项排除；0 失败 0 超时） |
+
+静态 `ninja -C C:\evs eve` exit 0（`eve.exe` 233,097,216 B）；OBJECT 单链接单元对照 **301/301**。基线 `LNK1120 = 461`（`LNK2019 450 + LNK2001 215 = 665 行`，`error C` 0，7 个组 DLL 全链通）——§7.6 记的 "rpg 565" 是 29 域一起链的汇总口径，逐域实测 461。标注 **66 个唯一站点 / 53 个文件**（类 59 + 自由函数 7），组宏 `PLATFORM 38 / FOUNDATION 18 / BACKENDS 6 / WORLD 2 / DOMAINS 2`，`Export.h` 新增 **47** 处，`_INLINE` 0，C2280 四件套 0，friend/兄弟声明补宏 **0**（`b2_dup_decls.py` 修掉顶格盲区后无遗漏 → 重链 **0 条 C4273**）；清两个对象根各 17 模块 / 167 个 `.obj`（共 334）。`dumpbin /dependents` 直接导入全部 7 个组 DLL。
+
+本域 **301 个用例真实全绿**：五个已知失败族结构上都存在（探针 `b6c_dll_state.py` / `b6e_box3d_state.py`），但一个都没触发——SDL `_this` 在 exe 里有一份却不建 `SDL_WINDOW_VULKAN`；ECS `default_table()` 在 `unit_test_rpg.exe` 里 **0 份**（24 份在 EVRPG 内，同属 EVPlatform.dll，故只有一份有效表）；ImGui/box3d 本域不建 context/世界。`b10-ctest.log` 里 `Video subsystem…` / `No current context` / `B3_ASSERT` / `0x80000003` / `SegFault` 全 0。
+
+**新坑（并入 §7.5 流水线规则）：批量标注器自己必须被验证，"能跑出计划"不等于"计划对了"。** 本轮在工具里挖出 4 个缺陷，前两个会直接污染源码：
+1. **apply 必须按"站点"去重，不能按"符号"**：461 个符号落在 66 个站点上，而 `b6e_place.py` 的 ALREADY 判定用的是未修改的索引行，于是同一行被插了 N 遍（45 个文件 395 个重复宏，`rpg/RPG.h:54` 一次 50 个）。回修用 `b10_repair.py`：**按字节**把连续的 `EVENGINE_API_*` 串收敛为第一个，不解码/重编码（行尾字节零改动）。检查手段很便宜：对 diff 扫 `^\+.*EVENGINE_API_[A-Z_]+.*EVENGINE_API_[A-Z_]+` 必须为 0（physics 提交与 rpg 批现在都是 0）。
+2. **`raw_lines()` 保留 `split` 的尾空元素** → 任何以换行结尾的文件都会先 `ABORT: line-count mismatch (N vs N-1)` 而一行不写：表现为"工具说成功、源码没变"。
+3. **假验证器**：`b6e_verify_sites.py` 拿补丁计划的**整行**当 mangled 符号去查字典，必然全落空（66 个站点全报 `NAMESPACE-MISMATCH`）。正确做法是 `b6e_place --map`（sym→site）+ 归属证据（所选模块目录下确有 `.cpp` 定义 `Class::`），即 `b10_verify.py`：461 符号 / 66 站点 / 0 问题。
+4. **`b10_includes.py` 的 include 正则漏了 `re.M`**（`^` 只匹配文首）→ 每个头文件的 `findall` 都返回空，于是给 6 个**本来已有** `Export.h` 的文件又插了一行；征兆是工具打印 `already reach Export.h: 0`。修正则 + 新增 `b10_fix_includes.py`（自校验：删掉插入块后仍至少有 1 个 include 才删）。
+
+**环境教训（两条，都会伪装成"代理卡死"）**：
+- 本机 `pwsh` 是 **Windows PowerShell 5.1**，`>` 重定向写 **UTF-16**；一切日志/中间产物改走 `cmd /c "python … > file"`。
+- 前台工具调用有 **120 s 上限**，超时会**孤儿化** python 进程并锁住输出文件；长工具一律 `run_in_background` + 轮询进程。
+
+`eol_restore.py` 本轮再次证明幂等：第一遍 `eol-churned=53`，修掉冗余 include 后再跑 `eol-churned=0`（收敛）。验收口径：这 53 个文件相对 merge-base 合计 **189 insertions**，**无任何整文件 diff**（最大 `game_event/GameEvent.h` 13/2）。
+
+进度：30 个域中 **24 个已链通**（21 个全绿——rpg 全绿）；余 `procgen` / `graphics`。

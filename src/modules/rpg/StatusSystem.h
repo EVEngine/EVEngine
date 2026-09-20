@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 // 状态（buff/debuff）系统：把 RPG EffectDefinition 适配到通用
 // effects::EffectContainer，并由 RPG executor 驱动 modifier / 周期结算。
@@ -22,7 +24,7 @@ namespace eve::rpg {
 class RPGActor;
 struct EffectDefinition;
 
-class StatusSystem {
+class EVENGINE_API_PLATFORM StatusSystem {
 public:
     /**
      * @brief 施加前条件：返回 false 表示拒绝施加。

@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @file SkillCondition.h
@@ -74,7 +76,7 @@ private:
 };
 
 /** @brief Evaluates a condition using RPG Skill state without mutating it. */
-class SkillConditionAdapter {
+class EVENGINE_API_PLATFORM SkillConditionAdapter {
 public:
     /**
      * @brief Evaluate one skill condition against an actor and definition.

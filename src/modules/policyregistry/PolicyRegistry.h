@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/Module.h"
 #include "common/Snapshot.h"
@@ -50,7 +52,7 @@ struct PolicyEvent {
 };
 
 /** @brief Deterministic registry for discoverable, non-executable policy descriptions. */
-class PolicyRegistry {
+class EVENGINE_API_FOUNDATION PolicyRegistry {
 public:
     /**
      * @brief Creates an independent policy registry.
@@ -144,7 +146,7 @@ private:
 };
 
 /** @brief Returns the stable lowercase implementation kind name. */
-std::string implementationKindName(ImplementationKind kind);
+EVENGINE_API_FOUNDATION std::string implementationKindName(ImplementationKind kind);
 /** @brief Parses a stable lowercase implementation kind name. */
 bool parseImplementationKind(const std::string& name, ImplementationKind& kind);
 

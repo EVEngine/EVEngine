@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @file ProductControl.h
@@ -23,7 +25,7 @@ class Tracker;
  * caller-owned adapter retains only borrowed pointers, an optimistic observation
  * fingerprint and owning event projections. Destroy it before any participant.
  */
-class ProductControl final : public IGameplayControlProvider {
+class EVENGINE_API_PLATFORM ProductControl final : public IGameplayControlProvider {
 public:
     /** @brief Construct over borrowed product-loop authorities and a stable instance identity. */
     ProductControl(SubjectRef instance, GameState& gameState, Tracker& tracker,

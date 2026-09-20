@@ -91,7 +91,7 @@ private:
  * assigned by AttributeSet and breaks equal-priority ties. For Custom,
  * `policyId` names a registered AttributeOperationRegistry policy.
  */
-struct AttributeModifier {
+struct EVENGINE_API_FOUNDATION AttributeModifier {
     ModifierId         id;
     AttributeId        attribute;
     SourceId           source;
@@ -140,7 +140,7 @@ struct AttributeValue {
  * MultiplicativePercent factors, then priority/sequence ordered Override and
  * Clamp operations. Custom policies participate in the final ordered phase.
  */
-[[nodiscard]] double computeAttributeValue(const AttributeValue&             attribute,
+[[nodiscard]] EVENGINE_API_FOUNDATION double computeAttributeValue(const AttributeValue&             attribute,
                                            const AttributeOperationRegistry* customOperations = nullptr);
 
 /** @brief Generic owning collection of canonical attributes and modifiers. */

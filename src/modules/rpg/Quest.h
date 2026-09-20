@@ -21,7 +21,7 @@
 namespace eve::rpg {
 
 /** @brief 数据驱动的任务模板。 */
-struct QuestDefinition {
+struct EVENGINE_API_PLATFORM QuestDefinition {
     std::string id;
     /** @brief "manual" | "auto"，缺省 "manual"。 */
     std::string startPolicy = "manual";

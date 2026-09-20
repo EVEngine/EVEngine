@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @file WeaponControl.h
@@ -24,7 +26,7 @@ namespace eve::weapon {
  * participant remain authoritative borrowed collaborators and must outlive this
  * owner-thread-affine adapter. Firing is delegated to WeaponActionAdapter.
  */
-class WeaponControl final : public IGameplayControlProvider {
+class EVENGINE_API_WORLD WeaponControl final : public IGameplayControlProvider {
 public:
     /**
      * @brief Construct a control adapter for one copied definition and borrowed effect authorities.
