@@ -73,6 +73,23 @@ print(sh.childCount());
 
 Ease 扩展：`in/out/inOut` + `Back` / `Elastic` / `Bounce`。
 
+把每个采样值**推给一个脚本对象**（不用逐帧 `value()` 轮询）：
+
+```squirrel
+class MoveSink {
+    function write(value) { myBar.width = value }   // 每次求值调一次
+}
+local sink = MoveSink();
+
+local h = anim.newMotion(0, 100, 0.5).bind(sink);   // bind = 绑上并开跑
+// 或者先只绑不跑（放进 sequence 时用）：builder.to(sink); seq.append(builder);
+```
+
+- `write(value)` 的失败**不会被吞**：motion 会按 `cancelOnError`（默认开）取消，本次 `advance()`
+  也会返回失败；连初始化值都拒绝的 sink 会让 `bind()` 自己失败。
+- 序列里用：`local b = anim.newMotion(0, 1, 0.3); b.to(sink); seq.append(b);`
+- 脚本 sink 与原生 sink（`FloatPointerSink` 等）是同一个接口的两个实现，行为一致。
+
 Punch / Shake（有限时长阻尼正弦；`to`/`strength` 为振幅）与 Color/Quat：
 
 ```cpp

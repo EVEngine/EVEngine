@@ -6,12 +6,16 @@
 #include "animation/MotionSequence.h"
 #include "animation/MotionTypes.h"
 #include "common/Exception.h"
+#include "common/ScriptProvider.h"
+#include "common/Value.h"
 
 #include <simplesquirrel/simplesquirrel.hpp>
 
 #include <cstdint>
+#include <memory>
 #include <string>
 #include <utility>
+#include <vector>
 
 namespace eve::animation {
 namespace {
@@ -30,6 +34,66 @@ Animation *requireAnimation(Animation *animation) {
     if (!animation) throw Exception("MotionSequence: Animation is null");
     return animation;
 }
+
+/**
+ * @brief 脚本对象实现的 `IMotionFloatSink`。
+ *
+ * 脚本对象实现 `write(value)`，每次求值调用一次。**失败原样返回**：`MotionRuntime` 靠这个返回值
+ * 决定要不要按 `cancelOnError` 取消 motion——脚本抛错被吞掉会让动画继续跑在一个已经不再接收值的
+ * 目标上。脚本对象的持有与代际由 provider 注册表负责（拿一份 VM 引用、给一个带代际的句柄），
+ * 所以适配器只存句柄，不存裸对象。
+ */
+class ScriptMotionFloatSink final : public IMotionFloatSink {
+public:
+    explicit ScriptMotionFloatSink(ScriptProviderHandle handle) : handle_(std::move(handle)) {}
+
+    /** @brief 本适配器所服务的那一代脚本对象。 */
+    [[nodiscard]] const ScriptProviderHandle& handle() const noexcept { return handle_; }
+
+    [[nodiscard]] eve::Result<void> write(float value) override {
+        const eve::ScriptArg args[] = {eve::ScriptArg::fromNumber(double(value))};
+        return eve::ScriptProviderRegistry::instance().call(handle_, "write", args);
+    }
+
+private:
+    ScriptProviderHandle handle_;
+};
+
+/**
+ * @brief 模块级持有脚本 motion sink 适配器。
+ *
+ * 为什么必须有主人：`MotionRuntime` 的槽位**借用** sink 指针，所以适配器要活到 motion 结束
+ * （`advance()` 随时可能用到它）。这里按"一次 `to()` 一个适配器"登记，模块析构时整体撤回；
+ * 正常用法是绑一次跑一个动画，不是每帧重绑（每帧重绑会让这个列表一直长）。
+ */
+struct ScriptMotionSinkEntry {
+    std::string                            providerName;
+    std::unique_ptr<ScriptMotionFloatSink> adapter;
+};
+
+std::vector<ScriptMotionSinkEntry>& scriptMotionSinkEntries() {
+    static std::vector<ScriptMotionSinkEntry> entries;
+    return entries;
+}
+
+std::uint64_t& scriptMotionSinkSequence() {
+    static std::uint64_t sequence = 0;
+    return sequence;
+}
+
+}  // namespace
+
+void clearScriptMotionSinkAdapters() {
+    auto& entries = scriptMotionSinkEntries();
+    for (ScriptMotionSinkEntry& entry : entries) {
+        eve::ScriptProviderRegistry& registry = eve::ScriptProviderRegistry::instance();
+        registry.unload(eve::ScriptProviderHandle{entry.providerName, registry.generationOf(entry.providerName)})
+            .ignore("module teardown may already have dropped this motion sink provider");
+    }
+    entries.clear();
+}
+
+namespace {
 
 class ScriptMotionHandle {
 public:
@@ -85,11 +149,35 @@ public:
     void stylePunch() { desc_.style = MotionStyle::Punch; }
     void styleShake() { desc_.style = MotionStyle::Shake; }
 
-    ScriptMotionHandle *run() {
+    /**
+     * @brief 把一个**脚本对象**绑成 sink（不启动；`run()` 会带着它跑）。
+     *
+     * 对象要实现 `write(value)`。这就是把 animation 侧五个"直接持有指针"的 sink 接口之一
+     * （`IMotionFloatSink`）接到脚本上的方式：适配器实现那个接口，脚本对象扮演原本由 C++ 适配器
+     * 扮演的角色。**重复 `to()` 以后一次为准**，前一个适配器留到模块析构。
+     */
+    void to(const ssq::Object& sink) {
         ensureLive();
-        consumed_      = true;
-        desc_.sink     = nullptr;
-        auto spawned   = animation_->motions().spawnFloat(desc_);
+        if (sink.getType() != ssq::Type::INSTANCE)
+            throw Exception("MotionBuilder.to: sink must be an instance implementing write(value)");
+        const std::string name      = "animation.motion-sink." + std::to_string(++scriptMotionSinkSequence());
+        auto              published = eve::ScriptProviderRegistry::instance().publish(name, sink);
+        if (!published.ok()) throwMotionError(published.error());
+        auto adapter = std::make_unique<ScriptMotionFloatSink>(published.value());
+        desc_.sink   = adapter.get();
+        scriptMotionSinkEntries().push_back(ScriptMotionSinkEntry{name, std::move(adapter)});
+    }
+
+    /** @brief 绑上脚本 sink 并立刻开跑（对应 C++ 的 `MotionBuilder::bind`）。 */
+    ScriptMotionHandle* bind(const ssq::Object& sink) {
+        to(sink);
+        return run();
+    }
+
+    ScriptMotionHandle* run() {
+        ensureLive();
+        consumed_    = true;
+        auto spawned = animation_->motions().spawnFloat(desc_);
         if (!spawned.ok()) throwMotionError(spawned.error());
         return new ScriptMotionHandle(&animation_->motions(), spawned.value());
     }
@@ -222,6 +310,14 @@ void exposeMotionScriptBindings(ssq::Table &table, ssq::Class &animationClass) {
     builder.addFunc("frequency", &ScriptMotionBuilder::frequency);
     builder.addFunc("dampingRatio", &ScriptMotionBuilder::dampingRatio);
     builder.addFunc("seed", &ScriptMotionBuilder::seed);
+    builder.addFunc("to", [](ScriptMotionBuilder* self, const ssq::Object& sink) {
+        if (!self) throw Exception("MotionBuilder.to: builder is null");
+        self->to(sink);
+    });
+    builder.addFunc("bind", [](ScriptMotionBuilder* self, const ssq::Object& sink) -> ScriptMotionHandle* {
+        if (!self) throw Exception("MotionBuilder.bind: builder is null");
+        return self->bind(sink);
+    });
     builder.addFunc("run", &ScriptMotionBuilder::run);
 
     auto seqHandle = table.addClass<ScriptMotionSequenceHandle>(
