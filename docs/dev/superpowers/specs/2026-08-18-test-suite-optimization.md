@@ -649,13 +649,15 @@ debug SDK（`make sdk/win32-debug`）**沿用开发配置，即动态**：它从
 
 | 项 | 数 |
 | --- | --- |
-| 用例总数 / 失败 / 超时 | **5274 / 130 / 0**（98% 通过，436.6 s） |
-| 分族 | SDL video `_this` **111**、ECS `default_table()` **6**、ImGui `GImGui` **6（挂起→超时）**、box3d `b3_worlds` **5**、box2d `s_initialized` **1**、插件夹具 **1** |
-| 分域 | particles 9、procgen 9、graphics 93（92 SDL + 1 box2d）、physics 6（5 box3d + 1 SDL）、ui 6、building 4、scene 1、combat 1、core 1；**其余 21 个域 0 失败** |
+| 用例总数 / 失败 / 超时 | **5274 / 129 / 0**（130 个里 1 个已随下面那处**构建修复**转绿） |
+| 分族 | SDL video `_this` **111**、ECS `default_table()` **6**、ImGui `GImGui` **6（挂起→超时）**、box3d `b3_worlds` **5**、box2d `s_initialized` **1**；插件夹具族已修好（0） |
+| 分域 | particles 9、procgen 9、graphics 93（92 SDL + 1 box2d）、physics 6（5 box3d + 1 SDL）、ui 6、building 4、scene 1、combat 1；**其余 22 个域 0 失败**（`core` 507/507 全绿） |
 
-**交叉核对**：9+9+93+6+6+4+1+1+1 = **130**，与整套跑出来的失败数逐一吻合，说明整套跑没有暴露任何逐域没记录过的新失败。分族明细与每族取证方式见 §7.3；这里补充两条**新族**：`box2d` 的 `s_initialized`（与 §7.16 的 box3d `b3_worlds` 同源：第三方静态库的文件作用域状态，`EVBackends.dll` 与 `EVWorld.dll` 各一份、`unit_test_graphics.exe` 里 0 份）与 `graphics` 域特有的 92 个 SDL 用例（窗口初始化在 EVPlatform 组、Vulkan 入口在 EVBackends 组各自的 SDL 副本里）。
+**翻转默认值后，整套构建暴露出一处"构建级"断裂（已修，不属于"记录不修"的那一类）**：SHARED 下 `ninja`（默认目标）失败于 `test/native_test_plugin.dll` → `LNK1104: 无法打开文件 "test\unit_test_core.lib"`——SHARED 里宿主 exe 没有导出表、**根本不存在**这个 `.lib`，插件夹具因而链不上。这与"某个用例在 SHARED 下失败"性质不同：它让默认构建直接红（开发者 `make build/win32-debug`、CI 都会停在链接阶段），所以尽管决策是"记录不修"，这一处仍按 §7.13 早已写明的方向修掉了：SHARED 下插件改链 `${EVE_LINK_TARGETS}`（组 DLL 的导入库），这也正是真实插件的发布模型——从引擎 DLL 解析符号，而不是从宿主 exe。修后：`ninja` 全目标 **0 FAILED**，`plugins.*` **5/5 通过**，`unit_test_core` **507/507 全绿**，已知失败 130 → **129**、全绿域 21 → **22**。
 
-**这 130 个是"记录"而不是"待修"**（项目所有者 2026-09-20 决策）：本仓库内只能修其中 7 个（ImGui 6 个 → 把 ImGui 编成 SHARED 目标；插件夹具 1 个 → 让插件改链组 DLL 的导入库），其余需要把 SDL2/box2d/box3d 改成动态库（新增一份第三方动态预编译树 + 部署/打包改动），ECS 的 6 个还需要改 `external/ECS.hpp` **子模块**（另一个仓库）。全部保留为已知失败并在此存档。
+**交叉核对**：9+9+93+6+6+4+1+1 = **129**（130 减去已修好的 core 插件用例），与整套跑出来的失败数逐一吻合，说明整套跑没有暴露任何逐域没记录过的新失败。分族明细与每族取证方式见 §7.3；这里补充两条**新族**：`box2d` 的 `s_initialized`（与 §7.16 的 box3d `b3_worlds` 同源：第三方静态库的文件作用域状态，`EVBackends.dll` 与 `EVWorld.dll` 各一份、`unit_test_graphics.exe` 里 0 份）与 `graphics` 域特有的 92 个 SDL 用例（窗口初始化在 EVPlatform 组、Vulkan 入口在 EVBackends 组各自的 SDL 副本里）。
+
+**剩下的 129 个是"记录"而不是"待修"**（项目所有者 2026-09-20 决策）：本仓库内还能修 6 个（把 ImGui 编成 SHARED 目标，救 `ui` 的 6 个挂起用例），其余需要把 SDL2/box2d/box3d 改成动态库（新增一份第三方动态预编译树 + 部署/打包改动），ECS 的 6 个还需要改 `external/ECS.hpp` **子模块**（另一个仓库）。全部保留为已知失败并在此存档。
 
 **运维陷阱（本轮踩到）**：`ctest` 的 `Test #NNN` 编号在本树上**不稳定**——同一个二进制两次全量跑之间，`graphics.imageAudit.pipelineConfigs` 从 #658 变 #748、`window.zeroSizeUsesDesktopDimensions` 从 #1686 变 #1914。因此 **`ctest --rerun-failed` 会跑错用例**（它一度声称"93 个里只有 7 个失败"，那 7 个其实是别的用例）。所有 ctest 结论都必须按**用例名集合**而不是编号。
 
