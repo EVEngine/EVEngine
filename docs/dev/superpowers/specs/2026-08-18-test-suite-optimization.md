@@ -674,3 +674,24 @@ debug SDK（`make sdk/win32-debug`）**沿用开发配置，即动态**：它从
 **回归 2（诊断过程中发现的门禁盲区）：`check/architecture-contracts` 的 Link/System 规则被宏"遮蔽"。** 同理，`\b(?:class|struct)\s+[A-Za-z_]\w*Link\b` 之类在宏前缀下**静默失配**——任何新加的 `class EVENGINE_API_X FooSystem` 都不再被门禁看见（覆盖率损失）。修法是让模式穿过宏；但只改模式会立刻在**既有**声明上报 6 条 `missing-contract-entry`（`network/UdpLink.h`、`particles/ParticleSystem.h`、`procgen/algorithms/LSystem.h`、`scene/TransformSystem.h`、`ui/UISystem.h`、`weapon/WeaponSystem.h`）——这些类型本来就在，只是"行被我们改过"。所以同时把规则**按它自己的描述实现成"只针对新声明"**：`lint_contract_coverage` 新增 `base` 参数，若该类型名在 base 版本的同一文件里已存在，则不算新面。修后门禁 **OK**、契约测试 **10/10**，并且新增一条测试（既有 `TransformSystem` 不报、base 里没有的 `BrandNewSystem` 照报）。
 
 **教训**：`ninja` 增量构建 + 陈旧生成物会把"冷构建才跑"的检查藏起来。**验收一条与生成物相关的改动，必须至少跑一次冷构建（或强制重跑该生成目标）**；本轮的判据是"Linux 全新 clone 的构建"。
+
+### 7.22 ELF 侧：SHARED 把第三方与测试框架链进 .so，因此需要 PIC（2026-09-20）
+
+修掉 §7.21 的两处之后，Linux 冷构建继续推进到**第一个组库链接**，暴露第二条 Windows 上根本不存在的问题类：
+
+```
+libEVFoundation.so: external/zeroerr/src/libzeroerr.a(color.cpp.o): relocation
+R_X86_64_PC32 against symbol `_ZN7zeroerr5ResetE' can not be used when making
+a shared object; recompile with -fPIC
+```
+
+ELF 不允许把非 PIC 的目标文件链进共享对象；OBJECT（release/SDK）只产出可执行文件，永远不需要 PIC，所以这条只在"SHARED + Linux"组合下出现。逐个定位后是两处，且**恰好两处**：
+
+1. **`zeroerr`**：它来自 `external/zeroerr` 子模块，自己不开 PIC → `cmake/link_groups.cmake` 在 SHARED 时给它设 `POSITION_INDEPENDENT_CODE ON`（MSVC 无视该属性）。
+2. **`SDL2-static`**：第三方聚合的 `third-party/CMakeLists.txt:9` 本来就 `set(CMAKE_POSITION_INDEPENDENT_CODE ON CACHE BOOL "" FORCE)`，其余子项目（Poco / box3d / assimp / mpg123 / OpenAL）都用它；**只有 SDL2 例外**——它按 `SDL_STATIC_PIC`（默认 `OFF`）逐 target 覆盖该属性（`third-party/SDL2/CMakeLists.txt:2639`）。因此 SHARED 时给第三方聚合加 `-DSDL_STATIC_PIC=ON`。
+
+**取证方法值得记下**：不要在每次链接失败后盲目重编第三方（一轮 20-40 分钟）。先做静态排查——在第三方源码树里 grep `POSITION_INDEPENDENT_CODE|_STATIC_PIC`（注意 `third-party/` **不在 git 里**，`git grep` 搜不到，要用文件系统级搜索），就能一次看清谁覆盖了全局设置：本次 16 处命中里只有 SDL2 是覆盖型的，其余都是"跟随全局"。加上"聚合 CMakeLists 已经 FORCE 全局 PIC"这一条，结论就是**只有 SDL2 需要显式开关**，不用逐个试错。
+
+`CMAKE_POSITION_INDEPENDENT_CODE` 那条全局参数因此被撤掉（聚合已经强制它），只保留 SDL 的开关——第三方 configure 参数越少越好，每个参数变化都会让整棵第三方树重编。
+
+**Linux 侧现状**：这两处修好后需要在 WSL 里强制重编第三方（ExternalProject 的 stamp 不认为参数变了，必须删 `third-party-prefix` 与第三方安装树）才能验证；`libEV*.so` 是否真正产出、`LD_LIBRARY_PATH` 运行期发现是否成立，以那次冷构建的实测为准（本节的结论只覆盖到"可以开始链接组库"）。
