@@ -1619,6 +1619,12 @@ Sculpt 七种结果。
 - 在每帧 update 生成大地图或纹理。
 - 在每帧重新生成树木网格；应缓存 `Mesh`，仅在 seed 或参数变化时重建。
 
+## 运行时质量与延迟任务
+
+`eve.PcgFrameRateManager()` 提供可回放的帧率采样和地形质量档策略；调用方注入 `dt` 与
+`timeScale`，因此它不依赖 OS 墙钟。`eve.PcgTaskQueue()` 提供 callback-free 的延迟任务状态机，
+任务执行仍由调用方在队列外完成。这两个 PCG 策略类型由 `procgen` 模块绑定，不属于 `os`。
+
 ## L-system 文法生成
 
 通用随机括号 L-system 引擎(`procgen.newLSystem()`)。给定 axiom 与产生式(可带权重随机),迭代若干次后用 3D 海龟解释:绘制 `/` 折返、`[ ]` 入/弹栈产生分支,枝条粗细随深度衰减。固定 seed 结果完全可复现。除 `mesh.lsystem` 网格配方外,`trace()` 可把枝段作为样条控制点输出(道路、二维布局)。

@@ -34,12 +34,11 @@
     worker 勿碰 Squirrel VM
 
 3. 计时器 — `timer`（`eve.Timer`）
-    启动后高精度时间与帧间隔；帧计时用它，不用 HostSystem。
+    启动后高精度时间与帧间隔；帧计时用它，不用 OS。
 
-4. 管理系统 — `system`（`eve.HostSystem`，槽 `system`）
+4. 操作系统 — `os`（`eve.OS`，槽 `os`）
     `getOS` / `getProcessorCount` / `getSystemRAM` / `getProcessMemoryMB` /
     `getWallTime` / `sleepMilliseconds` / 剪贴板 / 电量 / GPU 查询
-    脚本里 `eve.System` 是 ECS System 基类，不要混用。
 
 5. 性能剖析 — `profiler`（`eve.Profiler`）
     按模块/zone 的 CPU 调用树；GPU 帧时间来自 Vulkan timestamp。关闭时零开销。

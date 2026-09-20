@@ -56,7 +56,7 @@ eve_declare_module(NAME platform_event REQUIRED LAYER 0 SCRIPT PlatformEvent SLO
                    THIRDPARTY sdl2)
 eve_declare_module(NAME timer REQUIRED LAYER 0 SCRIPT Timer SLOT timer
                    THIRDPARTY sdl2)
-eve_declare_module(NAME system LAYER 0 SCRIPT HostSystem SLOT system
+eve_declare_module(NAME os LAYER 0 SCRIPT OS SLOT os
                    THIRDPARTY sdl2
                    GROUP minimal 2d 3d web)
 # Profiler: built-in engine-wide profiler. Scoped zones (common/Profile.h) are
