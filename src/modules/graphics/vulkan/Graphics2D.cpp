@@ -9,6 +9,7 @@
 #include "graphics/PrimitiveTessellator.h"
 #include "graphics/RenderControl.h"
 #include "graphics/vulkan/Canvas.h"
+#include "graphics/vulkan/GlslCompiler.h"
 #include "graphics/vulkan/Graphics.h"
 
 #include <SDL2/SDL.h>
@@ -25,9 +26,6 @@
 #include <stdexcept>
 #include <string>
 #include <vector>
-#if !defined(_WIN32)
-#include <unistd.h>
-#endif
 
 #include "common/Exception.h"
 #include "common/StartupTiming.h"
@@ -112,63 +110,19 @@ std::vector<uint32_t> readSpirvFile(const std::string &path) {
     return loadSpirvBytes(fd->getData(), fd->getSize());
 }
 
-std::vector<uint32_t> compileGlslWithGlslc(const std::string &source, const char *stage) {
+/**
+ * Compile one GLSL stage through the engine's shared compiler (GlslCompiler.h)
+ * while keeping the `newShader`-style exception text the shader factories report.
+ */
+std::vector<uint32_t> compileShaderStage(const std::string &source, const char *stage, GlslStage glslStage) {
     if (source.empty()) throw Exception("newShader: empty %s GLSL", stage);
-#if defined(_WIN32)
-    (void)source;
-    (void)stage;
-    throw Exception("newShader: GLSL compile via glslc is not supported on Windows; "
-                    "use newShaderFromSpv / newShaderFromSpvFile");
-#else
-    char inPath[] = "/tmp/eve_shader_XXXXXX";
-    int fd = mkstemp(inPath);
-    if (fd < 0) throw Exception("newShader: mkstemp failed");
-    std::string outPath = std::string(inPath) + ".spv";
-    {
-        ssize_t n = write(fd, source.data(), source.size());
-        close(fd);
-        if (n < 0 || size_t(n) != source.size()) {
-            unlink(inPath);
-            throw Exception("newShader: failed to write temp GLSL");
-        }
+    try {
+        return compileGlslToSpirv(source, glslStage, std::string("eve_shader.") + stage);
+    } catch (const std::exception &error) {
+        // The shared helper throws plain runtime errors (it also runs on CPU
+        // worker threads); wrap them into the engine exception callers expect.
+        throw Exception("newShader: GLSL compile failed for %s:\n%s", stage, error.what());
     }
-
-    std::string cmd = std::string("glslc -fshader-stage=") + stage + " \"" + inPath + "\" -o \"" +
-                      outPath + "\" 2>&1";
-    FILE *pipe = popen(cmd.c_str(), "r");
-    std::string err;
-    if (pipe) {
-        char buf[256];
-        while (fgets(buf, sizeof(buf), pipe)) err += buf;
-        int status = pclose(pipe);
-        unlink(inPath);
-        if (status != 0) {
-            unlink(outPath.c_str());
-            throw Exception("newShader: glslc failed for %s:\n%s", stage, err.c_str());
-        }
-    } else {
-        unlink(inPath);
-        throw Exception("newShader: glslc not available (popen failed)");
-    }
-
-    FILE *f = fopen(outPath.c_str(), "rb");
-    if (!f) {
-        unlink(outPath.c_str());
-        throw Exception("newShader: failed to open compiled SPIR-V");
-    }
-    fseek(f, 0, SEEK_END);
-    long sz = ftell(f);
-    fseek(f, 0, SEEK_SET);
-    std::vector<uint8_t> bytes(static_cast<size_t>(sz > 0 ? sz : 0));
-    if (sz > 0 && fread(bytes.data(), 1, static_cast<size_t>(sz), f) != static_cast<size_t>(sz)) {
-        fclose(f);
-        unlink(outPath.c_str());
-        throw Exception("newShader: failed to read compiled SPIR-V");
-    }
-    fclose(f);
-    unlink(outPath.c_str());
-    return loadSpirvBytes(bytes.data(), bytes.size());
-#endif
 }
 
 }  // namespace
@@ -1158,8 +1112,8 @@ Shader *Graphics::newShaderFromSpvFile(const std::string &vertPath, const std::s
 Shader *Graphics::newShader(const std::string &vertGlsl, const std::string &fragGlsl) {
     if (fragGlsl.empty()) throw Exception("newShader: empty fragment GLSL");
     std::vector<uint32_t> vert;
-    if (!vertGlsl.empty()) vert = compileGlslWithGlslc(vertGlsl, "vert");
-    auto frag = compileGlslWithGlslc(fragGlsl, "frag");
+    if (!vertGlsl.empty()) vert = compileShaderStage(vertGlsl, "vert", GlslStage::eVertex);
+    auto frag = compileShaderStage(fragGlsl, "frag", GlslStage::eFragment);
     return newShaderFromSpv(vert, frag);
 }
 
@@ -1297,8 +1251,8 @@ bool Graphics::releaseShader(Shader *shader) {
 Shader *Graphics::newMeshShader(const std::string &vertGlsl, const std::string &fragGlsl) {
     if (fragGlsl.empty()) throw Exception("newMeshShader: empty fragment GLSL");
     std::vector<uint32_t> vert;
-    if (!vertGlsl.empty()) vert = compileGlslWithGlslc(vertGlsl, "vert");
-    auto frag = compileGlslWithGlslc(fragGlsl, "frag");
+    if (!vertGlsl.empty()) vert = compileShaderStage(vertGlsl, "vert", GlslStage::eVertex);
+    auto frag = compileShaderStage(fragGlsl, "frag", GlslStage::eFragment);
     return newMeshShaderFromSpv(vert, frag);
 }
 

@@ -140,15 +140,6 @@ Result<void> Graphics::replaceShaderFromWgsl(Shader &, const std::string &,
 
 Result<void> Graphics::replaceShaderFromGlsl(Shader &shader, const std::string &vertGlsl,
                                              const std::string &fragGlsl) {
-#if defined(_WIN32)
-    (void)shader;
-    (void)vertGlsl;
-    (void)fragGlsl;
-    return reloadFailure(DiagnosticCode::Unsupported,
-                         "runtime GLSL replacement is unavailable on Windows Vulkan; compile "
-                         "SPIR-V before publication",
-                         "source");
-#else
     if (fragGlsl.empty())
         return reloadFailure(DiagnosticCode::InvalidArgument,
                              "fragment GLSL must not be empty", "fragGlsl");
@@ -188,7 +179,6 @@ Result<void> Graphics::replaceShaderFromGlsl(Shader &shader, const std::string &
         return reloadFailure(DiagnosticCode::InvariantViolation,
                              "temporary compiled shader could not be released", "candidate");
     return replaced;
-#endif
 }
 
 }  // namespace eve::graphics::vulkan

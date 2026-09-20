@@ -12,6 +12,7 @@
 #include "graphics/Outline.h"
 #include "graphics/RenderControl.h"
 #include "graphics/vulkan/Canvas.h"
+#include "graphics/vulkan/GlslCompiler.h"
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_vulkan.h>
@@ -285,6 +286,8 @@ void VmaAllocatorOwner::create(const vkb::Instance& instance, const vkb::Physica
 #endif
 
 std::string Graphics::getBackendName() const { return "vulkan"; }
+
+bool Graphics::supportsRuntimeGlslCompilation() const { return glslRuntimeCompilationAvailable(); }
 
 Graphics::Graphics() = default;
 
