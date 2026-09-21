@@ -1,9 +1,9 @@
-#include "snow/SnowField.h"
+#include "weather/SnowField.h"
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
 TEST_CASE("SnowField.compressedSnowRemainsSnow") {
-    eve::snow::SnowField field(8, 8);
+    eve::weather::SnowField field(8, 8);
     field.fill(0.4f);
     const auto compressed = field.toAlbedoRGBA();
     REQUIRE(compressed[0] > 180);

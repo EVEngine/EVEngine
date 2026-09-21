@@ -1,14 +1,14 @@
-#include "snow/editing/SnowFieldTarget.h"
+#include "graphics/lighting/editing/SnowFieldTarget.h"
 
-#include "snow/SnowField.h"
+#include "weather/SnowField.h"
 
 #include <algorithm>
 #include <cmath>
 #include <utility>
 
-namespace eve::snow_editing {
+namespace eve::lighting_editing {
 
-SnowFieldTarget::SnowFieldTarget(std::string id, snow::SnowField* field)
+SnowFieldTarget::SnowFieldTarget(std::string id, weather::SnowField* field)
     : id_(std::move(id)), field_(field) {}
 int SnowFieldTarget::width() const { return field_ ? field_->getWidth() : 0; }
 int SnowFieldTarget::height() const { return field_ ? field_->getHeight() : 0; }
@@ -40,4 +40,4 @@ float SnowFieldTarget::sampleScalar(float x, float y) const {
     return top + (bottom - top) * ty;
 }
 
-}  // namespace eve::snow_editing
+}  // namespace eve::lighting_editing

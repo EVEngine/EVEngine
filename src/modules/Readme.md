@@ -114,7 +114,7 @@
     NPR：cartoon / watercolor / ink / pixel；`StylePass` / `StyleChain` / 网格着色
     设计：`docs/风格化渲染模块设计.md`
 
-25. 昼夜 / 天气 / 贴花 / 积雪 — `daynight` `weather` `decal` `snow`
+25. 昼夜 / 天气（含积雪）/ 贴花 — `daynight` `weather` `decal`
     太阳与 IBL 天空；降水/闪电/风场；投影贴花；深度场积雪（脚印 / 弹坑 / 回填）
 
 26. 体素 — `voxel`（`eve.Voxel`）
