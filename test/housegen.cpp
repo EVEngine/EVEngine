@@ -304,7 +304,7 @@ TEST_CASE("housegen.emitsEveryRequiredRoomInsideTheActiveFootprint") {
     HouseComponentLibrary lib;
     REQUIRE(lib.loadFromJson(kInteriorKit).ok());
     HouseGenerator generator(lib);
-    for (const std::string footprint : {std::string("rectangle"), std::string("l_shape")}) {
+    for (const std::string &footprint : {std::string("rectangle"), std::string("l_shape")}) {
         HouseRequest request;
         request.width         = 6;
         request.depth         = 5;
