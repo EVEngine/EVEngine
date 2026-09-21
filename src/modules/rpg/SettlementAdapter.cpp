@@ -1,9 +1,14 @@
 #include "rpg/SettlementAdapter.h"
 
+#include "rpg/AttributeSystem.h"
+#include "rpg/Effect.h"
+#include "rpg/VitalsSystem.h"
+
 #include <algorithm>
 #include <cmath>
 #include <limits>
 #include <memory>
+#include <set>
 #include <string>
 #include <utility>
 
@@ -25,7 +30,112 @@ eve::Result<double> checkedNumber(double value, std::string_view name) {
     return eve::Result<double>::success(value);
 }
 
+eve::Result<settlement::SettlementRequest> requestFailure(eve::DiagnosticCode code, std::string message,
+                                                           std::string path) {
+    return eve::Result<settlement::SettlementRequest>::failure(
+        eve::Diagnostic::error(code, std::move(message), std::move(path)));
+}
+
+eve::Result<settlement::SettlementRequest> requestFailure(eve::Status status) {
+    return eve::Result<settlement::SettlementRequest>::failure(std::move(status));
+}
+
+const eve::Value* objectField(const eve::Value::Object& object, std::string_view name) {
+    const auto found = object.find(std::string(name));
+    return found == object.end() ? nullptr : &found->second;
+}
+
 }  // namespace
+
+eve::Result<settlement::SettlementRequest> makeStatusTickSettlementRequest(
+    const StatusTickEvent& tick, SubjectRef source, SubjectRef target, SimulationTick simulationTick) {
+    if (tick.actor == nullptr || tick.effectId.empty() || tick.instanceId <= 0 || tick.stacks <= 0)
+        return requestFailure(eve::DiagnosticCode::InvalidArgument, "RPG status tick identity is invalid", "tick");
+    if (!target.isValid())
+        return requestFailure(eve::DiagnosticCode::InvalidArgument, "RPG status tick target must be valid", "target");
+    const EffectDefinition* definition = EffectRegistry::find(tick.effectId);
+    if (definition == nullptr)
+        return requestFailure(eve::DiagnosticCode::NotFound, "RPG status tick definition was not found",
+                              "tick.effectId");
+    const auto encoded = definition->extra.find("settlement.tick");
+    if (encoded == definition->extra.end())
+        return requestFailure(eve::DiagnosticCode::NotFound, "RPG effect has no settlement.tick configuration",
+                              "effect.extra.settlement.tick");
+    auto parsed = eve::Value::fromJson(encoded->second);
+    if (!parsed) return requestFailure(parsed.status());
+    const auto* object = parsed.value().getIf<eve::Value::Object>();
+    if (object == nullptr)
+        return requestFailure(eve::DiagnosticCode::InvalidArgument, "settlement.tick must be a JSON object",
+                              "effect.extra.settlement.tick");
+    static const std::set<std::string> fields = {"context", "kind", "magnitude", "resource", "tags"};
+    for (const auto& [name, value] : *object) {
+        (void)value;
+        if (!fields.contains(name))
+            return requestFailure(eve::DiagnosticCode::InvalidArgument, "unknown settlement.tick field",
+                                  "effect.extra.settlement.tick." + name);
+    }
+    const auto* kindValue      = objectField(*object, "kind");
+    const auto* resourceValue  = objectField(*object, "resource");
+    const auto* magnitudeValue = objectField(*object, "magnitude");
+    const auto* kind           = kindValue == nullptr ? nullptr : kindValue->getIf<std::string>();
+    const auto* resource       = resourceValue == nullptr ? nullptr : resourceValue->getIf<std::string>();
+    if (kind == nullptr || kind->empty() || resource == nullptr || resource->empty() || magnitudeValue == nullptr)
+        return requestFailure(eve::DiagnosticCode::InvalidArgument,
+                              "settlement.tick requires kind, resource, and magnitude",
+                              "effect.extra.settlement.tick");
+    double magnitude = 0.0;
+    if (const auto* real = magnitudeValue->getIf<double>())
+        magnitude = *real;
+    else if (const auto* integer = magnitudeValue->getIf<std::int64_t>())
+        magnitude = static_cast<double>(*integer);
+    else
+        return requestFailure(eve::DiagnosticCode::InvalidArgument, "settlement.tick magnitude must be a number",
+                              "effect.extra.settlement.tick.magnitude");
+    magnitude *= static_cast<double>(tick.stacks);
+    if (!std::isfinite(magnitude) || magnitude < 0.0)
+        return requestFailure(eve::DiagnosticCode::InvalidArgument,
+                              "settlement.tick magnitude must be finite and non-negative",
+                              "effect.extra.settlement.tick.magnitude");
+
+    settlement::SettlementRequest request;
+    request.source    = source;
+    request.target    = target;
+    request.kind      = *kind;
+    request.resource  = *resource;
+    request.magnitude = magnitude;
+    request.tick      = simulationTick;
+    request.tags      = definition->tags;
+    request.tags.push_back("rpg:status-tick");
+    if (const auto* tagsValue = objectField(*object, "tags")) {
+        const auto* tags = tagsValue->getIf<eve::Value::Array>();
+        if (tags == nullptr)
+            return requestFailure(eve::DiagnosticCode::InvalidArgument, "settlement.tick tags must be an array",
+                                  "effect.extra.settlement.tick.tags");
+        for (std::size_t index = 0; index < tags->size(); ++index) {
+            const auto* tag = (*tags)[index].getIf<std::string>();
+            if (tag == nullptr || tag->empty())
+                return requestFailure(eve::DiagnosticCode::InvalidArgument,
+                                      "settlement.tick tag must be a non-empty string",
+                                      "effect.extra.settlement.tick.tags[" + std::to_string(index) + "]");
+            request.tags.push_back(*tag);
+        }
+    }
+    std::sort(request.tags.begin(), request.tags.end());
+    request.tags.erase(std::unique(request.tags.begin(), request.tags.end()), request.tags.end());
+    eve::Value::Object context;
+    if (const auto* contextValue = objectField(*object, "context")) {
+        const auto* configured = contextValue->getIf<eve::Value::Object>();
+        if (configured == nullptr)
+            return requestFailure(eve::DiagnosticCode::InvalidArgument, "settlement.tick context must be an object",
+                                  "effect.extra.settlement.tick.context");
+        context = *configured;
+    }
+    context["effect_id"]         = tick.effectId;
+    context["status_instance_id"] = static_cast<std::int64_t>(tick.instanceId);
+    context["stacks"]              = static_cast<std::int64_t>(tick.stacks);
+    request.context                 = eve::Value(std::move(context));
+    return eve::Result<settlement::SettlementRequest>::success(std::move(request));
+}
 
 RPGSettlementAdapter::RPGSettlementAdapter(RPGActor& target, SubjectRef targetRef)
     : RPGSettlementAdapter(target, std::move(targetRef), Config{}) {}
@@ -107,9 +217,11 @@ eve::Result<void> RPGSettlementAdapter::validate(settlement::SettlementContext& 
             eve::DiagnosticCode::Conflict, "RPG settlement request target does not match adapter target", "target"));
     const bool damage  = isDamage(context);
     const bool healing = isHealing(context);
-    if (!damage && !healing)
+    const bool trigger = context.request().kind == "trigger";
+    if (!damage && !healing && !trigger)
         return eve::Result<void>::failure(eve::Diagnostic::error(
-            eve::DiagnosticCode::Unsupported, "RPG settlement adapter supports damage and healing kinds only", "kind"));
+            eve::DiagnosticCode::Unsupported, "RPG settlement adapter supports damage, healing and trigger kinds only",
+            "kind"));
 
     auto       health   = readBase(config_.healthAttribute);
     const bool healthOk = health.ok();
@@ -134,6 +246,7 @@ eve::Result<void> RPGSettlementAdapter::validate(settlement::SettlementContext& 
 }
 
 eve::Result<void> RPGSettlementAdapter::sourceModifiers(settlement::SettlementContext& context) {
+    if (context.request().kind == "trigger") return context.setMagnitude(0.0);
     double multiplier = 1.0;
     if (const auto value = numberValue(contextValue(context, "source_multiplier"))) {
         multiplier = *value;
@@ -369,6 +482,39 @@ eve::Result<settlement::PreparedApply> RPGSettlementAdapter::prepareApply(
         [pending]() {
             if (pending->published) pending->actor->attributes()->values = pending->before;
         }));
+}
+
+eve::Result<std::vector<settlement::SettlementRequest>> RPGSettlementAdapter::prepareTrigger(
+    const settlement::SettlementContext& context, const settlement::SettlementResult& result) {
+    std::vector<settlement::SettlementRequest> transitions;
+    if (!isDamage(context))
+        return eve::Result<std::vector<settlement::SettlementRequest>>::success(std::move(transitions));
+
+    const auto append = [&](std::string key) {
+        settlement::SettlementRequest transition = context.request();
+        transition.kind                           = "trigger";
+        transition.resource.clear();
+        transition.magnitude = 0.0;
+        transition.decisions.clear();
+        transition.trigger = std::move(key);
+        transition.chain   = {};
+        transition.tags.push_back("trigger:" + transition.trigger);
+        transitions.push_back(std::move(transition));
+    };
+
+    auto shield = readBase(config_.shieldAttribute);
+    if (shield.ok() && shield.value() > 0.0 && result.absorbed >= shield.value()) append("shield_break");
+    if (!shield.ok() && shield.code() != eve::StatusCode::NotFound)
+        return eve::Result<std::vector<settlement::SettlementRequest>>::failure(shield.status());
+
+    auto health = readBase(config_.healthAttribute);
+    if (!health) return eve::Result<std::vector<settlement::SettlementRequest>>::failure(health.status());
+    const bool died = config_.emitLifeTransitions && health.value() > 0.0 && result.applied >= health.value();
+    if (died) {
+        append("death");
+        if (context.request().source.isValid() && context.request().source != context.request().target) append("kill");
+    }
+    return eve::Result<std::vector<settlement::SettlementRequest>>::success(std::move(transitions));
 }
 
 }  // namespace eve::rpg

@@ -6,6 +6,7 @@
 
 #include "common/Json.h"
 #include "common/SubjectRef.h"
+#include "common/SquirrelBinding.h"
 #include "graphics/Graphics.h"
 
 #include <simplesquirrel/simplesquirrel.hpp>
@@ -675,6 +676,7 @@ std::string Card::getEventReason(int index) const {
 // ---------------------------------------------------------------------------
 
 void Card::expose(ssq::Table &table) {
+    const auto vm = table.getHandle();
     auto cls = table.addClass(name, Card::create, false);
     expose(cls);
 
@@ -752,6 +754,18 @@ void Card::expose(ssq::Table &table) {
     cardCls.addFunc("setAttack", [](CardData *c, int v) { if (c) c->stats()->attack = v; });
     cardCls.addFunc("getHealth", [](CardData *c) -> int { return c ? c->stats()->health : 0; });
     cardCls.addFunc("setHealth", [](CardData *c, int v) { if (c) c->stats()->health = v; });
+    cardCls.addFunc("configureSettlementRulesJson", [vm](CardData* value, const std::string& json) {
+        if (!value)
+            return eve::script::projectResult(
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(
+                        eve::DiagnosticCode::InvalidArgument, "CardData receiver must not be null", "card", {},
+                        "card.squirrel")));
+        auto rules = settlement::SettlementRuleSet::fromJson(json);
+        if (!rules)
+            return eve::script::projectResult(vm, eve::Result<void>::failure(rules.status()));
+        return eve::script::projectResult(vm,
+                                          value->effects()->values.configureSettlementRules(rules.value()));
+    });
     cardCls.addFunc("isFaceUp", [](CardData *c) -> bool { return c ? c->visual()->faceUp : true; });
     cardCls.addFunc("setFaceUp", [](CardData *c, bool v) { if (c) c->visual()->faceUp = v; });
     cardCls.addFunc("isDisabled", [](CardData *c) -> bool { return c ? c->visual()->disabled : false; });

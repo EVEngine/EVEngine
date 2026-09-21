@@ -344,6 +344,13 @@ void RTS::setCombatProviders(sensing::SensingWorld* sensing, combat::DamageRunti
     damage_ = damage;
 }
 
+Result<void> RTS::configureSettlementRules(const settlement::SettlementRuleSet& rules) {
+    if (damage_ == nullptr)
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::NotFound,
+                                                       "RTS combat damage provider is not attached", "damage"));
+    return damage_->configureSettlementRules(rules);
+}
+
 void RTS::setCrowdProvider(crowd::Crowd* crowd) noexcept {
     if (crowd_ == crowd) return;
     if (crowd_ != nullptr) {
@@ -1623,8 +1630,11 @@ Result<double> RTS::heal(SubjectRef source, SubjectRef target, double amount) co
             Diagnostic::error(DiagnosticCode::Conflict, "RTS healing target must be alive", "target"));
     auto valid = state->validate();
     if (!valid) return Result<double>::failure(valid.status());
-    const double applied = std::min(amount, state->maxHealth - state->health);
-    state->health += applied;
+    combat::DamageRuntime defaultSettlement;
+    auto& settlement = damage_ != nullptr ? *damage_ : defaultSettlement;
+    auto settled = settlement.heal(*state, source, amount);
+    if (!settled) return Result<double>::failure(settled.status());
+    const double applied = settled.value().applied;
     return Result<double>::success(applied,
         Status::success(applied == 0.0 ? StatusCode::NoOp : StatusCode::Applied));
 }
@@ -1832,8 +1842,10 @@ Result<std::size_t> RTS::step(const SimulationStep& simulationStep, IRTSActionEx
     if (!infrastructure) return Result<std::size_t>::failure(infrastructure.status());
     processed += std::move(infrastructure).takeValue();
 
+    combat::DamageRuntime defaultHealthSettlement;
+    auto& healthSettlement = damage_ != nullptr ? *damage_ : defaultHealthSettlement;
     if (repairDebit_) {
-        auto repair = RepairSystem::step(simulationStep, repairDebit_);
+        auto repair = RepairSystem::step(simulationStep, healthSettlement, repairDebit_);
         if (!repair) return Result<std::size_t>::failure(repair.status());
         processed += std::move(repair).takeValue();
     }
@@ -1887,7 +1899,7 @@ Result<std::size_t> RTS::step(const SimulationStep& simulationStep, IRTSActionEx
         processed += std::move(technology).takeValue();
     }
 
-    auto effects = EffectSystem::step(simulationStep, lifecycleEvents);
+    auto effects = EffectSystem::step(simulationStep, healthSettlement, lifecycleEvents);
     if (!effects) return Result<std::size_t>::failure(effects.status());
     processed += std::move(effects).takeValue();
     for (const auto& handle : matches_) {
@@ -3691,6 +3703,15 @@ void RTS::expose(ssq::Class& cls) {
     cls.addFunc("matchCount", [](RTS* self) { return self->matchCount(); });
     cls.addFunc("scriptTick", [](RTS* self) { return static_cast<std::int64_t>(self->scriptTick()); });
     const auto vm = cls.getHandle();
+    cls.addFunc("configureSettlementRulesJson", [vm](RTS* self, const std::string& json) -> ssq::Table {
+        if (self == nullptr)
+            return script::projectStatusResult(
+                vm, Status::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                       "RTS receiver must not be null", "rts")));
+        auto rules = settlement::SettlementRuleSet::fromJson(json);
+        if (!rules) return script::projectStatusResult(vm, rules.status());
+        return script::projectResult(vm, self->configureSettlementRules(rules.value()));
+    });
     cls.addFunc("removeSubject", [vm](RTS* self, const std::string& subjectText) -> ssq::Table {
         auto subject = parseScriptSubject(subjectText, "subject");
         if (!subject) return script::projectStatusResult(vm, subject.status());

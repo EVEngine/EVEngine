@@ -47,6 +47,12 @@ struct SettlementContext {
     bool hasTag(const std::string &tag) const;
 };
 
+/**
+ * @brief Compatibility-only named calculator retained for existing RPG scripts.
+ * @deprecated New gameplay must use eve::settlement::SettlementPipeline through Battle or a domain policy.
+ * @remarks run() delegates scheduling and transaction boundaries to the canonical settlement pipeline; this facade
+ * retains only legacy stage registration and the open numeric value bag required by existing scripts.
+ */
 class SettlementPipeline {
 public:
     using Stage = std::function<void(SettlementContext &)>;

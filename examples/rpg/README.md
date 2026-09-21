@@ -39,14 +39,13 @@ make run/macosx-debug GAME=examples/rpg
 | 效果 | JSON 注册 4 种策略：instant（治疗药水）、duration+refresh（力量姿态/衰弱）、duration+period+stack（灼烧最多叠 3 层）|
 | 状态 | `getStatusCount/EffectId/Stacks/Remaining` 逐帧读出来做 UI；`pollTicks` 驱动灼烧伤害与被动回复 |
 | 技能 | 学习/冷却/消耗/读条时间；`canCastSkill`/`canCastSkillReason` 给出施法失败原因；`getCastProgress` 画读条进度条 |
-| 结算 | 伤害公式直接写在脚本里（`computeDamage`）——`SettlementPipeline::registerStage` 是 C++ 扩展点，未绑定到脚本，见下方说明 |
+| 结算 | 示例为教学目的把伤害公式写在脚本 `computeDamage`；正式 Battle 使用通用 Settlement，旧 named pipeline 只作兼容 |
 
 ## 已知限制 / 扩展点
 
-- **结算流水线是 C++ 扩展点**：`SettlementContext`/`runSettlement` 已绑定到脚本，
-  但注册新阶段（`SettlementPipeline::registerStage`，接受一个 C++ `std::function`）
-  目前只能在原生代码里做。纯脚本项目通常自己实现伤害公式（本例的做法），
-  想要"原生插件注册阶段 + 脚本触发"的组合可以参考 `examples/native-plugin`。
+- **`runSettlement` 是兼容入口**：旧 `SettlementContext` 数值袋仍可由原生插件注册回调并由脚本触发，
+  其调度已委托通用 Settlement。新项目应配置 `Battle` 的 `settlement.rules`，让伤害、治疗、Status tick、
+  Buff 与触发链走同一正式路径；不要用兼容数值袋直接提交权威状态。
 - **自定义施法条件同理**：`SkillSystem::registerCastCondition` 也是 C++-only。
 
 ## 踩过的坑（写给以后改这个模块/写新脚本绑定的人）

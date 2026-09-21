@@ -295,6 +295,13 @@ public:
     void setFogProvider(FogProvider provider) noexcept;
     /** @brief Attach canonical sensing and damage coordinators used by automatic combat. */
     void setCombatProviders(sensing::SensingWorld* sensing, combat::DamageRuntime* damage) noexcept;
+    /**
+     * @brief Replace declarative settlement rules on the active canonical damage provider.
+     * @return Applied, or NotFound when no combat provider is attached; failure retains previous rules.
+     * @thread Call on the RTS owning simulation thread outside update.
+     * @reentrancy Does not invoke gameplay callbacks.
+     */
+    [[nodiscard]] Result<void> configureSettlementRules(const settlement::SettlementRuleSet& rules);
     /** @brief Install the map/game-owned line-of-fire query used by direct weapons. */
     void setFireLineQuery(FireLineQuery query) { fireLineQuery_ = std::move(query); }
     /** @brief Install the map/game-owned absolute projectile launch-height query. */
