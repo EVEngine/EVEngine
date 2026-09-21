@@ -896,6 +896,7 @@ void Math::expose(ssq::Class &cls) {
     cls.addFunc("clamp", &Math::clamp);
     cls.addFunc("lerp", &Math::lerp);
     cls.addFunc("smoothstep", &Math::smoothstep);
+    cls.addFunc("smoothMax", &Math::smoothMax);
     cls.addFunc("remap", &Math::remap);
     cls.addFunc("degToRad", &Math::degToRad);
     cls.addFunc("radToDeg", &Math::radToDeg);

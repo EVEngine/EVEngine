@@ -52,6 +52,7 @@ RULES = (
     "ecs-system",
     "time-rng",
     "api-lifetime",
+    "module-interface",
     "persistence",
     "optional-capability",
     "backend-contract",
@@ -67,6 +68,10 @@ COMMON_REQUIRED = {
     "tests",
 }
 RULE_REQUIRED = {
+    "module-interface": {
+        "provides", "requires", "emits", "observes", "binds", "protocol",
+        "thread_affinity", "hot_path", "trim", "cost_notes",
+    },
     "api-shape": {"result_policy", "nodiscard_policy", "pointer_policy"},
     "link": {"symbols", "create", "ownership", "destroy_order", "restore", "stale"},
     "state-owner": {"state", "authoritative_owner", "projections"},
@@ -269,6 +274,14 @@ def validate_catalogue(metadata: Any, today: date | None = None) -> list[str]:
                 growth = entry.get("max_net_growth")
                 if not isinstance(growth, int) or growth < 0:
                     errors.append(f"{prefix}.max_net_growth must be a non-negative integer")
+            if rule == "module-interface":
+                for field in ("provides", "requires", "emits", "observes", "binds", "protocol", "hot_path", "cost_notes"):
+                    if field in entry and not isinstance(entry[field], list):
+                        errors.append(f"{prefix}.{field} must be an array (empty means no surface)")
+                if "thread_affinity" in entry and not nonempty_string(entry["thread_affinity"]):
+                    errors.append(f"{prefix}.thread_affinity must be a non-empty string")
+                if "trim" in entry and (not isinstance(entry["trim"], Mapping) or not entry["trim"]):
+                    errors.append(f"{prefix}.trim must be a non-empty object describing evidence or no claim")
 
     missing = sorted(set(RULES) - covered)
     if missing:

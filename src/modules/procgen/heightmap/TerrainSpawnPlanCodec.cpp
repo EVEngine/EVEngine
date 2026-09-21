@@ -125,8 +125,16 @@ Result<std::string> hexDecode(std::string_view text) {
 #define WRITE_MEMBER(name) writer.scalar(value.name);
 #define READ_MEMBER(name) if (!reader.scalar(value.name)) return false;
 
-void writeStamp(Writer& writer, const TerrainStampSettings& value) { STAMP_FIELDS(WRITE_MEMBER) }
-bool readStamp(Reader& reader, TerrainStampSettings& value) { STAMP_FIELDS(READ_MEMBER) return true; }
+void writeStamp(Writer& writer, const TerrainStampSettings& value) {
+    STAMP_FIELDS(WRITE_MEMBER) writer.scalar(value.smoothWidth);
+    writer.scalar(value.edgeFade);
+}
+bool readStamp(Reader& reader, TerrainStampSettings& value, int version) {
+    STAMP_FIELDS(READ_MEMBER)
+    if (version < 4) return value.operation <= TerrainStampOperation::Subtract;
+    return reader.scalar(value.smoothWidth) && reader.scalar(value.edgeFade) && value.smoothWidth >= 0 &&
+           value.edgeFade >= 0;
+}
 void writeDetail(Writer& writer, const TerrainDetailSettings& value) { DETAIL_FIELDS(WRITE_MEMBER) }
 bool readDetail(Reader& reader, TerrainDetailSettings& value) { DETAIL_FIELDS(READ_MEMBER) return true; }
 void writeTree(Writer& writer, const TerrainTreePlacementSettings& value) {
@@ -215,7 +223,7 @@ bool validEnums(const TerrainProbeSpawnRule& rule) {
 bool validEnums(const TerrainSplatSpawnRule& rule) { return rule.targetLayer >= 0; }
 bool validEnums(const TerrainModifierStampSpawnRule& rule) {
     return rule.operation.operation >= TerrainStampOperation::Raise &&
-           rule.operation.operation <= TerrainStampOperation::Subtract;
+           rule.operation.operation <= TerrainStampOperation::SmoothRaise;
 }
 bool stringsFit(const TerrainSpawnRule& variant) {
     return std::visit([](const auto& rule) {
@@ -292,7 +300,7 @@ bool readRule(Reader& reader, int version, TerrainSpawnRule& output) {
         return false;
     Heightmap localMask, globalMask;
     if (kind == 4 && (!readHeightmap(reader, localMask) || !readHeightmap(reader, globalMask))) return false;
-    if (!readStamp(reader, operation)) return false;
+    if (!readStamp(reader, operation, version)) return false;
     if (kind == 3) {
         TerrainSplatSpawnRule rule;
         rule.ruleId = std::move(id); rule.enabled = enabled; rule.paint = std::move(fitness); rule.operation = operation;
@@ -352,8 +360,8 @@ Result<std::string> TerrainSpawnPlan::snapshotJson() const {
     if (writer.bytes.size() > kMaximumSnapshotBytes)
         return Result<std::string>::failure(Diagnostic::error(
             DiagnosticCode::InvalidArgument, "terrain.spawnPlan.snapshot: payload exceeds size limit"));
-    Value::Object root{{"payload", hexEncode(writer.bytes)}, {"schema", "eve.procgen.terrain-spawn-plan"},
-                       {"version", 3}};
+    Value::Object root{
+        {"payload", hexEncode(writer.bytes)}, {"schema", "eve.procgen.terrain-spawn-plan"}, {"version", 4}};
     return Value(std::move(root)).toJson();
 }
 
@@ -372,8 +380,7 @@ Result<void> TerrainSpawnPlan::restoreJson(const std::string& json) {
     const auto* version = root->at("version").getIf<std::int64_t>();
     const auto* payload = root->at("payload").getIf<std::string>();
     if (!schema || *schema != "eve.procgen.terrain-spawn-plan" || !version ||
-        (*version != 0 && *version != 1 && *version != 2 && *version != 3) ||
-        !payload)
+        (*version != 0 && *version != 1 && *version != 2 && *version != 3 && *version != 4) || !payload)
         return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
                                                        "terrain.spawnPlan.restore: unsupported schema or version"));
     auto bytes = hexDecode(*payload);

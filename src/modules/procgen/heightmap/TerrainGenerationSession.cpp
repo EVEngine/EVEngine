@@ -32,6 +32,7 @@ struct SessionWriter {
     }
 };
 struct SessionReader {
+    int                     version = 1;
     std::string_view bytes;
     std::size_t offset = 0;
     template <class T> bool scalar(T& value) {
@@ -184,8 +185,18 @@ namespace {
 #define SESSION_READ_FIELD(name) if (!reader.scalar(value.name)) return false;
 template <class T> void writeSessionValue(SessionWriter& writer, const T& value);
 template <class T> bool readSessionValue(SessionReader& reader, T& value);
-template <> void writeSessionValue(SessionWriter& writer, const TerrainStampSettings& value) { SESSION_STAMP_FIELDS(SESSION_WRITE_FIELD) }
-template <> bool readSessionValue(SessionReader& reader, TerrainStampSettings& value) { SESSION_STAMP_FIELDS(SESSION_READ_FIELD) return true; }
+template <>
+void writeSessionValue(SessionWriter& writer, const TerrainStampSettings& value) {
+    SESSION_STAMP_FIELDS(SESSION_WRITE_FIELD) writer.scalar(value.smoothWidth);
+    writer.scalar(value.edgeFade);
+}
+template <>
+bool readSessionValue(SessionReader& reader, TerrainStampSettings& value) {
+    SESSION_STAMP_FIELDS(SESSION_READ_FIELD)
+    if (reader.version < 2) return value.operation <= TerrainStampOperation::Subtract;
+    return reader.scalar(value.smoothWidth) && reader.scalar(value.edgeFade) && value.smoothWidth >= 0 &&
+           value.edgeFade >= 0;
+}
 template <> void writeSessionValue(SessionWriter& writer, const TerrainSmoothSettings& value) { SESSION_SMOOTH_FIELDS(SESSION_WRITE_FIELD) }
 template <> bool readSessionValue(SessionReader& reader, TerrainSmoothSettings& value) { SESSION_SMOOTH_FIELDS(SESSION_READ_FIELD) return true; }
 template <> void writeSessionValue(SessionWriter& writer, const TerrainRidgeSettings& value) { SESSION_RIDGE_FIELDS(SESSION_WRITE_FIELD) }
@@ -488,7 +499,8 @@ Result<std::string> TerrainGenerationSession::snapshotJson() const {
         return Result<std::string>::failure(Diagnostic::error(
             DiagnosticCode::InvalidArgument, "terrain.session.snapshot: payload exceeds size limit"));
     Value::Object root{{"payload", encodeSessionHex(writer.bytes)},
-                       {"schema", "eve.procgen.terrain-generation-session"}, {"version", 1}};
+                       {"schema", "eve.procgen.terrain-generation-session"},
+                       {"version", 2}};
     return Value(std::move(root)).toJson();
 }
 
@@ -508,12 +520,13 @@ Result<void> TerrainGenerationSession::restoreJson(const std::string& json) {
     const auto* schema = root->at("schema").getIf<std::string>();
     const auto* version = root->at("version").getIf<std::int64_t>();
     const auto* payload = root->at("payload").getIf<std::string>();
-    if (!schema || *schema != "eve.procgen.terrain-generation-session" || !version || *version != 1 || !payload)
+    if (!schema || *schema != "eve.procgen.terrain-generation-session" || !version ||
+        (*version != 1 && *version != 2) || !payload)
         return Result<void>::failure(Diagnostic::error(
             DiagnosticCode::InvalidArgument, "terrain.session.restore: unsupported schema or version"));
     auto bytes = decodeSessionHex(*payload);
     if (!bytes.ok()) return Result<void>::failure(bytes.status());
-    SessionReader reader{bytes.value()};
+    SessionReader reader{static_cast<int>(*version), bytes.value()};
     auto candidate = std::make_unique<Impl>();
     std::uint32_t count{};
     if (!readSessionHeightmap(reader, candidate->baseline) || !reader.scalar(candidate->cursor) ||

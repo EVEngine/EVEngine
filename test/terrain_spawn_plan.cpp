@@ -361,6 +361,10 @@ TEST_CASE("procgen.spawnPlan.strictSnapshotRoundTripMigrationAndAtomicFailure") 
     REQUIRE(payload->isString());
     std::string legacyPayload = payload->asString();
     const std::size_t enabledByteOffset = 4 + 1 + 4 + std::string("stable-rule").size();
+    // Strip the two v4 stamp fields before converting this 5x3 fixture to v0.
+    const std::size_t rasterBytes   = 8 + map.data().size() * sizeof(float);
+    const std::size_t oldStampBytes = 9 * sizeof(double) + 3 * sizeof(float) + sizeof(int);
+    legacyPayload.erase((enabledByteOffset + 1 + rasterBytes + oldStampBytes) * 2, 16);
     legacyPayload.erase(enabledByteOffset * 2, 2);
     legacyValue.value().set("payload", legacyPayload);
     auto legacyJson = legacyValue.value().toJson();

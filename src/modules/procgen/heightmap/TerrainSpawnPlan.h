@@ -116,9 +116,9 @@ public:
     [[nodiscard]] int getRuleCount() const noexcept;
     /** @brief Return immutable ordered rules for transactional execution. */
     [[nodiscard]] const std::vector<TerrainSpawnRule>& rules() const noexcept;
-    /** @brief Serialize schema version 3 as deterministic strict JSON with an owning binary payload. */
+    /** @brief Serialize schema version 4 as deterministic strict JSON with an owning binary payload. */
     [[nodiscard]] Result<std::string> snapshotJson() const;
-    /** @brief Atomically restore versions 0-3; version 0 migrates all rules to enabled. */
+    /** @brief Atomically restore versions 0-4; v0 enables rules, v0-3 default smoothWidth/edgeFade to zero. */
     [[nodiscard]] Result<void> restoreJson(const std::string& json);
 
 private:
