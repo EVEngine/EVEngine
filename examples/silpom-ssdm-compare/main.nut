@@ -149,9 +149,9 @@ function makeThinMesh() {
 }
 
 function makeCard(mode, x) {
-    // The fragment stage ships as committed SPIR-V next to its source: runtime
-    // GLSL compilation needs glslc on PATH, and the Vulkan backend rejects it on
-    // Windows outright. Regenerate with
+    // The fragment stage ships as committed SPIR-V next to its source, so the
+    // example needs no runtime compiler and every host renders the same stages.
+    // Regenerate with
     //   glslc -o shaders/compare.frag.spv shaders/compare.frag
     local loaded = gfx.loadMeshShaderSpv("", "shaders/compare.frag.spv");
     if (!loaded.ok)
@@ -284,14 +284,14 @@ eve_init = function() {
 eve_asset_reload <- function(path) {
     if (!cmpReady) return;
     if (path.find("compare.frag") == null) return;
-    // Live GLSL reload is a convenience of hosts with glslc on PATH; where it is
-    // unavailable (Windows, no SDK) the committed SPIR-V keeps rendering and the
-    // status line says so instead of failing the example.
+    // Live GLSL reload uses the engine's own compiler; when it is missing or the
+    // source fails to compile, the committed SPIR-V keeps rendering and the status
+    // line says so instead of failing the example.
     local src = fs.readText("shaders/compare.frag");
     foreach (p in [cmpPom, cmpSil, cmpSsdm]) {
         local result = gfx.replaceShaderFromGlsl(p.shader, "", src);
         if (!result.ok) {
-            cmpStatus = "GLSL reload needs glslc; keeping committed SPIR-V";
+            cmpStatus = "GLSL reload failed; keeping committed SPIR-V";
             print("[silpom-ssdm] " + cmpStatus + "\n");
             return;
         }

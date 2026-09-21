@@ -12,7 +12,9 @@
 #include <cstdint>
 #include <limits>
 #include <stdexcept>
+#include <string_view>
 #include <typeindex>
+#include <vector>
 
 namespace eve::material_editor {
 namespace {
@@ -65,9 +67,7 @@ editor::EditorValue runtimeMaterialSnapshot(const graphics::Renderable3D::MeshRe
 
 class MaterialEditorModule::TargetFactory final : public editor::IEditorAutomationTargetFactory {
 public:
-    bool supports(std::string_view type) const override {
-        return type == "material" || type == "material-renderable3d";
-    }
+    std::vector<std::string_view> types() const override { return {"material", "material-renderable3d"}; }
 
     editor::EditorResult<editor::AutomationOwnedTarget> create(
         const editor::TargetId& target, std::string_view type,

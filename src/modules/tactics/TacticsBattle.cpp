@@ -531,7 +531,6 @@ Result<BattlePhase> BattleSystem::advance(Battle& battle, const SimulationStep& 
                     DiagnosticCode::StaleHandle, "tactics schedule contains a stale unit", "battle.schedule"));
             turn->activeUnit   = turn->schedule[turn->cursor];
             turn->activeSide   = unit->membership()->side;
-            turn->activeSide   = unit->membership()->side;
             return transition(battle, BattlePhase::TurnStart, step.tick, "turn.pending", committedRevision,
                               std::move(command),
                               unit->identity()->subject);

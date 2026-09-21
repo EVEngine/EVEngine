@@ -75,8 +75,8 @@ debug shader emitting a constant `1.0` arrives in the frame buffer as `224/255`,
 (`hostTonemapInverse`) so the palette they author is the sRGB that actually ships;
 without it every colour is silently compressed twice and cannot be tuned.
 
-The two fragment shaders are compiled to SPIR-V, because runtime GLSL compilation is
-unavailable on Windows:
+The two fragment shaders are compiled to SPIR-V, so the example needs no runtime
+compiler:
 
 ```sh
 glslc -o shaders/hex_planet_terrain.frag.spv shaders/hex_planet_terrain.frag

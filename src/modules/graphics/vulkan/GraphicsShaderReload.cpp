@@ -23,7 +23,11 @@ Result<void> reloadFailure(DiagnosticCode code, std::string message, std::string
 
 void destroyCandidate(vkb::Device &device, GpuShader &candidate) {
     if (candidate.swapchainPipeline) device->destroyPipeline(candidate.swapchainPipeline);
+    if (candidate.swapchainOpaquePipeline) device->destroyPipeline(candidate.swapchainOpaquePipeline);
     if (candidate.offscreenPipeline) device->destroyPipeline(candidate.offscreenPipeline);
+    if (candidate.offscreenOpaquePipeline) device->destroyPipeline(candidate.offscreenOpaquePipeline);
+    if (candidate.hdrOffscreenPipeline) device->destroyPipeline(candidate.hdrOffscreenPipeline);
+    if (candidate.hdrOffscreenOpaquePipeline) device->destroyPipeline(candidate.hdrOffscreenOpaquePipeline);
     if (candidate.mesh3dPipeline) device->destroyPipeline(candidate.mesh3dPipeline);
     if (candidate.mesh3dOffscreenPipeline) device->destroyPipeline(candidate.mesh3dOffscreenPipeline);
     if (candidate.mesh3dHdrOffscreenPipeline) device->destroyPipeline(candidate.mesh3dHdrOffscreenPipeline);
@@ -80,11 +84,25 @@ Result<void> Graphics::replaceShaderFromSpv(Shader &shader,
     candidate.owner = &shader;
     try {
         if (!candidate.isMesh3D) {
+            // Every render pass the shader owns a pipeline for must be replaced: the
+            // renderer binds the opaque variant for opaque batches, so rebuilding only
+            // the blended pipelines would keep drawing the previous fragment stage there.
             candidate.swapchainPipeline =
                 createTexturedStylePipeline(vert, fragSpv, renderpass, candidate.pipelineLayout);
-            if (offscreenRenderPass)
+            candidate.swapchainOpaquePipeline = createTexturedStylePipeline(
+                vert, fragSpv, renderpass, candidate.pipelineLayout, BlendMode::Opaque);
+            if (offscreenRenderPass) {
                 candidate.offscreenPipeline = createTexturedStylePipeline(
                     vert, fragSpv, offscreenRenderPass, candidate.pipelineLayout);
+                candidate.offscreenOpaquePipeline = createTexturedStylePipeline(
+                    vert, fragSpv, offscreenRenderPass, candidate.pipelineLayout, BlendMode::Opaque);
+            }
+            if (hdrOffscreenRenderPass) {
+                candidate.hdrOffscreenPipeline = createTexturedStylePipeline(
+                    vert, fragSpv, hdrOffscreenRenderPass, candidate.pipelineLayout);
+                candidate.hdrOffscreenOpaquePipeline = createTexturedStylePipeline(
+                    vert, fragSpv, hdrOffscreenRenderPass, candidate.pipelineLayout, BlendMode::Opaque);
+            }
         } else if (candidate.isHair3D) {
             candidate.mesh3dPipeline = createMesh3DHairPipeline(
                 vert, fragSpv, candidate.pipelineLayout, activeScenePass(), activeSceneSamples());
@@ -114,7 +132,11 @@ Result<void> Graphics::replaceShaderFromSpv(Shader &shader,
 
     waitForSharedGpuResources();
     if (current->swapchainPipeline) device->destroyPipeline(current->swapchainPipeline);
+    if (current->swapchainOpaquePipeline) device->destroyPipeline(current->swapchainOpaquePipeline);
     if (current->offscreenPipeline) device->destroyPipeline(current->offscreenPipeline);
+    if (current->offscreenOpaquePipeline) device->destroyPipeline(current->offscreenOpaquePipeline);
+    if (current->hdrOffscreenPipeline) device->destroyPipeline(current->hdrOffscreenPipeline);
+    if (current->hdrOffscreenOpaquePipeline) device->destroyPipeline(current->hdrOffscreenOpaquePipeline);
     if (current->mesh3dPipeline) device->destroyPipeline(current->mesh3dPipeline);
     if (current->mesh3dXrayPipeline) device->destroyPipeline(current->mesh3dXrayPipeline);
     if (current->isMesh3D && !current->isHair3D) {
@@ -124,7 +146,11 @@ Result<void> Graphics::replaceShaderFromSpv(Shader &shader,
         current->mesh3dHdrOffscreenPipeline = candidate.mesh3dHdrOffscreenPipeline;
     }
     current->swapchainPipeline = candidate.swapchainPipeline;
+    current->swapchainOpaquePipeline = candidate.swapchainOpaquePipeline;
     current->offscreenPipeline = candidate.offscreenPipeline;
+    current->offscreenOpaquePipeline = candidate.offscreenOpaquePipeline;
+    current->hdrOffscreenPipeline = candidate.hdrOffscreenPipeline;
+    current->hdrOffscreenOpaquePipeline = candidate.hdrOffscreenOpaquePipeline;
     current->mesh3dPipeline = candidate.mesh3dPipeline;
     current->mesh3dXrayPipeline = candidate.mesh3dXrayPipeline;
     shader.setSpirv(std::move(vert), fragSpv);
@@ -140,15 +166,6 @@ Result<void> Graphics::replaceShaderFromWgsl(Shader &, const std::string &,
 
 Result<void> Graphics::replaceShaderFromGlsl(Shader &shader, const std::string &vertGlsl,
                                              const std::string &fragGlsl) {
-#if defined(_WIN32)
-    (void)shader;
-    (void)vertGlsl;
-    (void)fragGlsl;
-    return reloadFailure(DiagnosticCode::Unsupported,
-                         "runtime GLSL replacement is unavailable on Windows Vulkan; compile "
-                         "SPIR-V before publication",
-                         "source");
-#else
     if (fragGlsl.empty())
         return reloadFailure(DiagnosticCode::InvalidArgument,
                              "fragment GLSL must not be empty", "fragGlsl");
@@ -188,7 +205,6 @@ Result<void> Graphics::replaceShaderFromGlsl(Shader &shader, const std::string &
         return reloadFailure(DiagnosticCode::InvariantViolation,
                              "temporary compiled shader could not be released", "candidate");
     return replaced;
-#endif
 }
 
 }  // namespace eve::graphics::vulkan

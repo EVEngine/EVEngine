@@ -183,6 +183,35 @@ public:
     /** @brief Destroys every live object and invalidates every prior handle. */
     EVENGINE_API void clear();
 
+    /**
+     * @brief Visits every live slot with its index, in slot order.
+     *
+     * The store holds untyped pointers, so it reports the index and the raw object; the
+     * typed registry narrows that pair into `(index, T&)`. Retired and free slots are
+     * skipped, so the callback only ever sees live objects.
+     * @param visit Callable taking `(std::uint32_t index, void* object)`.
+     * @thread Owner thread only; the callback runs under no lock and must not re-enter
+     *         the store.
+     */
+    template <class F>
+    void forEachLive(F&& visit) {
+        for (std::uint32_t index = 0; index < slots_.size(); ++index) {
+            void* object = slots_[index].object;
+            if (object == nullptr) continue;
+            visit(index, object);
+        }
+    }
+
+    /** @brief Read-only overload: the callback receives `const void*`. */
+    template <class F>
+    void forEachLive(F&& visit) const {
+        for (std::uint32_t index = 0; index < slots_.size(); ++index) {
+            const void* object = slots_[index].object;
+            if (object == nullptr) continue;
+            visit(index, object);
+        }
+    }
+
     /** @brief Returns the non-reusable lifetime epoch of this store. */
     [[nodiscard]] std::uint64_t ownerEpoch() const noexcept { return ownerEpoch_; }
 
@@ -395,6 +424,33 @@ public:
     /** @brief Reports whether a non-invalid handle can no longer resolve. */
     [[nodiscard]] bool isStale(Ref ref) const noexcept {
         return store_->isStale(ref.handle.index(), ref.handle.generation(), ref.ownerEpoch);
+    }
+
+    /**
+     * @brief Visit every live object with its slot index, in slot order.
+     *
+     * Exists for diagnostics and automation surfaces that must enumerate owned objects -
+     * a debug tool cannot know the handles a game script created. The callback receives a
+     * non-owning observation valid only for the duration of the call; it must not retain
+     * the reference or release objects.
+     * @param visit Callable taking `(std::uint32_t index, T& object)`.
+     * @ownership The registry keeps sole ownership; `visit` never receives one.
+     * @lifetime The observed object is valid only inside the call.
+     * @thread Owner thread only; the callback runs under no lock and must not re-enter
+     *         the registry.
+     */
+    template <class F>
+    void forEachLive(F&& visit) {
+        store_->forEachLive(
+            [&](std::uint32_t index, void* object) { visit(index, static_cast<T&>(*static_cast<T*>(object))); });
+    }
+
+    /** @brief Read-only overload: the callback receives `const T&`. */
+    template <class F>
+    void forEachLive(F&& visit) const {
+        store_->forEachLive([&](std::uint32_t index, const void* object) {
+            visit(index, static_cast<const T&>(*static_cast<const T*>(object)));
+        });
     }
 
     /** @brief Invalidates all slots and releases every unique-owned object. */

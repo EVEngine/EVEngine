@@ -1,5 +1,6 @@
 #include "ui/UI.h"
 #include "ui/DatabasePanel.h"
+#include "ui/ObjectRegistry.h"
 #include "ui/EditorShell.h"
 #include "ui/PcgColorPreviewSync.h"
 #include "ui/PcgControllerSelection.h"
@@ -24,10 +25,12 @@
 #include "ui/Widget.h"
 #include "ui/ParentScaler.h"
 
+#include "common/Capability.h"
 #include "common/Module.h"
 #include "common/Json.h"
 #include "common/Value.h"
 #include "common/SquirrelBinding.h"
+#include "common/SquirrelOwnership.h"
 #include "common/config.h"
 #include "graphics/Graphics.h"
 #include "image/Image.h"
@@ -382,6 +385,20 @@ void injectUIComponentClass(ssq::Table &eveTable) {
     sq_settop(vm, top);
 }
 
+class UiRootReleaser final : public eve::script::ISquirrelRootReleaser {
+public:
+    void releaseSquirrelRoots() noexcept override {
+        if (auto* ui = ModuleManager::getInstance<UI>("UI")) ui->releaseSquirrelRoots();
+    }
+};
+
+struct RegisterUiRoots {
+    RegisterUiRoots() {
+        static UiRootReleaser releaser;
+        eve::cap::addListener<eve::script::ISquirrelRootReleaser>(&releaser);
+    }
+} g_uiRoots;
+
 }  // namespace
 
 Module_IMPL(UI, new UI());
@@ -391,6 +408,15 @@ UI::UI() : backend_(createImGuiBackend()) {
     registerUIAutomationCapabilities();
 }
 UI::~UI() { shutdownBackend(); }
+
+void UI::releaseSquirrelRoots() noexcept {
+    databasePanel_.reset();
+    if (!ModuleManager::runtime()) return;
+    try {
+        ObjectRegistry::instance().clearAll();
+    } catch (...) {
+    }
+}
 
 bool UI::isBackendReady() const { return backend_ && backend_->isInitialized(); }
 
@@ -410,6 +436,7 @@ bool UI::initBackend() {
 }
 
 void UI::shutdownBackend() {
+    releaseSquirrelRoots();
     releaseNinePatches();
     UISystem::clearBackend();
     if (backend_) backend_->shutdown();

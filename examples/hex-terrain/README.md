@@ -28,8 +28,8 @@ tests can verify that a seed contains the requested terrain features.
 
 The terrain shader pair ships compiled: `main.nut` loads
 `shaders/hex_terrain.vert.spv` + `shaders/hex_terrain.frag.spv` through
-`gfx.loadMeshShaderSpv`, because runtime GLSL compilation needs `glslc` on `PATH`
-and is unavailable on Windows. Regenerate both after editing the GLSL:
+`gfx.loadMeshShaderSpv`, so the example needs no runtime compiler. Regenerate both
+after editing the GLSL:
 
 ```sh
 glslc -o shaders/hex_terrain.vert.spv shaders/hex_terrain.vert

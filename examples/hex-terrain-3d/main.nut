@@ -259,8 +259,8 @@ function updateCamera(st, dt) {
 function createShaders(st) {
     if (st.shaders.len() > 0) return;
     // The engine's built-in Mesh3D vertex stage already produces the varyings these
-    // fragment shaders consume, so only the fragment stages are shipped (as SPIR-V:
-    // runtime GLSL compilation is unavailable on Windows). The list is indexed by
+    // fragment shaders consume, so only the fragment stages are shipped (as SPIR-V,
+    // which needs no runtime compiler). The list is indexed by
     // surface stream, so it must stay in `HexSurface` order; the wall and the
     // feature stream share one shader, which is therefore listed twice.
     local frags = ["shaders/hex_map_terrain.frag.spv", "shaders/hex_map_water.frag.spv",

@@ -473,6 +473,7 @@ Module_IMPL(Tactics, new Tactics());
 
 Tactics::Tactics() {
     cap::addListener<IGameplayControlProvider>(this);
+    cap::addListener<IGameplayInstanceCatalog>(this);
     // Importing tactics is what makes grid line of sight available to the targeting pipeline. A
     // refusal here (a foreign provider already owning the capability, say) is observed rather than
     // thrown: the project keeps whatever it registered, and grid sight simply is not claimed.
@@ -490,6 +491,7 @@ TacticsBattleSession::~TacticsBattleSession() noexcept {
 }
 
 Tactics::~Tactics() {
+    cap::removeListener<IGameplayInstanceCatalog>(this);
     cap::removeListener<IGameplayControlProvider>(this);
     releaseLive<TacticalUnit>(units_);
     releaseLive<TacticalSide>(sides_);
@@ -497,6 +499,18 @@ Tactics::~Tactics() {
 }
 
 std::string_view Tactics::gameplayDomain() const noexcept { return "tactics"; }
+
+std::vector<SubjectRef> Tactics::gameplayInstances() const {
+    // One tactics instance is one battle; the identity is the battle subject.
+    std::vector<SubjectRef> result;
+    for (const auto& handle : battles_) {
+        auto* battle = dynamic_cast<Battle*>(ecs::try_get(handle));
+        if (battle != nullptr && battle->identity()->subject.isValid()) result.push_back(battle->identity()->subject);
+    }
+    std::sort(result.begin(), result.end(),
+              [](const SubjectRef& left, const SubjectRef& right) { return left.format() < right.format(); });
+    return result;
+}
 
 Result<GameplayObservation> Tactics::observeGameplay(const GameplaySession& session,
                                                        SubjectRef instance) const {
