@@ -47,7 +47,7 @@ private:
 template <class T>
 [[nodiscard]] PinnedResource<T> pinResource(T *resource) {
     if (resource == nullptr) return PinnedResource<T>();
-    auto pinned = ResourceManager::getInstance().pin(*resource);
+    auto pinned = ResourceManager::getInstance().pin(resource);
     if (!pinned.ok()) return PinnedResource<T>();
     return PinnedResource<T>(std::move(pinned).takeValue());
 }

@@ -106,6 +106,17 @@ void ResourceManager::runLoadJob(std::string norm, uint64_t epoch) {
         cv_.notify_all();
         return;
     }
+    // Check the map before registering: a concurrent load of the same key may have won the
+    // race while this candidate decoded. Registering first and erasing afterwards would
+    // leave the candidate stranded in the registry whenever that erase cannot complete.
+    if (resources.find(norm) != resources.end()) {
+        if (pendingIt != pending_.end()) {
+            pendingIt->second->done = true;
+            pending_.erase(pendingIt);
+        }
+        cv_.notify_all();
+        return;  // `loaded` destroys the losing candidate
+    }
     auto entry = registry_.emplace(std::move(loaded));
     if (!entry.ok()) {
         if (pendingIt != pending_.end()) {
@@ -117,10 +128,9 @@ void ResourceManager::runLoadJob(std::string norm, uint64_t epoch) {
         cv_.notify_all();
         return;
     }
-    // A concurrent load of the same key may have won the race: keep its entry and
-    // release the candidate we just registered.
-    auto [it, inserted] = resources.emplace(norm, entry.value());
-    if (!inserted) registry_.erase(entry.value()).ignore("released the duplicate candidate");
+    // No second element can appear for `norm` between the check above and this insert:
+    // both run under mu_.
+    resources.emplace(norm, entry.value());
     if (pendingIt != pending_.end()) {
         pendingIt->second->done = true;
         pending_.erase(pendingIt);
@@ -298,14 +308,20 @@ ResultRef<Resource> ResourceManager::waitFor(std::string key) {
     return ResultRef<Resource>::success(std::ref(*live));
 }
 
-eve::Result<ResourcePin> ResourceManager::pin(Resource &resource) {
+eve::Result<ResourcePin> ResourceManager::pin(Resource *resource) {
+    if (resource == nullptr) {
+        return eve::Result<ResourcePin>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "cannot pin a null resource"));
+    }
     std::lock_guard<std::mutex> lock(mu_);
     for (auto &kv : resources) {
-        if (borrowLocked(kv.second) != &resource) continue;
+        if (borrowLocked(kv.second) != resource) continue;
         return registry_.pin(kv.second);
     }
+    // Deliberately does not name the resource: the caller's borrowed pointer may already
+    // have been destroyed by a concurrent unload() before this call ran.
     return eve::Result<ResourcePin>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::NotFound, "resource is not cached", resource.getUri()));
+        eve::Diagnostic::error(eve::DiagnosticCode::NotFound, "resource is not cached"));
 }
 
 size_t ResourceManager::pendingCount() const {
@@ -317,18 +333,23 @@ void ResourceManager::unload(std::string key) {
     std::lock_guard<std::mutex> lock(mu_);
     auto                        it = resources.find(makeKey(std::move(key)));
     if (it == resources.end()) return;
-    // The handle goes stale at once; a pinned payload is destroyed when the last
-    // pin is released, which is what keeps a playing SoundData alive.
-    registry_.erase(it->second).ignore("the entry handle became stale before the drop");
-    resources.erase(it);
+    // The handle goes stale at once; a pinned payload is destroyed when the last pin is
+    // released, which is what keeps a playing SoundData alive. A failed erase (free-list
+    // bookkeeping could not grow) keeps the payload owned by a reachable slot, so the
+    // mapping stays: dropping it would strand the resource until clear() or process exit.
+    if (registry_.erase(it->second).ok()) resources.erase(it);
 }
 
 void ResourceManager::unloadPath(const std::string &path) {
     const std::string norm = normalizePath(path);
     std::lock_guard<std::mutex> lock(mu_);
     for (auto it = resources.begin(); it != resources.end();) {
-        if (pathOfKey(it->first) == norm) {
-            registry_.erase(it->second).ignore("the entry handle became stale before the drop");
+        if (pathOfKey(it->first) != norm) {
+            ++it;
+            continue;
+        }
+        // Same rule as unload(): keep the mapping when the payload could not be released.
+        if (registry_.erase(it->second).ok()) {
             it = resources.erase(it);
         } else {
             ++it;
@@ -488,7 +509,9 @@ std::vector<Resource *> Resource::getDependencies() const {
 }
 
 eve::Result<void> Resource::addDependency(Resource &dependency) {
-    auto pinned = ResourceManager::getInstance().pin(dependency);
+    // Address-based, never dereferenced: the dependency may have been unloaded since the
+    // caller borrowed its reference.
+    auto pinned = ResourceManager::getInstance().pin(&dependency);
     if (!pinned.ok()) return eve::Result<void>::failure(pinned.status());
     dependencies.push_back(std::move(pinned).takeValue());
     return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));

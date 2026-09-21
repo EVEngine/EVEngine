@@ -12,6 +12,12 @@
 #include "production/Production.h"
 #include "statepatch/StatePatch.h"
 
+// A RuntimePin references its producing store by address, so that store must never be
+// relocated while a pin can exist. RuntimeObjectRegistry keeps it behind a stable heap
+// address and stays movable itself (statepatch::Store move-assigns one).
+static_assert(!std::is_move_constructible_v<eve::script::detail::RuntimeSlotStore>);
+static_assert(!std::is_move_assignable_v<eve::script::detail::RuntimeSlotStore>);
+
 #include "zeroerr/unittest.h"
 
 #include <simplesquirrel/simplesquirrel.hpp>

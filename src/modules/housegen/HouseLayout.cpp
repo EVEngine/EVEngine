@@ -120,7 +120,7 @@ ModelHandle loadModel(model3d::Model3D *models, const std::string &path) {
         // using the model after the cache entry may have been unloaded.
         model3d::ModelData *cached = models->newModelDataFromFile(path);
         if (cached == nullptr) return {};
-        auto pinned = eve::ResourceManager::getInstance().pin(*cached);
+        auto pinned = eve::ResourceManager::getInstance().pin(cached);
         if (!pinned.ok()) return {};
         ModelHandle handle;
         handle.pinned = std::move(pinned).takeValue();

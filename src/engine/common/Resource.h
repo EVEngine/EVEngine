@@ -2,13 +2,11 @@
 #include "common/AssetReloader.h"
 #include "common/BorrowedRef.h"
 #include "common/Result.h"
-// Cached resources are owned by a RuntimeObjectRegistry rather than by an intrusive
-// reference count, so this header needs the registry, RuntimePin and Owned/Borrowed
-// definitions. Both headers live in common/, so this is a same-layer include;
-// splitting the Squirrel-independent half of SquirrelOwnership.h (the registry,
-// store and pin) into its own header would keep <squirrel.h> out of the ~12 TUs
-// that include this one without already including Squirrel.
-#include "common/SquirrelOwnership.h"
+// Cached resources are owned by a RuntimeObjectRegistry and handed out as borrows and
+// keep-alive pins, so this header needs those definitions. RuntimeRegistry.h is
+// deliberately Squirrel-free: the cache's consumers must not be forced to include
+// <squirrel.h> just to name a resource handle.
+#include "common/RuntimeRegistry.h"
 
 #include <cstddef>
 #include <condition_variable>
@@ -198,11 +196,16 @@ public:
 
     /**
      * @brief Keeps one cached resource alive across unload()/clear()/reload.
-     * @param resource A resource the cache currently owns, typically one returned
-     *                 by get()/peek()/waitFor().
-     * @return A move-only keep-alive pin, or NotFound when @p resource is not
-     *         cached (already unloaded, or never cached here).
-     * @ownership The cache keeps owning @p resource; the pin only postpones its
+     * @param resource Borrowed pointer to a resource the cache owns, typically one
+     *                 returned by get()/peek()/waitFor() or a `newXFromFile()` factory.
+     *                 A null or already-stale pointer is rejected; this call never
+     *                 dereferences it, so a concurrent unload() cannot make the call
+     *                 itself read freed memory.
+     * @return A move-only keep-alive pin, or NotFound when no live cache entry resolves
+     *         to @p resource (already unloaded, or never cached here). Once a pin is
+     *         returned it is the authority: use `pin.get()` rather than the borrowed
+     *         pointer, which may have been stale before the call.
+     * @ownership The cache keeps owning the resource; the pin only postpones its
      *            destruction, so the address stays valid after unload() drops the
      *            cache entry (this is what keeps a playing SoundData alive).
      * @lifetime The pin must not outlive the manager; release it (or let it go out
@@ -211,7 +214,7 @@ public:
      * @thread Same serialization as the rest of the cache.
      * @reentrancy Does not invoke callbacks.
      */
-    [[nodiscard]] eve::Result<ResourcePin> pin(Resource& resource);
+    [[nodiscard]] eve::Result<ResourcePin> pin(Resource* resource);
 
     /**
      * @brief Block until `key` is cached, failed, or unclaimed.

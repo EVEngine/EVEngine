@@ -1390,9 +1390,12 @@ UI::NinePatchResource *UI::loadNinePatch(const std::string &path) {
         // while the nine-patch border is measured and stripped.
         eve::image::ImageData *source = images->newImageDataFromFile(path);
         if (source == nullptr) return nullptr;
-        auto sourcePin = eve::ResourceManager::getInstance().pin(*source);
+        auto sourcePin = eve::ResourceManager::getInstance().pin(source);
         if (!sourcePin.ok()) return nullptr;
-        eve::ResourcePin  keepAlive = std::move(sourcePin).takeValue();
+        eve::ResourcePin keepAlive = std::move(sourcePin).takeValue();
+        // The pin is the authority from here on; the borrowed pointer may have gone stale
+        // before the pin was taken.
+        source = static_cast<eve::image::ImageData *>(keepAlive.get());
         NinePatchResource resource;
         std::string error;
         if (!parseNinePatch(*source, resource.info, &error)) {

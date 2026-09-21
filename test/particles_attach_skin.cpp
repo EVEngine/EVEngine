@@ -2,19 +2,16 @@
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
-#include "ResourceTestSupport.h"
 #include "particles/ParticleEmitter.h"
 #include "particles/ParticleSystem.h"
 #include "particles/Particles.h"
 
-#include "ResourceTestSupport.h"
 #include "animation/AnimClip.h"
 #include "animation/AnimImporter.h"
 #include "animation/AnimPose.h"
 #include "animation/AnimSkeleton.h"
 #include "animation/AnimSkin.h"
 
-#include "ResourceTestSupport.h"
 #include "filesystem/Filesystem.h"
 #include "model3d/Model3D.h"
 #include "model3d/ModelData.h"
@@ -31,7 +28,6 @@ using namespace eve::animation;
 namespace {
 
 #include "PathBesideSource.h"
-#include "ResourceTestSupport.h"
 EVE_DEFINE_PATH_BESIDE_SOURCE()
 
 bool fileExists(const std::string &path) { return std::filesystem::is_regular_file(path); }

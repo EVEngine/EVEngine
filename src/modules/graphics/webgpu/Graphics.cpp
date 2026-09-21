@@ -2043,9 +2043,12 @@ bool Graphics::reloadTextureFromFile(const std::string& filename) {
         auto* imgMod = image::Image::create();
         data         = imgMod->newImageDataFromFile(filename);
         if (data != nullptr) {
-            auto pinned = eve::ResourceManager::getInstance().pin(*data);
+            auto pinned = eve::ResourceManager::getInstance().pin(data);
             if (!pinned.ok()) return false;
             keepAlive = std::move(pinned).takeValue();
+            // The pin is the authority from here on; the borrowed pointer may have gone
+            // stale before the pin was taken.
+            data = static_cast<image::ImageData*>(keepAlive.get());
         }
     } catch (...) {
         return false;
