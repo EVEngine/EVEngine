@@ -144,12 +144,19 @@ GAME ?=
 	reinstall/third-party/ios reinstall/third-party/ios-debug \
 	link-compile-commands download-classic-scenes download-skinned-character \
 	check/test-manifest check/module-layers check/bindings check/nodiscard check/quality-metadata \
-	check/profile-matrix check/architecture-contracts check/quality check/examples \
+	check/profile-matrix check/architecture-contracts check/quality check/examples check \
+	check/format check/depgraph check/binding-gaps check/versions check/scripts check/scripts-test \
 	profile profile/configure profile/build profile/smoke profile/dry-run \
 	ensure-built/win32 ensure-built/win32-debug ensure-built/linux ensure-built/linux-debug \
 	ensure-built/macosx ensure-built/macosx-debug \
 	init/submodules \
 	docs
+
+# Local source-quality checks compare the worktree against this git base.
+# CI passes the pull-request base SHA; locally this is origin/dev so a branch
+# is linted the same way the PR will be.
+CI_BASE ?= origin/dev
+ARCHITECTURE_BASE ?= $(CI_BASE)
 
 # Default: every debug target this machine can build (host + optional ios/android/wsl).
 all: $(ALL_DEBUG_TARGETS)
@@ -166,6 +173,7 @@ show-targets:
 	@echo "release -> build/$(PLATFORM)"
 	@echo "sdk -> sdk/$(PLATFORM) (Release) or sdk/$(PLATFORM)-debug"
 	@echo "run -> run/$(PLATFORM)-debug (GAME=$(GAME), empty = embedded demo)"
+	@echo "check -> source-quality gate (same commands as CI; CI_BASE=$(CI_BASE))"
 	@echo "profile -> PROFILE=$(PROFILE) in $(PROFILE_BUILD_ROOT)"
 	@echo "profile stages -> profile/configure profile/build profile/smoke"
 
@@ -233,6 +241,30 @@ check/profile-matrix:
 # Fast local quality gate for the profile and debt contracts.
 check/quality: check/quality-metadata check/profile-matrix check/nodiscard check/architecture-contracts
 
+# Individual source-quality pieces that CI also runs (see scripts/check_source_quality.sh).
+check/format:
+	bash .github/scripts/check-format.sh "$(CI_BASE)"
+
+check/depgraph:
+	python3 scripts/module_depgraph.py --check
+
+check/binding-gaps:
+	python3 scripts/check_binding_gap_metadata.py
+
+check/versions:
+	python3 scripts/release.py check-versions
+
+check/scripts:
+	python3 -m ruff check scripts
+
+check/scripts-test:
+	python3 -X utf8 -m unittest discover -s scripts/tests -p "test_*.py" -v
+
+# Source-only gate matching CI job `source-quality`. Does not build the engine.
+# Host compile/test is a separate lane: make build/$(PLATFORM)-debug && make test
+check:
+	bash scripts/check_source_quality.sh "$(CI_BASE)"
+
 # Profile stages are separate so CI can report configure, build, and
 # independent capability smoke failures independently. The default build root
 # is /tmp; no normal build/<platform> directory is touched.
@@ -292,6 +324,14 @@ WITH_MSVC = : && cmake/with-msvc.cmd
 VS_GENERATOR ?= Visual Studio 18 2026
 # Extra cmake -D... flags (CI: CMAKE_EXTRA_ARGS=-DBUILD_TESTING=OFF)
 CMAKE_EXTRA_ARGS ?=
+# Match CI debug jobs in .github/workflows/ci.yml (windows + linux):
+# -DEVENGINE_ENABLE_STRICT_WARNINGS=ON → MSVC /W4 /WX, GCC/Clang -Wall -Wextra -Werror.
+# CMAKE_EXTRA_ARGS is appended after this, so an explicit
+#   CMAKE_EXTRA_ARGS=-DEVENGINE_ENABLE_STRICT_WARNINGS=OFF
+# still wins. Release, macOS debug, Android, and iOS stay off, matching CI.
+# `sdk/win32-debug` / `sdk/linux-debug` package the same debug trees, so they
+# inherit the gate; `sdk/win32` / `sdk/linux` (Release) do not.
+DEBUG_STRICT_WARNINGS_FLAG = -DEVENGINE_ENABLE_STRICT_WARNINGS=ON
 JOBS ?= 32
 ANDROID_JOBS ?= 8
 CTEST_JOBS ?= 4
@@ -312,9 +352,6 @@ PROFILE_MATRIX_ARGS = --profile "$(PROFILE)" \
 	$(if $(PROFILE_PLATFORM),--platform "$(PROFILE_PLATFORM)") \
 	--cmake-command "$(PROFILE_CMAKE_COMMAND)"
 
-# Local checks inspect the current worktree diff; CI supplies the PR base SHA.
-ARCHITECTURE_BASE ?= HEAD
-
 # Reusable configure command lines: used both by the first-configure rules and
 # by the on-change reconfigure inside the build recipes below.
 MSVC_COMPILER_WRAPPER   := $(abspath cmake/msvc-cl.cmd)
@@ -326,23 +363,28 @@ MSVC_COMPILER_WRAPPER   := $(abspath cmake/msvc-cl.cmd)
 # `CMAKE_EXTRA_ARGS="-DEVENGINE_MODULE_LINKAGE=SHARED"` (tracked by
 # reconfigure-if-args-changed, so switching it reconfigures).
 WIN32_CMAKE_ARGS        = -G Ninja -DCMAKE_BUILD_TYPE=Release -DEVENGINE_MODULE_LINKAGE=OBJECT -DCMAKE_C_COMPILER=$(MSVC_COMPILER_WRAPPER) -DCMAKE_CXX_COMPILER=$(MSVC_COMPILER_WRAPPER) $(CMAKE_EXTRA_ARGS) -B build/win32 -S .
-WIN32_DEBUG_CMAKE_ARGS  = -G Ninja -DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_COMPILER=$(MSVC_COMPILER_WRAPPER) -DCMAKE_CXX_COMPILER=$(MSVC_COMPILER_WRAPPER) $(CMAKE_EXTRA_ARGS) -B build/win32-debug -S .
+WIN32_DEBUG_CMAKE_ARGS  = -G Ninja -DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_COMPILER=$(MSVC_COMPILER_WRAPPER) -DCMAKE_CXX_COMPILER=$(MSVC_COMPILER_WRAPPER) $(DEBUG_STRICT_WARNINGS_FLAG) $(CMAKE_EXTRA_ARGS) -B build/win32-debug -S .
 LINUX_CMAKE_ARGS        = -G 'Unix Makefiles' -DCMAKE_BUILD_TYPE=Release -DBUILD_PLATFORM=linux $(CMAKE_EXTRA_ARGS) -B build/linux -S .
-LINUX_DEBUG_CMAKE_ARGS  = -G 'Unix Makefiles' -DCMAKE_BUILD_TYPE=Debug -DBUILD_PLATFORM=linux $(CMAKE_EXTRA_ARGS) -B build/linux-debug -S .
+LINUX_DEBUG_CMAKE_ARGS  = -G 'Unix Makefiles' -DCMAKE_BUILD_TYPE=Debug -DBUILD_PLATFORM=linux $(DEBUG_STRICT_WARNINGS_FLAG) $(CMAKE_EXTRA_ARGS) -B build/linux-debug -S .
 MACOSX_CMAKE_ARGS       = -G 'Unix Makefiles' -DCMAKE_BUILD_TYPE=Release -DBUILD_PLATFORM=macosx $(CMAKE_EXTRA_ARGS) -B build/macosx -S .
 MACOSX_DEBUG_CMAKE_ARGS = -G 'Unix Makefiles' -DCMAKE_BUILD_TYPE=Debug -DBUILD_PLATFORM=macosx $(CMAKE_EXTRA_ARGS) -B build/macosx-debug -S .
+WIN32_DEBUG_CONFIG_STAMP = $(strip $(DEBUG_STRICT_WARNINGS_FLAG) $(CMAKE_EXTRA_ARGS))
+LINUX_DEBUG_CONFIG_STAMP = $(strip $(DEBUG_STRICT_WARNINGS_FLAG) $(CMAKE_EXTRA_ARGS))
 
-# $(call reconfigure-if-args-changed,<build-dir>,<cmake-command>)
-# Re-runs cmake when the recorded CMAKE_EXTRA_ARGS stamp differs from the
-# current make-level value. build/<plat> targets are phony, so this check runs
-# on every invocation but costs only one cat when nothing changed.
+# $(call reconfigure-if-args-changed,<build-dir>,<cmake-command>[,<stamp>])
+# Re-runs cmake when the recorded stamp differs from the current make-level
+# value. A missing stamp is recorded without a second configure: the generated-
+# file prerequisite has just configured. The optional third argument defaults
+# to CMAKE_EXTRA_ARGS. build/<plat> targets are phony, so this check runs on
+# every invocation but costs only one cat when nothing changed.
 define reconfigure-if-args-changed
-	@if [ ! -f $(1)/.eve-config-args ]; then \
-	  printf '%s\n' "$(CMAKE_EXTRA_ARGS)" > $(1)/.eve-config-args; \
-	elif [ "$$(cat $(1)/.eve-config-args)" != "$(CMAKE_EXTRA_ARGS)" ]; then \
-	  echo "CMAKE_EXTRA_ARGS changed; reconfiguring $(1)"; \
+	@stamp="$(if $(3),$(3),$(CMAKE_EXTRA_ARGS))"; \
+	if [ ! -f $(1)/.eve-config-args ]; then \
+	  printf '%s\n' "$$stamp" > $(1)/.eve-config-args; \
+	elif [ "$$(cat $(1)/.eve-config-args)" != "$$stamp" ]; then \
+	  echo "cmake config args changed; reconfiguring $(1)"; \
 	  $(2); \
-	  printf '%s\n' "$(CMAKE_EXTRA_ARGS)" > $(1)/.eve-config-args; \
+	  printf '%s\n' "$$stamp" > $(1)/.eve-config-args; \
 	fi
 endef
 
@@ -440,7 +482,7 @@ build/android/build.ninja:
 		-B build/android -S .
 
 build/win32-debug: build/win32-debug/build.ninja
-	$(call reconfigure-if-args-changed,build/win32-debug,$(WITH_MSVC) cmake.exe $(WIN32_DEBUG_CMAKE_ARGS))
+	$(call reconfigure-if-args-changed,build/win32-debug,$(WITH_MSVC) cmake.exe $(WIN32_DEBUG_CMAKE_ARGS),$(WIN32_DEBUG_CONFIG_STAMP))
 	$(WITH_MSVC) cmake.exe --build $@ -j $(JOBS)
 
 build/win32-debug/build.ninja:
@@ -471,7 +513,7 @@ ensure-built/win32-debug:
 	  $(WITH_MSVC) cmake.exe $(WIN32_DEBUG_CMAKE_ARGS); \
 	fi; \
 	if [ -f build/win32-debug/build.ninja ] \
-	   && [ "$$(cat build/win32-debug/.eve-config-args 2>/dev/null)" = "$(CMAKE_EXTRA_ARGS)" ] \
+	   && [ "$$(cat build/win32-debug/.eve-config-args 2>/dev/null)" = "$(WIN32_DEBUG_CONFIG_STAMP)" ] \
 	   && [ "$$stale" = 0 ] \
 	   && ! ninja -C build/win32-debug -n 2>&1 \
 	        | grep -v 'Entering directory' \
@@ -484,7 +526,7 @@ ensure-built/win32-debug:
 	fi
 
 build/linux-debug: build/linux-debug/Makefile
-	$(call reconfigure-if-args-changed,build/linux-debug,cmake $(LINUX_DEBUG_CMAKE_ARGS))
+	$(call reconfigure-if-args-changed,build/linux-debug,cmake $(LINUX_DEBUG_CMAKE_ARGS),$(LINUX_DEBUG_CONFIG_STAMP))
 	cmake --build $@ --target deps -j $(JOBS)
 	cmake --build $@ -j $(JOBS)
 
@@ -1217,6 +1259,7 @@ tools/debug:
 # Target-platform SDK install (independent prefix per plat; for publishing games TO that plat).
 # Release: make sdk/macosx  → builds build/macosx then dist/eve-sdk/macosx
 # Debug:   make sdk/macosx-debug
+# win32/linux debug SDK trees reuse build/*-debug, including the CI warning gate.
 sdk/win32: build/win32
 sdk/linux: build/linux
 sdk/macosx: build/macosx

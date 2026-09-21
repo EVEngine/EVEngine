@@ -1,0 +1,19 @@
+{
+  "repository": "EVEngine/EVEngine",
+  "owner": "xiaofan",
+  "relay_id": "xiaofan-windows",
+  "workspace": "C:/path/to/EVEngine",
+  "token_env": "GH_TOKEN",
+  "signing_key_env": "AGENT_REPAIR_HMAC_KEY",
+  "lease_seconds": 3900,
+  "providers": {
+    "codex": {
+      "command": [],
+      "timeout_seconds": 3600
+    },
+    "deepseek": {
+      "command": [],
+      "timeout_seconds": 3600
+    }
+  }
+}

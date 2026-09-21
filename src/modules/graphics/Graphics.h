@@ -193,6 +193,17 @@ public:
 
     /** @brief Renderer backend id used by sibling modules (e.g. Gpgpu). */
     virtual std::string getBackendName() const = 0;
+
+    /**
+     * @brief Whether this backend and build can compile GLSL to SPIR-V at runtime.
+     *
+     * Vulkan builds answer yes when a compiler is available: the shaderc archive
+     * linked on Windows, or an external `glslc` elsewhere. Backends that only accept
+     * prebuilt bytecode (WebGPU) answer no. Callers that can ship prebuilt SPIR-V
+     * should gate on this instead of probing the platform.
+     * @return True when newShader() may be given GLSL source in this build.
+     */
+    virtual bool supportsRuntimeGlslCompilation() const { return false; }
     /**
      * @brief Observe this provider's resource lifetime without extending it.
      * @return Weak token; expiry
@@ -1553,8 +1564,9 @@ public:
     }
 
     /**
-     * @brief Compile GLSL source with glslc (must be on PATH). Empty vertGlsl → default textured vert.
-     * Throws if compilation fails.
+     * @brief Compile GLSL source with the engine's build-time GLSL compiler. Empty vertGlsl → default textured
+     * vert. Windows builds link the Vulkan SDK's shaderc archive; hosts without it fall back to an external
+     * `glslc` on PATH. Throws if compilation fails.
      */
     virtual Shader *newShader(const std::string &vertGlsl, const std::string &fragGlsl) = 0;
     Shader *newShader(const std::string &fragGlsl) { return newShader(std::string(), fragGlsl); }

@@ -5,10 +5,57 @@
 #include "procgen/PointGraph.h"
 
 #include <simplesquirrel/simplesquirrel.hpp>
+#include <squirrel.h>
 
 #include <functional>
 
 namespace eve::procgen {
+namespace {
+
+SQInteger sqPointGraphConnect(HSQUIRRELVM vm) {
+    const SQInteger n = sq_gettop(vm);
+    if (n < 3 || n > 4) return sq_throwerror(vm, "PointGraph.connect expects (from, to [, inputIndex=0])");
+    PointGraph* self = nullptr;
+    if (SQ_FAILED(sq_getinstanceup(vm, 1, reinterpret_cast<SQUserPointer*>(&self), nullptr)) || !self)
+        return sq_throwerror(vm, "invalid PointGraph");
+    const SQChar* from = nullptr;
+    const SQChar* to   = nullptr;
+    SQInteger     inputIndex = 0;
+    if (SQ_FAILED(sq_getstring(vm, 2, &from)) || SQ_FAILED(sq_getstring(vm, 3, &to)))
+        return sq_throwerror(vm, "PointGraph.connect expects string node ids");
+    if (n >= 4 && SQ_FAILED(sq_getinteger(vm, 4, &inputIndex)))
+        return sq_throwerror(vm, "PointGraph.connect inputIndex must be an integer");
+    sq_pushbool(vm, self->connect(from ? from : "", to ? to : "", static_cast<int>(inputIndex)) ? SQTrue : SQFalse);
+    return 1;
+}
+
+SQInteger sqPointGraphDisconnect(HSQUIRRELVM vm) {
+    const SQInteger n = sq_gettop(vm);
+    if (n < 2 || n > 3) return sq_throwerror(vm, "PointGraph.disconnect expects (to [, inputIndex=0])");
+    PointGraph* self = nullptr;
+    if (SQ_FAILED(sq_getinstanceup(vm, 1, reinterpret_cast<SQUserPointer*>(&self), nullptr)) || !self)
+        return sq_throwerror(vm, "invalid PointGraph");
+    const SQChar* to         = nullptr;
+    SQInteger     inputIndex = 0;
+    if (SQ_FAILED(sq_getstring(vm, 2, &to))) return sq_throwerror(vm, "PointGraph.disconnect expects a string node id");
+    if (n >= 3 && SQ_FAILED(sq_getinteger(vm, 3, &inputIndex)))
+        return sq_throwerror(vm, "PointGraph.disconnect inputIndex must be an integer");
+    sq_pushbool(vm, self->disconnect(to ? to : "", static_cast<int>(inputIndex)) ? SQTrue : SQFalse);
+    return 1;
+}
+
+void addOptionalTrailingInt(ssq::Class& cls, const char* name, SQFUNCTION func, SQInteger minParams,
+                            const SQChar* typemask) {
+    HSQUIRRELVM vm = cls.getHandle();
+    sq_pushobject(vm, cls.getRaw());
+    sq_pushstring(vm, name, -1);
+    sq_newclosure(vm, func, 0);
+    sq_setparamscheck(vm, -minParams, typemask);
+    sq_newslot(vm, -3, SQFalse);
+    sq_poptop(vm);
+}
+
+}  // namespace
 
 void exposePointGraph(ssq::Table& table) {
     auto graph = table.addClass<PointGraph>(
@@ -20,8 +67,8 @@ void exposePointGraph(ssq::Table& table) {
     graph.addFunc("getNodeCount", &PointGraph::getNodeCount);
     graph.addFunc("getNodeId", &PointGraph::getNodeId);
     graph.addFunc("getNodeOperation", &PointGraph::getNodeOperation);
-    graph.addFunc("connect", &PointGraph::connect);
-    graph.addFunc("disconnect", &PointGraph::disconnect);
+    addOptionalTrailingInt(graph, "connect", sqPointGraphConnect, 3, _SC("xssi"));
+    addOptionalTrailingInt(graph, "disconnect", sqPointGraphDisconnect, 2, _SC("xsi"));
     graph.addFunc("getInputNode", &PointGraph::getInputNode);
     graph.addFunc("setNodePoints", &PointGraph::setNodePoints);
     graph.addFunc("setNodeSpatial", &PointGraph::setNodeSpatial);

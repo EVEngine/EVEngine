@@ -326,6 +326,7 @@ public:
     float gpuFrameMs() const override;
 
     std::string getBackendName() const override;
+    bool        supportsRuntimeGlslCompilation() const override;
 
     void initWithWindow(void *nativeWindow) override;
     void initHeadless(int width, int height) override;

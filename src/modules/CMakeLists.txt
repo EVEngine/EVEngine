@@ -330,6 +330,36 @@ if(_has_asset)
   target_link_libraries(EVAsset PRIVATE ${EVENGINE_ASSET_ZSTD_TARGET} ${EVENGINE_ASSET_UTF8PROC_TARGET})
 endif()
 
+# In-process GLSL -> SPIR-V through the Vulkan SDK's shaderc archive (glslang +
+# SPIRV-Tools). Every runtime GLSL compile in the engine goes through
+# graphics/vulkan/GlslCompiler.cpp, so enabling this on EVGraphics also covers the
+# modules above it: gpgpu's compute codegen inherits the INTERFACE link through its
+# dependency on graphics. Linking the archive removes the external glslc.exe
+# dependency from Windows builds — players do not install the Vulkan SDK.
+function(eve_enable_inprocess_shaderc target)
+  if(NOT WIN32 OR NOT DEFINED ENV{VULKAN_SDK} OR "$ENV{VULKAN_SDK}" STREQUAL "")
+    return()
+  endif()
+  set(_eve_shaderc_libnames shaderc_combined)
+  if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+    set(_eve_shaderc_libnames shaderc_combinedd)
+  endif()
+  find_library(EVE_SHADERC_LIB NAMES ${_eve_shaderc_libnames}
+    HINTS "$ENV{VULKAN_SDK}/Lib" "$ENV{VULKAN_SDK}/lib")
+  unset(_eve_shaderc_libnames)
+  if(NOT EVE_SHADERC_LIB)
+    message(STATUS "${target}: shaderc lib not found; runtime GLSL compilation will spawn glslc")
+    return()
+  endif()
+  # INTERFACE: module libraries are OBJECT libraries, so their private link deps
+  # would not reach the final executable.
+  target_link_libraries(${target} INTERFACE ${EVE_SHADERC_LIB})
+  # PRIVATE: GlslCompiler.cpp selects shaderc at compile time; INTERFACE would only
+  # define the macro for consumers and silently leave the target spawning glslc.
+  target_compile_definitions(${target} PRIVATE EVE_HAS_SHADERC=1)
+  message(STATUS "${target}: in-process shaderc compiler: ${EVE_SHADERC_LIB}")
+endfunction()
+
 eve_module_enabled(graphics _has_graphics)
 if(_has_graphics)
   # Header-only VKBuilder: prefer the source tree over a stale third-party install.
@@ -355,6 +385,9 @@ if(_has_graphics)
       add_dependencies(EVGraphics webgpu_shaders)
     endif()
   endif()
+
+  # Runtime GLSL compilation (newShader / newMeshShader / gpgpu compute codegen).
+  eve_enable_inprocess_shaderc(EVGraphics)
 endif()
 
 eve_module_enabled(ik _has_ik)
@@ -479,30 +512,9 @@ eve_module_enabled(gpgpu _has_gpgpu)
 if(_has_gpgpu)
   target_include_directories(EVGpgpu BEFORE PRIVATE
     ${EVENGINE_VKBUILDER_INCLUDE_DIR})
-  if(WIN32 AND DEFINED ENV{VULKAN_SDK} AND NOT "$ENV{VULKAN_SDK}" STREQUAL "")
-    # In-process GLSL -> SPIR-V via the Vulkan SDK's shaderc (glslang + SPIRV-Tools
-    # static archive). The tensor module's runtime kernel codegen compiles generated
-    # GLSL when a CompiledFunction is built; linking shaderc removes the external
-    # glslc.exe dependency on Windows (players don't install the Vulkan SDK).
-    set(_eve_shaderc_libnames shaderc_combined)
-    if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-      set(_eve_shaderc_libnames shaderc_combinedd)
-    endif()
-    find_library(EVE_SHADERC_LIB NAMES ${_eve_shaderc_libnames}
-      HINTS "$ENV{VULKAN_SDK}/Lib" "$ENV{VULKAN_SDK}/lib")
-    unset(_eve_shaderc_libnames)
-    if(EVE_SHADERC_LIB)
-      # INTERFACE: EVGpgpu is an OBJECT library; its private link deps would not
-      # reach the final executable, so propagate the SDK archive to consumers.
-      target_link_libraries(EVGpgpu INTERFACE ${EVE_SHADERC_LIB})
-      # The implementation itself selects shaderc; INTERFACE would only define
-      # the macro for consumers and silently leave VulkanUtil spawning glslc.
-      target_compile_definitions(EVGpgpu PRIVATE EVE_HAS_SHADERC=1)
-      message(STATUS "Gpgpu: in-process shaderc compiler: ${EVE_SHADERC_LIB}")
-    else()
-      message(STATUS "Gpgpu: shaderc lib not found; will spawn glslc at runtime")
-    endif()
-  endif()
+  # Compute codegen uses graphics::compileGlslToSpirv, so EVGpgpu needs no shaderc
+  # wiring of its own: the INTERFACE link on EVGraphics reaches this module through
+  # its dependency on graphics (see eve_enable_inprocess_shaderc above).
 endif()
 
 eve_module_enabled(virtualgeometry _has_virtualgeometry)

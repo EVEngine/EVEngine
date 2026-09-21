@@ -42,6 +42,12 @@ public:
     UI();
     ~UI() override;
 
+    /**
+     * @brief Drops database-panel Squirrel roots while the Runtime VM is alive.
+     * @remarks Invoked from Runtime shutdown via ISquirrelRootReleaser.
+     */
+    void releaseSquirrelRoots() noexcept;
+
     /** @brief Creates the platform UI backend (ImGui); true on success. */
     bool initBackend();
     /** @brief Destroys the platform UI backend. */
