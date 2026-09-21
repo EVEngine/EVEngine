@@ -5,8 +5,9 @@
 #include "RenderImageAudit.h"
 #include "common/Capability.h"
 #include "common/DecalQuery.h"
-#include "decal/DecalManager.h"
 #include "decal/Decal.h"
+#include "decal/ProceduralDecal.h"
+#include "decal/DecalManager.h"
 #include "graphics/Graphics.h"
 #include "graphics/RenderControl.h"
 #include "graphics/RenderSystem.h"
@@ -25,10 +26,346 @@
 #include <cstdint>
 #include <cmath>
 #include <filesystem>
+#include <fstream>
+#include <iterator>
+#include <string>
 #include <vector>
 
 using namespace eve::decal;
 using namespace eve::graphics;
+
+namespace {
+eve::graphics::Texture *makeSolidTex(eve::graphics::Graphics *gfx, uint8_t r, uint8_t g,
+                                     uint8_t b);
+eve::graphics::Mesh *makePlane(eve::graphics::Graphics *gfx, float size);
+}  // namespace
+
+TEST_CASE("decal.proceduralBakeIsDeterministicAndChannelPacked") {
+    auto preset = proceduralDecalPreset("blood-wet", 1729u);
+    REQUIRE(preset.ok());
+    preset.value().width = 64;
+    preset.value().height = 48;
+    auto first = bakeProceduralDecal(preset.value());
+    auto second = bakeProceduralDecal(preset.value());
+    REQUIRE(first.ok());
+    REQUIRE(second.ok());
+    CHECK_EQ(first.value().albedo, second.value().albedo);
+    CHECK_EQ(first.value().normal, second.value().normal);
+    CHECK_EQ(first.value().params, second.value().params);
+    REQUIRE_EQ(first.value().albedo.size(), static_cast<std::size_t>(64 * 48 * 4));
+    bool hasCoverage = false;
+    bool hasHeight = false;
+    bool hasPerturbedNormal = false;
+    for (std::size_t i = 0; i < first.value().albedo.size(); i += 4) {
+        hasCoverage = hasCoverage || first.value().albedo[i + 3] > 0;
+        hasHeight = hasHeight || first.value().params[i + 3] > 0;
+        hasPerturbedNormal = hasPerturbedNormal || first.value().normal[i] != 128 ||
+                             first.value().normal[i + 1] != 128;
+        CHECK_EQ(first.value().normal[i + 3], first.value().albedo[i + 3]);
+    }
+    CHECK(hasCoverage);
+    CHECK(hasHeight);
+    CHECK(hasPerturbedNormal);
+}
+
+TEST_CASE("decal.proceduralPresetsCoverReferenceMaterialFamilies") {
+    const char* names[] = {"blood-wet", "blood-dried", "damage", "dirt", "rust", "puddle",
+                           "paint", "moss", "mold", "lichen"};
+    for (const char* name : names) {
+        auto preset = proceduralDecalPreset(name, 7u);
+        REQUIRE(preset.ok());
+        preset.value().width = 16;
+        preset.value().height = 16;
+        auto baked = bakeProceduralDecal(preset.value());
+        REQUIRE(baked.ok());
+        CHECK_EQ(baked.value().albedo.size(), static_cast<std::size_t>(16 * 16 * 4));
+    }
+    auto unknown = proceduralDecalPreset("not-a-preset", 1u);
+    CHECK(!unknown.ok());
+}
+
+TEST_CASE("decal.proceduralLayerControlsChangeMaterialOutputs") {
+    ProceduralDecalRecipe recipe;
+    recipe.width = 32;
+    recipe.height = 32;
+    recipe.seed = 99u;
+    recipe.layerA.pattern = DecalPattern::Puddle;
+    recipe.layerA.amount = 1.f;
+    recipe.layerA.blur = 0.f;
+    recipe.layerA.color = {0.8f, 0.1f, 0.05f};
+    recipe.layerA.roughness = 0.15f;
+    recipe.layerA.metallic = 0.1f;
+    recipe.layerA.emissive = 0.35f;
+    recipe.layerA.height = 0.2f;
+    recipe.layerB.enabled = false;
+    auto first = bakeProceduralDecal(recipe);
+    REQUIRE(first.ok());
+
+    recipe.layerA.pattern = DecalPattern::Cracks;
+    recipe.layerA.rotation = 0.7f;
+    recipe.layerA.contrast = 2.2f;
+    recipe.layerA.color = {0.05f, 0.2f, 0.9f};
+    recipe.layerA.roughness = 0.85f;
+    recipe.layerA.metallic = 0.75f;
+    recipe.layerA.emissive = 0.9f;
+    recipe.layerA.height = 0.8f;
+    recipe.layerA.normalStrength = 5.f;
+    auto second = bakeProceduralDecal(recipe);
+    REQUIRE(second.ok());
+
+    CHECK(first.value().albedo != second.value().albedo);
+    CHECK(first.value().normal != second.value().normal);
+    CHECK(first.value().params != second.value().params);
+    bool hasEmissive = false;
+    for (std::size_t index = 2; index < second.value().params.size(); index += 4)
+        hasEmissive = hasEmissive || second.value().params[index] > 0;
+    CHECK(hasEmissive);
+}
+
+TEST_CASE("decal.proceduralImportsReferenceSubstanceMaterialPresets") {
+    const auto directory = std::filesystem::path(EVENGINE_SOURCE_DIR) / "test" / "fixtures" /
+                           "procedural_decal";
+    std::size_t importedCount = 0;
+    for (const auto& entry : std::filesystem::directory_iterator(directory)) {
+        if (entry.path().extension() != ".sbsprs") continue;
+        const auto& path = entry.path();
+        std::ifstream stream(path, std::ios::binary);
+        REQUIRE(stream.good());
+        const std::string xml((std::istreambuf_iterator<char>(stream)), std::istreambuf_iterator<char>());
+        auto imported = importProceduralDecalSbsprs(xml);
+        REQUIRE(imported.ok());
+        CHECK(imported.value().width >= 1);
+        CHECK(imported.value().height >= 1);
+        imported.value().width = 32;
+        imported.value().height = 32;
+        auto baked = bakeProceduralDecal(imported.value());
+        REQUIRE(baked.ok());
+        CHECK_EQ(baked.value().albedo.size(), static_cast<std::size_t>(32 * 32 * 4));
+        CHECK_EQ(baked.value().normal.size(), baked.value().albedo.size());
+        CHECK_EQ(baked.value().params.size(), baked.value().albedo.size());
+        ++importedCount;
+    }
+    CHECK_EQ(importedCount, 40u);
+
+    auto malformed = importProceduralDecalSbsprs("<sbspresets><sbspreset><presetinput identifier=\"a_color\"");
+    CHECK(!malformed.ok());
+    std::string oversized(1024u * 1024u + 1u, 'x');
+    CHECK(!importProceduralDecalSbsprs(oversized).ok());
+}
+
+TEST_CASE("decal.renderImportedPresetContactSheet") {
+    const auto directory = std::filesystem::path(EVENGINE_SOURCE_DIR) / "test" / "fixtures" /
+                           "procedural_decal";
+    std::vector<std::filesystem::path> presets;
+    for (const auto& entry : std::filesystem::directory_iterator(directory)) {
+        if (entry.path().extension() == ".sbsprs") presets.push_back(entry.path());
+    }
+    std::sort(presets.begin(), presets.end());
+    REQUIRE_EQ(presets.size(), 40u);
+
+    constexpr int tile = 128;
+    constexpr int gap = 4;
+    constexpr int columns = 5;
+    constexpr int rows = 8;
+    constexpr int sheetWidth = columns * tile + (columns + 1) * gap;
+    constexpr int sheetHeight = rows * tile + (rows + 1) * gap;
+    std::vector<std::uint8_t> sheet(static_cast<std::size_t>(sheetWidth * sheetHeight * 4), 255u);
+    for (int y = 0; y < sheetHeight; ++y) {
+        for (int x = 0; x < sheetWidth; ++x) {
+            const auto index = static_cast<std::size_t>((y * sheetWidth + x) * 4);
+            const auto shade = static_cast<std::uint8_t>(((x / 12 + y / 12) & 1) ? 72 : 104);
+            sheet[index + 0] = shade;
+            sheet[index + 1] = shade;
+            sheet[index + 2] = shade;
+        }
+    }
+
+    const auto output = std::filesystem::path(EVENGINE_TEST_BINARY_DIR) / "out" / "decal" /
+                        "imported_presets";
+    std::error_code ec;
+    std::filesystem::create_directories(output, ec);
+    REQUIRE(!ec);
+    std::ofstream manifest(output / "contact_sheet_order.txt", std::ios::binary);
+    REQUIRE(manifest.good());
+
+    for (std::size_t presetIndex = 0; presetIndex < presets.size(); ++presetIndex) {
+        std::ifstream stream(presets[presetIndex], std::ios::binary);
+        REQUIRE(stream.good());
+        const std::string xml((std::istreambuf_iterator<char>(stream)), std::istreambuf_iterator<char>());
+        auto recipe = importProceduralDecalSbsprs(xml);
+        REQUIRE(recipe.ok());
+        recipe.value().width = tile;
+        recipe.value().height = tile;
+        auto bake = bakeProceduralDecal(recipe.value());
+        REQUIRE(bake.ok());
+
+        eve::image::ImageData image(tile, tile, "RGBA8", bake.value().albedo.data(), false);
+        REQUIRE(saveImagePng(image, (output / (presets[presetIndex].stem().string() + ".png")).string()));
+        manifest << presetIndex + 1 << "\t" << presets[presetIndex].stem().string() << "\n";
+
+        const int originX = gap + static_cast<int>(presetIndex % columns) * (tile + gap);
+        const int originY = gap + static_cast<int>(presetIndex / columns) * (tile + gap);
+        for (int y = 0; y < tile; ++y) {
+            for (int x = 0; x < tile; ++x) {
+                const auto source = static_cast<std::size_t>((y * tile + x) * 4);
+                const auto target = static_cast<std::size_t>(((originY + y) * sheetWidth + originX + x) * 4);
+                const float alpha = float(bake.value().albedo[source + 3]) / 255.f;
+                for (int channel = 0; channel < 3; ++channel) {
+                    sheet[target + channel] = static_cast<std::uint8_t>(
+                        float(bake.value().albedo[source + channel]) * alpha +
+                        float(sheet[target + channel]) * (1.f - alpha));
+                }
+            }
+        }
+    }
+    eve::image::ImageData contactSheet(sheetWidth, sheetHeight, "RGBA8", sheet.data(), false);
+    REQUIRE(saveImagePng(contactSheet, (output / "contact_sheet.png").string()));
+    std::printf("procedural decal contact sheet saved: %s\n", output.string().c_str());
+}
+
+TEST_CASE("decal.renderImportedPresetsOnLitMaterialSpheres") {
+    eve::window::Window *win = nullptr;
+    eve::graphics::Graphics *gfx = nullptr;
+    openGfxWindow(win, gfx, 1280, 800);
+
+    auto *cam = Camera3D::createCamera();
+    cam->data()->eyeZ = 6.0f;
+    cam->setAmbient(0.075f, 0.08f, 0.095f);
+    RenderSystem3D::setDirectionalLight(-0.65f, 0.8f, 0.9f, 1.f, 0.92f, 0.78f);
+
+    auto *background = Renderable3D::create();
+    background->meshRenderer()->mesh = makePlane(gfx, 12.f);
+    background->meshRenderer()->texture = makeSolidTex(gfx, 28, 32, 42);
+    background->meshRenderer()->roughness = 0.9f;
+    background->transform()->z = -0.65f;
+
+    static bool sMaterialSphereDrawer = false;
+    if (!sMaterialSphereDrawer) {
+        sMaterialSphereDrawer = true;
+        RenderSystem3D::addDecalExtraDrawer(
+            [](eve::graphics::Graphics &g, const Camera3D::Data &camData,
+               const glm::mat4 &viewProj, float aspect) {
+                DecalManager::inst().drawAll(g, camData.eyeX, camData.eyeY, camData.eyeZ,
+                                             viewProj, aspect);
+            });
+    }
+    gfx->getRenderControl()->enable("decal");
+    gfx->getRenderControl()->compile();
+    gfx->setScreenReadbackEnabled(true);
+
+    const auto directory = std::filesystem::path(EVENGINE_SOURCE_DIR) / "test" / "fixtures" /
+                           "procedural_decal";
+    std::vector<std::filesystem::path> presets;
+    for (const auto& entry : std::filesystem::directory_iterator(directory)) {
+        if (entry.path().extension() == ".sbsprs") presets.push_back(entry.path());
+    }
+    std::sort(presets.begin(), presets.end());
+    REQUIRE_EQ(presets.size(), 40u);
+
+    auto *sphere = gfx->newMeshSphere(48, 24);
+    REQUIRE(sphere != nullptr);
+    DecalManager::inst().clearAll();
+    constexpr int columns = 8;
+    for (std::size_t presetIndex = 0; presetIndex < presets.size(); ++presetIndex) {
+        std::ifstream stream(presets[presetIndex], std::ios::binary);
+        REQUIRE(stream.good());
+        const std::string xml((std::istreambuf_iterator<char>(stream)), std::istreambuf_iterator<char>());
+        auto recipe = importProceduralDecalSbsprs(xml);
+        REQUIRE(recipe.ok());
+        recipe.value().width = 128;
+        recipe.value().height = 128;
+        auto bake = bakeProceduralDecal(recipe.value());
+        REQUIRE(bake.ok());
+
+        const int column = static_cast<int>(presetIndex % columns);
+        const int row = static_cast<int>(presetIndex / columns);
+        const float x = (float(column) - 3.5f) * 0.9f;
+        const float y = (2.f - float(row)) * 0.9f;
+        auto *entity = Renderable3D::create();
+        entity->meshRenderer()->mesh = sphere;
+        entity->meshRenderer()->texture = makeSolidTex(gfx, 185, 185, 190);
+        entity->meshRenderer()->roughness = 0.48f;
+        entity->setPosition(x, y, 0.f);
+        entity->setScale(0.36f, 0.36f, 0.36f);
+
+        const int decal = DecalManager::inst().project(
+            x, y, 0.18f, 0.f, 0.f, 1.f,
+            gfx->newTexture(128, 128, bake.value().albedo.data()), "material-sphere", 0.78f,
+            0.72f, false, static_cast<int>(presetIndex), 0.f, 0.f, 0.f, 1.f, 1.f, 1.f, 1.f);
+        REQUIRE(DecalManager::inst().setTextures(
+            decal, gfx->newTexture(128, 128, bake.value().normal.data()),
+            gfx->newTexture(128, 128, bake.value().params.data())));
+        REQUIRE(DecalManager::inst().setProjection(decal, "spherical", 4.f) ==
+                DecalProjectionStatus::Applied);
+        REQUIRE(DecalManager::inst().setParallax(decal, 0.025f, 8.f, 24.f) ==
+                DecalParallaxStatus::Applied);
+        REQUIRE(DecalManager::inst().setEdgeFade(decal, 0.025f) == DecalEdgeFadeStatus::Applied);
+    }
+
+    for (int frame = 0; frame < 4; ++frame) {
+        RenderSystem3D::render(*gfx);
+        RenderSystem::render(*gfx);
+        SDL_Event event;
+        while (SDL_PollEvent(&event)) {
+            if (event.type == SDL_QUIT) break;
+        }
+    }
+    auto *snapshot = gfx->newImageData();
+    REQUIRE(snapshot != nullptr);
+    const auto output = std::filesystem::path(EVENGINE_TEST_BINARY_DIR) / "out" / "decal" /
+                        "imported_presets";
+    std::error_code ec;
+    std::filesystem::create_directories(output, ec);
+    REQUIRE(!ec);
+    REQUIRE(saveImagePng(*snapshot, (output / "lit_material_spheres.png").string()));
+    delete snapshot;
+
+    DecalManager::inst().clearAll();
+    win->close();
+}
+
+TEST_CASE("decal.proceduralRejectsInvalidRecipeWithoutOutput") {
+    ProceduralDecalRecipe recipe;
+    recipe.width = 0;
+    auto invalidSize = bakeProceduralDecal(recipe);
+    CHECK(!invalidSize.ok());
+    recipe.width = 32;
+    recipe.schemaVersion = 99;
+    auto invalidVersion = bakeProceduralDecal(recipe);
+    CHECK(!invalidVersion.ok());
+    recipe.schemaVersion = ProceduralDecalRecipe::kSchemaVersion;
+    recipe.layerA.scale = 0.f;
+    auto invalidScale = bakeProceduralDecal(recipe);
+    CHECK(!invalidScale.ok());
+}
+
+TEST_CASE("decal.proceduralFacadeUploadsAllRuntimeChannels") {
+    eve::graphics::Graphics *gfx = nullptr;
+    openHeadlessGfx(gfx, 32, 32);
+    Decal api;
+    auto *albedo = api.bakePresetTexture(gfx, "rust", 42u, 32, "albedo");
+    auto *normal = api.bakePresetTexture(gfx, "rust", 42u, 32, "normal");
+    auto *params = api.bakePresetTexture(gfx, "rust", 42u, 32, "params");
+    REQUIRE(albedo != nullptr);
+    REQUIRE(normal != nullptr);
+    REQUIRE(params != nullptr);
+    CHECK_EQ(albedo->getWidth(), 32);
+    CHECK_EQ(normal->getHeight(), 32);
+    CHECK_EQ(params->getWidth(), 32);
+    const auto importedPath = std::filesystem::path(EVENGINE_SOURCE_DIR) / "test" / "fixtures" /
+                              "procedural_decal" / "Blood_Wet.sbsprs";
+    std::ifstream importedStream(importedPath, std::ios::binary);
+    REQUIRE(importedStream.good());
+    const std::string importedXml((std::istreambuf_iterator<char>(importedStream)),
+                                  std::istreambuf_iterator<char>());
+    auto *importedAlbedo = api.bakeSbsprsTexture(gfx, importedXml, 32, "albedo");
+    REQUIRE(importedAlbedo != nullptr);
+    CHECK_EQ(importedAlbedo->getWidth(), 32);
+    CHECK_THROWS(([&] {
+        auto *unexpected = api.bakePresetTexture(gfx, "rust", 42u, 32, "unknown");
+        (void)unexpected;
+    }(), false));
+}
 
 TEST_CASE("decal.managerProjectRemove") {
     auto &mgr = DecalManager::inst();
@@ -123,9 +460,24 @@ TEST_CASE("decal.managerAtlasBlendSetters") {
     CHECK(mgr.instances()[0].blendSharpness == 8.f);
     CHECK(mgr.setProjection(id, "planar", 4.f) == DecalProjectionStatus::Applied);
     CHECK(mgr.instances()[0].projectionMode == 0);
+    CHECK(mgr.setProjection(id, "spherical", 4.f) == DecalProjectionStatus::Applied);
+    CHECK(mgr.instances()[0].projectionMode == 2);
+    CHECK(mgr.setProjection(id, "world", 4.f) == DecalProjectionStatus::Applied);
+    CHECK(mgr.instances()[0].projectionMode == 3);
     CHECK(mgr.setProjection(id, "bogus", 4.f) == DecalProjectionStatus::InvalidMode);
     CHECK(mgr.setProjection(id, "triplanar", 0.f) == DecalProjectionStatus::InvalidSharpness);
     CHECK(mgr.setProjection(99999, "triplanar", 4.f) == DecalProjectionStatus::UnknownId);
+    CHECK(mgr.setParallax(id, 0.06f, 8.f, 32.f) == DecalParallaxStatus::Applied);
+    CHECK(mgr.instances()[0].parallaxScale == 0.06f);
+    CHECK(mgr.instances()[0].parallaxMinLayers == 8.f);
+    CHECK(mgr.instances()[0].parallaxMaxLayers == 32.f);
+    CHECK(mgr.setParallax(id, -0.1f, 8.f, 32.f) == DecalParallaxStatus::InvalidScale);
+    CHECK(mgr.setParallax(id, 0.1f, 32.f, 8.f) == DecalParallaxStatus::InvalidLayers);
+    CHECK(mgr.setParallax(99999, 0.1f, 8.f, 32.f) == DecalParallaxStatus::UnknownId);
+    CHECK(mgr.setEdgeFade(id, 0.12f) == DecalEdgeFadeStatus::Applied);
+    CHECK(mgr.instances()[0].edgeFadeWidth == 0.12f);
+    CHECK(mgr.setEdgeFade(id, 0.5f) == DecalEdgeFadeStatus::InvalidWidth);
+    CHECK(mgr.setEdgeFade(99999, 0.1f) == DecalEdgeFadeStatus::UnknownId);
 
     CHECK(mgr.setTextures(id, nullptr, nullptr));
     CHECK(!mgr.setUvRect(99999, 0.f, 0.f, 1.f, 1.f));  // unknown id
@@ -421,9 +773,14 @@ TEST_CASE("decal.gpuTriplanarCoversGrazingWall") {
     REQUIRE(mgr.setProjection(id, "triplanar", 4.f) == DecalProjectionStatus::Applied);
     const float triplanarScore = centerRedness();
 
+    REQUIRE(mgr.setProjection(id, "world", 4.f) == DecalProjectionStatus::Applied);
+    const float worldScore = centerRedness();
+
     // Triplanar must shift the wall toward the red decal; planar should not.
     REQUIRE(triplanarScore > 0.12f);
     REQUIRE(triplanarScore > planarScore + 0.08f);
+    REQUIRE(worldScore > 0.12f);
+    REQUIRE(worldScore > planarScore + 0.08f);
 
     mgr.clearAll();
     win->close();
@@ -590,23 +947,47 @@ TEST_CASE("decal.renderGalleryPng") {
 
     DecalManager::inst().clearAll();
     auto &mgr = DecalManager::inst();
+    auto bloodRecipe = proceduralDecalPreset("blood-wet", 7u);
+    auto dirtRecipe = proceduralDecalPreset("dirt", 23u);
+    auto damageRecipe = proceduralDecalPreset("damage", 37u);
+    REQUIRE(bloodRecipe.ok());
+    REQUIRE(dirtRecipe.ok());
+    REQUIRE(damageRecipe.ok());
+    for (auto *recipe : {&bloodRecipe.value(), &dirtRecipe.value(), &damageRecipe.value()}) {
+        recipe->width = 128;
+        recipe->height = 128;
+    }
+    auto bloodBake = bakeProceduralDecal(bloodRecipe.value());
+    auto dirtBake = bakeProceduralDecal(dirtRecipe.value());
+    auto damageBake = bakeProceduralDecal(damageRecipe.value());
+    REQUIRE(bloodBake.ok());
+    REQUIRE(dirtBake.ok());
+    REQUIRE(damageBake.ok());
     // Blood: dark red splat, wet gloss (roughness down via params R).
     const int blood = mgr.project(-0.85f, 0.01f, 0.15f, 0.f, 1.f, 0.f,
-                                  makeBloodSplat(gfx, 128), "blood", 1.05f, 0.12f, true, 7, 0.f,
-                                  0.f, 0.f, 0.f, 0.f, 0.f, 0.f);
-    CHECK(mgr.setTextures(blood, nullptr, makeRoughParams(gfx, 16, 0.28f)));
-    CHECK(mgr.setStrength(blood, 0.f, 1.f, 0.f, 0.f));
+                                  gfx->newTexture(128, 128, bloodBake.value().albedo.data()),
+                                  "blood", 1.05f, 0.12f, true, 7, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f,
+                                  0.f);
+    CHECK(mgr.setTextures(blood, gfx->newTexture(128, 128, bloodBake.value().normal.data()),
+                          gfx->newTexture(128, 128, bloodBake.value().params.data())));
+    CHECK(mgr.setStrength(blood, 1.f, 1.f, 0.f, 0.f));
     // Dirt: gray-brown speckle, rough + slight normal wobble.
-    const int dirt = mgr.project(0.f, 0.01f, 0.1f, 0.f, 1.f, 0.f, makeDirt(gfx, 128), "dirt",
+    const int dirt = mgr.project(0.f, 0.01f, 0.1f, 0.f, 1.f, 0.f,
+                                 gfx->newTexture(128, 128, dirtBake.value().albedo.data()), "dirt",
                                  1.3f, 0.12f, true, 23, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f);
-    CHECK(mgr.setTextures(dirt, nullptr, makeRoughParams(gfx, 16, 0.85f)));
-    CHECK(mgr.setStrength(dirt, 0.35f, 1.f, 0.f, 0.f));
+    CHECK(mgr.setTextures(dirt, gfx->newTexture(128, 128, dirtBake.value().normal.data()),
+                          gfx->newTexture(128, 128, dirtBake.value().params.data())));
+    CHECK(mgr.setStrength(dirt, 1.f, 1.f, 0.f, 0.f));
+    CHECK(mgr.setProjection(dirt, "spherical", 4.f) == DecalProjectionStatus::Applied);
     // Dent: concave normal map + crater albedo (real indentation shading).
-    const int dent = mgr.project(0.85f, 0.01f, 0.15f, 0.f, 1.f, 0.f, makeDentAlbedo(gfx, 128),
+    const int dent = mgr.project(0.85f, 0.01f, 0.15f, 0.f, 1.f, 0.f,
+                                 gfx->newTexture(128, 128, damageBake.value().albedo.data()),
                                  "dent", 1.05f, 0.12f, false, 0, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f,
                                  0.f);
-    CHECK(mgr.setTextures(dent, makeDentNormal(gfx, 128), makeRoughParams(gfx, 16, 0.6f)));
-    CHECK(mgr.setStrength(dent, 0.9f, 0.6f, 0.f, 0.f));
+    CHECK(mgr.setTextures(dent, gfx->newTexture(128, 128, damageBake.value().normal.data()),
+                          gfx->newTexture(128, 128, damageBake.value().params.data())));
+    CHECK(mgr.setStrength(dent, 1.f, 1.f, 0.f, 0.f));
+    CHECK(mgr.setParallax(dent, 0.055f, 8.f, 24.f) == DecalParallaxStatus::Applied);
 
     gfx->setScreenReadbackEnabled(true);
     for (int i = 0; i < 3; ++i) {

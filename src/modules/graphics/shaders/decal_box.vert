@@ -5,7 +5,8 @@ layout(push_constant) uniform DecalPush {
     vec4 uvRect;      // atlas region [x, y, w, h]
     vec4 fadeParams;  // x = fade, y = normalStrength, z = roughStrength, w = metalStrength
     vec4 extraParams; // x = emissiveStrength, y = blendMode,
-                      // z = projectionMode (0 planar / 1 triplanar), w = blendSharpness
+                      // z = projectionMode (0 planar / 1 triplanar / 2 spherical), w = blendSharpness
+    vec4 surfaceParams; // x = POM scale, y = min layers, z = max layers
 } decal;
 
 layout(location = 0) flat out vec4 vUV;

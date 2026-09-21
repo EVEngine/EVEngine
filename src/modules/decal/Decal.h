@@ -3,6 +3,9 @@
 #include "common/Module.h"
 #include "decal/DecalManager.h"
 
+#include <cstdint>
+#include <string>
+
 namespace eve::graphics {
 class Graphics;
 class Texture;
@@ -42,12 +45,17 @@ public:
     /** @brief Blend mode: "over" (default) or "add" (emissive). */
     bool setBlend(int id, const std::string &mode);
     /**
-     * @brief Projection: "planar" (default single-axis) or "triplanar" (no stretch on sides).
+     * @brief Projection: "planar", "triplanar", "spherical", or world-aligned "world".
      * @param blendSharpness Triplanar blend exponent (typical 2–10; default 4).
      * @return DecalProjectionStatus::Applied on success.
      */
     [[nodiscard]] DecalProjectionStatus setProjection(int id, const std::string &mode,
                                                       float blendSharpness);
+    /** @brief Configure params-alpha POM; scale zero disables it. */
+    [[nodiscard]] DecalParallaxStatus setParallax(int id, float scale, float minLayers,
+                                                 float maxLayers);
+    /** @brief Configure normalized edge-mask feather width in [0, 0.49]. */
+    [[nodiscard]] DecalEdgeFadeStatus setEdgeFade(int id, float width);
     bool remove(int id);
     void clearAll();
     int count();
@@ -56,6 +64,46 @@ public:
     void update(float dt);
     /** @brief Toggle the graphics "decal" feature on the given backend. */
     void setEnabled(graphics::Graphics *gfx, bool enabled);
+
+    /**
+     * @brief Return the stable comma-separated Procedural Decal preset names.
+     * @return Value-owned UTF-8 text suitable for UI menus and EveScript discovery.
+     */
+    [[nodiscard]] std::string proceduralPresets() const;
+
+    /**
+     * @brief Bake one channel of a named Procedural Decal preset and upload it.
+     * @param gfx Graphics service that owns the returned texture.
+     * @param preset Preset listed by proceduralPresets().
+     * @param seed Deterministic authoring seed.
+     * @param resolution Square output size in the inclusive range 1..4096.
+     * @param channel One of "albedo", "normal", or "params".
+     * @return Borrowed texture owned by gfx; it remains valid according to the graphics resource lifetime.
+     * @cost Linear in pixel count and blur radius; bake during load or authoring, never per frame.
+     * @throws eve::Exception when arguments or the recipe are invalid.
+     * @thread Must run on the graphics service's resource-creation thread.
+     * @reentrancy Does not invoke scripts or callbacks.
+     */
+    [[nodiscard]] graphics::Texture *bakePresetTexture(graphics::Graphics *gfx,
+                                                       const std::string &preset,
+                                                       std::uint32_t seed, int resolution,
+                                                       const std::string &channel);
+
+    /**
+     * @brief Import a Procedural Decal `.sbsprs` document, bake it, and upload one channel.
+     * @param gfx Graphics service that owns the returned texture.
+     * @param xml UTF-8 Substance preset document.
+     * @param resolution Square output size in the inclusive range 1..4096.
+     * @param channel One of "albedo", "normal", or "params".
+     * @return Borrowed texture owned by gfx.
+     * @cost Linear in XML size, pixel count, and blur radius; admission/loading only.
+     * @throws eve::Exception when import, bake, channel selection, or upload fails.
+     * @thread Must run on the graphics service's resource-creation thread.
+     * @reentrancy Does not invoke scripts or callbacks.
+     */
+    [[nodiscard]] graphics::Texture *bakeSbsprsTexture(graphics::Graphics *gfx,
+                                                       const std::string &xml, int resolution,
+                                                       const std::string &channel);
 };
 
 /** @brief Register the IDecalQuery capability (implemented in DecalCapabilities.cpp). */

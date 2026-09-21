@@ -51,6 +51,34 @@ TEST_CASE("editor.decal.snapshot_is_atomic_and_rejects_projection_rules") {
         EditorValue::Array{0.8,0.0,0.4,1.0},PropertySetMode::Absolute).code()),static_cast<int>(EditorStatus::Rejected));
 }
 
+TEST_CASE("editor.decal.v1_snapshot_migrates_with_pom_disabled") {
+    DecalDocumentTarget original("legacy");
+    EditorValue legacy=original.snapshotValue();
+    auto*root=legacy.getIf<EditorValue::Object>();
+    (*root)["schemaVersion"]=int64_t{1};
+    auto*values=(*root)["values"].getIf<EditorValue::Object>();
+    values->erase("projection.parallaxScale");
+    values->erase("projection.parallaxMinLayers");
+    values->erase("projection.parallaxMaxLayers");
+    DecalDocumentTarget restored("restored");
+    REQUIRE(restored.loadSnapshot(legacy).ok());
+    CHECK_EQ(*restored.value("projection.parallaxScale")->getIf<double>(),0.0);
+    CHECK_EQ(*restored.value("projection.parallaxMinLayers")->getIf<double>(),8.0);
+    CHECK_EQ(*restored.value("projection.parallaxMaxLayers")->getIf<double>(),24.0);
+    CHECK_EQ(*restored.value("projection.edgeFadeWidth")->getIf<double>(),0.06);
+}
+
+TEST_CASE("editor.decal.v2_snapshot_accepts_world_projection_upgrade") {
+    DecalDocumentTarget source("v2");
+    EditorValue snapshot=source.snapshotValue();
+    auto*root=snapshot.getIf<EditorValue::Object>();
+    (*root)["schemaVersion"]=int64_t{2};
+    DecalDocumentTarget restored("restored-v2");
+    REQUIRE(restored.loadSnapshot(snapshot).ok());
+    CHECK_EQ(*restored.value("projection.edgeFadeWidth")->getIf<double>(),0.06);
+    REQUIRE(set(restored,"projection.mode","world").ok());
+}
+
 TEST_CASE("editor.decal.runtime_replacement_resolves_assets_before_atomic_generation_swap") {
     auto&manager=eve::decal::DecalManager::inst();manager.clearAll();manager.setLimit("scorch",1);
     DecalDocumentTarget target("scorch");REQUIRE(set(target,"decal.kind","scorch").ok());
@@ -62,8 +90,13 @@ TEST_CASE("editor.decal.runtime_replacement_resolves_assets_before_atomic_genera
     CHECK_EQ(static_cast<int>(binding.publish(target).code()),static_cast<int>(EditorStatus::NotFound));
     CHECK_EQ(binding.runtimeId(),first);CHECK_EQ(manager.count(),1);CHECK_EQ(manager.instances()[0].id,first);
     REQUIRE(set(target,"texture.albedo","textures/a.png").ok());REQUIRE(set(target,"projection.depth",0.7).ok());
+    REQUIRE(set(target,"projection.mode","world").ok());
+    REQUIRE(set(target,"projection.parallaxScale",0.05).ok());
+    REQUIRE(set(target,"projection.edgeFadeWidth",0.12).ok());
     REQUIRE(binding.publish(target).ok());CHECK(binding.runtimeId()!=first);CHECK_EQ(manager.count(),1);
-    CHECK_EQ(manager.instances()[0].depth,0.7f);REQUIRE(binding.clear().ok());CHECK_EQ(manager.count(),0);
+    CHECK_EQ(manager.instances()[0].depth,0.7f);CHECK_EQ(manager.instances()[0].projectionMode,3);
+    CHECK_EQ(manager.instances()[0].parallaxScale,0.05f);CHECK_EQ(manager.instances()[0].edgeFadeWidth,0.12f);
+    REQUIRE(binding.clear().ok());CHECK_EQ(manager.count(),0);
 }
 
 TEST_CASE("editor.decal.publishing_target_preserves_author_and_runtime_on_rejection") {
