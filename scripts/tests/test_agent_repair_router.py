@@ -4,7 +4,15 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from agent_repair_router import decide, label_value, next_attempt, parse_state  # noqa: E402
+from agent_repair_router import (  # noqa: E402
+    decide,
+    GitHub,
+    label_value,
+    next_attempt,
+    parse_state,
+    sign_state,
+    valid_state,
+)
 
 
 def pr(repo="EVEngine/EVEngine", sha="abc", labels=None):
@@ -56,6 +64,42 @@ class AgentRepairRouterTest(unittest.TestCase):
     def test_attempt_limit_is_bounded(self):
         self.assertEqual(next_attempt(2, 3), (3, "pending"))
         self.assertEqual(next_attempt(3, 3), (3, "exhausted"))
+
+    def test_signed_state_is_bound_to_repository_pr_and_payload(self):
+        state = sign_state(
+            {
+                "schema": "evengine.agent-repair/v1",
+                "repository": "EVEngine/EVEngine",
+                "pr": 12,
+                "head_sha": "abc",
+                "owner": "a",
+                "provider": "codex",
+                "attempt": 1,
+                "max_attempts": 3,
+                "source_key": "workflow_run:42",
+                "reason": "CI failed",
+            },
+            "secret",
+        )
+        self.assertTrue(valid_state(state, "secret", "EVEngine/EVEngine", 12))
+        self.assertFalse(valid_state(dict(state, reason="forged"), "secret", "EVEngine/EVEngine", 12))
+        self.assertFalse(valid_state(state, "secret", "other/repo", 12))
+
+    def test_comment_pagination_reaches_later_pages(self):
+        class FakeGitHub(GitHub):
+            def __init__(self):
+                pass
+
+            def request(self, method, path, payload=None):
+                self.assert_request(method, payload)
+                return [{"id": value} for value in range(100)] if path.endswith("page=1") else [{"id": 100}]
+
+            @staticmethod
+            def assert_request(method, payload):
+                if method != "GET" or payload is not None:
+                    raise AssertionError("unexpected paginated request")
+
+        self.assertEqual(len(FakeGitHub().get_all("/issues/12/comments")), 101)
 
 
 if __name__ == "__main__":

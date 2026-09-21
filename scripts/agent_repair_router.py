@@ -3,6 +3,8 @@
 
 from __future__ import annotations
 
+import hashlib
+import hmac
 import json
 import os
 import urllib.error
@@ -12,7 +14,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-from utf8_stdio import enable_utf8_stdio
+import utf8_stdio
 
 
 MARKER = "<!-- evengine-agent-repair-state -->"
@@ -24,6 +26,19 @@ OWNER_PREFIX = "agent:owner:"
 PROVIDER_PREFIX = "agent:provider:"
 SUPPORTED_PROVIDERS = {"codex", "deepseek"}
 FAILED_CONCLUSIONS = {"failure", "timed_out", "cancelled", "action_required"}
+SIGNED_FIELDS = (
+    "schema",
+    "status",
+    "repository",
+    "pr",
+    "head_sha",
+    "owner",
+    "provider",
+    "attempt",
+    "max_attempts",
+    "source_key",
+    "reason",
+)
 
 
 @dataclass(frozen=True)
@@ -77,6 +92,29 @@ def decide(event_name: str, event: dict[str, Any], pr: dict[str, Any], repositor
 def parse_state(body: str) -> dict[str, Any] | None:
     if MARKER not in body:
         return None
+
+
+def signature_payload(state: dict[str, Any]) -> bytes:
+    payload = {field: state.get(field) for field in SIGNED_FIELDS}
+    return json.dumps(payload, sort_keys=True, separators=(",", ":")).encode("utf-8")
+
+
+def sign_state(state: dict[str, Any], key: str) -> dict[str, Any]:
+    signed = dict(state)
+    signed["signature"] = hmac.new(key.encode("utf-8"), signature_payload(state), hashlib.sha256).hexdigest()
+    return signed
+
+
+def valid_state(state: dict[str, Any], key: str, repository: str, pr_number: int) -> bool:
+    signature = state.get("signature")
+    if not isinstance(signature, str):
+        return False
+    expected = hmac.new(key.encode("utf-8"), signature_payload(state), hashlib.sha256).hexdigest()
+    return (
+        hmac.compare_digest(signature, expected)
+        and state.get("repository") == repository
+        and state.get("pr") == pr_number
+    )
     try:
         payload = body.split(MARKER, 1)[1].strip()
         if payload.startswith("```json") and payload.endswith("```"):
@@ -131,6 +169,38 @@ class GitHub:
             detail = exc.read().decode("utf-8", errors="replace")
             raise RuntimeError(f"GitHub API {method} {path} failed: {exc.code} {detail}") from exc
 
+    def get_all(self, path: str) -> list[dict[str, Any]]:
+        separator = "&" if "?" in path else "?"
+        items: list[dict[str, Any]] = []
+        page = 1
+        while True:
+            batch = self.request("GET", f"{path}{separator}per_page=100&page={page}")
+            if not isinstance(batch, list):
+                raise RuntimeError(f"GitHub API pagination expected a list for {path}")
+            items.extend(batch)
+            if len(batch) < 100:
+                return items
+            page += 1
+
+
+def find_state(
+    gh: GitHub, pr_number: int, signing_key: str, repository: str
+) -> tuple[dict[str, Any], dict[str, Any]] | None:
+    matches = []
+    for comment in gh.get_all(f"/issues/{pr_number}/comments"):
+        state = parse_state(comment.get("body", ""))
+        if (
+            comment.get("user", {}).get("login") == "github-actions[bot]"
+            and state
+            and valid_state(state, signing_key, repository, pr_number)
+        ):
+            matches.append((comment, state))
+    return max(
+        matches,
+        key=lambda item: (int(item[1].get("attempt", 0)), int(item[0]["id"])),
+        default=None,
+    )
+
 
 def event_pr_number(event_name: str, event: dict[str, Any]) -> int | None:
     if event_name == "workflow_run":
@@ -151,12 +221,11 @@ def latest_ci_run(gh: GitHub, pr: dict[str, Any]) -> dict[str, Any] | None:
     return max(matching, key=lambda run: run.get("run_number", 0), default=None)
 
 
-def cancel_existing(gh: GitHub, pr_number: int, reason: str) -> None:
-    comments = gh.request("GET", f"/issues/{pr_number}/comments?per_page=100")
-    existing = next(((comment, parse_state(comment.get("body", ""))) for comment in comments if parse_state(comment.get("body", ""))), None)
+def cancel_existing(gh: GitHub, pr_number: int, reason: str, signing_key: str, repository: str) -> None:
+    existing = find_state(gh, pr_number, signing_key, repository)
     if not existing or existing[1].get("status") not in {"pending", "claimed"}:
         return
-    state = dict(existing[1], status="cancelled", cancel_reason=reason)
+    state = sign_state(dict(existing[1], status="cancelled", cancel_reason=reason), signing_key)
     gh.request("PATCH", f"/issues/comments/{existing[0]['id']}", {"body": render_state(state)})
     for stale in (NEEDED_LABEL, CLAIMED_LABEL):
         try:
@@ -177,6 +246,9 @@ def ensure_label(gh: GitHub, name: str, color: str, description: str) -> None:
 def main() -> int:
     event_name = os.environ["REPAIR_EVENT_NAME"]
     repository = os.environ["REPAIR_REPOSITORY"]
+    signing_key = os.environ.get("REPAIR_HMAC_KEY", "")
+    if not signing_key:
+        raise SystemExit("REPAIR_HMAC_KEY is required")
     event = json.loads(Path(os.environ["REPAIR_EVENT_PATH"]).read_text(encoding="utf-8"))
     pr_number = event_pr_number(event_name, event)
     if pr_number is None:
@@ -211,11 +283,10 @@ def main() -> int:
             )
         )
         if should_cancel:
-            cancel_existing(gh, pr_number, decision.reason)
+            cancel_existing(gh, pr_number, decision.reason, signing_key, repository)
         return 0
 
-    comments = gh.request("GET", f"/issues/{pr_number}/comments?per_page=100")
-    existing = next(((c, parse_state(c.get("body", ""))) for c in comments if parse_state(c.get("body", ""))), None)
+    existing = find_state(gh, pr_number, signing_key, repository)
     previous = existing[1] if existing else {}
     if previous.get("source_key") == decision.source_key:
         print("skip: repair request already exists for this source event")
@@ -228,6 +299,7 @@ def main() -> int:
     provider = label_value(labels, PROVIDER_PREFIX)
     state = {
         "schema": "evengine.agent-repair/v1",
+        "repository": repository,
         "status": status,
         "pr": pr_number,
         "head_sha": pr["head"]["sha"],
@@ -238,6 +310,7 @@ def main() -> int:
         "source_key": decision.source_key,
         "reason": decision.reason,
     }
+    state = sign_state(state, signing_key)
 
     for name, color, description in (
         (NEEDED_LABEL, "d93f0b", "Queued for an opted-in local repair agent"),
@@ -263,5 +336,5 @@ def main() -> int:
 
 
 if __name__ == "__main__":
-    enable_utf8_stdio()
+    utf8_stdio.enable_utf8_stdio()
     raise SystemExit(main())

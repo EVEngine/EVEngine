@@ -4,6 +4,8 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
+import hmac
 import json
 import logging
 import os
@@ -20,7 +22,19 @@ from typing import Any
 
 MARKER = "<!-- evengine-agent-repair-state -->"
 NEEDED_LABEL = "agent:repair-needed"
-CLAIMED_LABEL = "agent:repair-claimed"
+SIGNED_FIELDS = (
+    "schema",
+    "status",
+    "repository",
+    "pr",
+    "head_sha",
+    "owner",
+    "provider",
+    "attempt",
+    "max_attempts",
+    "source_key",
+    "reason",
+)
 
 
 def parse_state(body: str) -> dict[str, Any] | None:
@@ -43,6 +57,29 @@ def render_state(state: dict[str, Any]) -> str:
         f"owner `{state['owner']}`)."
     )
     return f"{summary}\n\n{MARKER}\n```json\n{json.dumps(state, sort_keys=True)}\n```"
+
+
+def signature_payload(state: dict[str, Any]) -> bytes:
+    payload = {field: state.get(field) for field in SIGNED_FIELDS}
+    return json.dumps(payload, sort_keys=True, separators=(",", ":")).encode("utf-8")
+
+
+def valid_state(state: dict[str, Any], key: str, repository: str, pr_number: int) -> bool:
+    signature = state.get("signature")
+    if not isinstance(signature, str):
+        return False
+    expected = hmac.new(key.encode("utf-8"), signature_payload(state), hashlib.sha256).hexdigest()
+    return (
+        hmac.compare_digest(signature, expected)
+        and state.get("repository") == repository
+        and state.get("pr") == pr_number
+    )
+
+
+def sign_state(state: dict[str, Any], key: str) -> dict[str, Any]:
+    signed = dict(state)
+    signed["signature"] = hmac.new(key.encode("utf-8"), signature_payload(state), hashlib.sha256).hexdigest()
+    return signed
 
 
 class GitHub:
@@ -74,7 +111,39 @@ class GitHub:
 
     def pending_prs(self) -> list[dict[str, Any]]:
         label = urllib.parse.quote(NEEDED_LABEL)
-        return self.request("GET", f"/issues?state=open&labels={label}&per_page=100")
+        return self.get_all(f"/issues?state=open&labels={label}")
+
+    def get_all(self, path: str) -> list[dict[str, Any]]:
+        separator = "&" if "?" in path else "?"
+        items: list[dict[str, Any]] = []
+        page = 1
+        while True:
+            batch = self.request("GET", f"{path}{separator}per_page=100&page={page}")
+            if not isinstance(batch, list):
+                raise RuntimeError(f"GitHub API pagination expected a list for {path}")
+            items.extend(batch)
+            if len(batch) < 100:
+                return items
+            page += 1
+
+    def acquire_lease(self, ref: str, sha: str) -> bool:
+        try:
+            self.request("POST", "/git/refs", {"ref": f"refs/heads/{ref}", "sha": sha})
+            return True
+        except RuntimeError as exc:
+            if "422" in str(exc):
+                return False
+            raise
+
+    def ref_exists(self, ref: str) -> bool:
+        try:
+            self.request("GET", f"/git/ref/heads/{urllib.parse.quote(ref, safe='/')}")
+            return True
+        except RuntimeError as exc:
+            if "404" in str(exc):
+                return False
+            raise
+
 
 
 @dataclass(frozen=True)
@@ -138,22 +207,50 @@ Fetch and verify the PR head before editing. Diagnose the failing CI/review evid
 """
 
 
-def find_state(gh: GitHub, number: int) -> tuple[dict[str, Any], dict[str, Any]] | None:
-    comments = gh.request("GET", f"/issues/{number}/comments?per_page=100")
+def find_state(
+    gh: GitHub, number: int, signing_key: str
+) -> tuple[dict[str, Any], dict[str, Any]] | None:
+    matches = []
+    comments = gh.get_all(f"/issues/{number}/comments")
     for comment in comments:
         state = parse_state(comment.get("body", ""))
-        if state:
-            return comment, state
-    return None
+        if (
+            comment.get("user", {}).get("login") == "github-actions[bot]"
+            and state
+            and valid_state(state, signing_key, gh.repository, number)
+        ):
+            matches.append((comment, state))
+    return max(
+        matches,
+        key=lambda item: (int(item[1].get("attempt", 0)), int(item[0]["id"])),
+        default=None,
+    )
 
 
-def set_labels(gh: GitHub, number: int, add: str, remove: str) -> None:
-    gh.request("POST", f"/issues/{number}/labels", {"labels": [add]})
+def remove_label(gh: GitHub, number: int, label: str) -> None:
     try:
-        gh.request("DELETE", f"/issues/{number}/labels/{urllib.parse.quote(remove)}")
+        gh.request("DELETE", f"/issues/{number}/labels/{urllib.parse.quote(label)}")
     except RuntimeError as exc:
         if "404" not in str(exc):
             raise
+
+
+def lease_ref(number: int, state: dict[str, Any], now: float, lease_seconds: int) -> tuple[str, float]:
+    bucket = int(now // lease_seconds)
+    expires_at = float((bucket + 1) * lease_seconds)
+    ref = (
+        f"agent-repair-leases/pr-{number}-{state['head_sha'][:12]}-"
+        f"a{state['attempt']}-w{bucket}"
+    )
+    return ref, expires_at
+
+
+def completion_ref(number: int, state: dict[str, Any]) -> str:
+    source_digest = hashlib.sha256(str(state["source_key"]).encode("utf-8")).hexdigest()[:12]
+    return (
+        f"agent-repair-completions/pr-{number}-{state['head_sha'][:12]}-"
+        f"a{state['attempt']}-{source_digest}"
+    )
 
 
 def process_one(
@@ -161,11 +258,13 @@ def process_one(
     issue: dict[str, Any],
     owner: str,
     relay_id: str,
+    signing_key: str,
+    lease_seconds: int,
     adapters: dict[str, Adapter],
     dry_run: bool,
 ) -> bool:
     number = int(issue["number"])
-    found = find_state(gh, number)
+    found = find_state(gh, number, signing_key)
     if not found:
         logging.warning("PR #%s has queue label but no valid state comment", number)
         return False
@@ -197,35 +296,77 @@ def process_one(
         logging.info("dry-run: PR #%s would be claimed and dispatched via %s", number, state.get("provider"))
         return True
 
-    claimed = dict(state, status="claimed", relay_id=relay_id)
-    gh.request("PATCH", f"/issues/comments/{comment['id']}", {"body": render_state(claimed)})
-    set_labels(gh, number, CLAIMED_LABEL, NEEDED_LABEL)
-
-    # Optimistic claim: re-read the shared state and dispatch only if our relay still owns it.
-    confirmed = find_state(gh, number)
-    fresh_pr = gh.request("GET", f"/pulls/{number}")
-    if not confirmed or confirmed[1].get("relay_id") != relay_id:
-        logging.info("PR #%s claim lost to another relay", number)
-        return False
-    if fresh_pr.get("head", {}).get("sha") != state.get("head_sha"):
-        logging.warning("PR #%s head changed after claim; refusing dispatch", number)
+    completed_ref = completion_ref(number, state)
+    if gh.ref_exists(completed_ref):
+        logging.info("PR #%s request already reached a terminal dispatch state", number)
+        remove_label(gh, number, NEEDED_LABEL)
         return False
 
-    return_code = adapter.dispatch(build_prompt(gh.repository, fresh_pr, state), False)
-    final_status = "dispatched" if return_code == 0 else "dispatch_failed"
-    completed = dict(claimed, status=final_status, dispatch_exit_code=return_code)
-    gh.request("PATCH", f"/issues/comments/{comment['id']}", {"body": render_state(completed)})
-    logging.info("PR #%s %s", number, final_status)
+    now = time.time()
+    ref, expires_at = lease_ref(number, state, now, lease_seconds)
+    if expires_at - now <= adapter.timeout_seconds + 60:
+        logging.info("PR #%s lease window is too close to expiry; waiting for the next window", number)
+        return False
+    if not gh.acquire_lease(ref, state["head_sha"]):
+        logging.info("PR #%s lease is owned by another relay", number)
+        return False
+
+    final_status = "dispatch_failed"
+    diagnostic = "provider did not start"
+    return_code: int | None = None
+    try:
+        fresh_pr = gh.request("GET", f"/pulls/{number}")
+        if fresh_pr.get("head", {}).get("sha") != state.get("head_sha"):
+            final_status = "cancelled"
+            diagnostic = "head changed after lease acquisition"
+        else:
+            return_code = adapter.dispatch(build_prompt(gh.repository, fresh_pr, state), False)
+            final_status = "dispatched" if return_code == 0 else "dispatch_failed"
+            diagnostic = f"provider exited with code {return_code}"
+    except subprocess.TimeoutExpired:
+        final_status = "dispatch_timeout"
+        diagnostic = f"provider exceeded {adapter.timeout_seconds} seconds"
+        logging.exception("PR #%s provider timed out", number)
+    except OSError as exc:
+        final_status = "dispatch_failed"
+        diagnostic = f"provider launch failed: {type(exc).__name__}: {exc}"
+        logging.exception("PR #%s provider launch failed", number)
+    finally:
+        completed = sign_state(
+            dict(
+                state,
+                status=final_status,
+                relay_id=relay_id,
+                lease_expires_at=int(expires_at),
+                dispatch_exit_code=return_code,
+                diagnostic=diagnostic,
+            ),
+            signing_key,
+        )
+        gh.acquire_lease(completed_ref, state["head_sha"])
+        gh.request("PATCH", f"/issues/comments/{comment['id']}", {"body": render_state(completed)})
+        remove_label(gh, number, NEEDED_LABEL)
+    logging.info("PR #%s %s: %s", number, final_status, diagnostic)
     return True
 
 
-def run_once(gh: GitHub, owner: str, relay_id: str, adapters: dict[str, Adapter], dry_run: bool) -> int:
+def run_once(
+    gh: GitHub,
+    owner: str,
+    relay_id: str,
+    signing_key: str,
+    lease_seconds: int,
+    adapters: dict[str, Adapter],
+    dry_run: bool,
+) -> int:
     handled = 0
     for issue in gh.pending_prs():
         if "pull_request" not in issue:
             continue
         try:
-            handled += int(process_one(gh, issue, owner, relay_id, adapters, dry_run))
+            handled += int(
+                process_one(gh, issue, owner, relay_id, signing_key, lease_seconds, adapters, dry_run)
+            )
         except Exception:
             logging.exception("failed to process PR #%s", issue.get("number"))
     return handled
@@ -246,13 +387,20 @@ def main() -> int:
     token = os.environ.get(config.get("token_env", "GH_TOKEN"), "")
     if not token:
         raise SystemExit("GitHub token is missing; set the configured token_env variable")
+    signing_key = os.environ.get(config.get("signing_key_env", "AGENT_REPAIR_HMAC_KEY"), "")
+    if not signing_key:
+        raise SystemExit("repair signing key is missing; set the configured signing_key_env variable")
     owner = str(config["owner"])
     relay_id = str(config.get("relay_id") or f"{owner}@{socket.gethostname()}")
     gh = GitHub(str(config["repository"]), token, str(config.get("api_url", "https://api.github.com")))
     adapters = load_adapters(args.config)
+    lease_seconds = int(config.get("lease_seconds", 3900))
+    minimum_lease = max((adapter.timeout_seconds for adapter in adapters.values()), default=0) + 120
+    if lease_seconds < minimum_lease:
+        raise SystemExit(f"lease_seconds must be at least {minimum_lease} for the configured timeouts")
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
     while True:
-        run_once(gh, owner, relay_id, adapters, args.dry_run)
+        run_once(gh, owner, relay_id, signing_key, lease_seconds, adapters, args.dry_run)
         if args.once:
             return 0
         time.sleep(max(5, args.interval))

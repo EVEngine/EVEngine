@@ -10,7 +10,7 @@ on:
     types: [submitted]
 
 concurrency:
-  group: agent-repair-router-${{ github.event.workflow_run.id || github.event.pull_request.number || github.run_id }}
+  group: agent-repair-router-${{ github.event.pull_request.number || github.event.workflow_run.pull_requests[0].number || github.run_id }}
   cancel-in-progress: false
 
 permissions:
@@ -25,12 +25,14 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 5
     steps:
-      - name: Checkout trusted router from the default branch
+      - name: Checkout trusted router from the PR base
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          ref: ${{ github.event.repository.default_branch }}
+          ref: ${{ github.event.pull_request.base.sha || github.event.workflow_run.pull_requests[0].base.sha || 'dev' }}
           persist-credentials: false
-          sparse-checkout: scripts/agent_repair_router.py
+          sparse-checkout: |
+            scripts/agent_repair_router.py
+            scripts/utf8_stdio.py
           sparse-checkout-cone-mode: false
 
       - name: Route repair request
@@ -41,4 +43,14 @@ jobs:
           REPAIR_REPOSITORY: ${{ github.repository }}
           REPAIR_API_URL: ${{ github.api_url }}
           REPAIR_MAX_ATTEMPTS: ${{ vars.AGENT_REPAIR_MAX_ATTEMPTS || '3' }}
-        run: python3 scripts/agent_repair_router.py
+          REPAIR_HMAC_KEY: ${{ secrets.AGENT_REPAIR_HMAC_KEY }}
+        run: |
+          if [ ! -f scripts/agent_repair_router.py ]; then
+            echo "::warning::Trusted PR base does not contain the repair router yet; routing is disabled"
+            exit 0
+          fi
+          if [ -z "$REPAIR_HMAC_KEY" ]; then
+            echo "::warning::AGENT_REPAIR_HMAC_KEY is not configured; repair routing is disabled"
+            exit 0
+          fi
+          python3 scripts/agent_repair_router.py
