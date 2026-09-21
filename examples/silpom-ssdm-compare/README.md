@@ -59,17 +59,17 @@ xvfb-run -a scripts/smoke_examples.sh silpom-ssdm-compare
 ### Regenerating the shader
 
 The fragment stage ships as **committed SPIR-V** (`shaders/compare.frag.spv`),
-loaded with `gfx.loadMeshShaderSpv` — runtime GLSL compilation needs `glslc` on
-`PATH` and is unavailable on Windows. After editing `shaders/compare.frag`,
+loaded with `gfx.loadMeshShaderSpv`, so the example needs no runtime compiler and
+renders the same stages on every host. After editing `shaders/compare.frag`,
 regenerate the committed artifact with:
 
 ```sh
 glslc -o shaders/compare.frag.spv shaders/compare.frag
 ```
 
-Hot reload (`eve_asset_reload`) still recompiles the GLSL live on hosts that have
-`glslc`; where it is missing the panels keep the committed SPIR-V and the status
-line reports it.
+Hot reload (`eve_asset_reload`) recompiles the GLSL live through the engine's own
+compiler; where that is unavailable the panels keep the committed SPIR-V and the
+status line reports it.
 
 ## Honesty bound
 

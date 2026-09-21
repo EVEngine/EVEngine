@@ -16,8 +16,8 @@ function rebuildWorld() {
     local meshResult=procgen.generateMesh("mesh.hexterrain",p,gfx);
     if(!meshResult.ok){ print("hex terrain: "+meshResult.status.summary+"\n"); return; }
     local mesh=meshResult.value;
-    // Both stages ship as committed SPIR-V: runtime GLSL compilation needs glslc
-    // on PATH and is unavailable on Windows. Regenerate with
+    // Both stages ship as committed SPIR-V, so the example needs no runtime
+    // compiler. Regenerate with
     //   glslc -o shaders/hex_terrain.vert.spv shaders/hex_terrain.vert
     //   glslc -o shaders/hex_terrain.frag.spv shaders/hex_terrain.frag
     local loaded=gfx.loadMeshShaderSpv("shaders/hex_terrain.vert.spv",
