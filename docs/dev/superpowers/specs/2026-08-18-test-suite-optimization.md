@@ -820,3 +820,40 @@ twin 的两个 CMake 细节：(a) `DEFINE_SYMBOL box3d_EXPORTS` / `Box2D_EXPORTS
 **子模块补丁的落点**：`external/ECS.hpp` 的 `default_table()` 是"内联函数 + 函数局部静态"，MSVC 与 ELF 都不跨 image 合并，于是宿主与 7 个组各持一张表（§7.24 探针：27 targets / 197 objs）。补丁把它转发给 `ecs::engine_default_table()`，实现在 FOUNDATION 组（`src/engine/common/EcsDefaultTable.cpp`），**进程内唯一所有者**——与"每个可变事实只有一个权威所有者"这条架构规范同向。补丁在 **configure 期**用现成的 `cmake/patch_third_party.cmake` 应用（模块 TU 直接编译该头，没有任何 per-module 依赖能排在它们之前），子模块缺失时静默跳过；OBJECT 路线的预处理输出不变（整块包在 `#if defined(EVENGINE_MODULE_DLL)` 里）。`scripts/tests/test_patch_third_party.py` 增加了幂等覆盖：box3d / box2d / ECS 三个补丁各连打两次。
 
 **读数**：Windows SHARED `ctest -E "^bundle/" --timeout 120 -j 16` → **5546 用例 / 0 失败 / 0 超时**（连续两次构建口径一致：先按"库类型随开关"实现时全绿，改成双形态之后重编重跑仍全绿）；其中 `unit_test_physics` 277/277、`box2d.*` 14/14，`unit_test_ui` 112/112、`unit_test_procgen` 643/643 为逐域复核。静态 OBJECT 路线 → `eve.exe` 链接成功（单文件，依赖表见上）+ `unit_test_{physics,scene,network,building,combat}` **608/608**。源码门禁 `make check/quality check/module-layers check/bindings check/examples check/test-manifest` 全绿；`scripts/tests/test_patch_third_party.py` 覆盖三个新补丁的幂等性。
+
+### 7.29 第三次合并 dev：四类"只在合并树上才现形"的缺陷（2026-09-21）
+
+第三次把 dev（`d74a1538b`）合进 `codex/test-domain-split`（合并提交 `bce79e1a4`，共 445 个文件、其中 51 个头文件需要人工判冲突）之后，CI 的读数不是"再跑一遍就行"，而是暴露了四类**在任一父提交上都看不到**的缺陷。它们的共同点是：**冲突解决器会产生"能提交、能 configure、但编译/链接/脚本执行时才报"的文本**。
+
+**缺陷 1：子模块 gitlink 冲突被解决成旧提交（最隐蔽）。** 双方都动过 `external/ECS.hpp`，但只有 dev 移动了指针（`f50a6138` → `47fe2979`，*Relax ECS storage requirements*）；冲突解决取了我这边的旧指针。单看主树毫无异常——`git status` 干净、configure 通过——但 `test/ECS.cpp` 取自 dev，用的是新 API：
+
+```
+test/ECS.cpp(460): error C2665: StrictNode::create: 没有重载函数可以转换所有参数类型
+test/ECS.cpp(480): error C2039: "has" 不是 ecs::ComponentRef<SeededComponent> 的成员
+```
+
+判据与配方：**子模块指针冲突要取"后代"那一侧**（`git -C <sub> merge-base --is-ancestor A B`），并且移动指针后必须重跑 configure —— 因为子模块补丁是 configure 期应用的（§7.28），补丁能否落地就是"新子模块是否兼容"的现成探针。取证：`git ls-tree bce79e1a4^2 -- external/ECS.hpp`（dev，`47fe2979`）vs `^1`（旧，`f50a6138`），`git apply --check cmake/patches/ecs-shared-default-table.patch` 在新提交上 exit 0。顺带核对四个子模块：只有 ECS 两侧不同，且旧的正是新的祖先。
+
+**缺陷 2：非编译文件的冲突残渣（`cmake -P` 脚本与 Python 断言）。** 两个文件的冲突解决都留下了"半句话"：
+
+- `cmake/ZeroErrDiscoverTestsImpl.cmake` 多出一个 `endif()`（dev 侧与我这侧各有一个 `if` 块，合并后嵌套失衡）。这个文件**不在 configure 期解析**，只在链接每个测试 exe 后被 `cmake -P` 调用，于是 configure 全绿、第一次链接才炸：`CMake Error at ZeroErrDiscoverTestsImpl.cmake:214 (endif): Flow control statements are not properly nested.`
+- `scripts/tests/test_zeroerr_discovery.py` 留下截断的 `self.assertIn(generated,)`（`TypeError: missing 'container'`），断言意图已被紧随其后的 membership 断言覆盖，删掉即可。
+
+配方：合并后**必须**跑 `python3 -X utf8 -m unittest discover -s scripts/tests` 与全量 build（链接期才是 discovery 脚本的执行期）；对 `cmake -P` 类脚本加一条控制流配平检查（`if/foreach/while/function/macro/block` 配对，注意跳过 bracket argument `[=[ … ]=]` 里的文本，否则 `CMakeLists.txt` 会误报）。
+
+**缺陷 3：dev 新增的"跨组头文件出口"没有导出宏。** dev 新增的 `src/engine/common/SquirrelOwnership.h` 给 `RuntimeSlotStore` 的公开成员逐个标了 `EVENGINE_API`，但漏了析构函数与私有静态 `nextEpoch()`——单体/OBJECT 下完全不可见，SHARED 下它们定义在 FOUNDATION，而头文件被上层组包含：
+
+```
+LNK2001: 无法解析的外部符号 eve::script::detail::RuntimeSlotStore::nextEpoch(void)
+LNK2001: 无法解析的外部符号 eve::script::detail::RuntimeSlotStore::~RuntimeSlotStore(void)
+```
+
+配方：**凡是被更高层组包含的头文件，其头内内联代码所调用的每一个 out-of-line 成员都要有导出宏**；私有辅助函数（`findSlot` / `destroySlot` / `coordinatesValid` / `nextGeneration`）只被 .cpp 调用，保持内部即可。类级宏在这里不可取：类里有 `inline static std::atomic<std::uint64_t> nextEpoch_{1};`，类级 dllimport 会撞 C2491。
+
+**缺陷 4：机械插入的导出宏不是 clang-format 不动点。** 标注是脚本按行插入的，续行仍对齐旧列（`void applySnowToHeightmap(...)` 换成带宏的签名后，第二行参数要对齐新列）；`git clang-format`（CI 的 `.github/scripts/check-format.sh` 口径）在约 300 个文件上报差异。两个细节：**(a)** 这轮插入发生在最近一次 CI 之后，所以"上一轮 CI 是绿的"不能替代本地复核；**(b)** `git clang-format` **不是幂等的**——第一遍只按当时的 changed-line 区间重排，重排后区间之外的对齐又会形成新的差异，必须**迭代到 `--diff` 为空**（实测 2 轮到不动点）。另外 `git clang-format <base>` 不能接受子模块路径（`external/ECS.hpp: is a directory`，退出 2 并中断整批），要显式限定 `-- src test`。安全性核对：`SortIncludes: true` + `IncludeBlocks: Preserve` 会让新增在 include 块旁的宏触发该块重排，因此用"token 多重集不变"（去掉空白后词法序列相同）而不是"逐字节只差空白"来证明格式化是纯格式化。
+
+**读数（合并树 `b62887463`，Windows）**：SHARED 全量 `ctest -E "^bundle/" --timeout 120 -j 4` → **5561 用例 / 0 失败 / 0 超时**（569 s）；`ninja` 两条路线均 exit 0（SHARED 7 组库 + 30 个域 exe；OBJECT 的 `eve` 目标）；架构契约门禁 `scripts/check_architecture_contracts.py --base 6a49a9824` 与 `scripts/tests` 全绿；CI 源码门的九条脚本（module_depgraph 两类、check_bindings、binding-gap、test-manifest、examples、nodiscard）本地全绿。
+
+**读数（推送头 `2a845b488`，格式化提交之后）**：Windows SHARED **5561 / 0 失败**（415 s）、Windows OBJECT 单体 **5561 / 0 失败**（441 s，`-E "^bundle/"` 口径与 SHARED 一致，单体共 6389 条 CTest 条目）；WSL Linux SHARED 七个域 **978/978**（scripts 68、platform 27、physics 277、scene 58、building 96、combat 151、rpg 301）；WSL Linux OBJECT 单体 **5563 / 0 失败**（222 s），`unit_test` 1.61 GB，`ldd` 无 `libEV*` / `box*` / `SDL*`。格式化提交只改空白与 include 顺序（token 多重集不变），但仍按推送头重编重跑，读数取推送头这一份。
+
+**两条"看似回归、实则口径"的读数**，记录以免下次重新踩：**(a)** OBJECT 单体默认不过滤 `bundle/*` 时会报 13 条失败（10 Failed + 3 SEGFAULT）——bundle 是把整个测试文件的用例塞进一个进程的 opt-in 形态，`make test` 与 CI 一律 `-E "^bundle/"` 排除，共享进程串扰是它的已知代价；**(b)** 只构建 `--target unit_test` 而不建 `native_test_plugin` 时，`plugins.load.nativeLibraryAndInstantiateCppModule` 会以 `dlopen ... native_test_plugin.so: No such file or directory` 失败（缺的是构建产物，不是代码）；另外 `ctest -j 6` 下 `network.UdpSendTo` 偶发 SEGFAULT（多个用例同时绑同一 UDP 端口），单跑 100% 通过。
