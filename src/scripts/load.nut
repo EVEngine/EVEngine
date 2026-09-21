@@ -891,8 +891,8 @@ eve_frame <- function() {
     // later frame fails with "begin3DFrame: swapchain pass already open".
     try {
         gfx.present();
-        if (has_module("system") && (!("hostDrivesFrames" in eve) || !eve.hostDrivesFrames)) {
-            system.limitFrame();
+        if (has_module("os") && (!("hostDrivesFrames" in eve) || !eve.hostDrivesFrames)) {
+            os.limitFrame();
         }
         if (has_module("ui")) ui.dispatchEvents();
         clear_loop_error("present");

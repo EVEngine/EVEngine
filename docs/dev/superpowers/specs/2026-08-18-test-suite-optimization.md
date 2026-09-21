@@ -42,7 +42,7 @@
 | `async.cpp` (8) | Promise、setTimeout、async/await 语义 |
 | `thread.cpp` (18) | 线程池、Channel、生命周期安全 |
 | `timer.cpp`/`timer_cpp.cpp` (4) | 定时器 C++/脚本接口 |
-| `system.cpp` (6) | 系统抽象（sleep 等） |
+| `os.cpp` (6) | 操作系统抽象（sleep 等） |
 | `i18n.cpp`/`i18n_script.cpp` (10) | 多语言加载、复数规则 |
 | `filesystem.cpp`/`filesystem_cpp.cpp` (15) | 读写、挂载、watch |
 | `database.cpp` (1) | SQLite CRUD/ORM/ECS 导出 |

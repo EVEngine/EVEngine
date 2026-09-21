@@ -1,7 +1,7 @@
 #pragma once
 #include "common/Result.h"
 namespace ssq { class Table; }
-namespace eve::system {
+namespace eve::procgen {
 /** @brief Terrain quality values selected by Pcg's six-level frame-rate manager. */
 struct PcgTerrainQualityPreset {
  float treeDistance=250,treeBillboardDistance=30,treeCrossFadeLength=5; int treeMaximumFullLodCount=5;
@@ -25,4 +25,4 @@ private:
  int target_=60,min_=0,max_=5,quality_=0,frames_=0; float interval_=10,left_=10,fpsLeft_=.5f,accum_=0,fps_=0; bool automatic_=true,changed_=false;
 };
 /** @brief Register Pcg frame-rate manager bindings. */ void exposePcgFrameRateManagerBindings(ssq::Table& table);
-}
+}  // namespace eve::procgen

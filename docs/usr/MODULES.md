@@ -16,7 +16,7 @@
 - [事件](modules/event.md)：泵送平台事件，并用字符串消息队列在模块或线程之间传递通知。
 - [响应式编程](modules/rx.md)：UniRx 风格推送流，Subject 家族 + LINQ 操作符 + ReactiveProperty + 事件桥接。
 - [计时器](modules/timer.md)：读取启动后的高精度时间和帧间隔。
-- [系统信息](modules/system.md)：查询操作系统、CPU、内存、电量、剪贴板和 GPU 信息。
+- [OS](modules/os.md)：查询操作系统、CPU、内存、电量、剪贴板和 GPU 信息。
 - [键盘](modules/keyboard.md)：查询按键状态、键盘重复和文本输入。
 - [鼠标](modules/mouse.md)：查询鼠标位置、按键和指针可见状态；当前脚本绑定不含相对模式设置。
 - [触摸](modules/touch.md)：按索引读取当前触点数量和归一化/屏幕坐标。

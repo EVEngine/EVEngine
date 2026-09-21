@@ -22,6 +22,8 @@
 #include "procgen/GtsTerrainLod.h"
 #include "procgen/PcgMeshLod.h"
 #include "procgen/PcgMeshLodBackup.h"
+#include "procgen/PcgFrameRateManager.h"
+#include "procgen/PcgTaskQueue.h"
 #include "procgen/GtsTerrainExportSettings.h"
 #include "procgen/GtsTerrainLodRuntime.h"
 #include "procgen/JsonExport.h"
@@ -2867,6 +2869,8 @@ void Procgen::expose(ssq::Table& table) {
     exposeMeshModifierGraph(table);
     exposeGridMeshGraphs(table);
     exposeShapeGrammar(table);
+    exposePcgFrameRateManagerBindings(table);
+    exposePcgTaskQueueBindings(table);
 
     auto recipe = table.addClass<RecipeDescriptor>(
         "ProcgenRecipeSchema", std::function<RecipeDescriptor*()>([]() -> RecipeDescriptor* { return nullptr; }), true);
