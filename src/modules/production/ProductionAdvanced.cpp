@@ -12,10 +12,21 @@ eve::Result<T> advancedFailure(eve::DiagnosticCode code, std::string message, st
         eve::Diagnostic::error(code, std::move(message), std::move(path), {}, "production.advanced"));
 }
 
-std::int64_t scaledRemaining(const ProductionTask& task) {
+eve::Result<std::int64_t> scaledRemaining(const ProductionTask& task) {
     const auto remaining = task.duration.nanoseconds() - task.progress.nanoseconds();
     const auto efficiency = static_cast<std::int64_t>(task.efficiencyPermille);
-    return remaining <= 0 ? 0 : (remaining * 1000 + efficiency - 1) / efficiency;
+    if (remaining <= 0) return eve::Result<std::int64_t>::success(0);
+    const auto whole = remaining / efficiency;
+    if (whole > std::numeric_limits<std::int64_t>::max() / 1000)
+        return advancedFailure<std::int64_t>(eve::DiagnosticCode::InvalidArgument,
+                                             "production remaining time is not representable");
+    const auto residualNumerator = (remaining % efficiency) * 1000 - task.workRemainderPermille;
+    const auto residual = residualNumerator <= 0 ? 0 : (residualNumerator + efficiency - 1) / efficiency;
+    const auto base = whole * 1000;
+    if (base > std::numeric_limits<std::int64_t>::max() - residual)
+        return advancedFailure<std::int64_t>(eve::DiagnosticCode::InvalidArgument,
+                                             "production remaining time is not representable");
+    return eve::Result<std::int64_t>::success(base + residual);
 }
 
 }  // namespace
@@ -88,6 +99,7 @@ void WorkQueue::continueAfterCycle(ProductionTask& task) {
         task.repeat.observedStock = static_cast<int>(std::min<std::int64_t>(updated, std::numeric_limits<int>::max()));
     }
     task.progress = eve::Duration::zero();
+    task.workRemainderPermille = 0;
     task.reason.clear();
     task.lastSettlementId = task.settlement.settlementId;
     task.settlement = {};
@@ -162,8 +174,9 @@ eve::Result<ProductionPrediction> WorkQueue::predict(std::string_view taskId) co
     auto reason = blockReason(taskId);
     if (!reason) return eve::Result<ProductionPrediction>::failure(reason.status());
     prediction.blockReason = reason.value();
-    const auto own = scaledRemaining(task);
-    prediction.ownWorkRemaining = eve::Duration::fromNanoseconds(own);
+    auto own = scaledRemaining(task);
+    if (!own) return eve::Result<ProductionPrediction>::failure(own.status());
+    prediction.ownWorkRemaining = eve::Duration::fromNanoseconds(own.value());
     if (task.state == TaskState::Running) {
         prediction.estimatedCompletionAfter = prediction.ownWorkRemaining;
         prediction.exact = true;
@@ -174,11 +187,19 @@ eve::Result<ProductionPrediction> WorkQueue::predict(std::string_view taskId) co
         earliest = std::numeric_limits<std::int64_t>::max();
         for (const auto& candidate : tasks_)
             if (candidate->owner == task.owner && candidate->state == TaskState::Running)
-                earliest = std::min(earliest, scaledRemaining(*candidate));
+                {
+                    auto candidateRemaining = scaledRemaining(*candidate);
+                    if (!candidateRemaining)
+                        return eve::Result<ProductionPrediction>::failure(candidateRemaining.status());
+                    earliest = std::min(earliest, candidateRemaining.value());
+                }
         if (earliest == std::numeric_limits<std::int64_t>::max()) earliest = 0;
     }
     prediction.estimatedStartAfter = eve::Duration::fromNanoseconds(earliest);
-    prediction.estimatedCompletionAfter = eve::Duration::fromNanoseconds(earliest + own);
+    if (earliest > std::numeric_limits<std::int64_t>::max() - own.value())
+        return advancedFailure<ProductionPrediction>(eve::DiagnosticCode::InvalidArgument,
+                                                     "production completion estimate is not representable");
+    prediction.estimatedCompletionAfter = eve::Duration::fromNanoseconds(earliest + own.value());
     prediction.exact = prediction.blockReason.empty() && task.state == TaskState::Queued && earliest == 0;
     return eve::Result<ProductionPrediction>::success(std::move(prediction));
 }

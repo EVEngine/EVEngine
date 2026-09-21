@@ -6,6 +6,8 @@
 #include "inventory/Item.h"
 #include "rpg/Crafting.h"
 
+#include <limits>
+
 using namespace eve;
 
 TEST_CASE("rpg.craftingAlchemyPaysQueuesRetriesAndSettlesOnce") {
@@ -101,5 +103,31 @@ TEST_CASE("rpg.craftingRejectsInsufficientIngredientsWithoutQueueMutation") {
     rpg::CraftingRequest request{&queue, &account, "player", recipe};
     auto result = rpg::Crafting::begin(std::move(request));
     CHECK(!result.ok());
+    CHECK_EQ(queue.taskCount(), 0);
+}
+
+TEST_CASE("rpg.craftingRejectsAggregateOutputOverflowBeforePayment") {
+    inventory::ItemRegistry::clear();
+    inventory::InventorySystem::ensureBuiltins();
+    inventory::ItemDefinition herb;
+    herb.id = "herb";
+    herb.maxStack = 99;
+    inventory::ItemRegistry::registerItem(herb);
+    inventory::Bag ingredients(1);
+    REQUIRE_EQ(ingredients.addItem("herb", 1), 1);
+    inventory::InventoryResourceAccount account(ingredients);
+    auto cost = resource::CostSpec::single("herb", 1);
+    REQUIRE(cost.ok());
+
+    rpg::CraftingRecipe recipe;
+    recipe.id = "overflowing_recipe";
+    recipe.ingredients = std::move(cost).takeValue();
+    recipe.outputs = {{"first", std::numeric_limits<int>::max()}, {"second", 1}};
+    recipe.duration = Duration::fromNanoseconds(1);
+    production::WorkQueue queue;
+    rpg::CraftingRequest request{&queue, &account, "player", recipe};
+    auto result = rpg::Crafting::begin(std::move(request));
+    CHECK(!result.ok());
+    CHECK_EQ(ingredients.countItem("herb"), 1);
     CHECK_EQ(queue.taskCount(), 0);
 }

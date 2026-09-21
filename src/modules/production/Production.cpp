@@ -24,6 +24,31 @@ bool terminal(TaskState state) {
     return state == TaskState::Completed || state == TaskState::Cancelled || state == TaskState::Failed;
 }
 
+struct ScaledWork {
+    std::int64_t appliedNanoseconds = 0;
+    std::uint32_t remainderPermille = 0;
+};
+
+eve::Result<ScaledWork> scaleWork(std::int64_t effortNanoseconds, std::uint32_t efficiencyPermille,
+                                  std::uint32_t remainderPermille) {
+    if (effortNanoseconds < 0 || efficiencyPermille == 0 || remainderPermille >= 1000)
+        return productionBindingFailure<ScaledWork>(eve::DiagnosticCode::InvalidArgument,
+                                                    "invalid production work scaling input");
+    const auto whole = effortNanoseconds / 1000;
+    const auto tail = effortNanoseconds % 1000;
+    if (whole > std::numeric_limits<std::int64_t>::max() / efficiencyPermille)
+        return productionBindingFailure<ScaledWork>(eve::DiagnosticCode::InvalidArgument,
+                                                    "scaled production work overflows duration");
+    const auto tailNumerator = tail * static_cast<std::int64_t>(efficiencyPermille) + remainderPermille;
+    const auto tailApplied = tailNumerator / 1000;
+    const auto wholeApplied = whole * static_cast<std::int64_t>(efficiencyPermille);
+    if (wholeApplied > std::numeric_limits<std::int64_t>::max() - tailApplied)
+        return productionBindingFailure<ScaledWork>(eve::DiagnosticCode::InvalidArgument,
+                                                    "scaled production work overflows duration");
+    return eve::Result<ScaledWork>::success(
+        {wholeApplied + tailApplied, static_cast<std::uint32_t>(tailNumerator % 1000)});
+}
+
 }  // namespace
 
 WorkQueue::WorkQueue(eve::PersistentId instanceId) : instanceId_(instanceId) {}
@@ -428,12 +453,23 @@ std::uint32_t WorkQueue::refundFor(const ProductionTask& task, RefundPolicy poli
     const auto duration = task.duration.nanoseconds();
     if (duration <= 0 || task.progress >= task.duration) return 0;
     const auto remaining = duration - task.progress.nanoseconds();
-    return static_cast<std::uint32_t>((remaining * 1000) / duration);
+    std::int64_t residue = 0;
+    std::uint32_t permille = 0;
+    for (std::uint32_t index = 0; index < 1000; ++index) {
+        if (residue >= duration - remaining) {
+            residue -= duration - remaining;
+            ++permille;
+        } else {
+            residue += remaining;
+        }
+    }
+    return std::min<std::uint32_t>(permille, 1000);
 }
 
 void WorkQueue::completeIfReady(ProductionTask& task) {
     if (task.progress < task.duration) return;
     task.progress = task.duration;
+    task.workRemainderPermille = 0;
     if (task.reservationState == ReservationState::Started)
         task.reservationState = ReservationState::Consumed;
     if (task.settlementRequired) {
@@ -458,12 +494,13 @@ eve::Result<void> WorkQueue::contribute(std::string_view taskId, WorkContributio
         contribution.efficiencyPermille == 0)
         return productionBindingFailure<void>(eve::DiagnosticCode::InvalidArgument,
                                               "work contribution must have a contributor, effort and efficiency");
-    const auto effort = contribution.effort.nanoseconds();
-    if (effort > (std::numeric_limits<std::int64_t>::max() / contribution.efficiencyPermille))
-        return productionBindingFailure<void>(eve::DiagnosticCode::InvalidArgument, "work contribution overflow");
-    const auto effective = (effort * contribution.efficiencyPermille) / 1000;
+    auto scaled = scaleWork(contribution.effort.nanoseconds(), contribution.efficiencyPermille,
+                            task->workRemainderPermille);
+    if (!scaled) return eve::Result<void>::failure(scaled.status());
     const auto remaining = task->duration.nanoseconds() - task->progress.nanoseconds();
-    task->progress = eve::Duration::fromNanoseconds(task->progress.nanoseconds() + std::min(effective, remaining));
+    task->workRemainderPermille = scaled.value().remainderPermille;
+    task->progress = eve::Duration::fromNanoseconds(
+        task->progress.nanoseconds() + std::min(scaled.value().appliedNanoseconds, remaining));
     completeIfReady(*task);
     if (task->state != TaskState::Running) scheduleAll();
     return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
@@ -477,20 +514,31 @@ eve::Result<void> WorkQueue::advance(const eve::SimulationStep& step) {
         return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
                                                                  "production step duration must be non-negative"));
 
-    tick_                       = step.tick;
-    const std::int64_t    delta = step.delta.nanoseconds();
-    bool completedAny = false;
+    struct PendingProgress {
+        ProductionTask* task = nullptr;
+        std::int64_t appliedNanoseconds = 0;
+        std::uint32_t remainderPermille = 0;
+    };
+    std::vector<PendingProgress> pending;
+    pending.reserve(tasks_.size());
+    const std::int64_t delta = step.delta.nanoseconds();
     for (auto& task : tasks_) {
         if (task->state != TaskState::Running) continue;
-        const std::int64_t remaining = task->duration.nanoseconds() - task->progress.nanoseconds();
-        if (delta > (std::numeric_limits<std::int64_t>::max() / task->efficiencyPermille))
-            return productionBindingFailure<void>(eve::DiagnosticCode::InvalidArgument,
-                                                  "scaled production step overflows duration");
-        const std::int64_t scaled    = (delta * task->efficiencyPermille) / 1000;
-        const std::int64_t applied   = scaled >= remaining ? remaining : scaled;
-        task->progress               = eve::Duration::fromNanoseconds(task->progress.nanoseconds() + applied);
-        if (task->progress >= task->duration) {
-            completeIfReady(*task);
+        auto scaled = scaleWork(delta, task->efficiencyPermille, task->workRemainderPermille);
+        if (!scaled) return eve::Result<void>::failure(scaled.status());
+        const auto remaining = task->duration.nanoseconds() - task->progress.nanoseconds();
+        pending.push_back({task.get(), std::min(scaled.value().appliedNanoseconds, remaining),
+                           scaled.value().remainderPermille});
+    }
+
+    tick_ = step.tick;
+    bool completedAny = false;
+    for (const auto& update : pending) {
+        update.task->workRemainderPermille = update.remainderPermille;
+        update.task->progress = eve::Duration::fromNanoseconds(
+            update.task->progress.nanoseconds() + update.appliedNanoseconds);
+        if (update.task->progress >= update.task->duration) {
+            completeIfReady(*update.task);
             completedAny = true;
         }
     }

@@ -50,6 +50,8 @@ struct RTSBuildRequest {
     eve::Value         reservation = eve::Value(eve::Value::Object{});
     Duration           duration = Duration::zero();
     int                priority = 0;
+    /** @brief Require a domain settlement consumer; generic jobs complete automatically by default. */
+    bool               settlementRequired = false;
     std::vector<RTSProductionResourceReserve> resourceReserves;
 
     std::string orderKind           = "build";

@@ -177,6 +177,8 @@ struct ProductionTask : eve::scheduling::ItemMetadata {
     std::uint32_t                     completedCycles = 0;
     std::uint32_t                     batchSize = 1;
     std::uint32_t                     efficiencyPermille = 1000;
+    /** @brief Unapplied fixed-point work numerator in thousandths of one nanosecond. */
+    std::uint32_t                     workRemainderPermille = 0;
     std::uint32_t                     refundPermille = 0;
     bool                              settlementRequired = false;
 };

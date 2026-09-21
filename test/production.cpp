@@ -6,6 +6,9 @@
 
 #include <simplesquirrel/simplesquirrel.hpp>
 
+#include <cstdint>
+#include <limits>
+
 using namespace eve::production;
 
 TEST_CASE("production.enqueue.stableIdsAndCanonicalContext") {
@@ -521,6 +524,91 @@ TEST_CASE("production.advancedDeterminismSchedulingPredictionAndCatchUp") {
     CHECK_EQ(restored.schedulerStrategy("lab"), SchedulerStrategy::Fifo);
     CHECK_EQ(restored.diagnose(recurringId.value()).value().correlationId, std::string("order:tonic:42"));
     CHECK_EQ(restored.snapshot().value(), snapshot.value());
+}
+
+TEST_CASE("production.fixedPointWorkRemainderSurvivesSnapshotAndEventuallyProgresses") {
+    WorkQueue queue;
+    ProductionRequest request;
+    request.owner = "micro-forge";
+    request.kind = "precision";
+    request.product = "micro-part";
+    request.duration = eve::Duration::fromNanoseconds(2);
+    request.efficiencyPermille = 1;
+    request.settlementRequired = false;
+    auto taskId = queue.enqueue(std::move(request));
+    REQUIRE(taskId.ok());
+
+    for (std::uint64_t tick = 1; tick <= 500; ++tick)
+        REQUIRE(queue.advance({eve::SimulationTick(tick), eve::Duration::fromNanoseconds(1)}).ok());
+    CHECK_EQ(queue.find(taskId.value())->get().progress.nanoseconds(), std::int64_t{0});
+    CHECK_EQ(queue.find(taskId.value())->get().workRemainderPermille, std::uint32_t{500});
+
+    auto snapshot = queue.snapshot();
+    REQUIRE(snapshot.ok());
+    WorkQueue restored;
+    REQUIRE(restored.restore(snapshot.value()).ok());
+    CHECK_EQ(restored.find(taskId.value())->get().workRemainderPermille, std::uint32_t{500});
+    for (std::uint64_t tick = 501; tick <= 1000; ++tick)
+        REQUIRE(restored.advance({eve::SimulationTick(tick), eve::Duration::fromNanoseconds(1)}).ok());
+    CHECK_EQ(restored.find(taskId.value())->get().progress.nanoseconds(), std::int64_t{1});
+    CHECK_EQ(restored.find(taskId.value())->get().workRemainderPermille, std::uint32_t{0});
+
+    WorkContribution contribution{"precision-tool", eve::Duration::fromNanoseconds(1), 1};
+    REQUIRE(restored.contribute(taskId.value(), contribution).ok());
+    CHECK_EQ(restored.find(taskId.value())->get().workRemainderPermille, std::uint32_t{1});
+}
+
+TEST_CASE("production.advanceOverflowLeavesTickAndEveryTaskUnchanged") {
+    WorkQueue queue;
+    REQUIRE(queue.setSlotCount("factory", 2).ok());
+    ProductionRequest safe;
+    safe.owner = "factory";
+    safe.kind = "build";
+    safe.product = "safe";
+    safe.duration = eve::Duration::fromNanoseconds(std::numeric_limits<std::int64_t>::max());
+    safe.efficiencyPermille = 1;
+    safe.settlementRequired = false;
+    auto safeId = queue.enqueue(std::move(safe));
+    REQUIRE(safeId.ok());
+    ProductionRequest overflowing;
+    overflowing.owner = "factory";
+    overflowing.kind = "build";
+    overflowing.product = "overflow";
+    overflowing.duration = eve::Duration::fromNanoseconds(std::numeric_limits<std::int64_t>::max());
+    overflowing.efficiencyPermille = std::numeric_limits<std::uint32_t>::max();
+    overflowing.settlementRequired = false;
+    auto overflowId = queue.enqueue(std::move(overflowing));
+    REQUIRE(overflowId.ok());
+
+    auto advanced = queue.advance({eve::SimulationTick(1),
+                                   eve::Duration::fromNanoseconds(std::numeric_limits<std::int64_t>::max())});
+    CHECK(!advanced.ok());
+    CHECK_EQ(queue.currentTick(), eve::SimulationTick::zero());
+    CHECK_EQ(queue.find(safeId.value())->get().progress, eve::Duration::zero());
+    CHECK_EQ(queue.find(overflowId.value())->get().progress, eve::Duration::zero());
+}
+
+TEST_CASE("production.longPredictionAndRefundUseOverflowSafeArithmetic") {
+    WorkQueue queue;
+    ProductionRequest request;
+    request.owner = "long-project";
+    request.kind = "build";
+    request.product = "megaproject";
+    request.duration = eve::Duration::fromNanoseconds(std::numeric_limits<std::int64_t>::max());
+    request.efficiencyPermille = 1;
+    request.termination.cancellation = RefundPolicy::Proportional;
+    request.settlementRequired = false;
+    auto taskId = queue.enqueue(std::move(request));
+    REQUIRE(taskId.ok());
+    auto prediction = queue.predict(taskId.value());
+    CHECK(!prediction.ok());
+
+    WorkContribution contribution{"builder",
+                                  eve::Duration::fromNanoseconds(std::numeric_limits<std::int64_t>::max() / 2),
+                                  1000};
+    REQUIRE(queue.contribute(taskId.value(), contribution).ok());
+    REQUIRE(queue.cancel(taskId.value()).ok());
+    CHECK_EQ(queue.find(taskId.value())->get().refundPermille, std::uint32_t{500});
 }
 
 TEST_CASE("production.script.queueLifecycle") {

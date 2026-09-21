@@ -554,6 +554,11 @@ Result<std::string> ProductionComponent::enqueue(std::string_view owner, std::st
     return impl_->queue.enqueue(owner, kind, product, eve::Value(eve::Value::Object{}), duration.seconds(), priority);
 }
 
+Result<std::string> ProductionComponent::enqueue(production::ProductionRequest request) {
+    if (!impl_) impl_ = std::make_unique<Impl>();
+    return impl_->queue.enqueue(std::move(request));
+}
+
 Result<void> ProductionComponent::advance(const SimulationStep& step) {
     if (!impl_) impl_ = std::make_unique<Impl>();
     return impl_->queue.advance(step);

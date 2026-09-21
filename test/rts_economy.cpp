@@ -703,7 +703,16 @@ TEST_CASE("rts.completedCanonicalResearchAppliesToExistingAndFutureUnitsOnce") {
     marine->shield()->regenRate           = 4.0f;
     auto duration                         = eve::Duration::fromSeconds(1.0);
     REQUIRE(duration.ok());
-    auto research = lab->production()->values.enqueue("faction", "research", "veteran_training", duration.value());
+    auto upgradeHandle = registry.handle("upgrade", "veteran_training");
+    REQUIRE(upgradeHandle.ok());
+    eve::production::ProductionRequest researchRequest;
+    researchRequest.owner = "faction";
+    researchRequest.kind = "research";
+    researchRequest.product = "veteran_training";
+    researchRequest.duration = duration.value();
+    researchRequest.definition = upgradeHandle.value();
+    researchRequest.settlementRequired = true;
+    auto research = lab->production()->values.enqueue(std::move(researchRequest));
     REQUIRE(research.ok());
     std::move(research).takeValue();
     const eve::SimulationStep tick{eve::SimulationTick{1}, eve::Duration::fromSeconds(1.0).expect("research dt")};
@@ -723,6 +732,12 @@ TEST_CASE("rts.completedCanonicalResearchAppliesToExistingAndFutureUnitsOnce") {
     auto repeated = eve::rts::TechnologySystem::step(registry);
     REQUIRE(repeated.ok());
     CHECK(std::abs(marine->motion()->speed - 2.4f) < 1e-5f);
+
+    auto reloaded = registry.replace("upgrade", "veteran_training", 2, R"JSON({
+      "id":"veteran_training","producer":"lab","targetUnit":"marine",
+      "attackMultiplier":9.0,"healthMultiplier":9.0,"speedMultiplier":9.0,"gatherMultiplier":9.0,
+      "shieldMultiplier":9.0,"shieldRegenMultiplier":9.0})JSON");
+    REQUIRE(reloaded.ok());
 
     Unit* reinforcement        = Unit::createUnit({}, *marineId);
     auto  reinforcementFaction = eve::rts::FactionLink::bind(ecs::handle_of(faction));

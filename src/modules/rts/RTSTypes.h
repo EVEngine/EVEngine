@@ -414,6 +414,8 @@ public:
     /** @brief Enqueue a production task with an injected simulation duration. */
     [[nodiscard]] Result<std::string> enqueue(std::string_view owner, std::string_view kind, std::string_view product,
                                               Duration duration, int priority = 0);
+    /** @brief Enqueue a fully validated canonical request, including a pinned definition handle. */
+    [[nodiscard]] Result<std::string> enqueue(production::ProductionRequest request);
     /** @brief Advance the queue using a caller-owned deterministic step. */
     [[nodiscard]] Result<void> advance(const SimulationStep& step);
     /** @brief Return the number of retained tasks. */
@@ -1205,6 +1207,8 @@ public:
     struct Technology {
         std::vector<std::string> unlocked;
         std::vector<std::string> consumedTasks;
+        /** @brief Validated immutable rule payload accepted for each completed research id. */
+        std::map<std::string, Value::Object> unlockedDefinitions;
     };
 
     COMPONENT(Identity, identity)

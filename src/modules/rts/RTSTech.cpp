@@ -170,6 +170,7 @@ Result<std::size_t> TechnologySystem::step(definitions::DefinitionRegistry& regi
                 return Result<std::size_t>::failure(Diagnostic::error(DiagnosticCode::PreconditionViolation,
                                                                       "completed RTS research lacks its prerequisite",
                                                                       task.product, {}, "rts.tech"));
+            faction->technology()->unlockedDefinitions.insert_or_assign(task.product, definition.value());
             insert(faction->technology()->unlocked, task.product);
             insert(faction->technology()->consumedTasks, task.id);
             settlements.emplace_back(identity->self, task.id);
@@ -182,7 +183,12 @@ Result<std::size_t> TechnologySystem::step(definitions::DefinitionRegistry& regi
         auto* faction = dynamic_cast<Faction*>(ecs::try_get(identity->self));
         if (faction == nullptr) continue;
         for (const auto& upgradeId : technology->unlocked) {
-            auto definition = upgrade(registry, upgradeId);
+            Result<Value::Object> definition = [&]() {
+                const auto pinned = technology->unlockedDefinitions.find(upgradeId);
+                if (pinned != technology->unlockedDefinitions.end())
+                    return Result<Value::Object>::success(pinned->second);
+                return upgrade(registry, upgradeId);
+            }();
             if (!definition) return Result<std::size_t>::failure(definition.status());
             auto allUnits = ecs::View<Unit, Unit::Identity, Unit::Faction>();
             for (auto it = allUnits.begin(); it != allUnits.end(); ++it) {

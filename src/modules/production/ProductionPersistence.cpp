@@ -152,7 +152,7 @@ eve::Result<std::string> WorkQueue::snapshot() const {
         if (policy == RefundPolicy::Proportional) return "proportional";
         return "full";
     };
-    out << "{\"version\":6,\"revision\":" << quote(std::to_string(revision_.value()))
+    out << "{\"version\":7,\"revision\":" << quote(std::to_string(revision_.value()))
         << ",\"nextEnqueueSequence\":" << quote(std::to_string(nextEnqueueSequence_))
         << ",\"nextEventSequence\":" << quote(std::to_string(nextEventSequence_))
         << ",\"nextTaskId\":" << quote(std::to_string(nextTaskId_))
@@ -264,6 +264,7 @@ eve::Result<std::string> WorkQueue::snapshot() const {
         out
             << ']'
             << ",\"progressNs\":" << quote(std::to_string(t.progress.nanoseconds()))
+            << ",\"workRemainderPermille\":" << t.workRemainderPermille
             << ",\"reason\":" << quote(t.reason) << ",\"reservation\":"
             << std::move(reservation).takeValue()
             << ",\"reservationReleaseId\":" << quote(t.reservationRelease.releaseId)
@@ -293,7 +294,8 @@ eve::Result<void> WorkQueue::restore(std::string_view json) {
     WorkQueue       candidate(instanceId_);
     const auto      root = doc.root();
     const int version = root.getInt("version");
-    if ((version != 1 && version != 2 && version != 3 && version != 4 && version != 5 && version != 6) ||
+    if ((version != 1 && version != 2 && version != 3 && version != 4 && version != 5 && version != 6 &&
+         version != 7) ||
         !parseU64(root.get("nextTaskId"), candidate.nextTaskId_) ||
         !parseU64(root.get("nextEnqueueSequence"), candidate.nextEnqueueSequence_) ||
         !parseU64(root.get("nextEventSequence"), candidate.nextEventSequence_) || candidate.nextTaskId_ == 0 ||
@@ -604,6 +606,17 @@ eve::Result<void> WorkQueue::restore(std::string_view json) {
                 return persistenceFailure<void>(eve::DiagnosticCode::ParseError,
                                                 "reservation release state and receipt disagree",
                                                 "tasks.reservationReleaseId");
+        }
+        if (version >= 7) {
+            if (!value.get("workRemainderPermille").isNumber())
+                return persistenceFailure<void>(eve::DiagnosticCode::ParseError,
+                                                "invalid production work remainder", "tasks.workRemainderPermille");
+            const int remainder = value.get("workRemainderPermille").asInt();
+            if (remainder < 0 || remainder >= 1000)
+                return persistenceFailure<void>(eve::DiagnosticCode::ParseError,
+                                                "production work remainder must be between 0 and 999",
+                                                "tasks.workRemainderPermille");
+            task->workRemainderPermille = static_cast<std::uint32_t>(remainder);
         }
         if (!parseDuration(value.get("durationNs"), value.get("duration"), task->duration) ||
             !parseDuration(value.get("progressNs"), value.get("progress"), task->progress)) {

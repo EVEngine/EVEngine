@@ -200,6 +200,27 @@ const eve::SnapshotMigrationChain& productionMigrations() {
                            return eve::Result<eve::Value>::success(eve::Value(std::move(migrated)));
                        });
         if (!requirementRegistration.ok()) std::terminate();
+        const auto remainderRegistration =
+            result.add(productionSchema(), eve::SchemaVersion(6), eve::SchemaVersion(7),
+                       [](const eve::Value& payload) -> eve::Result<eve::Value> {
+                           const auto* object = payload.getIf<eve::Value::Object>();
+                           if (!object)
+                               return eve::Result<eve::Value>::failure(eve::Diagnostic::error(
+                                   eve::DiagnosticCode::ParseError, "production queue payload must be an object"));
+                           eve::Value::Object migrated = *object;
+                           migrated["version"] = eve::Value(std::int64_t(7));
+                           if (auto tasks = migrated.find("tasks"); tasks != migrated.end()) {
+                               if (auto* array = tasks->second.getIf<eve::Value::Array>()) {
+                                   for (auto& item : *array) {
+                                       auto* task = item.getIf<eve::Value::Object>();
+                                       if (task)
+                                           task->try_emplace("workRemainderPermille", eve::Value(std::int64_t(0)));
+                                   }
+                               }
+                           }
+                           return eve::Result<eve::Value>::success(eve::Value(std::move(migrated)));
+                       });
+        if (!remainderRegistration.ok()) std::terminate();
         return result;
     }();
     return chain;
@@ -217,7 +238,7 @@ eve::Result<eve::SnapshotEnvelope> WorkQueue::snapshot(const eve::SnapshotHashPr
     if (!serialized.ok()) return eve::Result<eve::SnapshotEnvelope>::failure(serialized.status());
     auto payload = eve::Value::fromJson(std::move(serialized).takeValue());
     if (!payload.ok()) return eve::Result<eve::SnapshotEnvelope>::failure(payload.status());
-    return eve::makeSnapshotEnvelope("production.queue", productionSchema(), eve::SchemaVersion(6), instanceId_,
+    return eve::makeSnapshotEnvelope("production.queue", productionSchema(), eve::SchemaVersion(7), instanceId_,
                                      revision_, tick_, std::move(payload).takeValue(), hashProvider);
 }
 
@@ -229,7 +250,7 @@ eve::Result<void> WorkQueue::restoreSnapshot(const eve::SnapshotEnvelope&     so
     if (!instanceId_.isNil() && source.instanceId != instanceId_)
         return snapshotFailure<void>(eve::DiagnosticCode::Conflict,
                                      "snapshot instanceId does not match production::WorkQueue");
-    auto migrated = productionMigrations().migrate(source, eve::SchemaVersion(6), hashProvider);
+    auto migrated = productionMigrations().migrate(source, eve::SchemaVersion(7), hashProvider);
     if (!migrated.ok()) return eve::Result<void>::failure(migrated.status());
     const auto& candidateEnvelope = migrated.value();
     auto        metadata = eve::validateSnapshotPayloadMetadata(candidateEnvelope.payload, candidateEnvelope.revision,

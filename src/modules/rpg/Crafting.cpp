@@ -3,8 +3,11 @@
 #include "inventory/Bag.h"
 #include "transaction/AtomicResourcePayment.h"
 
+#include <array>
 #include <limits>
 #include <memory>
+#include <optional>
+#include <span>
 #include <utility>
 
 namespace eve::rpg {
@@ -156,6 +159,124 @@ private:
     bool                                   committed_ = false;
 };
 
+class SettlementParticipant final : public transaction::ITransactionParticipant {
+public:
+    SettlementParticipant(production::WorkQueue& queue, std::string taskId,
+                          production::ProductionSettlementReceipt receipt)
+        : queue_(queue), taskId_(std::move(taskId)), receipt_(std::move(receipt)) {}
+
+    [[nodiscard]] std::string_view name() const noexcept override { return "rpg-crafting-settlement"; }
+
+    [[nodiscard]] eve::Result<void> prepare(const transaction::TransactionContext&) override {
+        auto before = queue_.snapshot();
+        if (!before) return eve::Result<void>::failure(before.status());
+        before_ = std::move(before).takeValue();
+        production::WorkQueue staged;
+        auto restored = staged.restore(before_);
+        if (!restored) return restored;
+        const auto task = staged.find(taskId_);
+        if (!task)
+            return failure<void>(eve::DiagnosticCode::NotFound, "crafting task was not found", "taskId");
+        if (task->get().state == production::TaskState::SettlementFailed) {
+            auto retried = staged.retrySettlement(taskId_);
+            if (!retried) return retried;
+        }
+        auto settled = staged.settle(taskId_, receipt_);
+        if (!settled) return settled;
+        auto after = staged.snapshot();
+        if (!after) return eve::Result<void>::failure(after.status());
+        after_ = std::move(after).takeValue();
+        prepared_ = true;
+        return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
+    }
+
+    [[nodiscard]] eve::Result<void> commit(const transaction::TransactionContext&) override {
+        if (!prepared_ || committed_)
+            return failure<void>(eve::DiagnosticCode::Conflict, "crafting settlement is not prepared");
+        auto current = queue_.snapshot();
+        if (!current) return eve::Result<void>::failure(current.status());
+        if (current.value() != before_)
+            return failure<void>(eve::DiagnosticCode::StaleHandle,
+                                 "crafting queue changed while settlement was staged", "production");
+        auto restored = queue_.restore(after_);
+        if (!restored) return restored;
+        committed_ = true;
+        return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
+    }
+
+    [[nodiscard]] eve::Result<void> rollback(const transaction::TransactionContext&) override {
+        prepared_ = false;
+        return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
+    }
+
+    [[nodiscard]] eve::Result<void> compensate(const transaction::TransactionContext&) override {
+        if (!committed_)
+            return failure<void>(eve::DiagnosticCode::Conflict, "crafting settlement has not committed");
+        auto current = queue_.snapshot();
+        if (!current) return eve::Result<void>::failure(current.status());
+        if (current.value() != after_)
+            return failure<void>(eve::DiagnosticCode::StaleHandle,
+                                 "crafting queue changed before settlement compensation", "production");
+        auto restored = queue_.restore(before_);
+        if (!restored) return restored;
+        committed_ = false;
+        prepared_ = false;
+        return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
+    }
+
+private:
+    production::WorkQueue& queue_;
+    std::string taskId_;
+    production::ProductionSettlementReceipt receipt_;
+    std::string before_;
+    std::string after_;
+    bool prepared_ = false;
+    bool committed_ = false;
+};
+
+class InventoryAddParticipant final : public transaction::ITransactionParticipant {
+public:
+    InventoryAddParticipant(inventory::Bag& output, std::vector<inventory::InventoryItemGrant> grants)
+        : output_(output), grants_(std::move(grants)) {}
+
+    [[nodiscard]] std::string_view name() const noexcept override { return "rpg-crafting-output"; }
+
+    [[nodiscard]] eve::Result<void> prepare(const transaction::TransactionContext&) override {
+        auto prepared = inventory::InventorySystem::prepareAddBatch(&output_, grants_);
+        if (!prepared) return eve::Result<void>::failure(prepared.status());
+        prepared_.emplace(std::move(prepared).takeValue());
+        return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
+    }
+
+    [[nodiscard]] eve::Result<void> commit(const transaction::TransactionContext&) override {
+        if (!prepared_)
+            return failure<void>(eve::DiagnosticCode::Conflict, "crafting output is not prepared", "output");
+        auto committed = inventory::InventorySystem::commitAddBatch(std::move(*prepared_));
+        prepared_.reset();
+        if (!committed) return eve::Result<void>::failure(committed.status());
+        added_ = std::move(committed).takeValue();
+        return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
+    }
+
+    [[nodiscard]] eve::Result<void> rollback(const transaction::TransactionContext&) override {
+        prepared_.reset();
+        return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
+    }
+
+    [[nodiscard]] eve::Result<void> compensate(const transaction::TransactionContext&) override {
+        return failure<void>(eve::DiagnosticCode::Unsupported,
+                             "committed crafting output cannot be compensated", "output");
+    }
+
+    [[nodiscard]] int added() const noexcept { return added_; }
+
+private:
+    inventory::Bag& output_;
+    std::vector<inventory::InventoryItemGrant> grants_;
+    std::optional<inventory::PreparedInventoryAdd> prepared_;
+    int added_ = 0;
+};
+
 }  // namespace
 
 eve::Result<CraftingReceipt> Crafting::begin(CraftingRequest request) {
@@ -170,12 +291,19 @@ eve::Result<CraftingReceipt> Crafting::begin(CraftingRequest request) {
         return failure<CraftingReceipt>(eve::DiagnosticCode::InvalidArgument,
                                         "crafting recipe requires ingredients, outputs and positive duration",
                                         "recipe");
+    std::int64_t totalOutput = 0;
     for (const auto& output : request.recipe.outputs) {
         if (output.itemId.empty() || output.quantity <= 0 ||
             output.quantity > std::numeric_limits<int>::max() / request.batchSize)
             return failure<CraftingReceipt>(eve::DiagnosticCode::InvalidArgument,
                                             "crafting outputs require item ids and positive quantities",
                                             "recipe.outputs");
+        const auto scaled = static_cast<std::int64_t>(output.quantity) * request.batchSize;
+        if (totalOutput > std::numeric_limits<int>::max() - scaled)
+            return failure<CraftingReceipt>(eve::DiagnosticCode::InvalidArgument,
+                                            "crafting batch output total exceeds inventory limits",
+                                            "recipe.outputs");
+        totalOutput += scaled;
     }
 
     production::ProductionRequest productionRequest;
@@ -218,29 +346,27 @@ eve::Result<int> Crafting::settle(production::WorkQueue& queue, inventory::Bag& 
         return failure<int>(eve::DiagnosticCode::Conflict, "crafting task is not ready to settle", "taskId");
     auto outputs = decodeOutputs(task->get().reservation);
     if (!outputs) return eve::Result<int>::failure(outputs.status());
-    auto prepared = inventory::InventorySystem::prepareAddBatch(&output, outputs.value());
-    if (!prepared) {
-        const auto* diagnostic = prepared.error();
-        auto failed = queue.failSettlement(taskId,
-                                           diagnostic == nullptr ? "crafting output rejected" : diagnostic->message());
-        if (!failed && task->get().state != production::TaskState::SettlementFailed)
-            return eve::Result<int>::failure(failed.status());
-        return eve::Result<int>::failure(prepared.status());
-    }
-    if (task->get().state == production::TaskState::SettlementFailed) {
-        auto retried = queue.retrySettlement(taskId);
-        if (!retried) return eve::Result<int>::failure(retried.status());
-    }
+    InventoryAddParticipant inventoryParticipant(output, outputs.value());
     production::ProductionSettlementReceipt receipt;
     receipt.settlementId = settlementId;
     receipt.payload = eve::Value(eve::Value::Object{{"destination", eve::Value(output.getId())}});
-    auto settled = queue.settle(taskId, std::move(receipt));
-    if (!settled) return eve::Result<int>::failure(settled.status());
-    auto added = inventory::InventorySystem::commitAddBatch(std::move(prepared).takeValue());
-    if (!added)
-        return failure<int>(eve::DiagnosticCode::InvariantViolation,
-                            "prepared crafting output failed after queue settlement", "output");
-    return added;
+    SettlementParticipant settlementParticipant(queue, std::string(taskId), std::move(receipt));
+    transaction::TransactionContext context("rpg.crafting.settle:" + std::string(taskId));
+    std::array<transaction::ITransactionParticipant*, 2> participants{
+        &settlementParticipant, &inventoryParticipant};
+    transaction::Coordinator coordinator;
+    auto committed = coordinator.execute(context, std::span<transaction::ITransactionParticipant*>(participants));
+    if (!committed) {
+        const auto* diagnostic = committed.error();
+        auto failed = queue.failSettlement(taskId,
+                                           diagnostic == nullptr ? "crafting output rejected" : diagnostic->message());
+        const auto current = queue.find(taskId);
+        if (!failed && (!current || current->get().state != production::TaskState::SettlementFailed))
+            return eve::Result<int>::failure(failed.status());
+        return eve::Result<int>::failure(committed.status());
+    }
+    return eve::Result<int>::success(inventoryParticipant.added(),
+                                     eve::Status::success(eve::StatusCode::Applied));
 }
 
 }  // namespace eve::rpg

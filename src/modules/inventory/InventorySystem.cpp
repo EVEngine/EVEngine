@@ -5,6 +5,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <limits>
 
 namespace eve::inventory {
 
@@ -459,6 +460,9 @@ InventorySystem::prepareAddBatch(Bag *bag, const std::vector<InventoryItemGrant>
                                                  : "inventory reward references an unknown item",
                 "grants[" + std::to_string(index) + "].itemId", {{"itemId", grant.itemId}},
                 "inventory.prepare-add-batch"));
+        if (prepared.state_->totalAdded > std::numeric_limits<int>::max() - added)
+            return eve::Result<PreparedInventoryAdd>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::InvalidArgument, "inventory batch total quantity overflows", "grants"));
         prepared.state_->totalAdded += added;
         InventoryChangeEvent event;
         event.action = "add";
