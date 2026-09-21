@@ -173,6 +173,33 @@ std::optional<std::pair<int, int>> findInteriorCell(const std::vector<uint8_t> &
     return std::nullopt;
 }
 
+void appendRoomRegions(int width, int depth, const std::vector<uint8_t>& mask, const std::string& roomType, int floorZ,
+                       std::vector<HouseRoom>& rooms) {
+    std::vector<uint8_t> claimed(mask.size(), 0);
+    for (int y = 0; y < depth; ++y) {
+        for (int x = 0; x < width; ++x) {
+            const size_t origin = size_t(y * width + x);
+            if (!mask[origin] || claimed[origin]) continue;
+            int x1 = x;
+            while (x1 + 1 < width && mask[size_t(y * width + x1 + 1)] && !claimed[size_t(y * width + x1 + 1)]) ++x1;
+            int  y1     = y;
+            bool extend = true;
+            while (extend && y1 + 1 < depth) {
+                for (int xx = x; xx <= x1; ++xx) {
+                    if (!mask[size_t((y1 + 1) * width + xx)] || claimed[size_t((y1 + 1) * width + xx)]) {
+                        extend = false;
+                        break;
+                    }
+                }
+                if (extend) ++y1;
+            }
+            rooms.push_back({roomType, x, y, floorZ, x1 - x + 1, y1 - y + 1});
+            for (int yy = y; yy <= y1; ++yy)
+                for (int xx = x; xx <= x1; ++xx) claimed[size_t(yy * width + xx)] = 1;
+        }
+    }
+}
+
 /** @brief Partition active cells into exact, rectangular rooms and emit mask-safe boundaries. */
 eve::Result<void> partitionFloor(int width, int depth, const std::vector<uint8_t>& mask,
                                  const std::vector<std::string>& roomTypes, std::mt19937& rng,
@@ -421,8 +448,7 @@ eve::Result<void> HouseGenerator::generate(const HouseRequest &r, HouseLayout &o
             return eve::Result<void>::failure(eve::Diagnostic::error(
                 eve::DiagnosticCode::Failed, "footprint collapsed after inset", {}, {}, "housegen.generate"));
         if (!partitionsInteriors)
-            generated.rooms.push_back({z == 0 ? "living" : "upper", minX, minY, z,
-                                       maxX - minX + 1, maxY - minY + 1});
+            appendRoomRegions(r.width, r.depth, mask, z == 0 ? "living" : "upper", z, generated.rooms);
 
         using Face = std::tuple<int, int, SocketDirection>;
         std::vector<Face> faces;
