@@ -3,10 +3,13 @@
 #include <stdexcept>
 #include "animation/AnimCurveLibrary.h"
 #include "animation/AnimationBindings.h"
+#include "common/SquirrelOwnership.h"
 #include "filesystem/FileData.h"
 #include "filesystem/Filesystem.h"
 
 namespace eve::animation {
+// A provider read hands over a freshly allocated FileData that this call owns.
+using eve::script::Owned;
 void exposeAnimCurveLibraryBindings(ssq::Table& table) {
     auto cls = table.addClass<AnimCurveLibrary>(
         "AnimCurveLibrary", std::function<AnimCurveLibrary*()>([] { return new AnimCurveLibrary(); }), true);
@@ -17,7 +20,7 @@ void exposeAnimCurveLibraryBindings(ssq::Table& table) {
             if (!fs) throw std::runtime_error("filesystem unavailable");
             auto* raw = fs->read(path);
             if (!raw) throw std::runtime_error("animation curve file unavailable");
-            eve::ref<eve::filesystem::FileData> data(raw);
+            Owned<eve::filesystem::FileData> data(raw);
             auto loaded = self->load({static_cast<const std::byte*>(data->getData()), data->getSize()});
             result.set("ok", loaded.ok());
             result.set("message", loaded.status().describe());

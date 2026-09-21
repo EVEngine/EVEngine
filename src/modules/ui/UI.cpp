@@ -1413,7 +1413,16 @@ UI::NinePatchResource *UI::loadNinePatch(const std::string &path) {
     auto *graphics = eve::ModuleManager::getInstance<eve::graphics::Graphics>("Graphics");
     if (!images || !graphics) return nullptr;
     try {
-        eve::ref<eve::image::ImageData> source(images->newImageDataFromFile(path));
+        // The provider hands back a cache-owned ImageData; the pin keeps it alive
+        // while the nine-patch border is measured and stripped.
+        eve::image::ImageData *source = images->newImageDataFromFile(path);
+        if (source == nullptr) return nullptr;
+        auto sourcePin = eve::ResourceManager::getInstance().pin(source);
+        if (!sourcePin.ok()) return nullptr;
+        eve::ResourcePin keepAlive = std::move(sourcePin).takeValue();
+        // The pin is the authority from here on; the borrowed pointer may have gone stale
+        // before the pin was taken.
+        source = static_cast<eve::image::ImageData *>(keepAlive.get());
         NinePatchResource resource;
         std::string error;
         if (!parseNinePatch(*source, resource.info, &error)) {

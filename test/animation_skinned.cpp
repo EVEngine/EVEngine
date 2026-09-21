@@ -1,6 +1,7 @@
+#include "Fixtures.h"
+#include "ResourceTestSupport.h"
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
-#include "Fixtures.h"
 
 #include "animation/AnimClip.h"
 #include "animation/AnimImporter.h"
@@ -502,7 +503,7 @@ TEST_CASE("animation.skinned.worldMatrixMatchesTRS") {
 TEST_CASE("animation.skinned.cesiumMan.loadSkinAndDeform") {
     if (!ensureSkinnedAssets()) return;
 
-    eve::ref<eve::model3d::ModelData> model(loadCesiumMan("ev_ut_animation_skinned"));
+    auto model = eve::test::pinResource(loadCesiumMan("ev_ut_animation_skinned"));
     REQUIRE(model.get() != nullptr);
     REQUIRE(!model->empty());
     CHECK(model->getMeshCount() >= 1);
@@ -608,8 +609,7 @@ TEST_CASE("animation.skinned.cesiumMan.loadSkinAndDeform") {
 TEST_CASE("animation.skinned.getSkinnedPositionsMatchesSkinPositionsTo") {
     if (!ensureSkinnedAssets()) return;
 
-    eve::ref<eve::model3d::ModelData> model(
-        loadCesiumMan("ev_ut_animation_skinned_posarray"));
+    auto model = eve::test::pinResource(loadCesiumMan("ev_ut_animation_skinned_posarray"));
     REQUIRE(model.get() != nullptr);
     const int meshIndex = findFirstSkinnedMesh(model.get());
     REQUIRE(meshIndex >= 0);
@@ -645,8 +645,7 @@ TEST_CASE("animation.skinned.getSkinnedPositionsMatchesSkinPositionsTo") {
 TEST_CASE("animation.skinned.normalsFollowPose") {
     if (!ensureSkinnedAssets()) return;
 
-    eve::ref<eve::model3d::ModelData> model(
-        loadCesiumMan("ev_ut_animation_skinned_normals"));
+    auto model = eve::test::pinResource(loadCesiumMan("ev_ut_animation_skinned_normals"));
     REQUIRE(model.get() != nullptr);
     const int meshIndex = findFirstSkinnedMesh(model.get());
     REQUIRE(meshIndex >= 0);
@@ -700,8 +699,7 @@ TEST_CASE("animation.skinned.normalsFollowPose") {
 TEST_CASE("animation.skinned.cesiumMan.animationFactory") {
     if (!ensureSkinnedAssets()) return;
 
-    eve::ref<eve::model3d::ModelData> model(
-        loadCesiumMan("ev_ut_animation_skinned_factory"));
+    auto model = eve::test::pinResource(loadCesiumMan("ev_ut_animation_skinned_factory"));
     REQUIRE(model.get() != nullptr);
 
     // Animation::create() returns the process-wide module singleton owned by
@@ -725,8 +723,7 @@ TEST_CASE("animation.skinned.cesiumMan.animationFactory") {
 TEST_CASE("animation.skinned.render.bindPose") {
     if (!ensureSkinnedAssets()) return;
 
-    eve::ref<eve::model3d::ModelData> model(
-        loadCesiumMan("ev_ut_animation_skinned_render_bindpose"));
+    auto model = eve::test::pinResource(loadCesiumMan("ev_ut_animation_skinned_render_bindpose"));
     REQUIRE(model.get() != nullptr);
     renderSkinnedAnimation(model.get(), "animation_skinned_bindpose.png",
                            SkinnedRenderDriver::bindPose, 3);
@@ -735,8 +732,7 @@ TEST_CASE("animation.skinned.render.bindPose") {
 TEST_CASE("animation.skinned.render.clipSampledMovesPixels") {
     if (!ensureSkinnedAssets()) return;
 
-    eve::ref<eve::model3d::ModelData> model(
-        loadCesiumMan("ev_ut_animation_skinned_render_clipsample"));
+    auto model = eve::test::pinResource(loadCesiumMan("ev_ut_animation_skinned_render_clipsample"));
     REQUIRE(model.get() != nullptr);
     // Walk cycle across 32 frames: mid-cycle pose differs from the first frame,
     // so the rendered silhouette must move (loop start/end are identical).
@@ -747,8 +743,7 @@ TEST_CASE("animation.skinned.render.clipSampledMovesPixels") {
 TEST_CASE("animation.skinned.render.playerDriven") {
     if (!ensureSkinnedAssets()) return;
 
-    eve::ref<eve::model3d::ModelData> model(
-        loadCesiumMan("ev_ut_animation_skinned_render_player"));
+    auto model = eve::test::pinResource(loadCesiumMan("ev_ut_animation_skinned_render_player"));
     REQUIRE(model.get() != nullptr);
     renderSkinnedAnimation(model.get(), "animation_skinned_player.png",
                            SkinnedRenderDriver::player, 60);
@@ -757,8 +752,7 @@ TEST_CASE("animation.skinned.render.playerDriven") {
 TEST_CASE("animation.skinned.render.applyToMesh") {
     if (!ensureSkinnedAssets()) return;
 
-    eve::ref<eve::model3d::ModelData> model(
-        loadCesiumMan("ev_ut_animation_skinned_render_apply"));
+    auto model = eve::test::pinResource(loadCesiumMan("ev_ut_animation_skinned_render_apply"));
     REQUIRE(model.get() != nullptr);
 
     const int meshIndex = findFirstSkinnedMesh(model.get());
