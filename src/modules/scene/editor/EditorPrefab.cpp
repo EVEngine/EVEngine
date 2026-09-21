@@ -8,11 +8,6 @@
 namespace eve::editor {
 namespace {
 
-template <class T>
-EditorResult<T> prefabError(EditorStatus status, const char* rule, std::string message) {
-    return eve::editing::failed<T>(status, RuleId(rule), std::move(message));
-}
-
 ObjectId instanceObject(const std::string& instanceId, const ObjectId& source) {
     return ObjectId(instanceId + "/" + source.value());
 }
@@ -46,40 +41,41 @@ EditorResult<SceneTransformValue> parseTransform(const EditorValue& value) {
     const double* sy = number("scaleY");
     const double* sz = number("scaleZ");
     if (!x || !y || !z || !rx || !ry || !rz || !sx || !sy || !sz)
-        return prefabError<SceneTransformValue>(EditorStatus::Rejected, "editor.prefab.invalid-transform",
-                                                "Prefab transform requires complete numeric TRS fields");
+        return eve::editing::failed<SceneTransformValue>(EditorStatus::Rejected,
+                                                         RuleId("editor.prefab.invalid-transform"),
+                                                         "Prefab transform requires complete numeric TRS fields");
     return eve::editing::applied<SceneTransformValue>({*x, *y, *z, *rx, *ry, *rz, *sx, *sy, *sz});
 }
 
 EditorResult<void> validatePrefab(const PrefabAssetSnapshot& prefab) {
     if (prefab.asset.empty() || prefab.rootSourceId.empty() || prefab.objects.empty() || prefab.revision == 0)
-        return prefabError<void>(EditorStatus::Rejected, "editor.prefab.invalid-identity",
-                                 "Prefab requires asset, revision, root and objects");
+        return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.prefab.invalid-identity"),
+                                          "Prefab requires asset, revision, root and objects");
     std::set<ObjectId> ids;
     for (const PrefabObjectRecord& object : prefab.objects)
         if (object.sourceId.empty() || !ids.insert(object.sourceId).second)
-            return prefabError<void>(EditorStatus::Rejected, "editor.prefab.duplicate-object",
-                                     "Prefab object ids must be unique and non-empty");
+            return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.prefab.duplicate-object"),
+                                              "Prefab object ids must be unique and non-empty");
     for (const PrefabObjectRecord& object : prefab.objects)
         if (object.nestedPrefab.empty() != (object.nestedRevision == 0))
-            return prefabError<void>(EditorStatus::Rejected, "editor.prefab.invalid-nested-pin",
-                                     "Nested prefab references require both asset and non-zero revision");
+            return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.prefab.invalid-nested-pin"),
+                                              "Nested prefab references require both asset and non-zero revision");
     if (!ids.contains(prefab.rootSourceId))
-        return prefabError<void>(EditorStatus::Rejected, "editor.prefab.root-not-found",
-                                 "Prefab root does not exist");
+        return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.prefab.root-not-found"),
+                                          "Prefab root does not exist");
     for (const PrefabObjectRecord& object : prefab.objects) {
         if (object.sourceId == prefab.rootSourceId && !object.parentSourceId.empty())
-            return prefabError<void>(EditorStatus::Rejected, "editor.prefab.root-has-parent",
-                                     "Prefab root must not have an internal parent");
+            return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.prefab.root-has-parent"),
+                                              "Prefab root must not have an internal parent");
         if (object.sourceId != prefab.rootSourceId && !ids.contains(object.parentSourceId))
-            return prefabError<void>(EditorStatus::Rejected, "editor.prefab.parent-not-found",
-                                     "Prefab object references a missing parent");
+            return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.prefab.parent-not-found"),
+                                              "Prefab object references a missing parent");
         std::set<ObjectId> ancestry;
         const PrefabObjectRecord* cursor = &object;
         while (!cursor->parentSourceId.empty()) {
             if (!ancestry.insert(cursor->sourceId).second)
-                return prefabError<void>(EditorStatus::Rejected, "editor.prefab.hierarchy-cycle",
-                                         "Prefab hierarchy contains a cycle");
+                return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.prefab.hierarchy-cycle"),
+                                                  "Prefab hierarchy contains a cycle");
             const auto parent = std::find_if(prefab.objects.begin(), prefab.objects.end(),
                                              [&](const PrefabObjectRecord& candidate) {
                                                  return candidate.sourceId == cursor->parentSourceId;
@@ -88,8 +84,8 @@ EditorResult<void> validatePrefab(const PrefabAssetSnapshot& prefab) {
             cursor = &*parent;
         }
         if (cursor->sourceId != prefab.rootSourceId)
-            return prefabError<void>(EditorStatus::Rejected, "editor.prefab.disconnected-object",
-                                     "Every prefab object must descend from its root");
+            return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.prefab.disconnected-object"),
+                                              "Every prefab object must descend from its root");
     }
     return eve::editing::applied<void>();
 }
@@ -100,12 +96,12 @@ EditorResult<PrefabAssetSnapshot> ScenePrefabService::capture(const AssetGuid& a
                                                                const SceneTargetBase& scene,
                                                                const ObjectId& root) const {
     if (asset.empty())
-        return prefabError<PrefabAssetSnapshot>(EditorStatus::Rejected, "editor.prefab.asset-required",
-                                                "Prefab asset identity is required");
+        return eve::editing::failed<PrefabAssetSnapshot>(EditorStatus::Rejected, RuleId("editor.prefab.asset-required"),
+                                                         "Prefab asset identity is required");
     auto rootObject = scene.sceneObject(root);
     if (!rootObject.ok())
-        return prefabError<PrefabAssetSnapshot>(EditorStatus::NotFound, "editor.prefab.root-not-found",
-                                                "Prefab capture root does not exist");
+        return eve::editing::failed<PrefabAssetSnapshot>(EditorStatus::NotFound, RuleId("editor.prefab.root-not-found"),
+                                                         "Prefab capture root does not exist");
     PrefabAssetSnapshot prefab;
     prefab.asset = asset;
     prefab.rootSourceId = root;
@@ -114,8 +110,9 @@ EditorResult<PrefabAssetSnapshot> ScenePrefabService::capture(const AssetGuid& a
         const ObjectId id = pending[index];
         auto object = scene.sceneObject(id);
         if (!object.ok())
-            return prefabError<PrefabAssetSnapshot>(EditorStatus::Conflict, "editor.prefab.capture-diverged",
-                                                    "Scene hierarchy changed during prefab capture");
+            return eve::editing::failed<PrefabAssetSnapshot>(EditorStatus::Conflict,
+                                                             RuleId("editor.prefab.capture-diverged"),
+                                                             "Scene hierarchy changed during prefab capture");
         prefab.objects.push_back({id, id == root ? ObjectId{} : object.value().parent,
                                   object.value().name, object.value().transform, {}, 0});
         const auto children = scene.sceneChildren(id);
@@ -129,11 +126,13 @@ EditorResult<PrefabInstancePlan> ScenePrefabService::instantiate(const PrefabAss
                                                                  const ObjectId& parent,
                                                                  const SceneTargetBase& scene) const {
     if (!validatePrefab(prefab).ok() || instanceId.empty())
-        return prefabError<PrefabInstancePlan>(EditorStatus::Rejected, "editor.prefab.invalid-instance",
-                                               "Prefab and non-empty instance id are required");
+        return eve::editing::failed<PrefabInstancePlan>(EditorStatus::Rejected,
+                                                        RuleId("editor.prefab.invalid-instance"),
+                                                        "Prefab and non-empty instance id are required");
     if (!parent.empty() && !scene.sceneObject(parent).ok())
-        return prefabError<PrefabInstancePlan>(EditorStatus::NotFound, "editor.prefab.scene-parent-not-found",
-                                               "Prefab instance parent does not exist");
+        return eve::editing::failed<PrefabInstancePlan>(EditorStatus::NotFound,
+                                                        RuleId("editor.prefab.scene-parent-not-found"),
+                                                        "Prefab instance parent does not exist");
     PrefabInstancePlan plan;
     plan.instanceId = instanceId;
     plan.sourceAsset = prefab.asset;
@@ -141,8 +140,9 @@ EditorResult<PrefabInstancePlan> ScenePrefabService::instantiate(const PrefabAss
     for (const PrefabObjectRecord& object : prefab.objects) {
         const ObjectId id = instanceObject(instanceId, object.sourceId);
         if (scene.sceneObject(id).ok())
-            return prefabError<PrefabInstancePlan>(EditorStatus::Conflict, "editor.prefab.instance-id-conflict",
-                                                   "Prefab instance object already exists: " + id.value());
+            return eve::editing::failed<PrefabInstancePlan>(EditorStatus::Conflict,
+                                                            RuleId("editor.prefab.instance-id-conflict"),
+                                                            "Prefab instance object already exists: " + id.value());
         CreateSceneObjectRequest request;
         request.id = id;
         request.parent = object.sourceId == prefab.rootSourceId
@@ -176,35 +176,41 @@ EditorResult<std::vector<DomainOperation>> ScenePrefabService::revertOverrides(
     const PrefabAssetSnapshot& prefab, const std::string& instanceId, const ObjectId& parent,
     const SceneTargetBase& scene) const {
     if (!validatePrefab(prefab).ok() || instanceId.empty())
-        return prefabError<std::vector<DomainOperation>>(EditorStatus::Rejected, "editor.prefab.invalid-instance",
-                                                        "Prefab and instance id are required");
+        return eve::editing::failed<std::vector<DomainOperation>>(
+            EditorStatus::Rejected, RuleId("editor.prefab.invalid-instance"), "Prefab and instance id are required");
     std::vector<DomainOperation> operations;
     for (const PrefabObjectRecord& source : prefab.objects) {
         const ObjectId id = instanceObject(instanceId, source.sourceId);
         auto object = scene.sceneObject(id);
         if (!object.ok())
-            return prefabError<std::vector<DomainOperation>>(EditorStatus::Conflict,
-                                                             "editor.prefab.instance-structure-changed",
-                                                             "Prefab instance object is missing: " + id.value());
+            return eve::editing::failed<std::vector<DomainOperation>>(
+                EditorStatus::Conflict, RuleId("editor.prefab.instance-structure-changed"),
+                "Prefab instance object is missing: " + id.value());
         const ObjectId wantedParent = source.sourceId == prefab.rootSourceId
                                           ? parent
                                           : instanceObject(instanceId, source.parentSourceId);
         if (object.value().parent != wantedParent) {
             auto operation = scene.makeReparent(id, wantedParent);
-            if (!operation.ok()) return prefabError<std::vector<DomainOperation>>(
-                EditorStatus::Conflict, "editor.prefab.revert-reparent", "Could not plan prefab reparent revert");
+            if (!operation.ok())
+                return eve::editing::failed<std::vector<DomainOperation>>(EditorStatus::Conflict,
+                                                                          RuleId("editor.prefab.revert-reparent"),
+                                                                          "Could not plan prefab reparent revert");
             operations.push_back(std::move(operation).takeValue());
         }
         if (object.value().name != source.name) {
             auto operation = scene.makeRename(id, source.name);
-            if (!operation.ok()) return prefabError<std::vector<DomainOperation>>(
-                EditorStatus::Conflict, "editor.prefab.revert-rename", "Could not plan prefab rename revert");
+            if (!operation.ok())
+                return eve::editing::failed<std::vector<DomainOperation>>(EditorStatus::Conflict,
+                                                                          RuleId("editor.prefab.revert-rename"),
+                                                                          "Could not plan prefab rename revert");
             operations.push_back(std::move(operation).takeValue());
         }
         if (object.value().transform != source.transform) {
             auto operation = scene.makeSetTransform(id, source.transform);
-            if (!operation.ok()) return prefabError<std::vector<DomainOperation>>(
-                EditorStatus::Conflict, "editor.prefab.revert-transform", "Could not plan prefab transform revert");
+            if (!operation.ok())
+                return eve::editing::failed<std::vector<DomainOperation>>(EditorStatus::Conflict,
+                                                                          RuleId("editor.prefab.revert-transform"),
+                                                                          "Could not plan prefab transform revert");
             operations.push_back(std::move(operation).takeValue());
         }
     }
@@ -216,8 +222,8 @@ EditorResult<PrefabAssetSnapshot> ScenePrefabService::applyOverrides(const Prefa
                                                                      const ObjectId& parent,
                                                                      const SceneTargetBase& scene) const {
     if (!validatePrefab(prefab).ok() || instanceId.empty())
-        return prefabError<PrefabAssetSnapshot>(EditorStatus::Rejected, "editor.prefab.invalid-instance",
-                                                "Prefab and instance id are required");
+        return eve::editing::failed<PrefabAssetSnapshot>(
+            EditorStatus::Rejected, RuleId("editor.prefab.invalid-instance"), "Prefab and instance id are required");
     PrefabAssetSnapshot result = prefab;
     ++result.revision;
     std::map<ObjectId, ObjectId> instanceToSource;
@@ -227,23 +233,23 @@ EditorResult<PrefabAssetSnapshot> ScenePrefabService::applyOverrides(const Prefa
         const ObjectId instance = instanceObject(instanceId, destination.sourceId);
         auto object = scene.sceneObject(instance);
         if (!object.ok())
-            return prefabError<PrefabAssetSnapshot>(EditorStatus::Conflict,
-                                                    "editor.prefab.instance-structure-changed",
-                                                    "Prefab instance object is missing: " + instance.value());
+            return eve::editing::failed<PrefabAssetSnapshot>(EditorStatus::Conflict,
+                                                             RuleId("editor.prefab.instance-structure-changed"),
+                                                             "Prefab instance object is missing: " + instance.value());
         destination.name = object.value().name;
         destination.transform = object.value().transform;
         if (destination.sourceId == prefab.rootSourceId) {
             if (object.value().parent != parent)
-                return prefabError<PrefabAssetSnapshot>(EditorStatus::Conflict,
-                                                        "editor.prefab.root-reparented",
-                                                        "Prefab root moved outside its instance parent");
+                return eve::editing::failed<PrefabAssetSnapshot>(EditorStatus::Conflict,
+                                                                 RuleId("editor.prefab.root-reparented"),
+                                                                 "Prefab root moved outside its instance parent");
             destination.parentSourceId = ObjectId{};
         } else {
             const auto sourceParent = instanceToSource.find(object.value().parent);
             if (sourceParent == instanceToSource.end())
-                return prefabError<PrefabAssetSnapshot>(EditorStatus::Conflict,
-                                                        "editor.prefab.child-reparented-outside",
-                                                        "Prefab child moved outside its instance");
+                return eve::editing::failed<PrefabAssetSnapshot>(EditorStatus::Conflict,
+                                                                 RuleId("editor.prefab.child-reparented-outside"),
+                                                                 "Prefab child moved outside its instance");
             destination.parentSourceId = sourceParent->second;
         }
     }
@@ -254,8 +260,8 @@ EditorResult<std::vector<PrefabOverrideRecord>> ScenePrefabService::inspectOverr
     const PrefabAssetSnapshot& prefab, const std::string& instanceId, const ObjectId& parent,
     const SceneTargetBase& scene) const {
     if (!validatePrefab(prefab).ok() || instanceId.empty())
-        return prefabError<std::vector<PrefabOverrideRecord>>(EditorStatus::Rejected,
-            "editor.prefab.invalid-instance", "Prefab and instance id are required");
+        return eve::editing::failed<std::vector<PrefabOverrideRecord>>(
+            EditorStatus::Rejected, RuleId("editor.prefab.invalid-instance"), "Prefab and instance id are required");
     std::vector<PrefabOverrideRecord> result;
     for (const PrefabObjectRecord& source : prefab.objects) {
         const ObjectId instance = instanceObject(instanceId, source.sourceId);
@@ -341,16 +347,17 @@ EditorResult<PrefabAssetSnapshot> ScenePrefabService::refreshNestedRevisions(
     const PrefabAssetSnapshot& prefab, const PrefabResolver& resolver) const {
     auto dependencies = inspectDependencies(prefab, resolver);
     if (dependencies.status != EditorStatus::Applied)
-        return prefabError<PrefabAssetSnapshot>(dependencies.status, "editor.prefab.invalid-dependencies",
-                                                "Nested prefab dependencies are missing, invalid or cyclic");
+        return eve::editing::failed<PrefabAssetSnapshot>(dependencies.status,
+                                                         RuleId("editor.prefab.invalid-dependencies"),
+                                                         "Nested prefab dependencies are missing, invalid or cyclic");
     PrefabAssetSnapshot result = prefab;
     bool changed = false;
     for (PrefabObjectRecord& object : result.objects) {
         if (object.nestedPrefab.empty()) continue;
         auto resolved = resolver(object.nestedPrefab);
         if (!resolved.ok())
-            return prefabError<PrefabAssetSnapshot>(resolved.code(), "editor.prefab.dependency-missing",
-                                                    "Nested prefab cannot be resolved");
+            return eve::editing::failed<PrefabAssetSnapshot>(
+                resolved.code(), RuleId("editor.prefab.dependency-missing"), "Nested prefab cannot be resolved");
         if (object.nestedRevision != resolved.value().revision) {
             object.nestedRevision = resolved.value().revision;
             changed = true;
@@ -386,8 +393,9 @@ EditorResult<PrefabAssetSnapshot> ScenePrefabService::loadSnapshot(const EditorV
     const auto* root = rootValue ? rootValue->getIf<std::string>() : nullptr;
     const auto* objects = objectsValue ? objectsValue->getIf<EditorValue::Array>() : nullptr;
     if (!schema || (*schema != 1 && *schema != 2) || !asset || !revision || *revision <= 0 || !root || !objects)
-        return prefabError<PrefabAssetSnapshot>(EditorStatus::Unsupported, "editor.prefab.invalid-snapshot",
-                                                "Prefab snapshot schema is invalid or unsupported");
+        return eve::editing::failed<PrefabAssetSnapshot>(EditorStatus::Unsupported,
+                                                         RuleId("editor.prefab.invalid-snapshot"),
+                                                         "Prefab snapshot schema is invalid or unsupported");
     PrefabAssetSnapshot prefab{AssetGuid(*asset), static_cast<Revision>(*revision), ObjectId(*root), {}};
     for (const EditorValue& value : *objects) {
         const EditorValue* idValue = field(value, "sourceId");
@@ -400,20 +408,23 @@ EditorResult<PrefabAssetSnapshot> ScenePrefabService::loadSnapshot(const EditorV
         const auto* parentId = parentValue ? parentValue->getIf<std::string>() : nullptr;
         const auto* name = nameValue ? nameValue->getIf<std::string>() : nullptr;
         if (!id || !parentId || !name || !transform)
-            return prefabError<PrefabAssetSnapshot>(EditorStatus::Rejected, "editor.prefab.invalid-object",
-                                                    "Prefab snapshot contains an invalid object");
+            return eve::editing::failed<PrefabAssetSnapshot>(EditorStatus::Rejected,
+                                                             RuleId("editor.prefab.invalid-object"),
+                                                             "Prefab snapshot contains an invalid object");
         auto parsed = parseTransform(*transform);
         if (!parsed.ok())
-            return prefabError<PrefabAssetSnapshot>(EditorStatus::Rejected, "editor.prefab.invalid-transform",
-                                                    "Prefab snapshot contains an invalid transform");
+            return eve::editing::failed<PrefabAssetSnapshot>(EditorStatus::Rejected,
+                                                             RuleId("editor.prefab.invalid-transform"),
+                                                             "Prefab snapshot contains an invalid transform");
         AssetGuid nestedAsset;
         Revision nestedRevision = 0;
         if (*schema == 2) {
             const auto* nested = nestedAssetValue ? nestedAssetValue->getIf<std::string>() : nullptr;
             const auto* pinned = nestedRevisionValue ? nestedRevisionValue->getIf<int64_t>() : nullptr;
             if (!nested || !pinned || *pinned < 0)
-                return prefabError<PrefabAssetSnapshot>(EditorStatus::Rejected, "editor.prefab.invalid-nested-pin",
-                                                        "Prefab snapshot contains an invalid nested revision pin");
+                return eve::editing::failed<PrefabAssetSnapshot>(
+                    EditorStatus::Rejected, RuleId("editor.prefab.invalid-nested-pin"),
+                    "Prefab snapshot contains an invalid nested revision pin");
             nestedAsset = AssetGuid(*nested); nestedRevision = static_cast<Revision>(*pinned);
         }
         prefab.objects.push_back({ObjectId(*id), ObjectId(*parentId), *name, parsed.value(),

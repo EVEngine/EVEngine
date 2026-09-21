@@ -6,6 +6,7 @@
 #include <algorithm>
 #include <cmath>
 #include <exception>
+#include <glm/gtc/matrix_transform.hpp>
 #include <string_view>
 
 namespace eve::graphics_editing {
@@ -24,11 +25,13 @@ bool finite(const editing::GizmoPrimitive& primitive) {
         return true;
     };
     return finiteArray(primitive.position) && finiteArray(primitive.size) && finiteArray(primitive.direction) &&
-           finiteArray(primitive.color) && std::isfinite(primitive.radius) && std::isfinite(primitive.length);
+           finiteArray(primitive.color) && std::isfinite(primitive.radius) && std::isfinite(primitive.length) &&
+           std::isfinite(primitive.yaw);
 }
 
 bool supported(std::string_view kind) {
-    return kind == "line" || kind == "point" || kind == "box" || kind == "sphere" || kind == "capsule" ||
+    return kind == "line" || kind == "point" || kind == "box" || kind == "obb" || kind == "ellipsoid" ||
+           kind == "sphere" || kind == "capsule" ||
            kind == "arrow" || kind == "camera" || kind == "area" || kind == "frustum";
 }
 
@@ -62,6 +65,9 @@ eve::Result<graphics::PrimitiveDrawStatistics> PrimitiveGizmoRenderer::render(
         if (!finite(primitive)) return failure("gizmo primitive must be finite", path);
         if ((primitive.kind == "sphere" || primitive.kind == "capsule") && primitive.radius <= 0.0)
             return failure("gizmo radius must be positive", path + ".radius");
+        if ((primitive.kind == "obb" || primitive.kind == "ellipsoid") &&
+            (primitive.size[0] <= 0.0 || primitive.size[1] <= 0.0 || primitive.size[2] <= 0.0))
+            return failure("gizmo size must be positive", path + ".size");
         if ((primitive.kind == "line" || primitive.kind == "capsule" || primitive.kind == "arrow" ||
              primitive.kind == "camera" || primitive.kind == "frustum") &&
             primitive.length <= 0.0)
@@ -84,6 +90,20 @@ eve::Result<graphics::PrimitiveDrawStatistics> PrimitiveGizmoRenderer::render(
             } else if (primitive.kind == "box") {
                 const glm::vec3 half = vector(primitive.size) * 0.5f;
                 canvas.drawAabb(origin - half, origin + half, style);
+            } else if (primitive.kind == "obb") {
+                const glm::vec3 half = vector(primitive.size) * 0.5f;
+                const float c = std::cos(static_cast<float>(primitive.yaw));
+                const float s = std::sin(static_cast<float>(primitive.yaw));
+                canvas.drawObb(origin, {{{c * half.x, 0.f, s * half.x}, {0.f, half.y, 0.f},
+                                         {-s * half.z, 0.f, c * half.z}}}, style);
+            } else if (primitive.kind == "ellipsoid") {
+                const glm::vec3 half = vector(primitive.size) * 0.5f;
+                canvas.save();
+                canvas.concat(glm::translate(glm::mat4(1.f), origin) *
+                              glm::rotate(glm::mat4(1.f), static_cast<float>(primitive.yaw), glm::vec3(0, 1, 0)) *
+                              glm::scale(glm::mat4(1.f), half));
+                canvas.drawSphere({}, 1.f, style, 32);
+                canvas.restore();
             } else if (primitive.kind == "sphere") {
                 canvas.drawSphere(origin, static_cast<float>(primitive.radius), style);
             } else if (primitive.kind == "capsule") {

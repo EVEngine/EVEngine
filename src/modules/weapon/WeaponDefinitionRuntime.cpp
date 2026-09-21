@@ -15,12 +15,6 @@
 namespace eve::weapon {
 namespace {
 
-template <class T>
-eve::Result<T> invalid(std::string message, std::string path = {}) {
-    return eve::Result<T>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, std::move(message),
-                                                          std::move(path), {}, "weapon.definition_runtime"));
-}
-
 const eve::Value* field(const eve::Value::Object& object, std::string_view name) {
     const auto it = object.find(std::string(name));
     return it == object.end() ? nullptr : &it->second;
@@ -120,17 +114,24 @@ eve::Result<WeaponDefinition> parseDefinition(const eve::definitions::Definition
     if (!parsed) return eve::Result<WeaponDefinition>::failure(parsed.status());
     auto        value  = std::move(parsed).takeValue();
     const auto* object = value.getIf<eve::Value::Object>();
-    if (object == nullptr) return invalid<WeaponDefinition>("weapon definition must be an object", "json");
+    if (object == nullptr)
+        return eve::Result<WeaponDefinition>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                             "weapon definition must be an object",
+                                                                             "json", {}, "weapon.definition_runtime"));
 
     WeaponDefinition result;
     result.id      = std::string(reference.id().name());
     std::string id = result.id;
     if (!readText(*object, "id", id) || id != result.id)
-        return invalid<WeaponDefinition>("weapon definition id does not match its logical reference", "id");
+        return eve::Result<WeaponDefinition>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "weapon definition id does not match its logical reference", "id", {},
+            "weapon.definition_runtime"));
     std::string kind  = weaponKindName(result.kind);
     std::string logic = result.logic;
     if (!readText(*object, "kind", kind) || !readText(*object, "logic", logic))
-        return invalid<WeaponDefinition>("weapon kind and logic must be strings", "definition");
+        return eve::Result<WeaponDefinition>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "weapon kind and logic must be strings",
+                                   "definition", {}, "weapon.definition_runtime"));
     result.kind  = weaponKindFromName(kind);
     result.logic = std::move(logic);
 
@@ -150,13 +151,17 @@ eve::Result<WeaponDefinition> parseDefinition(const eve::definitions::Definition
         !readNumber(*object, "recoilRecover", result.recoilRecover) ||
         !readNumber(*object, "zoomFov", result.zoomFov) || !readNumber(*object, "cooldown", result.cooldown) ||
         !readNumber(*object, "arc", result.arc))
-        return invalid<WeaponDefinition>("weapon numeric fields must be finite numbers", "definition");
+        return eve::Result<WeaponDefinition>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "weapon numeric fields must be finite numbers",
+                                   "definition", {}, "weapon.definition_runtime"));
     if (result.falloffStart < 0.0f || result.falloffStart > result.range ||
         result.minimumDamageFactor < 0.0f || result.minimumDamageFactor > 1.0f ||
         result.splashMinimumDamageFactor < 0.0f || result.splashMinimumDamageFactor > 1.0f ||
         result.accuracy < 0.0f || result.accuracy > 1.0f || result.scatterRadius < 0.0f ||
         result.preferredTargetBonus < 1.0f)
-        return invalid<WeaponDefinition>("weapon damage falloff fields are outside valid ranges", "definition");
+        return eve::Result<WeaponDefinition>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "weapon damage falloff fields are outside valid ranges", "definition",
+            {}, "weapon.definition_runtime"));
 
     if (!readText(*object, "damageType", result.damageType) || !readText(*object, "element", result.element) ||
         !readBoolean(*object, "targetsGround", result.targetsGround) ||
@@ -166,33 +171,50 @@ eve::Result<WeaponDefinition> parseDefinition(const eve::definitions::Definition
         !readStringArray(*object, "requiredTargetTags", result.requiredTargetTags) ||
         !readStringArray(*object, "excludedTargetTags", result.excludedTargetTags) ||
         !readStringArray(*object, "preferredTargetTags", result.preferredTargetTags))
-        return invalid<WeaponDefinition>("weapon target policy fields are invalid", "definition");
+        return eve::Result<WeaponDefinition>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "weapon target policy fields are invalid",
+                                   "definition", {}, "weapon.definition_runtime"));
     if (!result.targetsGround && !result.targetsAir)
-        return invalid<WeaponDefinition>("weapon must target ground, air, or both", "definition");
+        return eve::Result<WeaponDefinition>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "weapon must target ground, air, or both",
+                                   "definition", {}, "weapon.definition_runtime"));
 
     if (const auto* modes = field(*object, "fireModes")) {
         const auto* array = modes->getIf<eve::Value::Array>();
-        if (array == nullptr) return invalid<WeaponDefinition>("fireModes must be an array", "fireModes");
+        if (array == nullptr)
+            return eve::Result<WeaponDefinition>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "fireModes must be an array", "fireModes",
+                                       {}, "weapon.definition_runtime"));
         for (const auto& entry : *array) {
             const auto* text = entry.getIf<std::string>();
-            if (text == nullptr) return invalid<WeaponDefinition>("fire mode must be a string", "fireModes");
+            if (text == nullptr)
+                return eve::Result<WeaponDefinition>::failure(
+                    eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "fire mode must be a string",
+                                           "fireModes", {}, "weapon.definition_runtime"));
             result.selectableModes.push_back(fireModeFromName(*text));
         }
     }
     std::string fireMode = fireModeName(result.fireMode);
     if (!readText(*object, "fireMode", fireMode))
-        return invalid<WeaponDefinition>("fireMode must be a string", "fireMode");
+        return eve::Result<WeaponDefinition>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                             "fireMode must be a string", "fireMode",
+                                                                             {}, "weapon.definition_runtime"));
     result.fireMode = fireModeFromName(fireMode);
 
     if (const auto* resource = field(*object, "resource")) {
         const auto* nested = resource->getIf<eve::Value::Object>();
-        if (nested == nullptr) return invalid<WeaponDefinition>("resource must be an object", "resource");
+        if (nested == nullptr)
+            return eve::Result<WeaponDefinition>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "resource must be an object", "resource",
+                                       {}, "weapon.definition_runtime"));
         std::string resourceName = resourceKindName(result.resource.kind);
         if (!readText(*nested, "kind", resourceName) || !readNumber(*nested, "max", result.resource.max) ||
             !readNumber(*nested, "regen", result.resource.regen) ||
             !readNumber(*nested, "cost", result.resource.cost) ||
             !readBoolean(*nested, "infinite", result.resource.infinite))
-            return invalid<WeaponDefinition>("weapon resource fields are invalid", "resource");
+            return eve::Result<WeaponDefinition>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "weapon resource fields are invalid",
+                                       "resource", {}, "weapon.definition_runtime"));
         result.resource.kind = resourceKindFromName(resourceName);
     }
     if (const auto* stages = field(*object, "stages")) {
@@ -200,19 +222,25 @@ eve::Result<WeaponDefinition> parseDefinition(const eve::definitions::Definition
         if (nested == nullptr || !readNumber(*nested, "windup", result.stages.windupTime) ||
             !readNumber(*nested, "active", result.stages.activeTime) ||
             !readNumber(*nested, "recover", result.stages.recoverTime))
-            return invalid<WeaponDefinition>("stages fields are invalid", "stages");
+            return eve::Result<WeaponDefinition>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                                 "stages fields are invalid", "stages",
+                                                                                 {}, "weapon.definition_runtime"));
     }
     if (const auto* burst = field(*object, "burst")) {
         const auto* nested = burst->getIf<eve::Value::Object>();
         if (nested == nullptr || !readInteger(*nested, "size", result.burstSize) ||
             !readNumber(*nested, "interval", result.burstInterval))
-            return invalid<WeaponDefinition>("burst fields are invalid", "burst");
+            return eve::Result<WeaponDefinition>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                                 "burst fields are invalid", "burst",
+                                                                                 {}, "weapon.definition_runtime"));
     }
     if (const auto* ammo = field(*object, "ammo")) {
         const auto* nested = ammo->getIf<eve::Value::Object>();
         if (nested == nullptr || !readInteger(*nested, "mag", result.magSize) ||
             !readInteger(*nested, "reserve", result.reserveSize) || !readNumber(*nested, "reload", result.reloadTime))
-            return invalid<WeaponDefinition>("ammo fields are invalid", "ammo");
+            return eve::Result<WeaponDefinition>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                                 "ammo fields are invalid", "ammo", {},
+                                                                                 "weapon.definition_runtime"));
     }
     if (const auto* projectile = field(*object, "projectile")) {
         const auto* nested = projectile->getIf<eve::Value::Object>();
@@ -222,13 +250,17 @@ eve::Result<WeaponDefinition> parseDefinition(const eve::definitions::Definition
             !readNumber(*nested, "aoe", result.projectile.aoe) ||
             !readInteger(*nested, "pelletCount", result.projectile.pelletCount) ||
             !readNumber(*nested, "pelletSpread", result.projectile.pelletSpread))
-            return invalid<WeaponDefinition>("projectile fields are invalid", "projectile");
+            return eve::Result<WeaponDefinition>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "projectile fields are invalid",
+                                       "projectile", {}, "weapon.definition_runtime"));
     }
     if (const auto* effects = field(*object, "effects")) {
         const auto* nested = effects->getIf<eve::Value::Object>();
         if (nested == nullptr || !readText(*nested, "muzzle", result.effectMuzzle) ||
             !readText(*nested, "sound", result.effectSound))
-            return invalid<WeaponDefinition>("effects fields are invalid", "effects");
+            return eve::Result<WeaponDefinition>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "effects fields are invalid", "effects",
+                                       {}, "weapon.definition_runtime"));
     }
     if (result.resource.kind == ResourceKind::None) result.resource.infinite = true;
     return eve::Result<WeaponDefinition>::success(std::move(result));
@@ -314,18 +346,25 @@ bool readStateNumber(const eve::Value::Object& object, const char* name, float& 
 
 eve::Result<WeaponRuntimeState> decodeState(const eve::Value& value) {
     const auto* object = value.getIf<eve::Value::Object>();
-    if (object == nullptr) return invalid<WeaponRuntimeState>("weapon runtime state must be an object", "state");
+    if (object == nullptr)
+        return eve::Result<WeaponRuntimeState>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "weapon runtime state must be an object",
+                                   "state", {}, "weapon.definition_runtime"));
     static const std::set<std::string> fields = {"aiming",        "burstRemaining", "burstTimer",  "cooldown",
                                                  "currentSpread", "jammed",         "recoilPitch", "recoilYaw",
                                                  "resource",      "selector",       "stage",       "stageTimer"};
     for (const auto& [name, unused] : *object) {
         (void)unused;
         if (!fields.contains(name))
-            return invalid<WeaponRuntimeState>("unknown weapon runtime state field", "state." + name);
+            return eve::Result<WeaponRuntimeState>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "unknown weapon runtime state field",
+                                       "state." + name, {}, "weapon.definition_runtime"));
     }
     for (const auto& name : fields)
         if (!object->contains(name))
-            return invalid<WeaponRuntimeState>("weapon runtime state is missing a field", "state." + name);
+            return eve::Result<WeaponRuntimeState>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "weapon runtime state is missing a field",
+                                       "state." + name, {}, "weapon.definition_runtime"));
 
     WeaponRuntimeState result;
     std::string        selector;
@@ -339,12 +378,16 @@ eve::Result<WeaponRuntimeState> decodeState(const eve::Value& value) {
         !readStateNumber(*object, "recoilPitch", result.recoilPitch) ||
         !readStateNumber(*object, "recoilYaw", result.recoilYaw) || !readText(*object, "selector", selector) ||
         !readText(*object, "stage", stage) || !readStateNumber(*object, "stageTimer", result.stageTimer))
-        return invalid<WeaponRuntimeState>("weapon runtime scalar field is invalid", "state");
+        return eve::Result<WeaponRuntimeState>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "weapon runtime scalar field is invalid",
+                                   "state", {}, "weapon.definition_runtime"));
     result.selector           = fireModeFromName(selector);
     result.stage              = attackStageFromName(stage);
     const auto* resourceValue = object->at("resource").getIf<eve::Value::Object>();
     if (resourceValue == nullptr)
-        return invalid<WeaponRuntimeState>("weapon runtime resource is invalid", "state.resource");
+        return eve::Result<WeaponRuntimeState>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "weapon runtime resource is invalid",
+                                   "state.resource", {}, "weapon.definition_runtime"));
     std::string kind;
     if (!readText(*resourceValue, "kind", kind) || !readStateNumber(*resourceValue, "value", result.resource.value) ||
         !readStateNumber(*resourceValue, "max", result.resource.max) ||
@@ -354,7 +397,9 @@ eve::Result<WeaponRuntimeState> decodeState(const eve::Value& value) {
         !readInteger(*resourceValue, "reserve", result.resource.reserve) ||
         !readBoolean(*resourceValue, "reloading", result.resource.reloading) ||
         !readStateNumber(*resourceValue, "reloadProgress", result.resource.reloadProgress))
-        return invalid<WeaponRuntimeState>("weapon runtime resource fields are invalid", "state.resource");
+        return eve::Result<WeaponRuntimeState>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "weapon runtime resource fields are invalid",
+                                   "state.resource", {}, "weapon.definition_runtime"));
     result.resource.kind = resourceKindFromName(kind);
     return eve::Result<WeaponRuntimeState>::success(std::move(result));
 }
@@ -363,10 +408,16 @@ eve::Result<WeaponRuntimeState> decodeState(const eve::Value& value) {
 
 eve::Result<WeaponDefinition> parseWeaponDefinition(const eve::definitions::Definition& source) {
     auto logical = eve::LogicalId::fromParts("weapon", source.id);
-    if (!logical) return invalid<WeaponDefinition>("weapon definition id is invalid", "id");
+    if (!logical)
+        return eve::Result<WeaponDefinition>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                             "weapon definition id is invalid", "id",
+                                                                             {}, "weapon.definition_runtime"));
     auto reference = eve::DefinitionRef::fromId(*logical);
     if (!reference) return eve::Result<WeaponDefinition>::failure(reference.status());
-    if (source.type != "weapon") return invalid<WeaponDefinition>("definition type must be weapon", "type");
+    if (source.type != "weapon")
+        return eve::Result<WeaponDefinition>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                             "definition type must be weapon", "type",
+                                                                             {}, "weapon.definition_runtime"));
     return parseDefinition(source, reference.value());
 }
 
@@ -375,7 +426,9 @@ eve::Result<WeaponDefinitionRuntime> WeaponDefinitionRuntime::create(eve::defini
                                                                      eve::PersistentId                     instanceId,
                                                                      eve::definition::ReloadPolicy         policy) {
     if (!definition.id().isValid() || definition.id().namespaceName() != "weapon")
-        return invalid<WeaponDefinitionRuntime>("weapon definition reference must use weapon namespace", "definition");
+        return eve::Result<WeaponDefinitionRuntime>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "weapon definition reference must use weapon namespace", "definition",
+            {}, "weapon.definition_runtime"));
     auto handle = currentHandle(registry, definition);
     if (!handle) return eve::Result<WeaponDefinitionRuntime>::failure(handle.status());
     auto typed = definitionFor(registry, handle.value(), definition);
@@ -392,7 +445,10 @@ eve::Result<WeaponDefinitionRuntime> WeaponDefinitionRuntime::create(eve::defini
                                                                      eve::PersistentId                     instanceId,
                                                                      eve::definition::ReloadPolicy         policy) {
     auto logical = eve::LogicalId::fromParts("weapon", definitionId);
-    if (!logical) return invalid<WeaponDefinitionRuntime>("weapon id is not a valid logical name", "definitionId");
+    if (!logical)
+        return eve::Result<WeaponDefinitionRuntime>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "weapon id is not a valid logical name",
+                                   "definitionId", {}, "weapon.definition_runtime"));
     auto reference = eve::DefinitionRef::fromId(*logical);
     if (!reference) return eve::Result<WeaponDefinitionRuntime>::failure(reference.status());
     return create(registry, std::move(reference).takeValue(), instanceId, policy);
@@ -417,7 +473,10 @@ eve::definition::DefinitionHandle WeaponDefinitionRuntime::definitionHandle() co
 }
 
 eve::Result<WeaponDefinition> WeaponDefinitionRuntime::definition() const {
-    if (registry_ == nullptr) return invalid<WeaponDefinition>("weapon definition registry is not bound", "registry");
+    if (registry_ == nullptr)
+        return eve::Result<WeaponDefinition>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "weapon definition registry is not bound",
+                                   "registry", {}, "weapon.definition_runtime"));
     return definitionFor(*registry_, definitionHandle(), identity().definition);
 }
 
@@ -470,7 +529,9 @@ eve::Result<void> WeaponDefinitionRuntime::applyTo(WeaponEntity* entity) const {
 
 eve::Result<eve::definition::ReloadOutcome> WeaponDefinitionRuntime::reload(eve::definition::ReloadPolicy policy) {
     if (registry_ == nullptr)
-        return invalid<eve::definition::ReloadOutcome>("weapon definition registry is not bound", "registry");
+        return eve::Result<eve::definition::ReloadOutcome>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "weapon definition registry is not bound",
+                                   "registry", {}, "weapon.definition_runtime"));
     auto next = currentHandle(*registry_, identity().definition);
     if (!next) return eve::Result<eve::definition::ReloadOutcome>::failure(next.status());
     auto typed = definitionFor(*registry_, next.value(), identity().definition);
@@ -523,7 +584,10 @@ eve::Result<std::string> WeaponDefinitionRuntime::snapshotJson(eve::Revision rev
 
 eve::Result<void> WeaponDefinitionRuntime::restore(const eve::SnapshotEnvelope&     snapshotValue,
                                                    const eve::SnapshotHashProvider& hashProvider) {
-    if (registry_ == nullptr) return invalid<void>("weapon definition registry is not bound", "registry");
+    if (registry_ == nullptr)
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                 "weapon definition registry is not bound", "registry",
+                                                                 {}, "weapon.definition_runtime"));
     auto current = currentHandle(*registry_, identity().definition);
     if (!current) return eve::Result<void>::failure(current.status());
     if (current.value() != definitionHandle())

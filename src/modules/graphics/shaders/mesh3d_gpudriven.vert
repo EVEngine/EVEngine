@@ -2,6 +2,7 @@
 
 #extension GL_GOOGLE_include_directive : enable
 #include "gpudriven_tables.glsl"
+#include "terrain_detail_wave.glsl"
 
 layout(location = 0) in vec3 inPos;
 layout(location = 1) in vec3 inNormal;
@@ -54,16 +55,35 @@ void main() {
     GpuInstance gi = instances[inst];
     GpuMaterialRecord m = materials[gi.materialId];
 
-    gl_Position = ubo.mvp * (gi.model * vec4(inPos, 1.0));
-    vec4 world = gi.model * vec4(inPos, 1.0);
+    vec4 world;
+    if ((m.flags & 4u) != 0u) {
+        vec3 origin = gi.model[3].xyz;
+        vec3 toCamera = ubo.cameraPos.xyz - origin;
+        toCamera.y = 0.0;
+        toCamera = length(toCamera) > 1e-6 ? normalize(toCamera) : vec3(0, 0, 1);
+        vec3 right = vec3(toCamera.z, 0, -toCamera.x);
+        vec3 scale = vec3(length(gi.model[0].xyz), length(gi.model[1].xyz), length(gi.model[2].xyz));
+        world = vec4(origin + right * inPos.x * scale.x + vec3(0, 1, 0) * inPos.y * scale.y +
+                     toCamera * inPos.z * scale.z, 1.0);
+    } else {
+        world = gi.model * vec4(inPos, 1.0);
+    }
+    vec3 waveTint = terrainDetailWave(world.xyz, inUV.y, gi);
+    gl_Position = ubo.mvp * world;
     vWorldPos = world.xyz;
     vViewPos = (ubo.view * world).xyz;
     // Full inverse-transpose per vertex; correctness over speed until stage 2
     // moves LOD/instance prep to the GPU (precomputed normal matrices).
-    mat3 normalMat = transpose(inverse(mat3(gi.model)));
-    vNormal = normalize(normalMat * inNormal);
+    if ((m.flags & 4u) != 0u) {
+        vec3 facing = ubo.cameraPos.xyz - gi.model[3].xyz;
+        facing.y = 0.0;
+        vNormal = length(facing) > 1e-6 ? normalize(facing) : vec3(0, 0, 1);
+    } else {
+        mat3 normalMat = transpose(inverse(mat3(gi.model)));
+        vNormal = normalize(normalMat * inNormal);
+    }
     vUV = inUV;
-    vTint = m.tint;
+    vTint = vec4(gi.color.rgb * waveTint, gi.color.a);
     vCameraPos = ubo.cameraPos.xyz;
     vMaterialId = gi.materialId;
     vInstanceId = inst;

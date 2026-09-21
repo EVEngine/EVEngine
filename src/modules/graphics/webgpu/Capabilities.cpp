@@ -42,6 +42,10 @@ void Capabilities::capture(wgpu::Adapter &adapter, wgpu::Device &device) {
             maxBindGroups_ = limits.maxBindGroups;
         if (limits.maxDynamicUniformBuffersPerPipelineLayout != wgpu::kLimitU32Undefined)
             maxDynamicUniformBuffers_ = limits.maxDynamicUniformBuffersPerPipelineLayout;
+        if (limits.maxSampledTexturesPerShaderStage != wgpu::kLimitU32Undefined)
+            maxSampledTexturesPerShaderStage_ = limits.maxSampledTexturesPerShaderStage;
+        if (limits.maxSamplersPerShaderStage != wgpu::kLimitU32Undefined)
+            maxSamplersPerShaderStage_ = limits.maxSamplersPerShaderStage;
         // Max sample count is not a single limit; cap conservatively at 4.
         maxSampleCount_ = std::min<uint32_t>(maxSampleCount_, 4u);
     }

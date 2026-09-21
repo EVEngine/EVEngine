@@ -12,12 +12,6 @@
 namespace eve::procgen::gridgraph {
 namespace {
 
-template <class T>
-Result<T> failure(std::string message) {
-    return Result<T>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move(message), {}, {}, "procgen.gridGraph"));
-}
-
 bool occupied(const Grid2D& grid, int x, int y) { return grid.getCell(x, y) != int(Semantic::Empty); }
 
 Grid2D makeGrid(const GenerateSettings& settings) {
@@ -158,7 +152,9 @@ Grid2D maze(const GenerateSettings& settings) {
 }  // namespace
 
 Result<Grid2D> generate(std::string_view operation, const GenerateSettings& settings) {
-    if (settings.width <= 0 || settings.height <= 0) return failure<Grid2D>("generator dimensions must be positive");
+    if (settings.width <= 0 || settings.height <= 0)
+        return Result<Grid2D>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "generator dimensions must be positive", {}, {}, "procgen.gridGraph"));
     Grid2D          grid = makeGrid(settings);
     std::mt19937_64 rng(settings.seed);
     if (operation == "generate.fill") {
@@ -210,7 +206,9 @@ Result<Grid2D> generate(std::string_view operation, const GenerateSettings& sett
             }
         }
     } else {
-        return failure<Grid2D>("unsupported generator: " + std::string(operation));
+        return Result<Grid2D>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                         "unsupported generator: " + std::string(operation), {}, {},
+                                                         "procgen.gridGraph"));
     }
     return Result<Grid2D>::success(std::move(grid));
 }
@@ -248,7 +246,10 @@ Result<Grid2D> select(const Grid2D& input, std::string_view operation, int mode,
                 out.setCell(point.first, point.second, input.getCell(point.first, point.second));
         }
     } else if (operation == "select.rule") {
-        if (rule.size() != 9) return failure<Grid2D>("rule must contain exactly nine characters (0/1/*)");
+        if (rule.size() != 9)
+            return Result<Grid2D>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                             "rule must contain exactly nine characters (0/1/*)", {},
+                                                             {}, "procgen.gridGraph"));
         for (const auto& point : active) {
             bool match = true;
             for (int oy = -1; oy <= 1 && match; ++oy)
@@ -283,7 +284,9 @@ Result<Grid2D> select(const Grid2D& input, std::string_view operation, int mode,
             }
         }
     } else {
-        return failure<Grid2D>("unsupported selector: " + std::string(operation));
+        return Result<Grid2D>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                         "unsupported selector: " + std::string(operation), {}, {},
+                                                         "procgen.gridGraph"));
     }
     return Result<Grid2D>::success(std::move(out));
 }
@@ -291,11 +294,15 @@ Result<Grid2D> select(const Grid2D& input, std::string_view operation, int mode,
 Result<Grid2D> findPath(const Grid2D& navigation, const Grid2D& starts, const Grid2D& targets, int semantic) {
     if (navigation.getWidth() != starts.getWidth() || navigation.getHeight() != starts.getHeight() ||
         navigation.getWidth() != targets.getWidth() || navigation.getHeight() != targets.getHeight())
-        return failure<Grid2D>("pathfinding grids must have equal dimensions");
+        return Result<Grid2D>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                         "pathfinding grids must have equal dimensions", {}, {},
+                                                         "procgen.gridGraph"));
     const auto startCells  = cells(starts);
     const auto targetCells = cells(targets);
     if (startCells.empty() || targetCells.empty())
-        return failure<Grid2D>("pathfinding requires start and target cells");
+        return Result<Grid2D>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                         "pathfinding requires start and target cells", {}, {},
+                                                         "procgen.gridGraph"));
     const int        width  = navigation.getWidth();
     const int        height = navigation.getHeight();
     std::vector<int> previous(std::size_t(width * height), -1);
@@ -326,7 +333,9 @@ Result<Grid2D> findPath(const Grid2D& navigation, const Grid2D& starts, const Gr
             }
         }
     }
-    if (destination < 0) return failure<Grid2D>("no path found");
+    if (destination < 0)
+        return Result<Grid2D>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "no path found", {}, {}, "procgen.gridGraph"));
     Grid2D out;
     out.resize(width, height);
     for (int current = destination;; current = previous[std::size_t(current)]) {

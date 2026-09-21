@@ -7,7 +7,7 @@ EVEngine 是一个以 Squirrel 脚本驱动的轻量游戏引擎，适合快速�
 
 > 当前版本为早期开发版本，API 仍在演进。最可靠的学习方式是运行并修改示例：下载的 SDK 自带 `share/eve/examples/basic/`，仓库中还有更多 `examples/` 可参考。
 
-本指南从“下载引擎”讲到“打包发布”；[EveScript 完整教程](EVESCRIPT.md)讲解脚本语法、规范和与标准 Squirrel 的区别，覆盖全部脚本模块的[模块使用手册](MODULES.md)则按功能逐章说明 API 与示例。先跑通一个示例，再按需查阅对应文档即可。
+本指南从“下载引擎”讲到“打包发布”；[EveScript 完整教程](EVESCRIPT.md)讲解脚本语法、规范和与标准 Squirrel 的区别，覆盖全部脚本模块的[模块使用手册](MODULES.md)则按功能逐章说明 API 与示例。给编程 Agent 的入口是仓库根目录 [`llms.txt`](../../llms.txt)。先跑通一个示例，再按需查阅对应文档即可。
 
 ## 1. 获取引擎：从官网下载，无需编译
 
@@ -25,6 +25,8 @@ EVEngine 是一个以 Squirrel 脚本驱动的轻量游戏引擎，适合快速�
 
 - `bin/eve(.exe)`：引擎运行时（桌面平台）；
 - `share/eve/examples/basic/`：可直接运行的参考游戏；
+- `share/eve/ai/`：本 SDK 构建的 EveScript API 目录（`eve-api.json`）与 Agent skill / MCP 桥；
+- `llms.txt`：给编程 Agent 的入口（解压后打开 SDK 目录即可被 Cursor 等读取）；
 - `platform/`：目标平台打包模板（Android APK 工程等）；
 - `share/eve/licenses/`：引擎与第三方许可文本；
 - `include/`、`lib/`、`cmake/`：原生插件开发文件（做纯脚本游戏用不到）。
@@ -127,7 +129,15 @@ my-game/
 | `eve_asset_reload(path)` | 非脚本资源变化后（可选） | 响应纹理、地图等资源变化 |
 | `eve_quit()` | 退出时（可选） | 保存数据或执行清理 |
 
-启用 `config.hotReload` 后，引擎会监视脚本和资源。需要跨热重载保存的 root 状态使用 EveScript 的 `persist` 声明：
+启用 `config.hotReload` 后，引擎会监视脚本和资源。默认监视游戏工作目录（`hot.watchTree(".")`）。
+`apps/<editor>` 这类入口需要看见父级的 `editors/`、`lib/` 时，在 `config.nut` 里设置：
+
+```squirrel
+hotReload = true
+hotReloadWatch = [".."]   // 字符串或数组；默认 ["."]
+```
+
+事件路径相对监视根报告：工作目录内仍是 `main.nut`，父级兄弟目录是 `editors/skill.vm.nut`。需要跨热重载保存的 root 状态使用 EveScript 的 `persist` 声明：
 
 ```squirrel
 persist player = null

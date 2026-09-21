@@ -23,12 +23,6 @@ constexpr std::uint32_t kZip64LocatorSignature = 0x07064b50;
 constexpr std::uint32_t kEndSignature         = 0x06054b50;
 constexpr std::uint16_t kUtf8Flag             = 0x0800;
 
-template <class T>
-Result<T> archiveFailure(DiagnosticCode code, std::string message, std::string path = {}) {
-    return Result<T>::failure(Diagnostic::error(code, std::move(message), std::move(path), {},
-                                                "asset.eva.archive"));
-}
-
 void put16(std::vector<std::uint8_t>& out, std::uint16_t value) {
     out.push_back(static_cast<std::uint8_t>(value));
     out.push_back(static_cast<std::uint8_t>(value >> 8));
@@ -187,8 +181,8 @@ Result<std::vector<std::uint8_t>> inflateRaw(std::span<const std::uint8_t> input
                                              std::uint64_t decodedSize) {
     if (input.size() > std::numeric_limits<uInt>::max() ||
         decodedSize > std::numeric_limits<uInt>::max())
-        return archiveFailure<std::vector<std::uint8_t>>(
-            DiagnosticCode::InvalidArgument, "Deflate entry exceeds decoder limits");
+        return Result<std::vector<std::uint8_t>>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "Deflate entry exceeds decoder limits", {}, {}, "asset.eva.archive"));
     std::vector<std::uint8_t> output(static_cast<std::size_t>(decodedSize));
     std::uint8_t emptyOutput = 0;
     z_stream stream{};
@@ -197,15 +191,15 @@ Result<std::vector<std::uint8_t>> inflateRaw(std::span<const std::uint8_t> input
     stream.next_out = output.empty() ? &emptyOutput : output.data();
     stream.avail_out = output.empty() ? 1u : static_cast<uInt>(output.size());
     if (inflateInit2(&stream, -MAX_WBITS) != Z_OK)
-        return archiveFailure<std::vector<std::uint8_t>>(DiagnosticCode::Failed,
-                                                         "Deflate decoder initialization failed");
+        return Result<std::vector<std::uint8_t>>::failure(Diagnostic::error(
+            DiagnosticCode::Failed, "Deflate decoder initialization failed", {}, {}, "asset.eva.archive"));
     const int status = inflate(&stream, Z_FINISH);
     const bool exact = status == Z_STREAM_END && stream.total_in == input.size() &&
                        stream.total_out == decodedSize;
     inflateEnd(&stream);
     if (!exact)
-        return archiveFailure<std::vector<std::uint8_t>>(DiagnosticCode::ParseError,
-                                                         "Deflate payload is malformed");
+        return Result<std::vector<std::uint8_t>>::failure(
+            Diagnostic::error(DiagnosticCode::ParseError, "Deflate payload is malformed", {}, {}, "asset.eva.archive"));
     return Result<std::vector<std::uint8_t>>::success(std::move(output));
 }
 
@@ -420,12 +414,13 @@ Result<std::vector<std::uint8_t>> buildEvaArchive(const EvaManifest& manifest,
     auto validatedManifest = parseEvaManifest(manifestText);
     if (!validatedManifest) return Result<std::vector<std::uint8_t>>::failure(validatedManifest.status());
     if (manifestText.size() > limits.maximumManifestBytes)
-        return archiveFailure<std::vector<std::uint8_t>>(DiagnosticCode::InvalidArgument,
-                                                         "manifest exceeds admission budget", "manifest.json");
+        return Result<std::vector<std::uint8_t>>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                                            "manifest exceeds admission budget",
+                                                                            "manifest.json", {}, "asset.eva.archive"));
     entries.push_back({"manifest.json", {manifestText.begin(), manifestText.end()}});
     if (entries.size() > limits.maximumEntries)
-        return archiveFailure<std::vector<std::uint8_t>>(DiagnosticCode::InvalidArgument,
-                                                         "archive has too many entries");
+        return Result<std::vector<std::uint8_t>>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "archive has too many entries", {}, {}, "asset.eva.archive"));
     std::sort(entries.begin(), entries.end(), [](const auto& left, const auto& right) {
         return left.path < right.path;
     });
@@ -434,23 +429,24 @@ Result<std::vector<std::uint8_t>> buildEvaArchive(const EvaManifest& manifest,
     std::set<std::string> foldedPaths;
     for (const auto& entry : entries) {
         if (!validPath(entry.path, limits))
-            return archiveFailure<std::vector<std::uint8_t>>(DiagnosticCode::InvalidArgument,
-                                                             "entry path is not canonical", entry.path);
+            return Result<std::vector<std::uint8_t>>::failure(Diagnostic::error(
+                DiagnosticCode::InvalidArgument, "entry path is not canonical", entry.path, {}, "asset.eva.archive"));
         if (entry.path == previous)
-            return archiveFailure<std::vector<std::uint8_t>>(DiagnosticCode::Conflict,
-                                                             "duplicate archive entry", entry.path);
+            return Result<std::vector<std::uint8_t>>::failure(Diagnostic::error(
+                DiagnosticCode::Conflict, "duplicate archive entry", entry.path, {}, "asset.eva.archive"));
         previous = entry.path;
         const std::string folded = unicodeCaseFold(entry.path);
         if (folded.empty())
-            return archiveFailure<std::vector<std::uint8_t>>(
-                DiagnosticCode::InvalidArgument, "entry path cannot be case-folded", entry.path);
+            return Result<std::vector<std::uint8_t>>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                                                "entry path cannot be case-folded",
+                                                                                entry.path, {}, "asset.eva.archive"));
         if (!foldedPaths.emplace(folded).second)
-            return archiveFailure<std::vector<std::uint8_t>>(DiagnosticCode::Conflict,
-                                                             "case-colliding archive entry", entry.path);
+            return Result<std::vector<std::uint8_t>>::failure(Diagnostic::error(
+                DiagnosticCode::Conflict, "case-colliding archive entry", entry.path, {}, "asset.eva.archive"));
         if (entry.bytes.size() > limits.maximumEntryBytes || entry.bytes.size() > limits.maximumDecodedBytes ||
             total > limits.maximumDecodedBytes - entry.bytes.size())
-            return archiveFailure<std::vector<std::uint8_t>>(DiagnosticCode::InvalidArgument,
-                                                             "decoded entry budget exceeded", entry.path);
+            return Result<std::vector<std::uint8_t>>::failure(Diagnostic::error(
+                DiagnosticCode::InvalidArgument, "decoded entry budget exceeded", entry.path, {}, "asset.eva.archive"));
         total += entry.bytes.size();
     }
     auto definitions = validateAssetDefinitions(validatedManifest.value(), entries, limits);
@@ -501,14 +497,15 @@ Result<std::vector<std::uint8_t>> buildEvaArchive(const EvaManifest& manifest,
     put32(out, kEndSignature); put16(out, 0); put16(out, 0); put16(out, 0xffff); put16(out, 0xffff);
     put32(out, 0xffffffff); put32(out, 0xffffffff); put16(out, 0);
     if (out.size() > limits.maximumArchiveBytes)
-        return archiveFailure<std::vector<std::uint8_t>>(DiagnosticCode::InvalidArgument,
-                                                         "encoded archive exceeds admission budget");
+        return Result<std::vector<std::uint8_t>>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "encoded archive exceeds admission budget", {}, {}, "asset.eva.archive"));
     return Result<std::vector<std::uint8_t>>::success(std::move(out));
 }
 
 Result<EvaArchive> parseEvaArchive(std::span<const std::uint8_t> bytes, const EvaArchiveLimits& limits) {
     if (bytes.size() > limits.maximumArchiveBytes || bytes.size() < 98)
-        return archiveFailure<EvaArchive>(DiagnosticCode::ParseError, "archive size is outside admission limits");
+        return Result<EvaArchive>::failure(Diagnostic::error(
+            DiagnosticCode::ParseError, "archive size is outside admission limits", {}, {}, "asset.eva.archive"));
     std::uint32_t signature = 0;
     std::uint16_t comment = 0;
     std::size_t eocd = std::numeric_limits<std::size_t>::max();
@@ -525,12 +522,14 @@ Result<EvaArchive> parseEvaArchive(std::span<const std::uint8_t> bytes, const Ev
         if (candidate == earliest) break;
     }
     if (eocd == std::numeric_limits<std::size_t>::max() || eocd < 20)
-        return archiveFailure<EvaArchive>(DiagnosticCode::ParseError, "canonical ZIP end record is missing");
+        return Result<EvaArchive>::failure(Diagnostic::error(
+            DiagnosticCode::ParseError, "canonical ZIP end record is missing", {}, {}, "asset.eva.archive"));
     const std::size_t locator = eocd - 20;
     std::uint64_t zip64Offset = 0;
     if (!get32(bytes, locator, signature) || signature != kZip64LocatorSignature ||
         !get64(bytes, locator + 8, zip64Offset) || zip64Offset > locator)
-        return archiveFailure<EvaArchive>(DiagnosticCode::ParseError, "ZIP64 locator is invalid");
+        return Result<EvaArchive>::failure(
+            Diagnostic::error(DiagnosticCode::ParseError, "ZIP64 locator is invalid", {}, {}, "asset.eva.archive"));
     std::uint64_t entryCount = 0, centralSize = 0, centralOffset = 0;
     if (!get32(bytes, static_cast<std::size_t>(zip64Offset), signature) || signature != kZip64EndSignature ||
         !get64(bytes, static_cast<std::size_t>(zip64Offset) + 32, entryCount) ||
@@ -538,7 +537,8 @@ Result<EvaArchive> parseEvaArchive(std::span<const std::uint8_t> bytes, const Ev
         !get64(bytes, static_cast<std::size_t>(zip64Offset) + 48, centralOffset) ||
         entryCount > limits.maximumEntries || centralOffset > bytes.size() ||
         centralSize > bytes.size() - centralOffset || centralOffset + centralSize != zip64Offset)
-        return archiveFailure<EvaArchive>(DiagnosticCode::ParseError, "ZIP64 central directory is invalid");
+        return Result<EvaArchive>::failure(Diagnostic::error(
+            DiagnosticCode::ParseError, "ZIP64 central directory is invalid", {}, {}, "asset.eva.archive"));
 
     std::vector<CentralRecord> records;
     std::set<std::string> names;
@@ -555,14 +555,15 @@ Result<EvaArchive> parseEvaArchive(std::span<const std::uint8_t> bytes, const Ev
             !get16(bytes, cursor + 34, disk) || !get32(bytes, cursor + 38, external) ||
             flags != kUtf8Flag || (method != 0 && method != 8) || commentSize != 0 || disk != 0 || external != 0 ||
             !rangeFits(cursor + 46, std::size_t(nameSize) + extraSize, bytes.size()))
-            return archiveFailure<EvaArchive>(DiagnosticCode::Unsupported,
-                                              "unsupported or malformed ZIP entry");
+            return Result<EvaArchive>::failure(Diagnostic::error(
+                DiagnosticCode::Unsupported, "unsupported or malformed ZIP entry", {}, {}, "asset.eva.archive"));
         std::string path(reinterpret_cast<const char*>(bytes.data() + cursor + 46), nameSize);
         const std::string folded = unicodeCaseFold(path);
         if (!validPath(path, limits) || !names.emplace(path).second || folded.empty() ||
             !foldedNames.emplace(folded).second)
-            return archiveFailure<EvaArchive>(DiagnosticCode::InvalidArgument,
-                                              "duplicate or non-canonical entry path", path);
+            return Result<EvaArchive>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                                 "duplicate or non-canonical entry path", path, {},
+                                                                 "asset.eva.archive"));
         const std::size_t extra = cursor + 46 + nameSize;
         std::uint16_t extraId = 0, zip64Size = 0;
         std::uint64_t decodedSize = 0, compressedSize = 0, localOffset = 0;
@@ -573,13 +574,15 @@ Result<EvaArchive> parseEvaArchive(std::span<const std::uint8_t> bytes, const Ev
             localOffset >= centralOffset ||
             decodedSize > limits.maximumEntryBytes || decodedSize > limits.maximumDecodedBytes ||
             decodedTotal > limits.maximumDecodedBytes - decodedSize)
-            return archiveFailure<EvaArchive>(DiagnosticCode::ParseError, "ZIP64 entry sizes are invalid", path);
+            return Result<EvaArchive>::failure(Diagnostic::error(
+                DiagnosticCode::ParseError, "ZIP64 entry sizes are invalid", path, {}, "asset.eva.archive"));
         decodedTotal += decodedSize;
         records.push_back({std::move(path), crc, decodedSize, compressedSize, localOffset, method});
         cursor += 46 + nameSize + extraSize;
     }
     if (cursor != zip64Offset)
-        return archiveFailure<EvaArchive>(DiagnosticCode::ParseError, "central directory length mismatch");
+        return Result<EvaArchive>::failure(Diagnostic::error(
+            DiagnosticCode::ParseError, "central directory length mismatch", {}, {}, "asset.eva.archive"));
 
     EvaArchive archive;
     for (const auto& record : records) {
@@ -590,7 +593,8 @@ Result<EvaArchive> parseEvaArchive(std::span<const std::uint8_t> bytes, const Ev
             !get16(bytes, local + 26, nameSize) || !get16(bytes, local + 28, extraSize) ||
             flags != kUtf8Flag || method != record.method || (method != 0 && method != 8) || extraSize != 20 ||
             !rangeFits(local + 30, std::size_t(nameSize) + extraSize, bytes.size()))
-            return archiveFailure<EvaArchive>(DiagnosticCode::ParseError, "local ZIP header is invalid", record.path);
+            return Result<EvaArchive>::failure(Diagnostic::error(
+                DiagnosticCode::ParseError, "local ZIP header is invalid", record.path, {}, "asset.eva.archive"));
         const std::string localName(reinterpret_cast<const char*>(bytes.data() + local + 30), nameSize);
         std::uint16_t extraId = 0, zip64Size = 0;
         std::uint64_t decodedSize = 0, compressedSize = 0;
@@ -599,19 +603,21 @@ Result<EvaArchive> parseEvaArchive(std::span<const std::uint8_t> bytes, const Ev
             !get16(bytes, extra + 2, zip64Size) || zip64Size != 16 ||
             !get64(bytes, extra + 4, decodedSize) || !get64(bytes, extra + 12, compressedSize) ||
             decodedSize != record.decodedSize || compressedSize != record.compressedSize)
-            return archiveFailure<EvaArchive>(DiagnosticCode::ParseError, "local and central ZIP records disagree",
-                                              record.path);
+            return Result<EvaArchive>::failure(Diagnostic::error(DiagnosticCode::ParseError,
+                                                                 "local and central ZIP records disagree", record.path,
+                                                                 {}, "asset.eva.archive"));
         const std::size_t payload = extra + extraSize;
         if (record.compressedSize > bytes.size() ||
             !rangeFits(payload, static_cast<std::size_t>(record.compressedSize), bytes.size()) ||
             payload + static_cast<std::size_t>(record.compressedSize) > centralOffset)
-            return archiveFailure<EvaArchive>(DiagnosticCode::ParseError, "entry payload is truncated", record.path);
+            return Result<EvaArchive>::failure(Diagnostic::error(
+                DiagnosticCode::ParseError, "entry payload is truncated", record.path, {}, "asset.eva.archive"));
         auto payloadBytes = bytes.subspan(payload, static_cast<std::size_t>(record.compressedSize));
         std::vector<std::uint8_t> decoded;
         if (record.method == 0) {
             if (record.compressedSize != record.decodedSize)
-                return archiveFailure<EvaArchive>(DiagnosticCode::ParseError,
-                                                  "stored entry sizes disagree", record.path);
+                return Result<EvaArchive>::failure(Diagnostic::error(
+                    DiagnosticCode::ParseError, "stored entry sizes disagree", record.path, {}, "asset.eva.archive"));
             decoded.assign(payloadBytes.begin(), payloadBytes.end());
         } else {
             auto inflated = inflateRaw(payloadBytes, record.decodedSize);
@@ -619,12 +625,13 @@ Result<EvaArchive> parseEvaArchive(std::span<const std::uint8_t> bytes, const Ev
             decoded = std::move(inflated).takeValue();
         }
         if (crcOf(decoded) != record.crc)
-            return archiveFailure<EvaArchive>(DiagnosticCode::HashMismatch, "entry CRC does not match", record.path);
+            return Result<EvaArchive>::failure(Diagnostic::error(
+                DiagnosticCode::HashMismatch, "entry CRC does not match", record.path, {}, "asset.eva.archive"));
         EvaArchiveEntry entry{record.path, std::move(decoded)};
         if (record.path == "manifest.json") {
             if (record.decodedSize > limits.maximumManifestBytes)
-                return archiveFailure<EvaArchive>(DiagnosticCode::InvalidArgument, "manifest exceeds budget",
-                                                  record.path);
+                return Result<EvaArchive>::failure(Diagnostic::error(
+                    DiagnosticCode::InvalidArgument, "manifest exceeds budget", record.path, {}, "asset.eva.archive"));
             std::string json(entry.bytes.begin(), entry.bytes.end());
             auto manifest = parseEvaManifest(json);
             if (!manifest) return Result<EvaArchive>::failure(manifest.status());
@@ -634,7 +641,8 @@ Result<EvaArchive> parseEvaArchive(std::span<const std::uint8_t> bytes, const Ev
         }
     }
     if (!names.contains("manifest.json"))
-        return archiveFailure<EvaArchive>(DiagnosticCode::ParseError, "root manifest.json is required");
+        return Result<EvaArchive>::failure(Diagnostic::error(
+            DiagnosticCode::ParseError, "root manifest.json is required", {}, {}, "asset.eva.archive"));
     std::sort(archive.entries.begin(), archive.entries.end(), [](const auto& left, const auto& right) {
         return left.path < right.path;
     });

@@ -19,6 +19,20 @@ namespace {
 
 [[nodiscard]] std::int32_t layerIndex(std::int32_t feature) noexcept { return clampInt(feature, 0, 2); }
 
+/**
+ * @brief `value + delta` with saturation instead of signed overflow.
+ *
+ * `delta` reaches this file from script bindings, so `elevation(c) + delta` used to
+ * overflow int32 for a large delta - undefined behaviour that, with the wrap both
+ * compilers emit here, turned a "raise this cell" brush into a lowering one.
+ */
+[[nodiscard]] std::int32_t saturatingAdd(std::int32_t value, std::int32_t delta) noexcept {
+    const std::int64_t sum = static_cast<std::int64_t>(value) + static_cast<std::int64_t>(delta);
+    if (sum < std::numeric_limits<std::int32_t>::min()) return std::numeric_limits<std::int32_t>::min();
+    if (sum > std::numeric_limits<std::int32_t>::max()) return std::numeric_limits<std::int32_t>::max();
+    return static_cast<std::int32_t>(sum);
+}
+
 }  // namespace
 
 // --- construction -----------------------------------------------------------
@@ -213,15 +227,36 @@ Result<HexCoordinates> HexMap::pickCell(HexVec3 rayOrigin, HexVec3 rayDirection)
         return Result<HexCoordinates>::failure(
             Diagnostic::error(DiagnosticCode::NotFound, "ray misses the hex map bounds", "hexmap.pick"));
 
+    // The march only has to cover the span in which the ray can still meet a surface:
+    // the box entry/exit clipped by the vertical band every cell lies in. A fixed step
+    // budget (this used to be 512 steps of 1.5 world units, i.e. 768 units past the box
+    // entry) silently reported NotFound for hits further along the ray - reachable on a
+    // large grid or with a long grazing ray. Deriving the count from the clipped span
+    // keeps the worst case bounded by the box itself, because a normalised direction
+    // always has at least one component large enough to leave the box in finite time.
+    float marchStart = tEnter;
+    float marchEnd   = tExit;
+    if (std::fabs(direction[1]) >= 1e-8f) {
+        const float invY = 1.f / direction[1];
+        float       t0   = (boxLow[1] - origin[1]) * invY;
+        float       t1   = (boxHigh[1] - origin[1]) * invY;
+        if (t0 > t1) std::swap(t0, t1);
+        marchStart = std::max(marchStart, t0);
+        marchEnd   = std::min(marchEnd, t1);
+    }
+    if (marchEnd < marchStart)
+        return Result<HexCoordinates>::failure(
+            Diagnostic::error(DiagnosticCode::NotFound, "ray never reached the hex surface", "hexmap.pick"));
+
     const float    step         = HexMetrics::kElevationStep * 0.5f;
-    const float    maxRayLength = tExit;
-    const int      maxSteps     = 512;
-    float          previousT    = tEnter;
+    const float    maxRayLength = marchEnd;
+    const int      maxSteps     = static_cast<int>((marchEnd - marchStart) / step) + 2;
+    float          previousT    = marchStart;
     HexCoordinates previousCoordinates{};
     bool           havePrevious = false;
 
     for (int i = 0; i <= maxSteps; ++i) {
-        const float          t = std::min(tEnter + static_cast<float>(i) * step, maxRayLength);
+        const float          t = std::min(marchStart + static_cast<float>(i) * step, maxRayLength);
         const HexVec3        point{rayOrigin.x + rayDirection.x * t, rayOrigin.y + rayDirection.y * t,
                                    rayOrigin.z + rayDirection.z * t};
         const HexCoordinates coordinates = HexCoordinates::fromWorldPosition(point);
@@ -229,9 +264,14 @@ Result<HexCoordinates> HexMap::pickCell(HexVec3 rayOrigin, HexVec3 rayDirection)
             const float surfaceY = cellPosition(coordinates).y;
             if (point.y <= surfaceY) {
                 // Bisect between the last sample above the surface and this one.
-                float          lo   = havePrevious ? previousT : tEnter;
-                float          hi   = t;
-                HexCoordinates best = contains(previousCoordinates) ? previousCoordinates : coordinates;
+                float lo = havePrevious ? previousT : marchStart;
+                float hi = t;
+                // Seed with the sample that actually hit: the previous in-grid sample
+                // when the ray entered from above, otherwise this one. Seeding from
+                // `previousCoordinates` unconditionally would fall back to its default
+                // (0, 0), which `contains` accepts on every non-empty map, so a ray
+                // that first meets the surface already inside the grid returned (0, 0).
+                HexCoordinates best = havePrevious ? previousCoordinates : coordinates;
                 for (int iteration = 0; iteration < 8; ++iteration) {
                     const float          mid = (lo + hi) * 0.5f;
                     const HexVec3        sample{rayOrigin.x + rayDirection.x * mid, rayOrigin.y + rayDirection.y * mid,
@@ -394,7 +434,9 @@ Result<void> HexMap::setTerrainType(HexCoordinates c, std::int32_t value) {
     HexCellData* data = mutableCell(c);
     if (!data) return invalidArgument("cell is outside the hex map");
     data->values = data->values.withTerrainType(clampTerrainType(value));
-    ++ ++revision_;
+    // Terrain type is baked into the terrain mesh's vertex encoding, so the chunk
+    // must be rebuilt just like any other authoring write.
+    refreshCellDependents(c);
     return Result<void>::success();
 }
 
@@ -444,9 +486,11 @@ Result<void> HexMap::setExplored(HexCoordinates c, bool explored) {
     HexCellData* data = mutableCell(c);
     if (!data) return invalidArgument("cell is outside the hex map");
     data->flags = data->flags.withExplored(explored);
-    // Fog state changes do not alter geometry, so the chunks stay clean: only the
-    // revision is bumped so a renderer can tell that the visible set changed.
-    ++revision_;
+    // The fog overlay *is* geometry derived from this latch: `buildFogMesh` emits a
+    // column shaded 1 while the cell is unexplored, 0 once it is explored but unseen,
+    // and nothing at all while it is visible. Flipping the latch therefore changes the
+    // chunk mesh, which is why `HexVisibility::increase` dirties the chunk itself.
+    refreshCellDependents(c);
     return Result<void>::success();
 }
 
@@ -454,7 +498,10 @@ Result<void> HexMap::setExplorable(HexCoordinates c, bool explorable) {
     HexCellData* data = mutableCell(c);
     if (!data) return invalidArgument("cell is outside the hex map");
     data->flags = data->flags.withExplorable(explorable);
-    ++revision_;
+    // Not rendered on its own, but it gates every later visibility sweep, so keep the
+    // documented "every mutation dirties its chunk" invariant unconditional rather
+    // than leave a fact that a future fog rule could read without a rebuild.
+    refreshCellDependents(c);
     return Result<void>::success();
 }
 
@@ -578,12 +625,21 @@ void HexMap::collectBrush(HexCoordinates center, std::int32_t radius, std::vecto
     out.clear();
     if (!contains(center) || radius < 0) return;
     // The brush reaches `radius` steps, so its offset-space footprint is at most
-    // `2 * radius` columns wide and `radius` rows tall.
+    // `2 * radius` columns wide and `radius` rows tall. A radius past the grid
+    // diameter already covers everything, and clamping it here keeps the `2 * radius`
+    // footprint (and the loop trip count) inside int32 for script-supplied radii.
+    const std::int64_t diameter     = static_cast<std::int64_t>(cellCountX_) + static_cast<std::int64_t>(cellCountZ_);
+    const std::int64_t reach        = std::min<std::int64_t>(static_cast<std::int64_t>(radius), diameter);
+    const std::int64_t spread       = reach * 2;
     const std::int32_t centerColumn = center.offsetX();
-    const std::int32_t minColumn    = std::max(0, centerColumn - radius * 2);
-    const std::int32_t maxColumn    = std::min(cellCountX_ - 1, centerColumn + radius * 2);
-    const std::int32_t minZ         = std::max(0, center.z - radius);
-    const std::int32_t maxZ         = std::min(cellCountZ_ - 1, center.z + radius);
+    const std::int32_t minColumn =
+        static_cast<std::int32_t>(std::max<std::int64_t>(0, static_cast<std::int64_t>(centerColumn) - spread));
+    const std::int32_t maxColumn = static_cast<std::int32_t>(
+        std::min<std::int64_t>(cellCountX_ - 1, static_cast<std::int64_t>(centerColumn) + spread));
+    const std::int32_t minZ =
+        static_cast<std::int32_t>(std::max<std::int64_t>(0, static_cast<std::int64_t>(center.z) - reach));
+    const std::int32_t maxZ =
+        static_cast<std::int32_t>(std::min<std::int64_t>(cellCountZ_ - 1, static_cast<std::int64_t>(center.z) + reach));
     for (std::int32_t z = minZ; z <= maxZ; ++z) {
         for (std::int32_t column = minColumn; column <= maxColumn; ++column) {
             const HexCoordinates candidate = HexCoordinates::fromOffset(column, z);
@@ -599,7 +655,7 @@ Result<void> HexMap::editElevation(HexCoordinates center, std::int32_t radius, s
     collectBrush(center, radius, cells);
     for (std::int32_t index : cells) {
         const HexCoordinates coordinates = coordinatesAt(index);
-        const std::int32_t   next        = elevation(coordinates) + delta;
+        const std::int32_t   next        = saturatingAdd(elevation(coordinates), delta);
         setElevation(coordinates, next).ignore("brush elevation edit clamps per cell");
     }
     return Result<void>::success();
@@ -612,7 +668,8 @@ Result<void> HexMap::editWaterLevel(HexCoordinates center, std::int32_t radius, 
     collectBrush(center, radius, cells);
     for (std::int32_t index : cells) {
         const HexCoordinates coordinates = coordinatesAt(index);
-        setWaterLevel(coordinates, waterLevel(coordinates) + delta).ignore("brush water edit clamps per cell");
+        setWaterLevel(coordinates, saturatingAdd(waterLevel(coordinates), delta))
+            .ignore("brush water edit clamps per cell");
     }
     return Result<void>::success();
 }
@@ -644,7 +701,7 @@ Result<void> HexMap::editFeatureLevel(HexCoordinates center, std::int32_t radius
         const std::int32_t current = layer == 0   ? data->values.urbanLevel()
                                      : layer == 1 ? data->values.farmLevel()
                                                   : data->values.plantLevel();
-        const std::int32_t next    = clampInt(current + delta, 0, 3);
+        const std::int32_t next    = clampInt(saturatingAdd(current, delta), 0, 3);
         if (layer == 0)
             setUrbanLevel(coordinates, next).ignore("brush urban edit clamps per cell");
         else if (layer == 1)

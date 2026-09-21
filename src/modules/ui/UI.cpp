@@ -27,6 +27,8 @@
 
 #include "common/Capability.h"
 #include "common/Module.h"
+#include "common/Json.h"
+#include "common/Value.h"
 #include "common/SquirrelBinding.h"
 #include "common/SquirrelOwnership.h"
 #include "common/config.h"
@@ -50,11 +52,30 @@
 #include <chrono>
 #include <cstdio>
 #include <cstring>
+#include <iterator>
 #include <sstream>
 #include <stdexcept>
 
 namespace eve::ui {
 namespace {
+
+std::string jsonQuoted(const std::string &value) {
+    std::string out = "\"";
+    for (const unsigned char ch : value) {
+        switch (ch) {
+        case '\"': out += "\\\""; break;
+        case '\\': out += "\\\\"; break;
+        case '\n': out += "\\n"; break;
+        case '\r': out += "\\r"; break;
+        case '\t': out += "\\t"; break;
+        default:
+            if (ch >= 0x20) out += static_cast<char>(ch);
+            break;
+        }
+    }
+    out += '\"';
+    return out;
+}
 
 /** Call a registered script handler with the event's payload. */
 void callScriptHandler(ssq::Function &fn, const std::string &kind, const UIEvent &ev) {
@@ -89,6 +110,29 @@ WidgetDesc descFromJson(const Poco::JSON::Object &o);
 
 /** Script base: `class X extends eve.UIComponent { function build() { ... } }`. */
 const char *kUIComponentScript = R"SQ(
+if (!("_uiComponents" in eve)) eve._uiComponents <- []
+if (!("_nextUIComponentOwner" in eve)) eve._nextUIComponentOwner <- 0
+
+eve._scheduleUIComponent <- function(component) {
+    if (component == null || component._scheduled) return
+    component._scheduled = true
+    eve._uiComponents.append(component)
+}
+
+eve._flushUIComponents <- function() {
+    local pending = eve._uiComponents
+    eve._uiComponents = []
+    foreach (component in pending) {
+        component._scheduled = false
+        if (component._mounted && component._parent == null && component.dirty)
+            component.updateIfDirty()
+    }
+}
+
+::eve_ui_flush_components <- function() {
+    eve._flushUIComponents()
+}
+
 eve.UIComponent <- class {
     hostName = ""
     dirty = true
@@ -98,6 +142,12 @@ eve.UIComponent <- class {
     _ui = null
     _parent = null
     _mounted = false
+    _scheduled = false
+    _children = null
+    _nextChildren = null
+    _keyedChildren = null
+    _eventBindings = null
+    _eventOwner = 0
 
     constructor(uiInstance = null, initialProps = null) {
         _ui = uiInstance
@@ -108,16 +158,27 @@ eve.UIComponent <- class {
         state = {}
         _parent = null
         _mounted = false
+        _scheduled = false
+        _children = []
+        _nextChildren = []
+        _keyedChildren = {}
+        _eventBindings = []
+        eve._nextUIComponentOwner += 1
+        _eventOwner = eve._nextUIComponentOwner
     }
 
     function setUI(uiInstance) { _ui = uiInstance; return this }
 
-    function setProps(nextProps, replace = false) {
+    function _applyProps(nextProps, replace, notify) {
         if (nextProps == null) return this
         if (replace) props = {}
         foreach (key, value in nextProps) props.rawset(key, value)
-        markDirty()
+        if (notify) markDirty()
         return this
+    }
+
+    function setProps(nextProps, replace = false) {
+        return _applyProps(nextProps, replace, true)
     }
 
     function mountAs(name) {
@@ -138,24 +199,132 @@ eve.UIComponent <- class {
     function markDirty() {
         dirty = true
         if (_parent != null && _parent != this) _parent.markDirty()
+        else if (_mounted) eve._scheduleUIComponent(this)
         return this
     }
 
     // Compose a persistent child instance inside this component's active build pass.
-    function renderChild(component, nextProps = null) {
+    function renderChild(component, nextProps = null, replaceProps = false) {
         if (component == null) return null
         component._parent = this
         component.setUI(ui())
-        if (nextProps != null) component.props = nextProps
+        component._applyProps(nextProps, replaceProps, false)
+        _nextChildren.append(component)
+        local firstMount = !component._mounted
+        component._nextChildren = []
         component.build()
+        component._finishChildPass()
         component.dirty = false
+        component._mounted = true
+        if (firstMount) component.onMount()
+        else component.onUpdated()
         return component
+    }
+
+    // Reuse a child component by a stable key. factory is called only for a new key.
+    function renderKeyed(key, factory, nextProps = null, replaceProps = false) {
+        if (key == null) throw "UIComponent renderKeyed requires a key"
+        local component = null
+        if (key in _keyedChildren) component = _keyedChildren[key]
+        else {
+            component = factory()
+            if (component == null) throw "UIComponent renderKeyed factory returned null"
+            _keyedChildren.rawset(key, component)
+        }
+        return renderChild(component, nextProps, replaceProps)
+    }
+
+    function _bindEvent(kind, id, fn) {
+        if (id == null || id == "" || fn == null) return this
+        foreach (binding in _eventBindings) {
+            if (binding.kind == kind && binding.id == id) {
+                binding.fn = fn
+                if (_mounted) _syncEventHandlers()
+                return this
+            }
+        }
+        _eventBindings.append({ kind = kind, id = id, fn = fn })
+        if (_mounted) _syncEventHandlers()
+        return this
+    }
+
+    function bindClick(id, fn) { return _bindEvent("click", id, fn) }
+    function bindChange(id, fn) { return _bindEvent("change", id, fn) }
+
+    function clearEventBindings() {
+        _eventBindings = []
+        ui().componentClearHandlers(_eventOwner)
+        return this
+    }
+
+    function _rootComponent() {
+        local root = this
+        while (root._parent != null && root._parent != root) root = root._parent
+        return root
+    }
+
+    function _syncEventHandlers() {
+        local u = ui()
+        u.componentClearHandlers(_eventOwner)
+        local root = _rootComponent()
+        if (root.hostName == "" || !u.select(root.hostName)) return
+        foreach (binding in _eventBindings) {
+            if (binding.kind == "click") u.componentOnClick(_eventOwner, binding.id, binding.fn)
+            else u.componentOnChange(_eventOwner, binding.id, binding.fn)
+        }
+    }
+
+    function _syncEventTree() {
+        _syncEventHandlers()
+        foreach (child in _children) child._syncEventTree()
+    }
+
+    function _containsChild(items, child) {
+        foreach (candidate in items) {
+            if (candidate == child) return true
+        }
+        return false
+    }
+
+    function _finishChildPass() {
+        foreach (child in _children) {
+            if (!_containsChild(_nextChildren, child)) child._unmountTree()
+        }
+        local staleKeys = []
+        foreach (key, child in _keyedChildren) {
+            if (!_containsChild(_nextChildren, child)) staleKeys.append(key)
+        }
+        foreach (key in staleKeys) delete _keyedChildren[key]
+        _children = _nextChildren
+        _nextChildren = []
+    }
+
+    function _unmountTree() {
+        if (!_mounted) return false
+        foreach (child in _children) child._unmountTree()
+        _children = []
+        _nextChildren = []
+        _mounted = false
+        _scheduled = false
+        dirty = false
+        ui().componentClearHandlers(_eventOwner)
+        onUnmount()
+        _parent = null
+        return true
+    }
+
+    function unmount() {
+        if (!_unmountTree()) return false
+        local u = ui()
+        if (hostName != "" && u.select(hostName)) u.setHostVisible(false)
+        return true
     }
 
     // Override in subclass: call this.ui().beginWindow / text / button / end ...
     function build() {}
     function onMount() {}
     function onUpdated() {}
+    function onUnmount() {}
 
     function ui() {
         if (_ui != null) return _ui
@@ -170,20 +339,26 @@ eve.UIComponent <- class {
         if (!dirty) return false
         local firstMount = !_mounted
         local u = ui()
+        _scheduled = false
+        dirty = false
+        _nextChildren = []
         u.beginBuild()
         build()
+        _finishChildPass()
         local name = hostName
         if (name == null || name == "") name = "default"
+        hostName = name
         if (forceFull) {
-            u.mountBuildAs(name)
+            if (!u.mountBuildAs(name)) throw "UIComponent mount failed: " + name
             forceFull = false
         } else {
-            u.remountBuildAs(name)
+            if (!u.remountBuildAs(name)) throw "UIComponent remount failed: " + name
         }
-        dirty = false
         _mounted = true
+        u.setHostVisible(true)
         if (firstMount) onMount()
         else onUpdated()
+        _syncEventTree()
         return true
     }
 
@@ -286,7 +461,7 @@ void UI::beginFrameAndRender() {
 }
 
 void UI::updateHostTweens() {
-    if (hostTweens_.empty()) return;
+    if (hostTweens_.empty() && itemTweens_.empty()) return;
     const double now =
         std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now().time_since_epoch())
             .count();
@@ -311,6 +486,28 @@ void UI::updateHostTweens() {
     hostTweens_.erase(std::remove_if(hostTweens_.begin(), hostTweens_.end(),
                                      [](const HostTween &t) { return !UIHost::resolve(t.host).has_value(); }),
                       hostTweens_.end());
+    for (auto &t : itemTweens_) {
+        auto host = UIHost::resolve(t.host);
+        if (!host) continue;
+        auto node = host->get().findById(t.nodeId);
+        if (!node) {
+            t.host = {};
+            continue;
+        }
+        const double elapsed = now - t.startMs;
+        if (t.durationMs <= 0.0 || elapsed >= t.durationMs) {
+            node->get().opacity = t.to;
+            t.host = {};
+            continue;
+        }
+        const float k = float(elapsed / t.durationMs);
+        const float ease = k * k * (3.f - 2.f * k);
+        node->get().opacity = t.from + (t.to - t.from) * ease;
+    }
+    itemTweens_.erase(
+        std::remove_if(itemTweens_.begin(), itemTweens_.end(),
+                       [](const ItemTween &t) { return !UIHost::resolve(t.host).has_value(); }),
+        itemTweens_.end());
 }
 
 void UI::dispatchEvents() {
@@ -349,6 +546,28 @@ void UI::onChange(const std::string &id, ssq::Function fn) {
     for (const char *kind : {"toggle", "value", "text"}) {
         scriptHandlers_.push_back(ScriptHandler(host->get().getName(), id, kind, fn));
     }
+}
+
+void UI::componentOnClick(uint64_t owner, const std::string &id, ssq::Function fn) {
+    auto host = resolveSelected();
+    if (!host || owner == 0 || id.empty()) return;
+    scriptHandlers_.push_back(
+        ScriptHandler(host->get().getName(), id, "click", std::move(fn), owner));
+}
+
+void UI::componentOnChange(uint64_t owner, const std::string &id, ssq::Function fn) {
+    auto host = resolveSelected();
+    if (!host || owner == 0 || id.empty()) return;
+    for (const char *kind : {"toggle", "value", "text"}) {
+        scriptHandlers_.push_back(ScriptHandler(host->get().getName(), id, kind, fn, owner));
+    }
+}
+
+void UI::componentClearHandlers(uint64_t owner) {
+    if (owner == 0) return;
+    std::erase_if(scriptHandlers_, [owner](const ScriptHandler &handler) {
+        return handler.owner == owner;
+    });
 }
 
 bool UI::wantCaptureMouse() const {
@@ -537,6 +756,13 @@ FlexJustify parseFlexJustify(const std::string &justify) {
     return FlexJustify::Start;
 }
 
+OverflowMode parseOverflowMode(const std::string &overflow) {
+    const std::string value = toLowerCopy(overflow);
+    if (value == "clip" || value == "hidden") return OverflowMode::Clip;
+    if (value == "scroll" || value == "auto") return OverflowMode::Scroll;
+    return OverflowMode::Visible;
+}
+
 FocusMode parseFocusMode(const std::string &mode) {
     const std::string value = toLowerCopy(mode);
     if (value == "none") return FocusMode::None;
@@ -600,6 +826,13 @@ void UI::beginFlex(const std::string &direction, const std::string &id, float ga
 void UI::beginRow(const std::string &id, float gap) { beginFlex("row", id, gap); }
 
 void UI::beginColumn(const std::string &id, float gap) { beginFlex("column", id, gap); }
+
+void UI::beginGrid(int columns, const std::string &id, float columnGap, float rowGap) {
+    WidgetDesc d = grid(columns, {}, id);
+    d.columnGap = columnGap;
+    d.rowGap = rowGap;
+    pushOpen(std::move(d));
+}
 
 void UI::beginSplitPane(const std::string &direction, float ratio, const std::string &id) {
     WidgetDesc d;
@@ -752,6 +985,32 @@ void UI::setItemFlexGrow(float grow) {
     parent.children.back().flexGrow = grow;
 }
 
+void UI::setItemFlexShrink(float shrink) {
+    WidgetDesc &parent = currentParent();
+    if (!parent.children.empty()) parent.children.back().flexShrink = std::max(0.f, shrink);
+}
+
+void UI::setItemFlexBasis(float basis) {
+    WidgetDesc &parent = currentParent();
+    if (!parent.children.empty()) parent.children.back().flexBasis = basis;
+}
+
+void UI::setItemAlignSelf(const std::string &align) {
+    WidgetDesc &parent = currentParent();
+    if (parent.children.empty()) return;
+    parent.children.back().alignSelf = align == "inherit" ? -1 : int(parseFlexAlign(align));
+}
+
+void UI::setItemAspectRatio(float ratio) {
+    WidgetDesc &parent = currentParent();
+    if (!parent.children.empty()) parent.children.back().aspectRatio = std::max(0.f, ratio);
+}
+
+void UI::setItemGridColumnSpan(int span) {
+    WidgetDesc &parent = currentParent();
+    if (!parent.children.empty()) parent.children.back().gridColumnSpan = std::max(1, span);
+}
+
 void UI::setItemSize(float width, float height) {
     WidgetDesc &parent = currentParent();
     if (parent.children.empty()) return;
@@ -860,6 +1119,13 @@ void UI::setThemeScope(const std::string &theme) {
     currentParent().themePreset = parseThemePreset(theme);
 }
 
+void UI::setItemStyleClass(const std::string &name) {
+    WidgetDesc &parent = currentParent();
+    if (!parent.children.empty()) parent.children.back().styleClass = name;
+}
+
+void UI::setStyleScope(const std::string &name) { currentParent().styleClass = name; }
+
 void UI::setItemTabIndex(int index) {
     WidgetDesc &parent = currentParent();
     if (!parent.children.empty()) parent.children.back().tabIndex = index;
@@ -901,6 +1167,25 @@ void UI::setFlexJustify(const std::string &justify) {
     WidgetDesc &parent = currentParent();
     if (parent.type != NodeType::Flex) return;
     parent.justifyContent = parseFlexJustify(justify);
+}
+
+void UI::setLayoutGaps(float columnGap, float rowGap) {
+    WidgetDesc &parent = currentParent();
+    if (parent.type != NodeType::Flex && parent.type != NodeType::Grid) return;
+    parent.columnGap = columnGap;
+    parent.rowGap = rowGap;
+}
+
+void UI::setFlexWrap(bool wrap) {
+    WidgetDesc &parent = currentParent();
+    if (parent.type == NodeType::Flex)
+        parent.flexWrap = wrap ? FlexWrap::Wrap : FlexWrap::NoWrap;
+}
+
+void UI::setLayoutOverflow(const std::string &overflow) {
+    WidgetDesc &parent = currentParent();
+    if (parent.type == NodeType::Flex || parent.type == NodeType::Grid)
+        parent.overflow = parseOverflowMode(overflow);
 }
 
 void UI::addListItem(const std::string &label, const std::string &id) {
@@ -1367,6 +1652,49 @@ bool UI::setTheme(const std::string &name) { return setThemeByName(name); }
 
 std::string UI::getTheme() const { return globalThemeName(); }
 
+std::string UI::defineStyleClass(const std::string &name, const std::string &parent) {
+    return styleClassStatusName(eve::ui::defineStyleClass(name, parent));
+}
+
+void UI::animateItemOpacity(const std::string &id, float opacity, float durationMs) {
+    auto host = resolveSelected();
+    if (!host) return;
+    auto node = host->get().findById(id);
+    if (!node) return;
+    itemTweens_.erase(std::remove_if(itemTweens_.begin(), itemTweens_.end(),
+                                    [&](const ItemTween &t) {
+                                        return t.host.table == selected_.table &&
+                                               t.host.type == selected_.type &&
+                                               t.host.id == selected_.id &&
+                                               t.host.generation == selected_.generation &&
+                                               t.nodeId == id;
+                                    }),
+                      itemTweens_.end());
+    ItemTween tween;
+    tween.host = selected_;
+    tween.nodeId = id;
+    tween.from = node->get().opacity;
+    tween.to = std::clamp(opacity, 0.f, 1.f);
+    tween.startMs =
+        std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now().time_since_epoch())
+            .count();
+    tween.durationMs = std::max(0.0, double(durationMs));
+    if (tween.durationMs <= 0.0) node->get().opacity = tween.to;
+    else itemTweens_.push_back(std::move(tween));
+}
+
+std::string UI::setStyleClassColor(const std::string &name, const std::string &property, float r,
+                                   float g, float b, float a) {
+    return styleClassStatusName(eve::ui::setStyleClassColor(name, property, r, g, b, a));
+}
+
+std::string UI::setStyleClassMetric(const std::string &name, const std::string &property, float x,
+                                    float y) {
+    return styleClassStatusName(eve::ui::setStyleClassMetric(name, property, x, y));
+}
+
+void UI::clearStyleClasses() { eve::ui::clearStyleClasses(); }
+
 void UI::setNavKeyboard(bool enabled) {
     globalTheme().navEnableKeyboard = enabled;
 }
@@ -1395,12 +1723,54 @@ std::string UI::getStats() const {
     return buf;
 }
 
+std::string UI::getLayoutDiagnostics() const {
+    auto host = resolveSelected();
+    if (!host) return "{\"nodes\":[]}";
+    std::ostringstream out;
+    out << "{\"host\":" << jsonQuoted(host->get().getName()) << ",\"nodes\":[";
+    bool first = true;
+    for (const UINode &node : host->get().tree()->nodes) {
+        if (!first) out << ',';
+        first = false;
+        out << "{\"id\":" << jsonQuoted(node.id) << ",\"width\":" << node.measuredW
+            << ",\"height\":" << node.measuredH << ",\"overflowX\":"
+            << node.layoutOverflowX << ",\"overflowY\":" << node.layoutOverflowY << '}';
+    }
+    out << "]}";
+    return out.str();
+}
+
+std::string UI::getAccessibilitySnapshot() const {
+    auto host = resolveSelected();
+    if (!host) return "{\"nodes\":[]}";
+    std::ostringstream out;
+    out << "{\"host\":" << jsonQuoted(host->get().getName()) << ",\"nodes\":[";
+    bool first = true;
+    for (const UINode &node : host->get().tree()->nodes) {
+        if (node.accessibilityRole == AccessibilityRole::Auto &&
+            node.accessibilityName.empty())
+            continue;
+        if (!first) out << ',';
+        first = false;
+        out << "{\"id\":" << jsonQuoted(node.id) << ",\"role\":"
+            << static_cast<int>(node.accessibilityRole) << ",\"name\":"
+            << jsonQuoted(node.accessibilityName) << ",\"description\":"
+            << jsonQuoted(node.accessibilityDescription) << ",\"enabled\":"
+            << (node.enabled ? "true" : "false") << ",\"focused\":"
+            << (node.focused ? "true" : "false") << '}';
+    }
+    out << "]}";
+    return out.str();
+}
+
 #if !(defined(EVENGINE_WEBGPU) && defined(__EMSCRIPTEN__))
 std::string UI::saveTreeJson() const {
     auto host = resolveSelected();
     if (!host) return "{}";
     auto               t = host->get().tree();
     Poco::JSON::Object root;
+    root.set("schema", "eve.ui.tree");
+    root.set("version", 4);
     root.set("host", host->get().getName());
     if (t->root >= 0) nodeToJson(*t, t->nodes[size_t(t->root)], root);
     std::ostringstream oss;
@@ -1416,6 +1786,10 @@ bool UI::loadTreeJson(const std::string &json) {
         const Poco::Dynamic::Var result = parser.parse(json);
         const Poco::JSON::Object::Ptr obj = result.extract<Poco::JSON::Object::Ptr>();
         if (!obj) return false;
+        if (obj->has("schema") && obj->getValue<std::string>("schema") != "eve.ui.tree")
+            return false;
+        const int version = obj->optValue<int>("version", 1);
+        if (version < 1 || version > 4) return false;
         WidgetDesc root = descFromJson(*obj);
         host->get().setTree(std::move(root));
         return true;
@@ -1424,9 +1798,133 @@ bool UI::loadTreeJson(const std::string &json) {
     }
 }
 #else
-// The Emscripten/WebGPU runtime trims Poco; keep the API but no-op.
-std::string UI::saveTreeJson() const { return "{}"; }
-bool UI::loadTreeJson(const std::string &) { return false; }
+// WebGPU trims Poco. Use EVCommon's owning Value/JSON path so UI assets retain
+// their portable core rather than degrading to a silent no-op.
+std::string UI::saveTreeJson() const {
+    auto host = resolveSelected();
+    if (!host) return "{}";
+    static const char *types[] = {
+        "window", "text", "button", "sameLine", "group", "separator", "checkbox",
+        "slider", "progress", "inputText", "collapsingHeader", "child", "flex", "spacer",
+        "image", "imageButton", "combo", "scrollList", "viewport", "searchField", "switch",
+        "badge", "card", "sectionHeader", "menuBar", "menu", "menuItem", "toolbar", "toolbox",
+        "sidebar", "statusBar", "splitPane", "ninePatchPanel", "colorPalette", "grid"};
+    const auto tree = host->get().tree();
+    std::function<eve::Value(int)> encode = [&](int index) -> eve::Value {
+        const UINode &n = tree->nodes[size_t(index)];
+        eve::Value node = eve::Value::object({});
+        const int typeIndex = static_cast<int>(n.type);
+        node.set("type", typeIndex >= 0 && typeIndex < int(std::size(types)) ? types[typeIndex]
+                                                                            : "text");
+        if (!n.id.empty()) node.set("id", n.id);
+        if (!n.key.empty()) node.set("key", n.key);
+        if (!n.text.empty()) node.set("text", n.text);
+        if (!n.valueText.empty()) node.set("valueText", n.valueText);
+        if (!n.tooltip.empty()) node.set("tooltip", n.tooltip);
+        if (!n.styleClass.empty()) node.set("styleClass", n.styleClass);
+        node.set("visible", n.visible);
+        node.set("enabled", n.enabled);
+        node.set("checked", n.checked);
+        node.set("value", n.value);
+        node.set("minValue", n.minValue);
+        node.set("maxValue", n.maxValue);
+        node.set("sizeX", n.sizeX);
+        node.set("sizeY", n.sizeY);
+        node.set("flexDirection", n.flexDirection == FlexDirection::Column ? "column" : "row");
+        node.set("alignItems", int(n.alignItems));
+        node.set("justifyContent", int(n.justifyContent));
+        node.set("gap", n.gap);
+        node.set("columnGap", n.columnGap);
+        node.set("rowGap", n.rowGap);
+        node.set("flexGrow", n.flexGrow);
+        node.set("flexShrink", n.flexShrink);
+        node.set("flexBasis", n.flexBasis);
+        node.set("alignSelf", n.alignSelf);
+        node.set("aspectRatio", n.aspectRatio);
+        node.set("flexWrap", n.flexWrap == FlexWrap::Wrap ? "wrap" : "nowrap");
+        node.set("overflow", int(n.overflow));
+        node.set("gridColumns", n.gridColumns);
+        node.set("gridColumnSpan", n.gridColumnSpan);
+        node.set("accessibilityRole", int(n.accessibilityRole));
+        node.set("accessibilityName", n.accessibilityName);
+        node.set("accessibilityDescription", n.accessibilityDescription);
+        eve::Value children = eve::Value::array({});
+        for (int child = n.firstChild; child >= 0;
+             child = tree->nodes[size_t(child)].nextSibling)
+            children.pushBack(encode(child));
+        node.set("children", std::move(children));
+        return node;
+    };
+    eve::Value root = tree->root >= 0 ? encode(tree->root) : eve::Value::object({});
+    root.set("schema", "eve.ui.tree");
+    root.set("version", 4);
+    root.set("host", host->get().getName());
+    auto encoded = eve::json::stringify(root);
+    return encoded.ok() ? std::move(encoded).takeValue() : "{}";
+}
+
+bool UI::loadTreeJson(const std::string &text) {
+    auto host = resolveSelected();
+    if (!host || text.empty()) return false;
+    std::string error;
+    const eve::json::Document document = eve::json::Document::parse(text, &error);
+    const eve::json::Value root = document.root();
+    if (!document.valid() || !root.isObject()) return false;
+    if (root.has("schema") && root.getString("schema") != "eve.ui.tree") return false;
+    const int version = root.getInt("version", 1);
+    if (version < 1 || version > 4) return false;
+    static const char *types[] = {
+        "window", "text", "button", "sameLine", "group", "separator", "checkbox",
+        "slider", "progress", "inputText", "collapsingHeader", "child", "flex", "spacer",
+        "image", "imageButton", "combo", "scrollList", "viewport", "searchField", "switch",
+        "badge", "card", "sectionHeader", "menuBar", "menu", "menuItem", "toolbar", "toolbox",
+        "sidebar", "statusBar", "splitPane", "ninePatchPanel", "colorPalette", "grid"};
+    std::function<WidgetDesc(eve::json::Value)> decode = [&](eve::json::Value value) {
+        WidgetDesc node;
+        const std::string type = value.getString("type", "text");
+        for (int i = 0; i < int(std::size(types)); ++i)
+            if (type == types[i]) node.type = static_cast<NodeType>(i);
+        node.id = value.getString("id");
+        node.key = value.getString("key");
+        node.text = value.getString("text");
+        node.valueText = value.getString("valueText");
+        node.tooltip = value.getString("tooltip");
+        node.styleClass = value.getString("styleClass");
+        node.visible = value.getBool("visible", true);
+        node.enabled = value.getBool("enabled", true);
+        node.checked = value.getBool("checked", false);
+        node.value = value.getFloat("value");
+        node.minValue = value.getFloat("minValue");
+        node.maxValue = value.getFloat("maxValue", 1.f);
+        node.sizeX = value.getFloat("sizeX");
+        node.sizeY = value.getFloat("sizeY");
+        node.flexDirection = value.getString("flexDirection") == "column" ? FlexDirection::Column
+                                                                           : FlexDirection::Row;
+        node.alignItems = static_cast<FlexAlign>(value.getInt("alignItems"));
+        node.justifyContent = static_cast<FlexJustify>(value.getInt("justifyContent"));
+        node.gap = value.getFloat("gap", -1.f);
+        node.columnGap = value.getFloat("columnGap", -1.f);
+        node.rowGap = value.getFloat("rowGap", -1.f);
+        node.flexGrow = value.getFloat("flexGrow");
+        node.flexShrink = value.getFloat("flexShrink", 1.f);
+        node.flexBasis = value.getFloat("flexBasis", -1.f);
+        node.alignSelf = value.getInt("alignSelf", -1);
+        node.aspectRatio = value.getFloat("aspectRatio");
+        node.flexWrap = value.getString("flexWrap") == "wrap" ? FlexWrap::Wrap : FlexWrap::NoWrap;
+        node.overflow = static_cast<OverflowMode>(value.getInt("overflow"));
+        node.gridColumns = std::max(1, value.getInt("gridColumns", 1));
+        node.gridColumnSpan = std::max(1, value.getInt("gridColumnSpan", 1));
+        node.accessibilityRole = static_cast<AccessibilityRole>(value.getInt("accessibilityRole"));
+        node.accessibilityName = value.getString("accessibilityName");
+        node.accessibilityDescription = value.getString("accessibilityDescription");
+        const eve::json::Value children = value.get("children");
+        for (size_t i = 0; i < children.size(); ++i)
+            if (children.at(i).isObject()) node.children.push_back(decode(children.at(i)));
+        return node;
+    };
+    host->get().setTree(decode(root));
+    return true;
+}
 #endif
 
 graphics::Canvas *UI::viewportCanvas(const std::string &id) {
@@ -1518,6 +2016,7 @@ const char *nodeTypeName(NodeType t) {
     case NodeType::Card: return "card";
     case NodeType::NinePatchPanel: return "ninePatchPanel";
     case NodeType::ColorPalette: return "colorPalette";
+    case NodeType::Grid: return "grid";
     case NodeType::SectionHeader: return "sectionHeader";
     case NodeType::MenuBar: return "menuBar";
     case NodeType::Menu: return "menu";
@@ -1556,6 +2055,7 @@ NodeType nodeTypeFromName(const std::string &s) {
     if (s == "card") return NodeType::Card;
     if (s == "ninePatchPanel") return NodeType::NinePatchPanel;
     if (s == "colorPalette" || s == "color-palette" || s == "color") return NodeType::ColorPalette;
+    if (s == "grid") return NodeType::Grid;
     if (s == "sectionHeader") return NodeType::SectionHeader;
     if (s == "menuBar") return NodeType::MenuBar;
     if (s == "menu") return NodeType::Menu;
@@ -1583,6 +2083,7 @@ void nodeToJson(const UIHost::Tree &tree, const UINode &n, Poco::JSON::Object &o
         o.set("mouseFilter", n.mouseFilter == MouseFilter::Pass ? "pass" : "ignore");
     if (n.themePreset != ThemePreset::Inherit)
         o.set("theme", n.themePreset == ThemePreset::Dark ? "dark" : "light");
+    if (!n.styleClass.empty()) o.set("styleClass", n.styleClass);
     if (n.tabIndex != 0) o.set("tabIndex", n.tabIndex);
     if (!n.focusPrevious.empty()) o.set("focusPrevious", n.focusPrevious);
     if (!n.focusNext.empty()) o.set("focusNext", n.focusNext);
@@ -1639,6 +2140,7 @@ void nodeToJson(const UIHost::Tree &tree, const UINode &n, Poco::JSON::Object &o
     if (n.maxSizeY != 0.f) o.set("maxSizeY", n.maxSizeY);
     if (n.percentW != 0.f) o.set("percentW", n.percentW);
     if (n.percentH != 0.f) o.set("percentH", n.percentH);
+    if (n.aspectRatio > 0.f) o.set("aspectRatio", n.aspectRatio);
     if (n.absolute) {
         o.set("absolute", true);
         o.set("anchorX", n.anchorX);
@@ -1653,6 +2155,15 @@ void nodeToJson(const UIHost::Tree &tree, const UINode &n, Poco::JSON::Object &o
     if (n.justifyContent != FlexJustify::Start) o.set("justifyContent", int(n.justifyContent));
     if (n.gap >= 0.f) o.set("gap", n.gap);
     if (n.flexGrow != 0.f) o.set("flexGrow", n.flexGrow);
+    if (n.flexShrink != 1.f) o.set("flexShrink", n.flexShrink);
+    if (n.flexBasis >= 0.f) o.set("flexBasis", n.flexBasis);
+    if (n.alignSelf >= 0) o.set("alignSelf", n.alignSelf);
+    if (n.columnGap >= 0.f) o.set("columnGap", n.columnGap);
+    if (n.rowGap >= 0.f) o.set("rowGap", n.rowGap);
+    if (n.flexWrap == FlexWrap::Wrap) o.set("flexWrap", "wrap");
+    if (n.overflow != OverflowMode::Visible) o.set("overflow", int(n.overflow));
+    if (n.type == NodeType::Grid) o.set("gridColumns", n.gridColumns);
+    if (n.gridColumnSpan != 1) o.set("gridColumnSpan", n.gridColumnSpan);
     if (n.type == NodeType::ColorPalette || n.tintR != 1.f || n.tintG != 1.f || n.tintB != 1.f ||
         n.tintA != 1.f)
         o.set("tint", Poco::Dynamic::Array({n.tintR, n.tintG, n.tintB, n.tintA}));
@@ -1693,6 +2204,7 @@ void applyCommonFields(WidgetDesc &d, const Poco::JSON::Object &o) {
         d.mouseFilter = parseMouseFilter(o.getValue<std::string>("mouseFilter"));
     if (o.has("theme"))
         d.themePreset = parseThemePreset(o.getValue<std::string>("theme"));
+    if (o.has("styleClass")) d.styleClass = o.getValue<std::string>("styleClass");
     if (o.has("tabIndex")) d.tabIndex = int(fnum(o.get("tabIndex")));
     if (o.has("focusPrevious"))
         d.focusPrevious = o.getValue<std::string>("focusPrevious");
@@ -1725,21 +2237,21 @@ void applyCommonFields(WidgetDesc &d, const Poco::JSON::Object &o) {
     if (o.has("sizeX")) d.sizeX = fnum(o.get("sizeX"));
     if (o.has("sizeY")) d.sizeY = fnum(o.get("sizeY"));
     if (o.has("margin")) {
-        const Poco::Dynamic::Array a = o.get("margin").extract<Poco::Dynamic::Array>();
-        if (a.size() >= 4) {
-            d.marginL = fnum(a[0]);
-            d.marginT = fnum(a[1]);
-            d.marginR = fnum(a[2]);
-            d.marginB = fnum(a[3]);
+        const Poco::JSON::Array::Ptr a = o.getArray("margin");
+        if (a && a->size() >= 4) {
+            d.marginL = fnum(a->get(0));
+            d.marginT = fnum(a->get(1));
+            d.marginR = fnum(a->get(2));
+            d.marginB = fnum(a->get(3));
         }
     }
     if (o.has("padding")) {
-        const Poco::Dynamic::Array a = o.get("padding").extract<Poco::Dynamic::Array>();
-        if (a.size() >= 4) {
-            d.paddingL = fnum(a[0]);
-            d.paddingT = fnum(a[1]);
-            d.paddingR = fnum(a[2]);
-            d.paddingB = fnum(a[3]);
+        const Poco::JSON::Array::Ptr a = o.getArray("padding");
+        if (a && a->size() >= 4) {
+            d.paddingL = fnum(a->get(0));
+            d.paddingT = fnum(a->get(1));
+            d.paddingR = fnum(a->get(2));
+            d.paddingB = fnum(a->get(3));
         }
     }
     if (o.has("minSizeX")) d.minSizeX = fnum(o.get("minSizeX"));
@@ -1748,6 +2260,7 @@ void applyCommonFields(WidgetDesc &d, const Poco::JSON::Object &o) {
     if (o.has("maxSizeY")) d.maxSizeY = fnum(o.get("maxSizeY"));
     if (o.has("percentW")) d.percentW = fnum(o.get("percentW"));
     if (o.has("percentH")) d.percentH = fnum(o.get("percentH"));
+    if (o.has("aspectRatio")) d.aspectRatio = fnum(o.get("aspectRatio"));
     if (o.has("absolute")) d.absolute = o.getValue<bool>("absolute");
     if (o.has("anchorX")) d.anchorX = fnum(o.get("anchorX"));
     if (o.has("anchorY")) d.anchorY = fnum(o.get("anchorY"));
@@ -1762,32 +2275,45 @@ void applyCommonFields(WidgetDesc &d, const Poco::JSON::Object &o) {
         d.justifyContent = FlexJustify(int(fnum(o.get("justifyContent"))));
     if (o.has("gap")) d.gap = fnum(o.get("gap"), -1.f);
     if (o.has("flexGrow")) d.flexGrow = fnum(o.get("flexGrow"));
+    if (o.has("flexShrink")) d.flexShrink = fnum(o.get("flexShrink"), 1.f);
+    if (o.has("flexBasis")) d.flexBasis = fnum(o.get("flexBasis"), -1.f);
+    if (o.has("alignSelf")) d.alignSelf = int(fnum(o.get("alignSelf"), -1.f));
+    if (o.has("columnGap")) d.columnGap = fnum(o.get("columnGap"), -1.f);
+    if (o.has("rowGap")) d.rowGap = fnum(o.get("rowGap"), -1.f);
+    if (o.has("flexWrap"))
+        d.flexWrap = o.getValue<std::string>("flexWrap") == "wrap" ? FlexWrap::Wrap
+                                                                    : FlexWrap::NoWrap;
+    if (o.has("overflow")) d.overflow = OverflowMode(int(fnum(o.get("overflow"))));
+    if (o.has("gridColumns"))
+        d.gridColumns = std::max(1, int(fnum(o.get("gridColumns"), 1.f)));
+    if (o.has("gridColumnSpan"))
+        d.gridColumnSpan = std::max(1, int(fnum(o.get("gridColumnSpan"), 1.f)));
     if (o.has("tint")) {
-        const Poco::Dynamic::Array a = o.get("tint").extract<Poco::Dynamic::Array>();
-        if (a.size() >= 4) {
-            d.tintR = fnum(a[0], 1.f);
-            d.tintG = fnum(a[1], 1.f);
-            d.tintB = fnum(a[2], 1.f);
-            d.tintA = fnum(a[3], 1.f);
+        const Poco::JSON::Array::Ptr a = o.getArray("tint");
+        if (a && a->size() >= 4) {
+            d.tintR = fnum(a->get(0), 1.f);
+            d.tintG = fnum(a->get(1), 1.f);
+            d.tintB = fnum(a->get(2), 1.f);
+            d.tintA = fnum(a->get(3), 1.f);
         }
     }
     if (o.has("border")) {
-        const Poco::Dynamic::Array a = o.get("border").extract<Poco::Dynamic::Array>();
-        if (a.size() >= 4) {
-            d.borderL = fnum(a[0]);
-            d.borderT = fnum(a[1]);
-            d.borderR = fnum(a[2]);
-            d.borderB = fnum(a[3]);
+        const Poco::JSON::Array::Ptr a = o.getArray("border");
+        if (a && a->size() >= 4) {
+            d.borderL = fnum(a->get(0));
+            d.borderT = fnum(a->get(1));
+            d.borderR = fnum(a->get(2));
+            d.borderB = fnum(a->get(3));
         }
     }
     if (o.has("cornerRadius")) d.cornerRadius = fnum(o.get("cornerRadius"));
     if (o.has("uv")) {
-        const Poco::Dynamic::Array a = o.get("uv").extract<Poco::Dynamic::Array>();
-        if (a.size() >= 4) {
-            d.uv0x = fnum(a[0]);
-            d.uv0y = fnum(a[1]);
-            d.uv1x = fnum(a[2], 1.f);
-            d.uv1y = fnum(a[3], 1.f);
+        const Poco::JSON::Array::Ptr a = o.getArray("uv");
+        if (a && a->size() >= 4) {
+            d.uv0x = fnum(a->get(0));
+            d.uv0y = fnum(a->get(1));
+            d.uv1x = fnum(a->get(2), 1.f);
+            d.uv1y = fnum(a->get(3), 1.f);
         }
     }
 }
@@ -2102,6 +2628,7 @@ void UI::expose(ssq::Class &cls) {
     cls.addFunc("beginFlex", &UI::beginFlex);
     cls.addFunc("beginRow", &UI::beginRow);
     cls.addFunc("beginColumn", &UI::beginColumn);
+    cls.addFunc("beginGrid", &UI::beginGrid);
     cls.addFunc("end", &UI::end);
     cls.addFunc("text", &UI::addText);
     cls.addFunc("textWrapped", &UI::addTextWrapped);
@@ -2127,6 +2654,11 @@ void UI::expose(ssq::Class &cls) {
     cls.addFunc("menuItem", &UI::addMenuItem);
     cls.addFunc("spacer", &UI::addSpacer);
     cls.addFunc("setItemFlexGrow", &UI::setItemFlexGrow);
+    cls.addFunc("setItemFlexShrink", &UI::setItemFlexShrink);
+    cls.addFunc("setItemFlexBasis", &UI::setItemFlexBasis);
+    cls.addFunc("setItemAlignSelf", &UI::setItemAlignSelf);
+    cls.addFunc("setItemAspectRatio", &UI::setItemAspectRatio);
+    cls.addFunc("setItemGridColumnSpan", &UI::setItemGridColumnSpan);
     cls.addFunc("setItemSize", &UI::setItemSize);
     cls.addFunc("setItemMargin", &UI::setItemMargin);
     cls.addFunc("setItemPadding", &UI::setItemPadding);
@@ -2143,12 +2675,17 @@ void UI::expose(ssq::Class &cls) {
     cls.addFunc("setItemMouseFilter", &UI::setItemMouseFilter);
     cls.addFunc("setItemTheme", &UI::setItemTheme);
     cls.addFunc("setThemeScope", &UI::setThemeScope);
+    cls.addFunc("setItemStyleClass", &UI::setItemStyleClass);
+    cls.addFunc("setStyleScope", &UI::setStyleScope);
     cls.addFunc("setItemTabIndex", &UI::setItemTabIndex);
     cls.addFunc("setItemFocusOrder", &UI::setItemFocusOrder);
     cls.addFunc("setItemFocusNeighbors", &UI::setItemFocusNeighbors);
     cls.addFunc("setItemAccessibility", &UI::setItemAccessibility);
     cls.addFunc("setFlexAlign", &UI::setFlexAlign);
     cls.addFunc("setFlexJustify", &UI::setFlexJustify);
+    cls.addFunc("setLayoutGaps", &UI::setLayoutGaps);
+    cls.addFunc("setFlexWrap", &UI::setFlexWrap);
+    cls.addFunc("setLayoutOverflow", &UI::setLayoutOverflow);
     cls.addFunc("listItem", &UI::addListItem);
     cls.addFunc("mountBuild", &UI::mountBuild);
 
@@ -2198,6 +2735,7 @@ void UI::expose(ssq::Class &cls) {
     cls.addFunc("setHostSize", &UI::setHostSize);
     cls.addFunc("setHostPercent", &UI::setHostPercent);
     cls.addFunc("animateHostPos", &UI::animateHostPos);
+    cls.addFunc("animateItemOpacity", &UI::animateItemOpacity);
     cls.addFunc("consumeClick", &UI::consumeClick);
     cls.addFunc("consumeChange", &UI::consumeChange);
     cls.addFunc("dragDropSupport", &UI::dragDropSupport);
@@ -2208,16 +2746,25 @@ void UI::expose(ssq::Class &cls) {
     cls.addFunc("getDropOrigin", &UI::getDropOrigin);
     cls.addFunc("onClick", &UI::onClick);
     cls.addFunc("onChange", &UI::onChange);
+    cls.addFunc("componentOnClick", &UI::componentOnClick);
+    cls.addFunc("componentOnChange", &UI::componentOnChange);
+    cls.addFunc("componentClearHandlers", &UI::componentClearHandlers);
 
     cls.addFunc("setThemeDark", &UI::setThemeDark);
     cls.addFunc("setThemeLight", &UI::setThemeLight);
     cls.addFunc("setTheme", &UI::setTheme);
+    cls.addFunc("defineStyleClass", &UI::defineStyleClass);
+    cls.addFunc("setStyleClassColor", &UI::setStyleClassColor);
+    cls.addFunc("setStyleClassMetric", &UI::setStyleClassMetric);
+    cls.addFunc("clearStyleClasses", &UI::clearStyleClasses);
     cls.addFunc("getTheme", &UI::getTheme);
     cls.addFunc("setNavKeyboard", &UI::setNavKeyboard);
     cls.addFunc("setNavGamepad", &UI::setNavGamepad);
     cls.addFunc("setScale", &UI::setScale);
     cls.addFunc("getScale", &UI::getScale);
     cls.addFunc("getStats", &UI::getStats);
+    cls.addFunc("getLayoutDiagnostics", &UI::getLayoutDiagnostics);
+    cls.addFunc("getAccessibilitySnapshot", &UI::getAccessibilitySnapshot);
     cls.addFunc("saveTreeJson", &UI::saveTreeJson);
     cls.addFunc("loadTreeJson", &UI::loadTreeJson);
     cls.addFunc("viewportCanvas", &UI::viewportCanvas);

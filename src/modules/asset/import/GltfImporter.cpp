@@ -1,3 +1,4 @@
+#include "asset/CanonicalMesh.h"
 #include "asset/import/AssetImporter.h"
 
 #include "asset/import/GltfAnimation.h"
@@ -41,20 +42,21 @@ Result<PrimitiveOutput> decodePrimitive(const Value::Object& root, const Value::
     auto mode = unsignedValue(member(primitive, "mode"), "primitive.mode", false, 4);
     if (!mode) return Result<PrimitiveOutput>::failure(mode.status());
     if (mode.value() != 4)
-        return detail::failure<PrimitiveOutput>(DiagnosticCode::Unsupported,
-                                                "only glTF TRIANGLES primitives are supported");
+        return Result<PrimitiveOutput>::failure(Diagnostic::error(
+            DiagnosticCode::Unsupported, "only glTF TRIANGLES primitives are supported", {}, {}, "asset.import"));
     const auto* attributesValue = member(primitive, "attributes");
     const auto* attributes = attributesValue ? attributesValue->getIf<Value::Object>() : nullptr;
     if (!attributes)
-        return detail::failure<PrimitiveOutput>(DiagnosticCode::ParseError, "primitive attributes are required");
+        return Result<PrimitiveOutput>::failure(
+            Diagnostic::error(DiagnosticCode::ParseError, "primitive attributes are required", {}, {}, "asset.import"));
     auto positionIndex = unsignedValue(member(*attributes, "POSITION"), "primitive.attributes.POSITION");
     if (!positionIndex) return Result<PrimitiveOutput>::failure(positionIndex.status());
     auto positions = accessorAt(root, buffers, positionIndex.value(), limits);
     if (!positions) return Result<PrimitiveOutput>::failure(positions.status());
     if (positions.value().count == 0 || positions.value().components != 3 || positions.value().componentType != 5126 ||
         positions.value().count > limits.maximumVerticesPerPrimitive)
-        return detail::failure<PrimitiveOutput>(DiagnosticCode::Unsupported,
-                                                "POSITION must be a bounded FLOAT VEC3 accessor");
+        return Result<PrimitiveOutput>::failure(Diagnostic::error(
+            DiagnosticCode::Unsupported, "POSITION must be a bounded FLOAT VEC3 accessor", {}, {}, "asset.import"));
     std::optional<Accessor> normals;
     if (const Value* normal = member(*attributes, "NORMAL")) {
         auto normalIndex = unsignedValue(normal, "primitive.attributes.NORMAL");
@@ -63,7 +65,8 @@ Result<PrimitiveOutput> decodePrimitive(const Value::Object& root, const Value::
         if (!decoded) return Result<PrimitiveOutput>::failure(decoded.status());
         if (decoded.value().components != 3 || decoded.value().componentType != 5126 ||
             decoded.value().count != positions.value().count)
-            return detail::failure<PrimitiveOutput>(DiagnosticCode::Unsupported, "NORMAL must match POSITION");
+            return Result<PrimitiveOutput>::failure(
+                Diagnostic::error(DiagnosticCode::Unsupported, "NORMAL must match POSITION", {}, {}, "asset.import"));
         normals = std::move(decoded).takeValue();
     }
     std::map<uint32_t, Accessor> texcoords;
@@ -73,7 +76,8 @@ Result<PrimitiveOutput> decodePrimitive(const Value::Object& root, const Value::
         uint32_t               set    = 0;
         const auto             parsed = std::from_chars(suffix.data(), suffix.data() + suffix.size(), set);
         if (parsed.ec != std::errc{} || parsed.ptr != suffix.data() + suffix.size() || std::to_string(set) != suffix)
-            return detail::failure<PrimitiveOutput>(DiagnosticCode::ParseError, "invalid UV set semantic");
+            return Result<PrimitiveOutput>::failure(
+                Diagnostic::error(DiagnosticCode::ParseError, "invalid UV set semantic", {}, {}, "asset.import"));
         auto texcoordIndex = unsignedValue(&texcoord, "primitive.attributes." + name);
         if (!texcoordIndex) return Result<PrimitiveOutput>::failure(texcoordIndex.status());
         auto decoded = accessorAt(root, buffers, texcoordIndex.value(), limits);
@@ -82,9 +86,38 @@ Result<PrimitiveOutput> decodePrimitive(const Value::Object& root, const Value::
         if (uv.components != 2 || uv.count != positions.value().count ||
             !((uv.componentType == 5126 && !uv.normalized) ||
               ((uv.componentType == 5121 || uv.componentType == 5123) && uv.normalized)))
-            return detail::failure<PrimitiveOutput>(
-                DiagnosticCode::Unsupported, "UV sets must match POSITION and use FLOAT or normalized unsigned VEC2");
+            return Result<PrimitiveOutput>::failure(Diagnostic::error(
+                DiagnosticCode::Unsupported, "UV sets must match POSITION and use FLOAT or normalized unsigned VEC2",
+                {}, {}, "asset.import"));
         texcoords.emplace(set, std::move(decoded).takeValue());
+    }
+    std::map<std::string, Accessor> extraAttributes;
+    uint64_t                        extraFloats = 0;
+    for (const auto& [name, value] : *attributes) {
+        if (name != "TANGENT" && !name.starts_with("COLOR_") && !name.starts_with("_")) continue;
+        if (name.starts_with("COLOR_")) {
+            const std::string_view suffix(name.data() + 6, name.size() - 6);
+            uint32_t               set    = 0;
+            const auto             parsed = std::from_chars(suffix.data(), suffix.data() + suffix.size(), set);
+            if (parsed.ec != std::errc{} || parsed.ptr != suffix.data() + suffix.size() ||
+                std::to_string(set) != suffix)
+                return Result<PrimitiveOutput>::failure(Diagnostic::error(
+                    DiagnosticCode::ParseError, "invalid color set semantic", {}, {}, "asset.import"));
+        }
+        auto index = unsignedValue(&value, "primitive.attributes." + name);
+        if (!index) return Result<PrimitiveOutput>::failure(index.status());
+        auto decoded = accessorAt(root, buffers, index.value(), limits);
+        if (!decoded) return Result<PrimitiveOutput>::failure(decoded.status());
+        const auto& a = decoded.value();
+        if (a.count != positions.value().count || a.components < 1 || a.components > 4 ||
+            (name == "TANGENT" && (a.components != 4 || a.componentType != 5126)) ||
+            (name.starts_with("COLOR_") && a.components != 3 && a.components != 4) ||
+            !((a.componentType == 5126 && !a.normalized) ||
+              ((a.componentType == 5121 || a.componentType == 5123) && a.normalized)))
+            return Result<PrimitiveOutput>::failure(Diagnostic::error(
+                DiagnosticCode::Unsupported, "unsupported vertex attribute", name, {}, "asset.import"));
+        extraFloats += a.components;
+        extraAttributes.emplace(name, std::move(decoded).takeValue());
     }
     std::vector<std::uint32_t> indices;
     if (const Value* indicesValue = member(primitive, "indices")) {
@@ -94,38 +127,41 @@ Result<PrimitiveOutput> decodePrimitive(const Value::Object& root, const Value::
         if (!accessor) return Result<PrimitiveOutput>::failure(accessor.status());
         if (accessor.value().count == 0 || accessor.value().count > limits.maximumIndicesPerPrimitive ||
             accessor.value().count % 3 != 0)
-            return detail::failure<PrimitiveOutput>(DiagnosticCode::InvalidArgument, "triangle index count is invalid");
+            return Result<PrimitiveOutput>::failure(Diagnostic::error(
+                DiagnosticCode::InvalidArgument, "triangle index count is invalid", {}, {}, "asset.import"));
         indices.reserve(accessor.value().count);
         for (std::uint32_t item = 0; item < accessor.value().count; ++item) {
             auto value = readIndex(accessor.value(), item);
             if (!value) return Result<PrimitiveOutput>::failure(value.status());
             if (value.value() >= positions.value().count)
-                return detail::failure<PrimitiveOutput>(DiagnosticCode::ParseError, "mesh index exceeds vertex count");
+                return Result<PrimitiveOutput>::failure(Diagnostic::error(
+                    DiagnosticCode::ParseError, "mesh index exceeds vertex count", {}, {}, "asset.import"));
             indices.push_back(value.value());
         }
     } else {
         if (positions.value().count % 3 != 0)
-            return detail::failure<PrimitiveOutput>(DiagnosticCode::ParseError,
-                                                    "unindexed triangle vertex count must be divisible by three");
+            return Result<PrimitiveOutput>::failure(Diagnostic::error(
+                DiagnosticCode::ParseError, "unindexed triangle vertex count must be divisible by three", {}, {},
+                "asset.import"));
         indices.resize(positions.value().count);
         for (std::uint32_t index = 0; index < indices.size(); ++index) indices[index] = index;
     }
-    const std::uint64_t decodedSize =
-        24 + uint64_t(texcoords.size()) * 4 +
-        std::uint64_t(positions.value().count) * (12 + (normals ? 12 : 0) + uint64_t(texcoords.size()) * 8) +
-        std::uint64_t(indices.size()) * 4;
+    const std::uint64_t decodedSize = (extraAttributes.empty() ? 24 : 28) + uint64_t(texcoords.size()) * 4 +
+                                      uint64_t(extraAttributes.size()) * 72 +
+                                      std::uint64_t(positions.value().count) *
+                                          (12 + (normals ? 12 : 0) + uint64_t(texcoords.size()) * 8 + extraFloats * 4) +
+                                      std::uint64_t(indices.size()) * 4;
     if (decodedSize > limits.maximumDecodedBytes || decodedSize > std::numeric_limits<std::size_t>::max())
-        return detail::failure<PrimitiveOutput>(DiagnosticCode::InvalidArgument, "canonical mesh exceeds decoded budget");
+        return Result<PrimitiveOutput>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "canonical mesh exceeds decoded budget", {}, {}, "asset.import"));
     PrimitiveOutput output;
     output.vertexCount = positions.value().count;
     output.indexCount = static_cast<std::uint32_t>(indices.size());
     output.hasNormals = normals.has_value();
     for (const auto& [set, uv] : texcoords) output.texcoordSets.push_back(set);
-    output.blob.insert(output.blob.end(), {'E', 'V', 'M', 'E', 'S', 'H', 0, 2});
-    put32(output.blob, output.vertexCount); put32(output.blob, output.indexCount);
-    put32(output.blob, output.hasNormals ? 1u : 0u);
-    put32(output.blob, uint32_t(texcoords.size()));
-    for (auto set : output.texcoordSets) put32(output.blob, set);
+    asset::CanonicalMeshData mesh;
+    mesh.indices = std::move(indices);
+    for (const auto& [name, attribute] : extraAttributes) mesh.attributes[name].components = attribute.components;
     for (std::uint32_t vertex = 0; vertex < output.vertexCount; ++vertex) {
         for (std::uint32_t axis = 0; axis < 3; ++axis) {
             auto value = readFloat(positions.value(), vertex, axis);
@@ -133,21 +169,30 @@ Result<PrimitiveOutput> decodePrimitive(const Value::Object& root, const Value::
             if (vertex == 0) output.minimum[axis] = output.maximum[axis] = value.value();
             else { output.minimum[axis] = std::min(output.minimum[axis], value.value());
                    output.maximum[axis] = std::max(output.maximum[axis], value.value()); }
-            putFloat(output.blob, value.value());
+            mesh.positions.push_back(value.value());
         }
         if (normals) for (std::uint32_t axis = 0; axis < 3; ++axis) {
             auto value = readFloat(*normals, vertex, axis);
             if (!value) return Result<PrimitiveOutput>::failure(value.status());
-            putFloat(output.blob, value.value());
+            mesh.normals.push_back(value.value());
         }
         for (const auto& [set, uv] : texcoords)
             for (std::uint32_t axis = 0; axis < 2; ++axis) {
                 auto value = readUv(uv, vertex, axis);
                 if (!value) return Result<PrimitiveOutput>::failure(value.status());
-                putFloat(output.blob, value.value());
+                mesh.texcoords[set].push_back(value.value());
+            }
+        for (const auto& [name, attribute] : extraAttributes)
+            for (uint32_t axis = 0; axis < attribute.components; ++axis) {
+                auto value = readUv(attribute, vertex, axis);
+                if (!value) return Result<PrimitiveOutput>::failure(value.status());
+                mesh.attributes[name].values.push_back(value.value());
             }
     }
-    for (const auto index : indices) put32(output.blob, index);
+    auto encoded = asset::encodeCanonicalMesh(
+        mesh, {limits.maximumVerticesPerPrimitive, limits.maximumIndicesPerPrimitive, limits.maximumDecodedBytes});
+    if (!encoded) return Result<PrimitiveOutput>::failure(encoded.status());
+    output.blob = std::move(encoded).takeValue();
     return Result<PrimitiveOutput>::success(std::move(output));
 }
 
@@ -159,33 +204,38 @@ Value::Array vector3(const float values[3]) {
 
 Result<PreparedAssetImport> prepareGltfImport(const GltfImportRequest& request) {
     if (request.sourceName.empty() || request.sourceName.size() > request.limits.maximumStringBytes)
-        return detail::failure<PreparedAssetImport>(DiagnosticCode::InvalidArgument, "glTF source name is invalid");
+        return Result<PreparedAssetImport>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "glTF source name is invalid", {}, {}, "asset.import"));
     auto document = parseDocument(request);
     if (!document) return Result<PreparedAssetImport>::failure(document.status());
     const auto* root = document.value().root.getIf<Value::Object>();
-    if (!root) return detail::failure<PreparedAssetImport>(DiagnosticCode::ParseError, "glTF root must be an object");
+    if (!root)
+        return Result<PreparedAssetImport>::failure(
+            Diagnostic::error(DiagnosticCode::ParseError, "glTF root must be an object", {}, {}, "asset.import"));
     if (const auto* required = member(*root, "extensionsRequired")) {
         const auto* extensions = required->getIf<Value::Array>();
         if (!extensions)
-            return detail::failure<PreparedAssetImport>(DiagnosticCode::ParseError,
-                                                        "extensionsRequired must be an array");
+            return Result<PreparedAssetImport>::failure(Diagnostic::error(
+                DiagnosticCode::ParseError, "extensionsRequired must be an array", {}, {}, "asset.import"));
         for (const auto& extension : *extensions)
             if (!extension.isString() || !gltf::supportsMaterialExtension(extension.asString()))
-                return detail::failure<PreparedAssetImport>(
-                    DiagnosticCode::Unsupported, "required glTF extension is not supported", "extensionsRequired");
+                return Result<PreparedAssetImport>::failure(
+                    Diagnostic::error(DiagnosticCode::Unsupported, "required glTF extension is not supported",
+                                      "extensionsRequired", {}, "asset.import"));
     }
     const auto* assetValue = member(*root, "asset");
     const auto* asset = assetValue ? assetValue->getIf<Value::Object>() : nullptr;
     const Value* version = asset ? member(*asset, "version") : nullptr;
     if (!version || !version->isString() || !version->asString().starts_with("2."))
-        return detail::failure<PreparedAssetImport>(DiagnosticCode::UnknownVersion, "only glTF 2.x is supported",
-                                                    "$.asset.version");
+        return Result<PreparedAssetImport>::failure(Diagnostic::error(
+            DiagnosticCode::UnknownVersion, "only glTF 2.x is supported", "$.asset.version", {}, "asset.import"));
     auto buffers = resolveBuffers(*root, document.value(), request);
     if (!buffers) return Result<PreparedAssetImport>::failure(buffers.status());
     const Value* meshesValue = member(*root, "meshes");
     const auto* meshes = meshesValue ? meshesValue->getIf<Value::Array>() : nullptr;
     if (!meshes || meshes->empty())
-        return detail::failure<PreparedAssetImport>(DiagnosticCode::ParseError, "glTF contains no meshes", "$.meshes");
+        return Result<PreparedAssetImport>::failure(
+            Diagnostic::error(DiagnosticCode::ParseError, "glTF contains no meshes", "$.meshes", {}, "asset.import"));
     auto manifestResult = detail::baseManifest(request.package, "eve.gltf2");
     if (!manifestResult) return Result<PreparedAssetImport>::failure(manifestResult.status());
     PreparedAssetImport result;
@@ -198,24 +248,28 @@ Result<PreparedAssetImport> prepareGltfImport(const GltfImportRequest& request) 
         const Value* primitivesValue = mesh ? member(*mesh, "primitives") : nullptr;
         const auto* primitives = primitivesValue ? primitivesValue->getIf<Value::Array>() : nullptr;
         if (!primitives || primitives->empty())
-            return detail::failure<PreparedAssetImport>(DiagnosticCode::ParseError, "glTF mesh has no primitives");
+            return Result<PreparedAssetImport>::failure(
+                Diagnostic::error(DiagnosticCode::ParseError, "glTF mesh has no primitives", {}, {}, "asset.import"));
         for (std::size_t primitiveIndex = 0; primitiveIndex < primitives->size(); ++primitiveIndex) {
             if (++assetCount > request.limits.maximumAssets)
-                return detail::failure<PreparedAssetImport>(DiagnosticCode::InvalidArgument,
-                                                            "glTF primitive asset count exceeds limits");
+                return Result<PreparedAssetImport>::failure(
+                    Diagnostic::error(DiagnosticCode::InvalidArgument, "glTF primitive asset count exceeds limits", {},
+                                      {}, "asset.import"));
             const auto* primitive = (*primitives)[primitiveIndex].getIf<Value::Object>();
             if (!primitive)
-                return detail::failure<PreparedAssetImport>(DiagnosticCode::ParseError, "glTF primitive is malformed");
+                return Result<PreparedAssetImport>::failure(Diagnostic::error(
+                    DiagnosticCode::ParseError, "glTF primitive is malformed", {}, {}, "asset.import"));
             if (member(*primitive, "targets"))
-                return detail::failure<PreparedAssetImport>(DiagnosticCode::Unsupported,
-                                                            "morph targets cannot be represented by the canonical mesh",
-                                                            "meshes.primitives.targets");
+                return Result<PreparedAssetImport>::failure(Diagnostic::error(
+                    DiagnosticCode::Unsupported, "morph targets cannot be represented by the canonical mesh",
+                    "meshes.primitives.targets", {}, "asset.import"));
             auto decoded = decodePrimitive(*root, *primitive, buffers.value(), request.limits);
             if (!decoded) return Result<PreparedAssetImport>::failure(decoded.status());
             if (decoded.value().blob.size() > request.limits.maximumDecodedBytes ||
                 decodedTotal > request.limits.maximumDecodedBytes - decoded.value().blob.size())
-                return detail::failure<PreparedAssetImport>(DiagnosticCode::InvalidArgument,
-                                                            "total canonical mesh budget is exceeded");
+                return Result<PreparedAssetImport>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                                              "total canonical mesh budget is exceeded",
+                                                                              {}, {}, "asset.import"));
             decodedTotal += decoded.value().blob.size();
             const PersistentId id = request.package.packageId.child(
                 "gltf:mesh:" + std::to_string(meshIndex) + ":primitive:" + std::to_string(primitiveIndex));
@@ -274,11 +328,12 @@ Result<PreparedAssetImport> prepareGltfImport(const GltfImportRequest& request) 
     if (const auto* used = member(*root, "extensionsUsed")) {
         const auto* extensions = used->getIf<Value::Array>();
         if (!extensions)
-            return detail::failure<PreparedAssetImport>(DiagnosticCode::ParseError, "extensionsUsed must be an array");
+            return Result<PreparedAssetImport>::failure(Diagnostic::error(
+                DiagnosticCode::ParseError, "extensionsUsed must be an array", {}, {}, "asset.import"));
         for (const auto& extension : *extensions) {
             if (!extension.isString())
-                return detail::failure<PreparedAssetImport>(DiagnosticCode::ParseError,
-                                                            "extension name must be a string");
+                return Result<PreparedAssetImport>::failure(Diagnostic::error(
+                    DiagnosticCode::ParseError, "extension name must be a string", {}, {}, "asset.import"));
             const bool translated = gltf::supportsMaterialExtension(extension.asString());
             result.findings.push_back({request.sourceName, extension.asString(),
                                        translated ? ImportDisposition::Translated : ImportDisposition::Unsupported,
@@ -294,11 +349,14 @@ Result<PreparedAssetImport> prepareGltfImport(const GltfImportRequest& request) 
             const auto& attributes = *member(primitive, "attributes")->getIf<Value::Object>();
             for (const auto& [key, unused] : attributes) {
                 (void)unused;
-                if (key == "POSITION" || key == "NORMAL" || key.starts_with("TEXCOORD_")) continue;
+                if (key == "POSITION" || key == "NORMAL" || key.starts_with("TEXCOORD_") || key == "TANGENT" ||
+                    key.starts_with("COLOR_") || key.starts_with("_"))
+                    continue;
                 if (key.starts_with("JOINTS_") || key.starts_with("WEIGHTS_")) {
                     if (!member(*root, "skins"))
-                        return detail::failure<PreparedAssetImport>(DiagnosticCode::ParseError,
-                                                                    "joint attributes require a skin binding", key);
+                        return Result<PreparedAssetImport>::failure(
+                            Diagnostic::error(DiagnosticCode::ParseError, "joint attributes require a skin binding",
+                                              key, {}, "asset.import"));
                     continue;
                 }
                 result.findings.push_back({request.sourceName, key, ImportDisposition::Unsupported,

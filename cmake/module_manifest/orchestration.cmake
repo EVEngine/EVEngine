@@ -43,9 +43,6 @@ eve_declare_module(NAME archspace_editing LAYER 5
 eve_declare_module(NAME camera_editing LAYER 5
                    DEPS camera editing
                    GROUP 3d web)
-eve_declare_module(NAME lighting_editing LAYER 5
-                   DEPS daynight editing graphics weather
-                   GROUP 3d web)
 eve_declare_module(NAME building_editing LAYER 5
                    DEPS editing
                    OPTIONAL_DEPS building
@@ -76,7 +73,7 @@ eve_declare_module(NAME rts LAYER 5 SCRIPT RTS SLOT rts
 # providers are introduced by adapters as their implementation slices land;
 # the phase-one board/turn core depends only on common engine contracts.
 eve_declare_module(NAME tactics LAYER 5 SCRIPT Tactics SLOT tactics
-                   DEPS action
+                   DEPS action sensing
                    GROUP 2d 3d web)
 eve_declare_module(NAME avatar LAYER 5 SCRIPT Avatar SLOT avatar
                    DEPS animation graphics inventory model3d scene
@@ -180,7 +177,6 @@ eve_declare_module(NAME scene_editor LAYER 7 DEPS editor physics scene_editing O
                    SCRIPT SceneEditorModule SLOT sceneEditor GROUP 3d web)
 eve_declare_module(NAME sceneloader_editor LAYER 7 DEPS editor sceneloader_editing GROUP 3d web)
 eve_declare_module(NAME social_editor LAYER 7 DEPS editor social_editing GROUP 2d 3d web)
-eve_declare_module(NAME snow_editor LAYER 7 DEPS editor snow_editing GROUP 3d)
 eve_declare_module(NAME spritestack_editor LAYER 7 DEPS editor spritestack_editing GROUP 2d 3d)
 eve_declare_module(NAME stylize_editor LAYER 7 DEPS editor graphics_editor stylize_editing GROUP 3d web)
 eve_declare_module(NAME ui_editor LAYER 7 DEPS editor ui ui_editing
@@ -223,10 +219,9 @@ eve_declare_module(NAME procgen_editing LAYER 6
                    DEPS editing image
                    OPTIONAL_DEPS procgen
                    GROUP 3d)
-eve_declare_module(NAME snow_editing LAYER 6
-                   DEPS editing
-                   OPTIONAL_DEPS snow
-                   GROUP 3d)
+eve_declare_module(NAME lighting_editing LAYER 6
+                   DEPS daynight editing graphics weather
+                   GROUP 3d web)
 eve_declare_module(NAME particles_graphics_editing LAYER 6
                    DEPS graphics_editing particles_editing
                    OPTIONAL_DEPS particles
@@ -243,7 +238,7 @@ eve_declare_module(NAME pixelworld_editor LAYER 6 SCRIPT PixelWorldEditorModule 
                    GROUP 2d 3d web)
 # Runtime bridge from capability-selected packages into executable PointGraphs.
 eve_declare_module(NAME asset_procgen LAYER 6
-                   DEPS asset asset_import data procgen
+                   DEPS asset asset_graphics asset_import data graphics procgen
                    GROUP 3d)
 eve_declare_module(NAME procgen_physics LAYER 6 SCRIPT ProcgenPhysics SLOT procgenPhysics
                    DEPS physics procgen
@@ -252,9 +247,17 @@ eve_declare_module(NAME procgen_animation DIR procgen/animation LAYER 6
                    SCRIPT ProcgenAnimation SLOT procgenAnimation
                    DEPS animation procgen
                    GROUP 3d)
-eve_declare_module(NAME snow LAYER 6 SCRIPT Snow SLOT snow
+eve_declare_module(NAME weather LAYER 6 SCRIPT Weather Snow SLOT weather snow
                    DEPS graphics procgen
-                   GROUP 3d)
+                   GROUP 3d web)
+if(CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
+    # Browser weather keeps the pre-merge surface. Interactive snow has always
+    # been a native 3D feature and would otherwise pull procgen -> map -> Poco
+    # into the WASM closure, where Poco is intentionally unavailable.
+    set(EVE_MODULE_weather_SCRIPT Weather CACHE INTERNAL "" FORCE)
+    set(EVE_MODULE_weather_SLOT weather CACHE INTERNAL "" FORCE)
+    set(EVE_MODULE_weather_DEPS graphics CACHE INTERNAL "" FORCE)
+endif()
 eve_declare_module(NAME sceneloader LIB EVSceneLoader LAYER 6 SCRIPT SceneLoader
                    DEPS action animation data filesystem graphics image model3d scene thread
                    THIRDPARTY assimp

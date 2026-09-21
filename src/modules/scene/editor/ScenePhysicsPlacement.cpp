@@ -21,11 +21,6 @@
 namespace eve::scene_editor {
 namespace {
 
-template <class T>
-editing::Result<T> placementError(editing::Status status, const char* rule, std::string message) {
-    return editing::failed<T>(status, editing::RuleId(rule), std::move(message));
-}
-
 bool finite(double value) { return std::isfinite(value); }
 
 bool finiteTransform(const scene_editing::SceneTransformValue& value) {
@@ -141,8 +136,9 @@ struct ScenePhysicsPlacementBackend::Impl {
                 auto* rawBody = world.newBody(object.selected ? "dynamic" : "static", static_cast<float>(transform.x),
                                               static_cast<float>(transform.y), static_cast<float>(transform.z));
                 if (!rawBody)
-                    return placementError<void>(editing::Status::Failed, "scene.physics-placement.body-create",
-                                                "Box3D could not create a placement body");
+                    return editing::failed<void>(editing::Status::Failed,
+                                                 editing::RuleId("scene.physics-placement.body-create"),
+                                                 "Box3D could not create a placement body");
                 RuntimeObject runtime;
                 runtime.admitted     = object;
                 runtime.appliedScale = {transform.scaleX, transform.scaleY, transform.scaleZ};
@@ -154,8 +150,9 @@ struct ScenePhysicsPlacementBackend::Impl {
                     if (shape) runtime.shapes.push_back(std::move(shape));
                 }
                 if (runtime.shapes.empty())
-                    return placementError<void>(editing::Status::Failed, "scene.physics-placement.shape-create",
-                                                "Collider policy left the placement object without a usable collider");
+                    return editing::failed<void>(editing::Status::Failed,
+                                                 editing::RuleId("scene.physics-placement.shape-create"),
+                                                 "Collider policy left the placement object without a usable collider");
                 if (object.selected) {
                     const bool dropping = request.settings.mode == PhysicsPlacementMode::Fall;
                     runtime.body->setGravityScale(dropping ? 1.0f : 0.0f);
@@ -189,8 +186,8 @@ struct ScenePhysicsPlacementBackend::Impl {
             }
             return editing::applied<void>();
         } catch (const std::exception& error) {
-            return placementError<void>(editing::Status::Failed, "scene.physics-placement.build",
-                                        std::string("Could not build placement preview: ") + error.what());
+            return editing::failed<void>(editing::Status::Failed, editing::RuleId("scene.physics-placement.build"),
+                                         std::string("Could not build placement preview: ") + error.what());
         }
     }
 
@@ -232,15 +229,16 @@ editing::Result<std::unique_ptr<ScenePhysicsPlacementBackend>> ScenePhysicsPlace
     };
     for (const auto& object : request.objects)
         if (object.selected && !admittedByPolicy(object))
-            return placementError<std::unique_ptr<ScenePhysicsPlacementBackend>>(
-                editing::Status::Rejected, "scene.physics-placement.selection-filtered",
+            return editing::failed<std::unique_ptr<ScenePhysicsPlacementBackend>>(
+                editing::Status::Rejected, editing::RuleId("scene.physics-placement.selection-filtered"),
                 "Admission policy must not exclude a selected placement object");
     request.objects.erase(std::remove_if(request.objects.begin(), request.objects.end(),
                                          [&](const auto& object) { return !admittedByPolicy(object); }),
                           request.objects.end());
     if (request.objects.empty())
-        return placementError<std::unique_ptr<ScenePhysicsPlacementBackend>>(
-            editing::Status::Rejected, "scene.physics-placement.empty", "Placement requires at least one object");
+        return editing::failed<std::unique_ptr<ScenePhysicsPlacementBackend>>(
+            editing::Status::Rejected, editing::RuleId("scene.physics-placement.empty"),
+            "Placement requires at least one object");
     if (request.settings.subStepCount <= 0 || request.settings.subStepCount > 64 ||
         !finite(request.settings.maximumLinearSpeed) || request.settings.maximumLinearSpeed <= 0.0 ||
         !finite(request.settings.gravityX) || !finite(request.settings.gravityY) ||
@@ -254,15 +252,15 @@ editing::Result<std::unique_ptr<ScenePhysicsPlacementBackend>> ScenePhysicsPlace
         request.settings.minimumBoundsSpeedFactor <= 0.0 || !finite(request.settings.maximumBoundsSpeedFactor) ||
         request.settings.maximumBoundsSpeedFactor < request.settings.minimumBoundsSpeedFactor ||
         !finite(request.settings.teleportDistance) || request.settings.teleportDistance < 0.0)
-        return placementError<std::unique_ptr<ScenePhysicsPlacementBackend>>(
-            editing::Status::Rejected, "scene.physics-placement.settings",
+        return editing::failed<std::unique_ptr<ScenePhysicsPlacementBackend>>(
+            editing::Status::Rejected, editing::RuleId("scene.physics-placement.settings"),
             "Placement settings must be finite and use a substep count in [1, 64]");
     std::set<editing::ObjectId> ids;
     std::size_t                 selectedCount = 0;
     for (const auto& object : request.objects) {
         if (object.shape == PhysicsPlacementShape::Auto && object.colliders.empty())
-            return placementError<std::unique_ptr<ScenePhysicsPlacementBackend>>(
-                editing::Status::Rejected, "scene.physics-placement.unresolved-shape",
+            return editing::failed<std::unique_ptr<ScenePhysicsPlacementBackend>>(
+                editing::Status::Rejected, editing::RuleId("scene.physics-placement.unresolved-shape"),
                 "Automatic placement shapes must be resolved by a scene editor session");
         const bool validHull = object.shape != PhysicsPlacementShape::ConvexHull || !object.colliders.empty() ||
                                (object.convexVertices.size() >= 12 && object.convexVertices.size() % 3 == 0 &&
@@ -290,22 +288,22 @@ editing::Result<std::unique_ptr<ScenePhysicsPlacementBackend>> ScenePhysicsPlace
             object.halfExtentX <= 0.0 || object.halfExtentY <= 0.0 || object.halfExtentZ <= 0.0 ||
             object.transform.scaleX == 0.0 || object.transform.scaleY == 0.0 || object.transform.scaleZ == 0.0 ||
             !validHull || !validColliders)
-            return placementError<std::unique_ptr<ScenePhysicsPlacementBackend>>(
-                editing::Status::Rejected, "scene.physics-placement.object",
+            return editing::failed<std::unique_ptr<ScenePhysicsPlacementBackend>>(
+                editing::Status::Rejected, editing::RuleId("scene.physics-placement.object"),
                 "Placement objects require unique ids, finite transforms, and positive nonzero bounds");
         if (object.selected) ++selectedCount;
     }
     if (selectedCount == 0)
-        return placementError<std::unique_ptr<ScenePhysicsPlacementBackend>>(
-            editing::Status::Rejected, "scene.physics-placement.selection",
+        return editing::failed<std::unique_ptr<ScenePhysicsPlacementBackend>>(
+            editing::Status::Rejected, editing::RuleId("scene.physics-placement.selection"),
             "Placement requires at least one selected object");
     if (!request.primaryObject.empty()) {
         const auto primary = std::find_if(request.objects.begin(), request.objects.end(), [&](const auto& object) {
             return object.object == request.primaryObject && object.selected;
         });
         if (primary == request.objects.end())
-            return placementError<std::unique_ptr<ScenePhysicsPlacementBackend>>(
-                editing::Status::Rejected, "scene.physics-placement.primary",
+            return editing::failed<std::unique_ptr<ScenePhysicsPlacementBackend>>(
+                editing::Status::Rejected, editing::RuleId("scene.physics-placement.primary"),
                 "Placement primary object must belong to the selected objects");
     }
     auto impl  = std::make_unique<Impl>(std::move(request));
@@ -330,24 +328,25 @@ std::unique_ptr<editor::IEditorSimulationBackend> ScenePhysicsPlacementBackend::
 
 editing::Result<void> ScenePhysicsPlacementBackend::setHandlePosition(double x, double y, double z) {
     if (!finite(x) || !finite(y) || !finite(z))
-        return placementError<void>(editing::Status::Rejected, "scene.physics-placement.handle",
-                                    "Placement handle coordinates must be finite");
+        return editing::failed<void>(editing::Status::Rejected, editing::RuleId("scene.physics-placement.handle"),
+                                     "Placement handle coordinates must be finite");
     impl_->handle = {x, y, z};
     return editing::applied<void>();
 }
 
 editing::Result<void> ScenePhysicsPlacementBackend::setHandleRotation(double x, double y, double z) {
     if (!finite(x) || !finite(y) || !finite(z))
-        return placementError<void>(editing::Status::Rejected, "scene.physics-placement.handle-rotation",
-                                    "Placement handle rotation must be finite");
+        return editing::failed<void>(editing::Status::Rejected,
+                                     editing::RuleId("scene.physics-placement.handle-rotation"),
+                                     "Placement handle rotation must be finite");
     impl_->handleRotation = glm::quat(glm::vec3(static_cast<float>(x), static_cast<float>(y), static_cast<float>(z)));
     return editing::applied<void>();
 }
 
 editing::Result<void> ScenePhysicsPlacementBackend::setHandleScale(double x, double y, double z) {
     if (!finite(x) || !finite(y) || !finite(z) || x == 0.0 || y == 0.0 || z == 0.0)
-        return placementError<void>(editing::Status::Rejected, "scene.physics-placement.handle-scale",
-                                    "Placement handle scale must be finite and nonzero");
+        return editing::failed<void>(editing::Status::Rejected, editing::RuleId("scene.physics-placement.handle-scale"),
+                                     "Placement handle scale must be finite and nonzero");
     impl_->handleScale = {x, y, z};
     return editing::applied<void>();
 }
@@ -357,8 +356,8 @@ editing::Result<void> ScenePhysicsPlacementBackend::alignHandleToSurface(double 
                                                                          double offset) {
     if (!finite(fromX) || !finite(fromY) || !finite(fromZ) || !finite(toX) || !finite(toY) || !finite(toZ) ||
         !finite(offset) || (fromX == toX && fromY == toY && fromZ == toZ))
-        return placementError<void>(editing::Status::Rejected, "scene.physics-placement.surface-ray",
-                                    "Surface alignment requires a finite, nonzero ray and offset");
+        return editing::failed<void>(editing::Status::Rejected, editing::RuleId("scene.physics-placement.surface-ray"),
+                                     "Surface alignment requires a finite, nonzero ray and offset");
     try {
         impl_->world.rayCastAll(static_cast<float>(fromX), static_cast<float>(fromY), static_cast<float>(fromZ),
                                 static_cast<float>(toX), static_cast<float>(toY), static_cast<float>(toZ), 256);
@@ -373,13 +372,15 @@ editing::Result<void> ScenePhysicsPlacementBackend::alignHandleToSurface(double 
             }
         }
         if (hit < 0)
-            return placementError<void>(editing::Status::NotFound, "scene.physics-placement.surface-miss",
-                                        "Surface alignment ray did not hit an admitted static object");
+            return editing::failed<void>(editing::Status::NotFound,
+                                         editing::RuleId("scene.physics-placement.surface-miss"),
+                                         "Surface alignment ray did not hit an admitted static object");
         glm::vec3 normal(impl_->world.getRayResultNormalX(hit), impl_->world.getRayResultNormalY(hit),
                          impl_->world.getRayResultNormalZ(hit));
         if (glm::dot(normal, normal) < 1.0e-8f)
-            return placementError<void>(editing::Status::Failed, "scene.physics-placement.surface-normal",
-                                        "Surface alignment hit did not provide a usable normal");
+            return editing::failed<void>(editing::Status::Failed,
+                                         editing::RuleId("scene.physics-placement.surface-normal"),
+                                         "Surface alignment hit did not provide a usable normal");
         normal                    = glm::normalize(normal);
         const glm::vec3 initialUp = impl_->initialHandleRotation * glm::vec3(0.0f, 1.0f, 0.0f);
         const glm::quat delta     = glm::rotation(glm::normalize(initialUp), normal);
@@ -412,15 +413,15 @@ editing::Result<void> ScenePhysicsPlacementBackend::alignHandleToSurface(double 
         impl_->surfaceNormal   = normal;
         return editing::applied<void>();
     } catch (const std::exception& error) {
-        return placementError<void>(editing::Status::Failed, "scene.physics-placement.surface-align",
-                                    std::string("Surface alignment failed: ") + error.what());
+        return editing::failed<void>(editing::Status::Failed, editing::RuleId("scene.physics-placement.surface-align"),
+                                     std::string("Surface alignment failed: ") + error.what());
     }
 }
 
 editing::Result<void> ScenePhysicsPlacementBackend::step(std::uint64_t tick, double fixedDelta) {
     if (tick <= impl_->tick || !finite(fixedDelta) || fixedDelta <= 0.0 || fixedDelta > 1.0)
-        return placementError<void>(editing::Status::Rejected, "scene.physics-placement.step",
-                                    "Placement ticks must increase and delta must be within (0, 1]");
+        return editing::failed<void>(editing::Status::Rejected, editing::RuleId("scene.physics-placement.step"),
+                                     "Placement ticks must increase and delta must be within (0, 1]");
     try {
         if (impl_->request.settings.mode != PhysicsPlacementMode::Fall) {
             const glm::quat  delta = glm::normalize(impl_->handleRotation * glm::inverse(impl_->initialHandleRotation));
@@ -529,8 +530,8 @@ editing::Result<void> ScenePhysicsPlacementBackend::step(std::uint64_t tick, dou
         impl_->tick = tick;
         return editing::applied<void>();
     } catch (const std::exception& error) {
-        return placementError<void>(editing::Status::Failed, "scene.physics-placement.advance",
-                                    std::string("Placement preview failed to advance: ") + error.what());
+        return editing::failed<void>(editing::Status::Failed, editing::RuleId("scene.physics-placement.advance"),
+                                     std::string("Placement preview failed to advance: ") + error.what());
     }
 }
 

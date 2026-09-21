@@ -16,8 +16,9 @@ const Value* member(const Value::Object& object, std::string_view key) {
 Result<std::string> requiredString(const Value::Object& object, std::string_view key, std::string path) {
     const Value* value = member(object, key);
     if (!value || !value->isString() || value->asString().empty())
-        return detail::failure<std::string>(DiagnosticCode::ParseError,
-                                            "Unreal adapter field must be a non-empty string", std::move(path));
+        return Result<std::string>::failure(Diagnostic::error(DiagnosticCode::ParseError,
+                                                              "Unreal adapter field must be a non-empty string",
+                                                              std::move(path), {}, "asset.import"));
     return Result<std::string>::success(value->asString());
 }
 
@@ -25,8 +26,9 @@ Result<std::uint32_t> requiredUint32(const Value::Object& object, std::string_vi
     const Value* value = member(object, key);
     if (!value || !value->isInt64() || value->asInt() <= 0 ||
         value->asInt() > std::numeric_limits<std::uint32_t>::max())
-        return detail::failure<std::uint32_t>(DiagnosticCode::ParseError,
-                                              "Unreal adapter field must be a positive uint32", std::move(path));
+        return Result<std::uint32_t>::failure(Diagnostic::error(DiagnosticCode::ParseError,
+                                                                "Unreal adapter field must be a positive uint32",
+                                                                std::move(path), {}, "asset.import"));
     return Result<std::uint32_t>::success(static_cast<std::uint32_t>(value->asInt()));
 }
 
@@ -34,10 +36,13 @@ Result<float> number(const Value& value, std::string path) {
     double result = 0;
     if (value.isDouble()) result = value.asDouble();
     else if (value.isInt64()) result = static_cast<double>(value.asInt());
-    else return detail::failure<float>(DiagnosticCode::ParseError, "Unreal numeric field is invalid", std::move(path));
+    else
+        return Result<float>::failure(Diagnostic::error(DiagnosticCode::ParseError, "Unreal numeric field is invalid",
+                                                        std::move(path), {}, "asset.import"));
     if (!std::isfinite(result) || result < -std::numeric_limits<float>::max() ||
         result > std::numeric_limits<float>::max())
-        return detail::failure<float>(DiagnosticCode::ParseError, "Unreal numeric field is non-finite", std::move(path));
+        return Result<float>::failure(Diagnostic::error(
+            DiagnosticCode::ParseError, "Unreal numeric field is non-finite", std::move(path), {}, "asset.import"));
     return Result<float>::success(static_cast<float>(result));
 }
 
@@ -45,8 +50,9 @@ template <std::size_t Count>
 Result<std::array<float, Count>> numberArray(const Value* value, std::string path) {
     const auto* array = value ? value->getIf<Value::Array>() : nullptr;
     if (!array || array->size() != Count)
-        return detail::failure<std::array<float, Count>>(DiagnosticCode::ParseError,
-                                                        "Unreal vector field has the wrong shape", std::move(path));
+        return Result<std::array<float, Count>>::failure(Diagnostic::error(DiagnosticCode::ParseError,
+                                                                           "Unreal vector field has the wrong shape",
+                                                                           std::move(path), {}, "asset.import"));
     std::array<float, Count> result{};
     for (std::size_t index = 0; index < Count; ++index) {
         auto parsed = number((*array)[index], path + "[" + std::to_string(index) + "]");
@@ -125,54 +131,62 @@ Result<void> preserveSource(PreparedAssetImport& output, const UnrealProjectImpo
 
 Result<PreparedAssetImport> prepareUnrealM4Import(const UnrealProjectImportRequest& request) {
     if (!safeProjectPath(request.descriptorPath, request.limits))
-        return detail::failure<PreparedAssetImport>(DiagnosticCode::InvalidArgument,
-                                                    "Unreal adapter descriptor path is unsafe");
+        return Result<PreparedAssetImport>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "Unreal adapter descriptor path is unsafe", {}, {}, "asset.import"));
     const auto descriptorFile = request.files.find(request.descriptorPath);
     if (descriptorFile == request.files.end() || descriptorFile->second.size() > request.limits.maximumSourceBytes)
-        return detail::failure<PreparedAssetImport>(DiagnosticCode::NotFound,
-                                                    "Unreal adapter descriptor was not supplied", request.descriptorPath);
+        return Result<PreparedAssetImport>::failure(Diagnostic::error(DiagnosticCode::NotFound,
+                                                                      "Unreal adapter descriptor was not supplied",
+                                                                      request.descriptorPath, {}, "asset.import"));
     std::uint64_t sourceTotal = 0;
     for (const auto& [path, bytes] : request.files) {
         if (!safeProjectPath(path, request.limits) || bytes.size() > request.limits.maximumSourceBytes ||
             sourceTotal > request.limits.maximumSourceBytes - bytes.size())
-            return detail::failure<PreparedAssetImport>(DiagnosticCode::InvalidArgument,
-                                                        "Unreal source path or total budget is invalid", path);
+            return Result<PreparedAssetImport>::failure(
+                Diagnostic::error(DiagnosticCode::InvalidArgument, "Unreal source path or total budget is invalid",
+                                  path, {}, "asset.import"));
         sourceTotal += bytes.size();
     }
     const std::string json(descriptorFile->second.begin(), descriptorFile->second.end());
     auto parsed = Value::fromJson(json);
     if (!parsed) return Result<PreparedAssetImport>::failure(parsed.status());
     const auto* root = parsed.value().getIf<Value::Object>();
-    if (!root) return detail::failure<PreparedAssetImport>(DiagnosticCode::ParseError,
-                                                           "Unreal adapter descriptor root must be an object");
+    if (!root)
+        return Result<PreparedAssetImport>::failure(Diagnostic::error(
+            DiagnosticCode::ParseError, "Unreal adapter descriptor root must be an object", {}, {}, "asset.import"));
     auto schema = requiredString(*root, "schema", "$.schema");
     auto version = requiredUint32(*root, "schemaVersion", "$.schemaVersion");
-    if (!schema || !version) return detail::failure<PreparedAssetImport>(DiagnosticCode::ParseError,
-                                                                         "Unreal descriptor envelope is invalid");
+    if (!schema || !version)
+        return Result<PreparedAssetImport>::failure(Diagnostic::error(
+            DiagnosticCode::ParseError, "Unreal descriptor envelope is invalid", {}, {}, "asset.import"));
     if (schema.value() != "eve.unreal-landscape-import" || version.value() != 1)
-        return detail::failure<PreparedAssetImport>(DiagnosticCode::UnknownVersion,
-                                                    "unsupported Unreal adapter descriptor schema/version");
+        return Result<PreparedAssetImport>::failure(
+            Diagnostic::error(DiagnosticCode::UnknownVersion, "unsupported Unreal adapter descriptor schema/version",
+                              {}, {}, "asset.import"));
     const auto* landscapeValue = member(*root, "landscape");
     const auto* landscape = landscapeValue ? landscapeValue->getIf<Value::Object>() : nullptr;
-    if (!landscape) return detail::failure<PreparedAssetImport>(DiagnosticCode::ParseError,
-                                                                "Unreal descriptor landscape is required");
+    if (!landscape)
+        return Result<PreparedAssetImport>::failure(Diagnostic::error(
+            DiagnosticCode::ParseError, "Unreal descriptor landscape is required", {}, {}, "asset.import"));
     auto sourceWidth = requiredUint32(*landscape, "width", "$.landscape.width");
     auto sourceHeight = requiredUint32(*landscape, "height", "$.landscape.height");
     auto heightmap = requiredString(*landscape, "heightmap", "$.landscape.heightmap");
     auto scale = numberArray<3>(member(*landscape, "scaleCm"), "$.landscape.scaleCm");
     if (!sourceWidth || !sourceHeight || !heightmap || !scale)
-        return detail::failure<PreparedAssetImport>(DiagnosticCode::ParseError,
-                                                    "Unreal Landscape fields are invalid");
+        return Result<PreparedAssetImport>::failure(Diagnostic::error(
+            DiagnosticCode::ParseError, "Unreal Landscape fields are invalid", {}, {}, "asset.import"));
     if (sourceWidth.value() < 2 || sourceHeight.value() < 2 || scale.value()[0] <= 0 ||
         scale.value()[1] <= 0 || scale.value()[2] <= 0 || !safeProjectPath(heightmap.value(), request.limits))
-        return detail::failure<PreparedAssetImport>(DiagnosticCode::InvalidArgument,
-                                                    "Unreal Landscape dimensions/scale/path are invalid");
+        return Result<PreparedAssetImport>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "Unreal Landscape dimensions/scale/path are invalid", {},
+                              {}, "asset.import"));
     const auto heightFile = request.files.find(heightmap.value());
     const std::uint64_t sampleCount = std::uint64_t(sourceWidth.value()) * sourceHeight.value();
     if (heightFile == request.files.end() || sampleCount > request.limits.maximumDecodedBytes / sizeof(float) ||
         heightFile->second.size() != sampleCount * 2)
-        return detail::failure<PreparedAssetImport>(DiagnosticCode::ParseError,
-                                                    "Unreal Landscape R16 byte count is invalid", heightmap.value());
+        return Result<PreparedAssetImport>::failure(Diagnostic::error(DiagnosticCode::ParseError,
+                                                                      "Unreal Landscape R16 byte count is invalid",
+                                                                      heightmap.value(), {}, "asset.import"));
     CanonicalTerrainInput terrain;
     // UE X rows become canonical -Z rows; UE Y columns become canonical +X columns.
     terrain.width = sourceWidth.value();
@@ -200,31 +214,36 @@ Result<PreparedAssetImport> prepareUnrealM4Import(const UnrealProjectImportReque
     const auto* layers = layersValue ? layersValue->getIf<Value::Array>() : nullptr;
     if (layers) for (std::size_t index = 0; index < layers->size(); ++index) {
         const auto* layer = (*layers)[index].getIf<Value::Object>();
-        if (!layer) return detail::failure<PreparedAssetImport>(DiagnosticCode::ParseError,
-                                                                "M4 layer must be an object");
+        if (!layer)
+            return Result<PreparedAssetImport>::failure(
+                Diagnostic::error(DiagnosticCode::ParseError, "M4 layer must be an object", {}, {}, "asset.import"));
         auto name = requiredString(*layer, "name", "$.layers[].name");
         if (!name) return Result<PreparedAssetImport>::failure(name.status());
         CanonicalTerrainLayer output;
         output.name = name.value(); output.normalConvention = "directx";
         if (const Value* diffuse = member(*layer, "diffuse")) {
             if (!diffuse->isString() || !safeProjectPath(diffuse->asString(), request.limits))
-                return detail::failure<PreparedAssetImport>(DiagnosticCode::InvalidArgument, "M4 diffuse path is invalid");
+                return Result<PreparedAssetImport>::failure(Diagnostic::error(
+                    DiagnosticCode::InvalidArgument, "M4 diffuse path is invalid", {}, {}, "asset.import"));
             output.diffuseSource = "sources/unreal/" + diffuse->asString(); preserved.emplace(diffuse->asString());
         }
         if (const Value* normal = member(*layer, "normal")) {
             if (!normal->isString() || !safeProjectPath(normal->asString(), request.limits))
-                return detail::failure<PreparedAssetImport>(DiagnosticCode::InvalidArgument, "M4 normal path is invalid");
+                return Result<PreparedAssetImport>::failure(Diagnostic::error(
+                    DiagnosticCode::InvalidArgument, "M4 normal path is invalid", {}, {}, "asset.import"));
             output.normalSource = "sources/unreal/" + normal->asString(); preserved.emplace(normal->asString());
         }
         if (const Value* weight = member(*layer, "weight")) {
             if (!weight->isString() || !safeProjectPath(weight->asString(), request.limits))
-                return detail::failure<PreparedAssetImport>(DiagnosticCode::InvalidArgument, "M4 weight path is invalid");
+                return Result<PreparedAssetImport>::failure(Diagnostic::error(
+                    DiagnosticCode::InvalidArgument, "M4 weight path is invalid", {}, {}, "asset.import"));
             output.weightSource = "sources/unreal/" + weight->asString(); preserved.emplace(weight->asString());
         }
         if (const Value* tile = member(*layer, "tileSizeCm")) {
             auto parsedTile = number(*tile, "$.layers[].tileSizeCm");
-            if (!parsedTile || parsedTile.value() <= 0) return detail::failure<PreparedAssetImport>(DiagnosticCode::InvalidArgument,
-                                                                                                   "M4 tile size is invalid");
+            if (!parsedTile || parsedTile.value() <= 0)
+                return Result<PreparedAssetImport>::failure(Diagnostic::error(
+                    DiagnosticCode::InvalidArgument, "M4 tile size is invalid", {}, {}, "asset.import"));
             output.tileSizeMeters = parsedTile.value() / 100.0f;
         }
         terrain.layers.push_back(std::move(output));
@@ -233,19 +252,23 @@ Result<PreparedAssetImport> prepareUnrealM4Import(const UnrealProjectImportReque
     const auto* grass = grassValue ? grassValue->getIf<Value::Array>() : nullptr;
     if (grass) for (std::size_t index = 0; index < grass->size(); ++index) {
         const auto* rule = (*grass)[index].getIf<Value::Object>();
-        if (!rule) return detail::failure<PreparedAssetImport>(DiagnosticCode::ParseError, "M4 grass rule must be an object");
+        if (!rule)
+            return Result<PreparedAssetImport>::failure(Diagnostic::error(
+                DiagnosticCode::ParseError, "M4 grass rule must be an object", {}, {}, "asset.import"));
         auto id = requiredString(*rule, "id", "$.grass[].id");
         auto prototype = requiredString(*rule, "prototype", "$.grass[].prototype");
         auto layer = requiredString(*rule, "layer", "$.grass[].layer");
         const Value* densityValue = member(*rule, "densityPerSquareMeter");
         if (!id || !prototype || !layer || !densityValue)
-            return detail::failure<PreparedAssetImport>(DiagnosticCode::ParseError, "M4 grass fields are incomplete");
+            return Result<PreparedAssetImport>::failure(Diagnostic::error(
+                DiagnosticCode::ParseError, "M4 grass fields are incomplete", {}, {}, "asset.import"));
         auto density = number(*densityValue, "$.grass[].densityPerSquareMeter");
         if (!density) return Result<PreparedAssetImport>::failure(density.status());
         CanonicalScatterRule output{id.value(), prototype.value(), layer.value(), density.value(), 0, 1.57079632679f, 0};
         if (const Value* seed = member(*rule, "seed")) {
             if (!seed->isInt64() || seed->asInt() < 0)
-                return detail::failure<PreparedAssetImport>(DiagnosticCode::ParseError, "M4 grass seed is invalid");
+                return Result<PreparedAssetImport>::failure(
+                    Diagnostic::error(DiagnosticCode::ParseError, "M4 grass seed is invalid", {}, {}, "asset.import"));
             output.seed = static_cast<std::uint64_t>(seed->asInt());
         }
         terrain.scatterRules.push_back(std::move(output));
@@ -254,13 +277,16 @@ Result<PreparedAssetImport> prepareUnrealM4Import(const UnrealProjectImportReque
     const auto* instances = instancesValue ? instancesValue->getIf<Value::Array>() : nullptr;
     if (instances) for (const auto& value : *instances) {
         const auto* instance = value.getIf<Value::Object>();
-        if (!instance) return detail::failure<PreparedAssetImport>(DiagnosticCode::ParseError, "UE instance must be an object");
+        if (!instance)
+            return Result<PreparedAssetImport>::failure(
+                Diagnostic::error(DiagnosticCode::ParseError, "UE instance must be an object", {}, {}, "asset.import"));
         auto prototype = requiredString(*instance, "prototype", "$.instances[].prototype");
         auto position = numberArray<3>(member(*instance, "positionCm"), "$.instances[].positionCm");
         auto rotation = numberArray<4>(member(*instance, "rotationQuat"), "$.instances[].rotationQuat");
         auto scaleValue = numberArray<3>(member(*instance, "scale"), "$.instances[].scale");
         if (!prototype || !position || !rotation || !scaleValue)
-            return detail::failure<PreparedAssetImport>(DiagnosticCode::ParseError, "UE instance transform is invalid");
+            return Result<PreparedAssetImport>::failure(Diagnostic::error(
+                DiagnosticCode::ParseError, "UE instance transform is invalid", {}, {}, "asset.import"));
         CanonicalTerrainInstance output;
         output.prototype = prototype.value();
         output.position[0] = position.value()[1] / 100.0f;
@@ -295,11 +321,13 @@ Result<PreparedAssetImport> prepareUnrealM4Import(const UnrealProjectImportReque
                                           "grass density/layer rules mapped to deterministic PCG"});
     if (const Value* unsupportedValue = member(*root, "unsupported")) {
         const auto* unsupported = unsupportedValue->getIf<Value::Array>();
-        if (!unsupported) return detail::failure<PreparedAssetImport>(DiagnosticCode::ParseError,
-                                                                      "unsupported must be an array");
+        if (!unsupported)
+            return Result<PreparedAssetImport>::failure(
+                Diagnostic::error(DiagnosticCode::ParseError, "unsupported must be an array", {}, {}, "asset.import"));
         for (const auto& feature : *unsupported) {
-            if (!feature.isString()) return detail::failure<PreparedAssetImport>(DiagnosticCode::ParseError,
-                                                                                 "unsupported feature must be a string");
+            if (!feature.isString())
+                return Result<PreparedAssetImport>::failure(Diagnostic::error(
+                    DiagnosticCode::ParseError, "unsupported feature must be a string", {}, {}, "asset.import"));
             output.findings.push_back({request.descriptorPath, feature.asString(), ImportDisposition::Unsupported,
                                        "native Unreal behavior is not executed by the data-only adapter"});
         }

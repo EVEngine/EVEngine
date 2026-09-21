@@ -789,6 +789,14 @@ uint32_t Graphics::materialTableGetOrCreate(Material *material) {
         syncMaterialTable();
         return it->second;
     }
+    if (!materialTableFree_.empty()) {
+        const uint32_t idx = materialTableFree_.back();
+        materialTableFree_.pop_back();
+        materialTableIndex_.emplace(material, idx);
+        materialTableRecords_[idx] = buildMaterialRecord(material);
+        syncMaterialTable();
+        return idx;
+    }
     if (materialTableRecords_.size() >= materialTableCapacity_) return kInvalidBindlessSlot;
     const uint32_t idx = uint32_t(materialTableRecords_.size());
     materialTableIndex_.emplace(material, idx);
@@ -812,13 +820,25 @@ uint32_t Graphics::gpuDrivenMeshRecord(Mesh *mesh) {
 }
 
 bool Graphics::gpuDrivenMaterialUsable(Material *material) {
-    if (!material ||
-        material->virtualTextureMode() == MaterialVirtualTextureMode::AtlasPageTable)
+    if (!material || material->virtualTextureMode() == MaterialVirtualTextureMode::AtlasPageTable ||
+        material->surfaceMode() == SurfaceMode::Transparent || material->hasPbrSurface())
         return false;
-    const uint32_t id = materialTableGetOrCreate(material);
-    // Any material with a GPU table record is representable by the bindless
-    // path; descriptor-array indexing handles arbitrary slots.
-    return id != kInvalidBindlessSlot;
+    return materialTableIndex_.contains(material) || !materialTableFree_.empty() ||
+           materialTableRecords_.size() < materialTableCapacity_;
+}
+
+Result<void> Graphics::gpuDrivenReleaseMaterialRecord(Material *material) {
+    if (!material)
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                       "cannot release a null GPU-driven material"));
+    const auto found = materialTableIndex_.find(material);
+    if (found == materialTableIndex_.end()) return Result<void>::success();
+    const uint32_t slot = found->second;
+    materialTableIndex_.erase(found);
+    materialTableRecords_[slot] = {};
+    materialTableFree_.push_back(slot);
+    syncMaterialTable();
+    return Result<void>::success();
 }
 
 bool Graphics::gpuDrivenSubmitOpaque(const GpuInstance *instances, uint32_t instanceCount) {

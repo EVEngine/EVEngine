@@ -8,11 +8,6 @@
 namespace eve::procgen {
 namespace {
 
-template <class T>
-Result<T> splineFailure(DiagnosticCode code, std::string message, std::string path = {}) {
-    return Result<T>::failure(Diagnostic::error(code, std::move(message), std::move(path), {}, "procgen.splinePath"));
-}
-
 bool finite(const SplinePoint& p) {
     return std::isfinite(p.x) && std::isfinite(p.y) && std::isfinite(p.z) && std::isfinite(p.inX) &&
            std::isfinite(p.inY) && std::isfinite(p.inZ) && std::isfinite(p.outX) && std::isfinite(p.outY) &&
@@ -45,8 +40,9 @@ V3 position(const SplinePoint& p) { return {p.x, p.y, p.z}; }
 
 Result<void> SplinePath::setKindResult(std::string_view kind) {
     if (kind != "linear" && kind != "catmullRom" && kind != "quadraticBezier" && kind != "bezier")
-        return splineFailure<void>(DiagnosticCode::InvalidArgument,
-                                   "spline kind must be linear, catmullRom, quadraticBezier, or bezier", "kind");
+        return Result<void>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "spline kind must be linear, catmullRom, quadraticBezier, or bezier",
+            "kind", {}, "procgen.splinePath"));
     kind_ = kind;
     invalidate();
     return Result<void>::success();
@@ -66,7 +62,8 @@ void SplinePath::setClosed(bool closed) {
 
 Result<void> SplinePath::addPointResult(const SplinePoint& point) {
     if (!finite(point))
-        return splineFailure<void>(DiagnosticCode::InvalidArgument, "spline point must be finite", "point");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "spline point must be finite",
+                                                       "point", {}, "procgen.splinePath"));
     points_.push_back(point);
     invalidate();
     return Result<void>::success();
@@ -74,9 +71,11 @@ Result<void> SplinePath::addPointResult(const SplinePoint& point) {
 
 Result<void> SplinePath::setPointResult(int index, const SplinePoint& point) {
     if (index < 0 || index >= pointCount())
-        return splineFailure<void>(DiagnosticCode::NotFound, "spline point index is out of range", "point.index");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::NotFound, "spline point index is out of range",
+                                                       "point.index", {}, "procgen.splinePath"));
     if (!finite(point))
-        return splineFailure<void>(DiagnosticCode::InvalidArgument, "spline point must be finite", "point");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "spline point must be finite",
+                                                       "point", {}, "procgen.splinePath"));
     points_[static_cast<std::size_t>(index)] = point;
     invalidate();
     return Result<void>::success();
@@ -84,11 +83,13 @@ Result<void> SplinePath::setPointResult(int index, const SplinePoint& point) {
 
 Result<void> SplinePath::setPointProfileResult(int index, float rollDegrees, float scaleX, float scaleY) {
     if (index < 0 || index >= pointCount())
-        return splineFailure<void>(DiagnosticCode::NotFound, "spline point index is out of range", "point.index");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::NotFound, "spline point index is out of range",
+                                                       "point.index", {}, "procgen.splinePath"));
     if (!std::isfinite(rollDegrees) || !std::isfinite(scaleX) || !std::isfinite(scaleY) || scaleX <= 0.f ||
         scaleY <= 0.f)
-        return splineFailure<void>(DiagnosticCode::InvalidArgument,
-                                   "spline point profile requires finite roll and positive scales", "point.profile");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                       "spline point profile requires finite roll and positive scales",
+                                                       "point.profile", {}, "procgen.splinePath"));
     auto candidate                           = points_[static_cast<std::size_t>(index)];
     candidate.rollDegrees                    = rollDegrees;
     candidate.scaleX                         = scaleX;
@@ -100,10 +101,12 @@ Result<void> SplinePath::setPointProfileResult(int index, float rollDegrees, flo
 
 Result<void> SplinePath::setPointRotationResult(int index, float pitchDegrees, float yawDegrees, float rollDegrees) {
     if (index < 0 || index >= pointCount())
-        return splineFailure<void>(DiagnosticCode::NotFound, "spline point index is out of range", "point.index");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::NotFound, "spline point index is out of range",
+                                                       "point.index", {}, "procgen.splinePath"));
     if (!std::isfinite(pitchDegrees) || !std::isfinite(yawDegrees) || !std::isfinite(rollDegrees))
-        return splineFailure<void>(DiagnosticCode::InvalidArgument, "spline point rotation must be finite",
-                                   "point.rotation");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                       "spline point rotation must be finite", "point.rotation", {},
+                                                       "procgen.splinePath"));
     auto candidate                           = points_[static_cast<std::size_t>(index)];
     candidate.pitchDegrees                   = pitchDegrees;
     candidate.yawDegrees                     = yawDegrees;
@@ -115,11 +118,13 @@ Result<void> SplinePath::setPointRotationResult(int index, float pitchDegrees, f
 
 Result<void> SplinePath::setPointChunkBreakResult(int index, bool disconnected) {
     if (index <= 0 || index >= pointCount())
-        return splineFailure<void>(DiagnosticCode::NotFound, "chunk breaks require a non-first existing spline point",
-                                   "point.index");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::NotFound,
+                                                       "chunk breaks require a non-first existing spline point",
+                                                       "point.index", {}, "procgen.splinePath"));
     if (closed_ && disconnected)
-        return splineFailure<void>(DiagnosticCode::PreconditionViolation,
-                                   "closed splines cannot contain disconnected chunks", "closed");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::PreconditionViolation,
+                                                       "closed splines cannot contain disconnected chunks", "closed",
+                                                       {}, "procgen.splinePath"));
     if (points_[static_cast<std::size_t>(index)].breakBefore == disconnected) return Result<void>::success();
     points_[static_cast<std::size_t>(index)].breakBefore = disconnected;
     invalidate();
@@ -128,7 +133,8 @@ Result<void> SplinePath::setPointChunkBreakResult(int index, bool disconnected) 
 
 Result<void> SplinePath::removePointResult(int index) {
     if (index < 0 || index >= pointCount())
-        return splineFailure<void>(DiagnosticCode::NotFound, "spline point index is out of range", "point.index");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::NotFound, "spline point index is out of range",
+                                                       "point.index", {}, "procgen.splinePath"));
     points_.erase(points_.begin() + index);
     invalidate();
     return Result<void>::success();
@@ -158,7 +164,8 @@ int SplinePath::chunkCount() const noexcept {
 
 Result<SplinePath> SplinePath::chunkPathResult(int chunk) const {
     if (chunk < 0 || chunk >= chunkCount())
-        return splineFailure<SplinePath>(DiagnosticCode::NotFound, "spline chunk index is out of range", "chunk.index");
+        return Result<SplinePath>::failure(Diagnostic::error(
+            DiagnosticCode::NotFound, "spline chunk index is out of range", "chunk.index", {}, "procgen.splinePath"));
     SplinePath result;
     result.kind_ = kind_;
     int current  = 0;
@@ -172,8 +179,9 @@ Result<SplinePath> SplinePath::chunkPathResult(int chunk) const {
     result.closed_   = closed_ && chunkCount() == 1;
     result.revision_ = revision_;
     if (result.segmentCount() == 0)
-        return splineFailure<SplinePath>(DiagnosticCode::PreconditionViolation,
-                                         "each spline chunk requires at least two points", "chunk.points");
+        return Result<SplinePath>::failure(Diagnostic::error(DiagnosticCode::PreconditionViolation,
+                                                             "each spline chunk requires at least two points",
+                                                             "chunk.points", {}, "procgen.splinePath"));
     return Result<SplinePath>::success(std::move(result));
 }
 
@@ -187,8 +195,9 @@ std::vector<std::pair<int, int>> SplinePath::segmentEndpoints() const {
 
 Result<void> SplinePath::validateReady() const {
     if (segmentCount() == 0)
-        return splineFailure<void>(DiagnosticCode::PreconditionViolation, "spline requires at least two points",
-                                   "points");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::PreconditionViolation,
+                                                       "spline requires at least two points", "points", {},
+                                                       "procgen.splinePath"));
     return Result<void>::success();
 }
 
@@ -277,7 +286,8 @@ Result<SplineSample> SplinePath::evaluateResult(float t) const {
     auto valid = validateReady();
     if (!valid.ok()) return Result<SplineSample>::failure(valid.status());
     if (!std::isfinite(t))
-        return splineFailure<SplineSample>(DiagnosticCode::InvalidArgument, "spline parameter must be finite", "t");
+        return Result<SplineSample>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "spline parameter must be finite", "t", {}, "procgen.splinePath"));
     return Result<SplineSample>::success(evaluateUnchecked(t));
 }
 
@@ -285,8 +295,9 @@ Result<void> SplinePath::ensureArcTable(int samplesPerSegment) const {
     auto valid = validateReady();
     if (!valid.ok()) return valid;
     if (samplesPerSegment < 2 || samplesPerSegment > 1024)
-        return splineFailure<void>(DiagnosticCode::InvalidArgument, "arc samples per segment must be in [2, 1024]",
-                                   "samplesPerSegment");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                       "arc samples per segment must be in [2, 1024]",
+                                                       "samplesPerSegment", {}, "procgen.splinePath"));
     if (arcSamplesPerSegment_ == samplesPerSegment && !arcTable_.empty()) return Result<void>::success();
     arcTable_.clear();
     arcTable_.reserve(static_cast<std::size_t>(segmentCount() * samplesPerSegment + chunkCount()));
@@ -319,8 +330,8 @@ Result<float> SplinePath::lengthResult(int samplesPerSegment) const {
 
 Result<SplineSample> SplinePath::evaluateDistanceResult(float distance, int samplesPerSegment) const {
     if (!std::isfinite(distance))
-        return splineFailure<SplineSample>(DiagnosticCode::InvalidArgument, "spline distance must be finite",
-                                           "distance");
+        return Result<SplineSample>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "spline distance must be finite", "distance", {}, "procgen.splinePath"));
     auto ready = ensureArcTable(samplesPerSegment);
     if (!ready.ok()) return Result<SplineSample>::failure(ready.status());
     const float total  = arcTable_.back().distance;
@@ -354,8 +365,8 @@ Result<SplineSample> SplinePath::evaluateDistanceResult(float distance, int samp
 
 Result<SplineSample> SplinePath::closestPointResult(float x, float y, float z, int samplesPerSegment) const {
     if (!std::isfinite(x) || !std::isfinite(y) || !std::isfinite(z))
-        return splineFailure<SplineSample>(DiagnosticCode::InvalidArgument, "closest point query must be finite",
-                                           "point");
+        return Result<SplineSample>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "closest point query must be finite", "point", {}, "procgen.splinePath"));
     auto ready = ensureArcTable(samplesPerSegment);
     if (!ready.ok()) return Result<SplineSample>::failure(ready.status());
     float        bestSquared = 0.f;
@@ -380,11 +391,12 @@ Result<SplineSample> SplinePath::closestPointResult(float x, float y, float z, i
 Result<std::vector<SplineFrameSample>> SplinePath::sampleFramesResult(int sampleCount, bool uniformByDistance,
                                                                       float rollDegrees, int samplesPerSegment) const {
     if (sampleCount < 1 || sampleCount > 4096)
-        return splineFailure<std::vector<SplineFrameSample>>(DiagnosticCode::InvalidArgument,
-                                                             "frame sampleCount must be in [1, 4096]", "sampleCount");
+        return Result<std::vector<SplineFrameSample>>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "frame sampleCount must be in [1, 4096]", "sampleCount",
+                              {}, "procgen.splinePath"));
     if (!std::isfinite(rollDegrees))
-        return splineFailure<std::vector<SplineFrameSample>>(DiagnosticCode::InvalidArgument,
-                                                             "frame roll must be finite", "rollDegrees");
+        return Result<std::vector<SplineFrameSample>>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "frame roll must be finite", "rollDegrees", {}, "procgen.splinePath"));
     float totalLength = 0.f;
     if (uniformByDistance) {
         auto measured = lengthResult(samplesPerSegment);
@@ -490,15 +502,17 @@ Result<std::vector<SplineFrameSample>> SplinePath::sampleFramesResult(int sample
 
 Result<SplineSample> SplineDistribution::sampleResult(int index) const {
     if (index < 0 || index >= count())
-        return splineFailure<SplineSample>(DiagnosticCode::NotFound, "spline distribution index is out of range",
-                                           "distribution.index");
+        return Result<SplineSample>::failure(Diagnostic::error(DiagnosticCode::NotFound,
+                                                               "spline distribution index is out of range",
+                                                               "distribution.index", {}, "procgen.splinePath"));
     return Result<SplineSample>::success(frames_[static_cast<std::size_t>(index)].sample);
 }
 
 Result<SplineFrameSample> SplineDistribution::frameResult(int index) const {
     if (index < 0 || index >= count())
-        return splineFailure<SplineFrameSample>(DiagnosticCode::NotFound, "spline distribution index is out of range",
-                                                "distribution.index");
+        return Result<SplineFrameSample>::failure(Diagnostic::error(DiagnosticCode::NotFound,
+                                                                    "spline distribution index is out of range",
+                                                                    "distribution.index", {}, "procgen.splinePath"));
     return Result<SplineFrameSample>::success(frames_[static_cast<std::size_t>(index)]);
 }
 
@@ -514,8 +528,9 @@ int SplinePolyline::chunkPointCount(int chunk) const noexcept {
 
 Result<SplineSample> SplinePolyline::chunkPointResult(int chunk, int index) const {
     if (chunk < 0 || chunk >= chunkCount() || index < 0 || index >= chunkPointCount(chunk))
-        return splineFailure<SplineSample>(DiagnosticCode::NotFound, "spline polyline index is out of range",
-                                           "polyline.index");
+        return Result<SplineSample>::failure(Diagnostic::error(DiagnosticCode::NotFound,
+                                                               "spline polyline index is out of range",
+                                                               "polyline.index", {}, "procgen.splinePath"));
     return Result<SplineSample>::success(chunks_[static_cast<std::size_t>(chunk)][static_cast<std::size_t>(index)]);
 }
 
@@ -526,17 +541,19 @@ Result<SplineSample> SplinePolyline::pointResult(int index) const {
                 return Result<SplineSample>::success(chunk[static_cast<std::size_t>(index)]);
             index -= static_cast<int>(chunk.size());
         }
-    return splineFailure<SplineSample>(DiagnosticCode::NotFound, "spline polyline index is out of range",
-                                       "polyline.index");
+    return Result<SplineSample>::failure(Diagnostic::error(
+        DiagnosticCode::NotFound, "spline polyline index is out of range", "polyline.index", {}, "procgen.splinePath"));
 }
 
 Result<SplineSample> SplinePath::travelResult(float distance, std::string_view wrapMode, int samplesPerSegment) const {
     if (!std::isfinite(distance))
-        return splineFailure<SplineSample>(DiagnosticCode::InvalidArgument, "spline travel distance must be finite",
-                                           "distance");
+        return Result<SplineSample>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                               "spline travel distance must be finite", "distance", {},
+                                                               "procgen.splinePath"));
     if (wrapMode != "clamp" && wrapMode != "loop" && wrapMode != "pingPong")
-        return splineFailure<SplineSample>(DiagnosticCode::InvalidArgument,
-                                           "spline travel wrap mode must be clamp, loop, or pingPong", "wrapMode");
+        return Result<SplineSample>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "spline travel wrap mode must be clamp, loop, or pingPong", "wrapMode", {},
+            "procgen.splinePath"));
     auto measured = lengthResult(samplesPerSegment);
     if (!measured.ok()) return Result<SplineSample>::failure(measured.status());
     const float total    = measured.value();
@@ -581,8 +598,9 @@ Result<SplineFrameSample> SplinePath::travelFrameResult(float distance, std::str
 Result<SplineDistribution> SplinePath::distributeResult(int instanceCount, bool includeEnd,
                                                         int samplesPerSegment) const {
     if (instanceCount < 1 || instanceCount > 100000)
-        return splineFailure<SplineDistribution>(DiagnosticCode::InvalidArgument,
-                                                 "spline instanceCount must be in [1, 100000]", "instanceCount");
+        return Result<SplineDistribution>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                                     "spline instanceCount must be in [1, 100000]",
+                                                                     "instanceCount", {}, "procgen.splinePath"));
     const bool duplicateEnd = includeEnd && !closed_ && instanceCount > 1;
     const int  intervals    = duplicateEnd ? instanceCount - 1 : instanceCount;
     auto       frames       = sampleFramesResult(std::max(1, intervals), true, 0.f, samplesPerSegment);
@@ -594,11 +612,13 @@ Result<SplineDistribution> SplinePath::distributeResult(int instanceCount, bool 
 Result<SplinePolyline> SplinePath::polylineResult(int sampleCount, bool uniformByDistance,
                                                   int samplesPerSegment) const {
     if (sampleCount < 2 || sampleCount > 65536)
-        return splineFailure<SplinePolyline>(DiagnosticCode::InvalidArgument,
-                                             "spline polyline sampleCount must be in [2, 65536]", "sampleCount");
+        return Result<SplinePolyline>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                                 "spline polyline sampleCount must be in [2, 65536]",
+                                                                 "sampleCount", {}, "procgen.splinePath"));
     if (sampleCount < chunkCount() * 2)
-        return splineFailure<SplinePolyline>(DiagnosticCode::InvalidArgument,
-                                             "spline polyline requires at least two samples per chunk", "sampleCount");
+        return Result<SplinePolyline>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "spline polyline requires at least two samples per chunk", "sampleCount",
+            {}, "procgen.splinePath"));
     std::vector<std::vector<SplineSample>> chunks;
     chunks.reserve(static_cast<std::size_t>(chunkCount()));
     int remaining = sampleCount;
@@ -631,14 +651,17 @@ Result<SplinePolyline> SplinePath::polylineResult(int sampleCount, bool uniformB
 Result<void> SplinePath::applyShapePresetResult(std::string_view preset, int pointCount, float radius, float height,
                                                 float turns) {
     if (preset != "line" && preset != "circle" && preset != "arc" && preset != "spiral" && preset != "wave")
-        return splineFailure<void>(DiagnosticCode::InvalidArgument,
-                                   "spline preset must be line, circle, arc, spiral, or wave", "preset");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                       "spline preset must be line, circle, arc, spiral, or wave",
+                                                       "preset", {}, "procgen.splinePath"));
     if (pointCount < 2 || pointCount > 4096 || (preset == "circle" && pointCount < 3))
-        return splineFailure<void>(DiagnosticCode::InvalidArgument, "spline preset pointCount is invalid",
-                                   "pointCount");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                       "spline preset pointCount is invalid", "pointCount", {},
+                                                       "procgen.splinePath"));
     if (!std::isfinite(radius) || !std::isfinite(height) || !std::isfinite(turns) || radius <= 0.f || turns <= 0.f)
-        return splineFailure<void>(DiagnosticCode::InvalidArgument,
-                                   "spline preset requires finite positive radius and turns", "preset.parameters");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                       "spline preset requires finite positive radius and turns",
+                                                       "preset.parameters", {}, "procgen.splinePath"));
     constexpr float          tau = 6.28318530717958647692f;
     std::vector<SplinePoint> candidate;
     candidate.reserve(static_cast<std::size_t>(pointCount));

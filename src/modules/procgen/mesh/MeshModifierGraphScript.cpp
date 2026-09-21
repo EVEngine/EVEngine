@@ -48,12 +48,10 @@ void exposeMeshModifierGraph(ssq::Table& table) {
     });
     dynamicPaint.addFunc("currentImageResult", [vm = dynamicPaint.getHandle()](DynamicMeshUvPaintSession* self) {
         auto result = self->currentImageResult();
-        if (!result.ok()) return eve::script::projectStatusResult(vm, result.status(), false, false);
+        if (!result.ok()) return eve::script::projectStatusResult(vm, result.status());
         auto instance = eve::script::makeOwnedSquirrelInstance<image::ImageData>(vm, std::move(result).takeValue());
-        if (!instance.ok()) return eve::script::projectStatusResult(vm, instance.status(), false, false);
-        auto projected = eve::script::projectStatusResult(vm, Status::success(), true, true);
-        projected.set("value", std::move(instance).takeValue());
-        return projected;
+        if (!instance.ok()) return eve::script::projectStatusResult(vm, instance.status());
+        return eve::script::projectStatusResult(vm, Status::success(), std::move(instance).takeValue());
     });
     dynamicPaint.addFunc("getMeshRevision", [](DynamicMeshUvPaintSession* self) { return self->meshRevision(); });
     dynamicPaint.addFunc("getPaintRevision", [](DynamicMeshUvPaintSession* self) { return self->paintRevision(); });
@@ -99,23 +97,19 @@ void exposeMeshModifierGraph(ssq::Table& table) {
     distribution.addFunc("getCount", [](SplineDistribution* self) { return self->count(); });
     distribution.addFunc("getSampleResult", [vm = distribution.getHandle()](SplineDistribution* self, int index) {
         auto result = self->sampleResult(index);
-        if (!result.ok()) return eve::script::projectStatusResult(vm, result.status(), false, false);
+        if (!result.ok()) return eve::script::projectStatusResult(vm, result.status());
         auto instance = eve::script::makeOwnedSquirrelInstance<SplineSample>(
             vm, std::make_unique<SplineSample>(std::move(result).takeValue()));
-        if (!instance.ok()) return eve::script::projectStatusResult(vm, instance.status(), false, false);
-        auto projected = eve::script::projectStatusResult(vm, Status::success(), true, true);
-        projected.set("value", std::move(instance).takeValue());
-        return projected;
+        if (!instance.ok()) return eve::script::projectStatusResult(vm, instance.status());
+        return eve::script::projectStatusResult(vm, Status::success(), std::move(instance).takeValue());
     });
     distribution.addFunc("getFrameResult", [vm = distribution.getHandle()](SplineDistribution* self, int index) {
         auto result = self->frameResult(index);
-        if (!result.ok()) return eve::script::projectStatusResult(vm, result.status(), false, false);
+        if (!result.ok()) return eve::script::projectStatusResult(vm, result.status());
         auto instance = eve::script::makeOwnedSquirrelInstance<SplineFrameSample>(
             vm, std::make_unique<SplineFrameSample>(std::move(result).takeValue()));
-        if (!instance.ok()) return eve::script::projectStatusResult(vm, instance.status(), false, false);
-        auto projected = eve::script::projectStatusResult(vm, Status::success(), true, true);
-        projected.set("value", std::move(instance).takeValue());
-        return projected;
+        if (!instance.ok()) return eve::script::projectStatusResult(vm, instance.status());
+        return eve::script::projectStatusResult(vm, Status::success(), std::move(instance).takeValue());
     });
 
     auto polyline = table.addClass<SplinePolyline>(
@@ -127,23 +121,19 @@ void exposeMeshModifierGraph(ssq::Table& table) {
                      [](SplinePolyline* self, int chunk) { return self->chunkPointCount(chunk); });
     polyline.addFunc("getPointResult", [vm = polyline.getHandle()](SplinePolyline* self, int index) {
         auto result = self->pointResult(index);
-        if (!result.ok()) return eve::script::projectStatusResult(vm, result.status(), false, false);
+        if (!result.ok()) return eve::script::projectStatusResult(vm, result.status());
         auto instance = eve::script::makeOwnedSquirrelInstance<SplineSample>(
             vm, std::make_unique<SplineSample>(std::move(result).takeValue()));
-        if (!instance.ok()) return eve::script::projectStatusResult(vm, instance.status(), false, false);
-        auto projected = eve::script::projectStatusResult(vm, Status::success(), true, true);
-        projected.set("value", std::move(instance).takeValue());
-        return projected;
+        if (!instance.ok()) return eve::script::projectStatusResult(vm, instance.status());
+        return eve::script::projectStatusResult(vm, Status::success(), std::move(instance).takeValue());
     });
     polyline.addFunc("getChunkPointResult", [vm = polyline.getHandle()](SplinePolyline* self, int chunk, int index) {
         auto result = self->chunkPointResult(chunk, index);
-        if (!result.ok()) return eve::script::projectStatusResult(vm, result.status(), false, false);
+        if (!result.ok()) return eve::script::projectStatusResult(vm, result.status());
         auto instance = eve::script::makeOwnedSquirrelInstance<SplineSample>(
             vm, std::make_unique<SplineSample>(std::move(result).takeValue()));
-        if (!instance.ok()) return eve::script::projectStatusResult(vm, instance.status(), false, false);
-        auto projected = eve::script::projectStatusResult(vm, Status::success(), true, true);
-        projected.set("value", std::move(instance).takeValue());
-        return projected;
+        if (!instance.ok()) return eve::script::projectStatusResult(vm, instance.status());
+        return eve::script::projectStatusResult(vm, Status::success(), std::move(instance).takeValue());
     });
 
     auto spline = table.addClass<SplinePath>(
@@ -152,13 +142,11 @@ void exposeMeshModifierGraph(ssq::Table& table) {
         return eve::script::projectResult(vm, std::move(result));
     };
     const auto projectSample = [vm = spline.getHandle()](Result<SplineSample> result) {
-        if (!result.ok()) return eve::script::projectStatusResult(vm, result.status(), false, false);
+        if (!result.ok()) return eve::script::projectStatusResult(vm, result.status());
         auto instance = eve::script::makeOwnedSquirrelInstance<SplineSample>(
             vm, std::make_unique<SplineSample>(std::move(result).takeValue()));
-        if (!instance.ok()) return eve::script::projectStatusResult(vm, instance.status(), false, false);
-        auto projected = eve::script::projectStatusResult(vm, Status::success(), true, true);
-        projected.set("value", std::move(instance).takeValue());
-        return projected;
+        if (!instance.ok()) return eve::script::projectStatusResult(vm, instance.status());
+        return eve::script::projectStatusResult(vm, Status::success(), std::move(instance).takeValue());
     };
     spline.addFunc("setKind", [projectSplineVoid](SplinePath* self, const std::string& kind) mutable {
         return projectSplineVoid(self->setKindResult(kind));
@@ -205,35 +193,29 @@ void exposeMeshModifierGraph(ssq::Table& table) {
     spline.addFunc("travelFrameResult", [vm = spline.getHandle()](SplinePath* self, float distance,
                                                                   const std::string& wrapMode, int samplesPerSegment) {
         auto result = self->travelFrameResult(distance, wrapMode, samplesPerSegment);
-        if (!result.ok()) return eve::script::projectStatusResult(vm, result.status(), false, false);
+        if (!result.ok()) return eve::script::projectStatusResult(vm, result.status());
         auto instance = eve::script::makeOwnedSquirrelInstance<SplineFrameSample>(
             vm, std::make_unique<SplineFrameSample>(std::move(result).takeValue()));
-        if (!instance.ok()) return eve::script::projectStatusResult(vm, instance.status(), false, false);
-        auto projected = eve::script::projectStatusResult(vm, Status::success(), true, true);
-        projected.set("value", std::move(instance).takeValue());
-        return projected;
+        if (!instance.ok()) return eve::script::projectStatusResult(vm, instance.status());
+        return eve::script::projectStatusResult(vm, Status::success(), std::move(instance).takeValue());
     });
     spline.addFunc("distributeResult",
                    [vm = spline.getHandle()](SplinePath* self, int count, bool includeEnd, int samplesPerSegment) {
                        auto result = self->distributeResult(count, includeEnd, samplesPerSegment);
-                       if (!result.ok()) return eve::script::projectStatusResult(vm, result.status(), false, false);
+                       if (!result.ok()) return eve::script::projectStatusResult(vm, result.status());
                        auto instance = eve::script::makeOwnedSquirrelInstance<SplineDistribution>(
                            vm, std::make_unique<SplineDistribution>(std::move(result).takeValue()));
-                       if (!instance.ok()) return eve::script::projectStatusResult(vm, instance.status(), false, false);
-                       auto projected = eve::script::projectStatusResult(vm, Status::success(), true, true);
-                       projected.set("value", std::move(instance).takeValue());
-                       return projected;
+                       if (!instance.ok()) return eve::script::projectStatusResult(vm, instance.status());
+                       return eve::script::projectStatusResult(vm, Status::success(), std::move(instance).takeValue());
                    });
     spline.addFunc("polylineResult", [vm = spline.getHandle()](SplinePath* self, int sampleCount,
                                                                bool uniformByDistance, int samplesPerSegment) {
         auto result = self->polylineResult(sampleCount, uniformByDistance, samplesPerSegment);
-        if (!result.ok()) return eve::script::projectStatusResult(vm, result.status(), false, false);
+        if (!result.ok()) return eve::script::projectStatusResult(vm, result.status());
         auto instance = eve::script::makeOwnedSquirrelInstance<SplinePolyline>(
             vm, std::make_unique<SplinePolyline>(std::move(result).takeValue()));
-        if (!instance.ok()) return eve::script::projectStatusResult(vm, instance.status(), false, false);
-        auto projected = eve::script::projectStatusResult(vm, Status::success(), true, true);
-        projected.set("value", std::move(instance).takeValue());
-        return projected;
+        if (!instance.ok()) return eve::script::projectStatusResult(vm, instance.status());
+        return eve::script::projectStatusResult(vm, Status::success(), std::move(instance).takeValue());
     });
     spline.addFunc("applyShapePreset", [projectSplineVoid](SplinePath* self, const std::string& preset, int pointCount,
                                                            float radius, float height, float turns) mutable {
@@ -241,10 +223,8 @@ void exposeMeshModifierGraph(ssq::Table& table) {
     });
     spline.addFunc("lengthResult", [vm = spline.getHandle()](SplinePath* self, int samplesPerSegment) {
         auto result = self->lengthResult(samplesPerSegment);
-        if (!result.ok()) return eve::script::projectStatusResult(vm, result.status(), false, false);
-        auto projected = eve::script::projectStatusResult(vm, Status::success(), true, true);
-        projected.set("value", result.value());
-        return projected;
+        if (!result.ok()) return eve::script::projectStatusResult(vm, result.status());
+        return eve::script::projectStatusResult(vm, Status::success(), result.value());
     });
     spline.addFunc("getPointCount", [](SplinePath* self) { return self->pointCount(); });
     spline.addFunc("getSegmentCount", [](SplinePath* self) { return self->segmentCount(); });
@@ -272,10 +252,8 @@ void exposeMeshModifierGraph(ssq::Table& table) {
     });
     stroke.addFunc("addPoint", [vm = stroke.getHandle()](GeometryStroke* self, float x, float y, float z) {
         auto result = self->addPointResult(x, y, z);
-        if (!result.ok()) return eve::script::projectStatusResult(vm, result.status(), false, false);
-        auto projected = eve::script::projectStatusResult(vm, Status::success(), true, true);
-        projected.set("value", result.value());
-        return projected;
+        if (!result.ok()) return eve::script::projectStatusResult(vm, result.status());
+        return eve::script::projectStatusResult(vm, Status::success(), result.value());
     });
     stroke.addFunc("undo", [projectStrokeVoid](GeometryStroke* self) mutable {
         return projectStrokeVoid(self->undoResult());
@@ -283,13 +261,11 @@ void exposeMeshModifierGraph(ssq::Table& table) {
     stroke.addFunc("clear", [](GeometryStroke* self) { self->clear(); });
     stroke.addFunc("buildMeshResult", [vm = stroke.getHandle()](GeometryStroke* self) {
         auto result = self->buildMeshResult();
-        if (!result.ok()) return eve::script::projectStatusResult(vm, result.status(), false, false);
+        if (!result.ok()) return eve::script::projectStatusResult(vm, result.status());
         auto instance = eve::script::makeOwnedSquirrelInstance<MeshBuild>(
             vm, std::make_unique<MeshBuild>(std::move(result).takeValue()));
-        if (!instance.ok()) return eve::script::projectStatusResult(vm, instance.status(), false, false);
-        auto projected = eve::script::projectStatusResult(vm, Status::success(), true, true);
-        projected.set("value", std::move(instance).takeValue());
-        return projected;
+        if (!instance.ok()) return eve::script::projectStatusResult(vm, instance.status());
+        return eve::script::projectStatusResult(vm, Status::success(), std::move(instance).takeValue());
     });
     stroke.addFunc("getPointCount", [](GeometryStroke* self) { return self->pointCount(); });
     stroke.addFunc("getShape", [](GeometryStroke* self) { return std::string(self->shape()); });
@@ -387,13 +363,11 @@ void exposeMeshModifierGraph(ssq::Table& table) {
     });
     session.addFunc("colliderMeshResult", [vm = session.getHandle()](MeshDeformationSession* self) {
         auto result = self->colliderMeshResult();
-        if (!result.ok()) return eve::script::projectStatusResult(vm, result.status(), false, false);
+        if (!result.ok()) return eve::script::projectStatusResult(vm, result.status());
         auto instance = eve::script::makeOwnedSquirrelInstance<MeshBuild>(
             vm, std::make_unique<MeshBuild>(std::move(result).takeValue()));
-        if (!instance.ok()) return eve::script::projectStatusResult(vm, instance.status(), false, false);
-        auto projected = eve::script::projectStatusResult(vm, Status::success(), true, true);
-        projected.set("value", std::move(instance).takeValue());
-        return projected;
+        if (!instance.ok()) return eve::script::projectStatusResult(vm, instance.status());
+        return eve::script::projectStatusResult(vm, Status::success(), std::move(instance).takeValue());
     });
     session.addFunc("selectVerticesSphere", [vm = session.getHandle()](MeshDeformationSession* self, float x, float y,
                                                                        float z, float radius, bool replace) {
@@ -431,13 +405,11 @@ void exposeMeshModifierGraph(ssq::Table& table) {
     });
     session.addFunc("currentMeshResult", [vm = session.getHandle()](MeshDeformationSession* self) {
         auto result = self->currentMeshResult();
-        if (!result.ok()) return eve::script::projectStatusResult(vm, result.status(), false, false);
+        if (!result.ok()) return eve::script::projectStatusResult(vm, result.status());
         auto instance = eve::script::makeOwnedSquirrelInstance<MeshBuild>(
             vm, std::make_unique<MeshBuild>(std::move(result).takeValue()));
-        if (!instance.ok()) return eve::script::projectStatusResult(vm, instance.status(), false, false);
-        auto projected = eve::script::projectStatusResult(vm, Status::success(), true, true);
-        projected.set("value", std::move(instance).takeValue());
-        return projected;
+        if (!instance.ok()) return eve::script::projectStatusResult(vm, instance.status());
+        return eve::script::projectStatusResult(vm, Status::success(), std::move(instance).takeValue());
     });
     session.addFunc("getRevision", [](MeshDeformationSession* self) { return self->revision(); });
     session.addFunc("getUndoCount", [](MeshDeformationSession* self) { return self->undoCount(); });
@@ -505,13 +477,11 @@ void exposeMeshModifierGraph(ssq::Table& table) {
     });
     graph.addFunc("executeResult", [vm = graph.getHandle()](MeshModifierGraph* self, const std::string& output) {
         auto result = self->executeResult(output);
-        if (!result.ok()) return eve::script::projectStatusResult(vm, result.status(), false, false);
+        if (!result.ok()) return eve::script::projectStatusResult(vm, result.status());
         auto instance = eve::script::makeOwnedSquirrelInstance<MeshBuild>(
             vm, std::make_unique<MeshBuild>(std::move(result).takeValue()));
-        if (!instance.ok()) return eve::script::projectStatusResult(vm, instance.status(), false, false);
-        auto projected = eve::script::projectStatusResult(vm, Status::success(), true, true);
-        projected.set("value", std::move(instance).takeValue());
-        return projected;
+        if (!instance.ok()) return eve::script::projectStatusResult(vm, instance.status());
+        return eve::script::projectStatusResult(vm, Status::success(), std::move(instance).takeValue());
     });
     graph.addFunc("clearCache", [](MeshModifierGraph* self) { self->clearCache(); });
     graph.addFunc("getRevision", [](MeshModifierGraph* self) { return self->revision(); });

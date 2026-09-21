@@ -9,11 +9,6 @@
 namespace eve::combat {
 namespace {
 
-template <typename T>
-Result<T> invalid(std::string message, std::string path) {
-    return Result<T>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::move(message), std::move(path)));
-}
-
 Result<void> invalid(std::string message, std::string path) {
     return Result<void>::failure(
         Diagnostic::error(DiagnosticCode::InvalidArgument, std::move(message), std::move(path)));
@@ -64,7 +59,8 @@ Result<DamageAmounts> DamageRuntime::preview(const CombatState& target, const Da
     auto requestValid = request.validate();
     if (!requestValid) return Result<DamageAmounts>::failure(requestValid.status());
     if (target.subject != request.target)
-        return invalid<DamageAmounts>("Damage request target does not match combat state", "target");
+        return Result<DamageAmounts>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "Damage request target does not match combat state", "target"));
     DamageAmounts amounts{request.healthDamage, request.poiseDamage, 1.0};
     if (rule_) {
         auto evaluated = rule_->evaluate(request, target);
@@ -121,7 +117,9 @@ Result<DamageOutcome> DamageRuntime::apply(CombatState& target, const DamageRequ
 Result<double> DamageRuntime::recoverPoise(CombatState& target, double amount) const {
     auto valid = target.validate();
     if (!valid) return Result<double>::failure(valid.status());
-    if (!finiteNonNegative(amount)) return invalid<double>("Poise recovery amount is invalid", "amount");
+    if (!finiteNonNegative(amount))
+        return Result<double>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "Poise recovery amount is invalid", "amount"));
     const double recovered = std::min(target.maxPoise, target.poise + amount);
     const bool   changed   = recovered != target.poise;
     target.poise           = recovered;

@@ -10,11 +10,6 @@
 namespace eve::voxel_editing {
 namespace {
 
-template <class T>
-EditorResult<T> fail(EditorStatus s, const char* r, std::string m) {
-    return eve::editing::failed<T>(s, RuleId(r), std::move(m));
-}
-
 const EditorValue* field(const EditorValue& v, const char* k) {
     const auto* o = v.getIf<EditorValue::Object>();
     if (!o) return nullptr;
@@ -44,27 +39,28 @@ EditorResult<VoxelSocket> parseSocket(const EditorValue& v) {
     const auto* tags  = tag ? tag->getIf<std::string>() : nullptr;
     const auto* kinds = kind ? kind->getIf<std::string>() : nullptr;
     if (!tags || !kinds)
-        return fail<VoxelSocket>(EditorStatus::Rejected, "editor.voxel-model.socket",
-                                 "Voxel socket requires tag and kind");
+        return eve::editing::failed<VoxelSocket>(EditorStatus::Rejected, RuleId("editor.voxel-model.socket"),
+                                                 "Voxel socket requires tag and kind");
     VoxelSocket out;
     out.tag  = *tags;
     out.kind = voxelSocketKindFromName(*kinds);
     if (*kinds != voxelSocketKindName(out.kind) && !kinds->empty())
-        return fail<VoxelSocket>(EditorStatus::Rejected, "editor.voxel-model.socket-kind", "Unknown voxel socket kind");
+        return eve::editing::failed<VoxelSocket>(EditorStatus::Rejected, RuleId("editor.voxel-model.socket-kind"),
+                                                 "Unknown voxel socket kind");
     return eve::editing::applied<VoxelSocket>(std::move(out));
 }
 
 EditorResult<std::array<VoxelSocket, 6>> parseSockets(const EditorValue* value) {
     const auto* a = value ? value->getIf<EditorValue::Array>() : nullptr;
     if (!a || a->size() != 6)
-        return fail<std::array<VoxelSocket, 6>>(EditorStatus::Rejected, "editor.voxel-model.sockets",
-                                                "Voxel sockets require six faces");
+        return eve::editing::failed<std::array<VoxelSocket, 6>>(
+            EditorStatus::Rejected, RuleId("editor.voxel-model.sockets"), "Voxel sockets require six faces");
     std::array<VoxelSocket, 6> out{};
     for (int i = 0; i < 6; ++i) {
         auto parsed = parseSocket((*a)[static_cast<std::size_t>(i)]);
         if (!parsed.ok())
-            return fail<std::array<VoxelSocket, 6>>(parsed.code(), "editor.voxel-model.socket",
-                                                    "Voxel socket cannot be parsed");
+            return eve::editing::failed<std::array<VoxelSocket, 6>>(parsed.code(), RuleId("editor.voxel-model.socket"),
+                                                                    "Voxel socket cannot be parsed");
         out[static_cast<std::size_t>(i)] = parsed.value();
     }
     return eve::editing::applied<std::array<VoxelSocket, 6>>(out);
@@ -80,26 +76,27 @@ EditorValue voxelsValue(const std::vector<VoxelCoord>& voxels) {
 EditorResult<std::vector<VoxelCoord>> parseVoxels(const EditorValue* value) {
     const auto* a = value ? value->getIf<EditorValue::Array>() : nullptr;
     if (!a)
-        return fail<std::vector<VoxelCoord>>(EditorStatus::Rejected, "editor.voxel-model.voxels",
-                                             "Voxel occupancy must be an array");
+        return eve::editing::failed<std::vector<VoxelCoord>>(
+            EditorStatus::Rejected, RuleId("editor.voxel-model.voxels"), "Voxel occupancy must be an array");
     if (a->size() > static_cast<std::size_t>(kVoxelModelMaxOccupied))
-        return fail<std::vector<VoxelCoord>>(EditorStatus::Rejected, "editor.voxel-model.voxels-capacity",
-                                             "Model occupancy exceeds 4096 cells");
+        return eve::editing::failed<std::vector<VoxelCoord>>(
+            EditorStatus::Rejected, RuleId("editor.voxel-model.voxels-capacity"), "Model occupancy exceeds 4096 cells");
     std::set<int> unique;
     std::vector<VoxelCoord> out;
     out.reserve(a->size());
     for (const auto& entry : *a) {
         const auto* n = entry.getIf<int64_t>();
         if (!n || *n < 0)
-            return fail<std::vector<VoxelCoord>>(EditorStatus::Rejected, "editor.voxel-model.voxel",
-                                                 "Voxel cell must be a packed non-negative integer");
+            return eve::editing::failed<std::vector<VoxelCoord>>(EditorStatus::Rejected,
+                                                                 RuleId("editor.voxel-model.voxel"),
+                                                                 "Voxel cell must be a packed non-negative integer");
         VoxelCoord coord;
         coord.x = static_cast<int>(*n) & 255;
         coord.y = (static_cast<int>(*n) >> 8) & 255;
         coord.z = (static_cast<int>(*n) >> 16) & 255;
         if (!unique.insert(static_cast<int>(*n)).second)
-            return fail<std::vector<VoxelCoord>>(EditorStatus::Rejected, "editor.voxel-model.voxel-dup",
-                                                 "Voxel cells must be unique");
+            return eve::editing::failed<std::vector<VoxelCoord>>(
+                EditorStatus::Rejected, RuleId("editor.voxel-model.voxel-dup"), "Voxel cells must be unique");
         out.push_back(coord);
     }
     return eve::editing::applied<std::vector<VoxelCoord>>(std::move(out));
@@ -132,8 +129,8 @@ EditorResult<VoxelModelValue> parseModel(const EditorValue& v) {
     auto        sockets = parseSockets(field(v, "sockets"));
     auto        voxels  = parseVoxels(field(v, "voxels"));
     if (!ids || ids->empty() || !names || names->empty() || !sx || !sy || !sz || !sockets.ok() || !voxels.ok())
-        return fail<VoxelModelValue>(EditorStatus::Rejected, "editor.voxel-model.entry",
-                                     "Voxel model entry is invalid");
+        return eve::editing::failed<VoxelModelValue>(EditorStatus::Rejected, RuleId("editor.voxel-model.entry"),
+                                                     "Voxel model entry is invalid");
     VoxelModelValue out;
     out.id      = ObjectId(*ids);
     out.name    = *names;
@@ -314,7 +311,7 @@ VoxelCatalogTarget::VoxelCatalogTarget(std::string id) : id_(std::move(id)) {}
 TargetDescriptor VoxelCatalogTarget::describe() const {
     return {TargetId(id_),
             "voxel-catalog",
-            revision_,
+            revisionValue(),
             false,
             {propertyCapabilityId(), IEditingSnapshotProvider::editingCapabilityId()}};
 }
@@ -347,7 +344,7 @@ eve::Result<eve::Revision> VoxelCatalogTarget::currentRevision(const SelectionSn
         return eve::Result<eve::Revision>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
                                                                           "Voxel catalog selection mismatch",
                                                                           "editor.voxel-model.selection"));
-    return eve::Result<eve::Revision>::success(eve::Revision(revision_));
+    return eve::Result<eve::Revision>::success(eve::Revision(revisionValue()));
 }
 
 PropertySchema VoxelCatalogTarget::schema(const SelectionSnapshot&) const {
@@ -410,8 +407,8 @@ EditorResult<DomainOperation> VoxelCatalogTarget::makeSet(const SelectionSnapsho
                                                           const EditorValue& value, PropertySetMode mode) const {
     if (mode == PropertySetMode::Reset) return makeReset(s, p);
     if (!matches(s) || !schema(s).find(p) || mode != PropertySetMode::Absolute)
-        return fail<DomainOperation>(EditorStatus::Rejected, "editor.voxel-model.set",
-                                     "Voxel model property edit is invalid");
+        return eve::editing::failed<DomainOperation>(EditorStatus::Rejected, RuleId("editor.voxel-model.set"),
+                                                     "Voxel model property edit is invalid");
     auto c = *this;
     for (const auto& i : s.items) {
         auto* model = c.findModelMut(ObjectId(i.item.value()));
@@ -419,64 +416,65 @@ EditorResult<DomainOperation> VoxelCatalogTarget::makeSet(const SelectionSnapsho
         if (p == PropertyPath("model.name")) {
             const auto* name = value.getIf<std::string>();
             if (!name || name->empty())
-                return fail<DomainOperation>(EditorStatus::Rejected, "editor.voxel-model.name",
-                                             "Model name must be non-empty");
+                return eve::editing::failed<DomainOperation>(EditorStatus::Rejected, RuleId("editor.voxel-model.name"),
+                                                             "Model name must be non-empty");
             model->name = *name;
         } else {
             int         face = 0;
             std::string fieldName;
             if (!parseFacePath(p, face, fieldName))
-                return fail<DomainOperation>(EditorStatus::Unsupported, "editor.voxel-model.property",
-                                             "Unknown voxel model property");
+                return eve::editing::failed<DomainOperation>(
+                    EditorStatus::Unsupported, RuleId("editor.voxel-model.property"), "Unknown voxel model property");
             auto& socket = model->sockets[static_cast<std::size_t>(face)];
             if (fieldName == "tag") {
                 const auto* tag = value.getIf<std::string>();
                 if (!tag)
-                    return fail<DomainOperation>(EditorStatus::Rejected, "editor.voxel-model.tag",
-                                                 "Socket tag must be a string");
+                    return eve::editing::failed<DomainOperation>(
+                        EditorStatus::Rejected, RuleId("editor.voxel-model.tag"), "Socket tag must be a string");
                 socket.tag = *tag;
             } else {
                 const auto* kind = value.getIf<std::string>();
                 if (!kind)
-                    return fail<DomainOperation>(EditorStatus::Rejected, "editor.voxel-model.kind",
-                                                 "Socket kind must be a string");
+                    return eve::editing::failed<DomainOperation>(
+                        EditorStatus::Rejected, RuleId("editor.voxel-model.kind"), "Socket kind must be a string");
                 socket.kind = voxelSocketKindFromName(*kind);
                 if (*kind != voxelSocketKindName(socket.kind))
-                    return fail<DomainOperation>(EditorStatus::Rejected, "editor.voxel-model.kind",
-                                                 "Unknown voxel socket kind");
+                    return eve::editing::failed<DomainOperation>(
+                        EditorStatus::Rejected, RuleId("editor.voxel-model.kind"), "Unknown voxel socket kind");
             }
         }
     }
     if (errors(c.validate()))
-        return fail<DomainOperation>(EditorStatus::Rejected, "editor.voxel-model.invalid",
-                                     "Voxel model property edit failed validation");
+        return eve::editing::failed<DomainOperation>(EditorStatus::Rejected, RuleId("editor.voxel-model.invalid"),
+                                                     "Voxel model property edit failed validation");
     return replacement(c.contentValue(), p.value());
 }
 
 EditorResult<DomainOperation> VoxelCatalogTarget::makeReset(const SelectionSnapshot& s, const PropertyPath& p) const {
     auto d = schema(s).find(p);
     if (!d)
-        return fail<DomainOperation>(EditorStatus::Unsupported, "editor.voxel-model.property",
-                                     "Unknown voxel model property");
+        return eve::editing::failed<DomainOperation>(EditorStatus::Unsupported, RuleId("editor.voxel-model.property"),
+                                                     "Unknown voxel model property");
     return makeSet(s, p, d->defaultValue, PropertySetMode::Absolute);
 }
 
 EditorResult<DomainOperation> VoxelCatalogTarget::makeCreateModel(const VoxelModelValue& v) const {
     if (v.id.empty() || v.name.empty() || findModel(v.id) ||
         std::any_of(models_.begin(), models_.end(), [&](const auto& x) { return x.name == v.name; }))
-        return fail<DomainOperation>(EditorStatus::Rejected, "editor.voxel-model.identity",
-                                     "Voxel model ID and name must be unique");
+        return eve::editing::failed<DomainOperation>(EditorStatus::Rejected, RuleId("editor.voxel-model.identity"),
+                                                     "Voxel model ID and name must be unique");
     auto c = *this;
     c.models_.push_back(v);
     if (errors(c.validate()))
-        return fail<DomainOperation>(EditorStatus::Rejected, "editor.voxel-model.invalid",
-                                     "Voxel model create failed validation");
+        return eve::editing::failed<DomainOperation>(EditorStatus::Rejected, RuleId("editor.voxel-model.invalid"),
+                                                     "Voxel model create failed validation");
     return replacement(c.contentValue());
 }
 
 EditorResult<DomainOperation> VoxelCatalogTarget::makeDeleteModel(const ObjectId& id) const {
     if (!findModel(id))
-        return fail<DomainOperation>(EditorStatus::NotFound, "editor.voxel-model.entry", "Voxel model does not exist");
+        return eve::editing::failed<DomainOperation>(EditorStatus::NotFound, RuleId("editor.voxel-model.entry"),
+                                                     "Voxel model does not exist");
     auto c = *this;
     std::erase_if(c.models_, [&](const auto& v) { return v.id == id; });
     return replacement(c.contentValue());
@@ -486,10 +484,11 @@ EditorResult<DomainOperation> VoxelCatalogTarget::makeSetVoxel(const ObjectId& m
                                                                bool occupied) const {
     const auto* current = findModel(model);
     if (!current)
-        return fail<DomainOperation>(EditorStatus::NotFound, "editor.voxel-model.entry", "Voxel model does not exist");
+        return eve::editing::failed<DomainOperation>(EditorStatus::NotFound, RuleId("editor.voxel-model.entry"),
+                                                     "Voxel model does not exist");
     if (!inBounds(*current, x, y, z))
-        return fail<DomainOperation>(EditorStatus::Rejected, "editor.voxel-model.range",
-                                     "Voxel is outside the model bounds");
+        return eve::editing::failed<DomainOperation>(EditorStatus::Rejected, RuleId("editor.voxel-model.range"),
+                                                     "Voxel is outside the model bounds");
     auto  c    = *this;
     auto* dest = c.findModelMut(model);
     const auto it =
@@ -499,8 +498,8 @@ EditorResult<DomainOperation> VoxelCatalogTarget::makeSetVoxel(const ObjectId& m
     else if (!occupied && it != dest->voxels.end())
         dest->voxels.erase(it);
     if (errors(c.validate()))
-        return fail<DomainOperation>(EditorStatus::Rejected, "editor.voxel-model.invalid",
-                                     "Voxel occupancy edit failed validation");
+        return eve::editing::failed<DomainOperation>(EditorStatus::Rejected, RuleId("editor.voxel-model.invalid"),
+                                                     "Voxel occupancy edit failed validation");
     return replacement(c.contentValue(), "model.voxels");
 }
 
@@ -542,23 +541,27 @@ std::vector<EditorDiagnostic> VoxelCatalogTarget::validate() const {
 
 EditorResult<void> VoxelCatalogTarget::applyDomainOperation(const DomainOperation& op) {
     if (op.target != TargetId(id_) || op.type != "voxel.catalog.replace.v1")
-        return fail<void>(EditorStatus::Rejected, "editor.voxel-model.operation", "Voxel catalog operation mismatch");
+        return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.voxel-model.operation"),
+                                          "Voxel catalog operation mismatch");
     const auto* models    = field(op.payload, "models");
     const auto* modelArray = models ? models->getIf<EditorValue::Array>() : nullptr;
     if (!modelArray || !op.payload.isWithinLimits(8, 20000, 1024 * 1024))
-        return fail<void>(EditorStatus::Rejected, "editor.voxel-model.payload", "Voxel catalog payload exceeds limits");
+        return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.voxel-model.payload"),
+                                          "Voxel catalog payload exceeds limits");
     VoxelCatalogTarget c(id_);
     for (const auto& v : *modelArray) {
         auto parsed = parseModel(v);
         if (!parsed.ok())
-            return fail<void>(EditorStatus::Rejected, "editor.voxel-model.entry", "Voxel model cannot be parsed");
+            return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.voxel-model.entry"),
+                                              "Voxel model cannot be parsed");
         c.models_.push_back(parsed.value());
     }
     if (errors(c.validate()))
-        return fail<void>(EditorStatus::Rejected, "editor.voxel-model.invalid", "Voxel catalog validation failed");
+        return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.voxel-model.invalid"),
+                                          "Voxel catalog validation failed");
     models_ = std::move(c.models_);
-    ++revision_;
-    dirty_.include(0, 0);
+    bumpRevision();
+    widenDirty(0, 0);
     return eve::editing::applied<void>();
 }
 
@@ -569,7 +572,8 @@ std::unique_ptr<IDomainOperationTarget> VoxelCatalogTarget::cloneDomainState() c
 EditorResult<void> VoxelCatalogTarget::commitDomainState(std::unique_ptr<IDomainOperationTarget> c) {
     auto* t = dynamic_cast<VoxelCatalogTarget*>(c.get());
     if (!t || t->id_ != id_)
-        return fail<void>(EditorStatus::Conflict, "editor.voxel-model.candidate", "Voxel catalog candidate mismatch");
+        return eve::editing::failed<void>(EditorStatus::Conflict, RuleId("editor.voxel-model.candidate"),
+                                          "Voxel catalog candidate mismatch");
     *this = *t;
     return eve::editing::applied<void>();
 }
@@ -582,14 +586,14 @@ EditorResult<void> VoxelCatalogTarget::loadSnapshot(const EditorValue& s) {
     const auto *v = field(s, "schemaVersion"), *content = field(s, "content");
     const auto* version = v ? v->getIf<int64_t>() : nullptr;
     if (!version || *version != 1 || !content)
-        return fail<void>(EditorStatus::Unsupported, "editor.voxel-model.snapshot",
-                          "Unsupported Voxel catalog snapshot");
+        return eve::editing::failed<void>(EditorStatus::Unsupported, RuleId("editor.voxel-model.snapshot"),
+                                          "Unsupported Voxel catalog snapshot");
     DomainOperation op;
     op.target   = TargetId(id_);
     op.type     = "voxel.catalog.replace.v1";
     op.payload  = *content;
     auto result = applyDomainOperation(op);
-    if (result.ok()) dirty_.clear();
+    if (result.ok()) clearDirtyRegion();
     return result;
 }
 

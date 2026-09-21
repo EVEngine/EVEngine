@@ -3,10 +3,14 @@
 #include "common/ScriptCompiler.h"
 #include "common/ScriptModule.h"
 #include "common/ServiceInterfaces.h"
+#include "filesystem/physfs/FileApi.h"
 
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
+#include <chrono>
+#include <filesystem>
+#include <fstream>
 #include <memory>
 #include <string>
 #include <unordered_map>
@@ -188,4 +192,31 @@ TEST_CASE("scriptModule.reloadAffectedRollsBackWholeGenerationGroup") {
     REQUIRE(failed);
     runtime.runSource("import { answer } from \"mem:/user.nut\"\nafter_failure <- answer()\n", "game:/after.nut");
     CHECK_EQ(runtime.vm().get<int64_t>("after_failure"), int64_t(3));
+}
+
+TEST_CASE("scriptModule.dofileInstantiatesImports") {
+    cap::detail::clearAllRaw();
+    VirtualFileSystem filesystem;
+    filesystem.files["lib/value.nut"] = "export const VALUE = 41\n";
+    cap::provide<service::IFileSystem>(&filesystem);
+
+    const auto root =
+        std::filesystem::temp_directory_path() /
+        ("eve_dofile_import_" + std::to_string(std::chrono::steady_clock::now().time_since_epoch().count()));
+    std::filesystem::create_directories(root);
+    const auto entry = root / "entry.nut";
+    {
+        std::ofstream out(entry, std::ios::binary);
+        out << "import { VALUE } from \"game:/lib/value.nut\"\n"
+               "imported_from_dofile <- VALUE + 1\n";
+    }
+
+    Runtime runtime(512, ssq::Libs::ALL);
+    eve::filesystem::physfs::installScriptFileApi(runtime.vm());
+    const std::string loader = "dofile(\"" + entry.generic_string() + "\")\n";
+    runtime.runSource(loader, "game:/loader.nut");
+    CHECK_EQ(runtime.vm().get<int64_t>("imported_from_dofile"), int64_t(42));
+
+    std::filesystem::remove_all(root);
+    cap::detail::clearAllRaw();
 }

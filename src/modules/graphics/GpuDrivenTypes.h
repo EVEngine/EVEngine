@@ -39,7 +39,7 @@ struct GpuResidentInstanceBucket {
  */
 struct GpuResidentInstanceBatch {
     GpuResidentBufferView            buffer;
-    const GpuResidentInstanceBucket *buckets       = nullptr;
+    const GpuResidentInstanceBucket* buckets       = nullptr;
     uint32_t                         bucketCount   = 0;
     uint32_t                         instanceCount = 0;
 };
@@ -57,54 +57,70 @@ enum class GpuResidentSubmitStatus : uint8_t {
 /// @brief GPU mesh table record (std430). Mirrors GLSL GpuMeshRecord.
 struct GpuMeshRecord {
     glm::vec4 boundsCenterRadius;  // model-space bounding sphere (xyz = center, w = radius)
-    uint32_t vertexOffset = 0;     // offset into pooled vertex buffer (vertex count)
-    uint32_t vertexCount = 0;
-    uint32_t indexOffset = 0;      // offset into pooled index buffer (index count)
-    uint32_t indexCount = 0;
-    uint32_t indexType = 1;        // 0 = u16, 1 = u32
-    uint32_t firstIndex = 0;       // VkDrawIndexedIndirectCommand.firstIndex
-    uint32_t vertexBase = 0;       // VkDrawIndexedIndirectCommand.vertexOffset
-    uint32_t lodGroupId = kInvalidGpuDrivenSlot;  // stage 2: LOD chain table index
-    uint32_t vgAssetId = kInvalidGpuDrivenSlot;   // stage 3: virtual-geometry asset
-    uint32_t pad1 = 0;
-    uint32_t pad2 = 0;
-    uint32_t pad3 = 0;
+    uint32_t  vertexOffset = 0;    // offset into pooled vertex buffer (vertex count)
+    uint32_t  vertexCount  = 0;
+    uint32_t  indexOffset  = 0;  // offset into pooled index buffer (index count)
+    uint32_t  indexCount   = 0;
+    uint32_t  indexType    = 1;                      // 0 = u16, 1 = u32
+    uint32_t  firstIndex   = 0;                      // VkDrawIndexedIndirectCommand.firstIndex
+    uint32_t  vertexBase   = 0;                      // VkDrawIndexedIndirectCommand.vertexOffset
+    uint32_t  lodGroupId   = kInvalidGpuDrivenSlot;  // stage 2: LOD chain table index
+    uint32_t  vgAssetId    = kInvalidGpuDrivenSlot;  // stage 3: virtual-geometry asset
+    uint32_t  pad1         = 0;
+    uint32_t  pad2         = 0;
+    uint32_t  pad3         = 0;
 };
 static_assert(sizeof(GpuMeshRecord) == 64, "GpuMeshRecord must be 64B (std430 16B aligned)");
 
+/** @brief Optional per-vertex streams used by vegetation-capable GPU-driven shaders. */
+struct GpuVegetationVertexRecord {
+    glm::vec4 tangent;       // xyz authored tangent, w = tangent frame present
+    glm::vec4 bitangent;     // xyz authored bitangent
+    glm::vec4 factors0;      // variation, occlusion, detail xyz (first two components)
+    glm::vec4 factors1;      // detail z, motion highlight, stream flags, reserved
+    glm::vec4 deformation0;  // pivot xyz, bending
+    glm::vec4 deformation1;  // branch, flutter, authored variation, bounds height
+    glm::vec4 deformation2;  // bounds radius, reserved
+};
+static_assert(sizeof(GpuVegetationVertexRecord) == 112, "GpuVegetationVertexRecord must be 112B (std430 16B aligned)");
+
 /// @brief GPU material table record (std430). Mirrors GLSL GpuMaterialRecord.
 struct GpuMaterialRecord {
-    glm::vec4 tint;       // rgba
-    glm::vec4 pbr;        // x = metallic, y = roughness, z = receiveShadow, w = receiveLight
-    glm::vec4 texBomb;    // x = cellScale, y = strength, z = rotAmount
-    glm::vec4 parallax;   // x = scale, y = minLayers, z = maxLayers
-    uint32_t textureSlots[4];  // xyzw = albedo / normal / height / env bindless slots
-    uint32_t shadingModel = 0; // 0 = pbr, 1 = unlit, 2 = hair, 3 = custom
-    uint32_t flags = 0;        // bit0 castShadow, bit1 castOcclusion
-    uint32_t pad0 = 0;
-    uint32_t pad1 = 0;
+    glm::vec4 tint;              // rgba
+    glm::vec4 pbr;               // x = metallic, y = roughness, z = receiveShadow, w = receiveLight
+    glm::vec4 texBomb;           // x = cellScale, y = strength, z = rotAmount
+    glm::vec4 parallax;          // x = scale, y = minLayers, z = maxLayers
+    glm::vec4 surface;           // x = alpha cutoff, y = surface mode (0 opaque, 1 masked, 2 transparent)
+    uint32_t  textureSlots[4];   // xyzw = albedo / normal / height / env bindless slots
+    uint32_t  shadingModel = 0;  // 0 = pbr, 1 = unlit, 2 = hair, 3 = custom
+    uint32_t  flags        = 0;  // bit0 castShadow, bit1 castOcclusion, bit2 cylindrical camera-facing card
+    uint32_t  pad0         = 0;
+    uint32_t  pad1         = 0;
 };
-static_assert(sizeof(GpuMaterialRecord) == 96, "GpuMaterialRecord must be 96B (std430 16B aligned)");
+static_assert(sizeof(GpuMaterialRecord) == 112, "GpuMaterialRecord must be 112B (std430 16B aligned)");
 
 /// @brief Per-instance GPU record (std430). Mirrors GLSL GpuInstance.
 struct GpuInstance {
-    glm::mat4 model;
-    uint32_t meshId = kInvalidGpuDrivenSlot;      // -> GpuMeshRecord table
-    uint32_t materialId = kInvalidGpuDrivenSlot;  // -> GpuMaterialRecord table
-    uint32_t flags = 0;                           // bit0 castShadow, bit1 receiveShadow, bit2 castOcclusion
-    uint32_t lodGroupId = kInvalidGpuDrivenSlot;  // stage 2
+    glm::mat4  model;
+    uint32_t   meshId     = kInvalidGpuDrivenSlot;  // -> GpuMeshRecord table
+    uint32_t   materialId = kInvalidGpuDrivenSlot;  // -> GpuMaterialRecord table
+    uint32_t   flags      = 0;                      // bit0 castShadow, bit1 receiveShadow, bit2 castOcclusion
+    uint32_t   lodGroupId = kInvalidGpuDrivenSlot;  // stage 2
     glm::uvec4 reflectionProbeSlots{kInvalidGpuDrivenSlot, kInvalidGpuDrivenSlot, 0u, 0u};
-    glm::vec4 reflectionProbeCenter[2]{};  // xyz = center, w = intensity
-    glm::vec4 reflectionProbeExtent[2]{};  // xyz = extent, w = blend distance
+    glm::vec4  reflectionProbeCenter[2]{};  // xyz = center, w = intensity
+    glm::vec4  reflectionProbeExtent[2]{};  // xyz = extent, w = blend distance
+    glm::vec4  color{1.f};                  // per-instance linear RGBA multiplier
+    glm::vec4  terrainWave{};               // x = time*speed, y = wave size, z = strength, w = enabled
+    glm::vec4  terrainWaveTint{1.f};         // Unity TerrainData waving-grass linear tint
 };
-static_assert(sizeof(GpuInstance) == 160, "GpuInstance must be 160B (std430)");
+static_assert(sizeof(GpuInstance) == 208, "GpuInstance must be 208B (std430)");
 
 /// @brief Indirect draw command; layout identical to VkDrawIndexedIndirectCommand.
 struct GpuIndirectCommand {
-    uint32_t indexCount = 0;
+    uint32_t indexCount    = 0;
     uint32_t instanceCount = 0;
-    uint32_t firstIndex = 0;
-    uint32_t vertexOffset = 0;
+    uint32_t firstIndex    = 0;
+    uint32_t vertexOffset  = 0;
     uint32_t firstInstance = 0;
 };
 static_assert(sizeof(GpuIndirectCommand) == 20, "GpuIndirectCommand must match VkDrawIndexedIndirectCommand (20B)");
@@ -121,14 +137,15 @@ static_assert(sizeof(GpuVgCluster) == 64, "GpuVgCluster must be 64B (4 x uvec4)"
 
 /// @brief Neutral GPU upload for one virtual-geometry asset. Raw arrays so the
 /// graphics module does not depend on the virtualgeometry module.
+/// @lifetime Every array is borrowed for the upload call only and is never retained.
 struct GpuVgAssetUpload {
-    const float *positions = nullptr;      // xyz packed, 3 * vertexCount
-    int vertexCount = 0;
-    const float *normals = nullptr;        // optional xyz packed
-    const std::uint32_t *triangles = nullptr;  // global triangle stream (indices)
-    int triangleCount = 0;                 // index count (multiple of 3)
-    const GpuVgCluster *clusters = nullptr;
-    int clusterCount = 0;
+    const float*         positions     = nullptr;  // xyz packed, 3 * vertexCount
+    int                  vertexCount   = 0;
+    const float*         normals       = nullptr;  // optional xyz packed
+    const std::uint32_t* triangles     = nullptr;  // global triangle stream (indices)
+    int                  triangleCount = 0;        // index count (multiple of 3)
+    const GpuVgCluster*  clusters      = nullptr;
+    int                  clusterCount  = 0;
 };
 
 }  // namespace eve::graphics

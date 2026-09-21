@@ -45,6 +45,7 @@ const char* nodeTypeName(NodeType type) {
         case NodeType::CollapsingHeader: return "collapsingHeader";
         case NodeType::Child: return "child";
         case NodeType::Flex: return "flex";
+        case NodeType::Grid: return "grid";
         case NodeType::Spacer: return "spacer";
         case NodeType::Image: return "image";
         case NodeType::ImageButton: return "imageButton";

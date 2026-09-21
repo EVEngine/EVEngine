@@ -9,11 +9,6 @@
 namespace eve::ui_editing {
 namespace {
 
-template <class T>
-EditorResult<T> uiError(EditorStatus status, const char* rule, std::string message) {
-    return eve::editing::failed<T>(status, RuleId(rule), std::move(message));
-}
-
 EditorDiagnostic uiDiagnostic(const char* rule, DiagnosticSeverity severity, std::string message) {
     return eve::editing::ruleDiagnostic(eve::DiagnosticCode::PreconditionViolation, RuleId(rule), severity,
                                         std::move(message));
@@ -26,7 +21,7 @@ UiDocumentTarget::UiDocumentTarget(std::string id) : id_(std::move(id)) {}
 TargetDescriptor UiDocumentTarget::describe() const {
     return {TargetId(id_),
             "ui-document",
-            revision_,
+            revisionValue(),
             false,
             {IUiDocumentEditTarget::editorCapabilityId(), CapabilityId("eve.editor.target.ui-properties")}};
 }
@@ -39,69 +34,72 @@ void* UiDocumentTarget::queryCapability(const CapabilityId& capability) {
 
 EditorResult<void> UiDocumentTarget::applyDomainOperation(const DomainOperation& operation) {
     if (operation.target != TargetId(id_))
-        return uiError<void>(EditorStatus::Rejected, "editor.ui.target-mismatch",
-                             "UI operation targets another document");
+        return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.ui.target-mismatch"),
+                                          "UI operation targets another document");
     if (operation.type == "ui.widget.create.v1") {
         auto parsed = parseWidget(operation.payload);
         if (!parsed.ok())
-            return uiError<void>(EditorStatus::Rejected, "editor.ui.create-payload", "UI create payload is invalid");
+            return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.ui.create-payload"),
+                                              "UI create payload is invalid");
         const UiWidgetSnapshot& value = parsed.value();
         if (value.id.empty() || widgets_.contains(value.id))
-            return uiError<void>(EditorStatus::Conflict, "editor.ui.widget-exists",
-                                 "UI widget id is empty or already exists");
+            return eve::editing::failed<void>(EditorStatus::Conflict, RuleId("editor.ui.widget-exists"),
+                                              "UI widget id is empty or already exists");
         if (!value.parent.empty() && !widgets_.contains(value.parent))
-            return uiError<void>(EditorStatus::NotFound, "editor.ui.parent-not-found",
-                                 "UI widget parent does not exist");
+            return eve::editing::failed<void>(EditorStatus::NotFound, RuleId("editor.ui.parent-not-found"),
+                                              "UI widget parent does not exist");
         widgets_.emplace(value.id, value);
     } else if (operation.type == "ui.widget.delete.v1") {
         auto parsed = parseWidget(operation.payload);
         if (!parsed.ok() || !widgets_.contains(parsed.value().id))
-            return uiError<void>(EditorStatus::NotFound, "editor.ui.widget-not-found", "UI widget does not exist");
+            return eve::editing::failed<void>(EditorStatus::NotFound, RuleId("editor.ui.widget-not-found"),
+                                              "UI widget does not exist");
         if (!children(parsed.value().id).empty())
-            return uiError<void>(EditorStatus::Rejected, "editor.ui.widget-has-children",
-                                 "UI widget with children cannot be deleted");
+            return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.ui.widget-has-children"),
+                                              "UI widget with children cannot be deleted");
         widgets_.erase(parsed.value().id);
     } else if (operation.type == "ui.widget.replace.v1") {
         auto parsed = parseWidget(operation.payload);
         if (!parsed.ok())
-            return uiError<void>(EditorStatus::Rejected, "editor.ui.replace-payload",
-                                 "UI replacement payload is invalid");
+            return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.ui.replace-payload"),
+                                              "UI replacement payload is invalid");
         auto current = widgets_.find(parsed.value().id);
         if (current == widgets_.end())
-            return uiError<void>(EditorStatus::NotFound, "editor.ui.widget-not-found", "UI widget does not exist");
+            return eve::editing::failed<void>(EditorStatus::NotFound, RuleId("editor.ui.widget-not-found"),
+                                              "UI widget does not exist");
         if (!parsed.value().parent.empty() && !widgets_.contains(parsed.value().parent))
-            return uiError<void>(EditorStatus::NotFound, "editor.ui.parent-not-found",
-                                 "UI widget parent does not exist");
+            return eve::editing::failed<void>(EditorStatus::NotFound, RuleId("editor.ui.parent-not-found"),
+                                              "UI widget parent does not exist");
         if (wouldCycle(parsed.value().id, parsed.value().parent, widgets_))
-            return uiError<void>(EditorStatus::Rejected, "editor.ui.hierarchy-cycle",
-                                 "UI reparenting would create a hierarchy cycle");
+            return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.ui.hierarchy-cycle"),
+                                              "UI reparenting would create a hierarchy cycle");
         current->second = parsed.value();
     } else if (operation.type == "ui.widget.multi-replace.v1") {
         const auto* entries = operation.payload.getIf<EditorValue::Array>();
         if (!entries)
-            return uiError<void>(EditorStatus::Rejected, "editor.ui.multi-payload",
-                                 "UI multi-edit requires an array payload");
+            return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.ui.multi-payload"),
+                                              "UI multi-edit requires an array payload");
         auto candidate = widgets_;
         for (const EditorValue& entry : *entries) {
             auto parsed = parseWidget(entry);
             if (!parsed.ok() || !candidate.contains(parsed.value().id))
-                return uiError<void>(EditorStatus::Rejected, "editor.ui.multi-widget",
-                                     "UI multi-edit references an invalid widget");
+                return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.ui.multi-widget"),
+                                                  "UI multi-edit references an invalid widget");
             candidate[parsed.value().id] = parsed.value();
         }
         for (const auto& [widgetId, value] : candidate) {
             if ((!value.parent.empty() && !candidate.contains(value.parent)) ||
                 wouldCycle(widgetId, value.parent, candidate))
-                return uiError<void>(EditorStatus::Rejected, "editor.ui.multi-hierarchy",
-                                     "UI multi-edit produces an invalid hierarchy");
+                return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.ui.multi-hierarchy"),
+                                                  "UI multi-edit produces an invalid hierarchy");
         }
         widgets_ = std::move(candidate);
     } else {
-        return uiError<void>(EditorStatus::Unsupported, "editor.ui.operation-unsupported",
-                             "Unsupported UI operation: " + operation.type);
+        return eve::editing::failed<void>(EditorStatus::Unsupported, RuleId("editor.ui.operation-unsupported"),
+                                          "Unsupported UI operation: " + operation.type);
     }
-    ++revision_;
-    dirty_.include(0, 0);
+    bumpRevision();
+    widenDirty(0, 0);
     return eve::editing::applied<void>();
 }
 
@@ -112,8 +110,8 @@ std::unique_ptr<IDomainOperationTarget> UiDocumentTarget::cloneDomainState() con
 EditorResult<void> UiDocumentTarget::commitDomainState(std::unique_ptr<IDomainOperationTarget> candidate) {
     auto* document = dynamic_cast<UiDocumentTarget*>(candidate.get());
     if (!document || document->id_ != id_)
-        return uiError<void>(EditorStatus::Conflict, "editor.ui.candidate-mismatch",
-                             "UI compensation candidate belongs to another document");
+        return eve::editing::failed<void>(EditorStatus::Conflict, RuleId("editor.ui.candidate-mismatch"),
+                                          "UI compensation candidate belongs to another document");
     *this = *document;
     return eve::editing::applied<void>();
 }
@@ -121,8 +119,8 @@ EditorResult<void> UiDocumentTarget::commitDomainState(std::unique_ptr<IDomainOp
 EditorResult<UiWidgetSnapshot> UiDocumentTarget::widget(const ObjectId& id) const {
     const auto found = widgets_.find(id);
     if (found == widgets_.end())
-        return uiError<UiWidgetSnapshot>(EditorStatus::NotFound, "editor.ui.widget-not-found",
-                                         "UI widget does not exist: " + id.value());
+        return eve::editing::failed<UiWidgetSnapshot>(EditorStatus::NotFound, RuleId("editor.ui.widget-not-found"),
+                                                      "UI widget does not exist: " + id.value());
     return eve::editing::applied<UiWidgetSnapshot>(found->second);
 }
 
@@ -135,14 +133,14 @@ std::vector<ObjectId> UiDocumentTarget::children(const ObjectId& parent) const {
 
 EditorResult<DomainOperation> UiDocumentTarget::makeCreate(const CreateUiWidgetRequest& request) const {
     if (request.id.empty() || request.type.empty() || request.name.empty())
-        return uiError<DomainOperation>(EditorStatus::Rejected, "editor.ui.invalid-widget",
-                                        "UI widget id, type and name are required");
+        return eve::editing::failed<DomainOperation>(EditorStatus::Rejected, RuleId("editor.ui.invalid-widget"),
+                                                     "UI widget id, type and name are required");
     if (widgets_.contains(request.id))
-        return uiError<DomainOperation>(EditorStatus::Conflict, "editor.ui.widget-exists",
-                                        "UI widget already exists: " + request.id.value());
+        return eve::editing::failed<DomainOperation>(EditorStatus::Conflict, RuleId("editor.ui.widget-exists"),
+                                                     "UI widget already exists: " + request.id.value());
     if (!request.parent.empty() && !widgets_.contains(request.parent))
-        return uiError<DomainOperation>(EditorStatus::NotFound, "editor.ui.parent-not-found",
-                                        "UI widget parent does not exist");
+        return eve::editing::failed<DomainOperation>(EditorStatus::NotFound, RuleId("editor.ui.parent-not-found"),
+                                                     "UI widget parent does not exist");
     UiWidgetSnapshot value{request.id, request.parent, request.type,   request.name, "",
                            true,       true,           request.layout, {},           {}};
     DomainOperation  operation;
@@ -159,11 +157,11 @@ EditorResult<DomainOperation> UiDocumentTarget::makeCreate(const CreateUiWidgetR
 EditorResult<DomainOperation> UiDocumentTarget::makeDelete(const ObjectId& id) const {
     auto current = widget(id);
     if (!current.ok())
-        return uiError<DomainOperation>(EditorStatus::NotFound, "editor.ui.widget-not-found",
-                                        "UI widget does not exist");
+        return eve::editing::failed<DomainOperation>(EditorStatus::NotFound, RuleId("editor.ui.widget-not-found"),
+                                                     "UI widget does not exist");
     if (!children(id).empty())
-        return uiError<DomainOperation>(EditorStatus::Rejected, "editor.ui.widget-has-children",
-                                        "Delete or reparent children before deleting their parent");
+        return eve::editing::failed<DomainOperation>(EditorStatus::Rejected, RuleId("editor.ui.widget-has-children"),
+                                                     "Delete or reparent children before deleting their parent");
     DomainOperation operation;
     operation.type        = "ui.widget.delete.v1";
     operation.inverseType = "ui.widget.create.v1";
@@ -178,11 +176,11 @@ EditorResult<DomainOperation> UiDocumentTarget::makeDelete(const ObjectId& id) c
 EditorResult<DomainOperation> UiDocumentTarget::makeRename(const ObjectId& id, const std::string& name) const {
     auto current = widget(id);
     if (!current.ok())
-        return uiError<DomainOperation>(EditorStatus::NotFound, "editor.ui.widget-not-found",
-                                        "UI widget does not exist");
+        return eve::editing::failed<DomainOperation>(EditorStatus::NotFound, RuleId("editor.ui.widget-not-found"),
+                                                     "UI widget does not exist");
     if (name.empty())
-        return uiError<DomainOperation>(EditorStatus::Rejected, "editor.ui.empty-name",
-                                        "UI widget name must not be empty");
+        return eve::editing::failed<DomainOperation>(EditorStatus::Rejected, RuleId("editor.ui.empty-name"),
+                                                     "UI widget name must not be empty");
     UiWidgetSnapshot changed = current.value();
     changed.name             = name;
     return makeReplace(current.value(), std::move(changed), "widget.name");
@@ -191,14 +189,14 @@ EditorResult<DomainOperation> UiDocumentTarget::makeRename(const ObjectId& id, c
 EditorResult<DomainOperation> UiDocumentTarget::makeReparent(const ObjectId& id, const ObjectId& parent) const {
     auto current = widget(id);
     if (!current.ok())
-        return uiError<DomainOperation>(EditorStatus::NotFound, "editor.ui.widget-not-found",
-                                        "UI widget does not exist");
+        return eve::editing::failed<DomainOperation>(EditorStatus::NotFound, RuleId("editor.ui.widget-not-found"),
+                                                     "UI widget does not exist");
     if (!parent.empty() && !widgets_.contains(parent))
-        return uiError<DomainOperation>(EditorStatus::NotFound, "editor.ui.parent-not-found",
-                                        "UI widget parent does not exist");
+        return eve::editing::failed<DomainOperation>(EditorStatus::NotFound, RuleId("editor.ui.parent-not-found"),
+                                                     "UI widget parent does not exist");
     if (wouldCycle(id, parent, widgets_))
-        return uiError<DomainOperation>(EditorStatus::Rejected, "editor.ui.hierarchy-cycle",
-                                        "UI reparenting would create a hierarchy cycle");
+        return eve::editing::failed<DomainOperation>(EditorStatus::Rejected, RuleId("editor.ui.hierarchy-cycle"),
+                                                     "UI reparenting would create a hierarchy cycle");
     UiWidgetSnapshot changed = current.value();
     changed.parent           = parent;
     return makeReplace(current.value(), std::move(changed), "widget.parent");
@@ -207,13 +205,14 @@ EditorResult<DomainOperation> UiDocumentTarget::makeReparent(const ObjectId& id,
 EditorResult<DomainOperation> UiDocumentTarget::makeSetLayout(const ObjectId& id, const UiLayoutValue& layout) const {
     auto current = widget(id);
     if (!current.ok())
-        return uiError<DomainOperation>(EditorStatus::NotFound, "editor.ui.widget-not-found",
-                                        "UI widget does not exist");
+        return eve::editing::failed<DomainOperation>(EditorStatus::NotFound, RuleId("editor.ui.widget-not-found"),
+                                                     "UI widget does not exist");
     if (layout.width < 0.0 || layout.height < 0.0 || layout.anchorX < 0.0 || layout.anchorX > 1.0 ||
         layout.anchorY < 0.0 || layout.anchorY > 1.0 || layout.pivotX < 0.0 || layout.pivotX > 1.0 ||
         layout.pivotY < 0.0 || layout.pivotY > 1.0)
-        return uiError<DomainOperation>(EditorStatus::Rejected, "editor.ui.invalid-layout",
-                                        "UI size must be non-negative and anchors/pivots must be within 0..1");
+        return eve::editing::failed<DomainOperation>(
+            EditorStatus::Rejected, RuleId("editor.ui.invalid-layout"),
+            "UI size must be non-negative and anchors/pivots must be within 0..1");
     UiWidgetSnapshot changed = current.value();
     changed.layout           = layout;
     return makeReplace(current.value(), std::move(changed), "layout");
@@ -222,16 +221,16 @@ EditorResult<DomainOperation> UiDocumentTarget::makeSetLayout(const ObjectId& id
 EditorResult<DomainOperation> UiDocumentTarget::makeSetStyle(const ObjectId& id, const UiStyleValue& style) const {
     auto current = widget(id);
     if (!current.ok())
-        return uiError<DomainOperation>(EditorStatus::NotFound, "editor.ui.widget-not-found",
-                                        "UI widget does not exist");
+        return eve::editing::failed<DomainOperation>(EditorStatus::NotFound, RuleId("editor.ui.widget-not-found"),
+                                                     "UI widget does not exist");
     const double values[]{style.marginLeft,   style.marginTop,  style.marginRight,  style.marginBottom,
                           style.paddingLeft,  style.paddingTop, style.paddingRight, style.paddingBottom,
                           style.tintR,        style.tintG,      style.tintB,        style.tintA,
                           style.cornerRadius, style.gap,        style.flexGrow};
     for (double value : values)
         if (!std::isfinite(value))
-            return uiError<DomainOperation>(EditorStatus::Rejected, "editor.ui.nonfinite-style",
-                                            "UI style values must be finite");
+            return eve::editing::failed<DomainOperation>(EditorStatus::Rejected, RuleId("editor.ui.nonfinite-style"),
+                                                         "UI style values must be finite");
     const std::set<std::string> directions{"row", "column"};
     const std::set<std::string> aligns{"start", "center", "end", "stretch"};
     const std::set<std::string> justifies{"start", "center", "end", "space-between", "space-around"};
@@ -241,8 +240,8 @@ EditorResult<DomainOperation> UiDocumentTarget::makeSetStyle(const ObjectId& id,
         style.tintG < 0.0 || style.tintG > 1.0 || style.tintB < 0.0 || style.tintB > 1.0 || style.tintA < 0.0 ||
         style.tintA > 1.0 || !directions.contains(style.direction) || !aligns.contains(style.align) ||
         !justifies.contains(style.justify))
-        return uiError<DomainOperation>(EditorStatus::Rejected, "editor.ui.invalid-style",
-                                        "UI style contains invalid box, color or flex values");
+        return eve::editing::failed<DomainOperation>(EditorStatus::Rejected, RuleId("editor.ui.invalid-style"),
+                                                     "UI style contains invalid box, color or flex values");
     UiWidgetSnapshot changed = current.value();
     changed.style            = style;
     return makeReplace(current.value(), std::move(changed), "style");
@@ -252,8 +251,8 @@ EditorResult<DomainOperation> UiDocumentTarget::makeSetContent(const ObjectId&  
                                                                const UiContentValue& content) const {
     auto current = widget(id);
     if (!current.ok())
-        return uiError<DomainOperation>(EditorStatus::NotFound, "editor.ui.widget-not-found",
-                                        "UI widget does not exist");
+        return eve::editing::failed<DomainOperation>(EditorStatus::NotFound, RuleId("editor.ui.widget-not-found"),
+                                                     "UI widget does not exist");
     const double                colors[]{content.textR, content.textG, content.textB, content.textA};
     const std::set<std::string> aligns{"start", "center", "end"};
     const std::set<std::string> fits{"stretch", "contain", "cover"};
@@ -262,8 +261,9 @@ EditorResult<DomainOperation> UiDocumentTarget::makeSetContent(const ObjectId&  
                     [](double value) { return !std::isfinite(value) || value < 0.0 || value > 1.0; }) ||
         !aligns.contains(content.horizontalAlign) || !aligns.contains(content.verticalAlign) ||
         !fits.contains(content.imageFit))
-        return uiError<DomainOperation>(EditorStatus::Rejected, "editor.ui.invalid-content",
-                                        "UI content contains an invalid font size, color, alignment or image fit");
+        return eve::editing::failed<DomainOperation>(
+            EditorStatus::Rejected, RuleId("editor.ui.invalid-content"),
+            "UI content contains an invalid font size, color, alignment or image fit");
     UiWidgetSnapshot changed = current.value();
     changed.content          = content;
     return makeReplace(current.value(), std::move(changed), "content");

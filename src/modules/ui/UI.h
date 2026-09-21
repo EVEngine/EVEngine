@@ -190,6 +190,9 @@ public:
     void beginRow(const std::string &id = "", float gap = -1.f);
     /** @brief Opens a column flex container. */
     void beginColumn(const std::string &id = "", float gap = -1.f);
+    /** @brief Begins a fixed-column grid container. */
+    void beginGrid(int columns, const std::string &id = "", float columnGap = -1.f,
+                   float rowGap = -1.f);
     /** @brief Closes the innermost open container. */
     void end();
     /** @brief Adds a text label to the current container. */
@@ -253,6 +256,16 @@ public:
      * No-op if there is no current child.
      */
     void setItemFlexGrow(float grow);
+    /** @brief Sets shrink weight on the most recently added flex item. */
+    void setItemFlexShrink(float shrink);
+    /** @brief Sets its main-axis basis; negative restores automatic measurement. */
+    void setItemFlexBasis(float basis);
+    /** @brief Sets its cross-axis alignment: inherit, start, center, end, or stretch. */
+    void setItemAlignSelf(const std::string &align);
+    /** @brief Sets width/height ratio on the most recently added item. */
+    void setItemAspectRatio(float ratio);
+    /** @brief Sets the grid-column span of the most recently added item. */
+    void setItemGridColumnSpan(int span);
     /** @brief Sets width/height on the most recently added child. */
     void setItemSize(float width, float height);
     /** Layout box model on the most recently added child (no-op if none). */
@@ -291,6 +304,10 @@ public:
     void setItemTheme(const std::string &theme);
     /** @brief Overrides the current open container's inherited subtree theme. */
     void setThemeScope(const std::string &theme);
+    /** @brief Applies a named style class to the most recently added item. */
+    void setItemStyleClass(const std::string &name);
+    /** @brief Applies a named style class to the current open container. */
+    void setStyleScope(const std::string &name);
     /** @brief Sets the last item's sequential focus order; negative excludes it. */
     void setItemTabIndex(int index);
     /** @brief Sets explicit previous and next focus neighbors on the last item. */
@@ -306,6 +323,12 @@ public:
     void setFlexAlign(const std::string &align);
     /** @brief Sets Flex container justify on the current open Flex. */
     void setFlexJustify(const std::string &justify);
+    /** @brief Sets independent column and row gaps on the current Flex/Grid. */
+    void setLayoutGaps(float columnGap, float rowGap);
+    /** @brief Enables or disables line wrapping on the current Flex. */
+    void setFlexWrap(bool wrap);
+    /** @brief Sets overflow behavior: visible, clip, or scroll. */
+    void setLayoutOverflow(const std::string &overflow);
     /** @brief Append one list row button (call inside beginList). */
     void addListItem(const std::string &label, const std::string &id = "");
 
@@ -432,6 +455,8 @@ public:
      * inside beginFrameAndRender().
      */
     void animateHostPos(float x, float y, float durationMs);
+    /** @brief Smoothly animates one retained node's transient opacity without rebuilding its tree. */
+    void animateItemOpacity(const std::string &id, float opacity, float durationMs);
     /** @brief Returns the id of the clicked widget since the last frame (or ""). */
     std::string consumeClick();
     /** @brief Returns the id of the changed widget since the last frame (or ""). */
@@ -457,6 +482,12 @@ public:
      */
     void onClick(const std::string &id, ssq::Function fn);
     void onChange(const std::string &id, ssq::Function fn);
+    /** @brief Internal UIComponent callback registration scoped to one component owner. */
+    void componentOnClick(uint64_t owner, const std::string &id, ssq::Function fn);
+    /** @brief Internal UIComponent value callback registration scoped to one component owner. */
+    void componentOnChange(uint64_t owner, const std::string &id, ssq::Function fn);
+    /** @brief Removes every callback owned by one UIComponent; idempotent on the UI thread. */
+    void componentClearHandlers(uint64_t owner);
 
     /** @brief Applies the dark/light built-in theme. */
     void setThemeDark();
@@ -465,6 +496,16 @@ public:
     bool setTheme(const std::string &name);
     /** @brief Name of the active theme. */
     std::string getTheme() const;
+    /** @brief Declares/replaces a named style class and returns a stable status string. */
+    std::string defineStyleClass(const std::string &name, const std::string &parent = "");
+    /** @brief Sets a named class color token and returns a stable status string. */
+    std::string setStyleClassColor(const std::string &name, const std::string &property, float r,
+                                   float g, float b, float a = 1.f);
+    /** @brief Sets a named class metric token and returns a stable status string. */
+    std::string setStyleClassMetric(const std::string &name, const std::string &property, float x,
+                                    float y = 0.f);
+    /** @brief Clears all named style classes. */
+    void clearStyleClasses();
     /** @brief Enables/disables keyboard navigation support. */
     void setNavKeyboard(bool enabled);
     void setNavGamepad(bool enabled);
@@ -474,6 +515,10 @@ public:
     float getScale() const;
     /** "hosts=.. nodes=.. measureMs=.. walkMs=.." from the last render frame. */
     std::string getStats() const;
+    /** @brief JSON diagnostics for measured size and overflow of the selected retained tree. */
+    std::string getLayoutDiagnostics() const;
+    /** @brief JSON accessibility snapshot for semantically named nodes in the selected tree. */
+    std::string getAccessibilitySnapshot() const;
     /** Serialize the selected host's tree to JSON (UI asset pipeline). */
     std::string saveTreeJson() const;
     /** Replace the selected host's tree from JSON produced by saveTreeJson(). */
@@ -630,13 +675,15 @@ private:
     std::string lastDropOrigin_;
 
     struct ScriptHandler {
-        ScriptHandler(std::string host, std::string node, std::string k, ssq::Function f)
+        ScriptHandler(std::string host, std::string node, std::string k, ssq::Function f,
+                      uint64_t componentOwner = 0)
             : hostName(std::move(host)), nodeId(std::move(node)), kind(std::move(k)),
-              fn(std::move(f)) {}
+              fn(std::move(f)), owner(componentOwner) {}
         std::string hostName;
         std::string nodeId;
         std::string kind;  // "click" | "toggle" | "value" | "text"
         ssq::Function fn;
+        uint64_t owner = 0;  // 0 belongs to the legacy host-level registration API.
     };
     std::vector<ScriptHandler> scriptHandlers_;
     void fireScriptHandlers(const UIEvent &ev);
@@ -650,7 +697,16 @@ private:
         double startMs = 0.0;
         double durationMs = 0.0;
     };
+    struct ItemTween {
+        UIHostHandle host{};
+        std::string nodeId;
+        float from = 1.f;
+        float to = 1.f;
+        double startMs = 0.0;
+        double durationMs = 0.0;
+    };
     std::vector<HostTween> hostTweens_;
+    std::vector<ItemTween> itemTweens_;
     void updateHostTweens();
     ssq::Object callPickHandler();
     void callScenePickHandler(const std::string &nodeId);

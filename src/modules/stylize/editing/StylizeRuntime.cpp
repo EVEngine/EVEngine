@@ -10,19 +10,15 @@
 #include <utility>
 
 namespace eve::stylize_editing {
-namespace {
-template <class T>
-EditorResult<T> fail(EditorStatus s, const char* r, std::string m) {
-    return eve::editing::failed<T>(s, RuleId(r), std::move(m));
-}
-}  // namespace
+namespace {}  // namespace
 
 StylizeRecipeRuntime::StylizeRecipeRuntime()  = default;
 StylizeRecipeRuntime::~StylizeRecipeRuntime() = default;
 
 EditorResult<void> StylizeRecipeRuntime::publish(const StylizeRecipeTarget& document, graphics::Graphics* graphics) {
     if (!graphics)
-        return fail<void>(EditorStatus::Rejected, "editor.stylize.graphics", "Stylize publication requires Graphics");
+        return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.stylize.graphics"),
+                                          "Stylize publication requires Graphics");
     const auto diagnostics = document.validate();
     for (const auto& d : diagnostics)
         if (d.severity() == DiagnosticSeverity::Error)
@@ -40,7 +36,7 @@ EditorResult<void> StylizeRecipeRuntime::publish(const StylizeRecipeTarget& docu
         }
         if (!instances.empty()) recipe->compile(graphics);
     } catch (const std::exception& exception) {
-        return fail<void>(EditorStatus::Failed, "editor.stylize.compile", exception.what());
+        return eve::editing::failed<void>(EditorStatus::Failed, RuleId("editor.stylize.compile"), exception.what());
     }
     instances_                         = std::move(instances);
     recipe_                            = std::move(recipe);
@@ -51,10 +47,11 @@ EditorResult<void> StylizeRecipeRuntime::publish(const StylizeRecipeTarget& docu
 EditorResult<void> StylizeRecipeRuntime::apply(graphics::Graphics* graphics, graphics::Texture* source,
                                                graphics::Canvas* destination, Revision expectedRevision) const {
     if (expectedRevision != revision_)
-        return fail<void>(EditorStatus::Conflict, "editor.stylize.stale", "Stylize runtime generation is stale");
+        return eve::editing::failed<void>(EditorStatus::Conflict, RuleId("editor.stylize.stale"),
+                                          "Stylize runtime generation is stale");
     if (!graphics || !source || !destination || graphics != graphics_ || revision_ == 0)
-        return fail<void>(EditorStatus::Rejected, "editor.stylize.runtime",
-                          "Stylize runtime requires its compiled Graphics, source and destination");
+        return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.stylize.runtime"),
+                                          "Stylize runtime requires its compiled Graphics, source and destination");
     try {
         if (instances_.empty()) {
             auto* previous = graphics->getCanvas();
@@ -65,7 +62,7 @@ EditorResult<void> StylizeRecipeRuntime::apply(graphics::Graphics* graphics, gra
         } else
             recipe_->apply(graphics, source, destination);
     } catch (const std::exception& exception) {
-        return fail<void>(EditorStatus::Failed, "editor.stylize.apply", exception.what());
+        return eve::editing::failed<void>(EditorStatus::Failed, RuleId("editor.stylize.apply"), exception.what());
     }
     return eve::editing::applied<void>();
 }

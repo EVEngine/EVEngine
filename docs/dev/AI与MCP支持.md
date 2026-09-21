@@ -62,6 +62,7 @@ MCP listening on 127.0.0.1:7529 (newline JSON-RPC; use tools/eve-mcp for Cursor 
 | 名称 | 用途 |
 |------|------|
 | `eve_status` | 附着 / 暂停 / 端口 / callgraph 摘要 |
+| `eve_api_search` / `eve_api_get` | 查询本构建的 EveScript Binding Contracts（先查再写脚本；见 [AI 知识补偿](AI知识补偿.md)） |
 | `eve_ui_tree` / `eve_ui_get` / `eve_ui_click` | 普通游戏 retained UI 的语义树查询、控件状态读取和按 ID 点击；与 `eve_host_*` 编辑器宿主互补 |
 | `eve_eval` | 求值表达式 |
 | `eve_pause` / `eve_continue` / `eve_step_*` | 运行控制 |
@@ -360,5 +361,5 @@ save→unload→reload 持久化往返）、`devtools.mcp.hostResourceHotReload`
 - 3D 物理世界与 Box3D 工具（当前仅 2D World）
 - 音频波形 / 素材来源加载类工具（当前为主音量、停止控制）
 - 与 `eve test` 场景脚本联动的 MCP 资源
-- AI 生成内容的静态校验（nut AST / 资源清单）
+- AI 生成内容的静态校验（nut AST / 资源清单；API 目录查询已由 `eve_api_search` 覆盖）
 - 编辑器 JSON：更多控件（image/视频预览、节点图）、多 OS 窗口、编辑器间拖拽

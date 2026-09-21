@@ -5,11 +5,6 @@
 namespace eve::physics_editing {
 namespace {
 
-template <class T>
-EditorResult<T> physicsError(EditorStatus status, const char* rule, std::string message) {
-    return eve::editing::failed<T>(status, RuleId(rule), std::move(message));
-}
-
 const EditorValue* field(const EditorValue& value, const char* key) {
     const auto* object = value.getIf<EditorValue::Object>();
     if (!object) return nullptr;
@@ -37,7 +32,7 @@ PhysicsColliderTarget::PhysicsColliderTarget(std::string id, int dimensions)
 TargetDescriptor PhysicsColliderTarget::describe() const {
     return {TargetId(id_),
             dimensions_ == 2 ? "physics-collider-2d" : "physics-collider-3d",
-            revision_,
+            revisionValue(),
             false,
             {CapabilityId("eve.editor.target.physics-collider")}};
 }
@@ -49,26 +44,26 @@ void* PhysicsColliderTarget::queryCapability(const CapabilityId& capability) {
 
 EditorResult<void> PhysicsColliderTarget::applyDomainOperation(const DomainOperation& operation) {
     if (operation.target != TargetId(id_))
-        return physicsError<void>(EditorStatus::Rejected, "editor.physics.target-mismatch",
-                                  "Physics operation targets another collider");
+        return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.physics.target-mismatch"),
+                                          "Physics operation targets another collider");
     if (operation.type != "physics.collider.property.set.v1")
-        return physicsError<void>(EditorStatus::Unsupported, "editor.physics.operation-unsupported",
-                                  "Unsupported physics collider operation: " + operation.type);
+        return eve::editing::failed<void>(EditorStatus::Unsupported, RuleId("editor.physics.operation-unsupported"),
+                                          "Unsupported physics collider operation: " + operation.type);
     const EditorValue* pathValue = field(operation.payload, "path");
     const EditorValue* value     = field(operation.payload, "value");
     const auto*        path      = pathValue ? pathValue->getIf<std::string>() : nullptr;
     if (!path || !value)
-        return physicsError<void>(EditorStatus::Rejected, "editor.physics.operation-payload",
-                                  "Physics collider operation requires path and value");
+        return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.physics.operation-payload"),
+                                          "Physics collider operation requires path and value");
     auto descriptor = colliderSchema().find(PropertyPath(*path));
     if (!descriptor)
-        return physicsError<void>(EditorStatus::Unsupported, "editor.physics.property-unsupported",
-                                  "Unknown physics collider property: " + *path);
+        return eve::editing::failed<void>(EditorStatus::Unsupported, RuleId("editor.physics.property-unsupported"),
+                                          "Unknown physics collider property: " + *path);
     auto valid = validateAssignment(*descriptor, *value);
     if (!valid.ok()) return valid;
     values_[*path] = *value;
-    ++revision_;
-    dirty_.include(0, 0);
+    bumpRevision();
+    widenDirty(0, 0);
     return eve::editing::applied<void>();
 }
 
@@ -79,8 +74,8 @@ std::unique_ptr<IDomainOperationTarget> PhysicsColliderTarget::cloneDomainState(
 EditorResult<void> PhysicsColliderTarget::commitDomainState(std::unique_ptr<IDomainOperationTarget> candidate) {
     auto* typed = dynamic_cast<PhysicsColliderTarget*>(candidate.get());
     if (!typed || typed->id_ != id_ || typed->dimensions_ != dimensions_)
-        return physicsError<void>(EditorStatus::Conflict, "editor.physics.candidate-mismatch",
-                                  "Collider candidate belongs to another target");
+        return eve::editing::failed<void>(EditorStatus::Conflict, RuleId("editor.physics.candidate-mismatch"),
+                                          "Collider candidate belongs to another target");
     *this = *typed;
     return eve::editing::applied<void>();
 }
@@ -90,7 +85,7 @@ eve::Result<eve::Revision> PhysicsColliderTarget::currentRevision(const Selectio
         return eve::Result<eve::Revision>::failure(
             eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "Selection does not belong to this collider",
                                    "editor.physics.selection", {}, "editor.PhysicsColliderTarget"));
-    return eve::Result<eve::Revision>::success(eve::Revision(revision_));
+    return eve::Result<eve::Revision>::success(eve::Revision(revisionValue()));
 }
 
 PropertySchema PhysicsColliderTarget::schema(const SelectionSnapshot&) const { return colliderSchema(); }
@@ -106,16 +101,17 @@ EditorResult<DomainOperation> PhysicsColliderTarget::makeSet(const SelectionSnap
                                                              const PropertyPath& path, const EditorValue& value,
                                                              PropertySetMode mode) const {
     if (!selectionMatches(selection))
-        return physicsError<DomainOperation>(EditorStatus::Rejected, "editor.physics.selection",
-                                             "Selection does not belong to this collider");
+        return eve::editing::failed<DomainOperation>(EditorStatus::Rejected, RuleId("editor.physics.selection"),
+                                                     "Selection does not belong to this collider");
     if (mode == PropertySetMode::Reset) return makeReset(selection, path);
     if (mode != PropertySetMode::Absolute)
-        return physicsError<DomainOperation>(EditorStatus::Unsupported, "editor.physics.property-mode",
-                                             "Collider properties require absolute assignment");
+        return eve::editing::failed<DomainOperation>(EditorStatus::Unsupported, RuleId("editor.physics.property-mode"),
+                                                     "Collider properties require absolute assignment");
     auto descriptor = colliderSchema().find(path);
     if (!descriptor)
-        return physicsError<DomainOperation>(EditorStatus::Unsupported, "editor.physics.property-unsupported",
-                                             "Unknown collider property: " + path.value());
+        return eve::editing::failed<DomainOperation>(EditorStatus::Unsupported,
+                                                     RuleId("editor.physics.property-unsupported"),
+                                                     "Unknown collider property: " + path.value());
     auto valid = validateAssignment(*descriptor, value);
     if (!valid.ok()) return EditorResult<DomainOperation>::failure(valid.status());
     const auto previous = values_.find(path.value());
@@ -140,8 +136,9 @@ EditorResult<DomainOperation> PhysicsColliderTarget::makeReset(const SelectionSn
                                                                const PropertyPath&      path) const {
     auto descriptor = colliderSchema().find(path);
     if (!descriptor)
-        return physicsError<DomainOperation>(EditorStatus::Unsupported, "editor.physics.property-unsupported",
-                                             "Unknown collider property: " + path.value());
+        return eve::editing::failed<DomainOperation>(EditorStatus::Unsupported,
+                                                     RuleId("editor.physics.property-unsupported"),
+                                                     "Unknown collider property: " + path.value());
     return makeSet(selection, path, descriptor->defaultValue, PropertySetMode::Absolute);
 }
 
@@ -211,13 +208,13 @@ EditorResult<void> PhysicsColliderTarget::validateAssignment(const PropertyDescr
         const auto*       tuple    = value.getIf<EditorValue::Array>();
         const std::size_t expected = dimensions_ == 2 ? 2 : 3;
         if (!tuple || tuple->size() != expected)
-            return physicsError<void>(EditorStatus::Rejected, "editor.physics.vector-size",
-                                      "Physics vector has the wrong dimensionality");
+            return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.physics.vector-size"),
+                                              "Physics vector has the wrong dimensionality");
         for (const EditorValue& component : *tuple) {
             const auto* number = component.getIf<double>();
             if (!number || (descriptor.path == PropertyPath("shape.size") && *number <= 0.0))
-                return physicsError<void>(EditorStatus::Rejected, "editor.physics.vector-value",
-                                          "Physics size components must be positive numbers");
+                return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.physics.vector-value"),
+                                                  "Physics size components must be positive numbers");
         }
     }
     return eve::editing::applied<void>();

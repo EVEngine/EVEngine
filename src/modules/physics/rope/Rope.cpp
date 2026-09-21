@@ -99,14 +99,6 @@ std::int64_t ropeColliderIdOrThrow(eve::Result<RopeColliderId> result, const cha
     throw Exception("Rope3D.%s: %s", operation, diagnostic ? diagnostic->message().c_str() : "operation failed");
 }
 
-template <class T>
-eve::Result<T> ropeCreateFailure(eve::DiagnosticCode code, std::string message, std::string path = {}) {
-    return eve::Result<T>::failure(
-        eve::Diagnostic::error(code, std::move(message), std::move(path),
-                               eve::DiagnosticDetails{{"schemaId", kRopeCreateSchemaId}, {"schemaVersion", "1"}},
-                               "physics.rope3d.create-schema"));
-}
-
 }  // namespace
 
 Module_IMPL(Rope, new Rope());
@@ -122,11 +114,17 @@ eve::Result<Rope3D*> Rope::newRope3DFromJson(const std::string& json) {
     if (!registered.ok()) return eve::Result<Rope3D*>::failure(registered.status());
     const auto errors = eve::schema::SchemaRegistry::validate(kRopeCreateSchemaId, 1, json);
     if (!errors.empty())
-        return ropeCreateFailure<Rope3D*>(eve::DiagnosticCode::InvalidArgument, errors.front().message,
-                                          errors.front().path);
+        return eve::Result<Rope3D*>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, errors.front().message, errors.front().path,
+                                   eve::DiagnosticDetails{{"schemaId", kRopeCreateSchemaId}, {"schemaVersion", "1"}},
+                                   "physics.rope3d.create-schema"));
     std::string parseError;
     auto        document = eve::json::Document::parse(json, &parseError);
-    if (!document.valid()) return ropeCreateFailure<Rope3D*>(eve::DiagnosticCode::ParseError, std::move(parseError));
+    if (!document.valid())
+        return eve::Result<Rope3D*>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::ParseError, std::move(parseError), {},
+                                   eve::DiagnosticDetails{{"schemaId", kRopeCreateSchemaId}, {"schemaVersion", "1"}},
+                                   "physics.rope3d.create-schema"));
     const auto root = document.root();
     try {
         auto rope = std::make_unique<Rope3D>(root.getInt("particleCount"), root.getFloat("startX"),
@@ -160,7 +158,10 @@ eve::Result<Rope3D*> Rope::newRope3DFromJson(const std::string& json) {
             rope->setTearing(root.getFloat("tearResistance", 1000.f), root.getInt("maxTearsPerStep", 1));
         return eve::Result<Rope3D*>::success(rope.release(), eve::Status::success(eve::StatusCode::Applied));
     } catch (const std::exception& exception) {
-        return ropeCreateFailure<Rope3D*>(eve::DiagnosticCode::InvalidArgument, exception.what());
+        return eve::Result<Rope3D*>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, exception.what(), {},
+                                   eve::DiagnosticDetails{{"schemaId", kRopeCreateSchemaId}, {"schemaVersion", "1"}},
+                                   "physics.rope3d.create-schema"));
     }
 }
 

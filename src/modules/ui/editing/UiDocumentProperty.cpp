@@ -6,11 +6,6 @@
 namespace eve::ui_editing {
 namespace {
 
-template <class T>
-EditorResult<T> propertyError(EditorStatus status, const char* rule, std::string message) {
-    return eve::editing::failed<T>(status, RuleId(rule), std::move(message));
-}
-
 PropertyDescriptor uiProperty(const char* path, const char* label, PropertyType type,
                               EditorValue defaultValue, const char* category) {
     PropertyDescriptor result;
@@ -189,7 +184,7 @@ eve::Result<eve::Revision> UiDocumentTarget::currentRevision(const SelectionSnap
             return eve::Result<eve::Revision>::failure(eve::Diagnostic::error(
                 eve::DiagnosticCode::InvalidArgument, "UI selection contains an invalid widget",
                 "editor.ui.selection", {}, "editor.UiDocumentTarget"));
-    return eve::Result<eve::Revision>::success(eve::Revision(revision_));
+    return eve::Result<eve::Revision>::success(eve::Revision(revisionValue()));
 }
 
 PropertySchema UiDocumentTarget::schema(const SelectionSnapshot&) const {
@@ -253,26 +248,26 @@ EditorResult<DomainOperation> UiDocumentTarget::makeSet(const SelectionSnapshot&
                                                          PropertySetMode mode) const {
     if (mode == PropertySetMode::Reset) return makeReset(selection, path);
     if (mode != PropertySetMode::Absolute || selection.items.empty())
-        return propertyError<DomainOperation>(EditorStatus::Unsupported, "editor.ui.property-mode",
-                                              "UI properties require a non-empty absolute assignment");
+        return eve::editing::failed<DomainOperation>(EditorStatus::Unsupported, RuleId("editor.ui.property-mode"),
+                                                     "UI properties require a non-empty absolute assignment");
     if (!schema(selection).find(path))
-        return propertyError<DomainOperation>(EditorStatus::Unsupported, "editor.ui.property-path",
-                                              "Unknown UI property: " + path.value());
+        return eve::editing::failed<DomainOperation>(EditorStatus::Unsupported, RuleId("editor.ui.property-path"),
+                                                     "Unknown UI property: " + path.value());
     EditorValue::Array payload;
     EditorValue::Array inverse;
     DomainOperation operation;
     for (const SelectionItem& item : selection.items) {
         if (item.target != TargetId(id_))
-            return propertyError<DomainOperation>(EditorStatus::Rejected, "editor.ui.property-target",
-                                                  "UI selection spans another target");
+            return eve::editing::failed<DomainOperation>(EditorStatus::Rejected, RuleId("editor.ui.property-target"),
+                                                         "UI selection spans another target");
         const auto found = widgets_.find(ObjectId(item.item.value()));
         if (found == widgets_.end())
-            return propertyError<DomainOperation>(EditorStatus::NotFound, "editor.ui.widget-not-found",
-                                                  "Selected UI widget does not exist");
+            return eve::editing::failed<DomainOperation>(EditorStatus::NotFound, RuleId("editor.ui.widget-not-found"),
+                                                         "Selected UI widget does not exist");
         UiWidgetSnapshot changed = found->second;
         if (!assign(changed, path, value))
-            return propertyError<DomainOperation>(EditorStatus::Rejected, "editor.ui.property-value",
-                                                  "UI property value is invalid for " + path.value());
+            return eve::editing::failed<DomainOperation>(EditorStatus::Rejected, RuleId("editor.ui.property-value"),
+                                                         "UI property value is invalid for " + path.value());
         payload.push_back(widgetValue(changed));
         inverse.push_back(widgetValue(found->second));
         operation.affectedObjects.push_back({TargetId(id_), item.item.value(), 0});
@@ -291,8 +286,8 @@ EditorResult<DomainOperation> UiDocumentTarget::makeReset(const SelectionSnapsho
                                                            const PropertyPath& path) const {
     auto property = schema(selection).find(path);
     if (!property)
-        return propertyError<DomainOperation>(EditorStatus::Unsupported, "editor.ui.property-path",
-                                              "Unknown UI property: " + path.value());
+        return eve::editing::failed<DomainOperation>(EditorStatus::Unsupported, RuleId("editor.ui.property-path"),
+                                                     "Unknown UI property: " + path.value());
     return makeSet(selection, path, property->defaultValue, PropertySetMode::Absolute);
 }
 

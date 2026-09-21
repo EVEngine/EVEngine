@@ -49,7 +49,16 @@ public:
     /** @brief Offer a (normalized) path to the registered reloaders; true if any reloaded. */
     bool tryReload(std::string path);
 
-    /** @brief Recursively watch root and all subdirectories. Returns number of watches added. */
+    /**
+     * @brief Recursively watch root and all subdirectories.
+     * Virtual paths walk the VFS. `..`, `../…`, and absolute OS directories walk the
+     * real filesystem so an app under `apps/<name>` can watch its parent workflow.
+     * Event paths are game/VFS relative: files under the working directory keep
+     * cwd-relative names (`main.nut`); siblings of the app report from the watch root
+     * (`editors/skill.vm.nut`).
+     * @return Number of directory watches added.
+     * @cost One OS watcher per directory in the tree; call at boot, not per frame.
+     */
     int watchTree(std::string root = ".");
 
     /**

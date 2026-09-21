@@ -5,11 +5,6 @@
 
 namespace eve::npc_ai {
 namespace {
-template <class T>
-Result<T> navigationFailure(DiagnosticCode code, std::string message) {
-    return Result<T>::failure(Diagnostic::error(code, std::move(message), {}, {}, "npc_ai.navigation"));
-}
-
 bool finitePosition(const std::array<double, 3>& position) {
     return std::all_of(position.begin(), position.end(), [](double value) { return std::isfinite(value); });
 }
@@ -22,8 +17,9 @@ NavigationTaskService::NavigationTaskService(std::unique_ptr<INavigationProvider
 Result<std::unique_ptr<NavigationTaskService>> NavigationTaskService::create(
     std::unique_ptr<INavigationProvider> provider, std::unique_ptr<INavigationRequestFactory> requestFactory) {
     if (!provider || !requestFactory)
-        return navigationFailure<std::unique_ptr<NavigationTaskService>>(
-            DiagnosticCode::InvalidArgument, "navigation provider and request factory owners are required");
+        return Result<std::unique_ptr<NavigationTaskService>>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "navigation provider and request factory owners are required", {}, {},
+            "npc_ai.navigation"));
     return Result<std::unique_ptr<NavigationTaskService>>::success(std::unique_ptr<NavigationTaskService>(
         new NavigationTaskService(std::move(provider), std::move(requestFactory))));
 }
@@ -43,20 +39,24 @@ Result<void> NavigationTaskService::start(const TaskContext& context, const Task
                                           std::string& inOutMemoryJson) {
     const auto taskKey = key(context, spec);
     if (active_.contains(taskKey))
-        return navigationFailure<void>(DiagnosticCode::AlreadyExists, "navigation task already owns an active ticket");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::AlreadyExists,
+                                                       "navigation task already owns an active ticket", {}, {},
+                                                       "npc_ai.navigation"));
     auto request = requestFactory_->create(context, spec);
     if (!request.ok()) return Result<void>::failure(request.status());
     if (request.value().agent != context.agent || !finitePosition(request.value().start) ||
         !finitePosition(request.value().destination) || !std::isfinite(request.value().agentRadius) ||
         !std::isfinite(request.value().acceptanceRadius) || request.value().agentRadius <= 0.0 ||
         request.value().acceptanceRadius < 0.0 || request.value().requestedTick != context.simulationTick)
-        return navigationFailure<void>(DiagnosticCode::InvalidArgument,
-                                       "navigation request factory returned an invalid request");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                       "navigation request factory returned an invalid request", {}, {},
+                                                       "npc_ai.navigation"));
     auto ticket = provider_->begin(request.value());
     if (!ticket.ok()) return Result<void>::failure(ticket.status());
     if (!ticket.value().isValid()) {
-        return navigationFailure<void>(DiagnosticCode::InvariantViolation,
-                                       "navigation provider returned an invalid ticket");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvariantViolation,
+                                                       "navigation provider returned an invalid ticket", {}, {},
+                                                       "npc_ai.navigation"));
     }
     active_.emplace(taskKey, ticket.value());
     inOutMemoryJson = "{\"phase\":\"pending\"}";
@@ -67,14 +67,16 @@ Result<TaskStatus> NavigationTaskService::tick(const TaskContext& context, const
                                                std::string& inOutMemoryJson) {
     const auto found = active_.find(key(context, spec));
     if (found == active_.end())
-        return navigationFailure<TaskStatus>(DiagnosticCode::PreconditionViolation,
-                                             "navigation task has no active ticket");
+        return Result<TaskStatus>::failure(Diagnostic::error(DiagnosticCode::PreconditionViolation,
+                                                             "navigation task has no active ticket", {}, {},
+                                                             "npc_ai.navigation"));
     auto progress = provider_->poll(found->second, context.simulationTick);
     if (!progress.ok()) return Result<TaskStatus>::failure(progress.status());
     if (!finitePosition(progress.value().desiredVelocity) || !std::isfinite(progress.value().remainingDistance) ||
         progress.value().remainingDistance < 0.0)
-        return navigationFailure<TaskStatus>(DiagnosticCode::InvariantViolation,
-                                             "navigation provider returned invalid progress");
+        return Result<TaskStatus>::failure(Diagnostic::error(DiagnosticCode::InvariantViolation,
+                                                             "navigation provider returned invalid progress", {}, {},
+                                                             "npc_ai.navigation"));
     switch (progress.value().phase) {
         case NavigationPhase::Pending:
             inOutMemoryJson = "{\"phase\":\"pending\"}";
@@ -95,8 +97,9 @@ Result<TaskStatus> NavigationTaskService::tick(const TaskContext& context, const
             inOutMemoryJson = "{\"phase\":\"cancelled\"}";
             return Result<TaskStatus>::success(TaskStatus::Failed);
     }
-    return navigationFailure<TaskStatus>(DiagnosticCode::InvariantViolation,
-                                         "navigation provider returned an unknown phase");
+    return Result<TaskStatus>::failure(Diagnostic::error(DiagnosticCode::InvariantViolation,
+                                                         "navigation provider returned an unknown phase", {}, {},
+                                                         "npc_ai.navigation"));
 }
 
 void NavigationTaskService::stop(const TaskContext& context, const TaskSpec& spec, StopReason reason,

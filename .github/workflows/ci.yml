@@ -72,6 +72,8 @@ jobs:
       fuzz: ${{ steps.scope.outputs.fuzz }}
       webgpu: ${{ steps.scope.outputs.webgpu }}
       tools: ${{ steps.scope.outputs.tools }}
+      test_mode: ${{ steps.scope.outputs.test_mode }}
+      test_label_regex: ${{ steps.scope.outputs.test_label_regex }}
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -84,11 +86,17 @@ jobs:
         env:
           EVENT_NAME: ${{ github.event_name }}
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          BEFORE_SHA: ${{ github.event.before }}
           HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
         run: |
           if [ "$EVENT_NAME" = "pull_request" ]; then
             python3 scripts/ci_change_scope.py \
               --base "$BASE_SHA" --head "$HEAD_SHA" --github-output "$GITHUB_OUTPUT"
+          elif [ "$EVENT_NAME" = "push" ] && [ -n "$BEFORE_SHA" ] && \
+               [ "$BEFORE_SHA" != "0000000000000000000000000000000000000000" ]; then
+            python3 scripts/ci_change_scope.py \
+              --base "$BEFORE_SHA" --head "$HEAD_SHA" --diff-mode direct \
+              --github-output "$GITHUB_OUTPUT"
           else
             python3 scripts/ci_change_scope.py --all --github-output "$GITHUB_OUTPUT"
           fi
@@ -371,9 +379,10 @@ jobs:
       - name: Build win32 debug
         # A PR that changes the third-party patch/cache key must do a full cold
         # dependency plus engine/test build. Recent windows-2025 runners can
-        # exceed 40 minutes without any compiler failure, so retain a bounded
-        # hang guard while allowing the cold build to finish.
-        timeout-minutes: 60
+        # exceed 60 minutes without any compiler failure as the full test
+        # manifest grows, so retain a bounded hang guard while allowing the
+        # cold build and final unit-test link to finish.
+        timeout-minutes: 75
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
@@ -405,11 +414,16 @@ jobs:
           key: ${{ steps.third-party-cache.outputs.cache-primary-key }}
 
       - name: Run win32 unit tests
-        timeout-minutes: 40
+        # Run 35519931809 reached 5548/5550 passing cases when the 40-minute
+        # guard fired. Keep a bounded margin for the final structural tests and
+        # normal hosted-runner variance when CI/build files require a full run.
+        timeout-minutes: 50
         # Headless runners have no WASAPI endpoint (0x80070490); OpenAL Soft null backend.
         env:
           ALSOFT_DRIVERS: "null"
-        run: make test/win32-debug
+        run: >-
+          make test/win32-debug
+          LABEL_FILTER='${{ needs.change-scope.outputs.test_label_regex }}'
 
       - name: Capture Vulkan parity artifacts
         timeout-minutes: 10
@@ -593,7 +607,9 @@ jobs:
         timeout-minutes: 45
         env:
           ALSOFT_DRIVERS: "null"
-        run: make test/win32
+        run: >-
+          make test/win32
+          LABEL_FILTER='${{ needs.change-scope.outputs.test_label_regex }}'
 
   android:
     name: Android
@@ -673,6 +689,7 @@ jobs:
 
       - name: Report C/C++ compilation cache
         if: always()
+        continue-on-error: true
         timeout-minutes: 5
         run: sccache --show-stats
 
@@ -749,6 +766,7 @@ jobs:
 
       - name: Report C/C++ compilation cache
         if: always()
+        continue-on-error: true
         timeout-minutes: 5
         run: sccache --show-stats
 
@@ -757,7 +775,9 @@ jobs:
     needs: [source-quality, change-scope]
     if: ${{ needs.source-quality.result == 'success' && needs.change-scope.outputs.macos == 'true' && (github.event_name != 'workflow_call' || inputs.build_type == 'debug' || inputs.build_type == 'both') }}
     runs-on: macos-latest
-    timeout-minutes: 120
+    # The full isolated test suite now exceeds 30 minutes on hosted Apple
+    # Silicon, and the native Dawn lane still follows it in this job.
+    timeout-minutes: 135
     env:
       SCCACHE_GHA_ENABLED: "true"
       SCCACHE_GHA_VERSION: evengine-cpp-v1-macos-arm64-debug
@@ -804,10 +824,14 @@ jobs:
           CMAKE_EXTRA_ARGS="-DEVENGINE_COMPILER_CACHE=SCCACHE"
 
       - name: Run macosx unit tests
-        timeout-minutes: 30
+        # Run 35376121813 reached 5403/5451 passing cases before the former
+        # 30-minute guard terminated ctest; retain a bounded completion margin.
+        timeout-minutes: 40
         env:
           ALSOFT_DRIVERS: "null"
-        run: make test/macosx-debug
+        run: >-
+          make test/macosx-debug
+          LABEL_FILTER='${{ needs.change-scope.outputs.test_label_regex }}'
 
       - name: Report network phase timings
         if: always()
@@ -939,7 +963,9 @@ jobs:
         timeout-minutes: 30
         env:
           ALSOFT_DRIVERS: "null"
-        run: make test/macosx
+        run: >-
+          make test/macosx
+          LABEL_FILTER='${{ needs.change-scope.outputs.test_label_regex }}'
 
   ios:
     name: iOS
@@ -1209,7 +1235,8 @@ jobs:
           # CTEST_JOBS=2: Lavapipe renders several window/GPU tests in
           # parallel; -j4 hits a pre-existing race (voxel.render.sceneHillsIsland
           # SEGFAULT) that is not reproducible in isolation.
-          xvfb-run -a -s "-screen 0 1280x800x24" make test/linux-debug CTEST_JOBS=2
+          xvfb-run -a -s "-screen 0 1280x800x24" make test/linux-debug CTEST_JOBS=2 \
+            LABEL_FILTER='${{ needs.change-scope.outputs.test_label_regex }}'
 
       - name: Verify resource test results without skipped or warning-only cases
         timeout-minutes: 20

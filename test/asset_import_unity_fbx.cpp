@@ -1,6 +1,7 @@
 #include <assimp/scene.h>
 #include <assimp/Exporter.hpp>
 #include "asset/AssetCooker.h"
+#include "asset/CanonicalMesh.h"
 #include "asset/EvpackResourceReader.h"
 #include "asset/graphics/EvpackStaticPrefab.h"
 #include "asset/import/UnityImporter.h"
@@ -14,29 +15,42 @@ using namespace eve;
 using namespace eve::asset_import;
 
 namespace {
-UnityProjectImportRequest triangleFbx() {
+UnityProjectImportRequest triangleFbx(bool extendedStreams = true, bool twoSubmeshes = false) {
     aiScene scene;
     scene.mRootNode                           = new aiNode("Root");
     scene.mRootNode->mNumChildren             = 1;
     scene.mRootNode->mChildren                = new aiNode*[1]{new aiNode("GroundTileModular.002")};
     scene.mRootNode->mChildren[0]->mParent    = scene.mRootNode;
-    scene.mRootNode->mChildren[0]->mNumMeshes = 1;
-    scene.mRootNode->mChildren[0]->mMeshes    = new unsigned[1]{0};
-    scene.mNumMeshes                          = 1;
-    scene.mMeshes                             = new aiMesh*[1]{new aiMesh};
-    auto& mesh                                = *scene.mMeshes[0];
-    mesh.mName.Set("Geometry");
-    mesh.mNumVertices          = 3;
-    mesh.mVertices             = new aiVector3D[3]{{1, 0, 0}, {0, 1, 0}, {0, 0, 1}};
-    mesh.mNormals              = new aiVector3D[3]{{0, 1, 0}, {0, 1, 0}, {0, 1, 0}};
-    mesh.mTextureCoords[0]     = new aiVector3D[3]{{0, 0, 0}, {1, 0, 0}, {0, 1, 0}};
-    mesh.mNumUVComponents[0]   = 2;
-    mesh.mNumFaces             = 1;
-    mesh.mFaces                = new aiFace[1];
-    mesh.mFaces[0].mNumIndices = 3;
-    mesh.mFaces[0].mIndices    = new unsigned[3]{0, 1, 2};
-    scene.mNumMaterials        = 1;
-    scene.mMaterials           = new aiMaterial*[1]{new aiMaterial};
+    const unsigned meshCount = twoSubmeshes ? 2 : 1;
+    scene.mRootNode->mChildren[0]->mNumMeshes = meshCount;
+    scene.mRootNode->mChildren[0]->mMeshes = twoSubmeshes ? new unsigned[2]{0, 1} : new unsigned[1]{0};
+    scene.mNumMeshes = meshCount;
+    scene.mMeshes = new aiMesh*[meshCount];
+    for (unsigned meshIndex = 0; meshIndex < meshCount; ++meshIndex) {
+        scene.mMeshes[meshIndex] = new aiMesh;
+        auto& mesh = *scene.mMeshes[meshIndex];
+        mesh.mName.Set("Geometry");
+        mesh.mMaterialIndex       = meshIndex;
+        mesh.mNumVertices         = 3;
+        mesh.mVertices            = new aiVector3D[3]{{1, 0, 0}, {0, 1, 0}, {0, 0, 1}};
+        mesh.mNormals             = new aiVector3D[3]{{0, 1, 0}, {0, 1, 0}, {0, 1, 0}};
+        mesh.mTextureCoords[0]    = new aiVector3D[3]{{0, 0, 0}, {1, 0, 0}, {0, 1, 0}};
+        mesh.mNumUVComponents[0]  = 2;
+        if (extendedStreams) {
+            mesh.mTextureCoords[1]   = new aiVector3D[3]{{0.25f, 0.5f, 0}, {0.75f, 0.5f, 0}, {0.25f, 1.f, 0}};
+            mesh.mNumUVComponents[1] = 2;
+            mesh.mTangents           = new aiVector3D[3]{{1, 0, 0}, {1, 0, 0}, {1, 0, 0}};
+            mesh.mBitangents         = new aiVector3D[3]{{0, 0, -1}, {0, 0, -1}, {0, 0, -1}};
+            mesh.mColors[0]          = new aiColor4D[3]{{1, 0, 0, 1}, {0, 1, 0, 0.5f}, {0, 0, 1, 0.25f}};
+        }
+        mesh.mNumFaces             = 1;
+        mesh.mFaces                = new aiFace[1];
+        mesh.mFaces[0].mNumIndices = 3;
+        mesh.mFaces[0].mIndices    = new unsigned[3]{0, 1, 2};
+    }
+    scene.mNumMaterials = meshCount;
+    scene.mMaterials = new aiMaterial*[meshCount];
+    for (unsigned index = 0; index < meshCount; ++index) scene.mMaterials[index] = new aiMaterial;
     Assimp::Exporter exporter;
     const auto*      blob = exporter.ExportToBlob(&scene, "fbxa");
     if (!blob) throw std::runtime_error(exporter.GetErrorString());
@@ -53,7 +67,7 @@ UnityProjectImportRequest triangleFbx() {
 }
 
 TEST_CASE("asset.import.unityStaticPrefabResolvesAndReleasesGpuLeases") {
-    auto request = triangleFbx();
+    auto request = triangleFbx(false);
     auto put     = [&](const char* path, const std::string& data) { request.files[path] = {data.begin(), data.end()}; };
     put("Assets/tile.mat", R"(--- !u!21 &2100000
 Material:
@@ -118,12 +132,16 @@ MeshRenderer:
         int                     uploads = 0, releases = 0, token = 0;
         bool                    reject = false;
         Result<graphics::Mesh*> uploadMesh(const float*, const float*, const float*, int, const std::uint32_t*,
-                                                          int) override {
+                                           int) override {
             ++uploads;
             if (reject)
                 return Result<graphics::Mesh*>::failure(
                     Diagnostic::error(DiagnosticCode::Failed, "injected upload failure"));
             return Result<graphics::Mesh*>::success(reinterpret_cast<graphics::Mesh*>(&token));
+        }
+        Result<void> setMeshTangentFrame(graphics::Mesh*, std::span<const float>,
+                                         std::span<const float>) override {
+            return Result<void>::success();
         }
         Result<void> releaseMesh(graphics::Mesh*) override {
             ++releases;
@@ -178,12 +196,25 @@ TEST_CASE("asset.import.unityFbxHashesNodeNameAndProducesCanonicalMesh") {
     REQUIRE(prepared.ok());
     REQUIRE_EQ(prepared.value().manifest.assets.size(), std::size_t(1));
     REQUIRE_EQ(prepared.value().sourceMappings.front().sourceObject, std::string("-813904291765591093"));
+    const auto meshEntry = std::find_if(prepared.value().entries.begin(), prepared.value().entries.end(),
+                                        [](const auto& entry) { return entry.path.ends_with("mesh.bin"); });
+    REQUIRE(meshEntry != prepared.value().entries.end());
+    auto decoded = asset::decodeCanonicalMesh(meshEntry->bytes);
+    REQUIRE(decoded.ok());
+    REQUIRE_EQ(decoded.value().texcoords.size(), std::size_t(2));
+    REQUIRE_EQ(decoded.value().texcoords.at(1), std::vector<float>({0.25f, 0.5f, 0.75f, 0.5f, 0.25f, 0.f}));
+    REQUIRE_EQ(decoded.value().attributes.at("TANGENT").components, std::uint32_t(4));
+    REQUIRE_EQ(decoded.value().attributes.at("TANGENT").values,
+               std::vector<float>({1, 0, 0, -1, 1, 0, 0, -1, 1, 0, 0, -1}));
+    REQUIRE_EQ(decoded.value().attributes.at("COLOR_0").components, std::uint32_t(4));
+    REQUIRE_EQ(decoded.value().attributes.at("COLOR_0").values,
+               std::vector<float>({1, 0, 0, 1, 0, 1, 0, 0.5f, 0, 0, 1, 0.25f}));
     auto repeated = prepareUnityFbx(request, source);
     REQUIRE(repeated.ok());
     REQUIRE(prepared.value().sourceMappings.front().asset == repeated.value().sourceMappings.front().asset);
 }
 
-TEST_CASE("asset.import.unityFbxRejectsCorruptionAndLegacyIdentityWithoutGuessing") {
+TEST_CASE("asset.import.unityFbxRejectsCorruptionAndRecoversReferencedLegacyIdentity") {
     auto             request = triangleFbx();
     UnitySourceAsset source{
         "Assets/tile.fbx", "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", UnitySourceKind::Model, "ModelImporter", {}};
@@ -195,7 +226,17 @@ TEST_CASE("asset.import.unityFbxRejectsCorruptionAndLegacyIdentityWithoutGuessin
     std::string meta(bytes.begin(), bytes.end());
     meta.replace(meta.find("fileIdsGeneration: 2"), 20, "fileIdsGeneration: 1");
     bytes.assign(meta.begin(), meta.end());
+    const std::string prefab =
+        "--- !u!33 &3300000\nMeshFilter:\n  m_Mesh: {fileID: 1243444849563829797, guid: "
+        "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa, type: 3}\n";
+    request.files["Assets/legacy.prefab"] = {prefab.begin(), prefab.end()};
     auto legacy = prepareUnityFbx(request, source);
-    REQUIRE(!legacy.ok());
-    REQUIRE(legacy.error()->code() == DiagnosticCode::Unsupported);
+    REQUIRE(legacy.ok());
+    REQUIRE_EQ(legacy.value().sourceMappings.front().sourceObject,
+               std::string("1243444849563829797"));
+
+    request.files.erase("Assets/legacy.prefab");
+    auto indexed = prepareUnityFbx(request, source);
+    REQUIRE(indexed.ok());
+    REQUIRE_EQ(indexed.value().sourceMappings.front().sourceObject, std::string("4300000"));
 }

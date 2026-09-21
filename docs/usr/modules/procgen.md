@@ -22,6 +22,29 @@ C++ render bridge 的 borrowed 边界，不是 Squirrel 的第二套生成入口
 Procgen 不提供 `lastError()`、`*Owned` 或 `*Checked` 的兼容命名。Result 的 `value`
 可以是由 generation handle 支持的 owned proxy，释放和 stale 检查遵循该 proxy 的
 公共方法。
+
+## 脚本生成器宿主
+
+项目脚本可以把参数 schema 与 `generate(params, ctx)` 封装成生成器 table，再交给
+`runScriptGenerator(generator, params, systemName, seed)` 同步执行。宿主在当前 Squirrel
+VM 的 owning thread 上创建临时事务 context；成功后原子提交并返回 system、seed、revision
+及 output 名称，脚本抛错、标记 context 失败或遗留未闭合 trace 时返回结构化失败并保留上一
+次成功快照。同一 system 不允许递归重入。宿主不会保存 generator closure、VM 栈或 Params；
+context proxy 只在本次调用中有效，返回后其 handle 会变为 stale。
+
+```squirrel
+local forest = {
+    generate = function(params, ctx) {
+        local points = procgen.sampleGrid(16, 12, 8.0, ctx.seedFor("trees"), 0.2).value;
+        if (!ctx.publish("trees", points)) throw ctx.getError();
+    }
+};
+local run = procgen.runScriptGenerator(forest, params, "forest", params.getSeed());
+if (!run.ok) throw run.status.summary;
+```
+
+生成器文件仍由项目通过 `dofile`/模块加载器载入；宿主负责的是校验 `generate` 入口、事务、
+结构化错误和提交生命周期，不把任意 Squirrel closure 注册为后台线程或 PointGraph operation。
 ## UE PCG 对标范围
 
 本模块对标的是 UE PCG 的核心工作流，而不是复制 UE 类型或资产格式：统一 Spatial Data、
@@ -1595,6 +1618,25 @@ Sculpt 七种结果。
 - Output palette 缺少算法输出的 tile key。
 - 在每帧 update 生成大地图或纹理。
 - 在每帧重新生成树木网格；应缓存 `Mesh`，仅在 seed 或参数变化时重建。
+
+## 运行时质量与延迟任务
+
+`eve.PcgFrameRateManager()` 提供可回放的帧率采样和地形质量档策略。调用
+`configure(targetFrameRate, checkInterval, minQuality, maxQuality, currentQuality)` 原子配置状态机；
+调用方每帧注入 `dt` 与 `timeScale` 给 `update()`，因此它不依赖 OS 墙钟。随后可读取
+`getFps()`、`getQuality()`、`getQualityChanged()` 和 `getPreset()`。手动选择使用
+`selectManualQuality(level)`，自动模式使用 `setAutomatic(enabled)` / `getAutomatic()`。
+返回的 `PcgTerrainQualityPreset` 提供 `treeDistance`、`treeBillboardDistance`、
+`treeCrossFadeLength`、`treeMaximumFullLodCount`、`detailObjectDistance`、
+`detailObjectDensity`、`heightmapPixelError`、`heightmapMaximumLod` 和 `basemapDistance`。
+
+`eve.PcgTaskQueue()` 提供 callback-free 的延迟任务状态机。`add(waitSeconds)` 加入任务并返回
+稳定 ID；`tick(deltaSeconds)` 只把到期任务发布为 Ready，调用方通过 `getReadyTaskId()` 取得
+ID、在队列外执行任务，再调用 `resolveReady(finished)`。未完成任务留待下一轮，完成任务被移除；
+`cancelAll()` 清空队列，`getQueueSize()` 与 `getStatus()` 提供状态。队列不保存回调或脚本对象，
+显式 dt 使调度可回放，非法时间不会改变队列。
+
+这两个 PCG 策略类型由 `procgen` 模块绑定，不属于 `os`。
 
 ## L-system 文法生成
 

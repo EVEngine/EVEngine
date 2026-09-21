@@ -11,18 +11,13 @@
 namespace eve::weapon {
 namespace {
 
-template <typename T>
-Result<T> failure(DiagnosticCode code, std::string message, std::string path) {
-    return Result<T>::failure(Diagnostic::error(code, std::move(message), std::move(path)));
-}
-
 LogicalId id(std::string_view text) { return LogicalId::parse(text).value(); }
 
 Result<const Value::Object*> object(const Value& value) {
     const auto* result = value.getIf<Value::Object>();
     if (!result)
-        return failure<const Value::Object*>(DiagnosticCode::InvalidArgument,
-                                             "weapon parameters must be an object", "parameters");
+        return Result<const Value::Object*>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "weapon parameters must be an object", "parameters"));
     return Result<const Value::Object*>::success(result);
 }
 
@@ -30,8 +25,8 @@ Result<double> number(const Value::Object& value, std::string_view name, double 
     const auto found = value.find(std::string(name));
     if (found == value.end()) return Result<double>::success(fallback);
     if (!found->second.isNumeric())
-        return failure<double>(DiagnosticCode::InvalidArgument,
-                               "weapon parameter must be numeric", "parameters." + std::string(name));
+        return Result<double>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "weapon parameter must be numeric", "parameters." + std::string(name)));
     return Result<double>::success(found->second.isInt64()
                                        ? static_cast<double>(found->second.asInt())
                                        : found->second.asDouble());
@@ -42,8 +37,8 @@ Result<int> integer(const Value::Object& value, std::string_view name, int fallb
     if (found == value.end()) return Result<int>::success(fallback);
     if (!found->second.isInt64() || found->second.asInt() < std::numeric_limits<int>::min() ||
         found->second.asInt() > std::numeric_limits<int>::max())
-        return failure<int>(DiagnosticCode::InvalidArgument,
-                            "weapon parameter must be an integer", "parameters." + std::string(name));
+        return Result<int>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "weapon parameter must be an integer", "parameters." + std::string(name)));
     return Result<int>::success(static_cast<int>(found->second.asInt()));
 }
 
@@ -73,14 +68,14 @@ bool WeaponControl::controls(const GameplaySession& session) const {
 Result<GameplayObservation> WeaponControl::observeGameplay(const GameplaySession& session,
                                                             SubjectRef instance) const {
     if (instance != instance_ || !instance_.isValid())
-        return failure<GameplayObservation>(DiagnosticCode::NotFound,
-                                            "weapon gameplay instance was not found", "instance");
+        return Result<GameplayObservation>::failure(
+            Diagnostic::error(DiagnosticCode::NotFound, "weapon gameplay instance was not found", "instance"));
     if (!controls(session))
-        return failure<GameplayObservation>(DiagnosticCode::PreconditionViolation,
-                                            "session does not control the weapon wielder", "instance");
+        return Result<GameplayObservation>::failure(Diagnostic::error(
+            DiagnosticCode::PreconditionViolation, "session does not control the weapon wielder", "instance"));
     if (!account_ || !effect_ || definition_.id.empty())
-        return failure<GameplayObservation>(DiagnosticCode::StaleHandle,
-                                            "weapon gameplay participants are invalid", "instance");
+        return Result<GameplayObservation>::failure(
+            Diagnostic::error(DiagnosticCode::StaleHandle, "weapon gameplay participants are invalid", "instance"));
     auto cost = WeaponActionAdapter::resourceCost(definition_);
     if (!cost) return Result<GameplayObservation>::failure(cost.status());
     bool affordable = true;
@@ -107,8 +102,8 @@ Result<std::vector<GameplayActionDescriptor>> WeaponControl::availableGameplayAc
     if (!observed) return Result<std::vector<GameplayActionDescriptor>>::failure(observed.status());
     std::move(observed).takeValue();
     if (subject != wielder_)
-        return failure<std::vector<GameplayActionDescriptor>>(
-            DiagnosticCode::PreconditionViolation, "weapon action subject must be its wielder", "subject");
+        return Result<std::vector<GameplayActionDescriptor>>::failure(Diagnostic::error(
+            DiagnosticCode::PreconditionViolation, "weapon action subject must be its wielder", "subject"));
     const Value numberType(Value::Object{{"type", Value("number")}});
     const Value integerType(Value::Object{{"type", Value("integer")}});
     return Result<std::vector<GameplayActionDescriptor>>::success({
@@ -123,21 +118,20 @@ Result<GameplayCommandReceipt> WeaponControl::submitGameplay(const GameplaySessi
                                                               SubjectRef instance,
                                                               const GameplayCommand& command) {
     if (instance != instance_)
-        return failure<GameplayCommandReceipt>(DiagnosticCode::NotFound,
-                                               "weapon gameplay instance was not found", "instance");
+        return Result<GameplayCommandReceipt>::failure(
+            Diagnostic::error(DiagnosticCode::NotFound, "weapon gameplay instance was not found", "instance"));
     if (!controls(session) || command.subject != wielder_)
-        return failure<GameplayCommandReceipt>(DiagnosticCode::PreconditionViolation,
-                                               "session does not control the weapon wielder", "command.subject");
+        return Result<GameplayCommandReceipt>::failure(Diagnostic::error(
+            DiagnosticCode::PreconditionViolation, "session does not control the weapon wielder", "command.subject"));
     if (command.id.empty())
-        return failure<GameplayCommandReceipt>(DiagnosticCode::InvalidArgument,
-                                               "command id must not be empty", "command.id");
+        return Result<GameplayCommandReceipt>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "command id must not be empty", "command.id"));
     if (command.action != id("weapon:fire"))
-        return failure<GameplayCommandReceipt>(DiagnosticCode::Unsupported,
-                                               "unsupported weapon action", "command.action");
+        return Result<GameplayCommandReceipt>::failure(
+            Diagnostic::error(DiagnosticCode::Unsupported, "unsupported weapon action", "command.action"));
     if (command.observedTick != tick_ || command.expectedRevision != revision_)
-        return failure<GameplayCommandReceipt>(DiagnosticCode::Conflict,
-                                               "weapon command was based on a stale observation",
-                                               "command.expectedRevision");
+        return Result<GameplayCommandReceipt>::failure(Diagnostic::error(
+            DiagnosticCode::Conflict, "weapon command was based on a stale observation", "command.expectedRevision"));
     auto values = object(command.parameters);
     if (!values) return Result<GameplayCommandReceipt>::failure(values.status());
     auto x = number(*values.value(), "targetX", 0.0);
@@ -189,8 +183,8 @@ Result<GameplayObservation> WeaponControl::advanceGameplay(const GameplaySession
                                                             SubjectRef instance,
                                                             const SimulationStep& step) {
     if (step.tick <= tick_)
-        return failure<GameplayObservation>(DiagnosticCode::Conflict,
-                                            "weapon simulation tick must increase", "step.tick");
+        return Result<GameplayObservation>::failure(
+            Diagnostic::error(DiagnosticCode::Conflict, "weapon simulation tick must increase", "step.tick"));
     auto observed = observeGameplay(session, instance);
     if (!observed) return Result<GameplayObservation>::failure(observed.status());
     std::move(observed).takeValue();

@@ -1,6 +1,8 @@
 #include "ui/PcgPhotoModeApplyPlan.h"
 #include "common/Capability.h"
 #include "common/AudioQuery.h"
+#include "common/FramePacing.h"
+#include "common/FramePresentation.h"
 #include "common/SquirrelBinding.h"
 #include <simplesquirrel/simplesquirrel.hpp>
 #include <unordered_set>
@@ -11,12 +13,12 @@ template<class T> Result<T> fail(const std::string& message) {
  return Result<T>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,message,{},{},"ui.pcgPhotoModeApply"));
 }
 PhotoModeDomain domainFor(const std::string& n) {
- static const std::unordered_set<std::string> system={"m_vSync","m_targetFPS"};
+ static const std::unordered_set<std::string> framePacing={"m_vSync","m_targetFPS"};
  static const std::unordered_set<std::string> graphics={"m_lodBias","m_antiAliasing","m_shadowDistance","m_shadowResolution","m_shadowCascades"};
  static const std::unordered_set<std::string> camera={"m_fieldOfView","m_pcgCullinDistance","m_cameraAperture","m_cameraFocalLength","m_cameraRoll","m_farClipPlane"};
  static const std::unordered_set<std::string> streaming={"m_pcgLoadRange","m_pcgImpostorRange"};
  static const std::unordered_set<std::string> audio={"m_globalVolume","m_pcgUnderwaterVolume"};
- if(system.contains(n))return PhotoModeDomain::System;
+ if(framePacing.contains(n))return PhotoModeDomain::FramePacing;
  if(graphics.contains(n))return PhotoModeDomain::Graphics;
  if(camera.contains(n))return PhotoModeDomain::Camera;
  if(streaming.contains(n))return PhotoModeDomain::Streaming;
@@ -36,12 +38,34 @@ PhotoModeDomain domainFor(const std::string& n) {
 class RegisteredPhotoModeSink final:public IPhotoModeApplySink {
 public:
  Result<void> applyPhotoModeAssignment(const PhotoModeAssignment& assignment)override{
-  if(assignment.field=="m_globalVolume"){
+ if(assignment.field=="m_globalVolume"){
    auto* audio=cap::query<IAudioQuery>();
    if(!audio)return unsupported("audio capability is unavailable");
    auto* value=std::get_if<float>(&assignment.value);
    if(!value)return fail<void>("global volume requires a float value");
    audio->setVolume(*value);return Result<void>::success();
+  }
+  if(assignment.domain==PhotoModeDomain::FramePacing){
+   auto* value=std::get_if<int64_t>(&assignment.value);
+   if(!value)return fail<void>("frame setting requires an integer value");
+   if(assignment.field=="m_vSync"){
+    if(*value<0||*value>2)return fail<void>("VSync count must be in [0,2]");
+    auto* presentation=cap::query<IFramePresentation>();
+    if(!presentation)return unsupported("frame presentation capability is unavailable");
+    auto* pacing=cap::query<IFramePacing>();
+    if(!pacing)return unsupported("frame pacing capability is unavailable");
+    auto pacingResult=pacing->setVerticalSyncCount(static_cast<int>(*value));
+    if(!pacingResult.ok())return pacingResult;
+    presentation->setVSyncCount(static_cast<int>(*value));
+    return Result<void>::success();
+   }
+   if(assignment.field=="m_targetFPS"){
+    if(*value < -1 || *value > 240)return fail<void>("target FPS must be in [-1,240]");
+    auto* pacing=cap::query<IFramePacing>();
+    if(!pacing)return unsupported("frame pacing capability is unavailable");
+    return pacing->setTargetFramesPerSecond(static_cast<int>(*value));
+   }
+   return unsupported("unknown frame setting: "+assignment.field);
   }
   IPhotoModeFieldSink* selected=nullptr;
   const size_t count=cap::listenerCount<IPhotoModeFieldSink>();

@@ -263,3 +263,53 @@ TEST_CASE("procgen.result.squirrelExecutionAndSchedulerShareProjection") {
         assert(!runtime.failGenerationJob(retry.value).ok);
     )"));
 }
+
+TEST_CASE("procgen.scriptHostCommitsAndRollsBackGeneratorsAtomically") {
+    ssq::VM vm(2048, ssq::Libs::ALL);
+    eve::ModuleManager::expose(vm);
+    vm.run(vm.compileSource(R"(
+        local procgen = eve.Procgen();
+        local params = procgen.newParams().value;
+        params.setInt("count", 3);
+        local good = {
+            generate = function(params, ctx) {
+                local points = procgen.sampleGrid(params.getInt("count", 1), 1, 2.0,
+                                                  ctx.seedFor("points"), 0.0).value;
+                if (!ctx.captureDebug("sampled", points)) throw ctx.getError();
+                if (!ctx.publish("points", points)) throw ctx.getError();
+            }
+        };
+        firstRun <- procgen.runScriptGenerator(good, params, "script-host-test", 41);
+        firstOutput <- procgen.getSystemOutput("script-host-test", "points");
+        firstCount <- firstOutput.value.getCount();
+        firstRevision <- procgen.getSystemRevision("script-host-test");
+        local broken = {
+            generate = function(params, ctx) {
+                local replacement = procgen.sampleGrid(1, 1, 1.0, 1, 0.0).value;
+                ctx.publish("points", replacement);
+                throw "intentional generator failure";
+            }
+        };
+        failedRun <- procgen.runScriptGenerator(broken, params, "script-host-test", 99);
+        afterFailure <- procgen.getSystemOutput("script-host-test", "points");
+        afterFailureCount <- afterFailure.value.getCount();
+        afterFailureRevision <- procgen.getSystemRevision("script-host-test");
+        local unfinished = {
+            generate = function(params, ctx) { ctx.beginTrace("open", 0); }
+        };
+        unfinishedRun <- procgen.runScriptGenerator(unfinished, params, "script-host-test", 99);
+        afterUnfinishedRevision <- procgen.getSystemRevision("script-host-test");
+    )"));
+
+    auto first = vm.find("firstRun").toTable();
+    REQUIRE(first.get<bool>("ok"));
+    auto receipt = first.get<ssq::Table>("value");
+    CHECK_EQ(receipt.get<std::int64_t>("revision"), std::int64_t(1));
+    CHECK_EQ(vm.find("firstCount").toInt(), 3);
+    CHECK_EQ(vm.find("firstRevision").toInt(), 1);
+    CHECK(!vm.find("failedRun").toTable().get<bool>("ok"));
+    CHECK_EQ(vm.find("afterFailureCount").toInt(), 3);
+    CHECK_EQ(vm.find("afterFailureRevision").toInt(), 1);
+    CHECK(!vm.find("unfinishedRun").toTable().get<bool>("ok"));
+    CHECK_EQ(vm.find("afterUnfinishedRevision").toInt(), 1);
+}

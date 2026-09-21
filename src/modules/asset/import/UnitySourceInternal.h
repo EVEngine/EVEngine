@@ -30,7 +30,31 @@ struct UnityExpandedPrefab {
 /** @brief Decode a bounded static Unity text Mesh into owning canonical submesh candidates. */
 [[nodiscard]] Result<PreparedAssetImport> prepareUnityNativeMesh(const UnityProjectImportRequest&,
                                                                  const UnitySourceAsset&);
-/** @brief Convert supported built-in Standard material properties to canonical PBR data. */
+/** @brief Convert embedded BC3 text Texture2D to an owning image candidate.
+ * @remarks Synchronous and reentrant; no
+ * external mutation, callbacks or retained source pointers.
+ */
+[[nodiscard]] Result<PreparedAssetImport> prepareUnityNativeTexture(const UnityProjectImportRequest&,
+                                                                    const UnitySourceAsset&);
+/** @brief Convert embedded linear R8 Unity Texture3D to an owning canonical volume candidate.
+ * @remarks Synchronous
+ * and reentrant; no callbacks, external mutation or retained source pointers.
+ */
+[[nodiscard]] Result<PreparedAssetImport> prepareUnityNativeVolumeTexture(const UnityProjectImportRequest&,
+                                                                          const UnitySourceAsset&);
+/** @brief Convert admitted TVE primary material data; remaining source features are reported explicitly.
+ * @remarks
+ * Owning unpublished candidate, synchronous/reentrant; no GPU allocation or retained source pointers.
+ */
+[[nodiscard]] Result<PreparedAssetImport> prepareUnityVegetationMaterial(const UnityProjectImportRequest& request,
+                                                                         const UnitySourceAsset&          source);
+/** @brief Parse one TVE conversion preset into a bounded versioned command tree. */
+[[nodiscard]] Result<PreparedAssetImport> prepareUnityVegetationPreset(const UnityProjectImportRequest& request,
+                                                                       const UnitySourceAsset&          source);
+/** @brief Convert a complete TVE manager component set from one Unity scene. */
+[[nodiscard]] Result<PreparedAssetImport> prepareUnityVegetationScene(const UnityProjectImportRequest& request,
+                                                                      const UnitySourceAsset&          source);
+/** @brief Dispatch built-in Standard and admitted vegetation materials to canonical PBR data. */
 [[nodiscard]] Result<PreparedAssetImport> prepareUnityMaterial(const UnityProjectImportRequest& request,
                                                                const UnitySourceAsset&          source);
 /** @brief Resolve renderer references after all collection assets are prepared; unpublished candidate only. */
@@ -39,11 +63,6 @@ struct UnityExpandedPrefab {
 }  // namespace eve::asset_import
 
 namespace eve::asset_import::unity_detail {
-
-template <class T>
-Result<T> failure(DiagnosticCode code, std::string message, std::string path = {}) {
-    return Result<T>::failure(Diagnostic::error(code, std::move(message), std::move(path), {}, "asset.import.unity"));
-}
 
 inline std::string foldAscii(std::string value) {
     for (char& c : value)

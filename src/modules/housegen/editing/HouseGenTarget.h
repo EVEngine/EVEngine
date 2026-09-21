@@ -55,16 +55,14 @@ struct HouseKitComponentValue {
 };
 
 /** @brief Revisioned component-kit and deterministic generation-request asset. */
-class HouseGenDocumentTarget final : public virtual IEditableTarget,
+class HouseGenDocumentTarget final : public ::eve::editing::EditableTargetState,
+                                     public virtual IEditableTarget,
                                      public IDomainOperationTarget,
                                      public IDomainOperationTargetStaging,
                                      public IPropertyProvider {
 public:
     explicit HouseGenDocumentTarget(std::string id);
     TargetId         targetId() const override { return TargetId(id_); }
-    std::uint64_t    revision() const override { return revision_; }
-    EditRegion       dirtyRegion() const override { return dirty_; }
-    void             clearDirtyRegion() override { dirty_.clear(); }
     TargetDescriptor describe() const override;
     /** @brief Query an optional target capability. @return Borrowed pointer owned by this target, or null. @lifetime
      * Valid until this target is destroyed or mutated. */
@@ -97,8 +95,6 @@ private:
     EditorValue                         contentValue() const;
     EditorResult<DomainOperation>       replacement(EditorValue content, std::string property = {}) const;
     std::string                         id_;
-    Revision                            revision_ = 1;
-    EditRegion                          dirty_;
     std::vector<HouseKitComponentValue> components_;
     housegen::HouseRequest              request_;
 };

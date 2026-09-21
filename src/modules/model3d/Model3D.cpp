@@ -340,15 +340,15 @@ void Model3D::expose(ssq::Class &cls) {
         try {
             auto  options   = parseOptions(object);
             auto *model     = self->newModelDataFromFile(path, options);
-            auto  projected = eve::script::projectStatusResult(vm, eve::Status::success(), true, true);
+            auto  projected = eve::script::projectStatusResult(vm, eve::Status::success());
             projected.set("value", model);
+            eve::script::markResultHasValue(projected);
             projected.set("ownership", std::string("borrowed-from-resource-cache"));
             return projected;
         } catch (const std::exception &error) {
             return eve::script::projectStatusResult(
-                vm,
-                eve::Status::failure(eve::Diagnostic::error(eve::DiagnosticCode::Failed, error.what(), "model3d.load")),
-                false, false);
+                vm, eve::Status::failure(
+                        eve::Diagnostic::error(eve::DiagnosticCode::Failed, error.what(), "model3d.load")));
         }
     });
     cls.addFunc("requestModelData", [vm = cls.getHandle()](Model3D *self, const std::string &path) {

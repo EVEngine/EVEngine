@@ -12,11 +12,6 @@
 namespace eve::animation {
 namespace {
 
-template <class T>
-Result<T> coordinatorError(DiagnosticCode code, std::string message, std::string path) {
-    return Result<T>::failure(Diagnostic::error(code, std::move(message), std::move(path)));
-}
-
 }  // namespace
 
 MontageCoordinator::MontageCoordinator(AnimSkeleton& skeleton)
@@ -50,16 +45,19 @@ Result<MontageHandle> MontageCoordinator::play(std::size_t layer, action::Action
                                                std::vector<MontageClipAsset>&& clips,
                                                action::ActionExecutionId executionId, SimulationTick tick) {
     if (layer > static_cast<std::size_t>(std::numeric_limits<MontageHandle::index_type>::max() / 2U))
-        return coordinatorError<MontageHandle>(DiagnosticCode::InvalidArgument, "montage layer is too large", "layer");
+        return Result<MontageHandle>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "montage layer is too large", "layer"));
     ensureLayer(layer);
     Layer&            entry     = layers_[layer];
     const std::size_t nextIndex = 1U - entry.active;
     Slot&             next      = entry.slots[nextIndex];
     if (next.retired)
-        return coordinatorError<MontageHandle>(DiagnosticCode::Failed, "montage slot generation is exhausted", "slot");
+        return Result<MontageHandle>::failure(
+            Diagnostic::error(DiagnosticCode::Failed, "montage slot generation is exhausted", "slot"));
     if (next.player) retireSlot(next);
     if (next.retired)
-        return coordinatorError<MontageHandle>(DiagnosticCode::Failed, "montage slot generation is exhausted", "slot");
+        return Result<MontageHandle>::failure(
+            Diagnostic::error(DiagnosticCode::Failed, "montage slot generation is exhausted", "slot"));
 
     auto           candidate = std::make_unique<MontagePlayer>(skeleton_);
     if (entry.rootMotionReceiver) candidate->setRootMotionReceiver(*entry.rootMotionReceiver);
@@ -96,16 +94,16 @@ const MontageCoordinator::Slot* MontageCoordinator::slotFor(MontageHandle handle
 Result<std::reference_wrapper<MontagePlayer>> MontageCoordinator::resolve(MontageHandle handle) {
     Slot* slot = slotFor(handle);
     if (!slot)
-        return coordinatorError<std::reference_wrapper<MontagePlayer>>(DiagnosticCode::StaleHandle,
-                                                                       "montage handle is invalid or stale", "handle");
+        return Result<std::reference_wrapper<MontagePlayer>>::failure(
+            Diagnostic::error(DiagnosticCode::StaleHandle, "montage handle is invalid or stale", "handle"));
     return Result<std::reference_wrapper<MontagePlayer>>::success(std::ref(*slot->player));
 }
 
 Result<std::reference_wrapper<const MontagePlayer>> MontageCoordinator::resolve(MontageHandle handle) const {
     const Slot* slot = slotFor(handle);
     if (!slot)
-        return coordinatorError<std::reference_wrapper<const MontagePlayer>>(
-            DiagnosticCode::StaleHandle, "montage handle is invalid or stale", "handle");
+        return Result<std::reference_wrapper<const MontagePlayer>>::failure(
+            Diagnostic::error(DiagnosticCode::StaleHandle, "montage handle is invalid or stale", "handle"));
     return Result<std::reference_wrapper<const MontagePlayer>>::success(std::cref(*slot->player));
 }
 
@@ -140,15 +138,17 @@ Result<MontageAdvance> MontageCoordinator::stop(MontageHandle handle, Duration b
 
 Result<void> MontageCoordinator::setLayerBoneMask(std::size_t layer, std::vector<float> weights) {
     if (layer > static_cast<std::size_t>(std::numeric_limits<MontageHandle::index_type>::max() / 2U))
-        return coordinatorError<void>(DiagnosticCode::InvalidArgument, "montage layer is too large", "layer");
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "montage layer is too large", "layer"));
     if (weights.size() != static_cast<std::size_t>(skeleton_.getBoneCount()))
-        return coordinatorError<void>(DiagnosticCode::InvalidArgument,
-                                      "montage layer mask must contain one weight per skeleton bone", "weights");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                       "montage layer mask must contain one weight per skeleton bone",
+                                                       "weights"));
     if (std::any_of(weights.begin(), weights.end(), [](float weight) {
             return !std::isfinite(weight) || weight < 0.0f || weight > 1.0f;
         }))
-        return coordinatorError<void>(DiagnosticCode::InvalidArgument,
-                                      "montage layer mask weights must be finite and within [0,1]", "weights");
+        return Result<void>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "montage layer mask weights must be finite and within [0,1]", "weights"));
     ensureLayer(layer);
     layers_[layer].boneMask = std::move(weights);
     return Result<void>::success(Status::success(StatusCode::Applied));
@@ -156,8 +156,8 @@ Result<void> MontageCoordinator::setLayerBoneMask(std::size_t layer, std::vector
 
 Result<void> MontageCoordinator::setLayerBoneMask(std::size_t layer, const AnimBoneMask& mask) {
     if (mask.getSkeleton() != &skeleton_)
-        return coordinatorError<void>(DiagnosticCode::InvalidArgument,
-                                      "montage layer mask belongs to a different skeleton", "mask");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                       "montage layer mask belongs to a different skeleton", "mask"));
     std::vector<float> weights;
     weights.reserve(static_cast<std::size_t>(mask.getBoneCount()));
     for (int bone = 0; bone < mask.getBoneCount(); ++bone) weights.push_back(mask.getBoneWeight(bone));
@@ -166,7 +166,8 @@ Result<void> MontageCoordinator::setLayerBoneMask(std::size_t layer, const AnimB
 
 Result<void> MontageCoordinator::clearLayerBoneMask(std::size_t layer) {
     if (layer >= layers_.size())
-        return coordinatorError<void>(DiagnosticCode::NotFound, "montage layer does not exist", "layer");
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::NotFound, "montage layer does not exist", "layer"));
     if (layers_[layer].boneMask.empty()) return Result<void>::success(Status::success(StatusCode::NoOp));
     layers_[layer].boneMask.clear();
     return Result<void>::success(Status::success(StatusCode::Applied));
@@ -174,17 +175,18 @@ Result<void> MontageCoordinator::clearLayerBoneMask(std::size_t layer) {
 
 Result<std::vector<float>> MontageCoordinator::layerBoneMask(std::size_t layer) const {
     if (layer >= layers_.size())
-        return coordinatorError<std::vector<float>>(DiagnosticCode::NotFound,
-                                                    "montage layer does not exist", "layer");
+        return Result<std::vector<float>>::failure(
+            Diagnostic::error(DiagnosticCode::NotFound, "montage layer does not exist", "layer"));
     return Result<std::vector<float>>::success(layers_[layer].boneMask);
 }
 
 Result<void> MontageCoordinator::setLayerWeight(std::size_t layer, float weight) {
     if (layer > static_cast<std::size_t>(std::numeric_limits<MontageHandle::index_type>::max() / 2U))
-        return coordinatorError<void>(DiagnosticCode::InvalidArgument, "montage layer is too large", "layer");
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "montage layer is too large", "layer"));
     if (!std::isfinite(weight) || weight < 0.0f || weight > 1.0f)
-        return coordinatorError<void>(DiagnosticCode::InvalidArgument,
-                                      "montage layer weight must be finite and within [0,1]", "weight");
+        return Result<void>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "montage layer weight must be finite and within [0,1]", "weight"));
     ensureLayer(layer);
     if (layers_[layer].weight == weight) return Result<void>::success(Status::success(StatusCode::NoOp));
     layers_[layer].weight = weight;
@@ -193,13 +195,15 @@ Result<void> MontageCoordinator::setLayerWeight(std::size_t layer, float weight)
 
 Result<float> MontageCoordinator::layerWeight(std::size_t layer) const {
     if (layer >= layers_.size())
-        return coordinatorError<float>(DiagnosticCode::NotFound, "montage layer does not exist", "layer");
+        return Result<float>::failure(
+            Diagnostic::error(DiagnosticCode::NotFound, "montage layer does not exist", "layer"));
     return Result<float>::success(layers_[layer].weight);
 }
 
 Result<void> MontageCoordinator::setLayerAdditive(std::size_t layer, bool additive) {
     if (layer > static_cast<std::size_t>(std::numeric_limits<MontageHandle::index_type>::max() / 2U))
-        return coordinatorError<void>(DiagnosticCode::InvalidArgument, "montage layer is too large", "layer");
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "montage layer is too large", "layer"));
     ensureLayer(layer);
     if (layers_[layer].additive == additive) return Result<void>::success(Status::success(StatusCode::NoOp));
     layers_[layer].additive = additive;
@@ -208,14 +212,16 @@ Result<void> MontageCoordinator::setLayerAdditive(std::size_t layer, bool additi
 
 Result<bool> MontageCoordinator::layerAdditive(std::size_t layer) const {
     if (layer >= layers_.size())
-        return coordinatorError<bool>(DiagnosticCode::NotFound, "montage layer does not exist", "layer");
+        return Result<bool>::failure(
+            Diagnostic::error(DiagnosticCode::NotFound, "montage layer does not exist", "layer"));
     return Result<bool>::success(layers_[layer].additive);
 }
 
 Result<void> MontageCoordinator::setLayerRootMotionReceiver(std::size_t layer,
                                                             IMontageRootMotionReceiver& receiver) {
     if (layer > static_cast<std::size_t>(std::numeric_limits<MontageHandle::index_type>::max() / 2U))
-        return coordinatorError<void>(DiagnosticCode::InvalidArgument, "montage layer is too large", "layer");
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "montage layer is too large", "layer"));
     ensureLayer(layer);
     Layer& entry = layers_[layer];
     entry.rootMotionReceiver = &receiver;
@@ -226,7 +232,8 @@ Result<void> MontageCoordinator::setLayerRootMotionReceiver(std::size_t layer,
 
 Result<void> MontageCoordinator::clearLayerRootMotionReceiver(std::size_t layer) {
     if (layer >= layers_.size())
-        return coordinatorError<void>(DiagnosticCode::NotFound, "montage layer does not exist", "layer");
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::NotFound, "montage layer does not exist", "layer"));
     Layer& entry = layers_[layer];
     if (!entry.rootMotionReceiver) return Result<void>::success(Status::success(StatusCode::NoOp));
     for (Slot& slot : entry.slots)
@@ -263,8 +270,8 @@ double MontageCoordinator::evaluateLayerPose(Layer& layer) const {
 
 Result<std::reference_wrapper<AnimPose>> MontageCoordinator::pose(std::size_t layerIndex) {
     if (layerIndex >= layers_.size())
-        return coordinatorError<std::reference_wrapper<AnimPose>>(DiagnosticCode::NotFound,
-                                                                  "montage layer does not exist", "layer");
+        return Result<std::reference_wrapper<AnimPose>>::failure(
+            Diagnostic::error(DiagnosticCode::NotFound, "montage layer does not exist", "layer"));
     Layer& layer = layers_[layerIndex];
     (void)evaluateLayerPose(layer);
     skeleton_.applyBindPose(layer.pose.get());
@@ -281,8 +288,8 @@ Result<std::reference_wrapper<AnimPose>> MontageCoordinator::pose(std::size_t la
 
 Result<std::reference_wrapper<AnimPose>> MontageCoordinator::compose(const AnimPose& basePose) {
     if (basePose.getBoneCount() != skeleton_.getBoneCount())
-        return coordinatorError<std::reference_wrapper<AnimPose>>(
-            DiagnosticCode::InvalidArgument, "montage base pose must match the coordinator skeleton", "basePose");
+        return Result<std::reference_wrapper<AnimPose>>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "montage base pose must match the coordinator skeleton", "basePose"));
     composedPose_->copyFrom(&basePose);
     for (Layer& layer : layers_) {
         const double rawWeight   = evaluateLayerPose(layer);

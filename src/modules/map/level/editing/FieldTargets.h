@@ -16,14 +16,13 @@ using editing::Revision;
 using editing::TargetId;
 
 /** @brief Non-owning IIntFieldTarget adapter for TileBuffer. */
-class TileBufferTarget final : public IEditableTarget, public IIntFieldTarget {
+class TileBufferTarget final : public ::eve::editing::EditableTargetState,
+                               public virtual IEditableTarget,
+                               public IIntFieldTarget {
 public:
     /** @brief Adapt a borrowed buffer that must outlive this target. @thread Owner-thread only. */
     TileBufferTarget(std::string id, TileBuffer *buffer);
-    TargetId targetId() const override { return TargetId(id_); }
-    std::uint64_t revision() const override { return revision_; }
-    EditRegion dirtyRegion() const override { return dirty_; }
-    void clearDirtyRegion() override { dirty_.clear(); }
+    TargetId         targetId() const override { return TargetId(id_); }
     int width() const override;
     int height() const override;
     bool containsCell(int x, int y) const override;
@@ -34,8 +33,6 @@ public:
 private:
     std::string id_;
     TileBuffer *buffer_ = nullptr;
-    unsigned long long revision_ = 0;
-    EditRegion dirty_;
 };
 
 }  // namespace eve::level_editing

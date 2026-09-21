@@ -15,33 +15,18 @@
 #include <memory>
 #include <string>
 #include <utility>
+#include "editor/EditorScriptProjection.h"
 
 namespace eve::procgen_editor {
 namespace {
 
 constexpr const char* kBindingSource = "editor.procgen.script.squirrel";
 
-Status statusFrom(const procgen_editing::EditorResult<void>& result) { return result.status(); }
-
-template <class T>
-Status statusFrom(const procgen_editing::EditorResult<T>& result) {
-    return result.status();
-}
-
-ssq::Table project(HSQUIRRELVM vm, const procgen_editing::EditorResult<void>& result) {
-    return script::projectStatusResult(vm, statusFrom(result), result.ok(), false);
-}
-
-template <class T>
-ssq::Table project(HSQUIRRELVM vm, const procgen_editing::EditorResult<T>& result, Value value) {
-    const bool hasValue = result.ok();
-    return script::projectStatusResult(vm, statusFrom(result), hasValue, hasValue, value);
-}
+using eve::editor::project;
 
 ssq::Table bindingFailure(HSQUIRRELVM vm, DiagnosticCode code, std::string message, std::string path = {}) {
     return script::projectStatusResult(
-        vm, Status::failure(Diagnostic::error(code, std::move(message), std::move(path), {}, kBindingSource)), false,
-        false);
+        vm, Status::failure(Diagnostic::error(code, std::move(message), std::move(path), {}, kBindingSource)));
 }
 
 class ScriptProcgenScriptEditor {
@@ -60,8 +45,7 @@ ssq::Table loadModuleFromScript(HSQUIRRELVM vm, ScriptProcgenScriptEditor* self,
                                 const ssq::Object& schema) {
     if (!self) return bindingFailure(vm, DiagnosticCode::InvalidArgument, "procgen editor must not be null");
     auto converted = script::valueFromSquirrel(schema);
-    if (!converted.ok())
-        return script::projectStatusResult(vm, converted.status(), false, false);
+    if (!converted.ok()) return script::projectStatusResult(vm, converted.status());
     return project(vm, self->editor().loadModule(uri, id, displayName, kind,
                                                  editor::toEditorValue(converted.value())));
 }
@@ -264,9 +248,9 @@ void exposeProcgenScriptEditorScriptBindings(ssq::Table& table, ssq::Class& modu
                                   "targetId");
         auto object = script::makeOwnedSquirrelInstance<ScriptProcgenScriptEditor>(
             vm, std::make_unique<ScriptProcgenScriptEditor>(targetId));
-        if (!object) return script::projectStatusResult(vm, object.status(), false, false);
+        if (!object) return script::projectStatusResult(vm, object.status());
         ssq::Object owned = std::move(object).takeValue();
-        auto        result = script::projectStatusResult(vm, Status::success(StatusCode::Applied), true, false);
+        auto        result = script::projectStatusResult(vm, Status::success(StatusCode::Applied));
         result.set("value", owned);
         result.set("ownership", std::string("owned"));
         return result;
@@ -276,9 +260,9 @@ void exposeProcgenScriptEditorScriptBindings(ssq::Table& table, ssq::Class& modu
             return bindingFailure(vm, DiagnosticCode::InvalidArgument, "mesh target id must not be empty", "targetId");
         auto object = script::makeOwnedSquirrelInstance<MeshModifierEditor>(
             vm, std::make_unique<MeshModifierEditor>(targetId));
-        if (!object) return script::projectStatusResult(vm, object.status(), false, false);
+        if (!object) return script::projectStatusResult(vm, object.status());
         ssq::Object owned = std::move(object).takeValue();
-        auto result = script::projectStatusResult(vm, Status::success(StatusCode::Applied), true, false);
+        auto        result = script::projectStatusResult(vm, Status::success(StatusCode::Applied));
         result.set("value", owned); result.set("ownership", std::string("owned"));
         return result;
     });

@@ -1,0 +1,126 @@
+/**
+ * @file TurnPolicy.cpp
+ * @brief Built-in turn policies and the id-keyed policy registry.
+ */
+
+#include "tactics/TurnPolicy.h"
+
+#include "common/Diagnostic.h"
+
+#include <utility>
+
+namespace eve::tactics {
+namespace {
+
+/**
+ * @brief Group a side's units together, in declared side order.
+ *
+ * Units of the same side compare equivalent, so the caller's canonical-subject
+ * tie-break decides their relative order. That keeps "sides alternate, and each
+ * side's units keep a stable order" expressible without this policy also owning
+ * the tie-break rule.
+ */
+class SideAlternatingPolicy final : public ITurnPolicy {
+public:
+    [[nodiscard]] std::string_view id() const noexcept override { return kSideAlternatingPolicyId; }
+
+    [[nodiscard]] TurnOrder order(const Battle&, const UnitOrder& left, const UnitOrder& right) const override {
+        if (left.sideIndex < right.sideIndex) return TurnOrder::LeftFirst;
+        if (right.sideIndex < left.sideIndex) return TurnOrder::RightFirst;
+        return TurnOrder::Equivalent;
+    }
+};
+
+/** @brief Order units by declared initiative, fastest first. */
+class InitiativePolicy final : public ITurnPolicy {
+public:
+    [[nodiscard]] std::string_view id() const noexcept override { return kInitiativePolicyId; }
+
+    [[nodiscard]] TurnOrder order(const Battle&, const UnitOrder& left, const UnitOrder& right) const override {
+        if (left.initiative > right.initiative) return TurnOrder::LeftFirst;
+        if (right.initiative > left.initiative) return TurnOrder::RightFirst;
+        return TurnOrder::Equivalent;
+    }
+};
+
+/**
+ * @brief Charge-time (CTB/ATB) scheduling: initiative decides how *often* a unit acts.
+ *
+ * Each scheduling round every living unit gains `initiative` charge. A unit may
+ * activate once its charge reaches @ref kChargeTimeBattleThreshold, and an
+ * activation spends exactly that threshold. A unit with twice the initiative
+ * therefore reaches the threshold twice as often, which is the behaviour a pure
+ * ordering policy cannot express: with `initiative` ordering, fast and slow units
+ * each act once per round.
+ *
+ * Ordering among the ready units uses charge first, so the unit closest to acting
+ * (and, on a tie, the one with the higher initiative) goes first. Charge survives
+ * across rounds, and the round machine reports a round in which nobody is ready as
+ * a `NoOp` advance instead of inventing an activation.
+ */
+class ChargeTimeBattlePolicy final : public ITurnPolicy {
+public:
+    [[nodiscard]] std::string_view id() const noexcept override { return kChargeTimeBattlePolicyId; }
+
+    [[nodiscard]] TurnOrder order(const Battle&, const UnitOrder& left, const UnitOrder& right) const override {
+        if (left.charge > right.charge) return TurnOrder::LeftFirst;
+        if (right.charge > left.charge) return TurnOrder::RightFirst;
+        if (left.initiative > right.initiative) return TurnOrder::LeftFirst;
+        if (right.initiative > left.initiative) return TurnOrder::RightFirst;
+        return TurnOrder::Equivalent;
+    }
+
+    [[nodiscard]] ChargeModel chargeModel(const Battle&) const override {
+        return ChargeModel{1, kChargeTimeBattleThreshold, kChargeTimeBattleThreshold};
+    }
+};
+
+}  // namespace
+
+ChargeModel ITurnPolicy::chargeModel(const Battle&) const { return ChargeModel{}; }
+
+Result<void> TurnPolicyRegistry::add(std::shared_ptr<const ITurnPolicy> policy) {
+    if (policy == nullptr || policy->id().empty())
+        return Result<void>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "tactics turn policy requires a non-empty stable id", "turnPolicy.id"));
+    const std::string key(policy->id());
+    if (policies_.contains(key))
+        return Result<void>::failure(Diagnostic::error(
+            DiagnosticCode::Conflict, "tactics turn policy id is already registered", "turnPolicy.id"));
+    policies_.emplace(key, std::move(policy));
+    return Result<void>::success(Status::success(StatusCode::Applied));
+}
+
+Result<const ITurnPolicy*> TurnPolicyRegistry::find(std::string_view id) const {
+    const auto found = policies_.find(id);
+    if (found == policies_.end())
+        return Result<const ITurnPolicy*>::failure(
+            Diagnostic::error(DiagnosticCode::NotFound, "tactics turn policy is not registered", "turnPolicy"));
+    return Result<const ITurnPolicy*>::success(found->second.get());
+}
+
+std::vector<std::string> TurnPolicyRegistry::ids() const {
+    std::vector<std::string> result;
+    result.reserve(policies_.size());
+    for (const auto& [id, policy] : policies_) result.push_back(id);
+    return result;
+}
+
+bool TurnPolicyRegistry::contains(std::string_view id) const { return policies_.contains(id); }
+
+TurnPolicyRegistry& TurnPolicyRegistry::builtins() {
+    // Function-local so registration happens once, after static initialisation
+    // order is no longer a question.
+    static TurnPolicyRegistry registry = [] {
+        TurnPolicyRegistry value;
+        // Built-ins are immutable and stateless, so a failed registration is
+        // impossible here; ignoring the result would hide a real duplicate bug.
+        if (!value.add(std::make_shared<const SideAlternatingPolicy>()).ok()) return TurnPolicyRegistry{};
+        if (!value.add(std::make_shared<const InitiativePolicy>()).ok()) return TurnPolicyRegistry{};
+        if (!value.add(std::make_shared<const ChargeTimeBattlePolicy>()).ok()) return TurnPolicyRegistry{};
+        return value;
+    }();
+    return registry;
+}
+
+}  // namespace eve::tactics

@@ -404,41 +404,72 @@ ssq::Table projectDiagnostic(HSQUIRRELVM vm, const Diagnostic& diagnostic) {
     return result;
 }
 
-ssq::Table projectStatus(HSQUIRRELVM vm, const Status& status) {
+namespace {
+
+/** @brief Project every diagnostic of one status exactly once. */
+ssq::Array projectDiagnostics(HSQUIRRELVM vm, const Status& status) {
+    ssq::Array diagnostics(vm);
+    for (const Diagnostic& diagnostic : status.diagnostics()) diagnostics.push(projectDiagnostic(vm, diagnostic));
+    return diagnostics;
+}
+
+/** @brief Nested `status` sub-table; reuses an already-projected diagnostics array. */
+ssq::Table buildStatusTable(HSQUIRRELVM vm, const Status& status, const ssq::Array& diagnostics) {
     ssq::Table result(vm);
     result.set("ok", status.isSuccess());
     result.set("code", std::string(statusCodeName(status.code())));
     result.set("summary", status.describe());
-    ssq::Array diagnostics(vm);
-    for (const Diagnostic& diagnostic : status.diagnostics()) diagnostics.push(projectDiagnostic(vm, diagnostic));
     result.set("diagnostics", diagnostics);
     result.set("diagnosticCount", static_cast<std::int64_t>(status.diagnostics().size()));
     return result;
 }
 
-ssq::Table projectStatusResult(HSQUIRRELVM vm, const Status& status, bool ok, bool hasValue, const Value& value) {
+/**
+ * @brief Result table without a payload.
+ *
+ * `ok` is derived from the status and the diagnostics are projected once for both
+ * the top-level array and the nested `status` sub-table (they share one ssq::Array).
+ */
+ssq::Table buildResultTable(HSQUIRRELVM vm, const Status& status, bool hasValue) {
     ssq::Table result(vm);
-    result.set("ok", ok);
+    result.set("ok", status.isSuccess());
     result.set("code", std::string(statusCodeName(status.code())));
     result.set("hasValue", hasValue);
     result.set("checked", true);
     result.set("ignored", false);
     result.set("ignoreReason", std::string{});
-    result.set("status", projectStatus(vm, status));
-    ssq::Array diagnostics(vm);
-    for (const Diagnostic& diagnostic : status.diagnostics()) diagnostics.push(projectDiagnostic(vm, diagnostic));
+    ssq::Array diagnostics = projectDiagnostics(vm, status);
+    result.set("status", buildStatusTable(vm, status, diagnostics));
     result.set("diagnostics", diagnostics);
-    if (hasValue)
-        result.set("value", projectValueObject(vm, value));
-    else
-        result.set("value", ssq::Object(vm));
+    if (!hasValue) result.set("value", ssq::Object(vm));
     return result;
 }
 
+}  // namespace
+
+ssq::Table projectStatus(HSQUIRRELVM vm, const Status& status) {
+    return buildStatusTable(vm, status, projectDiagnostics(vm, status));
+}
+
+ssq::Table projectStatusResult(HSQUIRRELVM vm, const Status& status) { return buildResultTable(vm, status, false); }
+
+ssq::Table projectStatusResult(HSQUIRRELVM vm, const Status& status, const Value& value) {
+    ssq::Table result = buildResultTable(vm, status, true);
+    result.set("value", projectValueObject(vm, value));
+    return result;
+}
+
+ssq::Table projectStatusResult(HSQUIRRELVM vm, const Status& status, ssq::Object value) {
+    ssq::Table result = buildResultTable(vm, status, true);
+    result.set("value", std::move(value));
+    return result;
+}
+
+void markResultHasValue(ssq::Table& result) { result.set("hasValue", true); }
+
 ssq::Table projectResult(HSQUIRRELVM vm, Result<void>&& result) {
-    const bool   ok     = result.ok();
     const Status status = result.status();
-    return projectStatusResult(vm, status, ok, false);
+    return projectStatusResult(vm, status);
 }
 
 bool ignoreResult(const ssq::Object& result, const std::string& reason) {

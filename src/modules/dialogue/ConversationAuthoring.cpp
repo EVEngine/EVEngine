@@ -117,12 +117,13 @@ bool ConversationDocument::setEntry(const std::string& nodeId) {
 int ConversationDocument::getParameterCount() const { return static_cast<int>(asset_.parameters.size()); }
 
 std::string ConversationDocument::getParameter(int index) const {
-    return index >= 0 && index < getParameterCount() ? asset_.parameters[static_cast<size_t>(index)] : std::string{};
+    return index >= 0 && index < getParameterCount() ? asset_.parameters[static_cast<size_t>(index)].name : std::string{};
 }
 
 bool ConversationDocument::addParameter(const std::string& name) {
     if (name.empty()) return fail("parameter name must not be empty");
-    if (std::find(asset_.parameters.begin(), asset_.parameters.end(), name) != asset_.parameters.end())
+    if (std::any_of(asset_.parameters.begin(), asset_.parameters.end(),
+                    [&](const auto& parameter) { return parameter.name == name; }))
         return fail("parameter already exists: " + name);
     asset_.parameters.push_back(name);
     failureMessage_.clear();
@@ -130,7 +131,8 @@ bool ConversationDocument::addParameter(const std::string& name) {
 }
 
 bool ConversationDocument::removeParameter(const std::string& name) {
-    const auto it = std::find(asset_.parameters.begin(), asset_.parameters.end(), name);
+    const auto it = std::find_if(asset_.parameters.begin(), asset_.parameters.end(),
+                                 [&](const auto& parameter) { return parameter.name == name; });
     if (it == asset_.parameters.end()) return false;
     asset_.parameters.erase(it);
     return true;
@@ -172,7 +174,11 @@ bool ConversationDocument::removeNode(const std::string& nodeId) {
 
 bool ConversationDocument::renameNode(const std::string& oldId, const std::string& newId) {
     std::vector<ConversationAsset> assets{asset_};
-    if (!renameConversationNode(assets, asset_.id, oldId, newId, &failureMessage_)) return false;
+    auto renamed = renameConversationNode(assets, asset_.id, oldId, newId);
+    if (!renamed) {
+        failureMessage_ = renamed.status().describe();
+        return false;
+    }
     asset_ = std::move(assets.front());
     return true;
 }
@@ -223,7 +229,7 @@ std::string ConversationDocument::getField(const std::string& nodeId, const std:
     if (field == "expression") return node->expression;
     if (field == "target") return node->target;
     if (field == "returnNode") return node->returnNode;
-    if (field == "arguments") return conversationStateToJson(node->arguments);
+    if (field == "arguments") return std::move(conversationStateToJson(node->arguments)).valueOr({});
     return {};
 }
 
@@ -249,10 +255,14 @@ bool ConversationDocument::setField(const std::string& nodeId, const std::string
     else if (field == "returnNode")
         node->returnNode = value;
     else if (field == "arguments") {
-        StateValue parsed;
-        if (!conversationStateFromJson(value, parsed, &failureMessage_)) return false;
-        if (!parsed.isObject()) return fail("arguments must be a JSON object");
-        node->arguments = std::move(parsed);
+        auto parsed = conversationStateFromJson(value);
+        if (!parsed) {
+            failureMessage_ = parsed.status().describe();
+            return false;
+        }
+        StateValue arguments = std::move(parsed).takeValue();
+        if (!arguments.isObject()) return fail("arguments must be a JSON object");
+        node->arguments = std::move(arguments);
     } else {
         return fail("unknown node field: " + field);
     }
@@ -268,7 +278,7 @@ int ConversationDocument::getRouteCount(const std::string& nodeId) const {
 std::string ConversationDocument::getRouteLabel(const std::string& nodeId, int index) const {
     const auto* node = findNode(nodeId);
     return node && index >= 0 && index < static_cast<int>(node->routes.size())
-               ? node->routes[static_cast<size_t>(index)].first
+               ? node->routes[static_cast<size_t>(index)].id
                : std::string{};
 }
 
@@ -305,7 +315,7 @@ bool ConversationDocument::removeRoute(const std::string& nodeId, int index) {
 
 bool ConversationDocument::validate() {
     diagnostics_.clear();
-    const bool valid = lintConversations({asset_}, asset_.id, diagnostics_);
+    const bool valid = lintConversations({asset_}, asset_.id, diagnostics_).ok();
     failureMessage_  = valid || diagnostics_.empty() ? std::string{} : diagnostics_.front().message;
     return valid;
 }

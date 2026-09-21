@@ -4,10 +4,6 @@
 #include <utility>
 namespace eve::hd2d_editing {
 namespace {
-template <class T>
-EditorResult<T> fail(EditorStatus s, const char* r, std::string m) {
-    return eve::editing::failed<T>(s, RuleId(r), std::move(m));
-}
 const EditorValue* field(const EditorValue& v, const char* k) {
     const auto* o = v.getIf<EditorValue::Object>();
     if (!o) return nullptr;
@@ -48,7 +44,7 @@ bool errors(const std::vector<EditorDiagnostic>& d) {
 }  // namespace
 Hd2dDocumentTarget::Hd2dDocumentTarget(std::string id) : id_(std::move(id)) {}
 TargetDescriptor Hd2dDocumentTarget::describe() const {
-    return {TargetId(id_), "hd2d-asset", revision_, false, {CapabilityId("eve.editor.target.hd2d-properties")}};
+    return {TargetId(id_), "hd2d-asset", revisionValue(), false, {CapabilityId("eve.editor.target.hd2d-properties")}};
 }
 void* Hd2dDocumentTarget::queryCapability(const CapabilityId& c) {
     return c == CapabilityId("eve.editor.target.hd2d-properties") ? static_cast<IPropertyProvider*>(this) : nullptr;
@@ -60,7 +56,7 @@ eve::Result<eve::Revision> Hd2dDocumentTarget::currentRevision(const SelectionSn
     if (!matches(s))
         return eve::Result<eve::Revision>::failure(eve::Diagnostic::error(
             eve::DiagnosticCode::InvalidArgument, "HD2D selection mismatch", "editor.hd2d.selection"));
-    return eve::Result<eve::Revision>::success(eve::Revision(revision_));
+    return eve::Result<eve::Revision>::success(eve::Revision(revisionValue()));
 }
 PropertySchema Hd2dDocumentTarget::schema(const SelectionSnapshot&) const {
     PropertySchema s;
@@ -153,7 +149,8 @@ EditorResult<DomainOperation> Hd2dDocumentTarget::makeSet(const SelectionSnapsho
     if (mode == PropertySetMode::Reset) return makeReset(s, p);
     auto d = schema(s).find(p);
     if (!matches(s) || !d || mode != PropertySetMode::Absolute || !validatePropertyValue(*d, value).ok())
-        return fail<DomainOperation>(EditorStatus::Rejected, "editor.hd2d.set", "HD2D property is invalid");
+        return eve::editing::failed<DomainOperation>(EditorStatus::Rejected, RuleId("editor.hd2d.set"),
+                                                     "HD2D property is invalid");
     auto  c = *this;
     auto& v = c.value_;
     if (p == PropertyPath("asset.kind"))
@@ -189,13 +186,15 @@ EditorResult<DomainOperation> Hd2dDocumentTarget::makeSet(const SelectionSnapsho
     else
         readArray(&value, v.wallUv.data(), 4);
     if (errors(c.validate()))
-        return fail<DomainOperation>(EditorStatus::Rejected, "editor.hd2d.invalid",
-                                     "HD2D edit produces an invalid preset");
+        return eve::editing::failed<DomainOperation>(EditorStatus::Rejected, RuleId("editor.hd2d.invalid"),
+                                                     "HD2D edit produces an invalid preset");
     return replacement(c.contentValue(), p.value());
 }
 EditorResult<DomainOperation> Hd2dDocumentTarget::makeReset(const SelectionSnapshot& s, const PropertyPath& p) const {
     auto d = schema(s).find(p);
-    if (!d) return fail<DomainOperation>(EditorStatus::Unsupported, "editor.hd2d.property", "Unknown HD2D property");
+    if (!d)
+        return eve::editing::failed<DomainOperation>(EditorStatus::Unsupported, RuleId("editor.hd2d.property"),
+                                                     "Unknown HD2D property");
     return makeSet(s, p, d->defaultValue, PropertySetMode::Absolute);
 }
 std::vector<EditorDiagnostic> Hd2dDocumentTarget::validate() const {
@@ -228,7 +227,8 @@ std::vector<EditorDiagnostic> Hd2dDocumentTarget::validate() const {
 }
 EditorResult<void> Hd2dDocumentTarget::applyDomainOperation(const DomainOperation& op) {
     if (op.target != TargetId(id_) || op.type != "hd2d.document.replace.v1" || !op.payload.isWithinLimits(5, 64, 4096))
-        return fail<void>(EditorStatus::Rejected, "editor.hd2d.operation", "HD2D operation is invalid");
+        return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.hd2d.operation"),
+                                          "HD2D operation is invalid");
     Hd2dAssetValue v;
     const auto *   kind = field(op.payload, "kind"), *source = field(op.payload, "source"),
                *fx = field(op.payload, "flipX"), *fy = field(op.payload, "flipY"),
@@ -239,7 +239,8 @@ EditorResult<void> Hd2dDocumentTarget::applyDomainOperation(const DomainOperatio
     const auto* yb      = fy ? fy->getIf<bool>() : nullptr;
     const auto* vb      = visible ? visible->getIf<bool>() : nullptr;
     if (!k || !s || !xb || !yb || !vb)
-        return fail<void>(EditorStatus::Rejected, "editor.hd2d.payload", "HD2D text/bool field is invalid");
+        return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.hd2d.payload"),
+                                          "HD2D text/bool field is invalid");
     v.kind                = *k;
     v.sourceAsset         = *s;
     v.flipX               = *xb;
@@ -250,7 +251,9 @@ EditorResult<void> Hd2dDocumentTarget::applyDomainOperation(const DomainOperatio
     for (int i = 0; i < 5; ++i) {
         const auto* x = field(op.payload, ifields[i]);
         const auto* n = x ? x->getIf<int64_t>() : nullptr;
-        if (!n) return fail<void>(EditorStatus::Rejected, "editor.hd2d.integer", "HD2D integer is invalid");
+        if (!n)
+            return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.hd2d.integer"),
+                                              "HD2D integer is invalid");
         *ints[i] = static_cast<int>(*n);
     }
     float*      floats[]  = {&v.fps, &v.sideDepth, &v.heightScale};
@@ -259,20 +262,23 @@ EditorResult<void> Hd2dDocumentTarget::applyDomainOperation(const DomainOperatio
         const auto* x = field(op.payload, ffields[i]);
         const auto* n = x ? x->getIf<double>() : nullptr;
         if (!n || !std::isfinite(*n))
-            return fail<void>(EditorStatus::Rejected, "editor.hd2d.number", "HD2D number is invalid");
+            return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.hd2d.number"),
+                                              "HD2D number is invalid");
         *floats[i] = static_cast<float>(*n);
     }
     if (!readArray(field(op.payload, "size"), v.size.data(), 2) ||
         !readArray(field(op.payload, "tint"), v.tint.data(), 4) ||
         !readArray(field(op.payload, "wallUv"), v.wallUv.data(), 4))
-        return fail<void>(EditorStatus::Rejected, "editor.hd2d.vector", "HD2D vector is invalid");
+        return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.hd2d.vector"),
+                                          "HD2D vector is invalid");
     Hd2dDocumentTarget c(id_);
     c.value_ = v;
     if (errors(c.validate()))
-        return fail<void>(EditorStatus::Rejected, "editor.hd2d.invalid", "HD2D document validation failed");
+        return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.hd2d.invalid"),
+                                          "HD2D document validation failed");
     value_ = v;
-    ++revision_;
-    dirty_.include(0, 0);
+    bumpRevision();
+    widenDirty(0, 0);
     return eve::editing::applied<void>();
 }
 std::unique_ptr<IDomainOperationTarget> Hd2dDocumentTarget::cloneDomainState() const {
@@ -281,7 +287,8 @@ std::unique_ptr<IDomainOperationTarget> Hd2dDocumentTarget::cloneDomainState() c
 EditorResult<void> Hd2dDocumentTarget::commitDomainState(std::unique_ptr<IDomainOperationTarget> c) {
     auto* t = dynamic_cast<Hd2dDocumentTarget*>(c.get());
     if (!t || t->id_ != id_)
-        return fail<void>(EditorStatus::Conflict, "editor.hd2d.candidate", "HD2D candidate mismatch");
+        return eve::editing::failed<void>(EditorStatus::Conflict, RuleId("editor.hd2d.candidate"),
+                                          "HD2D candidate mismatch");
     *this = *t;
     return eve::editing::applied<void>();
 }
@@ -292,22 +299,24 @@ EditorResult<void> Hd2dDocumentTarget::loadSnapshot(const EditorValue& s) {
     const auto *v = field(s, "schemaVersion"), *content = field(s, "content");
     const auto* version = v ? v->getIf<int64_t>() : nullptr;
     if (!version || *version != 1 || !content)
-        return fail<void>(EditorStatus::Unsupported, "editor.hd2d.snapshot", "Unsupported HD2D snapshot");
+        return eve::editing::failed<void>(EditorStatus::Unsupported, RuleId("editor.hd2d.snapshot"),
+                                          "Unsupported HD2D snapshot");
     DomainOperation op;
     op.target   = TargetId(id_);
     op.type     = "hd2d.document.replace.v1";
     op.payload  = *content;
     auto result = applyDomainOperation(op);
-    if (result.ok()) dirty_.clear();
+    if (result.ok()) clearDirtyRegion();
     return result;
 }
 EditorResult<Hd2dFramePreview> Hd2dFramePreviewService::evaluate(const Hd2dDocumentTarget& d, float time) const {
     if (d.value().kind != "sprite" || !std::isfinite(time) || time < 0 || time > 86400)
-        return fail<Hd2dFramePreview>(EditorStatus::Rejected, "editor.hd2d.preview",
-                                      "HD2D frame preview requires a sprite and bounded time");
+        return eve::editing::failed<Hd2dFramePreview>(EditorStatus::Rejected, RuleId("editor.hd2d.preview"),
+                                                      "HD2D frame preview requires a sprite and bounded time");
     const auto diagnostics = d.validate();
     if (errors(diagnostics))
-        return fail<Hd2dFramePreview>(EditorStatus::Rejected, "editor.hd2d.preview-invalid", "HD2D preset is invalid");
+        return eve::editing::failed<Hd2dFramePreview>(EditorStatus::Rejected, RuleId("editor.hd2d.preview-invalid"),
+                                                      "HD2D preset is invalid");
     const auto&      v     = d.value();
     const int        span  = v.animEnd - v.animStart + 1;
     const int        frame = v.animStart + (static_cast<long long>(std::floor(time * v.fps)) % span);

@@ -21,8 +21,9 @@ void exposeCanvasScriptBindings(ssq::Table& table) {
             std::unique_ptr<image::ImageData> pixels(self->newImageData());
             if (!pixels) throw std::runtime_error("canvas has no readable RGBA8 pixels");
             auto status = Result<void>::success();
-            auto result = eve::script::projectStatusResult(vm, status.status(), true, true);
+            auto result = eve::script::projectStatusResult(vm, status.status());
             result.set("value", pixels.get());
+            eve::script::markResultHasValue(result);
             result.set("ownership", std::string("script-owned"));
             pixels.release();
             return result;

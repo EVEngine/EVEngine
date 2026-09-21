@@ -40,6 +40,18 @@ public:
         const AssetRef& asset, std::string_view expectedType,
         const EvpackCapabilities& capabilities, std::uint64_t maximumDecodedBytes) const;
 
+    /**
+     * @brief List stable assets providing an exact type/version for the selected runtime variant.
+     * @param expectedType Canonical type/version such as `eve.vegetation-scene/1`.
+     * @param capabilities Actual runtime capabilities used for variant selection.
+     * @param maximumAssets Owning result budget; exceeding it fails without a partial list.
+     * @return Sorted unique asset references, which may be empty when the type is absent.
+     * @thread Worker-safe while this immutable reader is read concurrently.
+     */
+    [[nodiscard]] Result<std::vector<AssetRef>> listAssets(
+        std::string_view expectedType, const EvpackCapabilities& capabilities,
+        std::uint32_t maximumAssets = 1'000'000) const;
+
 private:
     std::shared_ptr<const Evpack> pack_;
 };

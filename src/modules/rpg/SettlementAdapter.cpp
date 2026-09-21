@@ -10,16 +10,6 @@
 namespace eve::rpg {
 namespace {
 
-template <class T>
-eve::Result<T> failure(eve::DiagnosticCode code, std::string message, std::string path = {}) {
-    return eve::Result<T>::failure(eve::Diagnostic::error(code, std::move(message), std::move(path)));
-}
-
-template <class T>
-eve::Result<T> failure(eve::Status status) {
-    return eve::Result<T>::failure(std::move(status));
-}
-
 eve::Result<void> success(eve::StatusCode code = eve::StatusCode::Ok) {
     return eve::Result<void>::success(eve::Status::success(code));
 }
@@ -30,8 +20,8 @@ bool isHealingKind(std::string_view kind) noexcept { return kind == "heal" || ki
 
 eve::Result<double> checkedNumber(double value, std::string_view name) {
     if (!std::isfinite(value))
-        return failure<double>(eve::DiagnosticCode::InvariantViolation, std::string(name) + " must be finite",
-                               std::string(name));
+        return eve::Result<double>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvariantViolation, std::string(name) + " must be finite", std::string(name)));
     return eve::Result<double>::success(value);
 }
 
@@ -88,12 +78,12 @@ std::optional<std::string> RPGSettlementAdapter::stringValue(const eve::Value* v
 
 eve::Result<double> RPGSettlementAdapter::readBase(std::string_view name) const {
     if (name.empty())
-        return failure<double>(eve::DiagnosticCode::InvalidArgument, "RPG settlement attribute name must not be empty",
-                               "attribute");
+        return eve::Result<double>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "RPG settlement attribute name must not be empty", "attribute"));
     const auto& attributes = target_.attributes()->values;
     if (!attributes.has(std::string(name)))
-        return failure<double>(eve::DiagnosticCode::NotFound, "RPG settlement attribute is not present",
-                               std::string(name));
+        return eve::Result<double>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::NotFound, "RPG settlement attribute is not present", std::string(name)));
     return checkedNumber(attributes.getBase(std::string(name)), name);
 }
 
@@ -113,28 +103,29 @@ eve::Result<double> RPGSettlementAdapter::readSourceFinal(std::string_view name,
 
 eve::Result<void> RPGSettlementAdapter::validate(settlement::SettlementContext& context) {
     if (!(context.request().target == targetRef_))
-        return failure<void>(eve::DiagnosticCode::Conflict,
-                             "RPG settlement request target does not match adapter target", "target");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Conflict, "RPG settlement request target does not match adapter target", "target"));
     const bool damage  = isDamage(context);
     const bool healing = isHealing(context);
     if (!damage && !healing)
-        return failure<void>(eve::DiagnosticCode::Unsupported,
-                             "RPG settlement adapter supports damage and healing kinds only", "kind");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Unsupported, "RPG settlement adapter supports damage and healing kinds only", "kind"));
 
     auto       health   = readBase(config_.healthAttribute);
     const bool healthOk = health.ok();
     if (!healthOk) {
         const auto status = health.status();
-        return failure<void>(status);
+        return eve::Result<void>::failure(status);
     }
     auto       maximum   = readBase(config_.maxHealthAttribute);
     const bool maximumOk = maximum.ok();
     if (!maximumOk) {
         const auto status = maximum.status();
-        return failure<void>(status);
+        return eve::Result<void>::failure(status);
     }
     if (health.value() > maximum.value())
-        return failure<void>(eve::DiagnosticCode::InvariantViolation, "RPG health exceeds max health", "health");
+        return eve::Result<void>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvariantViolation, "RPG health exceeds max health", "health"));
     context.setStageDetail("policy", "rpg");
     context.setStageDetail("health_attribute", config_.healthAttribute);
     context.setStageDetail("kind", context.request().kind);
@@ -151,19 +142,20 @@ eve::Result<void> RPGSettlementAdapter::sourceModifiers(settlement::SettlementCo
         const bool sourceMultiplierOk = sourceMultiplier.ok();
         if (!sourceMultiplierOk) {
             const auto status = sourceMultiplier.status();
-            return failure<void>(status);
+            return eve::Result<void>::failure(status);
         }
         multiplier = sourceMultiplier.value();
     }
     if (!std::isfinite(multiplier) || multiplier < 0.0)
-        return failure<void>(eve::DiagnosticCode::InvalidArgument,
-                             "RPG source multiplier must be finite and non-negative", "source_multiplier");
+        return eve::Result<void>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                   "RPG source multiplier must be finite and non-negative", "source_multiplier"));
 
     auto       scaled   = context.setMagnitude(context.magnitude() * multiplier);
     const bool scaledOk = scaled.ok();
     if (!scaledOk) {
         const auto status = scaled.status();
-        return failure<void>(status);
+        return eve::Result<void>::failure(status);
     }
 
     bool critical = boolValue(contextValue(context, "critical")).value_or(false);
@@ -173,7 +165,7 @@ eve::Result<void> RPGSettlementAdapter::sourceModifiers(settlement::SettlementCo
         const bool chanceOk = chance.ok();
         if (!chanceOk) {
             const auto status = chance.status();
-            return failure<void>(status);
+            return eve::Result<void>::failure(status);
         }
         if (roll && std::isfinite(*roll)) {
             const double probability = std::clamp(chance.value(), 0.0, 1.0);
@@ -190,18 +182,19 @@ eve::Result<void> RPGSettlementAdapter::sourceModifiers(settlement::SettlementCo
             const bool configuredOk = configured.ok();
             if (!configuredOk) {
                 const auto status = configured.status();
-                return failure<void>(status);
+                return eve::Result<void>::failure(status);
             }
             criticalMultiplier = configured.value();
         }
         if (!std::isfinite(criticalMultiplier) || criticalMultiplier < 1.0)
-            return failure<void>(eve::DiagnosticCode::InvalidArgument,
-                                 "RPG critical multiplier must be finite and at least one", "critical_multiplier");
+            return eve::Result<void>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::InvalidArgument, "RPG critical multiplier must be finite and at least one",
+                "critical_multiplier"));
         auto       critScaled   = context.setMagnitude(context.magnitude() * criticalMultiplier);
         const bool critScaledOk = critScaled.ok();
         if (!critScaledOk) {
             const auto status = critScaled.status();
-            return failure<void>(status);
+            return eve::Result<void>::failure(status);
         }
     }
     context.setCritical(critical);
@@ -220,7 +213,7 @@ eve::Result<void> RPGSettlementAdapter::targetMitigation(settlement::SettlementC
     const bool        resistanceOk        = resistance.ok();
     if (!resistanceOk) {
         const auto status = resistance.status();
-        return failure<void>(status);
+        return eve::Result<void>::failure(status);
     }
     const double factor    = 1.0 - std::clamp(resistance.value(), 0.0, 1.0);
     const double before    = context.magnitude();
@@ -228,13 +221,13 @@ eve::Result<void> RPGSettlementAdapter::targetMitigation(settlement::SettlementC
     const bool   changedOk = changed.ok();
     if (!changedOk) {
         const auto status = changed.status();
-        return failure<void>(status);
+        return eve::Result<void>::failure(status);
     }
     auto       recorded   = context.addResisted(before - context.magnitude());
     const bool recordedOk = recorded.ok();
     if (!recordedOk) {
         const auto status = recorded.status();
-        return failure<void>(status);
+        return eve::Result<void>::failure(status);
     }
     context.setStageDetail("element", element);
     context.setStageDetail("resistance", resistance.value());
@@ -248,7 +241,7 @@ eve::Result<void> RPGSettlementAdapter::armorShield(settlement::SettlementContex
     const bool armorOk = armor.ok();
     if (!armorOk) {
         const auto status = armor.status();
-        return failure<void>(status);
+        return eve::Result<void>::failure(status);
     }
     const double penetration    = std::max(0.0, numberValue(contextValue(context, "penetration")).value_or(0.0));
     const double effectiveArmor = std::max(0.0, armor.value() - penetration);
@@ -258,13 +251,13 @@ eve::Result<void> RPGSettlementAdapter::armorShield(settlement::SettlementContex
     const bool   armorChangedOk = armorChanged.ok();
     if (!armorChangedOk) {
         const auto status = armorChanged.status();
-        return failure<void>(status);
+        return eve::Result<void>::failure(status);
     }
     auto       armorLoss   = context.addResisted(beforeArmor - context.magnitude());
     const bool armorLossOk = armorLoss.ok();
     if (!armorLossOk) {
         const auto status = armorLoss.status();
-        return failure<void>(status);
+        return eve::Result<void>::failure(status);
     }
 
     auto   shield      = readBase(config_.shieldAttribute);
@@ -273,20 +266,20 @@ eve::Result<void> RPGSettlementAdapter::armorShield(settlement::SettlementContex
         shieldValue = shield.value();
     } else if (shield.code() != eve::StatusCode::NotFound) {
         const auto status = shield.status();
-        return failure<void>(status);
+        return eve::Result<void>::failure(status);
     }
     const double absorbed        = std::min(shieldValue, context.magnitude());
     auto         shieldChanged   = context.setMagnitude(context.magnitude() - absorbed);
     const bool   shieldChangedOk = shieldChanged.ok();
     if (!shieldChangedOk) {
         const auto status = shieldChanged.status();
-        return failure<void>(status);
+        return eve::Result<void>::failure(status);
     }
     auto       absorbedRecorded   = context.addAbsorbed(absorbed);
     const bool absorbedRecordedOk = absorbedRecorded.ok();
     if (!absorbedRecordedOk) {
         const auto status = absorbedRecorded.status();
-        return failure<void>(status);
+        return eve::Result<void>::failure(status);
     }
     context.setStageDetail("armor", armor.value());
     context.setStageDetail("penetration", penetration);
@@ -300,20 +293,20 @@ eve::Result<void> RPGSettlementAdapter::clamp(settlement::SettlementContext& con
     const bool healthOk = health.ok();
     if (!healthOk) {
         const auto status = health.status();
-        return failure<void>(status);
+        return eve::Result<void>::failure(status);
     }
     auto       maximum   = readBase(config_.maxHealthAttribute);
     const bool maximumOk = maximum.ok();
     if (!maximumOk) {
         const auto status = maximum.status();
-        return failure<void>(status);
+        return eve::Result<void>::failure(status);
     }
     const double bound        = isDamage(context) ? health.value() : maximum.value() - health.value();
     auto         configured   = context.setClampMax(std::max(0.0, bound));
     const bool   configuredOk = configured.ok();
     if (!configuredOk) {
         const auto status = configured.status();
-        return failure<void>(status);
+        return eve::Result<void>::failure(status);
     }
     context.setStageDetail("maximum", bound);
     return eve::Result<void>::success();
@@ -325,22 +318,22 @@ eve::Result<settlement::PreparedApply> RPGSettlementAdapter::prepareApply(
     const bool healthOk = health.ok();
     if (!healthOk) {
         const auto status = health.status();
-        return failure<settlement::PreparedApply>(status);
+        return eve::Result<settlement::PreparedApply>::failure(status);
     }
     auto       maximum   = readBase(config_.maxHealthAttribute);
     const bool maximumOk = maximum.ok();
     if (!maximumOk) {
         const auto status = maximum.status();
-        return failure<settlement::PreparedApply>(status);
+        return eve::Result<settlement::PreparedApply>::failure(status);
     }
 
     auto         candidate = target_.attributes()->values;
     const double nextHealth =
         isDamage(context) ? health.value() - context.magnitude() : health.value() + context.magnitude();
     if (!std::isfinite(nextHealth) || nextHealth < 0.0 || nextHealth > maximum.value())
-        return failure<settlement::PreparedApply>(eve::DiagnosticCode::InvariantViolation,
-                                                  "RPG settlement candidate health is outside its validated bounds",
-                                                  "health");
+        return eve::Result<settlement::PreparedApply>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvariantViolation,
+                                   "RPG settlement candidate health is outside its validated bounds", "health"));
     candidate.setBase(config_.healthAttribute, nextHealth);
 
     if (isDamage(context) && !config_.shieldAttribute.empty() && context.absorbed() > 0.0) {
@@ -348,12 +341,13 @@ eve::Result<settlement::PreparedApply> RPGSettlementAdapter::prepareApply(
         const bool shieldOk = shield.ok();
         if (!shieldOk) {
             const auto status = shield.status();
-            if (status.code() != eve::StatusCode::NotFound) return failure<settlement::PreparedApply>(status);
+            if (status.code() != eve::StatusCode::NotFound)
+                return eve::Result<settlement::PreparedApply>::failure(status);
         } else {
             if (context.absorbed() > shield.value())
-                return failure<settlement::PreparedApply>(
-                    eve::DiagnosticCode::InvariantViolation,
-                    "RPG shield absorption exceeds the authoritative shield balance", "shield");
+                return eve::Result<settlement::PreparedApply>::failure(
+                    eve::Diagnostic::error(eve::DiagnosticCode::InvariantViolation,
+                                           "RPG shield absorption exceeds the authoritative shield balance", "shield"));
             candidate.setBase(config_.shieldAttribute, shield.value() - context.absorbed());
         }
     }
