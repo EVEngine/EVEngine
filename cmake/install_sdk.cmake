@@ -187,6 +187,27 @@ install(DIRECTORY "${CMAKE_SOURCE_DIR}/examples/basic"
     DESTINATION share/eve/examples
 )
 
+# ---- Agent knowledge pack (this SDK build, no engine git tree required) ----
+# eve-api.json / eve-api.d.ts are generated next to BindingContracts.generated.cpp.
+install(FILES
+    "${CMAKE_BINARY_DIR}/src/engine/common/eve-api.json"
+    "${CMAKE_BINARY_DIR}/src/engine/common/eve-api.d.ts"
+    DESTINATION share/eve/ai
+)
+install(FILES "${CMAKE_SOURCE_DIR}/.cursor/skills/evescript/SKILL.md"
+    DESTINATION share/eve/ai
+)
+install(FILES "${CMAKE_SOURCE_DIR}/.cursor/skills/evescript/SKILL.md"
+    DESTINATION .cursor/skills/evescript
+)
+install(FILES "${CMAKE_SOURCE_DIR}/cmake/sdk/llms.txt"
+    DESTINATION .
+    RENAME llms.txt
+)
+install(DIRECTORY "${CMAKE_SOURCE_DIR}/tools/eve-mcp/"
+    DESTINATION share/eve/ai/eve-mcp
+)
+
 # ---- Target-platform packaging template only ----
 set(_eve_plat_src "${CMAKE_SOURCE_DIR}/platform/${BUILD_PLATFORM}")
 if(EXISTS "${_eve_plat_src}")

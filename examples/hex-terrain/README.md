@@ -26,9 +26,19 @@ Generated mesh metadata exposes per-biome cell counts (`cells.deepOcean` through
 `cells.ice`), plus `cells.river`, `cells.lake` and `edges.cliff`, so tools and
 tests can verify that a seed contains the requested terrain features.
 
+The terrain shader pair ships compiled: `main.nut` loads
+`shaders/hex_terrain.vert.spv` + `shaders/hex_terrain.frag.spv` through
+`gfx.loadMeshShaderSpv`, because runtime GLSL compilation needs `glslc` on `PATH`
+and is unavailable on Windows. Regenerate both after editing the GLSL:
+
+```sh
+glslc -o shaders/hex_terrain.vert.spv shaders/hex_terrain.vert
+glslc -o shaders/hex_terrain.frag.spv shaders/hex_terrain.frag
+```
+
 On Linux, `scripts/capture_hex_terrain.sh` performs a reproducible headless
-capture with Xvfb, Mesa Lavapipe and ffmpeg. Set `VULKAN_SDK` when `glslc` is not
-already on `PATH`; the output defaults to `hex-terrain-vulkan-latest.png`.
+capture with Xvfb, Mesa Lavapipe and ffmpeg; the output defaults to
+`hex-terrain-vulkan-latest.png`.
 
 UV encoding is intentionally documented by the mesh metadata:
 `u = primaryBiome + transitionWeight`, `v = secondaryBiome + riverCoverage`.

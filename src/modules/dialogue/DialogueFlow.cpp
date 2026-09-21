@@ -1,5 +1,7 @@
 #include "dialogue/DialogueFlow.h"
 
+#include "common/Capability.h"
+#include "common/ServiceInterfaces.h"
 #include "common/SquirrelBinding.h"
 #include "common/SubjectRef.h"
 #include "dialogue/ConversationAuthoring.h"
@@ -19,6 +21,30 @@ namespace eve::dialogue {
 Module_IMPL(DialogueFlow, new DialogueFlow());
 
 namespace {
+
+template <class T = void>
+eve::Result<T> flowFailure(eve::DiagnosticCode code, const std::string& message, const std::string& path) {
+    return eve::Result<T>::failure(
+        eve::Diagnostic::error(code, message, path, {}, "dialogue.flow"));
+}
+
+bool buildPoolWorkspace(const std::unordered_map<std::string, DataValue>& sources, DataValue& root,
+                        std::string& error) {
+    DataValue::Object combined;
+    for (const auto& [sourceId, sourceRoot] : sources) {
+        const DataValue* pools = sourceRoot.find("pools");
+        if (!pools || !pools->isObject()) continue;
+        for (const auto& poolId : pools->keys()) {
+            if (combined.contains(poolId)) {
+                error = "pool '" + poolId + "' has multiple source owners (including '" + sourceId + "')";
+                return false;
+            }
+            combined.emplace(poolId, *pools->find(poolId));
+        }
+    }
+    root = DataValue::object({{"pools", DataValue::object(std::move(combined))}});
+    return true;
+}
 
 bool squirrelToState(HSQUIRRELVM vm, SQInteger index, StateValue& out) {
     switch (sq_gettype(vm, index)) {
@@ -136,8 +162,8 @@ public:
         auto selected = runner_.selectRouteForTransaction(routeId_);
         if (!selected.ok()) {
             std::string error = selected.status().describe();
-            std::string restoreError;
-            if (!runner_.restoreState(before_, &restoreError) && error.empty()) error = restoreError;
+            auto restored = runner_.restoreStateChecked(before_);
+            if (!restored && error.empty()) error = restored.status().describe();
             return dialogueFailure(eve::DiagnosticCode::Failed,
                                    error.empty() ? "dialogue choice selection failed" : error, "route");
         }
@@ -155,10 +181,10 @@ public:
         if (phase_ != Phase::Committed)
             return dialogueFailure(eve::DiagnosticCode::Conflict, "dialogue choice is not committed",
                                    "transaction.lifecycle");
-        std::string error;
-        if (!runner_.restoreState(before_, &error))
+        auto restored = runner_.restoreStateChecked(before_);
+        if (!restored)
             return dialogueFailure(eve::DiagnosticCode::Failed,
-                                   error.empty() ? "dialogue choice compensation failed" : error, "route");
+                                   restored.status().describe(), "route");
         phase_ = Phase::RolledBack;
         return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
     }
@@ -239,6 +265,7 @@ void DialogueFlow::configureIntegration(IntegrationConfig config) {
     operationRequestHandler_      = std::move(config.operationHandler);
     gameplayActionHandler_        = std::move(config.gameplayActionHandler);
     commandParticipantFactory_    = std::move(config.commandParticipantFactory);
+    contentReader_                = std::move(config.contentReader);
     stateMutationProvider_        = config.stateMutation;
     paymentAdapter_.setBindings(std::move(config.accounts));
 
@@ -249,7 +276,8 @@ void DialogueFlow::configureIntegration(IntegrationConfig config) {
             [this](const eve::Value& specification) { return stateContext_.evaluate(specification); });
     }
 
-    if (operationRequestHandler_ || gameplayActionHandler_ || commandParticipantFactory_ || stateMutationProvider_) {
+    if (operationRequestHandler_ || gameplayActionHandler_ || commandParticipantFactory_ || stateMutationProvider_ ||
+        manualCommandMode_) {
         runner_.setCommandRequestDispatcher([this](const CommandRequest& request) { return dispatchCommand(request); });
     } else {
         runner_.clearCommandRequestDispatcher();
@@ -269,17 +297,40 @@ const ConversationAsset* DialogueFlow::find(const std::string& id) const {
     return nullptr;
 }
 
-int DialogueFlow::loadFromDnut(const std::string& source, const std::string& path) {
-    const size_t hash = std::hash<std::string>{}(source);
-    if (const auto it = sourceHashes_.find(path); it != sourceHashes_.end() && it->second == hash) {
+int DialogueFlow::loadDnutImpl(const std::string& source, const std::string& path) {
+    if (const auto it = sourceTexts_.find(path); it != sourceTexts_.end() && it->second == source) {
         lastLoadChanged_ = false;
         failureMessage_.clear();
         return static_cast<int>(sourceAssets_[path].size());
     }
-    std::vector<ConversationAsset> compiled;
     diagnostics_.clear();
-    if (!compileDnutConversations(source, path, compiled, diagnostics_)) {
+    auto compiledDocument = compileDnutDocument(source, path, diagnostics_);
+    if (!compiledDocument) {
         failureMessage_ = diagnostics_.empty() ? "conversation compilation failed" : diagnostics_.front().message;
+        return 0;
+    }
+    DnutDocument document = std::move(compiledDocument).takeValue();
+    std::vector<ConversationAsset> compiled = std::move(document.conversations);
+    for (const auto& asset : compiled) {
+        const auto owner = assetSources_.find(asset.id);
+        if (owner != assetSources_.end() && owner->second != path) {
+            diagnostics_.push_back({ConversationDiagnostic::Severity::Error, path, 0,
+                                    "conversation '" + asset.id + "' is already owned by '" + owner->second + "'"});
+            failureMessage_ = diagnostics_.back().message;
+            return 0;
+        }
+    }
+    if (runner_.isActive()) {
+        failureMessage_ = "cannot load a dnut source while a conversation is active; use transactional reload";
+        return 0;
+    }
+    auto candidatePoolSources = sourcePools_;
+    candidatePoolSources[path] = std::move(document.poolRoot);
+    DataValue poolWorkspace;
+    if (!buildPoolWorkspace(candidatePoolSources, poolWorkspace, failureMessage_)) return 0;
+    Dialogue* dialogue = Dialogue::create();
+    if (!dialogue || (dialogue->replacePoolsFromData(poolWorkspace) == 0 && !dialogue->getLastPoolsError().empty())) {
+        failureMessage_ = dialogue ? dialogue->getLastPoolsError() : "dialogue pool runtime is unavailable";
         return 0;
     }
     runner_.stop();
@@ -300,27 +351,42 @@ int DialogueFlow::loadFromDnut(const std::string& source, const std::string& pat
         else
             *it = std::move(asset);
     }
-    sourceHashes_[path] = hash;
+    sourceTexts_[path] = source;
+    sourcePools_         = std::move(candidatePoolSources);
     sourceAssets_[path] = std::move(compiledIds);
+    for (const auto& id : sourceAssets_[path]) assetSources_[id] = path;
     lastLoadChanged_    = true;
     failureMessage_.clear();
     return static_cast<int>(compiled.size());
 }
 
-int DialogueFlow::reloadFromDnut(const std::string& source, const std::string& path) {
-    const size_t hash = std::hash<std::string>{}(source);
-    if (const auto cached = sourceHashes_.find(path); cached != sourceHashes_.end() && cached->second == hash) {
+int DialogueFlow::reloadDnutImpl(const std::string& source, const std::string& path) {
+    if (const auto cached = sourceTexts_.find(path); cached != sourceTexts_.end() && cached->second == source) {
         lastLoadChanged_ = false;
         failureMessage_.clear();
         return static_cast<int>(sourceAssets_[path].size());
     }
-    std::vector<ConversationAsset>      compiled;
     std::vector<ConversationDiagnostic> candidateDiagnostics;
-    if (!compileDnutConversations(source, path, compiled, candidateDiagnostics)) {
+    auto compiledDocument = compileDnutDocument(source, path, candidateDiagnostics);
+    if (!compiledDocument) {
         diagnostics_     = std::move(candidateDiagnostics);
         failureMessage_  = diagnostics_.empty() ? "conversation compilation failed" : diagnostics_.front().message;
         lastLoadChanged_ = false;
         return 0;
+    }
+    DnutDocument document = std::move(compiledDocument).takeValue();
+    std::vector<ConversationAsset> compiled = std::move(document.conversations);
+    for (const auto& asset : compiled) {
+        const auto owner = assetSources_.find(asset.id);
+        if (owner != assetSources_.end() && owner->second != path) {
+            candidateDiagnostics.push_back({ConversationDiagnostic::Severity::Error, path, 0,
+                                            "conversation '" + asset.id + "' is already owned by '" +
+                                                owner->second + "'"});
+            diagnostics_ = std::move(candidateDiagnostics);
+            failureMessage_ = diagnostics_.back().message;
+            lastLoadChanged_ = false;
+            return 0;
+        }
     }
 
     std::vector<ConversationAsset> candidate = assets_;
@@ -351,90 +417,240 @@ int DialogueFlow::reloadFromDnut(const std::string& source, const std::string& p
 
     StateValue activeState;
     const bool hadActive = runner_.isActive();
-    if (hadActive) runner_.captureState(activeState);
+    if (hadActive) {
+        auto captured = runner_.captureStateChecked();
+        if (!captured) {
+            failureMessage_ = captured.status().describe();
+            return 0;
+        }
+        activeState = std::move(captured).takeValue();
+    }
     std::vector<ConversationAsset> previous = assets_;
+    auto candidatePoolSources = sourcePools_;
+    candidatePoolSources[path] = std::move(document.poolRoot);
+    DataValue candidatePoolWorkspace;
+    if (!buildPoolWorkspace(candidatePoolSources, candidatePoolWorkspace, failureMessage_)) return 0;
+    Dialogue* dialogue = Dialogue::create();
+    if (!dialogue ||
+        (dialogue->replacePoolsFromData(candidatePoolWorkspace) == 0 && !dialogue->getLastPoolsError().empty())) {
+        failureMessage_ = dialogue ? dialogue->getLastPoolsError() : "dialogue pool runtime is unavailable";
+        return 0;
+    }
     runner_.stop();
     assets_ = std::move(candidate);
     if (hadActive) {
         StateValue  migrated = activeState;
         std::string restoreError;
-        if (!migrations_.migrate(
-                migrated, [this](const std::string& id) { return find(id); }, &restoreError) ||
-            !runner_.restoreState(migrated, &restoreError)) {
+        auto migratedResult = migrations_.migrate(
+            migrated, [this](const std::string& id) { return find(id); });
+        bool restored = migratedResult.ok();
+        if (restored) {
+            migrated = std::move(migratedResult).takeValue();
+            auto restoreResult = runner_.restoreStateChecked(migrated);
+            restored = restoreResult.ok();
+            if (!restored) restoreError = restoreResult.status().describe();
+        } else {
+            restoreError = migratedResult.status().describe();
+        }
+        if (!restored) {
             assets_ = std::move(previous);
-            runner_.restoreState(activeState, nullptr);
+            runner_.restoreStateChecked(activeState).ignore("restore prior validated state after reload rollback");
+            DataValue previousPools;
+            std::string ignored;
+            if (dialogue && buildPoolWorkspace(sourcePools_, previousPools, ignored))
+                dialogue->replacePoolsFromData(previousPools);
             failureMessage_  = "conversation hot reload rolled back: " + restoreError;
             lastLoadChanged_ = false;
             return 0;
         }
     }
     diagnostics_        = std::move(candidateDiagnostics);
-    sourceHashes_[path] = hash;
+    if (const auto old = sourceAssets_.find(path); old != sourceAssets_.end())
+        for (const auto& id : old->second) assetSources_.erase(id);
+    sourceTexts_[path] = source;
+    sourcePools_         = std::move(candidatePoolSources);
     sourceAssets_[path] = std::move(compiledIds);
+    for (const auto& id : sourceAssets_[path]) assetSources_[id] = path;
     lastLoadChanged_    = true;
     failureMessage_.clear();
     return static_cast<int>(compiled.size());
 }
 
-bool DialogueFlow::removeSource(const std::string& path) {
+eve::Result<void> DialogueFlow::removeSourceChecked(const std::string& path) {
     const auto source = sourceAssets_.find(path);
-    if (source == sourceAssets_.end()) return false;
-    runner_.stop();
+    if (source == sourceAssets_.end())
+        return flowFailure(eve::DiagnosticCode::NotFound, "dnut source is not loaded", path);
+    if (runner_.isActive()) {
+        failureMessage_ = "cannot remove a dnut source while a conversation is active";
+        return flowFailure(eve::DiagnosticCode::PreconditionViolation, failureMessage_, path);
+    }
+    auto candidatePoolSources = sourcePools_;
+    candidatePoolSources.erase(path);
+    DataValue poolWorkspace;
+    if (!buildPoolWorkspace(candidatePoolSources, poolWorkspace, failureMessage_))
+        return flowFailure(eve::DiagnosticCode::Conflict, failureMessage_, path);
+    Dialogue* dialogue = Dialogue::create();
+    if (!dialogue || (dialogue->replacePoolsFromData(poolWorkspace) == 0 && !dialogue->getLastPoolsError().empty())) {
+        failureMessage_ = dialogue ? dialogue->getLastPoolsError() : "dialogue pool runtime is unavailable";
+        return flowFailure(eve::DiagnosticCode::Failed, failureMessage_, path);
+    }
     assets_.erase(std::remove_if(assets_.begin(), assets_.end(),
                                  [&](const auto& asset) {
                                      return std::find(source->second.begin(), source->second.end(), asset.id) !=
                                             source->second.end();
                                  }),
                   assets_.end());
+    const std::vector<std::string> removedIds = source->second;
     sourceAssets_.erase(source);
-    sourceHashes_.erase(path);
+    sourceTexts_.erase(path);
+    sourcePools_ = std::move(candidatePoolSources);
+    for (const auto& id : removedIds) assetSources_.erase(id);
     lastLoadChanged_ = true;
-    return true;
+    return eve::Result<void>::success();
 }
 
-bool DialogueFlow::lintAll() {
+eve::Result<void> DialogueFlow::lintAllChecked() {
     diagnostics_.clear();
-    const bool valid = lintConversationWorkspace(assets_, "<dialogue-workspace>", diagnostics_);
+    bool valid = lintConversationWorkspace(assets_, "<dialogue-workspace>", diagnostics_).ok();
+    for (const auto& asset : assets_) {
+        for (const auto& node : asset.nodes) {
+            const std::string assetPath = asset.id + "/" + node.id;
+            if (node.kind == ConversationAsset::Node::Kind::Line) {
+                if (!node.text.empty() && node.i18nKey.empty())
+                    diagnostics_.push_back({ConversationDiagnostic::Severity::Warning, "<dialogue-workspace>",
+                                            node.sourceLine, "line has display text but no localization key",
+                                            "MissingLocalizationReference", node.sourceColumn, assetPath});
+                if (!node.speaker.empty() && node.voice.empty())
+                    diagnostics_.push_back({ConversationDiagnostic::Severity::Warning, "<dialogue-workspace>",
+                                            node.sourceLine, "spoken line has no voice reference",
+                                            "MissingVoiceReference", node.sourceColumn, assetPath});
+            }
+            if (node.kind == ConversationAsset::Node::Kind::Choice) {
+                for (const auto& route : node.routes)
+                    if (!route.text.empty() && route.i18nKey.empty())
+                        diagnostics_.push_back({ConversationDiagnostic::Severity::Warning, "<dialogue-workspace>",
+                                                route.sourceLine, "choice route has display text but no localization key",
+                                                "MissingLocalizationReference", route.sourceColumn,
+                                                assetPath + "/" + route.id});
+            }
+            if (node.kind != ConversationAsset::Node::Kind::Command) continue;
+            const bool transactional = !node.payment.empty() || !node.stateMutations.empty();
+            const bool legacyHandler = node.commandKind == CommandRequestKind::Operation
+                                           ? static_cast<bool>(operationRequestHandler_)
+                                           : static_cast<bool>(gameplayActionHandler_);
+            bool handled = false;
+            if (!transactional)
+                handled = legacyHandler || manualCommandMode_ || static_cast<bool>(commandParticipantFactory_);
+            else
+                handled = (commandParticipantFactory_ || !node.stateMutations.empty()) &&
+                          (node.stateMutations.empty() || stateMutationProvider_) &&
+                          (node.payment.empty() || commandParticipantFactory_ || !node.stateMutations.empty());
+            if (!handled) {
+                diagnostics_.push_back({ConversationDiagnostic::Severity::Error, "<dialogue-workspace>",
+                                        node.sourceLine, "command has no compatible runtime handler",
+                                        "MissingCommandHandler", node.sourceColumn, assetPath});
+                valid = false;
+            }
+        }
+    }
     failureMessage_  = valid || diagnostics_.empty() ? std::string{} : diagnostics_.front().message;
-    return valid;
+    if (!valid) return flowFailure(eve::DiagnosticCode::InvalidArgument, failureMessage_, "<dialogue-workspace>");
+    return eve::Result<void>::success();
 }
 
-bool DialogueFlow::renameConversation(const std::string& oldId, const std::string& newId) {
-    runner_.stop();
-    if (!renameConversationAsset(assets_, oldId, newId, &failureMessage_)) return false;
+eve::Result<void> DialogueFlow::renameConversationChecked(const std::string& oldId, const std::string& newId) {
+    if (runner_.isActive()) {
+        failureMessage_ = "cannot rename a conversation while a conversation is active";
+        return flowFailure(eve::DiagnosticCode::PreconditionViolation, failureMessage_, oldId);
+    }
+    std::vector<ConversationAsset> candidate = assets_;
+    auto renamed = renameConversationAsset(candidate, oldId, newId);
+    if (!renamed) {
+        failureMessage_ = renamed.status().describe();
+        return eve::Result<void>::failure(renamed.status());
+    }
+    std::vector<ConversationDiagnostic> candidateDiagnostics;
+    if (!lintConversationWorkspace(candidate, "<dialogue-workspace>", candidateDiagnostics)) {
+        diagnostics_ = std::move(candidateDiagnostics);
+        failureMessage_ = diagnostics_.empty() ? "conversation rename validation failed" : diagnostics_.front().message;
+        return flowFailure(eve::DiagnosticCode::InvalidArgument, failureMessage_, oldId);
+    }
+    assets_ = std::move(candidate);
+    if (const auto owner = assetSources_.find(oldId); owner != assetSources_.end()) {
+        const std::string path = owner->second;
+        assetSources_.erase(owner);
+        assetSources_[newId] = path;
+    }
     for (auto& [path, ids] : sourceAssets_)
         for (auto& id : ids)
             if (id == oldId) id = newId;
-    return true;
+    return eve::Result<void>::success();
 }
 
-bool DialogueFlow::renameNode(const std::string& conversationId, const std::string& oldId, const std::string& newId) {
-    runner_.stop();
-    return renameConversationNode(assets_, conversationId, oldId, newId, &failureMessage_);
-}
-
-int DialogueFlow::loadFromDnutFile(const std::string& path) {
-    auto* filesystem = eve::ModuleManager::getInstance<eve::filesystem::Filesystem>("Filesystem");
-    if (!filesystem) filesystem = eve::filesystem::Filesystem::create();
-    eve::filesystem::FileData* data = nullptr;
-    try {
-        data = filesystem->read(path);
-    } catch (...) {
-        delete data;
-        failureMessage_ = path + ": read failed";
-        return 0;
+eve::Result<void> DialogueFlow::renameNodeChecked(const std::string& conversationId, const std::string& oldId,
+                                                  const std::string& newId) {
+    if (runner_.isActive()) {
+        failureMessage_ = "cannot rename a node while a conversation is active";
+        return flowFailure(eve::DiagnosticCode::PreconditionViolation, failureMessage_, conversationId + "/" + oldId);
     }
-    if (!data || !data->getData()) {
-        delete data;
-        failureMessage_ = path + ": read failed";
-        return 0;
+    std::vector<ConversationAsset> candidate = assets_;
+    auto renamed = renameConversationNode(candidate, conversationId, oldId, newId);
+    if (!renamed) {
+        failureMessage_ = renamed.status().describe();
+        return eve::Result<void>::failure(renamed.status());
     }
-    const std::string text(static_cast<const char*>(data->getData()), data->getSize());
-    delete data;
-    return loadFromDnut(text, path);
+    std::vector<ConversationDiagnostic> candidateDiagnostics;
+    if (!lintConversationWorkspace(candidate, "<dialogue-workspace>", candidateDiagnostics)) {
+        diagnostics_ = std::move(candidateDiagnostics);
+        failureMessage_ = diagnostics_.empty() ? "node rename validation failed" : diagnostics_.front().message;
+        return flowFailure(eve::DiagnosticCode::InvalidArgument, failureMessage_, conversationId + "/" + oldId);
+    }
+    assets_ = std::move(candidate);
+    return eve::Result<void>::success();
 }
 
-int DialogueFlow::mergeImported(std::vector<ConversationAsset> imported) {
+int DialogueFlow::loadDnutFileImpl(const std::string& path) {
+    std::string source;
+    if (contentReader_) {
+        auto content = contentReader_(path);
+        if (!content) {
+            failureMessage_ = content.status().describe();
+            return 0;
+        }
+        source = std::move(content).takeValue();
+    } else {
+        auto* filesystem = eve::cap::query<eve::service::IFileSystem>();
+        std::vector<std::uint8_t> bytes;
+        if (!filesystem || !filesystem->readFile(path, bytes)) {
+            failureMessage_ = path + ": dialogue content read failed";
+            return 0;
+        }
+        source.assign(reinterpret_cast<const char*>(bytes.data()), bytes.size());
+    }
+    return loadDnutImpl(source, path);
+}
+
+namespace {
+eve::Result<int> dnutLoadResult(int count, const std::string& error, const std::string& sourceId) {
+    if (count > 0 || error.empty()) return eve::Result<int>::success(count);
+    return eve::Result<int>::failure(eve::Diagnostic::error(
+        eve::DiagnosticCode::Failed, error.empty() ? "dnut load failed" : error, sourceId, {}, "dialogue.dnut"));
+}
+}  // namespace
+
+eve::Result<int> DialogueFlow::loadDnutChecked(const std::string& source, const std::string& sourceId) {
+    return dnutLoadResult(loadDnutImpl(source, sourceId), failureMessage_, sourceId);
+}
+
+eve::Result<int> DialogueFlow::reloadDnutChecked(const std::string& source, const std::string& sourceId) {
+    return dnutLoadResult(reloadDnutImpl(source, sourceId), failureMessage_, sourceId);
+}
+
+eve::Result<int> DialogueFlow::loadDnutFileChecked(const std::string& path) {
+    return dnutLoadResult(loadDnutFileImpl(path), failureMessage_, path);
+}
+
+eve::Result<int> DialogueFlow::mergeImported(std::vector<ConversationAsset> imported) {
     runner_.stop();
     const int count = static_cast<int>(imported.size());
     for (auto& asset : imported) {
@@ -445,34 +661,38 @@ int DialogueFlow::mergeImported(std::vector<ConversationAsset> imported) {
             *it = std::move(asset);
     }
     failureMessage_.clear();
-    return count;
+    return eve::Result<int>::success(count);
 }
 
-int DialogueFlow::importYarn(const std::string& source, const std::string& path) {
-    std::vector<ConversationAsset> imported;
+eve::Result<int> DialogueFlow::importYarnChecked(const std::string& source, const std::string& path) {
     diagnostics_.clear();
-    if (!importYarnConversation(source, path, imported, diagnostics_)) {
+    auto imported = importYarnConversation(source, path, diagnostics_);
+    if (!imported) {
         failureMessage_ = diagnostics_.empty() ? "Yarn import failed" : diagnostics_.front().message;
-        return 0;
+        return eve::Result<int>::failure(imported.status());
     }
-    return mergeImported(std::move(imported));
+    return mergeImported(std::move(imported).takeValue());
 }
 
-int DialogueFlow::importTwee(const std::string& source, const std::string& path) {
-    std::vector<ConversationAsset> imported;
+eve::Result<int> DialogueFlow::importTweeChecked(const std::string& source, const std::string& path) {
     diagnostics_.clear();
-    if (!importTweeConversation(source, path, imported, diagnostics_)) {
+    auto imported = importTweeConversation(source, path, diagnostics_);
+    if (!imported) {
         failureMessage_ = diagnostics_.empty() ? "Twee import failed" : diagnostics_.front().message;
-        return 0;
+        return eve::Result<int>::failure(imported.status());
     }
-    return mergeImported(std::move(imported));
+    return mergeImported(std::move(imported).takeValue());
 }
 
 void DialogueFlow::clear() {
     runner_.stop();
     assets_.clear();
-    sourceHashes_.clear();
+    sourceTexts_.clear();
     sourceAssets_.clear();
+    assetSources_.clear();
+    sourcePools_.clear();
+    if (Dialogue* dialogue = Dialogue::create())
+        dialogue->replacePoolsFromData(DataValue::object({{"pools", DataValue::object({})}}));
     localization_.clear();
     migrations_.clear();
     textRenderer_.clearToneRules();
@@ -492,11 +712,14 @@ bool DialogueFlow::hasConversation(const std::string& id) const { return find(id
 
 std::string DialogueFlow::exportLocalizationCsv() const { return exportConversationLocalizationCsv(assets_); }
 
-int DialogueFlow::importLocalizationCsv(const std::string& csv, const std::string& defaultLocale) {
+eve::Result<int> DialogueFlow::importLocalizationCsvChecked(const std::string& csv,
+                                                            const std::string& defaultLocale) {
     diagnostics_.clear();
     const int count = localization_.importCsv(csv, defaultLocale, diagnostics_);
     failureMessage_ = count > 0 || diagnostics_.empty() ? std::string{} : diagnostics_.front().message;
-    return count;
+    if (!failureMessage_.empty())
+        return flowFailure<int>(eve::DiagnosticCode::ParseError, failureMessage_, "dialogue.localization.csv");
+    return eve::Result<int>::success(count);
 }
 
 std::string DialogueFlow::exportMissingLocalizationCsv(const std::string& locale) const {
@@ -550,10 +773,10 @@ ConversationDocument* DialogueFlow::getDocument(const std::string& id) const {
     return asset ? new ConversationDocument(*asset) : nullptr;
 }
 
-bool DialogueFlow::applyDocument(ConversationDocument* document) {
+eve::Result<void> DialogueFlow::applyDocumentChecked(ConversationDocument* document) {
     if (!document) {
         failureMessage_ = "conversation document must not be null";
-        return false;
+        return flowFailure(eve::DiagnosticCode::InvalidArgument, failureMessage_, "authoring");
     }
     std::vector<ConversationAsset> candidate = assets_;
     const auto existing = std::find_if(candidate.begin(), candidate.end(),
@@ -567,12 +790,25 @@ bool DialogueFlow::applyDocument(ConversationDocument* document) {
         diagnostics_ = std::move(candidateDiagnostics);
         failureMessage_ =
             diagnostics_.empty() ? "conversation document validation failed" : diagnostics_.front().message;
-        return false;
+        return flowFailure(eve::DiagnosticCode::InvalidArgument, failureMessage_, "authoring");
     }
     assets_ = std::move(candidate);
     diagnostics_.clear();
     failureMessage_.clear();
-    return true;
+    return eve::Result<void>::success();
+}
+
+int DialogueFlow::getDiagnosticColumn(int index) const {
+    return index >= 0 && index < getDiagnosticCount() ? diagnostics_[static_cast<size_t>(index)].column : 0;
+}
+
+std::string DialogueFlow::getDiagnosticCode(int index) const {
+    return index >= 0 && index < getDiagnosticCount() ? diagnostics_[static_cast<size_t>(index)].code : std::string{};
+}
+
+std::string DialogueFlow::getDiagnosticAssetPath(int index) const {
+    return index >= 0 && index < getDiagnosticCount() ? diagnostics_[static_cast<size_t>(index)].assetPath
+                                                       : std::string{};
 }
 
 std::string DialogueFlow::getDiagnosticMessage(int index) const {
@@ -596,26 +832,20 @@ eve::Result<void> DialogueFlow::startChecked(const std::string& id, ssq::Object 
     const ConversationAsset* asset = find(id);
     if (!asset)
         return dialogueFailure(eve::DiagnosticCode::NotFound, "conversation was not found: " + id, "dialogue." + id);
-    if (!runner_.start(asset, std::move(converted), &failureMessage_))
-        return dialogueFailure(eve::DiagnosticCode::Failed,
-                               failureMessage_.empty() ? "conversation could not start" : failureMessage_,
-                               "dialogue." + id);
+    auto started = runner_.startChecked(asset, std::move(converted));
+    if (!started) return eve::Result<void>::failure(started.status());
     return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
-}
-
-bool DialogueFlow::start(const std::string& id, ssq::Object bindings) {
-    return startChecked(id, std::move(bindings)).ok();
 }
 
 eve::Result<void> DialogueFlow::advanceChecked() {
-    if (!runner_.advance(&failureMessage_))
-        return dialogueFailure(eve::DiagnosticCode::Failed,
-                               failureMessage_.empty() ? "conversation could not advance" : failureMessage_,
-                               "dialogue.advance");
+    auto advanced = runner_.advanceChecked();
+    if (!advanced) return eve::Result<void>::failure(advanced.status());
     return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
 }
 
-bool DialogueFlow::advance() { return advanceChecked().ok(); }
+eve::Result<void> DialogueFlow::resumeCommandChecked(const std::string& requestId, eve::Value value) {
+    return runner_.resumeCommand(requestId, std::move(value));
+}
 
 eve::Result<void> DialogueFlow::select(const std::string& routeId) {
     const auto* node = runner_.currentNode();
@@ -635,11 +865,9 @@ eve::Result<void> DialogueFlow::select(const std::string& routeId) {
                                "route.stateMutations");
     }
 
-    StateValue before;
-    if (!runner_.captureState(before)) {
-        return dialogueFailure(eve::DiagnosticCode::Failed,
-                               "dialogue choice could not capture its pre-transaction state", "route");
-    }
+    auto captured = runner_.captureStateChecked();
+    if (!captured) return eve::Result<void>::failure(captured.status());
+    StateValue before = std::move(captured).takeValue();
     DialogueSelectionParticipant                            selection(runner_, routeId, std::move(before));
     std::unique_ptr<DialogueStateMutationParticipant>       state;
     std::vector<eve::transaction::ITransactionParticipant*> effects{&selection};
@@ -662,6 +890,12 @@ CommandResponse DialogueFlow::dispatchCommand(const CommandRequest& request) {
     CommandRequestHandler* legacy =
         request.kind == CommandRequestKind::Operation ? &operationRequestHandler_ : &gameplayActionHandler_;
     if (!transactional && *legacy) return (*legacy)(request);
+
+    if (!transactional && manualCommandMode_) {
+        CommandResponse response;
+        response.status = CommandResponse::Status::Blocked;
+        return response;
+    }
 
     if (!transactional && !commandParticipantFactory_) {
         CommandResponse response;
@@ -746,8 +980,13 @@ std::string DialogueFlow::getText() {
     if (!node) return {};
     const std::string localized = localization_.resolveText(node->i18nKey, locale_, node->text);
     return textRenderer_.render(localized, runner_.bindings(), runner_.locals(), [this](const std::string& rule) {
-        const StateValue result = evaluate(rule, runner_.bindings(), runner_.locals());
-        return result.isBool() && result.asBool();
+        auto result = evaluate(rule, runner_.bindings(), runner_.locals());
+        if (!result) {
+            failureMessage_ = result.status().describe();
+            return false;
+        }
+        StateValue value = std::move(result).takeValue();
+        return value.isBool() && value.asBool();
     });
 }
 
@@ -774,17 +1013,20 @@ int DialogueFlow::getRouteCount() const {
 std::string DialogueFlow::getRouteId(int index) const {
     const auto* node = runner_.currentNode();
     return node && index >= 0 && static_cast<size_t>(index) < node->routes.size()
-               ? node->routes[static_cast<size_t>(index)].first
+               ? node->routes[static_cast<size_t>(index)].id
                : std::string{};
 }
 
-bool DialogueFlow::setExpressionEvaluator(ssq::Object fn) {
-    if (!vm_ || fn.getRaw()._type != OT_CLOSURE) return false;
+eve::Result<void> DialogueFlow::setExpressionEvaluatorChecked(ssq::Object fn) {
+    if (!vm_ || fn.getRaw()._type != OT_CLOSURE)
+        return flowFailure(eve::DiagnosticCode::InvalidArgument,
+                           "dialogue expression evaluator must be a closure owned by the active VM",
+                           "dialogue.expressionEvaluator");
     clearExpressionEvaluator();
     evaluator_ = fn.getRaw();
     sq_addref(vm_, &evaluator_);
     hasEvaluator_ = true;
-    return true;
+    return eve::Result<void>::success();
 }
 
 void DialogueFlow::clearExpressionEvaluator() {
@@ -793,11 +1035,16 @@ void DialogueFlow::clearExpressionEvaluator() {
     hasEvaluator_ = false;
 }
 
-StateValue DialogueFlow::evaluate(const std::string& expression, const StateValue& bindings, const StateValue& locals) {
-    if (expression == "else") return StateValue::boolean(true);
-    if (!vm_ || !hasEvaluator_) return StateValue::boolean(false);
+eve::Result<StateValue> DialogueFlow::evaluate(const std::string& expression, const StateValue& bindings,
+                                               const StateValue& locals) {
+    if (expression == "else") return eve::Result<StateValue>::success(StateValue::boolean(true));
+    if (!vm_ || !hasEvaluator_)
+        return eve::Result<StateValue>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Unsupported, "dialogue expression evaluator is not configured", "expression", {},
+            "dialogue.expression"));
     const SQInteger top = sq_gettop(vm_);
     sq_pushobject(vm_, evaluator_);
+    sq_pushroottable(vm_);
     sq_newtable(vm_);
     sq_pushstring(vm_, "expression", -1);
     sq_pushstring(vm_, expression.c_str(), expression.size());
@@ -808,34 +1055,62 @@ StateValue DialogueFlow::evaluate(const std::string& expression, const StateValu
     sq_pushstring(vm_, "locals", -1);
     pushState(vm_, locals);
     sq_newslot(vm_, -3, SQFalse);
-    if (SQ_FAILED(sq_call(vm_, 1, SQTrue, SQTrue))) {
+    if (SQ_FAILED(sq_call(vm_, 2, SQTrue, SQTrue))) {
         sq_settop(vm_, top);
-        return StateValue::boolean(false);
+        return eve::Result<StateValue>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Failed, "dialogue expression evaluator raised an exception", "expression", {},
+            "dialogue.expression"));
     }
     StateValue result;
-    if (!squirrelToState(vm_, -1, result)) result = StateValue::boolean(false);
+    if (!squirrelToState(vm_, -1, result)) {
+        sq_settop(vm_, top);
+        return eve::Result<StateValue>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "dialogue expression returned an unsupported value", "expression",
+            {}, "dialogue.expression"));
+    }
     sq_settop(vm_, top);
-    return result;
+    return eve::Result<StateValue>::success(std::move(result));
 }
 
-bool DialogueFlow::restoreState(const StateValue& in, std::string* error) { return runner_.restoreState(in, error); }
-
-std::string DialogueFlow::captureStateJson() const {
-    StateValue state;
-    if (!runner_.captureState(state)) return {};
-    return conversationStateToJson(state);
+std::string DialogueFlow::getRouteText(int index) const {
+    const auto* node = runner_.currentNode();
+    if (!node || index < 0 || static_cast<size_t>(index) >= node->routes.size()) return {};
+    const auto& route = node->routes[static_cast<size_t>(index)];
+    return localization_.resolveText(route.i18nKey, locale_, route.text.empty() ? route.id : route.text);
 }
 
-bool DialogueFlow::restoreStateJson(const std::string& json) {
-    StateValue state;
-    if (!conversationStateFromJson(json, state, &failureMessage_)) return false;
-    if (!migrations_.migrate(state, [this](const std::string& id) { return find(id); }, &failureMessage_)) return false;
-    return runner_.restoreState(state, &failureMessage_);
+void DialogueFlow::setManualCommandMode(bool enabled) {
+    manualCommandMode_ = enabled;
+    if (operationRequestHandler_ || gameplayActionHandler_ || commandParticipantFactory_ || stateMutationProvider_ ||
+        manualCommandMode_)
+        runner_.setCommandRequestDispatcher([this](const CommandRequest& request) { return dispatchCommand(request); });
+    else
+        runner_.clearCommandRequestDispatcher();
 }
 
-bool DialogueFlow::registerMigration(const std::string& assetId, int fromVersion, const std::string& currentAssetId,
-                                     const std::string& nodeMap) {
-    return migrations_.registerMigration(assetId, fromVersion, currentAssetId, nodeMap, &failureMessage_);
+eve::Result<void> DialogueFlow::restoreStateChecked(const StateValue& in) {
+    return runner_.restoreStateChecked(in);
+}
+
+eve::Result<std::string> DialogueFlow::captureStateJsonChecked() const {
+    auto captured = runner_.captureStateChecked();
+    if (!captured) return eve::Result<std::string>::failure(captured.status());
+    return conversationStateToJson(std::move(captured).takeValue());
+}
+
+eve::Result<void> DialogueFlow::restoreStateJsonChecked(const std::string& json) {
+    auto parsed = conversationStateFromJson(json);
+    if (!parsed) return eve::Result<void>::failure(parsed.status());
+    auto migrated = migrations_.migrate(std::move(parsed).takeValue(),
+                                        [this](const std::string& id) { return find(id); });
+    if (!migrated) return eve::Result<void>::failure(migrated.status());
+    return runner_.restoreStateChecked(std::move(migrated).takeValue());
+}
+
+eve::Result<void> DialogueFlow::registerMigrationChecked(const std::string& assetId, int fromVersion,
+                                                         const std::string& currentAssetId,
+                                                         const std::string& nodeMap) {
+    return migrations_.registerMigration(assetId, fromVersion, currentAssetId, nodeMap);
 }
 
 void DialogueFlow::addToneRule(const std::string& expression, const std::string& prefix, const std::string& suffix,
@@ -890,15 +1165,48 @@ void DialogueFlow::expose(ssq::Table& table) {
 
 void DialogueFlow::expose(ssq::Class& cls) {
     cls.addFunc("getName", &DialogueFlow::getName);
-    cls.addFunc("loadFromDnut", &DialogueFlow::loadFromDnut);
-    cls.addFunc("reloadFromDnut", &DialogueFlow::reloadFromDnut);
-    cls.addFunc("loadFromDnutFile", &DialogueFlow::loadFromDnutFile);
-    cls.addFunc("importYarn", &DialogueFlow::importYarn);
-    cls.addFunc("importTwee", &DialogueFlow::importTwee);
-    cls.addFunc("removeSource", &DialogueFlow::removeSource);
-    cls.addFunc("lintAll", &DialogueFlow::lintAll);
-    cls.addFunc("renameConversation", &DialogueFlow::renameConversation);
-    cls.addFunc("renameNode", &DialogueFlow::renameNode);
+    const auto projectCount = [](int count) { return eve::Value(count); };
+    cls.addFunc("loadDnutChecked", [vm = cls.getHandle(), projectCount](DialogueFlow* value,
+                                                                        const std::string& source,
+                                                                        const std::string& sourceId) {
+        return eve::script::projectResult(vm, value->loadDnutChecked(source, sourceId), projectCount);
+    });
+    cls.addFunc("reloadDnutChecked", [vm = cls.getHandle(), projectCount](DialogueFlow* value,
+                                                                          const std::string& source,
+                                                                          const std::string& sourceId) {
+        return eve::script::projectResult(vm, value->reloadDnutChecked(source, sourceId), projectCount);
+    });
+    cls.addFunc("loadDnutFileChecked", [vm = cls.getHandle(), projectCount](DialogueFlow* value,
+                                                                            const std::string& path) {
+        return eve::script::projectResult(vm, value->loadDnutFileChecked(path), projectCount);
+    });
+    cls.addFunc("importYarnChecked", [vm = cls.getHandle(), projectCount](DialogueFlow* value,
+                                                                          const std::string& source,
+                                                                          const std::string& path) {
+        return eve::script::projectResult(vm, value->importYarnChecked(source, path), projectCount);
+    });
+    cls.addFunc("importTweeChecked", [vm = cls.getHandle(), projectCount](DialogueFlow* value,
+                                                                          const std::string& source,
+                                                                          const std::string& path) {
+        return eve::script::projectResult(vm, value->importTweeChecked(source, path), projectCount);
+    });
+    cls.addFunc("removeSourceChecked", [vm = cls.getHandle()](DialogueFlow* value, const std::string& path) {
+        return eve::script::projectResult(vm, value->removeSourceChecked(path));
+    });
+    cls.addFunc("lintAllChecked", [vm = cls.getHandle()](DialogueFlow* value) {
+        return eve::script::projectResult(vm, value->lintAllChecked());
+    });
+    cls.addFunc("renameConversationChecked", [vm = cls.getHandle()](DialogueFlow* value,
+                                                                     const std::string& oldId,
+                                                                     const std::string& newId) {
+        return eve::script::projectResult(vm, value->renameConversationChecked(oldId, newId));
+    });
+    cls.addFunc("renameNodeChecked", [vm = cls.getHandle()](DialogueFlow* value,
+                                                             const std::string& conversationId,
+                                                             const std::string& oldId,
+                                                             const std::string& newId) {
+        return eve::script::projectResult(vm, value->renameNodeChecked(conversationId, oldId, newId));
+    });
     cls.addFunc("getLastLoadChanged", &DialogueFlow::getLastLoadChanged);
     cls.addFunc("clear", &DialogueFlow::clear);
     cls.addFunc("getConversationCount", &DialogueFlow::getConversationCount);
@@ -906,7 +1214,11 @@ void DialogueFlow::expose(ssq::Class& cls) {
                 static_cast<std::string (DialogueFlow::*)(int) const>(&DialogueFlow::getConversationId));
     cls.addFunc("hasConversation", &DialogueFlow::hasConversation);
     cls.addFunc("exportLocalizationCsv", &DialogueFlow::exportLocalizationCsv);
-    cls.addFunc("importLocalizationCsv", &DialogueFlow::importLocalizationCsv);
+    cls.addFunc("importLocalizationCsvChecked", [vm = cls.getHandle()](DialogueFlow* value, const std::string& csv,
+                                                                        const std::string& defaultLocale) {
+        return eve::script::projectResult(vm, value->importLocalizationCsvChecked(csv, defaultLocale),
+                                          [](int count) { return eve::Value(count); });
+    });
     cls.addFunc("exportMissingLocalizationCsv", &DialogueFlow::exportMissingLocalizationCsv);
     cls.addFunc("exportVoiceRecordingCsv", &DialogueFlow::exportVoiceRecordingCsv);
     cls.addFunc("validateLocalization", [vm = cls.getHandle()](DialogueFlow* value, eve::i18n::I18n* localization,
@@ -927,12 +1239,16 @@ void DialogueFlow::expose(ssq::Class& cls) {
     cls.addFunc("getDiagnosticSeverity", &DialogueFlow::getDiagnosticSeverity);
     cls.addFunc("getDiagnosticPath", &DialogueFlow::getDiagnosticPath);
     cls.addFunc("getDiagnosticLine", &DialogueFlow::getDiagnosticLine);
+    cls.addFunc("getDiagnosticColumn", &DialogueFlow::getDiagnosticColumn);
+    cls.addFunc("getDiagnosticCode", &DialogueFlow::getDiagnosticCode);
+    cls.addFunc("getDiagnosticAssetPath", &DialogueFlow::getDiagnosticAssetPath);
     cls.addFunc("getDiagnosticMessage", &DialogueFlow::getDiagnosticMessage);
     cls.addFunc("newDocument", &DialogueFlow::newDocument);
     cls.addFunc("getDocument", &DialogueFlow::getDocument);
-    cls.addFunc("applyDocument", &DialogueFlow::applyDocument);
-    cls.addFunc("start", &DialogueFlow::start);
-    cls.addFunc("advance", &DialogueFlow::advance);
+    cls.addFunc("applyDocumentChecked", [vm = cls.getHandle()](DialogueFlow* value,
+                                                                ConversationDocument* document) {
+        return eve::script::projectResult(vm, value->applyDocumentChecked(document));
+    });
     cls.addFunc(
         "startChecked", [vm = cls.getHandle()](DialogueFlow* value, const std::string& id, ssq::Object bindings) {
             if (!value)
@@ -946,6 +1262,18 @@ void DialogueFlow::expose(ssq::Class& cls) {
                                                                   "dialogue flow must not be null", "dialogue"));
         return eve::script::projectResult(vm, value->advanceChecked());
     });
+    cls.addFunc("resumeCommandChecked", [vm = cls.getHandle()](DialogueFlow* value,
+                                                               const std::string& requestId,
+                                                               ssq::Object result) {
+        if (!value)
+            return eve::script::projectResult(vm, dialogueFailure(eve::DiagnosticCode::InvalidArgument,
+                                                                  "dialogue flow must not be null", "dialogue"));
+        auto converted = eve::script::valueFromSquirrel(result, {.source = "dialogue.resumeCommand"});
+        if (!converted)
+            return eve::script::projectResult(vm, eve::Result<void>::failure(converted.status()));
+        return eve::script::projectResult(vm,
+                                          value->resumeCommandChecked(requestId, std::move(converted).takeValue()));
+    });
     cls.addFunc("select", [vm = cls.getHandle()](DialogueFlow* value, const std::string& routeId) {
         if (!value)
             return eve::script::projectResult(vm, dialogueFailure(eve::DiagnosticCode::InvalidArgument,
@@ -957,6 +1285,7 @@ void DialogueFlow::expose(ssq::Class& cls) {
     cls.addFunc("getActiveConversationId",
                 static_cast<std::string (DialogueFlow::*)() const>(&DialogueFlow::getConversationId));
     cls.addFunc("getNodeId", &DialogueFlow::getNodeId);
+    cls.addFunc("getPendingCommandRequestId", &DialogueFlow::getPendingCommandRequestId);
     cls.addFunc("getNodeKind", &DialogueFlow::getNodeKind);
     cls.addFunc("getSpeaker", &DialogueFlow::getSpeaker);
     cls.addFunc("getText", &DialogueFlow::getText);
@@ -967,11 +1296,26 @@ void DialogueFlow::expose(ssq::Class& cls) {
     cls.addFunc("getVoiceDuration", &DialogueFlow::getVoiceDuration);
     cls.addFunc("getRouteCount", &DialogueFlow::getRouteCount);
     cls.addFunc("getRouteId", &DialogueFlow::getRouteId);
-    cls.addFunc("setExpressionEvaluator", &DialogueFlow::setExpressionEvaluator);
+    cls.addFunc("getRouteText", &DialogueFlow::getRouteText);
+    cls.addFunc("setManualCommandMode", &DialogueFlow::setManualCommandMode);
+    cls.addFunc("setExpressionEvaluatorChecked", [vm = cls.getHandle()](DialogueFlow* value, ssq::Object fn) {
+        return eve::script::projectResult(vm, value->setExpressionEvaluatorChecked(fn));
+    });
     cls.addFunc("clearExpressionEvaluator", &DialogueFlow::clearExpressionEvaluator);
-    cls.addFunc("captureStateJson", &DialogueFlow::captureStateJson);
-    cls.addFunc("restoreStateJson", &DialogueFlow::restoreStateJson);
-    cls.addFunc("registerMigration", &DialogueFlow::registerMigration);
+    cls.addFunc("captureStateJsonChecked", [vm = cls.getHandle()](DialogueFlow* value) {
+        return eve::script::projectResult(vm, value->captureStateJsonChecked(),
+                                          [](std::string json) { return eve::Value(std::move(json)); });
+    });
+    cls.addFunc("restoreStateJsonChecked", [vm = cls.getHandle()](DialogueFlow* value, const std::string& json) {
+        return eve::script::projectResult(vm, value->restoreStateJsonChecked(json));
+    });
+    cls.addFunc("registerMigrationChecked", [vm = cls.getHandle()](DialogueFlow* value,
+                                                                    const std::string& assetId, int fromVersion,
+                                                                    const std::string& currentAssetId,
+                                                                    const std::string& nodeMap) {
+        return eve::script::projectResult(
+            vm, value->registerMigrationChecked(assetId, fromVersion, currentAssetId, nodeMap));
+    });
     cls.addFunc("clearMigrations", &DialogueFlow::clearMigrations);
     cls.addFunc("addToneRule", &DialogueFlow::addToneRule);
     cls.addFunc("clearToneRules", &DialogueFlow::clearToneRules);

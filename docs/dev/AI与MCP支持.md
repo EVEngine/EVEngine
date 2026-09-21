@@ -62,6 +62,7 @@ MCP listening on 127.0.0.1:7529 (newline JSON-RPC; use tools/eve-mcp for Cursor 
 | 名称 | 用途 |
 |------|------|
 | `eve_status` | 附着 / 暂停 / 端口 / callgraph 摘要 |
+| `eve_api_search` / `eve_api_get` | 查询本构建的 EveScript Binding Contracts（先查再写脚本；见 [AI 知识补偿](AI知识补偿.md)） |
 | `eve_ui_tree` / `eve_ui_get` / `eve_ui_click` | 普通游戏 retained UI 的语义树查询、控件状态读取和按 ID 点击；与 `eve_host_*` 编辑器宿主互补 |
 | `eve_eval` | 求值表达式 |
 | `eve_pause` / `eve_continue` / `eve_step_*` | 运行控制 |
@@ -439,9 +440,11 @@ passing evidence 才能完成；失败可显式进入 Recover 后回到 Modify/R
 `eve_renderable3d_get` 用完整的 `entityId` + `generation` 返回 live Renderable3D 的位置、
 字段材质和渲染开关；旧 generation 返回 `status: stale`，Agent 应重新获取当前 identity，
 而不是继续向已复用的 entity id 提交事务。
-`eve_editor_target_create` 的 `type` 支持 `scene`、`material`、`scene-host` 和
-`material-renderable3d`；前两者创建由 Editor 持有的 document，`scene-host` 必须提供已有
-SceneHost 的 `host` 名称，`material-renderable3d` 必须提供运行中 Renderable3D 的
+`eve_editor_target_create` 的 `type` 是**运行期发现**的：先调用 `eve_editor_target_list` 读它返回的
+`supportedTypes`（内建为 `scene`、`material`、`scene-host` 和 `material-renderable3d`，工程脚本注册的适配器
+还会追加自己的类型，例如 `archspace`、tile layer、height map、voxel world），不要假设固定集合；同一个响应
+也会列出脚本已创建并绑定的 target id，这是获知这些 id 的唯一途径。前两者创建由 Editor 持有的 document，
+`scene-host` 必须提供已有 SceneHost 的 `host` 名称，`material-renderable3d` 必须提供运行中 Renderable3D 的
 `entityId` 与 `generation`。live target 只借用 ECS 对象，关闭 target 不会销毁 host 或
 renderable；实体被销毁、generation 不匹配、graphics/scene 模块被裁剪时会返回结构化
 `conflict` / `unsupported` / `not-found`。当前 live material 只接受没有 packed Material、
@@ -542,7 +545,7 @@ level 为 `engine`、detach 后关闭捕获）、`devtools.mcp.engineLineDropsSc
 - 3D 物理世界与 Box3D 工具（当前仅 2D World）
 - 音频波形 / 素材来源加载类工具（当前为主音量、停止控制）
 - 与 `eve test` 场景脚本联动的 MCP 资源
-- AI 生成内容的静态校验（nut AST / 资源清单）
+- AI 生成内容的静态校验（nut AST / 资源清单；API 目录查询已由 `eve_api_search` 覆盖）
 - 编辑器 JSON：更多控件（image/视频预览、节点图）、多 OS 窗口、编辑器间拖拽
 - 玩法域：`npc_ai` 需要先有模块实例与脚本面（`NpcAiWorld` 目前只在模块内部与 editor 中被引用），
   之后才有「游戏能发布 agent」的挂点

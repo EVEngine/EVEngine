@@ -2,6 +2,7 @@
 #include "asset/AssetMigration.h"
 #include "asset/CanonicalImageCook.h"
 #include "asset/CanonicalPcgCook.h"
+#include "asset/CanonicalVolumeTextureCook.h"
 #include "asset/ShaderAsset.h"
 
 #include "asset/EvpackCompression.h"
@@ -231,9 +232,9 @@ Result<AssetCookReceipt> cookEvaToEvpack(const EvaArchive& source, const AssetCo
             if (std::find(profile.variant.textureFamilies.begin(),
                           profile.variant.textureFamilies.end(), "rgba8") ==
                 profile.variant.textureFamilies.end())
-                return cookFailure<AssetCookReceipt>(
-                    DiagnosticCode::Unsupported,
-                    "eve.image/2 requires an explicit rgba8 target texture family", asset.definition);
+                return cookFailure<AssetCookReceipt>(DiagnosticCode::Unsupported,
+                                                     "eve.image/3 requires an explicit rgba8 target texture family",
+                                                     asset.definition);
             auto parsedDefinition = Value::fromJson(std::string_view(
                 reinterpret_cast<const char*>(definition->bytes.data()), definition->bytes.size()));
             if (!parsedDefinition)
@@ -242,14 +243,12 @@ Result<AssetCookReceipt> cookEvaToEvpack(const EvaArchive& source, const AssetCo
             const Value* blobValue = definitionObject ? field(*definitionObject, "blob") : nullptr;
             if (!blobValue || !blobValue->isString())
                 return cookFailure<AssetCookReceipt>(DiagnosticCode::ParseError,
-                                                     "eve.image/2 source blob path is missing",
-                                                     asset.definition);
+                                                     "eve.image/3 source blob path is missing", asset.definition);
             const auto sourceBlob = std::lower_bound(
                 canonical.entries.begin(), canonical.entries.end(), blobValue->asString(),
                 [](const EvaArchiveEntry& entry, std::string_view path) { return entry.path < path; });
             if (sourceBlob == canonical.entries.end() || sourceBlob->path != blobValue->asString())
-                return cookFailure<AssetCookReceipt>(DiagnosticCode::NotFound,
-                                                     "eve.image/2 source blob is missing",
+                return cookFailure<AssetCookReceipt>(DiagnosticCode::NotFound, "eve.image/3 source blob is missing",
                                                      blobValue->asString());
             auto image = cookCanonicalImageRgba8(definition->bytes, sourceBlob->bytes,
                                                  evpackLimits.maximumChunkBytes);
@@ -266,6 +265,39 @@ Result<AssetCookReceipt> cookEvaToEvpack(const EvaArchive& source, const AssetCo
                                     EvpackChunkKind::Bulk, 1, EvpackCodec::None,
                                     profile.bulkAlignment, dependencies,
                                     std::move(image).takeValue().bulk});
+            continue;
+        }
+        if (asset.type == "eve.volume-texture") {
+            if (std::find(profile.variant.textureFamilies.begin(), profile.variant.textureFamilies.end(), "rgba8") ==
+                profile.variant.textureFamilies.end())
+                return cookFailure<AssetCookReceipt>(
+                    DiagnosticCode::Unsupported,
+                    "eve.volume-texture/1 requires an explicit rgba8 target texture family", asset.definition);
+            auto parsedDefinition = Value::fromJson(
+                std::string_view(reinterpret_cast<const char*>(definition->bytes.data()), definition->bytes.size()));
+            if (!parsedDefinition) return Result<AssetCookReceipt>::failure(parsedDefinition.status());
+            const auto*  definitionObject = parsedDefinition.value().getIf<Value::Object>();
+            const Value* blobValue        = definitionObject ? field(*definitionObject, "blob") : nullptr;
+            if (!blobValue || !blobValue->isString())
+                return cookFailure<AssetCookReceipt>(
+                    DiagnosticCode::ParseError, "eve.volume-texture/1 source blob path is missing", asset.definition);
+            const auto sourceBlob =
+                std::lower_bound(canonical.entries.begin(), canonical.entries.end(), blobValue->asString(),
+                                 [](const EvaArchiveEntry& entry, std::string_view path) { return entry.path < path; });
+            if (sourceBlob == canonical.entries.end() || sourceBlob->path != blobValue->asString())
+                return cookFailure<AssetCookReceipt>(
+                    DiagnosticCode::NotFound, "eve.volume-texture/1 source blob is missing", blobValue->asString());
+            auto volume =
+                cookCanonicalVolumeTextureRgba8(definition->bytes, sourceBlob->bytes, evpackLimits.maximumChunkBytes);
+            if (!volume) return Result<AssetCookReceipt>::failure(volume.status());
+            auto runtimeDefinition =
+                binaryDefinition(volume.value().definition, evpackLimits.maximumChunkBytes, assetDependencyPolicies);
+            if (!runtimeDefinition) return Result<AssetCookReceipt>::failure(runtimeDefinition.status());
+            build.chunks.push_back({asset.asset.id(), asset.type, asset.schemaVersion, 0, EvpackChunkKind::Definition,
+                                    0, profile.chunkCodec, 8, dependencies, std::move(runtimeDefinition).takeValue()});
+            build.chunks.push_back({asset.asset.id(), asset.type, asset.schemaVersion, 0, EvpackChunkKind::Bulk, 1,
+                                    EvpackCodec::None, profile.bulkAlignment, dependencies,
+                                    std::move(volume).takeValue().bulk});
             continue;
         }
         if (asset.type == "eve.pcg-graph") {

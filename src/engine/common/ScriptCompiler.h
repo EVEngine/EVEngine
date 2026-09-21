@@ -6,6 +6,7 @@
 
 #include <simplesquirrel/script.hpp>
 
+#include <cstddef>
 #include <cstdint>
 #include <memory>
 #include <optional>
@@ -140,6 +141,17 @@ struct EVENGINE_API BindingContract {
 
     /** @brief Stable lookup key in the form module/class.method. */
     std::string key() const;
+    /**
+     * @brief Compact JSON object for one contract (`eve.binding-api` item).
+     * @return UTF-8 JSON object with key, signatures, ownership and source.
+     */
+    std::string toJson() const;
+};
+
+/** @brief Ranked Binding Contract hit from text search. */
+struct EVENGINE_API BindingSearchHit {
+    BindingContract contract;
+    int             score = 0;
 };
 
 /** @brief Registry consumed by compiler checks and tooling protocol adapters. */
@@ -177,6 +189,16 @@ public:
     bool hasScriptClass(std::string_view scriptClass) const noexcept;
     /** @brief Returns a stable snapshot sorted by contract key. */
     std::vector<BindingContract> snapshot() const;
+    /**
+     * @brief Ranked substring/token search over keys, classes, methods and documentation ids.
+     * @param query Case-insensitive text; space-separated tokens must all match.
+     * @param moduleFilter Optional exact module id (case-insensitive).
+     * @param classFilter Optional exact script class (case-insensitive).
+     * @param limit Maximum hits; 0 uses 20, values above 64 are clamped to 64.
+     * @return Hits sorted by score descending then key ascending.
+     */
+    std::vector<BindingSearchHit> search(std::string_view query, std::string_view moduleFilter = {},
+                                         std::string_view classFilter = {}, size_t limit = 20) const;
 
 private:
     struct Storage {

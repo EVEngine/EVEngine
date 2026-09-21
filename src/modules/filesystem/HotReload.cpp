@@ -36,6 +36,7 @@
 #include <fstream>
 #include <sstream>
 #include <string>
+#include <system_error>
 #include <vector>
 
 namespace eve::filesystem {
@@ -45,6 +46,165 @@ std::string joinDir(const std::string &dir, const std::string &name) {
     if (dir.empty() || dir == ".") return name;
     if (dir.back() == '/' || dir.back() == '\\') return dir + name;
     return dir + "/" + name;
+}
+
+std::filesystem::path pathFromUtf8(const std::string &text) {
+    const auto *data = reinterpret_cast<const char8_t *>(text.data());
+    return std::filesystem::path(std::u8string_view(data, text.size()));
+}
+
+std::string pathToUtf8(const std::filesystem::path &p) {
+    auto u8 = p.u8string();
+    return std::string(reinterpret_cast<const char *>(u8.data()), u8.size());
+}
+
+bool looksAbsoluteOs(const std::string &path) {
+    if (path.empty()) return false;
+    if (path[0] == '/' || path[0] == '\\') return true;
+#ifdef _WIN32
+    if (path.size() >= 2 && path[1] == ':') return true;
+#endif
+    return false;
+}
+
+bool hasParentSegment(const std::string &path) {
+    if (path == "..") return true;
+    if (path.size() >= 3 && (path.compare(0, 3, "../") == 0 || path.compare(0, 3, "..\\") == 0))
+        return true;
+    return path.find("/..") != std::string::npos || path.find("\\..") != std::string::npos;
+}
+
+bool skipWatchDirName(const std::string &name) {
+    return name == ".git" || name == "build" || name == "third-party" || name == "node_modules" ||
+           name == ".cursor" || name == ".local-debug" || name == "CMakeFiles";
+}
+
+std::string posixRelative(const std::filesystem::path &dir, const std::filesystem::path &root) {
+    std::error_code ec;
+    auto rel = std::filesystem::relative(dir, root, ec);
+    if (ec) return {};
+    std::string s = rel.generic_string();
+    if (s.empty()) return ".";
+    return s;
+}
+
+bool isPathPrefix(const std::filesystem::path &prefix, const std::filesystem::path &full) {
+    std::error_code ec;
+    auto a = std::filesystem::weakly_canonical(prefix, ec);
+    if (ec) a = prefix.lexically_normal();
+    auto b = std::filesystem::weakly_canonical(full, ec);
+    if (ec) b = full.lexically_normal();
+    std::string as = a.generic_string();
+    std::string bs = b.generic_string();
+    if (as.size() > bs.size()) return false;
+#ifdef _WIN32
+    for (char &ch : as) ch = static_cast<char>(std::tolower(static_cast<unsigned char>(ch)));
+    for (char &ch : bs) ch = static_cast<char>(std::tolower(static_cast<unsigned char>(ch)));
+#endif
+    if (bs.compare(0, as.size(), as) != 0) return false;
+    return bs.size() == as.size() || bs[as.size()] == '/';
+}
+
+int watchTreeVfs(Filesystem *fs, const std::string &root) {
+    int added = 0;
+    std::vector<std::string> stack;
+    stack.push_back(root == "." ? std::string(".") : root);
+
+    while (!stack.empty()) {
+        std::string dir = stack.back();
+        stack.pop_back();
+        if (fs->watch(dir)) ++added;
+
+        std::vector<std::string> items;
+        try {
+            if (dir == "." || dir.empty())
+                items = fs->getDirectoryItems("");
+            else
+                items = fs->getDirectoryItems(dir);
+        } catch (...) {
+            continue;
+        }
+
+        for (const auto &item : items) {
+            if (item.empty() || item == "." || item == "..") continue;
+            const std::string child = (dir == "." || dir.empty()) ? item : joinDir(dir, item);
+            Filesystem::Info info{};
+            if (!fs->getInfo(child, info)) continue;
+            if (info.type == "directory") stack.push_back(child);
+        }
+    }
+    return added;
+}
+
+int watchTreeOs(Filesystem *fs, const std::filesystem::path &realRoot) {
+    std::error_code ec;
+    if (!std::filesystem::is_directory(realRoot, ec)) return 0;
+
+    const auto cwd = pathFromUtf8(fs->getWorkingDirectory());
+    auto reportFor = [&](const std::filesystem::path &dir) -> std::string {
+        std::error_code canonEc;
+        auto d = std::filesystem::weakly_canonical(dir, canonEc);
+        if (canonEc) d = dir;
+        auto c = std::filesystem::weakly_canonical(cwd, canonEc);
+        if (canonEc) c = cwd;
+        if (isPathPrefix(c, d)) {
+            const std::string rel = posixRelative(d, c);
+            return rel.empty() ? "." : rel;
+        }
+        const std::string rel = posixRelative(d, realRoot);
+        return rel.empty() ? "." : rel;
+    };
+
+    int added = 0;
+    if (fs->watchRealDirectory(pathToUtf8(realRoot), reportFor(realRoot)).ok()) ++added;
+
+    auto it = std::filesystem::recursive_directory_iterator(
+        realRoot, std::filesystem::directory_options::skip_permission_denied, ec);
+    const auto end = std::filesystem::recursive_directory_iterator();
+    for (; it != end; it.increment(ec)) {
+        if (ec) {
+            ec.clear();
+            continue;
+        }
+        std::error_code dirEc;
+        if (!it->is_directory(dirEc)) continue;
+        const auto name = it->path().filename().string();
+        if (name.empty() || name == "." || name == ".." || skipWatchDirName(name)) {
+            it.disable_recursion_pending();
+            continue;
+        }
+        const auto &dir = it->path();
+        // When watching a parent workflow, skip sibling apps (apps/battle while
+        // running apps/skill) but keep the current working directory.
+        if (isPathPrefix(realRoot, cwd)) {
+            const auto appsDir = cwd.parent_path();
+            if (isPathPrefix(appsDir, dir) && !isPathPrefix(dir, appsDir) && !isPathPrefix(cwd, dir)) {
+                it.disable_recursion_pending();
+                continue;
+            }
+        }
+        const std::string report = reportFor(dir);
+        if (report.empty() || report.find("..") != std::string::npos) continue;
+        if (fs->watchRealDirectory(pathToUtf8(dir), report).ok()) ++added;
+    }
+    return added;
+}
+
+bool resolveOsWatchRoot(Filesystem *fs, const std::string &root, std::filesystem::path &out) {
+    std::error_code ec;
+    std::filesystem::path candidate;
+    if (root == "." || root == "./") {
+        candidate = pathFromUtf8(fs->getWorkingDirectory());
+    } else if (looksAbsoluteOs(root)) {
+        candidate = pathFromUtf8(root);
+    } else {
+        candidate = pathFromUtf8(fs->getWorkingDirectory()) / pathFromUtf8(root);
+    }
+    auto canonical = std::filesystem::weakly_canonical(candidate, ec);
+    if (ec) return false;
+    if (!std::filesystem::is_directory(canonical, ec)) return false;
+    out = canonical;
+    return true;
 }
 
 // --- Remote sync helpers ---
@@ -161,34 +321,15 @@ int HotReload::watchTree(std::string root) {
     root = normalizePath(std::move(root));
     if (root.empty()) root = ".";
 
-    int added = 0;
-    std::vector<std::string> stack;
-    stack.push_back(root == "." ? std::string(".") : root);
+    Filesystem::Info info{};
+    const bool vfsDir = (root == "." || root == "./") ||
+                        (!looksAbsoluteOs(root) && !hasParentSegment(root) && fs->getInfo(root, info) &&
+                         info.type == "directory");
+    if (vfsDir) return watchTreeVfs(fs, root);
 
-    while (!stack.empty()) {
-        std::string dir = stack.back();
-        stack.pop_back();
-        if (fs->watch(dir)) ++added;
-
-        std::vector<std::string> items;
-        try {
-            if (dir == "." || dir.empty())
-                items = fs->getDirectoryItems("");
-            else
-                items = fs->getDirectoryItems(dir);
-        } catch (...) {
-            continue;
-        }
-
-        for (const auto &item : items) {
-            if (item.empty() || item == "." || item == "..") continue;
-            const std::string child = (dir == "." || dir.empty()) ? item : joinDir(dir, item);
-            Filesystem::Info info{};
-            if (!fs->getInfo(child, info)) continue;
-            if (info.type == "directory") stack.push_back(child);
-        }
-    }
-    return added;
+    std::filesystem::path realRoot;
+    if (!resolveOsWatchRoot(fs, root, realRoot)) return 0;
+    return watchTreeOs(fs, realRoot);
 }
 
 bool HotReload::watchNewDirectory(std::string path) {
@@ -198,8 +339,13 @@ bool HotReload::watchNewDirectory(std::string path) {
     if (path.empty()) return false;
 
     Filesystem::Info info{};
-    if (!fs->getInfo(path, info) || info.type != "directory") return false;
-    watchTree(path);
+    if (fs->getInfo(path, info) && info.type == "directory") {
+        watchTree(path);
+        return true;
+    }
+    std::filesystem::path real;
+    if (!resolveOsWatchRoot(fs, path, real)) return false;
+    watchTreeOs(fs, real);
     return true;
 }
 

@@ -529,8 +529,8 @@ image::ImageData *Graphics::readDecalLayerToImageData(const std::string &attachm
     if (!initialized) return nullptr;
     auto *slot = currentDecalSlot();
     auto *gslot = currentGBufferSlot();
-    if (!slot || !gslot || !slot->framebuffer || !decalPipeline || !decalRenderPass ||
-        !gbufferPipeline || !gbufferRenderPass || !gslot->framebuffer)
+    if (!slot || !gslot || !slot->framebuffer || !decalPipeline || !decalRenderPass || !gbufferPipeline ||
+        !gbufferRenderPass || !gslot->framebuffer)
         return nullptr;
     vkb::ColorTarget *src = nullptr;
     if (attachment == "normal")

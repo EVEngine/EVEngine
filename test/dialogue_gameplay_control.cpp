@@ -77,7 +77,9 @@ struct DialogueFixture {
         flow = eve::dialogue::DialogueFlow::create();
         REQUIRE(flow != nullptr);
         flow->clearGameplayControls();
-        REQUIRE_EQ(flow->loadFromDnut(kConversation, "greeting.dnut"), 1);
+        const auto loaded = flow->loadDnutChecked(kConversation, "greeting.dnut");
+        REQUIRE(loaded.ok());
+        REQUIRE_EQ(loaded.value(), 1);
         instance             = subject(kInstanceId);
         owner                = subject(kOwnerId);
         const auto published = flow->publishGameplay(kInstanceId, kOwnerId);

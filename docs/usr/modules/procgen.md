@@ -22,6 +22,29 @@ C++ render bridge 的 borrowed 边界，不是 Squirrel 的第二套生成入口
 Procgen 不提供 `lastError()`、`*Owned` 或 `*Checked` 的兼容命名。Result 的 `value`
 可以是由 generation handle 支持的 owned proxy，释放和 stale 检查遵循该 proxy 的
 公共方法。
+
+## 脚本生成器宿主
+
+项目脚本可以把参数 schema 与 `generate(params, ctx)` 封装成生成器 table，再交给
+`runScriptGenerator(generator, params, systemName, seed)` 同步执行。宿主在当前 Squirrel
+VM 的 owning thread 上创建临时事务 context；成功后原子提交并返回 system、seed、revision
+及 output 名称，脚本抛错、标记 context 失败或遗留未闭合 trace 时返回结构化失败并保留上一
+次成功快照。同一 system 不允许递归重入。宿主不会保存 generator closure、VM 栈或 Params；
+context proxy 只在本次调用中有效，返回后其 handle 会变为 stale。
+
+```squirrel
+local forest = {
+    generate = function(params, ctx) {
+        local points = procgen.sampleGrid(16, 12, 8.0, ctx.seedFor("trees"), 0.2).value;
+        if (!ctx.publish("trees", points)) throw ctx.getError();
+    }
+};
+local run = procgen.runScriptGenerator(forest, params, "forest", params.getSeed());
+if (!run.ok) throw run.status.summary;
+```
+
+生成器文件仍由项目通过 `dofile`/模块加载器载入；宿主负责的是校验 `generate` 入口、事务、
+结构化错误和提交生命周期，不把任意 Squirrel closure 注册为后台线程或 PointGraph operation。
 ## UE PCG 对标范围
 
 本模块对标的是 UE PCG 的核心工作流，而不是复制 UE 类型或资产格式：统一 Spatial Data、
@@ -1596,6 +1619,25 @@ Sculpt 七种结果。
 - 在每帧 update 生成大地图或纹理。
 - 在每帧重新生成树木网格；应缓存 `Mesh`，仅在 seed 或参数变化时重建。
 
+## 运行时质量与延迟任务
+
+`eve.PcgFrameRateManager()` 提供可回放的帧率采样和地形质量档策略。调用
+`configure(targetFrameRate, checkInterval, minQuality, maxQuality, currentQuality)` 原子配置状态机；
+调用方每帧注入 `dt` 与 `timeScale` 给 `update()`，因此它不依赖 OS 墙钟。随后可读取
+`getFps()`、`getQuality()`、`getQualityChanged()` 和 `getPreset()`。手动选择使用
+`selectManualQuality(level)`，自动模式使用 `setAutomatic(enabled)` / `getAutomatic()`。
+返回的 `PcgTerrainQualityPreset` 提供 `treeDistance`、`treeBillboardDistance`、
+`treeCrossFadeLength`、`treeMaximumFullLodCount`、`detailObjectDistance`、
+`detailObjectDensity`、`heightmapPixelError`、`heightmapMaximumLod` 和 `basemapDistance`。
+
+`eve.PcgTaskQueue()` 提供 callback-free 的延迟任务状态机。`add(waitSeconds)` 加入任务并返回
+稳定 ID；`tick(deltaSeconds)` 只把到期任务发布为 Ready，调用方通过 `getReadyTaskId()` 取得
+ID、在队列外执行任务，再调用 `resolveReady(finished)`。未完成任务留待下一轮，完成任务被移除；
+`cancelAll()` 清空队列，`getQueueSize()` 与 `getStatus()` 提供状态。队列不保存回调或脚本对象，
+显式 dt 使调度可回放，非法时间不会改变队列。
+
+这两个 PCG 策略类型由 `procgen` 模块绑定，不属于 `os`。
+
 ## L-system 文法生成
 
 通用随机括号 L-system 引擎(`procgen.newLSystem()`)。给定 axiom 与产生式(可带权重随机),迭代若干次后用 3D 海龟解释:绘制 `/` 折返、`[ ]` 入/弹栈产生分支,枝条粗细随深度衰减。固定 seed 结果完全可复现。除 `mesh.lsystem` 网格配方外,`trace()` 可把枝段作为样条控制点输出(道路、二维布局)。
@@ -2980,3 +3022,67 @@ Created、1 为 Removed。新增项按本次扫描顺序排列，随后删除项
 spawner 计数，`updateRuleFraction` 更新当前规则的小数进度；`getProgress` 使用
 `(totalCompleted + fraction) / totalCount`。`getTitle`、`getSubtitle`、`getStatus` 提供 UI 所需快照，
 `requestCancel` 发布取消请求，`clear` 隐藏并清空状态。所有更新先验证候选，非法计数或进度不修改旧值。
+## GridGraph、PointGraph 与 MeshGraph 混合编排
+
+`GridGraph` 是面向语义格子的确定性数据流图。内建掩码生成节点覆盖填充、随机噪声、棋盘、点阵、
+形状、元胞自动机、随机游走、迷宫和 Poisson 撒点；`generate.registry` 则直接复用现有
+`GeneratorRegistry`，以 `algorithm` 字符串选择 `dungeon.bsp`、`level.roguelike`、WFC 等成熟
+生成器，并把节点上的整数、浮点和字符串参数投影为 `Params`。地牢算法只保留注册表中的一份实现。
+修改与选择节点覆盖布尔组合、反转、膨胀、收缩、平滑、随机/边缘/邻居/规则/岛屿/岛心/
+细节范围/语义选择、寻路与八邻域 autotile。固定 seed 的生成结果可复现。
+
+`convert.grid_to_points` 是显式的类型边界：它将匹配语义的格子中心转换为 `PointSet`，并写入
+`cell_x`、`cell_y`、`semantic` 和 `detail` 属性。`point.subgraph` 随后可把这组点送入独立的
+`PointGraph`，用于筛选、变换、采样和组合。
+
+`MeshGraph` 接受 `Grid2D`、`PointSet` 与 `MeshBuild` 三种强类型输入。`mesh.grid_tiles` 从格子
+构造顶面和暴露侧墙，并按
+`group/semantic/tile-kind/rN/(normal|mx)/reference-configuration` 建立命名三角形组。
+其中标准网格 mask 会映射到 TileWorldCreator 4.3.5 的 3×3 配置表，直接携带瓦片类别、
+0/90/180/270 度朝向和 X 镜像语义；原版未归类的配置 350 保持为 `none`。
+
+`eve.ProcgenObjectBuildLayer()` 是 Objects Build Layer 的原生对应物。它接收 PointGraph 产生的
+`PointSet`，按稳定点身份和层 seed 确定性选择加权 `asset`，并应用层偏移、位置散布、Euler
+旋转、统一或非统一缩放。`setOrientation` 可按北、东、南、西优先级朝向另一点层；
+`setPlaceOnTop` 读取输入点的 `surface_highest_y` 或 `surface_lowest_y`。`addChild` 生成带
+`object_role=child` 与 `parent_index` 的子对象点。结果仍是普通 PointSet，可继续送入 PointGraph、
+`mesh.instance_points` 或实例发布接口。
+
+对象层 API 速查：`clearAssets` 清空加权资产；`setLayerOffset`、`setLayerScale` 设置层级变换；
+`setPositionRadius` 设置平面散布半径；`setRandomRotation`、`setRandomScale` 设置确定性随机范围；
+`disableOrientation` 关闭朝向层；`clearChildRules` 清空子对象规则；`buildOriented` 使用显式朝向点集
+执行对象层。GridGraph 与 MeshGraph 的运行时输入分别通过 `setNodeGrid` 绑定；GridGraph 使用
+`setNodePointSubgraph` 绑定拥有明确输入/输出节点的 PointGraph 子图。
+
+`eve.ProcgenBuildLayerStack()` 将 Tiles 与 Objects 定义放进同一个有序执行器。`addTileLayer` 和
+`addObjectLayer` 保存值副本，`setEnabled` 控制参与执行的层；`execute` 只在全部启用层成功后返回
+`ProcgenBuildLayerExecution`，再通过 `getType/getMesh/getPoints` 获取具名 artifact。配置使用
+`EVPCG_BUILD_LAYERS 1`，对象层使用嵌入式 `EVPCG_OBJECT_LAYER 1`；反序列化拒绝未知记录和尾随字段，
+并在完整校验成功后原子替换旧配置。
+
+层栈可用 `getLayerId`、`getLayerType` 和 `isLayerEnabled` 查询定义；`executeOriented` 为需要朝向
+点集的对象层执行完整栈。增量执行器的 `getCachedClusterCount` 返回当前成功提交的活动簇数量，
+失败构建不会改变该计数。
+
+`eve.ProcgenIncrementalBuildExecutor()` 为 BuildLayerStack 增加跨次构建缓存。`update` 接收簇边长（格子数）
+和格子世界尺寸，返回 `ProcgenIncrementalBuildDelta`；每项通过 `getClusterX/getClusterZ/isRemoved` 标识
+场景侧应更新或删除的簇，非删除项用 `getArtifacts` 取得该簇的完整层结果。格子哈希带一格 halo，
+因此边界 autotile 改动会同时使相邻簇失效；点按半开世界坐标范围归属一个簇。任一脏簇构建失败时，
+内部旧缓存不变。带朝向层时使用 `updateOriented`；`getCachedArtifacts` 可按簇坐标读取当前快照。
+场景侧应以 `clusterX:clusterZ` 作为派生缓存键：普通 delta 替换该簇的渲染/碰撞 artifact，removed
+delta 先从场景隐藏或移除旧对象再删除缓存项。空 PointSet 是合法簇结果，不应尝试上传空实例网格。
+示例中的物理消费者按同一键维护静态三角网格刚体：先成功创建替换体再销毁旧体，避免失败时留下
+无碰撞窗口；裁剪掉 `physics` 模块时明确退化为纯渲染路径，不影响生成结果与缓存权威状态。
+`mesh.instance_points` 把任意 `MeshBuild` 实例化到点集；`mesh.merge` 与 `mesh.transform` 完成
+组合和变换。输出仍是现有 `MeshBuild`，可继续交给统一发布、碰撞、材质和场景生命周期。
+
+三个图各自拥有缓存，不共享跨帧可变裸指针。连接时检查端口类型，Grid 输出不能直接连到
+Point 或 Mesh 输入，必须经过显式转换或输入绑定。图拓扑、参数或输入变化会从修改点向下游
+失效缓存，相同输入重复执行会复用结果。
+
+脚本通过 `procgen.newGridGraph()` 与 `procgen.newMeshGraph()` 获取模块拥有的句柄；所有失败均为
+统一 Result 投影。两种图定义都支持版本化 `serializeDefinition()` / `deserializeDefinition()`；
+运行时输入值刻意不写入定义，加载后由调用方重新绑定，避免资产与场景实例形成第二份权威状态。
+
+TileWorldCreator 4 运行时核心能力的逐项对应和边界见
+[`TileWorldCreator4核心移植.md`](../../dev/TileWorldCreator4核心移植.md)。

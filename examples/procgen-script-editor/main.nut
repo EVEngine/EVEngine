@@ -43,17 +43,10 @@ function rebuild() {
     }
     local params = paramsResult.value;
     fillParams(params);
-    local contextResult = procgen.beginSystem(pcgUi.editor.getModuleId(), params.getSeed());
-    if (!contextResult.ok) {
-        pcgUi.editor.failPreview(contextResult.status.summary, expected);
-        pcgUi.status = contextResult.status.summary;
-        return;
-    }
-    local ctx = contextResult.value;
+    local runResult = procgen.runScriptGenerator(
+        forestModule, params, pcgUi.editor.getModuleId(), params.getSeed());
     try {
-        forestModule.generate(params, ctx);
-        local commitResult = procgen.commitSystem(ctx);
-        if (!commitResult.ok) throw commitResult.status.summary;
+        if (!runResult.ok) throw runResult.status.summary;
         local outputResult = procgen.getSystemOutput(pcgUi.editor.getModuleId(), "trees");
         if (!outputResult.ok) throw outputResult.status.summary;
         local stageCount = procgen.getSystemDebugStageCount(pcgUi.editor.getModuleId());
@@ -65,8 +58,6 @@ function rebuild() {
         requireResult(pcgUi.editor.publishPreview(outputResult.value, "trees", expected), "Publish preview");
         pcgUi.status = "Generated " + pcgUi.editor.getPointCount() + " points";
     } catch (error) {
-        ctx.fail(error.tostring());
-        procgen.commitSystem(ctx);
         pcgUi.editor.failPreview(error.tostring(), expected);
         pcgUi.status = "rebuild failed, previous preview kept: " + error.tostring();
     }

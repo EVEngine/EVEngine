@@ -25,15 +25,17 @@
 #include "scripts.h"
 
 #include "common/AudioQuery.h"
+#include "common/BindingContracts.h"
 #include "common/Capability.h"
 #include "common/EditorHost.h"
 #include "common/Module.h"
 #include "common/ParticlesQuery.h"
-#include "common/PixelWorldAutomation.h"
 #include "common/PhysicsQuery.h"
+#include "common/PixelWorldAutomation.h"
 #include "common/ProcgenQuery.h"
 #include "common/RenderCapture.h"
 #include "common/SceneQuery.h"
+#include "common/ScriptCompiler.h"
 #include "common/ScriptError.h"
 #include "common/UIAutomation.h"
 
@@ -578,6 +580,46 @@ std::string callTool(McpServer& mcp, const std::string& name, Poco::JSON::Object
     auto& dap = DebugAdapter::instance();
 
     if (name == "eve_status") return engineStatusJson(mcp);
+
+    if (name == "eve_api_search") {
+        const std::string query       = getArgString(args, "query");
+        const std::string module      = getArgString(args, "module");
+        const std::string scriptClass = getArgString(args, "class");
+        int               limit       = getArgInt(args, "limit", 20);
+        if (limit < 0) limit = 0;
+        const auto hits =
+            eve::script::generatedBindingContracts().search(query, module, scriptClass, static_cast<size_t>(limit));
+        std::ostringstream json;
+        json << "{\"ok\":true,\"schema\":\"eve.binding-api\",\"schemaVersion\":1,\"query\":\"" << mcpJsonEscape(query)
+             << "\",\"module\":\"" << mcpJsonEscape(module) << "\",\"class\":\"" << mcpJsonEscape(scriptClass)
+             << "\",\"count\":" << hits.size() << ",\"matches\":[";
+        for (size_t i = 0; i < hits.size(); ++i) {
+            if (i != 0) json << ',';
+            json << "{\"score\":" << hits[i].score << ",\"contract\":" << hits[i].contract.toJson() << '}';
+        }
+        json << "]}";
+        return json.str();
+    }
+
+    if (name == "eve_api_get") {
+        const std::string                   key         = getArgString(args, "key");
+        const std::string                   scriptClass = getArgString(args, "class");
+        const std::string                   method      = getArgString(args, "method");
+        const auto&                         registry    = eve::script::generatedBindingContracts();
+        const eve::script::BindingContract* contract    = nullptr;
+        if (!key.empty()) {
+            contract = registry.find(key);
+        } else if (!scriptClass.empty() && !method.empty()) {
+            contract = registry.findMethod(scriptClass, method);
+        } else if (!method.empty()) {
+            contract = registry.findMethod(method);
+        } else {
+            return "{\"ok\":false,\"error\":\"missing key or method\"}";
+        }
+        if (!contract) return "{\"ok\":false,\"error\":\"binding not found or method name is ambiguous\"}";
+        return std::string("{\"ok\":true,\"schema\":\"eve.binding-api\",\"schemaVersion\":1,\"contract\":") +
+               contract->toJson() + "}";
+    }
 
     if (name == "eve_gameplay") {
         if (!args || !args->has("request")) return "error: missing request";
@@ -1591,7 +1633,9 @@ std::string handleInitialize(McpServer& mcp, const std::string& idJson, Poco::JS
         std::string("{\"protocolVersion\":\"") + mcpJsonEscape(protocol) +
         "\",\"capabilities\":{\"tools\":{},\"resources\":{},\"prompts\":{}},"
         "\"serverInfo\":{\"name\":\"evengine\",\"title\":\"EVEngine MCP\",\"version\":\"0.5.1\"},"
-        "\"instructions\":\"EVEngine MCP for AI-assisted game development. Diagnose through the game's own channels: "
+        "\"instructions\":\"EVEngine MCP for AI-assisted game development. Call eve_api_search/eve_api_get to look up "
+        "this build's EveScript bindings before writing .nut (do not invent Unity C# names); prefer eve_play and "
+        "editor commands over eve_eval for gameplay. Diagnose through the game's own channels: "
         "eve_console_read returns the runtime console (Squirrel print/error plus engine log lines) with a monotonic "
         "seq cursor, eve_error_slice returns the last script/render error slice, and eve_render_status with "
         "eve_screenshot/eve_screenshot_image capture engine-owned frames. Drive a run with eve_pause/eve_step_* or "
@@ -1607,6 +1651,20 @@ std::string handleToolsList(const std::string& idJson) {
     static const char* const kToolsParts[] = {
         "{\"name\":\"eve_status\",\"description\":\"Runtime + debugger + MCP/DAP status JSON.\","
         "\"inputSchema\":{\"type\":\"object\",\"properties\":{}}},"
+        "{\"name\":\"eve_api_search\",\"description\":\"Search this build's EveScript Binding Contracts "
+        "(module/class/method signatures). Look up APIs before writing .nut. Do not use this to invent Unity C# "
+        "names.\","
+        "\"inputSchema\":{\"type\":\"object\",\"properties\":{"
+        "\"query\":{\"type\":\"string\",\"description\":\"case-insensitive method, class, key, or space-separated "
+        "tokens\"},"
+        "\"module\":{\"type\":\"string\",\"description\":\"optional exact module id\"},"
+        "\"class\":{\"type\":\"string\",\"description\":\"optional exact script class\"},"
+        "\"limit\":{\"type\":\"integer\",\"minimum\":1,\"maximum\":64}},"
+        "\"required\":[]}},"
+        "{\"name\":\"eve_api_get\",\"description\":\"Fetch one EveScript Binding Contract by key (module/Class.method) "
+        "or unique method name. Prefer this after eve_api_search.\","
+        "\"inputSchema\":{\"type\":\"object\",\"properties\":{"
+        "\"key\":{\"type\":\"string\"},\"class\":{\"type\":\"string\"},\"method\":{\"type\":\"string\"}}}},"
         "{\"name\":\"eve_gameplay\",\"description\":\"Observe, discover, submit or advance player-equivalent gameplay "
         "through the versioned shared control protocol.\","
         "\"inputSchema\":{\"type\":\"object\",\"properties\":{\"request\":{\"type\":\"object\"}},\"required\":["

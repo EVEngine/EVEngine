@@ -131,7 +131,7 @@ set(_doc_module_pages
     "sound.md|mod_sound|声音数据模块"
     "spatial.md|mod_spatial|空间索引模块"
     "spritestack.md|mod_spritestack|Sprite-Stacking 伪 3D"
-    "system.md|mod_system|系统信息模块"
+    "os.md|mod_os|OS 模块"
     "tensor.md|mod_tensor|张量模块"
     "thread.md|mod_thread|线程与异步模块"
     "timer.md|mod_timer|计时器模块"

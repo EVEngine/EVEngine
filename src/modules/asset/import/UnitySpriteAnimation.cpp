@@ -165,7 +165,7 @@ Result<PreparedAssetImport> prepareUnitySpriteAnimation(const UnityProjectImport
                                              asset::EvaDependencyKind::RuntimeRequired,
                                              "spriteFrame",
                                              {},
-                                             "eve.image/2",
+                                             "eve.image/3",
                                              {}});
     }
     out.findings.push_back({source.path, "AnimationClip.sprite", ImportDisposition::Translated,

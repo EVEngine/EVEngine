@@ -2,7 +2,7 @@
 
 **脚本入口：** `eve.Math()`
 
-提供向量、矩阵、几何、噪声、随机数、插值和缓动工具。2D/3D 对象的**点选、重叠与射线检测**也放在本模块（轻量几何测试）；带刚体/接触响应的模拟见 [Physics](physics.md)，屏幕坐标换算见 [Graphics](graphics.md) 的 Camera2D/Camera3D。
+提供向量、矩阵、几何、无状态 2D/3D steering、噪声、随机数、插值和缓动工具。2D/3D 对象的**点选、重叠与射线检测**也放在本模块（轻量几何测试）；带刚体/接触响应的模拟见 [Physics](physics.md)，屏幕坐标换算见 [Graphics](graphics.md) 的 Camera2D/Camera3D。
 
 ## 基本用法
 
@@ -26,6 +26,19 @@ local n = math.noise2(p.getX(), p.getY());
 ### 平滑移动和程序噪声
 
 用 lerp/smoothstep/ease 做相机与 UI 插值；`noise2()` / fractal noise 适合高度图，输入坐标乘 frequency 控制尺度。Vec/Mat 对象用于变换组合，热点循环避免反复分配临时对象。
+
+### 2D/3D steering 数学
+
+`steeringSeek2/3`、`steeringFlee2/3`、`steeringArrive2/3` 和
+`steeringAvoid2/3` 返回新的 Vec2/Vec3 值对象。`steeringSeparation2/3` 与
+`steeringPathTarget2/3` 的脚本适配器分别接受 `x:y,x:y` 和
+`x:y:z,x:y:z` 格式；C++ 的 `math/Steering.h` 核心接口使用值类型和
+`std::span`，不解析字符串，也不保存 agent、路径、邻居或时间状态。
+
+```squirrel
+local desired2 = math.steeringArrive2(x, y, targetX, targetY, 6.0, 20.0, 2.0);
+local desired3 = math.steeringSeek3(x, y, z, targetX, targetY, targetZ, 8.0);
+```
 
 ### 2D 点击拾取与重叠
 
@@ -93,6 +106,8 @@ if (t >= 0) {
 - `rectsOverlap()`、`remap()`、`ridged2()`、`ridged3()`、`rotate2X()`、`rotate2Y()`、`rotateX()`、`rotateY()`
 - `rotateZ()`、`scale()`、`segmentsIntersect()`、`set()`、`setRandomSeed()`、`setRandomSeedFromTime()`、`setX()`、`setY()`
 - `setZ()`、`sign()`、`smootherstep()`、`smoothstep()`、`snap()`、`spheresOverlap()`、`step()`、`sub()`
+- `steeringArrive2()`、`steeringArrive3()`、`steeringAvoid2()`、`steeringAvoid3()`、`steeringFlee2()`、`steeringFlee3()`
+- `steeringPathTarget2()`、`steeringPathTarget3()`、`steeringSeek2()`、`steeringSeek3()`、`steeringSeparation2()`、`steeringSeparation3()`
 - `transformPoint2()`、`transformVec3()`、`translate()`、`turbulence2()`、`voronoi2()`、`voronoiEdge2()`、`warpNoise2()`、`wrap()`
 
 ## 使用要点

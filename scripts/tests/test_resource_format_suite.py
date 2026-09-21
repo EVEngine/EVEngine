@@ -72,6 +72,11 @@ class ResourceSuiteTests(unittest.TestCase):
         self.assertNotEqual(code, 0)
         self.assertEqual(report["results"][0]["status"], "failed")
 
+    def test_real_ctest_warning_assertion_log_is_success(self):
+        code, report = self.real_ctest("print('WARN Assertion Failed: approximate comparison')")
+        self.assertEqual(code, 0)
+        self.assertEqual(report["results"][0]["status"], "passed")
+
     def test_real_ctest_skip_is_not_pass(self):
         code, report = self.real_ctest("raise SystemExit(77)",
                                        "set_tests_properties(example PROPERTIES SKIP_RETURN_CODE 77)\n")

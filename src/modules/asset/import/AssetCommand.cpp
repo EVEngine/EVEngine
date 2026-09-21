@@ -160,7 +160,7 @@ struct AssetArgs final : Handler {
     CLI::App* diffCommand = nullptr;
     std::string from, input, secondInput, output, packageId, packageName = "imported.asset", packageVersion = "1.0.0";
     bool        strict = false;
-    std::string descriptor, terrain, prefab, colorSpace = "srgb", usage = "color", target;
+    std::string descriptor, terrain, terrainDetails, prefab, colorSpace = "srgb", usage = "color", target;
 
     void setup(CLI::App& app, std::shared_ptr<CLI::Formatter> formatter) override {
         assetCommand = app.add_subcommand("asset", "Import, validate, inspect and Cook EVEngine asset packages");
@@ -177,6 +177,8 @@ struct AssetArgs final : Handler {
         importCommand->add_option("--version", packageVersion);
         importCommand->add_option("--descriptor", descriptor, "UE adapter descriptor relative to input root");
         importCommand->add_option("--terrain", terrain, "Unity TerrainData relative to input root");
+        importCommand->add_option("--terrain-details", terrainDetails,
+                                  "Unity Terrain Detail sidecar relative to input root");
         importCommand->add_option("--prefab", prefab, "Unity Prefab relative to input root");
         importCommand->add_option("--color-space", colorSpace, "srgb|linear");
         importCommand->add_option("--usage", usage);
@@ -309,10 +311,16 @@ struct AssetArgs final : Handler {
             auto files = from == "unity" ? readUnityInput(input, limits) : readTree(input, limits.maximumSourceBytes);
             if (!files) { prepared.ignore(); printFailure(files.status()); return 2; }
             prepared.ignore();
-            if (from == "unity")
-                prepared = asset_import::prepareUnityProjectImport(
-                    {identity.value(), std::move(files).takeValue(), terrain, prefab, limits});
-            else
+            if (from == "unity") {
+                asset_import::UnityProjectImportRequest request;
+                request.package            = identity.value();
+                request.files              = std::move(files).takeValue();
+                request.terrainDataPath    = terrain;
+                request.prefabPath         = prefab;
+                request.limits             = limits;
+                request.terrainDetailsPath = terrainDetails;
+                prepared                   = asset_import::prepareUnityProjectImport(request);
+            } else
                 prepared = asset_import::prepareUnrealM4Import(
                     {identity.value(), std::move(files).takeValue(), descriptor, limits});
         }

@@ -29,10 +29,41 @@ constexpr std::size_t kUnitRecordSize = 8;
  * @brief Largest accepted grid dimension.
  *
  * A stored payload is untrusted input, so the dimensions are bounded before any
- * storage is sized from them. 512 keeps one grid at most 512 x 512 cells, which
- * matches the smallest sane bound for an interactive editor grid.
+ * storage is sized from them. Shared with the script bindings through
+ * `kMaxHexGridDimension` so both entry points reject the same sizes.
  */
-constexpr std::uint32_t kMaxGridDimension = 512;
+constexpr std::uint32_t kMaxGridDimension = static_cast<std::uint32_t>(kMaxHexGridDimension);
+
+/** @brief Every flag bit this version defines: roads, rivers, walled, explored, explorable. */
+constexpr std::uint32_t kKnownFlagMask = 0x3fu | (0x3fu << 6) | (0x3fu << 12) | (1u << 18) | (1u << 20) | (1u << 21);
+
+/**
+ * @brief Whether a decoded cell record is inside the ranges the map itself produces.
+ *
+ * `HexMap::setCellState` writes a record verbatim, so anything accepted here becomes
+ * observable cell state. Without this check a payload could decode an elevation of
+ * -15 (the five-bit field's floor) into a cell whose surface then sat far below the
+ * box `pickCell` marches through, so a visible cell reported NotFound; the same hole
+ * covered terrain indices past the palette and unmirrored river bits.
+ */
+[[nodiscard]] bool isRepresentableCell(const HexCellData& cell) noexcept {
+    const std::int32_t elevation = cell.values.elevation();
+    if (elevation < HexMetrics::kMinElevation || elevation > HexMetrics::kMaxElevation) return false;
+    const std::int32_t water = cell.values.waterLevel();
+    if (water < 0 || water > HexMetrics::kMaxElevation) return false;
+    if (cell.values.terrainType() < 0 || cell.values.terrainType() >= kHexTerrainTypeCount) return false;
+    if (cell.values.specialIndex() < 0 || cell.values.specialIndex() >= 4) return false;
+    // Bits outside the documented layout are unspecified; a payload that sets one was
+    // not written by this version.
+    if ((cell.flags.raw() & ~kKnownFlagMask) != 0u) return false;
+    // The same-edge rule `setOutgoingRiver` enforces: a river may not both enter and
+    // leave through one edge.
+    for (std::int32_t i = 0; i < kHexDirectionCount; ++i) {
+        const auto direction = static_cast<HexDirection>(i);
+        if (cell.flags.hasRiverIn(direction) && cell.flags.hasRiverOut(direction)) return false;
+    }
+    return true;
+}
 
 /** @brief Diagnostic for a payload that cannot be decoded. */
 [[nodiscard]] Diagnostic invalidArgument(std::string message) {
@@ -217,6 +248,8 @@ Result<void> loadHexMap(const std::vector<std::uint8_t>& bytes, HexMap& map, std
     for (std::size_t index = 0; index < cellCount; ++index) {
         cells[index].values = HexValues{reader.u32()};
         cells[index].flags  = HexFlags{reader.u32()};
+        if (!isRepresentableCell(cells[index]))
+            return Result<void>::failure(invalidArgument("hex save cell record is out of range"));
     }
 
     std::vector<HexUnitState> restored(unitCount);

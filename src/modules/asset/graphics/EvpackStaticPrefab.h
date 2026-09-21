@@ -1,7 +1,9 @@
 #pragma once
 
 #include <array>
+#include <cstdint>
 #include <memory>
+#include <vector>
 #include "common/ResourceRef.h"
 
 namespace eve::asset {
@@ -15,6 +17,11 @@ class IImageResourceFactory;
 }  // namespace eve::graphics
 
 namespace eve::asset_graphics {
+/** @brief One prefab renderer registered in backend GPU-driven tables. */
+struct StaticPrefabGpuPart {
+    std::array<float, 16> localTransform{};
+    std::uint32_t meshId = 0xffffffffu, materialId = 0xffffffffu, flags = 0x7u, lodGroupId = 0xffffffffu;
+};
 /**
  * @brief Owning static-prefab GPU leases and immutable draw transforms; no ECS or Scene mutation.
  * @ownership Mesh/image factories must outlive this object and its explicit release; the factories own GPU allocations.
@@ -38,6 +45,12 @@ public:
         graphics::IImageResourceFactory& images, const AssetRef& asset, const asset::EvpackCapabilities& capabilities);
     /** @brief Number of enabled static renderer bindings prepared for drawing. */
     [[nodiscard]] std::size_t drawCount() const noexcept;
+    /** @brief Register every opaque or masked prefab draw in GPU-driven tables transactionally.
+     * @param graphics Borrowed backend corresponding to the factories used during load.
+     * @return Owning part descriptors; material objects remain owned by this prefab until release.
+     * @thread Graphics thread only; synchronous and non-reentrant.
+     */
+    [[nodiscard]] Result<std::vector<StaticPrefabGpuPart>> prepareGpuDriven(graphics::Graphics& graphics);
     /** @brief Draw in an already-open 3D pass using its camera/light state and a column-major instance transform.
      * @param graphics Borrowed backend corresponding to the factories used at load.
      * @param transform Finite column-major instance transform; borrowed only during this call.
@@ -49,6 +62,17 @@ public:
      */
     [[nodiscard]] Result<void> draw(graphics::Graphics& graphics, const std::array<float, 16>& transform,
                                     const std::array<float, 16>& cameraView) const;
+    /**
+     * @brief Submit enabled source shadow casters inside an active cascade shadow pass.
+     * @param graphics Borrowed backend corresponding to the factories used at load.
+     * @param transform Finite column-major prefab instance transform.
+     * @param lightViewProjection Finite column-major cascade light view-projection matrix.
+     * @return Success, or a structured released/transform error before issuing draws.
+     * @thread Graphics thread only; synchronous and non-reentrant.
+     */
+    [[nodiscard]] Result<void> drawShadow(graphics::Graphics& graphics,
+                                          const std::array<float, 16>& transform,
+                                          const std::array<float, 16>& lightViewProjection) const;
     /** @brief Invalidate draw packets and release all leases; failed releases remain owned for retry.
      * @return Backend failure if any release fails. Destructor retries and reports remaining errors to stderr.
      */

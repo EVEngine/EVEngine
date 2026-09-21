@@ -11,12 +11,16 @@ namespace {
 class RecordingMaterialSink final : public IMaterialRuntimeSink {
 public:
     EditorResult<void> publish(const MaterialDocumentTarget& candidate) override {
+        if (reject)
+            return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("test.material.reload-rejected"),
+                                              "Runtime rejected reloaded material");
         ++publications;
         last = candidate.snapshotValue();
         return eve::editing::applied<void>();
     }
 
     int         publications = 0;
+    bool        reject       = false;
     EditorValue last;
 };
 
@@ -102,6 +106,33 @@ TEST_CASE("editor.material.studio_cancel_preserves_live_material_and_refreshes_p
     CHECK_EQ(sink.publications, 0);
     CHECK_EQ(renderer.renders, 2);
     CHECK_EQ(studio.state().previewRevision, original);
+}
+
+TEST_CASE("editor.material.hot_reload_publishes_candidate_atomically") {
+    RecordingMaterialSink    sink;
+    MaterialPublishingTarget target("hot-leaf", &sink);
+    MaterialDocumentTarget   source("hot-leaf");
+    const SelectionSnapshot  selection = materialSelection(source);
+    auto operation = source.makeSet(selection, PropertyPath("vegetation.alpha.glancing"), 0.65,
+                                    PropertySetMode::Absolute);
+    REQUIRE(operation.ok());
+    REQUIRE(source.applyDomainOperation(operation.value()).ok());
+
+    const Revision before = target.revision();
+    sink.reject = true;
+    REQUIRE(!target.reloadSnapshot(source.snapshotValue()).ok());
+    CHECK_EQ(target.revision(), before);
+    CHECK(target.authoringTarget()
+              .read(materialSelection(target.authoringTarget()), PropertyPath("vegetation.alpha.glancing"))
+              .value == EditorValue(0.0));
+
+    sink.reject = false;
+    REQUIRE(target.reloadSnapshot(source.snapshotValue()).ok());
+    CHECK_EQ(target.revision(), before + 1);
+    CHECK_EQ(sink.publications, 1);
+    CHECK(target.authoringTarget()
+              .read(materialSelection(target.authoringTarget()), PropertyPath("vegetation.alpha.glancing"))
+              .value == EditorValue(0.65));
 }
 
 TEST_CASE("editor.material.studio_rate_limits_with_injected_monotonic_time") {

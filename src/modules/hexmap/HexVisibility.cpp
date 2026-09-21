@@ -102,9 +102,14 @@ Result<void> HexVisibility::decrease(HexMap& map, HexSearchContext& scratch, Hex
     return Result<void>::success();
 }
 
-void HexVisibility::clear() noexcept {
+void HexVisibility::clear(HexMap& map) noexcept {
+    // Every cell that loses its last viewer changes the fog overlay's shade, so each
+    // touched cell's chunk has to be rebuilt. `increase`/`decrease` already do this;
+    // leaving it out here meant dropping the viewers left stale fog geometry on screen
+    // until an unrelated edit happened to dirty the same chunk.
     for (const std::int32_t index : touched_) {
         counts_[static_cast<std::size_t>(index)] = 0;
+        map.markChunkDirtyAndNeighbors(map.chunkIndexOf(map.coordinatesAt(index)));
     }
     // The map's explored flags are a one-way latch and stay untouched.
     touched_.clear();

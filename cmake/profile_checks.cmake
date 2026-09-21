@@ -29,12 +29,37 @@ if(TARGET eve AND TARGET EVGraphics)
     target_link_libraries(eve_pbr_surface_check PRIVATE ${_eve_skin_host_libraries}
         zeroerr eve_engine_includes)
     add_test(NAME profile.pbr_surface COMMAND eve_pbr_surface_check)
+    if(TARGET EVAsset_graphics)
+        add_executable(eve_texture_mip_check
+            "${CMAKE_SOURCE_DIR}/test/profile/gltf_animation_main.cpp"
+            "${CMAKE_SOURCE_DIR}/test/graphics_texture_mips.cpp")
+        target_compile_features(eve_texture_mip_check PRIVATE cxx_std_20)
+        target_link_libraries(eve_texture_mip_check PRIVATE ${_eve_skin_host_libraries}
+            zeroerr eve_engine_includes)
+        add_test(NAME profile.texture_mips COMMAND eve_texture_mip_check)
+        add_executable(eve_unity_normal_mip_graphics_probe
+            "${CMAKE_SOURCE_DIR}/test/asset_import/UnityNormalMipGraphicsProbe.cpp")
+        target_compile_features(eve_unity_normal_mip_graphics_probe PRIVATE cxx_std_20)
+        target_link_libraries(eve_unity_normal_mip_graphics_probe PRIVATE ${_eve_skin_host_libraries}
+            eve_engine_includes)
+        add_executable(eve_unity_material_graphics_probe
+            "${CMAKE_SOURCE_DIR}/test/asset_import/UnityMaterialGraphicsProbe.cpp")
+        target_compile_features(eve_unity_material_graphics_probe PRIVATE cxx_std_20)
+        target_link_libraries(eve_unity_material_graphics_probe PRIVATE ${_eve_skin_host_libraries}
+            eve_engine_includes)
+        add_executable(eve_unity_volume_graphics_probe
+            "${CMAKE_SOURCE_DIR}/test/asset_import/UnityVolumeGraphicsProbe.cpp")
+        target_compile_features(eve_unity_volume_graphics_probe PRIVATE cxx_std_20)
+        target_link_libraries(eve_unity_volume_graphics_probe PRIVATE ${_eve_skin_host_libraries}
+            eve_engine_includes)
+    endif()
     if(TARGET EVAsset_import AND TARGET EVAsset_graphics)
         add_executable(eve_material_compat_check
             "${CMAKE_SOURCE_DIR}/test/profile/gltf_animation_main.cpp"
             "${CMAKE_SOURCE_DIR}/test/asset_import_unity_native.cpp"
             "${CMAKE_SOURCE_DIR}/test/asset_import_gltf_material.cpp"
             "${CMAKE_SOURCE_DIR}/test/asset_graphics_loader.cpp"
+            "${CMAKE_SOURCE_DIR}/test/asset_graphics_material_color.cpp"
             "${CMAKE_SOURCE_DIR}/test/asset_import.cpp"
             "${CMAKE_SOURCE_DIR}/test/asset_mesh_uv.cpp")
         target_compile_definitions(eve_material_compat_check PRIVATE EVE_TEST_MESH_UPLOAD=1)
@@ -116,6 +141,9 @@ if(TARGET EVAsset)
         "${CMAKE_SOURCE_DIR}/test/asset_import_gltf_material.cpp"
         "${CMAKE_SOURCE_DIR}/test/asset_migration.cpp"
         "${CMAKE_SOURCE_DIR}/test/asset_mesh_uv.cpp"
+        "${CMAKE_SOURCE_DIR}/test/asset_mesh_attributes.cpp"
+        "${CMAKE_SOURCE_DIR}/test/asset_import_tiff.cpp"
+        "${CMAKE_SOURCE_DIR}/test/asset_import_tga.cpp"
         "${CMAKE_SOURCE_DIR}/src/modules/asset/import/GltfImporter.cpp"
         "${CMAKE_SOURCE_DIR}/src/modules/asset/import/GltfAnimation.cpp"
         "${CMAKE_SOURCE_DIR}/src/modules/asset/import/GltfDecode.cpp"

@@ -3452,10 +3452,20 @@ void Graphics::drawMeshShader(Mesh* mesh, const glm::mat4& model, Texture* textu
     d.depthWrite     = mesh3dSurfaceDepthWrite;
     d.doubleSided    = mesh3dSurfaceDoubleSided;
     d.shadowReceive  = mesh3dShadowReceive;
+    d.metallic       = mesh3dMetallic;
+    d.roughness      = mesh3dRoughness;
+    d.viewProj       = mesh3dViewProj;
+    d.view           = mesh3dView;
+    d.cameraPos      = mesh3dCameraPos;
+    d.lighting       = mesh3dLighting;
+    d.shadows        = mesh3dShadows;
+    d.environment    = mesh3dEnvTexture;
+    d.environmentIntensity = mesh3dEnvIntensity;
     d.skinInfluenceLimit = mesh3dSkinInfluenceLimit;
     d.alphaCutoff    = mesh3dAlphaCutoff;
     d.alphaTechnique = mesh3dAlphaTechnique;
     d.lodFade       = mesh3dLodFade;
+    d.pbrSurface    = mesh3dPbrSurface;
     mesh3dDraws.push_back(d);
 }
 
@@ -4165,6 +4175,9 @@ void Graphics::flushMesh3D(wgpu::RenderPassEncoder pass, WGPUTextureFormat forma
         // Canvas targets are 1-sample; scene pipelines follow the active MSAA
         // count. Both sets preserve the per-draw material raster state.
         const bool           customShader = d.shader && d.shader->gpuHandle;
+        if (d.pbrSurface && !customShader &&
+            drawPbrMesh(pass, format, canvasTarget, d, *gpuMesh))
+            continue;
         wgpu::RenderPipeline pipe;
         if (d.shader && d.shader->gpuHandle) {
             auto* gs = static_cast<GpuShader*>(d.shader->gpuHandle);

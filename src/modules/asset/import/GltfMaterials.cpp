@@ -107,7 +107,8 @@ void append(const GltfImportRequest& request, const Value::Object& root,
         }
         require(mode == "OPAQUE" || mode == "MASK" || mode == "BLEND", "unknown alphaMode");
         Value::Object definition{{"schema", Value("eve.material")},
-                                 {"schemaVersion", Value(int64_t(2))},
+                                 {"schemaVersion", Value(int64_t(15))},
+                                 {"alphaToCoverage", Value(false)},
                                  {"shadingModel", Value("pbr")},
                                  {"surfaceMode", Value(mode == "OPAQUE" ? "opaque"
                                                        : mode == "MASK" ? "masked"
@@ -255,7 +256,7 @@ void append(const GltfImportRequest& request, const Value::Object& root,
                 budget(request, out);
             }
             definition[role] = Value(found->second.format());
-            link(out, ref, found->second, role, "eve.image/2");
+            link(out, ref, found->second, role, "eve.image/3");
             Value::Object sampler{{"wrapS", Value(int64_t(10497))}, {"wrapT", Value(int64_t(10497))}};
             if (auto* id = member(texture, "sampler")) {
                 const auto& samplers = array(member(root, "samplers"));
@@ -283,7 +284,7 @@ void append(const GltfImportRequest& request, const Value::Object& root,
         require(json.ok(), "cannot encode material");
         std::vector<uint8_t> bytes(json.value().begin(), json.value().end());
         out.manifest.assets.push_back(
-            {ref, "eve.material", SchemaVersion(2), path, detail::sha256(bytes), {"source:gltf2"}});
+            {ref, "eve.material", SchemaVersion(15), path, detail::sha256(bytes), {"source:gltf2"}});
         out.entries.push_back({path, std::move(bytes)});
         out.manifest.entrypoints.emplace("material:" + std::to_string(m), ref);
         out.findings.push_back({request.sourceName, "materials[" + std::to_string(m) + "]",
@@ -301,7 +302,7 @@ void append(const GltfImportRequest& request, const Value::Object& root,
                 request.package.packageId.child("gltf:material:" + std::to_string(index(value, materials.size()))));
             auto mesh = reference(
                 request.package.packageId.child("gltf:mesh:" + std::to_string(m) + ":primitive:" + std::to_string(p)));
-            link(out, mesh, material, "material", "eve.material/2");
+            link(out, mesh, material, "material", "eve.material/15");
         }
     }
 }

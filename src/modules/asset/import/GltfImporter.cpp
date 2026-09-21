@@ -1,3 +1,4 @@
+#include "asset/CanonicalMesh.h"
 #include "asset/import/AssetImporter.h"
 
 #include "asset/import/GltfAnimation.h"
@@ -86,6 +87,32 @@ Result<PrimitiveOutput> decodePrimitive(const Value::Object& root, const Value::
                 DiagnosticCode::Unsupported, "UV sets must match POSITION and use FLOAT or normalized unsigned VEC2");
         texcoords.emplace(set, std::move(decoded).takeValue());
     }
+    std::map<std::string, Accessor> extraAttributes;
+    uint64_t                        extraFloats = 0;
+    for (const auto& [name, value] : *attributes) {
+        if (name != "TANGENT" && !name.starts_with("COLOR_") && !name.starts_with("_")) continue;
+        if (name.starts_with("COLOR_")) {
+            const std::string_view suffix(name.data() + 6, name.size() - 6);
+            uint32_t               set    = 0;
+            const auto             parsed = std::from_chars(suffix.data(), suffix.data() + suffix.size(), set);
+            if (parsed.ec != std::errc{} || parsed.ptr != suffix.data() + suffix.size() ||
+                std::to_string(set) != suffix)
+                return detail::failure<PrimitiveOutput>(DiagnosticCode::ParseError, "invalid color set semantic");
+        }
+        auto index = unsignedValue(&value, "primitive.attributes." + name);
+        if (!index) return Result<PrimitiveOutput>::failure(index.status());
+        auto decoded = accessorAt(root, buffers, index.value(), limits);
+        if (!decoded) return Result<PrimitiveOutput>::failure(decoded.status());
+        const auto& a = decoded.value();
+        if (a.count != positions.value().count || a.components < 1 || a.components > 4 ||
+            (name == "TANGENT" && (a.components != 4 || a.componentType != 5126)) ||
+            (name.starts_with("COLOR_") && a.components != 3 && a.components != 4) ||
+            !((a.componentType == 5126 && !a.normalized) ||
+              ((a.componentType == 5121 || a.componentType == 5123) && a.normalized)))
+            return detail::failure<PrimitiveOutput>(DiagnosticCode::Unsupported, "unsupported vertex attribute", name);
+        extraFloats += a.components;
+        extraAttributes.emplace(name, std::move(decoded).takeValue());
+    }
     std::vector<std::uint32_t> indices;
     if (const Value* indicesValue = member(primitive, "indices")) {
         auto index = unsignedValue(indicesValue, "primitive.indices");
@@ -110,10 +137,11 @@ Result<PrimitiveOutput> decodePrimitive(const Value::Object& root, const Value::
         indices.resize(positions.value().count);
         for (std::uint32_t index = 0; index < indices.size(); ++index) indices[index] = index;
     }
-    const std::uint64_t decodedSize =
-        24 + uint64_t(texcoords.size()) * 4 +
-        std::uint64_t(positions.value().count) * (12 + (normals ? 12 : 0) + uint64_t(texcoords.size()) * 8) +
-        std::uint64_t(indices.size()) * 4;
+    const std::uint64_t decodedSize = (extraAttributes.empty() ? 24 : 28) + uint64_t(texcoords.size()) * 4 +
+                                      uint64_t(extraAttributes.size()) * 72 +
+                                      std::uint64_t(positions.value().count) *
+                                          (12 + (normals ? 12 : 0) + uint64_t(texcoords.size()) * 8 + extraFloats * 4) +
+                                      std::uint64_t(indices.size()) * 4;
     if (decodedSize > limits.maximumDecodedBytes || decodedSize > std::numeric_limits<std::size_t>::max())
         return detail::failure<PrimitiveOutput>(DiagnosticCode::InvalidArgument, "canonical mesh exceeds decoded budget");
     PrimitiveOutput output;
@@ -121,11 +149,9 @@ Result<PrimitiveOutput> decodePrimitive(const Value::Object& root, const Value::
     output.indexCount = static_cast<std::uint32_t>(indices.size());
     output.hasNormals = normals.has_value();
     for (const auto& [set, uv] : texcoords) output.texcoordSets.push_back(set);
-    output.blob.insert(output.blob.end(), {'E', 'V', 'M', 'E', 'S', 'H', 0, 2});
-    put32(output.blob, output.vertexCount); put32(output.blob, output.indexCount);
-    put32(output.blob, output.hasNormals ? 1u : 0u);
-    put32(output.blob, uint32_t(texcoords.size()));
-    for (auto set : output.texcoordSets) put32(output.blob, set);
+    asset::CanonicalMeshData mesh;
+    mesh.indices = std::move(indices);
+    for (const auto& [name, attribute] : extraAttributes) mesh.attributes[name].components = attribute.components;
     for (std::uint32_t vertex = 0; vertex < output.vertexCount; ++vertex) {
         for (std::uint32_t axis = 0; axis < 3; ++axis) {
             auto value = readFloat(positions.value(), vertex, axis);
@@ -133,21 +159,30 @@ Result<PrimitiveOutput> decodePrimitive(const Value::Object& root, const Value::
             if (vertex == 0) output.minimum[axis] = output.maximum[axis] = value.value();
             else { output.minimum[axis] = std::min(output.minimum[axis], value.value());
                    output.maximum[axis] = std::max(output.maximum[axis], value.value()); }
-            putFloat(output.blob, value.value());
+            mesh.positions.push_back(value.value());
         }
         if (normals) for (std::uint32_t axis = 0; axis < 3; ++axis) {
             auto value = readFloat(*normals, vertex, axis);
             if (!value) return Result<PrimitiveOutput>::failure(value.status());
-            putFloat(output.blob, value.value());
+            mesh.normals.push_back(value.value());
         }
         for (const auto& [set, uv] : texcoords)
             for (std::uint32_t axis = 0; axis < 2; ++axis) {
                 auto value = readUv(uv, vertex, axis);
                 if (!value) return Result<PrimitiveOutput>::failure(value.status());
-                putFloat(output.blob, value.value());
+                mesh.texcoords[set].push_back(value.value());
+            }
+        for (const auto& [name, attribute] : extraAttributes)
+            for (uint32_t axis = 0; axis < attribute.components; ++axis) {
+                auto value = readUv(attribute, vertex, axis);
+                if (!value) return Result<PrimitiveOutput>::failure(value.status());
+                mesh.attributes[name].values.push_back(value.value());
             }
     }
-    for (const auto index : indices) put32(output.blob, index);
+    auto encoded = asset::encodeCanonicalMesh(
+        mesh, {limits.maximumVerticesPerPrimitive, limits.maximumIndicesPerPrimitive, limits.maximumDecodedBytes});
+    if (!encoded) return Result<PrimitiveOutput>::failure(encoded.status());
+    output.blob = std::move(encoded).takeValue();
     return Result<PrimitiveOutput>::success(std::move(output));
 }
 
@@ -294,7 +329,9 @@ Result<PreparedAssetImport> prepareGltfImport(const GltfImportRequest& request) 
             const auto& attributes = *member(primitive, "attributes")->getIf<Value::Object>();
             for (const auto& [key, unused] : attributes) {
                 (void)unused;
-                if (key == "POSITION" || key == "NORMAL" || key.starts_with("TEXCOORD_")) continue;
+                if (key == "POSITION" || key == "NORMAL" || key.starts_with("TEXCOORD_") || key == "TANGENT" ||
+                    key.starts_with("COLOR_") || key.starts_with("_"))
+                    continue;
                 if (key.starts_with("JOINTS_") || key.starts_with("WEIGHTS_")) {
                     if (!member(*root, "skins"))
                         return detail::failure<PreparedAssetImport>(DiagnosticCode::ParseError,

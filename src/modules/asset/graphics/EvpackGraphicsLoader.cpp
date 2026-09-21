@@ -1,5 +1,7 @@
 #include "asset/graphics/EvpackGraphicsLoader.h"
+#include <cmath>
 #include <limits>
+#include <new>
 #include "asset/CanonicalMesh.h"
 namespace eve::asset_graphics {
 namespace {
@@ -50,6 +52,45 @@ Result<LoadedGraphicsMesh> EvpackGraphicsLoader::loadMesh(const AssetRef&       
                                      static_cast<int>(staging.value().positions.size() / 3), staging.value().indices.data(),
                                      static_cast<int>(staging.value().indices.size()));
     if (!uploaded) return Result<LoadedGraphicsMesh>::failure(uploaded.status());
+    if (const auto authored = staging.value().attributes.find("TANGENT");
+        authored != staging.value().attributes.end()) {
+        const auto  count  = staging.value().positions.size() / 3;
+        const auto& a      = authored->second;
+        auto        attach = [&]() -> Result<void> {
+            try {
+                if (a.components != 4 || a.values.size() != count * 4 || staging.value().normals.size() != count * 3)
+                    return Result<void>::failure(
+                        Diagnostic::error(DiagnosticCode::InvalidArgument, "invalid canonical tangent frame"));
+                std::vector<float> tangents(count * 3), bitangents(count * 3);
+                for (size_t i = 0; i < count; ++i) {
+                    const auto& normals = staging.value().normals;
+                    const float w       = a.values[i * 4 + 3];
+                    if (w != 1.f && w != -1.f)
+                        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                                              "tangent handedness must be signed unit"));
+                    for (unsigned c = 0; c < 3; ++c) {
+                        tangents[i * 3 + c] = a.values[i * 4 + c];
+                        const unsigned j = (c + 1) % 3, k = (c + 2) % 3;
+                        bitangents[i * 3 + c] =
+                            (normals[i * 3 + j] * a.values[i * 4 + k] - normals[i * 3 + k] * a.values[i * 4 + j]) * w;
+                        if (!std::isfinite(bitangents[i * 3 + c]))
+                            return Result<void>::failure(
+                                Diagnostic::error(DiagnosticCode::InvalidArgument, "nonfinite canonical bitangent"));
+                    }
+                }
+                return factory_.setMeshTangentFrame(uploaded.value(), tangents, bitangents);
+            } catch (const std::bad_alloc&) {
+                return Result<void>::failure(
+                    Diagnostic::error(DiagnosticCode::Failed, "canonical tangent allocation failed"));
+            }
+        };
+        auto attached = attach();
+        if (!attached) {
+            auto released = factory_.releaseMesh(uploaded.value());
+            if (!released) return Result<LoadedGraphicsMesh>::failure(released.status());
+            return Result<LoadedGraphicsMesh>::failure(attached.status());
+        }
+    }
     if (preserveAllTexcoords)
         for (const auto& [set, values] : staging.value().texcoords) {
             if (set == texcoordSet) continue;
@@ -62,8 +103,9 @@ Result<LoadedGraphicsMesh> EvpackGraphicsLoader::loadMesh(const AssetRef&       
         }
     std::vector<uint32_t> available;
     for (const auto& [set, values] : staging.value().texcoords) available.push_back(set);
-    return Result<LoadedGraphicsMesh>::success(
-        {asset, uploaded.value(), std::move(payload).takeValue().variant, texcoordSet, std::move(available)});
+    return Result<LoadedGraphicsMesh>::success({asset, uploaded.value(), std::move(payload).takeValue().variant,
+                                                texcoordSet, std::move(available),
+                                                std::move(staging.value().attributes)});
 }
 
 }  // namespace eve::asset_graphics

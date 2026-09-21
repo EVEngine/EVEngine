@@ -15,6 +15,7 @@ public:
     }
     std::string closeWindow() override { return EditorHost::instance().closeWindow(); }
     std::string windowState() const override { return EditorHost::instance().windowState(); }
+    bool isWindowOpen() const override { return EditorHost::instance().isWindowOpen(); }
     std::string applyEditor(const std::string &json) override {
         return EditorHost::instance().applyEditor(json);
     }

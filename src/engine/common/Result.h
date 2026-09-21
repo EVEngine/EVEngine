@@ -489,4 +489,26 @@ private:
     Status status_;
 };
 
+/**
+ * @brief True only when every argument Result succeeded, observing all of them.
+ *
+ * Use this helper for any condition that combines several Results instead of a
+ * short-circuiting chain such as `if (!first || !second)`. `||` stops at the first
+ * failing operand, so the operands after it are never observed; destroying an
+ * unobserved Result asserts in Debug, and when two such destructors run during the
+ * same unwinding the second throw terminates the process instead of reporting the
+ * intended structured failure. The fold below uses `&` rather than `&&` for exactly
+ * that reason: every argument is observed before the answer is computed.
+ *
+ * @param results One or more Results to observe; pass them as lvalues.
+ * @return True when every argument represents a successful outcome.
+ * @remarks Evaluation order follows the fold's grouping and is deterministic; the
+ *          helper never throws, never allocates, and invokes no callbacks.
+ */
+template <typename... Results>
+[[nodiscard]] bool everyResultValid(const Results&... results) noexcept {
+    static_assert(sizeof...(Results) > 0, "everyResultValid requires at least one Result");
+    return (results.ok() & ...);
+}
+
 }  // namespace eve

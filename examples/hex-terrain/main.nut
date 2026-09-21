@@ -5,11 +5,6 @@ persist hexPitch = 0.62
 persist hexSeed = 20260825
 persist hexTime = 0.0
 
-function readText(path) {
-    local f=file(path,"r"); if(f==null) return null;
-    local s=f.read(); f.close(); return s;
-}
-
 function rebuildWorld() {
     local paramsResult=procgen.newParams();
     if(!paramsResult.ok){ print("hex terrain parameters failed: "+paramsResult.status.summary+"\n"); return; }
@@ -21,8 +16,14 @@ function rebuildWorld() {
     local meshResult=procgen.generateMesh("mesh.hexterrain",p,gfx);
     if(!meshResult.ok){ print("hex terrain: "+meshResult.status.summary+"\n"); return; }
     local mesh=meshResult.value;
-    local shader=gfx.newMeshShaderVF(readText("shaders/hex_terrain.vert"),
-                                     readText("shaders/hex_terrain.frag"));
+    // Both stages ship as committed SPIR-V: runtime GLSL compilation needs glslc
+    // on PATH and is unavailable on Windows. Regenerate with
+    //   glslc -o shaders/hex_terrain.vert.spv shaders/hex_terrain.vert
+    //   glslc -o shaders/hex_terrain.frag.spv shaders/hex_terrain.frag
+    local loaded=gfx.loadMeshShaderSpv("shaders/hex_terrain.vert.spv",
+                                       "shaders/hex_terrain.frag.spv");
+    if(!loaded.ok) throw "hex-terrain: shader unavailable: "+loaded.status.summary;
+    local shader=loaded.value;
     hexWorld=eve.Renderable3D(); hexWorld.setMesh(mesh); hexWorld.setShader(shader);
     hexWorld.setTint(1.0,1.0,1.0,1.0); hexWorld.setCastShadow(true);
 }

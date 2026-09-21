@@ -22,9 +22,9 @@ float effectiveGrow(const FlexItemSpec &s) {
 
 }  // namespace
 
-FlexResult flexArrange(bool row, float gap, float availMain, float availCross,
-                       FlexAlign containerAlign, FlexJustify justify,
-                       const std::vector<FlexItemSpec> &items) {
+FlexResult flexArrangeSingleLine(bool row, float gap, float availMain, float availCross,
+                                 FlexAlign containerAlign, FlexJustify justify,
+                                 const std::vector<FlexItemSpec> &items) {
     FlexResult res;
     res.items.resize(items.size());
     if (availMain < 0.f) availMain = 0.f;
@@ -44,12 +44,16 @@ FlexResult flexArrange(bool row, float gap, float availMain, float availCross,
         const FlexItemSpec &s = items[size_t(i)];
         float m = s.explicitMain > 0.f
                       ? s.explicitMain
-                      : (s.percentMain > 0.f ? s.percentMain * availMain : s.basisMain);
+                      : (s.percentMain > 0.f
+                             ? s.percentMain * availMain
+                             : (s.flexBasis >= 0.f ? s.flexBasis : s.basisMain));
         m = clampV(m, s.minMain, s.maxMain);
         float c = s.explicitCross > 0.f
                       ? s.explicitCross
                       : (s.percentCross > 0.f ? s.percentCross * availCross : s.basisCross);
         c = clampV(c, s.minCross, s.maxCross);
+        if (s.aspectRatio > 0.f && s.explicitCross <= 0.f && s.percentCross <= 0.f)
+            c = row ? m / s.aspectRatio : m * s.aspectRatio;
         mainSize[size_t(i)] = m;
         crossSize[size_t(i)] = c;
 
@@ -62,7 +66,33 @@ FlexResult flexArrange(bool row, float gap, float availMain, float availCross,
     const int gapCount = std::max(0, flowCount - 1);
     float total = flowTotal + float(gapCount) * gap;
     float freeSpace = availMain - total;
-    if (freeSpace < 0.f) freeSpace = 0.f;
+    if (freeSpace < 0.f) {
+        const float deficit = -freeSpace;
+        float shrinkWeight = 0.f;
+        for (int i = 0; i < n; ++i) {
+            const FlexItemSpec &s = items[size_t(i)];
+            if (!s.absolute && s.flexShrink > 0.f)
+                shrinkWeight += s.flexShrink * mainSize[size_t(i)];
+        }
+        if (shrinkWeight > 0.f) {
+            for (int i = 0; i < n; ++i) {
+                const FlexItemSpec &s = items[size_t(i)];
+                if (s.absolute || s.flexShrink <= 0.f) continue;
+                const float share = deficit *
+                                    (s.flexShrink * mainSize[size_t(i)] / shrinkWeight);
+                mainSize[size_t(i)] = clampV(std::max(0.f, mainSize[size_t(i)] - share),
+                                             s.minMain, s.maxMain);
+            }
+        }
+        float shrunkTotal = float(gapCount) * gap;
+        for (int i = 0; i < n; ++i) {
+            const FlexItemSpec &s = items[size_t(i)];
+            if (!s.absolute)
+                shrunkTotal += mainSize[size_t(i)] + s.marginBefore + s.marginAfter;
+        }
+        res.overflowMain = std::max(0.f, shrunkTotal - availMain);
+        freeSpace = 0.f;
+    }
 
     float leading = 0.f;
     float between = gap;
@@ -123,15 +153,15 @@ FlexResult flexArrange(bool row, float gap, float availMain, float availCross,
         }
         const float cb = s.marginCrossBefore;
         const float ca = s.marginCrossAfter;
-        const bool stretch = s.alignSelf >= 0
-                                 ? s.alignSelf == int(FlexAlign::Stretch)
-                                 : containerAlign == FlexAlign::Stretch;
+        const FlexAlign align =
+            s.alignSelf >= 0 ? FlexAlign(s.alignSelf) : containerAlign;
+        const bool stretch = align == FlexAlign::Stretch;
         if (stretch && s.explicitCross <= 0.f && s.percentCross <= 0.f) {
             float c = availCross - cb - ca;
             if (c < 0.f) c = 0.f;
             crossSize[size_t(i)] = c;
         }
-        switch (containerAlign) {
+        switch (align) {
         case FlexAlign::Center:
             crossPos[size_t(i)] = (availCross - crossSize[size_t(i)] - cb - ca) * 0.5f + cb;
             break;
@@ -166,6 +196,136 @@ FlexResult flexArrange(bool row, float gap, float availMain, float availCross,
     res.contentW = row ? contentMain : contentCross;
     res.contentH = row ? contentCross : contentMain;
     return res;
+}
+
+FlexResult flexArrange(bool row, float gap, float availMain, float availCross,
+                       FlexAlign containerAlign, FlexJustify justify,
+                       const std::vector<FlexItemSpec> &items, bool wrap, float crossGap) {
+    if (!wrap)
+        return flexArrangeSingleLine(row, gap, availMain, availCross, containerAlign, justify,
+                                     items);
+
+    FlexResult result;
+    result.items.resize(items.size());
+    if (crossGap < 0.f) crossGap = gap;
+    std::vector<size_t> lineIndices;
+    float lineOuterMain = 0.f;
+    float crossOffset = 0.f;
+
+    auto flushLine = [&]() {
+        if (lineIndices.empty()) return;
+        std::vector<FlexItemSpec> line;
+        line.reserve(lineIndices.size());
+        float lineCross = 0.f;
+        for (size_t index : lineIndices) {
+            line.push_back(items[index]);
+            const auto &s = items[index];
+            float cross = s.explicitCross > 0.f ? s.explicitCross : s.basisCross;
+            float main = s.explicitMain > 0.f
+                             ? s.explicitMain
+                             : (s.flexBasis >= 0.f ? s.flexBasis : s.basisMain);
+            if (s.aspectRatio > 0.f && s.explicitCross <= 0.f && s.percentCross <= 0.f)
+                cross = row ? main / s.aspectRatio : main * s.aspectRatio;
+            lineCross = std::max(lineCross,
+                                 cross + s.marginCrossBefore + s.marginCrossAfter);
+        }
+        const FlexResult arranged = flexArrangeSingleLine(
+            row, gap, availMain, lineCross, containerAlign, justify, line);
+        for (size_t i = 0; i < lineIndices.size(); ++i) {
+            FlexRect rect = arranged.items[i];
+            if (row) rect.y += crossOffset;
+            else rect.x += crossOffset;
+            result.items[lineIndices[i]] = rect;
+        }
+        result.overflowMain = std::max(result.overflowMain, arranged.overflowMain);
+        const float lineMain = row ? arranged.contentW : arranged.contentH;
+        result.contentW = row ? std::max(result.contentW, lineMain)
+                              : crossOffset + lineCross;
+        result.contentH = row ? crossOffset + lineCross
+                              : std::max(result.contentH, lineMain);
+        crossOffset += lineCross + crossGap;
+        lineIndices.clear();
+        lineOuterMain = 0.f;
+    };
+
+    for (size_t i = 0; i < items.size(); ++i) {
+        const FlexItemSpec &s = items[i];
+        if (s.absolute) {
+            const FlexResult absolute = flexArrangeSingleLine(
+                row, 0.f, availMain, availCross, containerAlign, justify, {s});
+            result.items[i] = absolute.items[0];
+            continue;
+        }
+        float main = s.explicitMain > 0.f
+                         ? s.explicitMain
+                         : (s.percentMain > 0.f
+                                ? s.percentMain * availMain
+                                : (s.flexBasis >= 0.f ? s.flexBasis : s.basisMain));
+        main = clampV(main, s.minMain, s.maxMain) + s.marginBefore + s.marginAfter;
+        const float next = lineOuterMain + (lineIndices.empty() ? 0.f : gap) + main;
+        if (!lineIndices.empty() && next > availMain) flushLine();
+        lineOuterMain += (lineIndices.empty() ? 0.f : gap) + main;
+        lineIndices.push_back(i);
+    }
+    flushLine();
+    if (row) result.contentH = std::max(0.f, result.contentH);
+    else result.contentW = std::max(0.f, result.contentW);
+    return result;
+}
+
+GridResult gridArrange(int columns, float columnGap, float rowGap, float availWidth,
+                       const std::vector<GridItemSpec> &items) {
+    GridResult result;
+    result.items.resize(items.size());
+    columns = std::max(1, columns);
+    columnGap = std::max(0.f, columnGap);
+    rowGap = std::max(0.f, rowGap);
+    const float gaps = float(columns - 1) * columnGap;
+    const float cellWidth = std::max(0.f, (availWidth - gaps) / float(columns));
+    struct Slot { int row = 0; int column = 0; int span = 1; };
+    std::vector<Slot> slots(items.size());
+    std::vector<float> rowHeights;
+    int row = 0;
+    int column = 0;
+    for (size_t i = 0; i < items.size(); ++i) {
+        const int span = std::clamp(items[i].columnSpan, 1, columns);
+        if (column + span > columns) {
+            ++row;
+            column = 0;
+        }
+        if (row >= int(rowHeights.size())) rowHeights.resize(size_t(row + 1), 0.f);
+        slots[i] = {row, column, span};
+        const float width = cellWidth * float(span) + columnGap * float(span - 1) -
+                            items[i].marginL - items[i].marginR;
+        float height = items[i].basisH;
+        if (items[i].aspectRatio > 0.f) height = std::max(0.f, width) / items[i].aspectRatio;
+        rowHeights[size_t(row)] =
+            std::max(rowHeights[size_t(row)], height + items[i].marginT + items[i].marginB);
+        column += span;
+        if (column >= columns) {
+            ++row;
+            column = 0;
+        }
+    }
+    std::vector<float> rowY(rowHeights.size(), 0.f);
+    for (size_t r = 1; r < rowHeights.size(); ++r)
+        rowY[r] = rowY[r - 1] + rowHeights[r - 1] + rowGap;
+    for (size_t i = 0; i < items.size(); ++i) {
+        const Slot slot = slots[i];
+        const float outerW = cellWidth * float(slot.span) + columnGap * float(slot.span - 1);
+        FlexRect &rect = result.items[i];
+        rect.x = float(slot.column) * (cellWidth + columnGap) + items[i].marginL;
+        rect.y = rowY[size_t(slot.row)] + items[i].marginT;
+        rect.w = std::max(0.f, outerW - items[i].marginL - items[i].marginR);
+        rect.h = items[i].aspectRatio > 0.f
+                     ? rect.w / items[i].aspectRatio
+                     : std::max(0.f, items[i].basisH);
+    }
+    result.contentW = std::max(0.f, availWidth);
+    if (!rowHeights.empty())
+        result.contentH = rowY.back() + rowHeights.back();
+    result.overflowX = std::max(0.f, gaps - availWidth);
+    return result;
 }
 
 void measureFlowChildren(UIHost::Tree &tree, int firstChild, float *outW, float *outH) {
@@ -413,6 +573,42 @@ void measureNode(UIHost::Tree &tree, int index) {
         n.measuredH = h + n.paddingT + n.paddingB;
         break;
     }
+    case NodeType::Grid: {
+        std::vector<GridItemSpec> items;
+        float maxCellWidth = 0.f;
+        for (int c = n.firstChild; c >= 0; c = tree.nodes[size_t(c)].nextSibling) {
+            UINode &child = tree.nodes[size_t(c)];
+            if (!child.visible || child.absolute) continue;
+            measureNode(tree, c);
+            GridItemSpec item;
+            item.basisW = child.measuredW;
+            item.basisH = child.measuredH;
+            item.marginL = child.marginL;
+            item.marginT = child.marginT;
+            item.marginR = child.marginR;
+            item.marginB = child.marginB;
+            item.aspectRatio = child.aspectRatio;
+            item.columnSpan = child.gridColumnSpan;
+            items.push_back(item);
+            maxCellWidth = std::max(maxCellWidth,
+                                    (child.measuredW + child.marginL + child.marginR) /
+                                        float(std::max(1, child.gridColumnSpan)));
+        }
+        const int columns = std::max(1, n.gridColumns);
+        const float columnGap = n.columnGap >= 0.f
+                                    ? n.columnGap
+                                    : (n.gap >= 0.f ? n.gap : style.ItemSpacing.x);
+        const float rowGap = n.rowGap >= 0.f
+                                 ? n.rowGap
+                                 : (n.gap >= 0.f ? n.gap : style.ItemSpacing.y);
+        const float naturalWidth = maxCellWidth * float(columns) +
+                                   columnGap * float(columns - 1);
+        const GridResult arranged =
+            gridArrange(columns, columnGap, rowGap, naturalWidth, items);
+        n.measuredW = arranged.contentW + n.paddingL + n.paddingR;
+        n.measuredH = arranged.contentH + n.paddingT + n.paddingB;
+        break;
+    }
     case NodeType::Flex: {
         const bool row = n.flexDirection == FlexDirection::Row;
         float mainSum = 0.f;
@@ -457,6 +653,10 @@ void measureNode(UIHost::Tree &tree, int index) {
     if (n.type != NodeType::Child && n.type != NodeType::Window) {
         if (n.sizeX > 0.f) n.measuredW = n.sizeX;
         if (n.sizeY > 0.f) n.measuredH = n.sizeY;
+    }
+    if (n.aspectRatio > 0.f) {
+        if (n.sizeX > 0.f && n.sizeY <= 0.f) n.measuredH = n.measuredW / n.aspectRatio;
+        else if (n.sizeY > 0.f && n.sizeX <= 0.f) n.measuredW = n.measuredH * n.aspectRatio;
     }
     if (n.minSizeX > 0.f) n.measuredW = std::max(n.measuredW, n.minSizeX);
     if (n.minSizeY > 0.f) n.measuredH = std::max(n.measuredH, n.minSizeY);

@@ -5,6 +5,11 @@ build/test/run commands live in [`Readme.en.md`](Readme.en.md) and the root
 [`Makefile`](Makefile) — use those; the notes below cover the non-obvious platform
 caveats. The Cursor Cloud VM is Linux; on a Windows host use the Windows section.
 
+Game-script agents: read [`.cursor/skills/evescript/SKILL.md`](.cursor/skills/evescript/SKILL.md)
+and [`docs/dev/AI知识补偿.md`](docs/dev/AI知识补偿.md). Look up EveScript APIs with MCP
+`eve_api_search` / `eve_api_get` (or `python3 scripts/generate_binding_contracts.py --json-output eve-api.json`).
+Do not invent Unity/Godot APIs. Do not use `eve_eval` as the official gameplay path.
+
 > CI 问题调试：本地复现 / WSL2 / SSH 到 Mac mini 的完整手册见本机
 > `.local-debug/CI-DEBUG-PLAYBOOK.md`（含私有机器信息，**勿提交到 GitHub**）。
 
@@ -309,6 +314,9 @@ cross-domain lifecycle, read and follow:
 - `docs/dev/重构代码质量与系统完整性规范.md`
 - `docs/dev/领域短根继承与跨域组合架构.md`
 - `docs/dev/Result检查与不得丢弃返回值规范.md`
+- `docs/dev/模块接口契约与机制选型规范.md`
+- `docs/dev/模块边界审查清单.md`（对单个模块执行上述规范的逐项判据与取证方式；
+  机械取证器 `python3 scripts/module_boundary_audit.py --findings`，只读报告，不做门禁）
 - `docs/dev/2026-08-26-architecture-consolidation-checklist.md`
 
 These are requirements, not optional design suggestions:
@@ -339,6 +347,20 @@ These are requirements, not optional design suggestions:
 - New TODO/HACK/FALLBACK/ALLOWLIST/soft-skip entries require an issue, owner,
   reason, and removal condition or expiry. Do not create a second source of truth
   as a compatibility shortcut.
+- A module's outward boundary is declared across the six faces (capability in/out,
+  ECS+Link data, events, script bindings, tool protocol). New or changed modules
+  need a `module-interface` catalogue entry; a module's trim claim must name its
+  layer (L1 compile / L2 link / L3 runtime / L4 observable) and cite symbol-reference
+  or trimmed-build evidence — never the `#include` graph alone.
+- Connection mechanism is derived from four axes (cardinality, frequency, observer
+  knowability, atomicity), not preference. Hot-path files must be declared and must
+  not do per-frame string-keyed lookups. `getModInst` / `requireModInst` belong to
+  non-runtime profiles only; do not add them to runtime module code.
+- Cost is part of the API shape. Expensive operations are two-step, return an
+  opaque token, or go through a builder; cheap ones get no ceremony; never separate
+  cost tiers with a default argument. Expensive public APIs carry `@cost` worded as
+  a relative magnitude and amortization dimension. Do not create a second, cheaper
+  way to perform the same operation.
 
 In the final handoff, report which of these rules applied, what was verified, and
 any deliberate exception. An exception requires explicit user approval; an agent

@@ -224,8 +224,11 @@ struct Mesh3DClusteredUBO {
 
 struct GpuTexture {
     vkb::TextureImage2D image;
+    vkb::GenericImage arrayImage;
     vkb::TextureImageCube cubeImage;
     bool isCube = false;
+    bool isArray = false;
+    bool isVolume = false;
     bool isHDR = false;
     vk::UniqueDeviceMemory rawCubeMemory;
     vk::UniqueImage rawCubeImage;
@@ -244,6 +247,7 @@ struct GpuTexture {
     vk::ImageView imageView() const {
         if (viewOverride) return viewOverride;
         if (rawCubeView) return *rawCubeView;
+        if (isArray || isVolume) return arrayImage.imageView();
         return isCube ? cubeImage.imageView() : image.imageView();
     }
 };
@@ -377,6 +381,7 @@ public:
         return materialTableGetOrCreate(material);
     }
     bool gpuDrivenMaterialUsable(Material *material) override;
+    [[nodiscard]] Result<void> gpuDrivenReleaseMaterialRecord(Material *material) override;
     uint32_t gpuDrivenReflectionProbeSlot(Texture *cubemap) override;
     /** @compatibility Implements the established GPU-driven boolean submission facade. */
     bool gpuDrivenSubmitOpaque(const GpuInstance *instances, uint32_t instanceCount) override;
@@ -444,6 +449,12 @@ public:
                         bool repeatV = false) override;
     Texture *newTexture(int width, int height, const uint8_t *rgba,
                         const TextureCreateInfo &info) override;
+    [[nodiscard]] Result<Texture *> newTextureMipChain(uint32_t width, uint32_t height, uint32_t levels,
+                                                        std::span<const uint8_t> rgba) override;
+    [[nodiscard]] Result<Texture *> newTextureArrayRgba16f(uint32_t width, uint32_t height, uint32_t layers,
+                                                            std::span<const uint16_t> rgbaHalf) override;
+    [[nodiscard]] Result<Texture *> newTexture3DRgba8(uint32_t width, uint32_t height, uint32_t depth,
+                                                       std::span<const uint8_t> rgba) override;
     Texture *newCubemap(int faceSize, const uint8_t *rgbaFaces) override;
     Texture *newCubemap(int faceSize, const uint8_t *rgbaFaces,
                         const TextureCreateInfo &info) override;
@@ -1106,6 +1117,11 @@ private:
     };
     std::vector<Mesh3dFrameSlots> mesh3dFrameSlots;
     Texture                      *whiteTexture            = nullptr;
+    Texture                      *defaultExtrasArray = nullptr;
+    Texture                      *defaultColorsArray = nullptr;
+    Texture                      *defaultVertexArray = nullptr;
+    Texture                      *defaultMotionArray = nullptr;
+    Texture                      *defaultVegetationFadeNoise = nullptr;
     /** @brief 1x1 white cubemap used as the bindless cubemap-array placeholder. */
     Texture                      *defaultBindlessCube     = nullptr;
     Texture                      *flatNormalTexture3D     = nullptr;
