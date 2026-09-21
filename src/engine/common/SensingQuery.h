@@ -10,7 +10,7 @@ namespace eve {
 /** @brief Last completed query of one live sensing world. */
 struct EVENGINE_API SensingWorldQuery {
     /** Slot index of the world in its owner registry; stable while it lives. */
-    int         index = 0;
+    int index = 0;
     /**
      * Last query document (schema `eve.sensing.lastQuery` version 1).
      *

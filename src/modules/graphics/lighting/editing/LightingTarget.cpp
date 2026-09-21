@@ -6,11 +6,6 @@
 namespace eve::lighting_editing {
 namespace {
 
-template <class T>
-EditorResult<T> lightingError(EditorStatus status, const char* rule, std::string message) {
-    return eve::editing::failed<T>(status, RuleId(rule), std::move(message));
-}
-
 PropertyDescriptor property(const char* path, const char* label, const char* category, PropertyType type,
                             EditorValue defaultValue) {
     PropertyDescriptor result;
@@ -112,7 +107,7 @@ TargetDescriptor LightingPropertyTargetBase::describe() const {
     TargetDescriptor result;
     result.id           = TargetId(id_);
     result.type         = targetType_;
-    result.revision     = revision_;
+    result.revision     = revisionValue();
     result.capabilities = {CapabilityId("eve.editor.target.lighting-properties")};
     return result;
 }
@@ -124,23 +119,23 @@ void* LightingPropertyTargetBase::queryCapability(const CapabilityId& capability
 
 EditorResult<void> LightingPropertyTargetBase::applyDomainOperation(const DomainOperation& operation) {
     if (operation.target != TargetId(id_))
-        return lightingError<void>(EditorStatus::Rejected, "editor.lighting.target-mismatch",
-                                   "Lighting operation targets another document");
+        return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.lighting.target-mismatch"),
+                                          "Lighting operation targets another document");
     if (operation.type != "lighting.property.set.v1")
-        return lightingError<void>(EditorStatus::Unsupported, "editor.lighting.operation-unsupported",
-                                   "Lighting operation is unsupported: " + operation.type);
+        return eve::editing::failed<void>(EditorStatus::Unsupported, RuleId("editor.lighting.operation-unsupported"),
+                                          "Lighting operation is unsupported: " + operation.type);
     const EditorValue* pathValue  = field(operation.payload, "path");
     const EditorValue* assigned   = field(operation.payload, "value");
     const auto*        path       = pathValue ? pathValue->getIf<std::string>() : nullptr;
     auto               descriptor = path ? schema_.find(PropertyPath(*path)) : PropertyDescriptorLookup{};
     if (!descriptor || !assigned)
-        return lightingError<void>(EditorStatus::Rejected, "editor.lighting.invalid-operation",
-                                   "Lighting operation requires a known path and value");
+        return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.lighting.invalid-operation"),
+                                          "Lighting operation requires a known path and value");
     auto valid = validatePropertyValue(*descriptor, *assigned);
     if (!valid.ok()) return valid;
     values_[*path] = *assigned;
-    ++revision_;
-    dirty_.include(0, 0);
+    bumpRevision();
+    widenDirty(0, 0);
     return eve::editing::applied<void>();
 }
 
@@ -149,7 +144,7 @@ eve::Result<eve::Revision> LightingPropertyTargetBase::currentRevision(const Sel
         return eve::Result<eve::Revision>::failure(eve::Diagnostic::error(
             eve::DiagnosticCode::InvalidArgument, "Selection does not belong to this lighting target",
             "editor.lighting.selection", {}, "editor.LightingPropertyTargetBase"));
-    return eve::Result<eve::Revision>::success(eve::Revision(revision_));
+    return eve::Result<eve::Revision>::success(eve::Revision(revisionValue()));
 }
 
 PropertySchema LightingPropertyTargetBase::schema(const SelectionSnapshot&) const { return schema_; }
@@ -166,16 +161,17 @@ EditorResult<DomainOperation> LightingPropertyTargetBase::makeSet(const Selectio
                                                                   const PropertyPath& path, const EditorValue& assigned,
                                                                   PropertySetMode mode) const {
     if (!selectionMatches(selection))
-        return lightingError<DomainOperation>(EditorStatus::Rejected, "editor.lighting.selection",
-                                              "Selection does not belong to this lighting target");
+        return eve::editing::failed<DomainOperation>(EditorStatus::Rejected, RuleId("editor.lighting.selection"),
+                                                     "Selection does not belong to this lighting target");
     if (mode == PropertySetMode::Reset) return makeReset(selection, path);
     if (mode != PropertySetMode::Absolute)
-        return lightingError<DomainOperation>(EditorStatus::Unsupported, "editor.lighting.set-mode",
-                                              "Lighting properties require absolute assignment");
+        return eve::editing::failed<DomainOperation>(EditorStatus::Unsupported, RuleId("editor.lighting.set-mode"),
+                                                     "Lighting properties require absolute assignment");
     auto descriptor = schema_.find(path);
     if (!descriptor)
-        return lightingError<DomainOperation>(EditorStatus::Unsupported, "editor.lighting.property-unsupported",
-                                              "Lighting property is unknown: " + path.value());
+        return eve::editing::failed<DomainOperation>(EditorStatus::Unsupported,
+                                                     RuleId("editor.lighting.property-unsupported"),
+                                                     "Lighting property is unknown: " + path.value());
     auto valid = validatePropertyValue(*descriptor, assigned);
     if (!valid.ok()) return EditorResult<DomainOperation>::failure(valid.status());
     const auto          previous = values_.find(path.value());
@@ -196,8 +192,9 @@ EditorResult<DomainOperation> LightingPropertyTargetBase::makeReset(const Select
                                                                     const PropertyPath&      path) const {
     auto descriptor = schema_.find(path);
     if (!descriptor)
-        return lightingError<DomainOperation>(EditorStatus::Unsupported, "editor.lighting.property-unsupported",
-                                              "Lighting property is unknown: " + path.value());
+        return eve::editing::failed<DomainOperation>(EditorStatus::Unsupported,
+                                                     RuleId("editor.lighting.property-unsupported"),
+                                                     "Lighting property is unknown: " + path.value());
     return makeSet(selection, path, descriptor->defaultValue, PropertySetMode::Absolute);
 }
 
@@ -213,23 +210,23 @@ EditorResult<void> LightingPropertyTargetBase::loadSnapshot(const EditorValue& s
     const auto*        version         = versionValue ? versionValue->getIf<int64_t>() : nullptr;
     const auto*        properties      = propertiesValue ? propertiesValue->getIf<EditorValue::Object>() : nullptr;
     if (!version || *version != 1 || !properties)
-        return lightingError<void>(EditorStatus::Rejected, "editor.lighting.invalid-snapshot",
-                                   "Lighting snapshot requires schema version one and properties");
+        return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.lighting.invalid-snapshot"),
+                                          "Lighting snapshot requires schema version one and properties");
     std::map<std::string, EditorValue> candidate;
     for (const PropertyDescriptor& descriptor : schema_.properties)
         candidate[descriptor.path.value()] = descriptor.defaultValue;
     for (const auto& [path, assigned] : *properties) {
         auto descriptor = schema_.find(PropertyPath(path));
         if (!descriptor)
-            return lightingError<void>(EditorStatus::Unsupported, "editor.lighting.snapshot-property",
-                                       "Lighting snapshot contains an unknown property: " + path);
+            return eve::editing::failed<void>(EditorStatus::Unsupported, RuleId("editor.lighting.snapshot-property"),
+                                              "Lighting snapshot contains an unknown property: " + path);
         auto valid = validatePropertyValue(*descriptor, assigned);
         if (!valid.ok()) return valid;
         candidate[path] = assigned;
     }
     values_ = std::move(candidate);
-    ++revision_;
-    dirty_.clear();
+    bumpRevision();
+    clearDirtyRegion();
     return eve::editing::applied<void>();
 }
 

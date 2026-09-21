@@ -36,11 +36,6 @@ EditorResult<void> EditorCommandService::checkExecutionPolicy(const CommandDescr
     return eve::editing::applied<void>();
 }
 
-template <class Output>
-EditorResult<Output> denyPolicy(EditorResult<void>&& policy) {
-    return EditorResult<Output>::failure(policy.status());
-}
-
 EditorResult<EditorValue> EditorCommandService::registerCommand(CommandDescriptor    descriptor,
                                                                 EditorCommandHandler handler, bool replace) {
     if (!descriptor.id || descriptor.ownerModule.empty() || !handler)
@@ -140,7 +135,7 @@ EditorResult<EditorValue> EditorCommandService::execute(const CommandId& id, con
         return error(EditorStatus::Failed, "editor.command.missing-profile", "Command context has no host profile");
     if (auto policy = checkExecutionPolicy(it->descriptor, id, context.source, payload, *context.profile);
         !policy.ok())
-        return denyPolicy<EditorValue>(std::move(policy));
+        return EditorResult<EditorValue>::failure(std::move(policy).status());
 
     if (!it->handler)
         return error(EditorStatus::Unsupported, "editor.command.requires-plan",
@@ -167,7 +162,7 @@ EditorResult<CommandPlan> EditorCommandService::plan(const CommandRequest& reque
                        "Command is not registered: " + request.id.value());
     if (auto policy = checkExecutionPolicy(it->descriptor, request.id, request.source, request.payload, profile);
         !policy.ok())
-        return denyPolicy<CommandPlan>(std::move(policy));
+        return EditorResult<CommandPlan>::failure(std::move(policy).status());
     if (request.expectedRevision && *request.expectedRevision != request.context.targetRevision)
         return failure(EditorStatus::Conflict, "editor.command.revision-conflict",
                        "Expected revision does not match the captured context");
@@ -225,7 +220,7 @@ EditorResult<TransactionReceipt> EditorCommandService::executePlan(const Command
                        "Command registration changed after planning");
     if (auto policy = checkExecutionPolicy(it->descriptor, request.id, request.source, request.payload, profile);
         !policy.ok())
-        return denyPolicy<TransactionReceipt>(std::move(policy));
+        return EditorResult<TransactionReceipt>::failure(std::move(policy).status());
     if (request.payload != plan.plannedPayload || request.source != plan.plannedSource)
         return failure(EditorStatus::Rejected, "editor.command.plan-input-mismatch",
                        "Plan payload or source differs from the validated request");

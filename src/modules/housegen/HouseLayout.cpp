@@ -30,12 +30,6 @@
 
 namespace eve::housegen {
 namespace {
-template <typename T>
-eve::Result<T> failure(eve::DiagnosticCode code, std::string message, std::string path = {}) {
-    return eve::Result<T>::failure(
-        eve::Diagnostic::error(code, std::move(message), std::move(path), {}, "housegen.layout"));
-}
-
 std::string esc(const std::string &v) { std::string o; for (char c : v) { if (c == '\\' || c == '"') o += '\\'; o += c; } return o; }
 
 graphics::Texture *textureFromEmbedded(graphics::Graphics *gfx, const aiTexture *source) {
@@ -116,7 +110,7 @@ eve::ref<model3d::ModelData> loadModel(model3d::Model3D *models, const std::stri
     data::ByteData source(bytes.data(), bytes.size());
     return models->newModelData(&source, std::filesystem::path(path).extension().string());
 }
-}
+}  // namespace
 
 void HouseLayout::clear() { instances.clear(); rooms.clear(); diagnostics.clear(); seed = 1; moduleSize = 1.f; floorHeight = 3.f; footprintStyle = "rectangle"; roofStyle = "gable"; entranceSide = "north"; }
 
@@ -139,10 +133,13 @@ eve::Result<void> HouseLayout::fromJson(std::string_view json) {
     std::string               parseError;
     const eve::json::Document doc = eve::json::Document::parse(std::string(json), &parseError);
     if (!doc.valid())
-        return failure<void>(eve::DiagnosticCode::ParseError,
-                             parseError.empty() ? "invalid house layout JSON" : parseError);
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::ParseError, parseError.empty() ? "invalid house layout JSON" : parseError, {}, {},
+            "housegen.layout"));
     const Value o = doc.root();
-    if (!o.isObject()) return failure<void>(eve::DiagnosticCode::ParseError, "layout must be an object");
+    if (!o.isObject())
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::ParseError, "layout must be an object", {}, {}, "housegen.layout"));
 
     HouseLayout parsed;
     parsed.seed = static_cast<unsigned>(o.getInt("seed", 1));
@@ -154,13 +151,15 @@ eve::Result<void> HouseLayout::fromJson(std::string_view json) {
 
     const Value instances = o.get("instances");
     if (!instances.isArray())
-        return failure<void>(eve::DiagnosticCode::ParseError, "layout has no instances", "instances");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::ParseError, "layout has no instances", "instances", {}, "housegen.layout"));
     for (size_t i = 0; i < instances.size(); ++i) {
         const Value v = instances.at(i);
         // componentId and the cell coordinates are required, not defaulted.
         if (!v.has("componentId") || !v.has("x") || !v.has("y") || !v.has("z"))
-            return failure<void>(eve::DiagnosticCode::ParseError, "instance needs componentId, x, y and z",
-                                 "instances");
+            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::ParseError,
+                                                                     "instance needs componentId, x, y and z",
+                                                                     "instances", {}, "housegen.layout"));
         parsed.instances.push_back({v.getString("componentId"), v.getInt("x"), v.getInt("y"),
                                     v.getInt("z"), v.getInt("rotationDeg", 0)});
     }
@@ -169,7 +168,9 @@ eve::Result<void> HouseLayout::fromJson(std::string_view json) {
     for (size_t i = 0; i < rooms.size(); ++i) {
         const Value v = rooms.at(i);
         if (!v.has("type") || !v.has("x") || !v.has("y") || !v.has("width") || !v.has("depth"))
-            return failure<void>(eve::DiagnosticCode::ParseError, "room needs type, x, y, width and depth", "rooms");
+            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::ParseError,
+                                                                     "room needs type, x, y, width and depth", "rooms",
+                                                                     {}, "housegen.layout"));
         parsed.rooms.push_back({v.getString("type"), v.getInt("x"), v.getInt("y"),
                                 v.getInt("width"), v.getInt("depth")});
     }
@@ -190,10 +191,13 @@ eve::Result<void> HouseLayout::validate(const HouseComponentLibrary &library) co
     for (const auto &i : instances) {
         const auto component = library.find(i.componentId);
         if (!component)
-            return failure<void>(eve::DiagnosticCode::NotFound, "unknown component: " + i.componentId, "componentId");
+            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::NotFound,
+                                                                     "unknown component: " + i.componentId,
+                                                                     "componentId", {}, "housegen.layout"));
         const HouseComponent &c = component->get();
         if (i.rotationDeg % 90 != 0)
-            return failure<void>(eve::DiagnosticCode::InvalidArgument, "non-cardinal rotation", "rotationDeg");
+            return eve::Result<void>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::InvalidArgument, "non-cardinal rotation", "rotationDeg", {}, "housegen.layout"));
         const bool quarter = (i.rotationDeg / 90) % 2 != 0;
         const int  w = quarter ? c.depth : c.width, d = quarter ? c.width : c.depth;
         for (int y = 0; y < d; ++y) for (int x = 0; x < w; ++x) {
@@ -204,7 +208,9 @@ eve::Result<void> HouseLayout::validate(const HouseComponentLibrary &library) co
             const std::string key         = std::to_string(i.x + x) + ":" + std::to_string(i.y + y) + ":" +
                                     std::to_string(i.z) + ":" + c.category + orientation;
             if (!occupied.insert(key).second)
-                return failure<void>(eve::DiagnosticCode::Conflict, "overlapping " + c.category + " components");
+                return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::Conflict,
+                                                                         "overlapping " + c.category + " components",
+                                                                         {}, {}, "housegen.layout"));
             if (c.category == "floor") {
                 floorCells.insert(cellKey(i.x + x, i.y + y, i.z));
                 floors.emplace_back(i.x + x, i.y + y, i.z);
@@ -215,15 +221,22 @@ eve::Result<void> HouseLayout::validate(const HouseComponentLibrary &library) co
         entrance = entrance || (c.category == "door" && i.z == 0);
         roof     = roof || c.category == "roof";
     }
-    if (!entrance) return failure<void>(eve::DiagnosticCode::InvalidArgument, "house has no entrance");
-    if (!roof) return failure<void>(eve::DiagnosticCode::InvalidArgument, "house has no roof");
+    if (!entrance)
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                 "house has no entrance", {}, {}, "housegen.layout"));
+    if (!roof)
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                 "house has no roof", {}, {}, "housegen.layout"));
     for (const auto &[x, y, z] : floors) {
         if (z > 0 && !floorCells.contains(cellKey(x, y, z - 1))) {
-            return failure<void>(eve::DiagnosticCode::InvalidArgument, "upper floor has no structural support");
+            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                     "upper floor has no structural support", {}, {},
+                                                                     "housegen.layout"));
         }
         if (!floorCells.contains(cellKey(x, y, z + 1)) &&
             !roofCells.contains(cellKey(x, y, z + 1))) {
-            return failure<void>(eve::DiagnosticCode::InvalidArgument, "floor cell has no roof coverage");
+            return eve::Result<void>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::InvalidArgument, "floor cell has no roof coverage", {}, {}, "housegen.layout"));
         }
     }
     return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
@@ -255,8 +268,9 @@ eve::Result<std::vector<ecs::EntityHandle>> HouseLayout::instantiate(graphics::G
             const auto component = library.find(i.componentId);
             if (!component) {
                 destroyCreated();
-                return failure<std::vector<ecs::EntityHandle>>(eve::DiagnosticCode::NotFound,
-                                                               "unknown component: " + i.componentId, "componentId");
+                return eve::Result<std::vector<ecs::EntityHandle>>::failure(
+                    eve::Diagnostic::error(eve::DiagnosticCode::NotFound, "unknown component: " + i.componentId,
+                                           "componentId", {}, "housegen.layout"));
             }
             const HouseComponent &c = component->get();
             // eve::ref cannot represent null, so look up before default-inserting.
@@ -324,8 +338,9 @@ eve::Result<std::vector<ecs::EntityHandle>> HouseLayout::instantiate(graphics::G
                 auto *e = graphics::Renderable3D::create();
                 if (!e) {
                     destroyCreated();
-                    return failure<std::vector<ecs::EntityHandle>>(eve::DiagnosticCode::Failed,
-                                                                   "failed to create Renderable3D entity");
+                    return eve::Result<std::vector<ecs::EntityHandle>>::failure(
+                        eve::Diagnostic::error(eve::DiagnosticCode::Failed, "failed to create Renderable3D entity", {},
+                                               {}, "housegen.layout"));
                 }
                 e->setMesh(part.mesh);
                 e->setPosition(i.x * moduleSize, i.z * floorHeight, i.y * moduleSize);
@@ -346,11 +361,12 @@ eve::Result<std::vector<ecs::EntityHandle>> HouseLayout::instantiate(graphics::G
         }
     } catch (const std::exception &e) {
         destroyCreated();
-        return failure<std::vector<ecs::EntityHandle>>(eve::DiagnosticCode::Failed, e.what());
+        return eve::Result<std::vector<ecs::EntityHandle>>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::Failed, e.what(), {}, {}, "housegen.layout"));
     } catch (...) {
         destroyCreated();
-        return failure<std::vector<ecs::EntityHandle>>(eve::DiagnosticCode::Failed,
-                                                       "house layout instantiation failed");
+        return eve::Result<std::vector<ecs::EntityHandle>>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Failed, "house layout instantiation failed", {}, {}, "housegen.layout"));
     }
     return eve::Result<std::vector<ecs::EntityHandle>>::success(std::move(entities),
                                                                 eve::Status::success(eve::StatusCode::Applied));

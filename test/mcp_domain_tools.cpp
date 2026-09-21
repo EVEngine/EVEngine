@@ -10,15 +10,15 @@
 
 #include "common/Capability.h"
 #include "common/DecalQuery.h"
+#include "common/Module.h"
 #include "common/Profile.h"
 #include "common/ProfilerQuery.h"
 #include "common/SensingQuery.h"
-#include "common/Module.h"
 #include "decal/Decal.h"
-#include "profiler/Profiler.h"
-#include "sensing/Sensing.h"
 #include "devtools/McpDomainTools.hpp"
 #include "devtools/McpServer.hpp"
+#include "profiler/Profiler.h"
+#include "sensing/Sensing.h"
 
 #include <Poco/JSON/Array.h>
 #include <Poco/JSON/Object.h>
@@ -37,9 +37,9 @@ namespace {
 std::vector<std::string> runStdioSession(const std::string& requests, std::size_t expectedResponses) {
     auto& mcp = McpServer::instance();
     mcp.stop();
-    std::istringstream in(requests);
-    std::ostringstream out;
-    const bool         started = mcp.listenStdio(in, out);
+    std::istringstream       in(requests);
+    std::ostringstream       out;
+    const bool               started = mcp.listenStdio(in, out);
     std::vector<std::string> responses;
     if (started) {
         for (int attempt = 0; attempt < 400; ++attempt) {
@@ -68,10 +68,10 @@ std::string callToolOnce(const std::string& name, const std::string& argumentsJs
     const std::vector<std::string> responses = runStdioSession(requests, 2);
     if (responses.size() < 2) return {};
     try {
-        Poco::JSON::Parser      parser;
-        auto                    object  = parser.parse(responses[1]).extract<Poco::JSON::Object::Ptr>();
-        auto                    result  = object ? object->getObject("result") : Poco::JSON::Object::Ptr();
-        auto                    content = result ? result->getArray("content") : Poco::JSON::Array::Ptr();
+        Poco::JSON::Parser parser;
+        auto               object  = parser.parse(responses[1]).extract<Poco::JSON::Object::Ptr>();
+        auto               result  = object ? object->getObject("result") : Poco::JSON::Object::Ptr();
+        auto               content = result ? result->getArray("content") : Poco::JSON::Array::Ptr();
         if (!content || content->size() == 0) return {};
         return content->getObject(0)->getValue<std::string>("text");
     } catch (...) {

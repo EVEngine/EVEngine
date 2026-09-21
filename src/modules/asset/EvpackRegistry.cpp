@@ -7,12 +7,6 @@
 namespace eve::asset {
 namespace {
 
-template <class T>
-Result<T> registryFailure(DiagnosticCode code, std::string message, std::string path = {}) {
-    return Result<T>::failure(Diagnostic::error(code, std::move(message), std::move(path), {},
-                                                "asset.evpack.registry"));
-}
-
 Result<void> registryFailureVoid(DiagnosticCode code, std::string message) {
     return Result<void>::failure(Diagnostic::error(code, std::move(message), {}, {},
                                                    "asset.evpack.registry"));
@@ -59,12 +53,13 @@ Result<PreparedEvpackMount> prepareEvpackMount(std::span<const std::uint8_t> byt
 
 Result<EvpackRegistrySubscription> EvpackRegistry::subscribe(Callback callback) {
     if (!callback)
-        return registryFailure<EvpackRegistrySubscription>(DiagnosticCode::InvalidArgument,
-                                                           "registry callback is empty");
+        return Result<EvpackRegistrySubscription>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "registry callback is empty", {}, {}, "asset.evpack.registry"));
     std::lock_guard lock(mutex_);
     if (nextSubscription_ == std::numeric_limits<std::uint64_t>::max())
-        return registryFailure<EvpackRegistrySubscription>(DiagnosticCode::InvariantViolation,
-                                                           "registry subscription identity is exhausted");
+        return Result<EvpackRegistrySubscription>::failure(
+            Diagnostic::error(DiagnosticCode::InvariantViolation, "registry subscription identity is exhausted", {}, {},
+                              "asset.evpack.registry"));
     const auto id = ++nextSubscription_;
     callbacks_.emplace(id, std::move(callback));
     return Result<EvpackRegistrySubscription>::success({id});
@@ -83,8 +78,9 @@ Result<void> EvpackRegistry::unsubscribe(EvpackRegistrySubscription subscription
 
 Result<EvpackMountReceipt> EvpackRegistry::commit(PreparedEvpackMount candidate) {
     if (!candidate.pack_)
-        return registryFailure<EvpackMountReceipt>(DiagnosticCode::InvalidArgument,
-                                                   "mount candidate has already been consumed");
+        return Result<EvpackMountReceipt>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                                     "mount candidate has already been consumed", {},
+                                                                     {}, "asset.evpack.registry"));
     const PersistentId packageId = candidate.pack_->packageId();
     bool replaced = false;
     EvpackHandle handle;
@@ -101,19 +97,18 @@ Result<EvpackMountReceipt> EvpackRegistry::commit(PreparedEvpackMount candidate)
             if (mountedId == packageId) continue;
             for (const auto& chunk : entry.pack->chunks()) {
                 if (candidateAssets.contains(chunk.assetId))
-                    return registryFailure<EvpackMountReceipt>(
-                        DiagnosticCode::Conflict,
-                        "runtime asset identity already has another mounted provider",
-                        chunk.assetId.format());
+                    return Result<EvpackMountReceipt>::failure(Diagnostic::error(
+                        DiagnosticCode::Conflict, "runtime asset identity already has another mounted provider",
+                        chunk.assetId.format(), {}, "asset.evpack.registry"));
                 available.emplace(chunk.assetId);
             }
         }
         for (const auto& chunk : candidate.pack_->chunks()) {
             for (const auto& dependency : chunk.dependencies) {
                 if (!available.contains(dependency))
-                    return registryFailure<EvpackMountReceipt>(
-                        DiagnosticCode::NotFound, "required runtime dependency is not mounted",
-                        dependency.format());
+                    return Result<EvpackMountReceipt>::failure(
+                        Diagnostic::error(DiagnosticCode::NotFound, "required runtime dependency is not mounted",
+                                          dependency.format(), {}, "asset.evpack.registry"));
             }
         }
         for (const auto& [mountedId, entry] : packages_) {
@@ -121,18 +116,18 @@ Result<EvpackMountReceipt> EvpackRegistry::commit(PreparedEvpackMount candidate)
             for (const auto& chunk : entry.pack->chunks()) {
                 for (const auto& dependency : chunk.dependencies) {
                     if (!available.contains(dependency))
-                        return registryFailure<EvpackMountReceipt>(
-                            DiagnosticCode::NotFound,
-                            "replacement would invalidate a mounted package dependency",
-                            dependency.format());
+                        return Result<EvpackMountReceipt>::failure(Diagnostic::error(
+                            DiagnosticCode::NotFound, "replacement would invalidate a mounted package dependency",
+                            dependency.format(), {}, "asset.evpack.registry"));
                 }
             }
         }
         replaced = packages_.contains(packageId);
         std::uint64_t& next = nextGenerations_[packageId];
         if (next == std::numeric_limits<std::uint64_t>::max())
-            return registryFailure<EvpackMountReceipt>(DiagnosticCode::InvariantViolation,
-                                                       "package generation is exhausted", packageId.format());
+            return Result<EvpackMountReceipt>::failure(
+                Diagnostic::error(DiagnosticCode::InvariantViolation, "package generation is exhausted",
+                                  packageId.format(), {}, "asset.evpack.registry"));
         ++next;
         auto pack = std::move(candidate.pack_);
         handle = {packageId, pack->buildId(), next};
@@ -154,13 +149,13 @@ Result<std::shared_ptr<const Evpack>> EvpackRegistry::resolve(const EvpackHandle
     std::lock_guard lock(mutex_);
     const auto found = packages_.find(handle.packageId);
     if (found == packages_.end())
-        return registryFailure<std::shared_ptr<const Evpack>>(DiagnosticCode::NotFound,
-                                                              "runtime package is not mounted",
-                                                              handle.packageId.format());
+        return Result<std::shared_ptr<const Evpack>>::failure(
+            Diagnostic::error(DiagnosticCode::NotFound, "runtime package is not mounted", handle.packageId.format(), {},
+                              "asset.evpack.registry"));
     if (!sameGeneration(handle, found->second))
-        return registryFailure<std::shared_ptr<const Evpack>>(DiagnosticCode::StaleHandle,
-                                                              "runtime package handle is stale",
-                                                              handle.packageId.format());
+        return Result<std::shared_ptr<const Evpack>>::failure(
+            Diagnostic::error(DiagnosticCode::StaleHandle, "runtime package handle is stale", handle.packageId.format(),
+                              {}, "asset.evpack.registry"));
     return Result<std::shared_ptr<const Evpack>>::success(found->second.pack);
 }
 
@@ -168,8 +163,8 @@ Result<EvpackAssetHandle> EvpackRegistry::resolveAsset(
     const AssetRef& assetRef, std::string_view expectedType,
     const EvpackCapabilities& capabilities) const {
     if (expectedType.empty())
-        return registryFailure<EvpackAssetHandle>(DiagnosticCode::InvalidArgument,
-                                                  "expected runtime asset type is empty");
+        return Result<EvpackAssetHandle>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "expected runtime asset type is empty", {}, {}, "asset.evpack.registry"));
     std::lock_guard lock(mutex_);
     bool identityFound = false;
     bool typeFound = false;
@@ -183,9 +178,9 @@ Result<EvpackAssetHandle> EvpackRegistry::resolveAsset(
                                        std::to_string(chunk.schemaVersion.value());
             if (actual == expectedType) typeFound = true;
             else
-                return registryFailure<EvpackAssetHandle>(
-                    DiagnosticCode::TypeMismatch,
-                    "runtime asset provider has a different canonical type", assetRef.format());
+                return Result<EvpackAssetHandle>::failure(Diagnostic::error(
+                    DiagnosticCode::TypeMismatch, "runtime asset provider has a different canonical type",
+                    assetRef.format(), {}, "asset.evpack.registry"));
         }
         if (!representative) continue;
         auto selected = selectEvpackVariant(*entry.pack, capabilities);
@@ -195,12 +190,12 @@ Result<EvpackAssetHandle> EvpackRegistry::resolveAsset(
              std::string(expectedType), capabilities});
     }
     if (identityFound && typeFound)
-        return registryFailure<EvpackAssetHandle>(DiagnosticCode::Unsupported,
-                                                  "asset provider has no compatible variant",
-                                                  assetRef.format());
-    return registryFailure<EvpackAssetHandle>(DiagnosticCode::NotFound,
-                                              "runtime asset has no mounted provider",
-                                              assetRef.format());
+        return Result<EvpackAssetHandle>::failure(Diagnostic::error(DiagnosticCode::Unsupported,
+                                                                    "asset provider has no compatible variant",
+                                                                    assetRef.format(), {}, "asset.evpack.registry"));
+    return Result<EvpackAssetHandle>::failure(Diagnostic::error(DiagnosticCode::NotFound,
+                                                                "runtime asset has no mounted provider",
+                                                                assetRef.format(), {}, "asset.evpack.registry"));
 }
 
 Result<RuntimeAssetPayload> EvpackRegistry::readAsset(
@@ -226,8 +221,8 @@ Result<EvpackChunkHandle> EvpackRegistry::resolveChunk(const EvpackHandle& handl
             chunk.variantIndex == variantIndex)
             return Result<EvpackChunkHandle>::success({handle, static_cast<std::uint32_t>(index)});
     }
-    return registryFailure<EvpackChunkHandle>(DiagnosticCode::NotFound, "runtime chunk is not present",
-                                               assetId.format());
+    return Result<EvpackChunkHandle>::failure(Diagnostic::error(
+        DiagnosticCode::NotFound, "runtime chunk is not present", assetId.format(), {}, "asset.evpack.registry"));
 }
 
 Result<std::vector<std::uint8_t>> EvpackRegistry::copyChunkBytes(const EvpackChunkHandle& handle) const {
@@ -235,8 +230,8 @@ Result<std::vector<std::uint8_t>> EvpackRegistry::copyChunkBytes(const EvpackChu
     if (!resolved) return Result<std::vector<std::uint8_t>>::failure(resolved.status());
     const auto pack = std::move(resolved).takeValue();
     if (handle.chunkIndex >= pack->chunks().size())
-        return registryFailure<std::vector<std::uint8_t>>(DiagnosticCode::InvalidArgument,
-                                                          "chunk index is outside the TOC");
+        return Result<std::vector<std::uint8_t>>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "chunk index is outside the TOC", {}, {}, "asset.evpack.registry"));
     return pack->decodeChunk(handle.chunkIndex, pack->chunks()[handle.chunkIndex].decodedSize);
 }
 
@@ -246,11 +241,11 @@ Result<EvpackUnmountReceipt> EvpackRegistry::unmount(const EvpackHandle& handle)
         std::lock_guard lock(mutex_);
         const auto found = packages_.find(handle.packageId);
         if (found == packages_.end())
-            return registryFailure<EvpackUnmountReceipt>(DiagnosticCode::NotFound,
-                                                         "runtime package is not mounted");
+            return Result<EvpackUnmountReceipt>::failure(Diagnostic::error(
+                DiagnosticCode::NotFound, "runtime package is not mounted", {}, {}, "asset.evpack.registry"));
         if (!sameGeneration(handle, found->second))
-            return registryFailure<EvpackUnmountReceipt>(DiagnosticCode::StaleHandle,
-                                                         "runtime package handle is stale");
+            return Result<EvpackUnmountReceipt>::failure(Diagnostic::error(
+                DiagnosticCode::StaleHandle, "runtime package handle is stale", {}, {}, "asset.evpack.registry"));
         packages_.erase(found);
         callbacks.reserve(callbacks_.size());
         for (const auto& [id, callback] : callbacks_) {

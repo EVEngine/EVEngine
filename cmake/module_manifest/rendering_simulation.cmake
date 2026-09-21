@@ -118,9 +118,6 @@ eve_declare_module(NAME animation LAYER 4 SCRIPT Animation SLOT anim
 eve_declare_module(NAME daynight LIB EVDayNight LAYER 4 SCRIPT DayNight SLOT daynight
                    DEPS graphics
                    GROUP 3d web)
-eve_declare_module(NAME weather LAYER 4 SCRIPT Weather SLOT weather
-                   DEPS graphics
-                   GROUP 3d web)
 eve_declare_module(NAME decal LAYER 4 SCRIPT Decal SLOT decal
                    DEPS graphics
                    GROUP 3d)

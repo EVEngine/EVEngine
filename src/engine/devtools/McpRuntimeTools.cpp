@@ -32,8 +32,7 @@ constexpr int kMaxScreenshotBytes     = 32 * 1024 * 1024;
 
 /** Levels ConsolePanel stores for script/agent/engine output (see ConsolePanel.hpp). */
 const std::vector<std::string>& consoleLevels() {
-    static const std::vector<std::string> levels{"debug",   "info", "warn", "error",
-                                                 "print",   "cmd",  "result", "engine"};
+    static const std::vector<std::string> levels{"debug", "info", "warn", "error", "print", "cmd", "result", "engine"};
     return levels;
 }
 
@@ -167,9 +166,7 @@ struct SessionSegment {
     bool crashed = false;
 };
 
-bool contains(const std::string& haystack, const char* needle) {
-    return haystack.find(needle) != std::string::npos;
-}
+bool contains(const std::string& haystack, const char* needle) { return haystack.find(needle) != std::string::npos; }
 
 /** Read at most the last kCrashLogWindowBytes of the log, dropping a split head line. */
 std::string readLogWindow(const std::string& path, std::uint64_t* totalBytes) {
@@ -203,9 +200,9 @@ CrashLogScan scanCrashLog(int tailLines) {
     const std::string window = readLogWindow(path, &scan.bytes);
     scan.scannedBytes        = window.size();
 
-    std::istringstream       stream(window);
-    std::string              line;
-    std::vector<std::string> all;
+    std::istringstream          stream(window);
+    std::string                 line;
+    std::vector<std::string>    all;
     std::vector<SessionSegment> segments;
     while (std::getline(stream, line)) {
         if (!line.empty() && line.back() == '\r') line.pop_back();
@@ -223,8 +220,8 @@ CrashLogScan scanCrashLog(int tailLines) {
         if (contains(line, "] crash | ")) {
             ++scan.crashes;
             segments.back().crashed = true;
-            const auto open  = line.find('[');
-            const auto close = line.find(']');
+            const auto open         = line.find('[');
+            const auto close        = line.find(']');
             if (open != std::string::npos && close != std::string::npos && close > open + 1)
                 scan.lastCrashAt = line.substr(open + 1, close - open - 1);
         }

@@ -86,10 +86,10 @@ public:
      * @ownership 适配器由本模块持有并随模块销毁；bag / equipment 所有权不变。
      * @thread 所有者模拟线程。
      */
-    [[nodiscard]] eve::Result<void> publishGameplay(const std::string& instanceId, const std::string& ownerId, Bag* bag,
-                                                    EquipmentSet* equipment = nullptr);
+    [[nodiscard]] eve::Result<void> publishGameplay(const std::string &instanceId, const std::string &ownerId, Bag *bag,
+                                                    EquipmentSet *equipment = nullptr);
     /** @brief 取消发布一个实例；该实例未发布（或 id 非法）时返回诊断。 */
-    [[nodiscard]] eve::Result<void> unpublishGameplay(const std::string& instanceId);
+    [[nodiscard]] eve::Result<void> unpublishGameplay(const std::string &instanceId);
     /** @brief 取消发布本模块持有的全部玩法实例。 */
     void clearGameplayControls();
     /** @brief 已发布的玩法实例数量。 */

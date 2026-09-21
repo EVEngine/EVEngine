@@ -9,12 +9,6 @@ namespace eve::vehicle {
 
 namespace {
 
-template <class T>
-eve::Result<T> failure(eve::DiagnosticCode code, std::string message, std::string path = {}) {
-    return eve::Result<T>::failure(
-        eve::Diagnostic::error(code, std::move(message), std::move(path), {}, "vehicle.orders"));
-}
-
 }  // namespace
 
 struct VehicleOrderQueueAdapter::Impl {
@@ -84,7 +78,8 @@ eve::Result<void> VehicleOrderQueueAdapter::completeCurrent() {
     auto           currentRef = impl_->queue.current();
     orders::Order* current    = currentRef ? &currentRef->get() : nullptr;
     if (current == nullptr)
-        return failure<void>(eve::DiagnosticCode::Conflict, "vehicle order queue has no active order", "order");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Conflict, "vehicle order queue has no active order", "order", {}, "vehicle.orders"));
     auto completed = impl_->queue.complete(current->id);
     if (completed) pruneTerminalPayloads();
     return completed;
@@ -94,7 +89,8 @@ eve::Result<void> VehicleOrderQueueAdapter::failCurrent(const std::string& reaso
     auto           currentRef = impl_->queue.current();
     orders::Order* current    = currentRef ? &currentRef->get() : nullptr;
     if (current == nullptr)
-        return failure<void>(eve::DiagnosticCode::Conflict, "vehicle order queue has no active order", "order");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Conflict, "vehicle order queue has no active order", "order", {}, "vehicle.orders"));
     auto failed = impl_->queue.fail(current->id, reason);
     if (failed) pruneTerminalPayloads();
     return failed;

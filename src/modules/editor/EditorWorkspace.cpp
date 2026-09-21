@@ -17,11 +17,6 @@ std::optional<WorkspaceRegion> parseWorkspaceRegion(const std::string& region) {
     return std::nullopt;
 }
 
-template <class T>
-EditorResult<T> workspaceError(EditorStatus status, const char* rule, std::string message) {
-    return eve::editing::failed<T>(status, RuleId(rule), std::move(message));
-}
-
 }  // namespace
 
 std::string_view workspaceRegionName(WorkspaceRegion region) {
@@ -52,17 +47,20 @@ bool EditorWorkspace::registerPanel(const std::string& id, const std::string& ti
 
 EditorResult<WorkspacePanelDescriptor> EditorWorkspace::registerPanel(WorkspacePanelDescriptor descriptor) {
     if (descriptor.id.empty())
-        return workspaceError<WorkspacePanelDescriptor>(EditorStatus::Rejected, "editor.workspace.empty-panel-id",
-                                                         "Workspace panel id must not be empty");
+        return eve::editing::failed<WorkspacePanelDescriptor>(
+            EditorStatus::Rejected, RuleId("editor.workspace.empty-panel-id"), "Workspace panel id must not be empty");
     if (descriptor.title.empty())
-        return workspaceError<WorkspacePanelDescriptor>(EditorStatus::Rejected, "editor.workspace.empty-panel-title",
-                                                         "Workspace panel title must not be empty");
+        return eve::editing::failed<WorkspacePanelDescriptor>(EditorStatus::Rejected,
+                                                              RuleId("editor.workspace.empty-panel-title"),
+                                                              "Workspace panel title must not be empty");
     if (!parseWorkspaceRegion(descriptor.region))
-        return workspaceError<WorkspacePanelDescriptor>(EditorStatus::Rejected, "editor.workspace.invalid-region",
-                                                         "Workspace panel uses an unsupported dock region");
+        return eve::editing::failed<WorkspacePanelDescriptor>(EditorStatus::Rejected,
+                                                              RuleId("editor.workspace.invalid-region"),
+                                                              "Workspace panel uses an unsupported dock region");
     if (findPanel(descriptor.id))
-        return workspaceError<WorkspacePanelDescriptor>(EditorStatus::Conflict, "editor.workspace.duplicate-panel",
-                                                         "Workspace panel id is already registered: " + descriptor.id);
+        return eve::editing::failed<WorkspacePanelDescriptor>(
+            EditorStatus::Conflict, RuleId("editor.workspace.duplicate-panel"),
+            "Workspace panel id is already registered: " + descriptor.id);
     const std::string id = descriptor.id;
     panels_.push_back(std::move(descriptor));
     sortPanels();
@@ -79,8 +77,9 @@ bool EditorWorkspace::removePanel(const std::string& id) {
 EditorResult<WorkspacePanelDescriptor> EditorWorkspace::removePanel(const StableId& id) {
     const auto found = std::find_if(panels_.begin(), panels_.end(), [&](const auto& panel) { return panel.id == id.value(); });
     if (found == panels_.end())
-        return workspaceError<WorkspacePanelDescriptor>(EditorStatus::NotFound, "editor.workspace.panel-not-found",
-                                                         "Workspace panel is not registered: " + id.value());
+        return eve::editing::failed<WorkspacePanelDescriptor>(EditorStatus::NotFound,
+                                                              RuleId("editor.workspace.panel-not-found"),
+                                                              "Workspace panel is not registered: " + id.value());
     WorkspacePanelDescriptor removed = *found;
     panels_.erase(found);
     if (activePanel_ == id.value()) activePanel_ = panels_.empty() ? std::string{} : panels_.front().id;
@@ -104,8 +103,9 @@ EditorResult<WorkspacePanelDescriptor> EditorWorkspace::movePanel(const StableId
                                                                    int order) {
     WorkspacePanelDescriptor* panel = findPanel(id.value());
     if (!panel)
-        return workspaceError<WorkspacePanelDescriptor>(EditorStatus::NotFound, "editor.workspace.panel-not-found",
-                                                         "Workspace panel is not registered: " + id.value());
+        return eve::editing::failed<WorkspacePanelDescriptor>(EditorStatus::NotFound,
+                                                              RuleId("editor.workspace.panel-not-found"),
+                                                              "Workspace panel is not registered: " + id.value());
     const std::string regionName(workspaceRegionName(region));
     if (panel->region == regionName && panel->order == order) {
         return EditorResult<WorkspacePanelDescriptor>::success(
@@ -120,8 +120,8 @@ EditorResult<WorkspacePanelDescriptor> EditorWorkspace::movePanel(const StableId
 
 EditorResult<WorkspacePanelDescriptor> EditorWorkspace::panelAt(std::size_t index) const {
     if (index >= panels_.size())
-        return workspaceError<WorkspacePanelDescriptor>(EditorStatus::NotFound, "editor.workspace.panel-index",
-                                                         "Workspace panel index is out of range");
+        return eve::editing::failed<WorkspacePanelDescriptor>(
+            EditorStatus::NotFound, RuleId("editor.workspace.panel-index"), "Workspace panel index is out of range");
     return eve::editing::applied<WorkspacePanelDescriptor>(panels_[index]);
 }
 
@@ -169,11 +169,13 @@ bool EditorWorkspace::activatePanel(const std::string& id) {
 EditorResult<WorkspacePanelDescriptor> EditorWorkspace::activatePanel(const StableId& id) {
     const WorkspacePanelDescriptor* panel = findPanel(id.value());
     if (!panel)
-        return workspaceError<WorkspacePanelDescriptor>(EditorStatus::NotFound, "editor.workspace.panel-not-found",
-                                                         "Workspace panel is not registered: " + id.value());
+        return eve::editing::failed<WorkspacePanelDescriptor>(EditorStatus::NotFound,
+                                                              RuleId("editor.workspace.panel-not-found"),
+                                                              "Workspace panel is not registered: " + id.value());
     if (!panel->visible)
-        return workspaceError<WorkspacePanelDescriptor>(EditorStatus::Rejected, "editor.workspace.panel-hidden",
-                                                         "Hidden workspace panels cannot be activated");
+        return eve::editing::failed<WorkspacePanelDescriptor>(EditorStatus::Rejected,
+                                                              RuleId("editor.workspace.panel-hidden"),
+                                                              "Hidden workspace panels cannot be activated");
     if (activePanel_ == id.value()) {
         return EditorResult<WorkspacePanelDescriptor>::success(
             *panel, eve::Status::success(EditorStatus::NoOp));
@@ -241,8 +243,8 @@ bool EditorWorkspace::setMode(const std::string& mode) {
 
 EditorResult<StableId> EditorWorkspace::setModeId(StableId mode) {
     if (mode.empty())
-        return workspaceError<StableId>(EditorStatus::Rejected, "editor.workspace.empty-mode",
-                                        "Workspace mode must not be empty");
+        return eve::editing::failed<StableId>(EditorStatus::Rejected, RuleId("editor.workspace.empty-mode"),
+                                              "Workspace mode must not be empty");
     if (mode_ == mode.value()) {
         return EditorResult<StableId>::success(std::move(mode), eve::Status::success(EditorStatus::NoOp));
     }
@@ -261,8 +263,9 @@ bool EditorWorkspace::select(const std::string& channel, const std::string& doma
 EditorResult<SelectionSnapshot> EditorWorkspace::selectItem(std::string channel, SelectionItem selected,
                                                              bool additive) {
     if (channel.empty() || selected.target.empty() || selected.item.empty())
-        return workspaceError<SelectionSnapshot>(EditorStatus::Rejected, "editor.workspace.invalid-selection",
-                                                  "Selection requires a channel, target and item");
+        return eve::editing::failed<SelectionSnapshot>(EditorStatus::Rejected,
+                                                       RuleId("editor.workspace.invalid-selection"),
+                                                       "Selection requires a channel, target and item");
     std::vector<SelectionItem> items;
     if (additive) items = selection_.snapshot(channel).items;
     if (std::find(items.begin(), items.end(), selected) == items.end()) items.push_back(selected);

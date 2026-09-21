@@ -16,12 +16,6 @@ Result<void> sessionFailure(DiagnosticCode code, std::string message, std::strin
         Diagnostic::error(code, std::move(message), std::move(path), {}, "procgen.meshDeformationSession"));
 }
 
-template <class T>
-Result<T> sessionFailureValue(DiagnosticCode code, std::string message, std::string path = {}) {
-    return Result<T>::failure(
-        Diagnostic::error(code, std::move(message), std::move(path), {}, "procgen.meshDeformationSession"));
-}
-
 bool validMesh(const MeshBuild& mesh) {
     if (mesh.empty() || mesh.positions().size() % 3u != 0u || mesh.normals().size() != mesh.positions().size() ||
         mesh.uvs().size() != mesh.positions().size() / 3u * 2u || mesh.indices().size() % 3u != 0u)
@@ -543,11 +537,13 @@ Result<void> MeshDeformationSession::requestColliderRefreshResult() {
 
 Result<bool> MeshDeformationSession::updateColliderRefreshResult(float dt) {
     if (!initialized_ || !colliderRefreshConfigured_)
-        return sessionFailureValue<bool>(DiagnosticCode::PreconditionViolation, "collider refresh is not configured",
-                                         "colliderRefresh");
+        return Result<bool>::failure(Diagnostic::error(DiagnosticCode::PreconditionViolation,
+                                                       "collider refresh is not configured", "colliderRefresh", {},
+                                                       "procgen.meshDeformationSession"));
     if (!std::isfinite(dt) || dt < 0.f)
-        return sessionFailureValue<bool>(DiagnosticCode::InvalidArgument, "collider refresh dt must be non-negative",
-                                         "colliderRefresh.dt");
+        return Result<bool>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                       "collider refresh dt must be non-negative", "colliderRefresh.dt",
+                                                       {}, "procgen.meshDeformationSession"));
     if (colliderRefreshMode_ == "everyFrame") return Result<bool>::success(true);
     if (colliderRefreshMode_ == "interval") {
         colliderRefreshAccumulator_ += dt;
@@ -564,8 +560,9 @@ Result<bool> MeshDeformationSession::updateColliderRefreshResult(float dt) {
 
 Result<MeshBuild> MeshDeformationSession::colliderMeshResult() const {
     if (!initialized_ || !colliderRefreshConfigured_)
-        return sessionFailureValue<MeshBuild>(DiagnosticCode::PreconditionViolation,
-                                              "collider refresh is not configured", "colliderRefresh");
+        return Result<MeshBuild>::failure(Diagnostic::error(DiagnosticCode::PreconditionViolation,
+                                                            "collider refresh is not configured", "colliderRefresh", {},
+                                                            "procgen.meshDeformationSession"));
     MeshBuild collider  = current_;
     auto&     positions = collider.positions();
     for (std::size_t i = 0; i + 2u < positions.size(); i += 3u) {
@@ -580,11 +577,13 @@ Result<MeshBuild> MeshDeformationSession::colliderMeshResult() const {
 
 Result<int> MeshDeformationSession::selectVerticesSphereResult(float x, float y, float z, float radius, bool replace) {
     if (!initialized_)
-        return sessionFailureValue<int>(DiagnosticCode::PreconditionViolation, "vertex editor is not initialized",
-                                        "mesh");
+        return Result<int>::failure(Diagnostic::error(DiagnosticCode::PreconditionViolation,
+                                                      "vertex editor is not initialized", "mesh", {},
+                                                      "procgen.meshDeformationSession"));
     if (!std::isfinite(x) || !std::isfinite(y) || !std::isfinite(z) || !std::isfinite(radius) || radius <= 0.f)
-        return sessionFailureValue<int>(DiagnosticCode::InvalidArgument, "invalid spherical vertex selection",
-                                        "selection");
+        return Result<int>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                      "invalid spherical vertex selection", "selection", {},
+                                                      "procgen.meshDeformationSession"));
     auto        candidate     = replace ? std::vector<std::uint8_t>(selectedVertices_.size(), 0u) : selectedVertices_;
     const auto& positions     = current_.positions();
     const float radiusSquared = radius * radius;
@@ -600,11 +599,13 @@ Result<int> MeshDeformationSession::selectVerticesSphereResult(float x, float y,
 Result<int> MeshDeformationSession::selectVerticesBoxResult(float minX, float minY, float minZ, float maxX, float maxY,
                                                             float maxZ, bool replace) {
     if (!initialized_)
-        return sessionFailureValue<int>(DiagnosticCode::PreconditionViolation, "vertex editor is not initialized",
-                                        "mesh");
+        return Result<int>::failure(Diagnostic::error(DiagnosticCode::PreconditionViolation,
+                                                      "vertex editor is not initialized", "mesh", {},
+                                                      "procgen.meshDeformationSession"));
     if (!std::isfinite(minX) || !std::isfinite(minY) || !std::isfinite(minZ) || !std::isfinite(maxX) ||
         !std::isfinite(maxY) || !std::isfinite(maxZ) || minX > maxX || minY > maxY || minZ > maxZ)
-        return sessionFailureValue<int>(DiagnosticCode::InvalidArgument, "invalid box vertex selection", "selection");
+        return Result<int>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "invalid box vertex selection",
+                                                      "selection", {}, "procgen.meshDeformationSession"));
     auto        candidate = replace ? std::vector<std::uint8_t>(selectedVertices_.size(), 0u) : selectedVertices_;
     const auto& positions = current_.positions();
     for (int vertex = 0; vertex < current_.getVertexCount(); ++vertex) {
@@ -627,8 +628,9 @@ int MeshDeformationSession::selectedVertexCount() const noexcept {
 
 Result<MeshVertexSelectionCenter> MeshDeformationSession::selectedVertexCenterResult() const {
     if (!initialized_ || selectedVertexCount() == 0)
-        return sessionFailureValue<MeshVertexSelectionCenter>(DiagnosticCode::PreconditionViolation,
-                                                               "vertex center requires a selection", "selection");
+        return Result<MeshVertexSelectionCenter>::failure(
+            Diagnostic::error(DiagnosticCode::PreconditionViolation, "vertex center requires a selection", "selection",
+                              {}, "procgen.meshDeformationSession"));
     MeshVertexSelectionCenter center;
     const auto&               positions = current_.positions();
     int                       count     = 0;
@@ -745,8 +747,9 @@ Result<void> MeshDeformationSession::undoResult() {
 
 Result<MeshBuild> MeshDeformationSession::currentMeshResult() const {
     if (!initialized_)
-        return sessionFailureValue<MeshBuild>(DiagnosticCode::PreconditionViolation,
-                                              "sculpting session is not initialized", "mesh");
+        return Result<MeshBuild>::failure(Diagnostic::error(DiagnosticCode::PreconditionViolation,
+                                                            "sculpting session is not initialized", "mesh", {},
+                                                            "procgen.meshDeformationSession"));
     return Result<MeshBuild>::success(current_);
 }
 

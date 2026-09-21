@@ -3,10 +3,6 @@
 #include <utility>
 namespace eve::sceneloader_editing {
 namespace {
-template <class T>
-EditorResult<T> fail(EditorStatus s, const char* r, std::string m) {
-    return eve::editing::failed<T>(s, RuleId(r), std::move(m));
-}
 const EditorValue* field(const EditorValue& v, const char* k) {
     auto* o = v.getIf<EditorValue::Object>();
     if (!o) return nullptr;
@@ -29,8 +25,11 @@ bool errors(const std::vector<EditorDiagnostic>& d) {
 }  // namespace
 SceneImportTarget::SceneImportTarget(std::string id) : id_(std::move(id)) {}
 TargetDescriptor SceneImportTarget::describe() const {
-    return {
-        TargetId(id_), "scene-import", revision_, false, {CapabilityId("eve.editor.target.scene-import-properties")}};
+    return {TargetId(id_),
+            "scene-import",
+            revisionValue(),
+            false,
+            {CapabilityId("eve.editor.target.scene-import-properties")}};
 }
 void* SceneImportTarget::queryCapability(const CapabilityId& c) {
     return c == CapabilityId("eve.editor.target.scene-import-properties") ? static_cast<IPropertyProvider*>(this)
@@ -43,7 +42,7 @@ eve::Result<eve::Revision> SceneImportTarget::currentRevision(const SelectionSna
     if (!matches(s))
         return eve::Result<eve::Revision>::failure(eve::Diagnostic::error(
             eve::DiagnosticCode::InvalidArgument, "Scene import selection mismatch", "editor.scene-import.selection"));
-    return eve::Result<eve::Revision>::success(eve::Revision(revision_));
+    return eve::Result<eve::Revision>::success(eve::Revision(revisionValue()));
 }
 PropertySchema SceneImportTarget::schema(const SelectionSnapshot&) const {
     PropertySchema s;
@@ -89,8 +88,8 @@ EditorResult<DomainOperation> SceneImportTarget::makeSet(const SelectionSnapshot
     if (mode == PropertySetMode::Reset) return makeReset(s, p);
     auto d = schema(s).find(p);
     if (!matches(s) || !d || mode != PropertySetMode::Absolute || !validatePropertyValue(*d, v).ok())
-        return fail<DomainOperation>(EditorStatus::Rejected, "editor.scene-import.set",
-                                     "Scene import property edit is invalid");
+        return eve::editing::failed<DomainOperation>(EditorStatus::Rejected, RuleId("editor.scene-import.set"),
+                                                     "Scene import property edit is invalid");
     EditorValue payload = contentValue();
     auto&       object  = *payload.getIf<EditorValue::Object>();
     object[p.value()]   = v;
@@ -125,8 +124,8 @@ EditorResult<DomainOperation> SceneImportTarget::makeSet(const SelectionSnapshot
 EditorResult<DomainOperation> SceneImportTarget::makeReset(const SelectionSnapshot& s, const PropertyPath& p) const {
     auto d = schema(s).find(p);
     if (!d)
-        return fail<DomainOperation>(EditorStatus::Unsupported, "editor.scene-import.property",
-                                     "Unknown scene import property");
+        return eve::editing::failed<DomainOperation>(EditorStatus::Unsupported, RuleId("editor.scene-import.property"),
+                                                     "Unknown scene import property");
     return makeSet(s, p, d->defaultValue, PropertySetMode::Absolute);
 }
 std::vector<EditorDiagnostic> SceneImportTarget::validate() const {
@@ -150,14 +149,15 @@ std::vector<EditorDiagnostic> SceneImportTarget::validate() const {
 }
 EditorResult<void> SceneImportTarget::applyDomainOperation(const DomainOperation& op) {
     if (op.target != TargetId(id_) || op.type != "scene-import.replace.v1" || !op.payload.isWithinLimits(3, 32, 4096))
-        return fail<void>(EditorStatus::Rejected, "editor.scene-import.operation", "Scene import operation is invalid");
+        return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.scene-import.operation"),
+                                          "Scene import operation is invalid");
     SceneImportValue v;
     const auto *     s = field(op.payload, "source"), *p = field(op.payload, "preset");
     auto*            ss = s ? s->getIf<std::string>() : nullptr;
     auto*            ps = p ? p->getIf<std::string>() : nullptr;
     if (!ss || !ps)
-        return fail<void>(EditorStatus::Rejected, "editor.scene-import.payload",
-                          "Scene import source or preset is invalid");
+        return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.scene-import.payload"),
+                                          "Scene import source or preset is invalid");
     v.sourceAsset      = *ss;
     v.preset           = *ps;
     bool*       dst[]  = {&v.triangulate,  &v.generateNormals, &v.joinVertices, &v.flipUvs,       &v.improveCache,
@@ -168,17 +168,18 @@ EditorResult<void> SceneImportTarget::applyDomainOperation(const DomainOperation
         auto* x = field(op.payload, keys[i]);
         auto* b = x ? x->getIf<bool>() : nullptr;
         if (!b)
-            return fail<void>(EditorStatus::Rejected, "editor.scene-import.boolean", "Scene import option is invalid");
+            return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.scene-import.boolean"),
+                                              "Scene import option is invalid");
         *dst[i] = *b;
     }
     SceneImportTarget c(id_);
     c.value_ = v;
     if (errors(c.validate()))
-        return fail<void>(EditorStatus::Rejected, "editor.scene-import.invalid",
-                          "Scene import settings validation failed");
+        return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.scene-import.invalid"),
+                                          "Scene import settings validation failed");
     value_ = std::move(v);
-    ++revision_;
-    dirty_.include(0, 0);
+    bumpRevision();
+    widenDirty(0, 0);
     return eve::editing::applied<void>();
 }
 std::unique_ptr<IDomainOperationTarget> SceneImportTarget::cloneDomainState() const {
@@ -187,7 +188,8 @@ std::unique_ptr<IDomainOperationTarget> SceneImportTarget::cloneDomainState() co
 EditorResult<void> SceneImportTarget::commitDomainState(std::unique_ptr<IDomainOperationTarget> c) {
     auto* t = dynamic_cast<SceneImportTarget*>(c.get());
     if (!t || t->id_ != id_)
-        return fail<void>(EditorStatus::Conflict, "editor.scene-import.candidate", "Scene import candidate mismatch");
+        return eve::editing::failed<void>(EditorStatus::Conflict, RuleId("editor.scene-import.candidate"),
+                                          "Scene import candidate mismatch");
     *this = *t;
     return eve::editing::applied<void>();
 }
@@ -198,14 +200,14 @@ EditorResult<void> SceneImportTarget::loadSnapshot(const EditorValue& s) {
     auto *v = field(s, "schemaVersion"), *c = field(s, "content");
     auto* n = v ? v->getIf<int64_t>() : nullptr;
     if (!n || *n != 1 || !c)
-        return fail<void>(EditorStatus::Unsupported, "editor.scene-import.snapshot",
-                          "Unsupported scene import snapshot");
+        return eve::editing::failed<void>(EditorStatus::Unsupported, RuleId("editor.scene-import.snapshot"),
+                                          "Unsupported scene import snapshot");
     DomainOperation op;
     op.target   = TargetId(id_);
     op.type     = "scene-import.replace.v1";
     op.payload  = *c;
     auto result = applyDomainOperation(op);
-    if (result.ok()) dirty_.clear();
+    if (result.ok()) clearDirtyRegion();
     return result;
 }
 }  // namespace eve::sceneloader_editing

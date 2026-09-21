@@ -9,25 +9,20 @@
 namespace eve::rpg {
 namespace {
 
-template <typename T>
-Result<T> failure(DiagnosticCode code, std::string message, std::string path) {
-    return Result<T>::failure(Diagnostic::error(code, std::move(message), std::move(path)));
-}
-
 LogicalId gameplayId(std::string_view value) { return LogicalId::parse(value).value(); }
 
 Result<std::string> stringParameter(const Value& parameters, std::string_view name,
                                     bool optional = false) {
     const auto* object = parameters.getIf<Value::Object>();
     if (!object)
-        return failure<std::string>(DiagnosticCode::InvalidArgument,
-                                    "RPG gameplay parameters must be an object", "parameters");
+        return Result<std::string>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "RPG gameplay parameters must be an object", "parameters"));
     const auto found = object->find(std::string(name));
     if (found == object->end() && optional) return Result<std::string>::success({});
     if (found == object->end() || !found->second.isString())
-        return failure<std::string>(DiagnosticCode::InvalidArgument,
-                                    "RPG gameplay parameter must be a string",
-                                    "parameters." + std::string(name));
+        return Result<std::string>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                              "RPG gameplay parameter must be a string",
+                                                              "parameters." + std::string(name)));
     return Result<std::string>::success(found->second.asString());
 }
 
@@ -46,21 +41,21 @@ BattleControl::~BattleControl() {
 
 Result<void> BattleControl::bindParticipant(SubjectRef subject, RPGActor* actor) {
     if (!instance_.isValid() || !subject.isValid() || !actor)
-        return failure<void>(DiagnosticCode::InvalidArgument,
-                             "battle, subject, and actor identities must be valid", "participant");
+        return Result<void>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "battle, subject, and actor identities must be valid", "participant"));
     bool participant = false;
     for (int index = 0; index < battle_.getActorCount(); ++index)
         if (battle_.getActor(index) == actor) participant = true;
     if (!participant)
-        return failure<void>(DiagnosticCode::NotFound,
-                             "actor is not a participant in the adapted battle", "actor");
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::NotFound, "actor is not a participant in the adapted battle", "actor"));
     const auto existing = actors_.find(subject);
     if (existing != actors_.end() && existing->second != actor)
-        return failure<void>(DiagnosticCode::Conflict,
-                             "subject is already bound to another participant", "subject");
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::Conflict, "subject is already bound to another participant", "subject"));
     if (const auto reverse = subjectOf(actor); reverse.isValid() && reverse != subject)
-        return failure<void>(DiagnosticCode::Conflict,
-                             "actor is already bound to another subject", "actor");
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::Conflict, "actor is already bound to another subject", "actor"));
     actors_[subject] = actor;
     ++revision_;
     return Result<void>::success(Status::success(StatusCode::Applied));
@@ -95,8 +90,8 @@ SubjectRef BattleControl::subjectOf(RPGActor* actor) const {
 Result<GameplayObservation> BattleControl::observeGameplay(const GameplaySession& session,
                                                             SubjectRef instance) const {
     if (instance != instance_ || !instance_.isValid())
-        return failure<GameplayObservation>(DiagnosticCode::NotFound,
-                                            "RPG battle gameplay instance was not found", "instance");
+        return Result<GameplayObservation>::failure(
+            Diagnostic::error(DiagnosticCode::NotFound, "RPG battle gameplay instance was not found", "instance"));
     bool ownsParticipant = false;
     Value::Array participants;
     for (int index = 0; index < battle_.getActorCount(); ++index) {
@@ -115,9 +110,9 @@ Result<GameplayObservation> BattleControl::observeGameplay(const GameplaySession
         });
     }
     if (session.access == GameplayAccess::PlayerEquivalent && !ownsParticipant)
-        return failure<GameplayObservation>(DiagnosticCode::PreconditionViolation,
-                                            "session controls no participant in this RPG battle",
-                                            "session.controlledSubjects");
+        return Result<GameplayObservation>::failure(
+            Diagnostic::error(DiagnosticCode::PreconditionViolation,
+                              "session controls no participant in this RPG battle", "session.controlledSubjects"));
     GameplayObservation observation;
     observation.domain = gameplayId("gameplay:rpg-battle");
     observation.instance = instance_;
@@ -136,15 +131,15 @@ Result<GameplayObservation> BattleControl::observeGameplay(const GameplaySession
 Result<std::vector<GameplayActionDescriptor>> BattleControl::availableGameplayActions(
     const GameplaySession& session, SubjectRef instance, SubjectRef subject) const {
     if (instance != instance_)
-        return failure<std::vector<GameplayActionDescriptor>>(
-            DiagnosticCode::NotFound, "RPG battle gameplay instance was not found", "instance");
+        return Result<std::vector<GameplayActionDescriptor>>::failure(
+            Diagnostic::error(DiagnosticCode::NotFound, "RPG battle gameplay instance was not found", "instance"));
     RPGActor* actor = resolve(subject);
     if (!actor)
-        return failure<std::vector<GameplayActionDescriptor>>(
-            DiagnosticCode::NotFound, "RPG battle participant was not found", "subject");
+        return Result<std::vector<GameplayActionDescriptor>>::failure(
+            Diagnostic::error(DiagnosticCode::NotFound, "RPG battle participant was not found", "subject"));
     if (!controls(session, subject))
-        return failure<std::vector<GameplayActionDescriptor>>(
-            DiagnosticCode::PreconditionViolation, "session does not control this RPG participant", "subject");
+        return Result<std::vector<GameplayActionDescriptor>>::failure(Diagnostic::error(
+            DiagnosticCode::PreconditionViolation, "session does not control this RPG participant", "subject"));
     if (!battle_.isActorAlive(actor) || battle_.isFinished())
         return Result<std::vector<GameplayActionDescriptor>>::success({});
     const Value targetSchema(Value::Object{{"type", Value("subject")}});
@@ -160,38 +155,36 @@ Result<GameplayCommandReceipt> BattleControl::submitGameplay(const GameplaySessi
                                                               SubjectRef instance,
                                                               const GameplayCommand& command) {
     if (instance != instance_)
-        return failure<GameplayCommandReceipt>(DiagnosticCode::NotFound,
-                                               "RPG battle gameplay instance was not found", "instance");
+        return Result<GameplayCommandReceipt>::failure(
+            Diagnostic::error(DiagnosticCode::NotFound, "RPG battle gameplay instance was not found", "instance"));
     RPGActor* actor = resolve(command.subject);
     if (!actor)
-        return failure<GameplayCommandReceipt>(DiagnosticCode::NotFound,
-                                               "RPG battle participant was not found", "command.subject");
+        return Result<GameplayCommandReceipt>::failure(
+            Diagnostic::error(DiagnosticCode::NotFound, "RPG battle participant was not found", "command.subject"));
     if (!controls(session, command.subject))
-        return failure<GameplayCommandReceipt>(DiagnosticCode::PreconditionViolation,
-                                               "session does not control this RPG participant",
-                                               "command.subject");
+        return Result<GameplayCommandReceipt>::failure(Diagnostic::error(
+            DiagnosticCode::PreconditionViolation, "session does not control this RPG participant", "command.subject"));
     if (command.id.empty())
-        return failure<GameplayCommandReceipt>(DiagnosticCode::InvalidArgument,
-                                               "command id must not be empty", "command.id");
+        return Result<GameplayCommandReceipt>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "command id must not be empty", "command.id"));
     if (command.observedTick != tick_ || command.expectedRevision != revision_)
-        return failure<GameplayCommandReceipt>(DiagnosticCode::Conflict,
-                                               "RPG command was based on a stale observation",
-                                               "command.expectedRevision");
+        return Result<GameplayCommandReceipt>::failure(Diagnostic::error(
+            DiagnosticCode::Conflict, "RPG command was based on a stale observation", "command.expectedRevision"));
     auto targetText = stringParameter(command.parameters, "target");
     if (!targetText) return Result<GameplayCommandReceipt>::failure(targetText.status());
     const auto targetId = PersistentId::parse(targetText.value());
     RPGActor* target = targetId ? resolve(SubjectRef::fromPersistentId(*targetId)) : nullptr;
     if (!target)
-        return failure<GameplayCommandReceipt>(DiagnosticCode::NotFound,
-                                               "RPG command target was not found", "parameters.target");
+        return Result<GameplayCommandReceipt>::failure(
+            Diagnostic::error(DiagnosticCode::NotFound, "RPG command target was not found", "parameters.target"));
     std::string skillId;
     if (command.action == gameplayId("rpg:skill")) {
         auto skill = stringParameter(command.parameters, "skillId");
         if (!skill) return Result<GameplayCommandReceipt>::failure(skill.status());
         skillId = std::move(skill).takeValue();
     } else if (command.action != gameplayId("rpg:attack")) {
-        return failure<GameplayCommandReceipt>(DiagnosticCode::Unsupported,
-                                               "unsupported RPG gameplay action", "command.action");
+        return Result<GameplayCommandReceipt>::failure(
+            Diagnostic::error(DiagnosticCode::Unsupported, "unsupported RPG gameplay action", "command.action"));
     }
     auto queued = battle_.setActionChecked(actor, skillId, target);
     if (!queued) return Result<GameplayCommandReceipt>::failure(queued.status());
@@ -222,11 +215,11 @@ Result<GameplayObservation> BattleControl::advanceGameplay(const GameplaySession
                                                             SubjectRef instance,
                                                             const SimulationStep& step) {
     if (instance != instance_)
-        return failure<GameplayObservation>(DiagnosticCode::NotFound,
-                                            "RPG battle gameplay instance was not found", "instance");
+        return Result<GameplayObservation>::failure(
+            Diagnostic::error(DiagnosticCode::NotFound, "RPG battle gameplay instance was not found", "instance"));
     if (step.tick <= tick_)
-        return failure<GameplayObservation>(DiagnosticCode::Conflict,
-                                            "RPG simulation tick must increase", "step.tick");
+        return Result<GameplayObservation>::failure(
+            Diagnostic::error(DiagnosticCode::Conflict, "RPG simulation tick must increase", "step.tick"));
     auto authorized = observeGameplay(session, instance);
     if (!authorized) return Result<GameplayObservation>::failure(authorized.status());
     std::move(authorized).takeValue();

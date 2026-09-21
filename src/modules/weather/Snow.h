@@ -1,7 +1,7 @@
 #pragma once
 
 #include "common/Module.h"
-#include "snow/SnowField.h"
+#include "weather/SnowField.h"
 
 namespace eve::graphics {
 class Graphics;
@@ -12,7 +12,7 @@ namespace eve::procgen {
 class Heightmap;
 }  // namespace eve::procgen
 
-namespace eve::snow {
+namespace eve::weather {
 
 /**
  * @brief out(x, y) = terrain(x, y) + field(x, y) * heightScale.
@@ -25,7 +25,7 @@ void applySnowToHeightmap(const SnowField &field, const procgen::Heightmap &terr
                           procgen::Heightmap &out, float heightScale);
 
 /**
- * @brief Interactive snow module — depth-field snow on a heightmap terrain.
+ * @brief Interactive snow service owned by the weather module.
  *
  * The SnowField grid is the single source of truth: it drives the real
  * terrain-surface displacement (footprints / craters as actual geometry via
@@ -41,10 +41,20 @@ public:
     Snow();
     ~Snow() override = default;
 
-    /** @brief New empty snow field (caller owns). */
+    /**
+     * @brief New empty snow field.
+     * @ownership Ownership transfers to the script/native caller.
+     * @lifetime Valid until the caller releases the field; the weather module does not retain it.
+     * @thread Main/script thread only.
+     */
     SnowField *newField(int width, int height);
 
-    /** @brief Script wrapper around applySnowToHeightmap(). */
+    /**
+     * @brief Compatibility script wrapper around applySnowToHeightmap().
+     * @ownership All pointers are borrowed; no argument is retained.
+     * @lifetime Arguments must remain valid for this synchronous call.
+     * @thread Main/script thread only.
+     */
     bool applyToHeightmap(SnowField *field, procgen::Heightmap *terrain,
                           procgen::Heightmap *out, float heightScale);
 
@@ -52,7 +62,10 @@ public:
      * @brief Upload the field as an RGBA8 texture.
      * @param kind "height" (R = snow depth, POM height map), "albedo"
      * (snow/ground color) or "normal" (tangent-space from the depth gradient).
-     * Borrowed handle owned by Graphics; call once, then updateTexture().
+     * @ownership `field` and `gfx` are borrowed; the returned texture is owned by Graphics.
+     * @lifetime Arguments must remain valid for this synchronous call; the result remains valid
+     * until its Graphics owner releases resources.
+     * @thread Render/main thread only.
      */
     graphics::Texture *uploadTexture(SnowField *field, graphics::Graphics *gfx,
                                      const std::string &kind);
@@ -60,10 +73,13 @@ public:
     /**
      * @brief Replace an uploaded snow texture's pixels in place.
      * @param kind one of "height" | "albedo" | "normal" (must match the upload).
-     * Returns false when the texture dimensions or pixel data are invalid.
+     * @return Compatibility scalar; false when dimensions or pixels are invalid.
+     * @ownership All pointers are borrowed and are not retained.
+     * @lifetime Arguments must remain valid for this synchronous call.
+     * @thread Render/main thread only.
      */
     bool updateTexture(SnowField *field, graphics::Texture *texture,
                        graphics::Graphics *gfx, const std::string &kind);
 };
 
-}  // namespace eve::snow
+}  // namespace eve::weather

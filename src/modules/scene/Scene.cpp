@@ -45,11 +45,6 @@ Module_IMPL(Scene, new Scene());
 namespace {
 
 template <class T>
-eve::Result<T> sceneFailure(eve::DiagnosticCode code, std::string message) {
-    return eve::Result<T>::failure(eve::Diagnostic::error(code, std::move(message), "scene"));
-}
-
-template <class T>
 T *borrowSceneResult(eve::Result<T *> result) {
     if (!result.ok()) return nullptr;
     return std::move(result).takeValue();
@@ -667,8 +662,8 @@ eve::Result<SceneHost *> Scene::mountAs(const std::string &name, NodeDesc root) 
         TransformSystem::updateHost(h);
         pruneOrphanObjects();
     } catch (const std::exception &error) {
-        return sceneFailure<SceneHost *>(eve::DiagnosticCode::PreconditionViolation,
-                                         std::string("scene mount rejected: ") + error.what());
+        return eve::Result<SceneHost *>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::PreconditionViolation, std::string("scene mount rejected: ") + error.what(), "scene"));
     }
     selected_ = h;
     return eve::Result<SceneHost *>::success(h, eve::Status::success(eve::StatusCode::Applied));
@@ -688,8 +683,9 @@ eve::Result<SceneHost *> Scene::remount(NodeDesc root) {
         TransformSystem::updateHost(h);
         pruneOrphanObjects();
     } catch (const std::exception &error) {
-        return sceneFailure<SceneHost *>(eve::DiagnosticCode::PreconditionViolation,
-                                         std::string("scene remount rejected: ") + error.what());
+        return eve::Result<SceneHost *>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation,
+                                   std::string("scene remount rejected: ") + error.what(), "scene"));
     }
     selected_ = h;
     return eve::Result<SceneHost *>::success(h, eve::Status::success(eve::StatusCode::Applied));
@@ -710,8 +706,9 @@ eve::Result<SceneHost *> Scene::remountReconcile(NodeDesc root) {
         return eve::Result<SceneHost *>::success(
             h, eve::Status::success(rebuilt ? eve::StatusCode::Applied : eve::StatusCode::NoOp));
     } catch (const std::exception &error) {
-        return sceneFailure<SceneHost *>(eve::DiagnosticCode::PreconditionViolation,
-                                         std::string("scene reconcile rejected: ") + error.what());
+        return eve::Result<SceneHost *>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation,
+                                   std::string("scene reconcile rejected: ") + error.what(), "scene"));
     }
 }
 
@@ -728,18 +725,21 @@ bool Scene::select(const std::string &name) {
 
 eve::Result<SceneHost *> Scene::findHost(const std::string &name) const {
     if (name.empty())
-        return sceneFailure<SceneHost *>(eve::DiagnosticCode::InvalidArgument, "scene host name must not be empty");
+        return eve::Result<SceneHost *>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "scene host name must not be empty", "scene"));
     if (SceneHost *host = findHostByName(name)) return eve::Result<SceneHost *>::success(host, eve::Status::success());
-    return sceneFailure<SceneHost *>(eve::DiagnosticCode::NotFound, "scene host was not found: " + name);
+    return eve::Result<SceneHost *>::failure(
+        eve::Diagnostic::error(eve::DiagnosticCode::NotFound, "scene host was not found: " + name, "scene"));
 }
 
 eve::Result<SceneHost *> Scene::findHostByOwner(uint32_t ownerId) const {
     if (ownerId == 0)
-        return sceneFailure<SceneHost *>(eve::DiagnosticCode::InvalidArgument, "scene host owner id must not be zero");
+        return eve::Result<SceneHost *>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "scene host owner id must not be zero", "scene"));
     if (SceneHost *host = findHostByOwnerId(ownerId))
         return eve::Result<SceneHost *>::success(host, eve::Status::success());
-    return sceneFailure<SceneHost *>(eve::DiagnosticCode::NotFound,
-                                     "scene host owner id was not found: " + std::to_string(ownerId));
+    return eve::Result<SceneHost *>::failure(eve::Diagnostic::error(
+        eve::DiagnosticCode::NotFound, "scene host owner id was not found: " + std::to_string(ownerId), "scene"));
 }
 
 void Scene::bindOwner(uint32_t ownerId) {

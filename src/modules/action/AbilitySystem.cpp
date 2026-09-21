@@ -6,11 +6,6 @@
 namespace eve::action {
 namespace {
 
-template <typename T>
-Result<T> failure(DiagnosticCode code, std::string message, std::string path = {}) {
-    return Result<T>::failure(Diagnostic::error(code, std::move(message), std::move(path)));
-}
-
 Result<void> failure(DiagnosticCode code, std::string message, std::string path = {}) {
     return Result<void>::failure(Diagnostic::error(code, std::move(message), std::move(path)));
 }
@@ -23,7 +18,9 @@ template <typename Id>
 Result<Id> takeNext(Id& next, std::string_view domain) {
     const Id   value       = next;
     const auto incremented = next.incremented();
-    if (!incremented) return failure<Id>(DiagnosticCode::Conflict, std::string(domain) + " identity space exhausted");
+    if (!incremented)
+        return Result<Id>::failure(
+            Diagnostic::error(DiagnosticCode::Conflict, std::string(domain) + " identity space exhausted", {}));
     next = *incremented;
     return Result<Id>::success(value);
 }
@@ -76,11 +73,12 @@ Result<void> AbilityRuntime::replaceDefinition(AbilityDefinition definition) {
 
 Result<AbilityGrantId> AbilityRuntime::grant(std::string ownerId, const LogicalId& definitionId) {
     if (ownerId.empty())
-        return failure<AbilityGrantId>(DiagnosticCode::InvalidArgument, "Ability owner is empty", "ownerId");
+        return Result<AbilityGrantId>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "Ability owner is empty", "ownerId"));
     const auto definition = definitions_.find(definitionId.format());
     if (definition == definitions_.end())
-        return failure<AbilityGrantId>(DiagnosticCode::NotFound, "Ability definition is not registered",
-                                       definitionId.format());
+        return Result<AbilityGrantId>::failure(
+            Diagnostic::error(DiagnosticCode::NotFound, "Ability definition is not registered", definitionId.format()));
     auto grantId = nextGrantId();
     if (!grantId) return grantId;
     AbilityInstanceId ownerInstance;
@@ -106,25 +104,29 @@ Result<void> AbilityRuntime::revoke(AbilityGrantId grantId) {
 Result<AbilityGrantState> AbilityRuntime::findGrant(AbilityGrantId grantId) const {
     const auto found = grants_.find(grantId);
     if (found == grants_.end())
-        return failure<AbilityGrantState>(DiagnosticCode::NotFound, "Ability grant was not found", "grantId");
+        return Result<AbilityGrantState>::failure(
+            Diagnostic::error(DiagnosticCode::NotFound, "Ability grant was not found", "grantId"));
     return Result<AbilityGrantState>::success(found->second.state);
 }
 
 Result<AbilityActivation> AbilityRuntime::activate(AbilityGrantId grantId, ActionRequest request, SimulationTick tick) {
     auto grant = grants_.find(grantId);
     if (grant == grants_.end())
-        return failure<AbilityActivation>(DiagnosticCode::NotFound, "Ability grant was not found", "grantId");
+        return Result<AbilityActivation>::failure(
+            Diagnostic::error(DiagnosticCode::NotFound, "Ability grant was not found", "grantId"));
     const auto definition = definitions_.find(grant->second.state.definitionId.format());
     if (definition == definitions_.end())
-        return failure<AbilityActivation>(DiagnosticCode::NotFound, "Granted ability definition was removed",
-                                          "definitionId");
+        return Result<AbilityActivation>::failure(
+            Diagnostic::error(DiagnosticCode::NotFound, "Granted ability definition was removed", "definitionId"));
     if (grant->second.state.cooldownRemaining > Duration::zero())
-        return failure<AbilityActivation>(DiagnosticCode::PreconditionViolation, "Ability is on cooldown", "cooldown");
+        return Result<AbilityActivation>::failure(
+            Diagnostic::error(DiagnosticCode::PreconditionViolation, "Ability is on cooldown", "cooldown"));
     if (request.actionId != definition->second.action.id)
-        return failure<AbilityActivation>(DiagnosticCode::InvalidArgument, "Ability request action id does not match",
-                                          "actionId");
+        return Result<AbilityActivation>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "Ability request action id does not match", "actionId"));
     if (definition->second.instancing != AbilityInstancingPolicy::PerExecution && grantHasActiveActivation(grantId))
-        return failure<AbilityActivation>(DiagnosticCode::Conflict, "Ability instance is already active", "grantId");
+        return Result<AbilityActivation>::failure(
+            Diagnostic::error(DiagnosticCode::Conflict, "Ability instance is already active", "grantId"));
 
     std::vector<AbilityActivationId> replaceable;
     if (definition->second.activationGroup != AbilityActivationGroup::Independent) {
@@ -134,8 +136,8 @@ Result<AbilityActivation> AbilityRuntime::activate(AbilityGrantId grantId, Actio
             const auto* execution = runtime_.find(active.executionId);
             if (!execution || terminal(execution->phase())) continue;
             if (active.group == AbilityActivationGroup::ExclusiveBlocking)
-                return failure<AbilityActivation>(DiagnosticCode::Conflict, "An exclusive-blocking ability is active",
-                                                  "activationGroup");
+                return Result<AbilityActivation>::failure(Diagnostic::error(
+                    DiagnosticCode::Conflict, "An exclusive-blocking ability is active", "activationGroup"));
             replaceable.push_back(id);
         }
     }
@@ -147,8 +149,8 @@ Result<AbilityActivation> AbilityRuntime::activate(AbilityGrantId grantId, Actio
         if (!cancelled) {
             auto rollback = runtime_.cancel(execution.value(), tick);
             if (!rollback) return Result<AbilityActivation>::failure(rollback.status());
-            return failure<AbilityActivation>(DiagnosticCode::Conflict,
-                                              "Could not replace the active exclusive ability", "activationGroup");
+            return Result<AbilityActivation>::failure(Diagnostic::error(
+                DiagnosticCode::Conflict, "Could not replace the active exclusive ability", "activationGroup"));
         }
         activations_.erase(replacedId);
     }

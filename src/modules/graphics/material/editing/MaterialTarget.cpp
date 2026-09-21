@@ -6,11 +6,6 @@
 namespace eve::material_editing {
 namespace {
 
-template <class T>
-EditorResult<T> materialError(EditorStatus status, const char* rule, std::string message) {
-    return eve::editing::failed<T>(status, RuleId(rule), std::move(message));
-}
-
 PropertyDescriptor property(const char* path, const char* label, const char* category,
                             PropertyType type, EditorValue defaultValue,
                             PropertyFlag flags = PropertyFlag::Runtime) {
@@ -40,7 +35,7 @@ TargetDescriptor MaterialDocumentTarget::describe() const {
     TargetDescriptor result;
     result.id = TargetId(id_);
     result.type = "material-document";
-    result.revision = revision_;
+    result.revision     = revisionValue();
     result.capabilities = {IPropertyProvider::editingCapabilityId(),
                            eve::editing::IEditingSnapshotProvider::editingCapabilityId()};
     return result;
@@ -56,26 +51,26 @@ void* MaterialDocumentTarget::queryCapability(const CapabilityId& capability) {
 
 EditorResult<void> MaterialDocumentTarget::applyDomainOperation(const DomainOperation& operation) {
     if (operation.target != TargetId(id_))
-        return materialError<void>(EditorStatus::Rejected, "editor.material.target-mismatch",
-                                   "Material operation targets another document");
+        return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.material.target-mismatch"),
+                                          "Material operation targets another document");
     if (operation.type != "material.property.set.v1")
-        return materialError<void>(EditorStatus::Unsupported, "editor.material.operation-unsupported",
-                                   "Unsupported material operation: " + operation.type);
+        return eve::editing::failed<void>(EditorStatus::Unsupported, RuleId("editor.material.operation-unsupported"),
+                                          "Unsupported material operation: " + operation.type);
     const EditorValue* pathValue = objectField(operation.payload, "path");
     const EditorValue* value = objectField(operation.payload, "value");
     const auto* path = pathValue ? pathValue->getIf<std::string>() : nullptr;
     if (!path || !value)
-        return materialError<void>(EditorStatus::Rejected, "editor.material.operation-payload",
-                                   "Material operation requires path and value");
+        return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.material.operation-payload"),
+                                          "Material operation requires path and value");
     auto descriptor = materialSchema().find(PropertyPath(*path));
     if (!descriptor)
-        return materialError<void>(EditorStatus::Unsupported, "editor.material.property-unsupported",
-                                   "Unknown material property: " + *path);
+        return eve::editing::failed<void>(EditorStatus::Unsupported, RuleId("editor.material.property-unsupported"),
+                                          "Unknown material property: " + *path);
     auto valid = validateAssignment(*descriptor, *value);
     if (!valid.ok()) return valid;
     values_[*path] = *value;
-    ++revision_;
-    dirty_.include(0, 0);
+    bumpRevision();
+    widenDirty(0, 0);
     return eve::editing::applied<void>();
 }
 
@@ -87,8 +82,8 @@ EditorResult<void> MaterialDocumentTarget::commitDomainState(
     std::unique_ptr<IDomainOperationTarget> candidate) {
     auto* typed = dynamic_cast<MaterialDocumentTarget*>(candidate.get());
     if (!typed || typed->id_ != id_)
-        return materialError<void>(EditorStatus::Conflict, "editor.material.candidate-mismatch",
-                                   "Material candidate belongs to another target");
+        return eve::editing::failed<void>(EditorStatus::Conflict, RuleId("editor.material.candidate-mismatch"),
+                                          "Material candidate belongs to another target");
     *this = *typed;
     return eve::editing::applied<void>();
 }
@@ -98,7 +93,7 @@ eve::Result<eve::Revision> MaterialDocumentTarget::currentRevision(const Selecti
         return eve::Result<eve::Revision>::failure(eve::Diagnostic::error(
             eve::DiagnosticCode::InvalidArgument, "Selection does not belong to this material",
             "editor.material.selection", {}, "editor.MaterialDocumentTarget"));
-    return eve::Result<eve::Revision>::success(eve::Revision(revision_));
+    return eve::Result<eve::Revision>::success(eve::Revision(revisionValue()));
 }
 
 PropertySchema MaterialDocumentTarget::schema(const SelectionSnapshot&) const { return materialSchema(); }
@@ -116,22 +111,23 @@ EditorResult<DomainOperation> MaterialDocumentTarget::makeSet(const SelectionSna
                                                                const EditorValue& value,
                                                                PropertySetMode mode) const {
     if (!selectionMatches(selection))
-        return materialError<DomainOperation>(EditorStatus::Rejected, "editor.material.selection",
-                                              "Selection does not belong to this material");
+        return eve::editing::failed<DomainOperation>(EditorStatus::Rejected, RuleId("editor.material.selection"),
+                                                     "Selection does not belong to this material");
     if (mode == PropertySetMode::Reset) return makeReset(selection, path);
     if (mode != PropertySetMode::Absolute)
-        return materialError<DomainOperation>(EditorStatus::Unsupported, "editor.material.set-mode",
-                                              "Material properties require absolute assignment");
+        return eve::editing::failed<DomainOperation>(EditorStatus::Unsupported, RuleId("editor.material.set-mode"),
+                                                     "Material properties require absolute assignment");
     auto descriptor = materialSchema().find(path);
     if (!descriptor)
-        return materialError<DomainOperation>(EditorStatus::Unsupported, "editor.material.property-unsupported",
-                                              "Unknown material property: " + path.value());
+        return eve::editing::failed<DomainOperation>(EditorStatus::Unsupported,
+                                                     RuleId("editor.material.property-unsupported"),
+                                                     "Unknown material property: " + path.value());
     auto valid = validateAssignment(*descriptor, value);
     if (!valid.ok()) return EditorResult<DomainOperation>::failure(valid.status());
     const auto previous = values_.find(path.value());
     if (previous == values_.end())
-        return materialError<DomainOperation>(EditorStatus::NotFound, "editor.material.property-missing",
-                                              "Material property has no current value");
+        return eve::editing::failed<DomainOperation>(EditorStatus::NotFound, RuleId("editor.material.property-missing"),
+                                                     "Material property has no current value");
     auto payload = [&](const EditorValue& assigned) {
         EditorValue::Object object;
         object["path"] = path.value();
@@ -153,8 +149,9 @@ EditorResult<DomainOperation> MaterialDocumentTarget::makeReset(const SelectionS
                                                                  const PropertyPath& path) const {
     auto descriptor = materialSchema().find(path);
     if (!descriptor)
-        return materialError<DomainOperation>(EditorStatus::Unsupported, "editor.material.property-unsupported",
-                                              "Unknown material property: " + path.value());
+        return eve::editing::failed<DomainOperation>(EditorStatus::Unsupported,
+                                                     RuleId("editor.material.property-unsupported"),
+                                                     "Unknown material property: " + path.value());
     return makeSet(selection, path, descriptor->defaultValue, PropertySetMode::Absolute);
 }
 
@@ -173,22 +170,22 @@ EditorResult<void> MaterialDocumentTarget::loadSnapshot(const EditorValue& snaps
     const auto* version = versionValue ? versionValue->getIf<int64_t>() : nullptr;
     const auto* properties = propertiesValue ? propertiesValue->getIf<EditorValue::Object>() : nullptr;
     if (!version || (*version < 1 || *version > 9) || !properties)
-        return materialError<void>(EditorStatus::Rejected, "editor.material.snapshot-format",
-                                   "Material snapshot requires schemaVersion 1 through 9 and properties");
+        return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.material.snapshot-format"),
+                                          "Material snapshot requires schemaVersion 1 through 9 and properties");
     auto candidate = defaults();
     const PropertySchema schemaValue = materialSchema();
     for (const auto& [path, value] : *properties) {
         auto descriptor = schemaValue.find(PropertyPath(path));
         if (!descriptor)
-            return materialError<void>(EditorStatus::Unsupported, "editor.material.snapshot-property",
-                                       "Material snapshot contains unknown property: " + path);
+            return eve::editing::failed<void>(EditorStatus::Unsupported, RuleId("editor.material.snapshot-property"),
+                                              "Material snapshot contains unknown property: " + path);
         auto valid = validateAssignment(*descriptor, value);
         if (!valid.ok()) return valid;
         candidate[path] = value;
     }
     values_ = std::move(candidate);
-    ++revision_;
-    dirty_.clear();
+    bumpRevision();
+    clearDirtyRegion();
     return eve::editing::applied<void>();
 }
 

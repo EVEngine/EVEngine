@@ -10,16 +10,11 @@
 namespace eve {
 namespace {
 
-template <typename T>
-Result<T> failure(DiagnosticCode code, std::string message, std::string path) {
-    return Result<T>::failure(Diagnostic::error(code, std::move(message), std::move(path)));
-}
-
 Result<const Value::Object*> asObject(const Value& value, std::string path) {
     const auto* object = value.getIf<Value::Object>();
     if (!object)
-        return failure<const Value::Object*>(DiagnosticCode::ParseError,
-                                             "gameplay control value must be an object", std::move(path));
+        return Result<const Value::Object*>::failure(
+            Diagnostic::error(DiagnosticCode::ParseError, "gameplay control value must be an object", std::move(path)));
     return Result<const Value::Object*>::success(object);
 }
 
@@ -27,9 +22,9 @@ Result<const Value*> member(const Value::Object& object, std::string_view name, 
                             std::string_view path) {
     const auto found = object.find(std::string(name));
     if (found == object.end() || found->second.type() != type)
-        return failure<const Value*>(DiagnosticCode::ParseError,
-                                     "missing or invalid gameplay control field",
-                                     std::string(path) + "." + std::string(name));
+        return Result<const Value*>::failure(Diagnostic::error(DiagnosticCode::ParseError,
+                                                               "missing or invalid gameplay control field",
+                                                               std::string(path) + "." + std::string(name)));
     return Result<const Value*>::success(&found->second);
 }
 
@@ -45,9 +40,9 @@ Result<std::uint64_t> uintMember(const Value::Object& object, std::string_view n
     auto found = member(object, name, Value::Type::Int64, path);
     if (!found) return Result<std::uint64_t>::failure(found.status());
     if (found.value()->asInt() < 0)
-        return failure<std::uint64_t>(DiagnosticCode::ParseError,
-                                      "gameplay control integer must be non-negative",
-                                      std::string(path) + "." + std::string(name));
+        return Result<std::uint64_t>::failure(Diagnostic::error(DiagnosticCode::ParseError,
+                                                                "gameplay control integer must be non-negative",
+                                                                std::string(path) + "." + std::string(name)));
     return Result<std::uint64_t>::success(static_cast<std::uint64_t>(found.value()->asInt()));
 }
 
@@ -56,9 +51,8 @@ Result<void> knownFields(const Value::Object& object, const std::set<std::string
     for (const auto& [name, value] : object) {
         (void)value;
         if (!allowed.contains(name))
-            return failure<void>(DiagnosticCode::ParseError,
-                                 "unknown gameplay control field",
-                                 std::string(path) + "." + name);
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::ParseError, "unknown gameplay control field",
+                                                           std::string(path) + "." + name));
     }
     return Result<void>::success();
 }
@@ -66,16 +60,16 @@ Result<void> knownFields(const Value::Object& object, const std::set<std::string
 Result<SubjectRef> subject(std::string_view text, std::string path) {
     const auto parsed = PersistentId::parse(text);
     if (!parsed)
-        return failure<SubjectRef>(DiagnosticCode::ParseError,
-                                   "gameplay subject must be a canonical UUID", std::move(path));
+        return Result<SubjectRef>::failure(Diagnostic::error(
+            DiagnosticCode::ParseError, "gameplay subject must be a canonical UUID", std::move(path)));
     return Result<SubjectRef>::success(SubjectRef::fromPersistentId(*parsed));
 }
 
 Result<GameplaySession> session(const Value::Object& root) {
     const auto found = root.find("session");
     if (found == root.end())
-        return failure<GameplaySession>(DiagnosticCode::ParseError,
-                                        "gameplay request requires a session", "request.session");
+        return Result<GameplaySession>::failure(
+            Diagnostic::error(DiagnosticCode::ParseError, "gameplay request requires a session", "request.session"));
     auto object = asObject(found->second, "request.session");
     if (!object) return Result<GameplaySession>::failure(object.status());
     auto known = knownFields(*object.value(), {"access", "controlledSubjects", "id"},
@@ -90,20 +84,20 @@ Result<GameplaySession> session(const Value::Object& root) {
     GameplaySession result;
     result.id = id.value();
     if (result.id.empty())
-        return failure<GameplaySession>(DiagnosticCode::ParseError,
-                                        "gameplay session id must not be empty", "request.session.id");
+        return Result<GameplaySession>::failure(Diagnostic::error(
+            DiagnosticCode::ParseError, "gameplay session id must not be empty", "request.session.id"));
     if (access.value() == "player") result.access = GameplayAccess::PlayerEquivalent;
     else if (access.value() == "test-driver") result.access = GameplayAccess::TestDriver;
     else if (access.value() == "developer-cheat") result.access = GameplayAccess::DeveloperCheat;
     else
-        return failure<GameplaySession>(DiagnosticCode::ParseError,
-                                        "unknown gameplay access profile", "request.session.access");
+        return Result<GameplaySession>::failure(
+            Diagnostic::error(DiagnosticCode::ParseError, "unknown gameplay access profile", "request.session.access"));
     const auto* values = subjects.value()->getIf<Value::Array>();
     for (std::size_t index = 0; index < values->size(); ++index) {
         if (!(*values)[index].isString())
-            return failure<GameplaySession>(DiagnosticCode::ParseError,
-                                            "controlled subject must be a UUID string",
-                                            "request.session.controlledSubjects." + std::to_string(index));
+            return Result<GameplaySession>::failure(
+                Diagnostic::error(DiagnosticCode::ParseError, "controlled subject must be a UUID string",
+                                  "request.session.controlledSubjects." + std::to_string(index)));
         auto parsed = subject((*values)[index].asString(),
                               "request.session.controlledSubjects." + std::to_string(index));
         if (!parsed) return Result<GameplaySession>::failure(parsed.status());
@@ -129,8 +123,8 @@ Result<IGameplayControlProvider*> provider(std::string_view domain, SubjectRef i
         if (candidate && candidate->gameplayDomain() == domain) matches.push_back(candidate);
     });
     if (matches.empty())
-        return failure<IGameplayControlProvider*>(DiagnosticCode::NotFound,
-                                                  "gameplay provider domain was not found", "request.domain");
+        return Result<IGameplayControlProvider*>::failure(
+            Diagnostic::error(DiagnosticCode::NotFound, "gameplay provider domain was not found", "request.domain"));
     if (matches.size() == 1) return Result<IGameplayControlProvider*>::success(matches.front());
 
     IGameplayControlProvider* claimant  = nullptr;
@@ -145,12 +139,11 @@ Result<IGameplayControlProvider*> provider(std::string_view domain, SubjectRef i
     }
     if (claimants == 1) return Result<IGameplayControlProvider*>::success(claimant);
     if (claimants > 1)
-        return failure<IGameplayControlProvider*>(DiagnosticCode::Conflict,
-                                                  "several gameplay providers claim that instance", "request.instance");
-    return failure<IGameplayControlProvider*>(DiagnosticCode::Conflict,
-                                              "multiple gameplay providers publish the same domain and none "
-                                              "claims that instance",
-                                              "request.domain");
+        return Result<IGameplayControlProvider*>::failure(Diagnostic::error(
+            DiagnosticCode::Conflict, "several gameplay providers claim that instance", "request.instance"));
+    return Result<IGameplayControlProvider*>::failure(Diagnostic::error(
+        DiagnosticCode::Conflict, "multiple gameplay providers publish the same domain and none claims that instance",
+        "request.domain"));
 }
 
 Value encodeObservation(GameplayObservation observation) {
@@ -210,8 +203,8 @@ Result<void> validateRoot(const Value::Object& root) {
     if (!schemaId) return Result<void>::failure(schemaId.status());
     if (!version) return Result<void>::failure(version.status());
     if (schemaId.value() != "evengine.gameplay-control-request" || version.value()->asInt() != 1)
-        return failure<void>(DiagnosticCode::Unsupported,
-                             "unsupported gameplay control request schema", "request.schemaVersion");
+        return Result<void>::failure(Diagnostic::error(
+            DiagnosticCode::Unsupported, "unsupported gameplay control request schema", "request.schemaVersion"));
     return Result<void>::success();
 }
 
@@ -250,15 +243,17 @@ Result<Value> executeGameplayControlRequest(const Value& request) {
         const auto domainField = root.value()->find("domain");
         if (domainField != root.value()->end()) {
             if (!domainField->second.isString())
-                return failure<Value>(DiagnosticCode::ParseError, "domain must be a string", "request.domain");
+                return Result<Value>::failure(
+                    Diagnostic::error(DiagnosticCode::ParseError, "domain must be a string", "request.domain"));
             const std::string         wanted = domainField->second.asString();
             IGameplayInstanceCatalog* match  = nullptr;
             cap::forEach<IGameplayInstanceCatalog>([&](auto* candidate) {
                 if (candidate && candidate->gameplayDomain() == wanted) match = candidate;
             });
             if (match == nullptr)
-                return failure<Value>(DiagnosticCode::Unsupported,
-                                      "that gameplay domain cannot enumerate its instances", "request.domain");
+                return Result<Value>::failure(Diagnostic::error(DiagnosticCode::Unsupported,
+                                                                "that gameplay domain cannot enumerate its instances",
+                                                                "request.domain"));
             return Result<Value>::success(
                 Value(Value::Object{{"domain", Value(wanted)}, {"instances", encodeInstances(match)}}));
         }
@@ -299,7 +294,6 @@ Result<Value> executeGameplayControlRequest(const Value& request) {
     // several providers publish one domain, the owning catalogue decides.
     auto target = provider(domain.value(), instance.value());
     if (!target) return Result<Value>::failure(target.status());
-    if (!instance) return Result<Value>::failure(instance.status());
 
     if (operation.value() == "observe") {
         auto result = target.value()->observeGameplay(access.value(), instance.value());
@@ -316,7 +310,8 @@ Result<Value> executeGameplayControlRequest(const Value& request) {
     if (operation.value() == "submit") {
         const auto found = root.value()->find("command");
         if (found == root.value()->end())
-            return failure<Value>(DiagnosticCode::ParseError, "submit requires a command", "request.command");
+            return Result<Value>::failure(
+                Diagnostic::error(DiagnosticCode::ParseError, "submit requires a command", "request.command"));
         auto commandObject = asObject(found->second, "request.command");
         if (!commandObject) return Result<Value>::failure(commandObject.status());
         auto known = knownFields(*commandObject.value(),
@@ -335,12 +330,12 @@ Result<Value> executeGameplayControlRequest(const Value& request) {
         if (!observedTick) return Result<Value>::failure(observedTick.status());
         if (!expectedRevision) return Result<Value>::failure(expectedRevision.status());
         if (parameters == commandObject.value()->end())
-            return failure<Value>(DiagnosticCode::ParseError, "submit command requires parameters",
-                                  "request.command.parameters");
+            return Result<Value>::failure(Diagnostic::error(
+                DiagnosticCode::ParseError, "submit command requires parameters", "request.command.parameters"));
         const auto parsedAction = LogicalId::parse(actionText.value());
         if (!parsedAction)
-            return failure<Value>(DiagnosticCode::ParseError, "command action must be a logical id",
-                                  "request.command.action");
+            return Result<Value>::failure(Diagnostic::error(
+                DiagnosticCode::ParseError, "command action must be a logical id", "request.command.action"));
         auto actor = subject(actorText.value(), "request.command.subject");
         if (!actor) return Result<Value>::failure(actor.status());
         GameplayCommand command;
@@ -360,8 +355,8 @@ Result<Value> executeGameplayControlRequest(const Value& request) {
         if (!tick) return Result<Value>::failure(tick.status());
         if (!delta) return Result<Value>::failure(delta.status());
         if (delta.value()->asInt() < 0)
-            return failure<Value>(DiagnosticCode::ParseError, "delta must be non-negative",
-                                  "request.deltaNanoseconds");
+            return Result<Value>::failure(Diagnostic::error(DiagnosticCode::ParseError, "delta must be non-negative",
+                                                            "request.deltaNanoseconds"));
         SimulationStep step{SimulationTick(tick.value()), Duration::fromNanoseconds(delta.value()->asInt())};
         auto result = target.value()->advanceGameplay(access.value(), instance.value(), step);
         if (!result) return Result<Value>::failure(result.status());
@@ -374,7 +369,8 @@ Result<Value> executeGameplayControlRequest(const Value& request) {
         if (!result) return Result<Value>::failure(result.status());
         return Result<Value>::success(Value(Value::Object{{"events", encodeEvents(std::move(result).takeValue())}}));
     }
-    return failure<Value>(DiagnosticCode::Unsupported, "unsupported gameplay control operation", "request.op");
+    return Result<Value>::failure(
+        Diagnostic::error(DiagnosticCode::Unsupported, "unsupported gameplay control operation", "request.op"));
 }
 
 Result<std::string> executeGameplayControlJson(std::string_view requestJson) {

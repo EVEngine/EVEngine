@@ -6,11 +6,11 @@
 #include "common/GameplayInstanceCatalog.h"
 #include "common/Module.h"
 #include "common/SquirrelOwnership.h"
+#include "tactics/Interaction.h"
+#include "tactics/Presentation.h"
 #include "tactics/TacticsBattle.h"
 #include "tactics/TacticsPersistence.h"
 #include "tactics/TacticsReplay.h"
-#include "tactics/Interaction.h"
-#include "tactics/Presentation.h"
 
 #include <cstddef>
 #include <vector>

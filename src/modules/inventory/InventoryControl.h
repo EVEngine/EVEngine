@@ -113,7 +113,7 @@ private:
      *         pointer is only valid until the next publish/unpublish/clear call.
      * @lifetime Never retained by the caller across a publication change.
      */
-    [[nodiscard]] Entry*       find(SubjectRef instance);
+    [[nodiscard]] Entry* find(SubjectRef instance);
     /** @copydoc find — const overload returns a borrowed read-only record. */
     [[nodiscard]] const Entry* find(SubjectRef instance) const;
     /** @brief Player-equivalent sessions must control the owner; other profiles pass. */

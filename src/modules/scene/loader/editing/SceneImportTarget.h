@@ -21,16 +21,14 @@ struct SceneImportValue {
     bool        triangulate = true, generateNormals = true, joinVertices = true, flipUvs = true, improveCache = true;
     bool sharedMeshes = true, mipmaps = true, importLights = true, importCameras = false, importAnimations = true;
 };
-class SceneImportTarget final : public virtual IEditableTarget,
+class SceneImportTarget final : public ::eve::editing::EditableTargetState,
+                                public virtual IEditableTarget,
                                 public IDomainOperationTarget,
                                 public IDomainOperationTargetStaging,
                                 public IPropertyProvider {
 public:
     explicit SceneImportTarget(std::string id);
     TargetId                                targetId() const override { return TargetId(id_); }
-    std::uint64_t                           revision() const override { return revision_; }
-    EditRegion                              dirtyRegion() const override { return dirty_; }
-    void                                    clearDirtyRegion() override { dirty_.clear(); }
     TargetDescriptor                        describe() const override;
     /**
      * @brief Query an optional stable editing capability.
@@ -56,8 +54,6 @@ private:
     bool              matches(const SelectionSnapshot&) const;
     EditorValue       contentValue() const;
     std::string       id_;
-    editing::Revision revision_ = 1;
-    EditRegion        dirty_;
     SceneImportValue  value_;
 };
 struct SceneImportPreflight {

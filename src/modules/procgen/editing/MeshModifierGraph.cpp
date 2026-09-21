@@ -19,11 +19,6 @@ EditorDiagnostic meshGraphDiagnostic(const char* rule, DiagnosticSeverity severi
                                         std::move(message));
 }
 
-template <class T>
-EditorResult<T> meshGraphError(const char* rule, std::string message) {
-    return eve::editing::failed<T>(EditorStatus::Rejected, RuleId(rule), std::move(message));
-}
-
 EditorValue defaultValue(const std::string& kind, const std::string& encoded) {
     if (kind == "int") return EditorValue(static_cast<std::int64_t>(std::stoll(encoded)));
     if (kind == "float") return EditorValue(std::stod(encoded));
@@ -244,8 +239,9 @@ GraphConnectionDecision MeshModifierGraphDomain::canConnect(const GraphPinRecord
 EditorResult<GraphNodeRecord> MeshModifierGraphDomain::makeNode(const GraphNodeId& id,
                                                                 const std::string& operation) const {
     if (id.empty() || procgen::MeshModifierGraph::operationInputCount(operation) < 0)
-        return meshGraphError<GraphNodeRecord>("editor.mesh-modifier.unknown-operation",
-                                               "Unknown mesh modifier operation");
+        return eve::editing::failed<GraphNodeRecord>(EditorStatus::Rejected,
+                                                     RuleId("editor.mesh-modifier.unknown-operation"),
+                                                     "Unknown mesh modifier operation");
     GraphNodeRecord node;
     node.id   = id;
     node.type = operation;

@@ -28,11 +28,6 @@ bool readNumber(const editing::Value& value, const char* key, double& out) {
     return false;
 }
 
-template <class T>
-editing::Result<T> error(editing::Status status, const char* rule, std::string message) {
-    return eve::editing::failed<T>(status, editing::RuleId(rule), std::move(message));
-}
-
 IAnimationClipEditTarget* clipTarget(editing::IEditableTarget& target) {
     return static_cast<IAnimationClipEditTarget*>(
         target.queryCapability(IAnimationClipEditTarget::editingCapabilityId()));
@@ -61,12 +56,14 @@ editing::Result<void> registerEditingCommands(editing::IEditingCommandRegistry& 
             const auto* loop = loopEntry ? loopEntry->getIf<bool>() : nullptr;
             if (!capability || !readNumber(request.payload, "duration", duration) ||
                 !readNumber(request.payload, "sampleRate", sampleRate) || !loop)
-                return error<editing::CommandPlan>(editing::Status::Rejected, "animation.editing.settings-payload",
-                                                   "Clip settings require duration, sampleRate and loop");
+                return eve::editing::failed<editing::CommandPlan>(
+                    editing::Status::Rejected, editing::RuleId("animation.editing.settings-payload"),
+                    "Clip settings require duration, sampleRate and loop");
             auto operation = capability->makeSetSettings(duration, sampleRate, *loop);
             if (!operation.ok())
-                return error<editing::CommandPlan>(operation.code(), "animation.editing.settings-operation",
-                                                   "Animation clip rejected the settings");
+                return eve::editing::failed<editing::CommandPlan>(
+                    operation.code(), editing::RuleId("animation.editing.settings-operation"),
+                    "Animation clip rejected the settings");
             editing::CommandPlan plan;
             plan.operations.push_back(std::move(operation).takeValue());
             plan.summary = editing::Value::Object{{"duration", duration}, {"sampleRate", sampleRate}, {"loop", *loop}};
@@ -79,16 +76,19 @@ editing::Result<void> registerEditingCommands(editing::IEditingCommandRegistry& 
         [](editing::IEditableTarget& target, const editing::CommandRequest& request) {
             auto* capability = clipTarget(target);
             if (!capability)
-                return error<editing::CommandPlan>(editing::Status::Rejected, "animation.editing.track-target",
-                                                   "Animation clip track requires a clip target");
+                return eve::editing::failed<editing::CommandPlan>(editing::Status::Rejected,
+                                                                  editing::RuleId("animation.editing.track-target"),
+                                                                  "Animation clip track requires a clip target");
             auto parsed = parseAnimationBoneTrack(request.payload);
             if (!parsed.ok())
-                return error<editing::CommandPlan>(parsed.code(), "animation.editing.track-payload",
-                                                   "Bone track requires stable id, bone name and keys");
+                return eve::editing::failed<editing::CommandPlan>(parsed.code(),
+                                                                  editing::RuleId("animation.editing.track-payload"),
+                                                                  "Bone track requires stable id, bone name and keys");
             auto operation = capability->makeSetTrack(parsed.value());
             if (!operation.ok())
-                return error<editing::CommandPlan>(operation.code(), "animation.editing.track-operation",
-                                                   "Animation clip rejected the bone track");
+                return eve::editing::failed<editing::CommandPlan>(operation.code(),
+                                                                  editing::RuleId("animation.editing.track-operation"),
+                                                                  "Animation clip rejected the bone track");
             editing::CommandPlan plan;
             plan.operations.push_back(std::move(operation).takeValue());
             plan.summary = editing::Value::Object{{"id", parsed.value().id.value()}, {"bone", parsed.value().bone}};
@@ -103,12 +103,14 @@ editing::Result<void> registerEditingCommands(editing::IEditingCommandRegistry& 
             const editing::Value* idValue = field(request.payload, "id");
             const auto* id = idValue ? idValue->getIf<std::string>() : nullptr;
             if (!capability || !id || id->empty())
-                return error<editing::CommandPlan>(editing::Status::Rejected, "animation.editing.track-id",
-                                                   "Track deletion requires a clip target and stable id");
+                return eve::editing::failed<editing::CommandPlan>(
+                    editing::Status::Rejected, editing::RuleId("animation.editing.track-id"),
+                    "Track deletion requires a clip target and stable id");
             auto operation = capability->makeDeleteTrack(editing::StableId(*id));
             if (!operation.ok())
-                return error<editing::CommandPlan>(operation.code(), "animation.editing.track-delete",
-                                                   "Animation clip could not delete the bone track");
+                return eve::editing::failed<editing::CommandPlan>(operation.code(),
+                                                                  editing::RuleId("animation.editing.track-delete"),
+                                                                  "Animation clip could not delete the bone track");
             editing::CommandPlan plan;
             plan.operations.push_back(std::move(operation).takeValue());
             plan.summary = editing::Value::Object{{"id", *id}};
@@ -121,16 +123,19 @@ editing::Result<void> registerEditingCommands(editing::IEditingCommandRegistry& 
         [](editing::IEditableTarget& target, const editing::CommandRequest& request) {
             auto* capability = clipTarget(target);
             if (!capability)
-                return error<editing::CommandPlan>(editing::Status::Rejected, "animation.editing.event-target",
-                                                   "Animation clip event requires a clip target");
+                return eve::editing::failed<editing::CommandPlan>(editing::Status::Rejected,
+                                                                  editing::RuleId("animation.editing.event-target"),
+                                                                  "Animation clip event requires a clip target");
             auto parsed = parseAnimationEventRecord(request.payload);
             if (!parsed.ok())
-                return error<editing::CommandPlan>(parsed.code(), "animation.editing.event-payload",
-                                                   "Event requires stable id, time, name and payload");
+                return eve::editing::failed<editing::CommandPlan>(parsed.code(),
+                                                                  editing::RuleId("animation.editing.event-payload"),
+                                                                  "Event requires stable id, time, name and payload");
             auto operation = capability->makeSetEvent(parsed.value());
             if (!operation.ok())
-                return error<editing::CommandPlan>(operation.code(), "animation.editing.event-operation",
-                                                   "Animation clip rejected the event");
+                return eve::editing::failed<editing::CommandPlan>(operation.code(),
+                                                                  editing::RuleId("animation.editing.event-operation"),
+                                                                  "Animation clip rejected the event");
             editing::CommandPlan plan;
             plan.operations.push_back(std::move(operation).takeValue());
             plan.summary = editing::Value::Object{{"id", parsed.value().id.value()}};
@@ -145,12 +150,14 @@ editing::Result<void> registerEditingCommands(editing::IEditingCommandRegistry& 
             const editing::Value* idValue = field(request.payload, "id");
             const auto* id = idValue ? idValue->getIf<std::string>() : nullptr;
             if (!capability || !id || id->empty())
-                return error<editing::CommandPlan>(editing::Status::Rejected, "animation.editing.event-id",
-                                                   "Event deletion requires a clip target and stable id");
+                return eve::editing::failed<editing::CommandPlan>(
+                    editing::Status::Rejected, editing::RuleId("animation.editing.event-id"),
+                    "Event deletion requires a clip target and stable id");
             auto operation = capability->makeDeleteEvent(editing::StableId(*id));
             if (!operation.ok())
-                return error<editing::CommandPlan>(operation.code(), "animation.editing.event-delete",
-                                                   "Animation clip could not delete the event");
+                return eve::editing::failed<editing::CommandPlan>(operation.code(),
+                                                                  editing::RuleId("animation.editing.event-delete"),
+                                                                  "Animation clip could not delete the event");
             editing::CommandPlan plan;
             plan.operations.push_back(std::move(operation).takeValue());
             plan.summary = editing::Value::Object{{"id", *id}};
@@ -165,13 +172,14 @@ editing::Result<void> registerEditingCommands(editing::IEditingCommandRegistry& 
                            const auto* bone = boneValue ? boneValue->getIf<std::string>() : nullptr;
                            double weight = 0;
                            if (!capability || !bone || bone->empty() || !readNumber(request.payload, "weight", weight))
-                               return error<editing::CommandPlan>(editing::Status::Rejected,
-                                                                  "animation.editing.mask-payload",
-                                                                  "Mask requires a clip target, bone and weight");
+                               return eve::editing::failed<editing::CommandPlan>(
+                                   editing::Status::Rejected, editing::RuleId("animation.editing.mask-payload"),
+                                   "Mask requires a clip target, bone and weight");
                            auto operation = capability->makeSetMask({*bone, weight});
                            if (!operation.ok())
-                               return error<editing::CommandPlan>(operation.code(), "animation.editing.mask-operation",
-                                                                  "Animation clip rejected the mask");
+                               return eve::editing::failed<editing::CommandPlan>(
+                                   operation.code(), editing::RuleId("animation.editing.mask-operation"),
+                                   "Animation clip rejected the mask");
                            editing::CommandPlan plan;
                            plan.operations.push_back(std::move(operation).takeValue());
                            plan.summary = editing::Value::Object{{"bone", *bone}, {"weight", weight}};

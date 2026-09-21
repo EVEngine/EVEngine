@@ -284,21 +284,21 @@ void Inventory::expose(ssq::Class &cls) {
     // 失败原因（非规范持久 id、重复实例、空 bag）不被丢弃。equipment 可为 null；
     // ssq 的默认指针绑定拒绝 Squirrel `null`，故按 Avatar.cpp 的既有做法接收
     // ssq::Object 并在此翻译 null -> nullptr。
-    cls.addFunc("publishGameplay", [vm = cls.getHandle()](Inventory* self, const std::string& instanceId,
-                                                          const std::string& ownerId, Bag* bag, ssq::Object equipment) {
+    cls.addFunc("publishGameplay", [vm = cls.getHandle()](Inventory *self, const std::string &instanceId,
+                                                          const std::string &ownerId, Bag *bag, ssq::Object equipment) {
         ssq::Table result(vm);
         if (self == nullptr || bag == nullptr) {
             result.set("ok", false);
             result.set("message", std::string("publishGameplay needs the inventory module and a bag"));
             return result;
         }
-        EquipmentSet* equipmentSet = equipment.isNull() ? nullptr : equipment.toPtrUnsafe<EquipmentSet*>();
+        EquipmentSet *equipmentSet = equipment.isNull() ? nullptr : equipment.toPtrUnsafe<EquipmentSet *>();
         const auto    published    = self->publishGameplay(instanceId, ownerId, bag, equipmentSet);
         result.set("ok", published.ok());
         result.set("message", published.ok() ? std::string("published") : published.status().describe());
         return result;
     });
-    cls.addFunc("unpublishGameplay", [vm = cls.getHandle()](Inventory* self, const std::string& instanceId) {
+    cls.addFunc("unpublishGameplay", [vm = cls.getHandle()](Inventory *self, const std::string &instanceId) {
         ssq::Table result(vm);
         const auto unpublished = self == nullptr
                                      ? eve::Result<void>::failure(eve::Diagnostic::error(
@@ -314,8 +314,8 @@ void Inventory::expose(ssq::Class &cls) {
 
 Inventory::~Inventory() { clearGameplayControls(); }
 
-eve::Result<void> Inventory::publishGameplay(const std::string& instanceId, const std::string& ownerId, Bag* bag,
-                                             EquipmentSet* equipment) {
+eve::Result<void> Inventory::publishGameplay(const std::string &instanceId, const std::string &ownerId, Bag *bag,
+                                             EquipmentSet *equipment) {
     if (instanceId.empty() || ownerId.empty() || bag == nullptr)
         return eve::Result<void>::failure(
             eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
@@ -331,7 +331,7 @@ eve::Result<void> Inventory::publishGameplay(const std::string& instanceId, cons
                               *bag, equipment);
 }
 
-eve::Result<void> Inventory::unpublishGameplay(const std::string& instanceId) {
+eve::Result<void> Inventory::unpublishGameplay(const std::string &instanceId) {
     if (!gameplay_)
         return eve::Result<void>::failure(
             eve::Diagnostic::error(eve::DiagnosticCode::NotFound, "no inventory instance is published", "instanceId"));
@@ -351,7 +351,7 @@ int Inventory::gameplayControlCount() const { return gameplay_ ? gameplay_->coun
 std::vector<std::string> Inventory::gameplayInstances() const {
     std::vector<std::string> result;
     if (!gameplay_) return result;
-    for (const auto& instance : gameplay_->instances()) result.push_back(instance.format());
+    for (const auto &instance : gameplay_->instances()) result.push_back(instance.format());
     return result;
 }
 

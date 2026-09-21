@@ -330,7 +330,7 @@ Result<GameplayCommandReceipt> CardControl::submitGameplay(const GameplaySession
     event.causationCommandId = command.id;
     event.correlationId      = command.id;
     event.payload            = Value(Value::Object{
-        {"instance", Value(entry->instance.format())}, {"detail", Value(detail)}, {"quantity", Value(applied)}});
+                   {"instance", Value(entry->instance.format())}, {"detail", Value(detail)}, {"quantity", Value(applied)}});
     entry->events.push_back(std::move(event));
 
     GameplayCommandReceipt receipt;

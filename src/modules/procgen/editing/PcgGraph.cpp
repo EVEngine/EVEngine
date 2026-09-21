@@ -12,11 +12,6 @@
 namespace eve::procgen_editing {
 namespace {
 
-template <class T>
-EditorResult<T> pcgGraphError(const char* rule, std::string message) {
-    return eve::editing::failed<T>(EditorStatus::Rejected, RuleId(rule), std::move(message));
-}
-
 EditorDiagnostic pcgDiagnostic(const char* rule, DiagnosticSeverity severity,
                                std::string message) {
     return eve::editing::ruleDiagnostic(eve::DiagnosticCode::InvalidArgument, RuleId(rule),
@@ -73,8 +68,8 @@ GraphConnectionDecision PcgPointGraphDomain::canConnect(const GraphPinRecord& fr
 EditorResult<GraphNodeRecord> PcgPointGraphDomain::makeNode(const GraphNodeId& id,
                                                             const std::string& operation) const {
     if (id.empty() || procgen::PointGraph::getOperationInputCount(operation) < 0)
-        return pcgGraphError<GraphNodeRecord>("editor.pcg.unknown-operation",
-                                              "Unknown PointGraph operation");
+        return eve::editing::failed<GraphNodeRecord>(EditorStatus::Rejected, RuleId("editor.pcg.unknown-operation"),
+                                                     "Unknown PointGraph operation");
     GraphNodeRecord node;
     node.id   = id;
     node.type = operation;

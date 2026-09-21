@@ -6,10 +6,6 @@
 namespace eve::input_editing {
 using namespace eve::editing;
 namespace {
-template <class T>
-EditorResult<T> fail(EditorStatus s, const char* r, std::string m) {
-    return eve::editing::failed<T>(s, RuleId(r), std::move(m));
-}
 const EditorValue* field(const EditorValue& v, const char* k) {
     auto* o = v.getIf<EditorValue::Object>();
     if (!o) return nullptr;
@@ -144,7 +140,8 @@ EditorResult<DomainOperation> InputMapTarget::makeSet(const SelectionSnapshot& s
     if (mode == PropertySetMode::Reset) return makeReset(s, p);
     auto d = schema(s).find(p);
     if (!matches(s) || !d || mode != PropertySetMode::Absolute || !validatePropertyValue(*d, v).ok())
-        return fail<DomainOperation>(EditorStatus::Rejected, "editor.input.set", "Input property edit is invalid");
+        return eve::editing::failed<DomainOperation>(EditorStatus::Rejected, RuleId("editor.input.set"),
+                                                     "Input property edit is invalid");
     auto c = *this;
     for (const auto& i : s.items)
         if (i.type == "input.action") {
@@ -171,38 +168,43 @@ EditorResult<DomainOperation> InputMapTarget::makeSet(const SelectionSnapshot& s
                 b.invert = *v.getIf<bool>();
         }
     if (errors(c.validate()))
-        return fail<DomainOperation>(EditorStatus::Rejected, "editor.input.invalid",
-                                     "Input edit produces invalid bindings");
+        return eve::editing::failed<DomainOperation>(EditorStatus::Rejected, RuleId("editor.input.invalid"),
+                                                     "Input edit produces invalid bindings");
     return replacement(c.contentValue(), p.value());
 }
 EditorResult<DomainOperation> InputMapTarget::makeReset(const SelectionSnapshot& s, const PropertyPath& p) const {
     auto d = schema(s).find(p);
-    if (!d) return fail<DomainOperation>(EditorStatus::Unsupported, "editor.input.property", "Unknown input property");
+    if (!d)
+        return eve::editing::failed<DomainOperation>(EditorStatus::Unsupported, RuleId("editor.input.property"),
+                                                     "Unknown input property");
     return makeSet(s, p, d->defaultValue, PropertySetMode::Absolute);
 }
 EditorResult<DomainOperation> InputMapTarget::makeCreateAction(InputActionValue v) const {
     auto c = *this;
     c.actions_.push_back(std::move(v));
     if (errors(c.validate()))
-        return fail<DomainOperation>(EditorStatus::Rejected, "editor.input.action", "Input action is invalid");
+        return eve::editing::failed<DomainOperation>(EditorStatus::Rejected, RuleId("editor.input.action"),
+                                                     "Input action is invalid");
     return replacement(c.contentValue());
 }
 EditorResult<DomainOperation> InputMapTarget::makeDeleteAction(const ObjectId& id) const {
     if (std::any_of(bindings_.begin(), bindings_.end(), [&](const auto& b) { return b.action == id; }))
-        return fail<DomainOperation>(EditorStatus::Rejected, "editor.input.action-referenced",
-                                     "Delete bindings before deleting their action");
+        return eve::editing::failed<DomainOperation>(EditorStatus::Rejected, RuleId("editor.input.action-referenced"),
+                                                     "Delete bindings before deleting their action");
     auto       c      = *this;
     const auto before = c.actions_.size();
     std::erase_if(c.actions_, [&](const auto& a) { return a.id == id; });
     if (before == c.actions_.size())
-        return fail<DomainOperation>(EditorStatus::NotFound, "editor.input.action", "Input action does not exist");
+        return eve::editing::failed<DomainOperation>(EditorStatus::NotFound, RuleId("editor.input.action"),
+                                                     "Input action does not exist");
     return replacement(c.contentValue());
 }
 EditorResult<DomainOperation> InputMapTarget::makeCreateBinding(InputBindingValue v) const {
     auto c = *this;
     c.bindings_.push_back(std::move(v));
     if (errors(c.validate()))
-        return fail<DomainOperation>(EditorStatus::Rejected, "editor.input.binding", "Input binding is invalid");
+        return eve::editing::failed<DomainOperation>(EditorStatus::Rejected, RuleId("editor.input.binding"),
+                                                     "Input binding is invalid");
     return replacement(c.contentValue());
 }
 EditorResult<DomainOperation> InputMapTarget::makeDeleteBinding(const ObjectId& id) const {
@@ -210,7 +212,8 @@ EditorResult<DomainOperation> InputMapTarget::makeDeleteBinding(const ObjectId& 
     const auto before = c.bindings_.size();
     std::erase_if(c.bindings_, [&](const auto& b) { return b.id == id; });
     if (before == c.bindings_.size())
-        return fail<DomainOperation>(EditorStatus::NotFound, "editor.input.binding", "Input binding does not exist");
+        return eve::editing::failed<DomainOperation>(EditorStatus::NotFound, RuleId("editor.input.binding"),
+                                                     "Input binding does not exist");
     return replacement(c.contentValue());
 }
 std::vector<EditorDiagnostic> InputMapTarget::validate() const {
@@ -247,12 +250,14 @@ std::vector<EditorDiagnostic> InputMapTarget::validate() const {
 EditorResult<void> InputMapTarget::applyDomainOperation(const DomainOperation& op) {
     if (op.target != TargetId(id_) || op.type != "input-map.replace.v1" ||
         !op.payload.isWithinLimits(5, 50000, 4 * 1024 * 1024))
-        return fail<void>(EditorStatus::Rejected, "editor.input.operation", "Input map operation is invalid");
+        return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.input.operation"),
+                                          "Input map operation is invalid");
     auto *av = field(op.payload, "actions"), *bv = field(op.payload, "bindings");
     auto* aa = av ? av->getIf<EditorValue::Array>() : nullptr;
     auto* ba = bv ? bv->getIf<EditorValue::Array>() : nullptr;
     if (!aa || !ba || aa->size() > 1024 || ba->size() > 8192)
-        return fail<void>(EditorStatus::Rejected, "editor.input.payload", "Input map payload exceeds limits");
+        return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.input.payload"),
+                                          "Input map payload exceeds limits");
     InputMapTarget c(id_);
     for (const auto& v : *aa) {
         auto *i = field(v, "id"), *n = field(v, "name"), *k = field(v, "kind");
@@ -260,7 +265,8 @@ EditorResult<void> InputMapTarget::applyDomainOperation(const DomainOperation& o
         auto* ns = n ? n->getIf<std::string>() : nullptr;
         auto* ks = k ? k->getIf<std::string>() : nullptr;
         if (!is || !ns || !ks)
-            return fail<void>(EditorStatus::Rejected, "editor.input.action", "Input action payload is invalid");
+            return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.input.action"),
+                                              "Input action payload is invalid");
         c.actions_.push_back({ObjectId(*is), *ns, *ks});
     }
     for (const auto& v : *ba) {
@@ -274,11 +280,13 @@ EditorResult<void> InputMapTarget::applyDomainOperation(const DomainOperation& o
         auto* dn = dead ? dead->getIf<double>() : nullptr;
         auto* ib = inv ? inv->getIf<bool>() : nullptr;
         if (!is || !as || !ds || !cs || !sn || !dn || !ib)
-            return fail<void>(EditorStatus::Rejected, "editor.input.binding", "Input binding payload is invalid");
+            return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.input.binding"),
+                                              "Input binding payload is invalid");
         c.bindings_.push_back({ObjectId(*is), ObjectId(*as), *ds, *cs, *sn, *dn, *ib});
     }
     if (errors(c.validate()))
-        return fail<void>(EditorStatus::Rejected, "editor.input.invalid", "Input map validation failed");
+        return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.input.invalid"),
+                                          "Input map validation failed");
     actions_  = std::move(c.actions_);
     bindings_ = std::move(c.bindings_);
     ++revision_;
@@ -291,7 +299,8 @@ std::unique_ptr<IDomainOperationTarget> InputMapTarget::cloneDomainState() const
 EditorResult<void> InputMapTarget::commitDomainState(std::unique_ptr<IDomainOperationTarget> c) {
     auto* t = dynamic_cast<InputMapTarget*>(c.get());
     if (!t || t->id_ != id_)
-        return fail<void>(EditorStatus::Conflict, "editor.input.candidate", "Input candidate mismatch");
+        return eve::editing::failed<void>(EditorStatus::Conflict, RuleId("editor.input.candidate"),
+                                          "Input candidate mismatch");
     *this = *t;
     return eve::editing::applied<void>();
 }
@@ -302,7 +311,8 @@ EditorResult<void> InputMapTarget::loadSnapshot(const EditorValue& s) {
     auto *v = field(s, "schemaVersion"), *c = field(s, "content");
     auto* n = v ? v->getIf<int64_t>() : nullptr;
     if (!n || *n != 1 || !c)
-        return fail<void>(EditorStatus::Unsupported, "editor.input.snapshot", "Unsupported input snapshot");
+        return eve::editing::failed<void>(EditorStatus::Unsupported, RuleId("editor.input.snapshot"),
+                                          "Unsupported input snapshot");
     DomainOperation op;
     op.target   = TargetId(id_);
     op.type     = "input-map.replace.v1";
@@ -314,8 +324,8 @@ EditorResult<void> InputMapTarget::loadSnapshot(const EditorValue& s) {
 EditorResult<std::map<std::string, double>> InputMapEvaluator::evaluate(
     const InputMapTarget& t, const std::vector<InputControlSample>& samples) const {
     if (errors(t.validate()))
-        return fail<std::map<std::string, double>>(EditorStatus::Rejected, "editor.input.invalid",
-                                                   "Cannot evaluate invalid input map");
+        return eve::editing::failed<std::map<std::string, double>>(
+            EditorStatus::Rejected, RuleId("editor.input.invalid"), "Cannot evaluate invalid input map");
     std::map<std::string, double> out;
     for (const auto& a : t.actions()) out[a.name] = 0;
     for (const auto& b : t.bindings()) {

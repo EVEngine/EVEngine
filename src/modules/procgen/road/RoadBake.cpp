@@ -29,12 +29,6 @@ V3 normalize(V3 a) {
     return l > 1e-8f ? a * (1.f / l) : V3{0.f, 1.f, 0.f};
 }
 
-template <class T>
-Result<T> bakeFail(DiagnosticCode code, std::string message, std::string path = {}) {
-    return Result<T>::failure(
-        Diagnostic::error(code, std::move(message), std::move(path), {}, "procgen.road"));
-}
-
 Result<SplinePath> edgeToSpline(const RoadEdge& edge) {
     SplinePath path;
     auto kind = path.setKindResult("catmullRom");
@@ -118,7 +112,8 @@ void appendOrientedTri(MeshBuild& mesh, V3 a, V3 b, V3 c, V3 normal, RoadMateria
 Result<void> loftProfileClean(MeshBuild& mesh, const std::vector<SplineFrameSample>& frames,
                               const RoadProfile& profile, float uvMeters) {
     if (frames.size() < 2 || profile.points.size() < 2)
-        return bakeFail<void>(DiagnosticCode::InvalidArgument, "loft needs >=2 frames and profile points");
+        return Result<void>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "loft needs >=2 frames and profile points", {}, {}, "procgen.road"));
 
     const int ringCount    = static_cast<int>(frames.size());
     const int profileCount = static_cast<int>(profile.points.size());
@@ -370,7 +365,8 @@ Result<void> bakeEdgeGeometry(MeshBuild& mesh, RoadOverlay& overlay, const RoadN
     auto fromNode = network.nodeResult(edge.from);
     auto toNode   = network.nodeResult(edge.to);
     if (!fromNode.ok() || !toNode.ok())
-        return bakeFail<void>(DiagnosticCode::NotFound, "edge endpoints missing during bake");
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::NotFound, "edge endpoints missing during bake", {}, {}, "procgen.road"));
 
     // Honour full junctionRadius so filleted corners meet the arm tips with G1
     // tangents (square stubs from early trim read as sharp turn corners).
@@ -837,9 +833,11 @@ Result<void> paintGroupVertexColors(MeshBuild& mesh) {
 
 Result<RoadBakeResult> bakeRoadNetwork(const RoadNetwork& network, const RoadBakeOptions& options) {
     if (options.pathSegmentsPerEdge < 2 || options.turnSamples < 2)
-        return bakeFail<RoadBakeResult>(DiagnosticCode::InvalidArgument, "segment counts must be >= 2");
+        return Result<RoadBakeResult>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "segment counts must be >= 2", {}, {}, "procgen.road"));
     if (network.edgeCount() == 0)
-        return bakeFail<RoadBakeResult>(DiagnosticCode::PreconditionViolation, "road network has no edges");
+        return Result<RoadBakeResult>::failure(Diagnostic::error(DiagnosticCode::PreconditionViolation,
+                                                                 "road network has no edges", {}, {}, "procgen.road"));
 
     RoadBakeResult result;
     for (const auto& edge : network.edges()) {
@@ -867,7 +865,8 @@ Result<RoadBakeResult> bakeRoadNetwork(const RoadNetwork& network, const RoadBak
     result.mesh.setMeta("nodes", std::to_string(network.nodeCount()));
     result.mesh.setMeta("laneLinks", std::to_string(network.laneLinkCount()));
     if (result.mesh.getVertexCount() < 3)
-        return bakeFail<RoadBakeResult>(DiagnosticCode::InvariantViolation, "bake produced an empty mesh");
+        return Result<RoadBakeResult>::failure(Diagnostic::error(
+            DiagnosticCode::InvariantViolation, "bake produced an empty mesh", {}, {}, "procgen.road"));
     return Result<RoadBakeResult>::success(std::move(result));
 }
 

@@ -59,8 +59,7 @@ bool hasReservedPrefix(const std::string& name) {
  * @brief Read a string field of a spec table.
  * @return The field value, or `defaultValue` when the field is absent or not a string.
  */
-std::string tableString(HSQUIRRELVM vm, HSQOBJECT table, const char* key,
-                        const std::string& defaultValue = {}) {
+std::string tableString(HSQUIRRELVM vm, HSQOBJECT table, const char* key, const std::string& defaultValue = {}) {
     const SQInteger top = sq_gettop(vm);
     sq_pushobject(vm, table);
     sq_pushstring(vm, key, -1);
@@ -345,8 +344,8 @@ void exposeMcpScriptApi(ssq::VM& vm) {
             bool removed = false;
             {
                 std::lock_guard<std::mutex> lock(g_mutex);
-                const auto found = std::find_if(g_tools.begin(), g_tools.end(),
-                                                [&](const ScriptTool& entry) { return entry.name == name; });
+                const auto                  found = std::find_if(g_tools.begin(), g_tools.end(),
+                                                                 [&](const ScriptTool& entry) { return entry.name == name; });
                 if (found != g_tools.end()) {
                     releaseEntry(*found, raw);
                     g_tools.erase(found);

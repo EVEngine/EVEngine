@@ -6,11 +6,6 @@
 
 namespace eve::material_editing {
 namespace {
-template <class T>
-EditorResult<T> fail(EditorStatus status, const char* rule, std::string message) {
-    return editing::failed<T>(status, RuleId(rule), std::move(message));
-}
-
 const EditorValue* field(const EditorValue& value, const char* key) {
     const auto* object = value.getIf<EditorValue::Object>();
     if (!object) return nullptr;
@@ -47,7 +42,7 @@ MaterialBatchTarget::MaterialBatchTarget(std::string id, std::vector<MaterialDoc
 TargetDescriptor MaterialBatchTarget::describe() const {
     return {targetId(),
             "material-batch",
-            revision_,
+            revisionValue(),
             false,
             {IPropertyProvider::editingCapabilityId(), editing::IEditingSnapshotProvider::editingCapabilityId()}};
 }
@@ -61,24 +56,28 @@ void* MaterialBatchTarget::queryCapability(const CapabilityId& capability) {
 
 EditorResult<std::vector<std::size_t>> MaterialBatchTarget::selectedIndices(const SelectionSnapshot& selection) const {
     if (selection.items.empty())
-        return fail<std::vector<std::size_t>>(EditorStatus::Rejected, "editor.material-batch.empty-selection",
-                                              "Material batch selection is empty");
+        return editing::failed<std::vector<std::size_t>>(EditorStatus::Rejected,
+                                                         RuleId("editor.material-batch.empty-selection"),
+                                                         "Material batch selection is empty");
     std::vector<std::size_t> result;
     std::set<std::size_t>    unique;
     for (const auto& item : selection.items) {
         if (item.target != targetId())
-            return fail<std::vector<std::size_t>>(EditorStatus::Rejected, "editor.material-batch.target-mismatch",
-                                                  "Material batch selection targets another document");
+            return editing::failed<std::vector<std::size_t>>(EditorStatus::Rejected,
+                                                             RuleId("editor.material-batch.target-mismatch"),
+                                                             "Material batch selection targets another document");
         const auto found = std::find_if(materials_.begin(), materials_.end(), [&](const auto& material) {
             return material.targetId().value() == item.item.value();
         });
         if (found == materials_.end())
-            return fail<std::vector<std::size_t>>(EditorStatus::NotFound, "editor.material-batch.material-not-found",
-                                                  "Selected material is not in this batch");
+            return editing::failed<std::vector<std::size_t>>(EditorStatus::NotFound,
+                                                             RuleId("editor.material-batch.material-not-found"),
+                                                             "Selected material is not in this batch");
         const auto index = static_cast<std::size_t>(found - materials_.begin());
         if (!unique.insert(index).second)
-            return fail<std::vector<std::size_t>>(EditorStatus::Rejected, "editor.material-batch.duplicate-selection",
-                                                  "Material batch selection contains a duplicate");
+            return editing::failed<std::vector<std::size_t>>(EditorStatus::Rejected,
+                                                             RuleId("editor.material-batch.duplicate-selection"),
+                                                             "Material batch selection contains a duplicate");
         result.push_back(index);
     }
     return editing::applied<std::vector<std::size_t>>(std::move(result));
@@ -87,7 +86,7 @@ EditorResult<std::vector<std::size_t>> MaterialBatchTarget::selectedIndices(cons
 eve::Result<eve::Revision> MaterialBatchTarget::currentRevision(const SelectionSnapshot& selection) const {
     const auto indices = selectedIndices(selection);
     if (!indices.ok()) return eve::Result<eve::Revision>::failure(indices.status());
-    return eve::Result<eve::Revision>::success(eve::Revision(revision_));
+    return eve::Result<eve::Revision>::success(eve::Revision(revisionValue()));
 }
 
 PropertySchema MaterialBatchTarget::schema(const SelectionSnapshot&) const {
@@ -142,8 +141,8 @@ EditorResult<DomainOperation> MaterialBatchTarget::makeReset(const SelectionSnap
                                                              const PropertyPath&      path) const {
     const auto descriptor = schema(selection).find(path);
     if (!descriptor)
-        return fail<DomainOperation>(EditorStatus::Unsupported, "editor.material-batch.property",
-                                     "Unknown material batch property");
+        return editing::failed<DomainOperation>(EditorStatus::Unsupported, RuleId("editor.material-batch.property"),
+                                                "Unknown material batch property");
     return makeSet(selection, path, descriptor->defaultValue, PropertySetMode::Absolute);
 }
 
@@ -155,20 +154,20 @@ EditorResult<void> MaterialBatchTarget::publishAndAdopt(std::vector<MaterialDocu
         if (!published.ok()) return published;
     }
     materials_ = std::move(candidates);
-    revision_  = candidateRevision;
-    dirty_.include(candidateDirty);
+    setRevision(candidateRevision);
+    widenDirty(candidateDirty);
     return editing::applied<void>();
 }
 
 EditorResult<void> MaterialBatchTarget::applyDomainOperation(const DomainOperation& operation) {
     if (operation.target != targetId() || operation.type != "material.batch.replace.v1")
-        return fail<void>(EditorStatus::Rejected, "editor.material-batch.operation",
-                          "Material batch operation mismatch");
+        return editing::failed<void>(EditorStatus::Rejected, RuleId("editor.material-batch.operation"),
+                                     "Material batch operation mismatch");
     const auto* values = field(operation.payload, "materials");
     const auto* array  = values ? values->getIf<EditorValue::Array>() : nullptr;
     if (!array || array->size() != materials_.size() || !operation.payload.isWithinLimits(16, 200000, 16 * 1024 * 1024))
-        return fail<void>(EditorStatus::Rejected, "editor.material-batch.payload",
-                          "Material batch payload is incomplete or exceeds limits");
+        return editing::failed<void>(EditorStatus::Rejected, RuleId("editor.material-batch.payload"),
+                                     "Material batch payload is incomplete or exceeds limits");
     std::vector<MaterialDocumentTarget> candidates;
     candidates.reserve(materials_.size());
     std::set<std::string> ids;
@@ -177,13 +176,13 @@ EditorResult<void> MaterialBatchTarget::applyDomainOperation(const DomainOperati
         const auto* snapshot = field(item, "snapshot");
         const auto* id       = idValue ? idValue->getIf<std::string>() : nullptr;
         if (!id || !snapshot || !ids.insert(*id).second)
-            return fail<void>(EditorStatus::Rejected, "editor.material-batch.entry",
-                              "Material batch entry is invalid or duplicated");
+            return editing::failed<void>(EditorStatus::Rejected, RuleId("editor.material-batch.entry"),
+                                         "Material batch entry is invalid or duplicated");
         const auto original = std::find_if(materials_.begin(), materials_.end(),
                                            [&](const auto& material) { return material.targetId().value() == *id; });
         if (original == materials_.end())
-            return fail<void>(EditorStatus::Conflict, "editor.material-batch.identity",
-                              "Material batch identities changed");
+            return editing::failed<void>(EditorStatus::Conflict, RuleId("editor.material-batch.identity"),
+                                         "Material batch identities changed");
         MaterialDocumentTarget candidate(*id);
         auto                   loaded = candidate.loadSnapshot(*snapshot);
         if (!loaded.ok()) return EditorResult<void>::failure(loaded.status());
@@ -191,7 +190,7 @@ EditorResult<void> MaterialBatchTarget::applyDomainOperation(const DomainOperati
     }
     EditRegion dirty;
     dirty.include(0, 0);
-    return publishAndAdopt(std::move(candidates), revision_ + 1, dirty);
+    return publishAndAdopt(std::move(candidates), revisionValue() + 1, dirty);
 }
 
 std::unique_ptr<IDomainOperationTarget> MaterialBatchTarget::cloneDomainState() const {
@@ -203,9 +202,9 @@ std::unique_ptr<IDomainOperationTarget> MaterialBatchTarget::cloneDomainState() 
 EditorResult<void> MaterialBatchTarget::commitDomainState(std::unique_ptr<IDomainOperationTarget> candidate) {
     auto* typed = dynamic_cast<MaterialBatchTarget*>(candidate.get());
     if (!typed || typed->id_ != id_ || typed->materials_.size() != materials_.size())
-        return fail<void>(EditorStatus::Conflict, "editor.material-batch.candidate",
-                          "Material batch candidate does not match this target");
-    return publishAndAdopt(std::move(typed->materials_), typed->revision_, typed->dirty_);
+        return editing::failed<void>(EditorStatus::Conflict, RuleId("editor.material-batch.candidate"),
+                                     "Material batch candidate does not match this target");
+    return publishAndAdopt(std::move(typed->materials_), typed->revisionValue(), typed->dirtyRegion());
 }
 
 EditorValue MaterialBatchTarget::snapshotValue() const {

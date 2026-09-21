@@ -151,9 +151,9 @@ TEST_CASE("gameplay.control.routerDispatchesByInstanceAcrossSameDomainProviders"
     CHECK(observedTwo.value().find("\"revision\":1") != std::string::npos);
 
     // submit 只落到认领该实例的 provider：被路由到的那个前进，另一个不动。
-    const std::string command   = ",\"command\":{\"id\":\"routed-1\",\"action\":\"fixture:increment\",\"subject\":\"" +
-                                  secondText + "\",\"observedTick\":0,\"expectedRevision\":1,\"parameters\":{}}";
-    auto              submitted = eve::executeGameplayControlJson(envelope("submit", secondText, command));
+    const std::string command = ",\"command\":{\"id\":\"routed-1\",\"action\":\"fixture:increment\",\"subject\":\"" +
+                                secondText + "\",\"observedTick\":0,\"expectedRevision\":1,\"parameters\":{}}";
+    auto submitted = eve::executeGameplayControlJson(envelope("submit", secondText, command));
     REQUIRE(submitted.ok());
     CHECK(submitted.value().find("routed-1") != std::string::npos);
     CHECK(submitted.value().find("\"resultingRevision\":2") != std::string::npos);

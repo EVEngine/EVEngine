@@ -8,11 +8,6 @@
 namespace eve::ui_editing {
 namespace {
 
-template <class T>
-EditorResult<T> fail(EditorStatus status, const char* rule, std::string message) {
-    return eve::editing::failed<T>(status, RuleId(rule), std::move(message));
-}
-
 }  // namespace
 
 bool UiThemeCatalogTarget::matches(const SelectionSnapshot& selection) const {
@@ -28,7 +23,7 @@ eve::Result<eve::Revision> UiThemeCatalogTarget::currentRevision(const Selection
     if (!matches(selection))
         return eve::Result<eve::Revision>::failure(eve::Diagnostic::error(
             eve::DiagnosticCode::InvalidArgument, "Theme selection mismatch", "editor.ui-theme.selection"));
-    return eve::Result<eve::Revision>::success(eve::Revision(revision_));
+    return eve::Result<eve::Revision>::success(eve::Revision(revisionValue()));
 }
 
 PropertySchema UiThemeCatalogTarget::schema(const SelectionSnapshot&) const { return themeTokenSchema(); }
@@ -54,26 +49,26 @@ EditorResult<DomainOperation> UiThemeCatalogTarget::makeSet(const SelectionSnaps
     auto descriptor = schema(selection).find(path);
     if (!matches(selection) || !descriptor || mode != PropertySetMode::Absolute ||
         !editing::validatePropertyValue(*descriptor, value).ok())
-        return fail<DomainOperation>(EditorStatus::Rejected, "editor.ui-theme.set",
-                                     "Theme property edit is invalid");
+        return eve::editing::failed<DomainOperation>(EditorStatus::Rejected, RuleId("editor.ui-theme.set"),
+                                                     "Theme property edit is invalid");
     auto candidate = *this;
     for (const auto& item : selection.items) {
         UiThemeAsset* asset = candidate.mutableTheme(ObjectId(item.item.value()));
         if (!asset)
-            return fail<DomainOperation>(EditorStatus::NotFound, "editor.ui-theme.missing",
-                                         "Theme asset does not exist");
+            return eve::editing::failed<DomainOperation>(EditorStatus::NotFound, RuleId("editor.ui-theme.missing"),
+                                                         "Theme asset does not exist");
         auto assigned = assignThemeToken(asset->tokens, path, value);
         if (!assigned.ok())
-            return fail<DomainOperation>(EditorStatus::Rejected, "editor.ui-theme.token",
-                                         "Theme token could not be assigned");
+            return eve::editing::failed<DomainOperation>(EditorStatus::Rejected, RuleId("editor.ui-theme.token"),
+                                                         "Theme token could not be assigned");
         if (asset->id.value() != "dark" && asset->id.value() != "light")
             asset->basePreset = UiThemeBasePreset::Custom;
     }
     auto diagnostics = candidate.validate();
     if (std::any_of(diagnostics.begin(), diagnostics.end(),
                     [](const EditorDiagnostic& item) { return item.severity() == DiagnosticSeverity::Error; }))
-        return fail<DomainOperation>(EditorStatus::Rejected, "editor.ui-theme.invalid",
-                                     "Theme property edit is out of range");
+        return eve::editing::failed<DomainOperation>(EditorStatus::Rejected, RuleId("editor.ui-theme.invalid"),
+                                                     "Theme property edit is out of range");
     return replacement(candidate.contentValue(), path.value());
 }
 
@@ -81,8 +76,8 @@ EditorResult<DomainOperation> UiThemeCatalogTarget::makeReset(const SelectionSna
                                                               const PropertyPath&      path) const {
     auto descriptor = schema(selection).find(path);
     if (!descriptor)
-        return fail<DomainOperation>(EditorStatus::Unsupported, "editor.ui-theme.property",
-                                     "Unknown theme property");
+        return eve::editing::failed<DomainOperation>(EditorStatus::Unsupported, RuleId("editor.ui-theme.property"),
+                                                     "Unknown theme property");
     return makeSet(selection, path, descriptor->defaultValue, PropertySetMode::Absolute);
 }
 

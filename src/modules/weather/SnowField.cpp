@@ -1,9 +1,9 @@
-#include "snow/SnowField.h"
+#include "weather/SnowField.h"
 
 #include <algorithm>
 #include <cmath>
 
-namespace eve::snow {
+namespace eve::weather {
 
 namespace {
 
@@ -217,4 +217,4 @@ float SnowField::clamp01(float v) {
     return std::clamp(v, 0.f, 1.f);
 }
 
-}  // namespace eve::snow
+}  // namespace eve::weather

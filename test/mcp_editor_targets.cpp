@@ -33,9 +33,9 @@ namespace {
 std::vector<std::string> runStdioSession(const std::string& requests, std::size_t expectedResponses) {
     auto& mcp = McpServer::instance();
     mcp.stop();
-    std::istringstream in(requests);
-    std::ostringstream out;
-    const bool         started = mcp.listenStdio(in, out);
+    std::istringstream       in(requests);
+    std::ostringstream       out;
+    const bool               started = mcp.listenStdio(in, out);
     std::vector<std::string> responses;
     if (started) {
         for (int attempt = 0; attempt < 400; ++attempt) {
@@ -60,8 +60,8 @@ std::string initializeRequest(int id) {
 }
 
 std::string callRequest(int id, const std::string& name, const std::string& argumentsJson) {
-    return "{\"jsonrpc\":\"2.0\",\"id\":" + std::to_string(id) +
-           ",\"method\":\"tools/call\",\"params\":{\"name\":\"" + name + "\",\"arguments\":" + argumentsJson + "}}";
+    return "{\"jsonrpc\":\"2.0\",\"id\":" + std::to_string(id) + ",\"method\":\"tools/call\",\"params\":{\"name\":\"" +
+           name + "\",\"arguments\":" + argumentsJson + "}}";
 }
 
 std::string joinRequests(const std::vector<std::string>& requests) {
@@ -84,8 +84,8 @@ std::string callToolOnce(const std::string& name, const std::string& argumentsJs
         runStdioSession(joinRequests({initializeRequest(1), callRequest(2, name, argumentsJson)}), 2);
     if (responses.size() < 2) return {};
     try {
-        auto object = parseObject(responses[1]);
-        auto result = object ? object->getObject("result") : Poco::JSON::Object::Ptr();
+        auto object  = parseObject(responses[1]);
+        auto result  = object ? object->getObject("result") : Poco::JSON::Object::Ptr();
         auto content = result ? result->getArray("content") : Poco::JSON::Array::Ptr();
         if (!content || content->size() == 0) return {};
         return content->getObject(0)->getValue<std::string>("text");

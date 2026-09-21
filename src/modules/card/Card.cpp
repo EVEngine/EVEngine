@@ -156,8 +156,8 @@ Card::~Card() {
     activeConfig_ = nullptr;
 }
 
-eve::Result<void> Card::publishGameplay(const std::string& instanceId, const std::string& ownerId, Hand* hand,
-                                        eve::resource::IResourceAccount* account) {
+eve::Result<void> Card::publishGameplay(const std::string &instanceId, const std::string &ownerId, Hand *hand,
+                                        eve::resource::IResourceAccount *account) {
     if (instanceId.empty() || ownerId.empty() || hand == nullptr)
         return eve::Result<void>::failure(
             eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
@@ -173,7 +173,7 @@ eve::Result<void> Card::publishGameplay(const std::string& instanceId, const std
                               *hand, account);
 }
 
-eve::Result<void> Card::unpublishGameplay(const std::string& instanceId) {
+eve::Result<void> Card::unpublishGameplay(const std::string &instanceId) {
     if (!gameplay_)
         return eve::Result<void>::failure(
             eve::Diagnostic::error(eve::DiagnosticCode::NotFound, "no card instance is published", "instanceId"));
@@ -193,7 +193,7 @@ int Card::gameplayControlCount() const { return gameplay_ ? gameplay_->count() :
 std::vector<std::string> Card::gameplayInstances() const {
     std::vector<std::string> result;
     if (!gameplay_) return result;
-    for (const auto& instance : gameplay_->instances()) result.push_back(instance.format());
+    for (const auto &instance : gameplay_->instances()) result.push_back(instance.format());
     return result;
 }
 
@@ -941,8 +941,8 @@ void Card::expose(ssq::Class &cls) {
     // 把手牌发布到共享玩法协议（`eve_gameplay` / MCP）。返回 {ok, message}：
     // 失败原因（非规范持久 id、重复实例、空 hand）不被丢弃。account 可为 null，
     // 此时 `card:play` 走"未绑定支付"边界：零费卡照常出牌，收费卡得到明确诊断。
-    cls.addFunc("publishGameplay", [vm = cls.getHandle()](Card* self, const std::string& instanceId,
-                                                          const std::string& ownerId, Hand* hand) {
+    cls.addFunc("publishGameplay", [vm = cls.getHandle()](Card *self, const std::string &instanceId,
+                                                          const std::string &ownerId, Hand *hand) {
         ssq::Table result(vm);
         if (self == nullptr || hand == nullptr) {
             result.set("ok", false);
@@ -954,7 +954,7 @@ void Card::expose(ssq::Class &cls) {
         result.set("message", published.ok() ? std::string("published") : published.status().describe());
         return result;
     });
-    cls.addFunc("unpublishGameplay", [vm = cls.getHandle()](Card* self, const std::string& instanceId) {
+    cls.addFunc("unpublishGameplay", [vm = cls.getHandle()](Card *self, const std::string &instanceId) {
         ssq::Table result(vm);
         const auto unpublished = self == nullptr ? eve::Result<void>::failure(eve::Diagnostic::error(
                                                        eve::DiagnosticCode::Failed, "card module unavailable", "self"))

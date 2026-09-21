@@ -7,11 +7,6 @@
 namespace eve::editor {
 namespace {
 
-template <class T>
-EditorResult<T> assetError(EditorStatus status, const char* rule, std::string message) {
-    return eve::editing::failed<T>(status, RuleId(rule), std::move(message));
-}
-
 bool containsInsensitive(std::string value, std::string text) {
     auto lower = [](unsigned char character) { return static_cast<char>(std::tolower(character)); };
     std::transform(value.begin(), value.end(), value.begin(), lower);
@@ -23,16 +18,16 @@ bool containsInsensitive(std::string value, std::string text) {
 
 EditorResult<AssetRecord> MemoryAssetDatabase::publish(AssetRecord record, std::vector<AssetDependency> dependencies) {
     if (record.guid.empty() || record.logicalUri.empty() || record.typeId.empty())
-        return assetError<AssetRecord>(EditorStatus::Rejected, "editor.asset.invalid-record",
-                                       "Asset GUID, logical URI and type are required");
+        return eve::editing::failed<AssetRecord>(EditorStatus::Rejected, RuleId("editor.asset.invalid-record"),
+                                                 "Asset GUID, logical URI and type are required");
     const auto uriOwner = uriToGuid_.find(record.logicalUri);
     if (uriOwner != uriToGuid_.end() && uriOwner->second != record.guid)
-        return assetError<AssetRecord>(EditorStatus::Conflict, "editor.asset.uri-conflict",
-                                       "Another asset already owns this logical URI");
+        return eve::editing::failed<AssetRecord>(EditorStatus::Conflict, RuleId("editor.asset.uri-conflict"),
+                                                 "Another asset already owns this logical URI");
     for (const AssetDependency& dependency : dependencies) {
         if (dependency.from != record.guid || dependency.to.empty())
-            return assetError<AssetRecord>(EditorStatus::Rejected, "editor.asset.invalid-dependency",
-                                           "Published dependencies must originate from the product asset");
+            return eve::editing::failed<AssetRecord>(EditorStatus::Rejected, RuleId("editor.asset.invalid-dependency"),
+                                                     "Published dependencies must originate from the product asset");
     }
     record.status       = AssetStatus::Ready;
     const auto existing = records_.find(record.guid);
@@ -49,8 +44,9 @@ EditorResult<AssetRecord> MemoryAssetDatabase::publish(AssetRecord record, std::
 EditorResult<std::vector<AssetRecord>> MemoryAssetDatabase::publishBatch(
     std::vector<AssetPublication> publications) {
     if (publications.empty())
-        return assetError<std::vector<AssetRecord>>(EditorStatus::Rejected, "editor.asset.empty-publication",
-                                                    "An asset publication batch must not be empty");
+        return eve::editing::failed<std::vector<AssetRecord>>(EditorStatus::Rejected,
+                                                              RuleId("editor.asset.empty-publication"),
+                                                              "An asset publication batch must not be empty");
     auto stagedRecords      = records_;
     auto stagedUris         = uriToGuid_;
     auto stagedDependencies = dependencies_;
@@ -60,21 +56,23 @@ EditorResult<std::vector<AssetRecord>> MemoryAssetDatabase::publishBatch(
     for (AssetPublication& publication : publications) {
         AssetRecord& record = publication.record;
         if (record.guid.empty() || record.logicalUri.empty() || record.typeId.empty())
-            return assetError<std::vector<AssetRecord>>(EditorStatus::Rejected, "editor.asset.invalid-record",
-                                                        "Asset GUID, logical URI and type are required");
+            return eve::editing::failed<std::vector<AssetRecord>>(EditorStatus::Rejected,
+                                                                  RuleId("editor.asset.invalid-record"),
+                                                                  "Asset GUID, logical URI and type are required");
         if (!batchGuids.emplace(record.guid, true).second)
-            return assetError<std::vector<AssetRecord>>(EditorStatus::Conflict,
-                                                        "editor.asset.duplicate-batch-guid",
-                                                        "An asset publication batch contains a duplicate GUID");
+            return eve::editing::failed<std::vector<AssetRecord>>(
+                EditorStatus::Conflict, RuleId("editor.asset.duplicate-batch-guid"),
+                "An asset publication batch contains a duplicate GUID");
         const auto uriOwner = stagedUris.find(record.logicalUri);
         if (uriOwner != stagedUris.end() && uriOwner->second != record.guid)
-            return assetError<std::vector<AssetRecord>>(EditorStatus::Conflict, "editor.asset.uri-conflict",
-                                                        "Another asset already owns this logical URI");
+            return eve::editing::failed<std::vector<AssetRecord>>(EditorStatus::Conflict,
+                                                                  RuleId("editor.asset.uri-conflict"),
+                                                                  "Another asset already owns this logical URI");
         for (const AssetDependency& dependency : publication.dependencies) {
             if (dependency.from != record.guid || dependency.to.empty())
-                return assetError<std::vector<AssetRecord>>(EditorStatus::Rejected,
-                                                            "editor.asset.invalid-dependency",
-                                                            "Published dependencies must originate from the product asset");
+                return eve::editing::failed<std::vector<AssetRecord>>(
+                    EditorStatus::Rejected, RuleId("editor.asset.invalid-dependency"),
+                    "Published dependencies must originate from the product asset");
         }
         record.status       = AssetStatus::Ready;
         const auto existing = stagedRecords.find(record.guid);
@@ -98,24 +96,24 @@ EditorResult<std::vector<AssetRecord>> MemoryAssetDatabase::publishBatch(
 EditorResult<AssetRecord> MemoryAssetDatabase::find(const AssetGuid& guid) const {
     auto found = records_.find(guid);
     if (found == records_.end())
-        return assetError<AssetRecord>(EditorStatus::NotFound, "editor.asset.not-found",
-                                       "Asset is not indexed: " + guid.value());
+        return eve::editing::failed<AssetRecord>(EditorStatus::NotFound, RuleId("editor.asset.not-found"),
+                                                 "Asset is not indexed: " + guid.value());
     return eve::editing::applied<AssetRecord>(found->second);
 }
 
 EditorResult<AssetRecord> MemoryAssetDatabase::findByUri(const std::string& logicalUri) const {
     const auto guid = uriToGuid_.find(logicalUri);
     if (guid != uriToGuid_.end()) return find(guid->second);
-    return assetError<AssetRecord>(EditorStatus::NotFound, "editor.asset.not-found",
-                                   "Asset URI is not indexed: " + logicalUri);
+    return eve::editing::failed<AssetRecord>(EditorStatus::NotFound, RuleId("editor.asset.not-found"),
+                                             "Asset URI is not indexed: " + logicalUri);
 }
 
 EditorResult<AssetPage<AssetRecord>> MemoryAssetDatabase::query(const AssetQuery& query, std::size_t offset,
                                                                 std::size_t                  limit,
                                                                 std::optional<std::uint64_t> generation) const {
     if (generation && *generation != generation_)
-        return assetError<AssetPage<AssetRecord>>(EditorStatus::Conflict, "editor.asset.page-expired",
-                                                  "Asset index changed while paging");
+        return eve::editing::failed<AssetPage<AssetRecord>>(EditorStatus::Conflict, RuleId("editor.asset.page-expired"),
+                                                            "Asset index changed while paging");
     std::vector<AssetRecord> matches;
     for (const auto& [guid, record] : records_) {
         (void)guid;
@@ -161,11 +159,11 @@ std::vector<AssetDependency> MemoryAssetDatabase::dependencies(const AssetGuid& 
 
 EditorResult<AssetRecord> ImportCoordinator::publish(ImportProduct product) {
     if (!database_)
-        return assetError<AssetRecord>(EditorStatus::Failed, "editor.import.missing-database",
-                                       "Import coordinator has no asset database");
+        return eve::editing::failed<AssetRecord>(EditorStatus::Failed, RuleId("editor.import.missing-database"),
+                                                 "Import coordinator has no asset database");
     if (product.record.sourceUri.empty() || product.record.importerId.empty())
-        return assetError<AssetRecord>(EditorStatus::Rejected, "editor.import.invalid-product",
-                                       "Import product requires source URI and importer identity");
+        return eve::editing::failed<AssetRecord>(EditorStatus::Rejected, RuleId("editor.import.invalid-product"),
+                                                 "Import product requires source URI and importer identity");
     return database_->publish(std::move(product.record), std::move(product.dependencies));
 }
 
@@ -173,8 +171,8 @@ EditorResult<ImportTicket> ImportCoordinator::begin(const AssetGuid& asset, std:
                                                     std::string importerId,
                                                     std::uint32_t importerVersion) {
     if (asset.empty() || sourceHash.empty() || importerId.empty() || importerVersion == 0)
-        return assetError<ImportTicket>(EditorStatus::Rejected, "editor.import.invalid-request",
-                                        "Import request requires asset, source hash and versioned importer");
+        return eve::editing::failed<ImportTicket>(EditorStatus::Rejected, RuleId("editor.import.invalid-request"),
+                                                  "Import request requires asset, source hash and versioned importer");
     const std::uint64_t generation = ++generations_[asset];
     return eve::editing::applied<ImportTicket>(
         {asset, generation, std::move(sourceHash), std::move(importerId), importerVersion});
@@ -183,35 +181,35 @@ EditorResult<ImportTicket> ImportCoordinator::begin(const AssetGuid& asset, std:
 EditorResult<AssetRecord> ImportCoordinator::publish(const ImportTicket& ticket,
                                                      ImportProduct product) {
     if (!database_)
-        return assetError<AssetRecord>(EditorStatus::Failed, "editor.import.missing-database",
-                                       "Import coordinator has no asset database");
+        return eve::editing::failed<AssetRecord>(EditorStatus::Failed, RuleId("editor.import.missing-database"),
+                                                 "Import coordinator has no asset database");
     const auto generation = generations_.find(ticket.asset);
     if (generation == generations_.end() || generation->second != ticket.generation)
-        return assetError<AssetRecord>(EditorStatus::Conflict, "editor.import.stale-product",
-                                       "Importer product was superseded by a newer source generation");
+        return eve::editing::failed<AssetRecord>(EditorStatus::Conflict, RuleId("editor.import.stale-product"),
+                                                 "Importer product was superseded by a newer source generation");
     AssetRecord& record = product.record;
     if (record.guid != ticket.asset || record.sourceHash != ticket.sourceHash ||
         record.importerId != ticket.importerId || record.importerVersion != ticket.importerVersion)
-        return assetError<AssetRecord>(EditorStatus::Conflict, "editor.import.ticket-mismatch",
-                                       "Importer product identity does not match its request ticket");
+        return eve::editing::failed<AssetRecord>(EditorStatus::Conflict, RuleId("editor.import.ticket-mismatch"),
+                                                 "Importer product identity does not match its request ticket");
     if (record.sourceUri.empty() || record.logicalUri.empty() || record.typeId.empty())
-        return assetError<AssetRecord>(EditorStatus::Rejected, "editor.import.incomplete-product",
-                                       "Importer product lacks source, logical URI or asset type");
+        return eve::editing::failed<AssetRecord>(EditorStatus::Rejected, RuleId("editor.import.incomplete-product"),
+                                                 "Importer product lacks source, logical URI or asset type");
     std::set<std::string> artifacts;
     for (const std::string& artifact : record.artifacts)
         if (artifact.empty() || !artifacts.insert(artifact).second)
-            return assetError<AssetRecord>(EditorStatus::Rejected, "editor.import.invalid-artifact",
-                                           "Importer artifacts must be unique and non-empty");
+            return eve::editing::failed<AssetRecord>(EditorStatus::Rejected, RuleId("editor.import.invalid-artifact"),
+                                                     "Importer artifacts must be unique and non-empty");
     if (record.artifacts.empty())
-        return assetError<AssetRecord>(EditorStatus::Rejected, "editor.import.missing-artifact",
-                                       "Importer product must contain at least one published artifact");
+        return eve::editing::failed<AssetRecord>(EditorStatus::Rejected, RuleId("editor.import.missing-artifact"),
+                                                 "Importer product must contain at least one published artifact");
     if (std::any_of(record.diagnostics.begin(), record.diagnostics.end(),
                     [](const EditorDiagnostic& diagnostic) {
                         return diagnostic.severity() == DiagnosticSeverity::Error ||
                                diagnostic.severity() == DiagnosticSeverity::Fatal;
                     }))
-        return assetError<AssetRecord>(EditorStatus::Rejected, "editor.import.product-errors",
-                                       "Importer product contains error diagnostics");
+        return eve::editing::failed<AssetRecord>(EditorStatus::Rejected, RuleId("editor.import.product-errors"),
+                                                 "Importer product contains error diagnostics");
     auto published = database_->publish(std::move(record), std::move(product.dependencies));
     if (published.ok()) generations_.erase(ticket.asset);
     return published;

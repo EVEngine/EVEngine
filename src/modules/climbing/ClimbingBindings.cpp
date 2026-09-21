@@ -14,12 +14,6 @@
 namespace eve::climbing {
 namespace {
 
-template <class T>
-eve::Result<T> bindingFailure(eve::DiagnosticCode code, std::string message, std::string path = {}) {
-    return eve::Result<T>::failure(
-        eve::Diagnostic::error(code, std::move(message), std::move(path), {}, "climbing.binding"));
-}
-
 eve::Value vecValue(Vec3 value) { return eve::Value::object({{"x", value.x}, {"y", value.y}, {"z", value.z}}); }
 
 eve::Value candidateValue(ClimbingCandidate candidate) {
@@ -380,17 +374,17 @@ std::optional<ClimbingCancelReason> parseCancelReason(std::string_view value) {
 
 template <class Ref, class Proxy, class Release>
 ssq::Table makeOwnedProxy(HSQUIRRELVM vm, eve::Result<Ref>&& reference, Release&& release) {
-    if (!reference) return eve::script::projectStatusResult(vm, reference.status(), false, false);
+    if (!reference) return eve::script::projectStatusResult(vm, reference.status());
     const Ref ref    = std::move(reference).takeValue();
     auto      object = eve::script::makeOwnedSquirrelInstance<Proxy>(vm, std::make_unique<Proxy>(ref));
     if (!object) {
         const eve::Status status = object.status();
         object.ignore("failed to create owned climbing proxy");
         std::invoke(std::forward<Release>(release), ref).ignore("rollback failed climbing allocation");
-        return eve::script::projectStatusResult(vm, status, false, false);
+        return eve::script::projectStatusResult(vm, status);
     }
     ssq::Object owned = std::move(object).takeValue();
-    auto result = eve::script::projectStatusResult(vm, eve::Status::success(eve::StatusCode::Applied), true, false);
+    auto        result = eve::script::projectStatusResult(vm, eve::Status::success(eve::StatusCode::Applied));
     result.set("value", owned);
     result.set("ownership", std::string("owned"));
     result.set("ownerEpoch", static_cast<std::int64_t>(ref.ownerEpoch));
@@ -424,32 +418,35 @@ void Climbing::expose(ssq::Table& table) {
     graph.addFunc("release", [vm](ScriptClimbingAnchorGraph* value) {
         if (!value)
             return eve::script::projectResult(
-                vm, bindingFailure<void>(eve::DiagnosticCode::InvalidArgument,
-                                         "climbing anchor graph proxy must not be null", "anchorGraph"));
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                      "climbing anchor graph proxy must not be null",
+                                                                      "anchorGraph", {}, "climbing.binding")));
         return eve::script::projectResult(vm, Climbing::releaseAnchorGraph(value->reference));
     });
     graph.addFunc("node", [vm](ScriptClimbingAnchorGraph* value, const std::string& nodeId) {
         if (!value)
             return eve::script::projectResult(
-                vm, bindingFailure<ClimbingAnchorNodeRef>(eve::DiagnosticCode::InvalidArgument,
-                                                          "climbing anchor graph proxy must not be null",
-                                                          "anchorGraph"),
+                vm,
+                eve::Result<ClimbingAnchorNodeRef>::failure(eve::Diagnostic::error(
+                    eve::DiagnosticCode::InvalidArgument, "climbing anchor graph proxy must not be null", "anchorGraph",
+                    {}, "climbing.binding")),
                 anchorNodeValue);
         auto resolved = Climbing::resolveAnchorGraph(value->reference);
         return eve::script::projectResult(
             vm,
-            resolved.isBound()
-                ? resolved->nodeRef(nodeId)
-                : bindingFailure<ClimbingAnchorNodeRef>(eve::DiagnosticCode::StaleHandle,
-                                                        "climbing anchor graph handle is stale", "anchorGraph"),
+            resolved.isBound() ? resolved->nodeRef(nodeId)
+                               : eve::Result<ClimbingAnchorNodeRef>::failure(eve::Diagnostic::error(
+                                     eve::DiagnosticCode::StaleHandle, "climbing anchor graph handle is stale",
+                                     "anchorGraph", {}, "climbing.binding")),
             anchorNodeValue);
     });
     graph.addFunc("reloadJson", [vm](ScriptClimbingAnchorGraph* value, const std::string& json) {
         if (!value)
             return eve::script::projectResult(
-                vm, bindingFailure<ClimbingAnchorGraphReload>(eve::DiagnosticCode::InvalidArgument,
-                                                              "climbing anchor graph proxy must not be null",
-                                                              "anchorGraph"),
+                vm,
+                eve::Result<ClimbingAnchorGraphReload>::failure(eve::Diagnostic::error(
+                    eve::DiagnosticCode::InvalidArgument, "climbing anchor graph proxy must not be null", "anchorGraph",
+                    {}, "climbing.binding")),
                 graphReloadValue);
         auto parsed = eve::Value::fromJson(json);
         if (!parsed)
@@ -462,10 +459,10 @@ void Climbing::expose(ssq::Table& table) {
         auto resolved = Climbing::resolveAnchorGraph(value->reference);
         return eve::script::projectResult(
             vm,
-            resolved.isBound()
-                ? resolved->reload(std::move(definition).takeValue())
-                : bindingFailure<ClimbingAnchorGraphReload>(eve::DiagnosticCode::StaleHandle,
-                                                            "climbing anchor graph handle is stale", "anchorGraph"),
+            resolved.isBound() ? resolved->reload(std::move(definition).takeValue())
+                               : eve::Result<ClimbingAnchorGraphReload>::failure(eve::Diagnostic::error(
+                                     eve::DiagnosticCode::StaleHandle, "climbing anchor graph handle is stale",
+                                     "anchorGraph", {}, "climbing.binding")),
             graphReloadValue);
     });
     graph.addFunc("planRoute", [vm](ScriptClimbingAnchorGraph* value, const std::string& startNodeId,
@@ -473,16 +470,19 @@ void Climbing::expose(ssq::Table& table) {
                                      std::int64_t executionId, std::int64_t maxVisitedNodes) {
         if (!value || agentId < 0 || executionId < 0 || (agentId == 0) != (executionId == 0) ||
             maxVisitedNodes <= 0 || maxVisitedNodes > 65536)
-            return eve::script::projectResult(
-                vm, bindingFailure<ClimbingAnchorRoute>(eve::DiagnosticCode::InvalidArgument,
-                                                        "graph, paired non-negative owner ids, and route bound are required",
-                                                        "planRoute"),
-                anchorRouteValue);
+            return eve::script::projectResult(vm,
+                                              eve::Result<ClimbingAnchorRoute>::failure(eve::Diagnostic::error(
+                                                  eve::DiagnosticCode::InvalidArgument,
+                                                  "graph, paired non-negative owner ids, and route bound are required",
+                                                  "planRoute", {}, "climbing.binding")),
+                                              anchorRouteValue);
         auto resolved = Climbing::resolveAnchorGraph(value->reference);
         if (!resolved.isBound())
             return eve::script::projectResult(
-                vm, bindingFailure<ClimbingAnchorRoute>(eve::DiagnosticCode::StaleHandle,
-                                                        "climbing anchor graph handle is stale", "anchorGraph"),
+                vm,
+                eve::Result<ClimbingAnchorRoute>::failure(
+                    eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle, "climbing anchor graph handle is stale",
+                                           "anchorGraph", {}, "climbing.binding")),
                 anchorRouteValue);
         auto start = resolved->nodeRef(startNodeId);
         if (!start)
@@ -522,46 +522,51 @@ void Climbing::expose(ssq::Table& table) {
     runtime.addFunc("release", [vm](ScriptClimbingRuntime* value) {
         if (!value)
             return eve::script::projectResult(
-                vm, bindingFailure<void>(eve::DiagnosticCode::InvalidArgument,
-                                         "climbing runtime proxy must not be null", "runtime"));
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                      "climbing runtime proxy must not be null",
+                                                                      "runtime", {}, "climbing.binding")));
         return eve::script::projectResult(vm, Climbing::release(value->reference));
     });
     runtime.addFunc("setProfileJson", [vm](ScriptClimbingRuntime* value, const std::string& json) {
         if (!value)
             return eve::script::projectResult(
-                vm, bindingFailure<void>(eve::DiagnosticCode::InvalidArgument,
-                                         "climbing runtime proxy must not be null", "runtime"));
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                      "climbing runtime proxy must not be null",
+                                                                      "runtime", {}, "climbing.binding")));
         auto resolved = Climbing::resolve(value->reference);
         return eve::script::projectResult(
-            vm, resolved.isBound()
-                    ? resolved->setProfileJson(json)
-                    : bindingFailure<void>(eve::DiagnosticCode::StaleHandle, "climbing runtime handle is stale",
-                                           "runtime"));
+            vm, resolved.isBound() ? resolved->setProfileJson(json)
+                                   : eve::Result<void>::failure(eve::Diagnostic::error(
+                                         eve::DiagnosticCode::StaleHandle, "climbing runtime handle is stale",
+                                         "runtime", {}, "climbing.binding")));
     });
     runtime.addFunc("reloadProfileJson", [vm](ScriptClimbingRuntime* value, const std::string& json) {
         if (!value)
             return eve::script::projectResult(
-                vm, bindingFailure<void>(eve::DiagnosticCode::InvalidArgument,
-                                         "climbing runtime proxy must not be null", "runtime"));
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                      "climbing runtime proxy must not be null",
+                                                                      "runtime", {}, "climbing.binding")));
         auto resolved = Climbing::resolve(value->reference);
         return eve::script::projectResult(
-            vm, resolved.isBound()
-                    ? resolved->reloadProfileJson(json)
-                    : bindingFailure<void>(eve::DiagnosticCode::StaleHandle, "climbing runtime handle is stale",
-                                           "runtime"));
+            vm, resolved.isBound() ? resolved->reloadProfileJson(json)
+                                   : eve::Result<void>::failure(eve::Diagnostic::error(
+                                         eve::DiagnosticCode::StaleHandle, "climbing runtime handle is stale",
+                                         "runtime", {}, "climbing.binding")));
     });
     runtime.addFunc("setProfile", [vm](ScriptClimbingRuntime* value, float radius, float height, float skin,
                                        float probeDistance, float obstacleHeight, float minTopNormalY,
                                        float maxWarpResidual, int maskBits) {
         if (!value)
             return eve::script::projectResult(
-                vm, bindingFailure<void>(eve::DiagnosticCode::InvalidArgument,
-                                         "climbing runtime proxy must not be null", "runtime"));
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                      "climbing runtime proxy must not be null",
+                                                                      "runtime", {}, "climbing.binding")));
         auto resolved = Climbing::resolve(value->reference);
         if (!resolved.isBound())
             return eve::script::projectResult(
-                vm, bindingFailure<void>(eve::DiagnosticCode::StaleHandle, "climbing runtime handle is stale",
-                                         "runtime"));
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle,
+                                                                      "climbing runtime handle is stale", "runtime", {},
+                                                                      "climbing.binding")));
         ClimbingProfile profile;
         profile.capsuleRadius        = radius;
         profile.capsuleHeight        = height;
@@ -578,15 +583,17 @@ void Climbing::expose(ssq::Table& table) {
                                          float apexHeight, int selectionBias) {
         if (!value)
             return eve::script::projectResult(
-                vm, bindingFailure<void>(eve::DiagnosticCode::InvalidArgument,
-                                         "climbing runtime proxy must not be null", "runtime"));
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                      "climbing runtime proxy must not be null",
+                                                                      "runtime", {}, "climbing.binding")));
         auto resolved = Climbing::resolve(value->reference);
         if (!resolved.isBound())
             return eve::script::projectResult(
-                vm, bindingFailure<void>(eve::DiagnosticCode::StaleHandle, "climbing runtime handle is stale",
-                                         "runtime"));
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle,
+                                                                      "climbing runtime handle is stale", "runtime", {},
+                                                                      "climbing.binding")));
         auto duration = eve::Duration::fromSeconds(durationSeconds);
-        if (!duration) return eve::script::projectStatusResult(vm, duration.status(), false, false);
+        if (!duration) return eve::script::projectStatusResult(vm, duration.status());
         return eve::script::projectResult(
             vm, resolved->upsertAction({id, minHeight, maxHeight, minSpeed, std::move(duration).takeValue(),
                                         landingForward, apexHeight, selectionBias}));
@@ -598,20 +605,22 @@ void Climbing::expose(ssq::Table& table) {
                                              float handSpacing, float cancelStart, float cancelEnd) {
         if (!value)
             return eve::script::projectResult(
-                vm, bindingFailure<void>(eve::DiagnosticCode::InvalidArgument,
-                                         "climbing runtime proxy must not be null", "runtime"));
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                      "climbing runtime proxy must not be null",
+                                                                      "runtime", {}, "climbing.binding")));
         auto resolved = Climbing::resolve(value->reference);
         if (!resolved.isBound())
             return eve::script::projectResult(
-                vm, bindingFailure<void>(eve::DiagnosticCode::StaleHandle, "climbing runtime handle is stale",
-                                         "runtime"));
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle,
+                                                                      "climbing runtime handle is stale", "runtime", {},
+                                                                      "climbing.binding")));
         const auto parsedKind = parseActionKind(kind);
         if (!parsedKind)
-            return eve::script::projectResult(
-                vm, bindingFailure<void>(eve::DiagnosticCode::InvalidArgument,
-                                         "unknown climbing action kind", "kind"));
+            return eve::script::projectResult(vm, eve::Result<void>::failure(eve::Diagnostic::error(
+                                                      eve::DiagnosticCode::InvalidArgument,
+                                                      "unknown climbing action kind", "kind", {}, "climbing.binding")));
         auto duration = eve::Duration::fromSeconds(durationSeconds);
-        if (!duration) return eve::script::projectStatusResult(vm, duration.status(), false, false);
+        if (!duration) return eve::script::projectStatusResult(vm, duration.status());
         ClimbingActionDefinition action{
             id,         minHeight,    maxHeight, minSpeed, std::move(duration).takeValue(), landingForward,
             apexHeight, selectionBias};
@@ -628,40 +637,43 @@ void Climbing::expose(ssq::Table& table) {
                                                animation::AnimClip* clip) {
         if (!value || !clip)
             return eve::script::projectResult(
-                vm, bindingFailure<void>(eve::DiagnosticCode::InvalidArgument,
-                                         "runtime and animation clip are required", "validateActionClip"));
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                      "runtime and animation clip are required",
+                                                                      "validateActionClip", {}, "climbing.binding")));
         auto resolved = Climbing::resolve(value->reference);
         return eve::script::projectResult(
-            vm, resolved.isBound()
-                    ? resolved->validateAnimationBinding(actionId, *clip)
-                    : bindingFailure<void>(eve::DiagnosticCode::StaleHandle, "climbing runtime handle is stale",
-                                           "runtime"));
+            vm, resolved.isBound() ? resolved->validateAnimationBinding(actionId, *clip)
+                                   : eve::Result<void>::failure(eve::Diagnostic::error(
+                                         eve::DiagnosticCode::StaleHandle, "climbing runtime handle is stale",
+                                         "runtime", {}, "climbing.binding")));
     });
     runtime.addFunc("probeMode", [vm](ScriptClimbingRuntime* value, physics::World3D* world, float x, float y, float z,
                                       float forwardX, float forwardZ, float speed, float verticalSpeed, bool grounded) {
         if (!value || !world)
             return eve::script::projectResult(
                 vm,
-                bindingFailure<ClimbingCandidate>(eve::DiagnosticCode::InvalidArgument,
-                                                  "runtime and world are required", "probeMode"),
+                eve::Result<ClimbingCandidate>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                               "runtime and world are required",
+                                                                               "probeMode", {}, "climbing.binding")),
                 candidateValue);
         auto resolved = Climbing::resolve(value->reference);
         if (!resolved.isBound())
-            return eve::script::projectResult(
-                vm,
-                bindingFailure<ClimbingCandidate>(eve::DiagnosticCode::StaleHandle, "climbing runtime handle is stale",
-                                                  "runtime"),
-                candidateValue);
+            return eve::script::projectResult(vm,
+                                              eve::Result<ClimbingCandidate>::failure(eve::Diagnostic::error(
+                                                  eve::DiagnosticCode::StaleHandle, "climbing runtime handle is stale",
+                                                  "runtime", {}, "climbing.binding")),
+                                              candidateValue);
         auto candidates =
             resolved->probe(*world, {{x, y, z}, {forwardX, 0.f, forwardZ}, speed, -1, verticalSpeed, grounded});
         if (!candidates.ok())
             return eve::script::projectResult(vm, eve::Result<ClimbingCandidate>::failure(candidates.status()),
                                               candidateValue);
         if (candidates.value().empty())
-            return eve::script::projectResult(vm,
-                                              bindingFailure<ClimbingCandidate>(eve::DiagnosticCode::NotFound,
-                                                                                "no traversable obstacle", "probeMode"),
-                                              candidateValue);
+            return eve::script::projectResult(
+                vm,
+                eve::Result<ClimbingCandidate>::failure(eve::Diagnostic::error(
+                    eve::DiagnosticCode::NotFound, "no traversable obstacle", "probeMode", {}, "climbing.binding")),
+                candidateValue);
         return eve::script::projectResult(vm, eve::Result<ClimbingCandidate>::success(candidates.value()[0]),
                                           candidateValue);
     });
@@ -671,15 +683,17 @@ void Climbing::expose(ssq::Table& table) {
         if (!value || !world || tick < 0)
             return eve::script::projectResult(
                 vm,
-                bindingFailure<ClimbingCandidate>(eve::DiagnosticCode::InvalidArgument,
-                                                  "runtime, world, and non-negative tick are required", "tryBegin"),
+                eve::Result<ClimbingCandidate>::failure(eve::Diagnostic::error(
+                    eve::DiagnosticCode::InvalidArgument, "runtime, world, and non-negative tick are required",
+                    "tryBegin", {}, "climbing.binding")),
                 candidateValue);
         auto resolved = Climbing::resolve(value->reference);
         if (!resolved.isBound())
-            return eve::script::projectResult(
-                vm, bindingFailure<ClimbingCandidate>(eve::DiagnosticCode::StaleHandle,
-                                                      "climbing runtime handle is stale", "runtime"),
-                candidateValue);
+            return eve::script::projectResult(vm,
+                                              eve::Result<ClimbingCandidate>::failure(eve::Diagnostic::error(
+                                                  eve::DiagnosticCode::StaleHandle, "climbing runtime handle is stale",
+                                                  "runtime", {}, "climbing.binding")),
+                                              candidateValue);
         return eve::script::projectResult(
             vm,
             resolved->tryBegin(*world, {{x, y, z}, {forwardX, 0.f, forwardZ}, speed, ignoredBodyId},
@@ -690,17 +704,19 @@ void Climbing::expose(ssq::Table& table) {
                                          float z, float forwardX, float forwardZ, float speed, int ignoredBodyId,
                                          float verticalSpeed, bool grounded, std::int64_t tick) {
         if (!value || !world || tick < 0)
-            return eve::script::projectResult(vm,
-                                              bindingFailure<ClimbingCandidate>(
-                                                  eve::DiagnosticCode::InvalidArgument,
-                                                  "runtime, world, and non-negative tick are required", "tryBeginMode"),
-                                              candidateValue);
+            return eve::script::projectResult(
+                vm,
+                eve::Result<ClimbingCandidate>::failure(eve::Diagnostic::error(
+                    eve::DiagnosticCode::InvalidArgument, "runtime, world, and non-negative tick are required",
+                    "tryBeginMode", {}, "climbing.binding")),
+                candidateValue);
         auto resolved = Climbing::resolve(value->reference);
         if (!resolved.isBound())
-            return eve::script::projectResult(
-                vm, bindingFailure<ClimbingCandidate>(eve::DiagnosticCode::StaleHandle,
-                                                      "climbing runtime handle is stale", "runtime"),
-                candidateValue);
+            return eve::script::projectResult(vm,
+                                              eve::Result<ClimbingCandidate>::failure(eve::Diagnostic::error(
+                                                  eve::DiagnosticCode::StaleHandle, "climbing runtime handle is stale",
+                                                  "runtime", {}, "climbing.binding")),
+                                              candidateValue);
         return eve::script::projectResult(
             vm,
             resolved->tryBegin(*world,
@@ -714,17 +730,20 @@ void Climbing::expose(ssq::Table& table) {
                                             float z, float forwardX, float forwardZ, float speed, int ignoredBodyId,
                                             float verticalSpeed, bool grounded, std::int64_t tick) {
         if (!value || !graphValue || !world || agentId <= 0 || tick < 0)
-            return eve::script::projectResult(
-                vm, bindingFailure<ClimbingCandidate>(eve::DiagnosticCode::InvalidArgument,
-                                                      "runtime, graph, world, positive agent id, and tick are required",
-                                                      "tryBeginAnchor"),
-                candidateValue);
+            return eve::script::projectResult(vm,
+                                              eve::Result<ClimbingCandidate>::failure(eve::Diagnostic::error(
+                                                  eve::DiagnosticCode::InvalidArgument,
+                                                  "runtime, graph, world, positive agent id, and tick are required",
+                                                  "tryBeginAnchor", {}, "climbing.binding")),
+                                              candidateValue);
         auto runtimeResolved = Climbing::resolve(value->reference);
         auto graphResolved   = Climbing::resolveAnchorGraph(graphValue->reference);
         if (!runtimeResolved.isBound() || !graphResolved.isBound())
             return eve::script::projectResult(
-                vm, bindingFailure<ClimbingCandidate>(eve::DiagnosticCode::StaleHandle,
-                                                      "climbing runtime or anchor graph handle is stale", "runtime"),
+                vm,
+                eve::Result<ClimbingCandidate>::failure(eve::Diagnostic::error(
+                    eve::DiagnosticCode::StaleHandle, "climbing runtime or anchor graph handle is stale", "runtime", {},
+                    "climbing.binding")),
                 candidateValue);
         auto node = graphResolved->nodeRef(nodeId);
         if (!node)
@@ -745,21 +764,23 @@ void Climbing::expose(ssq::Table& table) {
                                               const std::string& edgeKind, const std::string& actionId,
                                               std::int64_t tick) {
         if (!value || !graphValue || !world || tick < 0)
-            return eve::script::projectResult(
-                vm, bindingFailure<void>(eve::DiagnosticCode::InvalidArgument,
-                                         "runtime, graph, world, and non-negative tick are required",
-                                         "transitionAnchor"));
+            return eve::script::projectResult(vm, eve::Result<void>::failure(eve::Diagnostic::error(
+                                                      eve::DiagnosticCode::InvalidArgument,
+                                                      "runtime, graph, world, and non-negative tick are required",
+                                                      "transitionAnchor", {}, "climbing.binding")));
         const auto parsedEdge = parseAnchorEdgeKind(edgeKind);
         if (!parsedEdge)
             return eve::script::projectResult(
-                vm, bindingFailure<void>(eve::DiagnosticCode::InvalidArgument,
-                                         "unknown climbing anchor edge kind", "edgeKind"));
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                      "unknown climbing anchor edge kind", "edgeKind",
+                                                                      {}, "climbing.binding")));
         auto runtimeResolved = Climbing::resolve(value->reference);
         auto graphResolved   = Climbing::resolveAnchorGraph(graphValue->reference);
         if (!runtimeResolved.isBound() || !graphResolved.isBound())
             return eve::script::projectResult(
-                vm, bindingFailure<void>(eve::DiagnosticCode::StaleHandle,
-                                         "climbing runtime or anchor graph handle is stale", "runtime"));
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(
+                        eve::DiagnosticCode::StaleHandle, "climbing runtime or anchor graph handle is stale", "runtime",
+                        {}, "climbing.binding")));
         auto node = graphResolved->nodeRef(targetNodeId);
         if (!node) return eve::script::projectResult(vm, eve::Result<void>::failure(node.status()));
         return eve::script::projectResult(
@@ -769,34 +790,39 @@ void Climbing::expose(ssq::Table& table) {
     runtime.addFunc("currentAnchor", [vm](ScriptClimbingRuntime* value) {
         if (!value)
             return eve::script::projectResult(
-                vm, bindingFailure<ClimbingAnchorNodeRef>(eve::DiagnosticCode::InvalidArgument,
-                                                          "climbing runtime proxy must not be null", "runtime"),
+                vm,
+                eve::Result<ClimbingAnchorNodeRef>::failure(eve::Diagnostic::error(
+                    eve::DiagnosticCode::InvalidArgument, "climbing runtime proxy must not be null", "runtime", {},
+                    "climbing.binding")),
                 anchorNodeValue);
         auto resolved = Climbing::resolve(value->reference);
         return eve::script::projectResult(
             vm,
-            resolved.isBound()
-                ? resolved->currentAnchor()
-                : bindingFailure<ClimbingAnchorNodeRef>(eve::DiagnosticCode::StaleHandle,
-                                                        "climbing runtime handle is stale", "runtime"),
+            resolved.isBound() ? resolved->currentAnchor()
+                               : eve::Result<ClimbingAnchorNodeRef>::failure(eve::Diagnostic::error(
+                                     eve::DiagnosticCode::StaleHandle, "climbing runtime handle is stale", "runtime",
+                                     {}, "climbing.binding")),
             anchorNodeValue);
     });
     exposeClimbingMotionBindings(runtime, vm);
     runtime.addFunc("cancel", [vm](ScriptClimbingRuntime* value, const std::string& reason, std::int64_t tick) {
         if (!value || tick < 0)
             return eve::script::projectResult(
-                vm, bindingFailure<void>(eve::DiagnosticCode::InvalidArgument,
-                                         "runtime and non-negative tick are required", "cancel"));
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                      "runtime and non-negative tick are required",
+                                                                      "cancel", {}, "climbing.binding")));
         auto resolved = Climbing::resolve(value->reference);
         if (!resolved.isBound())
             return eve::script::projectResult(
-                vm, bindingFailure<void>(eve::DiagnosticCode::StaleHandle, "climbing runtime handle is stale",
-                                         "runtime"));
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle,
+                                                                      "climbing runtime handle is stale", "runtime", {},
+                                                                      "climbing.binding")));
         const auto parsed = parseCancelReason(reason);
         if (!parsed)
             return eve::script::projectResult(
-                vm, bindingFailure<void>(eve::DiagnosticCode::InvalidArgument, "unknown climbing cancellation reason",
-                                         "reason"));
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                      "unknown climbing cancellation reason", "reason",
+                                                                      {}, "climbing.binding")));
         return eve::script::projectResult(
             vm, resolved->cancel(*parsed, eve::SimulationTick(static_cast<std::uint64_t>(tick))));
     });
@@ -804,68 +830,75 @@ void Climbing::expose(ssq::Table& table) {
         if (!value)
             return eve::script::projectResult(
                 vm,
-                bindingFailure<std::vector<ClimbingEvent>>(eve::DiagnosticCode::InvalidArgument,
-                                                           "climbing runtime proxy must not be null", "runtime"),
+                eve::Result<std::vector<ClimbingEvent>>::failure(eve::Diagnostic::error(
+                    eve::DiagnosticCode::InvalidArgument, "climbing runtime proxy must not be null", "runtime", {},
+                    "climbing.binding")),
                 eventBatchValue);
         auto resolved = Climbing::resolve(value->reference);
         return eve::script::projectResult(
             vm,
-            resolved.isBound()
-                ? resolved->drainEvents()
-                : bindingFailure<std::vector<ClimbingEvent>>(eve::DiagnosticCode::StaleHandle,
-                                                             "climbing runtime handle is stale", "runtime"),
+            resolved.isBound() ? resolved->drainEvents()
+                               : eve::Result<std::vector<ClimbingEvent>>::failure(eve::Diagnostic::error(
+                                     eve::DiagnosticCode::StaleHandle, "climbing runtime handle is stale", "runtime",
+                                     {}, "climbing.binding")),
             eventBatchValue);
     });
     runtime.addFunc("drop", [vm](ScriptClimbingRuntime* value, std::int64_t tick) {
         if (!value || tick < 0)
             return eve::script::projectResult(
-                vm, bindingFailure<void>(eve::DiagnosticCode::InvalidArgument,
-                                         "runtime and non-negative tick are required", "drop"));
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                      "runtime and non-negative tick are required",
+                                                                      "drop", {}, "climbing.binding")));
         auto resolved = Climbing::resolve(value->reference);
         return eve::script::projectResult(
-            vm, resolved.isBound()
-                    ? resolved->drop(eve::SimulationTick(static_cast<std::uint64_t>(tick)))
-                    : bindingFailure<void>(eve::DiagnosticCode::StaleHandle, "climbing runtime handle is stale",
-                                           "runtime"));
+            vm, resolved.isBound() ? resolved->drop(eve::SimulationTick(static_cast<std::uint64_t>(tick)))
+                                   : eve::Result<void>::failure(eve::Diagnostic::error(
+                                         eve::DiagnosticCode::StaleHandle, "climbing runtime handle is stale",
+                                         "runtime", {}, "climbing.binding")));
     });
     runtime.addFunc("climbUp", [vm](ScriptClimbingRuntime* value, std::int64_t tick) {
         if (!value || tick < 0)
             return eve::script::projectResult(
-                vm, bindingFailure<void>(eve::DiagnosticCode::InvalidArgument,
-                                         "runtime and non-negative tick are required", "climbUp"));
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                      "runtime and non-negative tick are required",
+                                                                      "climbUp", {}, "climbing.binding")));
         auto resolved = Climbing::resolve(value->reference);
         return eve::script::projectResult(
-            vm, resolved.isBound()
-                    ? resolved->climbUp(eve::SimulationTick(static_cast<std::uint64_t>(tick)))
-                    : bindingFailure<void>(eve::DiagnosticCode::StaleHandle, "climbing runtime handle is stale",
-                                           "runtime"));
+            vm, resolved.isBound() ? resolved->climbUp(eve::SimulationTick(static_cast<std::uint64_t>(tick)))
+                                   : eve::Result<void>::failure(eve::Diagnostic::error(
+                                         eve::DiagnosticCode::StaleHandle, "climbing runtime handle is stale",
+                                         "runtime", {}, "climbing.binding")));
     });
     runtime.addFunc("snapshotJson", [vm](ScriptClimbingRuntime* value) {
         if (!value)
             return eve::script::projectResult(
-                vm, bindingFailure<std::string>(eve::DiagnosticCode::InvalidArgument,
-                                                "climbing runtime proxy must not be null", "runtime"),
+                vm,
+                eve::Result<std::string>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                         "climbing runtime proxy must not be null",
+                                                                         "runtime", {}, "climbing.binding")),
                 [](std::string text) { return eve::Value(std::move(text)); });
         auto resolved = Climbing::resolve(value->reference);
         return eve::script::projectResult(
-            vm, resolved.isBound()
-                    ? resolved->snapshotJson()
-                    : bindingFailure<std::string>(eve::DiagnosticCode::StaleHandle,
-                                                  "climbing runtime handle is stale", "runtime"),
+            vm,
+            resolved.isBound() ? resolved->snapshotJson()
+                               : eve::Result<std::string>::failure(eve::Diagnostic::error(
+                                     eve::DiagnosticCode::StaleHandle, "climbing runtime handle is stale", "runtime",
+                                     {}, "climbing.binding")),
             [](std::string text) { return eve::Value(std::move(text)); });
     });
     runtime.addFunc("restoreJson", [vm](ScriptClimbingRuntime* value, const std::string& json,
                                         physics::World3D* world) {
         if (!value || !world)
             return eve::script::projectResult(
-                vm, bindingFailure<void>(eve::DiagnosticCode::InvalidArgument,
-                                         "runtime and world are required", "restoreJson"));
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                      "runtime and world are required", "restoreJson",
+                                                                      {}, "climbing.binding")));
         auto resolved = Climbing::resolve(value->reference);
         return eve::script::projectResult(
-            vm, resolved.isBound()
-                    ? resolved->restoreJson(json, *world)
-                    : bindingFailure<void>(eve::DiagnosticCode::StaleHandle, "climbing runtime handle is stale",
-                                           "runtime"));
+            vm, resolved.isBound() ? resolved->restoreJson(json, *world)
+                                   : eve::Result<void>::failure(eve::Diagnostic::error(
+                                         eve::DiagnosticCode::StaleHandle, "climbing runtime handle is stale",
+                                         "runtime", {}, "climbing.binding")));
     });
     runtime.addFunc("definitionGeneration", [](ScriptClimbingRuntime* value) -> std::string {
         if (!value) return {};
@@ -875,28 +908,33 @@ void Climbing::expose(ssq::Table& table) {
     runtime.addFunc("setDebugCapture", [vm](ScriptClimbingRuntime* value, bool enabled) {
         if (!value)
             return eve::script::projectResult(
-                vm, bindingFailure<void>(eve::DiagnosticCode::InvalidArgument,
-                                         "climbing runtime proxy must not be null", "runtime"));
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                      "climbing runtime proxy must not be null",
+                                                                      "runtime", {}, "climbing.binding")));
         auto resolved = Climbing::resolve(value->reference);
         if (!resolved.isBound())
             return eve::script::projectResult(
-                vm, bindingFailure<void>(eve::DiagnosticCode::StaleHandle, "climbing runtime handle is stale",
-                                         "runtime"));
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle,
+                                                                      "climbing runtime handle is stale", "runtime", {},
+                                                                      "climbing.binding")));
         resolved->setDebugCapture(enabled ? ClimbingDebugCapture::Enabled : ClimbingDebugCapture::Disabled);
         return eve::script::projectResult(vm, eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied)));
     });
     runtime.addFunc("inspect", [vm](ScriptClimbingRuntime* value) {
         if (!value)
             return eve::script::projectResult(
-                vm, bindingFailure<ClimbingDebugSnapshot>(eve::DiagnosticCode::InvalidArgument,
-                                                          "climbing runtime proxy must not be null", "runtime"),
+                vm,
+                eve::Result<ClimbingDebugSnapshot>::failure(eve::Diagnostic::error(
+                    eve::DiagnosticCode::InvalidArgument, "climbing runtime proxy must not be null", "runtime", {},
+                    "climbing.binding")),
                 debugValue);
         auto resolved = Climbing::resolve(value->reference);
         if (!resolved.isBound())
-            return eve::script::projectResult(
-                vm, bindingFailure<ClimbingDebugSnapshot>(eve::DiagnosticCode::StaleHandle,
-                                                          "climbing runtime handle is stale", "runtime"),
-                debugValue);
+            return eve::script::projectResult(vm,
+                                              eve::Result<ClimbingDebugSnapshot>::failure(eve::Diagnostic::error(
+                                                  eve::DiagnosticCode::StaleHandle, "climbing runtime handle is stale",
+                                                  "runtime", {}, "climbing.binding")),
+                                              debugValue);
         return eve::script::projectResult(vm, eve::Result<ClimbingDebugSnapshot>::success(resolved->inspect()),
                                           debugValue);
     });
@@ -917,8 +955,9 @@ void Climbing::expose(ssq::Class& cls) {
         if (!world || !body)
             return makeOwnedProxy<ClimbingAnchorGraphHandleRef, ScriptClimbingAnchorGraph>(
                 vm,
-                bindingFailure<ClimbingAnchorGraphHandleRef>(eve::DiagnosticCode::InvalidArgument,
-                                                              "world and body are required", "newAnchorGraphJson"),
+                eve::Result<ClimbingAnchorGraphHandleRef>::failure(
+                    eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "world and body are required",
+                                           "newAnchorGraphJson", {}, "climbing.binding")),
                 [](ClimbingAnchorGraphHandleRef reference) { return Climbing::releaseAnchorGraph(reference); });
         auto parsed = eve::Value::fromJson(json);
         if (!parsed)

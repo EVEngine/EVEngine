@@ -84,10 +84,11 @@ std::string decalProject(Poco::JSON::Object::Ptr args) {
 
     // Zero means "engine default" for every size/time field: the decal module
     // owns those defaults, so the tool must not invent a second set.
-    const int id = decals->project(getArgFloat(args, "x"), getArgFloat(args, "y"), getArgFloat(args, "z"), nx, ny, nz,
-                                   /*albedoTexture=*/nullptr, getArgString(args, "kind"), getArgFloat(args, "size"),
-                                   getArgFloat(args, "depth"), getArgBool(args, "randomYaw"), getArgInt(args, "seed"),
-                                   getArgFloat(args, "fadeIn"), getArgFloat(args, "lifetime"), getArgFloat(args, "fadeOut"));
+    const int id =
+        decals->project(getArgFloat(args, "x"), getArgFloat(args, "y"), getArgFloat(args, "z"), nx, ny, nz,
+                        /*albedoTexture=*/nullptr, getArgString(args, "kind"), getArgFloat(args, "size"),
+                        getArgFloat(args, "depth"), getArgBool(args, "randomYaw"), getArgInt(args, "seed"),
+                        getArgFloat(args, "fadeIn"), getArgFloat(args, "lifetime"), getArgFloat(args, "fadeOut"));
     if (id <= 0) return errorPayload("decal projection was rejected");
 
     Poco::JSON::Object::Ptr out = Poco::JSON::Object::Ptr(new Poco::JSON::Object());
@@ -149,15 +150,14 @@ std::string physicsSphereCast(Poco::JSON::Object::Ptr args) {
     if (!cast) return unavailablePayload(eve::ICameraObstructionQuery::capabilityName);
     if (!args || !args->has("from") || !args->has("to")) return errorPayload("from and to are required");
 
-    const std::array<float, 3> from = getArgVec3(args, "from", {0.f, 0.f, 0.f});
-    const std::array<float, 3> to   = getArgVec3(args, "to", {0.f, 0.f, 0.f});
+    const std::array<float, 3> from   = getArgVec3(args, "from", {0.f, 0.f, 0.f});
+    const std::array<float, 3> to     = getArgVec3(args, "to", {0.f, 0.f, 0.f});
     const float                radius = getArgFloat(args, "radius", 0.f);
     const long long            mask   = getArgInt64(args, "maskBits", static_cast<long long>(kAllCategoryBits));
 
     eve::CameraObstructionHit hit;
-    const bool                swept =
-        cast->sphereCast(from[0], from[1], from[2], to[0], to[1], to[2], radius,
-                         static_cast<std::uint64_t>(mask), getArgInt(args, "ignoredBodyId", -1), &hit);
+    const bool                swept = cast->sphereCast(from[0], from[1], from[2], to[0], to[1], to[2], radius,
+                                                       static_cast<std::uint64_t>(mask), getArgInt(args, "ignoredBodyId", -1), &hit);
     if (!swept) return errorPayload("sphere cast is unavailable (no live 3D physics world)");
 
     Poco::JSON::Object::Ptr out = Poco::JSON::Object::Ptr(new Poco::JSON::Object());
@@ -245,14 +245,14 @@ std::string sensingLastQuery(Poco::JSON::Object::Ptr args) {
     bool                   found  = false;
     for (const auto& entry : sensing->lastQueries()) {
         if (hasIndex && entry.index != index) continue;
-        found = true;
+        found                        = true;
         Poco::JSON::Object::Ptr item = Poco::JSON::Object::Ptr(new Poco::JSON::Object());
         item->set("index", entry.index);
         // The world owns this document's schema (eve.sensing.lastQuery v1); nest
         // it as an object so the agent does not have to parse JSON-in-JSON.
         try {
-            Poco::JSON::Parser      parser;
-            Poco::Dynamic::Var      parsed = parser.parse(entry.lastQueryJson);
+            Poco::JSON::Parser parser;
+            Poco::Dynamic::Var parsed = parser.parse(entry.lastQueryJson);
             item->set("query", parsed);
         } catch (...) {
             item->set("query", entry.lastQueryJson);

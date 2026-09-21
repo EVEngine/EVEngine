@@ -946,7 +946,8 @@ std::string callTool(McpServer& mcp, const std::string& name, Poco::JSON::Object
         for (const auto& key : {"roomCount", "roomMin", "roomMax", "corridorWidth", "autotile", "scale", "octaves"}) {
             if (args && args->has(key)) params.emplace_back(key, std::to_string(getArgInt(args, key)));
         }
-        if (args && args->has("corridorStyle")) params.emplace_back("corridorStyle", getArgString(args, "corridorStyle"));
+        if (args && args->has("corridorStyle"))
+            params.emplace_back("corridorStyle", getArgString(args, "corridorStyle"));
         std::string err;
         std::string json = pg->generateMap(algorithm, getArgInt(args, "width", 32), getArgInt(args, "height", 32),
                                            static_cast<uint32_t>(getArgInt(args, "seed", 0)), params, &err);
@@ -2190,7 +2191,7 @@ std::string handleResourcesRead(const std::string& idJson, Poco::JSON::Object::P
             std::ifstream in(path, std::ios::binary);
             if (in) {
                 in.seekg(0, std::ios::end);
-                const std::streamoff size = in.tellg();
+                const std::streamoff size  = in.tellg();
                 const std::streamoff start = size > kCrashResourceBytes ? size - kCrashResourceBytes : 0;
                 in.seekg(start < 0 ? 0 : start);
                 std::ostringstream buffer;

@@ -11,12 +11,6 @@
 namespace eve::asset_procgen {
 namespace {
 
-template <class T>
-Result<T> failure(DiagnosticCode code, std::string message, std::string path = {}) {
-    return Result<T>::failure(
-        Diagnostic::error(code, std::move(message), std::move(path), {}, "asset.procgen.instances"));
-}
-
 std::uint32_t little32(std::span<const std::uint8_t> bytes, std::size_t offset) {
     return std::uint32_t(bytes[offset]) | (std::uint32_t(bytes[offset + 1]) << 8) |
            (std::uint32_t(bytes[offset + 2]) << 16) | (std::uint32_t(bytes[offset + 3]) << 24);
@@ -55,25 +49,31 @@ Result<LoadedInstanceSet> EvpackInstanceSetLoader::load(const AssetRef&         
     for (const auto& chunk : payload.value().chunks) {
         if (chunk.kind == asset::EvpackChunkKind::Definition) {
             if (definition)
-                return failure<LoadedInstanceSet>(DiagnosticCode::Conflict, "instance set has duplicate definitions");
+                return Result<LoadedInstanceSet>::failure(Diagnostic::error(DiagnosticCode::Conflict,
+                                                                            "instance set has duplicate definitions",
+                                                                            {}, {}, "asset.procgen.instances"));
             definition = &chunk;
         } else if (chunk.kind == asset::EvpackChunkKind::Bulk) {
             if (bulk)
-                return failure<LoadedInstanceSet>(DiagnosticCode::Conflict, "instance set has duplicate bulk chunks");
+                return Result<LoadedInstanceSet>::failure(Diagnostic::error(DiagnosticCode::Conflict,
+                                                                            "instance set has duplicate bulk chunks",
+                                                                            {}, {}, "asset.procgen.instances"));
             bulk = &chunk;
         }
     }
     static constexpr std::uint8_t magic[] = {'E', 'V', 'I', 'N', 'S', 'T', 0, 1};
     if (!definition || !bulk || bulk->bytes.size() < 16 ||
         !std::equal(std::begin(magic), std::end(magic), bulk->bytes.begin()))
-        return failure<LoadedInstanceSet>(DiagnosticCode::ParseError,
-                                          "instance definition or EVINST payload is invalid");
+        return Result<LoadedInstanceSet>::failure(Diagnostic::error(DiagnosticCode::ParseError,
+                                                                    "instance definition or EVINST payload is invalid",
+                                                                    {}, {}, "asset.procgen.instances"));
     const std::uint32_t   count              = little32(bulk->bytes, 8);
     const std::uint32_t   reserved           = little32(bulk->bytes, 12);
     constexpr std::size_t minimumRecordBytes = 4 + 1 + (3 + 4 + 3) * sizeof(float);
     if (count > limits.maximumInstances || reserved != 0 || count > (bulk->bytes.size() - 16) / minimumRecordBytes)
-        return failure<LoadedInstanceSet>(DiagnosticCode::InvalidArgument,
-                                          "instance count or reserved header is invalid");
+        return Result<LoadedInstanceSet>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                                    "instance count or reserved header is invalid", {},
+                                                                    {}, "asset.procgen.instances"));
     asset::RuntimeDefinitionLimits definitionLimits;
     definitionLimits.maximumBytes = limits.maximumDecodedBytes;
     auto metadata                 = asset::decodeRuntimeDefinition(definition->bytes, definitionLimits);
@@ -90,8 +90,9 @@ Result<LoadedInstanceSet> EvpackInstanceSetLoader::load(const AssetRef&         
         !declaredCount->isInt64() ||
         declaredCount->asInt() != count || !partition || !partition->isString() ||
         partition->asString() != "single-cell")
-        return failure<LoadedInstanceSet>(DiagnosticCode::ParseError,
-                                          "instance metadata does not match EVINST payload");
+        return Result<LoadedInstanceSet>::failure(Diagnostic::error(DiagnosticCode::ParseError,
+                                                                    "instance metadata does not match EVINST payload",
+                                                                    {}, {}, "asset.procgen.instances"));
     LoadedInstanceSet result{instanceRef};
     if (version->asInt() == 5) {
         const Value* windValue = field(*root, "wavingGrass");
@@ -107,17 +108,20 @@ Result<LoadedInstanceSet> EvpackInstanceSetLoader::load(const AssetRef&         
         const Value* tintValue = wind ? field(*wind, "tint") : nullptr;
         const auto* tint = tintValue ? tintValue->getIf<Value::Array>() : nullptr;
         if (!amount || !speed || !strength || !tint || tint->size() != 4)
-            return failure<LoadedInstanceSet>(DiagnosticCode::InvalidArgument,
-                                              "instance waving grass settings are invalid");
+            return Result<LoadedInstanceSet>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                                        "instance waving grass settings are invalid",
+                                                                        {}, {}, "asset.procgen.instances"));
         for (std::size_t component = 0; component < 4; ++component) {
             if (!(*tint)[component].isNumeric())
-                return failure<LoadedInstanceSet>(DiagnosticCode::InvalidArgument,
-                                                  "instance waving grass tint is invalid");
+                return Result<LoadedInstanceSet>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                                            "instance waving grass tint is invalid", {},
+                                                                            {}, "asset.procgen.instances"));
             const double parsed = (*tint)[component].isInt64() ? double((*tint)[component].asInt())
                                                                : (*tint)[component].asDouble();
             if (!std::isfinite(parsed) || parsed < 0 || parsed > 1)
-                return failure<LoadedInstanceSet>(DiagnosticCode::InvalidArgument,
-                                                  "instance waving grass tint is invalid");
+                return Result<LoadedInstanceSet>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                                            "instance waving grass tint is invalid", {},
+                                                                            {}, "asset.procgen.instances"));
             result.wavingGrassTint[component] = static_cast<float>(parsed);
         }
         result.wavingGrassAmount = *amount;
@@ -130,7 +134,8 @@ Result<LoadedInstanceSet> EvpackInstanceSetLoader::load(const AssetRef&         
         const Value* prototypeValue = field(*root, "prototypes");
         const auto*  prototypeArray = prototypeValue ? prototypeValue->getIf<Value::Array>() : nullptr;
         if (!prototypeArray || prototypeArray->size() > limits.maximumInstances)
-            return failure<LoadedInstanceSet>(DiagnosticCode::ParseError, "instance prototype table is invalid");
+            return Result<LoadedInstanceSet>::failure(Diagnostic::error(
+                DiagnosticCode::ParseError, "instance prototype table is invalid", {}, {}, "asset.procgen.instances"));
         prototypes.reserve(prototypeArray->size());
         auto number = [&](const Value::Object& object, std::string_view name) -> std::optional<float> {
             const Value* value = field(object, name);
@@ -156,15 +161,16 @@ Result<LoadedInstanceSet> EvpackInstanceSetLoader::load(const AssetRef&         
                 (mode->asString() != "GrassBillboard" && mode->asString() != "Grass" &&
                  mode->asString() != "VertexLit") ||
                 !mesh || !mesh->isBool() || !instancing || !instancing->isBool() || !seed || !seed->isInt64())
-                return failure<LoadedInstanceSet>(DiagnosticCode::ParseError, "instance prototype metadata is invalid",
-                                                  std::to_string(index));
+                return Result<LoadedInstanceSet>::failure(
+                    Diagnostic::error(DiagnosticCode::ParseError, "instance prototype metadata is invalid",
+                                      std::to_string(index), {}, "asset.procgen.instances"));
             std::string resourceAsset;
             if (version->asInt() >= 3) {
                 if (!resource || !resource->isString() || resource->asString().size() > limits.maximumStringBytes ||
                     (!resource->asString().empty() && !AssetRef::parse(resource->asString())))
-                    return failure<LoadedInstanceSet>(DiagnosticCode::ParseError,
-                                                      "instance prototype resource asset is invalid",
-                                                      std::to_string(index));
+                    return Result<LoadedInstanceSet>::failure(
+                        Diagnostic::error(DiagnosticCode::ParseError, "instance prototype resource asset is invalid",
+                                          std::to_string(index), {}, "asset.procgen.instances"));
                 resourceAsset = resource->asString();
             }
             const auto minWidth    = number(*object, "minWidth");
@@ -179,8 +185,9 @@ Result<LoadedInstanceSet> EvpackInstanceSetLoader::load(const AssetRef&         
                 *minWidth <= 0 || *maxWidth < *minWidth || *minHeight <= 0 || *maxHeight < *minHeight ||
                 *noiseSpread < 0 || *density < 0 || *align < 0 || *align > 1 || *jitter < 0 || *jitter > 1 ||
                 (mesh->asBool() != id->asString().starts_with("unity-guid:")))
-                return failure<LoadedInstanceSet>(DiagnosticCode::InvalidArgument,
-                                                  "instance prototype values are invalid", id->asString());
+                return Result<LoadedInstanceSet>::failure(
+                    Diagnostic::error(DiagnosticCode::InvalidArgument, "instance prototype values are invalid",
+                                      id->asString(), {}, "asset.procgen.instances"));
             RuntimeInstancePrototype prototype{id->asString(), mode->asString(), mesh->asBool(), instancing->asBool(),
                                                *minWidth, *maxWidth, *minHeight, *maxHeight, seed->asInt(),
                                                *noiseSpread, *density, *align, *jitter, std::move(resourceAsset)};
@@ -204,8 +211,9 @@ Result<LoadedInstanceSet> EvpackInstanceSetLoader::load(const AssetRef&         
                 if (!color("healthyColor", prototype.healthyColor) || !color("dryColor", prototype.dryColor) ||
                     !bend || *bend < 0 || *bend > 1 || !padding || *padding < 0 || *padding > 1 ||
                     !densityScaling || !densityScaling->isBool())
-                    return failure<LoadedInstanceSet>(DiagnosticCode::InvalidArgument,
-                                                      "instance prototype extended values are invalid", id->asString());
+                    return Result<LoadedInstanceSet>::failure(Diagnostic::error(
+                        DiagnosticCode::InvalidArgument, "instance prototype extended values are invalid",
+                        id->asString(), {}, "asset.procgen.instances"));
                 prototype.bendFactor = *bend;
                 prototype.holeEdgePadding = *padding;
                 prototype.useDensityScaling = densityScaling->asBool();
@@ -218,25 +226,30 @@ Result<LoadedInstanceSet> EvpackInstanceSetLoader::load(const AssetRef&         
     std::size_t cursor = 16;
     for (std::uint32_t index = 0; index < count; ++index) {
         if (bulk->bytes.size() - cursor < 4)
-            return failure<LoadedInstanceSet>(DiagnosticCode::ParseError, "instance prototype length is truncated");
+            return Result<LoadedInstanceSet>::failure(Diagnostic::error(DiagnosticCode::ParseError,
+                                                                        "instance prototype length is truncated", {},
+                                                                        {}, "asset.procgen.instances"));
         const std::uint32_t stringBytes = little32(bulk->bytes, cursor);
         cursor += 4;
         constexpr std::size_t trsBytes = (3 + 4 + 3) * sizeof(float);
         if (stringBytes == 0 || stringBytes > limits.maximumStringBytes || stringBytes > bulk->bytes.size() - cursor ||
             bulk->bytes.size() - cursor - stringBytes < trsBytes)
-            return failure<LoadedInstanceSet>(DiagnosticCode::ParseError, "instance record exceeds payload bounds");
+            return Result<LoadedInstanceSet>::failure(Diagnostic::error(DiagnosticCode::ParseError,
+                                                                        "instance record exceeds payload bounds", {},
+                                                                        {}, "asset.procgen.instances"));
         RuntimeInstance instance;
         instance.prototype.assign(reinterpret_cast<const char*>(bulk->bytes.data() + cursor), stringBytes);
         if (!isValidUtf8(instance.prototype, Utf8NullPolicy::Reject))
-            return failure<LoadedInstanceSet>(DiagnosticCode::ParseError, "instance prototype is not valid UTF-8",
-                                              std::to_string(index));
+            return Result<LoadedInstanceSet>::failure(
+                Diagnostic::error(DiagnosticCode::ParseError, "instance prototype is not valid UTF-8",
+                                  std::to_string(index), {}, "asset.procgen.instances"));
         // Unity tree instances and mesh-backed terrain Details both use unity-guid:. A GUID absent from the
         // Detail prototype table is therefore a tree prototype; texture-backed Details have an unambiguous prefix.
         if (version->asInt() >= 2 && instance.prototype.starts_with("unity-texture-guid:") &&
             !prototypeIds.contains(instance.prototype))
-            return failure<LoadedInstanceSet>(DiagnosticCode::NotFound,
-                                              "instance references an undeclared terrain detail prototype",
-                                              instance.prototype);
+            return Result<LoadedInstanceSet>::failure(Diagnostic::error(
+                DiagnosticCode::NotFound, "instance references an undeclared terrain detail prototype",
+                instance.prototype, {}, "asset.procgen.instances"));
         cursor += stringBytes;
         for (float& value : instance.position) {
             value = littleFloat(bulk->bytes, cursor);
@@ -261,12 +274,14 @@ Result<LoadedInstanceSet> EvpackInstanceSetLoader::load(const AssetRef&         
                       instance.rotation[2] * instance.rotation[2] + instance.rotation[3] * instance.rotation[3]);
         if (!finite || qLength < 0.999f || qLength > 1.001f || instance.scale[0] == 0.f || instance.scale[1] == 0.f ||
             instance.scale[2] == 0.f)
-            return failure<LoadedInstanceSet>(DiagnosticCode::InvalidArgument, "instance TRS is invalid",
-                                              std::to_string(index));
+            return Result<LoadedInstanceSet>::failure(
+                Diagnostic::error(DiagnosticCode::InvalidArgument, "instance TRS is invalid", std::to_string(index), {},
+                                  "asset.procgen.instances"));
         instances.push_back(std::move(instance));
     }
     if (cursor != bulk->bytes.size())
-        return failure<LoadedInstanceSet>(DiagnosticCode::ParseError, "instance payload has trailing bytes");
+        return Result<LoadedInstanceSet>::failure(Diagnostic::error(
+            DiagnosticCode::ParseError, "instance payload has trailing bytes", {}, {}, "asset.procgen.instances"));
     result.prototypes = std::move(prototypes);
     result.instances = std::move(instances);
     result.variant = std::move(payload).takeValue().variant;

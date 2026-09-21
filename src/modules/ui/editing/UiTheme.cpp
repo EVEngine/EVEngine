@@ -8,11 +8,6 @@
 namespace eve::ui_editing {
 namespace {
 
-template <class T>
-EditorResult<T> fail(EditorStatus status, const char* rule, std::string message) {
-    return eve::editing::failed<T>(status, RuleId(rule), std::move(message));
-}
-
 EditorDiagnostic diagnostic(const char* rule, std::string message) {
     return eve::editing::ruleDiagnostic(eve::DiagnosticCode::InvalidArgument, RuleId(rule),
                                         DiagnosticSeverity::Error, std::move(message));
@@ -46,8 +41,8 @@ EditorResult<UiThemeAsset> parseAsset(const EditorValue& value) {
     const auto*        name        = nameField ? nameField->getIf<std::string>() : nullptr;
     const auto*        preset      = presetField ? presetField->getIf<std::string>() : nullptr;
     if (!id || id->empty() || !name || name->empty() || !preset || !tokensField)
-        return fail<UiThemeAsset>(EditorStatus::Rejected, "editor.ui-theme.asset",
-                                  "Theme asset id, name, basePreset and tokens are required");
+        return eve::editing::failed<UiThemeAsset>(EditorStatus::Rejected, RuleId("editor.ui-theme.asset"),
+                                                  "Theme asset id, name, basePreset and tokens are required");
     auto base = parsePreset(*preset);
     if (!base.ok()) return EditorResult<UiThemeAsset>::failure(base.status());
     auto tokens = parseThemeTokens(*tokensField);
@@ -66,8 +61,8 @@ EditorResult<void> parseCatalog(const EditorValue& content, std::vector<UiThemeA
     const auto*        active      = activeField ? activeField->getIf<std::string>() : nullptr;
     const auto*        list        = themesField ? themesField->getIf<EditorValue::Array>() : nullptr;
     if (!active || active->empty() || !list)
-        return fail<void>(EditorStatus::Rejected, "editor.ui-theme.catalog",
-                          "Theme catalog requires activeId and a themes array");
+        return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.ui-theme.catalog"),
+                                          "Theme catalog requires activeId and a themes array");
     std::vector<UiThemeAsset> parsed;
     parsed.reserve(list->size());
     for (const EditorValue& entry : *list) {
@@ -101,7 +96,7 @@ UiThemeCatalogTarget::UiThemeCatalogTarget(std::string id) : id_(std::move(id)) 
 TargetDescriptor UiThemeCatalogTarget::describe() const {
     return {TargetId(id_),
             "ui-theme-catalog",
-            revision_,
+            revisionValue(),
             false,
             {propertyCapabilityId(), IEditingSnapshotProvider::editingCapabilityId()}};
 }
@@ -148,8 +143,8 @@ UiThemeAsset* UiThemeCatalogTarget::mutableTheme(const ObjectId& id) {
 EditorResult<UiThemeAsset> UiThemeCatalogTarget::theme(const ObjectId& id) const {
     const UiThemeAsset* asset = findTheme(id);
     if (!asset)
-        return fail<UiThemeAsset>(EditorStatus::NotFound, "editor.ui-theme.missing",
-                                  "Theme asset does not exist: " + id.value());
+        return eve::editing::failed<UiThemeAsset>(EditorStatus::NotFound, RuleId("editor.ui-theme.missing"),
+                                                  "Theme asset does not exist: " + id.value());
     return eve::editing::applied<UiThemeAsset>(*asset);
 }
 
@@ -183,20 +178,21 @@ std::vector<EditorDiagnostic> UiThemeCatalogTarget::validate() const {
 
 EditorResult<void> UiThemeCatalogTarget::applyDomainOperation(const DomainOperation& operation) {
     if (operation.target != TargetId(id_))
-        return fail<void>(EditorStatus::Rejected, "editor.ui-theme.target", "Theme operation targets another catalog");
+        return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.ui-theme.target"),
+                                          "Theme operation targets another catalog");
     if (operation.type != "ui.theme.catalog.replace.v1")
-        return fail<void>(EditorStatus::Unsupported, "editor.ui-theme.operation",
-                          "Unsupported theme operation: " + operation.type);
+        return eve::editing::failed<void>(EditorStatus::Unsupported, RuleId("editor.ui-theme.operation"),
+                                          "Unsupported theme operation: " + operation.type);
     auto candidate = *this;
     auto parsed    = parseCatalog(operation.payload, candidate.themes_, candidate.activeId_);
     if (!parsed.ok()) return parsed;
     if (hasError(candidate.validate()))
-        return fail<void>(EditorStatus::Rejected, "editor.ui-theme.invalid",
-                          "Theme catalog replacement is invalid");
+        return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.ui-theme.invalid"),
+                                          "Theme catalog replacement is invalid");
     themes_   = std::move(candidate.themes_);
     activeId_ = candidate.activeId_;
-    ++revision_;
-    dirty_.include(0, 0);
+    bumpRevision();
+    widenDirty(0, 0);
     return eve::editing::applied<void>();
 }
 
@@ -207,8 +203,8 @@ std::unique_ptr<IDomainOperationTarget> UiThemeCatalogTarget::cloneDomainState()
 EditorResult<void> UiThemeCatalogTarget::commitDomainState(std::unique_ptr<IDomainOperationTarget> candidate) {
     auto* catalog = dynamic_cast<UiThemeCatalogTarget*>(candidate.get());
     if (!catalog || catalog->id_ != id_)
-        return fail<void>(EditorStatus::Conflict, "editor.ui-theme.candidate",
-                          "Theme compensation candidate belongs to another catalog");
+        return eve::editing::failed<void>(EditorStatus::Conflict, RuleId("editor.ui-theme.candidate"),
+                                          "Theme compensation candidate belongs to another catalog");
     *this = *catalog;
     return eve::editing::applied<void>();
 }
@@ -216,15 +212,15 @@ EditorResult<void> UiThemeCatalogTarget::commitDomainState(std::unique_ptr<IDoma
 EditorResult<DomainOperation> UiThemeCatalogTarget::makeCreateFromPreset(const ObjectId& id, std::string name,
                                                                          UiThemeBasePreset preset) const {
     if (id.empty() || name.empty())
-        return fail<DomainOperation>(EditorStatus::Rejected, "editor.ui-theme.create",
-                                     "Theme id and name are required");
+        return eve::editing::failed<DomainOperation>(EditorStatus::Rejected, RuleId("editor.ui-theme.create"),
+                                                     "Theme id and name are required");
     if (preset == UiThemeBasePreset::Custom)
-        return fail<DomainOperation>(EditorStatus::Rejected, "editor.ui-theme.preset-source",
-                                     "New themes must be created from dark or light");
+        return eve::editing::failed<DomainOperation>(EditorStatus::Rejected, RuleId("editor.ui-theme.preset-source"),
+                                                     "New themes must be created from dark or light");
     if (findTheme(id) ||
         std::any_of(themes_.begin(), themes_.end(), [&](const UiThemeAsset& asset) { return asset.name == name; }))
-        return fail<DomainOperation>(EditorStatus::Conflict, "editor.ui-theme.exists",
-                                     "Theme id or name already exists");
+        return eve::editing::failed<DomainOperation>(EditorStatus::Conflict, RuleId("editor.ui-theme.exists"),
+                                                     "Theme id or name already exists");
     auto candidate = *this;
     UiThemeAsset asset;
     asset.id         = id;
@@ -233,8 +229,8 @@ EditorResult<DomainOperation> UiThemeCatalogTarget::makeCreateFromPreset(const O
     asset.tokens     = themeFromPreset(preset);
     candidate.themes_.push_back(std::move(asset));
     if (hasError(candidate.validate()))
-        return fail<DomainOperation>(EditorStatus::Rejected, "editor.ui-theme.invalid",
-                                     "Creating the theme would invalidate the catalog");
+        return eve::editing::failed<DomainOperation>(EditorStatus::Rejected, RuleId("editor.ui-theme.invalid"),
+                                                     "Creating the theme would invalidate the catalog");
     return replacement(candidate.contentValue());
 }
 
@@ -242,12 +238,12 @@ EditorResult<DomainOperation> UiThemeCatalogTarget::makeDuplicate(const ObjectId
                                                                   std::string name) const {
     const UiThemeAsset* original = findTheme(source);
     if (!original)
-        return fail<DomainOperation>(EditorStatus::NotFound, "editor.ui-theme.missing",
-                                     "Theme asset does not exist");
+        return eve::editing::failed<DomainOperation>(EditorStatus::NotFound, RuleId("editor.ui-theme.missing"),
+                                                     "Theme asset does not exist");
     if (id.empty() || name.empty() || findTheme(id) ||
         std::any_of(themes_.begin(), themes_.end(), [&](const UiThemeAsset& asset) { return asset.name == name; }))
-        return fail<DomainOperation>(EditorStatus::Rejected, "editor.ui-theme.duplicate",
-                                     "Duplicated theme needs a unique id and name");
+        return eve::editing::failed<DomainOperation>(EditorStatus::Rejected, RuleId("editor.ui-theme.duplicate"),
+                                                     "Duplicated theme needs a unique id and name");
     auto         candidate = *this;
     UiThemeAsset asset     = *original;
     asset.id               = id;
@@ -255,22 +251,23 @@ EditorResult<DomainOperation> UiThemeCatalogTarget::makeDuplicate(const ObjectId
     asset.basePreset       = UiThemeBasePreset::Custom;
     candidate.themes_.push_back(std::move(asset));
     if (hasError(candidate.validate()))
-        return fail<DomainOperation>(EditorStatus::Rejected, "editor.ui-theme.invalid",
-                                     "Duplicating the theme would invalidate the catalog");
+        return eve::editing::failed<DomainOperation>(EditorStatus::Rejected, RuleId("editor.ui-theme.invalid"),
+                                                     "Duplicating the theme would invalidate the catalog");
     return replacement(candidate.contentValue());
 }
 
 EditorResult<DomainOperation> UiThemeCatalogTarget::makeRename(const ObjectId& id, std::string name) const {
     const UiThemeAsset* current = findTheme(id);
     if (!current)
-        return fail<DomainOperation>(EditorStatus::NotFound, "editor.ui-theme.missing",
-                                     "Theme asset does not exist");
+        return eve::editing::failed<DomainOperation>(EditorStatus::NotFound, RuleId("editor.ui-theme.missing"),
+                                                     "Theme asset does not exist");
     if (name.empty())
-        return fail<DomainOperation>(EditorStatus::Rejected, "editor.ui-theme.empty-name",
-                                     "Theme name must not be empty");
+        return eve::editing::failed<DomainOperation>(EditorStatus::Rejected, RuleId("editor.ui-theme.empty-name"),
+                                                     "Theme name must not be empty");
     if (std::any_of(themes_.begin(), themes_.end(),
                     [&](const UiThemeAsset& asset) { return asset.id != id && asset.name == name; }))
-        return fail<DomainOperation>(EditorStatus::Conflict, "editor.ui-theme.name", "Theme name already exists");
+        return eve::editing::failed<DomainOperation>(EditorStatus::Conflict, RuleId("editor.ui-theme.name"),
+                                                     "Theme name already exists");
     auto candidate = *this;
     candidate.mutableTheme(id)->name = std::move(name);
     return replacement(candidate.contentValue(), "theme.name");
@@ -278,24 +275,24 @@ EditorResult<DomainOperation> UiThemeCatalogTarget::makeRename(const ObjectId& i
 
 EditorResult<DomainOperation> UiThemeCatalogTarget::makeDelete(const ObjectId& id) const {
     if (!findTheme(id))
-        return fail<DomainOperation>(EditorStatus::NotFound, "editor.ui-theme.missing",
-                                     "Theme asset does not exist");
+        return eve::editing::failed<DomainOperation>(EditorStatus::NotFound, RuleId("editor.ui-theme.missing"),
+                                                     "Theme asset does not exist");
     if (themes_.size() <= 1)
-        return fail<DomainOperation>(EditorStatus::Rejected, "editor.ui-theme.last",
-                                     "The last theme asset cannot be deleted");
+        return eve::editing::failed<DomainOperation>(EditorStatus::Rejected, RuleId("editor.ui-theme.last"),
+                                                     "The last theme asset cannot be deleted");
     auto candidate = *this;
     std::erase_if(candidate.themes_, [&](const UiThemeAsset& asset) { return asset.id == id; });
     if (candidate.activeId_ == id) candidate.activeId_ = candidate.themes_.front().id;
     if (hasError(candidate.validate()))
-        return fail<DomainOperation>(EditorStatus::Rejected, "editor.ui-theme.invalid",
-                                     "Deleting the theme would invalidate the catalog");
+        return eve::editing::failed<DomainOperation>(EditorStatus::Rejected, RuleId("editor.ui-theme.invalid"),
+                                                     "Deleting the theme would invalidate the catalog");
     return replacement(candidate.contentValue());
 }
 
 EditorResult<DomainOperation> UiThemeCatalogTarget::makeSetActive(const ObjectId& id) const {
     if (!findTheme(id))
-        return fail<DomainOperation>(EditorStatus::NotFound, "editor.ui-theme.missing",
-                                     "Theme asset does not exist");
+        return eve::editing::failed<DomainOperation>(EditorStatus::NotFound, RuleId("editor.ui-theme.missing"),
+                                                     "Theme asset does not exist");
     auto candidate      = *this;
     candidate.activeId_ = id;
     return replacement(candidate.contentValue(), "catalog.active");
@@ -304,11 +301,11 @@ EditorResult<DomainOperation> UiThemeCatalogTarget::makeSetActive(const ObjectId
 EditorResult<DomainOperation> UiThemeCatalogTarget::makeResetToBase(const ObjectId& id) const {
     const UiThemeAsset* current = findTheme(id);
     if (!current)
-        return fail<DomainOperation>(EditorStatus::NotFound, "editor.ui-theme.missing",
-                                     "Theme asset does not exist");
+        return eve::editing::failed<DomainOperation>(EditorStatus::NotFound, RuleId("editor.ui-theme.missing"),
+                                                     "Theme asset does not exist");
     if (current->basePreset == UiThemeBasePreset::Custom)
-        return fail<DomainOperation>(EditorStatus::Rejected, "editor.ui-theme.reset",
-                                     "Custom themes have no built-in base preset to restore");
+        return eve::editing::failed<DomainOperation>(EditorStatus::Rejected, RuleId("editor.ui-theme.reset"),
+                                                     "Custom themes have no built-in base preset to restore");
     auto candidate                 = *this;
     candidate.mutableTheme(id)->tokens = themeFromPreset(current->basePreset);
     return replacement(candidate.contentValue(), "theme.tokens");
@@ -323,18 +320,18 @@ EditorResult<void> UiThemeCatalogTarget::loadSnapshot(const EditorValue& snapsho
     const EditorValue* content      = field(snapshot, "content");
     const auto*        version      = versionValue ? versionValue->getIf<int64_t>() : nullptr;
     if (!version || *version != 1 || !content)
-        return fail<void>(EditorStatus::Unsupported, "editor.ui-theme.snapshot",
-                          "Theme snapshot requires schemaVersion 1 and content");
+        return eve::editing::failed<void>(EditorStatus::Unsupported, RuleId("editor.ui-theme.snapshot"),
+                                          "Theme snapshot requires schemaVersion 1 and content");
     auto candidate = *this;
     auto parsed    = parseCatalog(*content, candidate.themes_, candidate.activeId_);
     if (!parsed.ok()) return parsed;
     if (hasError(candidate.validate()))
-        return fail<void>(EditorStatus::Rejected, "editor.ui-theme.snapshot-invalid",
-                          "Theme snapshot failed validation");
+        return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.ui-theme.snapshot-invalid"),
+                                          "Theme snapshot failed validation");
     themes_   = std::move(candidate.themes_);
     activeId_ = candidate.activeId_;
-    ++revision_;
-    dirty_.clear();
+    bumpRevision();
+    clearDirtyRegion();
     return eve::editing::applied<void>();
 }
 

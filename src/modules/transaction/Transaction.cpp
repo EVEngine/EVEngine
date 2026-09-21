@@ -63,12 +63,6 @@ std::string canonicalJson(const eve::json::Value& value) {
     return {};
 }
 
-template <class T>
-eve::Result<T> transactionBindingFailure(eve::DiagnosticCode code, std::string message, std::string path = {}) {
-    return eve::Result<T>::failure(
-        eve::Diagnostic::error(code, std::move(message), std::move(path), {}, "transaction"));
-}
-
 eve::Value planBindingValue(const Plan* plan) {
     if (!plan) return eve::Value();
     return eve::Value(eve::Value::Object{
@@ -104,11 +98,6 @@ const eve::SnapshotMigrationChain& transactionMigrations() {
         return result;
     }();
     return chain;
-}
-
-template <class T>
-eve::Result<T> snapshotFailure(eve::DiagnosticCode code, std::string message) {
-    return eve::Result<T>::failure(eve::Diagnostic::error(code, std::move(message)));
 }
 
 bool parseU64(const eve::json::Value& value, uint64_t& out) {
@@ -739,11 +728,11 @@ eve::Result<eve::SnapshotEnvelope> Ledger::snapshot(const eve::SnapshotHashProvi
 eve::Result<void> Ledger::restoreSnapshot(const eve::SnapshotEnvelope&     source,
                                           const eve::SnapshotHashProvider& hashProvider) {
     if (source.type != "transaction.ledger" || source.schema != transactionSchema())
-        return snapshotFailure<void>(eve::DiagnosticCode::InvalidArgument,
-                                     "snapshot does not belong to transaction::Ledger");
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                 "snapshot does not belong to transaction::Ledger"));
     if (!instanceId_.isNil() && source.instanceId != instanceId_)
-        return snapshotFailure<void>(eve::DiagnosticCode::Conflict,
-                                     "snapshot instanceId does not match transaction::Ledger");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Conflict, "snapshot instanceId does not match transaction::Ledger"));
 
     auto migrated = transactionMigrations().migrate(source, eve::SchemaVersion(1), hashProvider);
     if (!migrated.ok()) return eve::Result<void>::failure(migrated.status());
@@ -814,44 +803,44 @@ void Transaction::expose(ssq::Table& table) {
     // failure status and diagnostics remain observable to the caller.
     plan.addFunc("markValid", [vm](Plan* p, const std::string& id) {
         if (!p)
-            return eve::script::projectResult(
-                vm, transactionBindingFailure<void>(eve::DiagnosticCode::InvalidArgument,
-                                                    "transaction plan must not be null", "plan"));
+            return eve::script::projectResult(vm, eve::Result<void>::failure(eve::Diagnostic::error(
+                                                      eve::DiagnosticCode::InvalidArgument,
+                                                      "transaction plan must not be null", "plan", {}, "transaction")));
         return eve::script::projectResult(vm, p->markValid(id));
     });
     plan.addFunc("markInvalid", [vm](Plan* p, const std::string& id, const std::string& error) {
         if (!p)
-            return eve::script::projectResult(
-                vm, transactionBindingFailure<void>(eve::DiagnosticCode::InvalidArgument,
-                                                    "transaction plan must not be null", "plan"));
+            return eve::script::projectResult(vm, eve::Result<void>::failure(eve::Diagnostic::error(
+                                                      eve::DiagnosticCode::InvalidArgument,
+                                                      "transaction plan must not be null", "plan", {}, "transaction")));
         return eve::script::projectResult(vm, p->markInvalid(id, error));
     });
     plan.addFunc("validate", [vm](Plan* p) {
         if (!p)
-            return eve::script::projectResult(
-                vm, transactionBindingFailure<void>(eve::DiagnosticCode::InvalidArgument,
-                                                    "transaction plan must not be null", "plan"));
+            return eve::script::projectResult(vm, eve::Result<void>::failure(eve::Diagnostic::error(
+                                                      eve::DiagnosticCode::InvalidArgument,
+                                                      "transaction plan must not be null", "plan", {}, "transaction")));
         return eve::script::projectResult(vm, p->validate());
     });
     plan.addFunc("commit", [vm](Plan* p) {
         if (!p)
-            return eve::script::projectResult(
-                vm, transactionBindingFailure<void>(eve::DiagnosticCode::InvalidArgument,
-                                                    "transaction plan must not be null", "plan"));
+            return eve::script::projectResult(vm, eve::Result<void>::failure(eve::Diagnostic::error(
+                                                      eve::DiagnosticCode::InvalidArgument,
+                                                      "transaction plan must not be null", "plan", {}, "transaction")));
         return eve::script::projectResult(vm, p->commit());
     });
     plan.addFunc("rollback", [vm](Plan* p, const std::string& reason) {
         if (!p)
-            return eve::script::projectResult(
-                vm, transactionBindingFailure<void>(eve::DiagnosticCode::InvalidArgument,
-                                                    "transaction plan must not be null", "plan"));
+            return eve::script::projectResult(vm, eve::Result<void>::failure(eve::Diagnostic::error(
+                                                      eve::DiagnosticCode::InvalidArgument,
+                                                      "transaction plan must not be null", "plan", {}, "transaction")));
         return eve::script::projectResult(vm, p->rollback(reason));
     });
     plan.addFunc("fail", [vm](Plan* p, const std::string& error) {
         if (!p)
-            return eve::script::projectResult(
-                vm, transactionBindingFailure<void>(eve::DiagnosticCode::InvalidArgument,
-                                                    "transaction plan must not be null", "plan"));
+            return eve::script::projectResult(vm, eve::Result<void>::failure(eve::Diagnostic::error(
+                                                      eve::DiagnosticCode::InvalidArgument,
+                                                      "transaction plan must not be null", "plan", {}, "transaction")));
         return eve::script::projectResult(vm, p->fail(error));
     });
     plan.addFunc("getError", &Plan::error);
@@ -869,8 +858,9 @@ void Transaction::expose(ssq::Table& table) {
         if (!value)
             return eve::script::projectResult(
                 vm,
-                transactionBindingFailure<eve::OperationId>(eve::DiagnosticCode::InvalidArgument,
-                                                            "transaction plan must not be null", "plan"),
+                eve::Result<eve::OperationId>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                              "transaction plan must not be null",
+                                                                              "plan", {}, "transaction")),
                 [](eve::OperationId id) { return eve::Value(id.isNil() ? std::string{} : id.format()); });
         eve::OperationId identity;
         if (!operationIdentity.empty()) {
@@ -878,9 +868,9 @@ void Transaction::expose(ssq::Table& table) {
             if (!parsed)
                 return eve::script::projectResult(
                     vm,
-                    transactionBindingFailure<eve::OperationId>(eve::DiagnosticCode::InvalidArgument,
-                                                                "operation identity must be canonical UUID text",
-                                                                "operationIdentity"),
+                    eve::Result<eve::OperationId>::failure(eve::Diagnostic::error(
+                        eve::DiagnosticCode::InvalidArgument, "operation identity must be canonical UUID text",
+                        "operationIdentity", {}, "transaction")),
                     [](eve::OperationId id) { return eve::Value(id.isNil() ? std::string{} : id.format()); });
             identity = *parsed;
         }
@@ -900,27 +890,28 @@ void Transaction::expose(ssq::Table& table) {
     ledger.addFunc("restore", [vm](Ledger* value, const std::string& json) {
         if (!value)
             return eve::script::projectResult(
-                vm, transactionBindingFailure<void>(eve::DiagnosticCode::InvalidArgument,
-                                                    "transaction ledger must not be null", "ledger"));
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                      "transaction ledger must not be null", "ledger",
+                                                                      {}, "transaction")));
         return eve::script::projectResult(vm, value->restore(json));
     });
     ledger.addFunc("create", [vm](Ledger* value, const std::string& correlation, const std::string& causation,
                                   const std::string& transactionIdentity) {
         if (!value)
-            return eve::script::projectResult(
-                vm,
-                transactionBindingFailure<Plan*>(eve::DiagnosticCode::InvalidArgument,
-                                                 "transaction ledger must not be null", "ledger"),
-                [](Plan* plan) { return planBindingValue(plan); });
+            return eve::script::projectResult(vm,
+                                              eve::Result<Plan*>::failure(eve::Diagnostic::error(
+                                                  eve::DiagnosticCode::InvalidArgument,
+                                                  "transaction ledger must not be null", "ledger", {}, "transaction")),
+                                              [](Plan* plan) { return planBindingValue(plan); });
         eve::TransactionId identity;
         if (!transactionIdentity.empty()) {
             const auto parsed = eve::TransactionId::parse(transactionIdentity);
             if (!parsed)
                 return eve::script::projectResult(
                     vm,
-                    transactionBindingFailure<Plan*>(eve::DiagnosticCode::InvalidArgument,
-                                                     "transaction identity must be canonical UUID text",
-                                                     "transactionIdentity"),
+                    eve::Result<Plan*>::failure(eve::Diagnostic::error(
+                        eve::DiagnosticCode::InvalidArgument, "transaction identity must be canonical UUID text",
+                        "transactionIdentity", {}, "transaction")),
                     [](Plan* plan) { return planBindingValue(plan); });
             identity = *parsed;
         }

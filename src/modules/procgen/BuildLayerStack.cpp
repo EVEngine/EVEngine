@@ -11,11 +11,6 @@
 namespace eve::procgen {
 namespace {
 
-template <class T>
-Result<T> fail(DiagnosticCode code, std::string message, std::string path = {}) {
-    return Result<T>::failure(Diagnostic::error(code, std::move(message), std::move(path), {}, "procgen.buildLayers"));
-}
-
 std::string hexEncode(std::string_view value) {
     constexpr char digits[] = "0123456789abcdef";
     std::string    output;
@@ -28,7 +23,9 @@ std::string hexEncode(std::string_view value) {
 }
 
 Result<std::string> hexDecode(std::string_view value) {
-    if (value.size() % 2 != 0) return fail<std::string>(DiagnosticCode::ParseError, "odd embedded definition size");
+    if (value.size() % 2 != 0)
+        return Result<std::string>::failure(Diagnostic::error(
+            DiagnosticCode::ParseError, "odd embedded definition size", {}, {}, "procgen.buildLayers"));
     const auto nibble = [](char c) -> int {
         if (c >= '0' && c <= '9') return c - '0';
         if (c >= 'a' && c <= 'f') return c - 'a' + 10;
@@ -39,7 +36,9 @@ Result<std::string> hexDecode(std::string_view value) {
     for (std::size_t index = 0; index < value.size(); index += 2) {
         const int high = nibble(value[index]);
         const int low  = nibble(value[index + 1]);
-        if (high < 0 || low < 0) return fail<std::string>(DiagnosticCode::ParseError, "invalid embedded definition");
+        if (high < 0 || low < 0)
+            return Result<std::string>::failure(Diagnostic::error(
+                DiagnosticCode::ParseError, "invalid embedded definition", {}, {}, "procgen.buildLayers"));
         output[index / 2] = char((high << 4) | low);
     }
     return Result<std::string>::success(std::move(output));
@@ -60,17 +59,23 @@ std::string BuildLayerExecution::getType(int index) const {
 
 Result<MeshBuild> BuildLayerExecution::getMesh(int index) const {
     if (index < 0 || index >= int(artifacts_.size()))
-        return fail<MeshBuild>(DiagnosticCode::InvalidArgument, "artifact index is out of range");
+        return Result<MeshBuild>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "artifact index is out of range", {}, {}, "procgen.buildLayers"));
     const auto* value = std::get_if<MeshBuild>(&artifacts_[std::size_t(index)].value);
-    if (!value) return fail<MeshBuild>(DiagnosticCode::TypeMismatch, "artifact is not a mesh");
+    if (!value)
+        return Result<MeshBuild>::failure(
+            Diagnostic::error(DiagnosticCode::TypeMismatch, "artifact is not a mesh", {}, {}, "procgen.buildLayers"));
     return Result<MeshBuild>::success(*value);
 }
 
 Result<PointSet> BuildLayerExecution::getPoints(int index) const {
     if (index < 0 || index >= int(artifacts_.size()))
-        return fail<PointSet>(DiagnosticCode::InvalidArgument, "artifact index is out of range");
+        return Result<PointSet>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "artifact index is out of range", {}, {}, "procgen.buildLayers"));
     const auto* value = std::get_if<PointSet>(&artifacts_[std::size_t(index)].value);
-    if (!value) return fail<PointSet>(DiagnosticCode::TypeMismatch, "artifact is not a point set");
+    if (!value)
+        return Result<PointSet>::failure(Diagnostic::error(DiagnosticCode::TypeMismatch, "artifact is not a point set",
+                                                           {}, {}, "procgen.buildLayers"));
     return Result<PointSet>::success(*value);
 }
 
@@ -82,17 +87,26 @@ bool BuildLayerStack::contains(std::string_view id) const {
 
 Result<void> BuildLayerStack::addTileLayer(std::string id, bool enabled, float cellSize, float height,
                                            std::string group) {
-    if (id.empty()) return fail<void>(DiagnosticCode::InvalidArgument, "layer id is empty");
-    if (contains(id)) return fail<void>(DiagnosticCode::Conflict, "duplicate layer id", id);
+    if (id.empty())
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "layer id is empty", {}, {}, "procgen.buildLayers"));
+    if (contains(id))
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::Conflict, "duplicate layer id", id, {}, "procgen.buildLayers"));
     if (!std::isfinite(cellSize) || cellSize <= 0.f || !std::isfinite(height))
-        return fail<void>(DiagnosticCode::InvalidArgument, "tile dimensions are invalid", id);
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "tile dimensions are invalid",
+                                                       id, {}, "procgen.buildLayers"));
     layers_.push_back({std::move(id), enabled, TileLayer{cellSize, height, std::move(group)}});
     return Result<void>::success();
 }
 
 Result<void> BuildLayerStack::addObjectLayer(std::string id, bool enabled, const ObjectBuildLayer& layer) {
-    if (id.empty()) return fail<void>(DiagnosticCode::InvalidArgument, "layer id is empty");
-    if (contains(id)) return fail<void>(DiagnosticCode::Conflict, "duplicate layer id", id);
+    if (id.empty())
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "layer id is empty", {}, {}, "procgen.buildLayers"));
+    if (contains(id))
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::Conflict, "duplicate layer id", id, {}, "procgen.buildLayers"));
     layers_.push_back({std::move(id), enabled, layer});
     return Result<void>::success();
 }
@@ -103,7 +117,8 @@ Result<void> BuildLayerStack::setEnabled(std::string_view id, bool enabled) {
         layer.enabled = enabled;
         return Result<void>::success();
     }
-    return fail<void>(DiagnosticCode::NotFound, "unknown layer", std::string(id));
+    return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::NotFound, "unknown layer", std::string(id), {}, "procgen.buildLayers"));
 }
 
 void BuildLayerStack::clear() { layers_.clear(); }
@@ -137,7 +152,8 @@ Result<BuildLayerExecution> BuildLayerStack::executeRegion(const Grid2D& grid, c
     if (region.minCellX < 0 || region.minCellY < 0 || region.maxCellX < region.minCellX ||
         region.maxCellY < region.minCellY || region.maxCellX > grid.getWidth() || region.maxCellY > grid.getHeight() ||
         !(region.minWorldX < region.maxWorldX) || !(region.minWorldZ < region.maxWorldZ))
-        return fail<BuildLayerExecution>(DiagnosticCode::InvalidArgument, "invalid build-layer region");
+        return Result<BuildLayerExecution>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "invalid build-layer region", {}, {}, "procgen.buildLayers"));
     PointSet regionPoints;
     regionPoints.reserve(points.points().size());
     for (std::size_t index = 0; index < points.points().size(); ++index) {
@@ -201,7 +217,8 @@ Result<void> BuildLayerStack::deserializeDefinition(std::string_view definition)
     std::string        magic;
     int                version = 0;
     if (!(input >> magic >> version) || magic != "EVPCG_BUILD_LAYERS" || version != 1)
-        return fail<void>(DiagnosticCode::ParseError, "invalid build-layer header");
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::ParseError, "invalid build-layer header", {}, {}, "procgen.buildLayers"));
     std::string line;
     std::getline(input, line);
     bool ended = false;
@@ -221,13 +238,15 @@ Result<void> BuildLayerStack::deserializeDefinition(std::string_view definition)
             std::string group;
             if (!(record >> std::quoted(id) >> enabled >> cellSize >> height >> std::quoted(group)) ||
                 (enabled != 0 && enabled != 1))
-                return fail<void>(DiagnosticCode::ParseError, "invalid TILE record");
+                return Result<void>::failure(Diagnostic::error(DiagnosticCode::ParseError, "invalid TILE record", {},
+                                                               {}, "procgen.buildLayers"));
             auto applied = replacement.addTileLayer(std::move(id), enabled != 0, cellSize, height, std::move(group));
             if (!applied.ok()) return applied;
         } else if (kind == "OBJECT") {
             std::string encoded;
             if (!(record >> std::quoted(id) >> enabled >> encoded) || (enabled != 0 && enabled != 1))
-                return fail<void>(DiagnosticCode::ParseError, "invalid OBJECT record");
+                return Result<void>::failure(Diagnostic::error(DiagnosticCode::ParseError, "invalid OBJECT record", {},
+                                                               {}, "procgen.buildLayers"));
             auto decoded = hexDecode(encoded);
             if (!decoded.ok()) return Result<void>::failure(decoded.status());
             ObjectBuildLayer object;
@@ -236,12 +255,17 @@ Result<void> BuildLayerStack::deserializeDefinition(std::string_view definition)
             auto added = replacement.addObjectLayer(std::move(id), enabled != 0, object);
             if (!added.ok()) return added;
         } else {
-            return fail<void>(DiagnosticCode::ParseError, "unknown build-layer record: " + kind);
+            return Result<void>::failure(Diagnostic::error(
+                DiagnosticCode::ParseError, "unknown build-layer record: " + kind, {}, {}, "procgen.buildLayers"));
         }
         record >> std::ws;
-        if (!record.eof()) return fail<void>(DiagnosticCode::ParseError, "trailing build-layer record data");
+        if (!record.eof())
+            return Result<void>::failure(Diagnostic::error(
+                DiagnosticCode::ParseError, "trailing build-layer record data", {}, {}, "procgen.buildLayers"));
     }
-    if (!ended) return fail<void>(DiagnosticCode::ParseError, "build-layer END record is missing");
+    if (!ended)
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::ParseError, "build-layer END record is missing",
+                                                       {}, {}, "procgen.buildLayers"));
     *this = std::move(replacement);
     return Result<void>::success();
 }

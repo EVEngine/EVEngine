@@ -10,10 +10,6 @@
 
 namespace eve::virtualgeometry_editing {
 namespace {
-template <class T>
-EditorResult<T> fail(EditorStatus s, const char* r, std::string m) {
-    return eve::editing::failed<T>(s, RuleId(r), std::move(m));
-}
 void hashBytes(std::uint64_t& hash, const void* data, std::size_t size) {
     const auto* bytes = static_cast<const unsigned char*>(data);
     for (std::size_t i = 0; i < size; ++i) {
@@ -39,8 +35,9 @@ EditorResult<VirtualGeometryBuildArtifact> VirtualGeometryBuildRuntime::build(
             return EditorResult<VirtualGeometryBuildArtifact>::failure(
                 Status(EditorStatus::Rejected, diagnostics));
     if (document.value().sourceAsset.empty())
-        return fail<VirtualGeometryBuildArtifact>(EditorStatus::Rejected, "editor.virtualgeometry.source",
-                                                  "VirtualGeometry build requires a source asset");
+        return eve::editing::failed<VirtualGeometryBuildArtifact>(EditorStatus::Rejected,
+                                                                  RuleId("editor.virtualgeometry.source"),
+                                                                  "VirtualGeometry build requires a source asset");
     auto resolved = resolver.resolve(document.value().sourceAsset);
     if (!resolved.ok())
         return EditorResult<VirtualGeometryBuildArtifact>::failure(resolved.status());
@@ -49,17 +46,20 @@ EditorResult<VirtualGeometryBuildArtifact> VirtualGeometryBuildRuntime::build(
     if (mesh.positions.empty() || mesh.positions.size() % 3 != 0 || mesh.indices.empty() ||
         mesh.indices.size() % 3 != 0 || mesh.positions.size() / 3 > 50000000 || mesh.indices.size() > 150000000 ||
         normalsInvalid)
-        return fail<VirtualGeometryBuildArtifact>(EditorStatus::Rejected, "editor.virtualgeometry.mesh",
-                                                  "VirtualGeometry mesh shape or budget is invalid");
+        return eve::editing::failed<VirtualGeometryBuildArtifact>(EditorStatus::Rejected,
+                                                                  RuleId("editor.virtualgeometry.mesh"),
+                                                                  "VirtualGeometry mesh shape or budget is invalid");
     const std::size_t vertices = mesh.positions.size() / 3;
     for (float value : mesh.positions)
         if (!std::isfinite(value))
-            return fail<VirtualGeometryBuildArtifact>(EditorStatus::Rejected, "editor.virtualgeometry.position",
-                                                      "VirtualGeometry positions must be finite");
+            return eve::editing::failed<VirtualGeometryBuildArtifact>(EditorStatus::Rejected,
+                                                                      RuleId("editor.virtualgeometry.position"),
+                                                                      "VirtualGeometry positions must be finite");
     for (std::uint32_t index : mesh.indices)
         if (index >= vertices)
-            return fail<VirtualGeometryBuildArtifact>(EditorStatus::Rejected, "editor.virtualgeometry.index",
-                                                      "VirtualGeometry index is out of range");
+            return eve::editing::failed<VirtualGeometryBuildArtifact>(EditorStatus::Rejected,
+                                                                      RuleId("editor.virtualgeometry.index"),
+                                                                      "VirtualGeometry index is out of range");
     auto                                    candidate = std::make_unique<virtualgeometry::VirtualGeometryAsset>();
     virtualgeometry::VirtualGeometryBuilder builder;
     virtualgeometry::VirtualGeometryBuilder::MeshInput input;
@@ -69,8 +69,9 @@ EditorResult<VirtualGeometryBuildArtifact> VirtualGeometryBuildRuntime::build(
     input.indices     = mesh.indices.data();
     input.indexCount  = static_cast<int>(mesh.indices.size());
     if (!builder.build(input, document.value().builder, *candidate))
-        return fail<VirtualGeometryBuildArtifact>(EditorStatus::Failed, "editor.virtualgeometry.build",
-                                                  "VirtualGeometry builder rejected the candidate mesh");
+        return eve::editing::failed<VirtualGeometryBuildArtifact>(
+            EditorStatus::Failed, RuleId("editor.virtualgeometry.build"),
+            "VirtualGeometry builder rejected the candidate mesh");
     VirtualGeometryBuildArtifact artifact;
     artifact.sourceRevision  = document.revision();
     artifact.vertices        = candidate->vertexCount;
@@ -82,12 +83,13 @@ EditorResult<VirtualGeometryBuildArtifact> VirtualGeometryBuildRuntime::build(
         artifact.maxLod = std::max(artifact.maxLod, static_cast<int>(cluster.lodLevel));
         if (cluster.parent == 0xFFFFFFFFu) ++artifact.roots;
         if (cluster.childCount > 4 || cluster.triStart + cluster.triCount > candidate->triangles.size() / 3)
-            return fail<VirtualGeometryBuildArtifact>(EditorStatus::Failed, "editor.virtualgeometry.dag",
-                                                      "VirtualGeometry builder produced an invalid cluster range");
+            return eve::editing::failed<VirtualGeometryBuildArtifact>(
+                EditorStatus::Failed, RuleId("editor.virtualgeometry.dag"),
+                "VirtualGeometry builder produced an invalid cluster range");
         for (std::uint32_t i = 0; i < cluster.childCount; ++i)
             if (cluster.children[i] >= candidate->clusters.size())
-                return fail<VirtualGeometryBuildArtifact>(
-                    EditorStatus::Failed, "editor.virtualgeometry.dag",
+                return eve::editing::failed<VirtualGeometryBuildArtifact>(
+                    EditorStatus::Failed, RuleId("editor.virtualgeometry.dag"),
                     "VirtualGeometry builder produced an invalid child reference");
     }
     const auto&     v      = document.value();

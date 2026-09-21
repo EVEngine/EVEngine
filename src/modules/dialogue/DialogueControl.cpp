@@ -167,11 +167,11 @@ void DialogueControl::record(Entry& entry, const GameplayCommand& command, std::
     event.causationCommandId = command.id;
     event.correlationId      = command.id;
     event.payload            = Value(Value::Object{
-        {"instance", Value(entry.instance.format())},
-        {"detail", Value(detail)},
-        {"quantity", Value(quantity)},
-        {"node", Value(flow_ != nullptr && flow_->isActive() ? flow_->getNodeId() : std::string{})},
-        {"nodeKind", Value(flow_ != nullptr && flow_->isActive() ? flow_->getNodeKind() : std::string{})}});
+                   {"instance", Value(entry.instance.format())},
+                   {"detail", Value(detail)},
+                   {"quantity", Value(quantity)},
+                   {"node", Value(flow_ != nullptr && flow_->isActive() ? flow_->getNodeId() : std::string{})},
+                   {"nodeKind", Value(flow_ != nullptr && flow_->isActive() ? flow_->getNodeKind() : std::string{})}});
     entry.events.push_back(std::move(event));
 }
 

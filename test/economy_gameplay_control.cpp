@@ -332,8 +332,8 @@ TEST_CASE("gameplay.control.economyServesSeveralLedgersFromOneDomain") {
     CHECK_EQ(matches, 1);
 
     eve::GameplaySession automation{"automation", eve::GameplayAccess::TestDriver, {fixture.owner}};
-    auto granted = provider->submitGameplay(automation, fixture.instance,
-                                            move(fixture, "grant-primary", "economy:credit", 0, "gold", 30));
+    auto                 granted = provider->submitGameplay(automation, fixture.instance,
+                                                            move(fixture, "grant-primary", "economy:credit", 0, "gold", 30));
     REQUIRE(granted.ok());
     CHECK_EQ(eve::economy::EconomySystem::get(kPlayer, "gold"), 30);
     // 第二个账本完全隔离：第一个玩家的发放不泄漏到它。

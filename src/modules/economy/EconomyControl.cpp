@@ -162,12 +162,12 @@ Value EconomyControl::ledgerState(const Entry& entry) const {
         const ResourceTypeDef* def     = ResourceTypeRegistry::find(type);
         const int              balance = EconomySystem::get(entry.player, type);
         Value::Object          resource{
-            {"type", Value(type)},
-            {"amount", Value(static_cast<std::int64_t>(balance))},
-            {"cap", Value(static_cast<std::int64_t>(EconomySystem::getCap(entry.player, type)))},
-            {"wasted", Value(static_cast<std::int64_t>(EconomySystem::getWasted(entry.player, type)))},
-            {"income", Value(static_cast<std::int64_t>(EconomySystem::getIncome(entry.player, type)))},
-            {"expense", Value(static_cast<std::int64_t>(EconomySystem::getExpense(entry.player, type)))}};
+                     {"type", Value(type)},
+                     {"amount", Value(static_cast<std::int64_t>(balance))},
+                     {"cap", Value(static_cast<std::int64_t>(EconomySystem::getCap(entry.player, type)))},
+                     {"wasted", Value(static_cast<std::int64_t>(EconomySystem::getWasted(entry.player, type)))},
+                     {"income", Value(static_cast<std::int64_t>(EconomySystem::getIncome(entry.player, type)))},
+                     {"expense", Value(static_cast<std::int64_t>(EconomySystem::getExpense(entry.player, type)))}};
         if (def != nullptr) {
             resource.emplace("category", Value(def->category));
             resource.emplace("depletion", Value(depletionName(def->depletion)));
@@ -256,7 +256,7 @@ Result<GameplayCommandReceipt> EconomyControl::submitGameplay(const GameplaySess
     std::int64_t      wastedAmount = 0;
     if (action == kDebit) {
         const EconomyLedger::Snapshot snapshot = EconomySystem::snapshot(entry->player);
-        const bool known = ResourceTypeRegistry::find(type.value()) != nullptr ||
+        const bool                    known    = ResourceTypeRegistry::find(type.value()) != nullptr ||
                            snapshot.current.contains(type.value()) || snapshot.income.contains(type.value()) ||
                            snapshot.expense.contains(type.value());
         if (!known)
@@ -299,7 +299,7 @@ Result<GameplayCommandReceipt> EconomyControl::submitGameplay(const GameplaySess
     event.causationCommandId = command.id;
     event.correlationId      = command.id;
     event.payload            = Value(Value::Object{
-        {"instance", Value(entry->instance.format())}, {"detail", Value(detail)}, {"quantity", Value(applied)}});
+                   {"instance", Value(entry->instance.format())}, {"detail", Value(detail)}, {"quantity", Value(applied)}});
     entry->events.push_back(std::move(event));
     if (wastedAmount > 0) {
         GameplayEvent overflow;

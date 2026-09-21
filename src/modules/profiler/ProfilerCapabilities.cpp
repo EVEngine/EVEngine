@@ -60,9 +60,8 @@ public:
         // Depth-0 samples are the roots of each thread's zone tree, so their self
         // times are the CPU work the zones account for.
         static const std::vector<eve::prof::ZoneSample> kNoZones;
-        const std::vector<eve::prof::ZoneSample>&       zones =
-            hasFrame ? eve::prof::Profiler::lastFrame() : kNoZones;
-        double cpuFrameMs = 0.0;
+        const std::vector<eve::prof::ZoneSample>&       zones = hasFrame ? eve::prof::Profiler::lastFrame() : kNoZones;
+        double                                          cpuFrameMs = 0.0;
         for (const auto& zone : zones) {
             if (zone.minDepth == 0) cpuFrameMs += zone.selfMs;
         }
