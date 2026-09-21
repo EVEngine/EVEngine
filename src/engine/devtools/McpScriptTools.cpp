@@ -57,13 +57,14 @@ bool hasReservedPrefix(const std::string& name) {
 
 /**
  * @brief Read a string field of a spec table.
- * @return The field value, or `fallback` when absent or not a string.
+ * @return The field value, or `defaultValue` when the field is absent or not a string.
  */
-std::string tableString(HSQUIRRELVM vm, HSQOBJECT table, const char* key, const std::string& fallback = {}) {
+std::string tableString(HSQUIRRELVM vm, HSQOBJECT table, const char* key,
+                        const std::string& defaultValue = {}) {
     const SQInteger top = sq_gettop(vm);
     sq_pushobject(vm, table);
     sq_pushstring(vm, key, -1);
-    std::string value = fallback;
+    std::string value = defaultValue;
     if (SQ_SUCCEEDED(sq_get(vm, -2)) && sq_gettype(vm, -1) == OT_STRING) {
         const SQChar* text = nullptr;
         if (SQ_SUCCEEDED(sq_getstring(vm, -1, &text)) && text) value = text;
