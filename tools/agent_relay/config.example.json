@@ -1,0 +1,17 @@
+{
+  "repository": "EVEngine/EVEngine",
+  "owner": "xiaofan",
+  "relay_id": "xiaofan-windows",
+  "workspace": "C:/path/to/EVEngine",
+  "token_env": "GH_TOKEN",
+  "providers": {
+    "codex": {
+      "command": [],
+      "timeout_seconds": 3600
+    },
+    "deepseek": {
+      "command": [],
+      "timeout_seconds": 3600
+    }
+  }
+}

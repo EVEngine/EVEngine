@@ -1,0 +1,44 @@
+name: Agent repair router
+
+on:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+  pull_request_target:
+    types: [labeled, unlabeled, synchronize, reopened, closed]
+  pull_request_review:
+    types: [submitted]
+
+concurrency:
+  group: agent-repair-router-${{ github.event.workflow_run.id || github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: false
+
+permissions:
+  actions: read
+  contents: read
+  issues: write
+  pull-requests: write
+
+jobs:
+  route:
+    # This job only inspects GitHub metadata. It never checks out or executes PR code.
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Checkout trusted router from the default branch
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+          persist-credentials: false
+          sparse-checkout: scripts/agent_repair_router.py
+          sparse-checkout-cone-mode: false
+
+      - name: Route repair request
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPAIR_EVENT_PATH: ${{ github.event_path }}
+          REPAIR_EVENT_NAME: ${{ github.event_name }}
+          REPAIR_REPOSITORY: ${{ github.repository }}
+          REPAIR_API_URL: ${{ github.api_url }}
+          REPAIR_MAX_ATTEMPTS: ${{ vars.AGENT_REPAIR_MAX_ATTEMPTS || '3' }}
+        run: python3 scripts/agent_repair_router.py
