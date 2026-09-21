@@ -36,6 +36,8 @@
 #include <functional>
 #include <string>
 
+#include "common/Export.h"
+
 namespace eve::dev {
 
 /** @brief Sink invoked on the drain thread for every complete stderr line. */
@@ -58,12 +60,12 @@ enum class StderrCaptureStatus {
  *         call is idempotent. `Unavailable` means stderr was left untouched and
  *         the console will only see script output.
  */
-[[nodiscard]] StderrCaptureStatus startStderrCapture(StderrLineSink sink);
+[[nodiscard]] EVENGINE_API_FOUNDATION StderrCaptureStatus startStderrCapture(StderrLineSink sink);
 
 /** @brief Restore stderr and join the drain thread. No-op when inactive. */
-void stopStderrCapture();
+EVENGINE_API_FOUNDATION void stopStderrCapture();
 
 /** @brief Whether stderr is currently mirrored into a sink. */
-[[nodiscard]] bool stderrCaptureActive();
+[[nodiscard]] EVENGINE_API_FOUNDATION bool stderrCaptureActive();
 
 }  // namespace eve::dev
