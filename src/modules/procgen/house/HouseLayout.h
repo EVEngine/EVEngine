@@ -2,7 +2,9 @@
 
 #include "common/ECS.h"
 #include "common/Result.h"
-#include "housegen/HouseGenTypes.h"
+#include "procgen/Grid2D.h"
+#include "procgen/PointSet.h"
+#include "procgen/house/HouseGenTypes.h"
 
 #include <string>
 #include <string_view>
@@ -38,6 +40,18 @@ public:
     [[nodiscard]] eve::Result<void> fromJson(std::string_view json);
     /** @brief 校验布局是否满足组件库规则。 */
     [[nodiscard]] eve::Result<void> validate(const HouseComponentLibrary &library) const;
+    /**
+     * @brief Export the generated footprint as the canonical procgen grid value.
+     * @return Success after atomically replacing @p out; invalid dimensions return a diagnostic.
+     * @cost Linear in the number of generated component instances.
+     */
+    [[nodiscard]] eve::Result<void> writeFootprintGrid(procgen::Grid2D &out) const;
+    /**
+     * @brief Export component placements as canonical attributed procgen points.
+     * @return Success after atomically replacing @p out; conversion failure leaves it unchanged.
+     * @cost Linear in the number of generated component instances.
+     */
+    [[nodiscard]] eve::Result<void> writeComponentPoints(procgen::PointSet &out) const;
     /**
      * @brief 把布局实例化为场景中的 Renderable3D ECS 实体。
      * @return Generation-checked ECS handles; the graphics ECS world owns the entities.

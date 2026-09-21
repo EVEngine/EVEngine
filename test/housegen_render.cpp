@@ -1,7 +1,7 @@
 #include "PathBesideSource.h"
-#include "housegen/HouseComponentLibrary.h"
-#include "housegen/HouseGenerator.h"
-#include "housegen/HouseLayout.h"
+#include "procgen/house/HouseComponentLibrary.h"
+#include "procgen/house/HouseGenerator.h"
+#include "procgen/house/HouseLayout.h"
 
 #include "data/ByteData.h"
 #include "filesystem/FileData.h"

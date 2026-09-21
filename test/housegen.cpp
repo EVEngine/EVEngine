@@ -1,6 +1,8 @@
-#include "housegen/HouseComponentLibrary.h"
-#include "housegen/HouseGenerator.h"
-#include "housegen/HouseLayout.h"
+#include "procgen/house/HouseComponentLibrary.h"
+#include "procgen/house/HouseGenerator.h"
+#include "procgen/house/HouseLayout.h"
+#include "procgen/GridGraph.h"
+#include "procgen/PointGraph.h"
 
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
@@ -79,6 +81,44 @@ TEST_CASE("housegen.reproducibleAndSerializable") {
     CHECK_EQ(restored.toJson(), a.toJson());
     auto validation = restored.validate(lib);
     CHECK(validation.ok());
+}
+
+TEST_CASE("procgen.housegen.exportsCanonicalGridAndPointGraphValues") {
+    HouseComponentLibrary library;
+    REQUIRE(library.loadFromJson(kKit).ok());
+    HouseRequest request;
+    request.seed = 42;
+    request.width = 5;
+    request.depth = 4;
+    request.floors = 2;
+
+    HouseLayout layout;
+    REQUIRE(HouseGenerator(library).generate(request, layout).ok());
+
+    eve::procgen::Grid2D footprint;
+    REQUIRE(layout.writeFootprintGrid(footprint).ok());
+    eve::procgen::GridGraph gridGraph;
+    REQUIRE(gridGraph.addNode("footprint", "grid.input").ok());
+    REQUIRE(gridGraph.addNode("placements", "convert.grid_to_points").ok());
+    REQUIRE(gridGraph.connect("footprint", "placements").ok());
+    REQUIRE(gridGraph.setNodeGrid("footprint", footprint).ok());
+    auto occupied = gridGraph.execute("placements");
+    REQUIRE(occupied.ok());
+    CHECK(std::get<eve::procgen::PointSet>(occupied.value()).getCount() > 0);
+
+    eve::procgen::PointSet components;
+    REQUIRE(layout.writeComponentPoints(components).ok());
+    REQUIRE_EQ(components.getCount(), int(layout.instances.size()));
+    eve::procgen::PointGraph pointGraph;
+    REQUIRE(pointGraph.addNode("components", "input"));
+    REQUIRE(pointGraph.addNode("raised", "transform"));
+    REQUIRE(pointGraph.connect("components", "raised"));
+    REQUIRE(pointGraph.setNodePoints("components", &components));
+    REQUIRE(pointGraph.setNodeFloat("raised", "y", 2.f));
+    auto raised = pointGraph.executeResult("raised");
+    REQUIRE(raised.ok());
+    CHECK_EQ(raised.value().getCount(), components.getCount());
+    CHECK_EQ(raised.value().getY(0), components.getY(0) + 2.f);
 }
 
 TEST_CASE("housegen.requiresStructuralCategories") {

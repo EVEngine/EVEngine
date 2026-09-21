@@ -1,4 +1,4 @@
-#include "housegen/editor/EditorHouseGenTarget.h"
+#include "procgen/editor/EditorHouseGenTarget.h"
 
 namespace eve::editor {
 namespace {

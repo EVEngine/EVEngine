@@ -1,7 +1,7 @@
 #pragma once
 
 #include "common/Result.h"
-#include "housegen/HouseComponentLibrary.h"
+#include "procgen/house/HouseComponentLibrary.h"
 
 #include <string>
 

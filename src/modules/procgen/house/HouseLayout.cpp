@@ -1,5 +1,5 @@
-#include "housegen/HouseLayout.h"
-#include "housegen/HouseComponentLibrary.h"
+#include "procgen/house/HouseLayout.h"
+#include "procgen/house/HouseComponentLibrary.h"
 
 #include "graphics/Graphics.h"
 #include "graphics/RenderSystem3D.h"
@@ -8,6 +8,7 @@
 #include "image/ImageData.h"
 #include "model3d/Model3D.h"
 #include "model3d/ModelData.h"
+#include "procgen/Semantic.h"
 
 #include <assimp/material.h>
 #include <assimp/matrix4x4.h>
@@ -15,6 +16,7 @@
 #include <assimp/texture.h>
 #include "common/Json.h"
 
+#include <algorithm>
 #include <cmath>
 #include <cstdlib>
 #include <filesystem>
@@ -121,7 +123,7 @@ std::string HouseLayout::toJson() const {
       << "\",\"entranceSide\":\"" << esc(entranceSide) << "\",\"instances\":[";
     for (size_t i = 0; i < instances.size(); ++i) { const auto &v = instances[i]; if (i) o << ','; o << "{\"componentId\":\"" << esc(v.componentId) << "\",\"x\":" << v.x << ",\"y\":" << v.y << ",\"z\":" << v.z << ",\"rotationDeg\":" << v.rotationDeg << '}'; }
     o << "],\"rooms\":[";
-    for (size_t i = 0; i < rooms.size(); ++i) { const auto &v = rooms[i]; if (i) o << ','; o << "{\"type\":\"" << esc(v.type) << "\",\"x\":" << v.x << ",\"y\":" << v.y << ",\"width\":" << v.width << ",\"depth\":" << v.depth << '}'; }
+    for (size_t i = 0; i < rooms.size(); ++i) { const auto &v = rooms[i]; if (i) o << ','; o << "{\"type\":\"" << esc(v.type) << "\",\"x\":" << v.x << ",\"y\":" << v.y << ",\"z\":" << v.z << ",\"width\":" << v.width << ",\"depth\":" << v.depth << '}'; }
     o << "],\"diagnostics\":[";
     for (size_t i = 0; i < diagnostics.size(); ++i) { if (i) o << ','; o << '"' << esc(diagnostics[i]) << '"'; }
     o << "]}";
@@ -172,7 +174,7 @@ eve::Result<void> HouseLayout::fromJson(std::string_view json) {
                                                                      "room needs type, x, y, width and depth", "rooms",
                                                                      {}, "housegen.layout"));
         parsed.rooms.push_back({v.getString("type"), v.getInt("x"), v.getInt("y"),
-                                v.getInt("width"), v.getInt("depth")});
+                                v.getInt("z", 0), v.getInt("width"), v.getInt("depth")});
     }
 
     parsed.diagnostics = o.getStringArray("diagnostics");
@@ -240,6 +242,64 @@ eve::Result<void> HouseLayout::validate(const HouseComponentLibrary &library) co
         }
     }
     return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
+}
+
+eve::Result<void> HouseLayout::writeFootprintGrid(procgen::Grid2D &out) const {
+    int width = 0;
+    int depth = 0;
+    for (const auto &instance : instances) {
+        if (instance.x < 0 || instance.y < 0 || instance.z < 0)
+            return eve::Result<void>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::InvalidArgument, "house instance has a negative grid coordinate",
+                instance.componentId, {}, "housegen.layout"));
+        width = std::max(width, instance.x + 1);
+        depth = std::max(depth, instance.y + 1);
+    }
+    if (width == 0 || depth == 0)
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::NotFound, "house layout has no footprint cells", {}, {}, "housegen.layout"));
+
+    procgen::Grid2D candidate;
+    candidate.resize(width, depth);
+    candidate.fill(int(procgen::Semantic::Empty));
+    for (const auto &instance : instances) {
+        candidate.setCell(instance.x, instance.y, int(procgen::Semantic::Floor));
+        candidate.setDetail(instance.x, instance.y,
+                            std::min(255, std::max(candidate.getDetail(instance.x, instance.y), instance.z + 1)));
+    }
+    candidate.setMeta("domain", "house.footprint");
+    candidate.setMeta("seed", std::to_string(seed));
+    candidate.setMeta("footprint", footprintStyle);
+    candidate.setMeta("roof", roofStyle);
+    candidate.setMeta("entrance", entranceSide);
+    out = std::move(candidate);
+    return eve::Result<void>::success();
+}
+
+eve::Result<void> HouseLayout::writeComponentPoints(procgen::PointSet &out) const {
+    procgen::PointSet candidate;
+    candidate.reserve(instances.size());
+    std::uint64_t ordinal = 0;
+    const std::uint64_t pointNamespace = (std::uint64_t(seed) << 32u) | 0x484f5553u;
+    for (const auto &instance : instances) {
+        const int index = candidate.add(float(instance.x) * moduleSize, float(instance.z) * floorHeight,
+                                        float(instance.y) * moduleSize);
+        candidate.setYaw(index, float(instance.rotationDeg));
+        candidate.setPointSeed(index, seed);
+        candidate.setBounds(index, 0.f, 0.f, 0.f, moduleSize, floorHeight, moduleSize);
+        auto id = candidate.trySetPointId(index, procgen::derivePointId(pointNamespace, ++ordinal));
+        if (!id.ok()) return eve::Result<void>::failure(id.status());
+        auto component = candidate.trySetStringAttribute(index, "component_id", instance.componentId);
+        if (!component.ok()) return eve::Result<void>::failure(component.status());
+        auto cellX = candidate.trySetIntAttribute(index, "cell_x", instance.x);
+        if (!cellX.ok()) return eve::Result<void>::failure(cellX.status());
+        auto cellY = candidate.trySetIntAttribute(index, "cell_y", instance.y);
+        if (!cellY.ok()) return eve::Result<void>::failure(cellY.status());
+        auto floor = candidate.trySetIntAttribute(index, "floor", instance.z);
+        if (!floor.ok()) return eve::Result<void>::failure(floor.status());
+    }
+    out = std::move(candidate);
+    return eve::Result<void>::success();
 }
 
 eve::Result<std::vector<ecs::EntityHandle>> HouseLayout::instantiate(graphics::Graphics &gfx, model3d::Model3D &models,

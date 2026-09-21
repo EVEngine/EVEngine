@@ -162,11 +162,11 @@
     QuadTree / Octree / SpatialHash / BSPTree：AABB 宽相查询
     设计：`docs/dev/空间索引模块设计.md`
 
-39. 程序化生成 — `procgen`（`eve.Procgen`）
-    算法注册表：地图 / 贴图 recipe / 网格（marching cubes 等）
+39. 程序化生成 — `procgen`（`eve.Procgen`，兼容 `eve.HouseGen`）
+    算法注册表：地图 / 贴图 recipe / 网格（marching cubes 等）/ 房屋组件库
 
-40. 程序化房屋 — `housegen`（`eve.HouseGen`）
-    组件库 + 请求 → 布局 JSON
+40. 程序化房屋领域 — `procgen/house`（`eve.HouseGen`）
+    procgen 内部领域：组件库 + 请求 → 布局 JSON，并导出 canonical `Grid2D` / `PointSet`
 
 41. 像素物质世界 — `pixelworld`（`eve.PixelWorldModule`）
     64×64 分块确定性沙/水/火等；配套 `pixelworld_graphics` / `pixelworld_physics` /

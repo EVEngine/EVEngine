@@ -18,6 +18,7 @@
 #include "image/ImageData.h"
 
 #include "procgen/GeneratorRegistry.h"
+#include "procgen/house/HouseGen.h"
 #include "procgen/GtsMeshSplitter.h"
 #include "procgen/GtsTerrainLod.h"
 #include "procgen/PcgMeshLod.h"
@@ -2952,6 +2953,7 @@ void Procgen::expose(ssq::Table& table) {
     exposePointGraph(table);
     exposeMeshModifierGraph(table);
     exposeGridMeshGraphs(table);
+    housegen::exposeHouseGeneration(table);
     exposeShapeGrammar(table);
     exposePcgFrameRateManagerBindings(table);
     exposePcgTaskQueueBindings(table);

@@ -1,6 +1,8 @@
 # 程序化房屋（HouseGen）
 
-**脚本入口：** `eve.HouseGen()`
+**所属模块：** `procgen`
+
+**脚本入口：** `eve.HouseGen()`（兼容入口，由 `eve.Procgen` 注册）
 
 数据驱动的程序化房屋生成：先加载组件库（墙体/屋顶/门窗），再按 `HouseRequest`
 （尺寸、层数、风格、地基、屋顶、入口）生成 `HouseLayout`（实例列表 + 诊断），
@@ -52,15 +54,23 @@ if (generation.ok) {
 - 所有可能失败的脚本调用都返回统一 Result 投影：检查 `ok`，再读取
   `code`、`status`、`diagnostics` 或 `value`；不存在 `lastError()` 旁路。
 
+### 接入现有 procgen graph
+
+不提供房屋专用 graph。`HouseLayout.writeFootprintGrid(grid)` 把占地写入 `Grid2D`，随后可绑定
+`GridGraph` 的 `grid.input`；`HouseLayout.writeComponentPoints(points)` 把组件实例写入 `PointSet`，
+随后可绑定 `PointGraph` 的 `input`。两个转换均为失败原子操作并返回统一 Result 投影。
+
 ### `HouseRequest`
 
-- `setSeed(int)`、`setPlot(w, d)`、`setFloors(int)`、`setStyle(string)`、
+- `setSeed(int)`、`setPlot(w, d)`、`setFloors(int)`、`setModuleSize(float)`、
+  `setFloorHeight(float)`、`setStyle(string)`、
   `setFootprint(string)`、`setRoof(string)`、`setEntrance(string)`。
 
 ### `HouseLayout`
 
 - `toJson()`、`fromJson(json)` → structured Result、`getInstanceCount()`、
   `getDiagnosticCount()`。
+- `writeFootprintGrid(grid)` → `Grid2D`；`writeComponentPoints(points)` → `PointSet`。
 
 ## 生命周期
 

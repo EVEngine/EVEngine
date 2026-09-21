@@ -4,7 +4,7 @@
 #include "editing/EditingAuthority.h"
 #include "editing/EditingGizmo.h"
 #include "editing/EditingProperty.h"
-#include "housegen/HouseGenTypes.h"
+#include "procgen/house/HouseGenTypes.h"
 
 #include <memory>
 #include <string>

@@ -58,6 +58,12 @@ struct HouseComponent {
     HouseMaterialOverride material;
 };
 
+/** @brief 自由轮廓占地的一个多边形顶点（角坐标，[0,width]×[0,depth]）。 */
+struct HousePolygonPoint {
+    float x = 0.f;
+    float y = 0.f;
+};
+
 /** @brief 一次房屋生成请求（参数集）。 */
 struct HouseRequest {
     uint32_t seed = 1;
@@ -69,8 +75,10 @@ struct HouseRequest {
     float moduleSize = 1.f;
     float floorHeight = 3.f;
     std::string style;
-    /** @brief auto | rectangle | l_shape | t_shape。 */
+    /** @brief auto | rectangle | l_shape | t_shape | polygon。 */
     std::string footprint = "auto";
+    /** @brief 自由轮廓占地顶点（footprint="polygon" 时必填，至少 3 个，角坐标）。 */
+    std::vector<HousePolygonPoint> perimeter;
     /** @brief auto | gable | flat | shed。 */
     std::string roof = "auto";
     /** @brief auto | north | east | south | west。 */
@@ -94,9 +102,10 @@ struct HouseInstance {
 /** @brief 布局中的房间标记。 */
 struct HouseRoom {
     std::string type;
-    /** @brief 格子坐标与尺寸。 */
+    /** @brief 格子坐标与尺寸（z = 楼层）。 */
     int x = 0;
     int y = 0;
+    int z = 0;
     int width = 1;
     int depth = 1;
 };
