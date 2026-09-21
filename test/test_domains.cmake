@@ -256,6 +256,7 @@ set(EVE_TEST_PREFIX_DOMAIN
 
     "composable_gameplay;rpg"
     "gameplay_control_json;rpg"
+    "rpg_script;rpg"
     "state_value;rpg"
 
     "climbing_playground;climbing"
