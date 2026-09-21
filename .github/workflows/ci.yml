@@ -566,10 +566,12 @@ jobs:
         env:
           ALSOFT_DRIVERS: "null"
           EVENGINE_SETTLEMENT_BENCHMARK: "1"
-        run: >-
+        shell: bash
+        run: |
+          set -o pipefail
           ctest --test-dir build/win32 -C Release
-          -R '^settlement\.benchmark\.' -V
-          | tee build/settlement-benchmark-windows.log
+            -R '^settlement\.benchmark\.' -V \
+            | tee build/settlement-benchmark-windows.log
 
       - name: Upload settlement benchmark sample
         if: always()
@@ -948,10 +950,12 @@ jobs:
         env:
           ALSOFT_DRIVERS: "null"
           EVENGINE_SETTLEMENT_BENCHMARK: "1"
-        run: >-
+        shell: bash
+        run: |
+          set -o pipefail
           ctest --test-dir build/macosx
-          -R '^settlement\.benchmark\.' -V
-          | tee build/settlement-benchmark-macos.log
+            -R '^settlement\.benchmark\.' -V \
+            | tee build/settlement-benchmark-macos.log
 
       - name: Upload settlement benchmark sample
         if: always()
@@ -1374,10 +1378,12 @@ jobs:
         env:
           ALSOFT_DRIVERS: "null"
           EVENGINE_SETTLEMENT_BENCHMARK: "1"
-        run: >-
+        shell: bash
+        run: |
+          set -o pipefail
           ctest --test-dir build/linux
-          -R '^settlement\.benchmark\.' -V
-          | tee build/settlement-benchmark-linux.log
+            -R '^settlement\.benchmark\.' -V \
+            | tee build/settlement-benchmark-linux.log
 
       - name: Upload settlement benchmark sample
         if: always()

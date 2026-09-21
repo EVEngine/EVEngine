@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <charconv>
+#include <cmath>
 #include <limits>
 #include <utility>
 
@@ -187,7 +188,31 @@ eve::Result<std::vector<std::string>> stringArray(const Value& value, const std:
     return eve::Result<std::vector<std::string>>::success(std::move(decoded));
 }
 
-eve::Result<SettlementRequest> decodeRequest(const Value& value, const std::string& path) {
+eve::Status locateRequestStatus(const eve::Status& status, const std::string& root) {
+    std::vector<eve::Diagnostic> diagnostics;
+    diagnostics.reserve(status.diagnostics().size());
+    for (const auto& diagnostic : status.diagnostics()) {
+        std::string path = root;
+        if (!diagnostic.path().empty()) path += "." + diagnostic.path();
+        diagnostics.emplace_back(diagnostic.code(), diagnostic.severity(), diagnostic.message(), std::move(path),
+                                 diagnostic.details(), diagnostic.source());
+    }
+    return eve::Status(status.code(), std::move(diagnostics));
+}
+
+bool knownStageKind(std::string_view value) noexcept {
+    return value == "validate" || value == "decision" || value == "source_modifiers" ||
+           value == "target_mitigation" || value == "armor_shield" || value == "clamp" || value == "apply" ||
+           value == "trigger" || value == "event";
+}
+
+bool knownDisposition(std::string_view value) noexcept {
+    return value == "applied" || value == "no_op" || value == "immune" || value == "resisted" ||
+           value == "partially_applied" || value == "blocked" || value == "invalid_target";
+}
+
+eve::Result<SettlementRequest> decodeRequest(const Value& value, const std::string& path,
+                                             bool emittedTemplate = false) {
     auto checked = strictObject(value,
                                 {"causation", "causationKind", "chain", "context", "correlation",
                                  "correlationKind", "decisions", "kind", "magnitude", "resource", "source",
@@ -321,6 +346,14 @@ eve::Result<SettlementRequest> decodeRequest(const Value& value, const std::stri
         return failure<SettlementRequest>(eve::DiagnosticCode::InvalidArgument, "unsupported correlation form",
                                           path + ".correlationKind");
     }
+    auto executable = request;
+    if (emittedTemplate && executable.chain.depth == 0 && !executable.trigger.empty()) {
+        executable.chain.depth = 1;
+        executable.chain.emittedCount = 1;
+        executable.chain.triggerPath = {executable.trigger};
+    }
+    auto valid = validateSettlementRequest(executable);
+    if (!valid) return eve::Result<SettlementRequest>::failure(locateRequestStatus(valid.status(), path));
     return eve::Result<SettlementRequest>::success(std::move(request));
 }
 
@@ -343,6 +376,24 @@ eve::Result<void> validateResultShape(const Value& value, const std::string& pat
                                  "requested", "resisted", "stages", "tick"},
                                 path + ".payload");
     if (!payload) return eve::Result<void>::failure(payload.status());
+    for (const auto field : {"requested", "applied", "absorbed", "resisted", "clamped"}) {
+        auto number = numberField(*payload.value(), field, path + ".payload");
+        if (!number) return eve::Result<void>::failure(number.status());
+        if (!std::isfinite(number.value()) || number.value() < 0.0)
+            return failure<void>(eve::DiagnosticCode::InvalidArgument, "expected finite non-negative number",
+                                 path + ".payload." + field);
+    }
+    if (payload.value()->at("critical").getIf<bool>() == nullptr)
+        return failure<void>(eve::DiagnosticCode::TypeMismatch, "expected boolean", path + ".payload.critical");
+    auto disposition = stringField(*payload.value(), "disposition", path + ".payload");
+    if (!disposition) return eve::Result<void>::failure(disposition.status());
+    if (!knownDisposition(disposition.value()))
+        return failure<void>(eve::DiagnosticCode::InvalidArgument, "unknown settlement disposition",
+                             path + ".payload.disposition");
+    auto tickText = stringField(*payload.value(), "tick", path + ".payload");
+    if (!tickText) return eve::Result<void>::failure(tickText.status());
+    auto tick = unsignedText(tickText.value(), path + ".payload.tick");
+    if (!tick) return eve::Result<void>::failure(tick.status());
     const auto* stages = payload.value()->at("stages").getIf<Value::Array>();
     if (stages == nullptr)
         return failure<void>(eve::DiagnosticCode::TypeMismatch, "expected stage array", path + ".payload.stages");
@@ -350,13 +401,38 @@ eve::Result<void> validateResultShape(const Value& value, const std::string& pat
         auto stage = strictObject((*stages)[index], {"after", "before", "details", "kind", "name", "status"},
                                   path + ".payload.stages[" + std::to_string(index) + "]");
         if (!stage) return eve::Result<void>::failure(stage.status());
+        const auto stagePath = path + ".payload.stages[" + std::to_string(index) + "]";
+        auto kind   = stringField(*stage.value(), "kind", stagePath);
+        auto name   = stringField(*stage.value(), "name", stagePath);
+        auto status = integerField(*stage.value(), "status", stagePath);
+        auto before = numberField(*stage.value(), "before", stagePath);
+        auto after  = numberField(*stage.value(), "after", stagePath);
+        if (!kind) return eve::Result<void>::failure(kind.status());
+        if (!name) return eve::Result<void>::failure(name.status());
+        if (!status) return eve::Result<void>::failure(status.status());
+        if (!before) return eve::Result<void>::failure(before.status());
+        if (!after) return eve::Result<void>::failure(after.status());
+        if (!knownStageKind(kind.value()))
+            return failure<void>(eve::DiagnosticCode::InvalidArgument, "unknown settlement stage kind",
+                                 stagePath + ".kind");
+        if (status.value() < 0 || status.value() > static_cast<std::int64_t>(eve::StatusCode::Failed))
+            return failure<void>(eve::DiagnosticCode::InvalidArgument, "unknown settlement stage status",
+                                 stagePath + ".status");
+        if (!std::isfinite(before.value()) || before.value() < 0.0 || !std::isfinite(after.value()) ||
+            after.value() < 0.0)
+            return failure<void>(eve::DiagnosticCode::InvalidArgument,
+                                 "stage magnitudes must be finite and non-negative", stagePath);
+        if (stage.value()->at("details").getIf<Value::Object>() == nullptr)
+            return failure<void>(eve::DiagnosticCode::TypeMismatch, "expected details object",
+                                 stagePath + ".details");
     }
     const auto* derived = payload.value()->at("derived").getIf<Value::Array>();
     if (derived == nullptr)
         return failure<void>(eve::DiagnosticCode::TypeMismatch, "expected derived request array",
                              path + ".payload.derived");
     for (std::size_t index = 0; index < derived->size(); ++index) {
-        auto request = decodeRequest((*derived)[index], path + ".payload.derived[" + std::to_string(index) + "]");
+        auto request = decodeRequest((*derived)[index], path + ".payload.derived[" + std::to_string(index) + "]",
+                                     true);
         if (!request) return eve::Result<void>::failure(request.status());
     }
     const auto& event = payload.value()->at("event");
@@ -366,6 +442,35 @@ eve::Result<void> validateResultShape(const Value& value, const std::string& pat
                                      "payload", "schema", "schemaVersion", "source", "subject", "tick", "type"},
                                     path + ".payload.event");
         if (!checked) return eve::Result<void>::failure(checked.status());
+        const auto eventPath = path + ".payload.event";
+        for (const auto field : {"causation", "correlation", "schema", "schemaVersion", "source", "subject",
+                                 "tick", "type"}) {
+            auto text = stringField(*checked.value(), field, eventPath);
+            if (!text) return eve::Result<void>::failure(text.status());
+        }
+        for (const auto field : {"causationKind", "correlationKind", "flags"}) {
+            auto integer = integerField(*checked.value(), field, eventPath);
+            if (!integer) return eve::Result<void>::failure(integer.status());
+            if (integer.value() < 0)
+                return failure<void>(eve::DiagnosticCode::InvalidArgument, "expected non-negative integer",
+                                     eventPath + "." + field);
+        }
+        const auto causationKind = checked.value()->at("causationKind").asInt();
+        const auto correlationKind = checked.value()->at("correlationKind").asInt();
+        if (causationKind > static_cast<std::int64_t>(game_event::CausationRef::Kind::Command))
+            return failure<void>(eve::DiagnosticCode::InvalidArgument, "unknown event causation kind",
+                                 eventPath + ".causationKind");
+        if (correlationKind > static_cast<std::int64_t>(game_event::CorrelationId::Kind::Id))
+            return failure<void>(eve::DiagnosticCode::InvalidArgument, "unknown event correlation kind",
+                                 eventPath + ".correlationKind");
+        for (const auto field : {"schemaVersion", "tick"}) {
+            auto text = stringField(*checked.value(), field, eventPath);
+            auto number = unsignedText(text.value(), eventPath + "." + field);
+            if (!number) return eve::Result<void>::failure(number.status());
+        }
+        if (checked.value()->at("payload").getIf<Value::Object>() == nullptr)
+            return failure<void>(eve::DiagnosticCode::TypeMismatch, "expected event payload object",
+                                 eventPath + ".payload");
     }
     return eve::Result<void>::success();
 }
@@ -386,6 +491,14 @@ eve::Result<Value> parseReplayRecord(std::string_view json) {
     if (version.value() != 1)
         return failure<Value>(eve::DiagnosticCode::UnknownVersion, "unsupported settlement replay version",
                               "record.version");
+    for (const auto field : {"ruleDigest", "resultDigest"}) {
+        auto digestText = stringField(*checked.value(), field, "record");
+        if (!digestText) return eve::Result<Value>::failure(digestText.status());
+        const auto digest = eve::ContentId::parse(digestText.value());
+        if (!digest || digest->isNil())
+            return failure<Value>(eve::DiagnosticCode::ParseError, "invalid content digest",
+                                  "record." + std::string(field));
+    }
     auto request = decodeRequest(checked.value()->at("request"), "record.request");
     if (!request) return eve::Result<Value>::failure(request.status());
     auto result = validateResultShape(checked.value()->at("result"), "record.result");

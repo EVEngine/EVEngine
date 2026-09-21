@@ -124,6 +124,16 @@ struct SettlementRequest {
 };
 
 /**
+ * @brief Validate the canonical semantic invariants of a settlement request.
+ * @param request Request to inspect without mutation.
+ * @return Success, or a structured diagnostic whose path is relative to the request root.
+ * @thread Thread-safe for an immutable request.
+ * @reentrancy Does not invoke callbacks.
+ * @cost Linear in recorded decisions and trigger-path length.
+ */
+[[nodiscard]] eve::Result<void> validateSettlementRequest(const SettlementRequest& request);
+
+/**
  * @brief Explanation emitted for one executed stage.
  *
  * `before` and `after` are the working amount around this stage.  `details`
@@ -608,6 +618,7 @@ private:
         std::string   name;
         int           priority     = 0;
         std::uint64_t registration = 0;
+        bool          canonical    = false;
         bool          terminal     = false;
         StageFunction function;
     };

@@ -416,9 +416,10 @@ void Battle::execute(PendingAction& pa, unsigned& seedCounter) {
     request.tags      = {heal ? "rpg:healing" : "rpg:damage", "element:" + spec->element};
     request.tick      = SimulationTick(static_cast<std::uint64_t>(turn_));
     Value::Object context;
-    context["source_multiplier"] = 1.0;
-    context["critical"]          = false;
-    context["element"]           = spec->element.empty() ? std::string("damage") : spec->element;
+    context["source_multiplier"]   = 1.0;
+    context["critical"]            = result.crit;
+    context["critical_multiplier"] = 1.0;
+    context["element"]             = spec->element.empty() ? std::string("damage") : spec->element;
     const double sourceMaximum = VitalsSystem::getMax(pa.actor, resource);
     const double targetMaximum = VitalsSystem::getMax(target, resource);
     context["source_hp_ratio"] = sourceMaximum > 0.0 ? VitalsSystem::getCurrent(pa.actor, resource) / sourceMaximum

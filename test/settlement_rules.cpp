@@ -17,7 +17,7 @@ eve::SubjectRef subject(std::uint8_t suffix) {
     return eve::SubjectRef::fromPersistentId(eve::PersistentId(bytes));
 }
 
-class HealthPolicy final : public eve::settlement::ISettlementPolicy {
+class HealthPolicy : public eve::settlement::ISettlementPolicy {
 public:
     explicit HealthPolicy(double& health, double maximum = 100.0) : health_(health), maximum_(maximum) {}
 
@@ -96,6 +96,15 @@ private:
     double  maximum_;
     bool    failPrepare_;
     bool    failCommit_;
+};
+
+class OrderedSourcePolicy final : public HealthPolicy {
+public:
+    explicit OrderedSourcePolicy(double& health) : HealthPolicy(health) {}
+
+    eve::Result<void> sourceModifiers(eve::settlement::SettlementContext& context) override {
+        return context.setMagnitude(context.magnitude() * 2.0);
+    }
 };
 
 eve::settlement::SettlementRule rule(std::string id, eve::settlement::StageKind stage,
@@ -204,6 +213,51 @@ TEST_CASE("settlement.decision.immunityIsDistinctFromZeroDamage") {
     CHECK_EQ(decisions->at(0).find("stream")->asString(), std::string("combat:hit"));
     CHECK_EQ(decisions->at(0).find("sequence")->asInt(), 7);
     CHECK(decisions->at(0).find("accepted")->asBool());
+}
+
+TEST_CASE("settlement.decision.immunityRemainsTerminalAcrossLaterNumericRules") {
+    auto immunity = rule("target.immunity", eve::settlement::StageKind::Decision,
+                         eve::settlement::RuleOperation::Immune, 0.0, {"damage"});
+    auto added = rule("source.add", eve::settlement::StageKind::SourceModifiers,
+                      eve::settlement::RuleOperation::Add, 40.0, {"damage"});
+    auto multiplied = rule("target.multiply", eve::settlement::StageKind::TargetMitigation,
+                           eve::settlement::RuleOperation::Multiply, 3.0, {"damage"});
+    eve::settlement::SettlementRuleSet rules;
+    REQUIRE(rules.configure({immunity, added, multiplied}).ok());
+    eve::settlement::SettlementPipeline pipeline;
+    REQUIRE(rules.install(pipeline).ok());
+
+    double                             health = 100.0;
+    HealthPolicy                       policy(health);
+    eve::settlement::SettlementRequest request;
+    request.target    = subject(30);
+    request.kind      = "damage";
+    request.magnitude = 25.0;
+
+    auto settled = pipeline.settle(request, policy);
+    REQUIRE(settled.ok());
+    CHECK_EQ(settled.value().applied, 0.0);
+    CHECK_EQ(settled.value().disposition, eve::settlement::SettlementDisposition::Immune);
+    CHECK_EQ(health, 100.0);
+}
+
+TEST_CASE("settlement.stages.canonicalPolicyPrecedesMinimumPriorityCustomStage") {
+    eve::settlement::SettlementPipeline pipeline;
+    REQUIRE(pipeline.addStage(eve::settlement::StageKind::SourceModifiers, "aaa_custom",
+                              std::numeric_limits<int>::min(), [](eve::settlement::SettlementContext& context) {
+                                  return context.setMagnitude(context.magnitude() + 1.0);
+                              }).ok());
+    double                             health = 100.0;
+    OrderedSourcePolicy                policy(health);
+    eve::settlement::SettlementRequest request;
+    request.target    = subject(31);
+    request.kind      = "damage";
+    request.magnitude = 10.0;
+
+    auto settled = pipeline.settle(request, policy);
+    REQUIRE(settled.ok());
+    CHECK_EQ(settled.value().applied, 21.0);
+    CHECK_EQ(health, 79.0);
 }
 
 TEST_CASE("settlement.decision.rejectsInvalidRecordedRandomInputBeforeMutation") {

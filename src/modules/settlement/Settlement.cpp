@@ -22,7 +22,22 @@ eve::Result<void> validateFiniteNonNegative(double value, std::string_view name)
     return eve::Result<void>::success();
 }
 
-eve::Result<void> validateRequest(const SettlementRequest& request) {
+bool isTerminalDisposition(SettlementDisposition disposition) noexcept {
+    switch (disposition) {
+        case SettlementDisposition::Immune:
+        case SettlementDisposition::Resisted:
+        case SettlementDisposition::Blocked:
+        case SettlementDisposition::InvalidTarget: return true;
+        case SettlementDisposition::Applied:
+        case SettlementDisposition::NoOp:
+        case SettlementDisposition::PartiallyApplied: return false;
+    }
+    return true;
+}
+
+}  // namespace
+
+eve::Result<void> validateSettlementRequest(const SettlementRequest& request) {
     if (!request.target.isValid())
         return eve::Result<void>::failure(eve::Diagnostic::error(
             eve::DiagnosticCode::InvalidArgument, "settlement target must be a valid SubjectRef", "target"));
@@ -89,6 +104,8 @@ eve::Result<void> validateRequest(const SettlementRequest& request) {
     }
     return eve::Result<void>::success();
 }
+
+namespace {
 
 const char* traceLevelName(SettlementTraceLevel level) noexcept {
     switch (level) {
@@ -359,7 +376,7 @@ eve::Result<void> SettlementContext::setMagnitude(double value) {
         const auto status = valid.status();
         return eve::Result<void>::failure(status);
     }
-    magnitude_ = value;
+    magnitude_ = isTerminalDisposition(disposition_) ? 0.0 : value;
     return eve::Result<void>::success();
 }
 
@@ -572,11 +589,11 @@ eve::Result<std::vector<SettlementRequest>> ISettlementPolicy::prepareTrigger(co
 SettlementPipeline::SettlementPipeline() {
     auto install = [&](StageKind kind, const char* name, StageFunction function, bool terminal = false) {
         const int priority = terminal ? 0 : std::numeric_limits<int>::min();
-        stages_.push_back(StageEntry{kind, name, priority, nextRegistration_++, terminal, std::move(function)});
+        stages_.push_back(StageEntry{kind, name, priority, nextRegistration_++, true, terminal, std::move(function)});
     };
 
     install(StageKind::Validate, "validate", [](SettlementContext& context) {
-        auto       generic   = validateRequest(context.request());
+        auto       generic   = validateSettlementRequest(context.request());
         const bool genericOk = generic.ok();
         if (!genericOk) {
             const auto status = generic.status();
@@ -644,7 +661,8 @@ eve::Result<void> SettlementPipeline::addStage(StageKind kind, std::string name,
     if (nextRegistration_ == std::numeric_limits<std::uint64_t>::max())
         return eve::Result<void>::failure(eve::Diagnostic::error(
             eve::DiagnosticCode::InvariantViolation, "settlement stage registration sequence exhausted", "stage"));
-    stages_.push_back(StageEntry{kind, std::move(name), priority, nextRegistration_++, false, std::move(function)});
+    stages_.push_back(StageEntry{kind, std::move(name), priority, nextRegistration_++, false, false,
+                                 std::move(function)});
     return eve::Result<void>::success();
 }
 
@@ -661,6 +679,7 @@ eve::Result<void> SettlementPipeline::prepare(SettlementContext& context, Settle
         // stage deliberately uses a larger priority or a lexicographically
         // later name.
         if (left->terminal != right->terminal) return !left->terminal && right->terminal;
+        if (left->canonical != right->canonical) return left->canonical && !right->canonical;
         if (left->priority != right->priority) return left->priority < right->priority;
         if (left->name != right->name) return left->name < right->name;
         return left->registration < right->registration;

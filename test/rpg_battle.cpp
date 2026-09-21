@@ -128,6 +128,40 @@ TEST_CASE("rpg.battle.resolveHitCritAndElement") {
     c->release();
 }
 
+TEST_CASE("rpg.battle.criticalSettlementPreservesMetadataWithoutDoubleScaling") {
+    auto* rpg = RPG::create();
+    rpg->clearTraitDefinitions();
+    REQUIRE_EQ(rpg->registerTraitsFromJson(
+                   R"([{"id":"always_crit","traits":[{"kind":"exParam","target":"critRate","value":1.0}]}])"),
+               1);
+    RPGActor* attacker = makeFighter(20, 0, 100, 10);
+    RPGActor* target   = makeFighter(0, 0, 100, 1);
+    REQUIRE(attacker->applyTrait("always_crit", "test") > 0);
+
+    Battle battle;
+    battle.addActor(attacker, BattleSide::Party);
+    battle.addActor(target, BattleSide::Enemies);
+    battle.setAction(attacker, "", target);
+    battle.startRound();
+    REQUIRE(battle.executeNextAction());
+    CHECK_EQ(target->getCurrent("hp"), 40.0);
+    battle.pollEvents();
+    bool sawCriticalDamage = false;
+    for (int index = 0; index < battle.getEventCount(); ++index) {
+        const auto event = battle.getEvent(index);
+        if (event.action == "damage") {
+            CHECK_EQ(event.amount, 60.0);
+            CHECK(event.crit);
+            sawCriticalDamage = true;
+        }
+    }
+    CHECK(sawCriticalDamage);
+
+    rpg->clearTraitDefinitions();
+    attacker->release();
+    target->release();
+}
+
 TEST_CASE("rpg.battle.roundVictory") {
     RPGActor* hero  = makeFighter(30, 0, 100, 10);
     RPGActor* slime = makeFighter(5, 0, 20, 1);

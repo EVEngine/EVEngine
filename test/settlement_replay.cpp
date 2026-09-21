@@ -185,3 +185,70 @@ TEST_CASE("settlement.replay.recordRejectsUnknownFieldsVersionsAndTampering") {
                                                                    testHashProvider());
     CHECK(!verified.ok());
 }
+
+TEST_CASE("settlement.replay.rejectsSemanticallyInvalidDecodedRequestsWithLocatedPaths") {
+    auto record = eve::settlement::createSettlementReplayRecord(sampleRequest(), contentId(7), sampleResult(),
+                                                                 testHashProvider());
+    REQUIRE(record.ok());
+    auto parsed = eve::Value::fromJson(record.value());
+    REQUIRE(parsed.ok());
+
+    auto negative = parsed.value();
+    negative.find("request")->set("magnitude", -1.0);
+    auto negativeJson = negative.toJson();
+    REQUIRE(negativeJson.ok());
+    auto negativeResult = eve::settlement::settlementReplayRequest(negativeJson.value());
+    CHECK(!negativeResult.ok());
+    REQUIRE(negativeResult.error() != nullptr);
+    CHECK_EQ(negativeResult.error()->path(), std::string("record.request.magnitude"));
+
+    auto badDecision = parsed.value();
+    badDecision.find("request")->find("decisions")->at(0).set("sample", 2.0);
+    auto badDecisionJson = badDecision.toJson();
+    REQUIRE(badDecisionJson.ok());
+    auto badDecisionResult = eve::settlement::settlementReplayRequest(badDecisionJson.value());
+    CHECK(!badDecisionResult.ok());
+    REQUIRE(badDecisionResult.error() != nullptr);
+    CHECK_EQ(badDecisionResult.error()->path(), std::string("record.request.decisions[0].sample"));
+
+    auto badChain = parsed.value();
+    badChain.find("request")->set("trigger", "reflect");
+    auto badChainJson = badChain.toJson();
+    REQUIRE(badChainJson.ok());
+    auto badChainResult = eve::settlement::settlementReplayRequest(badChainJson.value());
+    CHECK(!badChainResult.ok());
+    REQUIRE(badChainResult.error() != nullptr);
+    CHECK_EQ(badChainResult.error()->path(), std::string("record.request.chain"));
+}
+
+TEST_CASE("settlement.replay.rejectsCorruptedResultScalarAndNestedTypes") {
+    auto record = eve::settlement::createSettlementReplayRecord(sampleRequest(), contentId(7), sampleResult(),
+                                                                 testHashProvider());
+    REQUIRE(record.ok());
+    auto parsed = eve::Value::fromJson(record.value());
+    REQUIRE(parsed.ok());
+
+    auto badTick = parsed.value();
+    badTick.find("result")->find("payload")->set("tick", "not-a-tick");
+    auto badTickJson = badTick.toJson();
+    REQUIRE(badTickJson.ok());
+    CHECK(!eve::settlement::settlementReplayRequest(badTickJson.value()).ok());
+
+    auto badDisposition = parsed.value();
+    badDisposition.find("result")->find("payload")->set("disposition", "maybe");
+    auto badDispositionJson = badDisposition.toJson();
+    REQUIRE(badDispositionJson.ok());
+    CHECK(!eve::settlement::settlementReplayRequest(badDispositionJson.value()).ok());
+
+    auto badStageStatus = parsed.value();
+    badStageStatus.find("result")->find("payload")->find("stages")->at(0).set("status", 99);
+    auto badStageStatusJson = badStageStatus.toJson();
+    REQUIRE(badStageStatusJson.ok());
+    CHECK(!eve::settlement::settlementReplayRequest(badStageStatusJson.value()).ok());
+
+    auto badEventPayload = parsed.value();
+    badEventPayload.find("result")->find("payload")->find("event")->set("payload", 42);
+    auto badEventPayloadJson = badEventPayload.toJson();
+    REQUIRE(badEventPayloadJson.ok());
+    CHECK(!eve::settlement::settlementReplayRequest(badEventPayloadJson.value()).ok());
+}
