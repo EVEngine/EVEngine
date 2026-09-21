@@ -1,4 +1,4 @@
-﻿// Capability-backed MCP domain tools.
+// Capability-backed MCP domain tools.
 //
 // These families exist so a module that already owns a query capability is not
 // invisible to an agent. Two contracts matter and are pinned here: the tool

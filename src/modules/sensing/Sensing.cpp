@@ -1,4 +1,4 @@
-﻿#include "sensing/Sensing.h"
+#include "sensing/Sensing.h"
 #include "common/Identity.h"
 #include "common/SquirrelBinding.h"
 #include "sensing/TargetingPipeline.h"

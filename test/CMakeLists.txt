@@ -1,4 +1,4 @@
-﻿enable_testing()
+enable_testing()
 
 # Compile-fail fixtures for critical non-Result return values. This target is
 # intentionally independent of unit_test and never triggers a full engine
