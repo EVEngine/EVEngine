@@ -8,6 +8,7 @@
 #include "common/Export.h"
 #include "common/Result.h"
 #include "common/RuntimeHandle.h"
+#include "common/RuntimeRegistry.h"
 #include "common/Value.h"
 
 #include <squirrel.h>
@@ -57,54 +58,6 @@ enum class ObjectSemantic { Value, Owned, Borrowed };
     return "unknown";
 }
 
-/**
- * @brief C++ owning storage used by an object factory.
- * @tparam T Object whose destruction belongs to this owner.
- * @remarks Prefer this alias over a raw owning pointer. Ownership transfer is
- *          explicit through move construction or `std::move`.
- */
-template <class T>
-using Owned = std::unique_ptr<T>;
-
-/**
- * @brief Non-owning C++ observation with no implicit lifetime extension.
- * @tparam T Observed object type, possibly const-qualified.
- * @remarks The owner must outlive every use. This type intentionally has no
- *          reset-to-own or heap-management operation.
- */
-template <class T>
-class Borrowed {
-public:
-    constexpr Borrowed() noexcept = default;
-    explicit constexpr Borrowed(T* value, std::uint64_t ownerEpoch = 0) noexcept
-        : value_(value), ownerEpoch_(ownerEpoch) {}
-    explicit constexpr Borrowed(T& value, std::uint64_t ownerEpoch = 0) noexcept
-        : value_(&value), ownerEpoch_(ownerEpoch) {}
-
-    /**
-     * @brief Returns the observed pointer, or `nullptr` when unbound.
-     * @return A nullable borrowed pointer; this wrapper never transfers ownership.
-     * @ownership Borrowed from the owner that created this observation.
-     * @nullable Yes.
-     * @lifetime Valid only while the owner epoch remains current and no owner
-     *           mutation, restore, clear or destruction has occurred.
-     * @thread Use on the owner thread; the wrapper provides no synchronization.
-     * @reentrancy Does not extend lifetime or invoke callbacks.
-     */
-    [[nodiscard]] constexpr T* get() const noexcept { return value_; }
-    /** @brief Returns whether the observation currently names an object. */
-    [[nodiscard]] constexpr bool isBound() const noexcept { return value_ != nullptr; }
-    /** @brief Returns the epoch of the owner that produced this observation. */
-    [[nodiscard]] constexpr std::uint64_t ownerEpoch() const noexcept { return ownerEpoch_; }
-    /** @brief Pointer-like access to the borrowed object. */
-    constexpr T* operator->() const noexcept { return value_; }
-    /** @brief Dereferences the borrowed object; the caller owns validity proof. */
-    constexpr T& operator*() const noexcept { return *value_; }
-
-private:
-    T*            value_      = nullptr;
-    std::uint64_t ownerEpoch_ = 0;
-};
 
 /** @brief Canonical detached script value; it never aliases a VM object. */
 using ScriptValue = eve::Value;
@@ -153,7 +106,7 @@ private:
 class EVENGINE_API ISquirrelRootReleaser {
 public:
     static constexpr const char* capabilityName = "eve.script.ISquirrelRootReleaser";
-    virtual ~ISquirrelRootReleaser() = default;
+    virtual ~ISquirrelRootReleaser()            = default;
     /**
      * @brief Drops every C++-owned Squirrel root this listener still holds.
      * @remarks Called from Runtime::shutdown() while the VM is still alive.
@@ -205,30 +158,8 @@ private:
     return eve::Result<OwnedSquirrelObject>::success(OwnedSquirrelObject(*borrowed.get()));
 }
 
-/**
- * @brief Handle plus owner-lifetime epoch for a non-ECS registry object.
- *
- * The embedded `RuntimeHandle` supplies slot/generation stale detection. The
- * epoch additionally prevents a handle from an unloaded module instance from
- * accidentally resolving against a newly-created module instance whose slot
- * numbers happen to restart at the same values.
- */
-template <class Tag>
-struct RuntimeHandleRef {
-    RuntimeHandle<Tag> handle     = RuntimeHandle<Tag>::invalid();
-    std::uint64_t      ownerEpoch = 0;
-
-    /** @brief Returns whether both the handle and its registry epoch are set. */
-    [[nodiscard]] constexpr bool isValid() const noexcept { return handle.isValid() && ownerEpoch != 0; }
-    /** @brief Returns the packed slot/generation projection. */
-    [[nodiscard]] constexpr std::uint64_t packed() const noexcept { return handle.packed(); }
-    friend constexpr bool operator==(const RuntimeHandleRef&, const RuntimeHandleRef&) noexcept = default;
-};
-
 namespace detail {
 
-/** @brief Destroys one owned C++ wrapper without knowing its type. */
-using OwnedInstanceDestroy = void (*)(void*) noexcept;
 
 template <class T>
 [[nodiscard]] inline std::size_t squirrelTypeHash() {
@@ -242,239 +173,8 @@ SQInteger ownedInstanceReleaseHook(SQUserPointer pointer, SQInteger) noexcept {
     return 0;
 }
 
-/** @brief Type-erased cleanup used when the VM never took the object. */
-template <class T>
-void ownedInstanceDestroy(void* pointer) noexcept {
-    delete static_cast<T*>(pointer);
-}
-
-/** @brief Slot coordinates without the domain tag. */
-struct RuntimeSlotCoordinates {
-    std::uint32_t index      = 0;
-    std::uint32_t generation = 0;
-};
-
-/**
- * @brief Tag-free slot store behind every RuntimeObjectRegistry<T, Tag>.
- *
- * Holds raw pointers and one destroy hook, so it never sees T or Tag. The
- * bookkeeping it performs -- free-list reuse, generation bumping, slot
- * retirement at generation exhaustion, owner-epoch staleness and the release
- * rollback -- is identical for every registry and is emitted once here instead
- * of once per (T, Tag) pair.
- *
- * @remarks Ownership rule for emplace(): the store takes the object only on
- *          success. A failed emplace leaves the object with the caller, which
- *          still owns it.
- * @thread Owner-thread-affine; no synchronization is provided.
- */
-class RuntimeSlotStore {
-public:
-    /** @brief Constructs an empty store that owns no slot. */
-    explicit RuntimeSlotStore(OwnedInstanceDestroy destroy) noexcept : destroy_(destroy), ownerEpoch_(nextEpoch()) {}
-
-    RuntimeSlotStore(const RuntimeSlotStore&)                = delete;
-    RuntimeSlotStore& operator=(const RuntimeSlotStore&)     = delete;
-    RuntimeSlotStore(RuntimeSlotStore&&) noexcept            = default;
-    RuntimeSlotStore& operator=(RuntimeSlotStore&&) noexcept = default;
-    EVENGINE_API ~RuntimeSlotStore();
-
-    /**
-     * @brief Stores one object in a fresh or recycled slot.
-     * @param object Non-null object whose destruction becomes store-owned.
-     * @return The slot coordinates, or a structured failure.
-     * @ownership On success the store owns @p object and destroys it through its
-     *            destroy hook; on failure the caller keeps ownership.
-     */
-    [[nodiscard]] EVENGINE_API Result<RuntimeSlotCoordinates> emplace(void* object);
-
-    /** @brief Borrows the live object for these coordinates, or null when stale. */
-    [[nodiscard]] EVENGINE_API void* resolve(std::uint32_t index, std::uint32_t generation,
-                                             std::uint64_t ownerEpoch) const noexcept;
-
-    /** @brief Destroys the object in a live slot, then advances or retires it. */
-    [[nodiscard]] EVENGINE_API Result<void> erase(std::uint32_t index, std::uint32_t generation,
-                                                  std::uint64_t ownerEpoch);
-
-    /** @brief Whether a non-invalid handle can no longer resolve. */
-    [[nodiscard]] EVENGINE_API bool isStale(std::uint32_t index, std::uint32_t generation,
-                                            std::uint64_t ownerEpoch) const noexcept;
-
-    /** @brief Destroys every live object and invalidates every prior handle. */
-    EVENGINE_API void clear();
-
-    /**
-     * @brief Visits every live slot with its index, in slot order.
-     *
-     * The store holds untyped pointers, so it reports the index and the raw object;
-     * the typed registry narrows that pair into `(index, T&)`. Retired and free
-     * slots are skipped, so the callback only ever sees live objects.
-     * @param visit Callable taking `(std::uint32_t index, void* object)`.
-     * @thread Owner thread only; the callback runs under no lock and must not
-     *         re-enter the store.
-     */
-    template <class F>
-    void forEachLive(F&& visit) {
-        for (std::uint32_t index = 0; index < slots_.size(); ++index) {
-            void* object = slots_[index].object;
-            if (object == nullptr) continue;
-            visit(index, object);
-        }
-    }
-
-    /** @brief Read-only overload: the callback receives `const void*`. */
-    template <class F>
-    void forEachLive(F&& visit) const {
-        for (std::uint32_t index = 0; index < slots_.size(); ++index) {
-            const void* object = slots_[index].object;
-            if (object == nullptr) continue;
-            visit(index, object);
-        }
-    }
-
-    /** @brief Returns the non-reusable lifetime epoch of this store. */
-    [[nodiscard]] std::uint64_t ownerEpoch() const noexcept { return ownerEpoch_; }
-
-private:
-    struct Slot {
-        std::uint32_t generation = 1;
-        bool          retired    = false;
-        void*         object     = nullptr;
-    };
-
-    [[nodiscard]] std::optional<std::uint32_t> findSlot(std::uint32_t index, std::uint32_t generation,
-                                                        std::uint64_t ownerEpoch) const noexcept;
-    [[nodiscard]] static bool                  coordinatesValid(std::uint32_t index, std::uint32_t generation) noexcept;
-    /** @brief Mirrors RuntimeHandle<Tag>::nextGeneration so the rule lives once. */
-    [[nodiscard]] static std::optional<std::uint32_t> nextGeneration(std::uint32_t current) noexcept;
-    [[nodiscard]] EVENGINE_API static std::uint64_t   nextEpoch() noexcept;
-    void                                              destroySlot(Slot& slot) noexcept;
-
-    OwnedInstanceDestroy       destroy_;
-    std::uint64_t              ownerEpoch_;
-    std::vector<Slot>          slots_;
-    std::vector<std::uint32_t> freeSlots_;
-
-    inline static std::atomic<std::uint64_t> nextEpoch_{1};
-};
-
 }  // namespace detail
 
-/**
- * @brief Slot/generation registry whose objects are exclusively unique-owned.
- * @tparam T Non-ECS object type stored in slots.
- * @tparam Tag Empty tag making the handle type domain-specific.
- *
- * All methods are owner-thread-affine. `resolve()` returns Borrowed and never
- * extends object lifetime. `clear()` and destruction invalidate every prior
- * handle; a new registry instance receives a distinct owner epoch.
- *
- * @remarks Only the coordinate arithmetic in Ref and the pointer cast are
- *          per-(T, Tag); the store below performs the bookkeeping once.
- */
-template <class T, class Tag>
-class RuntimeObjectRegistry {
-public:
-    using Handle = RuntimeHandle<Tag>;
-    using Ref    = RuntimeHandleRef<Tag>;
-
-    /** @brief Creates an empty registry with a unique owner-lifetime epoch. */
-    RuntimeObjectRegistry() : store_(&detail::ownedInstanceDestroy<T>) {}
-    RuntimeObjectRegistry(const RuntimeObjectRegistry&)                = delete;
-    RuntimeObjectRegistry& operator=(const RuntimeObjectRegistry&)     = delete;
-    RuntimeObjectRegistry(RuntimeObjectRegistry&&) noexcept            = default;
-    RuntimeObjectRegistry& operator=(RuntimeObjectRegistry&&) noexcept = default;
-
-    /**
-     * @brief Transfers one unique-owned object into a fresh registry slot.
-     * @param object Non-null object whose destruction becomes registry-owned.
-     * @return Generation-qualified handle and owner epoch.
-     */
-    [[nodiscard]] eve::Result<Ref> emplace(Owned<T> object) {
-        if (!object) {
-            return eve::Result<Ref>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
-                                                                    "runtime registry cannot own a null object", {}, {},
-                                                                    "runtime.registry"));
-        }
-        auto slot = store_.emplace(static_cast<void*>(object.get()));
-        if (!slot.ok()) return eve::Result<Ref>::failure(slot.status());
-        const detail::RuntimeSlotCoordinates coordinates = slot.value();
-        object.release();
-        return eve::Result<Ref>::success(Ref{Handle(coordinates.index, coordinates.generation), store_.ownerEpoch()});
-    }
-
-    /**
-     * @brief Resolves a live object as a non-owning observation.
-     * @return An empty Borrowed value when the generation/owner epoch is stale;
-     *         otherwise a borrowed observation owned by this registry.
-     * @ownership Borrowed; the registry remains responsible for destruction.
-     * @nullable The returned Borrowed may be unbound.
-     * @lifetime Valid until registry mutation, clear, destruction or owner-epoch
-     *           change; never retain it across those boundaries.
-     * @thread Owner-thread-affine; no synchronization is provided.
-     * @reentrancy Side-effect free and does not invoke callbacks.
-     */
-    [[nodiscard]] Borrowed<T> resolve(Ref ref) noexcept {
-        return Borrowed<T>(static_cast<T*>(store_.resolve(ref.handle.index(), ref.handle.generation(), ref.ownerEpoch)),
-                           store_.ownerEpoch());
-    }
-
-    /** @brief Const overload of resolve(); see the non-const form for its contract. */
-    [[nodiscard]] Borrowed<const T> resolve(Ref ref) const noexcept {
-        return Borrowed<const T>(
-            static_cast<const T*>(store_.resolve(ref.handle.index(), ref.handle.generation(), ref.ownerEpoch)),
-            store_.ownerEpoch());
-    }
-
-    /**
-     * @brief Destroys the object identified by a live handle.
-     * @return Applied, or StaleHandle/InvalidArgument/Failed.
-     */
-    [[nodiscard]] eve::Result<void> erase(Ref ref) {
-        return store_.erase(ref.handle.index(), ref.handle.generation(), ref.ownerEpoch);
-    }
-
-    /** @brief Reports whether a non-invalid handle can no longer resolve. */
-    [[nodiscard]] bool isStale(Ref ref) const noexcept {
-        return store_.isStale(ref.handle.index(), ref.handle.generation(), ref.ownerEpoch);
-    }
-
-    /**
-     * @brief Visit every live object with its slot index, in slot order.
-     *
-     * Exists for diagnostics and automation surfaces that must enumerate owned
-     * objects — a debug tool cannot know the handles a game script created. The
-     * callback receives a non-owning observation valid only for the duration of
-     * the call; it must not retain the reference or release objects.
-     * @param visit Callable taking `(std::uint32_t index, T& object)`.
-     * @ownership The registry keeps sole ownership; `visit` never receives one.
-     * @lifetime The observed object is valid only inside the call.
-     * @thread Owner thread only; the callback runs under no lock and must not
-     *         re-enter the registry.
-     */
-    template <class F>
-    void forEachLive(F&& visit) {
-        store_.forEachLive(
-            [&](std::uint32_t index, void* object) { visit(index, static_cast<T&>(*static_cast<T*>(object))); });
-    }
-
-    /** @brief Read-only overload: the callback receives `const T&`. */
-    template <class F>
-    void forEachLive(F&& visit) const {
-        store_.forEachLive([&](std::uint32_t index, const void* object) {
-            visit(index, static_cast<const T&>(*static_cast<const T*>(object)));
-        });
-    }
-
-    /** @brief Invalidates all slots and releases every unique-owned object. */
-    void clear() { store_.clear(); }
-
-    /** @brief Returns the non-reusable lifetime epoch of this registry. */
-    [[nodiscard]] std::uint64_t ownerEpoch() const noexcept { return store_.ownerEpoch(); }
-
-private:
-    detail::RuntimeSlotStore store_;
-};
 
 namespace detail {
 

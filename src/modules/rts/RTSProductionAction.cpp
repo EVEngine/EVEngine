@@ -104,14 +104,18 @@ private:
 class ProductionParticipant final : public transaction::ITransactionParticipant {
 public:
     ProductionParticipant(production::WorkQueue& queue, std::string owner, std::string kind, std::string product,
-                          eve::Value context, Duration duration, int priority)
+                          eve::Value context, eve::definition::DefinitionHandle definition,
+                          eve::Value reservation, Duration duration, int priority, bool settlementRequired)
         : queue_(queue),
           owner_(std::move(owner)),
           kind_(std::move(kind)),
           product_(std::move(product)),
           context_(std::move(context)),
+          definition_(std::move(definition)),
+          reservation_(std::move(reservation)),
           duration_(duration),
-          priority_(priority) {}
+          priority_(priority),
+          settlementRequired_(settlementRequired) {}
 
     [[nodiscard]] std::string_view name() const noexcept override { return "rts-production-queue"; }
 
@@ -125,7 +129,17 @@ public:
         staged_       = std::make_unique<production::WorkQueue>();
         auto restored = staged_->restore(beforeJson_);
         if (!restored) return restored;
-        auto task = staged_->enqueue(owner_, kind_, product_, context_, duration_.seconds(), priority_);
+        production::ProductionRequest request;
+        request.owner = owner_;
+        request.kind = kind_;
+        request.product = product_;
+        request.context = context_;
+        request.definition = definition_;
+        request.reservation = reservation_;
+        request.duration = duration_;
+        request.priority = priority_;
+        request.settlementRequired = settlementRequired_;
+        auto task = staged_->enqueue(std::move(request));
         if (!task) return eve::Result<void>::failure(task.status());
         taskId_    = std::move(task).takeValue();
         auto after = staged_->snapshot();
@@ -186,8 +200,11 @@ private:
     std::string                            kind_;
     std::string                            product_;
     eve::Value                             context_;
+    eve::definition::DefinitionHandle      definition_;
+    eve::Value                             reservation_;
     Duration                               duration_;
     int                                    priority_ = 0;
+    bool                                   settlementRequired_ = false;
     std::unique_ptr<production::WorkQueue> staged_;
     std::string                            beforeJson_;
     std::string                            afterJson_;
@@ -272,7 +289,8 @@ eve::Result<RTSBuildReceipt> RTSProductionActionAdapter::build(Building& buildin
                                                                resource::CostSpec cost, std::string product,
                                                                Duration duration, std::string productionKind,
                                                                int priority, std::string transactionId,
-                                                               std::vector<RTSProductionResourceReserve> resourceReserves) {
+                                                               std::vector<RTSProductionResourceReserve> resourceReserves,
+                                                               eve::definition::DefinitionHandle definition) {
     const auto subject = building.identity()->subject;
     if (!subject.isValid())
         return eve::Result<RTSBuildReceipt>::failure(
@@ -295,7 +313,9 @@ eve::Result<RTSBuildReceipt> RTSProductionActionAdapter::build(Building& buildin
     request.product              = std::move(product);
     request.duration             = std::move(duration);
     request.priority             = priority;
+    request.settlementRequired   = request.productionKind == "unit" || request.productionKind == "research";
     request.resourceReserves     = std::move(resourceReserves);
+    request.definition           = std::move(definition);
     request.transactionId        = std::move(transactionId);
     request.actionRequest.source = ecs::handle_of(&building);
     return build(std::move(request));
@@ -316,6 +336,8 @@ eve::Result<RTSBuildReceipt> RTSProductionActionAdapter::build(RTSBuildRequest r
     if (request.duration.nanoseconds() <= 0 || request.actionDelta.nanoseconds() < 0)
         return eve::Result<RTSBuildReceipt>::failure(eve::Diagnostic::error(
             eve::DiagnosticCode::InvalidArgument, "RTS build durations are invalid", "duration"));
+    request.settlementRequired = request.settlementRequired || request.productionKind == "unit" ||
+                                 request.productionKind == "research";
 
     std::vector<resource::ResourceCost> protectedItems = request.cost.items();
     for (const auto& reserve : request.resourceReserves) {
@@ -360,7 +382,9 @@ eve::Result<RTSBuildReceipt> RTSProductionActionAdapter::build(RTSBuildRequest r
     OrderParticipant      order(*request.orders, request.orderKind, request.orderPriority, request.orderTimeoutSeconds,
                                 request.product, request.owner);
     ProductionParticipant production(*request.production, request.owner, request.productionKind, request.product,
-                                     std::move(request.context), request.duration, request.priority);
+                                     std::move(request.context), std::move(request.definition),
+                                     std::move(request.reservation), request.duration, request.priority,
+                                     request.settlementRequired);
     ActionParticipant     action(*request.action, std::move(request.actionDefinition), std::move(request.actionRequest),
                                  request.tick, request.actionDelta);
     std::vector<transaction::ITransactionParticipant*> participants;

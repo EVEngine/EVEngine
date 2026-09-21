@@ -1,4 +1,5 @@
 #include "RenderImageAudit.h"
+#include "ResourceTestSupport.h"
 
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
@@ -72,10 +73,10 @@ using eve::graphics::Color;
 #include "particles/ParticleSystem.h"
 #include "particles/Particles.h"
 #include "physics/Body.h"
-#include "physics/cloth/Cloth.h"
 #include "physics/Fluid2D.h"
 #include "physics/Physics.h"
 #include "physics/World.h"
+#include "physics/cloth/Cloth.h"
 #include "procgen/Params.h"
 #include "procgen/Procgen.h"
 #include "scene/NodeDesc.h"
@@ -2075,7 +2076,7 @@ TEST_CASE("graphics.imageAudit.skinnedStill") {
     auto studio = makeStudio3D(gfx);
     makeSprite(makeSolid(gfx, 180, 140, 70), 0.f, 0.f, 400.f, 84.f, false);
 
-    eve::ref<eve::model3d::ModelData> model(loadCesiumMan("ev_ut_image_audit_skin_still"));
+    auto model = eve::test::pinResource(loadCesiumMan("ev_ut_image_audit_skin_still"));
     REQUIRE(model.get() != nullptr);
     const int mi = findFirstSkinnedMesh(model.get());
     REQUIRE(mi >= 0);
@@ -2111,7 +2112,7 @@ TEST_CASE("graphics.imageAudit.skinnedPose") {
     auto studio = makeStudio3D(gfx);
     makeSprite(makeSolid(gfx, 180, 140, 70), 0.f, 0.f, 400.f, 84.f, false);
 
-    eve::ref<eve::model3d::ModelData> model(loadCesiumMan("ev_ut_image_audit_skin_pose"));
+    auto model = eve::test::pinResource(loadCesiumMan("ev_ut_image_audit_skin_pose"));
     REQUIRE(model.get() != nullptr);
     const int mi = findFirstSkinnedMesh(model.get());
     REQUIRE(mi >= 0);
@@ -2498,7 +2499,7 @@ TEST_CASE("graphics.imageAudit.particleSkin") {
     auto studio = makeStudio3D(gfx);
     makeSprite(makeSolid(gfx, 180, 140, 70), 0.f, 0.f, 400.f, 84.f, false);
 
-    eve::ref<eve::model3d::ModelData> model(loadCesiumMan("ev_ut_image_audit_skin_part"));
+    auto model = eve::test::pinResource(loadCesiumMan("ev_ut_image_audit_skin_part"));
     REQUIRE(model.get() != nullptr);
     const int mi = findFirstSkinnedMesh(model.get());
     REQUIRE(mi >= 0);
@@ -3182,7 +3183,7 @@ TEST_CASE("graphics.imageAudit.avatarVroid") {
     makeSprite(makeSolid(gfx, 180, 140, 70), 0.f, 0.f, 400.f, 84.f, false);
     studio.subject->setVisible(false);
 
-    eve::ref<eve::model3d::ModelData> model(loadCesiumMan("ev_ut_image_audit_vroid"));
+    auto model = eve::test::pinResource(loadCesiumMan("ev_ut_image_audit_vroid"));
     REQUIRE(model.get() != nullptr);
     const int mi = findFirstSkinnedMesh(model.get());
     REQUIRE(mi >= 0);

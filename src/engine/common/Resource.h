@@ -1,10 +1,13 @@
 #pragma once
-
-#include "Object.h"
 #include "common/AssetReloader.h"
 #include "common/BorrowedRef.h"
 #include "common/Export.h"
 #include "common/Result.h"
+// Cached resources are owned by a RuntimeObjectRegistry and handed out as borrows and
+// keep-alive pins, so this header needs those definitions. RuntimeRegistry.h is
+// deliberately Squirrel-free: the cache's consumers must not be forced to include
+// <squirrel.h> just to name a resource handle.
+#include "common/RuntimeRegistry.h"
 
 #include <cstddef>
 #include <condition_variable>
@@ -19,6 +22,12 @@
 namespace eve {
 
 class Resource;
+
+/** @brief Domain tag of the registry that exclusively owns cached resources. */
+struct ResourceCacheTag;
+
+/** @brief Keep-alive pin on one cached resource; see script::RuntimePin. */
+using ResourcePin = script::RuntimePin<Resource, ResourceCacheTag>;
 
 /**
  * @brief Resource is a game object that is managed by the ResourceManager.
@@ -39,14 +48,35 @@ class Resource;
  * path, optionally with `?param=value` suffixes for parameters that change the
  * decoded asset (e.g. a font's pixel size). See ResourceManager::makeKey.
  */
-class Resource : public Object {
+class Resource {
 public:
     virtual ~Resource() {}
 
     std::string getUri() const { return uri; }
-	std::vector<eve::ref<Resource>> getDependencies() const { return dependencies; }
 
-	virtual void addDependency(eve::ref<Resource> resource) { dependencies.push_back(resource); }
+    /**
+     * @brief Borrowed views of the resources this instance keeps alive.
+     * @return One borrowed entry per registered dependency, in registration order.
+     * @ownership Borrowed; the dependency stays owned by the resource cache.
+     * @nullable No entry is null while this instance holds its keep-alive pins.
+     * @lifetime Valid until this instance is destroyed or a pin is released;
+     *           callers must not retain the pointers across either.
+     * @thread Same thread as the owning ResourceManager.
+     * @reentrancy Side-effect free.
+     */
+    [[nodiscard]] std::vector<Resource*> getDependencies() const;
+
+    /**
+     * @brief Keeps @p dependency alive for as long as this instance lives.
+     * @param dependency A resource the cache currently owns (see ResourceManager::pin).
+     * @return Applied, or NotFound/Failed when @p dependency is not cached.
+     * @ownership The cache keeps owning @p dependency; this instance only postpones
+     *            its destruction across unload()/clear()/reload.
+     * @lifetime The pin is released when this instance is destroyed.
+     * @thread Same thread as the owning ResourceManager.
+     * @reentrancy Registers a pin only; it never invokes callbacks.
+     */
+    [[nodiscard]] eve::Result<void> addDependency(Resource& dependency);
 
     /**
      * @brief Replace this instance's contents with `replacement`'s.
@@ -70,7 +100,8 @@ protected:
     friend class ResourceManager;
 
     std::string uri;
-	std::vector<eve::ref<Resource>> dependencies;
+    /** @brief Keep-alive pins; see getDependencies()/addDependency(). */
+    std::vector<ResourcePin> dependencies;
 };
 
 
@@ -165,6 +196,28 @@ public:
     [[nodiscard]] OptionalRef<Resource> peek(const std::string& key);
 
     /**
+     * @brief Keeps one cached resource alive across unload()/clear()/reload.
+     * @param resource Borrowed pointer to a resource the cache owns, typically one
+     *                 returned by get()/peek()/waitFor() or a `newXFromFile()` factory.
+     *                 A null or already-stale pointer is rejected; this call never
+     *                 dereferences it, so a concurrent unload() cannot make the call
+     *                 itself read freed memory.
+     * @return A move-only keep-alive pin, or NotFound when no live cache entry resolves
+     *         to @p resource (already unloaded, or never cached here). Once a pin is
+     *         returned it is the authority: use `pin.get()` rather than the borrowed
+     *         pointer, which may have been stale before the call.
+     * @ownership The cache keeps owning the resource; the pin only postpones its
+     *            destruction, so the address stays valid after unload() drops the
+     *            cache entry (this is what keeps a playing SoundData alive).
+     * @lifetime The pin must not outlive the manager; release it (or let it go out
+     *           of scope) as soon as the borrower no longer needs the resource.
+     * @cost O(cached entries): the entry is located by address.
+     * @thread Same serialization as the rest of the cache.
+     * @reentrancy Does not invoke callbacks.
+     */
+    [[nodiscard]] eve::Result<ResourcePin> pin(Resource* resource);
+
+    /**
      * @brief Block until `key` is cached, failed, or unclaimed.
      * @param key Cache key; starts a load if neither cached nor in flight.
      * @return Borrowed resource on success; `NotFound` / `Failed` otherwise.
@@ -238,7 +291,20 @@ protected:
         uint64_t epoch = 0;
     };
 
-    std::map<std::string, ref<Resource>> resources;
+    using ResourceRef = script::RuntimeHandleRef<ResourceCacheTag>;
+
+    /**
+     * @brief Borrows the live resource behind a cache entry.
+     * @param reference Entry from `resources`.
+     * @return The owned resource, or null when the entry is stale.
+     * @remarks Callers must hold `mu_`; the borrowed pointer is only valid until
+     *          the next cache mutation.
+     */
+    [[nodiscard]] Resource* borrowLocked(const ResourceRef& reference) { return registry_.resolve(reference).get(); }
+
+    /** @brief Registry that exclusively owns every cached resource. */
+    script::RuntimeObjectRegistry<Resource, ResourceCacheTag>   registry_;
+    std::map<std::string, ResourceRef>                          resources;
     std::unordered_map<std::string, std::shared_ptr<AsyncLoad>> pending_;
     mutable std::mutex mu_;
     std::condition_variable cv_;

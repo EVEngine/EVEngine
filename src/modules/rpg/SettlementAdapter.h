@@ -10,6 +10,7 @@
  */
 
 #include "rpg/RPGActor.h"
+#include "rpg/StatusTypes.h"
 #include "settlement/Settlement.h"
 
 #include <optional>
@@ -17,6 +18,22 @@
 #include <string_view>
 
 namespace eve::rpg {
+
+/**
+ * @brief Project one configured RPG status tick into the canonical settlement request.
+ * @param tick Owning lifecycle event produced by StatusSystem.
+ * @param source Stable source identity supplied by the owning game; it may be nil when unknown.
+ * @param target Stable target identity resolving to tick.actor.
+ * @param simulationTick Deterministic scheduler tick for replay and event ordering.
+ * @return Request decoded from the effect definition's strict `settlement.tick` JSON object.
+ * @remarks The object requires `kind`, `resource`, and non-negative `magnitude`; optional `tags`
+ * and `context` are copied. Magnitude is multiplied by the captured status stack count.
+ * @thread Call on the RPG registry thread while the referenced definition remains registered.
+ * @reentrancy Does not invoke callbacks or mutate StatusSystem, the actor, or the registry.
+ * @cost Linear in JSON and tag/context size; call once per emitted tick, outside Settlement's hot stages.
+ */
+[[nodiscard]] eve::Result<settlement::SettlementRequest> makeStatusTickSettlementRequest(
+    const StatusTickEvent& tick, SubjectRef source, SubjectRef target, SimulationTick simulationTick);
 
 /**
  * @brief Settles damage/healing against one RPG actor's AttributeSet.
@@ -29,14 +46,18 @@ class RPGSettlementAdapter final : public settlement::ISettlementPolicy {
 public:
     /** @brief Attribute names used by the RPG policy. */
     struct Config {
-        std::string healthAttribute             = "health";
-        std::string maxHealthAttribute          = "max_health";
+        /** @brief Vitals resource holding authoritative current health. */
+        std::string healthAttribute = "hp";
+        /** @brief Final attribute supplying the resource maximum. */
+        std::string maxHealthAttribute          = "hp";
         std::string shieldAttribute             = "shield";
         std::string armorAttribute              = "armor";
         std::string resistancePrefix            = "resistance.";
         std::string criticalChanceAttribute     = "critical_chance";
         std::string criticalMultiplierAttribute = "critical_multiplier";
         std::string sourceMultiplierAttribute   = "damage_multiplier";
+        /** @brief Emit death/kill transitions when this resource crosses zero. */
+        bool emitLifeTransitions = true;
     };
 
     /** @brief Bind a target actor with default RPG attribute names. */
@@ -66,6 +87,9 @@ public:
     /** @copydoc settlement::ISettlementPolicy::prepareApply */
     [[nodiscard]] eve::Result<settlement::PreparedApply> prepareApply(
         const settlement::SettlementContext& context) override;
+    /** @copydoc settlement::ISettlementPolicy::prepareTrigger */
+    [[nodiscard]] eve::Result<std::vector<settlement::SettlementRequest>> prepareTrigger(
+        const settlement::SettlementContext& context, const settlement::SettlementResult& result) override;
 
 private:
     [[nodiscard]] bool isDamage(const settlement::SettlementContext& context) const noexcept;

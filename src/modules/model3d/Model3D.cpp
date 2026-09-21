@@ -184,7 +184,7 @@ bool Model3D::bakeModel(const std::string &sourcePath, const std::string &destin
     if (!fs) fs = filesystem::Filesystem::create();
     filesystem::FileData *sourceRaw = fs->read(sourcePath);
     if (!sourceRaw) return false;
-    eve::ref<filesystem::FileData> source(sourceRaw);
+    eve::script::Owned<filesystem::FileData> source(sourceRaw);
     if (!source->getData() || source->getSize() == 0) return false;
     const std::string hint = ensureDotExt(source->getExtension());
     if (hint.empty() || hint == ".evmodel" || hint.size() > 65535u) return false;

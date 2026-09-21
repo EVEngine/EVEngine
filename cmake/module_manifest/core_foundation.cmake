@@ -81,7 +81,7 @@ eve_declare_module(NAME ik LIB EVIK LAYER 0 SCRIPT IK
                    GROUP 2d 3d web)
 # L6 -- editor orchestration
 eve_declare_module(NAME editor LAYER 6 SCRIPT Editor SLOT editor
-                   DEPS asset editing property_access rx tags transaction
+                   DEPS asset editing property_access rx settlement tags transaction
                    GROUP 3d web
                    OPTIONAL_DEPS graphics)
 # L0 -- foundation (continued)
@@ -100,7 +100,7 @@ eve_declare_module(NAME pixelworld_streaming LAYER 1
                    DEPS asset pixelworld
                    GROUP 2d 3d web)
 eve_declare_module(NAME rpg LIB EVRPG LAYER 1 SCRIPT RPG
-                   DEPS action attributes decision definitions dnut_interpreter effects inventory settlement)
+                   DEPS action attributes decision definitions dnut_interpreter effects inventory production settlement transaction)
 # L0 -- foundation (continued)
 eve_declare_module(NAME inventory LAYER 0 SCRIPT Inventory)
 eve_declare_module(NAME economy LAYER 0 SCRIPT Economy SLOT economy
@@ -121,7 +121,7 @@ eve_declare_module(NAME game_event LAYER 0 SCRIPT GameEvent SLOT game_event
                    DEPS schema
                    GROUP minimal 2d 3d web)
 eve_declare_module(NAME settlement LIB EVSettlement LAYER 0
-                   DEPS game_event
+                   DEPS effects game_event
                    GROUP minimal 2d 3d web)
 eve_declare_module(NAME orders LAYER 0 SCRIPT Orders SLOT orders
                    GROUP minimal 2d 3d web)
@@ -161,7 +161,7 @@ eve_declare_module(NAME action_input DIR action/input LAYER 2
                    GROUP minimal 2d 3d web)
 # L2 -- combat resolution consuming the action protocol
 eve_declare_module(NAME combat LIB EVCombat LAYER 2 SCRIPT Combat SLOT combat
-                   DEPS action attributes tags
+                   DEPS action attributes settlement tags
                    GROUP minimal 2d 3d web)
 # Shared fixed-step/backend contract extracted from the physics host so
 # independently switchable simulation satellites do not depend back upward.

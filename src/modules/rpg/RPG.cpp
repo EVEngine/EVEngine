@@ -820,6 +820,17 @@ void RPG::expose(ssq::Table &table) {
     auto battle = table.addClass<Battle>(
         "Battle", std::function<Battle *()>([]() { return new Battle(); }), true);
     battle.addFunc("addActor", &Battle::addActor);
+    battle.addFunc("configureSettlementRulesJson", [vm](Battle* value, const std::string& json) {
+        if (!value)
+            return eve::script::projectResult(
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(
+                        eve::DiagnosticCode::InvalidArgument, "Battle receiver must not be null", "battle", {},
+                        "rpg.squirrel")));
+        auto rules = settlement::SettlementRuleSet::fromJson(json);
+        if (!rules)
+            return eve::script::projectResult(vm, eve::Result<void>::failure(rules.status()));
+        return eve::script::projectResult(vm, value->configureSettlementRules(rules.value()));
+    });
     battle.addFunc("setAction", &Battle::setAction);
     battle.addFunc("setActionChecked",
                    [vm](Battle *value, RPGActor *actor, const std::string &skillId,

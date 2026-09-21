@@ -554,6 +554,11 @@ Result<std::string> ProductionComponent::enqueue(std::string_view owner, std::st
     return impl_->queue.enqueue(owner, kind, product, eve::Value(eve::Value::Object{}), duration.seconds(), priority);
 }
 
+Result<std::string> ProductionComponent::enqueue(production::ProductionRequest request) {
+    if (!impl_) impl_ = std::make_unique<Impl>();
+    return impl_->queue.enqueue(std::move(request));
+}
+
 Result<void> ProductionComponent::advance(const SimulationStep& step) {
     if (!impl_) impl_ = std::make_unique<Impl>();
     return impl_->queue.advance(step);
@@ -563,12 +568,12 @@ std::size_t ProductionComponent::taskCount() const noexcept {
     return impl_ ? static_cast<std::size_t>(impl_->queue.taskCount()) : 0u;
 }
 
-OptionalRef<production::ProductionTask> ProductionComponent::taskAt(int index) {
-    return impl_ ? impl_->queue.taskAt(index) : OptionalRef<production::ProductionTask>{};
+OptionalRef<const production::ProductionTask> ProductionComponent::taskAt(int index) {
+    return impl_ ? impl_->queue.taskAt(index) : OptionalRef<const production::ProductionTask>{};
 }
 
-OptionalRef<production::ProductionTask> ProductionComponent::find(std::string_view taskId) {
-    return impl_ ? impl_->queue.find(taskId) : OptionalRef<production::ProductionTask>{};
+OptionalRef<const production::ProductionTask> ProductionComponent::find(std::string_view taskId) {
+    return impl_ ? impl_->queue.find(taskId) : OptionalRef<const production::ProductionTask>{};
 }
 
 Result<void> ProductionComponent::pause(std::string_view taskId) {
@@ -592,15 +597,22 @@ Result<void> ProductionComponent::cancel(std::string_view taskId, std::string_vi
     return impl_->queue.cancel(taskId, reason);
 }
 
-std::vector<production::ProductionTask> ProductionComponent::completed(std::string_view kind) const {
+std::vector<production::ProductionTask> ProductionComponent::readyToSettle(std::string_view kind) const {
     std::vector<production::ProductionTask> result;
     if (!impl_ || kind.empty()) return result;
     for (int index = 0; index < impl_->queue.taskCount(); ++index) {
         const auto task = impl_->queue.taskAt(index);
-        if (task && task->get().kind == kind && task->get().state == production::TaskState::Completed)
+        if (task && task->get().kind == kind && task->get().state == production::TaskState::ReadyToSettle)
             result.push_back(task->get());
     }
     return result;
+}
+
+Result<void> ProductionComponent::settle(std::string_view taskId, production::ProductionSettlementReceipt receipt) {
+    if (!impl_)
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::NotFound, "RTS production task was not found", "taskId"));
+    return impl_->queue.settle(taskId, std::move(receipt));
 }
 
 Result<std::string> ProductionComponent::snapshot() const {

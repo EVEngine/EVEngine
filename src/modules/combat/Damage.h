@@ -7,6 +7,8 @@
 #include "action/Action.h"
 #include "common/Result.h"
 #include "common/SubjectRef.h"
+#include "settlement/Settlement.h"
+#include "settlement/SettlementRules.h"
 
 #include <optional>
 #include <string>
@@ -51,6 +53,10 @@ struct DamageRequest {
     std::string                              damageType;
     double                                   healthDamage = 0.0;
     double                                   poiseDamage  = 0.0;
+    /** @brief Target-owned effect multiplier applied in the target-mitigation settlement stage. */
+    double                                   incomingDamageMultiplier = 1.0;
+    /** @brief Shield balance available to this transaction; the caller commits reported consumption. */
+    double                                   availableShield = 0.0;
     Impulse3                                 knockback;
 
     /** @brief Validate target, canonical gameplay-tag damage type and finite amounts. */
@@ -97,9 +103,14 @@ struct DamageOutcome {
     double           poise               = 0.0;
     double           appliedHealthDamage = 0.0;
     double           appliedPoiseDamage  = 0.0;
+    double           absorbedShieldDamage = 0.0;
     Impulse3         knockback;
     HitReaction      reaction   = HitReaction::None;
     DamageRuleSource ruleSource = DamageRuleSource::Default;
+    /** @brief Exact owning request executed by the shared settlement pipeline. */
+    settlement::SettlementRequest settlementRequest;
+    /** @brief Complete owning settlement audit retained for replay and verification. */
+    settlement::SettlementResult settlementResult;
 };
 
 /**
@@ -116,16 +127,43 @@ public:
     explicit DamageRuntime(const IDamageRule* rule = nullptr, HitReactionPolicy policy = {})
         : rule_(rule), policy_(policy) {}
 
-    /** @brief Resolve final damage amounts without mutating the target, for authoritative tactical prediction. */
+    /**
+     * @brief Replace the optional declarative buff/effect rules used by subsequent damage settlements.
+     *
+     * @param rules Validated owning rule collection; the installed snapshot is copied.
+     * @return Applied, or a duplicate/invalid stage diagnostic without changing the previous pipeline.
+     * @thread Call on the owning simulation thread while no apply call is active.
+     * @reentrancy Does not invoke gameplay callbacks.
+     */
+    [[nodiscard]] Result<void> configureSettlementRules(const settlement::SettlementRuleSet& rules);
+
+    /** @brief Resolve provider damage amounts before settlement stages, without mutating the target. */
     [[nodiscard]] Result<DamageAmounts> preview(const CombatState& target, const DamageRequest& request) const;
+    /**
+     * @brief Preview the complete rule, mitigation, shield, clamp and reaction result without mutation.
+     * @return The same owning outcome apply would produce while leaving @p target unchanged.
+     * @cost Same order as one full damage settlement; use preview() when only provider amounts are needed.
+     */
+    [[nodiscard]] Result<DamageOutcome> previewSettlement(const CombatState& target,
+                                                          const DamageRequest& request) const;
     /** @brief Resolve and atomically commit one damage request. */
     [[nodiscard]] Result<DamageOutcome> apply(CombatState& target, const DamageRequest& request) const;
+    /**
+     * @brief Resolve and atomically commit health restoration through the configured settlement pipeline.
+     * @param target Authoritative combat state to restore.
+     * @param source Stable subject responsible for the restoration; may be nil for passive regeneration.
+     * @param amount Requested finite non-negative restoration.
+     * @return Complete canonical settlement audit, including the clamped applied amount.
+     */
+    [[nodiscard]] Result<settlement::SettlementResult> heal(CombatState& target, SubjectRef source,
+                                                             double amount) const;
     /** @brief Restore an explicit poise amount, clamped to maxPoise. */
     [[nodiscard]] Result<double> recoverPoise(CombatState& target, double amount) const;
 
 private:
-    const IDamageRule* rule_ = nullptr;
-    HitReactionPolicy  policy_;
+    const IDamageRule*             rule_ = nullptr;
+    HitReactionPolicy              policy_;
+    settlement::SettlementPipeline settlement_;
 };
 
 }  // namespace eve::combat

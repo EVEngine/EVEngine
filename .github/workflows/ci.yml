@@ -561,6 +561,26 @@ jobs:
           make test/win32
           LABEL_FILTER='${{ needs.change-scope.outputs.test_label_regex }}'
 
+      - name: Sample settlement release benchmark
+        timeout-minutes: 5
+        env:
+          ALSOFT_DRIVERS: "null"
+          EVENGINE_SETTLEMENT_BENCHMARK: "1"
+        shell: bash
+        run: |
+          set -o pipefail
+          ctest --test-dir build/win32 -C Release
+            -R '^settlement\.benchmark\.' -V \
+            | tee build/settlement-benchmark-windows.log
+
+      - name: Upload settlement benchmark sample
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: settlement-benchmark-windows-release
+          path: build/settlement-benchmark-windows.log
+          if-no-files-found: error
+
   android:
     name: Android
     needs: [source-quality, change-scope]
@@ -929,6 +949,26 @@ jobs:
         run: >-
           make test/macosx
           LABEL_FILTER='${{ needs.change-scope.outputs.test_label_regex }}'
+
+      - name: Sample settlement release benchmark
+        timeout-minutes: 5
+        env:
+          ALSOFT_DRIVERS: "null"
+          EVENGINE_SETTLEMENT_BENCHMARK: "1"
+        shell: bash
+        run: |
+          set -o pipefail
+          ctest --test-dir build/macosx
+            -R '^settlement\.benchmark\.' -V \
+            | tee build/settlement-benchmark-macos.log
+
+      - name: Upload settlement benchmark sample
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: settlement-benchmark-macos-release
+          path: build/settlement-benchmark-macos.log
+          if-no-files-found: error
 
   ios:
     name: iOS
@@ -1337,6 +1377,26 @@ jobs:
         env:
           ALSOFT_DRIVERS: "null"
         run: xvfb-run -a -s "-screen 0 1280x800x24" make test/linux
+
+      - name: Sample settlement release benchmark
+        timeout-minutes: 5
+        env:
+          ALSOFT_DRIVERS: "null"
+          EVENGINE_SETTLEMENT_BENCHMARK: "1"
+        shell: bash
+        run: |
+          set -o pipefail
+          ctest --test-dir build/linux
+            -R '^settlement\.benchmark\.' -V \
+            | tee build/settlement-benchmark-linux.log
+
+      - name: Upload settlement benchmark sample
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: settlement-benchmark-linux-release
+          path: build/settlement-benchmark-linux.log
+          if-no-files-found: error
 
   linux-asan:
     name: Linux (ASan+UBSan)

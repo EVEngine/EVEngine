@@ -74,7 +74,7 @@ eve_declare_module(NAME rts LAYER 5 SCRIPT RTS SLOT rts
 # providers are introduced by adapters as their implementation slices land;
 # the phase-one board/turn core depends only on common engine contracts.
 eve_declare_module(NAME tactics LAYER 5 SCRIPT Tactics SLOT tactics
-                   DEPS action sensing
+                   DEPS action sensing settlement
                    GROUP 2d 3d web)
 eve_declare_module(NAME avatar LAYER 5 SCRIPT Avatar SLOT avatar
                    DEPS animation graphics inventory model3d scene

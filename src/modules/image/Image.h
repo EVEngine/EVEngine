@@ -77,10 +77,10 @@ public:
 	 **/
 	bool isCompressed(Data *data);
 
-	std::vector<ref<ImageData>> newCubeFaces(ImageData *src);
-	std::vector<ref<ImageData>> newVolumeLayers(ImageData *src);
+        std::vector<script::Owned<ImageData>> newCubeFaces(ImageData *src);
+        std::vector<script::Owned<ImageData>> newVolumeLayers(ImageData *src);
 
-	const std::list<FormatHandler *> &getFormatHandlers() const;
+        const std::list<FormatHandler *> &getFormatHandlers() const;
 
 private:
 

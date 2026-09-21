@@ -1129,11 +1129,21 @@ bool Graphics::reloadTextureFromFile(const std::string &filename) {
     if (it == texturesByPath.end() || !it->second) return false;
 
     ensureFileTexturesReady();
+    // The provider hands back a cache-owned ImageData; the pin keeps it alive until
+    // the pixels have been copied out of it.
     image::ImageData *data = nullptr;
+    eve::ResourcePin  keepAlive;
     try {
         auto *imgMod = image::Image::create();
-        eve::ref<image::ImageData> cached(imgMod->newImageDataFromFile(filename));
-        data = cached.get();
+        data         = imgMod->newImageDataFromFile(filename);
+        if (data != nullptr) {
+            auto pinned = eve::ResourceManager::getInstance().pin(data);
+            if (!pinned.ok()) return false;
+            keepAlive = std::move(pinned).takeValue();
+            // The pin is the authority from here on; the borrowed pointer may have gone
+            // stale before the pin was taken.
+            data = static_cast<image::ImageData *>(keepAlive.get());
+        }
     } catch (...) {
         return false;
     }

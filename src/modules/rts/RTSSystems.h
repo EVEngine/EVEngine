@@ -362,7 +362,8 @@ using RepairDebit = std::function<Result<resource::Receipt>(Unit&, Building&, co
 class EVENGINE_API_DOMAINS RepairSystem {
 public:
     /** @brief Advance arrived Repair orders through the injected canonical debit boundary. */
-    [[nodiscard]] static Result<std::size_t> step(const SimulationStep& step, const RepairDebit& debit);
+    [[nodiscard]] static Result<std::size_t> step(const SimulationStep& step, combat::DamageRuntime& settlement,
+                                                  const RepairDebit& debit);
 };
 
 /** @brief Resolves deterministic single-faction and contested building capture. */
@@ -728,7 +729,7 @@ public:
 class EffectSystem {
 public:
     /** @brief Advance all attached effects by the injected simulation delta. */
-    [[nodiscard]] static Result<std::size_t> step(const SimulationStep& step,
+    [[nodiscard]] static Result<std::size_t> step(const SimulationStep& step, combat::DamageRuntime& settlement,
                                                   const LifecycleEventSink& events = {});
 };
 

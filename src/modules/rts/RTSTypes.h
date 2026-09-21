@@ -416,22 +416,26 @@ public:
     /** @brief Enqueue a production task with an injected simulation duration. */
     [[nodiscard]] Result<std::string> enqueue(std::string_view owner, std::string_view kind, std::string_view product,
                                               Duration duration, int priority = 0);
+    /** @brief Enqueue a fully validated canonical request, including a pinned definition handle. */
+    [[nodiscard]] Result<std::string> enqueue(production::ProductionRequest request);
     /** @brief Advance the queue using a caller-owned deterministic step. */
     [[nodiscard]] Result<void> advance(const SimulationStep& step);
     /** @brief Return the number of retained tasks. */
     [[nodiscard]] std::size_t taskCount() const noexcept;
     /** @brief Borrow a retained canonical task by enqueue index. */
-    [[nodiscard]] OptionalRef<production::ProductionTask> taskAt(int index);
+    [[nodiscard]] OptionalRef<const production::ProductionTask> taskAt(int index);
     /** @brief Borrow a retained canonical task by stable task id. */
-    [[nodiscard]] OptionalRef<production::ProductionTask> find(std::string_view taskId);
+    [[nodiscard]] OptionalRef<const production::ProductionTask> find(std::string_view taskId);
     /** @brief Pause a queued or running task through the canonical queue. */
     [[nodiscard]] Result<void> pause(std::string_view taskId);
     /** @brief Resume a paused task through the canonical queue. */
     [[nodiscard]] Result<void> resume(std::string_view taskId);
     /** @brief Cancel a non-terminal task through the canonical queue. */
     [[nodiscard]] Result<void> cancel(std::string_view taskId, std::string_view reason = "cancelled");
-    /** @brief Copy completed canonical tasks of one kind for domain settlement. */
-    [[nodiscard]] std::vector<production::ProductionTask> completed(std::string_view kind) const;
+    /** @brief Copy work-complete tasks of one kind that await domain settlement. */
+    [[nodiscard]] std::vector<production::ProductionTask> readyToSettle(std::string_view kind) const;
+    /** @brief Commit one domain settlement with an idempotency receipt. */
+    [[nodiscard]] Result<void> settle(std::string_view taskId, production::ProductionSettlementReceipt receipt);
     /** @brief Serialize the canonical production queue for persistence/replay. */
     [[nodiscard]] Result<std::string> snapshot() const;
     /** @brief Transactionally restore the canonical production queue. */
@@ -1205,6 +1209,8 @@ public:
     struct Technology {
         std::vector<std::string> unlocked;
         std::vector<std::string> consumedTasks;
+        /** @brief Validated immutable rule payload accepted for each completed research id. */
+        std::map<std::string, Value::Object> unlockedDefinitions;
     };
 
     COMPONENT(Identity, identity)
