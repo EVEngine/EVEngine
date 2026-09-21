@@ -11,11 +11,6 @@
 namespace eve::rts {
 namespace {
 
-template <typename T>
-Result<T> failure(DiagnosticCode code, std::string message, std::string path = {}) {
-    return Result<T>::failure(Diagnostic::error(code, std::move(message), std::move(path), {}, "rts.tech"));
-}
-
 const Value* field(const Value::Object& object, std::string_view name) {
     const auto it = object.find(std::string(name));
     return it == object.end() ? nullptr : &it->second;
@@ -33,10 +28,13 @@ Result<double> factor(const Value::Object& object, std::string_view name) {
     double result = 0.0;
     if (const auto* real = value->getIf<double>()) result = *real;
     else if (const auto* integer = value->getIf<std::int64_t>()) result = static_cast<double>(*integer);
-    else return failure<double>(DiagnosticCode::InvalidArgument, "RTS upgrade factor must be numeric", std::string(name));
+    else
+        return Result<double>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "RTS upgrade factor must be numeric", std::string(name), {}, "rts.tech"));
     if (!std::isfinite(result) || result < 0.0)
-        return failure<double>(DiagnosticCode::InvalidArgument, "RTS upgrade factor must be finite and non-negative",
-                               std::string(name));
+        return Result<double>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                         "RTS upgrade factor must be finite and non-negative",
+                                                         std::string(name), {}, "rts.tech"));
     return Result<double>::success(result);
 }
 
@@ -60,8 +58,9 @@ Result<Value::Object> upgrade(definitions::DefinitionRegistry& registry, std::st
     if (!parsed) return Result<Value::Object>::failure(parsed.status());
     auto value = std::move(parsed).takeValue();
     const auto* object = value.getIf<Value::Object>();
-    if (object == nullptr) return failure<Value::Object>(DiagnosticCode::InvalidArgument,
-                                                         "RTS upgrade definition must be an object", "upgrade");
+    if (object == nullptr)
+        return Result<Value::Object>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "RTS upgrade definition must be an object", "upgrade", {}, "rts.tech"));
     return Result<Value::Object>::success(*object);
 }
 
@@ -149,8 +148,9 @@ Result<std::size_t> TechnologySystem::step(definitions::DefinitionRegistry& regi
             if (!definition) return Result<std::size_t>::failure(definition.status());
             const std::string prerequisite = text(definition.value(), "prerequisiteUpgrade");
             if (!prerequisite.empty() && !contains(faction->technology()->unlocked, prerequisite))
-                return failure<std::size_t>(DiagnosticCode::PreconditionViolation,
-                                            "completed RTS research lacks its prerequisite", task.product);
+                return Result<std::size_t>::failure(Diagnostic::error(DiagnosticCode::PreconditionViolation,
+                                                                      "completed RTS research lacks its prerequisite",
+                                                                      task.product, {}, "rts.tech"));
             insert(faction->technology()->unlocked, task.product);
             insert(faction->technology()->consumedTasks, task.id);
             ++processed;

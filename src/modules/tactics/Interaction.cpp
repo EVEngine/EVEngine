@@ -13,11 +13,6 @@
 namespace eve::tactics {
 namespace {
 
-template <typename T>
-Result<T> failure(DiagnosticCode code, std::string message, std::string path) {
-    return Result<T>::failure(Diagnostic::error(code, std::move(message), std::move(path)));
-}
-
 Result<void> failure(DiagnosticCode code, std::string message, std::string path) {
     return Result<void>::failure(Diagnostic::error(code, std::move(message), std::move(path)));
 }
@@ -96,15 +91,16 @@ InteractionIntent InteractionSession::makeIntent(InteractionIntentKind kind, Cel
 
 Result<InteractionIntent> InteractionSession::onCellClicked(Cell cell) {
     if (state_ == InteractionState::Ended)
-        return failure<InteractionIntent>(DiagnosticCode::PreconditionViolation,
-                                          "interaction session belongs to a finished battle", "interaction.state");
+        return Result<InteractionIntent>::failure(Diagnostic::error(DiagnosticCode::PreconditionViolation,
+                                                                    "interaction session belongs to a finished battle",
+                                                                    "interaction.state"));
     if (state_ == InteractionState::Blocked)
-        return failure<InteractionIntent>(DiagnosticCode::PreconditionViolation,
-                                          "interaction session is blocked", "interaction.state");
+        return Result<InteractionIntent>::failure(Diagnostic::error(
+            DiagnosticCode::PreconditionViolation, "interaction session is blocked", "interaction.state"));
     if (state_ == InteractionState::Resolving)
-        return failure<InteractionIntent>(DiagnosticCode::Conflict,
-                                          "a pending interaction intent must be committed or dropped first",
-                                          "interaction.state");
+        return Result<InteractionIntent>::failure(
+            Diagnostic::error(DiagnosticCode::Conflict,
+                              "a pending interaction intent must be committed or dropped first", "interaction.state"));
 
     if (state_ == InteractionState::Targeting) {
         if (!cellInTargetable(cell)) return Result<InteractionIntent>::success(makeIntent(InteractionIntentKind::None, cell));
@@ -134,10 +130,11 @@ Result<InteractionIntent> InteractionSession::onCellClicked(Cell cell) {
 
 Result<void> InteractionSession::armAbility(const LogicalId& action, std::vector<Cell> targetableCells) {
     if (state_ == InteractionState::Ended || state_ == InteractionState::Blocked || state_ == InteractionState::Resolving)
-        return failure<void>(DiagnosticCode::PreconditionViolation, "interaction session cannot arm an ability",
-                             "interaction.state");
+        return Result<void>::failure(Diagnostic::error(
+            DiagnosticCode::PreconditionViolation, "interaction session cannot arm an ability", "interaction.state"));
     if (!action.isValid())
-        return failure<void>(DiagnosticCode::InvalidArgument, "armed ability requires a logical id", "action");
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "armed ability requires a logical id", "action"));
     armedAction_ = action;
     armedTargets_ = std::move(targetableCells);
     unitSelected_ = true;
@@ -148,15 +145,16 @@ Result<void> InteractionSession::armAbility(const LogicalId& action, std::vector
 
 Result<InteractionIntent> InteractionSession::onCancel() {
     if (state_ == InteractionState::Ended)
-        return failure<InteractionIntent>(DiagnosticCode::PreconditionViolation,
-                                          "interaction session belongs to a finished battle", "interaction.state");
+        return Result<InteractionIntent>::failure(Diagnostic::error(DiagnosticCode::PreconditionViolation,
+                                                                    "interaction session belongs to a finished battle",
+                                                                    "interaction.state"));
     if (state_ == InteractionState::Blocked)
-        return failure<InteractionIntent>(DiagnosticCode::PreconditionViolation,
-                                          "interaction session is blocked", "interaction.state");
+        return Result<InteractionIntent>::failure(Diagnostic::error(
+            DiagnosticCode::PreconditionViolation, "interaction session is blocked", "interaction.state"));
     if (state_ == InteractionState::Resolving)
-        return failure<InteractionIntent>(DiagnosticCode::Conflict,
-                                          "a pending interaction intent must be committed or dropped first",
-                                          "interaction.state");
+        return Result<InteractionIntent>::failure(
+            Diagnostic::error(DiagnosticCode::Conflict,
+                              "a pending interaction intent must be committed or dropped first", "interaction.state"));
     if (state_ == InteractionState::AwaitSelection && !unitSelected_)
         // Nothing to cancel is not a failure, but it must not be reported as if the player
         // had cancelled something either.
@@ -172,11 +170,12 @@ Result<InteractionIntent> InteractionSession::onCancel() {
 
 Result<InteractionIntent> InteractionSession::onEndTurn() {
     if (state_ == InteractionState::Ended)
-        return failure<InteractionIntent>(DiagnosticCode::PreconditionViolation,
-                                          "interaction session belongs to a finished battle", "interaction.state");
+        return Result<InteractionIntent>::failure(Diagnostic::error(DiagnosticCode::PreconditionViolation,
+                                                                    "interaction session belongs to a finished battle",
+                                                                    "interaction.state"));
     if (state_ == InteractionState::Blocked || state_ == InteractionState::Resolving)
-        return failure<InteractionIntent>(DiagnosticCode::PreconditionViolation,
-                                          "interaction session cannot end the turn", "interaction.state");
+        return Result<InteractionIntent>::failure(Diagnostic::error(
+            DiagnosticCode::PreconditionViolation, "interaction session cannot end the turn", "interaction.state"));
     // Ending the turn is terminal for this activation, so the session moves to Resolving and
     // the caller decides whether to commit it or rebuild from a fresh context.
     pending_ = InteractionIntentKind::EndTurn;
@@ -192,19 +191,20 @@ Result<InteractionIntent> InteractionSession::onEndTurn() {
 
 Result<void> InteractionSession::markResolving() {
     if (state_ == InteractionState::Ended || state_ == InteractionState::Blocked)
-        return failure<void>(DiagnosticCode::PreconditionViolation, "interaction session cannot resolve",
-                             "interaction.state");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::PreconditionViolation,
+                                                       "interaction session cannot resolve", "interaction.state"));
     if (pending_ == InteractionIntentKind::None)
-        return failure<void>(DiagnosticCode::PreconditionViolation,
-                             "interaction session has no pending intent to confirm", "interaction.pending");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::PreconditionViolation,
+                                                       "interaction session has no pending intent to confirm",
+                                                       "interaction.pending"));
     state_ = InteractionState::Resolving;
     return Result<void>::success(Status::success(StatusCode::Applied));
 }
 
 Result<void> InteractionSession::resolve() {
     if (state_ == InteractionState::Ended || state_ == InteractionState::Blocked)
-        return failure<void>(DiagnosticCode::PreconditionViolation, "interaction session cannot resolve",
-                             "interaction.state");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::PreconditionViolation,
+                                                       "interaction session cannot resolve", "interaction.state"));
     armedAction_ = LogicalId{};
     armedTargets_.clear();
     unitSelected_ = false;

@@ -7,11 +7,6 @@
 namespace eve::action {
 namespace {
 
-template <typename T>
-Result<T> invalid(std::string message, std::string path) {
-    return Result<T>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::move(message), std::move(path)));
-}
-
 Result<double> number(const Value& value, std::string path) {
     double result = 0.0;
     if (const auto* integer = value.getIf<std::int64_t>())
@@ -19,8 +14,11 @@ Result<double> number(const Value& value, std::string path) {
     else if (const auto* decimal = value.getIf<double>())
         result = *decimal;
     else
-        return invalid<double>("spatial component must be numeric", std::move(path));
-    if (!std::isfinite(result)) return invalid<double>("spatial component must be finite", std::move(path));
+        return Result<double>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "spatial component must be numeric", std::move(path)));
+    if (!std::isfinite(result))
+        return Result<double>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "spatial component must be finite", std::move(path)));
     return Result<double>::success(result);
 }
 
@@ -30,7 +28,8 @@ Result<ActionSpatialVector3> vector(const Value::Object& payload, std::string_vi
     if (found == payload.end()) return Result<ActionSpatialVector3>::success(fallback);
     const auto* values = found->second.getIf<Value::Array>();
     if (!values || values->size() != 3)
-        return invalid<ActionSpatialVector3>("spatial vector must contain exactly three numbers", std::string(key));
+        return Result<ActionSpatialVector3>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "spatial vector must contain exactly three numbers", std::string(key)));
     ActionSpatialVector3 result;
     double*              components[] = {&result.x, &result.y, &result.z};
     for (std::size_t index = 0; index < 3; ++index) {
@@ -45,7 +44,9 @@ Result<std::string> text(const Value::Object& payload, std::string_view key, std
     const auto found = payload.find(std::string(key));
     if (found == payload.end()) return Result<std::string>::success(std::move(fallback));
     const auto* value = found->second.getIf<std::string>();
-    if (!value) return invalid<std::string>("spatial field must be text", std::string(key));
+    if (!value)
+        return Result<std::string>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "spatial field must be text", std::string(key)));
     return Result<std::string>::success(*value);
 }
 
@@ -71,7 +72,8 @@ Result<ActionSpatialBinding> ActionSpatialBinding::fromPayload(const Value::Obje
     else if (mode.value() == "world_transform_at_start")
         candidate.mode = ActionSpatialAttachmentMode::WorldTransformAtStart;
     else
-        return invalid<ActionSpatialBinding>("unknown spatial attachment mode", "attachment");
+        return Result<ActionSpatialBinding>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "unknown spatial attachment mode", "attachment"));
 
     auto target = text(payload, "spatialTarget", "source");
     if (!target) return Result<ActionSpatialBinding>::failure(target.status());
@@ -80,12 +82,14 @@ Result<ActionSpatialBinding> ActionSpatialBinding::fromPayload(const Value::Obje
     else if (target.value() == "target")
         candidate.target = ActionSpatialTarget::Target;
     else
-        return invalid<ActionSpatialBinding>("unknown spatial target", "spatialTarget");
+        return Result<ActionSpatialBinding>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "unknown spatial target", "spatialTarget"));
 
     if (const auto found = payload.find("targetIndex"); found != payload.end()) {
         const auto* index = found->second.getIf<std::int64_t>();
         if (!index || *index < 0 || static_cast<std::uint64_t>(*index) > std::numeric_limits<std::size_t>::max())
-            return invalid<ActionSpatialBinding>("target index must be a non-negative integer", "targetIndex");
+            return Result<ActionSpatialBinding>::failure(Diagnostic::error(
+                DiagnosticCode::InvalidArgument, "target index must be a non-negative integer", "targetIndex"));
         candidate.targetIndex = static_cast<std::size_t>(*index);
     }
     auto bone = text(payload, "bone", {});
@@ -102,7 +106,8 @@ Result<ActionSpatialBinding> ActionSpatialBinding::fromPayload(const Value::Obje
     if (!scale) return Result<ActionSpatialBinding>::failure(scale.status());
     candidate.scale = std::move(scale).takeValue();
     if (candidate.scale.x <= 0.0 || candidate.scale.y <= 0.0 || candidate.scale.z <= 0.0)
-        return invalid<ActionSpatialBinding>("spatial scale components must be positive", "scale");
+        return Result<ActionSpatialBinding>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "spatial scale components must be positive", "scale"));
     return Result<ActionSpatialBinding>::success(std::move(candidate));
 }
 

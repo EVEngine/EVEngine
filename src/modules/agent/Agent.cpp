@@ -10,11 +10,6 @@
 namespace eve::agent {
 namespace {
 
-template <class T>
-Result<T> invalid(std::string message) {
-    return Result<T>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::move(message), {}, {}, "agent"));
-}
-
 bool validObservation(const Observation& o, std::size_t features, std::size_t actions) {
     if (o.features.size() != features || o.legalActions.size() > actions || !std::isfinite(o.reward) ||
         std::abs(o.reward) > 1e9 || o.coverage.size() > 64 || o.finding.size() > 4096)
@@ -91,9 +86,12 @@ Result<void> validatePolicy(const Policy& policy) {
         policy.featureCount > 1024 || policy.actionCount == 0 || policy.actionCount > 1024 || policy.hiddenWidth == 0 ||
         policy.hiddenWidth > 64 ||
         policy.weights.size() != detail::weightCount(policy.featureCount, policy.hiddenWidth, policy.actionCount))
-        return invalid<void>("Unsupported policy schema, version or dimensions");
+        return Result<void>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "Unsupported policy schema, version or dimensions", {}, {}, "agent"));
     for (double w : policy.weights)
-        if (!std::isfinite(w) || std::abs(w) > 1e6) return invalid<void>("Invalid policy weight");
+        if (!std::isfinite(w) || std::abs(w) > 1e6)
+            return Result<void>::failure(
+                Diagnostic::error(DiagnosticCode::InvalidArgument, "Invalid policy weight", {}, {}, "agent"));
     return Result<void>::success();
 }
 
@@ -108,7 +106,9 @@ Result<std::string> backendName(Backend backend) {
         return Result<std::string>::failure(Diagnostic::error(
             DiagnosticCode::Unsupported, "GPU requires an active AgentTensor module", {}, {}, "agent"));
     }
-    if (backend != Backend::Tensor) return invalid<std::string>("Unknown backend");
+    if (backend != Backend::Tensor)
+        return Result<std::string>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "Unknown backend", {}, {}, "agent"));
     if (auto* provider = cap::query<IPolicyBackend>()) return Result<std::string>::success(provider->name());
     return Result<std::string>::failure(Diagnostic::error(
         DiagnosticCode::Unsupported, "Tensor backend requires an active AgentTensor module", {}, {}, "agent"));
@@ -118,7 +118,8 @@ Result<std::vector<double>> infer(const Policy& policy, const Observation& obser
     auto validated = validatePolicy(policy);
     if (!validated) return Result<std::vector<double>>::failure(validated.status());
     if (!validObservation(observation, policy.featureCount, policy.actionCount) || observation.legalActions.empty())
-        return invalid<std::vector<double>>("Invalid observation or empty legal action mask");
+        return Result<std::vector<double>>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "Invalid observation or empty legal action mask", {}, {}, "agent"));
     if (backend == Backend::Cpu) return Result<std::vector<double>>::success(detail::forward(policy, observation));
     auto available = backendName(backend);
     if (!available) return Result<std::vector<double>>::failure(available.status());
@@ -126,7 +127,9 @@ Result<std::vector<double>> infer(const Policy& policy, const Observation& obser
     EV_ASSERT(provider, "backend registration must remain stable during inference");
     auto result = provider->evaluate(policy, observation);
     if (!result) return result;
-    if (result.value().size() != policy.actionCount) return invalid<std::vector<double>>("Invalid backend shape");
+    if (result.value().size() != policy.actionCount)
+        return Result<std::vector<double>>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "Invalid backend shape", {}, {}, "agent"));
     double sum = 0;
     for (std::size_t i = 0; i < result.value().size(); ++i) {
         const auto value = result.value()[i];
@@ -134,15 +137,21 @@ Result<std::vector<double>> infer(const Policy& policy, const Observation& obser
             (std::find(observation.legalActions.begin(), observation.legalActions.end(), i) ==
                  observation.legalActions.end() &&
              value != 0))
-            return invalid<std::vector<double>>("Invalid backend probability");
+            return Result<std::vector<double>>::failure(
+                Diagnostic::error(DiagnosticCode::InvalidArgument, "Invalid backend probability", {}, {}, "agent"));
         sum += value;
     }
-    if (std::abs(sum - 1) > 1e-5) return invalid<std::vector<double>>("Backend probabilities must sum to one");
+    if (std::abs(sum - 1) > 1e-5)
+        return Result<std::vector<double>>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "Backend probabilities must sum to one", {}, {}, "agent"));
     return result;
 }
 
 Result<Report> run(const Config& c, IEnvironment& environment) {
-    if (!validConfig(c)) return invalid<Report>("Invalid dimensions, budgets, strategy, probabilities or time");
+    if (!validConfig(c))
+        return Result<Report>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                         "Invalid dimensions, budgets, strategy, probabilities or time",
+                                                         {}, {}, "agent"));
     auto selectedBackend = backendName(c.backend);
     if (!selectedBackend) return Result<Report>::failure(selectedBackend.status());
     Report report;
@@ -164,7 +173,9 @@ Result<Report> run(const Config& c, IEnvironment& environment) {
             auto reset                      = environment.reset(c.environmentSeed);
             if (!reset) return Result<Report>::failure(reset.status());
             if (!validObservation(reset.value(), c.featureCount, c.actionCount) || reset.value().reward != 0)
-                return invalid<Report>("Environment returned invalid initial observation");
+                return Result<Report>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                                 "Environment returned invalid initial observation", {},
+                                                                 {}, "agent"));
             candidate.trace.initial           = std::move(reset).takeValue();
             Observation           observation = candidate.trace.initial;
             std::set<std::string> episodeCoverage(observation.coverage.begin(), observation.coverage.end());
@@ -184,7 +195,9 @@ Result<Report> run(const Config& c, IEnvironment& environment) {
                 auto stepped = environment.step(action, c.dt);
                 if (!stepped) return Result<Report>::failure(stepped.status());
                 if (!validObservation(stepped.value(), c.featureCount, c.actionCount))
-                    return invalid<Report>("Environment returned invalid step observation");
+                    return Result<Report>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                                     "Environment returned invalid step observation",
+                                                                     {}, {}, "agent"));
                 observation = std::move(stepped).takeValue();
                 candidate.score += observation.reward;
                 episodeCoverage.insert(observation.coverage.begin(), observation.coverage.end());
@@ -230,7 +243,9 @@ Result<Report> run(const Config& c, IEnvironment& environment) {
                             if (trained.value().featureCount != c.featureCount ||
                                 trained.value().hiddenWidth != c.hiddenWidth ||
                                 trained.value().actionCount != c.actionCount)
-                                return invalid<Report>("GPU training changed policy shape");
+                                return Result<Report>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                                                 "GPU training changed policy shape",
+                                                                                 {}, {}, "agent"));
                             report.policy = std::move(trained).takeValue();
                         } else
                             detail::train(report.policy, *previous, step.action, c.learningRate);
@@ -249,16 +264,20 @@ Result<void> replay(const Trace& trace, IEnvironment& environment, double tolera
     if (trace.schemaId != "evengine.agent.trace" || trace.schemaVersion != 1 || !std::isfinite(trace.dt) ||
         trace.dt <= 0 || trace.dt > 60 || !std::isfinite(tolerance) || tolerance < 0 || trace.steps.size() > 1024 ||
         trace.initial.features.empty() || trace.initial.features.size() > 1024 || trace.initial.reward != 0)
-        return invalid<void>("Unsupported trace schema/version, time, length or tolerance");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                       "Unsupported trace schema/version, time, length or tolerance",
+                                                       {}, {}, "agent"));
     const Observation* previous = &trace.initial;
     if (!validObservation(*previous, trace.initial.features.size(), 1024))
-        return invalid<void>("Invalid initial trace observation");
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "Invalid initial trace observation", {}, {}, "agent"));
     for (const auto& step : trace.steps) {
         if (previous->outcome != Outcome::Running ||
             std::find(previous->legalActions.begin(), previous->legalActions.end(), step.action) ==
                 previous->legalActions.end() ||
             !validObservation(step.observation, trace.initial.features.size(), 1024))
-            return invalid<void>("Invalid trace action or observation");
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                           "Invalid trace action or observation", {}, {}, "agent"));
         previous = &step.observation;
     }
     auto reset = environment.reset(trace.environmentSeed);

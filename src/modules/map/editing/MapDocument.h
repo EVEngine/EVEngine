@@ -124,16 +124,14 @@ public:
 };
 
 /** @brief UI-neutral map structure document with reversible domain operations. */
-class EVENGINE_API_WORLD MapDocumentTarget final : public virtual IEditableTarget,
+class EVENGINE_API_WORLD MapDocumentTarget final : public ::eve::editing::EditableTargetState,
+                                public virtual IEditableTarget,
                                 public IDomainOperationTarget,
                                 public IDomainOperationTargetStaging,
                                 public IMapStructureEditTarget {
 public:
     explicit MapDocumentTarget(std::string id);
     TargetId         targetId() const override { return TargetId(id_); }
-    std::uint64_t    revision() const override { return revision_; }
-    EditRegion       dirtyRegion() const override { return dirty_; }
-    void             clearDirtyRegion() override { dirty_.clear(); }
     TargetDescriptor describe() const override;
     /** @brief Query an optional target capability. @return Borrowed pointer owned by this target, or null. @lifetime
      * Valid until this target is destroyed or mutated. */
@@ -164,8 +162,6 @@ public:
 
 private:
     std::string                            id_;
-    unsigned long long                     revision_ = 1;
-    EditRegion                             dirty_;
     std::map<StableId, MapLayerRecord>     layers_;
     std::map<StableId, MapRoadRecord>      roads_;
     std::map<StableId, MapPlacementRecord> placements_;

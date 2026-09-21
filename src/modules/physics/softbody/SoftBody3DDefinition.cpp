@@ -10,12 +10,6 @@
 namespace eve::physics {
 namespace {
 
-template <typename T>
-eve::Result<T> invalid(std::string message, std::string path) {
-    return eve::Result<T>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, std::move(message), std::move(path)));
-}
-
 const eve::Value* field(const eve::Value::Object& object, std::string_view name) {
     const auto found = object.find(std::string(name));
     return found == object.end() ? nullptr : &found->second;
@@ -30,26 +24,34 @@ bool hasExactFields(const eve::Value::Object& object, std::initializer_list<std:
 
 eve::Result<int> integer(const eve::Value::Object& object, std::string_view name) {
     const eve::Value* value = field(object, name);
-    if (!value || !value->isInt64()) return invalid<int>("soft-body field must be an integer", std::string(name));
+    if (!value || !value->isInt64())
+        return eve::Result<int>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "soft-body field must be an integer", std::string(name)));
     const auto parsed = value->asInt();
     if (parsed < std::numeric_limits<int>::min() || parsed > std::numeric_limits<int>::max())
-        return invalid<int>("soft-body integer is outside int range", std::string(name));
+        return eve::Result<int>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "soft-body integer is outside int range", std::string(name)));
     return eve::Result<int>::success(static_cast<int>(parsed));
 }
 
 eve::Result<float> number(const eve::Value::Object& object, std::string_view name) {
     const eve::Value* value = field(object, name);
-    if (!value || !value->isNumeric()) return invalid<float>("soft-body field must be numeric", std::string(name));
+    if (!value || !value->isNumeric())
+        return eve::Result<float>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "soft-body field must be numeric", std::string(name)));
     const double parsed = value->isDouble() ? value->asDouble() : static_cast<double>(value->asInt());
     if (!std::isfinite(parsed) || parsed < -std::numeric_limits<float>::max() ||
         parsed > std::numeric_limits<float>::max())
-        return invalid<float>("soft-body number must be a finite float", std::string(name));
+        return eve::Result<float>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "soft-body number must be a finite float", std::string(name)));
     return eve::Result<float>::success(static_cast<float>(parsed));
 }
 
 eve::Result<bool> boolean(const eve::Value::Object& object, std::string_view name) {
     const eve::Value* value = field(object, name);
-    if (!value || !value->isBool()) return invalid<bool>("soft-body field must be boolean", std::string(name));
+    if (!value || !value->isBool())
+        return eve::Result<bool>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                 "soft-body field must be boolean", std::string(name)));
     return eve::Result<bool>::success(value->asBool());
 }
 
@@ -57,28 +59,44 @@ eve::Result<bool> boolean(const eve::Value::Object& object, std::string_view nam
 
 eve::Result<void> SoftBody3DDefinition::validate() const {
     if (cols < 2 || rows < 2 || layers < 2)
-        return invalid<void>("soft-body lattice dimensions must each be at least 2", "dimensions");
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                 "soft-body lattice dimensions must each be at least 2",
+                                                                 "dimensions"));
     const std::int64_t count = std::int64_t(cols) * std::int64_t(rows) * std::int64_t(layers);
-    if (count > 1000000) return invalid<void>("soft-body exceeds the one-million-particle limit", "dimensions");
+    if (count > 1000000)
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "soft-body exceeds the one-million-particle limit", "dimensions"));
     const auto finite = [](float value) { return std::isfinite(value); };
-    if (!finite(spacing) || spacing <= 0.f) return invalid<void>("spacing must be finite and positive", "spacing");
+    if (!finite(spacing) || spacing <= 0.f)
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                 "spacing must be finite and positive", "spacing"));
     if (!finite(originX) || !finite(originY) || !finite(originZ))
-        return invalid<void>("origin must contain finite coordinates", "origin");
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                 "origin must contain finite coordinates", "origin"));
     if (!finite(gravityX) || !finite(gravityY) || !finite(gravityZ))
-        return invalid<void>("gravity must contain finite coordinates", "gravity");
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                 "gravity must contain finite coordinates", "gravity"));
     if (!finite(deformationResistance) || deformationResistance < 0.f || deformationResistance > 1.f)
-        return invalid<void>("deformationResistance must be in [0, 1]", "deformationResistance");
-    if (iterations < 1 || iterations > 32) return invalid<void>("iterations must be in [1, 32]", "iterations");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "deformationResistance must be in [0, 1]", "deformationResistance"));
+    if (iterations < 1 || iterations > 32)
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                 "iterations must be in [1, 32]", "iterations"));
     if (!finite(damping) || damping < 0.f || damping > 1.f)
-        return invalid<void>("damping must be in [0, 1]", "damping");
+        return eve::Result<void>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "damping must be in [0, 1]", "damping"));
     if (!finite(particleRadius) || particleRadius <= 0.f)
-        return invalid<void>("particleRadius must be finite and positive", "particleRadius");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "particleRadius must be finite and positive", "particleRadius"));
     if (!finite(particleMass) || particleMass <= 0.f)
-        return invalid<void>("particleMass must be finite and positive", "particleMass");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "particleMass must be finite and positive", "particleMass"));
     if (!finite(plasticYield) || !finite(plasticCreep) || !finite(plasticRecovery) || !finite(maxDeformation) ||
         plasticYield < 0.f || plasticCreep < 0.f || plasticCreep > 1.f || plasticRecovery < 0.f ||
         plasticRecovery > 1.f || maxDeformation < 0.f)
-        return invalid<void>("plasticity fields are outside their supported ranges", "plasticity");
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                 "plasticity fields are outside their supported ranges",
+                                                                 "plasticity"));
     return eve::Result<void>::success();
 }
 
@@ -189,7 +207,9 @@ eve::Result<void> SoftBody3DDefinition::ensureSchemaRegistered() {
 
 eve::Result<SoftBody3DDefinition> SoftBody3DDefinition::fromValue(const eve::Value& value) {
     const auto* object = value.getIf<eve::Value::Object>();
-    if (!object) return invalid<SoftBody3DDefinition>("soft-body definition must be an object", "softbody3d");
+    if (!object)
+        return eve::Result<SoftBody3DDefinition>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "soft-body definition must be an object", "softbody3d"));
     const std::initializer_list<std::string_view> fields = {"schema",
                                                             "schemaVersion",
                                                             "cols",
@@ -213,13 +233,16 @@ eve::Result<SoftBody3DDefinition> SoftBody3DDefinition::fromValue(const eve::Val
                                                             "maxDeformation",
                                                             "selfCollision"};
     if (!hasExactFields(*object, fields))
-        return invalid<SoftBody3DDefinition>("soft-body definition has missing or unknown fields", "softbody3d");
+        return eve::Result<SoftBody3DDefinition>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "soft-body definition has missing or unknown fields", "softbody3d"));
     const eve::Value* schema = field(*object, "schema");
     if (!schema || !schema->isString() || schema->asString() != SchemaId)
-        return invalid<SoftBody3DDefinition>("unexpected soft-body schema id", "schema");
+        return eve::Result<SoftBody3DDefinition>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "unexpected soft-body schema id", "schema"));
     auto version = integer(*object, "schemaVersion");
     if (!version || version.value() != static_cast<int>(SchemaVersion))
-        return invalid<SoftBody3DDefinition>("unsupported soft-body schema version", "schemaVersion");
+        return eve::Result<SoftBody3DDefinition>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "unsupported soft-body schema version", "schemaVersion"));
 
     SoftBody3DDefinition result;
     auto                 readInt = [&](std::string_view name, int& target) -> eve::Result<void> {

@@ -22,15 +22,10 @@ using eve::resource::Reservation;
 using eve::resource::ReservationId;
 using eve::resource::ResourceId;
 
-template <class T>
-eve::Result<T> failure(eve::DiagnosticCode code, std::string message, std::string path = {}) {
-    return eve::Result<T>::failure(eve::Diagnostic::error(code, std::move(message), std::move(path)));
-}
-
 eve::Result<void> validateCost(const CostSpec& cost) {
     if (!cost.isValid())
-        return failure<void>(eve::DiagnosticCode::InvalidArgument,
-                             "inventory account requires a validated non-empty CostSpec", "cost");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "inventory account requires a validated non-empty CostSpec", "cost"));
     return eve::Result<void>::success();
 }
 
@@ -81,19 +76,6 @@ eve::Status identityUnavailable() {
                                "inventory resource account has no valid identity nonce", "account"));
 }
 
-template <class T>
-eve::Result<T> exceptionFailure(std::string_view operation, const std::exception& exception) {
-    return failure<T>(eve::DiagnosticCode::Failed,
-                      std::string(operation) + " failed while staging an inventory candidate: " + exception.what(),
-                      "inventory.account");
-}
-
-template <class T>
-eve::Result<T> unknownExceptionFailure(std::string_view operation) {
-    return failure<T>(eve::DiagnosticCode::Failed,
-                      std::string(operation) + " failed while staging an inventory candidate", "inventory.account");
-}
-
 }  // namespace
 
 InventoryResourceAccount::InventoryResourceAccount(Bag& bag) : bag_(bag) {
@@ -107,8 +89,8 @@ InventoryResourceAccount::InventoryResourceAccount(Bag& bag) : bag_(bag) {
 eve::Result<std::int64_t> InventoryResourceAccount::balanceOf(const ResourceId& resource) const {
     const int quantity = bag_.countItem(resource.value());
     if (quantity < 0)
-        return failure<std::int64_t>(eve::DiagnosticCode::InvariantViolation,
-                                     "inventory item quantity must not be negative", resource.value());
+        return eve::Result<std::int64_t>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvariantViolation, "inventory item quantity must not be negative", resource.value()));
     return eve::Result<std::int64_t>::success(static_cast<std::int64_t>(quantity));
 }
 
@@ -120,8 +102,9 @@ eve::Result<std::int64_t> InventoryResourceAccount::activeReservationsFor(const 
         for (const auto& item : record.cost.items()) {
             if (item.resource != resource) continue;
             if (item.amount.value() > std::numeric_limits<std::int64_t>::max() - total)
-                return failure<std::int64_t>(eve::DiagnosticCode::InvariantViolation,
-                                             "active inventory reservations overflowed", resource.value());
+                return eve::Result<std::int64_t>::failure(
+                    eve::Diagnostic::error(eve::DiagnosticCode::InvariantViolation,
+                                           "active inventory reservations overflowed", resource.value()));
             total += item.amount.value();
         }
     }
@@ -156,14 +139,14 @@ eve::Result<Reservation> InventoryResourceAccount::reserve(const CostSpec& cost)
     const auto& checked = affordability.value();
     if (!checked.affordable) return eve::Result<Reservation>::failure(insufficient(checked));
     if (nextReservation_.value() == std::numeric_limits<std::uint64_t>::max())
-        return failure<Reservation>(eve::DiagnosticCode::InvariantViolation,
-                                    "inventory resource reservation id exhausted", "reservation");
+        return eve::Result<Reservation>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvariantViolation, "inventory resource reservation id exhausted", "reservation"));
 
     const ReservationId id    = nextReservation_;
     const auto [it, inserted] = reservations_.emplace(id, ReservationRecord{cost, ReservationState::Active});
     if (!inserted)
-        return failure<Reservation>(eve::DiagnosticCode::Conflict, "inventory resource reservation id was already used",
-                                    "reservation");
+        return eve::Result<Reservation>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Conflict, "inventory resource reservation id was already used", "reservation"));
     nextReservation_ = ReservationId(id.value() + 1);
     return eve::Result<Reservation>::success(Reservation{accountNonce_, id, it->second.cost},
                                              eve::Status::success(eve::StatusCode::Applied));
@@ -174,8 +157,9 @@ eve::Result<void> InventoryResourceAccount::applyDelta(const CostSpec& cost, boo
     if (!valid) return valid;
     for (const auto& item : cost.items()) {
         if (item.amount.value() > std::numeric_limits<int>::max())
-            return failure<void>(eve::DiagnosticCode::Unsupported,
-                                 "inventory item quantity exceeds the Bag integer range", item.resource.value());
+            return eve::Result<void>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::Unsupported,
+                                       "inventory item quantity exceeds the Bag integer range", item.resource.value()));
     }
 
     const auto        originalSlots           = bag_.slots();
@@ -198,35 +182,44 @@ eve::Result<void> InventoryResourceAccount::applyDelta(const CostSpec& cost, boo
                 auto balance = balanceOf(item.resource);
                 if (!balance || balance.value() < amount) {
                     restore();
-                    return failure<void>(eve::DiagnosticCode::PreconditionViolation,
-                                         "inventory debit would make item quantity negative", item.resource.value());
+                    return eve::Result<void>::failure(eve::Diagnostic::error(
+                        eve::DiagnosticCode::PreconditionViolation, "inventory debit would make item quantity negative",
+                        item.resource.value()));
                 }
                 if (InventorySystem::removeItem(&bag_, item.resource.value(), amount) != amount) {
                     restore();
-                    return failure<void>(eve::DiagnosticCode::Failed, "inventory debit was not applied in full",
-                                         item.resource.value());
+                    return eve::Result<void>::failure(eve::Diagnostic::error(
+                        eve::DiagnosticCode::Failed, "inventory debit was not applied in full", item.resource.value()));
                 }
             } else {
                 std::string reason;
                 if (!InventorySystem::canAdd(&bag_, item.resource.value(), amount, &reason)) {
                     restore();
-                    return failure<void>(eve::DiagnosticCode::PreconditionViolation,
-                                         "inventory credit was rejected by the Bag policy: " + reason,
-                                         item.resource.value());
+                    return eve::Result<void>::failure(eve::Diagnostic::error(
+                        eve::DiagnosticCode::PreconditionViolation,
+                        "inventory credit was rejected by the Bag policy: " + reason, item.resource.value()));
                 }
                 if (InventorySystem::addItem(&bag_, item.resource.value(), amount) != amount) {
                     restore();
-                    return failure<void>(eve::DiagnosticCode::PreconditionViolation,
-                                         "inventory credit was not applied in full", item.resource.value());
+                    return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation,
+                                                                             "inventory credit was not applied in full",
+                                                                             item.resource.value()));
                 }
             }
         }
     } catch (const std::exception& exception) {
         restore();
-        return exceptionFailure<void>(debit ? "debit" : "credit", exception);
+        return eve::Result<void>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::Failed,
+                                   std::string(debit ? "debit" : "credit") +
+                                       " failed while staging an inventory candidate: " + exception.what(),
+                                   "inventory.account"));
     } catch (...) {
         restore();
-        return unknownExceptionFailure<void>(debit ? "debit" : "credit");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Failed,
+            std::string(debit ? "debit" : "credit") + " failed while staging an inventory candidate",
+            "inventory.account"));
     }
 
     InventorySystem::changeHooksSuppressed() = oldHookSuppression;
@@ -289,9 +282,9 @@ eve::Result<void> InventoryResourceAccount::activeReservationsAreCovered() const
             auto reserved = activeReservationsFor(item.resource);
             if (!reserved) return eve::Result<void>::failure(reserved.status());
             if (balance.value() < reserved.value())
-                return failure<void>(eve::DiagnosticCode::Conflict,
-                                     "external Bag mutation invalidated active item reservations",
-                                     item.resource.value());
+                return eve::Result<void>::failure(eve::Diagnostic::error(
+                    eve::DiagnosticCode::Conflict, "external Bag mutation invalidated active item reservations",
+                    item.resource.value()));
         }
     }
     return eve::Result<void>::success();
@@ -300,14 +293,15 @@ eve::Result<void> InventoryResourceAccount::activeReservationsAreCovered() const
 eve::Result<Receipt> InventoryResourceAccount::commit(const Reservation& reservation) {
     if (accountNonce_.isZero()) return eve::Result<Receipt>::failure(identityUnavailable());
     if (!reservation.isValid())
-        return failure<Receipt>(eve::DiagnosticCode::InvalidArgument, "inventory resource reservation is invalid",
-                                "reservation");
+        return eve::Result<Receipt>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "inventory resource reservation is invalid", "reservation"));
     if (reservation.account != accountNonce_) return eve::Result<Receipt>::failure(foreignReservation());
     const auto it = reservations_.find(reservation.id);
     if (it == reservations_.end()) return eve::Result<Receipt>::failure(unknownReservation());
     if (it->second.cost != reservation.cost)
-        return failure<Receipt>(eve::DiagnosticCode::Conflict,
-                                "inventory reservation cost does not match its account record", "reservation.cost");
+        return eve::Result<Receipt>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::Conflict,
+                                   "inventory reservation cost does not match its account record", "reservation.cost"));
     if (it->second.state != ReservationState::Active) return eve::Result<Receipt>::failure(terminalReservation());
     auto covered = activeReservationsAreCovered();
     if (!covered) return eve::Result<Receipt>::failure(covered.status());
@@ -325,14 +319,15 @@ eve::Result<Receipt> InventoryResourceAccount::commit(const Reservation& reserva
 eve::Result<void> InventoryResourceAccount::rollback(const Reservation& reservation) {
     if (accountNonce_.isZero()) return eve::Result<void>::failure(identityUnavailable());
     if (!reservation.isValid())
-        return failure<void>(eve::DiagnosticCode::InvalidArgument, "inventory resource reservation is invalid",
-                             "reservation");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "inventory resource reservation is invalid", "reservation"));
     if (reservation.account != accountNonce_) return eve::Result<void>::failure(foreignReservation());
     const auto it = reservations_.find(reservation.id);
     if (it == reservations_.end()) return eve::Result<void>::failure(unknownReservation());
     if (it->second.cost != reservation.cost)
-        return failure<void>(eve::DiagnosticCode::Conflict,
-                             "inventory reservation cost does not match its account record", "reservation.cost");
+        return eve::Result<void>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::Conflict,
+                                   "inventory reservation cost does not match its account record", "reservation.cost"));
     if (it->second.state != ReservationState::Active) return eve::Result<void>::failure(terminalReservation());
     it->second.state = ReservationState::RolledBack;
     return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));

@@ -20,74 +20,58 @@ void exposeEmitterState(ssq::Class& cls, HSQUIRRELVM vm) {
     cls.addFunc("isEmitting", [](Emitter* self) { return self->isEmitting(); });
     cls.addFunc("activeParticleCount", [vm](Emitter*, VolumeFluid* solver, ssq::Object emissionObject) {
         if (!solver)
-            return script::projectStatusResult(
-                vm,
-                Status::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Missing volume solver",
-                                                  "fluids.volume.actorParticleCount")),
-                false, false);
+            return script::projectStatusResult(vm, Status::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Missing volume solver",
+                                                  "fluids.volume.actorParticleCount")));
         auto value = script::valueFromSquirrel(emissionObject);
-        if (!value) return script::projectStatusResult(vm, value.status(), false, false);
+        if (!value) return script::projectStatusResult(vm, value.status());
         auto emission = decodeVolumeFluidEmission(value.value());
-        if (!emission) return script::projectStatusResult(vm, emission.status(), false, false);
+        if (!emission) return script::projectStatusResult(vm, emission.status());
         return script::projectResult(vm, solver->actorParticleCount(emission.value().prototype.actorGroup),
                                      [](unsigned count) { return Value(int64_t(count)); });
     });
     cls.addFunc("killParticle", [vm](Emitter*, VolumeFluid* solver, ssq::Object emissionObject, int actorIndex) {
         if (!solver || actorIndex < 0)
-            return script::projectStatusResult(
-                vm,
-                Status::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+            return script::projectStatusResult(vm, Status::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
                                                   "Missing solver or invalid actor particle index",
-                                                  "fluids.volume.killActorParticle")),
-                false, false);
+                                                  "fluids.volume.killActorParticle")));
         auto value = script::valueFromSquirrel(emissionObject);
-        if (!value) return script::projectStatusResult(vm, value.status(), false, false);
+        if (!value) return script::projectStatusResult(vm, value.status());
         auto emission = decodeVolumeFluidEmission(value.value());
-        if (!emission) return script::projectStatusResult(vm, emission.status(), false, false);
+        if (!emission) return script::projectStatusResult(vm, emission.status());
         return script::projectResult(
             vm, solver->killActorParticle(emission.value().prototype.actorGroup, unsigned(actorIndex)));
     });
     cls.addFunc("snapshot", [vm](Emitter* self) {
-        return script::projectStatusResult(vm, Status::success(), true, true,
-                                           encodeVolumeFluidEmitterState(self->snapshot()));
+        return script::projectStatusResult(vm, Status::success(), encodeVolumeFluidEmitterState(self->snapshot()));
     });
     cls.addFunc("restore", [vm](Emitter* self, ssq::Object object) {
         auto value = script::valueFromSquirrel(object);
-        if (!value) return script::projectStatusResult(vm, value.status(), false, false);
+        if (!value) return script::projectStatusResult(vm, value.status());
         auto decoded = decodeVolumeFluidEmitterState(value.value());
-        if (!decoded) return script::projectStatusResult(vm, decoded.status(), false, false);
+        if (!decoded) return script::projectStatusResult(vm, decoded.status());
         return script::projectResult(vm, self->restore(decoded.value()));
     });
     cls.addFunc("checkpoint", [vm](Emitter* self, VolumeFluid* solver, ssq::Object emissionObject) {
         if (!solver)
-            return script::projectStatusResult(
-                vm,
-                Status::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Missing volume solver",
-                                                  "fluids.volume.emitterCheckpoint")),
-                false, false);
+            return script::projectStatusResult(vm, Status::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Missing volume solver",
+                                                  "fluids.volume.emitterCheckpoint")));
         auto value = script::valueFromSquirrel(emissionObject);
-        if (!value) return script::projectStatusResult(vm, value.status(), false, false);
+        if (!value) return script::projectStatusResult(vm, value.status());
         auto emission = decodeVolumeFluidEmission(value.value());
-        if (!emission) return script::projectStatusResult(vm, emission.status(), false, false);
-        return script::projectStatusResult(
-            vm, Status::success(), true, true,
-            encodeVolumeFluidEmitterCheckpoint(captureVolumeFluidEmitterCheckpoint(*solver, emission.value(), *self)));
+        if (!emission) return script::projectStatusResult(vm, emission.status());
+        return script::projectStatusResult(vm, Status::success(), encodeVolumeFluidEmitterCheckpoint(captureVolumeFluidEmitterCheckpoint(*solver, emission.value(), *self)));
     });
     cls.addFunc("restoreCheckpoint", [vm](Emitter* self, VolumeFluid* solver, ssq::Object checkpointObject) {
         if (!solver)
-            return script::projectStatusResult(
-                vm,
-                Status::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Missing volume solver",
-                                                  "fluids.volume.emitterCheckpoint")),
-                false, false);
+            return script::projectStatusResult(vm, Status::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Missing volume solver",
+                                                  "fluids.volume.emitterCheckpoint")));
         auto value = script::valueFromSquirrel(checkpointObject);
-        if (!value) return script::projectStatusResult(vm, value.status(), false, false);
+        if (!value) return script::projectStatusResult(vm, value.status());
         auto checkpoint = decodeVolumeFluidEmitterCheckpoint(value.value());
-        if (!checkpoint) return script::projectStatusResult(vm, checkpoint.status(), false, false);
+        if (!checkpoint) return script::projectStatusResult(vm, checkpoint.status());
         auto restored = restoreVolumeFluidEmitterCheckpoint(*solver, *self, checkpoint.value());
-        if (!restored) return script::projectStatusResult(vm, restored.status(), false, false);
-        return script::projectStatusResult(vm, Status::success(), true, true,
-                                           encodeVolumeFluidEmission(checkpoint.value().emission));
+        if (!restored) return script::projectStatusResult(vm, restored.status());
+        return script::projectStatusResult(vm, Status::success(), encodeVolumeFluidEmission(checkpoint.value().emission));
     });
 }
 Result<VolumeFluidSnapshot> read(const ssq::Object& object) {

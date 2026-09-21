@@ -37,12 +37,6 @@ std::string numberToString(double v) {
     return os.str();
 }
 
-template <typename T>
-eve::Result<T> bundleFailure(eve::DiagnosticCode code, std::string message, std::string path) {
-    return eve::Result<T>::failure(
-        eve::Diagnostic::error(code, std::move(message), std::move(path), {}, "i18n.bundle"));
-}
-
 bool validIdentifier(const std::string& value) {
     if (value.empty() || value.size() > 64) return false;
     for (const unsigned char ch : value)
@@ -267,13 +261,14 @@ const I18n::Locale* I18n::findLocale(const std::string& lang) const {
 
 eve::Result<void> I18n::replaceLocaleFromJson(const std::string& lang, const std::string& json) {
     if (lang.empty())
-        return bundleFailure<void>(eve::DiagnosticCode::InvalidArgument, "locale identifier must not be empty",
-                                   "locale");
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "locale identifier must not be empty", "locale", {}, "i18n.bundle"));
     Locale      loc;
     std::string error;
     if (!parseLocale(json, loc.strings, loc.plurals, &error))
-        return bundleFailure<void>(eve::DiagnosticCode::ParseError, error.empty() ? "invalid locale JSON" : error,
-                                   "locale." + lang);
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::ParseError,
+                                                                 error.empty() ? "invalid locale JSON" : error,
+                                                                 "locale." + lang, {}, "i18n.bundle"));
     loc.path       = "";
     loc.modtime    = -1;
     locales_[lang] = std::move(loc);
@@ -288,48 +283,58 @@ eve::Result<int> I18n::replaceBundleFromJson(const std::string& json) {
     std::string parseError;
     const auto  document = eve::json::Document::parse(json, &parseError);
     if (!document.valid())
-        return bundleFailure<int>(eve::DiagnosticCode::ParseError,
-                                  parseError.empty() ? "invalid localization bundle JSON" : parseError, "$");
+        return eve::Result<int>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::ParseError, parseError.empty() ? "invalid localization bundle JSON" : parseError, "$",
+            {}, "i18n.bundle"));
     const auto root = document.root();
     if (!root.isObject())
-        return bundleFailure<int>(eve::DiagnosticCode::InvalidArgument, "localization bundle root must be an object",
-                                  "$");
+        return eve::Result<int>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                "localization bundle root must be an object", "$", {},
+                                                                "i18n.bundle"));
     const std::unordered_set<std::string> rootFields = {"schema", "version", "defaultLocale", "locales"};
     for (const auto& field : root.keys())
         if (!rootFields.contains(field))
-            return bundleFailure<int>(eve::DiagnosticCode::InvalidArgument,
-                                      "localization bundle contains an unknown field", "$." + field);
+            return eve::Result<int>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                    "localization bundle contains an unknown field",
+                                                                    "$." + field, {}, "i18n.bundle"));
     const auto schema        = root.get("schema");
     const auto version       = root.get("version");
     const auto defaultLocale = root.get("defaultLocale");
     const auto locales       = root.get("locales");
     if (!schema.isString() || schema.asString() != "eve.i18n.bundle")
-        return bundleFailure<int>(eve::DiagnosticCode::InvalidArgument, "localization bundle schema id is invalid",
-                                  "$.schema");
+        return eve::Result<int>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                "localization bundle schema id is invalid", "$.schema",
+                                                                {}, "i18n.bundle"));
     if (!version.isInt64() || version.asInt64() != 1)
-        return bundleFailure<int>(eve::DiagnosticCode::UnknownVersion, "unsupported localization bundle schema version",
-                                  "$.version");
+        return eve::Result<int>::failure(eve::Diagnostic::error(eve::DiagnosticCode::UnknownVersion,
+                                                                "unsupported localization bundle schema version",
+                                                                "$.version", {}, "i18n.bundle"));
     if (!defaultLocale.isString() || !validIdentifier(defaultLocale.asString()))
-        return bundleFailure<int>(eve::DiagnosticCode::InvalidArgument,
-                                  "defaultLocale must be a stable locale identifier", "$.defaultLocale");
+        return eve::Result<int>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                "defaultLocale must be a stable locale identifier",
+                                                                "$.defaultLocale", {}, "i18n.bundle"));
     if (!locales.isObject() || locales.size() == 0 || locales.size() > 32)
-        return bundleFailure<int>(eve::DiagnosticCode::InvalidArgument,
-                                  "locales must contain between 1 and 32 locale objects", "$.locales");
+        return eve::Result<int>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                "locales must contain between 1 and 32 locale objects",
+                                                                "$.locales", {}, "i18n.bundle"));
     if (!locales.has(defaultLocale.asString().c_str()))
-        return bundleFailure<int>(eve::DiagnosticCode::NotFound, "defaultLocale is not present in locales",
-                                  "$.defaultLocale");
+        return eve::Result<int>::failure(eve::Diagnostic::error(eve::DiagnosticCode::NotFound,
+                                                                "defaultLocale is not present in locales",
+                                                                "$.defaultLocale", {}, "i18n.bundle"));
 
     std::unordered_map<std::string, Locale> proposed;
     for (const auto& lang : locales.keys()) {
         if (!validIdentifier(lang))
-            return bundleFailure<int>(eve::DiagnosticCode::InvalidArgument, "locale names must be stable identifiers",
-                                      "$.locales." + lang);
+            return eve::Result<int>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                    "locale names must be stable identifiers",
+                                                                    "$.locales." + lang, {}, "i18n.bundle"));
         Locale      candidate;
         std::string error;
         std::string errorPath;
         if (!flattenStrict(locales.get(lang.c_str()), "", 0, candidate.strings, candidate.plurals, error, errorPath))
-            return bundleFailure<int>(eve::DiagnosticCode::InvalidArgument, std::move(error),
-                                      "$.locales." + lang + (errorPath.empty() ? "" : "." + errorPath));
+            return eve::Result<int>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::InvalidArgument, std::move(error),
+                "$.locales." + lang + (errorPath.empty() ? "" : "." + errorPath), {}, "i18n.bundle"));
         proposed.emplace(lang, std::move(candidate));
     }
 
@@ -338,34 +343,37 @@ eve::Result<int> I18n::replaceBundleFromJson(const std::string& json) {
         for (const auto& [key, sourceText] : source.strings) {
             const auto translated = locale.strings.find(key);
             if (translated == locale.strings.end())
-                return bundleFailure<int>(eve::DiagnosticCode::NotFound,
-                                          "locale is missing a required singular translation",
-                                          "$.locales." + lang + "." + key);
+                return eve::Result<int>::failure(eve::Diagnostic::error(
+                    eve::DiagnosticCode::NotFound, "locale is missing a required singular translation",
+                    "$.locales." + lang + "." + key, {}, "i18n.bundle"));
             std::set<std::string> expected;
             std::set<std::string> actual;
             std::string           placeholderError;
             if (!collectPlaceholders(sourceText, expected, placeholderError))
-                return bundleFailure<int>(eve::DiagnosticCode::InvalidArgument, placeholderError,
-                                          "$.locales." + defaultLocale.asString() + "." + key);
+                return eve::Result<int>::failure(
+                    eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, placeholderError,
+                                           "$.locales." + defaultLocale.asString() + "." + key, {}, "i18n.bundle"));
             if (!collectPlaceholders(translated->second, actual, placeholderError))
-                return bundleFailure<int>(eve::DiagnosticCode::InvalidArgument, placeholderError,
-                                          "$.locales." + lang + "." + key);
+                return eve::Result<int>::failure(
+                    eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, placeholderError,
+                                           "$.locales." + lang + "." + key, {}, "i18n.bundle"));
             if (expected != actual)
-                return bundleFailure<int>(eve::DiagnosticCode::InvalidArgument,
-                                          "translation placeholders do not match the default locale",
-                                          "$.locales." + lang + "." + key);
+                return eve::Result<int>::failure(eve::Diagnostic::error(
+                    eve::DiagnosticCode::InvalidArgument, "translation placeholders do not match the default locale",
+                    "$.locales." + lang + "." + key, {}, "i18n.bundle"));
         }
         for (const auto& [key, translated] : locale.strings)
             if (!source.strings.contains(key))
-                return bundleFailure<int>(eve::DiagnosticCode::InvalidArgument,
-                                          "locale contains a singular key absent from the default locale",
-                                          "$.locales." + lang + "." + key);
+                return eve::Result<int>::failure(
+                    eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                           "locale contains a singular key absent from the default locale",
+                                           "$.locales." + lang + "." + key, {}, "i18n.bundle"));
         for (const auto& [key, sourceForms] : source.plurals) {
             const auto translated = locale.plurals.find(key);
             if (translated == locale.plurals.end())
-                return bundleFailure<int>(eve::DiagnosticCode::NotFound,
-                                          "locale is missing a required plural translation",
-                                          "$.locales." + lang + "." + key);
+                return eve::Result<int>::failure(eve::Diagnostic::error(
+                    eve::DiagnosticCode::NotFound, "locale is missing a required plural translation",
+                    "$.locales." + lang + "." + key, {}, "i18n.bundle"));
             for (const auto& [form, translatedText] : translated->second) {
                 const auto         exactSource    = sourceForms.find(form);
                 const auto         fallbackSource = sourceForms.find("other");
@@ -375,23 +383,25 @@ eve::Result<int> I18n::replaceBundleFromJson(const std::string& json) {
                 std::set<std::string> actual;
                 std::string           placeholderError;
                 if (!collectPlaceholders(sourceText, expected, placeholderError))
-                    return bundleFailure<int>(eve::DiagnosticCode::InvalidArgument, placeholderError,
-                                              "$.locales." + defaultLocale.asString() + "." + key + "." + form);
+                    return eve::Result<int>::failure(eve::Diagnostic::error(
+                        eve::DiagnosticCode::InvalidArgument, placeholderError,
+                        "$.locales." + defaultLocale.asString() + "." + key + "." + form, {}, "i18n.bundle"));
                 if (!collectPlaceholders(translatedText, actual, placeholderError))
-                    return bundleFailure<int>(eve::DiagnosticCode::InvalidArgument, placeholderError,
-                                              "$.locales." + lang + "." + key + "." + form);
+                    return eve::Result<int>::failure(
+                        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, placeholderError,
+                                               "$.locales." + lang + "." + key + "." + form, {}, "i18n.bundle"));
                 if (expected != actual)
-                    return bundleFailure<int>(eve::DiagnosticCode::InvalidArgument,
-                                              "plural placeholders do not match the default locale",
-                                              "$.locales." + lang + "." + key + "." + form);
+                    return eve::Result<int>::failure(eve::Diagnostic::error(
+                        eve::DiagnosticCode::InvalidArgument, "plural placeholders do not match the default locale",
+                        "$.locales." + lang + "." + key + "." + form, {}, "i18n.bundle"));
             }
         }
         for (const auto& [key, forms] : locale.plurals) {
             (void)forms;
             if (!source.plurals.contains(key))
-                return bundleFailure<int>(eve::DiagnosticCode::InvalidArgument,
-                                          "locale contains a plural key absent from the default locale",
-                                          "$.locales." + lang + "." + key);
+                return eve::Result<int>::failure(eve::Diagnostic::error(
+                    eve::DiagnosticCode::InvalidArgument, "locale contains a plural key absent from the default locale",
+                    "$.locales." + lang + "." + key, {}, "i18n.bundle"));
         }
     }
 
@@ -405,8 +415,9 @@ eve::Result<int> I18n::replaceBundleFromJson(const std::string& json) {
 
 eve::Result<void> I18n::replaceLocaleFromFile(const std::string& lang, const std::string& path) {
     if (lang.empty() || path.empty())
-        return bundleFailure<void>(eve::DiagnosticCode::InvalidArgument,
-                                   "locale identifier and VFS path must not be empty", "locale.file");
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                 "locale identifier and VFS path must not be empty",
+                                                                 "locale.file", {}, "i18n.bundle"));
 
     auto* fs = ModuleManager::getInstance<filesystem::Filesystem>("Filesystem");
     if (!fs) fs = filesystem::Filesystem::create();
@@ -416,11 +427,13 @@ eve::Result<void> I18n::replaceLocaleFromFile(const std::string& lang, const std
         fd = fs->read(path);
     } catch (...) {
         delete fd;
-        return bundleFailure<void>(eve::DiagnosticCode::NotFound, "locale file could not be read", path);
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::NotFound, "locale file could not be read", path, {}, "i18n.bundle"));
     }
     if (fd == nullptr || fd->getData() == nullptr || fd->getSize() == 0) {
         delete fd;
-        return bundleFailure<void>(eve::DiagnosticCode::NotFound, "locale file is missing or empty", path);
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::NotFound, "locale file is missing or empty", path, {}, "i18n.bundle"));
     }
 
     std::string text(static_cast<const char*>(fd->getData()), fd->getSize());
@@ -429,8 +442,8 @@ eve::Result<void> I18n::replaceLocaleFromFile(const std::string& lang, const std
     Locale      loc;
     std::string error;
     if (!parseLocale(text, loc.strings, loc.plurals, &error))
-        return bundleFailure<void>(eve::DiagnosticCode::ParseError, error.empty() ? "invalid locale JSON" : error,
-                                   path);
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::ParseError, error.empty() ? "invalid locale JSON" : error, path, {}, "i18n.bundle"));
 
     loc.path    = path;
     loc.modtime = fileModtime(path);
@@ -449,7 +462,8 @@ void I18n::clear() { locales_.clear(); }
 
 eve::Result<void> I18n::selectLanguage(const std::string& lang) {
     if (!hasLanguage(lang))
-        return bundleFailure<void>(eve::DiagnosticCode::NotFound, "language has not been admitted", "language." + lang);
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::NotFound, "language has not been admitted", "language." + lang, {}, "i18n.bundle"));
     language_ = lang;
     return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
 }
@@ -474,29 +488,33 @@ bool I18n::hasInLanguage(const std::string& lang, const std::string& key) const 
 
 eve::Result<int> I18n::validateKeyCoverage(const std::string& key) const {
     if (key.empty() || key.back() == '.')
-        return bundleFailure<int>(eve::DiagnosticCode::InvalidArgument, "translation key must not be empty",
-                                  "requiredKey");
+        return eve::Result<int>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                "translation key must not be empty", "requiredKey", {},
+                                                                "i18n.bundle"));
     size_t offset = 0;
     while (offset < key.size()) {
         const size_t      separator = key.find('.', offset);
         const std::string segment   = key.substr(offset, separator == std::string::npos ? std::string::npos
                                                                                        : separator - offset);
         if (!validIdentifier(segment))
-            return bundleFailure<int>(eve::DiagnosticCode::InvalidArgument,
-                                      "translation key segments must be stable identifiers", "requiredKey." + key);
+            return eve::Result<int>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::InvalidArgument, "translation key segments must be stable identifiers",
+                "requiredKey." + key, {}, "i18n.bundle"));
         if (separator == std::string::npos) break;
         offset = separator + 1;
     }
     if (locales_.empty())
-        return bundleFailure<int>(eve::DiagnosticCode::NotFound, "no locales have been admitted", "locales");
+        return eve::Result<int>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::NotFound, "no locales have been admitted", "locales", {}, "i18n.bundle"));
     std::vector<std::string> languages;
     languages.reserve(locales_.size());
     for (const auto& [language, locale] : locales_) languages.push_back(language);
     std::sort(languages.begin(), languages.end());
     for (const auto& language : languages)
         if (!hasInLanguage(language, key))
-            return bundleFailure<int>(eve::DiagnosticCode::NotFound, "required translation key is missing",
-                                      "locales." + language + "." + key);
+            return eve::Result<int>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::NotFound, "required translation key is missing",
+                                       "locales." + language + "." + key, {}, "i18n.bundle"));
     return eve::Result<int>::success(static_cast<int>(languages.size()));
 }
 

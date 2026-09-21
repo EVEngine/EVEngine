@@ -7,11 +7,6 @@
 namespace eve::particles_editing {
 namespace {
 
-template <class T>
-EditorResult<T> runtimeError(EditorStatus status, const char* rule, std::string message) {
-    return eve::editing::failed<T>(status, RuleId(rule), std::move(message));
-}
-
 const EditorValue* field(const EditorValue& value, const char* key) {
     const auto* object = value.getIf<EditorValue::Object>();
     if (!object) return nullptr;
@@ -41,8 +36,8 @@ EditorResult<void> ParticleGraphRuntimeBuilder::apply(const GraphDocumentData& g
                                                       particles::ParticleEmitter* emitter,
                                                       const TextureResolver& textures) const {
     if (!emitter)
-        return runtimeError<void>(EditorStatus::Rejected, "editor.particles.runtime-emitter",
-                                  "Live particle emitter is required");
+        return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.particles.runtime-emitter"),
+                                          "Live particle emitter is required");
     ParticleGraphDomain domain;
     const ParticleGraphCompileResult compiled = domain.compile(graph);
     if (compiled.status != EditorStatus::Applied)
@@ -53,18 +48,19 @@ EditorResult<void> ParticleGraphRuntimeBuilder::apply(const GraphDocumentData& g
     const EditorValue* renderer = field(compiled.configuration, "renderer");
     const EditorValue* output = field(compiled.configuration, "output");
     if (emitter->getBufferSize() != integer(*output, "bufferSize"))
-        return runtimeError<void>(EditorStatus::Conflict, "editor.particles.runtime-buffer-size",
-                                  "Live emitter buffer size differs from the graph output; recreate the emitter");
+        return eve::editing::failed<void>(
+            EditorStatus::Conflict, RuleId("editor.particles.runtime-buffer-size"),
+            "Live emitter buffer size differs from the graph output; recreate the emitter");
     const std::string texture = text(*renderer, "texture");
     graphics::Texture* resolvedTexture = nullptr;
     if (!texture.empty()) {
         if (!textures)
-            return runtimeError<void>(EditorStatus::Rejected, "editor.particles.texture-resolver",
-                                      "Particle graph references a texture but no resolver was provided");
+            return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.particles.texture-resolver"),
+                                              "Particle graph references a texture but no resolver was provided");
         resolvedTexture = textures(texture);
         if (!resolvedTexture)
-            return runtimeError<void>(EditorStatus::NotFound, "editor.particles.texture-not-found",
-                                      "Particle texture asset could not be resolved: " + texture);
+            return eve::editing::failed<void>(EditorStatus::NotFound, RuleId("editor.particles.texture-not-found"),
+                                              "Particle texture asset could not be resolved: " + texture);
     }
 
     const auto& lifetime = array(*emission, "lifetime");

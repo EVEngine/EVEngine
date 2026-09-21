@@ -7,11 +7,6 @@
 namespace eve::physics_editing {
 namespace {
 
-template <class T>
-EditorResult<T> jointError(EditorStatus status, const char* rule, std::string message) {
-    return eve::editing::failed<T>(status, RuleId(rule), std::move(message));
-}
-
 const EditorValue* field(const EditorValue& value, const char* key) {
     const auto* object = value.getIf<EditorValue::Object>();
     if (!object) return nullptr;
@@ -36,7 +31,8 @@ PropertyDescriptor jointProperty(const char* path, const char* label, const char
 PhysicsJointTarget::PhysicsJointTarget(std::string id) : id_(std::move(id)), values_(defaults()) {}
 
 TargetDescriptor PhysicsJointTarget::describe() const {
-    return {TargetId(id_), "physics-joint-3d", revision_, false, {CapabilityId("eve.editor.target.physics-joint")}};
+    return {
+        TargetId(id_), "physics-joint-3d", revisionValue(), false, {CapabilityId("eve.editor.target.physics-joint")}};
 }
 
 void* PhysicsJointTarget::queryCapability(const CapabilityId& capability) {
@@ -46,23 +42,23 @@ void* PhysicsJointTarget::queryCapability(const CapabilityId& capability) {
 
 EditorResult<void> PhysicsJointTarget::applyDomainOperation(const DomainOperation& operation) {
     if (operation.target != TargetId(id_) || operation.type != "physics.joint.property.set.v1")
-        return jointError<void>(EditorStatus::Rejected, "editor.physics.joint-operation",
-                                "Operation is not valid for this physics joint");
+        return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.physics.joint-operation"),
+                                          "Operation is not valid for this physics joint");
     const EditorValue* pathValue = field(operation.payload, "path");
     const EditorValue* value     = field(operation.payload, "value");
     const auto*        path      = pathValue ? pathValue->getIf<std::string>() : nullptr;
     if (!path || !value)
-        return jointError<void>(EditorStatus::Rejected, "editor.physics.joint-payload",
-                                "Joint operation requires path and value");
+        return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.physics.joint-payload"),
+                                          "Joint operation requires path and value");
     auto descriptor = jointSchema().find(PropertyPath(*path));
     if (!descriptor)
-        return jointError<void>(EditorStatus::Unsupported, "editor.physics.joint-property",
-                                "Unknown joint property: " + *path);
+        return eve::editing::failed<void>(EditorStatus::Unsupported, RuleId("editor.physics.joint-property"),
+                                          "Unknown joint property: " + *path);
     auto valid = validatePropertyValue(*descriptor, *value);
     if (!valid.ok()) return valid;
     values_[*path] = *value;
-    ++revision_;
-    dirty_.include(0, 0);
+    bumpRevision();
+    widenDirty(0, 0);
     return eve::editing::applied<void>();
 }
 
@@ -73,8 +69,8 @@ std::unique_ptr<IDomainOperationTarget> PhysicsJointTarget::cloneDomainState() c
 EditorResult<void> PhysicsJointTarget::commitDomainState(std::unique_ptr<IDomainOperationTarget> candidate) {
     auto* typed = dynamic_cast<PhysicsJointTarget*>(candidate.get());
     if (!typed || typed->id_ != id_)
-        return jointError<void>(EditorStatus::Conflict, "editor.physics.joint-candidate-mismatch",
-                                "Joint candidate belongs to another target");
+        return eve::editing::failed<void>(EditorStatus::Conflict, RuleId("editor.physics.joint-candidate-mismatch"),
+                                          "Joint candidate belongs to another target");
     *this = *typed;
     return eve::editing::applied<void>();
 }
@@ -84,7 +80,7 @@ eve::Result<eve::Revision> PhysicsJointTarget::currentRevision(const SelectionSn
         return eve::Result<eve::Revision>::failure(
             eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "Selection does not belong to this joint",
                                    "editor.physics.joint-selection", {}, "editor.PhysicsJointTarget"));
-    return eve::Result<eve::Revision>::success(eve::Revision(revision_));
+    return eve::Result<eve::Revision>::success(eve::Revision(revisionValue()));
 }
 
 PropertySchema PhysicsJointTarget::schema(const SelectionSnapshot&) const { return jointSchema(); }
@@ -99,12 +95,13 @@ PropertyReadResult PhysicsJointTarget::read(const SelectionSnapshot& selection, 
 EditorResult<DomainOperation> PhysicsJointTarget::makeSet(const SelectionSnapshot& selection, const PropertyPath& path,
                                                           const EditorValue& value, PropertySetMode mode) const {
     if (!selectionMatches(selection) || mode != PropertySetMode::Absolute)
-        return jointError<DomainOperation>(EditorStatus::Rejected, "editor.physics.joint-set",
-                                           "Joint property requires its own selection and absolute assignment");
+        return eve::editing::failed<DomainOperation>(
+            EditorStatus::Rejected, RuleId("editor.physics.joint-set"),
+            "Joint property requires its own selection and absolute assignment");
     auto descriptor = jointSchema().find(path);
     if (!descriptor)
-        return jointError<DomainOperation>(EditorStatus::Unsupported, "editor.physics.joint-property",
-                                           "Unknown joint property: " + path.value());
+        return eve::editing::failed<DomainOperation>(EditorStatus::Unsupported, RuleId("editor.physics.joint-property"),
+                                                     "Unknown joint property: " + path.value());
     auto valid = validatePropertyValue(*descriptor, value);
     if (!valid.ok()) {
         return EditorResult<DomainOperation>::failure(valid.status());
@@ -130,8 +127,8 @@ EditorResult<DomainOperation> PhysicsJointTarget::makeReset(const SelectionSnaps
                                                             const PropertyPath&      path) const {
     auto descriptor = jointSchema().find(path);
     if (!descriptor)
-        return jointError<DomainOperation>(EditorStatus::Unsupported, "editor.physics.joint-property",
-                                           "Unknown joint property: " + path.value());
+        return eve::editing::failed<DomainOperation>(EditorStatus::Unsupported, RuleId("editor.physics.joint-property"),
+                                                     "Unknown joint property: " + path.value());
     return makeSet(selection, path, descriptor->defaultValue, PropertySetMode::Absolute);
 }
 

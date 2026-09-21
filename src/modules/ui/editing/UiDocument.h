@@ -130,7 +130,8 @@ public:
 };
 
 /** @brief Serializable UI authoring document with hierarchy and inspector capabilities. */
-class EVENGINE_API_DOMAINS UiDocumentTarget final : public virtual IEditableTarget,
+class EVENGINE_API_DOMAINS UiDocumentTarget final : public ::eve::editing::EditableTargetState,
+                               public virtual IEditableTarget,
                                public IDomainOperationTarget,
                                public IDomainOperationTargetStaging,
                                public IUiDocumentEditTarget,
@@ -139,9 +140,6 @@ public:
     explicit UiDocumentTarget(std::string id);
 
     TargetId         targetId() const override { return TargetId(id_); }
-    std::uint64_t    revision() const override { return revision_; }
-    EditRegion       dirtyRegion() const override { return dirty_; }
-    void             clearDirtyRegion() override { dirty_.clear(); }
     TargetDescriptor describe() const override;
     /** @brief Query an optional target capability. @return Borrowed pointer owned by this target, or null. @lifetime
      * Valid until this target is destroyed or mutated. */
@@ -193,8 +191,6 @@ private:
                                                      const std::map<ObjectId, UiWidgetSnapshot>& widgets) const;
 
     std::string                          id_;
-    unsigned long long                   revision_ = 1;
-    EditRegion                           dirty_;
     std::map<ObjectId, UiWidgetSnapshot> widgets_;
 };
 

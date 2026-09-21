@@ -11,7 +11,8 @@
 namespace eve::audio_editing {
 
 /** @brief Serializable audio-source authoring target independent of OpenAL handles. */
-class EVENGINE_API_BACKENDS AudioSourceTarget final : public virtual IEditableTarget,
+class EVENGINE_API_BACKENDS AudioSourceTarget final : public ::eve::editing::EditableTargetState,
+                                public virtual IEditableTarget,
                                 public IDomainOperationTarget,
                                 public IDomainOperationTargetStaging,
                                 public IPropertyProvider,
@@ -22,10 +23,7 @@ public:
 
     explicit AudioSourceTarget(std::string id);
 
-    TargetId targetId() const override { return TargetId(id_); }
-    std::uint64_t revision() const override { return revision_; }
-    EditRegion dirtyRegion() const override { return dirty_; }
-    void clearDirtyRegion() override { dirty_.clear(); }
+    TargetId         targetId() const override { return TargetId(id_); }
     TargetDescriptor describe() const override;
     /** @brief Query an optional target capability. @return Borrowed pointer owned by this target, or null. @lifetime Valid until this target is destroyed or mutated. */
     void* queryCapability(const CapabilityId& capability) override;
@@ -53,9 +51,7 @@ private:
     static std::map<std::string, EditorValue> defaults();
     bool selectionMatches(const SelectionSnapshot& selection) const;
 
-    std::string id_;
-    unsigned long long revision_ = 1;
-    EditRegion dirty_;
+    std::string                        id_;
     std::map<std::string, EditorValue> values_;
 };
 
@@ -122,15 +118,13 @@ struct AudioBusSnapshot {
 };
 
 /** @brief Serializable mixer-bus hierarchy, including master bus. */
-class EVENGINE_API_BACKENDS AudioMixerTarget final : public virtual IEditableTarget,
+class EVENGINE_API_BACKENDS AudioMixerTarget final : public ::eve::editing::EditableTargetState,
+                               public virtual IEditableTarget,
                                public IDomainOperationTarget,
                                public IDomainOperationTargetStaging {
 public:
     explicit AudioMixerTarget(std::string id);
-    TargetId targetId() const override { return TargetId(id_); }
-    std::uint64_t revision() const override { return revision_; }
-    EditRegion dirtyRegion() const override { return dirty_; }
-    void clearDirtyRegion() override { dirty_.clear(); }
+    TargetId         targetId() const override { return TargetId(id_); }
     TargetDescriptor describe() const override;
     /** @brief Query an optional target capability. @return Borrowed pointer owned by this target, or null. @lifetime Valid until this target is destroyed or mutated. */
     void* queryCapability(const CapabilityId& capability) override;
@@ -158,9 +152,7 @@ private:
     static EditorResult<AudioBusSnapshot> parseBus(const EditorValue& value);
     bool wouldCycle(const ObjectId& id, const ObjectId& parent) const;
 
-    std::string id_;
-    unsigned long long revision_ = 1;
-    EditRegion dirty_;
+    std::string                          id_;
     std::map<ObjectId, AudioBusSnapshot> buses_;
 };
 

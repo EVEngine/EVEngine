@@ -5,11 +5,6 @@
 
 namespace eve::asset {
 namespace {
-template <class T>
-Result<T> bad(std::string message) {
-    return Result<T>::failure(
-        Diagnostic::error(DiagnosticCode::ParseError, std::move(message), {}, {}, "asset.sprite-animation"));
-}
 const Value* field(const Value& value, const char* name) { return value.isObject() ? value.find(name) : nullptr; }
 bool         number(const Value* v, double& n) {
     if (!v || !v->isNumeric()) return false;
@@ -36,13 +31,16 @@ Result<SpriteAnimationClip> SpriteAnimationClip::decode(const Value& value) {
         !version->isInt64() || version->asInt() != 1 || !loop || !loop->isBool() ||
         !number(field(value, "duration"), out.duration_) || out.duration_ <= 0 || !frames || frames->empty() ||
         frames->size() > 100000)
-        return bad<SpriteAnimationClip>("invalid sprite timeline");
+        return Result<SpriteAnimationClip>::failure(
+            Diagnostic::error(DiagnosticCode::ParseError, "invalid sprite timeline", {}, {}, "asset.sprite-animation"));
     out.loop_ = loop->asBool();
     for (const auto& key : *frames) {
         const auto* image  = field(key, "image");
         const auto* name   = field(key, "name");
         const auto* filter = field(key, "filter");
-        if (!image || !image->isString()) return bad<SpriteAnimationClip>("missing sprite image reference");
+        if (!image || !image->isString())
+            return Result<SpriteAnimationClip>::failure(Diagnostic::error(
+                DiagnosticCode::ParseError, "missing sprite image reference", {}, {}, "asset.sprite-animation"));
         auto ref = AssetRef::parse(image->asString());
         if (!ref) return Result<SpriteAnimationClip>::failure(ref.status());
         SpriteAnimationFrame frame{std::move(ref).takeValue()};
@@ -51,7 +49,8 @@ Result<SpriteAnimationClip> SpriteAnimationClip::decode(const Value& value) {
             !number(field(key, "time"), frame.time) || !number(field(key, "pixelsPerUnit"), frame.pixelsPerUnit) ||
             !array(field(key, "rect"), frame.rect) || !array(field(key, "pivot"), frame.pivot) ||
             !array(field(key, "imageSize"), frame.imageSize))
-            return bad<SpriteAnimationClip>("invalid sprite key fields");
+            return Result<SpriteAnimationClip>::failure(Diagnostic::error(
+                DiagnosticCode::ParseError, "invalid sprite key fields", {}, {}, "asset.sprite-animation"));
         frame.name    = name->asString();
         frame.nearest = filter->asString() == "nearest";
         if (frame.time < 0 || frame.time >= out.duration_ ||
@@ -60,7 +59,8 @@ Result<SpriteAnimationClip> SpriteAnimationClip::decode(const Value& value) {
             frame.rect[3] <= 0 || frame.imageSize[0] <= 0 || frame.imageSize[1] <= 0 ||
             frame.rect[0] + frame.rect[2] > frame.imageSize[0] || frame.rect[1] + frame.rect[3] > frame.imageSize[1] ||
             frame.pivot[0] < 0 || frame.pivot[0] > 1 || frame.pivot[1] < 0 || frame.pivot[1] > 1)
-            return bad<SpriteAnimationClip>("sprite key bounds or timing invalid");
+            return Result<SpriteAnimationClip>::failure(Diagnostic::error(
+                DiagnosticCode::ParseError, "sprite key bounds or timing invalid", {}, {}, "asset.sprite-animation"));
         out.frames_.push_back(std::move(frame));
     }
     return Result<SpriteAnimationClip>::success(std::move(out));
@@ -70,14 +70,16 @@ Result<SpriteAnimationClip> SpriteAnimationClip::load(const EvpackResourceReader
     auto payload = reader.read(ref, "eve.sprite-animation/1", caps, 64 * 1024 * 1024);
     if (!payload) return Result<SpriteAnimationClip>::failure(payload.status());
     if (payload.value().chunks.size() != 1 || payload.value().chunks.front().kind != EvpackChunkKind::Definition)
-        return bad<SpriteAnimationClip>("sprite timeline requires one definition");
+        return Result<SpriteAnimationClip>::failure(Diagnostic::error(
+            DiagnosticCode::ParseError, "sprite timeline requires one definition", {}, {}, "asset.sprite-animation"));
     auto value = decodeRuntimeDefinition(payload.value().chunks.front().bytes);
     if (!value) return Result<SpriteAnimationClip>::failure(value.status());
     return decode(value.value());
 }
 Result<SpriteAnimationFrame> SpriteAnimationClip::sample(double seconds) const {
     if (!std::isfinite(seconds) || seconds < 0 || frames_.empty())
-        return bad<SpriteAnimationFrame>("invalid sprite sample time or empty clip");
+        return Result<SpriteAnimationFrame>::failure(Diagnostic::error(
+            DiagnosticCode::ParseError, "invalid sprite sample time or empty clip", {}, {}, "asset.sprite-animation"));
     const double time = loop_ ? std::fmod(seconds, duration_) : seconds;
     auto         it   = std::upper_bound(frames_.begin(), frames_.end(), time,
                                          [](double t, const auto& frame) { return t < frame.time; });

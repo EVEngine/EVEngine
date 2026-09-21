@@ -56,16 +56,14 @@ struct Hd2dAssetValue {
     std::array<float, 4> wallUv{0, 0, .05f, .05f};
 };
 /** @brief Revisioned HD-2D sprite/tilemap presentation asset. */
-class EVENGINE_API_ORCHESTRATION Hd2dDocumentTarget final : public virtual IEditableTarget,
+class EVENGINE_API_ORCHESTRATION Hd2dDocumentTarget final : public ::eve::editing::EditableTargetState,
+                                 public virtual IEditableTarget,
                                  public IDomainOperationTarget,
                                  public IDomainOperationTargetStaging,
                                  public IPropertyProvider {
 public:
     explicit Hd2dDocumentTarget(std::string id);
     TargetId                                targetId() const override { return TargetId(id_); }
-    std::uint64_t                           revision() const override { return revision_; }
-    EditRegion                              dirtyRegion() const override { return dirty_; }
-    void                                    clearDirtyRegion() override { dirty_.clear(); }
     TargetDescriptor                        describe() const override;
     /**
      * @brief Query an optional stable editing capability.
@@ -92,8 +90,6 @@ private:
     EditorValue                   contentValue() const;
     EditorResult<DomainOperation> replacement(EditorValue, std::string) const;
     std::string                   id_;
-    Revision                      revision_ = 1;
-    EditRegion                    dirty_;
     Hd2dAssetValue                value_;
 };
 /** @brief Deterministically sampled sprite-sheet frame and UV rectangle. */

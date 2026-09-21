@@ -180,16 +180,25 @@ foreach(_basename IN LISTS _bundle_files)
     list(GET _parts 0 _name)
     list(GET _parts 1 _file)
     if(_file STREQUAL _basename)
-      set(_eve_case_labels "${ZEROERR_LABEL}")
+      # Keep source ownership on every per-case entry.  CI can then select the
+      # cases from changed test translation units without relying on naming
+      # conventions inside TEST_CASE strings. The link unit's own label is added
+      # too, so `make test/<platform> DOMAIN=<domain>` and `ctest -L` can select
+      # one domain; CTest labels are a list, so both coexist.
+      set(_labels "source:${_basename}")
+      if(DEFINED ZEROERR_LABEL AND NOT ZEROERR_LABEL STREQUAL "")
+        list(APPEND _labels "${ZEROERR_LABEL}")
+      endif()
       if(_name STREQUAL "ClassicScenes.perf.maxFps")
         # Full FPS sweeps stay opt-in: the benchmark label lets `make test`
         # exclude them (CTEST_BENCHMARK_SEL) while -L benchmark still selects them.
-        set(_eve_case_labels "${_eve_case_labels};benchmark")
+        list(APPEND _labels "benchmark")
+      endif()
       endif()
       # CTest include files use classic add_test(name exe [args...]), not NAME/COMMAND keywords.
       string(APPEND _content
         "add_test(\"${_name}\" \"${ZEROERR_EXE}\" \"--testcase=^${_name}$\")\n"
-        "set_tests_properties(\"${_name}\" PROPERTIES LABELS \"${_eve_case_labels}\" WORKING_DIRECTORY \"${ZEROERR_WORKING_DIRECTORY}\"${_eve_test_env_property})\n")
+        "set_tests_properties(\"${_name}\" PROPERTIES LABELS \"${_labels}\" WORKING_DIRECTORY \"${ZEROERR_WORKING_DIRECTORY}\"${_eve_test_env_property})\n")
       if(_name MATCHES "^ClassicScenes[.]")
         # These asset-dependent cases already return early with these diagnostics.
         # Expose that outcome as skipped rather than a zero-assertion pass.

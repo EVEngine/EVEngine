@@ -53,7 +53,8 @@ struct UiThemeAsset {
 };
 
 /** @brief Serializable catalog of named UI themes with one active publication slot. */
-class EVENGINE_API_DOMAINS UiThemeCatalogTarget final : public virtual IEditableTarget,
+class EVENGINE_API_DOMAINS UiThemeCatalogTarget final : public ::eve::editing::EditableTargetState,
+                                   public virtual IEditableTarget,
                                    public IDomainOperationTarget,
                                    public IDomainOperationTargetStaging,
                                    public IPropertyProvider,
@@ -68,10 +69,7 @@ public:
     /** @brief Inspector capability published by describe(). */
     static CapabilityId propertyCapabilityId() { return CapabilityId("eve.editor.target.ui-theme-properties"); }
 
-    TargetId      targetId() const override { return TargetId(id_); }
-    std::uint64_t revision() const override { return revision_; }
-    EditRegion    dirtyRegion() const override { return dirty_; }
-    void          clearDirtyRegion() override { dirty_.clear(); }
+    TargetId         targetId() const override { return TargetId(id_); }
     TargetDescriptor describe() const override;
     /**
      * @brief Query Inspector and snapshot capabilities.
@@ -136,8 +134,6 @@ private:
     const UiThemeAsset* findTheme(const ObjectId& id) const;
 
     std::string                id_;
-    unsigned long long         revision_ = 1;
-    EditRegion                 dirty_;
     std::vector<UiThemeAsset>  themes_;
     ObjectId                   activeId_;
 };

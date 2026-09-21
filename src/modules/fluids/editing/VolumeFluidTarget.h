@@ -40,15 +40,13 @@ struct VolumeFluidAuthoringPreview {
  * @thread Editor-thread affine.
  * @reentrancy Does not invoke callbacks.
  */
-class EVENGINE_API_ORCHESTRATION VolumeFluidTarget final : public virtual IEditableTarget,
+class EVENGINE_API_ORCHESTRATION VolumeFluidTarget final : public ::eve::editing::EditableTargetState,
+                                public virtual IEditableTarget,
                                 public IDomainOperationTarget,
                                 public IPropertyProvider {
 public:
     explicit VolumeFluidTarget(std::string id);
     TargetId         targetId() const override { return TargetId(id_); }
-    std::uint64_t    revision() const override { return revision_; }
-    EditRegion       dirtyRegion() const override { return dirty_; }
-    void             clearDirtyRegion() override { dirty_.clear(); }
     TargetDescriptor describe() const override;
     /** @brief Query the property capability. @return Borrowed pointer owned by this target.
      * @lifetime Valid until target destruction. */
@@ -76,8 +74,6 @@ public:
 private:
     bool                         matches(const SelectionSnapshot& selection) const;
     std::string                  id_;
-    Revision                     revision_ = 1;
-    EditRegion                   dirty_;
     VolumeFluidAuthoringSettings settings_;
 };
 

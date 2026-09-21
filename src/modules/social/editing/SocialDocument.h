@@ -51,16 +51,14 @@ struct SocialEdgeRecord {
 };
 
 /** @brief UI-neutral revisioned social graph authoring document. */
-class EVENGINE_API_BACKENDS SocialDocumentTarget final : public virtual IEditableTarget,
+class EVENGINE_API_BACKENDS SocialDocumentTarget final : public ::eve::editing::EditableTargetState,
+                                   public virtual IEditableTarget,
                                    public IDomainOperationTarget,
                                    public IDomainOperationTargetStaging {
 public:
     static CapabilityId editorCapabilityId() { return CapabilityId("eve.editor.target.social-graph"); }
     explicit SocialDocumentTarget(std::string id);
     TargetId         targetId() const override { return TargetId(id_); }
-    std::uint64_t    revision() const override { return revision_; }
-    EditRegion       dirtyRegion() const override { return dirty_; }
-    void             clearDirtyRegion() override { dirty_.clear(); }
     TargetDescriptor describe() const override;
     /** @brief Query an optional target capability. @return Borrowed pointer owned by this target, or null. @lifetime
      * Valid until this target is destroyed or mutated. */
@@ -89,8 +87,6 @@ public:
 
 private:
     std::string                            id_;
-    Revision                               revision_ = 1;
-    EditRegion                             dirty_;
     std::map<StableId, SocialEntityRecord> entities_;
     std::map<StableId, SocialEdgeRecord>   edges_;
 };

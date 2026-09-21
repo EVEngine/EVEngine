@@ -10,26 +10,25 @@
 namespace eve::combat {
 namespace {
 
-template <typename T>
-Result<T> failure(DiagnosticCode code, std::string message, std::string path = {}) {
-    return Result<T>::failure(Diagnostic::error(code, std::move(message), std::move(path)));
-}
-
 }  // namespace
 
 Result<void> CombatAttributeDefinition::validate() const {
     if (!tags::isValidGameplayTagName(tag))
-        return failure<void>(DiagnosticCode::InvalidArgument, "Combat attribute tag is invalid", "tag");
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "Combat attribute tag is invalid", "tag"));
     if (!std::isfinite(initialValue) || !std::isfinite(minimumValue) || !std::isfinite(maximumValue) ||
         !std::isfinite(regenerationPerSecond))
-        return failure<void>(DiagnosticCode::InvalidArgument, "Combat attribute values must be finite", tag);
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "Combat attribute values must be finite", tag));
     if (minimumValue > maximumValue)
-        return failure<void>(DiagnosticCode::InvalidArgument, "Combat attribute minimum exceeds maximum", tag);
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "Combat attribute minimum exceeds maximum", tag));
     if (initialValue < minimumValue || initialValue > maximumValue)
-        return failure<void>(DiagnosticCode::InvalidArgument, "Combat attribute initial value is outside bounds", tag);
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                       "Combat attribute initial value is outside bounds", tag));
     if (regenerationPerSecond < 0.0)
-        return failure<void>(DiagnosticCode::InvalidArgument, "Combat attribute regeneration must be non-negative",
-                             tag);
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                       "Combat attribute regeneration must be non-negative", tag));
     return Result<void>::success();
 }
 
@@ -37,7 +36,8 @@ Result<void> CombatAttributeRuntime::registerAttribute(CombatAttributeDefinition
     auto valid = definition.validate();
     if (!valid) return valid;
     if (definitions_.contains(definition.tag))
-        return failure<void>(DiagnosticCode::AlreadyExists, "Combat attribute is already registered", definition.tag);
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::AlreadyExists, "Combat attribute is already registered", definition.tag));
     const std::string tag = definition.tag;
     definitions_.emplace(tag, std::move(definition));
     values_.setBase(tag, definitions_.at(tag).initialValue);
@@ -47,15 +47,16 @@ Result<void> CombatAttributeRuntime::registerAttribute(CombatAttributeDefinition
 Result<double> CombatAttributeRuntime::value(std::string_view tag) const {
     const auto definition = definitions_.find(tag);
     if (definition == definitions_.end())
-        return failure<double>(DiagnosticCode::NotFound, "Combat attribute is not registered", std::string(tag));
+        return Result<double>::failure(
+            Diagnostic::error(DiagnosticCode::NotFound, "Combat attribute is not registered", std::string(tag)));
     return Result<double>::success(values_.getBase(definition->first));
 }
 
 Result<std::vector<CombatAttributeEvent>> CombatAttributeRuntime::commit(
     const CombatAttributeDefinition& definition, double newValue) {
     if (!std::isfinite(newValue))
-        return failure<std::vector<CombatAttributeEvent>>(DiagnosticCode::InvalidArgument,
-                                                           "Combat attribute value must be finite", definition.tag);
+        return Result<std::vector<CombatAttributeEvent>>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "Combat attribute value must be finite", definition.tag));
     const double previous = values_.getBase(definition.tag);
     const double clamped  = std::clamp(newValue, definition.minimumValue, definition.maximumValue);
     if (clamped == previous)
@@ -74,26 +75,26 @@ Result<std::vector<CombatAttributeEvent>> CombatAttributeRuntime::commit(
 Result<std::vector<CombatAttributeEvent>> CombatAttributeRuntime::setValue(std::string_view tag, double value) {
     const auto definition = definitions_.find(tag);
     if (definition == definitions_.end())
-        return failure<std::vector<CombatAttributeEvent>>(DiagnosticCode::NotFound,
-                                                           "Combat attribute is not registered", std::string(tag));
+        return Result<std::vector<CombatAttributeEvent>>::failure(
+            Diagnostic::error(DiagnosticCode::NotFound, "Combat attribute is not registered", std::string(tag)));
     return commit(definition->second, value);
 }
 
 Result<std::vector<CombatAttributeEvent>> CombatAttributeRuntime::modify(std::string_view tag, double delta) {
     if (!std::isfinite(delta))
-        return failure<std::vector<CombatAttributeEvent>>(DiagnosticCode::InvalidArgument,
-                                                           "Combat attribute delta must be finite", std::string(tag));
+        return Result<std::vector<CombatAttributeEvent>>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "Combat attribute delta must be finite", std::string(tag)));
     const auto definition = definitions_.find(tag);
     if (definition == definitions_.end())
-        return failure<std::vector<CombatAttributeEvent>>(DiagnosticCode::NotFound,
-                                                           "Combat attribute is not registered", std::string(tag));
+        return Result<std::vector<CombatAttributeEvent>>::failure(
+            Diagnostic::error(DiagnosticCode::NotFound, "Combat attribute is not registered", std::string(tag)));
     return commit(definition->second, values_.getBase(definition->first) + delta);
 }
 
 Result<CombatAttributeAdvance> CombatAttributeRuntime::advance(Duration delta) {
     if (delta < Duration::zero())
-        return failure<CombatAttributeAdvance>(DiagnosticCode::InvalidArgument,
-                                               "Combat attribute delta must be non-negative", "delta");
+        return Result<CombatAttributeAdvance>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "Combat attribute delta must be non-negative", "delta"));
     if (delta.isZero())
         return Result<CombatAttributeAdvance>::success({}, Status::success(StatusCode::NoOp));
 
@@ -106,8 +107,8 @@ Result<CombatAttributeAdvance> CombatAttributeRuntime::advance(Duration delta) {
     for (const auto& [tag, definition] : definitions_) {
         const double amount = definition.regenerationPerSecond * delta.seconds();
         if (!std::isfinite(amount))
-            return failure<CombatAttributeAdvance>(DiagnosticCode::InvalidArgument,
-                                                   "Combat attribute regeneration overflowed", tag);
+            return Result<CombatAttributeAdvance>::failure(
+                Diagnostic::error(DiagnosticCode::InvalidArgument, "Combat attribute regeneration overflowed", tag));
         candidates.push_back({&definition, values_.getBase(tag) + amount});
     }
 

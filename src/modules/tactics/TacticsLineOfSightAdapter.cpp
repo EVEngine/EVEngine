@@ -16,11 +16,6 @@
 namespace eve::tactics {
 namespace {
 
-template <typename T>
-Result<T> failure(DiagnosticCode code, std::string message, std::string path) {
-    return Result<T>::failure(Diagnostic::error(code, std::move(message), std::move(path)));
-}
-
 /** @brief Handles are compared field by field: the ECS handle type defines no equality operator. */
 bool sameHandle(const ecs::EntityHandle& left, const ecs::EntityHandle& right) noexcept {
     return left.table == right.table && left.type == right.type && left.id == right.id &&
@@ -47,13 +42,13 @@ Result<Cell> toCell(const sensing::TargetLocation& location) {
                 if (point.space() == sensing::CoordinateSpace::Grid2D) return Result<Cell>::success(Cell{point.x(), point.y(), 0});
                 if (point.space() == sensing::CoordinateSpace::Grid3D)
                     return Result<Cell>::success(Cell{point.x(), point.y(), point.z()});
-                return failure<Cell>(DiagnosticCode::Unsupported,
-                                     "tactics line of sight answers grid coordinates only",
-                                     "lineOfSight.space");
+                return Result<Cell>::failure(Diagnostic::error(DiagnosticCode::Unsupported,
+                                                               "tactics line of sight answers grid coordinates only",
+                                                               "lineOfSight.space"));
             } else {
-                return failure<Cell>(DiagnosticCode::Unsupported,
-                                     "tactics line of sight answers grid coordinates only",
-                                     "lineOfSight.space");
+                return Result<Cell>::failure(Diagnostic::error(DiagnosticCode::Unsupported,
+                                                               "tactics line of sight answers grid coordinates only",
+                                                               "lineOfSight.space"));
             }
         },
         location);
@@ -68,13 +63,14 @@ TacticsLineOfSightAdapter& tacticsLineOfSightAdapter() {
 
 Result<void> TacticsLineOfSightAdapter::bindBattle(ecs::EntityHandle battle) {
     if (boundBoard(battle, true) == nullptr)
-        return failure<void>(DiagnosticCode::StaleHandle, "line-of-sight battle binding is not a live battle", "battle");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::StaleHandle,
+                                                       "line-of-sight battle binding is not a live battle", "battle"));
     if (bound_ && sameHandle(battle_, battle)) return Result<void>::success(Status::success(StatusCode::NoOp));
     if (bound_)
         // One board at a time on purpose: with two bound boards the answer would depend on which
         // was bound last, exactly the order-dependence the router exists to remove.
-        return failure<void>(DiagnosticCode::Conflict,
-                             "another battle is already bound for grid line of sight", "battle");
+        return Result<void>::failure(Diagnostic::error(
+            DiagnosticCode::Conflict, "another battle is already bound for grid line of sight", "battle"));
     battle_ = battle;
     bound_  = true;
     return Result<void>::success(Status::success(StatusCode::Applied));
@@ -92,8 +88,8 @@ Result<sensing::LineOfSightResult> TacticsLineOfSightAdapter::query(const sensin
                                                                    const sensing::TargetLocation& to) const {
     const BoardState* board = boundBoard(battle_, bound_);
     if (board == nullptr)
-        return failure<sensing::LineOfSightResult>(
-            DiagnosticCode::Unsupported, "no tactics battle is bound for grid line of sight", "lineOfSight.battle");
+        return Result<sensing::LineOfSightResult>::failure(Diagnostic::error(
+            DiagnosticCode::Unsupported, "no tactics battle is bound for grid line of sight", "lineOfSight.battle"));
     auto fromCell = toCell(from);
     if (!fromCell) return Result<sensing::LineOfSightResult>::failure(fromCell.status());
     auto toCellValue = toCell(to);

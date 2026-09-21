@@ -73,16 +73,14 @@ struct AvatarExpressionValue {
 };
 
 /** @brief Revisioned image/Live2D/VRoid Avatar authoring asset. */
-class EVENGINE_API_ORCHESTRATION AvatarDocumentTarget final : public virtual IEditableTarget,
+class EVENGINE_API_ORCHESTRATION AvatarDocumentTarget final : public ::eve::editing::EditableTargetState,
+                                   public virtual IEditableTarget,
                                    public IDomainOperationTarget,
                                    public IDomainOperationTargetStaging,
                                    public IPropertyProvider {
 public:
     explicit AvatarDocumentTarget(std::string id);
     TargetId                                targetId() const override { return TargetId(id_); }
-    std::uint64_t                           revision() const override { return revision_; }
-    EditRegion                              dirtyRegion() const override { return dirty_; }
-    void                                    clearDirtyRegion() override { dirty_.clear(); }
     TargetDescriptor                        describe() const override;
     /**
      * @brief Query an optional stable editing capability.
@@ -121,8 +119,6 @@ private:
     EditorValue                        contentValue() const;
     EditorResult<DomainOperation>      replacement(EditorValue, std::string = {}) const;
     std::string                        id_, kind_ = "image", sourceAsset_;
-    Revision                           revision_ = 1;
-    EditRegion                         dirty_;
     std::vector<AvatarLayerValue>      layers_;
     std::vector<AvatarParameterValue>  parameters_;
     std::vector<AvatarExpressionValue> expressions_;

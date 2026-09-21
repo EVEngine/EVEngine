@@ -62,16 +62,14 @@ struct CameraTimelineKeyValue {
 };
 
 /** @brief Revisioned camera-rig and director-timeline editing document. */
-class EVENGINE_API_DOMAINS CameraDocumentTarget final : public virtual IEditableTarget,
+class EVENGINE_API_DOMAINS CameraDocumentTarget final : public ::eve::editing::EditableTargetState,
+                                   public virtual IEditableTarget,
                                    public IDomainOperationTarget,
                                    public IDomainOperationTargetStaging,
                                    public IPropertyProvider {
 public:
     explicit CameraDocumentTarget(std::string id);
-    TargetId targetId() const override { return TargetId(id_); }
-    std::uint64_t revision() const override { return revision_; }
-    EditRegion dirtyRegion() const override { return dirty_; }
-    void clearDirtyRegion() override { dirty_.clear(); }
+    TargetId         targetId() const override { return TargetId(id_); }
     TargetDescriptor describe() const override;
     /** @brief Query an optional target capability. @return Borrowed pointer owned by this target, or null. @lifetime Valid until this target is destroyed or mutated. */
     void* queryCapability(const CapabilityId& capability) override;
@@ -107,7 +105,7 @@ private:
     bool matches(const SelectionSnapshot& selection) const;
     EditorValue contentValue() const;
     EditorResult<DomainOperation> replacement(EditorValue content, std::string property = {}) const;
-    std::string id_; Revision revision_ = 1; EditRegion dirty_;
+    std::string                   id_;
     std::vector<CameraRigValue> rigs_; std::vector<CameraTimelineKeyValue> keys_;
 };
 

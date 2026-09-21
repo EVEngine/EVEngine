@@ -106,8 +106,12 @@ class ZeroerrDiscoveryTests(unittest.TestCase):
         result, generated = self.discover(entries, "plain")
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
         self.assertIn(
-            "benchmark", self.labels_of(generated, "ClassicScenes.perf.maxFps")
+            generated,
         )
+        labels = self.labels_of(generated, "ClassicScenes.perf.maxFps")
+        self.assertIn("benchmark", labels)
+        self.assertIn("source:ClassicScenes.cpp", labels)
+        self.assertNotIn('set_property(TEST', generated)
         self.assertEqual(generated.count('SKIP_REGULAR_EXPRESSION'), 2)
         self.assertEqual(generated.count('SKIP_REGULAR_EXPRESSION "ClassicScenes.*: missing"'), 2)
         self.assertNotIn('"other.case" PROPERTIES SKIP', generated)

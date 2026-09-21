@@ -63,15 +63,13 @@ struct SurfaceFluidSettings {
 };
 
 /** @brief Reversible document for surface droplets, wet traces and material response. */
-class EVENGINE_API_ORCHESTRATION SurfaceFluidTarget final : public virtual IEditableTarget,
+class EVENGINE_API_ORCHESTRATION SurfaceFluidTarget final : public ::eve::editing::EditableTargetState,
+                                 public virtual IEditableTarget,
                                  public IDomainOperationTarget,
                                  public IPropertyProvider {
 public:
     explicit SurfaceFluidTarget(std::string id);
     TargetId         targetId() const override { return TargetId(id_); }
-    std::uint64_t    revision() const override { return revision_; }
-    EditRegion       dirtyRegion() const override { return dirty_; }
-    void             clearDirtyRegion() override { dirty_.clear(); }
     TargetDescriptor describe() const override;
     /** @brief Query an optional target capability. @return Borrowed pointer owned by this target, or null. @lifetime
      * Valid until this target is destroyed or mutated. */
@@ -96,8 +94,6 @@ public:
 private:
     bool                 matches(const SelectionSnapshot& selection) const;
     std::string          id_;
-    Revision             revision_ = 1;
-    EditRegion           dirty_;
     SurfaceFluidSettings settings_;
 };
 

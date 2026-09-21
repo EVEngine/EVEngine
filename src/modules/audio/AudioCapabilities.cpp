@@ -447,11 +447,6 @@ private:
     std::vector<FadingSource> fading_;
 };
 
-template <typename T>
-eve::Result<T> previewFailure(eve::DiagnosticCode code, std::string message, std::string path) {
-    return eve::Result<T>::failure(eve::Diagnostic::error(code, std::move(message), std::move(path)));
-}
-
 class AudioActionPreviewSink final : public eve::action::IActionPreviewSink {
 public:
     ~AudioActionPreviewSink() override {
@@ -545,8 +540,8 @@ private:
         const eve::action::ActionAudioBinding& binding, eve::Duration localTime, std::uint64_t seed) {
         auto* audio = eve::ModuleManager::getInstance<Audio>("Audio");
         if (!audio)
-            return previewFailure<std::optional<OwnedAudio>>(
-                eve::DiagnosticCode::NotFound, "Audio preview requires the Audio module", "audio");
+            return eve::Result<std::optional<OwnedAudio>>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::NotFound, "Audio preview requires the Audio module", "audio"));
         try {
             auto* data = eve::sound::Sound::create()->newSoundDataFromFile(selectAudioUri(binding, seed));
             std::unique_ptr<Source> source(audio->newSource(data));
@@ -565,13 +560,13 @@ private:
                     return eve::Result<std::optional<OwnedAudio>>::success(std::nullopt);
             }
             if (mediaTime > 0.0 && !owned.source->seek(mediaTime))
-                return previewFailure<std::optional<OwnedAudio>>(
-                    eve::DiagnosticCode::Unsupported, "Audio preview source does not support seeking", "uri");
+                return eve::Result<std::optional<OwnedAudio>>::failure(eve::Diagnostic::error(
+                    eve::DiagnosticCode::Unsupported, "Audio preview source does not support seeking", "uri"));
             return eve::Result<std::optional<OwnedAudio>>::success(
                 std::optional<OwnedAudio>(std::move(owned)));
         } catch (const std::exception& error) {
-            return previewFailure<std::optional<OwnedAudio>>(
-                eve::DiagnosticCode::Failed, error.what(), "uri");
+            return eve::Result<std::optional<OwnedAudio>>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::Failed, error.what(), "uri"));
         }
     }
 
@@ -607,8 +602,8 @@ public:
 
     eve::Result<std::unique_ptr<eve::action::IActionPreviewSink>> createActionPreviewSink() override {
         if (!eve::ModuleManager::getInstance<Audio>("Audio"))
-            return previewFailure<std::unique_ptr<eve::action::IActionPreviewSink>>(
-                eve::DiagnosticCode::NotFound, "Audio preview requires the Audio module", "audio");
+            return eve::Result<std::unique_ptr<eve::action::IActionPreviewSink>>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::NotFound, "Audio preview requires the Audio module", "audio"));
         return eve::Result<std::unique_ptr<eve::action::IActionPreviewSink>>::success(
             std::make_unique<AudioActionPreviewSink>());
     }

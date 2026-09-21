@@ -8,11 +8,6 @@
 namespace eve::decal_editing {
 namespace {
 
-template <class T>
-EditorResult<T> fail(EditorStatus status, const char* rule, std::string message) {
-    return eve::editing::failed<T>(status, RuleId(rule), std::move(message));
-}
-
 double number(const DecalDocumentTarget& document, const char* path) {
     return *document.value(path)->getIf<double>();
 }
@@ -26,8 +21,8 @@ EditorResult<graphics::Texture*> resolve(const DecalDocumentTarget& document,
     const auto& name = *document.value(path)->getIf<std::string>();
     if (name.empty()) return eve::editing::applied<graphics::Texture*>(nullptr);
     if (!assets)
-        return fail<graphics::Texture*>(EditorStatus::Rejected, "editor.decal.assets",
-                                        "Decal texture resolver is required");
+        return eve::editing::failed<graphics::Texture*>(EditorStatus::Rejected, RuleId("editor.decal.assets"),
+                                                        "Decal texture resolver is required");
     return assets->texture(name);
 }
 
@@ -35,7 +30,8 @@ EditorResult<graphics::Texture*> resolve(const DecalDocumentTarget& document,
 
 EditorResult<void> DecalRuntimeBinding::publish(const DecalDocumentTarget& document) {
     if (!manager_)
-        return fail<void>(EditorStatus::Rejected, "editor.decal.manager", "Live DecalManager is required");
+        return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.decal.manager"),
+                                          "Live DecalManager is required");
     const auto diagnostics = document.validate();
     if (std::any_of(diagnostics.begin(), diagnostics.end(),
                     [](const auto& diagnostic) { return diagnostic.severity() == DiagnosticSeverity::Error; }))
@@ -81,8 +77,8 @@ EditorResult<void> DecalRuntimeBinding::publish(const DecalDocumentTarget& docum
 
     const int next = manager_->replace(runtimeId_, std::move(candidate));
     if (next == 0)
-        return fail<void>(EditorStatus::Conflict, "editor.decal.replace",
-                          "Decal runtime generation is stale or invalid");
+        return eve::editing::failed<void>(EditorStatus::Conflict, RuleId("editor.decal.replace"),
+                                          "Decal runtime generation is stale or invalid");
     runtimeId_ = next;
     return eve::editing::applied<void>(diagnostics);
 }
@@ -90,8 +86,8 @@ EditorResult<void> DecalRuntimeBinding::publish(const DecalDocumentTarget& docum
 EditorResult<void> DecalRuntimeBinding::clear() {
     if (runtimeId_ == 0) return eve::editing::noOp();
     if (!manager_ || !manager_->remove(runtimeId_))
-        return fail<void>(EditorStatus::NotFound, "editor.decal.runtime-stale",
-                          "Published decal generation no longer exists");
+        return eve::editing::failed<void>(EditorStatus::NotFound, RuleId("editor.decal.runtime-stale"),
+                                          "Published decal generation no longer exists");
     runtimeId_ = 0;
     return eve::editing::applied<void>();
 }
@@ -114,11 +110,11 @@ EditorResult<void> DecalPublishingTarget::commitDomainState(
     std::unique_ptr<IDomainOperationTarget> candidate) {
     auto* typed = dynamic_cast<DecalPublishingTarget*>(candidate.get());
     if (!typed || typed->targetId() != targetId() || typed->sink_ != sink_ || !typed->staging_)
-        return fail<void>(EditorStatus::Conflict, "editor.decal.publish-candidate",
-                          "Decal publishing candidate mismatch");
+        return eve::editing::failed<void>(EditorStatus::Conflict, RuleId("editor.decal.publish-candidate"),
+                                          "Decal publishing candidate mismatch");
     if (!sink_)
-        return fail<void>(EditorStatus::Rejected, "editor.decal.publish-sink",
-                          "Decal publishing target requires a runtime sink");
+        return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.decal.publish-sink"),
+                                          "Decal publishing target requires a runtime sink");
     auto published = sink_->publish(typed->document_);
     if (!published.ok()) return published;
     document_ = typed->document_;

@@ -66,11 +66,6 @@ struct UnityExpandedPrefab {
 
 namespace eve::asset_import::unity_detail {
 
-template <class T>
-Result<T> failure(DiagnosticCode code, std::string message, std::string path = {}) {
-    return Result<T>::failure(Diagnostic::error(code, std::move(message), std::move(path), {}, "asset.import.unity"));
-}
-
 inline std::string foldAscii(std::string value) {
     for (char& c : value)
         if (c >= 'A' && c <= 'Z') c += 'a' - 'A';

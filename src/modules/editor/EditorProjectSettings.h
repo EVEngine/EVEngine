@@ -28,15 +28,13 @@ struct ProjectSettingsSchema {
 };
 
 /** @brief Schema-driven, reversible settings target with secret-reference enforcement. */
-class EVENGINE_API_ORCHESTRATION ProjectSettingsTarget final : public virtual IEditableTarget,
+class EVENGINE_API_ORCHESTRATION ProjectSettingsTarget final : public ::eve::editing::EditableTargetState,
+                                    public virtual IEditableTarget,
                                     public IDomainOperationTarget,
                                     public IPropertyProvider {
 public:
     ProjectSettingsTarget(std::string id, ProjectSettingsSchema schema);
     TargetId         targetId() const override { return TargetId(id_); }
-    std::uint64_t    revision() const override { return revision_; }
-    EditRegion       dirtyRegion() const override { return dirty_; }
-    void             clearDirtyRegion() override { dirty_.clear(); }
     TargetDescriptor describe() const override;
     /** @brief Query an optional target capability. @return Borrowed pointer owned by this target, or null. @lifetime
      * Valid until this target is destroyed or mutated. */
@@ -63,8 +61,6 @@ private:
     bool                               selectionMatches(const SelectionSnapshot& selection) const;
     std::string                        id_;
     ProjectSettingsSchema              schema_;
-    Revision                           revision_ = 1;
-    EditRegion                         dirty_;
     std::map<std::string, EditorValue> values_;
     std::map<std::string, bool>        restartDirty_;
 };

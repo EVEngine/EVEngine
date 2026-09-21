@@ -9,11 +9,6 @@
 namespace eve::graphics {
 namespace {
 
-template <class T>
-Result<T> invalid(std::string message, std::string path, DiagnosticCode code = DiagnosticCode::InvalidArgument) {
-    return Result<T>::failure(Diagnostic::error(code, std::move(message), std::move(path), {}, "graphics.water"));
-}
-
 Result<void> invalid(std::string message, std::string path) {
     return Result<void>::failure(
         Diagnostic::error(DiagnosticCode::InvalidArgument, std::move(message), std::move(path), {}, "graphics.water"));
@@ -137,13 +132,17 @@ Result<WaterStyleConfig> WaterStyleConfig::fromValue(const Value& value) {
     const auto* root = value.getIf<Value::Object>();
     if (!root || !exactFields(*root, {"schema", "schemaVersion", "unknownFields", "colors", "waves", "depth",
                                       "foam", "lighting", "refraction", "caustics"}))
-        return invalid<WaterStyleConfig>("water definition requires exactly ten known fields", "$",
-                                         DiagnosticCode::InvalidArgument);
+        return Result<WaterStyleConfig>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                                   "water definition requires exactly ten known fields",
+                                                                   "$", {}, "graphics.water"));
     if (!root->at("schema").isString() || root->at("schema").asString() != SchemaId ||
         !root->at("schemaVersion").isInt64() || root->at("schemaVersion").asInt() != SchemaVersion)
-        return invalid<WaterStyleConfig>("unsupported water schema/version", "$.schemaVersion", DiagnosticCode::UnknownVersion);
+        return Result<WaterStyleConfig>::failure(Diagnostic::error(DiagnosticCode::UnknownVersion,
+                                                                   "unsupported water schema/version",
+                                                                   "$.schemaVersion", {}, "graphics.water"));
     if (!root->at("unknownFields").isString() || root->at("unknownFields").asString() != "reject")
-        return invalid<WaterStyleConfig>("water v1 requires unknownFields=reject", "$.unknownFields");
+        return Result<WaterStyleConfig>::failure(
+            Diagnostic::error({}, "water v1 requires unknownFields=reject", "$.unknownFields", {}, "graphics.water"));
 
     const auto* colors = objectAt(value, "colors");
     const auto* waves = objectAt(value, "waves");
@@ -159,7 +158,8 @@ Result<WaterStyleConfig> WaterStyleConfig::fromValue(const Value& value) {
         !exactFields(*foam, {"width", "softness", "strength"}) ||
         !exactFields(*lighting, {"fresnelPower", "reflectionIntensity", "sunIntensity", "screenSpaceReflection", "screenSpaceReflectionStrength"}) ||
         !exactFields(*refraction, {"strength"}) || !exactFields(*caustics, {"strength", "scale"}))
-        return invalid<WaterStyleConfig>("invalid or unknown nested water field", "$", DiagnosticCode::InvalidArgument);
+        return Result<WaterStyleConfig>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "invalid or unknown nested water field", "$", {}, "graphics.water"));
 
     WaterStyleConfig output;
     if (!vec3At(*colors, "deep", output.deepColor) || !vec3At(*colors, "shallow", output.shallowColor) ||
@@ -178,7 +178,8 @@ Result<WaterStyleConfig> WaterStyleConfig::fromValue(const Value& value) {
         !numberAt(*refraction, "strength", output.refractionStrength) ||
         !numberAt(*caustics, "strength", output.causticsStrength) ||
         !numberAt(*caustics, "scale", output.causticsScale))
-        return invalid<WaterStyleConfig>("missing or invalid water value", "$", DiagnosticCode::InvalidArgument);
+        return Result<WaterStyleConfig>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "missing or invalid water value", "$", {}, "graphics.water"));
     auto valid = output.validate();
     if (!valid) return Result<WaterStyleConfig>::failure(valid.status());
     return Result<WaterStyleConfig>::success(std::move(output));

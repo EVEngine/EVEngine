@@ -5,20 +5,15 @@
 #include <tuple>
 
 namespace eve::asset {
-namespace {
-template <class T>
-Result<T> fail(DiagnosticCode code, std::string message, std::string path = {}) {
-    return Result<T>::failure(Diagnostic::error(code, std::move(message), std::move(path), {},
-                                                "asset.evpack.reader"));
-}
-}  // namespace
+namespace {}  // namespace
 
 Result<RuntimeAssetPayload> EvpackResourceReader::read(
     const AssetRef& asset, std::string_view expectedType,
     const EvpackCapabilities& capabilities, std::uint64_t maximumDecodedBytes) const {
     if (!pack_ || asset.id().isNil() || expectedType.empty())
-        return fail<RuntimeAssetPayload>(DiagnosticCode::InvalidArgument,
-                                        "pack, asset and expected type are required");
+        return Result<RuntimeAssetPayload>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                                      "pack, asset and expected type are required", {},
+                                                                      {}, "asset.evpack.reader"));
     auto selected = selectEvpackVariant(*pack_, capabilities);
     if (!selected) return Result<RuntimeAssetPayload>::failure(selected.status());
     RuntimeAssetPayload result{asset, {}, {}, selected.value(), {}};
@@ -34,8 +29,9 @@ Result<RuntimeAssetPayload> EvpackResourceReader::read(
         typeFound = true;
         if (chunk.variantIndex != selected.value().index) continue;
         if (decodedTotal > maximumDecodedBytes || chunk.decodedSize > maximumDecodedBytes - decodedTotal)
-            return fail<RuntimeAssetPayload>(DiagnosticCode::InvalidArgument,
-                                            "asset payload exceeds decoded budget", asset.format());
+            return Result<RuntimeAssetPayload>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                                          "asset payload exceeds decoded budget",
+                                                                          asset.format(), {}, "asset.evpack.reader"));
         auto bytes = pack_->decodeChunk(index, maximumDecodedBytes - decodedTotal);
         if (!bytes) return Result<RuntimeAssetPayload>::failure(bytes.status());
         decodedTotal += bytes.value().size();
@@ -45,28 +41,32 @@ Result<RuntimeAssetPayload> EvpackResourceReader::read(
     }
     if (result.chunks.empty()) {
         if (identityFound && !typeFound)
-            return fail<RuntimeAssetPayload>(DiagnosticCode::TypeMismatch,
-                                            "asset does not provide the expected type/version",
-                                            asset.format());
+            return Result<RuntimeAssetPayload>::failure(
+                Diagnostic::error(DiagnosticCode::TypeMismatch, "asset does not provide the expected type/version",
+                                  asset.format(), {}, "asset.evpack.reader"));
         if (typeFound)
-            return fail<RuntimeAssetPayload>(DiagnosticCode::Unsupported,
-                                            "asset has no chunk for the selected variant", asset.format());
-        return fail<RuntimeAssetPayload>(DiagnosticCode::NotFound, "asset is not present", asset.format());
+            return Result<RuntimeAssetPayload>::failure(Diagnostic::error(DiagnosticCode::Unsupported,
+                                                                          "asset has no chunk for the selected variant",
+                                                                          asset.format(), {}, "asset.evpack.reader"));
+        return Result<RuntimeAssetPayload>::failure(Diagnostic::error(DiagnosticCode::NotFound, "asset is not present",
+                                                                      asset.format(), {}, "asset.evpack.reader"));
     }
     std::sort(result.chunks.begin(), result.chunks.end(), [](const auto& left, const auto& right) {
         return std::tie(left.kind, left.chunkId) < std::tie(right.kind, right.chunkId);
     });
     if (result.chunks.front().kind != EvpackChunkKind::Definition)
-        return fail<RuntimeAssetPayload>(DiagnosticCode::InvariantViolation,
-                                        "asset has no definition chunk", asset.format());
+        return Result<RuntimeAssetPayload>::failure(Diagnostic::error(DiagnosticCode::InvariantViolation,
+                                                                      "asset has no definition chunk", asset.format(),
+                                                                      {}, "asset.evpack.reader"));
     return Result<RuntimeAssetPayload>::success(std::move(result));
 }
 
 Result<std::vector<AssetRef>> EvpackResourceReader::listAssets(
     std::string_view expectedType, const EvpackCapabilities& capabilities, std::uint32_t maximumAssets) const {
     if (!pack_ || expectedType.empty() || maximumAssets == 0)
-        return fail<std::vector<AssetRef>>(DiagnosticCode::InvalidArgument,
-                                          "pack, expected type and asset budget are required");
+        return Result<std::vector<AssetRef>>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "pack, expected type and asset budget are required", {},
+                              {}, "asset.evpack.reader"));
     auto selected = selectEvpackVariant(*pack_, capabilities);
     if (!selected) return Result<std::vector<AssetRef>>::failure(selected.status());
     try {
@@ -79,8 +79,8 @@ Result<std::vector<AssetRef>> EvpackResourceReader::listAssets(
         std::sort(identities.begin(), identities.end());
         identities.erase(std::unique(identities.begin(), identities.end()), identities.end());
         if (identities.size() > maximumAssets)
-            return fail<std::vector<AssetRef>>(DiagnosticCode::InvalidArgument,
-                                               "asset listing exceeds result budget");
+            return Result<std::vector<AssetRef>>::failure(Diagnostic::error(
+                DiagnosticCode::InvalidArgument, "asset listing exceeds result budget", {}, {}, "asset.evpack.reader"));
         std::vector<AssetRef> result;
         result.reserve(identities.size());
         for (const auto& identity : identities) {
@@ -90,7 +90,8 @@ Result<std::vector<AssetRef>> EvpackResourceReader::listAssets(
         }
         return Result<std::vector<AssetRef>>::success(std::move(result));
     } catch (const std::bad_alloc&) {
-        return fail<std::vector<AssetRef>>(DiagnosticCode::Failed, "asset listing allocation failed");
+        return Result<std::vector<AssetRef>>::failure(Diagnostic::error(
+            DiagnosticCode::Failed, "asset listing allocation failed", {}, {}, "asset.evpack.reader"));
     }
 }
 }  // namespace eve::asset

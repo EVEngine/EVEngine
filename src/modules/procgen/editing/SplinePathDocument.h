@@ -83,7 +83,8 @@ public:
  *
  * Unknown snapshot fields are ignored. Known fields are validated into an isolated candidate before commit.
  */
-class EVENGINE_API_ORCHESTRATION SplinePathDocument final : public virtual IEditableTarget,
+class EVENGINE_API_ORCHESTRATION SplinePathDocument final : public ::eve::editing::EditableTargetState,
+                                 public virtual IEditableTarget,
                                  public IDomainOperationTarget,
                                  public IDomainOperationTargetStaging,
                                  public ISplinePathDocumentEditTarget {
@@ -91,9 +92,6 @@ public:
     /** @brief Construct an empty document with a stable target id. */
     explicit SplinePathDocument(std::string id);
     TargetId         targetId() const override { return TargetId(id_); }
-    std::uint64_t    revision() const override { return revision_; }
-    EditRegion       dirtyRegion() const override { return dirty_; }
-    void             clearDirtyRegion() override { dirty_.clear(); }
     TargetDescriptor describe() const override;
     /**
      * @brief Query the spline editing capability.
@@ -135,8 +133,6 @@ public:
 
 private:
     std::string                                id_;
-    Revision                                   revision_ = 1;
-    EditRegion                                 dirty_;
     SplinePathSettings                         settings_;
     std::map<StableId, SplinePathControlPoint> points_;
 };

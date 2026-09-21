@@ -67,11 +67,6 @@ const OperationSpec* specFor(std::string_view id) {
     return found == specs().end() ? nullptr : &*found;
 }
 
-template <class T>
-Result<T> fail(DiagnosticCode code, std::string message, std::string path = {}) {
-    return Result<T>::failure(Diagnostic::error(code, std::move(message), std::move(path), {}, "procgen.gridGraph"));
-}
-
 Result<void> failVoid(DiagnosticCode code, std::string message, std::string path = {}) {
     return Result<void>::failure(Diagnostic::error(code, std::move(message), std::move(path), {}, "procgen.gridGraph"));
 }
@@ -140,8 +135,9 @@ std::uint64_t hashText(std::string_view text) {
 Result<PointSet> gridToPoints(const Grid2D& grid, int semantic, float cellSize, float originX, float originZ,
                               std::string_view nodeId) {
     if (!std::isfinite(cellSize) || cellSize <= 0.f)
-        return fail<PointSet>(DiagnosticCode::InvalidArgument, "cellSize must be finite and positive",
-                              std::string(nodeId));
+        return Result<PointSet>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                           "cellSize must be finite and positive", std::string(nodeId),
+                                                           {}, "procgen.gridGraph"));
     PointSet points;
     points.reserve(grid.cells().size());
     std::uint64_t ordinal = 0;
@@ -277,20 +273,20 @@ Result<void> GridGraph::setNodePointSubgraph(std::string_view id, const PointGra
 ResultRef<const GridGraphValue> GridGraph::evaluate(std::string_view id, std::unordered_map<std::string, int>& states) {
     const auto found = nodes_.find(std::string(id));
     if (found == nodes_.end())
-        return fail<std::reference_wrapper<const GridGraphValue>>(DiagnosticCode::NotFound, "unknown node",
-                                                                  std::string(id));
+        return Result<std::reference_wrapper<const GridGraphValue>>::failure(
+            Diagnostic::error(DiagnosticCode::NotFound, "unknown node", std::string(id), {}, "procgen.gridGraph"));
     Node& node = found->second;
     if (node.cacheValid) return ResultRef<const GridGraphValue>::success(std::cref(node.cache));
     if (states[node.id] == 1)
-        return fail<std::reference_wrapper<const GridGraphValue>>(DiagnosticCode::Conflict, "graph contains a cycle",
-                                                                  node.id);
+        return Result<std::reference_wrapper<const GridGraphValue>>::failure(
+            Diagnostic::error(DiagnosticCode::Conflict, "graph contains a cycle", node.id, {}, "procgen.gridGraph"));
     states[node.id]                                                = 1;
     const OperationSpec*                                      spec = specFor(node.operation);
     std::vector<std::reference_wrapper<const GridGraphValue>> inputs;
     for (int i = 0; i < spec->inputs; ++i) {
         if (node.inputs[i].empty())
-            return fail<std::reference_wrapper<const GridGraphValue>>(DiagnosticCode::NotFound,
-                                                                      "required input is disconnected", node.id);
+            return Result<std::reference_wrapper<const GridGraphValue>>::failure(Diagnostic::error(
+                DiagnosticCode::NotFound, "required input is disconnected", node.id, {}, "procgen.gridGraph"));
         auto input = evaluate(node.inputs[i], states);
         if (!input.ok()) return ResultRef<const GridGraphValue>::failure(input.status());
         inputs.push_back(input.value());
@@ -298,15 +294,15 @@ ResultRef<const GridGraphValue> GridGraph::evaluate(std::string_view id, std::un
 
     if (node.operation == "grid.input") {
         if (!node.hasInputGrid)
-            return fail<std::reference_wrapper<const GridGraphValue>>(DiagnosticCode::NotFound,
-                                                                      "grid.input has no bound value", node.id);
+            return Result<std::reference_wrapper<const GridGraphValue>>::failure(Diagnostic::error(
+                DiagnosticCode::NotFound, "grid.input has no bound value", node.id, {}, "procgen.gridGraph"));
         node.cache = node.inputGrid;
     } else if (node.operation == "generate.registry") {
         const auto algorithm = node.strings.find("algorithm");
         if (algorithm == node.strings.end() || algorithm->second.empty())
-            return fail<std::reference_wrapper<const GridGraphValue>>(
-                DiagnosticCode::InvalidArgument, "generate.registry requires a non-empty algorithm parameter",
-                node.id);
+            return Result<std::reference_wrapper<const GridGraphValue>>::failure(Diagnostic::error(
+                DiagnosticCode::InvalidArgument, "generate.registry requires a non-empty algorithm parameter", node.id,
+                {}, "procgen.gridGraph"));
         Params params;
         params.setSize(node.ints.contains("width") ? node.ints["width"] : 32,
                        node.ints.contains("height") ? node.ints["height"] : 32);
@@ -319,13 +315,15 @@ ResultRef<const GridGraphValue> GridGraph::evaluate(std::string_view id, std::un
         auto& registry = GeneratorRegistry::instance();
         registry.registerBuiltins();
         if (!registry.has(algorithm->second))
-            return fail<std::reference_wrapper<const GridGraphValue>>(
-                DiagnosticCode::NotFound, "registered generator was not found: " + algorithm->second, node.id);
+            return Result<std::reference_wrapper<const GridGraphValue>>::failure(
+                Diagnostic::error(DiagnosticCode::NotFound, "registered generator was not found: " + algorithm->second,
+                                  node.id, {}, "procgen.gridGraph"));
         Grid2D     generated;
         std::string error;
         if (!registry.generate(algorithm->second, params, generated, error))
-            return fail<std::reference_wrapper<const GridGraphValue>>(
-                DiagnosticCode::Failed, error.empty() ? "registered generator failed" : std::move(error), node.id);
+            return Result<std::reference_wrapper<const GridGraphValue>>::failure(Diagnostic::error(
+                DiagnosticCode::Failed, error.empty() ? "registered generator failed" : std::move(error), node.id, {},
+                "procgen.gridGraph"));
         node.cache = std::move(generated);
     } else if (node.operation.starts_with("generate.")) {
         gridgraph::GenerateSettings settings;
@@ -344,8 +342,8 @@ ResultRef<const GridGraphValue> GridGraph::evaluate(std::string_view id, std::un
     } else if (node.operation == "select.semantic") {
         const auto* source = std::get_if<Grid2D>(&inputs[0].get());
         if (!source)
-            return fail<std::reference_wrapper<const GridGraphValue>>(DiagnosticCode::TypeMismatch,
-                                                                      "grid input required", node.id);
+            return Result<std::reference_wrapper<const GridGraphValue>>::failure(Diagnostic::error(
+                DiagnosticCode::TypeMismatch, "grid input required", node.id, {}, "procgen.gridGraph"));
         Grid2D out;
         out.resize(source->getWidth(), source->getHeight());
         const int semantic = node.ints.contains("semantic") ? node.ints["semantic"] : int(Semantic::Floor);
@@ -360,8 +358,8 @@ ResultRef<const GridGraphValue> GridGraph::evaluate(std::string_view id, std::un
     } else if (node.operation == "select.detail_range") {
         const auto* source = std::get_if<Grid2D>(&inputs[0].get());
         if (!source)
-            return fail<std::reference_wrapper<const GridGraphValue>>(DiagnosticCode::TypeMismatch,
-                                                                      "grid input required", node.id);
+            return Result<std::reference_wrapper<const GridGraphValue>>::failure(Diagnostic::error(
+                DiagnosticCode::TypeMismatch, "grid input required", node.id, {}, "procgen.gridGraph"));
         Grid2D out;
         out.resize(source->getWidth(), source->getHeight());
         const int minimum = node.ints.contains("min") ? node.ints["min"] : 0;
@@ -377,8 +375,8 @@ ResultRef<const GridGraphValue> GridGraph::evaluate(std::string_view id, std::un
     } else if (node.operation.starts_with("select.")) {
         const auto* source = std::get_if<Grid2D>(&inputs[0].get());
         if (!source)
-            return fail<std::reference_wrapper<const GridGraphValue>>(DiagnosticCode::TypeMismatch,
-                                                                      "grid input required", node.id);
+            return Result<std::reference_wrapper<const GridGraphValue>>::failure(Diagnostic::error(
+                DiagnosticCode::TypeMismatch, "grid input required", node.id, {}, "procgen.gridGraph"));
         auto selected = gridgraph::select(*source, node.operation, node.ints.contains("mode") ? node.ints["mode"] : 0,
                                           node.ints.contains("count") ? node.ints["count"] : 0,
                                           node.floats.contains("weight") ? node.floats["weight"] : 0.5f,
@@ -391,8 +389,8 @@ ResultRef<const GridGraphValue> GridGraph::evaluate(std::string_view id, std::un
         const auto* starts     = std::get_if<Grid2D>(&inputs[1].get());
         const auto* targets    = std::get_if<Grid2D>(&inputs[2].get());
         if (!navigation || !starts || !targets)
-            return fail<std::reference_wrapper<const GridGraphValue>>(DiagnosticCode::TypeMismatch,
-                                                                      "three grid inputs required", node.id);
+            return Result<std::reference_wrapper<const GridGraphValue>>::failure(Diagnostic::error(
+                DiagnosticCode::TypeMismatch, "three grid inputs required", node.id, {}, "procgen.gridGraph"));
         auto path = gridgraph::findPath(*navigation, *starts, *targets,
                                         node.ints.contains("semantic") ? node.ints["semantic"] : int(Semantic::Floor));
         if (!path.ok()) return ResultRef<const GridGraphValue>::failure(path.status());
@@ -402,14 +400,15 @@ ResultRef<const GridGraphValue> GridGraph::evaluate(std::string_view id, std::un
         const auto* first  = std::get_if<Grid2D>(&inputs[0].get());
         const auto* second = std::get_if<Grid2D>(&inputs[1].get());
         if (!first || !second || !sameSize(*first, *second))
-            return fail<std::reference_wrapper<const GridGraphValue>>(
-                DiagnosticCode::TypeMismatch, "grid inputs must have equal dimensions", node.id);
+            return Result<std::reference_wrapper<const GridGraphValue>>::failure(
+                Diagnostic::error(DiagnosticCode::TypeMismatch, "grid inputs must have equal dimensions", node.id, {},
+                                  "procgen.gridGraph"));
         node.cache = combine(*first, *second, node.operation);
     } else if (node.operation == "grid.invert") {
         const auto* source = std::get_if<Grid2D>(&inputs[0].get());
         if (!source)
-            return fail<std::reference_wrapper<const GridGraphValue>>(DiagnosticCode::TypeMismatch,
-                                                                      "grid input required", node.id);
+            return Result<std::reference_wrapper<const GridGraphValue>>::failure(Diagnostic::error(
+                DiagnosticCode::TypeMismatch, "grid input required", node.id, {}, "procgen.gridGraph"));
         Grid2D    out      = *source;
         const int semantic = node.ints.contains("semantic") ? node.ints["semantic"] : int(Semantic::Floor);
         for (int y = 0; y < out.getHeight(); ++y)
@@ -419,15 +418,15 @@ ResultRef<const GridGraphValue> GridGraph::evaluate(std::string_view id, std::un
     } else if (node.operation == "grid.expand" || node.operation == "grid.shrink") {
         const auto* source = std::get_if<Grid2D>(&inputs[0].get());
         if (!source)
-            return fail<std::reference_wrapper<const GridGraphValue>>(DiagnosticCode::TypeMismatch,
-                                                                      "grid input required", node.id);
+            return Result<std::reference_wrapper<const GridGraphValue>>::failure(Diagnostic::error(
+                DiagnosticCode::TypeMismatch, "grid input required", node.id, {}, "procgen.gridGraph"));
         node.cache = morphology(*source, node.ints.contains("radius") ? node.ints["radius"] : 1,
                                 node.operation == "grid.expand");
     } else if (node.operation == "grid.smooth") {
         const auto* source = std::get_if<Grid2D>(&inputs[0].get());
         if (!source)
-            return fail<std::reference_wrapper<const GridGraphValue>>(DiagnosticCode::TypeMismatch,
-                                                                      "grid input required", node.id);
+            return Result<std::reference_wrapper<const GridGraphValue>>::failure(Diagnostic::error(
+                DiagnosticCode::TypeMismatch, "grid input required", node.id, {}, "procgen.gridGraph"));
         Grid2D    out       = *source;
         const int threshold = node.ints.contains("threshold") ? node.ints["threshold"] : 4;
         for (int y = 0; y < source->getHeight(); ++y) {
@@ -443,8 +442,8 @@ ResultRef<const GridGraphValue> GridGraph::evaluate(std::string_view id, std::un
     } else if (node.operation == "grid.autotile") {
         const auto* source = std::get_if<Grid2D>(&inputs[0].get());
         if (!source)
-            return fail<std::reference_wrapper<const GridGraphValue>>(DiagnosticCode::TypeMismatch,
-                                                                      "grid input required", node.id);
+            return Result<std::reference_wrapper<const GridGraphValue>>::failure(Diagnostic::error(
+                DiagnosticCode::TypeMismatch, "grid input required", node.id, {}, "procgen.gridGraph"));
         Grid2D out = *source;
         auto autotiled = autotileOccupiedGridInPlace(out);
         if (!autotiled.ok())
@@ -453,8 +452,8 @@ ResultRef<const GridGraphValue> GridGraph::evaluate(std::string_view id, std::un
     } else if (node.operation == "convert.grid_to_points") {
         const auto* source = std::get_if<Grid2D>(&inputs[0].get());
         if (!source)
-            return fail<std::reference_wrapper<const GridGraphValue>>(DiagnosticCode::TypeMismatch,
-                                                                      "grid input required", node.id);
+            return Result<std::reference_wrapper<const GridGraphValue>>::failure(Diagnostic::error(
+                DiagnosticCode::TypeMismatch, "grid input required", node.id, {}, "procgen.gridGraph"));
         auto points = gridToPoints(*source, node.ints.contains("semantic") ? node.ints["semantic"] : -1,
                                    node.floats.contains("cellSize") ? node.floats["cellSize"] : 1.f,
                                    node.floats.contains("originX") ? node.floats["originX"] : 0.f,
@@ -464,12 +463,14 @@ ResultRef<const GridGraphValue> GridGraph::evaluate(std::string_view id, std::un
     } else if (node.operation == "point.subgraph") {
         const auto* source = std::get_if<PointSet>(&inputs[0].get());
         if (!source || !node.pointSubgraph)
-            return fail<std::reference_wrapper<const GridGraphValue>>(
-                DiagnosticCode::TypeMismatch, "bound PointGraph and PointSet input required", node.id);
+            return Result<std::reference_wrapper<const GridGraphValue>>::failure(
+                Diagnostic::error(DiagnosticCode::TypeMismatch, "bound PointGraph and PointSet input required", node.id,
+                                  {}, "procgen.gridGraph"));
         PointSet copy = *source;
         if (!node.pointSubgraph->setNodePoints(node.pointInputNode, &copy))
-            return fail<std::reference_wrapper<const GridGraphValue>>(
-                DiagnosticCode::InvalidArgument, "nested PointGraph input binding failed", node.id);
+            return Result<std::reference_wrapper<const GridGraphValue>>::failure(
+                Diagnostic::error(DiagnosticCode::InvalidArgument, "nested PointGraph input binding failed", node.id,
+                                  {}, "procgen.gridGraph"));
         auto output = node.pointSubgraph->executeResult(node.pointOutputNode);
         if (!output.ok()) return ResultRef<const GridGraphValue>::failure(output.status());
         node.cache = std::move(output).takeValue();
@@ -543,7 +544,8 @@ std::string GridGraph::operationId(int index) {
 Result<GridGraphValueType> GridGraph::operationOutputType(std::string_view operation) {
     const OperationSpec* spec = specFor(operation);
     if (!spec)
-        return fail<GridGraphValueType>(DiagnosticCode::NotFound, "unknown operation: " + std::string(operation));
+        return Result<GridGraphValueType>::failure(Diagnostic::error(
+            DiagnosticCode::NotFound, "unknown operation: " + std::string(operation), {}, {}, "procgen.gridGraph"));
     return Result<GridGraphValueType>::success(spec->output);
 }
 

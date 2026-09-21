@@ -154,11 +154,6 @@ struct ClimbingSystemContract {
 [[nodiscard]] EVENGINE_API_DOMAINS std::span<const ClimbingSystemContract> climbingSystemContracts() noexcept;
 
 namespace detail {
-template <class T>
-eve::Result<T> climbingEcsFailure(eve::DiagnosticCode code, std::string message, std::string path) {
-    return eve::Result<T>::failure(
-        eve::Diagnostic::error(code, std::move(message), std::move(path), {}, "climbing.ecs"));
-}
 
 inline bool activeClimbingPhase(ClimbingPhase phase) noexcept {
     return phase != ClimbingPhase::Idle && phase != ClimbingPhase::Completed &&
@@ -189,9 +184,9 @@ public:
             (void)intent;
             auto runtime = Climbing::resolve(state->runtime);
             if (!runtime.isBound())
-                return detail::climbingEcsFailure<std::size_t>(eve::DiagnosticCode::StaleHandle,
-                                                                "climbing runtime link is stale",
-                                                                "state.runtime");
+                return eve::Result<std::size_t>::failure(eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle,
+                                                                                "climbing runtime link is stale",
+                                                                                "state.runtime", {}, "climbing.ecs"));
             auto linkedBody = links->physicsBody.resolve(world);
             if (!linkedBody)
                 return eve::Result<std::size_t>::failure(linkedBody.status());
@@ -236,9 +231,9 @@ public:
             if (!ClimbingInputSystem::peek(*intent, command, tick)) continue;
             auto runtime = Climbing::resolve(state->runtime);
             if (!runtime.isBound())
-                return detail::climbingEcsFailure<std::size_t>(eve::DiagnosticCode::StaleHandle,
-                                                                "climbing runtime link is stale",
-                                                                "state.runtime");
+                return eve::Result<std::size_t>::failure(eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle,
+                                                                                "climbing runtime link is stale",
+                                                                                "state.runtime", {}, "climbing.ecs"));
             auto linkedBody = links->physicsBody.resolve(world);
             if (!linkedBody) return eve::Result<std::size_t>::failure(linkedBody.status());
             const ClimbingPose pose{body->feet, body->forward,
@@ -267,18 +262,18 @@ public:
                                                         const eve::SimulationStep& step,
                                                         const ClimbingMotionInput& motion = {}) {
         if (step.delta.nanoseconds() <= 0)
-            return detail::climbingEcsFailure<std::size_t>(eve::DiagnosticCode::InvalidArgument,
-                                                            "climbing motion delta must be positive",
-                                                            "step.delta");
+            return eve::Result<std::size_t>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                            "climbing motion delta must be positive",
+                                                                            "step.delta", {}, "climbing.ecs"));
         std::size_t processed = 0;
         auto view = ecs::View<EntityRoot, ClimbingBody, ClimbingIntent, ClimbingState, ClimbingLinks>();
         for (auto it = view.begin(); it != view.end(); ++it) {
             auto [body, intent, state, links] = *it;
             auto runtime = Climbing::resolve(state->runtime);
             if (!runtime.isBound())
-                return detail::climbingEcsFailure<std::size_t>(eve::DiagnosticCode::StaleHandle,
-                                                                "climbing runtime link is stale",
-                                                                "state.runtime");
+                return eve::Result<std::size_t>::failure(eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle,
+                                                                                "climbing runtime link is stale",
+                                                                                "state.runtime", {}, "climbing.ecs"));
             auto linkedBody = links->physicsBody.resolve(world);
             if (!linkedBody) return eve::Result<std::size_t>::failure(linkedBody.status());
             if (!detail::activeClimbingPhase(runtime->phase())) {
@@ -288,9 +283,9 @@ public:
                     body->groundSnap < 0.f || body->stepHeight < 0.f ||
                     !std::isfinite(body->maxSlopeRadians) || body->maxSlopeRadians < 0.f ||
                     body->maxSlopeRadians >= 1.57079633f)
-                    return detail::climbingEcsFailure<std::size_t>(eve::DiagnosticCode::InvalidArgument,
-                                                                    "ordinary locomotion capsule is invalid",
-                                                                    "body.capsule");
+                    return eve::Result<std::size_t>::failure(eve::Diagnostic::error(
+                        eve::DiagnosticCode::InvalidArgument, "ordinary locomotion capsule is invalid", "body.capsule",
+                        {}, "climbing.ecs"));
                 const ClimbingLocomotionPolicy policy = runtime->locomotionPolicy();
                 const float deltaSeconds = static_cast<float>(step.delta.seconds());
                 const float moveLength = std::sqrt(intent->move.x * intent->move.x +
@@ -467,9 +462,9 @@ public:
             auto [state, pose, events] = *it;
             auto runtime = Climbing::resolve(state->runtime);
             if (!runtime.isBound())
-                return detail::climbingEcsFailure<std::size_t>(eve::DiagnosticCode::StaleHandle,
-                                                                "climbing runtime link is stale",
-                                                                "state.runtime");
+                return eve::Result<std::size_t>::failure(eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle,
+                                                                                "climbing runtime link is stale",
+                                                                                "state.runtime", {}, "climbing.ecs"));
             pose->executionId = state->lastAdvance.executionId;
             pose->leftHandAnchor = state->lastAdvance.leftHandAnchor;
             pose->rightHandAnchor = state->lastAdvance.rightHandAnchor;

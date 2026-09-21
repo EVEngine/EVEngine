@@ -53,7 +53,8 @@ using editing::validatePropertyValue;
  * operations. High-level helpers (bootstrap/room/opening/item) plan those
  * replacements without bypassing validation.
  */
-class EVENGINE_API_DOMAINS ArchSpaceDocumentTarget final : public virtual IEditableTarget,
+class EVENGINE_API_DOMAINS ArchSpaceDocumentTarget final : public ::eve::editing::EditableTargetState,
+                                      public virtual IEditableTarget,
                                       public IDomainOperationTarget,
                                       public IDomainOperationTargetStaging,
                                       public IPropertyProvider,
@@ -65,9 +66,6 @@ public:
     static CapabilityId propertyCapabilityId() { return CapabilityId("eve.editor.target.archspace-properties"); }
 
     TargetId         targetId() const override { return TargetId(id_); }
-    std::uint64_t    revision() const override { return revision_; }
-    EditRegion       dirtyRegion() const override { return dirty_; }
-    void             clearDirtyRegion() override { dirty_.clear(); }
     TargetDescriptor describe() const override;
     /**
      * @brief Query Inspector property capability.
@@ -131,8 +129,6 @@ private:
     const archspace::Node* selectedNode(const SelectionSnapshot& selection) const;
 
     std::string         id_;
-    Revision            revision_ = 1;
-    EditRegion          dirty_;
     archspace::Document document_;
 };
 

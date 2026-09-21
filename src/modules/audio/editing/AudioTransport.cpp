@@ -4,21 +4,16 @@
 #include <cmath>
 
 namespace eve::audio_editing {
-namespace {
-template <class T>
-EditorResult<T> transportError(EditorStatus status, const char* rule, std::string message) {
-    return eve::editing::failed<T>(status, RuleId(rule), std::move(message));
-}
-}  // namespace
+namespace {}  // namespace
 
 EditorResult<void> AudioAuditionTransport::bind(StableId asset, Revision revision, IAudioTransportBackend* backend) {
     if (asset.empty() || revision == 0 || !backend)
-        return transportError<void>(EditorStatus::Rejected, "editor.audio.transport-bind",
-                                    "Audition requires asset identity, revision and playback backend");
+        return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.audio.transport-bind"),
+                                          "Audition requires asset identity, revision and playback backend");
     const double duration = backend->duration();
     if (!std::isfinite(duration) || duration <= 0.0)
-        return transportError<void>(EditorStatus::Rejected, "editor.audio.transport-duration",
-                                    "Audition source requires a finite positive duration");
+        return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.audio.transport-duration"),
+                                          "Audition source requires a finite positive duration");
     unbind();
     asset_    = std::move(asset);
     revision_ = revision;
@@ -28,11 +23,11 @@ EditorResult<void> AudioAuditionTransport::bind(StableId asset, Revision revisio
 }
 EditorResult<void> AudioAuditionTransport::validateRevision(Revision expected) const {
     if (!backend_)
-        return transportError<void>(EditorStatus::NotFound, "editor.audio.transport-unbound",
-                                    "No audition source is bound");
+        return eve::editing::failed<void>(EditorStatus::NotFound, RuleId("editor.audio.transport-unbound"),
+                                          "No audition source is bound");
     if (expected != revision_)
-        return transportError<void>(EditorStatus::Conflict, "editor.audio.transport-stale",
-                                    "Audition source revision is stale");
+        return eve::editing::failed<void>(EditorStatus::Conflict, RuleId("editor.audio.transport-stale"),
+                                          "Audition source revision is stale");
     return eve::editing::applied<void>();
 }
 EditorResult<void> AudioAuditionTransport::setLoop(Revision expected, bool enabled, double start,
@@ -42,8 +37,8 @@ EditorResult<void> AudioAuditionTransport::setLoop(Revision expected, bool enabl
     const double duration = backend_->duration();
     if (end == 0.0) end = duration;
     if (!std::isfinite(start) || !std::isfinite(end) || start < 0.0 || end <= start || end > duration)
-        return transportError<void>(EditorStatus::Rejected, "editor.audio.transport-loop-range",
-                                    "Loop range must be finite, ordered and inside the clip");
+        return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.audio.transport-loop-range"),
+                                          "Loop range must be finite, ordered and inside the clip");
     loopEnabled_ = enabled;
     loopStart_   = start;
     loopEnd_     = end;
@@ -86,8 +81,8 @@ EditorResult<void> AudioAuditionTransport::seek(Revision expected, double second
     if (!valid.ok()) return valid;
     const double duration = backend_->duration();
     if (!std::isfinite(seconds) || seconds < 0.0 || seconds > duration)
-        return transportError<void>(EditorStatus::Rejected, "editor.audio.transport-seek-range",
-                                    "Seek position must be inside the clip");
+        return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.audio.transport-seek-range"),
+                                          "Seek position must be inside the clip");
     return backend_->seek(seconds);
 }
 AudioTransportSnapshot AudioAuditionTransport::observe() const {
@@ -103,8 +98,8 @@ AudioTransportSnapshot AudioAuditionTransport::observe() const {
 EditorResult<AudioTransportSnapshot> AudioAuditionTransport::snapshot(Revision expected) const {
     auto valid = validateRevision(expected);
     if (!valid.ok())
-        return transportError<AudioTransportSnapshot>(valid.code(), "editor.audio.transport-stale",
-                                                      "Audition source is absent or stale");
+        return eve::editing::failed<AudioTransportSnapshot>(valid.code(), RuleId("editor.audio.transport-stale"),
+                                                            "Audition source is absent or stale");
     return eve::editing::applied<AudioTransportSnapshot>(observe());
 }
 EditorResult<AudioTransportSnapshot> AudioAuditionTransport::update(Revision expected) {
@@ -112,15 +107,14 @@ EditorResult<AudioTransportSnapshot> AudioAuditionTransport::update(Revision exp
     if (!valid.ok()) {
         const EditorStatus status = valid.code();
         if (status == EditorStatus::Conflict) unbind();
-        return transportError<AudioTransportSnapshot>(status, "editor.audio.transport-stale",
-                                                      "Audition source is absent or stale");
+        return eve::editing::failed<AudioTransportSnapshot>(status, RuleId("editor.audio.transport-stale"),
+                                                            "Audition source is absent or stale");
     }
     if (state_ == AudioTransportState::Playing && loopEnabled_ && backend_->tell() >= loopEnd_) {
         auto seekResult = backend_->seek(loopStart_);
         if (!seekResult.ok())
-            return transportError<AudioTransportSnapshot>(seekResult.code(),
-                                                          "editor.audio.transport-loop-seek",
-                                                          "Playback backend cannot wrap the loop");
+            return eve::editing::failed<AudioTransportSnapshot>(
+                seekResult.code(), RuleId("editor.audio.transport-loop-seek"), "Playback backend cannot wrap the loop");
         backend_->play();
     } else if (state_ == AudioTransportState::Playing && !backend_->playing() &&
                backend_->tell() >= backend_->duration()) {

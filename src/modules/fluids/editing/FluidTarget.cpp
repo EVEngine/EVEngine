@@ -6,11 +6,6 @@
 
 namespace eve::fluids_editing {
 namespace {
-
-template <class T>
-EditorResult<T> fluidError(EditorStatus status, const char* rule, std::string message) {
-    return eve::editing::failed<T>(status, RuleId(rule), std::move(message));
-}
 EditorDiagnostic fluidDiagnostic(const char* rule, DiagnosticSeverity severity, std::string message) {
     return eve::editing::ruleDiagnostic(eve::DiagnosticCode::InvalidArgument, RuleId(rule), severity,
                                         std::move(message));
@@ -66,14 +61,14 @@ EditorResult<FluidSimulationSettings> parseSettings(const EditorValue& value) {
     const auto* pbf          = integer("pbfIterations");
     if (!max || !preview || !radius || !support || !density || !gravity || gravity->size() != 3 || !viscosity ||
         !yield || !cohesion || !adhesion || !damping || !velocity || !iterations || !pbf)
-        return fluidError<FluidSimulationSettings>(EditorStatus::Rejected, "editor.fluid.invalid-settings",
-                                                   "Fluid settings are incomplete");
+        return eve::editing::failed<FluidSimulationSettings>(
+            EditorStatus::Rejected, RuleId("editor.fluid.invalid-settings"), "Fluid settings are incomplete");
     double gravityComponents[3];
     for (int i = 0; i < 3; ++i) {
         const auto* component = (*gravity)[i].getIf<double>();
         if (!component || !std::isfinite(*component))
-            return fluidError<FluidSimulationSettings>(EditorStatus::Rejected, "editor.fluid.invalid-gravity",
-                                                       "Fluid gravity must be finite");
+            return eve::editing::failed<FluidSimulationSettings>(
+                EditorStatus::Rejected, RuleId("editor.fluid.invalid-gravity"), "Fluid gravity must be finite");
         gravityComponents[i] = *component;
     }
     const double values[]{*radius, *support, *density, *viscosity, *yield, *cohesion, *adhesion, *damping, *velocity};
@@ -81,8 +76,9 @@ EditorResult<FluidSimulationSettings> parseSettings(const EditorValue& value) {
         *max <= 0 || *max > 10000000 || *preview < 0 || *preview > *max || *radius <= 0.0 || *support <= 0.0 ||
         *density <= 0.0 || *viscosity < 0.0 || *yield < 0.0 || *cohesion < 0.0 || *adhesion < 0.0 || *damping < 0.0 ||
         *velocity <= 0.0 || *iterations <= 0 || *iterations > 1024 || *pbf <= 0 || *pbf > 1024)
-        return fluidError<FluidSimulationSettings>(EditorStatus::Rejected, "editor.fluid.settings-range",
-                                                   "Fluid settings are outside safe solver ranges");
+        return eve::editing::failed<FluidSimulationSettings>(EditorStatus::Rejected,
+                                                             RuleId("editor.fluid.settings-range"),
+                                                             "Fluid settings are outside safe solver ranges");
     return eve::editing::applied<FluidSimulationSettings>(
         {static_cast<int>(*max), static_cast<int>(*preview), *radius, *support, *density, gravityComponents[0],
          gravityComponents[1], gravityComponents[2], *viscosity, *yield, *cohesion, *adhesion, *damping, *velocity,
@@ -115,7 +111,11 @@ EditorValue setting(const FluidSimulationSettings& s, const std::string& path) {
 
 FluidSimulationTarget::FluidSimulationTarget(std::string id) : id_(std::move(id)) {}
 TargetDescriptor FluidSimulationTarget::describe() const {
-    return {TargetId(id_), "fluid-simulation", revision_, false, {CapabilityId("eve.editor.target.fluid-properties")}};
+    return {TargetId(id_),
+            "fluid-simulation",
+            revisionValue(),
+            false,
+            {CapabilityId("eve.editor.target.fluid-properties")}};
 }
 void* FluidSimulationTarget::queryCapability(const CapabilityId& capability) {
     return capability == CapabilityId("eve.editor.target.fluid-properties") ? static_cast<IPropertyProvider*>(this)
@@ -124,13 +124,13 @@ void* FluidSimulationTarget::queryCapability(const CapabilityId& capability) {
 
 EditorResult<void> FluidSimulationTarget::applyDomainOperation(const DomainOperation& operation) {
     if (operation.target != TargetId(id_) || operation.type != "fluid.settings.replace.v1")
-        return fluidError<void>(EditorStatus::Rejected, "editor.fluid.operation-mismatch",
-                                "Fluid operation targets another document or type");
+        return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.fluid.operation-mismatch"),
+                                          "Fluid operation targets another document or type");
     auto parsed = parseSettings(operation.payload);
     if (!parsed.ok()) return EditorResult<void>::failure(parsed.status());
     settings_ = std::move(parsed.value());
-    ++revision_;
-    dirty_.include(0, 0);
+    bumpRevision();
+    widenDirty(0, 0);
     return eve::editing::applied<void>();
 }
 
@@ -142,7 +142,7 @@ eve::Result<eve::Revision> FluidSimulationTarget::currentRevision(const Selectio
         return eve::Result<eve::Revision>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
                                                                           "Fluid selection does not match its target",
                                                                           "editor.fluid.selection"));
-    return eve::Result<eve::Revision>::success(eve::Revision(revision_));
+    return eve::Result<eve::Revision>::success(eve::Revision(revisionValue()));
 }
 
 PropertySchema FluidSimulationTarget::schema(const SelectionSnapshot&) const {
@@ -178,8 +178,9 @@ EditorResult<DomainOperation> FluidSimulationTarget::makeSet(const SelectionSnap
     if (mode == PropertySetMode::Reset) return makeReset(selection, path);
     auto property = schema(selection).find(path);
     if (!matches(selection) || !property || mode != PropertySetMode::Absolute)
-        return fluidError<DomainOperation>(EditorStatus::Rejected, "editor.fluid.invalid-property-set",
-                                           "Fluid property requires matching selection and absolute assignment");
+        return eve::editing::failed<DomainOperation>(
+            EditorStatus::Rejected, RuleId("editor.fluid.invalid-property-set"),
+            "Fluid property requires matching selection and absolute assignment");
     auto valid = validatePropertyValue(*property, value);
     if (!valid.ok()) return EditorResult<DomainOperation>::failure(valid.status());
     EditorValue candidateValue = settingsValue(settings_);
@@ -203,8 +204,8 @@ EditorResult<DomainOperation> FluidSimulationTarget::makeReset(const SelectionSn
                                                                const PropertyPath&      path) const {
     auto property = schema(selection).find(path);
     if (!property)
-        return fluidError<DomainOperation>(EditorStatus::Unsupported, "editor.fluid.property-not-found",
-                                           "Fluid property is unknown");
+        return eve::editing::failed<DomainOperation>(
+            EditorStatus::Unsupported, RuleId("editor.fluid.property-not-found"), "Fluid property is unknown");
     return makeSet(selection, path, property->defaultValue, PropertySetMode::Absolute);
 }
 
@@ -222,7 +223,7 @@ std::vector<EditorDiagnostic> FluidSimulationTarget::validate() const {
 FluidSimulationPreview FluidSimulationTarget::previewBudget(std::uint64_t byteBudget,
                                                             std::uint64_t neighborBudget) const {
     FluidSimulationPreview result;
-    result.documentRevision        = revision_;
+    result.documentRevision        = revisionValue();
     const std::uint64_t particles  = static_cast<std::uint64_t>(settings_.previewParticles);
     result.estimatedBytes          = particles * 80ULL;
     const double ratio             = settings_.supportRadius / settings_.particleRadius;
@@ -249,13 +250,13 @@ EditorResult<void> FluidSimulationTarget::loadSnapshot(const EditorValue& snapsh
     const auto* settings     = field(snapshot, "settings");
     const auto* version      = versionValue ? versionValue->getIf<int64_t>() : nullptr;
     if (!version || *version != 1 || !settings)
-        return fluidError<void>(EditorStatus::Unsupported, "editor.fluid.invalid-snapshot",
-                                "Fluid snapshot schema is unsupported");
+        return eve::editing::failed<void>(EditorStatus::Unsupported, RuleId("editor.fluid.invalid-snapshot"),
+                                          "Fluid snapshot schema is unsupported");
     auto parsed = parseSettings(*settings);
     if (!parsed.ok()) return EditorResult<void>::failure(parsed.status());
     settings_ = std::move(parsed.value());
-    ++revision_;
-    dirty_.clear();
+    bumpRevision();
+    clearDirtyRegion();
     return eve::editing::applied<void>();
 }
 

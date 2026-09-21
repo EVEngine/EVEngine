@@ -39,11 +39,6 @@ struct ScriptTacticsInteraction {
     std::optional<InteractionSession> session;
 };
 
-template <typename T>
-Result<T> failure(DiagnosticCode code, std::string message, std::string path) {
-    return Result<T>::failure(Diagnostic::error(code, std::move(message), std::move(path)));
-}
-
 Result<void> failure(DiagnosticCode code, std::string message, std::string path) {
     return Result<void>::failure(Diagnostic::error(code, std::move(message), std::move(path)));
 }
@@ -51,8 +46,8 @@ Result<void> failure(DiagnosticCode code, std::string message, std::string path)
 Result<SubjectRef> bindingSubject(const std::string& text, std::string path) {
     const auto id = PersistentId::parse(text);
     if (!id || id->isNil())
-        return failure<SubjectRef>(DiagnosticCode::InvalidArgument, "expected a non-nil canonical UUID",
-                                   std::move(path));
+        return Result<SubjectRef>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "expected a non-nil canonical UUID", std::move(path)));
     return Result<SubjectRef>::success(SubjectRef::fromPersistentId(*id));
 }
 
@@ -70,8 +65,8 @@ Result<SubjectRef> bindingOptionalSubject(const std::string& text, std::string p
 Result<LogicalId> bindingLogicalId(const std::string& text, std::string path) {
     const auto id = LogicalId::parse(text);
     if (!id)
-        return failure<LogicalId>(DiagnosticCode::InvalidArgument, "expected a namespace:name logical ID",
-                                  std::move(path));
+        return Result<LogicalId>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                            "expected a namespace:name logical ID", std::move(path)));
     return Result<LogicalId>::success(*id);
 }
 
@@ -80,22 +75,23 @@ Result<std::vector<Cell>> bindingCellsJson(const std::string& json) {
     if (!value) return Result<std::vector<Cell>>::failure(value.status());
     const auto* rows = value.value().getIf<Value::Array>();
     if (!rows || rows->empty())
-        return failure<std::vector<Cell>>(DiagnosticCode::InvalidArgument,
-                                          "objective cells JSON must be a non-empty array", "cellsJson");
+        return Result<std::vector<Cell>>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "objective cells JSON must be a non-empty array", "cellsJson"));
     std::vector<Cell> result;
     result.reserve(rows->size());
     for (std::size_t index = 0; index < rows->size(); ++index) {
         const auto* tuple = (*rows)[index].getIf<Value::Array>();
         if (!tuple || tuple->size() != 3 || !(*tuple)[0].isInt64() || !(*tuple)[1].isInt64() ||
             !(*tuple)[2].isInt64())
-            return failure<std::vector<Cell>>(DiagnosticCode::InvalidArgument,
-                                              "objective cell must be [x,y,layer] integers",
-                                              "cellsJson[" + std::to_string(index) + "]");
+            return Result<std::vector<Cell>>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                                        "objective cell must be [x,y,layer] integers",
+                                                                        "cellsJson[" + std::to_string(index) + "]"));
         const auto convert = [&](std::size_t coordinate) -> Result<int> {
             const auto value = (*tuple)[coordinate].asInt();
             if (value < std::numeric_limits<int>::min() || value > std::numeric_limits<int>::max())
-                return failure<int>(DiagnosticCode::InvalidArgument, "objective cell coordinate is out of range",
-                                    "cellsJson[" + std::to_string(index) + "]");
+                return Result<int>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                              "objective cell coordinate is out of range",
+                                                              "cellsJson[" + std::to_string(index) + "]"));
             return Result<int>::success(static_cast<int>(value));
         };
         auto x = convert(0);
@@ -121,16 +117,16 @@ Result<std::vector<ReactionCandidate>> bindingReactionCandidatesJson(const std::
     if (!value) return Result<std::vector<ReactionCandidate>>::failure(value.status());
     const auto* rows = value.value().getIf<Value::Array>();
     if (!rows)
-        return failure<std::vector<ReactionCandidate>>(DiagnosticCode::InvalidArgument,
-                                                       "reaction candidates JSON must be an array", "candidatesJson");
+        return Result<std::vector<ReactionCandidate>>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "reaction candidates JSON must be an array", "candidatesJson"));
     std::vector<ReactionCandidate> result;
     result.reserve(rows->size());
     for (std::size_t index = 0; index < rows->size(); ++index) {
         const std::string element = "candidatesJson[" + std::to_string(index) + "]";
         const auto*       object  = (*rows)[index].getIf<Value::Object>();
         if (object == nullptr)
-            return failure<std::vector<ReactionCandidate>>(DiagnosticCode::InvalidArgument,
-                                                          "reaction candidate must be an object", element);
+            return Result<std::vector<ReactionCandidate>>::failure(
+                Diagnostic::error(DiagnosticCode::InvalidArgument, "reaction candidate must be an object", element));
         const auto field = [&](std::string_view name) -> const Value* {
             const auto found = object->find(std::string(name));
             return found == object->end() ? nullptr : &found->second;
@@ -138,9 +134,8 @@ Result<std::vector<ReactionCandidate>> bindingReactionCandidatesJson(const std::
         const Value* reactorText = field("reactor");
         const Value* actionText  = field("action");
         if (reactorText == nullptr || !reactorText->isString() || actionText == nullptr || !actionText->isString())
-            return failure<std::vector<ReactionCandidate>>(DiagnosticCode::InvalidArgument,
-                                                          "reaction candidate requires string reactor and action",
-                                                          element);
+            return Result<std::vector<ReactionCandidate>>::failure(Diagnostic::error(
+                DiagnosticCode::InvalidArgument, "reaction candidate requires string reactor and action", element));
         auto reactor = bindingSubject(reactorText->asString(), element + ".reactor");
         if (!reactor) return Result<std::vector<ReactionCandidate>>::failure(reactor.status());
         auto action = bindingLogicalId(actionText->asString(), element + ".action");
@@ -149,12 +144,14 @@ Result<std::vector<ReactionCandidate>> bindingReactionCandidatesJson(const std::
             const Value* raw = field(name);
             if (raw == nullptr) return Result<int>::success(0);
             if (!raw->isInt64())
-                return failure<int>(DiagnosticCode::InvalidArgument,
-                                    "reaction candidate field must be an integer", element + "." + std::string(name));
+                return Result<int>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                              "reaction candidate field must be an integer",
+                                                              element + "." + std::string(name)));
             const auto number = raw->asInt();
             if (number < std::numeric_limits<int>::min() || number > std::numeric_limits<int>::max())
-                return failure<int>(DiagnosticCode::InvalidArgument,
-                                    "reaction candidate field is out of range", element + "." + std::string(name));
+                return Result<int>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                              "reaction candidate field is out of range",
+                                                              element + "." + std::string(name)));
             return Result<int>::success(static_cast<int>(number));
         };
         auto priority   = integerField("priority");
@@ -176,12 +173,12 @@ Tactics* currentModule() noexcept { return ModuleManager::getInstance<Tactics>("
 
 Result<TacticsBattleSession*> bindingSession(ScriptTacticsBattle* proxy) {
     if (!proxy)
-        return failure<TacticsBattleSession*>(DiagnosticCode::InvalidArgument,
-                                              "tactics battle proxy must not be null", "battle");
+        return Result<TacticsBattleSession*>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "tactics battle proxy must not be null", "battle"));
     auto session = Tactics::resolve(proxy->reference);
     if (!session.isBound())
-        return failure<TacticsBattleSession*>(DiagnosticCode::StaleHandle,
-                                              "tactics battle session handle is stale", "battle");
+        return Result<TacticsBattleSession*>::failure(
+            Diagnostic::error(DiagnosticCode::StaleHandle, "tactics battle session handle is stale", "battle"));
     return Result<TacticsBattleSession*>::success(session.get());
 }
 
@@ -300,7 +297,8 @@ Result<EdgeState> bindingEdgeStateJson(const std::string& json) {
     if (!value) return Result<EdgeState>::failure(value.status());
     const auto* object = value.value().getIf<Value::Object>();
     if (object == nullptr)
-        return failure<EdgeState>(DiagnosticCode::InvalidArgument, "edge spec JSON must be an object", "edge");
+        return Result<EdgeState>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "edge spec JSON must be an object", "edge"));
     const auto field = [&](std::string_view name) -> const Value* {
         const auto found = object->find(std::string(name));
         return found == object->end() ? nullptr : &found->second;
@@ -308,27 +306,29 @@ Result<EdgeState> bindingEdgeStateJson(const std::string& json) {
     if (const Value* passable = field("passable"); passable != nullptr) {
         const auto* boolean = passable->getIf<bool>();
         if (boolean == nullptr)
-            return failure<EdgeState>(DiagnosticCode::InvalidArgument, "edge passable must be a boolean",
-                                      "edge.passable");
+            return Result<EdgeState>::failure(
+                Diagnostic::error(DiagnosticCode::InvalidArgument, "edge passable must be a boolean", "edge.passable"));
         state.passable = *boolean;
     }
     if (const Value* extra = field("extraCost"); extra != nullptr) {
         if (!extra->isInt64())
-            return failure<EdgeState>(DiagnosticCode::InvalidArgument, "edge extraCost must be an integer",
-                                      "edge.extraCost");
+            return Result<EdgeState>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                                "edge extraCost must be an integer", "edge.extraCost"));
         const auto number = extra->asInt();
         if (number < std::numeric_limits<int>::min() || number > std::numeric_limits<int>::max())
-            return failure<EdgeState>(DiagnosticCode::InvalidArgument, "edge extraCost is out of range",
-                                      "edge.extraCost");
+            return Result<EdgeState>::failure(
+                Diagnostic::error(DiagnosticCode::InvalidArgument, "edge extraCost is out of range", "edge.extraCost"));
         state.extraCost = static_cast<int>(number);
     }
     if (const Value* tags = field("tags"); tags != nullptr) {
         const auto* array = tags->getIf<Value::Array>();
         if (array == nullptr)
-            return failure<EdgeState>(DiagnosticCode::InvalidArgument, "edge tags must be an array", "edge.tags");
+            return Result<EdgeState>::failure(
+                Diagnostic::error(DiagnosticCode::InvalidArgument, "edge tags must be an array", "edge.tags"));
         for (const auto& tag : *array) {
             if (!tag.isString())
-                return failure<EdgeState>(DiagnosticCode::InvalidArgument, "edge tag must be a string", "edge.tags");
+                return Result<EdgeState>::failure(
+                    Diagnostic::error(DiagnosticCode::InvalidArgument, "edge tag must be a string", "edge.tags"));
             state.tags.push_back(tag.asString());
         }
     }
@@ -342,7 +342,8 @@ Result<std::string> scriptAddSide(ScriptTacticsBattle* proxy, const std::string&
     if (!subject) return Result<std::string>::failure(subject.status());
     Tactics* module = currentModule();
     if (!module)
-        return failure<std::string>(DiagnosticCode::StaleHandle, "Tactics module is no longer loaded", "battle");
+        return Result<std::string>::failure(
+            Diagnostic::error(DiagnosticCode::StaleHandle, "Tactics module is no longer loaded", "battle"));
     auto created = module->newSide(session.value()->battle, subject.value());
     if (!created) return Result<std::string>::failure(created.status());
     std::move(created).takeValue();
@@ -362,7 +363,8 @@ Result<std::string> scriptAddUnit(ScriptTacticsBattle* proxy, const std::string&
     if (!sideSubject) return Result<std::string>::failure(sideSubject.status());
     auto* battle = dynamic_cast<Battle*>(ecs::try_get(session.value()->battle));
     if (!battle)
-        return failure<std::string>(DiagnosticCode::StaleHandle, "tactics battle entity is stale", "battle");
+        return Result<std::string>::failure(
+            Diagnostic::error(DiagnosticCode::StaleHandle, "tactics battle entity is stale", "battle"));
     std::optional<ecs::EntityHandle> side;
     for (const auto& handle : battle->turn()->sides) {
         auto* sideValue = dynamic_cast<TacticalSide*>(ecs::try_get(handle));
@@ -372,11 +374,12 @@ Result<std::string> scriptAddUnit(ScriptTacticsBattle* proxy, const std::string&
         }
     }
     if (!side)
-        return failure<std::string>(DiagnosticCode::NotFound, "tactics side is not part of this script battle",
-                                    "side");
+        return Result<std::string>::failure(
+            Diagnostic::error(DiagnosticCode::NotFound, "tactics side is not part of this script battle", "side"));
     Tactics* module = currentModule();
     if (!module)
-        return failure<std::string>(DiagnosticCode::StaleHandle, "Tactics module is no longer loaded", "battle");
+        return Result<std::string>::failure(
+            Diagnostic::error(DiagnosticCode::StaleHandle, "Tactics module is no longer loaded", "battle"));
     auto created = module->newUnit(session.value()->battle, *side, subject.value(), definition.value(),
                                    {x, y, layer}, {actionPoints, movePoints, reactionPoints, initiative});
     if (!created) return Result<std::string>::failure(created.status());
@@ -418,12 +421,14 @@ Result<int> integerParameter(const Value& parameters, std::string_view name) {
     const auto* object = parameters.getIf<Value::Object>();
     const auto  found = object ? object->find(std::string(name)) : Value::Object::const_iterator{};
     if (!object || found == object->end() || !found->second.isInt64())
-        return failure<int>(DiagnosticCode::InvalidArgument, "gameplay command parameter must be an integer",
-                            "parameters." + std::string(name));
+        return Result<int>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                      "gameplay command parameter must be an integer",
+                                                      "parameters." + std::string(name)));
     const auto value = found->second.asInt();
     if (value < std::numeric_limits<int>::min() || value > std::numeric_limits<int>::max())
-        return failure<int>(DiagnosticCode::InvalidArgument, "gameplay command parameter is out of range",
-                            "parameters." + std::string(name));
+        return Result<int>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                      "gameplay command parameter is out of range",
+                                                      "parameters." + std::string(name)));
     return Result<int>::success(static_cast<int>(value));
 }
 
@@ -441,9 +446,9 @@ Result<std::string> optionalStringParameter(const Value& parameters, std::string
     if (found == object->end() || found->second.isNull()) return Result<std::string>::success(std::string{});
     const auto* text = found->second.getIf<std::string>();
     if (text == nullptr)
-        return failure<std::string>(DiagnosticCode::InvalidArgument,
-                                    "gameplay command parameter must be a string",
-                                    "parameters." + std::string(name));
+        return Result<std::string>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                              "gameplay command parameter must be a string",
+                                                              "parameters." + std::string(name)));
     return Result<std::string>::success(*text);
 }
 
@@ -497,8 +502,8 @@ Result<GameplayObservation> Tactics::observeGameplay(const GameplaySession& sess
                                                        SubjectRef instance) const {
     Battle* battle = resolveBattle(instance);
     if (!battle)
-        return failure<GameplayObservation>(DiagnosticCode::NotFound, "tactics gameplay instance was not found",
-                                            "instance");
+        return Result<GameplayObservation>::failure(
+            Diagnostic::error(DiagnosticCode::NotFound, "tactics gameplay instance was not found", "instance"));
     if (session.access == GameplayAccess::PlayerEquivalent) {
         const bool ownsParticipant = std::any_of(battle->turn()->units.begin(), battle->turn()->units.end(),
                                                  [&](const ecs::EntityHandle& handle) {
@@ -506,9 +511,9 @@ Result<GameplayObservation> Tactics::observeGameplay(const GameplaySession& sess
             return unit && controls(session, unit->identity()->subject);
         });
         if (!ownsParticipant)
-            return failure<GameplayObservation>(DiagnosticCode::PreconditionViolation,
-                                                "session controls no participant in this tactics battle",
-                                                "session.controlledSubjects");
+            return Result<GameplayObservation>::failure(Diagnostic::error(
+                DiagnosticCode::PreconditionViolation, "session controls no participant in this tactics battle",
+                "session.controlledSubjects"));
     }
 
     Value::Array units;
@@ -548,12 +553,11 @@ Result<std::vector<GameplayActionDescriptor>> Tactics::availableGameplayActions(
     const GameplaySession& session, SubjectRef instance, SubjectRef subject) const {
     Battle* battle = resolveBattle(instance);
     if (!battle)
-        return failure<std::vector<GameplayActionDescriptor>>(DiagnosticCode::NotFound,
-                                                               "tactics gameplay instance was not found", "instance");
+        return Result<std::vector<GameplayActionDescriptor>>::failure(
+            Diagnostic::error(DiagnosticCode::NotFound, "tactics gameplay instance was not found", "instance"));
     if (!controls(session, subject))
-        return failure<std::vector<GameplayActionDescriptor>>(DiagnosticCode::PreconditionViolation,
-                                                               "session does not control the requested subject",
-                                                               "subject");
+        return Result<std::vector<GameplayActionDescriptor>>::failure(Diagnostic::error(
+            DiagnosticCode::PreconditionViolation, "session does not control the requested subject", "subject"));
     auto* active = battle->turn()->activeUnit
                        ? dynamic_cast<TacticalUnit*>(ecs::try_get(*battle->turn()->activeUnit))
                        : nullptr;
@@ -587,19 +591,18 @@ Result<GameplayCommandReceipt> Tactics::submitGameplay(const GameplaySession& se
                                                         const GameplayCommand& command) {
     Battle* battle = resolveBattle(instance);
     if (!battle)
-        return failure<GameplayCommandReceipt>(DiagnosticCode::NotFound, "tactics gameplay instance was not found",
-                                               "instance");
+        return Result<GameplayCommandReceipt>::failure(
+            Diagnostic::error(DiagnosticCode::NotFound, "tactics gameplay instance was not found", "instance"));
     if (command.id.empty())
-        return failure<GameplayCommandReceipt>(DiagnosticCode::InvalidArgument, "command id must not be empty",
-                                               "command.id");
+        return Result<GameplayCommandReceipt>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "command id must not be empty", "command.id"));
     if (!controls(session, command.subject))
-        return failure<GameplayCommandReceipt>(DiagnosticCode::PreconditionViolation,
-                                               "session does not control the command subject", "command.subject");
+        return Result<GameplayCommandReceipt>::failure(Diagnostic::error(
+            DiagnosticCode::PreconditionViolation, "session does not control the command subject", "command.subject"));
     if (command.observedTick != battle->turn()->tick ||
         command.expectedRevision != battle->turn()->revision.value())
-        return failure<GameplayCommandReceipt>(DiagnosticCode::Conflict,
-                                               "gameplay command was based on a stale observation",
-                                               "command.expectedRevision");
+        return Result<GameplayCommandReceipt>::failure(Diagnostic::error(
+            DiagnosticCode::Conflict, "gameplay command was based on a stale observation", "command.expectedRevision"));
 
     Value details(Value::Object{});
     if (command.action == gameplayId("tactics:move")) {
@@ -654,8 +657,8 @@ Result<GameplayCommandReceipt> Tactics::submitGameplay(const GameplaySession& se
                                        Value(receipt.targetUnit.isValid() ? receipt.targetUnit.format()
                                                                           : std::string{})}});
     } else {
-        return failure<GameplayCommandReceipt>(DiagnosticCode::Unsupported,
-                                               "unsupported tactics gameplay action", "command.action");
+        return Result<GameplayCommandReceipt>::failure(
+            Diagnostic::error(DiagnosticCode::Unsupported, "unsupported tactics gameplay action", "command.action"));
     }
 
     GameplayCommandReceipt receipt;
@@ -673,8 +676,8 @@ Result<GameplayObservation> Tactics::advanceGameplay(const GameplaySession& sess
                                                        const SimulationStep& step) {
     Battle* battle = resolveBattle(instance);
     if (!battle)
-        return failure<GameplayObservation>(DiagnosticCode::NotFound, "tactics gameplay instance was not found",
-                                            "instance");
+        return Result<GameplayObservation>::failure(
+            Diagnostic::error(DiagnosticCode::NotFound, "tactics gameplay instance was not found", "instance"));
     auto advanced = BattleSystem::advance(*battle, step);
     if (!advanced) return Result<GameplayObservation>::failure(advanced.status());
     std::move(advanced).takeValue();
@@ -710,8 +713,8 @@ Result<std::vector<GameplayEvent>> Tactics::gameplayEvents(const GameplaySession
 
 Result<ecs::EntityHandle> Tactics::newBattle(SubjectRef subject, std::uint64_t seed) {
     if (!subject.isValid())
-        return failure<ecs::EntityHandle>(DiagnosticCode::InvalidArgument,
-                                          "tactics battle requires a valid SubjectRef", "subject");
+        return Result<ecs::EntityHandle>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "tactics battle requires a valid SubjectRef", "subject"));
     Battle* battle             = Battle::create();
     battle->identity()->self    = ecs::handle_of(battle);
     battle->identity()->subject = subject;
@@ -730,11 +733,11 @@ Result<ecs::EntityHandle> Tactics::newBattle(SubjectRef subject, std::uint64_t s
 Result<ecs::EntityHandle> Tactics::newSide(ecs::EntityHandle battleHandle, SubjectRef subject) {
     Battle* battle = resolveBattle(battleHandle);
     if (battle == nullptr)
-        return failure<ecs::EntityHandle>(DiagnosticCode::StaleHandle,
-                                          "tactics battle is stale or not owned by this facade", "battle");
+        return Result<ecs::EntityHandle>::failure(Diagnostic::error(
+            DiagnosticCode::StaleHandle, "tactics battle is stale or not owned by this facade", "battle"));
     if (!subject.isValid())
-        return failure<ecs::EntityHandle>(DiagnosticCode::InvalidArgument,
-                                          "tactics side requires a valid SubjectRef", "subject");
+        return Result<ecs::EntityHandle>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "tactics side requires a valid SubjectRef", "subject"));
     TacticalSide* side           = TacticalSide::create();
     side->identity()->self        = ecs::handle_of(side);
     side->identity()->subject     = subject;
@@ -753,14 +756,14 @@ Result<ecs::EntityHandle> Tactics::newUnit(ecs::EntityHandle battleHandle, ecs::
                                            TurnResourceSpec resources) {
     Battle* battle = resolveBattle(battleHandle);
     if (battle == nullptr)
-        return failure<ecs::EntityHandle>(DiagnosticCode::StaleHandle,
-                                          "tactics battle is stale or not owned by this facade", "battle");
+        return Result<ecs::EntityHandle>::failure(Diagnostic::error(
+            DiagnosticCode::StaleHandle, "tactics battle is stale or not owned by this facade", "battle"));
     if (!owns(sides_, sideHandle))
-        return failure<ecs::EntityHandle>(DiagnosticCode::StaleHandle,
-                                          "tactics side is stale or not owned by this facade", "side");
+        return Result<ecs::EntityHandle>::failure(Diagnostic::error(
+            DiagnosticCode::StaleHandle, "tactics side is stale or not owned by this facade", "side"));
     if (!subject.isValid())
-        return failure<ecs::EntityHandle>(DiagnosticCode::InvalidArgument,
-                                          "tactics unit requires a valid SubjectRef", "subject");
+        return Result<ecs::EntityHandle>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "tactics unit requires a valid SubjectRef", "subject"));
     auto resourcesValid = resources.validate();
     if (!resourcesValid) return Result<ecs::EntityHandle>::failure(resourcesValid.status());
     TacticalUnit* unit               = TacticalUnit::create();
@@ -832,8 +835,8 @@ Result<void> Tactics::start(ecs::EntityHandle battleHandle, std::string_view pol
 Result<BattlePhase> Tactics::advance(ecs::EntityHandle battleHandle, const SimulationStep& step) {
     Battle* battle = resolveBattle(battleHandle);
     if (battle == nullptr)
-        return failure<BattlePhase>(DiagnosticCode::StaleHandle,
-                                    "tactics battle is stale or not owned by this facade", "battle");
+        return Result<BattlePhase>::failure(Diagnostic::error(
+            DiagnosticCode::StaleHandle, "tactics battle is stale or not owned by this facade", "battle"));
     return BattleSystem::advance(*battle, step);
 }
 
@@ -848,8 +851,8 @@ Result<AbilityReceipt> Tactics::useAbility(ecs::EntityHandle battleHandle, Subje
                                            Cell targetCell, SubjectRef targetUnit, std::string payload) {
     Battle* battle = resolveBattle(battleHandle);
     if (battle == nullptr)
-        return failure<AbilityReceipt>(DiagnosticCode::StaleHandle,
-                                       "tactics battle is stale or not owned by this facade", "battle");
+        return Result<AbilityReceipt>::failure(Diagnostic::error(
+            DiagnosticCode::StaleHandle, "tactics battle is stale or not owned by this facade", "battle"));
     return BattleSystem::useAbility(*battle, actor, action, targetCell, targetUnit, std::move(payload));
 }
 
@@ -858,16 +861,16 @@ Result<AbilityReceipt> Tactics::previewAbility(ecs::EntityHandle battleHandle, S
                                                std::string_view payload) {
     Battle* battle = resolveBattle(battleHandle);
     if (battle == nullptr)
-        return failure<AbilityReceipt>(DiagnosticCode::StaleHandle,
-                                       "tactics battle is stale or not owned by this facade", "battle");
+        return Result<AbilityReceipt>::failure(Diagnostic::error(
+            DiagnosticCode::StaleHandle, "tactics battle is stale or not owned by this facade", "battle"));
     return BattleSystem::previewAbility(*battle, actor, action, targetCell, targetUnit, payload);
 }
 
 Result<MoveReceipt> Tactics::moveUnit(ecs::EntityHandle battleHandle, SubjectRef actor, Cell destination) {
     Battle* battle = resolveBattle(battleHandle);
     if (battle == nullptr)
-        return failure<MoveReceipt>(DiagnosticCode::StaleHandle,
-                                    "tactics battle is stale or not owned by this facade", "battle");
+        return Result<MoveReceipt>::failure(Diagnostic::error(
+            DiagnosticCode::StaleHandle, "tactics battle is stale or not owned by this facade", "battle"));
     return BattleSystem::moveUnit(*battle, actor, destination);
 }
 
@@ -896,8 +899,8 @@ Result<std::size_t> Tactics::openReaction(ecs::EntityHandle battleHandle, std::u
                                           std::vector<ReactionCandidate> candidates) {
     Battle* battle = resolveBattle(battleHandle);
     if (battle == nullptr)
-        return failure<std::size_t>(DiagnosticCode::StaleHandle,
-                                    "tactics battle is stale or not owned by this facade", "battle");
+        return Result<std::size_t>::failure(Diagnostic::error(
+            DiagnosticCode::StaleHandle, "tactics battle is stale or not owned by this facade", "battle"));
     return BattleSystem::openReaction(*battle, triggerSequence, std::move(candidates));
 }
 
@@ -905,8 +908,8 @@ Result<ReactionReceipt> Tactics::acceptReaction(ecs::EntityHandle battleHandle, 
                                                  const LogicalId& action) {
     Battle* battle = resolveBattle(battleHandle);
     if (battle == nullptr)
-        return failure<ReactionReceipt>(DiagnosticCode::StaleHandle,
-                                        "tactics battle is stale or not owned by this facade", "battle");
+        return Result<ReactionReceipt>::failure(Diagnostic::error(
+            DiagnosticCode::StaleHandle, "tactics battle is stale or not owned by this facade", "battle"));
     return BattleSystem::acceptReaction(*battle, reactor, action);
 }
 
@@ -934,24 +937,24 @@ Result<void> Tactics::defeatUnit(ecs::EntityHandle battleHandle, SubjectRef unit
 Result<std::uint64_t> Tactics::roll(ecs::EntityHandle battleHandle, const LogicalId& stream) {
     Battle* battle = resolveBattle(battleHandle);
     if (!battle)
-        return failure<std::uint64_t>(DiagnosticCode::StaleHandle,
-                                      "tactics battle is stale or not owned by this facade", "battle");
+        return Result<std::uint64_t>::failure(Diagnostic::error(
+            DiagnosticCode::StaleHandle, "tactics battle is stale or not owned by this facade", "battle"));
     return BattleSystem::roll(*battle, stream);
 }
 
 Result<BattleStatus> Tactics::status(ecs::EntityHandle battleHandle) {
     Battle* battle = resolveBattle(battleHandle);
     if (battle == nullptr)
-        return failure<BattleStatus>(DiagnosticCode::StaleHandle,
-                                     "tactics battle is stale or not owned by this facade", "battle");
+        return Result<BattleStatus>::failure(Diagnostic::error(
+            DiagnosticCode::StaleHandle, "tactics battle is stale or not owned by this facade", "battle"));
     return Result<BattleStatus>::success(battle->turn()->status);
 }
 
 Result<BattlePhase> Tactics::phase(ecs::EntityHandle battleHandle) {
     Battle* battle = resolveBattle(battleHandle);
     if (battle == nullptr)
-        return failure<BattlePhase>(DiagnosticCode::StaleHandle,
-                                    "tactics battle is stale or not owned by this facade", "battle");
+        return Result<BattlePhase>::failure(Diagnostic::error(
+            DiagnosticCode::StaleHandle, "tactics battle is stale or not owned by this facade", "battle"));
     return Result<BattlePhase>::success(battle->turn()->phase);
 }
 
@@ -967,8 +970,8 @@ TacticalUnit* Tactics::findUnit(SubjectRef subject) const noexcept {
 Result<MoveReceipt> Tactics::previewMove(ecs::EntityHandle battleHandle, SubjectRef actor, Cell destination) {
     Battle* battle = resolveBattle(battleHandle);
     if (battle == nullptr)
-        return failure<MoveReceipt>(DiagnosticCode::StaleHandle,
-                                    "tactics battle is stale or not owned by this facade", "battle");
+        return Result<MoveReceipt>::failure(Diagnostic::error(
+            DiagnosticCode::StaleHandle, "tactics battle is stale or not owned by this facade", "battle"));
     return BattleSystem::previewMove(*battle, actor, destination);
 }
 
@@ -989,8 +992,8 @@ Result<void> Tactics::previewWait(ecs::EntityHandle battleHandle, SubjectRef act
 Result<Reachability> Tactics::reachable(ecs::EntityHandle battleHandle, SubjectRef subject, int budget) {
     Battle* battle = resolveBattle(battleHandle);
     if (battle == nullptr)
-        return failure<Reachability>(DiagnosticCode::StaleHandle,
-                                     "tactics battle is stale or not owned by this facade", "battle");
+        return Result<Reachability>::failure(Diagnostic::error(
+            DiagnosticCode::StaleHandle, "tactics battle is stale or not owned by this facade", "battle"));
     return PathQuery::reachable(battle->board()->value, subject, budget);
 }
 
@@ -998,8 +1001,8 @@ Result<std::vector<Cell>> Tactics::cellsInRange(ecs::EntityHandle battleHandle, 
                                                 CellRangeMetric metric) {
     Battle* battle = resolveBattle(battleHandle);
     if (battle == nullptr)
-        return failure<std::vector<Cell>>(DiagnosticCode::StaleHandle,
-                                          "tactics battle is stale or not owned by this facade", "battle");
+        return Result<std::vector<Cell>>::failure(Diagnostic::error(
+            DiagnosticCode::StaleHandle, "tactics battle is stale or not owned by this facade", "battle"));
     return PathQuery::cellsInRange(battle->board()->value, origin, minimum, maximum, metric);
 }
 
@@ -1023,8 +1026,8 @@ Result<void> Tactics::addEdge(ecs::EntityHandle battleHandle, Cell from, Cell to
 Result<EdgeState> Tactics::edge(ecs::EntityHandle battleHandle, Cell from, Cell to) {
     Battle* battle = resolveBattle(battleHandle);
     if (battle == nullptr)
-        return failure<EdgeState>(DiagnosticCode::StaleHandle,
-                                  "tactics battle is stale or not owned by this facade", "battle");
+        return Result<EdgeState>::failure(Diagnostic::error(
+            DiagnosticCode::StaleHandle, "tactics battle is stale or not owned by this facade", "battle"));
     return battle->board()->value.edge(from, to);
 }
 
@@ -1037,35 +1040,35 @@ std::optional<EdgeState> Tactics::tryEdge(ecs::EntityHandle battleHandle, Cell f
 Result<std::string> Tactics::policyId(ecs::EntityHandle battleHandle) {
     Battle* battle = resolveBattle(battleHandle);
     if (battle == nullptr)
-        return failure<std::string>(DiagnosticCode::StaleHandle,
-                                    "tactics battle is stale or not owned by this facade", "battle");
+        return Result<std::string>::failure(Diagnostic::error(
+            DiagnosticCode::StaleHandle, "tactics battle is stale or not owned by this facade", "battle"));
     return Result<std::string>::success(battle->turn()->policyId);
 }
 
 Result<TacticalUnit::TurnResources> Tactics::unitResources(ecs::EntityHandle battleHandle, SubjectRef unit) {
     Battle* battle = resolveBattle(battleHandle);
     if (battle == nullptr)
-        return failure<TacticalUnit::TurnResources>(DiagnosticCode::StaleHandle,
-                                                    "tactics battle is stale or not owned by this facade", "battle");
+        return Result<TacticalUnit::TurnResources>::failure(Diagnostic::error(
+            DiagnosticCode::StaleHandle, "tactics battle is stale or not owned by this facade", "battle"));
     TacticalUnit* found = findUnit(unit);
     if (found == nullptr)
-        return failure<TacticalUnit::TurnResources>(DiagnosticCode::NotFound,
-                                                    "tactics unit is not owned by this facade", "unit");
+        return Result<TacticalUnit::TurnResources>::failure(
+            Diagnostic::error(DiagnosticCode::NotFound, "tactics unit is not owned by this facade", "unit"));
     return Result<TacticalUnit::TurnResources>::success(*found->turn());
 }
 
 Result<SubjectRef> Tactics::activeUnit(ecs::EntityHandle battleHandle) {
     Battle* battle = resolveBattle(battleHandle);
     if (battle == nullptr)
-        return failure<SubjectRef>(DiagnosticCode::StaleHandle,
-                                   "tactics battle is stale or not owned by this facade", "battle");
+        return Result<SubjectRef>::failure(Diagnostic::error(
+            DiagnosticCode::StaleHandle, "tactics battle is stale or not owned by this facade", "battle"));
     if (!battle->turn()->activeUnit)
-        return failure<SubjectRef>(DiagnosticCode::NotFound, "tactics battle has no active unit",
-                                   "battle.activeUnit");
+        return Result<SubjectRef>::failure(
+            Diagnostic::error(DiagnosticCode::NotFound, "tactics battle has no active unit", "battle.activeUnit"));
     auto* unit = dynamic_cast<TacticalUnit*>(ecs::try_get(*battle->turn()->activeUnit));
     if (unit == nullptr)
-        return failure<SubjectRef>(DiagnosticCode::StaleHandle, "tactics active unit is stale",
-                                   "battle.activeUnit");
+        return Result<SubjectRef>::failure(
+            Diagnostic::error(DiagnosticCode::StaleHandle, "tactics active unit is stale", "battle.activeUnit"));
     return Result<SubjectRef>::success(unit->identity()->subject);
 }
 
@@ -1073,8 +1076,8 @@ Result<SnapshotEnvelope> Tactics::snapshot(ecs::EntityHandle battleHandle,
                                            const SnapshotHashProvider& hashProvider) {
     Battle* battle = resolveBattle(battleHandle);
     if (!battle)
-        return failure<SnapshotEnvelope>(DiagnosticCode::StaleHandle,
-                                         "tactics battle is stale or not owned by this facade", "battle");
+        return Result<SnapshotEnvelope>::failure(Diagnostic::error(
+            DiagnosticCode::StaleHandle, "tactics battle is stale or not owned by this facade", "battle"));
     return TacticsPersistence::snapshot(*battle, hashProvider);
 }
 
@@ -1089,8 +1092,8 @@ Result<void> Tactics::restore(ecs::EntityHandle battleHandle, const SnapshotEnve
 Result<std::vector<BattleCommand>> Tactics::commandsFrom(ecs::EntityHandle battleHandle, Revision revision) {
     Battle* battle = resolveBattle(battleHandle);
     if (!battle)
-        return failure<std::vector<BattleCommand>>(DiagnosticCode::StaleHandle,
-                                                   "tactics battle is stale or not owned by this facade", "battle");
+        return Result<std::vector<BattleCommand>>::failure(Diagnostic::error(
+            DiagnosticCode::StaleHandle, "tactics battle is stale or not owned by this facade", "battle"));
     return Result<std::vector<BattleCommand>>::success(BattleReplay::commandsFrom(*battle, revision));
 }
 
@@ -1104,8 +1107,8 @@ Result<void> Tactics::replay(ecs::EntityHandle battleHandle, std::span<const Bat
 Result<std::string> Tactics::snapshotJson(ecs::EntityHandle battleHandle) {
     Battle* battle = resolveBattle(battleHandle);
     if (battle == nullptr)
-        return failure<std::string>(DiagnosticCode::StaleHandle,
-                                    "tactics battle is stale or not owned by this facade", "battle");
+        return Result<std::string>::failure(Diagnostic::error(
+            DiagnosticCode::StaleHandle, "tactics battle is stale or not owned by this facade", "battle"));
     // The provider is resolved per call, so a module that registers a stronger hasher later is
     // picked up instead of the facade caching a weaker one from an earlier call.
     auto sealed = TacticsPersistence::snapshot(*battle, snapshotContentHashProvider());
@@ -1128,8 +1131,8 @@ Result<void> Tactics::restoreJson(ecs::EntityHandle battleHandle, std::string_vi
 Result<std::string> Tactics::commandLogJson(ecs::EntityHandle battleHandle, Revision revision) {
     Battle* battle = resolveBattle(battleHandle);
     if (battle == nullptr)
-        return failure<std::string>(DiagnosticCode::StaleHandle,
-                                    "tactics battle is stale or not owned by this facade", "battle");
+        return Result<std::string>::failure(Diagnostic::error(
+            DiagnosticCode::StaleHandle, "tactics battle is stale or not owned by this facade", "battle"));
     auto log = TacticsPersistence::commandLogValue(*battle, revision);
     if (!log) return Result<std::string>::failure(log.status());
     return log.value().toJson();
@@ -1154,8 +1157,8 @@ Result<std::vector<Cell>> Tactics::visibleCellsInRange(ecs::EntityHandle battleH
                                                        int maximum, CellRangeMetric metric) {
     Battle* battle = resolveBattle(battleHandle);
     if (battle == nullptr)
-        return failure<std::vector<Cell>>(DiagnosticCode::StaleHandle,
-                                          "tactics battle is stale or not owned by this facade", "battle");
+        return Result<std::vector<Cell>>::failure(Diagnostic::error(
+            DiagnosticCode::StaleHandle, "tactics battle is stale or not owned by this facade", "battle"));
     // A registered sight policy wins, so a project board (a hex map with its own projection)
     // replaces the built-in rule instead of being ignored.
     const ILineOfSightPolicy* registered = cap::query<ILineOfSightPolicy>();
@@ -1168,15 +1171,15 @@ Result<std::vector<Cell>> Tactics::visibleCellsInRange(ecs::EntityHandle battleH
 Result<InteractionContext> Tactics::interactionContext(ecs::EntityHandle battleHandle, SubjectRef controlledUnit) {
     Battle* battle = resolveBattle(battleHandle);
     if (battle == nullptr)
-        return failure<InteractionContext>(DiagnosticCode::StaleHandle,
-                                           "tactics battle is stale or not owned by this facade", "battle");
+        return Result<InteractionContext>::failure(Diagnostic::error(
+            DiagnosticCode::StaleHandle, "tactics battle is stale or not owned by this facade", "battle"));
     if (!controlledUnit.isValid())
-        return failure<InteractionContext>(DiagnosticCode::InvalidArgument,
-                                           "interaction context requires a controlled unit", "controlledUnit");
+        return Result<InteractionContext>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "interaction context requires a controlled unit", "controlledUnit"));
     TacticalUnit* unit = findUnit(controlledUnit);
     if (unit == nullptr)
-        return failure<InteractionContext>(DiagnosticCode::NotFound,
-                                           "controlled unit is not in this battle", "controlledUnit");
+        return Result<InteractionContext>::failure(
+            Diagnostic::error(DiagnosticCode::NotFound, "controlled unit is not in this battle", "controlledUnit"));
 
     InteractionContext context;
     context.status = battle->turn()->status;
@@ -1220,9 +1223,8 @@ Result<std::vector<PresentationCommand>> Tactics::presentationIntents(ecs::Entit
                                                                      std::uint64_t transientTicks) {
     Battle* battle = resolveBattle(battleHandle);
     if (battle == nullptr)
-        return failure<std::vector<PresentationCommand>>(DiagnosticCode::StaleHandle,
-                                                         "tactics battle is stale or not owned by this facade",
-                                                         "battle");
+        return Result<std::vector<PresentationCommand>>::failure(Diagnostic::error(
+            DiagnosticCode::StaleHandle, "tactics battle is stale or not owned by this facade", "battle"));
     // The frame is built from the battle itself: the revision anchors the projection and each
     // unit's resting state is where a transient intent has to return to.
     PresentationFrame frame;
@@ -1233,8 +1235,8 @@ Result<std::vector<PresentationCommand>> Tactics::presentationIntents(ecs::Entit
         // references, which would hide the entity helper here.
         TacticalUnit* unit = dynamic_cast<TacticalUnit*>(ecs::try_get(handle));
         if (unit == nullptr)
-            return failure<std::vector<PresentationCommand>>(DiagnosticCode::StaleHandle,
-                                                             "tactics battle contains a stale unit", "battle.units");
+            return Result<std::vector<PresentationCommand>>::failure(
+                Diagnostic::error(DiagnosticCode::StaleHandle, "tactics battle contains a stale unit", "battle.units"));
         UnitVisualState resting = UnitVisualState::Idle;
         if (!unit->turn()->alive) {
             resting = UnitVisualState::Destroyed;
@@ -1342,11 +1344,11 @@ void Tactics::expose(ssq::Table& table) {
         // Projected through the common Result shape like every other query, so a script reads it
         // as `result.value` instead of getting a bare native array.
         if (value == nullptr || !value->session.has_value())
-            return script::projectResult(
-                vm,
-                failure<std::vector<Cell>>(DiagnosticCode::PreconditionViolation,
-                                           "interaction object was not created from a battle", "interaction"),
-                bindingCellArrayValue);
+            return script::projectResult(vm,
+                                         Result<std::vector<Cell>>::failure(Diagnostic::error(
+                                             DiagnosticCode::PreconditionViolation,
+                                             "interaction object was not created from a battle", "interaction")),
+                                         bindingCellArrayValue);
         return script::projectResult(vm,
                                      Result<std::vector<Cell>>::success(value->session->context().reachableCells),
                                      bindingCellArrayValue);
@@ -1355,21 +1357,20 @@ void Tactics::expose(ssq::Table& table) {
     // that cannot accept input at all is a refused Result: a UI can tell them apart.
     interaction.addFunc("click", [vm](ScriptTacticsInteraction* value, int x, int y, int layer) {
         if (value == nullptr || !value->session.has_value())
-            return script::projectResult(
-                vm,
-                failure<InteractionIntent>(DiagnosticCode::PreconditionViolation,
-                                           "interaction object was not created from a battle", "interaction"),
-                bindingInteractionIntentValue);
+            return script::projectResult(vm,
+                                         Result<InteractionIntent>::failure(Diagnostic::error(
+                                             DiagnosticCode::PreconditionViolation,
+                                             "interaction object was not created from a battle", "interaction")),
+                                         bindingInteractionIntentValue);
         return script::projectResult(vm, value->session->onCellClicked({x, y, layer}),
                                      bindingInteractionIntentValue);
     });
     interaction.addFunc("armAbility", [vm](ScriptTacticsInteraction* value, const std::string& actionText,
                                             const std::string& cellsJson) {
         if (value == nullptr || !value->session.has_value())
-            return script::projectResult(
-                vm,
-                failure<void>(DiagnosticCode::PreconditionViolation,
-                              "interaction object was not created from a battle", "interaction"));
+            return script::projectResult(vm, Result<void>::failure(Diagnostic::error(
+                                                 DiagnosticCode::PreconditionViolation,
+                                                 "interaction object was not created from a battle", "interaction")));
         auto action = bindingLogicalId(actionText, "action");
         if (!action) return script::projectResult(vm, Result<void>::failure(action.status()));
         auto cells = bindingCellsJson(cellsJson);
@@ -1379,30 +1380,29 @@ void Tactics::expose(ssq::Table& table) {
     });
     interaction.addFunc("cancel", [vm](ScriptTacticsInteraction* value) {
         if (value == nullptr || !value->session.has_value())
-            return script::projectResult(
-                vm,
-                failure<InteractionIntent>(DiagnosticCode::PreconditionViolation,
-                                           "interaction object was not created from a battle", "interaction"),
-                bindingInteractionIntentValue);
+            return script::projectResult(vm,
+                                         Result<InteractionIntent>::failure(Diagnostic::error(
+                                             DiagnosticCode::PreconditionViolation,
+                                             "interaction object was not created from a battle", "interaction")),
+                                         bindingInteractionIntentValue);
         return script::projectResult(vm, value->session->onCancel(), bindingInteractionIntentValue);
     });
     interaction.addFunc("endTurn", [vm](ScriptTacticsInteraction* value) {
         if (value == nullptr || !value->session.has_value())
-            return script::projectResult(
-                vm,
-                failure<InteractionIntent>(DiagnosticCode::PreconditionViolation,
-                                           "interaction object was not created from a battle", "interaction"),
-                bindingInteractionIntentValue);
+            return script::projectResult(vm,
+                                         Result<InteractionIntent>::failure(Diagnostic::error(
+                                             DiagnosticCode::PreconditionViolation,
+                                             "interaction object was not created from a battle", "interaction")),
+                                         bindingInteractionIntentValue);
         return script::projectResult(vm, value->session->onEndTurn(), bindingInteractionIntentValue);
     });
     // After the caller commits (or drops) the intent it received, the session returns to
     // `await_selection`; until then a second click is refused rather than queued.
     interaction.addFunc("resolve", [vm](ScriptTacticsInteraction* value) {
         if (value == nullptr || !value->session.has_value())
-            return script::projectResult(
-                vm,
-                failure<void>(DiagnosticCode::PreconditionViolation,
-                              "interaction object was not created from a battle", "interaction"));
+            return script::projectResult(vm, Result<void>::failure(Diagnostic::error(
+                                                 DiagnosticCode::PreconditionViolation,
+                                                 "interaction object was not created from a battle", "interaction")));
         return script::projectResult(vm, value->session->resolve());
     });
     auto battle = table.addClass<ScriptTacticsBattle>(
@@ -1547,8 +1547,9 @@ void Tactics::expose(ssq::Table& table) {
     battle.addFunc("advance", [vm](ScriptTacticsBattle* value, std::int64_t tick, std::int64_t deltaNanoseconds) {
         if (tick < 0)
             return script::projectResult(
-                vm, failure<BattlePhase>(DiagnosticCode::InvalidArgument, "simulation tick must be non-negative",
-                                         "tick"),
+                vm,
+                Result<BattlePhase>::failure(
+                    Diagnostic::error(DiagnosticCode::InvalidArgument, "simulation tick must be non-negative", "tick")),
                 [](BattlePhase phase) { return Value(std::string(phaseName(phase))); });
         return script::projectResult(
             vm,
@@ -1659,7 +1660,8 @@ void Tactics::expose(ssq::Table& table) {
     battle.addFunc("restoreJson", [vm](ScriptTacticsBattle* value, const std::string& json) {
         if (json.empty())
             return script::projectResult(
-                vm, failure<void>(DiagnosticCode::InvalidArgument, "snapshot text must not be empty", "json"));
+                vm, Result<void>::failure(
+                        Diagnostic::error(DiagnosticCode::InvalidArgument, "snapshot text must not be empty", "json")));
         return script::projectResult(
             vm, withScriptBattle<Result<void>>(value, [&](Tactics& module, TacticsBattleSession& session) {
                 return module.restoreJson(session.battle, json);
@@ -1669,8 +1671,8 @@ void Tactics::expose(ssq::Table& table) {
         if (revision < 0)
             return script::projectResult(
                 vm,
-                failure<std::string>(DiagnosticCode::InvalidArgument, "command revision must be non-negative",
-                                     "revision"),
+                Result<std::string>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                               "command revision must be non-negative", "revision")),
                 [](const std::string& json) { return Value(json); });
         return script::projectResult(
             vm,
@@ -1682,7 +1684,8 @@ void Tactics::expose(ssq::Table& table) {
     battle.addFunc("replayJson", [vm](ScriptTacticsBattle* value, const std::string& json) {
         if (json.empty())
             return script::projectResult(
-                vm, failure<void>(DiagnosticCode::InvalidArgument, "command log text must not be empty", "json"));
+                vm, Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                            "command log text must not be empty", "json")));
         return script::projectResult(
             vm, withScriptBattle<Result<void>>(value, [&](Tactics& module, TacticsBattleSession& session) {
                 return module.replayJson(session.battle, json);
@@ -1715,7 +1718,8 @@ void Tactics::expose(ssq::Table& table) {
         else
             return script::projectResult(
                 vm,
-                failure<std::vector<Cell>>(DiagnosticCode::InvalidArgument, "unknown tactics range metric", "metric"),
+                Result<std::vector<Cell>>::failure(
+                    Diagnostic::error(DiagnosticCode::InvalidArgument, "unknown tactics range metric", "metric")),
                 projectCells);
         return script::projectResult(
             vm,
@@ -1738,22 +1742,21 @@ void Tactics::expose(ssq::Table& table) {
     // value, not a subscription.
     battle.addFunc("newInteraction", [vm](ScriptTacticsBattle* value, const std::string& unitText) {
         auto subject = bindingSubject(unitText, "unit");
-        if (!subject) return script::projectStatusResult(vm, subject.status(), false, false);
+        if (!subject) return script::projectStatusResult(vm, subject.status());
         auto session = bindingSession(value);
-        if (!session) return script::projectStatusResult(vm, session.status(), false, false);
+        if (!session) return script::projectStatusResult(vm, session.status());
         Tactics* module = currentModule();
         if (module == nullptr)
             return script::projectStatusResult(
-                vm, Status::failure(Diagnostic::error(DiagnosticCode::StaleHandle,
-                                                       "Tactics module is no longer loaded", "battle")),
-                false, false);
+                vm, Status::failure(Diagnostic::error(DiagnosticCode::StaleHandle, "Tactics module is no longer loaded",
+                                                      "battle")));
         auto context = module->interactionContext(session.value()->battle, subject.value());
-        if (!context) return script::projectStatusResult(vm, context.status(), false, false);
+        if (!context) return script::projectStatusResult(vm, context.status());
         auto created = InteractionSession::create(std::move(context).takeValue());
         auto object = script::makeOwnedSquirrelInstance<ScriptTacticsInteraction>(
             vm, std::make_unique<ScriptTacticsInteraction>(ScriptTacticsInteraction{std::move(created)}));
-        if (!object) return script::projectStatusResult(vm, object.status(), false, false);
-        auto result = script::projectStatusResult(vm, Status::success(StatusCode::Applied), true, false);
+        if (!object) return script::projectStatusResult(vm, object.status());
+        auto result = script::projectStatusResult(vm, Status::success(StatusCode::Applied));
         result.set("value", std::move(object).takeValue());
         result.set("ownership", std::string("owned"));
         return result;
@@ -1793,9 +1796,8 @@ void Tactics::expose(ssq::Table& table) {
         if (afterSequence < 0 || transientTicks < 0)
             return script::projectResult(
                 vm,
-                failure<std::vector<PresentationCommand>>(DiagnosticCode::InvalidArgument,
-                                                          "presentation window must be non-negative",
-                                                          "afterSequence"),
+                Result<std::vector<PresentationCommand>>::failure(Diagnostic::error(
+                    DiagnosticCode::InvalidArgument, "presentation window must be non-negative", "afterSequence")),
                 projectIntents);
         return script::projectResult(
             vm,
@@ -1862,8 +1864,8 @@ void Tactics::expose(ssq::Table& table) {
         if (revision < 0)
             return script::projectResult(
                 vm,
-                failure<std::vector<BattleCommand>>(DiagnosticCode::InvalidArgument,
-                                                    "command revision must be non-negative", "revision"),
+                Result<std::vector<BattleCommand>>::failure(Diagnostic::error(
+                    DiagnosticCode::InvalidArgument, "command revision must be non-negative", "revision")),
                 project);
         return script::projectResult(
             vm,
@@ -1899,11 +1901,11 @@ void Tactics::expose(ssq::Table& table) {
                                         const std::string& candidatesJson) {
         const auto projectDepth = [](std::size_t depth) { return Value(static_cast<std::int64_t>(depth)); };
         if (triggerSequence < 0)
-            return script::projectResult(
-                vm,
-                failure<std::size_t>(DiagnosticCode::InvalidArgument,
-                                     "reaction trigger sequence must be non-negative", "triggerSequence"),
-                projectDepth);
+            return script::projectResult(vm,
+                                         Result<std::size_t>::failure(Diagnostic::error(
+                                             DiagnosticCode::InvalidArgument,
+                                             "reaction trigger sequence must be non-negative", "triggerSequence")),
+                                         projectDepth);
         auto candidates = bindingReactionCandidatesJson(candidatesJson);
         if (!candidates)
             return script::projectResult(vm, Result<std::size_t>::failure(candidates.status()), projectDepth);
@@ -1982,8 +1984,8 @@ void Tactics::expose(ssq::Table& table) {
         if (budget < 0)
             return script::projectResult(
                 vm,
-                failure<Reachability>(DiagnosticCode::InvalidArgument,
-                                      "reachability budget must be non-negative", "budget"),
+                Result<Reachability>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                                "reachability budget must be non-negative", "budget")),
                 bindingReachabilityValue);
         return script::projectResult(
             vm,
@@ -2005,7 +2007,8 @@ void Tactics::expose(ssq::Table& table) {
         else
             return script::projectResult(
                 vm,
-                failure<std::vector<Cell>>(DiagnosticCode::InvalidArgument, "unknown tactics range metric", "metric"),
+                Result<std::vector<Cell>>::failure(
+                    Diagnostic::error(DiagnosticCode::InvalidArgument, "unknown tactics range metric", "metric")),
                 projectCells);
         return script::projectResult(
             vm,
@@ -2061,14 +2064,16 @@ void Tactics::expose(ssq::Table& table) {
             return script::projectResult(vm, Result<Cell>::failure(session.status()), bindingCellValue);
         auto* battleValue = dynamic_cast<Battle*>(ecs::try_get(session.value()->battle));
         if (!battleValue)
-            return script::projectResult(
-                vm, failure<Cell>(DiagnosticCode::StaleHandle, "tactics battle entity is stale", "battle"),
-                bindingCellValue);
+            return script::projectResult(vm,
+                                         Result<Cell>::failure(Diagnostic::error(
+                                             DiagnosticCode::StaleHandle, "tactics battle entity is stale", "battle")),
+                                         bindingCellValue);
         const auto cell = battleValue->board()->value.position(subject.value());
         if (!cell)
-            return script::projectResult(
-                vm, failure<Cell>(DiagnosticCode::NotFound, "tactics unit is not placed", "unit"),
-                bindingCellValue);
+            return script::projectResult(vm,
+                                         Result<Cell>::failure(Diagnostic::error(DiagnosticCode::NotFound,
+                                                                                 "tactics unit is not placed", "unit")),
+                                         bindingCellValue);
         return script::projectResult(vm, Result<Cell>::success(*cell), bindingCellValue);
     });
     battle.addFunc("revision", [](ScriptTacticsBattle* value) -> std::int64_t {
@@ -2088,9 +2093,10 @@ void Tactics::expose(ssq::Table& table) {
             return script::projectResult(vm, Result<BattleEvent>::failure(session.status()), eventProjection);
         auto* battleValue = dynamic_cast<Battle*>(ecs::try_get(session.value()->battle));
         if (!battleValue || index < 0 || static_cast<std::size_t>(index) >= battleValue->events()->values.size())
-            return script::projectResult(
-                vm, failure<BattleEvent>(DiagnosticCode::NotFound, "tactics event index is out of range", "index"),
-                eventProjection);
+            return script::projectResult(vm,
+                                         Result<BattleEvent>::failure(Diagnostic::error(
+                                             DiagnosticCode::NotFound, "tactics event index is out of range", "index")),
+                                         eventProjection);
         return script::projectResult(
             vm, Result<BattleEvent>::success(battleValue->events()->values[static_cast<std::size_t>(index)]),
             eventProjection);
@@ -2107,15 +2113,15 @@ void Tactics::expose(ssq::Class& cls) {
     cls.addFunc("sideCount", [](Tactics* self) { return self->sideCount(); });
     cls.addFunc("newBattle", [vm = cls.getHandle()](Tactics*, const std::string& subject, std::int64_t seed) {
         auto parsed = bindingSubject(subject, "subject");
-        if (!parsed)
-            return script::projectStatusResult(vm, parsed.status(), false, false);
+        if (!parsed) return script::projectStatusResult(vm, parsed.status());
         if (seed < 0)
             return script::projectResult(
-                vm, failure<TacticsBattleSessionRef>(DiagnosticCode::InvalidArgument,
-                                                      "battle seed must be non-negative", "seed"),
+                vm,
+                Result<TacticsBattleSessionRef>::failure(
+                    Diagnostic::error(DiagnosticCode::InvalidArgument, "battle seed must be non-negative", "seed")),
                 [](TacticsBattleSessionRef) { return Value(); });
         auto reference = Tactics::newSession(parsed.value(), static_cast<std::uint64_t>(seed));
-        if (!reference) return script::projectStatusResult(vm, reference.status(), false, false);
+        if (!reference) return script::projectStatusResult(vm, reference.status());
         const auto ref = std::move(reference).takeValue();
         auto object = script::makeOwnedSquirrelInstance<ScriptTacticsBattle>(
             vm, std::make_unique<ScriptTacticsBattle>(ref));
@@ -2123,10 +2129,10 @@ void Tactics::expose(ssq::Class& cls) {
             const Status status = object.status();
             object.ignore("failed to create owned tactics battle proxy");
             Tactics::release(ref).ignore("rollback failed owned tactics battle allocation");
-            return script::projectStatusResult(vm, status, false, false);
+            return script::projectStatusResult(vm, status);
         }
         ssq::Object owned = std::move(object).takeValue();
-        auto result = script::projectStatusResult(vm, Status::success(StatusCode::Applied), true, false);
+        auto        result = script::projectStatusResult(vm, Status::success(StatusCode::Applied));
         result.set("value", owned);
         result.set("ownership", std::string("owned"));
         result.set("ownerEpoch", static_cast<std::int64_t>(ref.ownerEpoch));
