@@ -92,6 +92,16 @@ def decide(event_name: str, event: dict[str, Any], pr: dict[str, Any], repositor
 def parse_state(body: str) -> dict[str, Any] | None:
     if MARKER not in body:
         return None
+    try:
+        payload = body.split(MARKER, 1)[1].strip()
+        if payload.startswith("```json") and payload.endswith("```"):
+            payload = payload[7:-3].strip()
+        value = json.loads(payload)
+        if isinstance(value, dict) and value.get("schema") == "evengine.agent-repair/v1":
+            return value
+        return None
+    except (ValueError, TypeError):
+        return None
 
 
 def signature_payload(state: dict[str, Any]) -> bytes:
@@ -115,16 +125,6 @@ def valid_state(state: dict[str, Any], key: str, repository: str, pr_number: int
         and state.get("repository") == repository
         and state.get("pr") == pr_number
     )
-    try:
-        payload = body.split(MARKER, 1)[1].strip()
-        if payload.startswith("```json") and payload.endswith("```"):
-            payload = payload[7:-3].strip()
-        value = json.loads(payload)
-        if isinstance(value, dict) and value.get("schema") == "evengine.agent-repair/v1":
-            return value
-        return None
-    except (ValueError, TypeError):
-        return None
 
 
 def render_state(state: dict[str, Any]) -> str:

@@ -10,6 +10,7 @@ from agent_repair_router import (  # noqa: E402
     label_value,
     next_attempt,
     parse_state,
+    render_state,
     sign_state,
     valid_state,
 )
@@ -69,6 +70,7 @@ class AgentRepairRouterTest(unittest.TestCase):
         state = sign_state(
             {
                 "schema": "evengine.agent-repair/v1",
+                "status": "pending",
                 "repository": "EVEngine/EVEngine",
                 "pr": 12,
                 "head_sha": "abc",
@@ -82,6 +84,7 @@ class AgentRepairRouterTest(unittest.TestCase):
             "secret",
         )
         self.assertTrue(valid_state(state, "secret", "EVEngine/EVEngine", 12))
+        self.assertEqual(parse_state(render_state(state)), state)
         self.assertFalse(valid_state(dict(state, reason="forged"), "secret", "EVEngine/EVEngine", 12))
         self.assertFalse(valid_state(state, "secret", "other/repo", 12))
 
