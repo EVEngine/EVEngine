@@ -56,9 +56,15 @@ function(eve_thirdparty_libs out_var)
             # dynamic route links the shared library so the whole process shares one
             # SDL state, and the archive route must stay one self-contained
             # artifact. On ELF/Mach-O the linker prefers libSDL2.so/.dylib by name
-            # (SDL gives its static target the same output name), so the archive
-            # route selects the archive by path; Windows already gives the two
-            # forms distinct names.
+            # (SDL gives its static target the same output name), so the desktop
+            # archive route selects the archive by path; Windows already gives the
+            # two forms distinct names.
+            #
+            # Mobile keeps the name-based lookup. Android's SDL build produces
+            # libSDL2.so whether or not SDL_SHARED is set, and that shared object
+            # carries its own GLES dependencies; forcing the archive there asked the
+            # engine link to resolve glClear/glBlendEquationOES/... itself and
+            # libmain.so failed with those undefined symbols.
             if(_emscripten)
             elseif(EVENGINE_MODULE_LINKAGE STREQUAL "SHARED")
                 if(_win_debug)
@@ -73,6 +79,8 @@ function(eve_thirdparty_libs out_var)
                     list(APPEND _libs SDL2-staticd SDL2maind)
                 elseif(WIN32)
                     list(APPEND _libs SDL2-staticmd SDL2mainmd)
+                elseif(ANDROID OR IOS OR CMAKE_SYSTEM_NAME STREQUAL "iOS")
+                    list(APPEND _libs SDL2 SDL2main)
                 else()
                     if(NOT DEFINED EVENGINE_TP_LIB_DIR)
                         message(FATAL_ERROR
