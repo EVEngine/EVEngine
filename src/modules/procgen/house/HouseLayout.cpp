@@ -114,13 +114,29 @@ eve::ref<model3d::ModelData> loadModel(model3d::Model3D *models, const std::stri
 }
 }  // namespace
 
-void HouseLayout::clear() { instances.clear(); rooms.clear(); diagnostics.clear(); seed = 1; moduleSize = 1.f; floorHeight = 3.f; footprintStyle = "rectangle"; roofStyle = "gable"; entranceSide = "north"; }
+void HouseLayout::clear() {
+    instances.clear();
+    rooms.clear();
+    diagnostics.clear();
+    footprintMask.clear();
+    seed           = 1;
+    moduleSize     = 1.f;
+    floorHeight    = 3.f;
+    footprintWidth = 0;
+    footprintDepth = 0;
+    footprintStyle = "rectangle";
+    roofStyle      = "gable";
+    entranceSide   = "north";
+}
 
 std::string HouseLayout::toJson() const {
     std::ostringstream o;
-    o << "{\"seed\":" << seed << ",\"moduleSize\":" << moduleSize << ",\"floorHeight\":" << floorHeight
-      << ",\"footprintStyle\":\"" << esc(footprintStyle) << "\",\"roofStyle\":\"" << esc(roofStyle)
-      << "\",\"entranceSide\":\"" << esc(entranceSide) << "\",\"instances\":[";
+    o << "{\"schema\":\"eve.house-layout\",\"version\":1,\"seed\":" << seed << ",\"moduleSize\":" << moduleSize
+      << ",\"floorHeight\":" << floorHeight << ",\"footprintStyle\":\"" << esc(footprintStyle) << "\",\"roofStyle\":\""
+      << esc(roofStyle) << "\",\"entranceSide\":\"" << esc(entranceSide) << "\",\"footprintWidth\":" << footprintWidth
+      << ",\"footprintDepth\":" << footprintDepth << ",\"footprintMask\":\"";
+    for (const uint8_t cell : footprintMask) o << (cell ? '1' : '0');
+    o << "\",\"instances\":[";
     for (size_t i = 0; i < instances.size(); ++i) { const auto &v = instances[i]; if (i) o << ','; o << "{\"componentId\":\"" << esc(v.componentId) << "\",\"x\":" << v.x << ",\"y\":" << v.y << ",\"z\":" << v.z << ",\"rotationDeg\":" << v.rotationDeg << '}'; }
     o << "],\"rooms\":[";
     for (size_t i = 0; i < rooms.size(); ++i) { const auto &v = rooms[i]; if (i) o << ','; o << "{\"type\":\"" << esc(v.type) << "\",\"x\":" << v.x << ",\"y\":" << v.y << ",\"z\":" << v.z << ",\"width\":" << v.width << ",\"depth\":" << v.depth << '}'; }
@@ -142,6 +158,12 @@ eve::Result<void> HouseLayout::fromJson(std::string_view json) {
     if (!o.isObject())
         return eve::Result<void>::failure(eve::Diagnostic::error(
             eve::DiagnosticCode::ParseError, "layout must be an object", {}, {}, "housegen.layout"));
+    const std::string schema  = o.getString("schema", "eve.house-layout");
+    const int         version = o.getInt("version", 1);
+    if (schema != "eve.house-layout" || version != 1)
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::Unsupported,
+                                                                 "unsupported house layout schema or version", "schema",
+                                                                 {}, "housegen.layout"));
 
     HouseLayout parsed;
     parsed.seed = static_cast<unsigned>(o.getInt("seed", 1));
@@ -150,6 +172,26 @@ eve::Result<void> HouseLayout::fromJson(std::string_view json) {
     parsed.footprintStyle = o.getString("footprintStyle", "rectangle");
     parsed.roofStyle = o.getString("roofStyle", "gable");
     parsed.entranceSide = o.getString("entranceSide", "north");
+    parsed.footprintWidth           = o.getInt("footprintWidth", 0);
+    parsed.footprintDepth           = o.getInt("footprintDepth", 0);
+    const std::string footprintBits = o.getString("footprintMask", "");
+    if (parsed.footprintWidth < 0 || parsed.footprintDepth < 0 ||
+        size_t(parsed.footprintWidth) * size_t(parsed.footprintDepth) != footprintBits.size())
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::ParseError,
+                                                                 "invalid canonical footprint mask", "footprintMask",
+                                                                 {}, "housegen.layout"));
+    for (const char bit : footprintBits) {
+        if (bit != '0' && bit != '1')
+            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::ParseError,
+                                                                     "footprint mask must contain only 0 or 1",
+                                                                     "footprintMask", {}, "housegen.layout"));
+        parsed.footprintMask.push_back(bit == '1' ? 1 : 0);
+    }
+    if (!std::isfinite(parsed.moduleSize) || parsed.moduleSize <= 0.f || !std::isfinite(parsed.floorHeight) ||
+        parsed.floorHeight <= 0.f)
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "moduleSize and floorHeight must be finite and positive", {}, {},
+            "housegen.layout"));
 
     const Value instances = o.get("instances");
     if (!instances.isArray())
@@ -183,6 +225,34 @@ eve::Result<void> HouseLayout::fromJson(std::string_view json) {
 }
 
 eve::Result<void> HouseLayout::validate(const HouseComponentLibrary &library) const {
+    if (!std::isfinite(moduleSize) || moduleSize <= 0.f || !std::isfinite(floorHeight) || floorHeight <= 0.f)
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "moduleSize and floorHeight must be finite and positive", {}, {},
+            "housegen.layout"));
+    if (footprintWidth <= 0 || footprintDepth <= 0 ||
+        footprintMask.size() != size_t(footprintWidth) * size_t(footprintDepth))
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                 "house layout has no canonical footprint mask",
+                                                                 "footprintMask", {}, "housegen.layout"));
+    for (const auto& instance : instances)
+        if (instance.x >= footprintWidth || instance.y >= footprintDepth ||
+            !footprintMask[size_t(instance.y * footprintWidth + instance.x)])
+            return eve::Result<void>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::InvalidArgument, "house instance origin is outside the canonical footprint",
+                instance.componentId, {}, "housegen.layout"));
+    for (const HouseRoom& room : rooms) {
+        if (room.x < 0 || room.y < 0 || room.width <= 0 || room.depth <= 0 || room.x + room.width > footprintWidth ||
+            room.y + room.depth > footprintDepth)
+            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                     "room lies outside the canonical footprint",
+                                                                     "rooms", {}, "housegen.layout"));
+        for (int y = room.y; y < room.y + room.depth; ++y)
+            for (int x = room.x; x < room.x + room.width; ++x)
+                if (!footprintMask[size_t(y * footprintWidth + x)])
+                    return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                             "room contains an inactive footprint cell",
+                                                                             "rooms", {}, "housegen.layout"));
+    }
     std::unordered_set<std::string> occupied;
     std::unordered_set<std::string> floorCells, roofCells;
     std::vector<std::tuple<int, int, int>> floors;
@@ -197,16 +267,25 @@ eve::Result<void> HouseLayout::validate(const HouseComponentLibrary &library) co
                                                                      "unknown component: " + i.componentId,
                                                                      "componentId", {}, "housegen.layout"));
         const HouseComponent &c = component->get();
-        if (i.rotationDeg % 90 != 0)
+        const int             normalizedRotation = (i.rotationDeg % 360 + 360) % 360;
+        if (normalizedRotation % 90 != 0)
             return eve::Result<void>::failure(eve::Diagnostic::error(
                 eve::DiagnosticCode::InvalidArgument, "non-cardinal rotation", "rotationDeg", {}, "housegen.layout"));
-        const bool quarter = (i.rotationDeg / 90) % 2 != 0;
+        const bool rotationAllowed = std::any_of(c.rotations.begin(), c.rotations.end(), [&](int allowed) {
+            return (allowed % 360 + 360) % 360 == normalizedRotation;
+        });
+        if (!rotationAllowed)
+            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                     "component does not allow the requested rotation",
+                                                                     "rotationDeg", {}, "housegen.layout"));
+        const bool quarter = (normalizedRotation / 90) % 2 != 0;
         const int  w = quarter ? c.depth : c.width, d = quarter ? c.width : c.depth;
         for (int y = 0; y < d; ++y) for (int x = 0; x < w; ++x) {
             // Boundary cells legitimately carry two perpendicular wall modules at corners.
-            const std::string orientation = (c.category == "wall" || c.category == "door")
-                                                ? ":" + std::to_string((i.rotationDeg % 360 + 360) % 360)
-                                                : "";
+            const bool        orientedBoundary = c.category == "wall" || c.category == "door" ||
+                                                 c.category == "interior_wall" || c.category == "interior_door";
+            const std::string orientation =
+                orientedBoundary ? ":" + std::to_string((i.rotationDeg % 360 + 360) % 360) : "";
             const std::string key         = std::to_string(i.x + x) + ":" + std::to_string(i.y + y) + ":" +
                                     std::to_string(i.z) + ":" + c.category + orientation;
             if (!occupied.insert(key).second)
@@ -245,25 +324,31 @@ eve::Result<void> HouseLayout::validate(const HouseComponentLibrary &library) co
 }
 
 eve::Result<void> HouseLayout::writeFootprintGrid(procgen::Grid2D &out) const {
-    int width = 0;
-    int depth = 0;
+    if (!std::isfinite(moduleSize) || moduleSize <= 0.f || !std::isfinite(floorHeight) || floorHeight <= 0.f)
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "moduleSize and floorHeight must be finite and positive", {}, {},
+            "housegen.layout"));
     for (const auto &instance : instances) {
         if (instance.x < 0 || instance.y < 0 || instance.z < 0)
             return eve::Result<void>::failure(eve::Diagnostic::error(
                 eve::DiagnosticCode::InvalidArgument, "house instance has a negative grid coordinate",
                 instance.componentId, {}, "housegen.layout"));
-        width = std::max(width, instance.x + 1);
-        depth = std::max(depth, instance.y + 1);
     }
-    if (width == 0 || depth == 0)
-        return eve::Result<void>::failure(eve::Diagnostic::error(
-            eve::DiagnosticCode::NotFound, "house layout has no footprint cells", {}, {}, "housegen.layout"));
+    if (footprintWidth <= 0 || footprintDepth <= 0 ||
+        footprintMask.size() != size_t(footprintWidth) * size_t(footprintDepth))
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                 "house layout has no canonical footprint mask",
+                                                                 "footprintMask", {}, "housegen.layout"));
 
     procgen::Grid2D candidate;
-    candidate.resize(width, depth);
+    candidate.resize(footprintWidth, footprintDepth);
     candidate.fill(int(procgen::Semantic::Empty));
+    for (int y = 0; y < footprintDepth; ++y)
+        for (int x = 0; x < footprintWidth; ++x)
+            if (footprintMask[size_t(y * footprintWidth + x)] != 0)
+                candidate.setCell(x, y, int(procgen::Semantic::Floor));
     for (const auto &instance : instances) {
-        candidate.setCell(instance.x, instance.y, int(procgen::Semantic::Floor));
+        if (instance.x >= footprintWidth || instance.y >= footprintDepth) continue;
         candidate.setDetail(instance.x, instance.y,
                             std::min(255, std::max(candidate.getDetail(instance.x, instance.y), instance.z + 1)));
     }
@@ -277,6 +362,24 @@ eve::Result<void> HouseLayout::writeFootprintGrid(procgen::Grid2D &out) const {
 }
 
 eve::Result<void> HouseLayout::writeComponentPoints(procgen::PointSet &out) const {
+    if (!std::isfinite(moduleSize) || moduleSize <= 0.f || !std::isfinite(floorHeight) || floorHeight <= 0.f)
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "moduleSize and floorHeight must be finite and positive", {}, {},
+            "housegen.layout"));
+    if (footprintWidth <= 0 || footprintDepth <= 0 ||
+        footprintMask.size() != size_t(footprintWidth) * size_t(footprintDepth))
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                 "house layout has no canonical footprint mask",
+                                                                 "footprintMask", {}, "housegen.layout"));
+    for (const auto& instance : instances) {
+        const int rotation = (instance.rotationDeg % 360 + 360) % 360;
+        if (instance.x < 0 || instance.y < 0 || instance.z < 0 || instance.x >= footprintWidth ||
+            instance.y >= footprintDepth || !footprintMask[size_t(instance.y * footprintWidth + instance.x)] ||
+            rotation % 90 != 0)
+            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                     "invalid house component point placement",
+                                                                     instance.componentId, {}, "housegen.layout"));
+    }
     procgen::PointSet candidate;
     candidate.reserve(instances.size());
     std::uint64_t ordinal = 0;
@@ -304,6 +407,8 @@ eve::Result<void> HouseLayout::writeComponentPoints(procgen::PointSet &out) cons
 
 eve::Result<std::vector<ecs::EntityHandle>> HouseLayout::instantiate(graphics::Graphics &gfx, model3d::Model3D &models,
                                                                      const HouseComponentLibrary &library) const {
+    const auto valid = validate(library);
+    if (!valid.ok()) return eve::Result<std::vector<ecs::EntityHandle>>::failure(valid.status());
     std::vector<ecs::EntityHandle> entities;
     const auto                     destroyCreated = [&entities]() noexcept {
         for (const auto &handle : entities) {

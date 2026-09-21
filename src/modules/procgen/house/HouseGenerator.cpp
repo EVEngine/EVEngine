@@ -2,6 +2,7 @@
 #include "procgen/house/HouseLayout.h"
 
 #include <algorithm>
+#include <cmath>
 #include <functional>
 #include <optional>
 #include <random>
@@ -28,6 +29,12 @@ const HouseComponent *pick(const std::vector<std::reference_wrapper<const HouseC
 }
 
 bool has(const std::vector<std::reference_wrapper<const HouseComponent>> &values) { return !values.empty(); }
+
+bool allowsRotation(const HouseComponent& component, int rotation) {
+    const int normalized = (rotation % 360 + 360) % 360;
+    return std::any_of(component.rotations.begin(), component.rotations.end(),
+                       [&](int allowed) { return (allowed % 360 + 360) % 360 == normalized; });
+}
 
 bool isWindowComponent(const HouseComponent *component) {
     if (!component) return false;
@@ -134,6 +141,7 @@ std::vector<std::reference_wrapper<const HouseComponent>> compatibleOnFace(
     std::vector<std::reference_wrapper<const HouseComponent>> out;
     for (const auto &choice : choices) {
         const auto &c = choice.get();
+        if (!allowsRotation(c, rotation)) continue;
         // Components without sockets are intentionally wildcard-compatible. This preserves
         // compatibility with small legacy kits while new player kits opt into strict sockets.
         if (c.sockets.empty()) {
@@ -165,75 +173,128 @@ std::optional<std::pair<int, int>> findInteriorCell(const std::vector<uint8_t> &
     return std::nullopt;
 }
 
-/** @brief Axis-aligned interior partition of one floor's active cells into rooms. */
-void partitionFloor(int width, int depth, const std::vector<uint8_t> &mask,
-                    const std::vector<std::string> &roomTypes, std::mt19937 &rng,
-                    const std::vector<std::reference_wrapper<const HouseComponent>> &innerWall,
-                    const std::vector<std::reference_wrapper<const HouseComponent>> &innerDoor,
-                    std::vector<HouseInstance> &instances, std::vector<HouseRoom> &rooms, int floorZ) {
+/** @brief Partition active cells into exact, rectangular rooms and emit mask-safe boundaries. */
+eve::Result<void> partitionFloor(int width, int depth, const std::vector<uint8_t>& mask,
+                                 const std::vector<std::string>& roomTypes, std::mt19937& rng,
+                                 const std::vector<std::reference_wrapper<const HouseComponent>>& innerWall,
+                                 const std::vector<std::reference_wrapper<const HouseComponent>>& innerDoor,
+                                 std::vector<HouseInstance>& instances, std::vector<HouseRoom>& rooms, int floorZ) {
     struct Rect {
         int x0, y0, x1, y1;
+        int area() const { return (x1 - x0 + 1) * (y1 - y0 + 1); }
     };
-    // Bound the number of rooms by the requested list and the floor area.
     int activeArea = 0;
     for (const uint8_t cell : mask) activeArea += cell != 0 ? 1 : 0;
-    const int target = std::clamp(int(roomTypes.size()), 1, std::max(1, activeArea / 3));
-    if (target <= 1) return;
+    const int target = std::max(1, int(roomTypes.size()));
+    if (target > std::max(1, activeArea / 3))
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::Unsupported,
+                                                                 "required room count cannot fit the active footprint",
+                                                                 "requiredRooms", {}, "housegen.generate"));
+    if (target <= 1) return eve::Result<void>::success();
 
-    std::vector<Rect> leaves;
-    const std::function<void(Rect, int)> split = [&](Rect rect, int count) {
-        if (count <= 1 || rect.x1 - rect.x0 < 2 || rect.y1 - rect.y0 < 2) {
-            leaves.push_back(rect);
-            return;
+    // Greedily decompose the mask into non-overlapping, fully active rectangles.
+    std::vector<uint8_t> claimed(mask.size(), 0);
+    std::vector<Rect>    rects;
+    for (int y = 0; y < depth; ++y) {
+        for (int x = 0; x < width; ++x) {
+            const size_t origin = size_t(y * width + x);
+            if (!mask[origin] || claimed[origin]) continue;
+            int x1 = x;
+            while (x1 + 1 < width && mask[size_t(y * width + x1 + 1)] && !claimed[size_t(y * width + x1 + 1)]) ++x1;
+            int  y1     = y;
+            bool extend = true;
+            while (extend && y1 + 1 < depth) {
+                for (int xx = x; xx <= x1; ++xx)
+                    if (!mask[size_t((y1 + 1) * width + xx)] || claimed[size_t((y1 + 1) * width + xx)]) {
+                        extend = false;
+                        break;
+                    }
+                if (extend) ++y1;
+            }
+            rects.push_back({x, y, x1, y1});
+            for (int yy = y; yy <= y1; ++yy)
+                for (int xx = x; xx <= x1; ++xx) claimed[size_t(yy * width + xx)] = 1;
         }
-        const bool vertical = (rect.x1 - rect.x0) >= (rect.y1 - rect.y0);
-        if (vertical) {
-            const int pos = rect.x0 + (rect.x1 - rect.x0) / 2;
-            split({rect.x0, rect.y0, pos - 1, rect.y1}, count / 2);
-            split({pos + 1, rect.y0, rect.x1, rect.y1}, count - count / 2);
-            // Emit the interior wall run (rotation 90 = runs along Y) with one door gap.
-            int gapY = rect.y0 + (rect.y1 - rect.y0) / 2;
-            for (int y = rect.y0; y <= rect.y1; ++y) {
-                if (!active(mask, width, depth, pos, y)) continue;
-                if (y == gapY && active(mask, width, depth, pos - 1, y) && active(mask, width, depth, pos + 1, y)) {
-                    if (const auto *door = pick(innerDoor, rng))
-                        instances.push_back({door->id, pos, y, floorZ, 90});
-                } else if (const auto *wall = pick(innerWall, rng)) {
-                    instances.push_back({wall->id, pos, y, floorZ, 90});
-                }
-            }
-        } else {
-            const int pos = rect.y0 + (rect.y1 - rect.y0) / 2;
-            split({rect.x0, rect.y0, rect.x1, pos - 1}, count / 2);
-            split({rect.x0, pos + 1, rect.x1, rect.y1}, count - count / 2);
-            int gapX = rect.x0 + (rect.x1 - rect.x0) / 2;
-            for (int x = rect.x0; x <= rect.x1; ++x) {
-                if (!active(mask, width, depth, x, pos)) continue;
-                if (x == gapX && active(mask, width, depth, x, pos - 1) && active(mask, width, depth, x, pos + 1)) {
-                    if (const auto *door = pick(innerDoor, rng))
-                        instances.push_back({door->id, x, pos, floorZ, 0});
-                } else if (const auto *wall = pick(innerWall, rng)) {
-                    instances.push_back({wall->id, x, pos, floorZ, 0});
-                }
-            }
-        }
-    };
-    int minX = width, minY = depth, maxX = -1, maxY = -1;
-    for (int y = 0; y < depth; ++y)
-        for (int x = 0; x < width; ++x)
-            if (active(mask, width, depth, x, y)) {
-                minX = std::min(minX, x); minY = std::min(minY, y);
-                maxX = std::max(maxX, x); maxY = std::max(maxY, y);
-            }
-    if (maxX < minX || maxY < minY) return;
-    split({minX, minY, maxX, maxY}, target);
-    std::sort(leaves.begin(), leaves.end(),
-              [](const Rect &a, const Rect &b) { return std::tie(a.y0, a.x0) < std::tie(b.y0, b.x0); });
-    for (size_t i = 0; i < leaves.size(); ++i) {
-        const auto &rect = leaves[i];
-        const std::string type = roomTypes[std::min(i, roomTypes.size() - 1)];
-        rooms.push_back({type, rect.x0, rect.y0, floorZ, rect.x1 - rect.x0 + 1, rect.y1 - rect.y0 + 1});
     }
+    if (int(rects.size()) > target)
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Unsupported,
+            "requested room count cannot represent the irregular footprint without outside cells", "requiredRooms", {},
+            "housegen.generate"));
+
+    while (int(rects.size()) < target) {
+        auto splitIt = std::max_element(rects.begin(), rects.end(),
+                                        [](const Rect& a, const Rect& b) { return a.area() < b.area(); });
+        if (splitIt == rects.end() || splitIt->area() < 2)
+            return eve::Result<void>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::Unsupported, "required room count cannot fit the active footprint",
+                "requiredRooms", {}, "housegen.generate"));
+        const Rect source = *splitIt;
+        rects.erase(splitIt);
+        if ((source.x1 - source.x0) >= (source.y1 - source.y0) && source.x0 < source.x1) {
+            const int cut = source.x0 + (source.x1 - source.x0) / 2;
+            rects.push_back({source.x0, source.y0, cut, source.y1});
+            rects.push_back({cut + 1, source.y0, source.x1, source.y1});
+        } else {
+            const int cut = source.y0 + (source.y1 - source.y0) / 2;
+            rects.push_back({source.x0, source.y0, source.x1, cut});
+            rects.push_back({source.x0, cut + 1, source.x1, source.y1});
+        }
+    }
+    std::sort(rects.begin(), rects.end(),
+              [](const Rect& a, const Rect& b) { return std::tie(a.y0, a.x0) < std::tie(b.y0, b.x0); });
+
+    std::vector<int> roomAt(size_t(width * depth), -1);
+    for (size_t i = 0; i < rects.size(); ++i) {
+        const Rect& rect = rects[i];
+        rooms.push_back({roomTypes[i], rect.x0, rect.y0, floorZ, rect.x1 - rect.x0 + 1, rect.y1 - rect.y0 + 1});
+        for (int y = rect.y0; y <= rect.y1; ++y)
+            for (int x = rect.x0; x <= rect.x1; ++x) roomAt[size_t(y * width + x)] = int(i);
+    }
+
+    const auto choose = [&](const auto& components, int rotation) -> const HouseComponent* {
+        std::vector<std::reference_wrapper<const HouseComponent>> allowed;
+        for (const auto& component : components)
+            if (allowsRotation(component.get(), rotation)) allowed.push_back(component);
+        return pick(allowed, rng);
+    };
+    std::unordered_set<std::string> doorBoundaries;
+    const auto emitBoundary = [&](int x, int y, int rotation, int roomA, int roomB) -> eve::Result<void> {
+        const int             lo = std::min(roomA, roomB), hi = std::max(roomA, roomB);
+        const std::string     boundary = std::to_string(lo) + ":" + std::to_string(hi) + ":" + std::to_string(rotation);
+        const bool            door     = doorBoundaries.insert(boundary).second;
+        const HouseComponent* component = choose(door ? innerDoor : innerWall, rotation);
+        if (!component)
+            return eve::Result<void>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::NotFound,
+                                       std::string("no interior ") + (door ? "door" : "wall") +
+                                           " component allows rotation " + std::to_string(rotation),
+                                       "rotations", {}, "housegen.generate"));
+        instances.push_back({component->id, x, y, floorZ, rotation});
+        return eve::Result<void>::success();
+    };
+
+    for (int y = 0; y < depth; ++y) {
+        for (int x = 0; x < width; ++x) {
+            const int room = roomAt[size_t(y * width + x)];
+            if (room < 0) continue;
+            if (x + 1 < width) {
+                const int neighbour = roomAt[size_t(y * width + x + 1)];
+                if (neighbour >= 0 && neighbour != room) {
+                    auto emitted = emitBoundary(x + 1, y, 90, room, neighbour);
+                    if (!emitted.ok()) return emitted;
+                }
+            }
+            if (y + 1 < depth) {
+                const int neighbour = roomAt[size_t((y + 1) * width + x)];
+                if (neighbour >= 0 && neighbour != room) {
+                    auto emitted = emitBoundary(x, y + 1, 0, room, neighbour);
+                    if (!emitted.ok()) return emitted;
+                }
+            }
+        }
+    }
+    return eve::Result<void>::success();
 }
 
 }  // namespace
@@ -245,6 +306,10 @@ eve::Result<void> HouseGenerator::generate(const HouseRequest &r, HouseLayout &o
             eve::DiagnosticCode::InvalidArgument, "house needs a 3x3 plot, at least one floor and one attempt", {}, {},
             "housegen.generate"));
     }
+    if (!std::isfinite(r.moduleSize) || r.moduleSize <= 0.f || !std::isfinite(r.floorHeight) || r.floorHeight <= 0.f)
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "moduleSize and floorHeight must be finite and positive", {}, {},
+            "housegen.generate"));
     if (!oneOf(r.footprint, {"auto", "rectangle", "l_shape", "t_shape", "polygon"}) ||
         !oneOf(r.roof, {"auto", "gable", "flat", "shed"}) ||
         !oneOf(r.entrance, {"auto", "north", "east", "south", "west"})) {
@@ -267,7 +332,7 @@ eve::Result<void> HouseGenerator::generate(const HouseRequest &r, HouseLayout &o
             eve::DiagnosticCode::NotFound, "library needs foundation, floor, wall, door and roof categories", {}, {},
             "housegen.generate"));
     }
-    // A named style must be a complete pack; otherwise the per-category fallback would
+    // A named style must be a complete pack; otherwise per-category selection would
     // silently mix it with unstyled components into a broken house.
     if (!r.style.empty() && !library_.hasCompletePack(r.style)) {
         return eve::Result<void>::failure(eve::Diagnostic::error(
@@ -280,8 +345,11 @@ eve::Result<void> HouseGenerator::generate(const HouseRequest &r, HouseLayout &o
     const auto stairs    = library_.byCategory("stairs", r.style);
     const auto innerWall = library_.byCategory("interior_wall", r.style);
     const auto innerDoor = library_.byCategory("interior_door", r.style);
-    const bool partitionsInteriors =
-        r.requiredRooms.size() > 1 && has(innerWall) && has(innerDoor);
+    const bool partitionsInteriors = r.requiredRooms.size() > 1;
+    if (partitionsInteriors && (!has(innerWall) || !has(innerDoor)))
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::NotFound, "multi-room generation needs interior_wall and interior_door categories",
+            "requiredRooms", {}, "housegen.generate"));
 
     std::mt19937 rng(r.seed);
     generated.seed                            = r.seed;
@@ -306,6 +374,9 @@ eve::Result<void> HouseGenerator::generate(const HouseRequest &r, HouseLayout &o
                          : footprintMask(generated.footprintStyle, r.width, r.depth, ins);
     };
     const auto baseMask = makeMask(0);
+    generated.footprintWidth = r.width;
+    generated.footprintDepth = r.depth;
+    generated.footprintMask  = baseMask;
     std::optional<std::pair<int, int>> stairwell;
     if (r.floors > 1 && has(stairs)) {
         stairwell = findInteriorCell(baseMask, r.width, r.depth);
@@ -398,8 +469,9 @@ eve::Result<void> HouseGenerator::generate(const HouseRequest &r, HouseLayout &o
             generated.instances.push_back({selected->id, x, y, z, rotation});
         }
         if (partitionsInteriors) {
-            partitionFloor(r.width, r.depth, mask, r.requiredRooms, rng, innerWall, innerDoor,
-                           generated.instances, generated.rooms, z);
+            auto partitioned = partitionFloor(r.width, r.depth, mask, r.requiredRooms, rng, innerWall, innerDoor,
+                                              generated.instances, generated.rooms, z);
+            if (!partitioned.ok()) return eve::Result<void>::failure(partitioned.status());
         }
         if (z + 1 == r.floors) {
             for (int y = 0; y < r.depth; ++y) for (int x = 0; x < r.width; ++x)
@@ -408,9 +480,36 @@ eve::Result<void> HouseGenerator::generate(const HouseRequest &r, HouseLayout &o
         }
         previousMask = mask;
     }
-    if (!partitionsInteriors && !r.requiredRooms.empty() && r.requiredRooms.front() != "living")
-        generated.diagnostics.push_back(
-            "multi-room request fell back to a single room per floor (no interior partition components)");
+    // Expand the canonical footprint to every cell occupied by rotated multi-cell components.
+    int occupiedWidth = r.width, occupiedDepth = r.depth;
+    for (const HouseInstance& instance : generated.instances) {
+        const auto component = library_.find(instance.componentId);
+        if (!component) continue;
+        const int  rotation = (instance.rotationDeg % 360 + 360) % 360;
+        const bool quarter  = (rotation / 90) % 2 != 0;
+        occupiedWidth =
+            std::max(occupiedWidth, instance.x + (quarter ? component->get().depth : component->get().width));
+        occupiedDepth =
+            std::max(occupiedDepth, instance.y + (quarter ? component->get().width : component->get().depth));
+    }
+    std::vector<uint8_t> occupiedMask(size_t(occupiedWidth * occupiedDepth), 0);
+    for (int y = 0; y < r.depth; ++y)
+        for (int x = 0; x < r.width; ++x)
+            occupiedMask[size_t(y * occupiedWidth + x)] = baseMask[size_t(y * r.width + x)];
+    for (const HouseInstance& instance : generated.instances) {
+        const auto component = library_.find(instance.componentId);
+        if (!component) continue;
+        const int  rotation  = (instance.rotationDeg % 360 + 360) % 360;
+        const bool quarter   = (rotation / 90) % 2 != 0;
+        const int  cellWidth = quarter ? component->get().depth : component->get().width;
+        const int  cellDepth = quarter ? component->get().width : component->get().depth;
+        for (int y = 0; y < cellDepth; ++y)
+            for (int x = 0; x < cellWidth; ++x)
+                occupiedMask[size_t((instance.y + y) * occupiedWidth + instance.x + x)] = 1;
+    }
+    generated.footprintWidth = occupiedWidth;
+    generated.footprintDepth = occupiedDepth;
+    generated.footprintMask  = std::move(occupiedMask);
     auto validated = generated.validate(library_);
     if (!validated.ok()) return validated;
     out = std::move(generated);
