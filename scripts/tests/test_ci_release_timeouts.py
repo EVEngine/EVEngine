@@ -55,6 +55,7 @@ class ReleaseJobTimeoutTests(unittest.TestCase):
             ("windows-release", "Build win32 release"): 160,
             ("android", "Build android debug"): 85,
             ("macos", "Build macosx debug"): 75,
+            ("macos", "Run macosx unit tests"): 60,
             ("macos", "Build native Dawn Metal lane"): 75,
         }
         for (job, step), minimum in minimums.items():
@@ -65,7 +66,7 @@ class ReleaseJobTimeoutTests(unittest.TestCase):
         minimums = {
             "windows": 300,
             "android": 120,
-            "macos": 180,
+            "macos": 240,
             "linux-coverage": 150,
         }
         for job, minimum in minimums.items():

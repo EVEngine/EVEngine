@@ -767,7 +767,9 @@ jobs:
     needs: [source-quality, change-scope]
     if: ${{ needs.source-quality.result == 'success' && needs.change-scope.outputs.macos == 'true' && (github.event_name != 'workflow_call' || inputs.build_type == 'debug' || inputs.build_type == 'both') }}
     runs-on: macos-latest
-    timeout-minutes: 180
+    # The debug unit suite exceeded its former 30-minute step guard in release
+    # run 35566503055. Budget the suite and the separate Dawn lane together.
+    timeout-minutes: 240
     env:
       SCCACHE_GHA_ENABLED: "true"
       SCCACHE_GHA_VERSION: evengine-cpp-v1-macos-arm64-debug
@@ -816,7 +818,7 @@ jobs:
           CMAKE_EXTRA_ARGS="-DEVENGINE_COMPILER_CACHE=SCCACHE"
 
       - name: Run macosx unit tests
-        timeout-minutes: 30
+        timeout-minutes: 60
         env:
           ALSOFT_DRIVERS: "null"
         run: make test/macosx-debug
