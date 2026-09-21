@@ -105,9 +105,6 @@ class ZeroerrDiscoveryTests(unittest.TestCase):
                    ("resourceFormats.image.png", "resource_format_image.cpp", 12)]
         result, generated = self.discover(entries, "plain")
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
-        self.assertIn(
-            generated,
-        )
         labels = self.labels_of(generated, "ClassicScenes.perf.maxFps")
         self.assertIn("benchmark", labels)
         self.assertIn("source:ClassicScenes.cpp", labels)

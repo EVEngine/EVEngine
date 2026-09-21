@@ -194,7 +194,6 @@ foreach(_basename IN LISTS _bundle_files)
         # exclude them (CTEST_BENCHMARK_SEL) while -L benchmark still selects them.
         list(APPEND _labels "benchmark")
       endif()
-      endif()
       # CTest include files use classic add_test(name exe [args...]), not NAME/COMMAND keywords.
       string(APPEND _content
         "add_test(\"${_name}\" \"${ZEROERR_EXE}\" \"--testcase=^${_name}$\")\n"
