@@ -414,7 +414,10 @@ jobs:
           key: ${{ steps.third-party-cache.outputs.cache-primary-key }}
 
       - name: Run win32 unit tests
-        timeout-minutes: 40
+        # Run 35519931809 reached 5548/5550 passing cases when the 40-minute
+        # guard fired. Keep a bounded margin for the final structural tests and
+        # normal hosted-runner variance when CI/build files require a full run.
+        timeout-minutes: 50
         # Headless runners have no WASAPI endpoint (0x80070490); OpenAL Soft null backend.
         env:
           ALSOFT_DRIVERS: "null"
