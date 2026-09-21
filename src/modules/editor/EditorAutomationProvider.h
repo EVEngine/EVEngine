@@ -34,6 +34,7 @@ private:
 
     void refreshProfile();
     std::string commandsJson();
+    std::string        targetList() const;
     EditorResult<void> bindRequestedTarget(const EditorValue::Object& request);
     std::string createTarget(const EditorValue::Object& request);
     std::string closeTarget(const EditorValue::Object& request);

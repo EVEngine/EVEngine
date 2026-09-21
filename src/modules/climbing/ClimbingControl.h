@@ -9,6 +9,7 @@
 
 #include "climbing/Climbing.h"
 #include "common/GameplayControl.h"
+#include "common/GameplayInstanceCatalog.h"
 
 namespace eve::climbing {
 
@@ -19,7 +20,7 @@ namespace eve::climbing {
  * They must outlive this owner-thread-affine adapter. Commands carry only
  * player semantics; begin always re-probes the borrowed authoritative world.
  */
-class EVENGINE_API_DOMAINS ClimbingControl final : public IGameplayControlProvider {
+class EVENGINE_API_DOMAINS ClimbingControl final : public IGameplayControlProvider, public IGameplayInstanceCatalog {
 public:
     /**
      * @brief Construct an adapter over one runtime, world and authoritative character pose.
@@ -39,6 +40,8 @@ public:
 
     /** @copydoc IGameplayControlProvider::gameplayDomain */
     [[nodiscard]] std::string_view gameplayDomain() const noexcept override;
+    /** @copydoc IGameplayInstanceCatalog::gameplayInstances */
+    [[nodiscard]] std::vector<SubjectRef> gameplayInstances() const override;
     /** @copydoc IGameplayControlProvider::observeGameplay */
     [[nodiscard]] Result<GameplayObservation> observeGameplay(const GameplaySession& session,
                                                                SubjectRef instance) const override;

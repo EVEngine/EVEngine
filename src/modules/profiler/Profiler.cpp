@@ -20,7 +20,10 @@ int64_t nowNs() {
 }
 }  // namespace
 
-Profiler::Profiler() { eve::debug::setRenderTracer(this); }
+Profiler::Profiler() {
+    eve::debug::setRenderTracer(this);
+    registerProfilerCapabilities();
+}
 
 Profiler::~Profiler() {
     if (eve::debug::renderTracer() == this) eve::debug::setRenderTracer(nullptr);

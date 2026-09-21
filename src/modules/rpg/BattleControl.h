@@ -8,6 +8,7 @@
  */
 
 #include "common/GameplayControl.h"
+#include "common/GameplayInstanceCatalog.h"
 
 #include <unordered_map>
 
@@ -24,7 +25,7 @@ class RPGActor;
  * explicit because legacy RPGActor instances do not themselves own persistent IDs.
  * Registration and calls are confined to the battle's simulation thread.
  */
-class EVENGINE_API_PLATFORM BattleControl final : public IGameplayControlProvider {
+class EVENGINE_API_PLATFORM BattleControl final : public IGameplayControlProvider, public IGameplayInstanceCatalog {
 public:
     /** @brief Construct an adapter over a borrowed battle and stable instance identity. */
     BattleControl(Battle& battle, SubjectRef instance);
@@ -39,6 +40,8 @@ public:
 
     /** @copydoc IGameplayControlProvider::gameplayDomain */
     [[nodiscard]] std::string_view gameplayDomain() const noexcept override;
+    /** @copydoc IGameplayInstanceCatalog::gameplayInstances */
+    [[nodiscard]] std::vector<SubjectRef> gameplayInstances() const override;
     /** @copydoc IGameplayControlProvider::observeGameplay */
     [[nodiscard]] Result<GameplayObservation> observeGameplay(const GameplaySession& session,
                                                                SubjectRef instance) const override;

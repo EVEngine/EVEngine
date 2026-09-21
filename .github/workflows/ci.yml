@@ -325,10 +325,14 @@ jobs:
       - name: Build win32 debug
         # A PR that changes the third-party patch/cache key must do a full cold
         # dependency plus engine/test build. Recent windows-2025 runners can
-        # exceed 60 minutes without any compiler failure as the full test
-        # manifest grows, so retain a bounded hang guard while allowing the
-        # cold build and final unit-test link to finish.
-        timeout-minutes: 75
+        # exceed 60 minutes without any compiler failure as the full test manifest
+        # grows, so retain a bounded hang guard while allowing the cold build and
+        # final unit-test link to finish. Measured on 2026-09-19: a passing cold
+        # build took 51.6 min, while two dev pushes and this PR were killed by the
+        # former 60-minute guard standing at 98% of the compile steps — the win32
+        # build genuinely needs ~62-66 min now — so keep the 80-minute guard the
+        # Dawn lane already uses.
+        timeout-minutes: 80
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
@@ -722,8 +726,12 @@ jobs:
     if: ${{ needs.source-quality.result == 'success' && needs.change-scope.outputs.macos == 'true' && (github.event_name != 'workflow_call' || inputs.build_type == 'debug' || inputs.build_type == 'both') }}
     runs-on: macos-latest
     # The full isolated test suite now exceeds 30 minutes on hosted Apple
-    # Silicon, and the native Dawn lane still follows it in this job.
-    timeout-minutes: 135
+    # Silicon, and the native Dawn lane still follows it in this job. Measured
+    # on 2026-09-21: the standard build plus its test suite took 24.8 + 31.9
+    # minutes, and a cache-cold Dawn Metal build needs more than 40 minutes on
+    # its own (sccache reported 163 hits against 2533 misses), so keep a hang
+    # guard that a cold cache can still finish inside.
+    timeout-minutes: 180
     env:
       SCCACHE_GHA_ENABLED: "true"
       SCCACHE_GHA_VERSION: evengine-cpp-v1-macos-arm64-debug
@@ -832,7 +840,11 @@ jobs:
           fi
 
       - name: Build native Dawn Metal lane
-        timeout-minutes: 40
+        # A warm sccache builds this lane in 10-29 minutes (10.4 on PR #443,
+        # 28.6 on dev), but a cache-cold pull-request ref compiles the whole
+        # webgpu-native unit_test target and ran past the former 40-minute guard
+        # on PR #428. Keep this a hang guard rather than a build budget.
+        timeout-minutes: 90
         run: cmake --build build/webgpu-macos --target unit_test -j "$(sysctl -n hw.ncpu)"
 
       - name: Report C/C++ compilation cache

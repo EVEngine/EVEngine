@@ -7,19 +7,20 @@
  * @brief RTS module owner and phase-one composition profile entry point.
  */
 
-#include "common/Module.h"
 #include "common/GameplayControl.h"
+#include "common/GameplayInstanceCatalog.h"
+#include "common/Module.h"
 #include "common/Snapshot.h"
-#include "rts/RTSAttributes.h"
 #include "rts/RTSArchetype.h"
+#include "rts/RTSAttributes.h"
 #include "rts/RTSContent.h"
-#include "rts/RTSTech.h"
-#include "rts/RTSMatch.h"
-#include "rts/RTSReplay.h"
 #include "rts/RTSEffects.h"
+#include "rts/RTSMatch.h"
 #include "rts/RTSProductionAction.h"
-#include "rts/RTSSystems.h"
+#include "rts/RTSReplay.h"
 #include "rts/RTSSnapshot.h"
+#include "rts/RTSSystems.h"
+#include "rts/RTSTech.h"
 
 #include <cstddef>
 #include <memory>
@@ -59,7 +60,7 @@ struct RTSFrameLifecycleEvent {
  * authoritative state owners, while action lifecycle state remains owned by
  * the caller-provided action::ActionRuntime through IRTSActionExecutor.
  */
-class EVENGINE_API_DOMAINS RTS : public Module, public IGameplayControlProvider {
+class EVENGINE_API_DOMAINS RTS : public Module, public IGameplayControlProvider, public IGameplayInstanceCatalog {
 public:
     Module_REG(RTS);
 
@@ -70,6 +71,8 @@ public:
 
     /** @copydoc IGameplayControlProvider::gameplayDomain */
     [[nodiscard]] std::string_view gameplayDomain() const noexcept override;
+    /** @copydoc IGameplayInstanceCatalog::gameplayInstances */
+    [[nodiscard]] std::vector<SubjectRef> gameplayInstances() const override;
     /** @copydoc IGameplayControlProvider::observeGameplay */
     [[nodiscard]] Result<GameplayObservation> observeGameplay(const GameplaySession& session,
                                                                SubjectRef instance) const override;

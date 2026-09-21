@@ -1,7 +1,10 @@
 #include "inventory/Inventory.h"
+#include "inventory/InventoryControl.h"
 #include "inventory/InventorySaveSession.h"
-#include "inventory/Item.h"
 #include "inventory/InventorySystem.h"
+#include "inventory/Item.h"
+
+#include "common/SubjectRef.h"
 
 #include <simplesquirrel/simplesquirrel.hpp>
 
@@ -276,6 +279,80 @@ void Inventory::expose(ssq::Class &cls) {
     cls.addFunc("getChangeEventSlot", &Inventory::getChangeEventSlot);
     cls.addFunc("getChangeEventOtherSlot", &Inventory::getChangeEventOtherSlot);
     cls.addFunc("getChangeEventEquipSlot", &Inventory::getChangeEventEquipSlot);
+
+    // 把玩家背包发布到共享玩法协议（`eve_gameplay` / MCP）。返回 {ok, message}：
+    // 失败原因（非规范持久 id、重复实例、空 bag）不被丢弃。equipment 可为 null；
+    // ssq 的默认指针绑定拒绝 Squirrel `null`，故按 Avatar.cpp 的既有做法接收
+    // ssq::Object 并在此翻译 null -> nullptr。
+    cls.addFunc("publishGameplay", [vm = cls.getHandle()](Inventory *self, const std::string &instanceId,
+                                                          const std::string &ownerId, Bag *bag, ssq::Object equipment) {
+        ssq::Table result(vm);
+        if (self == nullptr || bag == nullptr) {
+            result.set("ok", false);
+            result.set("message", std::string("publishGameplay needs the inventory module and a bag"));
+            return result;
+        }
+        EquipmentSet *equipmentSet = equipment.isNull() ? nullptr : equipment.toPtrUnsafe<EquipmentSet *>();
+        const auto    published    = self->publishGameplay(instanceId, ownerId, bag, equipmentSet);
+        result.set("ok", published.ok());
+        result.set("message", published.ok() ? std::string("published") : published.status().describe());
+        return result;
+    });
+    cls.addFunc("unpublishGameplay", [vm = cls.getHandle()](Inventory *self, const std::string &instanceId) {
+        ssq::Table result(vm);
+        const auto unpublished = self == nullptr
+                                     ? eve::Result<void>::failure(eve::Diagnostic::error(
+                                           eve::DiagnosticCode::Failed, "inventory module unavailable", "self"))
+                                     : self->unpublishGameplay(instanceId);
+        result.set("ok", unpublished.ok());
+        result.set("message", unpublished.ok() ? std::string("unpublished") : unpublished.status().describe());
+        return result;
+    });
+    cls.addFunc("clearGameplayControls", &Inventory::clearGameplayControls);
+    cls.addFunc("getGameplayControlCount", &Inventory::gameplayControlCount);
+}
+
+Inventory::~Inventory() { clearGameplayControls(); }
+
+eve::Result<void> Inventory::publishGameplay(const std::string &instanceId, const std::string &ownerId, Bag *bag,
+                                             EquipmentSet *equipment) {
+    if (instanceId.empty() || ownerId.empty() || bag == nullptr)
+        return eve::Result<void>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                   "publishGameplay needs an instance id, an owner id and a bag", "instanceId"));
+    const auto instance = eve::PersistentId::parse(instanceId);
+    const auto owner    = eve::PersistentId::parse(ownerId);
+    if (!instance.has_value() || !owner.has_value())
+        return eve::Result<void>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                   "instance and owner ids must be canonical persistent ids", "instanceId"));
+    if (!gameplay_) gameplay_ = std::make_unique<InventoryControl>();
+    return gameplay_->publish(eve::SubjectRef::fromPersistentId(*instance), eve::SubjectRef::fromPersistentId(*owner),
+                              *bag, equipment);
+}
+
+eve::Result<void> Inventory::unpublishGameplay(const std::string &instanceId) {
+    if (!gameplay_)
+        return eve::Result<void>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::NotFound, "no inventory instance is published", "instanceId"));
+    const auto instance = eve::PersistentId::parse(instanceId);
+    if (!instance.has_value())
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "the instance id must be a canonical persistent id", "instanceId"));
+    return gameplay_->unpublish(eve::SubjectRef::fromPersistentId(*instance));
+}
+
+void Inventory::clearGameplayControls() {
+    if (gameplay_) gameplay_->clear();
+}
+
+int Inventory::gameplayControlCount() const { return gameplay_ ? gameplay_->count() : 0; }
+
+std::vector<std::string> Inventory::gameplayInstances() const {
+    std::vector<std::string> result;
+    if (!gameplay_) return result;
+    for (const auto &instance : gameplay_->instances()) result.push_back(instance.format());
+    return result;
 }
 
 }  // namespace eve::inventory

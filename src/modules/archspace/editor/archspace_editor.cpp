@@ -10,6 +10,8 @@
 
 #include <stdexcept>
 #include <string>
+#include <string_view>
+#include <vector>
 
 namespace eve::archspace_editor {
 namespace {
@@ -25,7 +27,7 @@ std::string stringField(const editor::EditorValue::Object& request, const char* 
 
 class ArchSpaceEditorModule::TargetFactory final : public editor::IEditorAutomationTargetFactory {
 public:
-    bool supports(std::string_view type) const override { return type == "archspace" || type == "archspace-document"; }
+    std::vector<std::string_view> types() const override { return {"archspace", "archspace-document"}; }
 
     editor::EditorResult<editor::AutomationOwnedTarget> create(const editor::TargetId& target, std::string_view type,
                                                                const editor::EditorValue::Object& request) override {

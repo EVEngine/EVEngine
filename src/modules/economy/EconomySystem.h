@@ -45,6 +45,13 @@ public:
     /** @brief 累计出账量。 */
     static int getExpense(int player, const std::string& type);
 
+    /**
+     * @brief 取一个玩家账本的完整只读快照（含未注册类型的余额与流水）。
+     * @param player 玩家 id。
+     * @return 拥有型快照，键按字典序；用于观察 / 调试 / MCP 投影。
+     */
+    [[nodiscard]] static EconomyLedger::Snapshot snapshot(int player);
+
     /** @brief 注册事件钩子（同名替换）。 */
     static void registerHook(const std::string& name, EconomyHook fn);
     /** @brief 注销事件钩子。 */

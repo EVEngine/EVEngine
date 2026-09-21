@@ -12,8 +12,11 @@
 
 #include <squirrel.h>
 #include <cstdint>
+#include <memory>
 #include <span>
+#include <string>
 #include <unordered_map>
+#include <vector>
 
 namespace ssq {
 class Object;
@@ -22,6 +25,7 @@ class Object;
 namespace eve::dialogue {
 
 class ConversationDocument;
+class DialogueControl;
 
 }  // namespace eve::dialogue
 
@@ -172,6 +176,19 @@ public:
      */
     [[nodiscard]] eve::Result<void> startChecked(const std::string& id, ssq::Object bindings);
     /**
+     * @brief Start a conversation with an empty binding table.
+     * @param id Conversation id to start.
+     * @return Applied on success, or the same structured diagnostics as the
+     *         binding-carrying overload.
+     * @remarks Entry point for hosts without a Squirrel call frame (MCP /
+     *          `eve_gameplay`). When a VM is attached the empty table is a real
+     *          Squirrel table, so conditions that read bindings resolve as
+     *          absent instead of reading an invalid object.
+     */
+    [[nodiscard]] eve::Result<void> startChecked(const std::string& id);
+    /** @brief Compatibility-only bool projection of startChecked. */
+    bool start(const std::string& id, ssq::Object bindings);
+    /**
      * @brief Advance the active conversation with a structured runner diagnostic.
      * @return Applied on
      * success; failure preserves the runner's validated state.
@@ -233,6 +250,28 @@ public:
                             const std::string& find, const std::string& replacement);
     void        clearToneRules() { textRenderer_.clearToneRules(); }
 
+    /**
+     * @brief 把本模块的对话运行器发布到共享玩法协议（`eve_gameplay` / MCP）。
+     *
+     * 运行器一次只跑一个对话，因此领域最多发布一个实例：重复发布返回
+     * Conflict，避免两个身份指向同一个运行器。动作词表就是本模块自己的操作
+     * （start/advance/select），观察结果是当前节点、说话人、文本与路由。
+     * @param instanceId 实例稳定标识，必须是规范持久 id（UUID 文本）。
+     * @param ownerId 控制该实例的玩家/角色稳定标识，同为规范持久 id。
+     * @return 成功返回空结果；id 非法或运行器已发布时返回诊断。
+     * @ownership 适配器由本模块持有并随模块销毁；运行器所有权不变。
+     * @thread 所有者模拟线程。
+     */
+    [[nodiscard]] eve::Result<void> publishGameplay(const std::string& instanceId, const std::string& ownerId);
+    /** @brief 取消发布一个实例；该实例未发布（或 id 非法）时返回诊断。 */
+    [[nodiscard]] eve::Result<void> unpublishGameplay(const std::string& instanceId);
+    /** @brief 取消发布本模块持有的全部玩法实例。 */
+    void clearGameplayControls();
+    /** @brief 已发布的玩法实例数量（0 或 1）。 */
+    [[nodiscard]] int gameplayControlCount() const;
+    /** @brief 已发布的玩法实例标识（发布顺序）。 */
+    [[nodiscard]] std::vector<std::string> gameplayInstances() const;
+
 private:
     int loadDnutImpl(const std::string& source, const std::string& sourceId);
     int reloadDnutImpl(const std::string& source, const std::string& sourceId);
@@ -270,6 +309,8 @@ private:
     std::string                                               locale_;
     ConversationSaveMigrations                                migrations_;
     ConversationTextRenderer                                  textRenderer_;
+    /** 惰性创建的玩法适配器；模块析构时随之注销。 */
+    std::unique_ptr<DialogueControl> gameplay_;
 };
 
 }  // namespace eve::dialogue
